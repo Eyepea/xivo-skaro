@@ -125,7 +125,7 @@ BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
 
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
-XIVOVERSION = '1.1'
+XIVOVERSION = '1.2'
 
 class manage_connection:
     ## \brief Deals with requests from the UI clients.
@@ -206,7 +206,7 @@ class manage_connection:
         closemenow = True
         
         if requester_ip not in daemon.ip_reverse_webi:
-            connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
+            connid.sendall('%s:KO <NOT ALLOWED FROM %s>\n' % (XIVO_CLI_WEBI_HEADER, requester_ip))
             return closemenow
         astid = daemon.ip_reverse_webi[requester_ip]
         
@@ -1027,17 +1027,13 @@ class xivo_daemon:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             self.cconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
         xivoconf_general = self.cconf.read_section('general', 'general')
-        
+
         # loads the general configuration
-        self.commandset = xivoconf_general.get('commandset', 'xivocti')
-        if 'incoming_tcp_ports' in xivoconf_general:
-            incoming_tcp_ports = xivoconf_general['incoming_tcp_ports'].split(',')
-        if 'incoming_udp_ports' in xivoconf_general:
-            incoming_udp_ports = xivoconf_general['incoming_udp_ports'].split(',')
+        self.commandset = self.cconf.xivoconf_json['main']['commandset']
         for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:
             fieldname = 'incoming_tcp_%s' % func.lower()
-            if fieldname in xivoconf_general:
-                bind_and_port = xivoconf_general[fieldname].split(':')
+            if fieldname in self.cconf.xivoconf_json['main']:
+                bind_and_port = self.cconf.xivoconf_json['main'][fieldname]
                 if len(bind_and_port) > 1:
                     try:
                         incoming_tcp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
@@ -1045,14 +1041,14 @@ class xivo_daemon:
                         log.exception('%s definition' % fieldname)
         for func in ['ANNOUNCE']:
             fieldname = 'incoming_udp_%s' % func.lower()
-            if fieldname in xivoconf_general:
-                bind_and_port = xivoconf_general[fieldname].split(':')
+            if fieldname in self.cconf.xivoconf_json['main']:
+                bind_and_port = self.cconf.xivoconf_json['main'][fieldname]
                 if len(bind_and_port) > 1:
                     try:
                         incoming_udp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
                     except Exception:
                         log.exception('%s definition' % fieldname)
-    
+                        
         self.extraconn = xivoconf_general.get('extraconn', '')
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
         ctilog = xivoconf_general.get('ctilog_db_uri')
