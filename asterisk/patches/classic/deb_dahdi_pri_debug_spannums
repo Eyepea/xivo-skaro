@@ -7,9 +7,11 @@ Last-Update: 2009-12-19
 This allows tracing ("pri debug" / "pri set debug") more than one span at
 a time in a sane manner.
 
---- a/channels/chan_dahdi.c
-+++ b/channels/chan_dahdi.c
-@@ -12207,6 +12207,8 @@ static void dahdi_pri_message(struct pri
+Index: asterisk-1.6.2.10/channels/chan_dahdi.c
+===================================================================
+--- asterisk-1.6.2.10.orig/channels/chan_dahdi.c	2010-06-24 18:19:36.000000000 -0400
++++ asterisk-1.6.2.10/channels/chan_dahdi.c	2010-07-27 16:29:43.697425849 -0400
+@@ -12347,6 +12347,8 @@
  		}
  		if (dchancount > 1 && (span > -1))
  			ast_verbose("[Span %d D-Channel %d]%s", span, dchan, s);
@@ -18,7 +20,7 @@ a time in a sane manner.
  		else
  			ast_verbose("%s", s);
  	} else
-@@ -12248,6 +12250,8 @@ static void dahdi_pri_error(struct pri *
+@@ -12388,6 +12390,8 @@
  		}
  		if ((dchancount > 1) && (span > -1))
  			ast_log(LOG_ERROR, "[Span %d D-Channel %d] PRI: %s", span, dchan, s);
