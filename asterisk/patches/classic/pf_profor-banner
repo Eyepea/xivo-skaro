@@ -2,18 +2,18 @@
  -- Faidon Liambotis <paravoid@debian.org>
  -- Guillaume Knispel <gknispel@proformatique.com>
 
-Index: asterisk-1.4.26/main/asterisk.c
+Index: asterisk-1.6.2.10/main/asterisk.c
 ===================================================================
---- asterisk-1.4.26.orig/main/asterisk.c	2009-07-22 18:59:33.000000000 +0200
-+++ asterisk-1.4.26/main/asterisk.c	2009-07-22 18:59:37.000000000 +0200
-@@ -145,6 +145,10 @@
- 	ast_verbose("This is free software, with components licensed under the GNU General Public\n"); \
- 	ast_verbose("License version 2 and other licenses; you are welcome to redistribute it under\n"); \
- 	ast_verbose("certain conditions. Type 'core show license' for details.\n"); \
-+	ast_verbose("=========================================================================\n"); \
-+	ast_verbose("This package has been modified for the Debian GNU/Linux distribution\n"); \
-+	ast_verbose("This package has then been modified for XiVO, a product of Proformatique\n"); \
-+	ast_verbose("Please report all bugs to technique@proformatique.com\n"); \
- 	ast_verbose("=========================================================================\n")
+--- asterisk-1.6.2.10.orig/main/asterisk.c	2010-06-28 17:51:52.000000000 -0400
++++ asterisk-1.6.2.10/main/asterisk.c	2010-07-27 14:33:45.797425295 -0400
+@@ -159,6 +159,10 @@
+                 "This is free software, with components licensed under the GNU General Public\n" \
+                 "License version 2 and other licenses; you are welcome to redistribute it under\n" \
+                 "certain conditions. Type 'core show license' for details.\n" \
++                "=========================================================================\n" \
++                "This package has been modified for the Debian GNU/Linux distribution\n" \
++                "This package has then been modified for XiVO, a product of Proformatique\n" \
++                "Please report all bugs to technique@proformatique.com\n" \
+                 "=========================================================================\n", ast_get_version()) \
  
  /*! \defgroup main_options Main Configuration Options
