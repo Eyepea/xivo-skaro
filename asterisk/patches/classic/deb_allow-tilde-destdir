@@ -1,31 +1,25 @@
+Subject: relax badshell tilde test
+Author: Faidon Liambotis <paravoid@debian.org>
+Bug: http://issues.asterisk.org/view.php?id=14718
+Last-Update: 2009-12-19
+
 badshell is disallowing tildes (~) in the DESTDIR directory to warn people
 who use a shell that doesn't expand it to $HOMEDIR.
 
 However, we have such a tilde in our directory (~dfsg) that isn't expanded
 to $HOMEDIR nor shouldn't be.
 
-Should be reported upstream.
+This patch relaxes this test just for cases where the ~ is followed by a '/',
+which should catch most cases.
 
- -- Faidon Liambotis <paravoid@debian.org>
-
-Index: asterisk-1.4.33/Makefile
-===================================================================
---- asterisk-1.4.33.orig/Makefile	2010-06-22 11:23:17.000000000 +0200
-+++ asterisk-1.4.33/Makefile	2010-06-22 11:23:53.000000000 +0200
-@@ -522,7 +522,7 @@
- 	@exit 1
- endif
- 
--install: badshell datafiles bininstall
-+install: datafiles bininstall
- 	@if [ -x /usr/sbin/asterisk-post-install ]; then \
- 		/usr/sbin/asterisk-post-install $(DESTDIR) . ; \
+--- a/Makefile
++++ b/Makefile
+@@ -609,7 +609,7 @@ oldmodcheck:
  	fi
-@@ -828,7 +828,6 @@
- .PHONY: _uninstall
- .PHONY: uninstall-all
- .PHONY: dont-optimize
--.PHONY: badshell
- .PHONY: installdirs
- .PHONY: _clean
- .PHONY: $(SUBDIRS_INSTALL)
+ 
+ badshell:
+-ifneq ($(findstring ~,$(DESTDIR)),)
++ifneq ($(findstring ~/,$(DESTDIR)),)
+ 	@echo "Your shell doesn't do ~ expansion when expected (specifically, when doing \"make install DESTDIR=~/path\")."
+ 	@echo "Try replacing ~ with \$$HOME, as in \"make install DESTDIR=\$$HOME/path\"."
+ 	@exit 1

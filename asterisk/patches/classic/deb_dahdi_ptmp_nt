@@ -1,0 +1,24 @@
+Subject: Give DAHDI PtMP NT mode a shot
+Author: Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+Bug: http://issues.asterisk.org/view.php?id=15048
+Forwarded: not-needed
+Last-Update: 2009-12-19
+
+This basically sort-of works. But then again, implementing the whole mode
+in a three-liner patch is quite a feat ;-)
+
+Proper PtMP NT support is included in version 1.8. Backporting it may not
+be that simple.
+
+--- a/channels/chan_dahdi.c
++++ b/channels/chan_dahdi.c
+@@ -16510,7 +16510,8 @@ static int process_dahdi(struct dahdi_ch
+ 					confp->chan.sig = SIG_BRI_PTMP;
+ 					confp->pri.nodetype = PRI_CPE;
+ 				} else if (!strcasecmp(v->value, "bri_net_ptmp")) {
+-					ast_log(LOG_WARNING, "How cool would it be if someone implemented this mode!  For now, sucks for you. (line %d)\n", v->lineno);
++					confp->chan.sig = SIG_BRI_PTMP;
++					confp->pri.nodetype = PRI_NETWORK;
+ 				} else if (!strcasecmp(v->value, "gr303fxoks_net")) {
+ 					confp->chan.sig = SIG_GR303FXOKS;
+ 					confp->pri.nodetype = PRI_NETWORK;

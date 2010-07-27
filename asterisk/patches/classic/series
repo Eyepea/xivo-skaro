@@ -1,39 +1,26 @@
 ## upstream fixes
+deb_allow-tilde-destdir
+deb_astgenkey-security
+deb_astvarrundir
+deb_dahdi_pri_debug_spannums
+deb_dahdi_ptmp_nt
+deb_make-clean-fixes
+deb_pubkey_jnctn
+deb_sound_files
+
+## digium issues patches
+#dig_passerted_issue8824
+
+## proformatique patches
 pf_profor-banner
 
-#deb_allow-tilde-destdir
-#deb_astvarrundir
-#deb_make-clean-fixes
-#deb_safe_asterisk-config
-#deb_safe_asterisk-nobg
-#deb_h323-workaround-openh323-segfault
-
-## new features
-#deb_pubkey_jnctn
-#dig_func_devstate
-
-## for chan_vpb
-#deb_vpb-handle-nocards
-
-#deb_astgenkey-security
-#deb_apptest_sleep
-
-#pf_fastagi_args
-
-#dig_pickup_issue5014-1.4
 #pf_manager_dtmf
 #pf_manager_atxfer
 #pf_manager_misc
 
 #pf_macro_loop_verbose
 
-## patch for 1.4.22 but only pushed in trunk
-#dig_chan-sip_sipremoveheader_issue14246-trunk
-
 #pf_sip_mwi_for_thomson_st20XXs
-
-#dig_passerted_issue8824
-#dig_deadlock_chan_local_issue14112
 
 #pf_chan_dahdi_pripreferred
 #pf_atxfer_cid_display
@@ -45,8 +32,6 @@ pf_profor-banner
 #pf_sip_fix_masquerade
 #pf_sip_fix_local_attended
 #pf_voicemail_date_language
-
-#deb_bridge-1.4-backport
 
 #pf_queue_incoming_limit
 #pf_meetme_moderation

@@ -1,0 +1,29 @@
+Subject: Print span number (when available) on PRI trace messages
+Author: Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+Bug: http://issues.asterisk.org/view.php?id=15054
+Origin: backport, http://svn.digium.com/view/asterisk?view=rev&revision=225836
+Last-Update: 2009-12-19
+
+This allows tracing ("pri debug" / "pri set debug") more than one span at
+a time in a sane manner.
+
+--- a/channels/chan_dahdi.c
++++ b/channels/chan_dahdi.c
+@@ -12207,6 +12207,8 @@ static void dahdi_pri_message(struct pri
+ 		}
+ 		if (dchancount > 1 && (span > -1))
+ 			ast_verbose("[Span %d D-Channel %d]%s", span, dchan, s);
++		else if (span > -1)
++			ast_verbose("%d %s", span+1, s);
+ 		else
+ 			ast_verbose("%s", s);
+ 	} else
+@@ -12248,6 +12250,8 @@ static void dahdi_pri_error(struct pri *
+ 		}
+ 		if ((dchancount > 1) && (span > -1))
+ 			ast_log(LOG_ERROR, "[Span %d D-Channel %d] PRI: %s", span, dchan, s);
++		else if (span > -1)
++			ast_log(LOG_ERROR, "%d %s", span+1, s);
+ 		else
+ 			ast_log(LOG_ERROR, "%s", s);
+ 	} else

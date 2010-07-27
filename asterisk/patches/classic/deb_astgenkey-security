@@ -1,19 +1,22 @@
-astgenkey should generate a private key that is not world-readable.
+Subject: astgenkey should generate a private key that is not world-readable
+Author: Lionel Elie Mamane <lionel@mamane.lu>
+Bug: http://issues.asterisk.org/view.php?id=12373
+Last-Update: 2009-12-19
 
-Upstream bug: http://bugs.digium.com/view.php?id=12373
+Upstream has not accepted this patch and chose intead to document this 
+as a known minor issue.
 
-Index: asterisk-1.4.19~dfsg/contrib/scripts/astgenkey
-===================================================================
---- asterisk-1.4.19~dfsg.orig/contrib/scripts/astgenkey	2008-04-06 14:12:56.316323355 +0200
-+++ asterisk-1.4.19~dfsg/contrib/scripts/astgenkey	2008-04-06 14:18:24.212318949 +0200
-@@ -47,7 +47,10 @@
+--- a/contrib/scripts/astgenkey
++++ b/contrib/scripts/astgenkey
+@@ -47,7 +47,11 @@ done
  rm -f ${KEY}.key ${KEY}.pub
  
  echo "Generating SSL key '$KEY': "
++oldumask="`umask`"
 +umask 0077
  openssl genrsa -out ${KEY}.key ${DES3} 1024
-+[ "$(id -u)" = 0 ] && chown asterisk:asterisk ${KEY}.key
-+umask 0022
++[ "$(id -u)" = 0 ] && chown asterisk: ${KEY}.key
++umask $oldumask
  openssl rsa -in ${KEY}.key -pubout -out ${KEY}.pub
  
  if [ -f "${KEY}.key" ] && [ -f "${KEY}.pub" ]; then

@@ -1,13 +1,11 @@
-Don't remove sounds on dist-clean, upstream tarballs come with
-one of them.
+Subject: Don't remove sounds on dist-clean
+Author: Faidon Liambotis <paravoid@debian.org>
+Forwarded: not-needed
+Last-Update: 2009-12-19
 
- -- Faidon Liambotis <paravoid@debian.org>
-
-Index: asterisk-1.4.32/Makefile
-===================================================================
---- asterisk-1.4.32.orig/Makefile	2010-06-04 16:06:52.000000000 +0200
-+++ asterisk-1.4.32/Makefile	2010-06-04 16:06:54.000000000 +0200
-@@ -402,7 +402,6 @@
+--- a/Makefile
++++ b/Makefile
+@@ -459,7 +459,6 @@ dist-clean: distclean
  
  distclean: $(SUBDIRS_DIST_CLEAN) _clean
  	@$(MAKE) -C menuselect dist-clean
@@ -15,7 +13,7 @@ Index: asterisk-1.4.32/Makefile
  	rm -f menuselect.makeopts makeopts menuselect-tree menuselect.makedeps
  	rm -f makeopts.embed_rules
  	rm -f config.log config.status config.cache
-@@ -412,6 +411,10 @@
+@@ -469,6 +468,10 @@ distclean: $(SUBDIRS_DIST_CLEAN) _clean
  	rm -rf doc/api
  	rm -f build_tools/menuselect-deps
  
@@ -24,5 +22,5 @@ Index: asterisk-1.4.32/Makefile
 +	@$(MAKE) -C sounds dist-clean
 +
  datafiles: _all
- 	CFLAGS="$(_ASTCFLAGS) $(ASTCFLAGS)" build_tools/mkpkgconfig $(DESTDIR)$(libdir)/pkgconfig;
- # Should static HTTP be installed during make samples or even with its own target ala
+ 	if [ `$(ID) -u` = 0 ]; then \
+ 		CFLAGS="$(_ASTCFLAGS) $(ASTCFLAGS)" build_tools/mkpkgconfig $(DESTDIR)/usr/lib/pkgconfig; \
