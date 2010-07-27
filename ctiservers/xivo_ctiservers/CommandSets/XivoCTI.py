@@ -73,7 +73,7 @@ from xivo.BackSQL import backsqlite
 
 log = logging.getLogger('xivocti')
 
-XIVOVERSION_NUM = '1.1'
+XIVOVERSION_NUM = '1.2'
 XIVOVERSION_NAME = 'gallifrey'
 REQUIRED_CLIENT_VERSION = 5680
 __revision__ = __version__.split()[1]

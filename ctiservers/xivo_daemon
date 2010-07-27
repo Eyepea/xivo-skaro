@@ -125,7 +125,7 @@ BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
 
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
-XIVOVERSION = '1.1'
+XIVOVERSION = '1.2'
 
 class manage_connection:
     ## \brief Deals with requests from the UI clients.
