@@ -2,7 +2,7 @@
 pf_profor-banner
 
 #deb_allow-tilde-destdir
-deb_astvarrundir
+#deb_astvarrundir
 #deb_make-clean-fixes
 #deb_safe_asterisk-config
 #deb_safe_asterisk-nobg
