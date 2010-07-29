@@ -11,7 +11,10 @@ Adresse de départ (plage d'adressage) :
 Adresse de fin (plage d'adressage) : 
 
 ; fm_interfaces
-Interfaces réseau : 
+Interfaces réseau supplémentaires : 
+
+; help_interfaces
+Le serveur écoute par défaut sur l'interface de type VoIP. Vous pouvez ajouter ici des interfaces supplémentaires sur lesquelles le serveurs DHCP sera à l'écoute
 
 ; ipaddr(callback)
 L'adresse IP n'est pas valide
