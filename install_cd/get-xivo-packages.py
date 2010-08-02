@@ -27,17 +27,17 @@ from optparse import OptionParser
 DAKBASE = 'http://dak.proformatique.com/debian/dists/'
 SUITES  = {
 	'gallifrey': [
-		'lenny-xivo-gallifrey-dev/main/binary-i386/Packages',
-		'lenny-xivo-gallifrey-dev/contrib/binary-i386/Packages',
-		'lenny-xivo-gallifrey-dev/non-free/binary-i386/Packages',
+		'lenny-xivo-gallifrey/main/binary-i386/Packages',
+		'lenny-xivo-gallifrey/contrib/binary-i386/Packages',
+		'lenny-xivo-gallifrey/non-free/binary-i386/Packages',
 
 		'lenny/main/binary-i386/Packages',
 		'lenny/contrib/binary-i386/Packages',
 		'lenny/non-free/binary-i386/Packages',
 
-		'lenny-dev/main/binary-i386/Packages',
-		'lenny-dev/contrib/binary-i386/Packages',
-		'lenny-dev/non-free/binary-i386/Packages',
+#		'lenny-dev/main/binary-i386/Packages',
+#		'lenny-dev/contrib/binary-i386/Packages',
+#		'lenny-dev/non-free/binary-i386/Packages',
 	],
 }
 
@@ -45,13 +45,19 @@ if __name__ == '__main__':
 	usage  = "Usage: %prog [options] path/to/download"
 	parser = OptionParser(usage=usage)
 	parser.add_option('-l', '--list-packages'         , dest='list'     , action='store_true',
-		default=False, help="list available package (does not download)")
+		default=False, help="list available packages (do not download)")
 	parser.add_option('-f', '--force'         , dest='force'     , action='store_true',
 		default=False, help="force re-download all packages")
 	parser.add_option('-s', '--suite'   , dest='suite'  , action='store',
-		type='string', default='gallifrey', help="XiVO suite")
+		type='string', default='gallifrey', help="XiVO suite. set SUITE to *list* to list all available suites")
 
 	(options, args) = parser.parse_args()
+	if options.suite in ['list', '*list*']:
+		print "Available suites:"
+		for suite in SUITES.keys():
+			print " *", suite
+		sys.exit(0)
+
 	if not options.list and len(args) != 1:
 		parser.print_help(); sys.exit(2)
 
@@ -64,8 +70,8 @@ if __name__ == '__main__':
 
 	# whitelist
 	include = [
-		'pf-fai-xivo-1.1-gallifrey-dev',
-		'pf-fai-dev',
+#		'pf-fai-xivo-1.1-gallifrey-dev',
+#		'pf-fai-dev',
 		'pf-fai-xivo-1.1-gallifrey',
 		'pf-fai',
 	]
