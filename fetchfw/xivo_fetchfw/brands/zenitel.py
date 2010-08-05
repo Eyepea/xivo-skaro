@@ -16,12 +16,16 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# XXX (2010-07-05) This is work in progress. The IP station firmware is
+# not publicly available and I'm in contact with the guys at Zenitel to
+# see if it will become public or not.
+ 
 import os.path
 from xivo_fetchfw import fetchfw
 
 
 def zenitel_install(firmware):
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Zenitel", "firmware")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH)
     fetchfw.makedirs(fw_dst_dir)
     fetchfw.zip_extract_files(firmware.remote_files[0], (), fw_dst_dir)
 

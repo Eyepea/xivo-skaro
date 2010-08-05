@@ -987,18 +987,6 @@ url: http://www.yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V50%20Firmw
 size: 6644890
 sha1sum: 66be3d5003f56d94ce4ea809929d91777873d6a1
 
-# SIP Vandal Resistant Substation
-[zenitel_sipst]
-brand: Zenitel
-model: SIP Vandal Resistant Substation
-version: 01.10.3.4
-files: A100G80200.01_10_3_4.zip
-
-[A100G80200.01_10_3_4.zip]
-url: https://alphasupport.zenitel.com/alphawiki/downloads/A100G80200.01_10_3_4.zip
-size: 5003951
-sha1sum: 304c2037491f9ab2c75a89ad0791460cfd08a0d4
-
 ###
 ### Cards Firmwares starting from here ###
 ###
