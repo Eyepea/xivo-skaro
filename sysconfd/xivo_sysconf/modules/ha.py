@@ -96,14 +96,16 @@ class Ha(jsoncore.JsonCore):
         """
 
         master = ocf.ha_node_uname(ocf.ha_uuid())
-        if len(ocf.ha_master_uname()) > 0 and master != ocf.ha_master_uname():
+        if ocf.ha_master_uname() is not None and master != ocf.ha_master_uname():
             out.append('Changes not applied: current node MUST be master node')
             raise HttpReqError(500, "can't apply ha changes")
 
-        for slave in ocf.ha_nodes_uname_except(master):
-            if ocf.ha_node_status(slave) == 'active':
-                out.append('Changes not applied: slave node \'%s\' is active' % slave)
-                raise HttpReqError(500, "can't apply ha changes")
+        slaves = ocf.ha_nodes_uname_except(master)
+        if slaves is not None:
+            for slave in slaves:
+                if ocf.ha_node_status(slave) == 'active':
+                    out.append('Changes not applied: slave node \'%s\' is active' % slave)
+                    raise HttpReqError(500, "can't apply ha changes")
 
         try:
             #1. stop heartbeat
