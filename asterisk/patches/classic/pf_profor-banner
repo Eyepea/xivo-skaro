@@ -2,11 +2,11 @@
  -- Faidon Liambotis <paravoid@debian.org>
  -- Guillaume Knispel <gknispel@proformatique.com>
 
-Index: asterisk-1.6.2.10/main/asterisk.c
+Index: asterisk-1.8.0-beta3/main/asterisk.c
 ===================================================================
---- asterisk-1.6.2.10.orig/main/asterisk.c	2010-06-28 17:51:52.000000000 -0400
-+++ asterisk-1.6.2.10/main/asterisk.c	2010-07-27 14:33:45.797425295 -0400
-@@ -159,6 +159,10 @@
+--- asterisk-1.8.0-beta3.orig/main/asterisk.c	2010-08-18 14:12:49.583535107 -0400
++++ asterisk-1.8.0-beta3/main/asterisk.c	2010-08-18 14:13:02.593533018 -0400
+@@ -162,6 +162,10 @@
                  "This is free software, with components licensed under the GNU General Public\n" \
                  "License version 2 and other licenses; you are welcome to redistribute it under\n" \
                  "certain conditions. Type 'core show license' for details.\n" \

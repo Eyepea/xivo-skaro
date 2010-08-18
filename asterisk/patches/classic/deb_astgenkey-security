@@ -6,10 +6,10 @@ Last-Update: 2009-12-19
 Upstream has not accepted this patch and chose intead to document this 
 as a known minor issue.
 
-Index: asterisk-1.6.2.10/contrib/scripts/astgenkey
+Index: asterisk-1.8.0-beta3/contrib/scripts/astgenkey
 ===================================================================
---- asterisk-1.6.2.10.orig/contrib/scripts/astgenkey	2006-02-14 14:14:15.000000000 -0500
-+++ asterisk-1.6.2.10/contrib/scripts/astgenkey	2010-07-27 16:27:44.367425834 -0400
+--- asterisk-1.8.0-beta3.orig/contrib/scripts/astgenkey	2010-08-18 14:12:51.823534862 -0400
++++ asterisk-1.8.0-beta3/contrib/scripts/astgenkey	2010-08-18 14:13:00.013533192 -0400
 @@ -47,7 +47,11 @@
  rm -f ${KEY}.key ${KEY}.pub
  

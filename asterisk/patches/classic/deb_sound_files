@@ -12,8 +12,10 @@ default to avoid downloading any. We believe those should be part of
 a separate source package (as they rarely change, and have their own
 versioning).
 
---- a/sounds/sounds.xml
-+++ b/sounds/sounds.xml
+Index: asterisk-1.8.0-beta3/sounds/sounds.xml
+===================================================================
+--- asterisk-1.8.0-beta3.orig/sounds/sounds.xml	2010-08-18 14:12:50.313533067 -0400
++++ asterisk-1.8.0-beta3/sounds/sounds.xml	2010-08-18 14:13:01.943532503 -0400
 @@ -57,7 +57,6 @@
  	</category>
  	<category name="MENUSELECT_MOH" displayname="Music On Hold File Packages" positive_output="yes">

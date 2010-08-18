@@ -1,14 +1,9 @@
 ## upstream fixes
 deb_allow-tilde-destdir
 deb_astgenkey-security
-deb_dahdi_pri_debug_spannums
-deb_dahdi_ptmp_nt
 deb_make-clean-fixes
 deb_pubkey_jnctn
 deb_sound_files
-
-## digium issues patches
-#dig_passerted_issue8824
 
 ## proformatique patches
 pf_profor-banner
