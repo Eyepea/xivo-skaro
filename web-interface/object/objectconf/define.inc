@@ -22,8 +22,8 @@ define('DWHO_LABEL_CUSTOM','XIVO-WEBI');
 
 define('XIVO_SOFT_NAME','xivo');
 define('XIVO_SOFT_LABEL','XIVO');
-define('XIVO_SOFT_VERSION','1.1');
-define('XIVO_SOFT_CODENAME','Gallifrey');
+define('XIVO_SOFT_VERSION','1.2');
+define('XIVO_SOFT_CODENAME','Skaro');
 define('XIVO_SOFT_URL','xivo.fr');
 define('XIVO_CORP_LABEL','Proformatique');
 define('XIVO_CORP_URL','xivo.fr');
