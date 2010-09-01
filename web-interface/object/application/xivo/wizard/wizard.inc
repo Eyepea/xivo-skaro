@@ -1490,8 +1490,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function set_default_provisioning_values()
 	{
-		if(dwho_issa('netiface',$this->_wizsess) === false
-		|| isset($this->_wizsess['netiface']['name']) === false)
+		if(dwho_issa('netiface',$this->_wizsess) === false)
 			return(false);
 
 		$netiface = $this->_wizsess['netiface'];
@@ -1675,7 +1674,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		|| !$this->_commit_timezone())
 			return(false);
 
-		set_default_provisioning_values();
+		$this->set_default_provisioning_values();
 
 		// Generate commonconf file
 		$this->_load_xivo_dso();
