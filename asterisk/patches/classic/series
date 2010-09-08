@@ -2,7 +2,6 @@
 deb_allow-tilde-destdir
 deb_astgenkey-security
 deb_make-clean-fixes
-deb_pubkey_jnctn
 deb_sound_files
 
 ## proformatique patches
