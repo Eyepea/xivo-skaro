@@ -25,10 +25,6 @@ $array['element']['bindport'] = array();
 $array['element']['bindport']['default'] = 5060;
 $array['element']['bindport']['setdef'] = true;
 
-$array['element']['bindaddr'] = array();
-$array['element']['bindaddr']['default'] = '0.0.0.0';
-$array['element']['bindaddr']['setdef'] = true;
-
 $array['element']['videosupport'] = array();
 $array['element']['videosupport']['value'] = array('no','yes');
 $array['element']['videosupport']['default'] = 'no';
@@ -86,17 +82,8 @@ $array['element']['alwaysauthreject']['value'] = array('no','yes');
 $array['element']['alwaysauthreject']['default'] = 'no';
 $array['element']['alwaysauthreject']['set'] = true;
 
-$array['element']['limitonpeer'] = array();
-$array['element']['limitonpeer']['value'] = array('no','yes');
-$array['element']['limitonpeer']['default'] = 'yes';
-$array['element']['limitonpeer']['set'] = true;
-
 $array['element']['useragent'] = array();
 $array['element']['useragent']['default'] = 'XIVO PBX';
-
-$array['element']['checkmwi'] = array();
-$array['element']['checkmwi']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
-$array['element']['checkmwi']['default'] = 10;
 
 $array['element']['buggymwi'] = array();
 $array['element']['buggymwi']['value'] = array('no','yes');
@@ -157,19 +144,9 @@ $array['element']['tos_video']['default'] = '';
 $array['element']['tos_video']['null'] = true;
 
 $array['element']['t38pt_udptl'] = array();
-$array['element']['t38pt_udptl']['value'] = array('no','yes');
+$array['element']['t38pt_udptl']['value'] = array('no','yes', 'fec', 'redundancy', 'none');
 $array['element']['t38pt_udptl']['default'] = 'no';
 $array['element']['t38pt_udptl']['set'] = true;
-
-$array['element']['t38pt_rtp'] = array();
-$array['element']['t38pt_rtp']['value'] = array('no','yes');
-$array['element']['t38pt_rtp']['default'] = 'no';
-$array['element']['t38pt_rtp']['set'] = true;
-
-$array['element']['t38pt_tcp'] = array();
-$array['element']['t38pt_tcp']['value'] = array('no','yes');
-$array['element']['t38pt_tcp']['default'] = 'no';
-$array['element']['t38pt_tcp']['set'] = true;
 
 $array['element']['t38pt_usertpsource'] = array();
 $array['element']['t38pt_usertpsource']['value'] = array('no','yes');
@@ -203,10 +180,6 @@ $array['element']['matchexterniplocally']['set'] = true;
 $array['element']['outboundproxy'] = array();
 $array['element']['outboundproxy']['default'] = '';
 $array['element']['outboundproxy']['null'] = true;
-
-$array['element']['outboundproxyport'] = array();
-$array['element']['outboundproxyport']['default'] = '';
-$array['element']['outboundproxyport']['null'] = true;
 
 $array['element']['g726nonstandard'] = array();
 $array['element']['g726nonstandard']['value'] = array('no','yes');
@@ -388,7 +361,7 @@ $array['element']['nat']['value'] = array('no','yes','never','route');
 $array['element']['nat']['default'] = 'no';
 
 $array['element']['dtmfmode'] = array();
-$array['element']['dtmfmode']['value'] = array('rfc2833','inband','info','auto');
+$array['element']['dtmfmode']['value'] = array('rfc2833','inband','info','shortinfo', 'auto');
 $array['element']['dtmfmode']['default'] = 'info';
 
 $array['element']['qualify'] = array();
@@ -429,19 +402,6 @@ $array['element']['sendrpid']['value'] = array('no','yes');
 $array['element']['sendrpid']['default'] = 'no';
 $array['element']['sendrpid']['set'] = true;
 
-$array['element']['assertedidentity'] = array();
-$array['element']['assertedidentity']['value'] = array('no','yes');
-$array['element']['assertedidentity']['default'] = 'no';
-$array['element']['assertedidentity']['set'] = true;
-
-$array['element']['canreinvite'] = array();
-$array['element']['canreinvite']['value'] = array('no'			=> 'no',
-						  'yes'			=> 'yes',
-						  'update'		=> 'update',
-						  'nonat'		=> 'nonat',
-						  'update,nonat'	=> 'update-nonat');
-$array['element']['canreinvite']['default'] = 'no';
-
 $array['element']['insecure'] = array();
 $array['element']['insecure']['value'] = array('no'		=> 'no',
 					       'port'		=> 'port',
@@ -480,12 +440,225 @@ $array['element']['subscribecontext']['default'] = '';
 $array['element']['subscribecontext']['forcedef'] = true;
 $array['element']['subscribecontext']['null'] = true;
 
+// new asterisk 1.8 options
+$array['element']['match_auth_username'] = array();
+$array['element']['match_auth_username']['value']    = array('yes', 'no');
+$array['element']['match_auth_username']['default']  = 'no';
+$array['element']['match_auth_username']['set']      = true;
+$array['element']['match_auth_username']['null']     = true;
+
+$array['element']['udpbindaddr'] = array();
+$array['element']['udpbindaddr']['default']  = '0.0.0.0';
+$array['element']['udpbindaddr']['set']      = true;
+$array['element']['udpbindaddr']['null']     = false;
+
+$array['element']['tcpenable'] = array();
+$array['element']['tcpenable']['value']    = array('yes', 'no');
+$array['element']['tcpenable']['default']  = 'no';
+$array['element']['tcpenable']['set']      = true;
+$array['element']['tcpenable']['null']     = false;
+
+$array['element']['tcpbindaddr'] = array();
+$array['element']['tcpbindaddr']['default']  = '0.0.0.0';
+$array['element']['tcpbindaddr']['set']      = true;
+$array['element']['tcpbindaddr']['null']     = false;
+
+$array['element']['tlsenable'] = array();
+$array['element']['tlsenable']['value']    = array('yes', 'no');
+$array['element']['tlsenable']['default']  = 'no';
+$array['element']['tlsenable']['set']      = true;
+$array['element']['tlsenable']['null']     = true;
+
+$array['element']['tlsbindaddr'] = array();
+$array['element']['tlsbindaddr']['default']  = '0.0.0.0';
+$array['element']['tlsbindaddr']['set']      = true;
+$array['element']['tlsbindaddr']['null']     = true;
+
+$array['element']['tlscertfile'] = array();
+$array['element']['tlscertfile']['default']  = '';
+$array['element']['tlscertfile']['set']      = true;
+$array['element']['tlscertfile']['null']     = true;
+
+$array['element']['tlscafile'] = array();
+$array['element']['tlscafile']['default']  = '';
+$array['element']['tlscafile']['set']      = true;
+$array['element']['tlscafile']['null']     = true;
+
+$array['element']['tlscadir'] = array();
+$array['element']['tlscadir']['default']  = '';
+$array['element']['tlscadir']['set']      = true;
+$array['element']['tlscadir']['null']     = true;
+
+$array['element']['tlsdontverifyserver'] = array();
+$array['element']['tlsdontverifyserver']['value']    = array('yes', 'no');
+$array['element']['tlsdontverifyserver']['default']  = 'no';
+$array['element']['tlsdontverifyserver']['set']      = true;
+$array['element']['tlsdontverifyserver']['null']     = true;
+
+$array['element']['tlscipher'] = array();
+$array['element']['tlscipher']['default']  = '';
+$array['element']['tlscipher']['set']      = true;
+$array['element']['tlscipher']['null']     = true;
+
+$array['element']['tos_text'] = array();
+$array['element']['tos_text']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',
+					      'AF11','AF12','AF13','AF21','AF22','AF23',
+					      'AF31', 'AF32','AF33','AF41','AF42','AF43','EF');
+$array['element']['tos_text']['default'] = '';
+$array['element']['tos_text']['null'] = true;
+
+$array['element']['cos_sip'] = array();
+$array['element']['cos_sip']['value']    = array(1, 2, 3, 4, 5, 6, 7);
+$array['element']['cos_sip']['default']  = '';
+$array['element']['cos_sip']['null']     = true;
+
+$array['element']['cos_audio'] = array();
+$array['element']['cos_audio']['value']    = array(1, 2, 3, 4, 5, 6, 7);
+$array['element']['cos_audio']['default']  = '';
+$array['element']['cos_audio']['null']     = true;
+
+$array['element']['cos_video'] = array();
+$array['element']['cos_video']['value']    = array(1, 2, 3, 4, 5, 6, 7);
+$array['element']['cos_video']['default']  = '';
+$array['element']['cos_video']['null']     = true;
+
+$array['element']['cos_text'] = array();
+$array['element']['cos_text']['value']    = array(1, 2, 3, 4, 5, 6, 7);
+$array['element']['cos_text']['default']  = '';
+$array['element']['cos_text']['null']     = true;
+
+$array['element']['mwiexpiry'] = array();
+$array['element']['mwiexpiry']['default']  = '';
+$array['element']['mwiexpiry']['null']     = true;
+
+$array['element']['qualifyfreq'] = array();
+$array['element']['qualifyfreq']['default'] = '';
+$array['element']['qualifyfreq']['null']    = true;
+
+$array['element']['qualifygap'] = array();
+$array['element']['qualifygap']['default']  = '';
+$array['element']['qualifygap']['null']     = true;
+
+$array['element']['qualifypeers'] = array();
+$array['element']['qualifypeers']['default']  = '';
+$array['element']['qualifypeers']['null']     = true;
+
+$array['element']['parkinglot'] = array();
+$array['element']['parkinglot']['default']  = '';
+$array['element']['parkinglot']['null']     = true;
+
+$array['element']['prematuremedia'] = array();
+$array['element']['prematuremedia']['value']    = array('yes', 'no');
+$array['element']['prematuremedia']['default']  = 'no';
+$array['element']['prematuremedia']['null']     = true;
+
+$array['element']['sdpsession'] = array();
+$array['element']['sdpsession']['default']  = '';
+$array['element']['sdpsession']['null']     = true;
+
+$array['element']['sdpowner'] = array();
+$array['element']['sdpowner']['default']  = '';
+$array['element']['sdpowner']['null']     = true;
+
+$array['element']['authfailureevents'] = array();
+$array['element']['authfailureevents']['value']    = array('yes', 'no');
+$array['element']['authfailureevents']['default']  = 'no';
+$array['element']['authfailureevents']['null']     = true;
+
+$array['element']['dynamic_exclude_static'] = array();
+$array['element']['dynamic_exclude_static']['value']    = array('yes', 'no');
+$array['element']['dynamic_exclude_static']['default']  = 'yes';
+$array['element']['dynamic_exclude_static']['null']     = true;
+
+$array['element']['contactdeny'] = array();
+$array['element']['contactdeny']['default']  = '0.0.0.0/0.0.0.0';
+$array['element']['contactdeny']['null']     = true;
+
+$array['element']['contactpermit'] = array();
+$array['element']['contactpermit']['default']  = '0.0.0.0/0.0.0.0';
+$array['element']['contactpermit']['null']     = true;
+
+$array['element']['shrinkcallerid'] = array();
+$array['element']['shrinkcallerid']['value']    = array('yes', 'no');
+$array['element']['shrinkcallerid']['default']  = 'yes';
+$array['element']['shrinkcallerid']['null']     = true;
+
+$array['element']['regextenonqualify'] = array();
+$array['element']['regextenonqualify']['value']    = array('yes', 'no');
+$array['element']['regextenonqualify']['default']  = 'no';
+$array['element']['regextenonqualify']['null']     = true;
+
+$array['element']['timert1'] = array();
+$array['element']['timert1']['default']  = '200';
+$array['element']['timert1']['null']     = true;
+
+$array['element']['timerb'] = array();
+$array['element']['timerb']['default']  = '32000';
+$array['element']['timerb']['null']     = true;
+
+$array['element']['session-timers'] = array();
+$array['element']['session-timers']['value']    = array('originate', 'accept', 'refuse');
+$array['element']['session-timers']['null']     = true;
+
+$array['element']['session-expires'] = array();
+$array['element']['session-expires']['default']  = '1800';
+$array['element']['session-expires']['null']     = true;
+
+$array['element']['session-minse'] = array();
+$array['element']['session-minse']['default']  = '90';
+$array['element']['session-minse']['null']     = true;
+
+$array['element']['session-refresher'] = array();
+$array['element']['session-refresher']['value']    = array('uas', 'uac');
+$array['element']['session-refresher']['default']  = 'uas';
+$array['element']['session-refresher']['null']     = true;
+
+$array['element']['hash_users'] = array();
+$array['element']['hash_users']['default']  = '563';
+$array['element']['hash_users']['null']     = true;
+
+$array['element']['hash_peers'] = array();
+$array['element']['hash_peers']['default']  = '563';
+$array['element']['hash_peers']['null']     = true;
+
+$array['element']['notifycid'] = array();
+$array['element']['notifycid']['value']    = array('yes', 'no');
+$array['element']['notifycid']['default']  = 'no';
+$array['element']['notifycid']['null']     = true;
+
+$array['element']['callcounter'] = array();
+$array['element']['callcounter']['value']    = array('yes', 'no');
+$array['element']['callcounter']['default']  = 'no';
+$array['element']['callcounter']['null']     = true;
+
+$array['element']['faxdetect'] = array();
+$array['element']['faxdetect']['value']    = array('yes', 'no', 'cng', 't38', 'both');
+$array['element']['faxdetect']['default']  = 'no';
+$array['element']['faxdetect']['null']     = true;
+
+$array['element']['stunaddr'] = array();
+$array['element']['stunaddr']['default']  = '';
+$array['element']['stunaddr']['null']     = true;
+
+$array['element']['directmedia'] = array();
+$array['element']['directmedia']['value']    = array('yes', 'no', 'nonat', 'update', 'update,nonat');
+$array['element']['directmedia']['default']  = 'yes';
+$array['element']['directmedia']['null']     = true;
+
+$array['element']['ignoresdpversion'] = array();
+$array['element']['ignoresdpversion']['value']    = array('yes', 'no');
+$array['element']['ignoresdpversion']['default']  = 'no';
+$array['element']['ignoresdpversion']['null']     = true;
+
+$array['element']['jbtargetextra'] = array();
+$array['element']['jbtargetextra']['default']  = '40';
+$array['element']['jbtargetextra']['null']     = true;
 
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
+$array['filter']['udpbindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
 				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)),
 				     'maxlen'		=> 64);
 $array['filter']['videosupport'] = array('bool' => true);
@@ -505,9 +678,7 @@ $array['filter']['allowexternaldomains'] = array('bool' => true);
 $array['filter']['usereqphone'] = array('bool' => true);
 $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
 $array['filter']['alwaysauthreject'] = array('bool' => true);
-$array['filter']['limitonpeer'] = array('bool' => true);
 $array['filter']['useragent'] = array('cast' => 'sgraph','maxlen' => 80);
-$array['filter']['checkmwi'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['buggymwi'] = array('bool' => true);
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 				       'callback' => 'xivo_service_asterisk::chk_context',
@@ -524,8 +695,6 @@ $array['filter']['tos_sip'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS
 $array['filter']['tos_audio'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
 $array['filter']['tos_video'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
 $array['filter']['t38pt_udptl'] = array('bool' => true);
-$array['filter']['t38pt_rtp'] = array('bool' => true);
-$array['filter']['t38pt_tcp'] = array('bool' => true);
 $array['filter']['t38pt_usertpsource'] = array('bool' => true);
 $array['filter']['localnet'] = array('set'		=> false,
 				     'chk'		=> 2,
@@ -552,7 +721,6 @@ $array['filter']['outboundproxy'] = array('set'		=> false,
 					  'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
 								  DWHO_NETWORK_HOST_HOSTNAME)),
 					  'maxlen'	=> 64);
-$array['filter']['outboundproxyport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['g726nonstandard'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
 $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
@@ -637,8 +805,7 @@ $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20)
 $array['filter']['vmexten'] = array('regexp' => '/^[0-9\*]+$/','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
 $array['filter']['sendrpid'] = array('bool' => true);
-$array['filter']['assertedidentity'] = array('bool' => true);
-$array['filter']['canreinvite'] = array('key' => array('no','yes','update','nonat','update,nonat'));
+$array['filter']['directmedia'] = array('key' => array('no','yes','update','nonat','update,nonat'));
 $array['filter']['insecure'] = array('key' => array('no','port','invite','port,invite'));
 $array['filter']['rtcachefriends'] = array('bool' => true);
 $array['filter']['rtupdate'] = array('bool' => true);
