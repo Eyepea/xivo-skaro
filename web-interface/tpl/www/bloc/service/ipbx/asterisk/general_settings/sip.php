@@ -68,6 +68,18 @@ endif;
 		</li>
 		<li id="dwsm-tab-3"
 		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-security');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_security');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-4"
+		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-signalling');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
@@ -78,7 +90,7 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-4"
+		<li id="dwsm-tab-5"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-t38');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -90,7 +102,7 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-5"
+		<li id="dwsm-tab-6"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-jitterbuffer');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -102,7 +114,7 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-6"
+		<li id="dwsm-tab-7"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-default');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -114,14 +126,26 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-7"
+		<li id="dwsm-tab-8"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-realtime');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_realtime');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-9"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-internals',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_realtime');?></a>
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_internals');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -152,16 +176,35 @@ endif;
 					  'error'		=> $this->bbf_args('error',
 						   $this->get_var('error', 'bindport')) )),
 
-		$form->text(array('desc'	=> $this->bbf('fm_bindaddr'),
-					  'name'		=> 'bindaddr',
-					  'labelid'		=> 'bindaddr',
+		$form->text(array('desc'	=> $this->bbf('fm_udpbindaddr'),
+					  'name'		=> 'udpbindaddr',
+					  'labelid'		=> 'udpbindaddr',
 					  'size'		=> 15,
-					  'help'		=> $this->bbf('hlp_fm_bindaddr'),
+					  'help'		=> $this->bbf('hlp_fm_udpbindaddr'),
 					  'required'	=> false,
-					  'value'		=> $this->get_var('info','bindaddr','var_val'),
-					  'default'		=> $element['bindaddr']['default'],
+					  'value'		=> $this->get_var('info','udpbindaddr','var_val'),
+					  'default'		=> $element['udpbindaddr']['default'],
 					  'error'		=> $this->bbf_args('error',
-						   $this->get_var('error', 'bindaddr')) )),
+						   $this->get_var('error', 'udpbindaddr')) )),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_tcpenable'),
+				      'name'		  => 'tcpenable',
+				      'labelid'		=> 'tcpenable',
+    				  'help'		  => $this->bbf('hlp_fm_tcpenable'),
+		  			  'required'	=> false,
+				      'checked'		=> $this->get_var('info','tcpenable','var_val'),
+				      'default'		=> $element['tcpenable']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_tcpbindaddr'),
+					  'name'     => 'tcpbindaddr',
+					  'labelid'  => 'tcpbindaddr',
+					  'size'     => 15,
+					  'help'     => $this->bbf('hlp_fm_tcpbindaddr'),
+					  'required' => false,
+					  'value'    => $this->get_var('info','tcpbindaddr','var_val'),
+					  'default'  => $element['tcpbindaddr']['default'],
+					  'error'    => $this->bbf_args('error',
+						   $this->get_var('error', 'tcpbindaddr')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_videosupport'),
 				      'name'		=> 'videosupport',
@@ -202,6 +245,14 @@ endif;
 					  'required'	=> false,
 				      'checked'		=> $this->get_var('info','allowoverlap','var_val'),
 				      'default'		=> $element['allowoverlap']['default'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_match_auth_username'),
+				      'name'		=> 'match_auth_username',
+				      'labelid'		=> 'match_auth_username',
+					  'help'		=> $this->bbf('hlp_fm_match_auth_username'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','match_auth_username','var_val'),
+				      'default'		=> $element['match_auth_username']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_promiscredir'),
 				      'name'		=> 'promiscredir',
@@ -265,14 +316,6 @@ endif;
 				      'checked'		=> $this->get_var('info','alwaysauthreject','var_val'),
 				      'default'		=> $element['alwaysauthreject']['default'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_limitonpeer'),
-				      'name'		=> 'limitonpeer',
-				      'labelid'		=> 'limitonpeer',
-					  'help'		=> $this->bbf('hlp_fm_limitonpeer'),
-					  'required'	=> false,
-				      'checked'		=> $this->get_var('info','limitonpeer','var_val'),
-				      'default'		=> $element['limitonpeer']['default'])),
-
 		$form->text(array('desc'	=> $this->bbf('fm_useragent'),
 				  'name'		=> 'useragent',
 				  'labelid'		=> 'useragent',
@@ -283,18 +326,6 @@ endif;
 				  'default'		=> $element['useragent']['default'],
 				  'error'		=> $this->bbf_args('error',
 						   $this->get_var('error', 'useragent')) )),
-
-		$form->select(array('desc'	=> $this->bbf('fm_checkmwi'),
-				    'name'		=> 'checkmwi',
-				    'labelid'	=> 'checkmwi',
-				    'key'		=> false,
-				    'bbf'		=> 'fm_checkmwi-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-					'help'		=> $this->bbf('hlp_fm_checkmwi'),
-					'required'	=> false,
-				    'selected'	=> $this->get_var('info','checkmwi','var_val'),
-				    'default'	=> $element['checkmwi']['default']),
-			      $element['checkmwi']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_buggymwi'),
 				      'name'		=> 'buggymwi',
@@ -317,6 +348,14 @@ if($context_list !== false):
 				    'selected'	=> $this->get_var('info','regcontext','var_val')),
 			      $context_list);
 endif;
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_regextenonqualify'),
+				      'name'		=> 'regextenonqualify',
+				      'labelid'		=> 'regextenonqualify',
+					  'help'		=> $this->bbf('hlp_fm_regextenonqualify'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','regextenonqualify','var_val'),
+				      'default'		=> $element['regextenonqualify']['default']));
+
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_callerid'),
 				  'name'		=> 'callerid',
@@ -374,6 +413,14 @@ endif;
 				      'default'		=> $element['callevents']['default']),
 				'disabled="disabled"'),
 
+		$form->checkbox(array('desc'	=> $this->bbf('fm_authfailureevents'),
+				      'name'		=> 'authfailureevents',
+				      'labelid'		=> 'authfailureevents',
+					  'help'		=> $this->bbf('hlp_fm_authfailureevents'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','authfailureevents','var_val'),
+				      'default'		=> $element['authfailureevents']['default'])),
+
 		$form->select(array('desc'	=> $this->bbf('fm_tos-sip'),
 				    'name'		=> 'tos_sip',
 				    'labelid'	=> 'tos-sip',
@@ -405,7 +452,62 @@ endif;
 					'required'	=> false,
 				    'selected'	=> $this->get_var('info','tos_video','var_val'),
 				    'default'	=> $element['tos_video']['default']),
-			      $element['tos_video']['value']);
+					$element['tos_video']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_tos-text'),
+				    'name'		=> 'tos_text',
+				    'labelid'	=> 'tos-text',
+				    'empty'		=> true,
+				    'key'		=> false,
+					'help'		=> $this->bbf('hlp_fm_tos-text'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','tos_text','var_val'),
+				    'default'	=> $element['tos_text']['default']),
+					$element['tos_text']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_cos-sip'),
+				    'name'		=> 'cos_sip',
+				    'labelid'	=> 'cos-sip',
+				    'empty'		=> true,
+				    'key'		=> false,
+					'help'		=> $this->bbf('hlp_fm_cos-sip'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','cos_sip','var_val'),
+				    'default'	=> $element['cos_sip']['default']),
+			      $element['cos_sip']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_cos-audio'),
+				    'name'		=> 'cos_audio',
+				    'labelid'	=> 'cos-audio',
+				    'empty'		=> true,
+				    'key'		=> false,
+					'help'		=> $this->bbf('hlp_fm_cos-audio'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','cos_audio','var_val'),
+				    'default'	=> $element['cos_audio']['default']),
+			      $element['cos_audio']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_cos-video'),
+				    'name'		=> 'cos_video',
+				    'labelid'	=> 'cos-video',
+				    'empty'		=> true,
+				    'key'		=> false,
+					'help'		=> $this->bbf('hlp_fm_cos-video'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','cos_video','var_val'),
+				    'default'	=> $element['cos_video']['default']),
+			      $element['cos_video']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_cos-text'),
+				    'name'		=> 'cos_text',
+				    'labelid'	=> 'cos-text',
+				    'empty'		=> true,
+				    'key'		=> false,
+					'help'		=> $this->bbf('hlp_fm_cos-text'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','cos_text','var_val'),
+				    'default'	=> $element['cos_text']['default']),
+			      $element['cos_text']['value']);
 ?>
 </div>
 
@@ -431,6 +533,16 @@ endif;
 				  'error'		=> $this->bbf_args('error',
 						   $this->get_var('error', 'externhost')) )),
 
+		$form->text(array('desc'	=> $this->bbf('fm_stunaddr'),
+				  'name'		=> 'stunaddr',
+				  'labelid'		=> 'stunaddr',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_stunaddr'),
+				  'value'		=> $this->get_var('info','stunaddr','var_val'),
+				  'default'		=> $element['stunaddr']['default'],
+				  'error'		=> $this->bbf_args('error',
+					$this->get_var('error', 'stunaddr')) )),
+
 		$form->select(array('desc'	=> $this->bbf('fm_externrefresh'),
 				    'name'		=> 'externrefresh',
 				    'labelid'	=> 'externrefresh',
@@ -452,6 +564,33 @@ endif;
 				      'checked'		=> $this->get_var('info','matchexterniplocally','var_val'),
 				      'default'		=> $element['matchexterniplocally']['default'])),
 
+		$form->checkbox(array('desc'	=> $this->bbf('fm_dynamic_exclude_static'),
+				      'name'		=> 'dynamic_exclude_static',
+				      'labelid'		=> 'dynamic_exclude_static',
+					  'help'		=> $this->bbf('hlp_fm_dynamic_exclude_static'),
+				      'checked'		=> $this->get_var('info','dynamic_exclude_static','var_val'),
+				      'default'		=> $element['dynamic_exclude_static']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_contactdeny'),
+				  'name'		=> 'contactdeny',
+				  'labelid'		=> 'contactdeny',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_contactdeny'),
+				  'value'		=> $this->get_var('info','contactdeny','var_val'),
+				  'default'		=> $element['contactdeny']['default'],
+				  'error'		=> $this->bbf_args('error',
+						   $this->get_var('error', 'contactdeny')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_contactpermit'),
+				  'name'		=> 'contactpermit',
+				  'labelid'		=> 'contactpermit',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_contactpermit'),
+				  'value'		=> $this->get_var('info','contactpermit','var_val'),
+				  'default'		=> $element['contactpermit']['default'],
+				  'error'		=> $this->bbf_args('error',
+						   $this->get_var('error', 'contactpermit')) )),
+
 		$form->text(array('desc'	=> $this->bbf('fm_outboundproxy'),
 				  'name'		=> 'outboundproxy',
 				  'labelid'		=> 'outboundproxy',
@@ -460,16 +599,8 @@ endif;
 				  'value'		=> $this->get_var('info','outboundproxy','var_val'),
 				  'default'		=> $element['outboundproxy']['default'],
 				  'error'		=> $this->bbf_args('error',
-						   $this->get_var('error', 'outboundproxy')) )),
+						   $this->get_var('error', 'outboundproxy')) ));
 
-		$form->text(array('desc'	=> $this->bbf('fm_outboundproxyport'),
-				  'name'		=> 'outboundproxyport',
-				  'labelid'		=> 'outboundproxyport',
-				  'help'		=> $this->bbf('hlp_fm_outboundproxyport'),
-				  'value'		=> $this->get_var('info','outboundproxyport','var_val'),
-				  'default'		=> $element['outboundproxyport']['default'],
-				  'error'		=> $this->bbf_args('error',
-						   $this->get_var('error', 'outboundproxyport')) ));
 ?>
 
 <div id="localnetlist" class="fm-paragraph fm-multilist">
@@ -510,6 +641,71 @@ endif;
 <div class="clearboth"></div>
 </div>
 
+<div id="sb-part-security" class="b-nodisplay">
+<?php
+		echo $form->checkbox(array('desc'	=> $this->bbf('fm_tlsenable'),
+				      'name'	  	=> 'tlsenable',
+				      'labelid'		=> 'tlsenable',
+  					  'help'  		=> $this->bbf('hlp_fm_tlsenable'),
+				      'checked'		=> $this->get_var('info','tlsenable','var_val'),
+							'default'		=> $element['tlsenable']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_tlsbindaddr'),
+				  'name'		      => 'tlsbindaddr',
+				  'labelid'		    => 'tlsbindaddr',
+				  'size'		      => 15,
+				  'help'	       	=> $this->bbf('hlp_fm_tlsbindaddr'),
+				  'required'	    => false,
+				  'value'		      => $this->get_var('info','tlsbindaddr','var_val'),
+				  'default'		    => $element['tlsbindaddr']['default'],
+					'error'		      => $this->bbf_args('error',	$this->get_var('error', 'tlsbindaddr'))
+		)),
+/*
+		$form->text(array('desc'	=> $this->bbf('fm_tlscertfile'),
+				  'name'		=> 'tlscertfile',
+				  'labelid'		=> 'tlscertfile',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_tlscertfile'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','tlscertfile','var_val'),
+				  'default'		=> $element['tlscertfile']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'tlscertfile')) )),
+ */
+/*
+ * $form->select(array('desc'	=> $this->bbf('fm_tlscipher'),
+				    'name'		 => 'tlscipher',
+				    'labelid'	 => 'tlscipher',
+				    'key'		   => false,
+				    'bbf'		   => 'fm_tlscipher-opt',
+				    'bbfopt'	 => array('argmode' => 'paramvalue'),
+  					'help'		 => $this->bbf('hlp_fm_tlscipher'),
+				    'selected' => $this->get_var('info','tlscipher','var_val'),
+				    'default'	 => $element['tlscipher']['default']),
+			      $element['tlscipher']['value']);
+ */
+		$form->checkbox(array('desc'	=> $this->bbf('fm_tlsdontverifyserver'),
+				      'name'	  	=> 'tlsdontverifyserver',
+				      'labelid'		=> 'tlsdontverifyserver',
+  					  'help'  		=> $this->bbf('hlp_fm_tlsdontverifyserver'),
+				      'checked'		=> $this->get_var('info','tlsdontverifyserver','var_val'),
+							'default'		=> $element['tlsdontverifyserver']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_tlscipher'),
+				  'name'		=> 'tlscipher',
+				  'labelid'		=> 'tlscipher',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_tlscipher'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','tlscipher','var_val'),
+				  'default'		=> $element['tlscipher']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'tlscipher')) ));
+
+?>
+<div class="clearboth"></div>
+</div>
+
 <div id="sb-part-signalling" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_t1min'),
@@ -522,6 +718,28 @@ endif;
 				    'selected'	=> $this->get_var('info','t1min','var_val'),
 				    'default'	=> $element['t1min']['default']),
 			      $element['t1min']['value']),
+
+		$form->text(array('desc'	=> $this->bbf('fm_timert1'),
+				  'name'		=> 'timert1',
+				  'labelid'		=> 'timert1',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_timert1'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','timert1','var_val'),
+				  'default'		=> $element['timert1']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'timert1')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_timerb'),
+				  'name'		=> 'timerb',
+				  'labelid'		=> 'timerb',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_timerb'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','timerb','var_val'),
+				  'default'		=> $element['timerb']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'timerb')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_relaxdtmf'),
 				      'name'		=> 'relaxdtmf',
@@ -587,7 +805,7 @@ endif;
 		$form->text(array('desc'	=> $this->bbf('fm_notifymimetype'),
 				  'name'		=> 'notifymimetype',
 				  'labelid'		=> 'notifymimetype',
-				  'size'		=> 15,
+				  'size'		=> 35,
 				  'help'		=> $this->bbf('hlp_fm_notifymimetype'),
 				  'required'	=> false,
 				  'value'		=> $this->get_var('info','notifymimetype','var_val'),
@@ -654,7 +872,22 @@ endif;
 					'required'	=> false,
 				    'selected'	=> $this->get_var('info','defaultexpiry','var_val'),
 				    'default'	=> $element['defaultexpiry']['default']),
-			      $element['defaultexpiry']['value']),
+					$element['defaultexpiry']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_mwiexpiry'),
+				    'name'		=> 'mwiexpiry',
+				    'labelid'	=> 'mwiexpiry',
+				    'key'		=> false,
+				    'bbf'		=> 'fm_expiry-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%H%M%s')),
+					'help'		=> $this->bbf('hlp_fm_mwiexpiry'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','mwiexpiry','var_val'),
+				    'mwi'	=> $element['mwiexpiry']['mwi']),
+			      $element['mwiexpiry']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_registertimeout'),
 				    'name'		=> 'registertimeout',
@@ -699,6 +932,22 @@ endif;
 				      'checked'		=> $this->get_var('info','notifyhold','var_val'),
 				      'default'		=> $element['notifyhold']['default'])),
 
+		$form->checkbox(array('desc'	=> $this->bbf('fm_notifycid'),
+				      'name'		=> 'notifycid',
+				      'labelid'		=> 'notifycid',
+					  'help'		=> $this->bbf('hlp_fm_notifycid'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','notifycid','var_val'),
+				      'default'		=> $element['notifycid']['default'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_callcounter'),
+				      'name'		=> 'callcounter',
+				      'labelid'		=> 'callcounter',
+					  'help'		=> $this->bbf('hlp_fm_callcounter'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','callcounter','var_val'),
+				      'default'		=> $element['callcounter']['default'])),
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_allowtransfer'),
 				      'name'		=> 'allowtransfer',
 				      'labelid'		=> 'allowtransfer',
@@ -725,6 +974,102 @@ endif;
 					  'required'	=> false,
 				      'checked'		=> $this->get_var('info','autoframing','var_val'),
 				      'default'		=> $element['autoframing']['default'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_prematuremedia'),
+				      'name'		=> 'prematuremedia',
+				      'labelid'		=> 'prematuremedia',
+					  'help'		=> $this->bbf('hlp_fm_prematuremedia'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','prematuremedia','var_val'),
+				      'default'		=> $element['prematuremedia']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_sdpsession'),
+				  'name'		=> 'sdpsession',
+				  'labelid'		=> 'sdpsession',
+				  'size'		=> 10,
+				  'help'		=> $this->bbf('hlp_fm_sdpsession'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','sdpsession','var_val'),
+				  'default'		=> $element['sdpsession']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'sdpsession')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_sdpowner'),
+				  'name'		=> 'sdpowner',
+				  'labelid'		=> 'sdpowner',
+				  'size'		=> 10,
+				  'help'		=> $this->bbf('hlp_fm_sdpowner'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','sdpowner','var_val'),
+				  'default'		=> $element['sdpowner']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'sdpowner')) )),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_ignoresdpversion'),
+				      'name'		=> 'ignoresdpversion',
+				      'labelid'		=> 'ignoresdpversion',
+					  'help'		=> $this->bbf('hlp_fm_ignoresdpversion'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','ignoresdpversion','var_val'),
+				      'default'		=> $element['ignoresdpversion']['default'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_shrinkcallerid'),
+				      'name'		=> 'shrinkcallerid',
+				      'labelid'		=> 'shrinkcallerid',
+					  'help'		=> $this->bbf('hlp_fm_shrinkcallerid'),
+					  'required'	=> false,
+				      'checked'		=> $this->get_var('info','shrinkcallerid','var_val'),
+				      'default'		=> $element['shrinkcallerid']['default'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_session-timers'),
+				    'name'		=> 'session-timers',
+				    'labelid'	=> 'session-timers',
+				    'key'		=> false,
+				    'bbf'		=> 'session-timers-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue'),
+					'help'		=> $this->bbf('hlp_fm_session-timers'),
+					'required'	=> false,
+					'empty' => true,
+				    'selected'	=> $this->get_var('info','session-timers','var_val'),
+				    'default'	=> $element['session-timers']['default']),
+			      $element['session-timers']['value']),
+
+		$form->text(array('desc'	=> $this->bbf('fm_session-expires'),
+				  'name'		=> 'session-expires',
+				  'labelid'		=> 'session-expires',
+				  'size'		=> 10,
+				  'help'		=> $this->bbf('hlp_fm_session-expires'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','session-expires','var_val'),
+				  'default'		=> $element['session-expires']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'session-expires')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_session-minse'),
+				  'name'		=> 'session-minse',
+				  'labelid'		=> 'session-minse',
+				  'size'		=> 10,
+				  'help'		=> $this->bbf('hlp_fm_session-minse'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','session-minse','var_val'),
+				  'default'		=> $element['session-minse']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'session-minse')) )),
+
+		$form->select(array('desc'	=> $this->bbf('fm_session-refresher'),
+				    'name'		=> 'session-refresher',
+				    'labelid'	=> 'session-refresher',
+				    'key'		=> false,
+				    'bbf'		=> 'refresher-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue'),
+					'help'		=> $this->bbf('hlp_fm_session-refresher'),
+					'required'	=> false,
+					'empty' => true,
+				    'selected'	=> $this->get_var('info','session-refresher','var_val'),
+				    'default'	=> $element['session-refresher']['default']),
+			      $element['session-refresher']['value']),
+
+
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_g726nonstandard'),
 				      'name'		=> 'g726nonstandard',
@@ -823,29 +1168,26 @@ endif;
 				      'checked'		=> $this->get_var('info','t38pt_udptl','var_val'),
 				      'default'		=> $element['t38pt_udptl']['default'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-rtp'),
-				      'name'		=> 't38pt_rtp',
-				      'labelid'		=> 't38pt-rtp',
-					  'help'		=> $this->bbf('hlp_fm_t38pt-rtp'),
-					  'required'	=> false,
-				      'checked'		=> $this->get_var('info','t38pt_rtp','var_val'),
-				      'default'		=> $element['t38pt_rtp']['default'])),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-tcp'),
-				      'name'		=> 't38pt_tcp',
-				      'labelid'		=> 't38pt-tcp',
-					  'help'		=> $this->bbf('hlp_fm_t38pt-tcp'),
-					  'required'	=> false,
-				      'checked'		=> $this->get_var('info','t38pt_tcp','var_val'),
-				      'default'		=> $element['t38pt_tcp']['default'])),
-
 		$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-usertpsource'),
 				      'name'		=> 't38pt_usertpsource',
 				      'labelid'		=> 't38pt-usertpsource',
 					  'help'		=> $this->bbf('hlp_fm_t38pt-usertpsource'),
 					  'required'	=> false,
 				      'checked'		=> $this->get_var('info','t38pt_usertpsource','var_val'),
-				      'default'		=> $element['t38pt_usertpsource']['default']));
+							'default'		=> $element['t38pt_usertpsource']['default'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_faxdetect'),
+				    'name'		=> 'faxdetect',
+				    'labelid'	=> 'faxdetect',
+				    'key'		=> false,
+				    'bbf'		=> 'faxdetect-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+					'help'		=> $this->bbf('hlp_fm_faxdetect'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','faxdetect','var_val'),
+				    'default'	=> $element['faxdetect']['default']),
+			      $element['faxdetect']['value']);
+
 ?>
 </div>
 
@@ -909,7 +1251,18 @@ endif;
 					  'help'		=> $this->bbf('hlp_fm_jblog'),
 					  'required'	=> false,
 				      'checked'		=> $this->get_var('info','jblog','var_val'),
-				      'default'		=> $element['jblog']['default']));
+				      'default'		=> $element['jblog']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_jbtargetextra'),
+				  'name'		=> 'jbtargetextra',
+				  'labelid'		=> 'jbtargetextra',
+				  'help'		=> $this->bbf('hlp_fm_jbtargetextra'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','jbtargetextra','var_val'),
+				  'default'		=> $element['jbtargetextra']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'jbtargetextra')) ));
+
 ?>
 </div>
 
@@ -964,7 +1317,37 @@ endif;
 					'required'	=> false,
 				    'selected'	=> $this->get_var('info','qualify','var_val'),
 				    'default'	=> $element['qualify']['default']),
-			      $element['qualify']['value']),
+					$element['qualify']['value']),
+
+		$form->text(array('desc'	=> $this->bbf('fm_qualifyfreq'),
+				  'name'		=> 'qualifyfreq',
+				  'labelid'		=> 'qualifyfreq',
+				  'help'		=> $this->bbf('hlp_fm_qualifyfreq'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','qualifyfreq','var_val'),
+				  'default'		=> $element['qualifyfreq']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'qualifyfreq')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_qualifygap'),
+				  'name'		=> 'qualifygap',
+				  'labelid'		=> 'qualifygap',
+				  'help'		=> $this->bbf('hlp_fm_qualifygap'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','qualifygap','var_val'),
+				  'default'		=> $element['qualifygap']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'qualifygap')) )),
+
+		$form->select(array('desc'	=> $this->bbf('fm_qualifypeers'),
+				    'name'		=> 'qualifypeers',
+				    'labelid'	=> 'qualifypeers',
+				    'key'		=> false,
+					'help'		=> $this->bbf('hlp_fm_qualifypeers'),
+					'required'	=> false,
+				    'selected'	=> $this->get_var('info','qualifypeers','var_val'),
+				    'default'	=> $element['qualifypeers']['default']),
+			      $element['qualifypeers']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_useclientcode'),
 				      'name'		=> 'useclientcode',
@@ -1045,24 +1428,16 @@ endif;
 				      'checked'		=> $this->get_var('info','sendrpid','var_val'),
 				      'default'		=> $element['sendrpid']['default'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_assertedidentity'),
-				      'name'		=> 'assertedidentity',
-				      'labelid'		=> 'assertedidentity',
-					  'help'		=> $this->bbf('hlp_fm_assertedidentity'),
-					  'required'	=> false,
-				      'checked'		=> $this->get_var('info','assertedidentity','var_val'),
-				      'default'		=> $element['assertedidentity']['default'])),
-
-		$form->select(array('desc'	=> $this->bbf('fm_canreinvite'),
-				    'name'		=> 'canreinvite',
-				    'labelid'	=> 'canreinvite',
-				    'bbf'		=> 'fm_canreinvite-opt',
+		$form->select(array('desc'	=> $this->bbf('fm_directmedia'),
+				    'name'		=> 'directmedia',
+				    'labelid'	=> 'directmedia',
+				    'bbf'		=> 'fm_directmedia-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-					'help'		=> $this->bbf('hlp_fm_canreinvite'),
+					'help'		=> $this->bbf('hlp_fm_directmedia'),
 					'required'	=> false,
-				    'selected'	=> $this->get_var('info','canreinvite','var_val'),
-				    'default'	=> $element['canreinvite']['default']),
-			      $element['canreinvite']['value']),
+				    'selected'	=> $this->get_var('info','directmedia','var_val'),
+				    'default'	=> $element['directmedia']['default']),
+			      $element['directmedia']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_insecure'),
 				    'name'		=> 'insecure',
@@ -1073,11 +1448,22 @@ endif;
 					'required'	=> false,
 				    'selected'	=> $this->get_var('info','insecure','var_val'),
 				    'default'	=> $element['insecure']['default']),
-			      $element['insecure']['value']);
+			      $element['insecure']['value']),
+	
+		$form->text(array('desc'	=> $this->bbf('fm_parkinglot'),
+				  'name'		=> 'parkinglot',
+				  'labelid'		=> 'parkinglot',
+				  'help'		=> $this->bbf('hlp_fm_parkinglot'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','parkinglot','var_val'),
+				  'default'		=> $element['parkinglot']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'parkinglot')) ));
+
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-realtime" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_rtcachefriends'),
 				      'name'		=> 'rtcachefriends',
@@ -1127,6 +1513,42 @@ endif;
 			      $element['rtautoclear']['value']);
 ?>
 </div>
+
+<div id="sb-part-internals" class="b-nodisplay">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_hash_users'),
+				  'name'		=> 'hash_users',
+				  'labelid'		=> 'hash_users',
+				  'help'		=> $this->bbf('hlp_fm_hash_users'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','hash_users','var_val'),
+				  'default'		=> $element['hash_users']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'hash_users')) )),
+
+	$form->text(array('desc'	=> $this->bbf('fm_hash_peers'),
+				  'name'		=> 'hash_peers',
+				  'labelid'		=> 'hash_peers',
+				  'help'		=> $this->bbf('hlp_fm_hash_peers'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','hash_peers','var_val'),
+				  'default'		=> $element['hash_peers']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'hash_peers')) )),
+
+	$form->text(array('desc'	=> $this->bbf('fm_hash_dialogs'),
+				  'name'		=> 'hash_dialogs',
+				  'labelid'		=> 'hash_dialogs',
+				  'help'		=> $this->bbf('hlp_fm_hash_dialogs'),
+				  'required'	=> false,
+				  'value'		=> $this->get_var('info','hash_dialogs','var_val'),
+				  'default'		=> $element['hash_dialogs']['default'],
+				  'error'		=> $this->bbf_args('error',
+					   		$this->get_var('error', 'hash_dialogs')) ));
+
+?>
+</div>
+
 	<?=$form->submit(array('name'	=> 'submit',
 			       'id'	=> 'it-submit',
 			       'value'	=> $this->bbf('fm_bt-save')));?>

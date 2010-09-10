@@ -454,7 +454,7 @@ $array['element']['udpbindaddr']['null']     = false;
 
 $array['element']['tcpenable'] = array();
 $array['element']['tcpenable']['value']    = array('yes', 'no');
-$array['element']['tcpenable']['default']  = 'no';
+#$array['element']['tcpenable']['default']  = 'no';
 $array['element']['tcpenable']['set']      = true;
 $array['element']['tcpenable']['null']     = false;
 
@@ -496,6 +496,7 @@ $array['element']['tlsdontverifyserver']['set']      = true;
 $array['element']['tlsdontverifyserver']['null']     = true;
 
 $array['element']['tlscipher'] = array();
+//$array['element']['tlscipher']['value']    = array('default', 'complementofdefault', 'all', 'complementofall', 'high', 'medium', 'low', 'export', 'export40', 'export50', 'null', 'aNULL', 'RSA', 'kEDH', 'kDHd', 'aRSA', 'DSS', 'aDH', 'FZA', 'SSLv2', 'DH', 'ADH', 'AES', 'CAMELLIA', '3DES', 'DES', 'RC4', 'RC2', 'IDEA', 'SEED', 'MD5', 'SHA1', 'SHA', 'aGOST', 'aGOST01', 'aGOST94', 'kGOST', 'GOST94', 'GOST89MAC');
 $array['element']['tlscipher']['default']  = '';
 $array['element']['tlscipher']['set']      = true;
 $array['element']['tlscipher']['null']     = true;
@@ -528,7 +529,12 @@ $array['element']['cos_text']['default']  = '';
 $array['element']['cos_text']['null']     = true;
 
 $array['element']['mwiexpiry'] = array();
-$array['element']['mwiexpiry']['default']  = '';
+$array['element']['mwiexpiry']['value'] = array(1,10,20,30,40,50,60,70,80,90,
+						    100,110,120,130,140,150,160,170,180,190,
+						    200,210,220,230,240,300,600,900,
+						    1200,1800,2400,2700,3000,3600,4500,
+						    5400,6300,7200);
+$array['element']['mwiexpiry']['default']  = 3600;
 $array['element']['mwiexpiry']['null']     = true;
 
 $array['element']['qualifyfreq'] = array();
@@ -540,7 +546,8 @@ $array['element']['qualifygap']['default']  = '';
 $array['element']['qualifygap']['null']     = true;
 
 $array['element']['qualifypeers'] = array();
-$array['element']['qualifypeers']['default']  = '';
+$array['element']['qualifypeers']['value']    = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,35,40,45,50,60,70,80,90,100);
+//$array['element']['qualifypeers']['default']  = null;
 $array['element']['qualifypeers']['null']     = true;
 
 $array['element']['parkinglot'] = array();
@@ -568,19 +575,21 @@ $array['element']['authfailureevents']['null']     = true;
 $array['element']['dynamic_exclude_static'] = array();
 $array['element']['dynamic_exclude_static']['value']    = array('yes', 'no');
 $array['element']['dynamic_exclude_static']['default']  = 'yes';
+$array['element']['dynamic_exclude_static']['set']      = true;
 $array['element']['dynamic_exclude_static']['null']     = true;
 
 $array['element']['contactdeny'] = array();
-$array['element']['contactdeny']['default']  = '0.0.0.0/0.0.0.0';
+$array['element']['contactdeny']['default']  = '';
 $array['element']['contactdeny']['null']     = true;
 
 $array['element']['contactpermit'] = array();
-$array['element']['contactpermit']['default']  = '0.0.0.0/0.0.0.0';
+$array['element']['contactpermit']['default']  = '';
 $array['element']['contactpermit']['null']     = true;
 
 $array['element']['shrinkcallerid'] = array();
 $array['element']['shrinkcallerid']['value']    = array('yes', 'no');
-$array['element']['shrinkcallerid']['default']  = 'yes';
+#$array['element']['shrinkcallerid']['default']  = 'yes';
+$array['element']['shrinkcallerid']['set']      = true;
 $array['element']['shrinkcallerid']['null']     = true;
 
 $array['element']['regextenonqualify'] = array();
@@ -589,7 +598,7 @@ $array['element']['regextenonqualify']['default']  = 'no';
 $array['element']['regextenonqualify']['null']     = true;
 
 $array['element']['timert1'] = array();
-$array['element']['timert1']['default']  = '200';
+$array['element']['timert1']['default']  = '500';
 $array['element']['timert1']['null']     = true;
 
 $array['element']['timerb'] = array();
@@ -621,6 +630,11 @@ $array['element']['hash_peers'] = array();
 $array['element']['hash_peers']['default']  = '563';
 $array['element']['hash_peers']['null']     = true;
 
+$array['element']['hash_dialogs'] = array();
+$array['element']['hash_dialogs']['default']  = '563';
+$array['element']['hash_dialogs']['null']     = true;
+
+
 $array['element']['notifycid'] = array();
 $array['element']['notifycid']['value']    = array('yes', 'no');
 $array['element']['notifycid']['default']  = 'no';
@@ -641,7 +655,12 @@ $array['element']['stunaddr']['default']  = '';
 $array['element']['stunaddr']['null']     = true;
 
 $array['element']['directmedia'] = array();
-$array['element']['directmedia']['value']    = array('yes', 'no', 'nonat', 'update', 'update,nonat');
+$array['element']['directmedia']['value']    = array(
+	'yes'          => 'yes', 
+	'no'           => 'no', 
+	'nonat'        => 'nonat',
+	'update'       => 'update', 
+	'update,nonat' => 'update,nonat');
 $array['element']['directmedia']['default']  = 'yes';
 $array['element']['directmedia']['null']     = true;
 
@@ -795,7 +814,7 @@ $array['filter']['context'] = array('set' => false,'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
 $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
-$array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','auto'));
+$array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','shortinfo','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['useclientcode'] = array('bool' => true);
 $array['filter']['progressinband'] = array('key' => array('no','yes','never'));

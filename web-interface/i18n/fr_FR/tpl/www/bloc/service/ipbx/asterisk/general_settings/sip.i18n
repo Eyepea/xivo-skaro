@@ -833,7 +833,10 @@ RFC 2833
 InBand
 
 ; fm_dtmfmode-opt(info)
-INFO
+INFO (application/dtmf-relay)
+
+; fm_dtmfmode-opt(shortinfo)
+INFO (application/dtmf)
 
 ; fm_dtmfmode-opt(auto)
 Auto
@@ -1062,3 +1065,330 @@ Oui
 
 ; fm_success-save
 Propriétés du protocole SIP sauvegardées avec succès
+
+;; asterisk 1.8
+;;; general
+
+; fm_udpbindaddr
+Adresse UDP en écoute : 
+
+; hlp_fm_udpbindaddr
+Config asterisk: udpbindaddr
+
+; fm_tcpenable
+Accepter les connexion TCP : 
+
+; hlp_fm_tcpenable
+Config asterisk: tcpenable
+
+; fm_tcpbindaddr
+Addresse TCP en écoute : 
+
+; hlp_fm_tcpbindaddr
+Config asterisk: tcpbindaddr
+
+; fm_match_auth_username
+Match les utilisateurs via le champ 'username' : 
+
+; hlp_fm_match_auth_username
+Config asterisk: match_auth_username
+
+; fm_regextenonqualify
+Force la désactivation de l'extension regexten : 
+
+; hlp_fm_regextenonqualify
+Config asterisk: regextenonqualify
+
+; fm_authfailureevents
+Génère des évènement "peerstatus" en cas d'échec d'authentification : 
+
+; hlp_fm_authfailureevents
+Config asterisk: authfailureevents
+
+; fm_tos-text
+TOS text : 
+
+; hlp_fm_tos-text
+Asterisk config: tos text
+
+; fm_cos-sip
+COS sip : 
+
+; hlp_fm_cos-sip
+Asterisk config: cos-sip
+
+; fm_cos-audio
+COS audio : 
+
+; hlp_fm_cos-audio
+Asterisk config: cos-audio
+
+; fm_cos-video
+COS video : 
+
+; hlp_fm_cos-video
+Asterisk config: cos-video
+
+; fm_cos-text
+COS text : 
+
+; hlp_fm_cos-text
+Asterisk config: cos-text
+
+
+;;; network
+
+; fm_stunaddr
+Addresse du serveur STUN : 
+
+; hlp_fm_stunaddr
+Config asterisk: stunaddr
+
+; fm_dynamic_exclude_static
+Interdire les IP dynamiques pour les utilisateurs/hôtes définis comme statique:
+
+; hlp_fm_dynamic_exclude_static
+Config asterisk: dynamic_exclude_static
+
+; fm_contactdeny
+Adresse IP/sous-réseau refusé :
+
+; hlp_fm_contactdeny
+Config asterisk: contactdeny
+
+; fm_contactpermit
+Adresse IP/sous-réseau autorisé : 
+
+; hlp_fm_contactpermit
+Config asterisk: contactpermit
+
+;;; security
+; smenu_security
+Sécurité
+
+; fm_tlsenable
+Accepter les connexions TLS : 
+
+; hlp_fm_tlsenable
+Config asterisk: tlsenable
+
+; fm_tlsbindaddr
+Adresse en écoute : 
+
+; hlp_fm_tlsbindaddr
+Config asterisk: tlsbindaddr
+
+; fm_tlsdontverifyserver
+Ne pas véfirier le certificat serveur :
+
+; hlp_fm_tlsdontverifyserver
+Config asterisk: tlsdontverifyserver
+
+; fm_tlscipher
+Algorithmes cryptographiques pris en charge : 
+
+; hlp_fm_tlscipher
+Config asterisk: tlscipher
+
+;;; signaling
+
+; fm_timert1
+Délai T1 : 
+
+; hlp_fm_timert1
+Config asterisk: timert1
+
+; fm_timerb
+Délai de configuration : 
+
+; hlp_fm_timerb
+Config asterisk: timerb
+
+; fm_mwiexpiry
+Déleai d'expiration des souscriptions MWI :
+
+; hlp_fm_mwiexpiry
+Config asterisk: mwiexpiry
+
+; fm_notifycid
+Envoyer le caller-id dans les notifications dialog-info+xml : 
+
+; hlp_fm_notifycid
+Config asterisk: notifycid
+
+; fm_callcounter
+Activer le décompte des appels par téléphone
+
+; hlp_fm_callcounter
+Config asterisk: callcounter
+
+; fm_prematuremedia
+Activer la compatibité ISDN : 
+
+; hlp_fm_prematuremedia
+Config asterisk: prematuremedia
+
+; fm_sdpsession
+Nom de la session SDP :
+
+; hlp_fm_sdpsession
+Config asterisk: sdpsession
+
+; fm_sdpowner
+champ 'username' de la chaîne SDP owner : 
+
+; hlp_fm_sdpowner
+Config asterisk: sdpowner
+
+; fm_ignoresdpversion
+Ignorer le numéro de version des paquets SDP : 
+
+; hlp_fm_ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_shrinkcallerid
+Nettoyer le caller-id : 
+
+; hlp_fm_shrinkcallerid
+Config asterisk: shrinkcallerid
+
+; fm_session-timers
+Activer session-timer : 
+
+; hlp_fm_session-timers
+Config asterisk: session-timers
+
+; session-timers-opt(originate)
+Toujours
+
+; session-timers-opt(accept)
+Sur demande uniquement 
+
+; session-timers-opt(refuse)
+Non
+
+
+; fm_session-expires
+Interval maximal de rafraichissement de la session : 
+
+; hlp_fm_session-expires
+Config asterisk: session-expires
+
+; fm_session-minse
+Interval minimal de rafraichissement de la session : 
+
+; hlp_fm_session-minse
+Config asterisk: session-minse
+
+; fm_session-refresher
+Session mise à jour par : 
+
+; hlp_fm_session-refresher
+Config asterisk: session-refresher
+
+; refresher-opt(uas)
+server
+
+; refresher-opt(uac)
+client
+
+;;; t38
+
+; fm_faxdetect
+Activer la détection des fax : 
+
+; hlp_fm_faxdetect
+Asterisk config: faxdetect
+
+; faxdetect-opt(yes)
+Oui
+
+; faxdetect-opt(no)
+Non
+
+; faxdetect-opt(cng)
+CNG
+
+; faxdetect-opt(t38)
+T38
+
+; faxdetect-opt(both)
+Les deux
+
+;;; jitter buffer
+
+; fm_jbtargetextra
+Valeur d'alignement du jitter : 
+
+; hlp_fm_jbtargetextra
+Asterisk config: jbtargetextra
+
+;;; default
+
+; fm_qualifyfreq
+Fréquence de supervision : 
+
+; hlp_fm_qualifyfreq
+Config Asterisk: qualifyfreq
+
+; fm_qualifygap
+Durée entre chaque test : 
+
+; hlp_fm_qualifygap
+Config Asterisk: qualifygap
+
+; fm_qualifypeers
+Nombre de postes par group (testés simultanéments) : 
+
+; hlp_fm_qualifypeers
+Config Asterisk: qualifypeers
+
+; fm_directmedia
+Rediriger le flux RTP de pair à pair : 
+
+; hlp_fm_directmedia
+Config Asterisk: directmedia
+
+; fm_directmedia-opt(yes)
+Oui
+
+; fm_directmedia-opt(no)
+Non
+
+; fm_directmedia-opt(nonat)
+Pas sur le NAT
+
+; fm_directmedia-opt(update)
+Oui, via UPDATE
+
+; fm_directmedia-opt(update,nonat)
+Oui, via UPDATE + pas sur le NAT
+
+; fm_parkinglot
+Parquage par défaut : 
+
+; hlp_fm_parkinglot
+Config Asterisk: parkinglot
+
+;;; internals
+; smenu_internals
+Interne
+
+; fm_hash_users
+Taille de la table des utilisateurs : 
+
+; hlp_fm_hash_users
+Config Asterisk: hash_users
+
+; fm_hash_peers
+Taille de la table des postes : 
+
+; hlp_fm_hash_peers
+Config Asterisk: hash_peers
+
+; fm_hash_dialogs
+Taille de la table dialogs : 
+
+; hlp_fm_hash_dialogs
+Config Asterisk: hash_dialogs
+
