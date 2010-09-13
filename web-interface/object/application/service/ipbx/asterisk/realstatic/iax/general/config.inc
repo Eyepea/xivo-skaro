@@ -199,6 +199,50 @@ $array['element']['calltokenoptional'] = array();
 $array['element']['calltokenoptional']['default'] = '';
 $array['element']['calltokenoptional']['null'] = true;
 
+$array['element']['srvlookup'] = array();
+$array['element']['srvlookup']['value'] = array('no','yes');
+$array['element']['srvlookup']['default'] = 'yes';
+
+$array['element']['jittertargetextra'] = array();
+$array['element']['jittertargetextra']['value'] = range(0,256);
+$array['element']['jittertargetextra']['default'] = 40;
+
+$array['element']['forceencryption'] = array();
+$array['element']['forceencryption']['value'] = array('no','yes');
+$array['element']['forceencryption']['default'] = 'no';
+
+$array['element']['trunkmaxsize'] = array();
+$array['element']['trunkmaxsize']['value'] = range(0,256);
+$array['element']['trunkmaxsize']['default'] = 128000;
+
+$array['element']['trunkmtu'] = array();
+$array['element']['trunkmtu']['value'] = range(0,256);
+$array['element']['trunkmtu']['default'] = 1240;
+
+$array['element']['cos'] = array();
+$array['element']['cos']['value'] = array(1,2,3,4,5,6,7);
+$array['element']['cos']['default'] = 5;
+
+$array['element']['allowfwdownload'] = array();
+$array['element']['allowfwdownload']['value'] = array('no','yes');
+$array['element']['allowfwdownload']['default'] = 'no';
+
+$array['element']['parkinglot'] = array();
+$array['element']['parkinglot']['default'] = '';
+$array['element']['parkinglot']['null'] = true;
+
+$array['element']['maxcallnumbers'] = array();
+$array['element']['maxcallnumbers']['value'] = range(0,256);
+$array['element']['maxcallnumbers']['default'] = 512;
+
+$array['element']['maxcallnumbers_nonvalidated'] = array();
+$array['element']['maxcallnumbers_nonvalidated']['value'] = range(0,256);
+$array['element']['maxcallnumbers_nonvalidated']['default'] = 1024;
+
+$array['element']['shrinkcallerid'] = array();
+$array['element']['shrinkcallerid']['value'] = array('no','yes');
+$array['element']['shrinkcallerid']['default'] = 'yes';
+
 
 dwho::load_class('dwho_network');
 

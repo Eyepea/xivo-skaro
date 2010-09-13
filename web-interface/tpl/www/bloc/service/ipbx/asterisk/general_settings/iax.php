@@ -258,7 +258,18 @@ endif;
 				    'help'		=> $this->bbf('hlp_fm_tos'),
 				    'selected'	=> $this->get_var('info','tos','var_val'),
 				    'default'	=> $element['tos']['default']),
-			      $element['tos']['value']);
+		$element['tos']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_cos'),
+            'name'    => 'cos',
+            'labelid' => 'cos',
+            'key'   => false,
+            'bbf'   => 'fm_cos-opt',
+            'bbfopt'  => array('argmode' => 'paramvalue'),
+            'help'    => $this->bbf('hlp_fm_cos'),
+            'selected'  => $this->get_var('info','cos','var_val'),
+            'default' => $element['cos']['default']),
+			 $element['cos']['value']);
 ?>
 </div>
 
@@ -298,7 +309,16 @@ endif;
 				    'help'		=> $this->bbf('hlp_fm_maxjitterinterps'),
 				    'selected'	=> $this->get_var('info','maxjitterinterps','var_val'),
 				    'default'	=> $element['maxjitterinterps']['default']),
-			      $element['maxjitterinterps']['value']),
+				$element['maxjitterinterps']['value']),
+
+    $form->select(array('desc'  => $this->bbf('fm_jittertargetextra'),
+            'name'     => 'jittertargetextra',
+            'labelid'  => 'jittertargetextra',
+            'key'      => false,
+            'help'     => $this->bbf('hlp_fm_jittertargetextra'),
+            'selected' => $this->get_var('info','jittertargetextra','var_val'),
+            'default'  => $element['jittertargetextra']['default']),
+        $element['jittertargetextra']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_resyncthreshold'),
 				    'name'		=> 'resyncthreshold',
@@ -343,6 +363,13 @@ endif;
 				      'help'	=> $this->bbf('hlp_fm_adsi'),
 				      'checked'	=> $this->get_var('info','adsi','var_val'),
 				      'default'	=> $element['adsi']['default'])),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_srvlookup'),
+              'name'    => 'srvlookup',
+              'labelid' => 'srvlookup',
+              'help'    => $this->bbf('hlp_fm_srvlookup'),
+              'checked' => $this->get_var('info','srvlookup','var_val'),
+              'default' => $element['srvlookup']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_transfer'),
 				    'name'		=> 'transfer',
@@ -395,6 +422,13 @@ endif;
 				    'selected'	=> $this->get_var('info','encryption','var_val'),
 				    'default'	=> $element['encryption']['default']),
 			      $element['encryption']['value']),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_forceencryption'),
+              'name'    => 'forceencryption',
+              'labelid' => 'forceencryption',
+              'help'    => $this->bbf('hlp_fm_forceencryption'),
+              'checked' => $this->get_var('info','forceencryption','var_val'),
+              'default' => $element['forceencryption']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_maxauthreq'),
 				    'name'		=> 'maxauthreq',
@@ -588,7 +622,72 @@ endif;
 				  'value'	=> $this->get_var('info','calltokenoptional','var_val'),
 				  'default'	=> $element['calltokenoptional']['default'],
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'calltokenoptional')) ));
+					$this->get_var('error', 'calltokenoptional')) )),
+
+		/***********/
+
+    $form->select(array('desc'  => $this->bbf('fm_trunkmaxsize'),
+            'name'     => 'trunkmaxsize',
+            'labelid'  => 'trunkmaxsize',
+            'key'      => false,
+            'help'     => $this->bbf('hlp_fm_trunkmaxsize'),
+            'selected' => $this->get_var('info','trunkmaxsize','var_val'),
+            'default'  => $element['trunkmaxsize']['default']),
+        $element['trunkmaxsize']['value']),
+
+    $form->select(array('desc'  => $this->bbf('fm_trunkmtu'),
+            'name'     => 'trunkmtu',
+            'labelid'  => 'trunkmtu',
+            'key'      => false,
+            'help'     => $this->bbf('hlp_fm_trunkmtu'),
+            'selected' => $this->get_var('info','trunkmtu','var_val'),
+            'default'  => $element['trunkmtu']['default']),
+        $element['trunkmtu']['value']),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_allowfwdownload'),
+              'name'    => 'allowfwdownload',
+              'labelid' => 'allowfwdownload',
+              'help'    => $this->bbf('hlp_fm_allowfwdownload'),
+              'checked' => $this->get_var('info','allowfwdownload','var_val'),
+              'default' => $element['allowfwdownload']['default'])),
+
+    $form->text(array('desc'  => $this->bbf('fm_parkinglot'),
+            'name'     => 'parkinglot',
+            'labelid'  => 'parkinglot',
+            'size'     => 25,
+            'help'     => $this->bbf('hlp_fm_parkinglot'),
+            'required' => false,
+            'value'    => $this->get_var('info','parkinglot','var_val'),
+            'default'  => $element['parkinglot']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'parkinglot')) )),
+
+    $form->select(array('desc'  => $this->bbf('fm_maxcallnumbers'),
+            'name'     => 'maxcallnumbers',
+            'labelid'  => 'maxcallnumbers',
+            'key'      => false,
+            'help'     => $this->bbf('hlp_fm_maxcallnumbers'),
+            'selected' => $this->get_var('info','maxcallnumbers','var_val'),
+            'default'  => $element['maxcallnumbers']['default']),
+        $element['maxcallnumbers']['value']),
+
+    $form->select(array('desc'  => $this->bbf('fm_maxcallnumbers_nonvalidated'),
+            'name'     => 'maxcallnumbers_nonvalidated',
+            'labelid'  => 'maxcallnumbers_nonvalidated',
+            'key'      => false,
+            'help'     => $this->bbf('hlp_fm_maxcallnumbers_nonvalidated'),
+            'selected' => $this->get_var('info','maxcallnumbers_nonvalidated','var_val'),
+            'default'  => $element['maxcallnumbers_nonvalidated']['default']),
+        $element['maxcallnumbers_nonvalidated']['value']),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_shrinkcallerid'),
+              'name'    => 'shrinkcallerid',
+              'labelid' => 'shrinkcallerid',
+              'help'    => $this->bbf('hlp_fm_shrinkcallerid'),
+              'checked' => $this->get_var('info','shrinkcallerid','var_val'),
+              'default' => $element['shrinkcallerid']['default']));
+
+
 ?>
 </div>
 	<?=$form->submit(array('name'	=> 'submit',

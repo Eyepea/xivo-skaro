@@ -540,3 +540,92 @@ calltokenoptional
 
 ; fm_success-save
 Propriétés du protocole IAX sauvegardées avec succès
+
+;; asterisk 1.8
+; fm_srvlookup
+Activer les requêtes SRV pour les appels sortants: 
+
+; hlp_fm_srvlookup
+onfig asterisk: srvlookup
+
+; fm_jittertargetextra
+Valeur d'alignement du jitter: 
+
+; hlp_fm_jittertargetextra
+Config asterisk: jitterbufferextra
+
+; fm_forceencryption
+Forcer le chiffrement: 
+
+; hlp_fm_forceencryption
+Config asterisk: forceencryption
+
+; fm_trunkmaxsize
+Taille maximale des trunks: 
+
+; hlp_fm_trunkmaxsize
+Config asterisk: trunkmaxsize
+
+; fm_trunkmtu
+MTU des trunks: 
+
+; hlp_fm_trunkmtu
+Config asterisk: trunkmtu
+
+; fm_cos
+COS: 
+
+; hlp_fm_cos
+Config asterisk: cos
+
+; fm_cos-opt(1)
+1
+
+; fm_cos-opt(2)
+2
+
+; fm_cos-opt(3)
+3
+
+; fm_cos-opt(4)
+4
+
+; fm_cos-opt(5)
+5
+
+; fm_cos-opt(6)
+6
+
+; fm_cos-opt(7)
+7
+
+; fm_allowfwdownload
+Servir les firmware aux clients: 
+
+; hlp_fm_allowfwdownload
+Config asterisk: allowfwdownload
+
+; fm_parkinglot
+Parquage par défaut: 
+
+; hlp_fm_parkinglot
+Config asterisk: parkinglot
+
+; fm_maxcallnumbers
+Nombre maximal d'appels par IP distante: 
+
+; hlp_fm_maxcallnumbers
+Config asterisk: maxcallnumbers
+
+; fm_maxcallnumbers_nonvalidated
+Nombre maximal d'appels global (validation des jetons d'appels désactivée): 
+
+; hlp_fm_maxcallnumbers_nonvalidated
+Config asterisk: maxcallnumbers_nonvalidated
+
+; fm_shrinkcallerid
+Nettoyer le caller-id: 
+
+; hlp_fm_shrinkcallerid
+Config asterisk: shrinkcallerid
+
