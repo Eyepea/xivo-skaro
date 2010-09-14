@@ -4,6 +4,12 @@ Name :
 ; fm_sheetactions_whom
 Recipient:
 
+<<<<<<< .courant
+=======
+; fm_sheetactions_extrarequests
+Extra requests:
+
+>>>>>>> .fusion-droit.r9187
 ; fm_sheetactions_focus
 Focus:
 
