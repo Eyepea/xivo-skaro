@@ -786,18 +786,20 @@ class manage_connection:
 
     @staticmethod
     def callback_timer_main(*args):
-        thisthread = threading.currentThread()
-        daemon = args[0]
-        tname = thisthread.getName()
-        log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
-        thisthread.setName(tname + '-' + '-'.join(args[1]))
-        daemon.tqueue.put(thisthread)
-        os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
+        try:
+            thisthread = threading.currentThread()
+            daemon = args[0]
+            tname = thisthread.getName()
+            log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
+            thisthread.setName(tname + '-' + '-'.join(args[1]))
+            daemon.tqueue.put(thisthread)
+            os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
+        except Exception:
+            log.exception('callback_timer_main %s' % args)
         return
 
     @staticmethod
-    def checkqueue_main(daemon):
-        buf = os.read(daemon.pipe_queued_threads_main[0], 1024)
+    def checkqueue_main(daemon, buf):
         log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, daemon.tqueue.qsize()))
         while daemon.tqueue.qsize() > 0:
             thisthread = daemon.tqueue.get()
@@ -813,14 +815,17 @@ class manage_connection:
                     # the related WEBI request then
                     actionid = thisthread.args[1][1]
                     if actionid in waiting_actionid and actionid in waiting_actionid_timer:
+                        log.info('closing the WEBI connection %s for the request %s'
+                                 % (conn_to_close, actionid))
                         conn_to_close = waiting_actionid[actionid]
                         del daemon.fdlist_established[conn_to_close]
                         conn_to_close.close()
                         del waiting_actionid[actionid]
                         del waiting_actionid_timer[actionid]
-                        log.info('closing the WEBI connection %s for the request %s' % (conn_to_close, actionid))
                     else:
                         log.warning('the actionid %s has gone' % actionid)
+                else:
+                    log.warning('unknown action <%r>' % action)
             else:
                 log.warning('malformed tqueue : not enough arguments in %s' % thisthread.args)
         return
@@ -1127,7 +1132,7 @@ class xivo_daemon:
                 log.exception('%s : failed while setting lists and sockets' % astid)
 
             try:
-                self.commandclass.updates(astid) # all updates ...
+                self.commandclass.updates(astid, 'all') # all updates ...
             except Exception:
                 log.exception('%s : commandclass.updates()' % astid)
         # }
@@ -1179,11 +1184,12 @@ class xivo_daemon:
             fdtodel = []
             for cn in self.fdlist_established.keys():
                 if isinstance(cn, ClientConnection):
-                    if cn.isClosed:
+                    if cn.isClosed and cn not in fdtodel:
                         fdtodel.append(cn)
                     if cn.toClose and not cn.need_sending():
                         cn.close()
-                        fdtodel.append(cn)
+                        if cn not in fdtodel:
+                            fdtodel.append(cn)
             if fdtodel:
                 log.warning('there are fd to delete : %s' % fdtodel)
                 for cn in fdtodel:
@@ -1205,10 +1211,14 @@ class xivo_daemon:
         # }
         except Exception:  # {
             log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
-            log.warning('(select) self.askedtoquit=%s fdlist_full=%s' % (self.askedtoquit, self.fdlist_full))
-            log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % self.fdlist_established)
-            log.warning('(select) current open TCP connections : (AMI) %s' % self.amilist.fdlist())
-            log.warning('(select) current open TCP connections : (OUT) %s' % self.outsock)
+            log.warning('(select) self.askedtoquit=%s fdlist_full=%s'
+                        % (self.askedtoquit, self.fdlist_full))
+            log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s'
+                        % self.fdlist_established)
+            log.warning('(select) current open TCP connections : (AMI) %s'
+                        % self.amilist.fdlist())
+            log.warning('(select) current open TCP connections : (OUT) %s'
+                        % self.outsock)
 
             if self.askedtoquit and self.apnoeafile:
                 try:
@@ -1226,7 +1236,9 @@ class xivo_daemon:
                     else:
                         self.commandclass.reset('reload', s)
                 if isinstance(s, int):
-                    os.close(s)
+                    # the only ones are the (read) pipes : no need to close/reopen them
+                    # os.close(s)
+                    pass
                 else:
                     s.close()
 
@@ -1438,31 +1450,39 @@ class xivo_daemon:
                     # local pipe fd
                     elif self.pipe_queued_threads_commandclass[0] == sel_i: # {
                         try:
-                            actionqueue = self.commandclass.checkqueue()
-                            for actionname, actionarg in actionqueue.iteritems():
-                                if actionname == 'disconnlist-tcp':
-                                    # disconnect when timeout after first connection
-                                    disconnlist = actionarg
-                                    if disconnlist:
-                                        log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
-                                        for connid in disconnlist:
-                                            try:
-                                                self.commandclass.telldisconn(connid)
-                                            except Exception:
-                                                log.exception('disconnlist-tcp')
+                            pipebuf = os.read(sel_i, 1024)
+                            if len(pipebuf) == 0:
+                                log.warning('pipe_queued_threads_commandclass has been closed')
+                            else:
+                                actionqueue = self.commandclass.checkqueue(pipebuf)
+                                for actionname, actionarg in actionqueue.iteritems():
+                                    if actionname == 'disconnlist-tcp':
+                                        # disconnect when timeout after first connection
+                                        disconnlist = actionarg
+                                        if disconnlist:
+                                            log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
+                                            for connid in disconnlist:
+                                                try:
+                                                    self.commandclass.telldisconn(connid)
+                                                except Exception:
+                                                    log.exception('disconnlist-tcp')
 
-                                            log.info('TCP socket %s closed(disconnlist) on %s'
-                                                     % (self.fdlist_established[connid],
-                                                        '%s:%d' % connid.getpeername()))
-                                            del self.fdlist_established[connid]
-                                            connid.close()
+                                                log.info('TCP socket %s closed(disconnlist) on %s'
+                                                         % (self.fdlist_established[connid],
+                                                            '%s:%d' % connid.getpeername()))
+                                                del self.fdlist_established[connid]
+                                                connid.close()
                         except Exception:
                             log.exception('[pipe_queued_threads_commandclass]')
 
                     # }
                     elif self.pipe_queued_threads_main[0] == sel_i: # {
                         try:
-                            manage_connection.checkqueue_main(self)
+                            pipebuf = os.read(sel_i, 1024)
+                            if len(pipebuf) == 0:
+                                log.warning('pipe_queued_threads_main has been closed')
+                            else:
+                                manage_connection.checkqueue_main(self, pipebuf)
                         except Exception:
                             log.exception('[pipe_queued_threads_main]')
 
@@ -1510,7 +1530,7 @@ class xivo_daemon:
                                         listtorequest = self.update_userlist[astid].pop()
                                         self.commandclass.updates(astid, listtorequest)
                                 else:
-                                    self.commandclass.updates(astid) # all updates ...
+                                    self.commandclass.updates(astid, 'others') # signal-less updates ...
                             except Exception:
                                 log.exception('%s : commandclass.updates() (computed timeout)' % astid)
                     # }
@@ -1521,7 +1541,7 @@ class xivo_daemon:
                           % (self.xdname, time.asctime()))
                 for astid in self.configs:
                     try:
-                        self.commandclass.updates(astid) # all updates ...
+                        self.commandclass.updates(astid, 'others') # signal-less updates ...
                     except Exception:
                         log.exception('%s : commandclass.updates() (select timeout)' % astid)
 

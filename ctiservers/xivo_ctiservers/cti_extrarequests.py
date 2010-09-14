@@ -26,6 +26,7 @@ __author__    = 'Corentin Le Gall'
 
 import cjson
 import logging
+import time
 import urllib
 import xmlrpclib
 
@@ -35,12 +36,15 @@ def getvariables(fileuri, itemdir):
     k = urllib.urlopen(fileuri)
     json_c = k.read()
     k.close()
-    jc = cjson.decode(json_c)
+    jcs = cjson.decode(json_c)
     myret = {}
-    method = jc.get('method')
-    if method == 'xmlrpc':
-        accessdefs = jc.get('access')
-        if 'url' in accessdefs and accessdefs.get('url'):
+
+    t1 = time.time()
+    for jc in jcs:
+        method = jc.get('method')
+        if method == 'xmlrpc':
+            accessdefs = jc.get('access')
+
             nv = []
             for mm in jc.get('inputs'):
                 for kk, vv in itemdir.iteritems():
@@ -50,14 +54,19 @@ def getvariables(fileuri, itemdir):
                 nv.append(mm)
             vardest = 'extra-%s' % jc.get('result')
 
+            url = accessdefs.get('url').replace('\/', '/')
             basename = accessdefs.get('basename')
             loginname = accessdefs.get('loginname')
-            xname = accessdefs.get('xname')
+            password = accessdefs.get('password')
             function = jc.get('function')
 
-            pp = xmlrpclib.ServerProxy(accessdefs.get('url'))
-            if pp:
-                myret[vardest] = pp.execute((basename), 1, loginname, xname, function, *nv)
-    else:
-        log.warning('unknown method %s' % method)
+            try:
+                pp = xmlrpclib.ServerProxy(url)
+                myret[vardest] = pp.execute((basename), 1, loginname, password, function, *nv)
+            except Exception:
+                log.exception('attempt to join %s' % url)
+        else:
+            log.warning('unknown method %s' % method)
+    t2 = time.time()
+    log.info('time spent : %f s' % (t2 - t1))
     return myret
