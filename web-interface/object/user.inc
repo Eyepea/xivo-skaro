@@ -60,7 +60,6 @@ class xivo_user
 
 		if(isset($cfg_gen['time_cache']) === true)
 			$this->_conf['option']['time_cache'] = dwho_uint($cfg_gen['time_cache']);
-<<<<<<< .courant
 
 		if(isset($cfg_gen['actif_actif']) === true)
 		{
@@ -68,14 +67,6 @@ class xivo_user
 			define('XIVO_ACTIF_ACTIF',$this->_conf['option']['actif_actif']);
 		}
 
-=======
-
-		if(isset($cfg_gen['actif_actif']) === true)
-		{
-			$this->_conf['option']['actif_actif'] = dwho_uint($cfg_gen['actif_actif']);
-			define('XIVO_ACTIF_ACTIF',$this->_conf['option']['actif_actif']);
-		}
->>>>>>> .fusion-droit.r9187
 	}
 
 	function &load_get_init()
