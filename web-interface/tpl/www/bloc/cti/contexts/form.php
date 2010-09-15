@@ -32,7 +32,7 @@ if($this->get_var('fm_save') === false):
 endif;
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_contexts_name'),
 				  'name'	=> 'contexts-name',

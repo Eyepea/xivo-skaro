@@ -56,31 +56,31 @@ if(isset($error_js[0]) === true)
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_userinternal');?></a>
+					<a href="#first"><?=$this->bbf('smenu_userinternal');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-agent');"
+		    onclick="dwho_submenu.select(this,'sb-part-agents');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_agents');?></a>
+					<a href="#agents"><?=$this->bbf('smenu_agents');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-3"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-queue');"
+		    onclick="dwho_submenu.select(this,'sb-part-queues');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_queues');?></a>
+					<a href="#queues"><?=$this->bbf('smenu_queues');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -92,19 +92,19 @@ if(isset($error_js[0]) === true)
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_meetme');?></a>
+					<a href="#meetme"><?=$this->bbf('smenu_meetme');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-5"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-timezone',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_timezone');?></a>
+					<a href="#timezone"><?=$this->bbf('smenu_timezone');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -122,7 +122,7 @@ if(isset($error_js[0]) === true)
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 	<?=$form->checkbox(array('desc'		=> $this->bbf('fm_userinternal_guest'),
 				 'name'		=> 'userinternal[guest]',
 				 'labelid'	=> 'userinternal-guest',
@@ -130,7 +130,7 @@ if(isset($error_js[0]) === true)
 				 'checked'	=> ($this->get_var('userinternal','guest','userfeatures','commented'))?'no':'yes'));?>
 </div>
 
-<div id="sb-part-agent" class="b-nodisplay">
+<div id="sb-part-agents" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_persistentagents'),
 				      'name'	=> 'generalagents[persistentagents]',
@@ -148,7 +148,7 @@ if(isset($error_js[0]) === true)
 ?>
 </div>
 
-<div id="sb-part-queue" class="b-nodisplay">
+<div id="sb-part-queues" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_persistentmembers'),
 				      'name'	=> 'generalqueues[persistentmembers]',
@@ -186,7 +186,7 @@ if(isset($error_js[0]) === true)
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-timezone" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_general_timezone'),
 				    'name'     => 'general[timezone]',

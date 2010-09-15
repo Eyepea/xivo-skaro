@@ -59,7 +59,7 @@ if(isset($error_js[0]) === true)
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 	<?=$form->select(array('desc'	=> $this->bbf('fm_cti_commandset'),
 				    'name'	=> 'cti[commandset]',
 				    'labelid'	=> 'cti_commandset',

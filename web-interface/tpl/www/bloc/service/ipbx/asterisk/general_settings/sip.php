@@ -49,7 +49,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+					<a href="#first"><?=$this->bbf('smenu_general');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -61,7 +61,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_network');?></a>
+					<a href="#network"><?=$this->bbf('smenu_network');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -73,7 +73,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_security');?></a>
+					<a href="#security"><?=$this->bbf('smenu_security');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -85,7 +85,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_signalling');?></a>
+					<a href="#signalling"><?=$this->bbf('smenu_signalling');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -97,7 +97,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_t38');?></a>
+					<a href="#t38"><?=$this->bbf('smenu_t38');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -109,7 +109,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_jitterbuffer');?></a>
+					<a href="#jitterbuffer"><?=$this->bbf('smenu_jitterbuffer');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -121,7 +121,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_default');?></a>
+					<a href="#default"><?=$this->bbf('smenu_default');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -133,7 +133,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_realtime');?></a>
+					<a href="#realtime"><?=$this->bbf('smenu_realtime');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -145,7 +145,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_internals');?></a>
+					<a href="#internals"><?=$this->bbf('smenu_internals');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -163,7 +163,7 @@ endif;
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_bindport'),
@@ -1163,16 +1163,16 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-udptl'),
 				      'name'		=> 't38pt_udptl',
 				      'labelid'		=> 't38pt-udptl',
-					  'help'		=> $this->bbf('hlp_fm_t38pt-udptl'),
-					  'required'	=> false,
+					    'help'		=> $this->bbf('hlp_fm_t38pt-udptl'),
+				  	  'required'	=> false,
 				      'checked'		=> $this->get_var('info','t38pt_udptl','var_val'),
 				      'default'		=> $element['t38pt_udptl']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-usertpsource'),
 				      'name'		=> 't38pt_usertpsource',
 				      'labelid'		=> 't38pt-usertpsource',
-					  'help'		=> $this->bbf('hlp_fm_t38pt-usertpsource'),
-					  'required'	=> false,
+		  			  'help'		=> $this->bbf('hlp_fm_t38pt-usertpsource'),
+			  		  'required'	=> false,
 				      'checked'		=> $this->get_var('info','t38pt_usertpsource','var_val'),
 							'default'		=> $element['t38pt_usertpsource']['default'])),
 
@@ -1182,8 +1182,8 @@ endif;
 				    'key'		=> false,
 				    'bbf'		=> 'faxdetect-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-					'help'		=> $this->bbf('hlp_fm_faxdetect'),
-					'required'	=> false,
+  					'help'		=> $this->bbf('hlp_fm_faxdetect'),
+	  				'required'	=> false,
 				    'selected'	=> $this->get_var('info','faxdetect','var_val'),
 				    'default'	=> $element['faxdetect']['default']),
 			      $element['faxdetect']['value']);

@@ -52,7 +52,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+					<a href="#first"><?=$this->bbf('smenu_general');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -64,7 +64,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_network');?></a>
+					<a href="#network"><?=$this->bbf('smenu_network');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -76,7 +76,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_signalling');?></a>
+					<a href="#signalling"><?=$this->bbf('smenu_signalling');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -88,7 +88,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_jitterbuffer');?></a>
+					<a href="#jitterbuffer"><?=$this->bbf('smenu_jitterbuffer');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -100,19 +100,19 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_default');?></a>
+					<a href="#default"><?=$this->bbf('smenu_default');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-6"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-hotline',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_hotline');?></a>
+					<a href="#hotline"><?=$this->bbf('smenu_hotline');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -128,7 +128,7 @@ endif;
 			$form->hidden(array('name'	=> 'fm_send','value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_servername'),
@@ -890,7 +890,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-hotline" class="b-nodisplay">
 <?php
 
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_hotline_enabled'),

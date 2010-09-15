@@ -60,7 +60,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+					<a href="#first"><?=$this->bbf('smenu_general');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -72,7 +72,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_voicemenu');?></a>
+					<a href="#voicemenu"><?=$this->bbf('smenu_voicemenu');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -84,7 +84,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_email');?></a>
+					<a href="#email"><?=$this->bbf('smenu_email');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -96,7 +96,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_pager');?></a>
+					<a href="#pager"><?=$this->bbf('smenu_pager');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -108,7 +108,7 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_timezones');?></a>
+					<a href="#timezones"><?=$this->bbf('smenu_timezones');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -120,19 +120,19 @@ endif;
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_adsi');?></a>
+					<a href="#adsi"><?=$this->bbf('smenu_adsi');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-7"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-advanced',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a>
+					<a href="#advanced"><?=$this->bbf('smenu_advanced');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -151,7 +151,7 @@ endif;
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 
 <?php
 
@@ -757,7 +757,7 @@ if($zmsg_nb > 0):
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-advanced" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-searchcontexts'),
 				      'name'	=> 'voicemail[searchcontexts]',

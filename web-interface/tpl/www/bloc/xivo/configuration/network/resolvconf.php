@@ -45,7 +45,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
+				<span class="span-center"><a href="#first"><?=$this->bbf('smenu_general');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -55,7 +55,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_search');?></a></span>
+				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_search');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -65,7 +65,7 @@ endif;
 <div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8">
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),

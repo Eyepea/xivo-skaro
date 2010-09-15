@@ -31,7 +31,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_phonebook_title'),
 				    'name'	=> 'phonebook[title]',

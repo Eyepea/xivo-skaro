@@ -59,7 +59,7 @@ if(isset($error_js[0]) === true)
 			onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_general')?></a>
+					<a href="#first"><?=$this->bbf('smenu_cti_general')?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -71,7 +71,7 @@ if(isset($error_js[0]) === true)
 			onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_presence')?></a>
+					<a href="#cti_presence"><?=$this->bbf('smenu_cti_presence')?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -83,7 +83,7 @@ if(isset($error_js[0]) === true)
 			onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_phonehints')?></a>
+					<a href="#cti_phonehints"><?=$this->bbf('smenu_cti_phonehints')?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -95,7 +95,7 @@ if(isset($error_js[0]) === true)
 			onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_profiles')?></a>
+					<a href="#cti_profiles"><?=$this->bbf('smenu_cti_profiles')?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -116,7 +116,7 @@ if(isset($error_js[0]) === true)
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 	<?=$form->select(array('desc'	=> $this->bbf('fm_cti_commandset'),
 				    'name'	=> 'cti[commandset]',
 				    'labelid'	=> 'cti_commandset',

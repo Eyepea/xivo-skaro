@@ -215,11 +215,24 @@ dwho.submenu.prototype.submit_form = function(obj)
 
 dwho.submenu.prototype.load = function()
 {
-	if((tab = dwho_eid(this._onload['tab'])) === false)
+	if(location.hash.length > 0)
+	{
+		tab = $("a[href="+location.hash+"]").first().parentsUntil('div.sb-smenu');
+		tab = tab[tab.length - 2];
+
+		part = 'sb-part-' + location.hash.substr(1);
+		last = ($(tab).attr('class') == 'dwsm-blur-last')
+	}	else {
+		tab  = dwho_eid(this._onload['tab']);
+		part = this._onload['part'];
+		last = this._onload['part'];
+	}
+
+	if(tab === false)
 		return(false);
 
-	this._backup[this._onload['tab']] = tab.className;
-	this.select(tab,this._onload['part'],this._onload['last']);
+	this._backup[tab.id] = tab.className;
+	this.select(tab,part,last);
 }
 
 if(dwho_is_undef(dwho.dom) === false

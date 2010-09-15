@@ -77,23 +77,21 @@ if(isset($error_js[0]) === true)
 		    onmouseover="dwho_submenu.focus(this);">
 			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-first');">
 				<div class="tab">
-					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
+					<span class="span-center"><a href="#first"><?=$this->bbf('smenu_general');?></a></span>
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</div>
 			<div class="stab">
 				<ul>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-call');
-							return(false);"><?=$this->bbf('smenu_calls');?></a></li>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-transfer');
-							return(false);"><?=$this->bbf('smenu_transfers');?></a></li>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-forward');
-							return(false);"><?=$this->bbf('smenu_forwards');?></a></li>
-				</ul>
-			</div>
+					<li><a href="#call"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-call');">
+							<?=$this->bbf('smenu_calls');?></a></li>
+					<li><a href="#transfer"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-transfer');">
+							<?=$this->bbf('smenu_transfers');?></a></li>
+					<li><a href="#forward"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-forward');">
+							<?=$this->bbf('smenu_forwards');?></a></li>			</div>
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
@@ -101,7 +99,7 @@ if(isset($error_js[0]) === true)
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_voicemail');?></a></span>
+				<span class="span-center"><a href="#voicemail"><?=$this->bbf('smenu_voicemail');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -111,7 +109,7 @@ if(isset($error_js[0]) === true)
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_agent');?></a></span>
+				<span class="span-center"><a href="#agent"><?=$this->bbf('smenu_agent');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -121,7 +119,7 @@ if(isset($error_js[0]) === true)
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_groups');?></a></span>
+				<span class="span-center"><a href="#group"><?=$this->bbf('smenu_groups');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -131,17 +129,15 @@ if(isset($error_js[0]) === true)
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-last',1);">
 				<div class="tab">
-					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
+					<span class="span-center"><a href="#last"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</div>
 			<div class="stab">
 				<ul>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-parking',1);
-							return(false);"><?=$this->bbf('smenu_parking');?></a></li>
-				</ul>
-			</div>
+					<li><a href="#parking"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-parking',1);">
+							<?=$this->bbf('smenu_parking');?></a></li>			</div>
 		</li>
 	</ul>
 </div>
@@ -155,7 +151,7 @@ if(isset($error_js[0]) === true)
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
 ?>
-	<div id="sb-part-first">
+	<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_featuremap_automon'),
 				  'name'	=> 'featuremap[automon]',

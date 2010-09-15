@@ -28,18 +28,16 @@
 			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-first');">
 				<div class="tab">
 					<span class="span-center">
-						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+						<a href="#first"><?=$this->bbf('smenu_general');?></a>
 					</span>
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</div>
 			<div class="stab">
 				<ul>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-period');
-							return(false);"><?=$this->bbf('smenu_period');?></a></li>
-				</ul>
-			</div>
+					<li><a href="#period"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-period');">
+							<?=$this->bbf('smenu_period');?></a></li>			</div>
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
@@ -48,7 +46,7 @@
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_administrator');?></a>
+					<a href="#administrator"><?=$this->bbf('smenu_administrator');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -60,7 +58,7 @@
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_user');?></a>
+					<a href="#user"><?=$this->bbf('smenu_user');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -72,18 +70,16 @@
 			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-last',1);">
 				<div class="tab">
 					<span class="span-center">
-						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_guest');?></a>
+						<a href="#last"><?=$this->bbf('smenu_guest');?></a>
 					</span>
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</div>
 			<div class="stab">
 				<ul>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-email',1);
-							return(false);"><?=$this->bbf('smenu_email');?></a></li>
-				</ul>
-			</div>
+					<li><a href="#email"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-email',1);">
+							<?=$this->bbf('smenu_email');?></a></li>			</div>
 		</li>
 	</ul>
 </div>

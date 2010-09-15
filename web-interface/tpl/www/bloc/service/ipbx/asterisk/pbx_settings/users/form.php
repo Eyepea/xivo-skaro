@@ -79,7 +79,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_firstname'),
 				  'name'	=> 'userfeatures[firstname]',
@@ -561,7 +561,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-group" class="b-nodisplay">
+<div id="sb-part-groups" class="b-nodisplay">
 <?php
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/groups');
 ?>
@@ -1154,7 +1154,7 @@ endif;
 	</div>
 </div>
 
-<div id="sb-part-rightcall" class="b-nodisplay">
+<div id="sb-part-rightcalls" class="b-nodisplay">
 <?php
 	if($rightcall['list'] !== false):
 ?>

@@ -47,7 +47,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_access');?></a></span>
+				<span class="span-center"><a href="#first"><?=$this->bbf('smenu_access');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -57,7 +57,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_xivoservers');?></a></span>
+				<span class="span-center"><a href="#xivoserver"><?=$this->bbf('smenu_xivoservers');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -67,7 +67,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_ldapfilters');?></a></span>
+				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_ldapfilters');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -87,7 +87,7 @@ endif;
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 	<div id="accesslist" class="fm-paragraph fm-multilist">
 		<div class="slt-list">
 <?php

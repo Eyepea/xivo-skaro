@@ -32,7 +32,7 @@ $form = &$this->get_module('form');
                 onmouseover="dwho_submenu.focus(this);">
                 <div class="tab">
                     <span class="span-center">
-                        <a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+                        <a href="#first"><?=$this->bbf('smenu_general');?></a>
                     </span>
                 </div>
                 <span class="span-right">&nbsp;</span>
@@ -44,7 +44,7 @@ $form = &$this->get_module('form');
                 onmouseover="dwho_submenu.focus(this);">
                 <div class="tab">
                     <span class="span-center">
-                        <a href="#" onclick="return(false);"><?=$this->bbf('smenu_screens');?></a>
+                        <a href="#screens"><?=$this->bbf('smenu_screens');?></a>
                     </span>
                 </div>
                 <span class="span-right">&nbsp;</span>
@@ -56,7 +56,7 @@ $form = &$this->get_module('form');
                 onmouseover="dwho_submenu.focus(this);">
                 <div class="tab">
                     <span class="span-center">
-                        <a href="#" onclick="return(false);"><?=$this->bbf('smenu_systrays');?></a>
+                        <a href="#systrays"><?=$this->bbf('smenu_systrays');?></a>
                     </span>
                 </div>
                 <span class="span-right">&nbsp;</span>
@@ -68,7 +68,7 @@ $form = &$this->get_module('form');
                 onmouseover="dwho_submenu.focus(this,1);">
                 <div class="tab">
                     <span class="span-center">
-                        <a href="#" onclick="return(false);"><?=$this->bbf('smenu_infos');?></a>
+                        <a href="#infos"><?=$this->bbf('smenu_infos');?></a>
                     </span>
                 </div>
                 <span class="span-right">&nbsp;</span>

@@ -37,7 +37,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_sheetactions_name'),
 				  'name'	=> 'sheetactions[name]',

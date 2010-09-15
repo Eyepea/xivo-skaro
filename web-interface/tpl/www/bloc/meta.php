@@ -36,6 +36,7 @@
 <link rel="shortcut icon" href="<?=$this->file_time($this->url('favicon.ico'));?>">
 
 <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('css/xivo.css'));?>">
+<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jquery.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho/dom.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho/form.js'));?>"></script>

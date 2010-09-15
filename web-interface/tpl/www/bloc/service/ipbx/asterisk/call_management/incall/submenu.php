@@ -27,7 +27,7 @@
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
+				<span class="span-center"><a href="#first"><?=$this->bbf('smenu_general');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -37,7 +37,7 @@
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_faxdetect');?></a></span>
+				<span class="span-center"><a href="#faxdetect"><?=$this->bbf('smenu_faxdetect');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -47,7 +47,7 @@
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_rightcalls');?></a></span>
+				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_rightcalls');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>

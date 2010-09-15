@@ -29,7 +29,7 @@ if($this->get_var('fm_save') === false):
 endif;
 ?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_filename'),
 				  'name'	=> 'configfile[filename]',

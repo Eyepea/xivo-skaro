@@ -48,7 +48,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_status');?></a></span>
+				<span class="span-center"><a href="#first"><?=$this->bbf('smenu_status');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -58,7 +58,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_services');?></a></span>
+				<span class="span-center"><a href="#services"><?=$this->bbf('smenu_services');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -68,7 +68,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_network');?></a></span>
+				<span class="span-center"><a href="#network"><?=$this->bbf('smenu_network');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -78,7 +78,7 @@ endif;
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_params');?></a></span>
+				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_params');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -88,7 +88,7 @@ endif;
 <div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8">
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_status'),
 	              'class'   => 'readonly',
