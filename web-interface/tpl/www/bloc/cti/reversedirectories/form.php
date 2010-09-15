@@ -51,7 +51,7 @@ $dhtml->write_js($js);
 // ***
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
+<div id="sb-part-first">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_rdid_number'),
 				  'name'	=> 'reversedirectories[context]',

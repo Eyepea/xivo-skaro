@@ -51,7 +51,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
+<div id="sb-part-first"">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_status_name'),
 				  'name'	=> 'status[name]',

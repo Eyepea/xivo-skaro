@@ -221,11 +221,12 @@ dwho.submenu.prototype.load = function()
 		tab = tab[tab.length - 2];
 
 		part = 'sb-part-' + location.hash.substr(1);
-		last = ($(tab).attr('class') == 'dwsm-blur-last')
+		last = ($(tab).attr('class') == 'dwsm-blur-last');
+
 	}	else {
 		tab  = dwho_eid(this._onload['tab']);
 		part = this._onload['part'];
-		last = this._onload['part'];
+		last = this._onload['last'];
 	}
 
 	if(tab === false)

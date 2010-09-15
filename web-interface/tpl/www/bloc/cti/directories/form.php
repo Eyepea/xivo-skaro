@@ -37,7 +37,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
+<div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_name'),
 				  'name'	=> 'directories[name]',
@@ -125,7 +125,6 @@ endif;
 				  'value'	=> $info['directories']['display_reverse']));
 
 ?>
-</div>
 <div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-description" for="it-description"><?=$this->bbf('fm_description');?></label>
@@ -138,5 +137,6 @@ endif;
 				 'rows'     => 5,
 				 'default'  => $element['directories']['description']['default']),
 			   $info['directories']['description']);?>
+</div>
 </div>
 

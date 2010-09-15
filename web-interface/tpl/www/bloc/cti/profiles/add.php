@@ -56,7 +56,7 @@ $form = &$this->get_module('form');
 				onmouseover="dwho_submenu.focus(this,1);">
 				<div class="tab">
 					<span class="span-center">
-						<a href="#xlets"><?=$this->bbf('smenu_xlets');?></a>
+						<a href="#last"><?=$this->bbf('smenu_xlets');?></a>
 					</span>
 				</div>
 				<span class="span-right">&nbsp;</span>

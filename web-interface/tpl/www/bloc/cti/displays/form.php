@@ -35,7 +35,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
+<div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_displays_name'),
 				  'name'	=> 'displays[name]',
@@ -212,7 +212,6 @@ endif;
 			</tbody>
 		</table>
 	</div>
-</div>
 <br />
 <div class="fm-paragraph fm-description">
 	<p>
@@ -228,3 +227,4 @@ endif;
 			   $info['displays']['description']);?>
 </div>
 
+</div>
