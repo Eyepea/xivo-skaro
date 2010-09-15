@@ -119,7 +119,8 @@ class dwho_query
 			if(dwho_has_len($q) === true)
 				$q .= DWHO_SEP_ARG_OUT;
 
-			$q .= DWHO_SESS_STR;
+			//remove session id from url
+			//$q .= DWHO_SESS_STR;
 		}
 
 		if(dwho_has_len($q) === true)

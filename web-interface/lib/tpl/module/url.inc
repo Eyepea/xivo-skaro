@@ -47,7 +47,10 @@ class dwho_tpl_url extends dwho_tpl_module
 
 	function _build_query($query=null,$encode=true,$sep=null,$sid=true)
 	{
+		//as the session id is contained in a cookie, we do not need to pass it in the
+		//query string
 		$sid = (bool) $sid === true && defined('DWHO_SESS_STR') === true;
+		$sid = false;
 		$sep = $this->get_separator($sep);
 
 		if(is_array($query) === true)
