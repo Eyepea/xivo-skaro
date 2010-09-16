@@ -21,8 +21,8 @@
 require_once('xivo.php');
 
 if(xivo_user::chk_acl(true) === false)
-	$_QRY->go($_TPL->url('xivo'));
-
+	$_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
+	
 $ipbx = &$_SRE->get('ipbx');
 
 $dhtml = &$_TPL->get_module('dhtml');

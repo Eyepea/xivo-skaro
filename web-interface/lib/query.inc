@@ -114,15 +114,16 @@ class dwho_query
 		else
 			$q = strval($query);
 
+		//remove session id from url
+		/*
 		if($query !== false)
 		{
 			if(dwho_has_len($q) === true)
 				$q .= DWHO_SEP_ARG_OUT;
 
-			//remove session id from url
-			//$q .= DWHO_SESS_STR;
+			$q .= DWHO_SESS_STR;
 		}
-
+	 */
 		if(dwho_has_len($q) === true)
 			$location .= '?'.$q;
 

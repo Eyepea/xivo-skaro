@@ -28,6 +28,7 @@ require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 dwho_logw('logoff',$login,'logoff');
 
 xivo_user::logoff();
-$_QRY->go($_TPL->url('index'));
+
+$_QRY->go($_TPL->url('index'), is_null($_GET['go'])?null:array('go' => $_GET['go']));
 
 ?>

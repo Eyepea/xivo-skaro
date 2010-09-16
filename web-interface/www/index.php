@@ -30,8 +30,10 @@ if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
 	die(include($action_path));
 }
 
+$go = $_GET['go'];
+
 if(xivo_user::is_valid() === true)
-	$_QRY->go($_TPL->url('xivo'));
+	$_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
 
 $_LANG = &dwho_gat::load_get('language',XIVO_PATH_OBJECTCONF);
 
@@ -42,7 +44,7 @@ else
 
 if(isset($_QR['login'],$_QR['password']) === true
 && $_USR->load_by_authent($_QR['login'],$_QR['password'],$language) === true)
-	$_QRY->go($_TPL->url('xivo'));
+	$_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
 
 $_TPL->set_var('language',dwho_array_intersect_key($_LANG,dwho_i18n::get_language_translated_list()));
 $_TPL->set_struct('home/login');
