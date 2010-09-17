@@ -555,7 +555,7 @@ Message personnalisé "Le mot de passe est erroné":
 Config asterisk: vm-invalid-password
 
 ; fm_vm-pls-try-again
-Message personnalisé "Veuilliez réessayer": 
+Message personnalisé "Veuillez réessayer": 
 
 ; hlp_fm_vm-pls-try-again
 Config asterisk: vm-pls-try-again

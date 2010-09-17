@@ -34,16 +34,16 @@ Silence detection sensibility:
 ; hlp_fm_voicemail-silencethreshold
 Asterisk config: voicemail-silencethreshold
 
-; fm_voicemail-minmessage
+; fm_voicemail-minsecs
 Minimum length of a message:
 
-; hlp_fm_voicemail-minmessage
+; hlp_fm_voicemail-minsecs
 Asterisk config: voicemail-minmessage
 
-; fm_voicemail-maxmessage
+; fm_voicemail-maxsecs
 Maximum length of a message:
 
-; hlp_fm_voicemail-maxmessage
+; hlp_fm_voicemail-maxsecs
 Asterisk config: voicemail-maxmessage
 
 ; fm_voicemail-message-opt(0)
@@ -411,3 +411,188 @@ Asterisk config: voicemail-odbctable
 
 ; fm_success-save
 Voicemails properties successfully saved
+
+;;; asterisk 1.8
+; fm_moveheard
+Move heard messages to the *Old* folder:
+
+; hlp_fm_moveheard
+Asterisk config: moveheard
+
+; fm_forward_urgent_auto
+Forward an urgent message as <b>urgent</b>: 
+
+; hlp_fm_forward_urgent_auto
+Asterisk config: forward_urgent_auto
+
+; fm_userscontext
+Users context:
+
+; hlp_fm_userscontext
+Asterisk config: userscontext
+
+; fm_smdienable
+SMDI notifications: 
+
+; hlp_fm_smdienable
+Asterisk config: smdienable
+
+; fm_externpassnotify
+Password change program (apply to voicemail too):
+
+; hlp_fm_externpassnotify
+Asterisk config: externpassnotify.
+
+; fm_externpasscheck
+Password validation program:
+
+; hlp_fm_externpasscheck
+Asterisk config: externpasscheck
+
+; fm_directoryintro
+Directory intro custom message:
+
+; hlp_fm_directoryintro
+Asterisk config: directoryintro
+
+; fm_pollmailboxes
+Polling mailboxes for changes:
+
+; hlp_fm_pollmailboxes
+Asterisk config: pollmailboxes
+
+; fm_pollfreq
+Polling frequency:
+
+; hlp_fm_pollfreq
+Asterisk config: pollfreq
+
+; fm_imapgreetings
+Store custom greetings in the mailbox:
+
+; hlp_fm_imapgreetings
+Asterisk config: imapgreetings
+
+; fm_greetingsfolder
+Mailbox directory to store greetings:
+
+; hlp_fm_greetingsfolder
+Asterisk config: greetingsfolder
+
+; fm_imapparentfolder
+IMAP parent folder:
+
+; hlp_fm_imapparentfolder
+Asterisk config: imapparentfolder
+
+; fm_tz
+Timezone:
+
+; hlp_fm_tz
+Asterisk config: tz
+
+; hlp_fm_attachfmt
+Asterisk config: attachfmt
+
+; fm_deletevoicemail
+Delete voicemail message is sended by email:
+
+; hlp_fm_deletevoicemail
+Asterisk config: deletevoicemail
+
+; fm_hidefromdir
+Hide this mailbox from app_directory directories: 
+
+; hlp_fm_hidefromdir
+Asterisk config: hidefromdir
+
+; fm_messagewrap
+Message wrap: 
+
+; hlp_fm_messagewrap
+Asterisk config: messagewrap
+
+; fm_minpassword
+Password minimum size (0=no limit): 
+
+; hlp_fm_minpassword
+Asterisk config: minpassword
+
+; fm_vm-password
+«Password» message: 
+
+; hlp_fm_vm-password
+Asterisk config: vm-password
+
+; fm_vm-newpassword
+«Enter new password» message: 
+
+; hlp_fm_vm-newpassword
+Asterisk config: vm-newpassword
+
+; fm_vm-passchanged
+«Password changed» message: 
+
+; hlp_fm_vm-passchanged
+Asterisk config: vm-passchanged
+
+; fm_vm-reenterpassword
+«Reenter password» message: 
+
+; hlp_fm_vm-reenterpassword
+Asterisk config: vm-reenterpassword
+
+; fm_vm-mistmatch
+«Passwords mismatch» message: 
+
+; hlp_fm_vm-mistmatch
+Asterisk config: vm-mistmatch
+
+; fm_vm-invalid-password
+«Invalid password» message: 
+
+; hlp_fm_vm-invalid-password
+Asterisk config: vm-invalid-password
+
+; fm_vm-pls-try-again
+«Try again» message: 
+
+; hlp_fm_vm-pls-try-again
+Asterisk config: vm-pls-try-again
+
+; fm_listen-control-forward-key
+«Fast forward» key: 
+
+; hlp_fm_listen-control-forward-key
+Asterisk config: listen-control-forward-key
+
+; fm_listen-control-reverse-key
+«Rewind» key: 
+
+; hlp_fm_listen-control-reverse-key
+Asterisk config: listen-control-reverse-key
+
+; fm_listen-control-pause-key
+«Pause» key: 
+
+; hlp_fm_listen-control-pause-key
+Asterisk config: listen-control-pause-key
+
+; fm_listen-control-restart-key
+«Replay» key: 
+
+; hlp_fm_listen-control-restart-key
+Asterisk config: listen-control-restart-key
+
+; fm_listen-control-stop-key
+«Playback stop» key:
+
+; hlp_fm_listen-control-stop-key
+Asterisk config: listen-control-stop-key
+
+; fm_backupdeleted
+Max number of messages allowed in «Deleted» folder:
+
+; hlp_fm_backupdeleted
+Asterisk config: backupdeleted
+
