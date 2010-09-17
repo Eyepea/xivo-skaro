@@ -31,19 +31,19 @@ $array['element']['silencethreshold'] = array();
 $array['element']['silencethreshold']['value'] = array(0,2,4,8,16,32,64,128,256,512);
 $array['element']['silencethreshold']['default'] = 256;
 
-$array['element']['minmessage'] = array();
-$array['element']['minmessage']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+$array['element']['minsecs'] = array();
+$array['element']['minsecs']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
 						 100,110,120,130,140,150,160,170,180,190,
 						 200,210,220,230,240,250,260,270,280,290,
 						 300,310,320,330,340,350,360);
-$array['element']['minmessage']['default'] = 2;
+$array['element']['minsecs']['default'] = 2;
 
-$array['element']['maxmessage'] = array();
-$array['element']['maxmessage']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+$array['element']['maxsecs'] = array();
+$array['element']['maxsecs']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
 						 100,110,120,130,140,150,160,170,180,190,
 						 200,210,220,230,240,250,260,270,280,290,
 						 300,310,320,330,340,350,360);
-$array['element']['maxmessage']['default'] = 0;
+$array['element']['maxsecs']['default'] = 0;
 
 $array['element']['maxsilence'] = array();
 $array['element']['maxsilence']['value'] = range(1,30);
@@ -185,10 +185,6 @@ $array['element']['emaildateformat'] = array();
 $array['element']['emaildateformat']['default'] = '%A, %B %d, %Y at %r';
 $array['element']['emaildateformat']['setdef'] = true;
 
-$array['element']['emaildatelocale'] = array();
-$array['element']['emaildatelocale']['default'] = 'en_US.UTF-8';
-$array['element']['emaildatelocale']['null'] = true;
-
 $array['element']['pbxskip'] = array();
 $array['element']['pbxskip']['value'] = array('no','yes');
 $array['element']['pbxskip']['default'] = 'no';
@@ -251,16 +247,152 @@ $array['element']['odbctable'] = array();
 $array['element']['odbctable']['default'] = '';
 $array['element']['odbctable']['null'] = true;
 
+// asterisk 1.8 fields
+$array['element']['moveheard'] = array();
+$array['element']['moveheard']['value'] = array('no','yes');
+$array['element']['moveheard']['default'] = 'yes';
+$array['element']['moveheard']['set'] = true;
+
+$array['element']['forward_urgent_auto'] = array();
+$array['element']['forward_urgent_auto']['value'] = array('no','yes');
+$array['element']['forward_urgent_auto']['default'] = 'no';
+$array['element']['forward_urgent_auto']['set'] = true;
+
+$array['element']['userscontext'] = array();
+$array['element']['userscontext']['default'] = 'default';
+$array['element']['userscontext']['null'] = true;
+
+$array['element']['smdienable'] = array();
+$array['element']['smdienable']['value'] = array('no','yes');
+$array['element']['smdienable']['default'] = 'no';
+$array['element']['smdienable']['set'] = true;
+
+$array['element']['externpassnotify'] = array();
+$array['element']['externpassnotify']['default'] = '';                                                                                                                                                    
+$array['element']['externpassnotify']['null'] = true;
+
+$array['element']['externpasscheck'] = array();
+$array['element']['externpasscheck']['default'] = ''; 
+$array['element']['externpasscheck']['null'] = true;
+
+$array['element']['directoryintro'] = array();
+$array['element']['directoryintro']['default'] = 'dir-intro';
+$array['element']['directoryintro']['null'] = true;
+
+$array['element']['pollmailboxes'] = array();
+$array['element']['pollmailboxes']['value'] = array('no','yes');
+$array['element']['pollmailboxes']['default'] = 'no';
+$array['element']['pollmailboxes']['set'] = true;
+
+$array['element']['pollfreq'] = array();
+$array['element']['pollfreq']['value'] = range(0,600);
+$array['element']['pollfreq']['default'] = 30; 
+
+$array['element']['imapgreetings'] = array();
+$array['element']['imapgreetings']['value'] = array('no','yes');
+$array['element']['imapgreetings']['default'] = 'no';
+$array['element']['imapgreetings']['set'] = true;
+
+$array['element']['greetingsfolder'] = array();
+$array['element']['greetingsfolder']['default'] = 'INBOX';
+$array['element']['greetingsfolder']['null'] = true;
+$array['element']['imapparentfolder'] = array();
+$array['element']['imapparentfolder']['default'] = 'INBOX';
+$array['element']['imapparentfolder']['null'] = true;
+
+$array['element']['tz'] = array();
+$array['element']['tz']['default'] = '';
+$array['element']['tz']['null'] = true;
+
+$array['element']['attachfmt'] = array();
+$array['element']['attachfmt']['default'] = '';
+$array['element']['attachfmt']['null'] = true;
+
+$array['element']['deletevoicemail'] = array();
+$array['element']['deletevoicemail']['value'] = array('no','yes');
+$array['element']['deletevoicemail']['default'] = 'no';
+$array['element']['deletevoicemail']['set'] = true;
+
+$array['element']['hidefromdir'] = array();
+$array['element']['hidefromdir']['value'] = array('no','yes');
+$array['element']['hidefromdir']['default'] = 'no';
+$array['element']['hidefromdir']['set'] = true;
+
+$array['element']['messagewrap'] = array();
+$array['element']['messagewrap']['value'] = array('no','yes');
+$array['element']['messagewrap']['default'] = 'no';
+$array['element']['messagewrap']['set'] = true;
+
+$array['element']['minpassword'] = array();
+$array['element']['minpassword']['value'] = range(0,10);
+$array['element']['minpassword']['default'] = 0;
+
+$array['element']['vm-password'] = array();
+$array['element']['vm-password']['default'] = '';
+$array['element']['vm-password']['null'] = true;
+
+$array['element']['vm-newpassword'] = array();
+$array['element']['vm-newpassword']['default'] = '';
+$array['element']['vm-newpassword']['null'] = true;
+
+$array['element']['vm-passchanged'] = array();
+$array['element']['vm-passchanged']['default'] = '';
+$array['element']['vm-passchanged']['null'] = true;
+
+$array['element']['vm-reenterpassword'] = array();
+$array['element']['vm-reenterpassword']['default'] = '';
+$array['element']['vm-reenterpassword']['null'] = true;
+
+$array['element']['vm-mistmatch'] = array(); 
+$array['element']['vm-mistmatch']['default'] = '';
+$array['element']['vm-mistmatch']['null'] = true;
+
+$array['element']['vm-invalid-password'] = array();
+$array['element']['vm-invalid-password']['default'] = '';
+$array['element']['vm-invalid-password']['null'] = true;
+
+$array['element']['vm-pls-try-again'] = array();
+$array['element']['vm-pls-try-again']['default'] = '';
+$array['element']['vm-pls-try-again']['null'] = true;
+
+$array['element']['listen-control-forward-key'] = array();
+$array['element']['listen-control-forward-key']['default'] = '#';
+$array['element']['listen-control-forward-key']['null'] = true;
+
+$array['element']['listen-control-reverse-key'] = array();
+$array['element']['listen-control-reverse-key']['default'] = '*';
+$array['element']['listen-control-reverse-key']['null'] = true;
+
+$array['element']['listen-control-pause-key'] = array();
+$array['element']['listen-control-pause-key']['default'] = '0';
+$array['element']['listen-control-pause-key']['null'] = true;
+
+$array['element']['listen-control-restart-key'] = array();
+$array['element']['listen-control-restart-key']['default'] = '2';
+$array['element']['listen-control-restart-key']['null'] = true;
+
+$array['element']['listen-control-stop-key'] = array();
+$array['element']['listen-control-stop-key']['default'] = '123456789';
+$array['element']['listen-control-stop-key']['null'] = true;
+
+$array['element']['backupdeleted'] = array();
+//$array['element']['backupdeleted']['value'] = range(0,256);
+$array['element']['backupdeleted']['default'] = 100;
+$array['element']['backupdeleted']['null']    = true;
+
+
+// FILTERS
+
 $array['filter'] = array();
 $array['filter']['maxmsg'] = array('key' => array(1,10,15,20,25,50,75,100,
 						  125,150,175,200,300,400,500,600,700,800,900,
 						  1000,2000,3000,4000,5000,6000,7000,8000,9000,9999));
 $array['filter']['silencethreshold'] = array('key' => array(0,2,4,8,16,32,64,128,256,512));
-$array['filter']['minmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+$array['filter']['minsecs'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
 						      100,110,120,130,140,150,160,170,180,190,
 						      200,210,220,230,240,250,260,270,280,290,
 						      300,310,320,330,340,350,360));
-$array['filter']['maxmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+$array['filter']['maxsecs'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
 						      100,110,120,130,140,150,160,170,180,190,
 						      200,210,220,230,240,250,260,270,280,290,
 						      300,310,320,330,340,350,360));
@@ -307,7 +439,6 @@ $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'regexp' => '/
 $array['filter']['charset'] = array('set' => false);
 $array['filter']['fromstring'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
 $array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 32);
-$array['filter']['emaildatelocale'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 32);
 $array['filter']['pbxskip'] = array('bool' => true);
 $array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['emailbody'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
@@ -324,5 +455,37 @@ $array['filter']['externnotify'] = array('set' => false,'chk' => 2,'cast' => 'sg
 $array['filter']['smdiport'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['odbcstorage'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['odbctable'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
+// asterisk 1.8 fields
+$array['filter']['moveheard'] = array('bool' => true);
+$array['filter']['forward_urgent_auto'] = array('bool' => true);
+$array['filter']['userscontext'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['smdienable'] = array('bool' => true);
+$array['filter']['externpassnotify'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['externpasscheck'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['directoryintro'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['pollmailboxes'] = array('bool' => true);
+$array['filter']['pollfreq'] = array('cast' => 'uint','between' => array(1,256));
+$array['filter']['imapgreetings'] = array('bool' => true);
+$array['filter']['greetingsfolder'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['imapparentfolder'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['tz'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['attachfmt'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['deletevoicemail'] = array('bool' => true);
+$array['filter']['hidefromdir'] = array('bool' => true);
+$array['filter']['messagewrap'] = array('bool' => true);
+$array['filter']['minpassword'] = array('cast' => 'uint','between' => array(1,256));
+$array['filter']['vm-password'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['vm-newpassword'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['vm-passchanged'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['vm-reenterpassword'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['vm-mistmatch'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['vm-invalid-password'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['vm-pls-try-again'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['listen-control-forward-key'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['listen-control-reverse-key'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['listen-control-pause-key'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['listen-control-restart-key'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['listen-control-stop-key'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['backupdeleted'] = array('cast' => 'uint','between' => array(1,256));
 
 ?>

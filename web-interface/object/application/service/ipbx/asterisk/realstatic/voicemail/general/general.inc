@@ -123,6 +123,7 @@ class xivo_application_service_asterisk_realstatic_voicemail_general extends xiv
 		&& $arr['minmessage'] > $arr['maxmessage'])
 			$arr['minmessage'] = $arr['maxmessage'];
 
+/* what it is for ?
 		if(isset($arr['format'],$arr['attachformat']) === true
 		&& is_array($arr['format']) === true
 		&& dwho_has_len($arr['attachformat']) === true
@@ -133,7 +134,7 @@ class xivo_application_service_asterisk_realstatic_voicemail_general extends xiv
 		}
 		else
 			unset($arr['attachformat']);
-
+*/
 		return(parent::set_save_all($arr,$disable));
 	}
 }

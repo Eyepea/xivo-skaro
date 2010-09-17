@@ -34,16 +34,16 @@ Sensibilité de détection d'un silence:
 ; hlp_fm_voicemail-silencethreshold
 Config asterisk: voicemail-silencethreshold
 
-; fm_voicemail-minmessage
+; fm_voicemail-minsecs
 Durée minimun d'un message:
 
-; hlp_fm_voicemail-minmessage
+; hlp_fm_voicemail-minsecs
 Config asterisk: voicemail-minmessage
 
-; fm_voicemail-maxmessage
+; fm_voicemail-maxsecs
 Durée maximum d'un message:
 
-; hlp_fm_voicemail-maxmessage
+; hlp_fm_voicemail-maxsecs
 Config asterisk: voicemail-maxmessage
 
 ; fm_voicemail-message-opt(0)
@@ -386,7 +386,7 @@ Programme externe pour changer le mot de passe:
 Config asterisk: voicemail-externpass
 
 ; fm_voicemail-externnotify
-Programme externe pour notifier un nouveau message:
+Programme externe pour notifier un nouveau message (mevo exclue):
 
 ; hlp_fm_voicemail-externnotify
 Config asterisk: voicemail-externnotify
@@ -411,3 +411,188 @@ Config asterisk: voicemail-odbctable
 
 ; fm_success-save
 Propriétés des messageries vocales sauvegardées avec succès
+
+;;; asterisk 1.8
+; fm_moveheard
+Déplacer les messages consultés dans le répertoire *Old*: 
+
+; hlp_fm_moveheard
+Config asterisk: moveheard
+
+; fm_forward_urgent_auto
+Transferer un message urgent en <b>urgent</b>: 
+
+; hlp_fm_forward_urgent_auto
+Config asterisk: forward_urgent_auto
+
+; fm_userscontext
+Contexte utilisateurs: 
+
+; hlp_fm_userscontext
+Config asterisk: userscontext
+
+; fm_smdienable
+Activer les notifications SMDI: 
+
+; hlp_fm_smdienable
+Config asterisk: smdienable
+
+; fm_externpassnotify
+Programme externe pour changer le mot de passe (mevo comprise):
+
+; hlp_fm_externpassnotify
+Config asterisk: externpassnotify.
+
+; fm_externpasscheck
+Programme externe pour valider le mot de passe: 
+
+; hlp_fm_externpasscheck
+Config asterisk: externpasscheck
+
+; fm_directoryintro
+Message d'entrée dans l'annuaire: 
+
+; hlp_fm_directoryintro
+Config asterisk: directoryintro
+
+; fm_pollmailboxes
+Activer la vérification de la messagerie: 
+
+; hlp_fm_pollmailboxes
+Config asterisk: pollmailboxes
+
+; fm_pollfreq
+Fréquence de vérification de la messagerie: 
+
+; hlp_fm_pollfreq
+Config asterisk: pollfreq
+
+; fm_imapgreetings
+Stocker les messages personnalisés dans la boîte email: 
+
+; hlp_fm_imapgreetings
+Config asterisk: imapgreetings
+
+; fm_greetingsfolder
+Dans le répertoire suivant: 
+
+; hlp_fm_greetingsfolder
+Config asterisk: greetingsfolder
+
+; fm_imapparentfolder
+Répertoire racine de la boîte email: 
+
+; hlp_fm_imapparentfolder
+Config asterisk: imapparentfolder
+
+; fm_tz
+Fuseau horaire: 
+
+; hlp_fm_tz
+Config asterisk: tz
+
+; hlp_fm_attachfmt
+Config asterisk: attachfmt
+
+; fm_deletevoicemail
+Supprimer le message vocal du serveur si envoyé par mail:
+
+; hlp_fm_deletevoicemail
+Config asterisk: deletevoicemail
+
+; fm_hidefromdir
+Masquer cette boîte email des répertoires app_directory : 
+
+; hlp_fm_hidefromdir
+Config asterisk: hidefromdir
+
+; fm_messagewrap
+Reboucler sur le 1er message à la fin: 
+
+; hlp_fm_messagewrap
+Config asterisk: messagewrap
+
+; fm_minpassword
+Longueur minimal des mot de passe (0=aucune): 
+
+; hlp_fm_minpassword
+Config asterisk: minpassword
+
+; fm_vm-password
+Message personnalisé "mot de passe": 
+
+; hlp_fm_vm-password
+Config asterisk: vm-password
+
+; fm_vm-newpassword
+Message personnalisé "Veuillez saisir votre mot de passe": 
+
+; hlp_fm_vm-newpassword
+Config asterisk: vm-newpassword
+
+; fm_vm-passchanged
+Message personnalisé "Votre mot de passe a été modifié": 
+
+; hlp_fm_vm-passchanged
+Config asterisk: vm-passchanged
+
+; fm_vm-reenterpassword
+Message personnalisé "Resaisissez votre mot de passe": 
+
+; hlp_fm_vm-reenterpassword
+Config asterisk: vm-reenterpassword
+
+; fm_vm-mistmatch
+Message personnalisé "Les mots de passe ne correspondent pas": 
+
+; hlp_fm_vm-mistmatch
+Config asterisk: vm-mistmatch
+
+; fm_vm-invalid-password
+Message personnalisé "Le mot de passe est erroné": 
+
+; hlp_fm_vm-invalid-password
+Config asterisk: vm-invalid-password
+
+; fm_vm-pls-try-again
+Message personnalisé "Veuilliez réessayer": 
+
+; hlp_fm_vm-pls-try-again
+Config asterisk: vm-pls-try-again
+
+; fm_listen-control-forward-key
+Touche «avance rapide»: 
+
+; hlp_fm_listen-control-forward-key
+Config asterisk: listen-control-forward-key
+
+; fm_listen-control-reverse-key
+Touche «retour rapide»: 
+
+; hlp_fm_listen-control-reverse-key
+Config asterisk: listen-control-reverse-key
+
+; fm_listen-control-pause-key
+Touche «pause»: 
+
+; hlp_fm_listen-control-pause-key
+Config asterisk: listen-control-pause-key
+
+; fm_listen-control-restart-key
+Touche «recommencer la lecture»: 
+
+; hlp_fm_listen-control-restart-key
+Config asterisk: listen-control-restart-key
+
+; fm_listen-control-stop-key
+Touche «arrêt de la lecture»: 
+
+; hlp_fm_listen-control-stop-key
+Config asterisk: listen-control-stop-key
+
+; fm_backupdeleted
+Nombre maximum de message dans la boîte «Anciens»: 
+
+; hlp_fm_backupdeleted
+Config asterisk: backupdeleted
+

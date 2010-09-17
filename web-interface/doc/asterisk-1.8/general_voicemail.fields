@@ -1,0 +1,83 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+====
+ n moveheard                 bool;yes
+ n forward_urgent_auto       bool;no
+ n userscontext              str;default
+ n smdienable                bool;no
+ n externpassnotify          str
+ n externpasscheck           str
+ n directoryintro            str;dir-intro
+ n pollmailboxes             bool;no
+ n pollfreq                  int;30
+ n imapgreetings             bool;no
+ n greetingsfolder           str;INBOX
+ n imapparentfolder          str;INBOX
+ n tz                        str
+ n attachfmt                 str
+ n deletevoicemail           bool;no
+ n hidefromdir               bool;no
+ n messagewrap               bool;no
+ n minpassword               int;0
+ n vm-password               str;
+ n vm-newpassword            str;
+ n vm-passchanged            str;
+ n vm-reenterpassword        str;
+ n vm-mistmatch              str;
+ n vm-invalid-password       str;
+ n vm-pls-try-again          str;
+ n listen-control-forward-key str;#
+ n listen-control-reverse-key str;*
+ n listen-control-pause-key   str;0
+ n listen-control-restart-key str;2
+ n listen-control-stop-key    str;123456789
+ n backupdeleted             int;100
+ . adsifdn
+ . adsisec
+ . adsiver
+ . attach
+ . callback
+ . charset
+ . cidinternalcontexts
+ . dialout
+ . emailbody
+ . emaildateformat
+ d emaildatelocale           
+ . emailsubject
+ . envelope
+ . exitcontext
+ . externnotify
+ . externpass
+ . forcegreetings
+ . forcename
+ . format
+ . fromstring
+ . mailcmd
+ . maxgreet
+ . maxlogins
+ u maxmessage                RENAMED in *maxsecs*
+ . maxmsg
+ . maxsilence
+ u minmessage                RENAMED in *minsecs*
+ . nextaftercmd
+ . odbcstorage
+ . odbctable
+ . operator
+ . pagerbody
+ . pagerfromstring
+ . pagersubject
+ . pbxskip
+ . review
+ . saycid
+ . sayduration
+ . saydurationm
+ . searchcontexts
+ . sendvoicemail
+ . serveremail
+ . silencethreshold
+ . skipms
+ . smdiport
+ . tempgreetwarn
+ . usedirectory
+ . volgain
