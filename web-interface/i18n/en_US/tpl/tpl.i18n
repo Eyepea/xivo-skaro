@@ -122,3 +122,24 @@ Full
 9
 
 
+; time-opt(0)
+Deactivated
+
+; time-opt-second
+1 second
+
+; time-opt-seconds
+%s seconds
+
+; time-opt-minute
+1 minute
+
+; time-opt-minute-seconds
+%s min. %s sec.
+
+; time-opt-minutes-seconds
+%s min. %s sec.
+
+; time-opt-minutes
+%s minutes
+

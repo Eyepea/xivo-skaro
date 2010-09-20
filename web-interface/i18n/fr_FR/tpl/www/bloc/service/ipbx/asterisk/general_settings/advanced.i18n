@@ -28,6 +28,8 @@ Config asterisk: persistentagents
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
 
+;;; queues
+
 ; fm_generalqueues_persistentmembers
 Membres persistants :
 
@@ -40,11 +42,57 @@ Activer le nouveau système de distribution des appels :
 ; fm_generalqueues_monitor-type
 Enregistrement :
 
+; fm_generalqueues_updatecdr
+Mise à jour des CDR : 
+
+; hlp_fm_generalqueues_updatecdr
+Config asterisk: updatecdr
+
+; fm_generalqueues_shared_lastcall
+Partage multifile des statistiques d'appel : 
+
+; hlp_fm_generalqueues_shared_lastcall
+Config asterisk: shared_lastcall
+
+;;; meetme
+
 ; fm_generalmeetme_audiobuffers
 Taille des tampons audio par canal :
 
 ; hlp_fm_generalmeetme_audiobuffers
 Config asterisk: audiobuffers
+
+; fm_generalmeetme_schedule
+Planification temps-réel : 
+
+; hlp_fm_generalmeetme_schedule
+Config asterisk: schedule
+
+; fm_generalmeetme_logmembercount
+Mise à jour des entrées/sorties en temps réel : 
+
+; hlp_fm_generalmeetme_logmembercount
+Config asterisk: logmembercount
+
+; fm_generalmeetme_fuzzystart
+Délai avant l'ouverture permettant de rejoindre la conférence : 
+
+; hlp_fm_generalmeetme_fuzzystart
+Config asterisk: fuzzystart
+
+; fm_generalmeetme_earlyalert
+Délai avant l'ouverture pour l'annonce de pré-ouverture : 
+
+; hlp_fm_generalmeetme_earlyalert
+Config asterisk: earlyalert
+
+; fm_generalmeetme_endalert
+Délai avant la fermeture pour l'annonce de clôture : 
+
+; hlp_fm_generalmeetme_endalert
+Config asterisk: endalert
+
+;;; agents
 
 ; fm_success-save
 Paramètres globaux avancés sauvegardées avec succès

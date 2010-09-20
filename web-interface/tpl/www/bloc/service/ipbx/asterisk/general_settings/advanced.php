@@ -169,7 +169,22 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'generalqueues-monitor-type',
 				      'default'	=> $element['generalqueues']['monitor-type']['default'],
 				      'help'	=> $this->bbf('hlp_fm_generalqueues_monitor-type'),
-				      'checked'	=> $this->get_var('generalqueues','monitor-type','var_val')));
+							'checked'	=> $this->get_var('generalqueues','monitor-type','var_val'))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_updatecdr'),
+				      'name'	=> 'generalqueues[updatecdr]',
+				      'labelid'	=> 'generalqueues-updatecdr',
+				      'default'	=> $element['generalqueues']['updatecdr']['default'],
+				      'help'	=> $this->bbf('hlp_fm_generalqueues_updatecdr'),
+				      'checked'	=> $this->get_var('generalqueues','updatecdr','var_val'))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_shared_lastcall'),
+				      'name'	=> 'generalqueues[shared_lastcall]',
+				      'labelid'	=> 'generalqueues-shared_lastcall',
+				      'default'	=> $element['generalqueues']['shared_lastcall']['default'],
+				      'help'	=> $this->bbf('hlp_fm_generalqueues_shared_lastcall'),
+				      'checked'	=> $this->get_var('generalqueues','shared_lastcall','var_val')));
+
 ?>
 </div>
 
@@ -182,7 +197,57 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['generalmeetme']['audiobuffers']['default'],
 				    'help'	=> $this->bbf('hlp_fm_generalmeetme_audiobuffers'),
 				    'selected'	=> $this->get_var('generalmeetme','audiobuffers','var_val')),
-			      $element['generalmeetme']['audiobuffers']['value']);
+			      $element['generalmeetme']['audiobuffers']['value']),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_generalmeetme_schedule'),
+              'name'    => 'generalmeetme[schedule]',
+              'labelid' => 'generalmeetme-schedule',
+              'help'    => $this->bbf('hlp_fm_generalmeetme_schedule'),
+              'checked' => $this->get_var('generalmeetme','schedule','var_val'),
+              'default' => $element['generalmeetme']['schedule']['default'])),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_generalmeetme_logmembercount'),
+              'name'    => 'generalmeetme[logmembercount]',
+              'labelid' => 'generalmeetme-logmembercount',
+              'help'    => $this->bbf('hlp_fm_generalmeetme_logmembercount'),
+              'checked' => $this->get_var('generalmeetme','logmembercount','var_val'),
+              'default' => $element['generalmeetme']['logmembercount']['default'])),
+
+     $form->select(array('desc'  => $this->bbf('fm_generalmeetme_fuzzystart'),
+            'name'    => 'generalmeetme[fuzzystart]',
+            'labelid' => 'generalmeetme-fuzzystart',
+            'key'     => false,
+            'bbf'     => 'time-opt',
+            'bbfopt'  => array('argmode' => 'paramvalue',
+                 'time' => array('from'=>'second', 'format'=>'%M%s')),
+            'help'    => $this->bbf('hlp_fm_generalmeetme_fuzzystart'),
+            'selected'  => $this->get_var('generalmeetme','fuzzystart','var_val'),
+            'default' => $element['generalmeetme']['fuzzystart']['default']),
+         $element['generalmeetme']['fuzzystart']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_generalmeetme_earlyalert'),
+            'name'    => 'generalmeetme[earlyalert]',
+            'labelid' => 'generalmeetme-earlyalert',
+            'key'     => false,
+            'bbf'     => 'time-opt',
+            'bbfopt'  => array('argmode' => 'paramvalue',
+                 'time' => array('from'=>'second', 'format'=>'%M%s')),
+            'help'    => $this->bbf('hlp_fm_generalmeetme_earlyalert'),
+            'selected'  => $this->get_var('generalmeetme','earlyalert','var_val'),
+            'default' => $element['generalmeetme']['earlyalert']['default']),
+         $element['generalmeetme']['earlyalert']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_generalmeetme_endalert'),
+            'name'    => 'generalmeetme[endalert]',
+            'labelid' => 'generalmeetme-endalert',
+            'key'     => false,
+            'bbf'     => 'time-opt',
+            'bbfopt'  => array('argmode' => 'paramvalue',
+                 'time' => array('from'=>'second', 'format'=>'%M%s')),
+            'help'    => $this->bbf('hlp_fm_generalmeetme_endalert'),
+            'selected'  => $this->get_var('generalmeetme','endalert','var_val'),
+            'default' => $element['generalmeetme']['endalert']['default']),
+         $element['generalmeetme']['endalert']['value']);
 ?>
 </div>
 
@@ -192,7 +257,7 @@ if(isset($error_js[0]) === true)
 				    'name'     => 'general[timezone]',
 				    'labelid'  => 'general-timezone',
 				    'key'      => false,
-				    'default'  => $element['general']['timezone']['default'],
+				    //'default'  => $element['general']['timezone']['default'],
 				    'help'     => $this->bbf('hlp_fm_general_timezone'),
 				    'selected' => $this->get_var('general','timezone')),
 			      $element['general']);

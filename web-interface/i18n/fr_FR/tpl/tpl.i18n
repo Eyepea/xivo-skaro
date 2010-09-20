@@ -153,4 +153,24 @@ Désactivé
 ; fm_digit(9)
 9
 
+; time-opt(0)
+Désactivé
+
+; time-opt-second
+1 seconde
+
+; time-opt-seconds
+%s secondes
+
+; time-opt-minute
+1 minute
+
+; time-opt-minute-seconds
+%s min. %s sec.
+
+; time-opt-minutes-seconds
+%s min. %s sec.
+
+; time-opt-minutes
+%s minutes
 

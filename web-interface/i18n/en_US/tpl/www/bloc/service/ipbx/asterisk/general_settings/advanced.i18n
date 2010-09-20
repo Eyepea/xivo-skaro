@@ -37,6 +37,38 @@ Audio buffers size per channel:
 ; hlp_fm_generalmeetme_audiobuffers
 Asterisk config: audiobuffers
 
+; fm_generalmeetme_schedule
+Realtime schedule: 
+
+; hlp_fm_generalmeetme_schedule
+Asterisk config: schedule
+
+; fm_generalmeetme_logmembercount
+Realtime inputs/outputs update:
+
+; hlp_fm_generalmeetme_logmembercount
+Asterisk config: logmembercount
+
+; fm_generalmeetme_fuzzystart
+Delay before opening where joining allowed:
+
+; hlp_fm_generalmeetme_fuzzystart
+Asterisk config: fuzzystart
+
+; fm_generalmeetme_earlyalert
+Delay before opening for preopen announcement:
+
+; hlp_fm_generalmeetme_earlyalert
+Asterisk config: earlyalert
+
+; fm_generalmeetme_endalert
+Delay before closing for close announcement:
+
+; hlp_fm_generalmeetme_endalert
+Asterisk config: endalert
+
+;;; agents
+
 ; fm_success-save
 Global advanced parameters successfully saved
 
@@ -60,6 +92,19 @@ Autofill system :
 
 ; fm_generalqueues_monitor-type
 Record :
+
+; fm_generalqueues_updatecdr
+Update CDR : 
+
+; hlp_fm_generalqueues_updatecdr
+Asterisk config: updatecdr
+
+; fm_generalqueues_shared_lastcall
+Multiqueues call stats sharing : 
+
+; hlp_fm_generalqueues_shared_lastcall
+Asterisk config: shared_lastcall
+
 
 ; smenu_timezone
 Timezone

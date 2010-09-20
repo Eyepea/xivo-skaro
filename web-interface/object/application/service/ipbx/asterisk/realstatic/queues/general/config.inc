@@ -36,9 +36,21 @@ $array['element']['monitor-type']['value'] = array('','mixmonitor');
 $array['element']['monitor-type']['default'] = '';
 $array['element']['monitor-type']['set'] = true;
 
+$array['element']['updatecdr'] = array();
+$array['element']['updatecdr']['value'] = array('no', 'yes');
+$array['element']['updatecdr']['default'] = 'no';
+$array['element']['updatecdr']['set'] = true;
+
+$array['element']['shared_lastcall'] = array();
+$array['element']['shared_lastcall']['value'] = array('no', 'yes');
+$array['element']['shared_lastcall']['default'] = 'no';
+$array['element']['shared_lastcall']['set'] = true;
+
 $array['filter'] = array();
 $array['filter']['persistentmembers'] = array('bool' => true);
 $array['filter']['autofill'] = array('bool' => true);
 $array['filter']['monitor-type'] = array('bool' => true);
+$array['filter']['updatecdr'] = array('bool' => true);
+$array['filter']['shared_lastcall'] = array('bool' => true);
 
 ?>
