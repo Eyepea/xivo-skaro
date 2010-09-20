@@ -725,7 +725,7 @@ class XivoCTICommand(BaseCommand):
 
         self.zipsheets = bool(int(xivocticonf.get('zipsheets', '1')))
         self.regupdates = xivocticonf.get('regupdates', {})
-        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'].replace('\\/', '/'))
+        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'].replace('\/', '/'))
 
         for name, val in xivocticonf['profiles'].iteritems():
             if name not in self.capas:
@@ -5743,15 +5743,20 @@ class XivoCTICommand(BaseCommand):
                     elif kind == 'agent':
                         props['id'] = self.weblist['agents'][astid].keeplist.keys()
                 else:
-                    props['id'] = kid
                     if kind == 'agent':
+                        props['id'] = [kid]
                         agentnum = self.weblist['agents'][astid].keeplist[kid].get('agentnum')
                         props['channels'] = self.__find_channel_by_agentnum__(astid, agentnum)
                     elif kind == 'queue':
+                        props['id'] = [kid]
                         props['channels'] = self.weblist['queues'][astid].keeplist[kid]['channels'].keys()
                     elif kind == 'chan':
-                        [d1, d2, channel] = fullid.split(':', 2)
+                        [kid, channel] = xid.split(':', 2)
+                        props['id'] = kid
                         props['channel'] = channel
+                        props['userinfo'] = self.ulist_ng.keeplist.get(kid)
+                    else:
+                        props['id'] = kid
             elif xid == 'special:me':
                 props['astid'] = uinfo.get('astid')
                 props['userinfo'] = uinfo
