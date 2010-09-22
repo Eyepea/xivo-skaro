@@ -26,10 +26,20 @@ $array['element']['ackcall'] = array();
 $array['element']['ackcall']['value'] = array('no','yes','always');
 $array['element']['ackcall']['default'] = 'no';
 
+$array['element']['acceptdtmf'] = array();
+$array['element']['acceptdtmf']['value'] = array('0','1','2','3','4','5','6','7','8','9','*','#');
+$array['element']['acceptdtmf']['default'] = '#';
+$array['element']['acceptdtmf']['null'] = true;
+
 $array['element']['endcall'] = array();
 $array['element']['endcall']['value'] = array('no','yes');
 $array['element']['endcall']['default'] = 'yes';
 $array['element']['endcall']['set'] = true;
+
+$array['element']['enddtmf'] = array();
+$array['element']['enddtmf']['value'] = array('0','1','2','3','4','5','6','7','8','9','*','#');
+$array['element']['enddtmf']['default'] = '#';
+$array['element']['enddtmf']['null'] = true;
 
 $array['element']['autologoff'] = array();
 $array['element']['autologoff']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
@@ -80,13 +90,22 @@ $array['element']['recordformat']['setdef'] = true;
 $array['element']['urlprefix'] = array();
 $array['element']['urlprefix']['default'] = '';
 
+$array['element']['savecallsin'] = array();
+$array['element']['savecallsin']['default'] = '';
+
 $array['element']['custom_beep'] = array();
 $array['element']['custom_beep']['default'] = 'beep';
 $array['element']['custom_beep']['setdef'] = true;
 
 $array['filter'] = array();
 $array['filter']['ackcall'] = array('key' => array('no','yes','always'));
+$array['filter']['acceptdtmf'] = array('set' => false,
+					'chk'    => 2,
+					'key'    => array('0','1','2','3','4','5','6','7','8','9','*','#'));
 $array['filter']['endcall'] = array('bool' => true);
+$array['filter']['enddtmf'] = array('set' => false,
+					'chk'    => 2,
+					'key'    => array('0','1','2','3','4','5','6','7','8','9','*','#'));
 $array['filter']['autologoff'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['autologoffunavail'] = array('bool' => true);
 $array['filter']['wrapuptime'] = array('key' => array(0,5000,10000,15000,20000,
@@ -109,7 +128,10 @@ $array['filter']['urlprefix'] = array('set'	=> false,
 				      'chk'	=> 2,
 				      'minlen'	=> 3,
 				      'maxlen'	=> 255,
-				      'cast'	=> 'sgraph');
+							'cast'	=> 'sgraph');
+$array['filter']['savecallsin'] = array('set' => false,
+					'chk'   => 2,
+					'maxlen' => 255);
 $array['filter']['custom_beep'] = array('set'		=> false,
 					'chk'		=> 2,
 					'maxlen'	=> 255,

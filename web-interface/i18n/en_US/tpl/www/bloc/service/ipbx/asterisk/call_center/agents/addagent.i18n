@@ -37,83 +37,11 @@ Language:
 ; fm_agentfeatures_numgroup
 Group:
 
-; fm_agentoptions_musiconhold
-Music on hold:
-
 ; fm_agentfeatures_silent
 Disable connection announce:
 
 ; fm_agentfeatures_numgroup
 Group:
-
-; fm_agent_ackcall
-Press # before call pickup:
-
-; fm_agent_ackcall-opt-no
-No
-
-; fm_agent_ackcall-opt-yes
-Yes
-
-; fm_agent_ackcall-opt-always
-Always
-
-; fm_agent_autologoff
-Ringing time before logging off the agent:
-
-; fm_agent_autologoff-opt0
-Unlimited
-
-; fm_agent_autologoff-opt
-%s seconds
-
-; fm_agent_wrapuptime
-Delay before reassigning a call:
-
-; fm_agent_wrapuptime-opt0
-Disabled
-
-; fm_agent_wrapuptime-opt
-%s seconds
-
-; fm_agent_maxlogintries
-Number of login retries:
-
-; fm_agent_maxlogintries-opt0
-Unlimited
-
-; fm_agent_maxlogintries-opt
-%s
-
-; fm_agent_goodbye
-Audio file used when a call ends:
-
-; fm_agent_goodbye-opt-default
-Default
-
-; fm_agent_musiconhold
-On-Hold Music:
-
-; fm_agent_updatecdr
-Log the calls:
-
-; fm_agent_recordagentcalls
-Record the calls:
-
-; fm_agent_createlink
-Add the name of the recording in the logs:
-
-; fm_agent_recordformat
-Recording format:
-
-; fm_agent_urlprefix
-URL prefix used to access the recordings:
-
-; fm_agent_custom_beep
-Beeps audio file:
-
-; fm_agent_custom-beep-opt-default
-Default
 
 ; bt_inqueue
 Add ->
@@ -132,75 +60,6 @@ No queues
 
 ; create_queue
 Create a queue
-
-; fm_agentoptions_ackcall
-Press "#" before taking a call:
-
-; fm_agentoptions_ackcall-opt(no)
-No
-
-; fm_agentoptions_ackcall-opt(yes)
-Yes
-
-; fm_agentoptions_ackcall-opt(always)
-Always
-
-; fm_agentoptions_endcall
-Enable the ability to hang with "*":
-
-; fm_agentoptions_autologoff
-Ring time before disconnection:
-
-; fm_agentoptions_autologoff-opt(0)
-Unlimited
-
-; fm_agentoptions_autologoff-opt
-%s seconds
-
-; fm_agentoptions_autologoffunavail
-Automatic logout if the channel is unavailable:
-
-; fm_agentoptions_wrapuptime
-Deadline for reallocation of Appeal:
-
-; fm_agentoptions_wrapuptime-opt(0)
-Disabled
-
-; fm_agentoptions_wrapuptime-opt-seconds
-%s seconds
-
-; fm_agentoptions_maxlogintries
-Number of logins:
-
-; fm_agentoptions_maxlogintries-opt(0)
-Unlimited
-
-; fm_agentoptions_maxlogintries-opt
-%s
-
-; fm_agentoptions_updatecdr
-Recording in the Call Logs:
-
-; fm_agentoptions_recordagentcalls
-Call Recording:
-
-; fm_agentoptions_recordformat
-Recording Format:
-
-; fm_agentoptions_urlprefix
-URL access to records:
-
-; fm_agentoptions_custom_beep
-File sound beeps:
-
-; fm_agentoptions_custom-beep-opt(default)
-Default
-
-; fm_agentoptions_goodbye
-Sound file end a call:
-
-; fm_agentoptions_goodbye-opt(default)
-Default
 
 ; fm_agentfeatures_description
 Description:
@@ -236,3 +95,5 @@ weight is not an integer
 ; error_fm_queueskill_weight(unbound)
 weight must be an integer between 0 and 100
 
+; fm_agentoptions_musiconhold
+Musiconhold:

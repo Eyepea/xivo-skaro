@@ -37,9 +37,6 @@ Langue:
 ; fm_agentfeatures_numgroup
 Groupe:
 
-; fm_agentoptions_musiconhold
-Musique d'attente:
-
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->
 
@@ -60,78 +57,6 @@ Pénalité
 
 ; no_queue
 Aucune file d'attente
-
-; fm_agentfeatures_silent
-Désactiver l'annonce de connexion :
-
-; fm_agentoptions_ackcall
-Appuyer sur "#" avant de prendre un appel :
-
-; fm_agentoptions_ackcall-opt(no)
-Non
-
-; fm_agentoptions_ackcall-opt(yes)
-Oui
-
-; fm_agentoptions_ackcall-opt(always)
-Toujours
-
-; fm_agentoptions_endcall
-Activer la possibilité de raccrocher avec "*" :
-
-; fm_agentoptions_autologoff
-Temps de sonnerie avant déconnexion :
-
-; fm_agentoptions_autologoff-opt(0)
-Illimité
-
-; fm_agentoptions_autologoff-opt
-%s secondes
-
-; fm_agentoptions_autologoffunavail
-Déconnexion automatique si le canal est indisponible :
-
-; fm_agentoptions_wrapuptime
-Délai de réattribution d'appel :
-
-; fm_agentoptions_wrapuptime-opt(0)
-Désactivé
-
-; fm_agentoptions_wrapuptime-opt-seconds
-%s secondes
-
-; fm_agentoptions_maxlogintries
-Nombre de tentatives de connexion :
-
-; fm_agentoptions_maxlogintries-opt(0)
-Illimité
-
-; fm_agentoptions_maxlogintries-opt
-%s
-
-; fm_agentoptions_updatecdr
-Enregistrement dans les journaux d'appels :
-
-; fm_agentoptions_recordagentcalls
-Enregistrement des appels :
-
-; fm_agentoptions_recordformat
-Format d'enregistrement :
-
-; fm_agentoptions_urlprefix
-URL d'accès aux enregistrements :
-
-; fm_agentoptions_custom_beep
-Fichier son des beeps :
-
-; fm_agentoptions_custom-beep-opt(default)
-Défaut
-
-; fm_agentoptions_goodbye
-Fichier son de fin d'un appel :
-
-; fm_agentoptions_goodbye-opt(default)
-Défaut
 
 ; fm_agentfeatures_description
 Description :

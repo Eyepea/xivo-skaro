@@ -19,6 +19,8 @@ Invité :
 ; hlp_fm_userinternal_guest
 Config asterisk: guest
 
+;;; agents
+
 ; fm_generalagents_persistentagents
 Agents persistants :
 
@@ -27,6 +29,139 @@ Config asterisk: persistentagents
 
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
+
+; fm_agentfeatures_silent
+Désactiver l'annonce de connexion :
+
+; fm_agentoptions_musiconhold
+Musique d'attente:
+
+; fm_agentoptions_ackcall-opt(no)
+Non
+
+; fm_agentoptions_ackcall-opt(yes)
+Oui
+
+; fm_agentoptions_ackcall-opt(always)
+Toujours
+
+; fm_agentoptions_endcall
+Activer la possibilité de raccrocher avec un DTMF :
+
+; fm_agentoptions_autologoff
+Temps de sonnerie avant déconnexion :
+
+; fm_agentoptions_autologoff-opt(0)
+Illimité
+
+; fm_agentoptions_autologoff-opt
+%s secondes
+
+; fm_agentoptions_autologoffunavail
+Déconnexion automatique si le canal est indisponible :
+
+; fm_agentoptions_wrapuptime
+Délai de réattribution d'appel :
+
+; fm_agentoptions_wrapuptime-opt(0)
+Désactivé
+
+; fm_agentoptions_wrapuptime-opt-seconds
+%s secondes
+
+; fm_agentoptions_maxlogintries
+Nombre de tentatives de connexion :
+
+; fm_agentoptions_maxlogintries-opt(0)
+Illimité
+
+; fm_agentoptions_maxlogintries-opt
+%s
+
+; fm_agentoptions_updatecdr
+Enregistrement dans les journaux d'appels :
+
+; fm_agentoptions_recordagentcalls
+Enregistrement des appels :
+
+; fm_agentoptions_recordformat
+Format d'enregistrement :
+
+; fm_agentoptions_urlprefix
+URL d'accès aux enregistrements :
+
+; fm_agentoptions_custom_beep
+Fichier son des beeps :
+
+; fm_agentoptions_custom-beep-opt(default)
+Défaut
+
+; fm_agentoptions_goodbye
+Fichier son de fin d'un appel :
+
+; fm_agentoptions_goodbye-opt(default)
+Défaut
+
+; fm_agentoptions_ackcall
+Requérir un DTMF avant de prendre un appel :
+
+; fm_agentoptions_enddtmf
+DTMF requis : 
+
+; fm_agentoptions_acceptdtmf
+DTMF requis : 
+
+; fm_agentoptions_savecallsin
+Répertoire contenant les enregistrements des conversations : 
+
+; hlp_fm_agentoptions_maxlogintries
+Config asterisk: maxlogintries
+
+; hlp_fm_agentoptions_autologoff
+Config asterisk: autologoff
+
+; hlp_fm_agentoptions_autologoffunavail
+Config asterisk: autologoffunavail
+
+; hlp_fm_agentoptions_ackcall
+Config asterisk: ackcall
+
+; hlp_fm_agentoptions_acceptdtmf
+Config asterisk: acceptdtmf
+
+; hlp_fm_agentoptions_endcall
+Config asterisk: endcall
+
+; hlp_fm_agentoptions_enddtmf
+Config asterisk: enddtmf
+
+; hlp_fm_agentoptions_warpuptime
+Config asterisk: warpuptime
+
+; hlp_fm_agentoptions_musiconhold
+Config asterisk: musiconhold
+
+; hlp_fm_agentoptions_goodbye
+Config asterisk: goodbye
+
+; hlp_fm_agentoptions_updatecdr
+Config asterisk: updatecdr
+
+; hlp_fm_agentoptions_recordagentcalls
+Config asterisk: recordagentcalls
+
+; hlp_fm_agentoptions_recordformat
+Config asterisk: recordformat
+
+; hlp_fm_agentoptions_urlprefix
+Config asterisk: urlprefix
+
+; hlp_fm_agentoptions_savecallsin
+Config asterisk: savecallsin
+
+; hlp_fm_agentoptions_custom_beep
+Config asterisk: custom_beep
+
 
 ;;; queues
 

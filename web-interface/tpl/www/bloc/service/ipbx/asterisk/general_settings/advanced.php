@@ -21,6 +21,7 @@
 $form = &$this->get_module('form');
 $dhtml = &$this->get_module('dhtml');
 
+$info    = $this->get_var('info');
 $element = $this->get_var('element');
 $error = $this->get_var('error');
 
@@ -144,7 +145,146 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'generalagents-multiplelogin',
 				      'default'	=> $element['generalagents']['multiplelogin']['default'],
 				      'help'	=> $this->bbf('hlp_fm_generalagents_multiplelogin'),
-				      'checked'	=> $this->get_var('generalagents','multiplelogin','var_val')));
+							'checked'	=> $this->get_var('generalagents','multiplelogin','var_val'))),
+
+		// agents options
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_ackcall'),
+				    'name'	=> 'agentoptions[ackcall]',
+				    'labelid'	=> 'agentoptions-ackcall',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_ackcall'),
+				    'bbf'	=> 'fm_agentoptions_ackcall-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['agentoptions']['ackcall']['default'],
+				    'selected'	=> $info['agentoptions']['ackcall']['var_val']),
+			      $element['agentoptions']['ackcall']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_acceptdtmf'),
+				    'name'	=> 'agentoptions[acceptdtmf]',
+				    'labelid'	=> 'agentoptions-acceptdtmf',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_acceptdtmf'),
+				    'default'	=> $element['agentoptions']['acceptdtmf']['default'],
+				    'selected'	=> $info['agentoptions']['acceptdtmf']['var_val']),
+			      $element['agentoptions']['acceptdtmf']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_endcall'),
+				      'name'	=> 'agentoptions[endcall]',
+				      'labelid'	=> 'agentoptions-endcall',
+					    'help'	=> $this->bbf('hlp_fm_agentoptions_endcall'),
+				      'default'	=> $element['agentoptions']['endcall']['default'],
+				      'checked' => $info['agentoptions']['endcall']['var_val'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_enddtmf'),
+				    'name'	=> 'agentoptions[enddtmf]',
+				    'labelid'	=> 'agentoptions-enddtmf',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_enddtmf'),
+				    'default'	=> $element['agentoptions']['enddtmf']['default'],
+				    'selected'	=> $info['agentoptions']['enddtmf']['var_val']),
+			      $element['agentoptions']['enddtmf']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_autologoff'),
+				    'name'	=> 'agentoptions[autologoff]',
+				    'labelid'	=> 'agentoptions-autologoff',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_autologoff'),
+				    'bbf'	=> 'fm_agentoptions_autologoff-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['agentoptions']['autologoff']['default'],
+				    'selected'	=> $info['agentoptions']['autologoff']['var_val']),
+			      $element['agentoptions']['autologoff']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_autologoffunavail'),
+				      'name'	=> 'agentoptions[autologoffunavail]',
+				      'labelid'	=> 'agentoptions-autologoffunavail',
+					    'help'	=> $this->bbf('hlp_fm_agentoptions_autologoffunavail'),
+				      'default'	=> $element['agentoptions']['autologoffunavail']['default'],
+				      'checked' => $info['agentoptions']['autologoffunavail']['var_val'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_wrapuptime'),
+				    'name'	=> 'agentoptions[wrapuptime]',
+				    'labelid'	=> 'agentoptions-wrapuptime',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_warpuptime'),
+				    'bbf'	=> 'time-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%s')),
+				    'selected'	=> $info['agentoptions']['wrapuptime']['var_val'],
+				    'default'	=> $element['agentoptions']['wrapuptime']['default']),
+			      $element['agentoptions']['wrapuptime']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_maxlogintries'),
+				    'name'	=> 'agentoptions[maxlogintries]',
+				    'labelid'	=> 'agentoptions-maxlogintries',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_maxlogintries'),
+				    'bbf'	=> 'fm_agentoptions_maxlogintries-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['agentoptions']['maxlogintries']['default'],
+				    'selected'	=> $info['agentoptions']['maxlogintries']['var_val']),
+			      $element['agentoptions']['maxlogintries']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_updatecdr'),
+				      'name'	=> 'agentoptions[updatecdr]',
+				      'labelid'	=> 'agentoptions-updatecdr',
+					    'help'	=> $this->bbf('hlp_fm_agentoptions_updatecdr'),
+				      'default'	=> $element['agentoptions']['updatecdr']['default'],
+				      'checked' => $info['agentoptions']['updatecdr']['var_val'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_recordagentcalls'),
+				      'name'	=> 'agentoptions[recordagentcalls]',
+				      'labelid'	=> 'agentoptions-recordagentcalls',
+					    'help'	=> $this->bbf('hlp_fm_agentoptions_recordagentcalls'),
+				      'default'	=> $element['agentoptions']['recordagentcalls']['default'],
+				      'checked' => $info['agentoptions']['recordagentcalls']['var_val'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_recordformat'),
+				    'name'	=> 'agentoptions[recordformat]',
+				    'labelid'	=> 'agentoptions-recordformat',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_recordformat'),
+				    'bbf'	=> 'ast_format_name_info',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['agentoptions']['recordformat']['default'],
+				    'selected'	=> $info['agentoptions']['recordformat']['var_val']),
+			      $element['agentoptions']['recordformat']['value']),
+
+		$form->text(array('desc'	=> $this->bbf('fm_agentoptions_urlprefix'),
+				  'name'	=> 'agentoptions[urlprefix]',
+				  'labelid'	=> 'agentoptions-urlprefix',
+				  'size'	=> 15,
+			    'help'	=> $this->bbf('hlp_fm_agentoptions_urlprefix'),
+				  'default'	=> $element['agentoptions']['urlprefix']['default'],
+				  'value'	=> $info['agentoptions']['urlprefix']['var_val'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_agentoptions_savecallsin'),
+				  'name'	=> 'agentoptions[savecallsin]',
+				  'labelid'	=> 'agentoptions-savecallsin',
+				  'size'	=> 15,
+			    'help'	=> $this->bbf('hlp_fm_agentoptions_savecallsin'),
+				  'default'	=> $element['agentoptions']['savecallsin']['default'],
+				  'value'	=> $info['agentoptions']['savecallsin']['var_val'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_custom_beep'),
+				    'name'	=> 'agentoptions[custom_beep]',
+				    'labelid'	=> 'agentoptions-custom-beep',
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_custom_beep'),
+				    'empty'	=> $this->bbf('fm_agentoptions_custom-beep-opt','default'),
+				    'default'	=> $element['agentoptions']['custom_beep']['default'],
+				    'selected'	=> $info['agentoptions']['custom_beep']['var_val']),
+			      $this->get_var('beep_list')),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_goodbye'),
+				    'name'	=> 'agentoptions[goodbye]',
+				    'labelid'	=> 'agentoptions-goodbye',
+				    'help'	=> $this->bbf('hlp_fm_agentoptions_goodbye'),
+				    'empty'	=> $this->bbf('fm_agentoptions_goodbye-opt','default'),
+				    'default'	=> $element['agentoptions']['goodbye']['default'],
+				    'selected'	=> $info['agentoptions']['goodbye']['var_val']),
+			      $this->get_var('goodbye_list'));
 ?>
 </div>
 

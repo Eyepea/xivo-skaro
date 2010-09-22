@@ -20,6 +20,7 @@
 
 $appagents = &$ipbx->get_apprealstatic('agents');
 $appgeneralagents = &$appagents->get_module('general');
+$appoptionsagents = &$appagents->get_module('agentoptions');
 
 $appqueues = &$ipbx->get_apprealstatic('queues');
 $appgeneralqueues = &$appqueues->get_module('general');
@@ -34,6 +35,7 @@ $general   = &$ipbx->get_module('general');
 
 $info = array();
 $info['generalagents'] = $appgeneralagents->get_all_by_category();
+$info['agentoptions']  = $appoptionsagents->get_all_by_category();
 $info['generalqueues'] = $appgeneralqueues->get_all_by_category();
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 $info['general']       = $general->get(1);
@@ -43,12 +45,14 @@ $info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest
 
 $element = array();
 $element['generalagents'] = $appgeneralagents->get_elements();
+$element['agentoptions']  = $appoptionsagents->get_elements();
 $element['generalqueues'] = $appgeneralqueues->get_elements();
 $element['generalmeetme'] = $appgeneralmeetme->get_elements();
 $element['general']       = array_keys(dwho_i18n::get_timezone_list());
 
 $error = array();
 $error['generalagents'] = array();
+$error['agentoptions']  = array();
 $error['generalqueues'] = array();
 $error['generalmeetme'] = array();
 
@@ -63,6 +67,20 @@ if(isset($_QR['fm_send']) === true)
 	{
 		$info['generalagents'] = $rs['result'];
 		$error['generalagents'] = $rs['error'];
+
+		if(isset($rs['error'][0]) === true)
+			$fm_save = false;
+		else if($fm_save !== false)
+			$fm_save = true;
+	}
+
+	if(dwho_issa('agentoptions',$_QR) === false)
+		$_QR['agentoptions'] = array();
+
+	if(($rs = $appoptionsagents->set_save_all($_QR['agentoptions'])) !== false)
+	{
+		$info['agentoptions'] = $rs['result'];
+		$error['agentoptions'] = $rs['error'];
 
 		if(isset($rs['error'][0]) === true)
 			$fm_save = false;
@@ -138,6 +156,7 @@ $_TPL->set_var('generalqueues', $info['generalqueues']);
 $_TPL->set_var('generalmeetme', $info['generalmeetme']);
 $_TPL->set_var('userinternal' , $info['userinternal']);
 $_TPL->set_var('general'      , $info['general']);
+$_TPL->set_var('info'         , $info);
 $_TPL->set_var('element',$element);
 
 $dhtml = &$_TPL->get_module('dhtml');
