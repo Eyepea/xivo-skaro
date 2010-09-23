@@ -42,12 +42,12 @@ while (<$fi>) {
 }
 
 while (<$fi>) {
-	if ($_ !~ /^.n /) {
-		next;
-	}
+#	if ($_ !~ /^.n /) {
+#		next;
+#	}
 
-	#print $_;	
-	$_ =~ /^ n ([\w-]+)\s+([\w;,]+)/;
+	print $_;	
+	$_ =~ /^ [nc] ([\w-]+)\s+([\w;,]+)?/;
 
 	$fld = $1;
 	@2 = split /;/,$2;
@@ -56,8 +56,8 @@ while (<$fi>) {
 	print "$fld @2\n";
 
 	$smysql .= " `$fld` $tmysql{@2[0]};\n";
-	$sintl .= "; fm_$hprefix$fld\n";
-	$sintl .= " : \n\n";
+#	$sintl .= "; fm_$hprefix$fld\n";
+#	$sintl .= " : \n\n";
 	$sintl .= "; hlp_fm_$hprefix$fld\n";
 	$sintl .= "Config asterisk: $fld\n";
 	$sintl .= "\n";

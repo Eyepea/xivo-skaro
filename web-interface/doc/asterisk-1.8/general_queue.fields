@@ -1,0 +1,11 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+
+=prefix:generalmeetme
+====
+   persistentmembers
+   autofill
+   monitor-type
+ n updatecdr                 bool;no
+ n shared_lastcall           bool;no
