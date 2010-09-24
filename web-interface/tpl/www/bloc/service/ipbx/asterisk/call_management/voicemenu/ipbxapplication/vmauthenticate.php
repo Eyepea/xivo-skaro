@@ -36,7 +36,7 @@ if(($voicemail_list = $this->get_var('voicemail_list')) !== false):
 			   $voicemail_list);
 else:
 	echo	'<div class="txt-center">',
-		$url->href_html($this->bbf('create_voicemail'),
+		$url->href_htmln($this->bbf('create_voicemail'),
 				'service/ipbx/pbx_settings/voicemail',
 				'act=add'),
 		'</div>';

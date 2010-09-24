@@ -57,7 +57,7 @@ if($context_list !== false):
 			      $context_list);
 else:
 	echo	'<div id="fd-outcall-context" class="txt-center">',
-		$url->href_html($this->bbf('create_context'),
+		$url->href_htmln($this->bbf('create_context'),
 				'service/ipbx/system_management/context',
 				'act=add'),
 		'</div>';
@@ -251,7 +251,7 @@ if($outcalltrunk['list'] !== false):
 <?php
 else:
 	echo	'<div class="txt-center">',
-		$url->href_html($this->bbf('create_trunk'),
+		$url->href_htmln($this->bbf('create_trunk'),
 				'service/ipbx/trunk_management/sip',
 				'act=add'),
 		'</div>';
@@ -312,7 +312,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_rightcall'),
+			$url->href_htmln($this->bbf('create_rightcall'),
 					'service/ipbx/call_management/rightcall',
 					'act=add'),
 			'</div>';

@@ -64,7 +64,7 @@ endif;
 				   $context_list);
 	else:
 		echo	'<div id="fd-voicemenu-context" class="txt-center">',
-			$url->href_html($this->bbf('create_context'),
+			$url->href_htmln($this->bbf('create_context'),
 					'service/ipbx/system_management/context',
 					'act=add'),
 			'</div>';

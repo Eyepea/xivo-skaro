@@ -56,7 +56,7 @@ if(empty($list) === false):
 	echo	$form->select($select,$list,$selectoptattr);
 else:
 	echo	$form->hidden($select),
-		$url->href_html($this->bbf('create_callfilter'),
+		$url->href_htmln($this->bbf('create_callfilter'),
 				'service/ipbx/call_management/callfilter',
 				'act=add',
 				$hrefstyle);

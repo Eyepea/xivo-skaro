@@ -138,7 +138,7 @@ $qmember = $this->get_var('qmember');
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_group'),
+			$url->href_htmln($this->bbf('create_group'),
 					'service/ipbx/pbx_settings/groups',
 					'act=add'),
 			'</div>';
@@ -264,7 +264,7 @@ $qmember = $this->get_var('qmember');
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_queue'),
+			$url->href_htmln($this->bbf('create_queue'),
 					'service/ipbx/call_center/queues',
 					'act=add'),
 			'</div>';

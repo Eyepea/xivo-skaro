@@ -81,7 +81,7 @@ if($context_list !== false):
 			      $context_list);
 else:
 	echo	'<div id="fd-voicemail-context" class="txt-center">',
-			$url->href_html($this->bbf('create_context'),
+			$url->href_htmln($this->bbf('create_context'),
 					'service/ipbx/system_management/context',
 					'act=add'),
 		'</div>';

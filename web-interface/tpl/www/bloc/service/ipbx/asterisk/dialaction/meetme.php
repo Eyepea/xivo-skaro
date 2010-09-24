@@ -55,7 +55,7 @@ if(empty($list) === false):
 	echo	'</div>';
 else:
 	echo	'<div id="fd-dialaction-'.$event.'-meetme-actiontype" class="txt-center b-nodisplay">',
-		$url->href_html($this->bbf('create_meetme'),'service/ipbx/pbx_settings/meetme','act=add'),
+		$url->href_htmln($this->bbf('create_meetme'),'service/ipbx/pbx_settings/meetme','act=add'),
 		'</div>';
 endif;
 

@@ -79,7 +79,7 @@ if(empty($list) === false):
 	echo	'</div>';
 else:
 	echo	'<div id="fd-dialaction-'.$event.'-voicemail-actiontype" class="txt-center b-nodisplay">',
-		$url->href_html($this->bbf('create_voicemail'),'service/ipbx/pbx_settings/voicemail','act=add'),
+		$url->href_htmln($this->bbf('create_voicemail'),'service/ipbx/pbx_settings/voicemail','act=add'),
 		'</div>';
 endif;
 

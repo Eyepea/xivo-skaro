@@ -55,7 +55,7 @@ if(empty($list) === false):
 	echo	'</div>';
 else:
 	echo	'<div id="fd-dialaction-'.$event.'-voicemenu-actiontype" class="txt-center b-nodisplay">',
-		$url->href_html($this->bbf('create_voicemenu'),'service/ipbx/call_management/voicemenu','act=add'),
+		$url->href_htmln($this->bbf('create_voicemenu'),'service/ipbx/call_management/voicemenu','act=add'),
 		'</div>';
 endif;
 

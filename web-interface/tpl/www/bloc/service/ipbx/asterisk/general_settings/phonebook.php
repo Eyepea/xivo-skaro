@@ -180,7 +180,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_xivoserver'),
+			$url->href_htmln($this->bbf('create_xivoserver'),
 					'xivo/configuration/manage/server',
 					'act=add'),
 			'</div>';
@@ -242,7 +242,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_ldapfilter'),
+			$url->href_htmln($this->bbf('create_ldapfilter'),
 					'service/ipbx/system_management/ldapfilter',
 					'act=add'),
 			'</div>';

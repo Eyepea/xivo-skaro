@@ -60,7 +60,7 @@ if($context_list !== false):
 			      $context_list);
 else:
 	echo	'<div id="fd-rightcall-context" class="txt-center">',
-		$url->href_html($this->bbf('create_context'),
+		$url->href_htmln($this->bbf('create_context'),
 				'service/ipbx/system_management/context',
 				'act=add'),
 		'</div>';
@@ -186,7 +186,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_user'),
+			$url->href_htmln($this->bbf('create_user'),
 					'service/ipbx/pbx_settings/users',
 					'act=add'),
 			'</div>';
@@ -244,7 +244,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_group'),
+			$url->href_htmln($this->bbf('create_group'),
 					'service/ipbx/pbx_settings/groups',
 					'act=add'),
 			'</div>';
@@ -301,7 +301,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_incall'),
+			$url->href_htmln($this->bbf('create_incall'),
 					'service/ipbx/call_management/incall',
 					'act=add'),
 			'</div>';
@@ -359,7 +359,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_outcall'),
+			$url->href_htmln($this->bbf('create_outcall'),
 					'service/ipbx/call_management/outcall',
 					'act=add'),
 			'</div>';

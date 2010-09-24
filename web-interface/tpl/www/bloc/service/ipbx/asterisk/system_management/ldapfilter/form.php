@@ -54,7 +54,7 @@ endif;
 				      $ldapservers);
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_ldapserver'),
+			$url->href_htmln($this->bbf('create_ldapserver'),
 					'xivo/configuration/manage/ldapserver',
 					'act=add'),
 			'</div>';

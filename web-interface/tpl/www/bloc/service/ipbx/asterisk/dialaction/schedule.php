@@ -58,7 +58,7 @@ else:
 	if($this->get_var('dialaction_from') === 'schedule'):
 		echo	$this->bbf('dialaction_no-schedule');
 	else:
-		echo	$url->href_html($this->bbf('create_schedule'),'service/ipbx/call_management/schedule','act=add');
+		echo	$url->href_htmln($this->bbf('create_schedule'),'service/ipbx/call_management/schedule','act=add');
 	endif;
 	echo	'</div>';
 endif;

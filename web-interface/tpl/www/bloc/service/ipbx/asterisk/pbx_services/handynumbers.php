@@ -99,7 +99,7 @@ $dhtml->write_js($handynumbers_js);
 
 if($this->get_var('trunkslist') === false):
 	echo	'<div class="txt-center">',
-		$url->href_html($this->bbf('create_trunk'),
+		$url->href_htmln($this->bbf('create_trunk'),
 				'service/ipbx/trunk_management/sip',
 				'act=add'),
 		'</div>';

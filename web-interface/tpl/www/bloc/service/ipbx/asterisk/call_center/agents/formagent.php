@@ -86,7 +86,7 @@ endif;
 					      $context_list);
 		else:
 			echo	'<div id="fd-agentfeatures-context" class="txt-center">',
-				$url->href_html($this->bbf('create_context'),
+				$url->href_htmln($this->bbf('create_context'),
 						'service/ipbx/system_management/context',
 						'act=add'),
 				'</div>';
@@ -174,7 +174,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_user'),
+			$url->href_htmln($this->bbf('create_user'),
 					'service/ipbx/call_center/users',
 					'act=add'),
 			'</div>';
@@ -277,7 +277,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_queue'),
+			$url->href_htmln($this->bbf('create_queue'),
 					'service/ipbx/call_center/queues',
 					'act=add'),
 			'</div>';

@@ -63,7 +63,7 @@ else:
 	if($this->get_var('dialaction_from') === 'user'):
 		echo	$this->bbf('dialaction_no-user');
 	else:
-		echo	$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add');
+		echo	$url->href_htmln($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add');
 	endif;
 	echo	'</div>';
 endif;

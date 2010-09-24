@@ -49,7 +49,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 				      $interfaces);
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_interface'),'xivo/configuration/network/interface','act=list'),
+			$url->href_htmln($this->bbf('create_interface'),'xivo/configuration/network/interface','act=list'),
 			'</div>';
 	endif;
 

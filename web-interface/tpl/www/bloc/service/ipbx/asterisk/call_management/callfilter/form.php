@@ -65,7 +65,7 @@ if($context_list !== false):
 			      $context_list);
 else:
 	echo	'<div id="fd-callfilter-context" class="txt-center">',
-		$url->href_html($this->bbf('create_context'),
+		$url->href_htmln($this->bbf('create_context'),
 				'service/ipbx/system_management/context',
 				'act=add'),
 		'</div>';
@@ -149,7 +149,7 @@ endif;
 				      $element['callfiltermember']['ringseconds']['value']);
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_user-boss'),
+			$url->href_htmln($this->bbf('create_user-boss'),
 					'service/ipbx/pbx_settings/users',
 					'act=add'),
 			'</div>';
@@ -227,7 +227,7 @@ endif;
 <?php
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_user-secretary'),
+			$url->href_htmln($this->bbf('create_user-secretary'),
 					'service/ipbx/pbx_settings/users',
 					'act=add'),
 			'</div>';

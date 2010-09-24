@@ -63,7 +63,7 @@ else:
 	if($this->get_var('dialaction_from') === 'group'):
 		echo	$this->bbf('dialaction_no-group');
 	else:
-		echo	$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add');
+		echo	$url->href_htmln($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add');
 	endif;
 	echo	'</div>';
 endif;

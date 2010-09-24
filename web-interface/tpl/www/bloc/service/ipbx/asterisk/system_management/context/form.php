@@ -114,7 +114,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 				   'onchange="xivo_context_entity_status(this.form,this.value.length === 0);"');
 	else:
 		echo	'<div class="txt-center">',
-			$url->href_html($this->bbf('create_entity'),'xivo/configuration/manage/entity','act=add'),
+			$url->href_htmln($this->bbf('create_entity'),'xivo/configuration/manage/entity','act=add'),
 			'</div>';
 	endif;
 
