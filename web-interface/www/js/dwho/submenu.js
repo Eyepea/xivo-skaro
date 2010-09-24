@@ -140,6 +140,7 @@ dwho.submenu.prototype.select = function(obj,part,last,cname)
 	obj.className = Boolean(last) === false ? cname : cname + '-last';
 
 	dwho.dom.free_focus();
+	location = $('li#'+obj.id).find('a').first().attr('href');
 }
 
 dwho.submenu.prototype.onstate = function(obj,last,cname,state)
