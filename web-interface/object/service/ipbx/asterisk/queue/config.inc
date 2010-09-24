@@ -30,18 +30,18 @@ $array['element']['timeout']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,
 $array['element']['timeout']['default'] = 15;
 $array['element']['timeout']['setdef'] = true;
 
-$array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
+$array['element']['musicclass'] = array();
+$array['element']['musicclass']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
 
 $array['element']['announce'] = array();
 $array['element']['announce']['default'] = '';
 
 $array['element']['strategy'] = array();
-$array['element']['strategy']['value'] = array('leastrecent',
+$array['element']['strategy']['value'] = array('linear', 'leastrecent',
 					       'fewestcalls',
-					       'roundrobin',
 					       'rrmemory',
 					       'random',
+								 'wrandom',
 					       'ringall');
 $array['element']['strategy']['default'] = 'ringall';
 $array['element']['strategy']['setdef'] = true;
@@ -176,10 +176,6 @@ $array['element']['queue-thankyou'] = array();
 $array['element']['queue-thankyou']['default'] = 'queue-thankyou';
 $array['element']['queue-thankyou']['setdef'] = true;
 
-$array['element']['queue-lessthan'] = array();
-$array['element']['queue-lessthan']['default'] = 'queue-less-than';
-$array['element']['queue-lessthan']['setdef'] = true;
-
 $array['element']['queue-reporthold'] = array();
 $array['element']['queue-reporthold']['default'] = 'queue-reporthold';
 $array['element']['queue-reporthold']['setdef'] = true;
@@ -191,19 +187,74 @@ $array['element']['periodic-announce']['setdef'] = true;
 $array['element']['category'] = array();
 $array['element']['category']['value'] = array('queue','group');
 
+$array['element']['timeoutpriority'] = array();
+$array['element']['timeoutpriority']['value'] = array('app','conf');
+$array['element']['timeoutpriority']['default'] = 'app';
+
+$array['element']['autofill'] = array();
+$array['element']['autofill']['value'] = array(0,1);
+$array['element']['autofill']['default'] = 1;
+$array['element']['autofill']['set'] = true;
+
+$array['element']['autopause'] = array();
+$array['element']['autopause']['value'] = array(0,1);
+$array['element']['autopause']['default'] = 1;
+$array['element']['autopause']['set'] = true;
+
+$array['element']['setinterfacevar'] = array();
+$array['element']['setinterfacevar']['value'] = array(0,1);
+$array['element']['setinterfacevar']['default'] = 0;
+$array['element']['setinterfacevar']['set'] = true;
+
+$array['element']['setqueueentryvar'] = array();
+$array['element']['setqueueentryvar']['value'] = array(0,1);
+$array['element']['setqueueentryvar']['default'] = 1;
+$array['element']['setqueueentryvar']['set'] = true;
+
+$array['element']['setqueuevar'] = array();
+$array['element']['setqueuevar']['value'] = array(0,1);
+$array['element']['setqueuevar']['default'] = 0;
+$array['element']['setqueuevar']['set'] = true;
+
+$array['element']['membermacro'] = array();
+$array['element']['membermacro']['default'] = '';
+$array['element']['membermacro']['null'] = true;
+
+$array['element']['min-announce-frequency'] = array();
+$array['element']['min-announce-frequency']['value'] = array(0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600);
+$array['element']['min-announce-frequency']['default'] = 60;
+
+$array['element']['random-periodic-announce'] = array();
+$array['element']['random-periodic-announce']['value'] = array(0,1);
+$array['element']['random-periodic-announce']['default'] = 0;
+$array['element']['random-periodic-announce']['set'] = true;
+
+$array['element']['announce-position'] = array();
+$array['element']['announce-position']['value'] = array('yes','no','limit','more');
+$array['element']['announce-position']['default'] = 'yes';
+
+$array['element']['announce-position-limit'] = array();
+$array['element']['announce-position-limit']['value']   = range(0, 50);
+$array['element']['announce-position-limit']['default'] = 5;
+
+$array['element']['defaultrule'] = array();
+$array['element']['defaultrule']['default'] = '';
+$array['element']['defaultrule']['null'] = true;
+
+
+// FILTERS
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['timeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['musicclass'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['announce'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['strategy'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'key'	=> array('leastrecent',
 							 'fewestcalls',
-							 'roundrobin',
 							 'rrmemory',
 							 'random',
-							 'ringall'));
+							 'ringall', 'linear', 'wrandom'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
 $array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['retry'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,60,5));
@@ -239,12 +290,24 @@ $array['filter']['queue-holdtime'] = array('set' => false,'chk' => 2,'cast' => '
 $array['filter']['queue-minutes'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['queue-seconds'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['queue-thankyou'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['queue-lessthan'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['queue-reporthold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['periodic-announce'] = array('set'	=> false,
 					      'chk'	=> 2,
 					      'regexp'	=> '/^(?:['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.
 								    preg_quote(DWHO_SEP_DIR,'/').']{1,79}\|?){1,10}$/');
 $array['filter']['category'] = array('key' => array('queue','group'));
+$array['filter']['timeoutpriority'] = array('key' => array('app','conf'));
+$array['filter']['autofill'] = array('bool' => true);
+$array['filter']['autopause'] = array('bool' => true);
+$array['filter']['setinterfacevar'] = array('bool' => true);
+$array['filter']['setqueueentryvar'] = array('bool' => true);
+$array['filter']['setqueuevar'] = array('bool' => true);
+$array['filter']['membermacro'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['min-announce-frequency'] = array('cast' => 'uint','between' => array(0,600,10));
+$array['filter']['random-periodic-announce'] = array('bool' => true);
+$array['filter']['announce-position'] = array('key' => array('yes','no','limit','more'));
+$array['filter']['announce-position-limit'] = array('cast' => 'uint');
+$array['filter']['announce-position-limit'] = array('cast' => 'uint', 'between' => array(1,50));
+$array['filter']['defaultrule'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 
 ?>

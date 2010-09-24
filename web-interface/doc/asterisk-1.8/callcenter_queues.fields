@@ -1,0 +1,53 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+====
+=prefix:queue
+ n timeoutpriority           lstr;app;app,conf
+ n autofill                  bool;yes
+ n autopause                 bool;yes
+ n setinterfacevar           bool;no
+ n setqueueentryvar          bool;no
+ n setqueuevar               bool;no
+ n membermacro               str
+ n min-announce-frequency    time;60;0;600;10
+ n random-periodic-announce  bool;no
+ n announce-position         lstr;yes;yes,no,limit,more
+ n announce-position-limit   int;5
+ n defaultrule               str
+   announce
+   announce-frequency
+   announce-holdtime
+   announce-round-seconds
+ ~ category                  NOT an asterisk field (used to distinct groups from queues)
+   context
+   eventmemberstatus
+   eventwhencalled
+   joinempty
+   leavewhenempty
+   maxlen
+   memberdelay
+   monitor-format
+   monitor-type
+ c musiconhold               REPLACED by musicclass
+ ~ name
+   periodic-announce
+   periodic-announce-frequency
+   queue-callswaiting
+   queue-holdtime
+ x queue-lessthan
+   queue-minutes
+   queue-reporthold
+   queue-seconds
+   queue-thankyou
+   queue-thereare
+   queue-youarenext
+   reportholdtime
+   retry
+   ringinuse
+   servicelevel
+ c strategy                  ADD new values, roundrobin remplacé par rrmemory
+   timeout
+   timeoutrestart
+   weight
+   wrapuptime
