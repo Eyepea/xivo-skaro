@@ -91,11 +91,27 @@ class dwho_tpl_url extends dwho_tpl_module
 			   $sep='&amp;',
 			   $sid=true,
 			   $internal=true,
-			   $encode=true)
+			   $encode=true,
+				 $target=null)
 	{
 		$url = $this->href($url,$query,$absolute,$sep,$sid,$internal,$encode);
 
-		return($this->_mk_href_html($content,$url,$opt,$title));
+		return($this->_mk_href_html($content,$url,$opt,$title,$target));
+	}
+
+	function href_htmln($content, $url=null, $query=null,
+			   $opt=null,
+			   $title=null,
+			   $absolute=false,
+			   $sep='&amp;',
+			   $sid=true,
+			   $internal=true,
+			   $encode=true,
+				 $target='_blank')
+	{
+		$url = $this->href($url,$query,$absolute,$sep,$sid,$internal,$encode);
+
+		return($this->_mk_href_html($content,$url,$opt,$title,$target));
 	}
 
 	function href_html_std($content,$url=null,$query=null,$opt=null,$title=null,$encode=true)
@@ -103,7 +119,7 @@ class dwho_tpl_url extends dwho_tpl_module
 		return($this->href_html($content,$url,$query,$opt,$title,false,null,false,false,$encode));
 	}
 
-	function _mk_href_html($content,$url=null,$opt=null,$title=null)
+	function _mk_href_html($content,$url=null,$opt=null,$title=null,$target=null)
 	{
 		$content	= (string) $content;
 		$opt		= (string) $opt;
@@ -113,9 +129,10 @@ class dwho_tpl_url extends dwho_tpl_module
 		else
 			$title = $content;
 
-		$title = isset($title{0}) === true ? ' title="'.trim(dwho_alttitle($title)).'"' : '';
+		$title  = isset($title{0}) === true ? ' title="'.trim(dwho_alttitle($title)).'"' : '';
+		$target = is_null($target)?'':' target="'.$target.'"';
 
-		return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.'>'.$content.'</a>');
+		return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.$target.'>'.$content.'</a>');
 	}
 
 	function img($url,$i18n=false,$internal=true)
