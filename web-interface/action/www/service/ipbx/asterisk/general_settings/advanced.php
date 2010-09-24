@@ -149,15 +149,19 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
-$_TPL->set_var('fm_save',$fm_save);
-$_TPL->set_var('error',$error);
+$_TPL->set_var('fm_save'      , $fm_save);
+$_TPL->set_var('error'        , $error);
 $_TPL->set_var('generalagents', $info['generalagents']);
 $_TPL->set_var('generalqueues', $info['generalqueues']);
 $_TPL->set_var('generalmeetme', $info['generalmeetme']);
 $_TPL->set_var('userinternal' , $info['userinternal']);
 $_TPL->set_var('general'      , $info['general']);
 $_TPL->set_var('info'         , $info);
-$_TPL->set_var('element',$element);
+$_TPL->set_var('element'      , $element);
+
+
+$appagent = &$ipbx->get_application('agent',null,false);
+$_TPL->set_var('moh_list'     , $appagent->get_musiconhold());
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');

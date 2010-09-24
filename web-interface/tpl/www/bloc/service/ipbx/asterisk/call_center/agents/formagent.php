@@ -111,15 +111,6 @@ endif;
 				    'selected'	=> $info['agentfeatures']['numgroup']),
 			      $this->get_var('agentgroup_list'));
 
-	if(($moh_list = $this->get_var('moh_list')) !== false):
-		echo	$form->select(array('desc'	=> $this->bbf('fm_agentoptions_musiconhold'),
-					    'name'	=> 'agentoptions[musiconhold]',
-					    'labelid'	=> 'agentoptions-musiconhold',
-					    'key'	=> 'category',
-					    'default'	=> $element['agentoptions']['musiconhold']['default'],
-					    'selected'	=> $info['agentoptions']['musiconhold']),
-				      $moh_list);
-	endif;
 ?>
 </div>
 

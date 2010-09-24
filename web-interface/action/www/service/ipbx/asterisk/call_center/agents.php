@@ -414,7 +414,6 @@ switch($act)
 		$_TPL->set_var('umember',$umember);
 		$_TPL->set_var('queues',$queues);
 		$_TPL->set_var('qmember',$qmember);
-		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
 		$_TPL->set_var('beep_list',$appagent->get_beep());
 		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
 		$_TPL->set_var('context_list',$appagent->get_context_list());

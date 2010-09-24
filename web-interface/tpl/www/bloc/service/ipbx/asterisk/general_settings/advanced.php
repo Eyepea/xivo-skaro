@@ -145,10 +145,20 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'generalagents-multiplelogin',
 				      'default'	=> $element['generalagents']['multiplelogin']['default'],
 				      'help'	=> $this->bbf('hlp_fm_generalagents_multiplelogin'),
-							'checked'	=> $this->get_var('generalagents','multiplelogin','var_val'))),
+							'checked'	=> $this->get_var('generalagents','multiplelogin','var_val')));
 
 		// agents options
-		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_ackcall'),
+		if(($moh_list = $this->get_var('moh_list')) !== false):
+			echo	$form->select(array('desc'	=> $this->bbf('fm_agentoptions_musiconhold'),
+					    'name'	=> 'agentoptions[musiconhold]',
+					    'labelid'	=> 'agentoptions-musiconhold',
+					    'key'	=> 'category',
+					    'default'	=> $element['agentoptions']['musiconhold']['default'],
+					    'selected'	=> $info['agentoptions']['musiconhold']['var_val']),
+				      $moh_list);
+		endif;
+
+		echo $form->select(array('desc'	=> $this->bbf('fm_agentoptions_ackcall'),
 				    'name'	=> 'agentoptions[ackcall]',
 				    'labelid'	=> 'agentoptions-ackcall',
 				    'key'	=> false,

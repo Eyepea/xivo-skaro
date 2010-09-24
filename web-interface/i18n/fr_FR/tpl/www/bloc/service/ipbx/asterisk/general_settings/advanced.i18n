@@ -30,9 +30,6 @@ Config asterisk: persistentagents
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
 
-; fm_agentfeatures_silent
-Désactiver l'annonce de connexion :
-
 ; fm_agentoptions_musiconhold
 Musique d'attente:
 

@@ -37,6 +37,10 @@ Langue:
 ; fm_agentfeatures_numgroup
 Groupe:
 
+; fm_agentfeatures_silent
+Désactiver l'annonce de connexion :
+
+
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->
 
