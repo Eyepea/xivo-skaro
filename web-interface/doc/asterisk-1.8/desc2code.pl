@@ -6,7 +6,7 @@ use List::Util qw(reduce);
 open my $fi, "< @ARGV[0]" or die $@;
 
 %tmysql = (
-	'bool' => 'tinyint(1)',
+	'bool' => 'tinyint(1) NOT NULL DEFAULT 0',
 	'int'  => 'integer unsigned NOT NULL DEFAULT 0',
 	'lint' => 'integer unsigned NOT NULL DEFAULT 0',
 	'str'  => "varchar(1024) NOT NULL DEFAULT ''",
@@ -42,12 +42,21 @@ while (<$fi>) {
 }
 
 while (<$fi>) {
-#	if ($_ !~ /^.n /) {
-#		next;
-#	}
+	if(/^=prefix:(.*)$/) {
+		$prefix  = $1;
+		$hprefix = "$1-";
+		$bprefix = "\['$1'\]";
+		$lprefix = "$1-";
+		$xprefix = "$1\[";
+		$yprefix = "]";
+		}
+
+	if ($_ =~ /^.n /) {
+		next;
+	}
 
 	print $_;	
-	$_ =~ /^ [nc] ([\w-]+)\s+([\w;,]+)?/;
+	$_ =~ /^ . ([\w-]+)\s+([\w;,]+)?/;
 
 	$fld = $1;
 	@2 = split /;/,$2;
@@ -55,7 +64,7 @@ while (<$fi>) {
 
 	print "$fld @2\n";
 
-	$smysql .= " `$fld` $tmysql{@2[0]};\n";
+	$smysql .= " `$fld` $tmysql{@2[0]},\n";
 #	$sintl .= "; fm_$hprefix$fld\n";
 #	$sintl .= " : \n\n";
 	$sintl .= "; hlp_fm_$hprefix$fld\n";
@@ -114,6 +123,30 @@ while (<$fi>) {
 
 			$sflt .= "\$array['filter']['$fld'] = array('set' => false,'chk' => 2,'maxlen' => 1024);\n";
 		}
+
+		case 'lstr' {
+	 		@mstr = join(',', map { "'$_'" } split /,/,@2[2]);
+			$scfg .= "\$array['element']['$fld'] = array();\n";                                                                             
+			$scfg .= "\$array['element']['$fld']['value'] = array(@mstr);\n";                                      
+			$scfg .= "\$array['element']['$fld']['default'] = '@2[1]';\n\n";
+
+			$stpl .= "     \$form->select(array('desc'  => \$this->bbf('fm_$hprefix$fld'),\n";
+			$stpl .= "            'name'    => '$xprefix$fld$yprefix',\n";
+			$stpl .= "            'labelid' => '$lprefix$fld',\n";
+			$stpl .= "            'key'   => false,\n";
+			$stpl .= "            'bbf'   => 'fm_$hprefix$fld-opt',\n";
+			$stpl .= "            'bbfopt'  => array('argmode' => 'paramvalue'),\n";
+			$stpl .= "            'help'    => \$this->bbf('hlp_fm_$hprefix$fld'),\n";
+			$stpl .= "            'selected'  => \$this->get_var('$prefix','$fld','var_val'),\n";
+			$stpl .= "            'default' => \$element$bprefix\['$fld'\]\['default'\]),\n";
+			$stpl .= "         \$element$bprefix\['$fld'\]\['value'\]),\n\n";
+
+			foreach (split /,/,@2[2]) {
+				$sintl .= "; fm_$hprefix$fld-opt($_)\n\n\n";
+			}
+
+			$sflt .= "\$array['filter']['$fld'] = array('key' => array(@mstr));\n";
+  	}
 
 		case 'lint' {
 			$scfg .= "\$array['element']['$fld'] = array();\n";                                                                             
