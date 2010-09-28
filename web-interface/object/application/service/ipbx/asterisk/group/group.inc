@@ -335,10 +335,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		$this->get_musiconhold();
 
-		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
-			$arr['musiconhold'] = '';
+		if(isset($arr['musicclass'],$this->_musiconhold[$arr['musicclass']]) === false)
+			$arr['musicclass'] = '';
 
-		$arr['category'] = 'group';
+		$arr['category']                = 'group';
+		$arr['timeoutpriority']         = 'app';
+		$arr['min-announce-frequency']  = 60;
+		$arr['announce-position']       = 'no';
+		$arr['announce-position-limit'] = 5;
 
 		if(($rs = $this->_queue->chk_values($arr)) === false)
 		{

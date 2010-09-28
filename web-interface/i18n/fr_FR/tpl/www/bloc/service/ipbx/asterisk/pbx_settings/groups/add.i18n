@@ -40,6 +40,12 @@ Répartition cyclique (mémorisée)
 ; fm_queue_strategy-opt(random)
 Aléatoire
 
+; fm_queue_strategy-opt(wrandom)
+Aléatoire pondéré par leur pénalités
+
+; fm_queue_strategy-opt(linear)
+Dans l'ordre de leur définition (ou ajout)
+
 ; fm_queue_strategy-opt(ringall)
 Tous
 
@@ -82,7 +88,7 @@ Désactivé
 ; fm_queue_ringinuse
 Appeler un membre déjà en communication :
 
-; fm_queue_musiconhold
+; fm_queue_musicclass
 Musique d'attente :
 
 ; fm_callerid_mode
@@ -114,3 +120,7 @@ Ajouter un ou plusieurs droits d'appels ->
 
 ; create_rightcall
 Créer un droit d'appel
+
+
+
+

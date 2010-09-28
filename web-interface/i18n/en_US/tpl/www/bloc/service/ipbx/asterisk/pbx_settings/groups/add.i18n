@@ -43,6 +43,12 @@ Random
 ; fm_queue_strategy-opt-ringall
 Ring all
 
+; fm_queue_strategy-opt(wrandom)
+Weight Random
+
+; fm_queue_strategy-opt(linear)
+Linear
+
 ; fm_groupfeatures_context
 Context:
 

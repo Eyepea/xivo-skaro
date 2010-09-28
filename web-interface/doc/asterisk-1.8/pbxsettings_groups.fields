@@ -1,0 +1,24 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+
+/!\ options are moved from callcenter/agent to general/advanced/agents
+
+=prefix:agentoptions
+====
+ c maxlogintries
+ c autologoff
+ c autologoffunavail
+ c ackcall
+ n acceptdtmf                lstr;*;0,1,2,3,4,5,6,7,8,9,*,#
+ c endcall
+ n enddtmf                   lstr;*;0,1,2,3,4,5,6,7,8,9,*,#
+ c warpuptime
+ c musiconhold
+ c goodbye
+ c updatecdr
+ c recordagentcalls
+ c recordformat
+ c urlprefix
+ n savecallsin               str;/var/spool/asterisk/monitor
+ c custom_beep

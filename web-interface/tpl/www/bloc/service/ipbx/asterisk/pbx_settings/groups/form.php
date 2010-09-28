@@ -118,14 +118,14 @@ endif;
 				      'checked'	=> $info['queue']['ringinuse']));
 
 if($moh_list !== false):
-	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_musiconhold'),
-				    'name'	=> 'queue[musiconhold]',
-				    'labelid'	=> 'queue-musiconhold',
+	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_musicclass'),
+				    'name'	=> 'queue[musicclass]',
+				    'labelid'	=> 'queue-musicclass',
 				    'empty'	=> true,
 				    'key'	=> 'category',
 				    'invalid'	=> ($this->get_var('act') === 'edit'),
-				    'default'	=> ($this->get_var('act') === 'add' ? $element['queue']['musiconhold']['default'] : null),
-				    'selected'	=> $info['queue']['musiconhold']),
+				    'default'	=> ($this->get_var('act') === 'add' ? $element['queue']['musicclass']['default'] : null),
+				    'selected'	=> $info['queue']['musicclass']),
 			      $moh_list);
 endif;
 
