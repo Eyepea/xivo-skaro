@@ -15,8 +15,6 @@ legend:
  n greetingsfolder           str;INBOX
  n imapparentfolder          str;INBOX
  n tz                        str
- n attachfmt                 str
- n deletevoicemail           bool;no
  n hidefromdir               bool;no
  n messagewrap               bool;no
  n minpassword               int;0

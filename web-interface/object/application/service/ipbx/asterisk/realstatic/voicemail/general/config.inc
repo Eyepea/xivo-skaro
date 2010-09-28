@@ -304,15 +304,6 @@ $array['element']['tz'] = array();
 $array['element']['tz']['default'] = '';
 $array['element']['tz']['null'] = true;
 
-$array['element']['attachfmt'] = array();
-$array['element']['attachfmt']['default'] = '';
-$array['element']['attachfmt']['null'] = true;
-
-$array['element']['deletevoicemail'] = array();
-$array['element']['deletevoicemail']['value'] = array('no','yes');
-$array['element']['deletevoicemail']['default'] = 'no';
-$array['element']['deletevoicemail']['set'] = true;
-
 $array['element']['hidefromdir'] = array();
 $array['element']['hidefromdir']['value'] = array('no','yes');
 $array['element']['hidefromdir']['default'] = 'no';
@@ -469,8 +460,6 @@ $array['filter']['imapgreetings'] = array('bool' => true);
 $array['filter']['greetingsfolder'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['imapparentfolder'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['tz'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
-$array['filter']['attachfmt'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
-$array['filter']['deletevoicemail'] = array('bool' => true);
 $array['filter']['hidefromdir'] = array('bool' => true);
 $array['filter']['messagewrap'] = array('bool' => true);
 $array['filter']['minpassword'] = array('cast' => 'uint','between' => array(1,256));

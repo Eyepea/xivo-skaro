@@ -34,7 +34,6 @@ endif;
 
 $format = $this->get_var('voicemail','format','var_val');
 
-$attachformat = is_array($format) === true && empty($format) === false;
 
 $zonemessages = $this->get_var('zonemessages');
 $zonenames = array();
@@ -516,17 +515,6 @@ endif;
 				      'checked'	=> $this->get_var('voicemail','attach','var_val'),
 				      'default'	=> $element['voicemail']['attach']['default'])),
 
-		$form->select(array('desc'	=> $this->bbf('fm_voicemail-attachformat'),
-				    'name'     => 'voicemail[attachfmt]',
-				    'labelid'  => 'voicemail-attachfmt',
-				    'key'      => false,
-						'help'     => $this->bbf('hlp_fm_attachfmt'),
-				    'bbf'      => 'ast_format_name_info',
-				    'bbfopt'   => array('argmode' => 'paramvalue'),
-						'selected' => $this->get_var('voicemail', 'attachfmt', 'var_val')),
-			      $format,
-			      ($attachformat === false ? 'class="it-disabled" disabled="disabled"' : '')),
-
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail-volgain'),
 				    'name'	=> 'voicemail[volgain]',
 				    'labelid'	=> 'voicemail-volgain',
@@ -924,13 +912,6 @@ if($zmsg_nb > 0):
             'default'  => $element['voicemail']['imapparentfolder']['default'],
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'imapparentfolder')) )),
-
-    $form->checkbox(array('desc'  => $this->bbf('fm_deletevoicemail'),
-              'name' => 'voicemail[deletevoicemail]',
-              'labelid' => 'deletevoicemail',
-              'help'    => $this->bbf('hlp_fm_deletevoicemail'),
-              'checked' => $this->get_var('info','deletevoicemail','var_val'),
-              'default' => $element['voicemail']['deletevoicemail']['default'])),
 
     $form->checkbox(array('desc'  => $this->bbf('fm_hidefromdir'),
               'name' => 'voicemail[hidefromdir]',
