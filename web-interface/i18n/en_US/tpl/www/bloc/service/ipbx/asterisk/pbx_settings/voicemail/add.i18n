@@ -90,3 +90,122 @@ Callback context:
 
 ; fm_voicemail_exitcontext
 Exit context:
+
+;;; asterisk 1.8 Fields
+; smenu_email
+E-mail
+
+; fm_voicemail-emailsubject
+Subject: 
+
+; hlp_fm_voicemail-emailsubject
+Config asterisk: emailsubject
+
+; fm_voicemail-emailbody
+Body: 
+
+; hlp_fm_voicemail-emailbody
+Config asterisk: emailbody
+
+; fm_voicemail-imapuser
+IMAP user:
+
+; hlp_fm_voicemail-imapuser
+Config asterisk: imapuser
+
+; fm_voicemail-imappassword
+IMAP password:
+
+; hlp_fm_voicemail-imappassword
+Config asterisk: imappassword
+
+; fm_voicemail-imapfolder
+IMAP directory:
+
+; hlp_fm_voicemail-imapfolder
+Config asterisk: imapfolder
+
+; fm_voicemail-imapvmsharedid
+Shared mailbox ID:
+
+; hlp_fm_voicemail-imapvmsharedid
+Config asterisk: imapvmsharedid
+
+; fm_voicemail-attachfmt
+Attachment audio format: 
+
+; hlp_fm_voicemail-attachfmt
+Config asterisk: attachfmt
+
+; fm_voicemail-serveremail
+«From» header:
+
+; hlp_fm_voicemail-serveremail
+Config asterisk: serveremail
+
+; fm_voicemail-locale
+Locale:
+
+; hlp_fm_voicemail-locale
+Config asterisk: locale
+
+; fm_voicemail-tempgreetwarn
+Report temporary greeting activation:
+
+; hlp_fm_voicemail-tempgreetwarn
+Config asterisk: tempgreetwarn
+
+; fm_voicemail-messagewrap
+Message wrap:
+
+; hlp_fm_voicemail-messagewrap
+Config asterisk: messagewrap
+
+; fm_voicemail-moveheard
+Move listened messages to «Old» folder:
+
+; hlp_fm_voicemail-moveheard
+Config asterisk: moveheard
+
+; fm_voicemail-minsecs
+Minimum duration of a message:
+
+; hlp_fm_voicemail-minsecs
+Config asterisk: minsecs
+
+; fm_voicemail-maxsecs
+Maximum duration of a message:
+
+; hlp_fm_voicemail-maxsecs
+Config asterisk: maxsecs
+
+; fm_voicemail-nextaftercmd
+Lecture automatique du message suivant :
+
+; hlp_fm_voicemail-nextaftercmd
+Config asterisk: nextaftercmd
+
+; fm_voicemail-backupdeleted
+Max number of messages allowed in «Deleted» folder:
+
+; hlp_fm_voicemail-backupdeleted
+Config asterisk: backupdeleted
+
+; fm_voicemail-volgain
+Increase/Decrease attached message audio volume:
+
+; hlp_fm_voicemail-volgain
+Config asterisk: volgain
+
+; fm_voicemail-passwordlocation
+Password stored in:
+
+; hlp_fm_voicemail-passwordlocation
+Config asterisk: passwordlocation
+
+; fm_voicemail-passwordlocation-opt(spooldir)
+Messages store directory
+
+; fm_voicemail-passwordlocation-opt(voicemail)
+Configuration
+

@@ -143,6 +143,99 @@ $array['element']['option']['value'] = array('none','add','search');
 $array['element']['option']['default'] = 'none';
 $array['element']['option']['unset'] = true;
 
+// asterisk 1.8 fields
+$array['element']['emailsubject'] = array();
+$array['element']['emailsubject']['default'] = '';
+$array['element']['emailsubject']['null'] = true;
+
+$array['element']['emailbody'] = array();
+$array['element']['emailbody']['default'] = '';
+$array['element']['emailbody']['null'] = true;
+
+$array['element']['imapuser'] = array();
+$array['element']['imapuser']['default'] = '';
+$array['element']['imapuser']['null'] = true;
+
+$array['element']['imappassword'] = array();
+$array['element']['imappassword']['default'] = '';
+$array['element']['imappassword']['null'] = true;
+
+$array['element']['imapfolder'] = array();
+$array['element']['imapfolder']['default'] = '';
+$array['element']['imapfolder']['null'] = true;
+
+$array['element']['imapvmsharedid'] = array();
+$array['element']['imapvmsharedid']['default'] = '';
+$array['element']['imapvmsharedid']['null'] = true;
+
+$array['element']['attachfmt'] = array();
+$array['element']['attachfmt']['value'] = array(
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_OGG,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ULAW,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN);
+$array['element']['attachfmt']['default'] = '';
+$array['element']['attachfmt']['null'] = true;
+
+$array['element']['serveremail'] = array();
+$array['element']['serveremail']['default'] = '';
+$array['element']['serveremail']['null'] = true;
+
+$array['element']['locale'] = array();
+$array['element']['locale']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['locale']['default'] = '';
+$array['element']['locale']['null'] = true;
+
+$array['element']['tempgreetwarn'] = array();
+$array['element']['tempgreetwarn']['value'] = array(0,1);
+$array['element']['tempgreetwarn']['default'] = '';
+$array['element']['tempgreetwarn']['null']    = true;
+
+$array['element']['messagewrap'] = array();
+$array['element']['messagewrap']['value'] = array(0,1);
+$array['element']['messagewrap']['default'] = 'false';
+$array['element']['messagewrap']['null'] = true;
+
+$array['element']['moveheard'] = array();
+$array['element']['moveheard']['value'] = array(0,1);
+$array['element']['moveheard']['default'] = 'false';
+$array['element']['moveheard']['null'] = true;
+
+$array['element']['minsecs'] = array();
+$array['element']['minsecs']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60);
+$array['element']['minsecs']['default'] = '';
+$array['element']['minsecs']['null'] = true;
+
+$array['element']['maxsecs'] = array();
+$array['element']['maxsecs']['value'] = array(30,60,90,120,150,180,210,240,270,300,330,360,390,420,450,480,510,540,570,600);
+$array['element']['maxsecs']['default'] = '';
+$array['element']['maxsecs']['null'] = true;
+
+$array['element']['nextaftercmd'] = array();
+$array['element']['nextaftercmd']['value'] = array(0,1);
+$array['element']['nextaftercmd']['default'] = 'false';
+$array['element']['nextaftercmd']['null'] = true;
+
+$array['element']['backupdeleted'] = array();
+$array['element']['backupdeleted']['value'] = range(0,100,1);
+$array['element']['backupdeleted']['default'] = '';
+$array['element']['backupdeleted']['null'] = true;
+
+$array['element']['volgain'] = array();
+$array['element']['volgain']['value'] = array(-5,-4.5,-4,-3.5,-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5);
+$array['element']['volgain']['default'] = '';
+$array['element']['volgain']['null'] = true;
+
+
+$array['element']['passwordlocation'] = array();
+$array['element']['passwordlocation']['value'] = array('spooldir','voicemail');
+$array['element']['passwordlocation']['default'] = '';
+$array['element']['passwordlocation']['null'] = true;
 
 dwho::load_class('dwho_network');
 
@@ -185,5 +278,25 @@ $array['filter']['maxmsg'] = array('set' => false,'chk' => 2,
 						  125,150,175,200,300,400,500,600,700,800,900,
 						  1000,2000,3000,4000,5000,6000,7000,8000,9000,9999));
 $array['filter']['commented'] = array('bool' => true);
+$array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'maxlen' => 4096);
+$array['filter']['emailbody'] = array('set' => false,'chk' => 2);
+$array['filter']['imapuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['imappassword'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['imapfolder'] = array('set' => false,'chk' => 2,'maxlen' => 64);
+$array['filter']['imapvmsharedid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['attachfmt'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['serveremail'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['locale'] = array('chk' => 2,
+  'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['tempgreetwarn'] = array('set' => false, 'chk' => 2, 'bool' => true);
+
+$array['filter']['messagewrap'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['moveheard'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['minsecs'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,60,1));
+$array['filter']['maxsecs'] = array('set' => false, 'chk' => 2, 'between' => array(1,600,30));
+$array['filter']['nextaftercmd'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['backupdeleted'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(0,100,1));
+$array['filter']['volgain'] = array('set' => false, 'chk' => 2, 'cast' => 'float', 'key' => array(-5,-4.5,-4,-3.5,-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5));
+$array['filter']['passwordlocation'] = array('set' => false, 'chk' => 2, 'key' => array('spooldir','voicemail'));
 
 ?>

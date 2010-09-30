@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$appvoicemail = &$ipbx->get_application('voicemail');
+
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
@@ -33,8 +35,6 @@ if($search !== '')
 switch($act)
 {
 	case 'add':
-		$appvoicemail = &$ipbx->get_application('voicemail');
-
 		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
@@ -60,9 +60,8 @@ switch($act)
 		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
 		$_TPL->set_var('context_list',$appvoicemail->get_context_list());
 		break;
-	case 'edit':
-		$appvoicemail = &$ipbx->get_application('voicemail');
 
+	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $appvoicemail->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
@@ -96,10 +95,9 @@ switch($act)
 		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
 		$_TPL->set_var('context_list',$appvoicemail->get_context_list());
 		break;
+
 	case 'delete':
 		$param['page'] = $page;
-
-		$appvoicemail = &$ipbx->get_application('voicemail');
 
 		if(isset($_QR['id']) === false || $appvoicemail->get($_QR['id']) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
@@ -108,13 +106,12 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
+
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = dwho_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
-
-		$appvoicemail = &$ipbx->get_application('voicemail');
 
 		$nb = count($values);
 
@@ -126,14 +123,13 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
+
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = dwho_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
-
-		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
 		$nb = count($values);
 
@@ -149,12 +145,11 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
+
 	default:
 		$act = 'list';
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
-
-		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
 		$order = array();
 		$order['fullname'] = SORT_ASC;

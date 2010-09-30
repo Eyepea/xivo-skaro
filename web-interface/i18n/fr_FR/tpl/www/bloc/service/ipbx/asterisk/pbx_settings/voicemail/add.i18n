@@ -90,3 +90,122 @@ Contexte de rappel :
 
 ; fm_voicemail_exitcontext
 Contexte de sortie :
+
+;;; asterisk 1.8 Fields
+; smenu_email
+E-mail
+
+; fm_voicemail-emailsubject
+Sujet des messages : 
+
+; hlp_fm_voicemail-emailsubject
+Config asterisk: emailsubject
+
+; fm_voicemail-emailbody
+Corps des messages : 
+
+; hlp_fm_voicemail-emailbody
+Config asterisk: emailbody
+
+; fm_voicemail-imapuser
+Utilisateur IMAP : 
+
+; hlp_fm_voicemail-imapuser
+Config asterisk: imapuser
+
+; fm_voicemail-imappassword
+Mot de passe IMAP : 
+
+; hlp_fm_voicemail-imappassword
+Config asterisk: imappassword
+
+; fm_voicemail-imapfolder
+Répertoire IMAP : 
+
+; hlp_fm_voicemail-imapfolder
+Config asterisk: imapfolder
+
+; fm_voicemail-imapvmsharedid
+Identifiant de la boite email partagée : 
+
+; hlp_fm_voicemail-imapvmsharedid
+Config asterisk: imapvmsharedid
+
+; fm_voicemail-attachfmt
+Format du fichier audio : 
+
+; hlp_fm_voicemail-attachfmt
+Config asterisk: attachfmt
+
+; fm_voicemail-serveremail
+Valeur de l'en-tête «From» : 
+
+; hlp_fm_voicemail-serveremail
+Config asterisk: serveremail
+
+; fm_voicemail-locale
+Langue : 
+
+; hlp_fm_voicemail-locale
+Config asterisk: locale
+
+; fm_voicemail-tempgreetwarn
+Signaler l'activation du message d'accueil temporaire :
+
+; hlp_fm_voicemail-tempgreetwarn
+Config asterisk: tempgreetwarn
+
+; fm_voicemail-messagewrap
+Reboucler sur le 1er message à la fin : 
+
+; hlp_fm_voicemail-messagewrap
+Config asterisk: messagewrap
+
+; fm_voicemail-moveheard
+Déplacer les messages consultés dans le répertoire *Old* : 
+
+; hlp_fm_voicemail-moveheard
+Config asterisk: moveheard
+
+; fm_voicemail-minsecs
+Durée minimun d'un message :
+
+; hlp_fm_voicemail-minsecs
+Config asterisk: minsecs
+
+; fm_voicemail-maxsecs
+Durée maximum d'un message :
+
+; hlp_fm_voicemail-maxsecs
+Config asterisk: maxsecs
+
+; fm_voicemail-nextaftercmd
+Lecture automatique du message suivant :
+
+; hlp_fm_voicemail-nextaftercmd
+Config asterisk: nextaftercmd
+
+; fm_voicemail-backupdeleted
+Nombre maximum de message dans la boîte «Anciens» : 
+
+; hlp_fm_voicemail-backupdeleted
+Config asterisk: backupdeleted
+
+; fm_voicemail-volgain
+Augmenter/diminuer le volume sonore du fichier audio :
+
+; hlp_fm_voicemail-volgain
+Config asterisk: volgain
+
+; fm_voicemail-passwordlocation
+Mots de passes définis dans : 
+
+; hlp_fm_voicemail-passwordlocation
+Config asterisk: passwordlocation
+
+; fm_voicemail-passwordlocation-opt(spooldir)
+Répertoire de stockage des messages
+
+; fm_voicemail-passwordlocation-opt(voicemail)
+Configuration
+

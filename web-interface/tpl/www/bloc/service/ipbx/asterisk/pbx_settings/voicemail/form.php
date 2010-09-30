@@ -140,6 +140,118 @@ endif;
 ?>
 </div>
 
+<div id="sb-part-email" class="b-nodisplay">
+<?php
+		echo $form->select(array('desc'	=> $this->bbf('fm_voicemail-attachfmt'),
+				    'name'     => 'voicemail[attachfmt]',
+				    'labelid'  => 'voicemail-attachfmt',
+				    'empty'    => true,
+				    'key'      => false,
+						'help'     => $this->bbf('hlp_fm_voicemail-attachfmt'),
+				    'bbf'      => 'ast_format_name_info',
+				    'bbfopt'   => array('argmode' => 'paramvalue'),
+				    'selected' => $info['voicemail']['attachfmt'],
+				    'default'	 => $element['voicemail']['attachfmt']['default']),
+			      $element['voicemail']['attachfmt']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-volgain'),
+            'name'     => 'voicemail[volgain]',
+            'labelid'  => 'voicemail-volgain',
+            'key'      => false,
+            'empty'    => true,
+            'help'     => $this->bbf('hlp_fm_voicemail-volgain'),
+            'selected' => $info['voicemail']['volgain'],
+            'default'  => $element['voicemail']['volgain']['default']),
+         $element['voicemail']['volgain']['value']),
+
+    $form->text(array('desc'  => $this->bbf('fm_voicemail-emailsubject'),
+            'name'     => 'voicemail[emailsubject]',
+            'labelid'  => 'voicemail-emailsubject',
+            'size'     => 25,
+            'help'     => $this->bbf('hlp_fm_voicemail-emailsubject'),
+            'required' => false,
+            'value'    => $info['voicemail']['emailsubject'],
+            'default'  => $element['voicemail']['emailsubject']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'emailsubject')) ));
+?>
+	<div class="fm-paragraph fm-description">
+    <?= $form->textarea(array('paragraph' => false,
+						'desc'     => $this->bbf('fm_voicemail-emailbody'),
+            'label'    => false,
+            'name'     => 'voicemail[emailbody]',
+            'id'       => 'voicemail-emailbody',
+            'cols'     => 60,
+            'rows'     => 5,
+            'help'     => $this->bbf('hlp_fm_voicemail-emailbody'),
+            'default'  => $element['voicemail']['emailbody']['default'],
+            'error'    => $this->bbf_args('error',
+               $this->get_var('error', 'emailbody'))),
+          $info['voicemail']['emailbody']);
+	  ?>
+	</div>
+	<br/><br/>
+<?php
+
+echo    $form->text(array('desc'  => $this->bbf('fm_voicemail-imapuser'),
+            'name'     => 'voicemail[imapuser]',
+            'labelid'  => 'voicemail-imapuser',
+            'size'     => 15,
+            'help'     => $this->bbf('hlp_fm_voicemail-imapuser'),
+            'required' => false,
+            'value'    => $info['voicemail']['imapuser'],
+            'default'  => $element['voicemail']['imapuser']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'imapuser')) )),
+
+    $form->text(array('desc'  => $this->bbf('fm_voicemail-imappassword'),
+            'name'     => 'voicemail[imappassword]',
+            'labelid'  => 'voicemail-imappassword',
+            'size'     => 15,
+            'help'     => $this->bbf('hlp_fm_voicemail-imappassword'),
+            'required' => false,
+            'value'    => $info['voicemail']['imappassword'],
+            'default'  => $element['voicemail']['imappassword']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'imappassword')) )),
+
+    $form->text(array('desc'  => $this->bbf('fm_voicemail-imapfolder'),
+            'name'     => 'voicemail[imapfolder]',
+            'labelid'  => 'voicemail-imapfolder',
+            'size'     => 15,
+            'help'     => $this->bbf('hlp_fm_voicemail-imapfolder'),
+            'required' => false,
+            'value'    => $info['voicemail']['imapfolder'],
+            'default'  => $element['voicemail']['imapfolder']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'imapfolder')) )),
+
+    $form->text(array('desc'  => $this->bbf('fm_voicemail-imapvmsharedid'),
+            'name'     => 'voicemail[imapvmsharedid]',
+            'labelid'  => 'voicemail-imapvmsharedid',
+            'size'     => 15,
+            'help'     => $this->bbf('hlp_fm_voicemail-imapvmsharedid'),
+            'required' => false,
+            'value'    => $info['voicemail']['imapvmsharedid'],
+            'default'  => $element['voicemail']['imapvmsharedid']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'imapvmsharedid')) )),
+
+    $form->text(array('desc'  => $this->bbf('fm_voicemail-serveremail'),
+            'name'     => 'voicemail[serveremail]',
+            'labelid'  => 'voicemail-serveremail',
+            'size'     => 15,
+            'help'     => $this->bbf('hlp_fm_voicemail-serveremail'),
+            'required' => false,
+            'value'    => $info['voicemail']['serveremail'],
+            'default'  => $element['voicemail']['serveremail']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'serveremail')) ));
+
+
+?>
+</div>
+
 <div id="sb-part-last" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_voicemail_pager'),
@@ -288,5 +400,115 @@ if($context_list !== false):
 			      $context_list);
 endif;
 
+
+  // asterisk 1.8 options
+
+echo     $form->select(array('desc'  => $this->bbf('fm_voicemail-locale'),
+            'name'      => 'voicemail[locale]',
+            'labelid'   => 'voicemail-locale',
+            'key'       => false,
+						'empty'     => true,
+            'help'      => $this->bbf('hlp_fm_voicemail-locale'),
+            'selected'  => $info['voicemail']['locale'],
+            'default'   => $element['voicemail']['locale']['default']),
+         $element['voicemail']['locale']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-tempgreetwarn'),
+            'name'      => 'voicemail[tempgreetwarn]',
+            'labelid'   => 'voicemail-tempgreetwarn',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'fm_bool-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue'),
+            'help'      => $this->bbf('hlp_fm_voicemail-tempgreetwarn'),
+            'selected'  => $info['voicemail']['tempgreetwarn'],
+            'default'   => $element['voicemail']['tempgreetwarn']['default']),
+         $element['voicemail']['tempgreetwarn']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-messagewrap'),
+            'name'      => 'voicemail[messagewrap]',
+            'labelid'   => 'voicemail-messagewrap',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'fm_bool-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue'),
+            'help'      => $this->bbf('hlp_fm_voicemail-messagewrap'),
+            'selected'  => $info['voicemail']['messagewrap'],
+            'default'   => $element['voicemail']['messagewrap']['default']),
+         $element['voicemail']['messagewrap']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-moveheard'),
+            'name'      => 'voicemail[moveheard]',
+            'labelid'   => 'voicemail-moveheard',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'fm_bool-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue'),
+            'help'      => $this->bbf('hlp_fm_voicemail-moveheard'),
+            'selected'  => $info['voicemail']['moveheard'],
+            'default'   => $element['voicemail']['moveheard']['default']),
+         $element['voicemail']['moveheard']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-minsecs'),
+            'name'      => 'voicemail[minsecs]',
+            'labelid'   => 'voicemail-minsecs',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'time-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue',
+            'time'      => array('from'=>'second', 'format'=>'%M%s')),
+            'help'      => $this->bbf('hlp_fm_voicemail-minsecs'),
+            'selected'  => $this->get_var('voicemail','minsecs','var_val'),
+            'selected'  => $info['voicemail']['minsecs'],
+            'default'   => $element['voicemail']['minsecs']['default']),
+         $element['voicemail']['minsecs']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-maxsecs'),
+            'name'      => 'voicemail[maxsecs]',
+            'labelid'   => 'voicemail-maxsecs',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'time-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue',
+            'time'      => array('from'=>'second', 'format'=>'%M%s')),
+            'help'      => $this->bbf('hlp_fm_voicemail-maxsecs'),
+            'selected'  => $this->get_var('voicemail','maxsecs','var_val'),
+            'selected'  => $info['voicemail']['maxsecs'],
+            'default'   => $element['voicemail']['maxsecs']['default']),
+         $element['voicemail']['maxsecs']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-nextaftercmd'),
+            'name'      => 'voicemail[nextaftercmd]',
+            'labelid'   => 'voicemail-nextaftercmd',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'fm_bool-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue'),
+            'help'      => $this->bbf('hlp_fm_voicemail-nextaftercmd'),
+            'selected'  => $info['voicemail']['nextaftercmd'],
+            'default'   => $element['voicemail']['nextaftercmd']['default']),
+         $element['voicemail']['nextaftercmd']['value']),
+
+    $form->select(array('desc'  => $this->bbf('fm_voicemail-backupdeleted'),
+            'name'     => 'voicemail[backupdeleted]',
+            'labelid'  => 'voicemail-backupdeleted',
+            'key'      => false,
+            'empty'    => true,
+            'help'     => $this->bbf('hlp_fm_voicemail-backupdeleted'),
+            'selected' => $info['voicemail']['backupdeleted'],
+            'default'  => $element['voicemail']['backupdeleted']['default']),
+        $element['voicemail']['backupdeleted']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_voicemail-passwordlocation'),
+            'name'     => 'voicemail[passwordlocation]',
+            'labelid'  => 'voicemail-passwordlocation',
+            'key'      => false,
+            'empty'    => true,
+            'bbf'      => 'fm_voicemail-passwordlocation-opt',
+            'bbfopt'   => array('argmode' => 'paramvalue'),
+            'help'     => $this->bbf('hlp_fm_voicemail-passwordlocation'),
+            'selected' => $info['voicemail']['passwordlocation'],
+            'default'  => $element['voicemail']['passwordlocation']['default']),
+         $element['voicemail']['passwordlocation']['value']);
 ?>
 </div>
