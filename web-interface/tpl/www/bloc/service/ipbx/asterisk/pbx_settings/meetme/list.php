@@ -97,7 +97,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=(dwho_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['confno']) === true ? $ref['confno'] : '-')?></td>
 		<td><?=(dwho_has_len($ref['pin']) === true ? $ref['pin'] : '-')?></td>
 		<td><?=(dwho_has_len($ref['pinadmin']) === true ? $ref['pinadmin'] : '-')?></td>
 		<td class="td-right" colspan="2">

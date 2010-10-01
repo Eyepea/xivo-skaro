@@ -751,7 +751,7 @@ CREATE TABLE `meetmefeatures` (
  `id` int(10) unsigned auto_increment,
  `meetmeid` int(10) unsigned NOT NULL,
  `name` varchar(80) NOT NULL,
- `number` varchar(40) NOT NULL,
+ `confno` varchar(40) NOT NULL,
  `context` varchar(39) NOT NULL,
  `admin_typefrom` enum('none','internal','external','undefined'),
  `admin_internalid` int(10) unsigned,
@@ -788,7 +788,7 @@ CREATE TABLE `meetmefeatures` (
  `closeconfdurationexceeded` tinyint(1) NOT NULL DEFAULT 0,
  `nbuserstartdeductduration` tinyint(2) unsigned,
  `timeannounceclose` smallint(3) unsigned,
- `maxuser` tinyint(2) unsigned,
+ `maxusers` tinyint(2) unsigned NOT NULL default 0,
  `startdate` datetime,
  `emailfrom` varchar(255),
  `emailfromname` varchar(255),
@@ -796,6 +796,7 @@ CREATE TABLE `meetmefeatures` (
  `emailbody` text NOT NULL,
  `preprocess_subroutine` varchar(39),
  `description` text NOT NULL,
+ `commented` tinyint(1) DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

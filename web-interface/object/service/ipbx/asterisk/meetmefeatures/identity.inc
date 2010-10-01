@@ -32,8 +32,8 @@ class xivo_service_asterisk_meetmefeatures_identity
 
 		if((bool) $full === false)
 			return($data);
-		else if(dwho_has_len($data['number']) === true)
-			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+		else if(dwho_has_len($data['confno']) === true)
+			$data['identity'] .= ' ('.$data['confno'].'@'.$data['context'].')';
 		else
 			$data['identity'] .= ' ('.$data['context'].')';
 
@@ -45,8 +45,8 @@ class xivo_service_asterisk_meetmefeatures_identity
 		if(is_array($arr) === false || isset($arr['name']) === false)
 			return(false);
 
-		if(isset($arr['number']) === false)
-			$arr['number'] = '';
+		if(isset($arr['confno']) === false)
+			$arr['confno'] = '';
 
 		if(isset($arr['context']) === false)
 			$arr['context'] = '';

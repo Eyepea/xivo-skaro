@@ -28,8 +28,8 @@ $array['element']['meetmeid']['default'] = '';
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
-$array['element']['number'] = array();
-$array['element']['number']['default'] = '';
+$array['element']['confno'] = array();
+$array['element']['confno']['default'] = '';
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
@@ -204,9 +204,9 @@ $array['element']['timeannounceclose']['value'] = array(15,30,45,60,75,90,105,12
 $array['element']['timeannounceclose']['default'] = '';
 $array['element']['timeannounceclose']['null'] = true;
 
-$array['element']['maxuser'] = array();
-$array['element']['maxuser']['default'] = '';
-$array['element']['maxuser']['null'] = true;
+$array['element']['maxusers'] = array();
+$array['element']['maxusers']['default'] = '';
+$array['element']['maxusers']['null'] = true;
 
 $array['element']['startdate'] = array();
 $array['element']['startdate']['default'] = '';
@@ -282,13 +282,15 @@ $array['element']['preprocess_subroutine']['null'] = true;
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
+$array['element']['commented'] = array();
+$array['element']['commented']['default'] = 0;
 
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['meetmeid'] = array('cast' => 'ulongint');
 $array['filter']['name'] = array('regexp' => '/^[a-zA-Z0-9_\.-]+$/','minlen' => 1,'maxlen' => 80);
-$array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['confno'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['admin_typefrom'] = array('key' => array('none','internal','external','undefined'));
 $array['filter']['admin_internalid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
@@ -325,7 +327,7 @@ $array['filter']['durationm'] = array('set' => false,'chk' => 2,'cast' => 'uint'
 $array['filter']['closeconfdurationexceeded'] = array('bool' => true);
 $array['filter']['nbuserstartdeductduration'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
 $array['filter']['timeannounceclose'] = array('set' => false,'cast' => 'uint','between' => array(15,300,15));
-$array['filter']['maxuser'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
+$array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
 $array['filter']['startdate'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_datetime','callbackarg' => array(true));
 $array['filter']['emailfrom'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['emailfromname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
@@ -333,5 +335,6 @@ $array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'cast' => 'sg
 $array['filter']['emailbody'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
+$array['filter']['commented'] = array('set' => false,'chk' => 2);
 
 ?>

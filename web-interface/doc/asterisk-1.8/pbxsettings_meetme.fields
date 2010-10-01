@@ -1,0 +1,17 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+
+====
+=prefix:meetmefeatures
+ ~ number                    RENAMED as confno
+ n starttime                 datetime
+ n endtime                   datetime
+   pin
+ n opts                      str;;100;1
+   pinadmin
+ n adminopts                 str;;100;1
+ ~ members                   THIS field is set live by asterisk to meetme members at now
+ n maxusers                  int;0;1
+ n recordingfilename         str;;80;1
+ n recordingformat           str::10;1

@@ -41,7 +41,7 @@ switch($act)
 			&& ($_QR['meetmeguest'] = dwho_group_array('fullname',$_QR['meetmeguest'])) === false)
 				unset($_QR['meetmeguest']);
 
-			$_QR['meetmeroom']['confno'] = $_QR['meetmefeatures']['number'];
+			$_QR['meetmeroom']['confno'] = $_QR['meetmefeatures']['confno'];
 
 			if($appmeetme->set_add($_QR) === false
 			|| $appmeetme->add() === false)
@@ -96,7 +96,7 @@ switch($act)
 			&& ($_QR['meetmeguest'] = dwho_group_array('fullname',$_QR['meetmeguest'])) === false)
 				unset($_QR['meetmeguest']);
 
-			$_QR['meetmeroom']['confno'] = $_QR['meetmefeatures']['number'];
+			$_QR['meetmeroom']['confno'] = $_QR['meetmefeatures']['confno'];
 
 			if($appmeetme->set_edit($_QR) === false
 			|| $appmeetme->edit() === false)

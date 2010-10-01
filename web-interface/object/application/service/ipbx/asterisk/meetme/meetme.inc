@@ -144,7 +144,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->_info['meetmemacro'] = false;
 		$this->_origin['meetmemacro'] = false;
 
-		if(($this->_info['meetmemacro'] = $this->_extensions->get_exten($this->_info['meetmefeatures']['number'],
+		if(($this->_info['meetmemacro'] = $this->_extensions->get_exten($this->_info['meetmefeatures']['confno'],
 										$this->_info['meetmefeatures']['context'],
 										'macro')) !== false)
 			$this->_origin['meetmemacro'] = $this->_extensions->get_origin();
@@ -203,7 +203,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$ref = &$r[$rs[$i]['id']];
 
 			$identity['name'] = $ref['name'];
-			$identity['number'] = $ref['number'];
+			$identity['confno'] = $ref['confno'];
 			$identity['context'] = $ref['context'];
 
 			$ref['identity'] = $this->_meetmefeatures->mk_identity($identity);
@@ -264,7 +264,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		if(dwho_issa('meetmeguest',$arr) === true)
 			$this->set_meetmeguest($arr['meetmeguest']);
 
-		$number = (string) $this->get_result_var('meetmefeatures','number');
+		$number = (string) $this->get_result_var('meetmefeatures','confno');
 		$context = (string) $this->get_result_var('meetmefeatures','context');
 
 		if($this->_errnb === 0 && $number !== '')
@@ -634,7 +634,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$this->_status = '';
 			return(false);
 		}
-		else if($this->_info['meetmefeatures']['number'] !== '')
+		else if($this->_info['meetmefeatures']['confno'] !== '')
 		{
 			if($this->get_result('meetmemacro') === null
 			|| $this->get_result('extenumbers') === null)
@@ -832,7 +832,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$variables['CONFNAME']		= (string) $this->get_result_var('meetmefeatures','name');
 		$variables['CONFPIN']		= (string) $this->get_result_var('meetmeroom','pin');
 		$variables['CONFPINADMIN']	= (string) $this->get_result_var('meetmeroom','pinadmin');
-		$variables['CONFNUMBER']	= (string) $this->get_result_var('meetmefeatures','number');
+		$variables['CONFNUMBER']	= (string) $this->get_result_var('meetmefeatures','confno');
 		$variables['CONFDATE']		= (string) $this->get_result_var('meetmefeatures','startdate');
 		$variables['CONFDURATION']	= (string) $this->get_result_var('meetmefeatures','durationm');
 
