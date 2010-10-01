@@ -1578,8 +1578,6 @@ INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','ima
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','greetingsfolder',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','imapparentfolder',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','tz',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','attachfmt',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','deletevoicemail',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','hidefromdir',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','messagewrap',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','minpassword',NULL);
@@ -1944,7 +1942,26 @@ CREATE TABLE `voicemail` (
  `forcegreetings` tinyint(1),
  `hidefromdir` enum('yes','no') NOT NULL DEFAULT 'no',
  `maxmsg` smallint(4) unsigned,
+ `emailsubject` varchar(1024),
+ `emailbody` text,
+ `imapuser` varchar(1024),
+ `imappassword` varchar(1024),
+ `imapfolder` varchar(1024),
+ `imapvmsharedid` varchar(1024),
+ `attachfmt` varchar(1024),
+ `serveremail` varchar(1024),
+ `locale` varchar(1024),
+ `tempgreetwarn` tinyint(1) DEFAULT NULL,
+ `messagewrap` tinyint(1) DEFAULT NULL,
+ `moveheard` tinyint(1) DEFAULT NULL,
+ `minsecs` integer unsigned DEFAULT NULL,
+ `maxsecs` integer unsigned DEFAULT NULL,
+ `nextaftercmd` tinyint(1) DEFAULT NULL,
+ `backupdeleted` integer unsigned DEFAULT NULL,
+ `volgain` float DEFAULT NULL,
+ `passwordlocation` enum('spooldir', 'voicemail') DEFAULT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
+
  PRIMARY KEY(`uniqueid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
