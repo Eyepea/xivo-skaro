@@ -1,0 +1,78 @@
+
+ * = required
+ | = OR
+
+====
+=source:main/pbx.c
+~ Answer                                         delay=int,nocdr=bool
+  Background                                     filenames=str,options=str(snm),langoverride=bool,context=str 
+  Busy                                           timeout=int
+  Congestion                                     timeout=int
+n ExecIfTime                                     times,weekdays,mdays,months,timezone,appname(appargs)
+  Goto                                           context,extension,priority(*)
+  GotoIf                                         condition(*),labeliftrue|labeliffalse(*)
+n GotoIfTime                                     times(*),weekdays(*),mdays(*),months(*),timezone,labeliftrue|labeliffalse
+n ImportVar                                      newvar(*),channelname|variable(*),
+~ Hangup                                         causecode
+n Incomplete                                     n
+  NoOp                                           text
+n Proceeding
+n Progress
+n RaiseException                                 reason(*)
+n ResetCDR                                       options=w|a|v|e
+n Ringing                                        
+n SayAlpha                                       sound
+n SayDigits                                      digits
+n SayNumber                                      digits(*),gender
+n SayPhonetic                                    sound(*)
+  Set                                            name(*),value(*)
+n MSet                                           (name,value)+(*)
+n SetAMAFlags                                    
+  Wait                                           seconds(*)
+  WaitExten                                      seconds,options=m[x]
+n EXCEPTION                                      field=reason|context|exten|priority
+n TESTTIME                                       date(*),time(*),zone
+  ShowDialPlan                                   extension,context
+=source:apps/app_authenticate.c
+~ Authenticate                                   password(*),options=a|d|m|r(*),maxdigits,prompt
+=source:apps/app_voicemail.c
+~ Voicemail                                      (mailbox@context)+(*),options=b|d|g|s|u|U|P
+~ VoicemailMain                                  mailbox(*),options=p|g|s|a
+n MailboxExists                                  mailbox@context(*)
+  VMAuthenticate                                 mailbox@context(*),options=s
+n VMSayName                                      mailbox@context(*) 
+n MAILBOX_EXISTS                                 mailbox@context(*)
+n VoicemailUsersList
+=source:apps/app_mixmonitor.c
+  MixMonitor                                     filename(*),options=a|b|v|V|W,command
+n StopMixMonitor                                 
+n MixMonitorMute                                 channel(*),direction,state
+=source:res/res_monitor.c
+~ Monitor                                        format*,basename,options=m|b|i|o
+  StopMonitor                                    
+n ChangeMonitor                                  basename(*)
+n PauseMonitor
+n UnpauseMonitor
+=source:apps/app_record.c
+~ Record                                         filename(*),silence,maxduration,options=a|n|q|s|t|x|k|y
+=source:apps/app_playback.c
+~ Playback                                       filename+(*),options=skip|noanswer|say
+=source:funcs/func_timeout.c
+  TIMEOUT                                        type=absolute|digit|response(*)
+     Replace AbsoluteTimeout,DigitTimeout,ResponseTimeout
+=source:apps/app_read.c
+  Read                                           variable(*),filename+*,maxdigits,options=s|i|n,attempts,timeout
+=source:apps/app_setcallerid.c
+n SetCallerPres                                  presentation=...(*)
+=source:funcs/func_callerid.c
+  CALLERID                                       type=all|...(*),value
+     Replace SetCallerID, SetCIDName, SetCIDNum
+=source:apps/app_waitforring.c
+  WaitForRing                                    timeout(*)
+=source:res/res_musiconhold.c
+n MusicOnHold                                    class(*),duration
+  WaitMusicOnHold                                delay(*)
+n SetmusicOnHold                                 class(*)
+n StartMusicOnHold                               class(*)
+n StopMusicOnHold
+

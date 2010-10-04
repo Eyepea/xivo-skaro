@@ -53,6 +53,7 @@ open my $fi, "< @ARGV[0]" or die $@;
 	'txt'  => "text NOT NULL DEFAULT ''",
 	'double' => "float NOT NULL DEFAULT 0",
 	'time' => 'integer unsigned NOT NULL DEFAULT 0',
+	'datetime' => "datetime NOT NULL DEFAULT '2000-01-01 12:00:00'",
 );
 $smysql = "=== mysql\n";
 $stpl   = "=== tpl\n";
