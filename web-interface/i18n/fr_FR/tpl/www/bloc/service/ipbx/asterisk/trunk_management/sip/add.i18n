@@ -47,16 +47,13 @@ Dynamique
 Statique
 
 ; fm_protocol_type
-Type de connexion :
-
-; fm_protocol_type-opt(user)
-Entrant
+Mode d'authentification :
 
 ; fm_protocol_type-opt(peer)
-Sortant
+Adresse
 
 ; fm_protocol_type-opt(friend)
-Entrant/Sortant
+Identifiant
 
 ; fm_protocol_language
 Langue :
@@ -250,24 +247,6 @@ Support des redirections 302 :
 ; fm_protocol_usereqphone
 Ajouter ";user=phone" dans l'URI :
 
-; fm_protocol_canreinvite
-Invite :
-
-; fm_protocol_canreinvite-opt(no)
-Non
-
-; fm_protocol_canreinvite-opt(yes)
-Oui
-
-; fm_protocol_canreinvite-opt(update)
-Mise à jour
-
-; fm_protocol_canreinvite-opt(nonat)
-Sans NAT
-
-; fm_protocol_canreinvite-opt(update-nonat)
-Mise à jour sans NAT
-
 ; fm_protocol_fromuser
 Réécriture du champ From-User :
 
@@ -285,3 +264,153 @@ Code client :
 
 ; fm_trunkfeatures_description
 Description :
+
+;;; 1.8 fields
+; fm_protocol-transport
+Protocoles réseau : 
+
+; hlp_fm_protocol-transport
+Config asterisk: transport
+
+; fm_protocol-remotesecret
+Mot de passe distant : 
+
+; hlp_fm_protocol-remotesecret
+Config asterisk: remotesecret
+
+; fm_protocol-directmedia
+Rediriger le flux RTP de pair à pair : 
+
+; hlp_fm_protocol-directmedia
+Config asterisk: directmedia
+
+; fm_protocol-directmedia-opt(no)
+Non
+
+; fm_protocol-directmedia-opt(yes)
+Oui
+
+; fm_protocol-directmedia-opt(nonat)
+Pas sur le NAT
+
+; fm_protocol-directmedia-opt(update)
+Oui, via UPDATE
+
+; fm_protocol-directmedia-opt(update,nonat)
+Oui, via UPDATE + pas sur le NAT
+
+; fm_protocol-callcounter
+Compter les appels : 
+
+; hlp_fm_protocol-callcounter
+Config asterisk: callcounter
+
+; fm_protocol-busylevel
+Envoyer le signal OCCUPÉ au dessus du nombre d'appels : 
+
+; hlp_fm_protocol-busylevel
+Config asterisk: busylevel
+
+; fm_protocol-ignoresdpversion
+Ignorer le numéro de version des paquets SDP : 
+
+; hlp_fm_protocol-ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_protocol-session-timers
+Activer session-timer : 
+
+; hlp_fm_protocol-session-timers
+Config asterisk: session-timers
+
+; fm_protocol-session-timers-opt(originate)
+Toujours
+
+; fm_protocol-session-timers-opt(accept)
+Sur demande uniquement
+
+; fm_protocol-session-timers-opt(refuse)
+Non
+
+; fm_protocol-session-expires
+Interval maximal de rafraîchissement de la session : 
+
+; hlp_fm_protocol-session-expires
+Config asterisk: session-expires
+
+; fm_protocol-session-minse
+Interval minimal de rafraîchissement de la session : 
+
+; hlp_fm_protocol-session-minse
+Config asterisk: session-minse
+
+; fm_protocol-session-refresher
+Session mise à jour par le : 
+
+; hlp_fm_protocol-session-refresher
+Config asterisk: session-refresher
+
+; fm_protocol-session-refresher-opt(uas)
+Serveur
+
+; fm_protocol-session-refresher-opt(uac)
+Client
+
+; fm_protocol-callbackextension
+Extension où aboutissent les appels entrants : 
+
+; hlp_fm_protocol-callbackextension
+Config asterisk: callbackextension
+
+; fm_protocol-registertrying
+Envoyer un «100 Trying» lors de l'enregistrement : 
+
+; hlp_fm_protocol-registertrying
+Config asterisk: registertrying
+
+; fm_protocol-timert1
+Délai T1 : 
+
+; hlp_fm_protocol-timert1
+Config asterisk: timert1
+
+; fm_protocol-timerb
+Délai de configuration : 
+
+; hlp_fm_protocol-timerb
+Config asterisk: timerb
+
+; fm_protocol-qualifyfreq
+Fréquence de supervision : 
+
+; hlp_fm_protocol-qualifyfreq
+Config asterisk: qualifyfreq
+
+; fm_protocol-contactpermit
+Adresses de contact autorisées : 
+
+; hlp_fm_protocol-contactpermit
+Config asterisk: contactpermit
+
+; fm_protocol-contactdeny
+Adresses de contact interdites : 
+
+; hlp_fm_protocol-contactdeny
+Config asterisk: contactdeny
+
+
+; fm_register-transport
+Transport : 
+
+; hlp_fm_register-transport
+
+; fm_register-expiry
+Délai d'expiration : 
+
+; hlp_fm_register-expiry
+Config asterisk: expiry
+
+; fm_register-callbackextension
+Utiliser l'extension de l'interconnexion : 
+
+

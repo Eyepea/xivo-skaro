@@ -57,16 +57,17 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		|| dwho_has_len($arr,'host') === false)
 			return(false);
 
+		$uri['scheme'] = $arr['transport'];
 		$uri['user'] = $arr['username'];
 		$uri['host'] = $arr['host'];
 
+		$uri['passwd'] = '';
 		if(dwho_has_len($arr,'password') === true)
-		{
 			$uri['passwd'] = $arr['password'];
+		$uri['passwd'] .= ':';
 
-			if(dwho_has_len($arr,'authuser') === true)
-				$uri['passwd'] .= ':'.$arr['authuser'];
-		}
+		if(dwho_has_len($arr,'authuser') === true)
+			$uri['passwd'] .= $arr['authuser'];
 
 		if(dwho_has_len($arr,'port') === true)
 			$uri['port'] = $arr['port'];
@@ -81,32 +82,34 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 				$uri['path'] = $arr['contact'];
 		}
 
+		if(dwho_has_len($arr, 'expiry') === true)
+			$uri['expiry'] = $arr['expiry'];
+
 		if(($r['str'] = $this->_uri->build_uri($uri)) === false
 		|| ($r['arr'] = $this->parse_register_uri($r['str'])) === false)
 			return(false);
-
-		if(substr($r['str'],0,2) === '//')
-			$r['str'] = substr($r['str'],2);
 
 		return($r);
 	}
 
 	function parse_register_uri($val,$decode=true)
 	{
-		if(is_scalar($val) === true && substr($val,0,2) !== '//')
-			$val = '//'.$val;
-
 		if($this->_load_uri() === false
 		|| ($parse_uri = $this->_uri->parse_uri($val,$decode)) === false)
 			return(false);
 
 		$r = array(
+			'transport' => '',
 			'username'	=> '',
 			'password'	=> '',
 			'authuser'	=> '',
 			'host'		=> '',
 			'port'		=> '',
-			'contact'	=> '');
+			'contact'	=> '',
+			'expiry'  => '',);
+
+		if(isset($parse_uri['scheme']) === true)
+			$r['transport'] = $parse_uri['scheme'];
 
 		if(dwho_issa('authority',$parse_uri) === true)
 		{
@@ -114,15 +117,10 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 				$r['username'] = $parse_uri['authority']['user'];
 
 			if(isset($parse_uri['authority']['passwd']) === true)
-			{
 				$r['password'] = $parse_uri['authority']['passwd'];
 
-				if(($pos = strrpos($parse_uri['authority']['passwd'],':')) !== false)
-				{
-					$r['password'] = substr($parse_uri['authority']['passwd'],0,$pos);
-					$r['authuser'] = substr($parse_uri['authority']['passwd'],$pos + 1);
-				}
-			}
+			if(isset($parse_uri['authority']['authuser']) === true)
+				$r['authuser'] = $parse_uri['authority']['authuser'];
 
 			if(isset($parse_uri['authority']['host']) === true)
 				$r['host'] = $parse_uri['authority']['host'];
@@ -138,6 +136,9 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 			else
 				$r['contact'] = $parse_uri['path'];
 		}
+
+		if(isset($parse_uri['expiry']) === true)
+			$r['expiry'] = $parse_uri['expiry'];
 
 		return($r);
 	}

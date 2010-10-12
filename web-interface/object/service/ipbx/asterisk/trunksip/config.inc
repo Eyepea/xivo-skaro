@@ -318,8 +318,90 @@ $array['element']['category']['forcedef'] = true;
 $array['element']['outboundproxy'] = array();
 $array['element']['outboundproxy']['default'] = '';
 
+// asterisk 1.8 fields
+$array['element']['transport'] = array();
+$array['element']['transport']['value'] = array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls');
+$array['element']['transport']['default'] = 'udp';
+
+$array['element']['remotesecret'] = array();
+$array['element']['remotesecret']['default'] = '';
+$array['element']['remotesecret']['null'] = true;
+
+$array['element']['directmedia'] = array();
+$array['element']['directmedia']['value'] = array('no','yes','nonat','update','update,nonat');
+$array['element']['directmedia']['default'] = 'yes';
+$array['element']['directmedia']['null'] = true;
+
+$array['element']['callcounter'] = array();
+$array['element']['callcounter']['value'] = array(0, 1);
+$array['element']['callcounter']['default'] = '';
+$array['element']['callcounter']['null']    = true;
+
+$array['element']['busylevel'] = array();
+$array['element']['busylevel']['value'] = range(1,100,1);
+$array['element']['busylevel']['default'] = '';
+$array['element']['busylevel']['null'] = true;
+
+$array['element']['ignoresdpversion'] = array();
+$array['element']['ignoresdpversion']['value'] = array(0, 1);
+$array['element']['ignoresdpversion']['default'] = '';
+$array['element']['ignoresdpversion']['null']    = true;
+
+$array['element']['session-timers'] = array();
+$array['element']['session-timers']['value'] = array('originate','accept','refuse');
+$array['element']['session-timers']['default'] = '';
+$array['element']['session-timers']['null'] = true;
+
+$array['element']['session-expires'] = array();
+$array['element']['session-expires']['value'] = range(0,3600,60);
+$array['element']['session-expires']['default'] = '';
+$array['element']['session-expires']['null'] = true;
+
+$array['element']['session-minse'] = array();
+$array['element']['session-minse']['value'] = range(0,300,10);
+$array['element']['session-minse']['default'] = '';
+$array['element']['session-minse']['null'] = true;
+
+$array['element']['session-refresher'] = array();
+$array['element']['session-refresher']['value'] = array('uas','uac');
+$array['element']['session-refresher']['default'] = '';
+$array['element']['session-refresher']['null'] = true;
+
+$array['element']['callbackextension'] = array();
+$array['element']['callbackextension']['default'] = '';
+$array['element']['callbackextension']['null'] = true;
+
+$array['element']['registertrying'] = array();
+$array['element']['registertrying']['value'] = array(0, 1);
+$array['element']['registertrying']['default'] = '';
+$array['element']['registertrying']['null']    = true;
+
+$array['element']['timert1'] = array();
+$array['element']['timert1']['default'] = '';
+$array['element']['timert1']['null'] = true;
+
+$array['element']['timerb'] = array();
+$array['element']['timerb']['default'] = '';
+$array['element']['timerb']['null'] = true;
+
+$array['element']['qualifyfreq'] = array();
+$array['element']['qualifyfreq']['value'] = range(1,300,10);
+$array['element']['qualifyfreq']['default'] = '';
+$array['element']['qualifyfreq']['null'] = true;
+
+$array['element']['contactpermit'] = array();
+$array['element']['contactpermit']['default'] = '';
+$array['element']['contactpermit']['null'] = true;
+
+$array['element']['contactdeny'] = array();
+$array['element']['contactdeny']['default'] = '';
+$array['element']['contactdeny']['null'] = true;
+
+
 dwho::load_class('dwho_network');
 
+// FILTER
+//
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9@+._-]+$/i');
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('user','peer','friend'));
@@ -424,5 +506,22 @@ $array['filter']['lastms'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 $array['filter']['outboundproxy'] = array('set' => false, 'chk' => 2);
+$array['filter']['transport'] = array('key' => array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls'));
+$array['filter']['remotesecret'] = array('set' => false,'chk' => 2,'maxlen' => 255);
+$array['filter']['directmedia'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','nonat','update','update,nonat'));
+$array['filter']['callcounter'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['busylevel'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,100,1));
+$array['filter']['ignoresdpversion'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['session-timers'] = array('set' => false, 'chk' => 2, 'key' => array('originate','accept','refuse'));
+$array['filter']['session-expires'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(0,3600,60));
+$array['filter']['session-minse'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(0,300,10));
+$array['filter']['session-refresher'] = array('set' => false, 'chk' => 2, 'key' => array('uas','uac'));
+$array['filter']['callbackextension'] = array('set' => false,'chk' => 2,'maxlen' => 25);
+$array['filter']['registertrying'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['timert1'] = array('set' => false,'chk' => 2,'maxlen' => 5);
+$array['filter']['timerb'] = array('set' => false,'chk' => 2,'maxlen' => 5);
+$array['filter']['qualifyfreq'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,300,10));
+$array['filter']['contactpermit'] = array('set' => false,'chk' => 2,'maxlen' => 35);
+$array['filter']['contactdeny'] = array('set' => false,'chk' => 2,'maxlen' => 35);
 
 ?>

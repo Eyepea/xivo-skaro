@@ -56,6 +56,8 @@ switch($act)
 		}
 
 		$element = $apptrunk->get_elements();
+		// remove 'user' type
+		unset($element['protocol']['type']['value'][0]);
 
 		if(dwho_issa('allow',$element['protocol']) === true
 		&& dwho_issa('value',$element['protocol']['allow']) === true
@@ -81,6 +83,7 @@ switch($act)
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('context_list',$apptrunk->get_context_list());
 		break;
+
 	case 'edit':
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
@@ -101,6 +104,9 @@ switch($act)
 		{
 			$return = &$result;
 
+			if(isset($_QR['register']['callbackextension']))
+				$_QR['register']['contact'] = 'callbackextension';
+
 			if($apptrunk->set_edit($_QR) === false
 			|| $apptrunk->edit() === false)
 			{
@@ -119,6 +125,8 @@ switch($act)
 		}
 
 		$element = $apptrunk->get_elements();
+		// remove 'user' type
+		unset($element['protocol']['type']['value'][0]);
 
 		if(dwho_issa('allow',$element['protocol']) === true
 		&& dwho_issa('value',$element['protocol']['allow']) === true
@@ -133,6 +141,12 @@ switch($act)
 		if(empty($return) === false)
 			$return['protocol']['allow'] = $allow;
 
+		if($return['register']['contact'] == 'callbackextension')
+		{
+			$return['register']['contact'] = '';
+			$return['register']['callbackextension'] = true;
+		}
+
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/sip.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
@@ -145,6 +159,7 @@ switch($act)
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('context_list',$apptrunk->get_context_list());
 		break;
+
 	case 'delete':
 		$param['page'] = $page;
 
@@ -177,6 +192,7 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/trunk_management/sip'),$param);
 		break;
+
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
@@ -201,6 +217,7 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/trunk_management/sip'),$param);
 		break;
+
 	default:
 		$act = 'list';
 		$prevpage = $page - 1;

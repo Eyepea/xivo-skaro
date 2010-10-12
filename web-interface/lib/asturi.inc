@@ -28,13 +28,13 @@ class dwho_asterisk_uri extends dwho_uri
 
 		$sub_delims	= '\!\$&\'\(\)\*\+,;=';
 		$unreserved	= 'a-zA-Z0-9-\._~';
-		$this->_regexp['user']		= '/^['.$unreserved.$sub_delims.'@+%]+$/';
+		$this->_regexp['user']		= '/^['.$unreserved.$sub_delims.'@:+%]+$/';
 	}
 
 	function build_uri($arr,$encode=true,$type_host=null,$query_sep=null)
 	{
 		$encode = (bool) $encode;
-		$scheme = $authority = $userinfo = $hostport = $path = $query = $fragment = '';
+		$scheme = $authority = $userinfo = $hostport = $path = $query = $fragment = $expiry = '';
 
 		if(is_array($arr) === false)
 			return(false);
@@ -148,6 +148,9 @@ class dwho_asterisk_uri extends dwho_uri
 				$fragment = $arr['fragment'];
 		}
 
+		if(dwho_has_len($arr,'expiry') === true)
+			$expiry = $arr['expiry'];
+
 		$r = '';
 
 		if($scheme !== '')
@@ -170,12 +173,22 @@ class dwho_asterisk_uri extends dwho_uri
 		if($fragment !== '')
 			$r .= '#'.$fragment;
 
+		if($expiry != '')
+			$r .= '~'.$expiry;
+
 		return($r);
 	}
 
 	function parse_uri($uri,$decode=true,$query_sep=null)
 	{
 		$decode = (bool) $decode;
+
+		$expiry = false;
+		if(($i = strrpos($uri, '~')) !== false)
+		{
+			$expiry = substr($uri, $i+1);
+			$uri    = substr($uri, 0, $i);
+		}
 
 		if(($uri = $this->uri_split($uri)) === false)
 			return(false);
@@ -187,6 +200,9 @@ class dwho_asterisk_uri extends dwho_uri
 			return(false);
 		else if(isset($uri['scheme']) === true && $this->valid_scheme($uri['scheme']) === false)
 			return(false);
+
+		if($expiry !== false)
+			$uri['expiry'] = $expiry;
 
 		if(dwho_issa('authority',$uri) === true)
 		{
@@ -287,14 +303,19 @@ class dwho_asterisk_uri extends dwho_uri
 			$userinfo = substr($authority,0,$pos);
 			$hostport = substr($authority,$pos + 1);
 
-			if(($pos = strpos($userinfo,':')) === false)
+			if(($pos = strrpos($userinfo,':')) === false)
 				$r['user'] = $userinfo;
 			else
 			{
-				if($pos !== 0)
-					$r['user'] = substr($userinfo,0,$pos);
+				if(($pos2 = strrpos($userinfo, ':', $pos-strlen($userinfo)-1)) !== false)
+				{
+					$r['authuser'] = substr($userinfo, $pos+1); 
+					$userinfo      = substr($userinfo, 0, $pos);
+					$pos           = $pos2;
+				}
 
-				if(isset($userinfo{$pos + 1}) === true)
+				$r['user']   = substr($userinfo,0,$pos);
+				if($pos + 1 < strlen($userinfo))
 					$r['passwd'] = substr($userinfo,$pos + 1);
 			}
 		}

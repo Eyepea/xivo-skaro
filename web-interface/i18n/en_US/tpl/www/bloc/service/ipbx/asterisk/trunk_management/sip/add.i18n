@@ -56,16 +56,13 @@ Port:
 DTMF:
 
 ; fm_protocol_type
-Connection type:
-
-; fm_protocol_type-opt(user)
-Incoming
+Identified by:
 
 ; fm_protocol_type-opt(peer)
-Outgoing
+Address
 
 ; fm_protocol_type-opt(friend)
-Incoming/Outgoing
+Username
 
 ; fm_protocol_nat
 NAT:
@@ -328,3 +325,156 @@ Client code :
 
 ; fm_trunkfeatures_description
 Description :
+
+
+;;; 1.8 fields
+; fm_protocol-transport
+Transport : 
+
+; hlp_fm_protocol-transport
+Config asterisk: transport
+
+; fm_protocol-remotesecret
+Remote password : 
+
+; hlp_fm_protocol-remotesecret
+Config asterisk: remotesecret
+
+; fm_protocol-directmedia
+Invite:
+
+; hlp_fm_protocol-directmedia
+Config asterisk: directmedia
+
+; fm_protocol-directmedia-opt(no)
+No
+
+; fm_protocol-directmedia-opt(yes)
+Yes
+
+; fm_protocol-directmedia-opt(nonat)
+
+Without NAT
+
+; fm_protocol-directmedia-opt(update)
+Update
+
+; fm_protocol-directmedia-opt(update,nonat)
+Update without NAT
+
+; fm_protocol-callcounter
+Enable calls counter:
+
+; hlp_fm_protocol-callcounter
+Config asterisk: callcounter
+
+; fm_protocol-busylevel
+Send BUSY up to num. calls:
+
+; hlp_fm_protocol-busylevel
+Config asterisk: busylevel
+
+; fm_protocol-ignoresdpversion
+Ignore SDP packets version:
+
+; hlp_fm_protocol-ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_protocol-session-timers
+Session-timers mode: 
+
+; hlp_fm_protocol-session-timers
+Config asterisk: session-timers
+
+; fm_protocol-session-timers-opt(originate)
+Originate
+
+; fm_protocol-session-timers-opt(accept)
+Accept
+
+; fm_protocol-session-timers-opt(refuse)
+Refuse
+
+; fm_protocol-session-expires
+Maximum session refresh interval: 
+
+; hlp_fm_protocol-session-expires
+Config asterisk: session-expires
+
+; fm_protocol-session-minse
+Minimum session refresh interval:
+
+; hlp_fm_protocol-session-minse
+Config asterisk: session-minse
+
+; fm_protocol-session-refresher
+Session refresher:
+
+; hlp_fm_protocol-session-refresher
+Config asterisk: session-refresher
+
+; fm_protocol-session-refresher-opt(uas)
+Server
+
+; fm_protocol-session-refresher-opt(uac)
+Client
+
+; fm_protocol-callbackextension
+Callback extension:
+
+; hlp_fm_protocol-callbackextension
+Config asterisk: callbackextension
+
+; fm_protocol-registertrying
+Send «100 Trying» when register: 
+
+; hlp_fm_protocol-registertrying
+Config asterisk: registertrying
+
+; fm_protocol-timert1
+Minimum time of the round trip (RTT) messages:
+
+; hlp_fm_protocol-timert1
+Config asterisk: timert1
+
+; fm_protocol-timerb
+Call setup timer: 
+
+; hlp_fm_protocol-timerb
+Config asterisk: timerb
+
+; fm_protocol-qualifyfreq
+Qualify frequency : 
+
+; hlp_fm_protocol-qualifyfreq
+Config asterisk: qualifyfreq
+
+; fm_protocol-contactpermit
+Authorised contact addresses: 
+
+; hlp_fm_protocol-contactpermit
+Config asterisk: contactpermit
+
+; fm_protocol-contactdeny
+Rejected contact addresses: 
+
+; hlp_fm_protocol-contactdeny
+Config asterisk: contactdeny
+
+
+; fm_register-transport
+Transport : 
+
+; hlp_fm_register-transport
+
+; fm_register-expiry
+Expiry : 
+
+; hlp_fm_register-expiry
+Config asterisk: expiry
+
+; fm_register-callbackextension
+Use callback extension : 
+
+
+

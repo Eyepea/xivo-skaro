@@ -39,6 +39,14 @@ $array['element']['port']['default'] = '';
 $array['element']['contact'] = array();
 $array['element']['contact']['default'] = '';
 
+$array['element']['expiry'] = array();
+$array['element']['expiry']['value'] = range(1,3600,1);
+$array['element']['expiry']['default'] = '';
+$array['element']['expiry']['null'] = true;
+
+$array['element']['transport'] = array();
+$array['element']['transport']['value'] = array('udp','tcp','tls');
+$array['element']['transport']['default'] = 'udp';
 
 dwho::load_class('dwho_network');
 
@@ -53,5 +61,7 @@ $array['filter']['host'] = array('set'		=> false,
 				 'maxlen'	=> 64);
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['contact'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9]+$/i','maxlen' => 250);
+$array['filter']['expiry'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,3600,1));
+$array['filter']['transport'] = array('key' => array('udp','tcp','tls'));
 
 ?>
