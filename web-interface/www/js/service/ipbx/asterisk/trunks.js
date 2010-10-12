@@ -43,6 +43,14 @@ var xivo_ast_fm_trunk_codec = {
 
 xivo_attrib_register('ast_fm_trunk_codec',xivo_ast_fm_trunk_codec);
 
+
+var xivo_ast_fm_register_contact = {
+	'it-register-contact':
+		{property: [{disabled: false, className: 'it-enabled'},
+			    {disabled: true, className: 'it-disabled'}]}};
+
+xivo_attrib_register('ast_fm_register_contact',xivo_ast_fm_register_contact);
+
 xivo_ast_fm_trunk_register = {
 	'it-register-username':
 		{property: [{disabled: false, className: 'it-enabled'},
@@ -61,6 +69,18 @@ xivo_ast_fm_trunk_register = {
 			    {disabled: true, className: 'it-disabled'}],
 		 link: 'it-register-port'},
 	'it-register-port':
+		{property: [{disabled: false, className: 'it-enabled'},
+			    {disabled: true, className: 'it-disabled'}],
+		 link: 'it-register-transport'},
+	'it-register-transport':
+		{property: [{disabled: false, className: 'it-enabled'},
+			    {disabled: true, className: 'it-disabled'}],
+		 link: 'it-register-expiry'},
+	'it-register-expiry':
+		{property: [{disabled: false, className: 'it-enabled'},
+			    {disabled: true, className: 'it-disabled'}],
+		 link: 'it-register-callbackextension'},
+	'it-register-callbackextension':
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}],
 		 link: 'it-register-contact'},
@@ -257,14 +277,23 @@ function xivo_ast_trunk_onload()
 		xivo_ast_chg_trunk_type(dwho_eid('it-protocol-type').value);
 
 	if((regactive = dwho_eid('it-register-active')) !== false)
+	{
 		xivo_chg_attrib('ast_fm_trunk_register',
 				'it-register-username',
 				Number(regactive.checked === false));
+
+		if(regactive.checked === true
+		&& (callbackexten = dwho_eid('it-register-callbackextension')) !== false)
+			xivo_chg_attrib('ast_fm_register_contact',
+					'it-register-contact',
+					Number(callbackexten.checked === true));
+	}
 
 	if((codec_active = dwho_eid('it-codec-active')) !== false)
 		xivo_chg_attrib('ast_fm_trunk_codec',
 				'it-protocol-disallow',
 				Number(codec_active.checked === false));
+
 }
 
 dwho.dom.set_onload(xivo_ast_trunk_onload);
