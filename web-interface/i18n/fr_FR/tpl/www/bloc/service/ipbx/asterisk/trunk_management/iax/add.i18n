@@ -261,3 +261,23 @@ oui
 
 ; ast_requirecalltoken(no)
 non
+
+;;; asterisk 1.8
+; fm_protocol-immediate
+Décrocher immédiatement : 
+
+; hlp_fm_protocol-immediate
+Config asterisk: immediate
+
+; fm_protocol-keyrotate
+Désactiver la rotation des clés avec encodage : 
+
+; hlp_fm_protocol-keyrotate
+Config asterisk: keyrotate
+
+; fm_protocol-keyrotate-opt(on)
+Oui
+
+; fm_protocol-keyrotate-opt(off)
+Non
+

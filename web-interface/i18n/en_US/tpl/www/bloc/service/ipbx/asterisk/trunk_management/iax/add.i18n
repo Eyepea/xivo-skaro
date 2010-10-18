@@ -274,3 +274,23 @@ yes
 
 ; fm_protocol_codec-disallow-opt(all)
 All
+
+;;; asterisk 1.8
+; fm_protocol-immediate
+Immediate off-hook : 
+
+; hlp_fm_protocol-immediate
+Config asterisk: immediate
+
+; fm_protocol-keyrotate
+Deactivate key rotation with encryption :
+
+; hlp_fm_protocol-keyrotate
+Config asterisk: keyrotate
+
+; fm_protocol-keyrotate-opt(on)
+Yes
+
+; fm_protocol-keyrotate-opt(off)
+No
+

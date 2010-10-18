@@ -530,7 +530,35 @@ endif;
 				    'bbf'	=> 'ast_requirecalltoken',
 				    'default'	=> $element['protocol']['requirecalltoken']['default'],
 				    'selected'	=> $info['protocol']['requirecalltoken']),
-			      $element['protocol']['requirecalltoken']['value']);
+					$element['protocol']['requirecalltoken']['value']),
+
+		// asterisk 1.8 fields
+	  $form->select(array('desc'  => $this->bbf('fm_protocol-immediate'),
+            'name'      => 'protocol[immediate]',
+            'labelid'   => 'protocol-immediate',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'fm_bool-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue'),
+            'help'      => $this->bbf('hlp_fm_protocol-immediate'),
+            'selected'  => $this->get_var('protocol','immediate','var_val'),
+            'selected'  => $info['protocol']['immediate'],
+            'default'   => $element['protocol']['immediate']['default']),
+         $element['protocol']['immediate']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_protocol-keyrotate'),
+            'name'    => 'protocol[keyrotate]',
+            'labelid' => 'protocol-keyrotate',
+            'key'   => false,
+            'empty' => true,
+            'bbf'   => 'fm_protocol-keyrotate-opt',
+            'bbfopt'  => array('argmode' => 'paramvalue'),
+            'help'    => $this->bbf('hlp_fm_protocol-keyrotate'),
+            'selected'  => $this->get_var('protocol','keyrotate','var_val'),
+            'selected'  => $info['protocol']['keyrotate'],
+            'default' => $element['protocol']['keyrotate']['default']),
+         $element['protocol']['keyrotate']['value']);
+
 
 ?>
 	<div class="fm-paragraph fm-description">

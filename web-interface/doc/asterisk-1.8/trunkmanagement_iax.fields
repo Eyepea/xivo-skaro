@@ -1,0 +1,66 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+
+====
+=prefix:protocol
+   accountcode
+   adsi
+   allow
+   amaflags
+ ~ auth                     VALUES: 
+   callerid
+ ~ category                 USED by XiVO
+   cid_number
+   codecpriority
+   context
+   dbsecret
+   defaultip
+   deny
+   disallow
+   encryption
+   forcejitterbuffer
+   fullname
+   host
+ ~ host-static               USED by XiVO, not in DB
+ ~ host-type                 USED by XiVO, not in DB
+   inkeys
+ ~ ipaddr                    NOTE: specific for realtime
+   jitterbuffer
+   language
+   mailbox
+   mask
+   maxauthreq
+   mohinterpret
+   mohsuggest
+ ~ name                      NOTE: specific for realtime
+   outkey
+   peercontext
+   permit
+   port
+ ~ protocol                  USED by XiVO
+   qualify
+   qualifyfreqnotok
+   qualifyfreqok
+   qualifysmoothing
+   regexten
+ ~ regseconds                NOTE: specific for realtime
+   requirecalltoken
+   secret                    
+   sendani
+   setvar
+   sourceaddress
+   timezone
+   transfer
+   trunk
+   type
+   username
+ n immediate                 bool;;1
+ n keyrotate                 lstr;;on,off;1
+
+=== sip register
+=prefix:register
+   username               
+   password
+   host                      MUST be either a hostname, an IP address or a SIP peer
+   port
