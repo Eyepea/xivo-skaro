@@ -29,6 +29,8 @@ xivo_ast_user_protocol_elt['iax'] = {
 	'protocol-maxauthreq': {it: true, fd: true},
 	'protocol-adsi': {it: true, fd: true},
 	'protocol-requirecalltoken': {it: true, fd: true},
+	'protocol-immediate': {it: true, fd: true},
+	'protocol-keyrotate': {it: true, fd: true},
 	'iax-protocol-amaflags': {it: true, fd: true},
 //	'protocol-name': {it: 'error'}
 };

@@ -1,0 +1,149 @@
+legend:
+  x= removed, c=changed, ~=notes, n=new
+  u= updated/inserted/deleted in webi
+
+====
+=prefix:protocol:sip
+   accountcode
+   allow
+   allowoverlap
+   allowsubscribe
+   allowtransfer
+   amaflags
+ ~ autoframing               MISSING from doc
+   buggymwi
+   callerid
+   callgroup
+   callingpres
+   call-limit
+ x canreinvite               REPLACED by directmedia
+ ~ category                  USED by XiVO
+ ~ cid_number                MISSING from doc
+   context
+   defaultip
+   deny
+   disallow
+   dtmfmode
+   fromdomain
+   fromuser
+ ~ fullcontact               MISSING from doc
+ ~ fullname                  MISSING from doc
+   g726nonstandard
+   host
+ ~ host-static               USED by XiVO, not in DB
+ ~ host-type                 USED by XiVO, not in DB
+   insecure
+ ~ ipaddr                    MISSING from doc
+   language
+ ~ lastms                    MISSING from doc
+   mailbox
+   maxcallbitrate
+   md5secret
+   mohinterpret
+   mohsuggest
+ ~ name                      characters authorized: a-z, 0-9, _
+   nat
+   permit
+   pickupgroup
+   port
+   progressinband
+   promiscredir
+ ~ protocol                  USED by XiVO
+   qualify
+   regexten
+ ~ regseconds                MISSING from doc. realtime specific
+ ~ regserver                 MISSING from doc. realtime specific
+   rfc2833compensate
+   rtpholdtimeout
+   rtpkeepalive
+   rtptimeout
+   secret
+   sendrpid
+   setvar
+   subscribecontext
+   subscribemwi
+ x t38pt_rtp
+ x t38pt_tcp
+ ~ t38pt_udptl               MISSING from doc
+   t38pt_usertpsource
+   trustrpid
+ ~ type                      lstr;peer;peer,friend
+   useclientcode
+   usereqphone
+ c username                  RENAMED to defaultuser
+   videosupport
+   vmexten
+ n transport                 lstr;udp;udp,tcp,tls;1
+                             1st in the list take place for registration
+                             list is for allowed transports
+ n directmedia               lstr;yes;no,yes,nonat,update,update-nonat;1
+ n callcounter               bool;;1
+ n busylevel                 int;;1-100;1
+ n ignoresdpversion          bool;;1
+ . template                  indicate template to use.
+                             SINCE we have not template definitions in XiVO, we won't
+                             implement this field
+ n session-timers            lstr;;originate,accept,refuse;1
+ n session-expires           int;;1;3600;60;1
+ n session-minse             int;;1;300;10;1
+ n session-refresher         lstr;;uas,uac;1
+ n registertrying            bool;;1
+ n timert1                   str;;5
+ n timerb                    str;;5
+ n qualifyfreq               int;;1;300;10;1
+ n contactpermit             str;;35
+ n contactdeny               str;;35
+=prefix:protocol:iax
+   accountcode
+   adsi
+   allow
+   amaflags
+ ~ auth                     VALUES: 
+   callerid
+ ~ category                 USED by XiVO
+   cid_number
+   codecpriority
+   context
+   dbsecret
+   defaultip
+   deny
+   disallow
+   encryption
+   forcejitterbuffer
+   fullname
+   host
+ ~ host-static               USED by XiVO, not in DB
+ ~ host-type                 USED by XiVO, not in DB
+   inkeys
+ ~ ipaddr                    NOTE: specific for realtime
+   jitterbuffer
+   language
+   mailbox
+   mask
+   maxauthreq
+   mohinterpret
+   mohsuggest
+ ~ name                      NOTE: specific for realtime
+   outkey
+   peercontext
+   permit
+   port
+ ~ protocol                  USED by XiVO
+   qualify
+   qualifyfreqnotok
+   qualifyfreqok
+   qualifysmoothing
+   regexten
+ ~ regseconds                NOTE: specific for realtime
+   requirecalltoken
+   secret                    
+   sendani
+   setvar
+   sourceaddress
+   timezone
+   transfer
+   trunk
+   type
+   username
+ n immediate                 bool;;1
+ n keyrotate                 lstr;;on,off;1

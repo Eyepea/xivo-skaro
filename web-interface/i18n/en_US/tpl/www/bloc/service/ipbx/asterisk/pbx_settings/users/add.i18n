@@ -95,7 +95,7 @@ Context:
 Create a context
 
 ; fm_protocol_language
-Language :
+Language:
 
 ; fm_protocol_amaflags
 Billing flag:
@@ -215,7 +215,7 @@ Video support:
 Max call bitrate video:
 
 ; fm_protocol_codec-disallow
-Codecs disallow :
+Codecs disallow:
 
 ; fm_protocol_codec-disallow-opt(all)
 All
@@ -662,7 +662,7 @@ Disabled
 Enabled
 
 ; fm_voicemail_option
-Voicemail :
+Voicemail:
 
 ; fm_voicemail_option-opt(none)
 None
@@ -677,19 +677,19 @@ Search
 Search filter
 
 ; fm_protocol_subscribemwi
-Verify new messages presence :
+Verify new messages presence:
 
 ; fm_protocol_buggymwi
-Verify new messages presence (RFC non-conformant) :
+Verify new messages presence (RFC non-conformant):
 
 ; fm_userfeatures_loginclient
-Login :
+Login:
 
 ; fm_userfeatures_passwdclient
-Password :
+Password:
 
 ; fm_userfeatures_mobilephonenumber
-Mobile phone number :
+Mobile phone number:
 
 ; fm_userfeatures_bsfilter-opt(no)
 No
@@ -704,13 +704,13 @@ Secretary
 Create Agent
 
 ; fm_protocol_t38pt-udptl
-Activate T38 (UDPTL) :
+Activate T38 (UDPTL):
 
 ; fm_protocol_t38pt-rtp
-Activate T38 (RTP) :
+Activate T38 (RTP):
 
 ; fm_protocol_t38pt-tcp
-Activate T38 (TCP) :
+Activate T38 (TCP):
 
 ; fm_protocol_t38pt-usertpsource
 Use the source IP address as the destination for the T38:
@@ -1071,7 +1071,7 @@ Conference room
 ; softkey_backjoin
 
 ; fm_protocol_requirecalltoken
-Calltoken validation : 
+Calltoken validation: 
 
 ; fm_protocol_requirecalltoken-opt(no)
 no
@@ -1080,4 +1080,176 @@ no
 yes
 
 ; fm_userfeatures_timezone
-Timezone : 
+Timezone: 
+
+
+;;; 1.8 fields
+; fm_protocol-transport
+Transport: 
+
+; hlp_fm_protocol-transport
+Config asterisk: transport
+
+; fm_protocol-remotesecret
+Remote password: 
+
+; hlp_fm_protocol-remotesecret
+Config asterisk: remotesecret
+
+; fm_protocol-directmedia
+Invite:
+
+; hlp_fm_protocol-directmedia
+Config asterisk: directmedia
+
+; fm_protocol-directmedia-opt(no)
+No
+
+; fm_protocol-directmedia-opt(yes)
+Yes
+
+; fm_protocol-directmedia-opt(nonat)
+
+Without NAT
+
+; fm_protocol-directmedia-opt(update)
+Update
+
+; fm_protocol-directmedia-opt(update,nonat)
+Update without NAT
+
+; fm_protocol-callcounter
+Enable calls counter:
+
+; hlp_fm_protocol-callcounter
+Config asterisk: callcounter
+
+; fm_protocol-busylevel
+Send BUSY up to num. calls:
+
+; hlp_fm_protocol-busylevel
+Config asterisk: busylevel
+
+; fm_protocol-ignoresdpversion
+Ignore SDP packets version:
+
+; hlp_fm_protocol-ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_protocol-session-timers
+Session-timers mode: 
+
+; hlp_fm_protocol-session-timers
+Config asterisk: session-timers
+
+; fm_protocol-session-timers-opt(originate)
+Originate
+
+; fm_protocol-session-timers-opt(accept)
+Accept
+
+; fm_protocol-session-timers-opt(refuse)
+Refuse
+
+; fm_protocol-session-expires
+Maximum session refresh interval: 
+
+; hlp_fm_protocol-session-expires
+Config asterisk: session-expires
+
+; fm_protocol-session-minse
+Minimum session refresh interval:
+
+; hlp_fm_protocol-session-minse
+Config asterisk: session-minse
+
+; fm_protocol-session-refresher
+Session refresher:
+
+; hlp_fm_protocol-session-refresher
+Config asterisk: session-refresher
+
+; fm_protocol-session-refresher-opt(uas)
+Server
+
+; fm_protocol-session-refresher-opt(uac)
+Client
+
+; fm_protocol-callbackextension
+Callback extension:
+
+; hlp_fm_protocol-callbackextension
+Config asterisk: callbackextension
+
+; fm_protocol-registertrying
+Send «100 Trying» when register: 
+
+; hlp_fm_protocol-registertrying
+Config asterisk: registertrying
+
+; fm_protocol-timert1
+Minimum time of the round trip (RTT) messages:
+
+; hlp_fm_protocol-timert1
+Config asterisk: timert1
+
+; fm_protocol-timerb
+Call setup timer: 
+
+; hlp_fm_protocol-timerb
+Config asterisk: timerb
+
+; fm_protocol-qualifyfreq
+Qualify frequency: 
+
+; hlp_fm_protocol-qualifyfreq
+Config asterisk: qualifyfreq
+
+; fm_protocol-contactpermit
+Authorised contact addresses: 
+
+; hlp_fm_protocol-contactpermit
+Config asterisk: contactpermit
+
+; fm_protocol-contactdeny
+Rejected contact addresses: 
+
+; hlp_fm_protocol-contactdeny
+Config asterisk: contactdeny
+
+
+; fm_register-transport
+Transport: 
+
+; hlp_fm_register-transport
+
+; fm_register-expiry
+Expiry: 
+
+; hlp_fm_register-expiry
+Config asterisk: expiry
+
+; fm_register-callbackextension
+Use callback extension: 
+
+
+; fm_protocol-immediate
+Immediate off-hook: 
+
+; hlp_fm_protocol-immediate
+Config asterisk: immediate
+
+; fm_protocol-keyrotate
+Deactivate key rotation with encryption:
+
+; hlp_fm_protocol-keyrotate
+Config asterisk: keyrotate
+
+; fm_protocol-keyrotate-opt(on)
+Yes
+
+; fm_protocol-keyrotate-opt(off)
+No
+
+
+

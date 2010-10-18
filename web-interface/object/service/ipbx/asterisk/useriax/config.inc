@@ -243,6 +243,17 @@ $array['element']['requirecalltoken'] = array();
 $array['element']['requirecalltoken']['default'] = 'no';
 $array['element']['requirecalltoken']['value']   = array('yes', 'no');
 
+// asterisk 1.8 fields
+$array['element']['immediate'] = array();
+$array['element']['immediate']['value'] = array(1, 0);
+$array['element']['immediate']['default'] = '';
+$array['element']['immediate']['null']    = true;
+
+$array['element']['keyrotate'] = array();
+$array['element']['keyrotate']['value'] = array('on','off');
+$array['element']['keyrotate']['default'] = '';
+$array['element']['keyrotate']['null'] = true;
+
 
 dwho::load_class('dwho_network');
 
@@ -352,5 +363,8 @@ $array['filter']['regseconds'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 $array['filter']['requirecalltoken'] = array('set' => false,'chk' => 2,'key' => array('no','yes'));
+$array['filter']['immediate'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['keyrotate'] = array('set' => false, 'chk' => 2, 'key' => array('on','off'));
+
 
 ?>
