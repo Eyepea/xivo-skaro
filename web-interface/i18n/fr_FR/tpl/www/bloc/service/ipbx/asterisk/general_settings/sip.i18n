@@ -1205,7 +1205,7 @@ Délai de configuration :
 Config asterisk: timerb
 
 ; fm_mwiexpiry
-Déleai d'expiration des souscriptions MWI :
+Délai d'expiration des souscriptions MWI :
 
 ; hlp_fm_mwiexpiry
 Config asterisk: mwiexpiry
@@ -1269,13 +1269,13 @@ Non
 
 
 ; fm_session-expires
-Interval maximal de rafraichissement de la session : 
+Interval maximal de rafraîchissement de la session : 
 
 ; hlp_fm_session-expires
 Config asterisk: session-expires
 
 ; fm_session-minse
-Interval minimal de rafraichissement de la session : 
+Interval minimal de rafraîchissement de la session : 
 
 ; hlp_fm_session-minse
 Config asterisk: session-minse
@@ -1391,4 +1391,17 @@ Taille de la table dialogs :
 
 ; hlp_fm_hash_dialogs
 Config Asterisk: hash_dialogs
+
+; fm_tlscertfile
+Certificat serveur : 
+
+; hlp_fm_tlscertfile
+Config Asterisk: tlscertfile
+
+; fm_tlscafile
+Certificat CA :
+
+; hlp_fm_tlscafile
+Config Asterisk: tlscafile
+
 

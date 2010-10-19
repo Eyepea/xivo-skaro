@@ -1008,3 +1008,18 @@ Yes
 
 ; fm_success-save
 SIP Protocol properties successfully saved
+
+
+
+; fm_tlscertfile
+Server certificate: 
+
+; hlp_fm_tlscertfile
+Asterisk config: tlscertfile
+
+; fm_tlscafile
+CA certificate :
+
+; hlp_fm_tlscafile
+Asterisk config: tlscafile
+

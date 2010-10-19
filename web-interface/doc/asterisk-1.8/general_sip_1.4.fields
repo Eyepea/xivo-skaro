@@ -1,8 +1,8 @@
 legend:
   x= removed, c=changed, ~=notes, n=new
   u= updated/inserted/deleted in webi
-====
 
+====
    allow
    allowexternaldomains
    allowguest
@@ -95,17 +95,17 @@ ux t38pt_tcp
    usereqphone
    videosupport
    vmexten
-un match_auth_username
-un udpbindaddr
-un tcpenable
-un tcpbindaddr
-un tlsenable
-un tlsbindaddr
- n tlscertfile
- n tlscafile
- n tlscadir
-un tlsdontverifyserver
-un tlscipher
+un match_auth_username				   bool;no;0
+un udpbindaddr								   str;0.0.0.0;20
+un tcpenable									   bool;no;0
+un tcpbindaddr								   str;;20
+un tlsenable									   bool;no;0
+un tlsbindaddr								   str;;20
+ n tlscertfile                   lstr;;a,b;1
+ n tlscafile                     str;;25
+ n tlscadir                      str;;25
+un tlsdontverifyserver           bool;no;0
+un tlscipher                     str;;20
 un tos_text
 un cos_sip
 un cos_audio

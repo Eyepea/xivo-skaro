@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$config = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+
 $appsip = &$ipbx->get_apprealstatic('sip');
 $appgeneralsip = &$appsip->get_module('general');
 
@@ -28,6 +30,8 @@ $info = $appgeneralsip->get_all_val_by_category(false);
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
+
+	$_QR['tlscadir'] = $config['tls']['cadir'];
 
 	if(($rs = $appgeneralsip->set_save_all($_QR)) !== false)
 	{
@@ -55,6 +59,7 @@ if(dwho_issa('localnet',$info) === true
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
+$dhtml->set_js('js/service/ipbx/asterisk/general/sip.js');
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('info',$info);
@@ -62,6 +67,8 @@ $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsip->get_context_list());
+$_TPL->set_var('tlscertfiles', $appgeneralsip->get_certificate_files('cert', $config['tls']['certdir']));
+$_TPL->set_var('tlscafiles', $appgeneralsip->get_certificate_files('ca', $config['tls']['certdir']));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
