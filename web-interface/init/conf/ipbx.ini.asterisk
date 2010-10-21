@@ -27,3 +27,7 @@ path = /var/lib/pf-xivo/sounds
 
 [logaccess]
 file = /var/log/pf-xivo-web-interface/xivo.log
+
+[tls]
+certdir = /var/lib/asterisk/certs
+cadir   = /var/lib/asterisk/certs/cadir
