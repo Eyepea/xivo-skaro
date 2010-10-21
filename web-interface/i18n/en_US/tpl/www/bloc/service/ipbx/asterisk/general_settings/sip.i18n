@@ -1023,3 +1023,332 @@ CA certificate :
 ; hlp_fm_tlscafile
 Asterisk config: tlscafile
 
+
+
+;; asterisk 1.8
+;;; general
+
+; fm_udpbindaddr
+UDP address: 
+
+; hlp_fm_udpbindaddr
+Config asterisk: udpbindaddr
+
+; fm_tcpenable
+Allow TCP connections: 
+
+; hlp_fm_tcpenable
+Config asterisk: tcpenable
+
+; fm_tcpbindaddr
+TCP address : 
+
+; hlp_fm_tcpbindaddr
+Config asterisk: tcpbindaddr
+
+; fm_match_auth_username
+Match users with 'username' field:
+
+; hlp_fm_match_auth_username
+Config asterisk: match_auth_username
+
+; fm_regextenonqualify
+Force 'regexten' extension deactivation:
+
+; hlp_fm_regextenonqualify
+Config asterisk: regextenonqualify
+
+; fm_authfailureevents
+Trigger 'peerstatus' event on auth failure:
+
+; hlp_fm_authfailureevents
+Config asterisk: authfailureevents
+
+; fm_tos-text
+TOS text : 
+
+; hlp_fm_tos-text
+Asterisk config: tos text
+
+; fm_cos-sip
+COS sip : 
+
+; hlp_fm_cos-sip
+Asterisk config: cos-sip
+
+; fm_cos-audio
+COS audio : 
+
+; hlp_fm_cos-audio
+Asterisk config: cos-audio
+
+; fm_cos-video
+COS video : 
+
+; hlp_fm_cos-video
+Asterisk config: cos-video
+
+; fm_cos-text
+COS text : 
+
+; hlp_fm_cos-text
+Asterisk config: cos-text
+
+
+;;; network
+
+; fm_stunaddr
+STUN address: 
+
+; hlp_fm_stunaddr
+Config asterisk: stunaddr
+
+; fm_dynamic_exclude_static
+Deny dynamic ip address for static users and hosts:
+
+; hlp_fm_dynamic_exclude_static
+Config asterisk: dynamic_exclude_static
+
+; fm_contactdeny
+Denied address/network:
+
+; hlp_fm_contactdeny
+Config asterisk: contactdeny
+
+; fm_contactpermit
+Allowed address/network:
+
+; hlp_fm_contactpermit
+Config asterisk: contactpermit
+
+;;; security
+; smenu_security
+Security
+
+; fm_tlsenable
+Allow TLS connections:
+
+; hlp_fm_tlsenable
+Config asterisk: tlsenable
+
+; fm_tlsbindaddr
+Listening address:
+
+; hlp_fm_tlsbindaddr
+Config asterisk: tlsbindaddr
+
+; fm_tlsdontverifyserver
+Don't verify server certificat:
+
+; hlp_fm_tlsdontverifyserver
+Config asterisk: tlsdontverifyserver
+
+; fm_tlscipher
+TLS cipher:
+
+; hlp_fm_tlscipher
+Config asterisk: tlscipher
+
+;;; signaling
+
+; fm_timert1
+T1 timer:
+
+; hlp_fm_timert1
+Config asterisk: timert1
+
+; fm_timerb
+Configuration timer:
+
+; hlp_fm_timerb
+Config asterisk: timerb
+
+; fm_mwiexpiry
+MWI expiry:
+
+; hlp_fm_mwiexpiry
+Config asterisk: mwiexpiry
+
+; fm_notifycid
+Set caller-id in dialog-info+xml notify:
+
+; hlp_fm_notifycid
+Config asterisk: notifycid
+
+; fm_callcounter
+Calls counter:
+
+; hlp_fm_callcounter
+Config asterisk: callcounter
+
+
+; fm_prematuremedia
+ISDN compatibility:
+
+; hlp_fm_prematuremedia
+Config asterisk: prematuremedia
+
+; fm_sdpsession
+SDP session name:
+
+; hlp_fm_sdpsession
+Config asterisk: sdpsession
+
+; fm_sdpowner
+SDP owner 'username' field:
+
+; hlp_fm_sdpowner
+Config asterisk: sdpowner
+
+; fm_ignoresdpversion
+Ignore SDP version:
+
+; hlp_fm_ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_shrinkcallerid
+Shrink caller-id:
+
+; hlp_fm_shrinkcallerid
+Config asterisk: shrinkcallerid
+
+; fm_session-timers
+Enable session-timers : 
+
+; hlp_fm_session-timers
+Config asterisk: session-timers
+
+; session-timers-opt(originate)
+Always
+
+; session-timers-opt(accept)
+When requested by other UA
+
+; session-timers-opt(refuse)
+Never
+
+
+; fm_session-expires
+Maximum session refresh interval:
+
+; hlp_fm_session-expires
+Config asterisk: session-expires
+
+; fm_session-minse
+Minimul session refresh interval:
+
+; hlp_fm_session-minse
+Config asterisk: session-minse
+
+; fm_session-refresher
+Session refresher:
+
+; hlp_fm_session-refresher
+Config asterisk: session-refresher
+
+; refresher-opt(uas)
+Server
+
+; refresher-opt(uac)
+Client
+
+;;; t38
+
+; fm_faxdetect
+Enable fax detection:
+
+; hlp_fm_faxdetect
+Asterisk config: faxdetect
+
+; faxdetect-opt(yes)
+Yes
+
+; faxdetect-opt(no)
+No
+
+; faxdetect-opt(cng)
+CNG
+
+; faxdetect-opt(t38)
+T38
+
+; faxdetect-opt(both)
+Both
+
+;;; jitter buffer
+
+; fm_jbtargetextra
+Buffer pad size:
+
+; hlp_fm_jbtargetextra
+Asterisk config: jbtargetextra
+
+;;; default
+
+; fm_qualifyfreq
+Qualify frequency:
+
+; hlp_fm_qualifyfreq
+Config Asterisk: qualifyfreq
+
+; fm_qualifygap
+Qualify gap:
+
+; hlp_fm_qualifygap
+Config Asterisk: qualifygap
+
+; fm_qualifypeers
+Num. of peers qualified at the same time (per group):
+
+; hlp_fm_qualifypeers
+Config Asterisk: qualifypeers
+
+; fm_directmedia
+Redirect RTP stream from caller to callee:
+
+; hlp_fm_directmedia
+Config Asterisk: directmedia
+
+; fm_directmedia-opt(yes)
+Yes
+
+; fm_directmedia-opt(no)
+No
+
+; fm_directmedia-opt(nonat)
+not over NAT
+
+; fm_directmedia-opt(update)
+using UPDATE
+
+; fm_directmedia-opt(update,nonat)
+not over NAT and using UPDATE
+
+; fm_parkinglot
+Parking lot:
+
+; hlp_fm_parkinglot
+Config Asterisk: parkinglot
+
+;;; internals
+; smenu_internals
+Internals
+
+; fm_hash_users
+Users hash size:
+
+; hlp_fm_hash_users
+Config Asterisk: hash_users
+
+; fm_hash_peers
+Peers hash size:
+
+; hlp_fm_hash_peers
+Config Asterisk: hash_peers
+
+; fm_hash_dialogs
+Dialogs hash size:
+
+; hlp_fm_hash_dialogs
+Config Asterisk: hash_dialogs
+

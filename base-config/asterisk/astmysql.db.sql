@@ -1454,16 +1454,16 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','match_auth_username',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','match_auth_username','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','udpbindaddr','0.0.0.0');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tcpenable','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tcpbindaddr','0.0.0.0');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tcpbindaddr',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlsenable','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlsbindaddr',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlscertfile',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlscafile',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlscadir',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlsdontverifyserver',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlscadir','/var/lib/asterisk/certs/cadir');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlsdontverifyserver','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tlscipher',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_text',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','cos_sip',NULL);
@@ -1471,34 +1471,34 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','cos_audio',NULL
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','cos_video',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','cos_text',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','mwiexpiry',3600);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualifyfreq',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualifygap',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualifypeers',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualifyfreq',60);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualifygap',100);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualifypeers',1);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','parkinglot',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','permaturemedia',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sdpsession',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sdpowner',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','authfailureevents',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dynamic_exclude_static',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','authfailureevents','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dynamic_exclude_static','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','contactdeny',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','contactpermit',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','shrinkcallerid',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','regextenonqualify',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','timer1',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','timerb',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','shrinkcallerid','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','regextenonqualify','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','timer1',500);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','timerb',32000);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-timers',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-expires',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-minse',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-refresher',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-expires',600);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-minse',90);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','session-refresher','uas');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','hash_users',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','hash_peers',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','hash_dialogs',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifycid',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callcounter',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifycid','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callcounter','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','faxdetect','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','stunaddr',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','directmedia','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoresdpversion',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoresdpversion','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbtargetextra',NULL);
 
 
@@ -1813,6 +1813,8 @@ CREATE TABLE `useriax` (
  `peercontext` varchar(80), -- peer --
  `ipaddr` varchar(255) NOT NULL DEFAULT '',
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
+ `immediate` tinyint(1) DEFAULT NULL,
+ `keyrotate` varchar(1024) DEFAULT NULL,
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
@@ -1859,7 +1861,6 @@ CREATE TABLE `usersip` (
  `maxcallbitrate` smallint(4) unsigned, -- general / user / peer --
  `insecure` enum('port','invite','port,invite'), -- general / user / peer --
  `nat` enum('no','yes','never','route'), -- general / user / peer --
- `canreinvite` enum('no','yes','update','nonat','update,nonat'), -- general / user / peer --
  `promiscredir` tinyint(1), -- general / user / peer --
  `usereqphone` tinyint(1), -- general / peer --
  `videosupport` tinyint(1), -- general / user / peer --
@@ -1879,8 +1880,6 @@ CREATE TABLE `usersip` (
  `useclientcode` tinyint(1), -- general / user / peer --
  `progressinband` enum('no','yes','never'), -- general / user / peer --
  `t38pt_udptl` tinyint(1), -- general / user / peer --
- `t38pt_rtp` tinyint(1), -- general / user / peer --
- `t38pt_tcp` tinyint(1), -- general / user / peer --
  `t38pt_usertpsource` tinyint(1), -- general / user / peer --
  `rtptimeout` tinyint unsigned, -- general / peer --
  `rtpholdtimeout` tinyint unsigned, -- general / peer --
@@ -1905,6 +1904,27 @@ CREATE TABLE `usersip` (
  `protocol` enum('sip') NOT NULL DEFAULT 'sip',
  `category` enum('user','trunk') NOT NULL,
  `outboundproxy` varchar(1024),
+
+	-- asterisk 1.8 new values
+ `transport` varchar(255) NOT NULL DEFAULT 'udp',
+ `remotesecret` varchar(255) DEFAULT NULL,
+ `directmedia` enum('yes', 'no', 'nonat', 'update', 'update,nonat') DEFAULT NULL,
+ `callcounter` tinyint(1) DEFAULT NULL,
+ `busylevel` integer unsigned DEFAULT NULL,
+ `ignoresdpversion` tinyint(1) DEFAULT NULL,
+ `session-timers` enum('originate', 'accept', 'refuse') DEFAULT NULL,
+ `session-expires` integer unsigned DEFAULT NULL,
+ `session-minse` integer unsigned DEFAULT NULL,
+ `session-refresher` enum('uac', 'uas') DEFAULT NULL,
+ `callbackextension` varchar(255) DEFAULT NULL,
+ `registertrying` tinyint(1) DEFAULT NULL,
+ `timert1` integer unsigned DEFAULT NULL,
+ `timerb` integer unsigned DEFAULT NULL,
+ `qualifyfreq` integer unsigned DEFAULT NULL,
+ `contactpermit` varchar(1024) DEFAULT NULL,
+ `contactdeny` varchar(1024) DEFAULT NULL',
+	-- 
+
  `commented` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -1920,10 +1940,12 @@ CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
 INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
                               NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-                              'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',NULL,0);
+                              'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',
+                              NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+                              NULL,NULL,NULL,NULL,NULL,NULL,0);
 
 
 DROP TABLE IF EXISTS `voicemail`;

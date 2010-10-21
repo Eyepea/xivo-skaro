@@ -16,10 +16,10 @@ ux assertedidentity
  ~ autoframing               NOTE: missing from doc, present in source code
 uc bindaddr                  REPLACED by udpbindaddr 
                              (in fact, both are valid and synonym in source code)
-  bindport
-  buggymwi
-~ callerid                   NOTE: missing from doc, present in source code
-  callevents
+   bindport
+   buggymwi
+ ~ callerid                  NOTE: missing from doc, present in source code
+   callevents
 uc canreinvite               REPLACED by directmedia (both are valid ans synonyms)
 ux checkmwi
    compactheaders
@@ -106,30 +106,30 @@ un tlsbindaddr								   str;;20
  n tlscadir                      str;;25
 un tlsdontverifyserver           bool;no;0
 un tlscipher                     str;;20
-un tos_text
+un tos_text	                     
 un cos_sip
 un cos_audio
 un cos_video
 un cos_text
 un mwiexpiry
-un qualifyfreq
-un qualifygap
+un qualifyfreq               time;60;0;600;10;1
+un qualifygap                time;100;0;1000;10;1
 un qualifypeers
 un parkinglot
 un prematuremedia
 un sdpsession
 un sdpowner
 un authfailureevents
-un dynamic_exclude_static
+un dynamic_exclude_static    bool;;1
 un contactdeny
 un contactpermit
 un shrinkcallerid
 un regextonqualify
-un timert1
-un timerb
+un timert1                   time;500;0;2000;100
+un timerb                    time;32000;0;120000;1000;1
 un session-timers
-un session-expires
-un session-minse
+un session-expires           time;1800;0;3600;60;1
+un session-minse             time;90;0;600;10;1
 un session-refresher
 un hash_users
 un hash_peers
