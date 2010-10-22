@@ -1698,21 +1698,22 @@ class XivoCTICommand(BaseCommand):
             dialplan_data['xivo-calleridnum'] = self.ulist_ng.keeplist[xuserid].get('phonenum')
             dialplan_data['xivo-calleridname'] = self.ulist_ng.keeplist[xuserid].get('fullname')
             try:
-                e = self.lconf.xc_json['directories']['internal']
-                for k, v in e.iteritems():
-                    if k.startswith('field_'):
-                        nk = 'db-%s' % k[6:]
-                        if v:
-                            v2 = v[0]
-                        else:
-                            v2 = ''
-                        for kk, vv in self.ulist_ng.keeplist[xuserid].iteritems():
-                            pattern = '{internal-%s}' % kk
-                            if v2.find(pattern) >= 0:
-                                v2 = v2.replace('{internal-%s}' % kk, vv)
-                        dialplan_data[nk] = v2
-                if 'name' in e:
-                    dialplan_data['xivo-directory'] = e.get('name')
+                if 'internal' in self.lconf.xc_json['directories']:
+                    e = self.lconf.xc_json['directories']['internal']
+                    for k, v in e.iteritems():
+                        if k.startswith('field_'):
+                            nk = 'db-%s' % k[6:]
+                            if v:
+                                v2 = v[0]
+                            else:
+                                v2 = ''
+                            for kk, vv in self.ulist_ng.keeplist[xuserid].iteritems():
+                                pattern = '{internal-%s}' % kk
+                                if v2.find(pattern) >= 0:
+                                    v2 = v2.replace('{internal-%s}' % kk, vv)
+                            dialplan_data[nk] = v2
+                        if 'name' in e:
+                            dialplan_data['xivo-directory'] = e.get('name')
             except Exception:
                 log.exception('__internal__ %s' % xuserid)
         return
@@ -2779,39 +2780,39 @@ class XivoCTICommand(BaseCommand):
         return
 
     ami_error_responses_list = ['No such channel',
-        'No such agent',
-        'Permission denied',
-        'Member not dynamic',
-        'Extension not specified',
-        'Interface not found',
-        'No active conferences.',
-        'Unable to add interface: Already there',
-        'Unable to remove interface from queue: No such queue',
-        'Unable to remove interface: Not there']
+                                'No such agent',
+                                'Permission denied',
+                                'Member not dynamic',
+                                'Extension not specified',
+                                'Interface not found',
+                                'No active conferences.',
+                                'Unable to add interface: Already there',
+                                'Unable to remove interface from queue: No such queue',
+                                'Unable to remove interface: Not there']
 
     def amiresponse_success(self, astid, event, nocolon):
         msg = event.get('Message')
         actionid = event.get('ActionID')
         ami_success_responses_list = ['Channel status will follow',
-            'Parked calls will follow',
-            'Agents will follow',
-            'Queue status will follow',
-            'Variable Set',
-            'Attended transfer started',
-            'Channel Hungup',
-            'Park successful',
-            'Meetme user list will follow',
-            'AOriginate successfully queued',
-            'Originate successfully queued',
-            'Redirect successful',
-            'Started monitoring channel',
-            'Stopped monitoring channel',
-            'Added interface to queue',
-            'Removed interface from queue',
-            'Interface paused successfully',
-            'Interface unpaused successfully',
-            'Agent logged out',
-            'Agent logged in']
+                                      'Parked calls will follow',
+                                      'Agents will follow',
+                                      'Queue status will follow',
+                                      'Variable Set',
+                                      'Attended transfer started',
+                                      'Channel Hungup',
+                                      'Park successful',
+                                      'Meetme user list will follow',
+                                      'AOriginate successfully queued',
+                                      'Originate successfully queued',
+                                      'Redirect successful',
+                                      'Started monitoring channel',
+                                      'Stopped monitoring channel',
+                                      'Added interface to queue',
+                                      'Removed interface from queue',
+                                      'Interface paused successfully',
+                                      'Interface unpaused successfully',
+                                      'Agent logged out',
+                                      'Agent logged in']
         if msg is None:
             if actionid is not None:
                 if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
@@ -5122,9 +5123,9 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].match_funcs(ucapa, 'features'):
                             log.info('%s %s' % (classcomm, icommand.struct))
                             rep = self.__build_features_put__(icommand.struct.get('userid'),
-                                icommand.struct.get('function'),
-                                icommand.struct.get('value'),
-                                icommand.struct.get('destination'))
+                                                              icommand.struct.get('function'),
+                                                              icommand.struct.get('value'),
+                                                              icommand.struct.get('destination'))
                             self.__send_msg_to_cti_client__(userinfo, rep)
 
                     elif classcomm == 'logout':
@@ -6189,7 +6190,7 @@ class XivoCTICommand(BaseCommand):
                         aststatus.append('%s:%d' % (var, val))
                     fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
             except Exception:
-                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
             return
 
         elif function == 'queuestatus':
@@ -6216,7 +6217,7 @@ class XivoCTICommand(BaseCommand):
                         fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
                         fastagi.set_variable('XIVO_QUEUEID', queueid)
             except Exception:
-                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
             return
 
         elif function == 'queueentries':
@@ -6231,7 +6232,7 @@ class XivoCTICommand(BaseCommand):
                             lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
                         fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
             except Exception:
-                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
             return
 
         elif function == 'queueholdtime':
@@ -6280,17 +6281,24 @@ class XivoCTICommand(BaseCommand):
             if calleridsolved:
                 td = '%s handle_fagi %s : calleridsolved="%s"' % (astid, function, calleridsolved)
                 log.info(td.encode('utf8'))
-                if calleridname in ['', 'unknown']:
+                if calleridname in ['', 'unknown', calleridnum]:
                     calleridname = calleridsolved
+                else:
+                    log.warning('%s handle_fagi %s : (solved) there is already a calleridname="%s"'
+                                % (astid, function, calleridname))
 
             # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
             if calleridnum in ['', 'unknown']:
                 calleridnum = CALLERID_UNKNOWN_NUM
             if calleridname in ['', 'unknown']:
                 calleridname = calleridnum
+            else:
+                log.warning('%s handle_fagi %s : (number) there is already a calleridname="%s"'
+                            % (astid, function, calleridname))
 
             calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
-            td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
+            td = '%s handle_fagi %s : the callerid will be set to %s' % (astid, function,
+                                                                         calleridtoset.decode('utf8'))
             log.info(td.encode('utf8'))
             fastagi.set_callerid(calleridtoset)
             return
