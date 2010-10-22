@@ -2,7 +2,7 @@
 deb_allow-tilde-destdir
 deb_astgenkey-security
 deb_make-clean-fixes
-deb_sound_files
+#deb_sound_files
 
 ## proformatique patches
 pf_profor-banner

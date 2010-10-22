@@ -23,6 +23,6 @@ Index: asterisk-1.8.0-rc3/Makefile
 +all-clean: distclean
 +	@$(MAKE) -C sounds dist-clean
 +
- datafiles: _all
+ datafiles: _all doc/core-en_US.xml
  	CFLAGS="$(_ASTCFLAGS) $(ASTCFLAGS)" build_tools/mkpkgconfig $(DESTDIR)$(libdir)/pkgconfig;
  # Should static HTTP be installed during make samples or even with its own target ala
