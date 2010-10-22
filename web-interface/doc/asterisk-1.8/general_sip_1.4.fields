@@ -76,7 +76,7 @@ ux outboundproxyport
    rtptimeout
    rtsavesysname
    rtupdate
-   sendrpid
+ c sendrpid                  lstr;no;yes,no,rpid,pai
    sipdebug
    srvlookup
    subscribecontext
@@ -141,4 +141,7 @@ un stunaddr
 un directmedia
 un ignoresdpversion
 un jbtargetextra
-
+ n media_address             str;;20
+ n externtcpport             str;;5
+ n externtlsport             str;;20
+ 

@@ -1500,6 +1500,10 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','stunaddr',NULL)
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','directmedia','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoresdpversion','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbtargetextra',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','srtp','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','externtcpport',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','externtlsport',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','media_address',NULL);
 
 
 DROP TABLE IF EXISTS `staticvoicemail`;
@@ -1924,6 +1928,8 @@ CREATE TABLE `usersip` (
  `contactpermit` varchar(1024) DEFAULT NULL,
  `contactdeny` varchar(1024) DEFAULT NULL',
 	-- 
+	`srtp` tinyint(1) DEFAULT NULL,
+	--
 
  `commented` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
  PRIMARY KEY(`id`)

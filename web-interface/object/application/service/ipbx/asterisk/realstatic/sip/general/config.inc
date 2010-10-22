@@ -398,9 +398,8 @@ $array['element']['trustrpid']['default'] = 'no';
 $array['element']['trustrpid']['set'] = true;
 
 $array['element']['sendrpid'] = array();
-$array['element']['sendrpid']['value'] = array('no','yes');
+$array['element']['sendrpid']['value'] = array('no', 'yes','rpid','pai');
 $array['element']['sendrpid']['default'] = 'no';
-$array['element']['sendrpid']['set'] = true;
 
 $array['element']['insecure'] = array();
 $array['element']['insecure']['value'] = array('no'		=> 'no',
@@ -670,6 +669,19 @@ $array['element']['jbtargetextra'] = array();
 $array['element']['jbtargetextra']['default']  = null;
 $array['element']['jbtargetextra']['null']     = true;
 
+$array['element']['media_address'] = array();
+$array['element']['media_address']['default'] = '';
+$array['element']['media_address']['null'] = true;
+
+$array['element']['externtcpport'] = array();
+$array['element']['externtcpport']['default'] = '';
+$array['element']['externtcpport']['null'] = true;
+
+$array['element']['externtlsport'] = array();
+$array['element']['externtlsport']['default'] = '';
+$array['element']['externtlsport']['null'] = true;
+
+
 // this is not a real sip option
 $array['element']['srtp'] = array();
 $array['element']['srtp']['value']    = array('no', 'yes');
@@ -828,7 +840,7 @@ $array['filter']['mohinterpret'] = array('set' => false,'chk' => 2,'maxlen' => 2
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['vmexten'] = array('regexp' => '/^[0-9\*]+$/','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
-$array['filter']['sendrpid'] = array('bool' => true);
+$array['filter']['sendrpid'] = array('key' => array('yes','no','rpid','pai'));
 $array['filter']['directmedia'] = array('key' => array('no','yes','update','nonat','update,nonat'));
 $array['filter']['insecure'] = array('key' => array('no','port','invite','port,invite'));
 $array['filter']['rtcachefriends'] = array('bool' => true);
@@ -857,6 +869,10 @@ $array['filter']['timerb'] = array('set' => false, 'chk' => 2, 'cast' => 'uint',
 $array['filter']['session-expires'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(0,3600,60));
 $array['filter']['session-minse'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(0,600,10));
 $array['filter']['shrinkcallerid'] = array('bool' => true);
+$array['filter']['media_address'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['externtcpport'] = array('set' => false,'chk' => 2,'maxlen' => 10);
+$array['filter']['externtlsport'] = array('set' => false,'chk' => 2,'maxlen' => 10);
+
 
 $array['filter']['srtp'] = array('bool' => true);
 

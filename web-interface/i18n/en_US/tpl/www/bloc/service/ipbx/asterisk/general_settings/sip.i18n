@@ -877,6 +877,18 @@ Asterisk config: trustrpid
 ; fm_sendrpid
 Send the Remote-Party-ID:
 
+; fm_sendrpid-opt(no)
+No
+
+; fm_sendrpid-opt(yes)
+Yes
+
+; fm_sendrpid-opt(rpid)
+RPID
+
+; fm_sendrpid-opt(pai)
+PAI
+
 ; cmt_fm_sendrpid
 Asterisk config: sendrpid
 
@@ -1357,3 +1369,23 @@ SRTP:
 
 ; hlp_fm_srtp
 Enable Audio stream cipher
+
+
+; fm_media_address
+Media streams address:
+
+; hlp_fm_media_address
+Config asterisk: media_address
+
+; fm_externtcpport
+External TCP port: 
+
+; hlp_fm_externtcpport
+Config asterisk: externtcpport
+
+; fm_externtlsport
+External TLS port: 
+
+; hlp_fm_externtlsport
+Config asterisk: externtlsport
+
