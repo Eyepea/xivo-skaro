@@ -727,8 +727,14 @@ endif;
 				  'value'		=> $this->get_var('info','tlscipher','var_val'),
 				  'default'		=> $element['tlscipher']['default'],
 				  'error'		=> $this->bbf_args('error',
-					   		$this->get_var('error', 'tlscipher')) ));
+					   		$this->get_var('error', 'tlscipher')) )),
 
+		$form->checkbox(array('desc'	=> $this->bbf('fm_srtp'),
+				      'name'	  	=> 'srtp',
+				      'labelid'		=> 'srtp',
+  					  'help'  		=> $this->bbf('hlp_fm_srtp'),
+				      'checked'		=> $this->get_var('info','srtp','var_val'),
+							'default'		=> $element['srtp']['default']));
 ?>
 <div class="clearboth"></div>
 </div>

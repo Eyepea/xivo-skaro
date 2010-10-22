@@ -1352,3 +1352,8 @@ Dialogs hash size:
 ; hlp_fm_hash_dialogs
 Config Asterisk: hash_dialogs
 
+; fm_srtp
+SRTP: 
+
+; hlp_fm_srtp
+Enable Audio stream cipher

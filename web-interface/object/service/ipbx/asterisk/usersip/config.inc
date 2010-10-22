@@ -376,6 +376,12 @@ $array['element']['contactdeny'] = array();
 $array['element']['contactdeny']['default'] = '';
 $array['element']['contactdeny']['null'] = true;
 
+//
+$array['element']['srtp'] = array();
+$array['element']['srtp']['value'] = array(0, 1);
+$array['element']['srtp']['default'] = '';
+$array['element']['srtp']['null']    = true;
+
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
@@ -495,4 +501,5 @@ $array['filter']['qualifyfreq'] = array('set' => false, 'chk' => 2, 'cast' => 'u
 $array['filter']['contactpermit'] = array('set' => false,'chk' => 2,'maxlen' => 35);
 $array['filter']['contactdeny'] = array('set' => false,'chk' => 2,'maxlen' => 35);
 
+$array['filter']['srtp'] = array('set' => false, 'chk' => 2, 'bool' => true);
 ?>

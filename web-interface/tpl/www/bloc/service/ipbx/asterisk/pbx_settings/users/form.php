@@ -703,6 +703,17 @@ endif;
 				    'selected'	=> $this->get_var('info','protocol','rtpkeepalive')),
 			      $element['protocol']['sip']['rtpkeepalive']['value']),
 
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_srtp'),
+				    'name'	=> 'protocol[srtp]',
+				    'labelid'	=> 'protocol-srtp',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'bbf'	=> 'fm_bool-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['protocol']['sip']['srtp']['default'],
+				    'selected'	=> $this->get_var('info','protocol','srtp')),
+			      $element['protocol']['sip']['srtp']['value']),
+
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_allowtransfer'),
 				    'name'	=> 'protocol[allowtransfer]',
 				    'labelid'	=> 'protocol-allowtransfer',

@@ -1179,7 +1179,7 @@ Adresse en écoute :
 Config asterisk: tlsbindaddr
 
 ; fm_tlsdontverifyserver
-Ne pas véfirier le certificat serveur :
+Ne pas vérifier le certificat serveur :
 
 ; hlp_fm_tlsdontverifyserver
 Config asterisk: tlsdontverifyserver
@@ -1404,4 +1404,8 @@ Certificat CA :
 ; hlp_fm_tlscafile
 Config Asterisk: tlscafile
 
+; fm_srtp
+SRTP :
 
+; hlp_fm_srtp
+Active l'encodage des flux audio

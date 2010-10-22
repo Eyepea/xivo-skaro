@@ -670,6 +670,14 @@ $array['element']['jbtargetextra'] = array();
 $array['element']['jbtargetextra']['default']  = null;
 $array['element']['jbtargetextra']['null']     = true;
 
+// this is not a real sip option
+$array['element']['srtp'] = array();
+$array['element']['srtp']['value']    = array('no', 'yes');
+$array['element']['srtp']['default']  = 'no';
+$array['element']['srtp']['set']      = true;
+
+
+
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
@@ -850,5 +858,6 @@ $array['filter']['session-expires'] = array('set' => false, 'chk' => 2, 'cast' =
 $array['filter']['session-minse'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(0,600,10));
 $array['filter']['shrinkcallerid'] = array('bool' => true);
 
+$array['filter']['srtp'] = array('bool' => true);
 
 ?>
