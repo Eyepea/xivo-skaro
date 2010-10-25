@@ -307,7 +307,7 @@ CREATE TABLE `queue_info` (
  `queue_name` varchar(255) NOT NULL,
  `caller` varchar(255) NOT NULL,
  `caller_uniqueid` varchar(255) NOT NULL,
- `call_picker` varchar(255) NOT NULL,
+ `call_picker` varchar(255),
  `hold_time` int,
  `talk_time` int,
  PRIMARY KEY(`id`)
