@@ -1870,26 +1870,28 @@ class XivoCTICommand(BaseCommand):
     # Methods to handle Asterisk AMI events
     def ami_dial(self, astid, event):
         log.info('%s ami_dial : %s' % (astid, event))
-        src     = event.get('Source')
+        src     = event.get('Channel')
         dst     = event.get('Destination')
-        calleridnum = event.get('CallerID')
+        calleridnum = event.get('CallerIDNum')
         calleridname = event.get('CallerIDName')
-        uidsrc  = event.get('SrcUniqueID')
+        uidsrc  = event.get('UniqueID')
         uiddst  = event.get('DestUniqueID')
         data    = event.get('Data', 'NOXIVO-DATA').split('|')
+        subevent = event.get('SubEvent')
+        dialstring = event.get('Dialstring')
         # actionid = self.amilist.execute(astid, 'getvar', src, 'XIVO_DSTNUM')
         # self.getvar_requests[astid][actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
         self.__link_local_channels__(astid, src, uidsrc, dst, uiddst, calleridnum, calleridname, None, None)
 
-        if data:
-            if uidsrc in self.uniqueids[astid]:
-                if 'dialplan_data' in self.uniqueids[astid][uidsrc]:
-                    self.uniqueids[astid][uidsrc]['dialplan_data']['xivo-dialednum'] = data[0].split('/')[1]
-                    if 'context' in self.uniqueids[astid][uidsrc]:
-                        context = self.uniqueids[astid][uidsrc]['context']
-                        self.__sheet_alert__('dial', astid, context, {}, self.uniqueids[astid][uidsrc].get('dialplan_data'), src)
-                else:
-                    log.warning('%s ami_dial : no dialplan_data defined for %s' % (astid, uidsrc))
+##        if data:
+##            if uidsrc in self.uniqueids[astid]:
+##                if 'dialplan_data' in self.uniqueids[astid][uidsrc]:
+##                    self.uniqueids[astid][uidsrc]['dialplan_data']['xivo-dialednum'] = data[0].split('/')[1]
+##                    if 'context' in self.uniqueids[astid][uidsrc]:
+##                        context = self.uniqueids[astid][uidsrc]['context']
+##                        self.__sheet_alert__('dial', astid, context, {}, self.uniqueids[astid][uidsrc].get('dialplan_data'), src)
+##                else:
+##                    log.warning('%s ami_dial : no dialplan_data defined for %s' % (astid, uidsrc))
 
         phoneidsrc = self.__phoneid_from_channel__(astid, src)
         phoneiddst = self.__phoneid_from_channel__(astid, dst)
@@ -2161,8 +2163,20 @@ class XivoCTICommand(BaseCommand):
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
         return
 
+    def ami_newaccountcode(self, astid, event):
+        log.info('%s ami_newaccountcode : %s' % (astid, event))
+        return
+
+    def ami_fullybooted(self, astid, event):
+        log.info('%s ami_fullybooted : %s' % (astid, event))
+        return
+
     def ami_bridge(self, astid, event):
+        bridgestate = event.get('Bridgestate')
+        # bridgetype = event.get('Bridgetype')
         log.info('%s ami_bridge : %s' % (astid, event))
+        if bridgestate == 'Link':
+            self.__ami_link__(astid, event)
         return
 
     def ami_masquerade(self, astid, event):
@@ -2236,7 +2250,7 @@ class XivoCTICommand(BaseCommand):
         # - not there when direct transfer without answering
         return
 
-    def ami_link(self, astid, event):
+    def __ami_link__(self, astid, event):
         chan1 = event.get('Channel1')
         chan2 = event.get('Channel2')
         clid1 = event.get('CallerID1')
@@ -3120,7 +3134,13 @@ class XivoCTICommand(BaseCommand):
         # log.info('%s ami_newchannel : %s' % (astid, event))
         channel = event.get('Channel')
         uniqueid = event.get('Uniqueid')
-        state = event.get('State')
+        channelstatedesc = event.get('ChannelStateDesc') # Down, Ring, ...
+        accountcode = event.get('AccountCode')
+        exten = event.get('Exten')
+        context = event.get('Context')
+        calleridnum = event.get('CallerIDNum')
+        calleridname = event.get('CallerIDName')
+
         timenow = time.time()
         log.info('%s time delay since uniqueid for %s : %f'
                  % (astid, channel, timenow - int(float(uniqueid))))
@@ -3139,8 +3159,8 @@ class XivoCTICommand(BaseCommand):
                                                                 'xivo-usereventstack' : []
                                                                 } }
         self.channels[astid][channel] = uniqueid
-        if state == 'Rsrvd':
-            self.uniqueids[astid][uniqueid]['state'] = state
+        if channelstatedesc == 'Rsrvd':
+            self.uniqueids[astid][uniqueid]['state'] = channelstatedesc
         # create "comm" in phone list if needed.
         phoneid = self.__phoneid_from_channel__(astid, channel)
         if phoneid:
