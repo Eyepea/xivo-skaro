@@ -1389,3 +1389,10 @@ External TLS port:
 ; hlp_fm_externtlsport
 Config asterisk: externtlsport
 
+; fm_auth_options_requests
+Authentify OPTIONS requests : 
+
+; hlp_fm_auth_options_requests
+Config asterisk: auth_options_requests
+
+

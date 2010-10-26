@@ -284,6 +284,13 @@ endif;
 				  'error'		=> $this->bbf_args('error',
 					   $this->get_var('error', 'domain')) )),
 
+    $form->checkbox(array('desc'  => $this->bbf('fm_domainsasrealm'),
+              'name'    => 'domainsasrealm',
+              'labelid' => 'domainsasrealm',
+              'help'    => $this->bbf('hlp_fm_domainsasrealm'),
+              'checked' => $this->get_var('info','domainsasrealm','var_val'),
+              'default' => $element['domainsasrealm']['default'])),
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_allowexternaldomains'),
 				      'name'		=> 'allowexternaldomains',
 				      'labelid'		=> 'allowexternaldomains',
@@ -1137,6 +1144,54 @@ endif;
 				    'default'	=> $element['session-refresher']['default']),
 			      $element['session-refresher']['value']),
 
+	$form->checkbox(array('desc'  => $this->bbf('fm_use_q850_reason'),
+              'name'    => 'use_q850_reason',
+              'labelid' => 'use_q850_reason',
+              'help'    => $this->bbf('hlp_fm_use_q850_reason'),
+              'checked' => $this->get_var('info','use_q850_reason','var_val'),
+              'default' => $element['use_q850_reason']['default'])),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_snom_aoc_enabled'),
+              'name'    => 'snom_aoc_enabled',
+              'labelid' => 'snom_aoc_enabled',
+              'help'    => $this->bbf('hlp_fm_snom_aoc_enabled'),
+              'checked' => $this->get_var('info','snom_aoc_enabled','var_val'),
+              'default' => $element['snom_aoc_enabled']['default'])),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_subscribe_network_change_event'),
+              'name'    => 'subscribe_network_change_event',
+              'labelid' => 'subscribe_network_change_event',
+              'help'    => $this->bbf('hlp_fm_subscribe_network_change_event'),
+              'checked' => $this->get_var('info','subscribe_network_change_event','var_val'),
+              'default' => $element['subscribe_network_change_event']['default'])),
+
+    $form->select(array('desc'  => $this->bbf('fm_maxforwards'),
+            'name'     => 'maxforwards',
+            'labelid'  => 'maxforwards',
+            'key'      => false,
+            'empty'    => true,
+            'help'     => $this->bbf('hlp_fm_maxforwards'),
+            'selected' => $this->get_var('info','maxforwards','var_val'),
+            'default'  => $element['maxforwards']['default']),
+        $element['maxforwards']['value']),
+
+    $form->text(array('desc'  => $this->bbf('fm_disallow_methods'),
+            'name'     => 'disallow_methods',
+            'labelid'  => 'disallow_methods',
+            'size'     => 20,
+            'help'     => $this->bbf('hlp_fm_disallow_methods'),
+            'required' => false,
+            'value'    => $this->get_var('info','disallow_methods','var_val'),
+            'default'  => $element['disallow_methods']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'disallow_methods')) )),
+
+    $form->checkbox(array('desc'  => $this->bbf('fm_auth_options_requests'),
+              'name'    => 'auth_options_requests',
+              'labelid' => 'auth_options_requests',
+              'help'    => $this->bbf('hlp_fm_auth_options_requests'),
+              'checked' => $this->get_var('info','auth_options_requests','var_val'),
+              'default' => $element['auth_options_requests']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_g726nonstandard'),
 				      'name'		=> 'g726nonstandard',
@@ -1531,7 +1586,32 @@ endif;
 				  'value'		=> $this->get_var('info','parkinglot','var_val'),
 				  'default'		=> $element['parkinglot']['default'],
 				  'error'		=> $this->bbf_args('error',
-					   		$this->get_var('error', 'parkinglot')) ));
+				$this->get_var('error', 'parkinglot')) )),
+
+     $form->select(array('desc'  => $this->bbf('fm_textsupport'),
+            'name'      => 'textsupport',
+            'labelid'   => 'textsupport',
+            'key'       => false,
+            'empty'     => true,
+            'bbf'       => 'fm_bool-opt',
+            'bbfopt'    => array('argmode' => 'paramvalue'),
+            'help'      => $this->bbf('hlp_fm_textsupport'),
+            'selected'  => $this->get_var('info','textsupport','var_val'),
+            'default'   => $element['textsupport']['default']),
+         $element['textsupport']['value']),
+
+     $form->select(array('desc'  => $this->bbf('fm_videosupport'),
+            'name'    => 'videosupport',
+            'labelid' => 'videosupport',
+            'key'   => false,
+            'empty' => true,
+            'bbf'   => 'fm_videosupport-opt',
+            'bbfopt'  => array('argmode' => 'paramvalue'),
+            'help'    => $this->bbf('hlp_fm_videosupport'),
+            'selected'  => $this->get_var('info','videosupport','var_val'),
+            'default' => $element['videosupport']['default']),
+					$element['videosupport']['value']);
+
 
 ?>
 </div>

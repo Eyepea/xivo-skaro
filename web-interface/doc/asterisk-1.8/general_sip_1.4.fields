@@ -52,7 +52,7 @@ ux limitonpeer
    minexpiry
    mohinterpret
    mohsuggest
-   nat
+   nat                       VALUES= no,yes,force_rport,comedia
    notifyhold
    notifymimetype
    notifyringing
@@ -144,4 +144,12 @@ un jbtargetextra
  n media_address             str;;20
  n externtcpport             str;;5
  n externtlsport             str;;20
- 
+ n use_q850_reason           bool;no;
+ n snom_aoc_enabled          bool;no;
+ n subscribe_network_change_event bool;no;
+ n maxforwards               int;;1;255;1;1
+ n disallow_methods          str;;35
+ n domainsasrealm            bool;no;1
+ n textsupport               bool;;1
+ n videosupport              lstr;;no,yes,always;1
+ n auth_options_requests     bool;no;

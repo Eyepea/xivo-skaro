@@ -811,6 +811,12 @@ Non
 ; fm_nat-opt(yes)
 Oui
 
+; fm_nat-opt(force_rport)
+RPORT
+
+; fm_nat-opt(comedia)
+COMEDIA
+
 ; fm_nat-opt(never)
 Jamais
 
@@ -1439,4 +1445,67 @@ Port TLS externe :
 
 ; hlp_fm_externtlsport
 Config asterisk: externtlsport
+
+; fm_use_q850_reason
+Utiliser l'en-tête «Reason» : 
+
+; hlp_fm_use_q850_reason
+Config asterisk: use_q850_reason
+
+; fm_snom_aoc_enabled
+Envoyer AOC-D/AOC-E aux terminaux Snom : 
+
+; hlp_fm_snom_aoc_enabled
+Config asterisk: snom_aoc_enabled
+
+; fm_subscribe_network_change_event
+Réenregistrer les interconnexions sortantes sur un changement de l'IP externe : 
+
+; hlp_fm_subscribe_network_change_event
+Config asterisk: subscribe_network_change_event
+
+; fm_maxforwards
+Nombre de relais maximum : 
+
+; hlp_fm_maxforwards
+Config asterisk: maxforwards
+
+; fm_disallow_methods
+Interdire les méthodes SIP suivantes : 
+
+; hlp_fm_disallow_methods
+Config asterisk: disallow_methods
+
+; fm_domainsasrealm
+Utiliser le domaine comme «realm» : 
+
+; hlp_fm_domainsasrealm
+Config asterisk: domainsasrealm
+
+; fm_textsupport
+Support Texte : 
+
+; hlp_fm_textsupport
+Config asterisk: textsupport
+
+; fm_videosupport
+Support Vidéo : 
+
+; hlp_fm_videosupport
+Config asterisk: videosupport
+
+; fm_videosupport-opt(no)
+Non
+
+; fm_videosupport-opt(yes)
+Oui
+
+; fm_videosupport-opt(always)
+Toujours
+
+; fm_auth_options_requests
+Authentifie les requêtes OPTIONS : 
+
+; hlp_fm_auth_options_requests
+Config asterisk: auth_options_requests
 
