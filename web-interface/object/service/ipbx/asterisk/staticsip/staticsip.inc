@@ -142,6 +142,82 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 
 		return($r);
 	}
+
+	function build_outboundmwi_uri($arr)
+	{
+		$r = array(
+			'str' => '',
+			'arr' => $arr
+		);
+
+		if($this->_load_uri() === false
+		|| dwho_has_len($arr,'username') === false
+		|| dwho_has_len($arr,'host') === false)
+			return(false);
+
+		$r['str'] = $arr['username'];
+
+		if(dwho_has_len($arr,'password') === true)
+			$r['str'] .= ':' . $arr['password'];
+
+		if(dwho_has_len($arr,'authuser') === true)
+			$r['str'] .= ":" . $arr['authuser'];
+
+		$r['str'] .= '@' . $arr['host'];
+		if(dwho_has_len($arr,'port') === true)
+			$r['str'] .= ':' . $arr['port'];
+
+		if(dwho_has_len($arr,'mailbox') === true)
+			$r['str'] .= '/' . $arr['mailbox'];
+
+		return($r);
+	}
+
+	function parse_outboundmwi_uri($val,$decode=true)
+	{
+		$val = "uri://$val";
+
+		if($this->_load_uri() === false
+		|| ($parse_uri = $this->_uri->parse_uri($val,$decode)) === false)
+			return(false);
+
+		$r = array(
+			'username'	=> '',
+			'password'	=> '',
+			'authuser'	=> '',
+			'host'	  	=> '',
+			'port'	  	=> '',
+			'mailbox' 	=> '');
+
+		if(dwho_issa('authority',$parse_uri) === true)
+		{
+			if(isset($parse_uri['authority']['user']) === true)
+				$r['username'] = $parse_uri['authority']['user'];
+
+			if(isset($parse_uri['authority']['passwd']) === true)
+				$r['password'] = $parse_uri['authority']['passwd'];
+
+			if(isset($parse_uri['authority']['authuser']) === true)
+				$r['authuser'] = $parse_uri['authority']['authuser'];
+
+			if(isset($parse_uri['authority']['host']) === true)
+				$r['host'] = $parse_uri['authority']['host'];
+
+			if(isset($parse_uri['authority']['port']) === true)
+				$r['port'] = $parse_uri['authority']['port'];
+		}
+
+		if(isset($parse_uri['path']) === true)
+		{
+			if($parse_uri['path']{0} === '/')
+				$r['mailbox'] = substr($parse_uri['path'],1);
+			else
+				$r['mailbox'] = $parse_uri['path'];
+		}
+
+		return($r);
+	}
+
 }
 
 ?>
