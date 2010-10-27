@@ -661,11 +661,20 @@ Disabled
 ; fm_phonefunckey_supervision-opt(1)
 Enabled
 
-; fm_voicemail_option
-Voicemail:
+; fm_userfeatures_voicemailtype
+Messagerie vocale:
 
-; fm_voicemail_option-opt(none)
+; fm_userfeatures_voicemailtype-opt(none)
 None
+
+; fm_userfeatures_voicemailtype-opt(asterisk)
+Asterisk
+
+; fm_userfeatures_voicemailtype-opt(exchange)
+Exchange
+
+; fm_voicemail_option
+Option:
 
 ; fm_voicemail_option-opt(add)
 Add

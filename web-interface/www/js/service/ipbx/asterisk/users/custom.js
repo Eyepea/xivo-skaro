@@ -48,6 +48,7 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'userfeatures-destunc': {it: false},
 	'userfeatures-agentid': {it: false},
 
+	'userfeatures-voicemailtype': {it: false},
 	'userfeatures-voicemailid': {it: false, fd: false},
 	'voicemail-option': {it: false},
 

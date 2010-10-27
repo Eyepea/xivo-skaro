@@ -26,25 +26,25 @@ Advanced
 Maximum number of messages:
 
 ; hlp_fm_voicemail-maxmsg
-Asterisk config: voicemail-maxmsg
+Asterisk config: maxmsg
 
 ; fm_voicemail-silencethreshold
 Silence detection sensibility:
 
 ; hlp_fm_voicemail-silencethreshold
-Asterisk config: voicemail-silencethreshold
+Asterisk config: silencethreshold
 
 ; fm_voicemail-minsecs
-Minimum length of a message:
+Minimum duration of a message:
 
 ; hlp_fm_voicemail-minsecs
-Asterisk config: voicemail-minmessage
+Asterisk config: minmessage
 
 ; fm_voicemail-maxsecs
-Maximum length of a message:
+Maximum duration of a message:
 
 ; hlp_fm_voicemail-maxsecs
-Asterisk config: voicemail-maxmessage
+Asterisk config: maxmessage
 
 ; fm_voicemail-message-opt(0)
 Disabled
@@ -71,7 +71,7 @@ Disabled
 Maximum length of a silence:
 
 ; hlp_fm_voicemail-maxsilence
-Asterisk config: voicemail-maxsilence
+Asterisk config: maxsilence
 
 ; fm_voicemail-maxsilence-opt(1)
 1 second
@@ -83,19 +83,19 @@ Asterisk config: voicemail-maxsilence
 Review / record again a message:
 
 ; hlp_fm_voicemail-review
-Asterisk config: voicemail-review
+Asterisk config: review
 
 ; fm_voicemail-operator
 Get transfered to an operator:
 
 ; hlp_fm_voicemail-operator
-Asterisk config: voicemail-operator
+Asterisk config: operator
 
 ; fm_voicemail-format
 Recording formats:
 
 ; hlp_voicemail-format
-Asterisk config: voicemail-format
+Asterisk config: format
 
 ; bt_informat
 Add one or more formats ->
@@ -107,37 +107,37 @@ Add one or more formats ->
 Maximum number of login retries:
 
 ; hlp_fm_voicemail-maxlogins
-Asterisk config: voicemail-maxlogins
+Asterisk config: maxlogins
 
 ; fm_voicemail-envelope
 Announce date and time:
 
 ; hlp_fm_voicemail-envelope
-Asterisk config: voicemail-envelope
+Asterisk config: envelope
 
 ; fm_voicemail-saycid
 Announce caller ID:
 
 ; hlp_fm_voicemail-saycid
-Asterisk config: voicemail-saycid
+Asterisk config: saycid
 
 ; fm_voicemail-cidinternalcontexts
 Internal context:
 
 ; hlp_fm_voicemail-cidinternalcontexts
-Asterisk config: voicemail-cidinternalcontexts
+Asterisk config: cidinternalcontexts
 
 ; fm_voicemail-sayduration
 Announce duration:
 
 ; hlp_fm_voicemail-sayduration
-Asterisk config: voicemail-sayduration
+Asterisk config: sayduration
 
 ; fm_voicemail-saydurationm
 Minimum time to announce duration:
 
 ; hlp_fm_voicemail-saydurationm
-Asterisk config: voicemail-saydurationm
+Asterisk config: saydurationm
 
 ; fm_voicemail-saydurationm-opt(1)
 1 minute
@@ -149,25 +149,25 @@ Asterisk config: voicemail-saydurationm
 Force the recording of name:
 
 ; hlp_fm_voicemail-forcename
-Asterisk config: voicemail-forcename
+Asterisk config: forcename
 
 ; fm_voicemail-forcegreetings
 Force the recording of greeting message:
 
 ; hlp_fm_voicemail-forcegreetings
-Asterisk config: voicemail-forcegreetings
+Asterisk config: forcegreetings
 
 ; fm_voicemail-tempgreetwarn
-Report the activation of temporary greeting:
+Report temporary greeting activation:
 
 ; hlp_fm_voicemail-tempgreetwarn
-Asterisk config: voicemail-tempgreetwarn
+Asterisk config: tempgreetwarn
 
 ; fm_voicemail-maxgreet
 Maximum duration of the greeting message:
 
 ; hlp_fm_voicemail-maxgreet
-Asterisk config: voicemail-maxgreet
+Asterisk config: maxgreet
 
 ; fm_voicemail-maxgreet-opt(0)
 Disabled
@@ -194,7 +194,7 @@ Disabled
 Fast forward and fast rewind skip time:
 
 ; hlp_fm_voicemail-skipms
-Asterisk config: voicemail-skipms
+Asterisk config: skipms
 
 ; fm_voicemail-skipms-opt-second
 1 second
@@ -209,127 +209,127 @@ Asterisk config: voicemail-skipms
 Forward a message:
 
 ; hlp_fm_voicemail-sendvoicemail
-Asterisk config: voicemail-sendvoicemail
+Asterisk config: sendvoicemail
 
 ; fm_voicemail-usedirectory
 Use the directory to transfer or to leave a message:
 
 ; hlp_fm_voicemail-usedirectory
-Asterisk config: voicemail-usedirectory
+Asterisk config: usedirectory
 
 ; fm_voicemail-nextaftercmd
 Automatic playback of the next message:
 
 ; hlp_fm_voicemail-nextaftercmd
-Asterisk config: voicemail-nextaftercmd
+Asterisk config: nextaftercmd
 
 ; fm_voicemail-dialout
 Call context:
 
 ; hlp_fm_voicemail-dialout
-Asterisk config: voicemail-dialout
+Asterisk config: dialout
 
 ; fm_voicemail-callback
 Callback context:
 
 ; hlp_fm_voicemail-callback
-Asterisk config: voicemail-callback
+Asterisk config: callback
 
 ; fm_voicemail-exitcontext
 Exit context:
 
 ; hlp_fm_voicemail-exitcontext
-Asterisk config: voicemail-exitcontext
+Asterisk config: exitcontext
 
 ; fm_voicemail-attach
 Attach the audio file:
 
 ; hlp_fm_voicemail-attach
-Asterisk config: voicemail-attach
+Asterisk config: attach
 
 ; fm_voicemail-attachformat
 Format of the attached file:
 
 ; hlp_fm_voicemail-attachformat
-Asterisk config: voicemail-attachformat
+Asterisk config: attachformat
 
 ; fm_voicemail-volgain
-Increase / decrease the volume of the attached file:
+Increase/Decrease attached message audio volume:
 
 ; hlp_fm_voicemail-volgain
-Asterisk config: voicemail-volgain
+Asterisk config: volgain
 
 ; fm_voicemail-mailcmd
 Program to be used to send e-mails:
 
 ; hlp_fm_voicemail-mailcmd
-Asterisk config: voicemail-mailcmd
+Asterisk config: mailcmd
 
 ; fm_voicemail-charset
 Encoding:
 
 ; hlp_fm_voicemail-charset
-Asterisk config: voicemail-charset
+Asterisk config: charset
 
 ; fm_voicemail-serveremail
 Sender e-mail address:
 
 ; hlp_fm_voicemail-serveremail
-Asterisk config: voicemail-serveremail
+Asterisk config: serveremail
 
 ; fm_voicemail-fromstring
 Sender:
 
 ; hlp_fm_voicemail-fromstring
-Asterisk config: voicemail-fromstring
+Asterisk config: fromstring
 
 ; fm_voicemail-emaildateformat
 Date format:
 
 ; hlp_fm_voicemail-emaildateformat
-Asterisk config: voicemail-emaildateformat
+Asterisk config: emaildateformat
 
 ; fm_voicemail-emaildatelocale
 Date locale:
 
 ; hlp_fm_voicemail-emaildatelocale
-Asterisk config: voicemail-emaildatelocale
+Asterisk config: emaildatelocale
 
 ; fm_voicemail-pbxskip
 Remove "[PBX]:" from the subject:
 
 ; hlp_fm_voicemail-pbxskip
-Asterisk config: voicemail-pbxskip
+Asterisk config: pbxskip
 
 ; fm_voicemail-emailsubject
 Subject:
 
 ; hlp_fm_voicemail-emailsubject
-Asterisk config: voicemail-emailsubject
+Asterisk config: emailsubject
 
 ; fm_voicemail-emailbody
 Body:
 
 ; hlp_fm_voicemail-emailbody
-Asterisk config: voicemail-emailbody
+Asterisk config: emailbody
 
 ; fm_voicemail-pagerfromstring
 Sender:
 
 ; hlp_fm_voicemail-pagerfromstring
-Asterisk config: voicemail-pagerfromstring
+Asterisk config: pagerfromstring
 
 ; fm_voicemail-pagersubject
 Subject:
 
 ; hlp_fm_voicemail-pagersubject
-Asterisk config: voicemail-pagersubject
+Asterisk config: pagersubject
 
 ; fm_voicemail-pagerbody
 Body:
 
 ; hlp_fm_voicemail-pagerbody
-Asterisk config: voicemail-pagerbody
+Asterisk config: pagerbody
 
 ; col_timezone-name
 Name
@@ -359,37 +359,37 @@ No time zone
 Descriptor number:
 
 ; hlp_fm_voicemail-adsifdn
-Asterisk config: voicemail-adsifdn
+Asterisk config: adsifdn
 
 ; fm_voicemail-adsisec
 Security code:
 
 ; hlp_fm_voicemail-adsisec
-Asterisk config: voicemail-adsisec
+Asterisk config: adsisec
 
 ; fm_voicemail-adsiver
 Version:
 
 ; hlp_fm_voicemail-adsiver
-Asterisk config: voicemail-adsiver
+Asterisk config: adsiver
 
 ; fm_voicemail-searchcontexts
 Context search:
 
 ; hlp_fm_voicemail-searchcontexts
-Asterisk config: voicemail-searchcontexts
+Asterisk config: searchcontexts
 
 ; fm_voicemail-externpass
 External program used to change the password:
 
 ; hlp_fm_voicemail-externpass
-Asterisk config: voicemail-externpass
+Asterisk config: externpass
 
 ; fm_voicemail-externnotify
 External program used to send new messages notifications:
 
 ; hlp_fm_voicemail-externnotify
-Asterisk config: voicemail-externnotify
+Asterisk config: externnotify
 
 ; fm_smdiport
 Device SMDI:
@@ -401,20 +401,20 @@ Asterisk config: smdiport
 ODBC system:
 
 ; hlp_fm_voicemail-odbcstorage
-Asterisk config: voicemail-odbcstorage
+Asterisk config: odbcstorage
 
 ; fm_voicemail-odbctable
 ODBC table:
 
 ; hlp_fm_voicemail-odbctable
-Asterisk config: voicemail-odbctable
+Asterisk config: odbctable
 
 ; fm_success-save
 Voicemails properties successfully saved
 
 ;;; asterisk 1.8
 ; fm_moveheard
-Move heard messages to the *Old* folder:
+Move listened messages to the «Old» folder:
 
 ; hlp_fm_moveheard
 Asterisk config: moveheard
@@ -595,4 +595,17 @@ Max number of messages allowed in «Deleted» folder:
 
 ; hlp_fm_backupdeleted
 Asterisk config: backupdeleted
+
+; smenu_exchange
+Exchange
+
+; fm_exchange_trunkid
+Exchange server trunk:
+
+; hlp_fm_exchange_trunkid
+
+; fm_exchange_exten
+Target extension: 
+
+; hlp_fm_exchange_exten
 

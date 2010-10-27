@@ -128,13 +128,25 @@ endif;
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-7"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-advanced');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#advanced"><?=$this->bbf('smenu_advanced');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-8"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-advanced',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-exchange',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#advanced"><?=$this->bbf('smenu_advanced');?></a>
+					<a href="#exchange"><?=$this->bbf('smenu_exchange');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -1076,9 +1088,36 @@ if($zmsg_nb > 0):
 
 ?>
 </div>
-	<?=$form->submit(array('name' => 'submit',
+
+<div id="sb-part-exchange" class="b-nodisplay">
+<?php
+   echo $form->select(array('desc'  => $this->bbf('fm_exchange_trunkid'),
+            'name' => 'general[exchange_trunkid]',
+            'labelid'  => 'exchange_trunkid',
+						'key'      => 'name',
+						'altkey'   => 'id',
+						'empty'    => true,
+            'help'     => $this->bbf('hlp_fm_exchange_trunkid'),
+            'selected' => $this->get_var('general','exchange_trunkid'),
+            'default'  => $element['general']['exchange_trunkid']['default']),
+        $this->get_var('siptrunks')),
+
+		$form->text(array('desc'	=> $this->bbf('fm_exchange_exten'),
+				  'name'	=> 'general[exchange_exten]',
+				  'labelid'	=> 'exchange_exten',
+				  'size'	=> 5,
+				  'help'	=> $this->bbf('hlp_fm_exchange_exten'),
+					'value'	=> $this->get_var('general','exchange_exten'),
+					'default'	=> $element['general']['exchange_exten']['default']));
+?>
+</div>
+
+<?php
+	echo $form->submit(array('name' => 'submit',
 			       'id'	=> 'it-submit',
-			       'value'	=> $this->bbf('fm_bt-save')));?>
+						 'value'	=> $this->bbf('fm_bt-save')));
+?>
+
 </form>
 	</div>
 	<div class="sb-foot xspan">

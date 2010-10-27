@@ -139,8 +139,8 @@ $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
 $array['element']['option'] = array();
-$array['element']['option']['value'] = array('none','add','search');
-$array['element']['option']['default'] = 'none';
+$array['element']['option']['value'] = array('add','search');
+$array['element']['option']['default'] = '';
 $array['element']['option']['unset'] = true;
 
 // asterisk 1.8 fields

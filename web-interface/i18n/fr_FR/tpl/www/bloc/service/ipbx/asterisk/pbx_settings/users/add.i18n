@@ -103,11 +103,20 @@ Jamais
 ; fm_protocol_nat-opt(route)
 Route
 
-; fm_voicemail_option
+; fm_userfeatures_voicemailtype
 Messagerie vocale :
 
-; fm_voicemail_option-opt(none)
+; fm_userfeatures_voicemailtype-opt(none)
 Aucune
+
+; fm_userfeatures_voicemailtype-opt(asterisk)
+Asterisk
+
+; fm_userfeatures_voicemailtype-opt(exchange)
+Exchange
+
+; fm_voicemail_option
+Messagerie vocale :
 
 ; fm_voicemail_option-opt(add)
 Ajouter

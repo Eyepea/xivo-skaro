@@ -151,6 +151,7 @@ var xivo_ast_users_elt_default = {
 	'userfeatures-preprocess-subroutine': {it: true},
 	'userfeatures-description': {it: true},
 
+	'userfeatures-voicemailtype': {it: true, fd: true},
 	'userfeatures-voicemailid': {it: true, fd: false},
 	'voicemail-option': {it: true},
 	'voicemail-suggest': {it: false, fd: false},
@@ -224,6 +225,16 @@ var xivo_ast_fm_user_enableunc = {
 			    {readOnly: false, className: 'it-enabled'}]}};
 
 xivo_attrib_register('ast_fm_user_enableunc',xivo_ast_fm_user_enableunc);
+
+var xivo_ast_fm_user_voicemailtype = {
+ 'it-userfeatures-voicemailid':
+    {property: [{disabled: true},{disabled: false}],
+     link: 'it-voicemail-option'},
+ 'it-voicemail-option':
+    {property: [{disabled: true, className: 'it-disabled'},
+          {disabled: false, className: 'it-enabled'}]}};
+
+xivo_attrib_register('ast_fm_user_voicemailtype',xivo_ast_fm_user_voicemailtype);
 
 var xivo_ast_fm_user_voicemailoption = {
 	'fd-voicemail-suggest':
@@ -641,6 +652,10 @@ function xivo_ast_user_chg_protocol(protocol)
 			xivo_ast_user_chg_voicemail(voicemail_option.value);
 	}
 
+  if(xivo_ast_user_protocol !== 'custom'
+  && (voicemail_type = dwho_eid('it-userfeatures-voicemailtype')) !== false)
+    xivo_ast_user_chg_voicemailtype(voicemail_type.value);
+
 	xivo_ast_user_chg_host_type();
 	xivo_ast_user_chg_autoprov_modact();
 	xivo_ast_user_chg_enableclient();
@@ -773,6 +788,16 @@ function xivo_ast_user_chg_voicemail(option)
 			dwho_eid('it-voicemail-suggest').value = '';
 			xivo_ast_user_voicemail_reset_search();
 			break;
+		case 'exchange':
+			dwho.form.reset_field(dwho_eid('it-userfeatures-voicemailid'),false);
+			
+			for(property in xivo_ast_fm_user_enablevoicemail)
+			  dwho.form.reset_field(dwho_eid(property),false);
+			
+			xivo_chg_attrib('ast_fm_user_enablevoicemail', 'it-voicemail-fullname', 1);
+			xivo_chg_attrib('ast_fm_user_enablevoicemail', 'it-userfeatures-enablevoicemail', 0);
+      break;
+
 		case 'none':
 		default:
 			dwho.form.reset_field(dwho_eid('it-userfeatures-voicemailid'),false);
@@ -785,6 +810,25 @@ function xivo_ast_user_chg_voicemail(option)
 					Number((option === 'none'
 					        || dwho_eid('it-userfeatures-voicemailid').value === '')));
 	}
+}
+
+function xivo_ast_user_chg_voicemailtype(type)
+{
+  xivo_chg_attrib('ast_fm_user_voicemailtype',
+    'it-userfeatures-voicemailid',
+    Number(type === 'asterisk'));
+
+  switch(type)
+  {
+    case 'asterisk':
+      return(xivo_ast_user_chg_voicemail(dwho_eid('it-voicemail-option').value));
+
+    case 'exchange':
+      return(xivo_ast_user_chg_voicemail('m$exchangeserver2010'));
+
+		default:
+      return(xivo_ast_user_chg_voicemail('none'));
+  }
 }
 
 function xivo_ast_user_http_get_voicemail(obj)
@@ -889,6 +933,16 @@ function xivo_ast_user_onload()
 				   dwho_eid('it-autoprov-modact'),
 				   xivo_ast_user_chg_autoprov_modact);
 	}
+
+  if((voicemailtype = dwho_eid('it-userfeatures-voicemailtype')) !== false)
+  {
+     var voicemailtype_fn = function()
+		 	 {
+			    xivo_ast_user_chg_voicemailtype(voicemailtype.value);
+			 };
+
+     dwho.dom.add_event('change',voicemailtype,voicemailtype_fn);
+  }
 
 	if((voicemailoption = dwho_eid('it-voicemail-option')) !== false)
 	{

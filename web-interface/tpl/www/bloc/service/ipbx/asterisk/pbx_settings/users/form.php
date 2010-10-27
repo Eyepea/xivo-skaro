@@ -236,7 +236,18 @@ endif;
 
 <div id="sb-part-voicemail" class="b-nodisplay">
 <?php
-	echo	$form->hidden(array('name'	=> 'userfeatures[voicemailid]',
+	echo    $form->select(array('desc'      => $this->bbf('fm_userfeatures_voicemailtype'),
+	           'name'      => 'userfeatures[voicemailtype]',
+	           'labelid'   => 'userfeatures-voicemailtype',
+	           'key'       => false,
+	           'empty'     => $this->bbf('fm_userfeatures_voicemailtype-opt(none)'),
+	           'bbf'       => 'fm_userfeatures_voicemailtype-opt',
+						 'bbfopt'	   => array('argmode' => 'paramvalue'),
+	           'selected'  => $info['userfeatures']['voicemailtype'],
+	           'default'   => $element['userfeatures']['voicemailtype']['default']),
+	       $element['userfeatures']['voicemailtype']['value']),
+
+		$form->hidden(array('name'	=> 'userfeatures[voicemailid]',
 				    'id'	=> 'it-userfeatures-voicemailid',
 				    'value'	=> $info['userfeatures']['voicemailid'])),
 

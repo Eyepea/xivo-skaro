@@ -40,6 +40,14 @@ class xivo_service_asterisk_general extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function edit($id, $rs)
+	{
+		$rs = array_merge($this->get(1), $rs);
+		$rs = $this->chk_values($rs,true);
+		var_dump($rs);
+		return(parent::edit($id, $rs));
+	}
 }
 
 ?>

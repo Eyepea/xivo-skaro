@@ -29,6 +29,11 @@ $info['voicemail'] = $appgeneralvoicemail->get_all_by_category();
 $appzonemessages = &$appvoicemail->get_module('zonemessages');
 $info['zonemessages'] = $appzonemessages->get_all_name();
 
+$general   = &$ipbx->get_module('general');
+$trunkapp = &$ipbx->get_application('trunk', array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
+$siptrunks = array();
+foreach($trunkapp->get_trunks_list() as $id => $values)
+	$siptrunks[$values['id']] = $values['name']; 
 
 if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 {
@@ -54,11 +59,23 @@ if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 		if($appzonemessages->get_errnb() > 0)
 			$fm_save = false;
 	}
+
+	if(dwho_issa('general',$_QR) === true)
+	{
+		if($general->edit(1, $_QR['general']) === false)
+		{
+			$info['general'] = $general->get_filter_result();
+			$error['general'] = $general->get_filter_error();
+
+			$fm_save = false;
+		}
+	}
 }
 
 $element = array();
 $element['voicemail'] = $appgeneralvoicemail->get_elements();
 $element['zonemessages'] = $appzonemessages->get_elements();
+$element['general']      = $general->get_element();
 
 if(dwho_issa('format',$element['voicemail']) === true
 && dwho_issa('value',$element['voicemail']['format']) === true
@@ -76,6 +93,8 @@ $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('element',$element);
+$_TPL->set_var('general',$general->get(1));
+$_TPL->set_var('siptrunks',$siptrunks);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('voicemail',$info['voicemail']);
 $_TPL->set_var('zonemessages',$info['zonemessages']);

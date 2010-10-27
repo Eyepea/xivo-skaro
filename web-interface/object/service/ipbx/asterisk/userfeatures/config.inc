@@ -65,6 +65,11 @@ $array['element']['context']['default'] = '';
 $array['element']['number'] = array();
 $array['element']['number']['default'] = '';
 
+$array['element']['voicemailtype'] = array();
+$array['element']['voicemailtype']['value'] = array('asterisk','exchange');
+$array['element']['voicemailtype']['default'] = '';
+$array['element']['voicemailtype']['null'] = true;
+
 $array['element']['voicemailid'] = array();
 $array['element']['voicemailid']['default'] = 0;
 $array['element']['voicemailid']['null'] = true;
@@ -214,6 +219,7 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 				    'callbackarg' => array(array(
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
+$array['filter']['voicemailtype'] = array('set' => false,'chk' => 2,'key' => array('asterisk','exchange'));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['agentid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));

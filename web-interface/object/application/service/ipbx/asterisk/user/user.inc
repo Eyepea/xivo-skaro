@@ -795,6 +795,24 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$simultcalls = (int) $this->get_result_var('userfeatures','simultcalls');
 		$musiconhold = (string) $this->get_result_var('userfeatures','musiconhold');
 
+		$numhaslen = dwho_has_len($number);
+		
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+		  $this->_set_result_var('userfeatures','voicemailtype',null);
+		
+		switch($this->get_result_var('userfeatures','voicemailtype'))
+		{
+		  case 'asterisk':
+		    break;
+		  case 'exchange':
+		    if($numhaslen === false)
+		      $this->_set_result_var('userfeatures','voicemailtype',null);
+		  default:
+		    $vmaction = 'none';
+		    $this->_set_result_var('userfeatures','voicemailid',null);
+		    break;
+		}
+
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
 			$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
 
@@ -836,7 +854,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if((bool) $chkcontext === true)
 			$this->set_contextnummember($context,$number);
 
-		$numhaslen = dwho_has_len($number);
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			if(($rsusermacro = $this->chk_macro('usermacro',
