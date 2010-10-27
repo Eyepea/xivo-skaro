@@ -25,7 +25,8 @@ class xivo_application_service_asterisk_realstatic_sip extends xivo_application_
 	var $_name	= 'sip';
 	var $_module	= array(
 				'general'	=> false,
-				'register'	=> false);
+				'register'	=> false,
+				'outboundmwi' => false);
 }
 
 ?>
