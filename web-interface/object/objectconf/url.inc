@@ -82,6 +82,7 @@ $array['service/ipbx/general_settings/sccp'] = 'service/ipbx/index.php/general_s
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
 $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
+$array['service/ipbx/general_settings/outboundmwi'] = 'service/ipbx/index.php/general_settings/outboundmwi/';
 
 
 

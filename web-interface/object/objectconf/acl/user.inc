@@ -32,6 +32,7 @@ $array['tree']['service']['ipbx']['general_settings']['sccp'] = true;
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
+$array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
 
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['agents'] = true;
