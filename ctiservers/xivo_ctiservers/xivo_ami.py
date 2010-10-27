@@ -178,51 +178,6 @@ class AMIClass:
         ret = self.sendcommand('MeetMeList', [])
         return ret
 
-    # \brief For debug.
-    def printresponse_forever(self):
-        while True:
-            str = self.fileobj.readline()
-    # \brief Reads a part of a reply.
-    def readresponsechunk(self):
-        start = True
-        list = []
-        while True:
-            str = self.fileobj.readline()
-            if start and str == '\r\n': continue
-            start = False
-            if str == '\r\n' or str == '': break
-            l = [ x.strip() for x in str.split(': ') ]
-            if len(l) == 2:
-                list.append((l[0], l[1]))
-        return dict(list)
-    # \brief Reads the reply.
-    def readresponse(self, check):
-        first = self.readresponsechunk()
-        if first=={}: return []
-        if first['Response'] != 'Success':
-            #and first['Response'] != 'Follows':
-            if first.has_key('Message'):
-                raise self.AMIError(first['Message'])
-            else:
-                raise self.AMIError('')
-        if check == '':
-            return []
-        resp = []
-        while True:
-            chunk = self.readresponsechunk()
-            #print "chunk", chunk
-            if chunk=={}:
-                #print 'empty chunk'
-                resp.append(first)
-                break
-            resp.append(chunk)
-            if not chunk.has_key('Event'):
-                continue
-                #break
-            if chunk['Event'] == check:
-                break
-        return resp
-
     # \brief Logins to the AMI.
     def login(self):
         try:
@@ -242,21 +197,6 @@ class AMIClass:
             return False
         except Exception:
             return False
-
-    # \brief Executes a CLI command.
-    def execclicommand(self, command):
-        # special procession for cli commands.
-        self.sendcommand('Command',
-                         [('Command', command)])
-        resp = []
-        for i in (1, 2):
-            str = self.fileobj.readline()
-        while True:
-            str = self.fileobj.readline()
-            if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
-                break
-            resp.append(str)
-        return resp
 
     # \brief Hangs up a Channel.
     def hangup(self, channel, channel_peer = None):
@@ -707,78 +647,122 @@ class AMIList:
                         % (command, astid))
         return actionid
 
-evfunction_to_method_name = {
-    'Registry':             'ami_registry',
-    'Dial':                 'ami_dial',
-    'Unlink':               'ami_unlink',
-    'Bridge':               'ami_bridge',                   # (1.6) Seems to replace partly Link/Unlink events
-    'Masquerade':           'ami_masquerade',               # (1.6 backported) for indirect transfers & intercepts
-    'Hangup':               'ami_hangup',
-    'Join':                 'ami_join',
-    'Leave':                'ami_leave',
-    'DTMF':                 'ami_dtmf',                     # (1.6 backported)
-    'PeerStatus':           'ami_peerstatus',
-    'Agentlogin':           'ami_agentlogin',
-    'Agentlogoff':          'ami_agentlogoff',
-    'Agentcallbacklogin':   'ami_agentcallbacklogin',
-    'Agentcallbacklogoff':  'ami_agentcallbacklogoff',
-    'AgentCalled':          'ami_agentcalled',
-    'AgentComplete':        'ami_agentcomplete',
-    'AgentsComplete':       'ami_agentscomplete',
-    'AgentConnect':         'ami_agentconnect',
-    'AgentDump':            'ami_agentdump',
-    'Agents':               'ami_agents',
-    'ChannelReload':        'ami_channelreload',            # (1.4)
-    'ParkedCall':           'ami_parkedcall',               # when the requested parking is acked
-    'UnParkedCall':         'ami_unparkedcall',
-    'ParkedCallTimeOut':    'ami_parkedcalltimeout',
-    'ParkedCallGiveUp':     'ami_parkedcallgiveup',
-    'ParkedCallsComplete':  'ami_parkedcallscomplete',
-    'DNDState':             'ami_dndstate',
-    'Cdr':                  'ami_cdr',
-    'Hold':                 'ami_hold',
-    'Unhold':               'ami_unhold',
-    'Alarm':                'ami_alarm',
-    'AlarmClear':           'ami_alarmclear',
-    'FaxSent':              'ami_faxsent',
-    'FaxReceived':          'ami_faxreceived',
-    'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
-    'MeetmeNoAuthed':       'ami_meetmenoauthed',           # when a member was accepted or not by an admin
-    'MeetmePause':          'ami_meetmepause',              # when a conf chamber is put in pause or activated
-    'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
-    'MeetmeMute':           'ami_meetmemute',               # when a member is (un)muted
-    'MeetmeTalking':        'ami_meetmetalking',
-    'MeetmeList':           'ami_meetmelist',
-    'MeetmeListComplete':   'ami_meetmelistcomplete',
-    'Transfer':             'ami_transfer',                 # (1.6 backported)
-    'ExtensionStatus':      'ami_extensionstatus',
-    'OriginateSuccess':     'ami_originatesuccess',
-    'AOriginateSuccess':    'ami_aoriginatesuccess',
-    'OriginateFailure':     'ami_originatefailure',
-    'AOriginateFailure':    'ami_aoriginatefailure',
-    'OriginateResponse':    'ami_originateresponse',
-    'Rename':               'ami_rename',                   # appears when there is a transfer
-    'Newstate':             'ami_newstate',
-    'NewCallerid':          'ami_newcallerid',              # useful for tricky managements - changed name in 1.8
-    'Newchannel':           'ami_newchannel',
-    'Newexten':             'ami_newexten',                 # in order to handle outgoing calls ?
-    'MessageWaiting':       'ami_messagewaiting',
-    'QueueParams':          'ami_queueparams',
-    'QueueMemberAdded':     'ami_queuememberadded',
-    'QueueMemberPaused':    'ami_queuememberpaused',
-    'QueueMemberRemoved':   'ami_queuememberremoved',
-    'QueueMember':          'ami_queuemember',
-    'QueueMemberStatus':    'ami_queuememberstatus',
-    'QueueStatusComplete':  'ami_queuestatuscomplete',
-    'QueueEntry':           'ami_queueentry',
-    'QueueCallerAbandon':   'ami_queuecallerabandon',       # (1.4)
-    'Status':               'ami_status',
-    'StatusComplete':       'ami_statuscomplete',
-    'Atxfer':               'ami_atxfer',                   # (?)
 
-    'FullyBooted':          'ami_fullybooted',              # (1.8)
-    'NewAccountCode':       'ami_newaccountcode',           # (1.8)
+# define the events, sorted according to their class
+# (defined here include/asterisk/manager.h)
 
-    'ActionRequest':        'ami_actionrequest',            # (xivo)
-    'HangupRequest':        'ami_hanguprequest',            # (xivo) to know who 'ordered' the hangup
-}
+event_flags = dict()
+event_others = dict()
+
+event_flags['SYSTEM'] = [ 'Alarm', 'AlarmClear', 'SpanAlarm', 'SpanAlarmClear',
+                          'Reload', 'Shutdown', 'ModuleLoadReport',
+                          'FullyBooted', # (1.8)
+                          'PeerStatus', 'DNDState', 'MobileStatus', 'Registry',
+                          'ChannelReload', 'ChannelUpdate', 'LogChannel'
+                          ]
+
+event_flags['CALL'] = [ 'MeetmeJoin',
+                        'MeetmeLeave',
+                        'MeetmeMute',
+                        'MeetmeTalking',
+                        'MeetmeTalkRequest',
+                        'MeetmeEnd',
+                        'Dial', 'Hangup', 'Pickup', 'Rename', 'Unlink',
+                        'Bridge', 'BridgeExec', 'BridgeAction',
+                        'Transfer', # only in chan_sip
+                        'Hold', # only in chan_sip and chan_iax2
+                        'Masquerade', 'OriginateResponse', 'MessageWaiting', 'MiniVoiceMail',
+                        'ParkedCall', 'UnParkedCall', 'ParkedCallTimeOut', 'ParkedCallGiveUp',
+                        'MonitorStart', 'MonitorStop', 'ChanSpyStart', 'ChanSpyStop',
+                        'Newchannel',
+                        'NewAccountCode', # (1.8)
+                        'NewCallerid', # was 'Newcallerid' in 1.4
+                        'NewPeerAccount',
+                        'Newstate',
+                        'CEL', 'MCID',
+                        'Join', 'Leave',
+                        'ExtensionStatus', 'MusicOnHold',
+                        'FaxSent', 'FaxReceived', 'ReceiveFAXStatus', 'SendFAXStatus', 'ReceiveFAX', 'SendFAX'
+                        ]
+
+event_flags['AGENT'] = [ 'AgentCalled', 'AgentComplete', 'AgentConnect', 'AgentDump',
+                         'Agentlogin', 'Agentlogoff',
+                         'AgentRingNoAnswer',
+                         'QueueCallerAbandon', 'QueueMemberAdded',
+                         'QueueMemberPaused', 'QueueMemberPenalty',
+                         'QueueMemberRemoved', 'QueueMemberStatus'
+                         ]
+
+event_flags['USER'] = [ 'JabberEvent', 'JabberStatus', 'UserEvent' ]
+
+event_flags['DTMF'] = [ 'DTMF' ]
+
+event_flags['REPORTING'] = [ 'JitterBufStats', 'RTCPReceived', 'RTCPSent' ]
+
+event_flags['CDR'] = [ 'Cdr' ]
+
+event_flags['DIALPLAN'] = [ 'Newexten', # in order to handle outgoing calls ?
+                            'VarSet' ]
+
+event_flags['AGI'] = [ 'AGIExec', 'AsyncAGI' ]
+
+event_flags['CC'] = [ 'CCAvailable',
+                      'CCCallerRecalling', 'CCCallerStartMonitoring', 'CCCallerStopMonitoring',
+                      'CCFailure', 'CCMonitorFailed', 'CCOfferTimerStart',
+                      'CCRecallComplete', 'CCRequestAcknowledged', 'CCRequested' ]
+
+event_flags['AOC'] = [ 'AOC-D', 'AOC-E', 'AOC-S' ]
+
+
+event_others['replies'] = [ 'WaitEventComplete',
+                            'Status' , 'StatusComplete',
+                            'CoreShowChannel', 'CoreShowChannelsComplete',
+                            'Placeholder', 'DBGetResponse', 'DBGetComplete',
+                            'ParkedCallsComplete',
+                            'ListDialplan', 'ShowDialPlanComplete',
+                            'RegistryEntry', 'RegistrationsComplete',
+                            'PeerEntry', 'PeerlistComplete',
+                            'LineEntry', 'LinelistComplete',
+                            'Agents', 'AgentsComplete',
+                            'DeviceEntry', 'DevicelistComplete',
+                            'VoicemailUserEntry', 'VoicemailUserEntryComplete',
+                            'MeetmeList', 'MeetmeListComplete',
+                            'QueueSummary', 'QueueSummaryComplete', 'QueueParams',
+                            'QueueStatusComplete', 'QueueEntry', 'QueueMember',
+                            'DAHDIShowChannels', 'DAHDIShowChannelsComplete',
+                            'DataGet Tree'
+                            ]
+
+event_others['extra'] = [
+    'Agentcallbacklogin',   # (old events : find the way to replace them)
+    'Agentcallbacklogoff',  # (old events : find the way to replace them)
+    'MeetmeNoAuthed',       # (xivo) when a member was accepted or not by an admin
+    'MeetmePause',          # (xivo) when a meetme room is put in pause or activated
+    'Atxfer',               # (patch to fetch ?)
+    'AOriginateSuccess',    # (xivo aoriginate)
+    'AOriginateFailure',    # (xivo aoriginate)
+    'ActionRequest',        # (xivo)
+    'HangupRequest',        # (xivo) to know who 'ordered' the hangup
+]
+
+evfunction_to_method_name = dict()
+
+# define the handling method for event XyZ to be ami_xyz()
+
+for k, v in event_flags.iteritems():
+    for eventname in v:
+        # '-' to '_' for 'AOC-[DES]' events
+        methodname = 'ami_%s' % eventname.lower().replace('-', '_')
+        if eventname not in evfunction_to_method_name:
+            evfunction_to_method_name[eventname] = methodname
+        else:
+            log.warning('%s (flags) %s already there' % (k, eventname))
+
+for k, v in event_others.iteritems():
+    for eventname in v:
+        # ' ' to '_' for 'DataGet Tree' event
+        methodname = 'ami_%s' % eventname.lower().replace(' ', '_')
+        if eventname not in evfunction_to_method_name:
+            evfunction_to_method_name[eventname] = methodname
+        else:
+            log.warning('%s (others) %s already there' % (k, eventname))

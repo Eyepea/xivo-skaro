@@ -4798,6 +4798,16 @@ class XivoCTICommand(BaseCommand):
         self.__ami_execute__(astid, 'sendqueuestatus', queuename)
         return
 
+    def ami_reload(self, astid, event):
+        log.warning('%s AMI:Reload %s' % (astid, event))
+        return
+
+    def ami_shutdown(self, astid, event):
+        shutdown = event.get('Shutdown')
+        restart  = event.get('Restart')
+        log.warning('%s AMI:Shutdown (how=%s restart=%s)' % (astid, shutdown, restart))
+        return
+
     def ami_registry(self, astid, event):
         """
         When this asterisk registers to another one.
@@ -6495,5 +6505,77 @@ class XivoCTICommand(BaseCommand):
                        }
             self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
         self.sheetmanager[astid].del_sheet(channel)
+
+    # new events to manage one day :-)
+    def ami_agentringnoanswer(self, astid, event): return
+    def ami_agiexec(self, astid, event): return
+    def ami_aoc_d(self, astid, event): return
+    def ami_aoc_e(self, astid, event): return
+    def ami_aoc_s(self, astid, event): return
+    def ami_asyncagi(self, astid, event): return
+    def ami_bridgeaction(self, astid, event): return
+    def ami_bridgeexec(self, astid, event): return
+    def ami_ccavailable(self, astid, event): return
+    def ami_cccallerrecalling(self, astid, event): return
+    def ami_cccallerstartmonitoring(self, astid, event): return
+    def ami_cccallerstopmonitoring(self, astid, event): return
+    def ami_ccfailure(self, astid, event): return
+    def ami_ccmonitorfailed(self, astid, event): return
+    def ami_ccoffertimerstart(self, astid, event): return
+    def ami_ccrecallcomplete(self, astid, event): return
+    def ami_ccrequestacknowledged(self, astid, event): return
+    def ami_ccrequested(self, astid, event): return
+    def ami_cel(self, astid, event): return
+    def ami_channelupdate(self, astid, event): return
+    def ami_chanspystart(self, astid, event): return
+    def ami_chanspystop(self, astid, event): return
+    def ami_coreshowchannel(self, astid, event): return
+    def ami_coreshowchannelscomplete(self, astid, event): return
+    def ami_dahdishowchannels(self, astid, event): return
+    def ami_dahdishowchannelscomplete(self, astid, event): return
+    def ami_dataget_tree(self, astid, event): return
+    def ami_dbgetcomplete(self, astid, event): return
+    def ami_dbgetresponse(self, astid, event): return
+    def ami_deviceentry(self, astid, event): return
+    def ami_devicelistcomplete(self, astid, event): return
+    def ami_jabberevent(self, astid, event): return
+    def ami_jabberstatus(self, astid, event): return
+    def ami_jitterbufstats(self, astid, event): return
+    def ami_lineentry(self, astid, event): return
+    def ami_linelistcomplete(self, astid, event): return
+    def ami_listdialplan(self, astid, event): return
+    def ami_logchannel(self, astid, event): return
+    def ami_mcid(self, astid, event): return
+    def ami_meetmeend(self, astid, event): return
+    def ami_meetmetalkrequest(self, astid, event): return
+    def ami_minivoicemail(self, astid, event): return
+    def ami_mobilestatus(self, astid, event): return
+    def ami_moduleloadreport(self, astid, event): return
+    def ami_monitorstart(self, astid, event): return
+    def ami_monitorstop(self, astid, event): return
+    def ami_musiconhold(self, astid, event): return
+    def ami_newpeeraccount(self, astid, event): return
+    def ami_peerentry(self, astid, event): return
+    def ami_peerlistcomplete(self, astid, event): return
+    def ami_pickup(self, astid, event): return
+    def ami_placeholder(self, astid, event): return
+    def ami_queuememberpenalty(self, astid, event): return
+    def ami_queuesummary(self, astid, event): return
+    def ami_queuesummarycomplete(self, astid, event): return
+    def ami_receivefax(self, astid, event): return
+    def ami_receivefaxstatus(self, astid, event): return
+    def ami_registrationscomplete(self, astid, event): return
+    def ami_registryentry(self, astid, event): return
+    def ami_rtcpreceived(self, astid, event): return
+    def ami_rtcpsent(self, astid, event): return
+    def ami_sendfax(self, astid, event): return
+    def ami_sendfaxstatus(self, astid, event): return
+    def ami_showdialplancomplete(self, astid, event): return
+    def ami_spanalarm(self, astid, event): return
+    def ami_spanalarmclear(self, astid, event): return
+    def ami_varset(self, astid, event): return
+    def ami_voicemailuserentry(self, astid, event): return
+    def ami_voicemailuserentrycomplete(self, astid, event): return
+    def ami_waiteventcomplete(self, astid, event): return
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
