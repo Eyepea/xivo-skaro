@@ -205,6 +205,8 @@ $array['element']['allow']['value'] = array(
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1C,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
@@ -357,7 +359,7 @@ $array['element']['context']['default'] = '';
 $array['element']['context']['null'] = true;
 
 $array['element']['nat'] = array();
-$array['element']['nat']['value'] = array('no','yes','never','route');
+$array['element']['nat']['value'] = array('no','yes','force_rport','comedia');
 $array['element']['nat']['default'] = 'no';
 
 $array['element']['dtmfmode'] = array();
@@ -681,6 +683,50 @@ $array['element']['externtlsport'] = array();
 $array['element']['externtlsport']['default'] = '';
 $array['element']['externtlsport']['null'] = true;
 
+$array['element']['use_q850_reason'] = array();
+$array['element']['use_q850_reason']['value'] = array('no','yes');
+$array['element']['use_q850_reason']['default'] = 'no';
+$array['element']['use_q850_reason']['set'] = true;
+
+$array['element']['snom_aoc_enabled'] = array();
+$array['element']['snom_aoc_enabled']['value'] = array('no','yes');
+$array['element']['snom_aoc_enabled']['default'] = 'no';
+$array['element']['snom_aoc_enabled']['set'] = true;
+
+$array['element']['subscribe_network_change_event'] = array();
+$array['element']['subscribe_network_change_event']['value'] = array('no','yes');
+$array['element']['subscribe_network_change_event']['default'] = 'yes';
+$array['element']['subscribe_network_change_event']['set'] = true;
+
+$array['element']['maxforwards'] = array();
+$array['element']['maxforwards']['value'] = range(1,255,1);
+$array['element']['maxforwards']['default'] = '';
+$array['element']['maxforwards']['null'] = true;
+
+$array['element']['disallow_methods'] = array();
+$array['element']['disallow_methods']['default'] = '';
+$array['element']['disallow_methods']['null'] = true;
+
+$array['element']['domainsasrealm'] = array();
+$array['element']['domainsasrealm']['value'] = array('no','yes');
+$array['element']['domainsasrealm']['default'] = 'no';
+$array['element']['domainsasrealm']['set']     = true;
+
+$array['element']['textsupport'] = array();
+$array['element']['textsupport']['value'] = array('no','yes');
+$array['element']['textsupport']['default'] = '';
+$array['element']['textsupport']['null']    = true;
+
+$array['element']['videosupport'] = array();
+$array['element']['videosupport']['value'] = array('no','yes','always');
+$array['element']['videosupport']['default'] = '';
+$array['element']['videosupport']['null'] = true;
+
+$array['element']['auth_options_requests'] = array();
+$array['element']['auth_options_requests']['value'] = array('no','yes');
+$array['element']['auth_options_requests']['default'] = 'no';
+$array['element']['auth_options_requests']['set'] = true;
+
 
 // this is not a real sip option
 $array['element']['srtp'] = array();
@@ -772,6 +818,8 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1C,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
@@ -830,7 +878,7 @@ $array['filter']['jblog'] = array('bool' => true);
 $array['filter']['context'] = array('set' => false,'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
-$array['filter']['nat'] = array('key' => array('no','yes','never','route'));
+$array['filter']['nat'] = array('key' => array('no','yes','force_rport','comedia'));
 $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','shortinfo','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['useclientcode'] = array('bool' => true);
@@ -872,6 +920,15 @@ $array['filter']['shrinkcallerid'] = array('bool' => true);
 $array['filter']['media_address'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['externtcpport'] = array('set' => false,'chk' => 2,'maxlen' => 10);
 $array['filter']['externtlsport'] = array('set' => false,'chk' => 2,'maxlen' => 10);
+$array['filter']['use_q850_reason'] = array('bool' => true);
+$array['filter']['snom_aoc_enabled'] = array('bool' => true);
+$array['filter']['subscribe_network_change_event'] = array('bool' => true);
+$array['filter']['maxforwards'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,255,1));
+$array['filter']['disallow_methods'] = array('set' => false,'chk' => 2,'maxlen' => 255);
+$array['filter']['domainsasrealm'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['textsupport'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','always'));
+$array['filter']['auth_options_requests'] = array('bool' => true);
 
 
 $array['filter']['srtp'] = array('bool' => true);
