@@ -75,6 +75,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('general_settings','outboundmwi') === true):
+			echo	'<dd id="mn-general-settings--outboundmwi">',
+				$url->href_html($this->bbf('mn_left_generalsettings-outboundmwi'),
+						'service/ipbx/general_settings/outboundmwi'),
+				'</dd>';
+		endif;
+
 		echo	'</dl>';
 	endif;
 

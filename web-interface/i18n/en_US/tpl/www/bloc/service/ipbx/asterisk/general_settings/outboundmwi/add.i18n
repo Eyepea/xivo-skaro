@@ -1,0 +1,20 @@
+; title_content_name
+MWI subscriptions > Add
+
+; fm_outboundmwi_username
+Username:
+
+; fm_outboundmwi_password
+Password:
+
+; fm_outboundmwi_authuser
+Authentication : 
+
+; fm_outboundmwi_host
+Remote server:
+
+; fm_outboundmwi_port
+Port : 
+
+; fm_outboundmwi_mailbox
+Voicemail:
