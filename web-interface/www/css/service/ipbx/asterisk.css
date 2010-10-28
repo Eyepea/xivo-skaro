@@ -58,3 +58,11 @@
 #s-asterisk #sr-voicemenu #voicemenu-event table th {width: 50%;}
 #s-asterisk #sr-voicemenu #voicemenu-event table td a {font-weight: bold;text-decoration: underline;color: #0063bf;}
 #s-asterisk #sr-voicemenu #voicemenu-event table td a:hover {text-decoration: none;color: #ff9d03;}
+
+.title {
+	margin-right: 5px;
+}
+
+.underline {
+	text-decoration: underline;
+}
