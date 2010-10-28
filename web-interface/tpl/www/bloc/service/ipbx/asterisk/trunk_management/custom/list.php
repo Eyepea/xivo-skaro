@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $page = $url->pager($pager['pages'],
 		    $pager['page'],
@@ -53,9 +54,45 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_interface');?></th>
-		<th class="th-center"><?=$this->bbf('col_intfsuffix');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='name'?'underline':''?>">
+				<?=$this->bbf('col_name');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_name'), 'border="0"'),
+					'service/ipbx/trunk_management/custom',
+					array('act'	=> 'list', 'sort' => 'name'),
+					null,
+					$this->bbf('col_sort_name'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='interface'?'underline':''?>">
+				<?=$this->bbf('col_interface');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_interface'), 'border="0"'),
+					'service/ipbx/trunk_management/custom',
+					array('act'	=> 'list', 'sort' => 'interface'),
+					null,
+					$this->bbf('col_sort_interface'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='intfsuffix'?'underline':''?>">
+				<?=$this->bbf('col_intfsuffix');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_intfsuffix'), 'border="0"'),
+					'service/ipbx/trunk_management/custom',
+					array('act'	=> 'list', 'sort' => 'intfsuffix'),
+					null,
+					$this->bbf('col_sort_intfsuffix'));
+?>
+		</th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>

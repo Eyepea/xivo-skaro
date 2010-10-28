@@ -20,9 +20,14 @@
 
 $appvoicemail = &$ipbx->get_application('voicemail');
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
-$search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
+dwho::load_class('dwho_prefs');
+$prefs = new dwho_prefs('voicemails');
+
+$act     = isset($_QR['act']) === true ? $_QR['act'] : '';
+$page    = dwho_uint($prefs->get('page', 1));
+$search  = strval($prefs->get('search', ''));
+$context = strval($prefs->get('context', ''));
+$sort    = $prefs->flipflop('sort', 'fullname');
 
 $info = array();
 
@@ -152,7 +157,7 @@ switch($act)
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$order = array();
-		$order['fullname'] = SORT_ASC;
+		$order[$sort[1]] = $sort[0];
 
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
@@ -174,6 +179,7 @@ switch($act)
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
+		$_TPL->set_var('sort',$sort);
 }
 
 $menu = &$_TPL->get_module('menu');

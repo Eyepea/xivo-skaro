@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $page = $url->pager($pager['pages'],
 		    $pager['page'],
@@ -53,9 +54,45 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_exten');?></th>
-		<th class="th-center"><?=$this->bbf('col_context');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='name'?'underline':''?>">
+				<?=$this->bbf('col_name');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_name'), 'border="0"'),
+					'service/ipbx/call_management/outcall',
+					array('act'	=> 'list', 'sort' => 'name'),
+					null,
+					$this->bbf('col_sort_name'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='exten'?'underline':''?>">
+				<?=$this->bbf('col_exten');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_exten'), 'border="0"'),
+					'service/ipbx/call_management/outcall',
+					array('act'	=> 'list', 'sort' => 'exten'),
+					null,
+					$this->bbf('col_sort_exten'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='context'?'underline':''?>">
+				<?=$this->bbf('col_context');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_context'), 'border="0"'),
+					'service/ipbx/call_management/outcall',
+					array('act'	=> 'list', 'sort' => 'context'),
+					null,
+					$this->bbf('col_sort_context'));
+?>
+		</th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>

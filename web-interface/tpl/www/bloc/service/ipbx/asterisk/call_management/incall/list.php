@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $param = array();
 
@@ -61,10 +62,58 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_did');?></th>
-		<th class="th-center"><?=$this->bbf('col_context');?></th>
-		<th class="th-center"><?=$this->bbf('col_destination');?></th>
-		<th class="th-center"><?=$this->bbf('col_identity');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='exten'?'underline':''?>">
+				<?=$this->bbf('col_exten');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_exten'), 'border="0"'),
+					'service/ipbx/call_management/incall',
+					array('act'	=> 'list', 'sort' => 'exten'),
+					null,
+					$this->bbf('col_sort_exten'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='context'?'underline':''?>">
+				<?=$this->bbf('col_context');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_context'), 'border="0"'),
+					'service/ipbx/call_management/incall',
+					array('act'	=> 'list', 'sort' => 'context'),
+					null,
+					$this->bbf('col_sort_context'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='destination'?'underline':''?>">
+				<?=$this->bbf('col_destination');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_destination'), 'border="0"'),
+					'service/ipbx/call_management/incall',
+					array('act'	=> 'list', 'sort' => 'destination'),
+					null,
+					$this->bbf('col_sort_destination'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='identity'?'underline':''?>">
+				<?=$this->bbf('col_identity');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_identity'), 'border="0"'),
+					'service/ipbx/call_management/incall',
+					array('act'	=> 'list', 'sort' => 'identity'),
+					null,
+					$this->bbf('col_sort_identity'));
+?>
+		</th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>

@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $param = array();
 
@@ -69,10 +70,58 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_fullname');?></th>
-		<th class="th-center"><?=$this->bbf('col_protocol');?></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_phone');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='fullname'?'underline':''?>">
+				<?=$this->bbf('col_fullname');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_fullname'), 'border="0"'),
+					'service/ipbx/pbx_settings/users',
+					array('act'	=> 'list', 'sort' => 'fullname'),
+					null,
+					$this->bbf('col_sort_fullname'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='protocol'?'underline':''?>">
+				<?=$this->bbf('col_protocol');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_protocol'), 'border="0"'),
+					'service/ipbx/pbx_settings/users',
+					array('act'	=> 'list', 'sort' => 'protocol'),
+					null,
+					$this->bbf('col_sort_protocol'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title, <?= $sort[1]=='name'?'underline':''?>">
+				<?=$this->bbf('col_name');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_name'), 'border="0"'),
+					'service/ipbx/pbx_settings/users',
+					array('act'	=> 'list', 'sort' => 'name'),
+					null,
+					$this->bbf('col_sort_name'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='number'?'underline':''?>">
+				<?=$this->bbf('col_phone');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_phone'), 'border="0"'),
+					'service/ipbx/pbx_settings/users',
+					array('act'	=> 'list', 'sort' => 'number'),
+					null,
+					$this->bbf('col_sort_phone'));
+?>
+		</th>
 		<th class="th-center"><?=$this->bbf('col_provisioning');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>

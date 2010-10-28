@@ -18,10 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
-$search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
-$context = isset($_QR['context']) === true ? strval($_QR['context']) : '';
+dwho::load_class('dwho_prefs');
+$prefs = new dwho_prefs('users');
+
+$act     = isset($_QR['act']) === true ? $_QR['act'] : '';
+$page    = dwho_uint($prefs->get('page', 1));
+$search  = strval($prefs->get('search', ''));
+$context = strval($prefs->get('context', ''));
+$sort    = $prefs->flipflop('sort', 'fullname');
 
 $param = array();
 $param['act'] = 'list';
@@ -129,8 +133,13 @@ switch($act)
 		$contexts = $appuser->get_all_context();
 
 		$order = array();
-		$order['firstname'] = SORT_ASC;
-		$order['lastname'] = SORT_ASC;
+		if($sort[1] == 'fullname')
+		{
+			$order['firstname'] = $sort[0];
+			$order['lastname']  = $sort[0];
+		} else {
+			$order[$sort[1]] = $sort[0];
+		}
 
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
@@ -155,6 +164,7 @@ switch($act)
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
 		$_TPL->set_var('context',$context);
+		$_TPL->set_var('sort',$sort);
 }
 
 $_TPL->set_var('act',$act);

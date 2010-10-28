@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $page = $url->pager($pager['pages'],
 		    $pager['page'],
@@ -53,10 +54,58 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_host');?></th>
-		<th class="th-center"><?=$this->bbf('col_type');?></th>
-		<th class="th-center"><?=$this->bbf('col_call-limit');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='name'?'underline':''?>">
+				<?=$this->bbf('col_name');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_name'), 'border="0"'),
+					'service/ipbx/trunk_management/sip',
+					array('act'	=> 'list', 'sort' => 'name'),
+					null,
+					$this->bbf('col_sort_name'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='host'?'underline':''?>">
+				<?=$this->bbf('col_host');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_host'), 'border="0"'),
+					'service/ipbx/trunk_management/sip',
+					array('act'	=> 'list', 'sort' => 'host'),
+					null,
+					$this->bbf('col_sort_host'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='type'?'underline':''?>">
+				<?=$this->bbf('col_type');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_type'), 'border="0"'),
+					'service/ipbx/trunk_management/sip',
+					array('act'	=> 'list', 'sort' => 'type'),
+					null,
+					$this->bbf('col_sort_type'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='call-limit'?'underline':''?>">
+				<?=$this->bbf('col_call-limit');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_call-limit'), 'border="0"'),
+					'service/ipbx/trunk_management/sip',
+					array('act'	=> 'list', 'sort' => 'call-limit'),
+					null,
+					$this->bbf('col_sort_call-limit'));
+?>
+		</th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>

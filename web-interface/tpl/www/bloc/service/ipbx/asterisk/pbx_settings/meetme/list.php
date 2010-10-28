@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $page = $url->pager($pager['pages'],
 		    $pager['page'],
@@ -53,8 +54,32 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_number');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='name'?'underline':''?>">
+				<?=$this->bbf('col_name');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_name'), 'border="0"'),
+					'service/ipbx/pbx_settings/meetme',
+					array('act'	=> 'list', 'sort' => 'name'),
+					null,
+					$this->bbf('col_sort_name'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='confno'?'underline':''?>">
+				<?=$this->bbf('col_confno');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_confno'), 'border="0"'),
+					'service/ipbx/pbx_settings/meetme',
+					array('act'	=> 'list', 'sort' => 'confno'),
+					null,
+					$this->bbf('col_sort_confno'));
+?>
+		</th>
 		<th class="th-center"><?=$this->bbf('col_pin');?></th>
 		<th class="th-center"><?=$this->bbf('col_pinadmin');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
