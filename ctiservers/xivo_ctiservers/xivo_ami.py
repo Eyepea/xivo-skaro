@@ -152,10 +152,12 @@ class AMIClass:
     def sendstatus(self):
         ret = self.sendcommand('Status', [])
         return ret
+
     # \brief Requesting the Agents' Status.
     def sendagents(self):
         ret = self.sendcommand('Agents', [])
         return ret
+
     # \brief Requesting the Queues' Status.
     def sendqueuestatus(self, queue = None):
         if queue is None:
@@ -164,6 +166,11 @@ class AMIClass:
             ret = self.sendcommand('QueueStatus',
                                    [('Queue', queue)])
         return ret
+
+    def sendcoreshowchannels(self):
+        ret = self.sendcommand('CoreShowChannels', [])
+        return ret
+
     # \brief Requesting an ExtensionState.
     def sendextensionstate(self, exten, context):
         ret = self.sendcommand('ExtensionState',
@@ -183,15 +190,13 @@ class AMIClass:
         try:
             ret = False
             if self.events:
-                ret = self.sendcommand('login',
-                                       [('Username', self.loginname),
-                                        ('Secret', self.password),
-                                        ('Events', 'on')])
+                onoff = 'on'
             else:
-                ret = self.sendcommand('login',
-                                       [('Username', self.loginname),
-                                        ('Secret', self.password),
-                                        ('Events', 'off')])
+                onoff = 'off'
+            ret = self.sendcommand('Login',
+                                   [('Username', self.loginname),
+                                    ('Secret', self.password),
+                                    ('Events', onoff)])
             return ret
         except self.AMIError:
             return False
@@ -590,6 +595,7 @@ class AMIList:
             # sendparkedcalls before sendstatus : parked calls can be identified later
             # sendmeetmelist before sendstatus : to fill the times spent for various conf rooms
             initphaseid = ''.join(random.sample(__alphanums__, 10))
+
             conn_ami.setactionid('init_parkedcalls_%s' % initphaseid)
             conn_ami.sendparkedcalls()
             conn_ami.setactionid('init_meetmelist_%s' % initphaseid)
@@ -600,6 +606,9 @@ class AMIList:
             conn_ami.sendagents()
             conn_ami.setactionid('init_queues_%s' % initphaseid)
             conn_ami.sendqueuestatus()
+            conn_ami.setactionid('init_coreshowchannels_%s' % initphaseid)
+            conn_ami.sendcoreshowchannels()
+
             conn_ami.setactionid('init_close_%s' % initphaseid)
         return
 
@@ -713,25 +722,33 @@ event_flags['CC'] = [ 'CCAvailable',
 
 event_flags['AOC'] = [ 'AOC-D', 'AOC-E', 'AOC-S' ]
 
+event_flags['LOG'] = []
+event_flags['VERBOSE'] = []
+event_flags['COMMAND'] = []
+event_flags['CONFIG'] = []
+event_flags['ORIGINATE'] = []
+event_flags['HOOKRESPONSE'] = []
 
-event_others['replies'] = [ 'WaitEventComplete',
-                            'Status' , 'StatusComplete',
-                            'CoreShowChannel', 'CoreShowChannelsComplete',
-                            'Placeholder', 'DBGetResponse', 'DBGetComplete',
-                            'ParkedCallsComplete',
-                            'ListDialplan', 'ShowDialPlanComplete',
-                            'RegistryEntry', 'RegistrationsComplete',
-                            'PeerEntry', 'PeerlistComplete',
-                            'LineEntry', 'LinelistComplete',
-                            'Agents', 'AgentsComplete',
-                            'DeviceEntry', 'DevicelistComplete',
-                            'VoicemailUserEntry', 'VoicemailUserEntryComplete',
-                            'MeetmeList', 'MeetmeListComplete',
-                            'QueueSummary', 'QueueSummaryComplete', 'QueueParams',
-                            'QueueStatusComplete', 'QueueEntry', 'QueueMember',
-                            'DAHDIShowChannels', 'DAHDIShowChannelsComplete',
-                            'DataGet Tree'
-                            ]
+event_others['replies'] = [
+    'ParkedCallsComplete',
+    'MeetmeList', 'MeetmeListComplete',
+    'Status' , 'StatusComplete',
+    'Agents', 'AgentsComplete',
+    'QueueSummary', 'QueueSummaryComplete',
+    'QueueParams', 'QueueEntry', 'QueueMember', 'QueueStatusComplete',
+    'CoreShowChannel', 'CoreShowChannelsComplete',
+
+    'WaitEventComplete',
+    'Placeholder', 'DBGetResponse', 'DBGetComplete',
+    'ListDialplan', 'ShowDialPlanComplete',
+    'RegistryEntry', 'RegistrationsComplete',
+    'PeerEntry', 'PeerlistComplete',
+    'LineEntry', 'LinelistComplete',
+    'DeviceEntry', 'DevicelistComplete',
+    'VoicemailUserEntry', 'VoicemailUserEntryComplete',
+    'DAHDIShowChannels', 'DAHDIShowChannelsComplete',
+    'DataGet Tree'
+    ]
 
 event_others['extra'] = [
     'Agentcallbacklogin',   # (old events : find the way to replace them)
@@ -742,7 +759,9 @@ event_others['extra'] = [
     'AOriginateSuccess',    # (xivo aoriginate)
     'AOriginateFailure',    # (xivo aoriginate)
     'ActionRequest',        # (xivo)
-    'HangupRequest',        # (xivo) to know who 'ordered' the hangup
+
+    'HangupRequest',        # (xivo) to know who 'ordered' the hangup (patch submitted to digium in #0018226)
+    'SoftHangupRequest',    # (xivo) to know when the hangup was requested from the CLI (patch submitted to digium in #0018226)
 ]
 
 evfunction_to_method_name = dict()
@@ -766,3 +785,30 @@ for k, v in event_others.iteritems():
             evfunction_to_method_name[eventname] = methodname
         else:
             log.warning('%s (others) %s already there' % (k, eventname))
+
+manager_commands = [
+    'AbsoluteTimeout',
+    'AgentLogoff', 'Agents', 'AOCMessage',
+    'Atxfer', 'Bridge', 'Challenge', 'ChangeMonitor', 'Command',
+    'CoreSettings', 'CoreShowChannels', 'CoreStatus',
+    'CreateConfig', 'DataGet',
+    'DBDel', 'DBDelTree', 'DBGet', 'DBPut',
+    'Events', 'ExtensionState',
+    'GetConfigJSON', 'GetConfig',
+    'Getvar', 'Hangup',
+    'IAXnetstats', 'IAXpeerlist', 'IAXpeers', 'IAXregistry',
+    'ListCategories', 'ListCommands',
+    'LocalOptimizeAway',
+    'Login', 'Logoff',
+    'MailboxCount', 'MailboxStatus',
+    'MeetmeList', 'MeetmeMute', 'MeetmeUnmute',
+    'MixMonitorMute',
+    'ModuleCheck', 'ModuleLoad', 'Monitor',
+    'Originate', 'ParkedCalls', 'Park', 'PauseMonitor', 'Ping',
+    'QueueAdd', 'QueueLog', 'QueuePause', 'QueuePenalty', 'QueueReload',
+    'QueueRemove', 'QueueReset', 'QueueRule', 'Queues', 'QueueStatus', 'QueueSummary',
+    'Redirect', 'Reload', 'SendText', 'Setvar', 'ShowDialPlan',
+    'SIPnotify', 'SIPpeers', 'SIPqualifypeer', 'SIPshowpeer', 'SIPshowregistry',
+    'Status', 'StopMonitor',
+    'UnpauseMonitor', 'UpdateConfig', 'UserEvent', 'WaitEvent'
+    ]

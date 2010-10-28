@@ -579,10 +579,10 @@ class manage_connection:
             evfunction = this_event.pop('Event', None)
             # log.info('%s AMI(all)  %s  : %s' % (astid, evfunction, this_event))
             if evfunction is not None:
-                if dumpami and (dumpami == 'all' or evfunction in dumpami):
+                if dumpami and (dumpami == 'all' or evfunction in dumpami) and evfunction not in ['VarSet']:
                     for ik, iv in daemon.fdlist_established.iteritems():
                         if iv == 'INFO':
-                            ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, evfunction, todisp))
+                            ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, evfunction, this_event))
                 manage_connection.handle_ami_function(daemon, astid, evfunction, this_event)
 
                 if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
@@ -670,9 +670,15 @@ class manage_connection:
             if 'Privilege' in this_event:
                 this_event.pop('Privilege')
             if (evfunction in xivo_ami.evfunction_to_method_name):
-                getattr(daemon.commandclass, xivo_ami.evfunction_to_method_name[evfunction])(astid, this_event)
+                methodname = xivo_ami.evfunction_to_method_name.get(evfunction)
+                if hasattr(daemon.commandclass, methodname):
+                    getattr(daemon.commandclass, methodname)(astid, this_event)
+                else:
+                    log.warning('%s AMI ... this event (%s) is tracked but no %s method is defined : %s'
+                                % (astid, evfunction, methodname, this_event))
             else:
-                log.warning('%s AMI ... this event (%s) is not tracked : %s' % (astid, evfunction, this_event))
+                log.warning('%s AMI ... this event (%s) is not tracked : %s'
+                            % (astid, evfunction, this_event))
 
         except Exception:
             log.exception('%s AMI / %s : event %s' % (astid, evfunction, this_event))
