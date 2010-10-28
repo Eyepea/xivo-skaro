@@ -317,6 +317,7 @@ $array['element']['category']['forcedef'] = true;
 
 $array['element']['outboundproxy'] = array();
 $array['element']['outboundproxy']['default'] = '';
+$array['element']['outboundproxy']['null'] = true;
 
 // asterisk 1.8 fields
 $array['element']['transport'] = array();
