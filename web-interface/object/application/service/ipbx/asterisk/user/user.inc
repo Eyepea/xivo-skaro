@@ -799,7 +799,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 		  $this->_set_result_var('userfeatures','voicemailtype',null);
-		
+
 		switch($this->get_result_var('userfeatures','voicemailtype'))
 		{
 		  case 'asterisk':
@@ -1383,6 +1383,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$this->_reverse_add();
 		}
 
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+			$this->_service->discuss('sccp reload');
+
 		$this->_status = '';
 
 		return($r);
@@ -1755,8 +1758,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		$this->edit_phone();
-		$this->_status = '';
 
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+			$this->_service->discuss('sccp reload');
+
+		$this->_status = '';
 		return(true);
 	}
 
