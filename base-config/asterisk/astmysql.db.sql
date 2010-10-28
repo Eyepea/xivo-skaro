@@ -810,7 +810,7 @@ CREATE TABLE `meetmefeatures` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `meetmefeatures__idx__number` ON `meetmefeatures`(`number`);
+CREATE INDEX `meetmefeatures__idx__number` ON `meetmefeatures`(`confno`);
 CREATE INDEX `meetmefeatures__idx__context` ON `meetmefeatures`(`context`);
 CREATE UNIQUE INDEX `meetmefeatures__uidx__meetmeid` ON `meetmefeatures`(`meetmeid`);
 CREATE UNIQUE INDEX `meetmefeatures__uidx__name` ON `meetmefeatures`(`name`);
@@ -1716,6 +1716,7 @@ CREATE TABLE `userfeatures` (
  `name` varchar(128) NOT NULL,
  `number` varchar(40) NOT NULL,
  `context` varchar(39),
+ `voicemailtype` enum('asterisk', 'exchange'),
  `voicemailid` int(10) unsigned,
  `agentid` int(10) unsigned,
  `provisioningid` mediumint(8) unsigned,
@@ -1764,7 +1765,7 @@ CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
+INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,NULL,148378,
                                    30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,NULL,0,'');
 
 
@@ -1935,10 +1936,10 @@ CREATE TABLE `usersip` (
  `timerb` integer unsigned DEFAULT NULL,
  `qualifyfreq` integer unsigned DEFAULT NULL,
  `contactpermit` varchar(1024) DEFAULT NULL,
- `contactdeny` varchar(1024) DEFAULT NULL',
-	-- 
-	`srtp` tinyint(1) DEFAULT NULL,
-	--
+ `contactdeny` varchar(1024) DEFAULT NULL,
+ -- 
+ `srtp` tinyint(1) DEFAULT NULL,
+ --
 
  `commented` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
  PRIMARY KEY(`id`)
@@ -1960,7 +1961,7 @@ INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initco
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
                               'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',
                               NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,0);
+                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);
 
 
 DROP TABLE IF EXISTS `voicemail`;
@@ -2187,6 +2188,8 @@ CREATE TABLE `general`
 (
  `id`       int(10) unsigned auto_increment,
  `timezone` varchar(128),
+ `exchange_trunkid` int(10) DEFAULT NULL,
+ `exchange_exten` varchar(128) DEFAULT NULL,
  PRIMARY KEY(`id`)
 );
 
