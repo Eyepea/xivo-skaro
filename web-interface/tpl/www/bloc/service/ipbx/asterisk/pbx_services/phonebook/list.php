@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $pager = $this->get_var('pager');
 $act = $this->get_var('act');
+$sort = $this->get_var('sort');
 
 $param = array();
 
@@ -69,11 +70,71 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_displayname');?></th>
-		<th class="th-center"><?=$this->bbf('col_society');?></th>
-		<th class="th-center"><?=$this->bbf('col_tel-office');?></th>
-		<th class="th-center"><?=$this->bbf('col_tel-mobile');?></th>
-		<th class="th-center"><?=$this->bbf('col_email');?></th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='displayname'?'underline':''?>">
+				<?=$this->bbf('col_displayname');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_displayname'), 'border="0"'),
+					'service/ipbx/pbx_services/phonebook',
+					array('act'	=> 'list', 'sort' => 'displayname'),
+					null,
+					$this->bbf('col_sort_displayname'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='society'?'underline':''?>">
+				<?=$this->bbf('col_society');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_society'), 'border="0"'),
+					'service/ipbx/pbx_services/phonebook',
+					array('act'	=> 'list', 'sort' => 'society'),
+					null,
+					$this->bbf('col_sort_society'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='office-number'?'underline':''?>">
+				<?=$this->bbf('col_office-number');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_office-number'), 'border="0"'),
+					'service/ipbx/pbx_services/phonebook',
+					array('act'	=> 'list', 'sort' => 'office-number'),
+					null,
+					$this->bbf('col_sort_office-number'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='mobile-number'?'underline':''?>">
+				<?=$this->bbf('col_mobile-number');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_mobile-number'), 'border="0"'),
+					'service/ipbx/pbx_services/phonebook',
+					array('act'	=> 'list', 'sort' => 'mobile-number'),
+					null,
+					$this->bbf('col_sort_mobile-number'));
+?>
+		</th>
+		<th class="th-center">
+			<span class="title <?= $sort[1]=='email'?'underline':''?>">
+				<?=$this->bbf('col_email');?>
+			</span>
+<?php
+	echo	$url->href_html(
+					$url->img_html('img/updown.png', $this->bbf('col_sort_email'), 'border="0"'),
+					'service/ipbx/pbx_services/phonebook',
+					array('act'	=> 'list', 'sort' => 'email'),
+					null,
+					$this->bbf('col_sort_email'));
+?>
+		</th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>

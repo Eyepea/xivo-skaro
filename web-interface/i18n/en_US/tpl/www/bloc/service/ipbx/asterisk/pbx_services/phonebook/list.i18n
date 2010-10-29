@@ -4,10 +4,10 @@ Display name
 ; col_society
 Company
 
-; col_tel-office
+; col_office-number
 Office phone
 
-; col_tel-mobile
+; col_mobile-number
 Mobile phone
 
 ; col_email

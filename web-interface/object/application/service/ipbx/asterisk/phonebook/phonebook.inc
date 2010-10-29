@@ -133,6 +133,13 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	{
 		$search = strval($search);
 
+		$subsort = false;
+		foreach(array('office-number', 'mobile-number') as $fld)
+		{
+			if(array_key_exists($fld, $order))
+			{ $subsort = array($fld, $order[$fld]); unset($order[$fld]); }
+		}
+
 		switch($action)
 		{
 			case 'search':
@@ -160,6 +167,28 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$info['phonebookaddress'] = $this->_phonebookaddress->get_all_type_by_phonebook($info['phonebook']['id']);
 			$info['phonebooknumber'] = $this->_phonebooknumber->get_all_type_by_phonebook($info['phonebook']['id']);
 			$r[$info['phonebook']['id']] = $info;
+		}
+
+		// here we can sort by phonebook number
+		if($subsort !== false)
+		{ 
+			function f_sortby_office_number($a, $b)
+			{ 
+				return strcmp(
+					$a['phonebooknumber']['office']['number'], 
+					$b['phonebooknumber']['office']['number']); 
+			}
+			function f_sortby_mobile_number($a, $b)
+			{ 
+				return strcmp(
+					$a['phonebooknumber']['mobile']['number'], 
+					$b['phonebooknumber']['mobile']['number']); 
+			}
+
+			usort($r, "f_sortby_".str_replace('-', '_', $subsort[0])); 
+
+			if($subsort[1] === SORT_DESC)
+				$r = array_reverse($r);
 		}
 
 		if(empty($r) === true)
