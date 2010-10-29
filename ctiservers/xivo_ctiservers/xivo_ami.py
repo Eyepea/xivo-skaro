@@ -788,32 +788,42 @@ for k, v in event_others.iteritems():
 
 manager_commands = [
     'AbsoluteTimeout',
-    'AgentLogoff', 'Agents', 'AOCMessage',
-    'Atxfer', 'Bridge', 'Challenge', 'ChangeMonitor', 'Command',
-    'CoreSettings', 'CoreShowChannels', 'CoreStatus',
+    'AgentLogoff', 'AGI', 'AOCMessage',
+    'Challenge', 'ChangeMonitor', 'Command',
     'CreateConfig',
     'DataGet',
     'DBDel', 'DBDelTree', 'DBGet', 'DBPut',
     'Events', 'ExtensionState',
     'GetConfigJSON', 'GetConfig',
-    'Getvar', 'Hangup',
-    'JabberSend'
-    'ListCategories', 'ListCommands',
+    'Getvar',
+    'JabberSend',
+    'ListCategories', 
     'LocalOptimizeAway',
     'Login', 'Logoff',
     'MailboxCount', 'MailboxStatus',
-    'MeetmeList', 'MeetmeMute', 'MeetmeUnmute',
+    'MeetmeMute', 'MeetmeUnmute',
     'MixMonitorMute',
     'ModuleCheck', 'ModuleLoad', 'Monitor',
-    'Originate', 'ParkedCalls', 'Park', 'PauseMonitor', 'Ping', 'PlayDTMF',
+    'PauseMonitor', 'Ping', 'PlayDTMF',
     'QueueAdd', 'QueueLog', 'QueuePause', 'QueuePenalty', 'QueueReload',
-    'QueueRemove', 'QueueReset', 'QueueRule', 'Queues', 'QueueStatus', 'QueueSummary',
-    'Redirect', 'Reload',
+    'QueueRemove', 'QueueReset', 'QueueRule', 'QueueStatus', 'QueueSummary',
+    'Reload',
     'SendText', 'Setvar', 'ShowDialPlan',
-    'Status', 'StopMonitor',
+    'StopMonitor',
     'UnpauseMonitor', 'UpdateConfig', 'UserEvent',
-    'VoicemailUsersList',
     'WaitEvent',
+
+    # general
+    'CoreSettings', 'CoreStatus', 'ListCommands',
+
+    # call actions
+    'Atxfer', 'Bridge', 'Hangup', 'Originate', 'Park', 'Redirect',
+
+    # list requests (~ config)
+    'Agents', 'Queues', 'MeetmeList', 'VoicemailUsersList',
+
+    # list requests (~ statuses)
+    'CoreShowChannels', 'ParkedCalls', 'Status',
 
     # protocol-related commands
     'DAHDIDialOffhook', 'DAHDIDNDoff', 'DAHDIDNDon', 'DAHDIHangup',
