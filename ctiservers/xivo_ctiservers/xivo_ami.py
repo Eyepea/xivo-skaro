@@ -737,15 +737,15 @@ event_others['replies'] = [
     'QueueSummary', 'QueueSummaryComplete',
     'QueueParams', 'QueueEntry', 'QueueMember', 'QueueStatusComplete',
     'CoreShowChannel', 'CoreShowChannelsComplete',
+    'PeerEntry', 'PeerlistComplete', # after SIPpeers or IAXpeers or ...
+    'LineEntry', 'LinelistComplete', # in reply to SKINNYlines
+    'DeviceEntry', 'DevicelistComplete', # in reply to SKINNYdevices
+    'VoicemailUserEntry', 'VoicemailUserEntryComplete', # in reply to VoicemailUserList ? XXX when empty
+    'ListDialplan', 'ShowDialPlanComplete', # in reply to ShowDialPlan
+    'RegistryEntry', 'RegistrationsComplete', # in reply to IAXregistry / SIPshowregistry seems to go elsewhere
 
     'WaitEventComplete',
     'Placeholder', 'DBGetResponse', 'DBGetComplete',
-    'ListDialplan', 'ShowDialPlanComplete',
-    'RegistryEntry', 'RegistrationsComplete',
-    'PeerEntry', 'PeerlistComplete',
-    'LineEntry', 'LinelistComplete',
-    'DeviceEntry', 'DevicelistComplete',
-    'VoicemailUserEntry', 'VoicemailUserEntryComplete',
     'DAHDIShowChannels', 'DAHDIShowChannelsComplete',
     'DataGet Tree'
     ]
@@ -791,12 +791,13 @@ manager_commands = [
     'AgentLogoff', 'Agents', 'AOCMessage',
     'Atxfer', 'Bridge', 'Challenge', 'ChangeMonitor', 'Command',
     'CoreSettings', 'CoreShowChannels', 'CoreStatus',
-    'CreateConfig', 'DataGet',
+    'CreateConfig',
+    'DataGet',
     'DBDel', 'DBDelTree', 'DBGet', 'DBPut',
     'Events', 'ExtensionState',
     'GetConfigJSON', 'GetConfig',
     'Getvar', 'Hangup',
-    'IAXnetstats', 'IAXpeerlist', 'IAXpeers', 'IAXregistry',
+    'JabberSend'
     'ListCategories', 'ListCommands',
     'LocalOptimizeAway',
     'Login', 'Logoff',
@@ -804,11 +805,22 @@ manager_commands = [
     'MeetmeList', 'MeetmeMute', 'MeetmeUnmute',
     'MixMonitorMute',
     'ModuleCheck', 'ModuleLoad', 'Monitor',
-    'Originate', 'ParkedCalls', 'Park', 'PauseMonitor', 'Ping',
+    'Originate', 'ParkedCalls', 'Park', 'PauseMonitor', 'Ping', 'PlayDTMF',
     'QueueAdd', 'QueueLog', 'QueuePause', 'QueuePenalty', 'QueueReload',
     'QueueRemove', 'QueueReset', 'QueueRule', 'Queues', 'QueueStatus', 'QueueSummary',
-    'Redirect', 'Reload', 'SendText', 'Setvar', 'ShowDialPlan',
-    'SIPnotify', 'SIPpeers', 'SIPqualifypeer', 'SIPshowpeer', 'SIPshowregistry',
+    'Redirect', 'Reload',
+    'SendText', 'Setvar', 'ShowDialPlan',
     'Status', 'StopMonitor',
-    'UnpauseMonitor', 'UpdateConfig', 'UserEvent', 'WaitEvent'
+    'UnpauseMonitor', 'UpdateConfig', 'UserEvent',
+    'VoicemailUsersList',
+    'WaitEvent',
+
+    # protocol-related commands
+    'DAHDIDialOffhook', 'DAHDIDNDoff', 'DAHDIDNDon', 'DAHDIHangup',
+    'DAHDIRestart', 'DAHDIShowChannels', 'DAHDITransfer',
+    'IAXnetstats', 'IAXpeerlist', 'IAXpeers', 'IAXregistry',
+    'SCCPDeviceAddLine', 'SCCPDeviceRestart', 'SCCPDeviceUpdate',
+    'SCCPLineForwardUpdate', 'SCCPListDevices', 'SCCPListLines',
+    'SKINNYshowline', 'SKINNYlines', 'SKINNYshowdevice', 'SKINNYdevices',
+    'SIPnotify', 'SIPpeers', 'SIPqualifypeer', 'SIPshowpeer', 'SIPshowregistry',
     ]
