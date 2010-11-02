@@ -261,6 +261,8 @@ $appqueue = &$ipbx->get_application('queue');
 $element['queueskills'] =  $appqueue->skills_gettree();
 $_TPL->set_var('queueskills', $queueskills);
 
+$element['protocol']['secret'] = array('default' => $appuser->gen_password());
+
 $_TPL->set_var('info',$result);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('fm_save',$fm_save);

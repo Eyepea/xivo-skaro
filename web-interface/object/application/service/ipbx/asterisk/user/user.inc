@@ -2685,6 +2685,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		return(true);
 	}
+
+	function gen_password()
+	{
+		$pwd = '';
+		for($i = 0; $i < 6; $i++)
+		{
+			$r = mt_rand(0, 35);
+			$pwd .= $r < 10?$r:chr($r-10+65);
+		}
+		
+		return $pwd;
+	}
 }
 
 ?>
