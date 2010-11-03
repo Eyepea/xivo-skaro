@@ -156,9 +156,11 @@ $array['service/ipbx/ui/pbx_settings/users/meetme/search'] = 'service/ipbx/ui.ph
 $array['service/ipbx/ui/pbx_settings/users/voicemail'] = 'service/ipbx/ui.php/pbx_settings/users/voicemail/';
 $array['service/ipbx/ui/pbx_settings/users/voicemail/search'] = 'service/ipbx/ui.php/pbx_settings/users/voicemail/search/';
 $array['service/ipbx/ui/pbx_settings/users/voicemail/view'] = 'service/ipbx/ui.php/pbx_settings/users/voicemail/view/';
+$array['service/ipbx/ui/pbx_settings/users/extension/view'] = 'service/ipbx/ui.php/pbx_settings/users/extension/view/';
 $array['service/ipbx/ui/pbx_settings/groups'] = 'service/ipbx/ui.php/pbx_settings/groups/';
 $array['service/ipbx/ui/pbx_settings/meetme'] = 'service/ipbx/ui.php/pbx_settings/meetme/';
 $array['service/ipbx/ui/pbx_settings/voicemail'] = 'service/ipbx/ui.php/pbx_settings/voicemail/';
+$array['service/ipbx/ui/pbx_settings/extension/search'] = 'service/ipbx/ui.php/pbx_settings/extension/search/';
 
 // call center
 $array['service/ipbx/json/restricted/call_center/agents'] = 'service/ipbx/json.php/restricted/call_center/agents/';

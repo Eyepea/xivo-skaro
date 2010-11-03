@@ -47,6 +47,7 @@ $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['agents'] = true;

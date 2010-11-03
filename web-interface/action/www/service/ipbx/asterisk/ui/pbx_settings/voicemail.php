@@ -39,7 +39,7 @@ else
 
 switch($act)
 {
-	case 'view':
+case 'view':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
 		$nocomponents = array('contextmember'	=> true);

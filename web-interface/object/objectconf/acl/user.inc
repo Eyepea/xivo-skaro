@@ -45,6 +45,8 @@ $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
+// required to query /ui/ url
+$array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 
 
 $array['tree']['service']['ipbx']['call_management'] = array();

@@ -60,7 +60,9 @@ dwho.suggest = function(options,id)
 		'result_topoffset':		-10,
 		'result_callback':		null,
 		'result_displaycallback':	null,
-		'result_emptycallback':		null};
+		'result_emptyalert'     : false,
+		'result_fullsearch'     : false,
+		'result_emptycallback'  : null};
 
 	this.set_options(options);
 
@@ -68,7 +70,7 @@ dwho.suggest = function(options,id)
 
 	this.fnkeypress	= function(e) { return(dwsptr.onkeypress(e)); }
 	this.fnkeyup	= function(e) { return(dwsptr.onkeyup(e)); }
-	this.fnfocus	= function() { dwsptr.deletetimeout(); }
+	this.fnfocus	= function() { dwsptr.fullsearch(); dwsptr.deletetimeout(); }
 	this.fnblur	= function() { dwsptr.onblur(); }
 	this.fnchange	= function() { dwsptr.onchange(); }
 
@@ -262,7 +264,8 @@ dwho.suggest.prototype.set = function(request,value)
 
 dwho.suggest.prototype.get = function(value)
 {
-	if(this._searchval === value)
+	if(this._searchval === value && value.length > 0 ||
+		(value.length == 0 && !this._options.result_fullsearch))
 		return(null);
 
 	var prevlength = this._searchlen;
@@ -273,9 +276,9 @@ dwho.suggest.prototype.get = function(value)
 	{
 		this._suggests = [];
 		this.clear();
+
 		return(false);
 	}
-
 	var cnt = this._suggests.length;
 
 	if(this._options.result_cache === true
@@ -351,6 +354,7 @@ dwho.suggest.prototype.clear = function()
 	this._highlightedid	= null;
 	this._suggestid		= null;
 	dwho.dom.remove_element(dwho_eid(this._dwsid,true));
+
 }
 
 dwho.suggest.prototype.display_result = function()
@@ -367,10 +371,15 @@ dwho.suggest.prototype.display_result = function()
 			this._options.result_emptycallback(this);
 			return(true);
 		}
+		else if(this._options.result_emptyalert)	
+			this._field.style.backgroundColor = '#ffcbcb';
 
 		this.clear();
 		return(false);
 	}
+
+	if(this._options.result_emptyalert)	
+		this._field.style.backgroundColor = '#beddfb';
 
 	this.deletetimeout();
 
@@ -676,3 +685,12 @@ dwho.suggest.prototype.deletetimeout = function()
 
 	this._timeoutid = null;
 }
+
+dwho.suggest.prototype.fullsearch = function()
+{
+	if(!this._options.result_fullsearch)
+		return;
+
+	this.get(this._field.value);
+}
+

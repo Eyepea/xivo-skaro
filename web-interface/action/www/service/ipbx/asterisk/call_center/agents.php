@@ -18,9 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
+dwho::load_class('dwho_prefs');
+$prefs = new dwho_prefs('agents');
+
+$act     = isset($_QR['act']) === true ? $_QR['act'] : '';
+$page    = dwho_uint($prefs->get('page', 1));
+$search  = strval($prefs->get('search', ''));
+$context = strval($prefs->get('context', ''));
+$sort    = $prefs->flipflop('sort', 'name');
+
 $group = isset($_QR['group']) === true ? dwho_uint($_QR['group'],1) : 1;
-$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';

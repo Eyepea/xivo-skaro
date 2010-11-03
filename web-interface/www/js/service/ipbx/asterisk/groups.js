@@ -16,6 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// get available extensions
+function xivo_ast_group_http_search_extension(dwsptr)
+{
+	context = dwho_eid('it-groupfeatures-context').value;
+	new dwho.http('/service/ipbx/ui.php/pbx_settings/extension/search/?obj=group&context=' + context,
+		{'callbackcomplete':	function(xhr) 
+			{	dwsptr.set(xhr,dwsptr.get_search_value()); },
+      'method':		'post',
+      'cache':			false
+		},
+    {'startnum':	dwsptr.get_search_value()},
+		true);
+}
+
+var xivo_ast_group_suggest_extension = new dwho.suggest({'requestor': xivo_ast_group_http_search_extension});
+
+function xivo_ast_group_suggest_event_extension()
+{
+	xivo_ast_group_suggest_extension.set_option('result_field', 'it-groupfeatures-numberid');
+	xivo_ast_group_suggest_extension.set_option('result_emptyalert', true);
+	//xivo_ast_group_suggest_extension.set_option('result_fullsearch', true);
+	xivo_ast_group_suggest_extension.set_option('result_minlen', 0);
+		
+	xivo_ast_group_suggest_extension.set_field(this.id);
+}
+
 function xivo_ast_group_onload()
 {
 	xivo_ast_build_dialaction_array('noanswer');
@@ -23,6 +49,12 @@ function xivo_ast_group_onload()
 	xivo_ast_build_dialaction_array('congestion');
 	xivo_ast_build_dialaction_array('chanunavail');
 	xivo_ast_dialaction_onload();
+
+	if((num = dwho_eid('it-groupfeatures-number')) !== false)
+	{
+		dwho.dom.add_event('focus', num, xivo_ast_group_suggest_event_extension);
+		num.setAttribute('autocomplete','off');
+	}
 }
 
 dwho.dom.set_onload(xivo_ast_group_onload);

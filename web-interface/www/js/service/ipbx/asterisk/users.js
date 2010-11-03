@@ -887,6 +887,40 @@ function xivo_ast_user_voicemail_set_info(request)
 	return(true);
 }
 
+// get available extensions
+function xivo_ast_user_http_search_extension(dwsptr)
+{
+	context = dwho_eid('it-protocol-context').value;
+	new dwho.http('/service/ipbx/ui.php/pbx_settings/extension/search/?obj=user&context=' + context,
+		 //	+ dwho_sess_str,
+		{'callbackcomplete':	function(xhr) 
+			{ 
+				dwsptr.set(xhr,dwsptr.get_search_value()); 
+			},
+      'method':		'post',
+      'cache':			false
+		},
+    {'startnum':	dwsptr.get_search_value()},
+		true);
+}
+
+var xivo_ast_user_suggest_extension = new dwho.suggest({'requestor': xivo_ast_user_http_search_extension});
+
+function xivo_ast_user_extension_reset_search()
+{
+	dwho.form.reset_field(dwho_eid('it-userfeatures-number'),true);
+}
+
+function xivo_ast_user_suggest_event_extension()
+{
+	xivo_ast_user_suggest_extension.set_option('result_field', 'it-userfeatures-numberid');
+	xivo_ast_user_suggest_extension.set_option('result_emptyalert', true);
+	xivo_ast_user_suggest_extension.set_option('result_fullsearch', true);
+	xivo_ast_user_suggest_extension.set_option('result_minlen', 0);
+		
+	xivo_ast_user_suggest_extension.set_field(this.id);
+}
+
 function xivo_ast_user_onload()
 {
 	xivo_ast_build_users_elt();
@@ -908,7 +942,9 @@ function xivo_ast_user_onload()
 	if((xnumber = dwho_eid('it-userfeatures-number')) !== false)
 	{
 		dwho.dom.add_event('change',xnumber,xivo_ast_user_chg_name);
-		dwho.dom.add_event('focus',xnumber,xivo_ast_user_cpy_name);
+		//dwho.dom.add_event('focus',xnumber,xivo_ast_user_cpy_name);
+
+		dwho.dom.add_event('focus', xnumber, xivo_ast_user_suggest_event_extension);
 	}
 
 	if((protocol = dwho_eid('it-protocol-protocol')) !== false)

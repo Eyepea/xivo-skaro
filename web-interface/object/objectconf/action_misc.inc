@@ -60,12 +60,21 @@ $array['service/ipbx/asterisk/ui/pbx_settings/users/voicemail/view'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/voicemail',
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'view'));
 
+$array['service/ipbx/asterisk/ui/pbx_settings/users/extension/view'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/extension',
+	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'view'));
+
 $array['service/ipbx/asterisk/ui/pbx_settings/meetme/users/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/users',
 	'define'	=> array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'meetme',
 			'XIVO_LOC_UI_ACTION'		=> 'search'));
+
+$array['service/ipbx/asterisk/ui/pbx_settings/extension/search'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/extension',
+	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
+
 
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',

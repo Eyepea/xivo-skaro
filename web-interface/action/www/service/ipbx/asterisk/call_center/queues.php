@@ -18,8 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
+dwho::load_class('dwho_prefs');
+$prefs = new dwho_prefs('queues');
+
+$act     = isset($_QR['act']) === true ? $_QR['act'] : '';
+$page    = dwho_uint($prefs->get('page', 1));
+$search  = strval($prefs->get('search', ''));
+$context = strval($prefs->get('context', ''));
+$sort    = $prefs->flipflop('sort', 'name');
 
 $param = array();
 $param['act'] = 'list';
@@ -161,6 +167,9 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
@@ -320,6 +329,9 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
@@ -407,7 +419,7 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
 		$order = array();
-		$order['name'] = SORT_ASC;
+		$order[$sort[1]] = $sort[0];
 
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
@@ -424,6 +436,7 @@ switch($act)
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
+		$_TPL->set_var('sort',$sort);
 }
 
 $_TPL->set_var('act',$act);

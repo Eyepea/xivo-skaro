@@ -124,15 +124,16 @@ switch($act)
 		$_TPL->set_var('context_list',$appgroup->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
-#		$dhtml->set_js('js/dwho/uri.js');
-#		$dhtml->set_js('js/dwho/http.js');
-#		$dhtml->set_js('js/dwho/suggest.js');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
 #		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/meetme.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
 		$dhtml->set_js('js/dwho/submenu.js');
 		break;
+
 	case 'edit':
 		$appgroup = &$ipbx->get_application('group');
 
@@ -230,6 +231,9 @@ switch($act)
 		$_TPL->set_var('context_list',$appgroup->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
