@@ -69,7 +69,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		$arr['fullname'] = null;
 		$arr['cid_number'] = null;
 		$arr['trunk'] = 0;
-		$arr['encryption'] = null;
+		//$arr['encryption'] = null;
 		$arr['inkeys'] = null;
 		$arr['outkey'] = null;
 		$arr['transfer'] = null;
@@ -102,7 +102,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		unset($arr['username'],
 		      $arr['fullname'],
 		      $arr['cid_number'],
-		      $arr['encryption'],
+		      //$arr['encryption'],
 		      $arr['inkeys'],
 		      $arr['outkey'],
 		      $arr['transfer'],

@@ -1305,18 +1305,66 @@ Décrocher immédiatement :
 ; hlp_fm_protocol-immediate
 Config asterisk: immediate
 
-; fm_protocol-keyrotate
-Désactiver la rotation des clés avec encodage : 
 
-; hlp_fm_protocol-keyrotate
-Config asterisk: keyrotate
+; fm_protocol-unsolicited_mailbox
+Boîte vocale non solicitée : 
 
-; fm_protocol-keyrotate-opt(on)
-Oui
+; hlp_fm_protocol-unsolicited_mailbox
+Config asterisk: unsolicited_mailbox
 
-; fm_protocol-keyrotate-opt(off)
+; fm_protocol-use_q850_reason
+Utiliser l'en-tête «Reason» : 
+
+; hlp_fm_protocol-use_q850_reason
+Config asterisk: use_q850_reason
+
+; fm_protocol-encryption
+Chiffrage des communications : 
+
+; hlp_fm_protocol-encryption
+Config asterisk: encryption
+
+; fm_protocol-forceencryption
+Chiffrage des communications (forcé): 
+
+; hlp_fm_protocol-forceencryption
+Config asterisk: forceencryption
+
+; fm_protocol-snom_aoc_enabled
+Envoyer AOC-D/AOC-E aux terminaux Snom : 
+
+; hlp_fm_protocol-snom_aoc_enabled
+Config asterisk: snom_aoc_enabled
+
+; fm_protocol-disallowed_methods
+Interdire les méthodes SIP suivantes : 
+
+; hlp_fm_protocol-disallowed_methods
+Config asterisk: disallowed_methods
+
+; fm_protocol-maxforwards
+Nombre de relais maximum : 
+
+; hlp_fm_protocol-maxforwards
+Config asterisk: maxforwards
+
+; fm_protocol-textsupport
+Support Texte : 
+
+; hlp_fm_protocol-textsupport
+Config asterisk: textsupport
+
+; hlp_fm_protocol-videosupport
+Config asterisk: videosupport
+
+; fm_protocol-videosupport-opt(no)
 Non
 
-; fm_protocol_srtp
-SRTP : 
+; fm_protocol-videosupport-opt(yes)
+Oui
+
+; fm_protocol-videosupport-opt(always)
+Toujours
+
+
 

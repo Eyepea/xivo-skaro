@@ -1796,7 +1796,8 @@ CREATE TABLE `useriax` (
              'plaintext,rsa',
              'md5,rsa',
              'plaintext,md5,rsa') NOT NULL DEFAULT 'plaintext,md5', -- user / peer --
- `encryption` enum('no','yes','aes128'), -- user / peer --
+ `encryption` enum('no','yes','aes128') DEFAULT NULL, -- user / peer --
+ `forceencryption` enum('no', 'yes', 'aes128') DEFAULT NULL,
  `maxauthreq` tinyint(2) unsigned, -- general / user --
  `inkeys` varchar(80), -- user / peer --
  `outkey` varchar(80), -- peer --

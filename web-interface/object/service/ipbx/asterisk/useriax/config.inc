@@ -88,7 +88,14 @@ $array['element']['auth']['default'] = 'plaintext,md5';
 $array['element']['auth']['setdef'] = true;
 
 $array['element']['encryption'] = array();
-$array['element']['encryption']['unset'] = true;
+$array['element']['encryption']['value'] = array('no', 'yes', 'aes128');
+$array['element']['encryption']['default'] = '';
+$array['element']['encryption']['null'] = true;
+
+$array['element']['forceencryption'] = array();
+$array['element']['forceencryption']['value'] = array('no', 'yes', 'aes128');
+$array['element']['forceencryption']['default'] = '';
+$array['element']['forceencryption']['null'] = true;
 
 $array['element']['maxauthreq'] = array();
 $array['element']['maxauthreq']['value'] = range(0,20);
@@ -249,10 +256,6 @@ $array['element']['immediate']['value'] = array(1, 0);
 $array['element']['immediate']['default'] = '';
 $array['element']['immediate']['null']    = true;
 
-$array['element']['keyrotate'] = array();
-$array['element']['keyrotate']['value'] = array('on','off');
-$array['element']['keyrotate']['default'] = '';
-$array['element']['keyrotate']['null'] = true;
 
 
 dwho::load_class('dwho_network');
@@ -296,7 +299,8 @@ $array['filter']['auth'] = array('set'	=> false,
 						 'plaintext,rsa',
 						 'md5,rsa',
 						 'plaintext,md5,rsa'));
-$array['filter']['encryption'] = array('set' => false,'chk' => 0);
+$array['filter']['encryption'] = array('set' => false,'chk' => 2, 'key' => array('no', 'yes', 'aes128'));
+$array['filter']['forceencryption'] = array('set' => false,'chk' => 2, 'key' => array('no', 'yes', 'aes128'));
 $array['filter']['maxauthreq'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['inkeys'] = array('set' => false,'chk' => 0);
 $array['filter']['outkey'] = array('set' => false,'chk' => 0);
@@ -364,7 +368,6 @@ $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 $array['filter']['requirecalltoken'] = array('set' => false,'chk' => 2,'key' => array('no','yes'));
 $array['filter']['immediate'] = array('set' => false, 'chk' => 2, 'bool' => true);
-$array['filter']['keyrotate'] = array('set' => false, 'chk' => 2, 'key' => array('on','off'));
 
 
 ?>

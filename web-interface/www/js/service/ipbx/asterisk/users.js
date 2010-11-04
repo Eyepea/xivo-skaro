@@ -118,8 +118,16 @@ var xivo_ast_users_elt_default = {
 	'protocol-qualifyfreq': {it: false, fd: false},
 	'protocol-contactpermit': {it: false, fd: false},
 	'protocol-contactdeny': {it: false, fd: false},
+	'protocol-unsolicited_mailbox': {it: false, fd: false},
+	'protocol-use_q850_reason': {it: false, fd: false},
+	'sip-protocol-encryption': {it: false, fd: false},
+	'iax-protocol-encryption': {it: false, fd: false},
+	'iax-protocol-forceencryption': {it: false, fd: false},
+	'protocol-snom_aoc_enabled': {it: false, fd: false},
+	'protocol-disallowed_methods': {it: false, fd: false},
+	'protocol-maxforwards': {it: false, fd: false},
+	'protocol-textsupport': {it: false, fd: false},
 	'protocol-immediate': {it: false, fd: false},
-	'protocol-keyrotate': {it: false, fd: false},
 	
 	'userfeatures-firstname': {it: true},
 	'userfeatures-lastname': {it: true},
@@ -945,6 +953,7 @@ function xivo_ast_user_onload()
 		//dwho.dom.add_event('focus',xnumber,xivo_ast_user_cpy_name);
 
 		dwho.dom.add_event('focus', xnumber, xivo_ast_user_suggest_event_extension);
+		xnumber.setAttribute('autocomplete','off');
 	}
 
 	if((protocol = dwho_eid('it-protocol-protocol')) !== false)

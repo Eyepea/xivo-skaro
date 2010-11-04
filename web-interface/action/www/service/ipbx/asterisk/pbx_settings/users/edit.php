@@ -112,7 +112,7 @@ if(isset($_QR['fm_send']) === true
 		$softkeys[$name] = $cursoftkey;
 	}
 	$_QR['protocol']['softkeys'] = $softkeys;
-	
+
 	if($appuser->set_edit($_QR,$_QR['protocol']['protocol']) === false
 	|| $skillerr === false
 	|| $appuser->edit() === false)

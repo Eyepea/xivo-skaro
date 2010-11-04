@@ -103,7 +103,7 @@ if(isset($_QR['fm_send']) === true
 		$softkeys[$name] = $cursoftkey;
 	}
 	$_QR['protocol']['softkeys'] = $softkeys;
-	
+
 	if($appuser->set_add($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->add() === false)
 	{
@@ -114,7 +114,6 @@ if(isset($_QR['fm_send']) === true
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
 
 		$error = $appuser->get_error();
-
 		if(dwho_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 

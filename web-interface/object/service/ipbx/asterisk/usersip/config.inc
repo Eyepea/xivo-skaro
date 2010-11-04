@@ -376,11 +376,45 @@ $array['element']['contactdeny'] = array();
 $array['element']['contactdeny']['default'] = '';
 $array['element']['contactdeny']['null'] = true;
 
-//
-$array['element']['srtp'] = array();
-$array['element']['srtp']['value'] = array(0, 1);
-$array['element']['srtp']['default'] = '';
-$array['element']['srtp']['null']    = true;
+$array['element']['unsolicited_mailbox'] = array();
+$array['element']['unsolicited_mailbox']['default'] = '';
+$array['element']['unsolicited_mailbox']['null'] = true;
+
+$array['element']['use_q850_reason'] = array();
+$array['element']['use_q850_reason']['value'] = array(1, 0);
+$array['element']['use_q850_reason']['default'] = '';
+$array['element']['use_q850_reason']['null']    = true;
+
+$array['element']['encryption'] = array();
+$array['element']['encryption']['value'] = array(1, 0);
+$array['element']['encryption']['default'] = '';
+$array['element']['encryption']['null']    = true;
+
+$array['element']['snom_aoc_enabled'] = array();
+$array['element']['snom_aoc_enabled']['value'] = array(1, 0);
+$array['element']['snom_aoc_enabled']['default'] = '';
+$array['element']['snom_aoc_enabled']['null']    = true;
+
+$array['element']['disallowed_methods'] = array();
+$array['element']['disallowed_methods']['default'] = '';
+$array['element']['disallowed_methods']['null'] = true;
+
+$array['element']['maxforwards'] = array();
+$array['element']['maxforwards']['value'] = range(1,255,1);
+$array['element']['maxforwards']['default'] = '';
+$array['element']['maxforwards']['null'] = true;
+
+$array['element']['textsupport'] = array();
+$array['element']['textsupport']['value'] = array(1, 0);
+$array['element']['textsupport']['default'] = '';
+$array['element']['textsupport']['null']    = true;
+
+$array['element']['videosupport'] = array();
+$array['element']['videosupport']['value'] = array('no','yes','always');
+$array['element']['videosupport']['default'] = '';
+$array['element']['videosupport']['null'] = true;
+
+
 
 dwho::load_class('dwho_network');
 
@@ -500,6 +534,13 @@ $array['filter']['timerb'] = array('set' => false,'chk' => 2,'maxlen' => 5);
 $array['filter']['qualifyfreq'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,300,10));
 $array['filter']['contactpermit'] = array('set' => false,'chk' => 2,'maxlen' => 35);
 $array['filter']['contactdeny'] = array('set' => false,'chk' => 2,'maxlen' => 35);
+$array['filter']['unsolicited_mailbox'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['use_q850_reason'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['encryption'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['snom_aoc_enabled'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['disallowed_methods'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
+$array['filter']['maxforwards'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,255,1));
+$array['filter']['textsupport'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','always'));
 
-$array['filter']['srtp'] = array('set' => false, 'chk' => 2, 'bool' => true);
 ?>

@@ -65,6 +65,13 @@ xivo_ast_user_protocol_elt['sip'] = {
 	'protocol-qualifyfreq': {it: true, fd: true},
 	'protocol-contactpermit': {it: true, fd: true},
 	'protocol-contactdeny': {it: true, fd: true},
+	'protocol-unsolicited_mailbox': {it: true, fd: true},
+	'protocol-use_q850_reason': {it: true, fd: true},
+	'sip-protocol-encryption': {it: true, fd: true},
+	'protocol-snom_aoc_enabled': {it: true, fd: true},
+	'protocol-disallowed_methods': {it: true, fd: true},
+	'protocol-maxforwards': {it: true, fd: true},
+	'protocol-textsupport': {it: true, fd: true},
 
 	'autoprov-modact': {it: true},
 	'autoprov-vendormodel': {it: true},

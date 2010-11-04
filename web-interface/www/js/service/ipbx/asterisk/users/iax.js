@@ -30,7 +30,8 @@ xivo_ast_user_protocol_elt['iax'] = {
 	'protocol-adsi': {it: true, fd: true},
 	'protocol-requirecalltoken': {it: true, fd: true},
 	'protocol-immediate': {it: true, fd: true},
-	'protocol-keyrotate': {it: true, fd: true},
 	'iax-protocol-amaflags': {it: true, fd: true},
+	'iax-protocol-encryption': {it: true, fd: true},
+	'iax-protocol-forceencryption': {it: true, fd: true},
 //	'protocol-name': {it: 'error'}
 };
