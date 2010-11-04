@@ -1828,7 +1828,6 @@ CREATE TABLE `useriax` (
  `ipaddr` varchar(255) NOT NULL DEFAULT '',
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
  `immediate` tinyint(1) DEFAULT NULL,
- `keyrotate` varchar(1024) DEFAULT NULL,
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
@@ -1877,7 +1876,7 @@ CREATE TABLE `usersip` (
  `nat` enum('no','yes','never','route'), -- general / user / peer --
  `promiscredir` tinyint(1), -- general / user / peer --
  `usereqphone` tinyint(1), -- general / peer --
- `videosupport` tinyint(1), -- general / user / peer --
+ `videosupport` enum('yes', 'no', 'always') DEFAULT NULL, -- general / user / peer --
  `trustrpid` tinyint(1), -- general / user / peer --
  `sendrpid` tinyint(1), -- general / user / peer --
  `allowsubscribe` tinyint(1), -- general / user / peer --
@@ -1937,9 +1936,13 @@ CREATE TABLE `usersip` (
  `qualifyfreq` integer unsigned DEFAULT NULL,
  `contactpermit` varchar(1024) DEFAULT NULL,
  `contactdeny` varchar(1024) DEFAULT NULL,
- -- 
- `srtp` tinyint(1) DEFAULT NULL,
- --
+ `unsolicited_mailbox` varchar(1024) DEFAULT NULL,
+ `use_q850_reason` tinyint(1) DEFAULT NULL,
+ `encryption` tinyint(1) DEFAULT NULL,
+ `snom_aoc_enabled` tinyint(1) DEFAULT NULL,
+ `maxforwards` integer unsigned DEFAULT NULL,
+ `disallowed_methods` varchar(1024) DEFAULT NULL,
+ `textsupport` tinyint(1) DEFAULT NULL,
 
  `commented` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
  PRIMARY KEY(`id`)
