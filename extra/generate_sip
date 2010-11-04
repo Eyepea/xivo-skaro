@@ -30,7 +30,7 @@ res = cursor.fetchall()
 
 print "[general]"
 for r in res:
-    if r['var_name'] not in ('allow','disallow'):
+    if r['var_name'] not in ('allow','disallow') and r['var_val'] is not None:
         print r['var_name'] + " = " + r['var_val'] 
     if r['var_name'] == 'allow' and r['var_val'] != None:
         print "disallow = all"
