@@ -49,6 +49,9 @@ Protocole SIP
 ; acl(service-ipbx-general_settings-iax)
 Protocole IAX
 
+; acl(service-ipbx-general_settings-sccp)
+Protocole SCCP
+
 ; acl(service-ipbx-general_settings-voicemail)
 Messageries vocales
 
@@ -57,6 +60,9 @@ Carnet d'adresses
 
 ; acl(service-ipbx-general_settings-advanced)
 Avancés
+
+; acl(service-ipbx-general_settings-outboundmwi)
+Abonnements MWI
 
 ; acl(service-ipbx-ctiserver)
 Serveurs CTI
@@ -120,6 +126,9 @@ Chambres de conférence
 
 ; acl(service-ipbx-pbx_settings-voicemail)
 Messageries vocales
+
+; acl(service-ipbx-pbx_settings-extension)
+Disponibilité des extensions
 
 ; acl(service-ipbx-call_management)
 Gestion des appels

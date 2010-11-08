@@ -19,6 +19,9 @@ SIP Protocol
 ; acl(service-ipbx-general_settings-iax)
 IAX Protocol
 
+; acl(service-ipbx-general_settings-sccp)
+SCCP Protocol
+
 ; acl(service-ipbx-general_settings-voicemail)
 Voicemails
 
@@ -27,6 +30,9 @@ Phonebook
 
 ; acl(service-ipbx-general_settings-advanced)
 Advanced
+
+; acl(service-ipbx-general_settings-outboundmwi)
+Outbound MWI registrations
 
 ; acl(service-ipbx-pbx_settings)
 IPBX settings
@@ -48,6 +54,9 @@ Conference rooms
 
 ; acl(service-ipbx-pbx_settings-voicemail)
 Voicemails
+
+; acl(service-ipbx-pbx_settings-extension)
+Free extensions
 
 ; acl(service-ipbx-call_management)
 Call management

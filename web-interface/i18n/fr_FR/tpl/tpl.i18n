@@ -70,6 +70,13 @@ Rejeté
 ; fm_bool-opt(silent)
 Silencieux
 
+; fm_bool-opt(always)
+Toujours
+
+; fm_bool-opt(aes128)
+AES128
+
+
 ; fm_success-save
 Le formulaire a bien été sauvegardé.
 

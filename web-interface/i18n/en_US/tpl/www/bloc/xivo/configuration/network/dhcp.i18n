@@ -21,3 +21,6 @@ Invalid IP address
 
 ; ipaddr(empty)
 You must fill IP address
+
+; fm_main_iface
+Main network interface:

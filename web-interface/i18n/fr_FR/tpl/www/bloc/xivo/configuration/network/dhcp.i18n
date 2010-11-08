@@ -21,3 +21,6 @@ L'adresse IP n'est pas valide
 
 ; ipaddr(empty)
 Vous devez saisir une adresse IP
+
+; fm_main_iface
+Interface principale :

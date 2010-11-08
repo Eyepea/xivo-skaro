@@ -73,7 +73,7 @@ Disabled
 ; fm_queue_timeout-opt
 %s seconds
 
-; fm_queue_musiconhold
+; fm_queue_musicclass
 On-Hold Music:
 
 ; bt_inuser
