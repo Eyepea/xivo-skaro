@@ -134,6 +134,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_userfeatures->set_dso_param('internal',$this->_param['internal']);
 			return(false);
 		}
+		if(is_null($this->_info['protocol']['context']))
+		{ $this->_info['protocol']['context'] = $this->_info['userfeatures']['context']; }
 
 		$this->_userfeatures->set_dso_param('internal',$this->_param['internal']);
 
@@ -1115,7 +1117,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 						     $rs['exten'],
 						     $this->_mk_usermacro_appdata($userfeaturesid),
 						     $rs['context'])) === false)
-			return(false);
+		return(false);
 
 		$this->_set_result('usermacro',$rsmacro);
 
