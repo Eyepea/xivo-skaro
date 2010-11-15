@@ -267,8 +267,8 @@ CREATE TABLE "user" (
  "meta" user_meta NOT NULL DEFAULT 'user',
  "valid" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "time" INTEGER NOT NULL DEFAULT 0,
- "dcreate" TIMESTAMP NOT NULL DEFAULT TIMESTAMP '-infinity',
- "dupdate" TIMESTAMP NOT NULL DEFAULT TIMESTAMP '-infinity',
+ "dcreate" INTEGER NOT NULL DEFAULT 0, -- TIMESTAMP
+ "dupdate" INTEGER NOT NULL DEFAULT 0, -- TIMESTAMP
  "obj" TEXT NOT NULL, -- BYTEA
  PRIMARY KEY("id")
 );
@@ -280,7 +280,7 @@ CREATE INDEX "user__idx__valid" ON "user"("valid");
 CREATE INDEX "user__idx__time" ON "user"("time");
 CREATE UNIQUE INDEX "user__uidx__login_meta" ON "user"("login","meta");
 
-INSERT INTO "user" VALUES (1,'root','proformatique','root',1,0,TIMESTAMP 'now',TIMESTAMP '-infinity','');
+INSERT INTO "user" VALUES (1,'root','proformatique','root',1,0,EXTRACT(EPOCH from now()),0,'');
 SELECT setval('user_id_seq', 2);
 
 
@@ -425,6 +425,7 @@ BEGIN
 END;
 ' LANGUAGE plpgsql;
 SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO xivo;') FROM pg_tables WHERE schemaname = 'public';
+SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO xivo;') FROM pg_class WHERE relkind = 'S';
 
 COMMIT;
 
