@@ -16,6 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+-- execute with *psql -f xivo.db.sql template1*
+
+CREATE USER xivo WITH PASSWORD 'proformatique';
+CREATE DATABASE xivo WITH OWNER xivo ENCODING 'UTF8';
+
+\connect xivo;
+CREATE LANGUAGE plpgsql;
+
+BEGIN;
 
 DROP TABLE IF EXISTS "accesswebservice";
 CREATE TABLE "accesswebservice" (
@@ -25,7 +34,7 @@ CREATE TABLE "accesswebservice" (
  "passwd" varchar(64),
  "host" varchar(255),
  "obj" bytea NOT NULL,
- "disable" BOOLEAN NOT NULL DEFAULT 'f',
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -68,7 +77,7 @@ CREATE TABLE "entity" (
  "state" varchar(128) NOT NULL DEFAULT '',
  "zipcode" varchar(16) NOT NULL DEFAULT '',
  "country" varchar(3) NOT NULL DEFAULT '',
- "disable" BOOLEAN NOT NULL DEFAULT 'f',
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -102,7 +111,7 @@ CREATE TABLE "iproute" (
  "destination" varchar(39) NOT NULL,
  "netmask" varchar(39) NOT NULL,
  "gateway" varchar(39) NOT NULL,
- "disable" BOOLEAN NOT NULL DEFAULT 'f',
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -127,7 +136,7 @@ CREATE TABLE "ldapserver" (
  "port" INTEGER NOT NULL,
  "securitylayer" ldapserver_securitylayer,
  "protocolversion" ldapserver_protocolversion NOT NULL DEFAULT '3',
- "disable" BOOLEAN NOT NULL DEFAULT 'f',
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -166,7 +175,7 @@ CREATE TABLE "netiface" (
  "vlanrawdevice" varchar(64),
  "vlanid" INTEGER,
  "options" text NOT NULL,
- "disable" BOOLEAN NOT NULL DEFAULT 'f',
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "description" text NOT NULL,
  PRIMARY KEY("name")
@@ -212,8 +221,8 @@ CREATE TABLE "server" (
  "name" varchar(64) NOT NULL DEFAULT '',
  "host" varchar(255) NOT NULL DEFAULT '',
  "port" INTEGER NOT NULL,
- "ssl" BOOLEAN NOT NULL DEFAULT 'f',
- "disable" BOOLEAN NOT NULL DEFAULT 'f',
+ "ssl" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "description" text NOT NULL,
  "webi" varchar(255) NOT NULL DEFAULT '',
@@ -229,7 +238,7 @@ CREATE INDEX "server__idx__disable" ON "server"("disable");
 CREATE UNIQUE INDEX "server__uidx__name" ON "server"("name");
 CREATE UNIQUE INDEX "server__uidx__host_port" ON "server"("host","port");
 
-INSERT INTO "server" VALUES(1,'xivo','localhost',443,'t','f',1271070538,'','127.0.0.1',5038,'xivouser','xivouser');
+INSERT INTO "server" VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivouser','xivouser');
 SELECT setval('server_id_seq', 2);
 
 
@@ -256,7 +265,7 @@ CREATE TABLE "user" (
  "login" varchar(64) NOT NULL DEFAULT '',
  "passwd" varchar(64) NOT NULL DEFAULT '',
  "meta" user_meta NOT NULL DEFAULT 'user',
- "valid" BOOLEAN NOT NULL DEFAULT 't',
+ "valid" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "time" INTEGER NOT NULL DEFAULT 0,
  "dcreate" TIMESTAMP NOT NULL DEFAULT TIMESTAMP '-infinity',
  "dupdate" TIMESTAMP NOT NULL DEFAULT TIMESTAMP '-infinity',
@@ -271,7 +280,7 @@ CREATE INDEX "user__idx__valid" ON "user"("valid");
 CREATE INDEX "user__idx__time" ON "user"("time");
 CREATE UNIQUE INDEX "user__uidx__login_meta" ON "user"("login","meta");
 
-INSERT INTO "user" VALUES (1,'root','proformatique','root','t',0,TIMESTAMP 'now',TIMESTAMP '-infinity','');
+INSERT INTO "user" VALUES (1,'root','proformatique','root',1,0,TIMESTAMP 'now',TIMESTAMP '-infinity','');
 SELECT setval('user_id_seq', 2);
 
 
@@ -407,4 +416,15 @@ CREATE TABLE "provisioning" (
 
 INSERT INTO "provisioning" VALUES(1, '', '', '', '', NULL);
 SELECT setval('provisioning_id_seq', 2);
+
+-- grant all rights to xivo.* for xivo user
+CREATE FUNCTION execute(text) 
+RETURNS VOID AS '
+BEGIN
+	execute $1;
+END;
+' LANGUAGE plpgsql;
+SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO xivo;') FROM pg_tables WHERE schemaname = 'public';
+
+COMMIT;
 
