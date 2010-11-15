@@ -33,7 +33,7 @@ CREATE TABLE "accesswebservice" (
  "login" varchar(64),
  "passwd" varchar(64),
  "host" varchar(255),
- "obj" bytea NOT NULL,
+ "obj" TEXT NOT NULL, -- BYTEA
  "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -95,7 +95,7 @@ CREATE TABLE "i18ncache" (
  "language" varchar(3) NOT NULL DEFAULT '',
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "dupdate" INTEGER NOT NULL DEFAULT 0,
- "obj" bytea NOT NULL,
+ "obj" TEXT NOT NULL, -- BYTEA
  PRIMARY KEY("locale","path")
 );
 
@@ -248,7 +248,7 @@ CREATE TABLE "session" (
  "start" INTEGER NOT NULL,
  "expire" INTEGER NOT NULL,
  "identifier" varchar(255) NOT NULL,
- "data" bytea NOT NULL,
+ "data" TEXT NOT NULL, -- BYTEA
  PRIMARY KEY("sessid")
 );
 
@@ -269,7 +269,7 @@ CREATE TABLE "user" (
  "time" INTEGER NOT NULL DEFAULT 0,
  "dcreate" TIMESTAMP NOT NULL DEFAULT TIMESTAMP '-infinity',
  "dupdate" TIMESTAMP NOT NULL DEFAULT TIMESTAMP '-infinity',
- "obj" bytea NOT NULL,
+ "obj" TEXT NOT NULL, -- BYTEA
  PRIMARY KEY("id")
 );
 
@@ -418,7 +418,7 @@ INSERT INTO "provisioning" VALUES(1, '', '', '', '', NULL);
 SELECT setval('provisioning_id_seq', 2);
 
 -- grant all rights to xivo.* for xivo user
-CREATE FUNCTION execute(text) 
+CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
 BEGIN
 	execute $1;
