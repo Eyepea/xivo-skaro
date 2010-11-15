@@ -789,28 +789,22 @@ for k, v in event_others.iteritems():
 manager_commands = [
     'AbsoluteTimeout',
     'AgentLogoff', 'AGI', 'AOCMessage',
-    'Challenge', 'ChangeMonitor', 'Command',
-    'CreateConfig',
+    'Challenge', 'Command',
     'DataGet',
     'DBDel', 'DBDelTree', 'DBGet', 'DBPut',
     'Events', 'ExtensionState',
-    'GetConfigJSON', 'GetConfig',
     'Getvar',
     'JabberSend',
-    'ListCategories', 
     'LocalOptimizeAway',
     'Login', 'Logoff',
     'MailboxCount', 'MailboxStatus',
     'MeetmeMute', 'MeetmeUnmute',
-    'MixMonitorMute',
-    'ModuleCheck', 'ModuleLoad', 'Monitor',
-    'PauseMonitor', 'Ping', 'PlayDTMF',
+    'ModuleCheck', 'ModuleLoad', 'Ping', 'PlayDTMF',
     'QueueAdd', 'QueueLog', 'QueuePause', 'QueuePenalty', 'QueueReload',
     'QueueRemove', 'QueueReset', 'QueueRule', 'QueueStatus', 'QueueSummary',
-    'Reload',
+    'MuteAudio', 'Reload',
     'SendText', 'Setvar', 'ShowDialPlan',
-    'StopMonitor',
-    'UnpauseMonitor', 'UpdateConfig', 'UserEvent',
+    'UserEvent',
     'WaitEvent',
 
     # general
@@ -819,11 +813,18 @@ manager_commands = [
     # call actions
     'Atxfer', 'Bridge', 'Hangup', 'Originate', 'Park', 'Redirect',
 
+    # config files
+    'CreateConfig', 'GetConfigJSON', 'GetConfig', 'ListCategories', 'UpdateConfig',
+
     # list requests (~ config)
     'Agents', 'Queues', 'MeetmeList', 'VoicemailUsersList',
 
     # list requests (~ statuses)
     'CoreShowChannels', 'ParkedCalls', 'Status',
+
+    # monitor actions
+    'ChangeMonitor', 'MixMonitorMute', 'Monitor',
+    'PauseMonitor', 'StopMonitor', 'UnpauseMonitor',
 
     # protocol-related commands
     'DAHDIDialOffhook', 'DAHDIDNDoff', 'DAHDIDNDon', 'DAHDIHangup',
@@ -833,4 +834,38 @@ manager_commands = [
     'SCCPLineForwardUpdate', 'SCCPListDevices', 'SCCPListLines',
     'SKINNYshowline', 'SKINNYlines', 'SKINNYshowdevice', 'SKINNYdevices',
     'SIPnotify', 'SIPpeers', 'SIPqualifypeer', 'SIPshowpeer', 'SIPshowregistry',
+    ]
+
+# list of applications
+# - might be useful for all the "Originate an application" needs
+# - actual list would be to be retrieved from "core show applications" or an AMI equivalent
+applications = [
+    'AddQueueMember', 'ADSIProg', 'AgentLogin', 'AgentMonitorOutgoing', 'AGI', 'AMD',
+    'Answer', 'Authenticate', 'BackGround', 'BackgroundDetect', 'Bridge', 'Busy',
+    'CallCompletionCancel', 'CallCompletionRequest', 'CELGenUserEvent', 'ChangeMonitor',
+    'ChanIsAvail', 'ChannelRedirect', 'ChanSpy', 'ClearHash', 'ConfBridge', 'Congestion',
+    'ContinueWhile', 'ControlPlayback', 'DAHDIBarge', 'DAHDIRAS', 'DAHDIScan', 'DateTime',
+    'DBdel', 'DBdeltree', 'DeadAGI', 'Dial', 'Dictate', 'Directory', 'DISA', 'DumpChan',
+    'EAGI', 'Echo', 'EndWhile', 'Exec', 'ExecIf', 'ExecIfTime', 'ExitWhile', 'ExtenSpy',
+    'ExternalIVR', 'Festival', 'Flash', 'FollowMe', 'ForkCDR', 'GetCPEID', 'Gosub', 'GosubIf',
+    'Goto', 'GotoIf', 'GotoIfTime', 'Hangup', 'IAX2Provision', 'ICES', 'ImportVar', 'Incomplete',
+    'JabberJoin', 'JabberLeave', 'JabberSend', 'JabberSendGroup', 'JabberStatus',
+    'Log', 'Macro', 'MacroExclusive', 'MacroExit', 'MacroIf', 'MailboxExists',
+    'MeetMe', 'MeetMeAdmin', 'MeetMeChannelAdmin', 'MeetMeCount',
+    'Milliwatt', 'MinivmAccMess', 'MinivmDelete', 'MinivmGreet', 'MinivmMWI',
+    'MinivmNotify', 'MinivmRecord', 'MixMonitor', 'Monitor', 'Morsecode',
+    'MP3Player', 'MSet', 'MusicOnHold', 'NBScat', 'NoCDR', 'NoOp', 'Originate',
+    'Page', 'Park', 'ParkAndAnnounce', 'ParkedCall', 'PauseMonitor', 'PauseQueueMember',
+    'Pickup', 'PickupChan', 'Playback', 'PlayTones', 'PrivacyManager', 'Proceeding',
+    'Progress', 'Queue', 'QueueLog', 'RaiseException', 'Read', 'ReadExten', 'ReadFile',
+    'ReceiveFAX', 'Record', 'RemoveQueueMember', 'ResetCDR', 'RetryDial', 'Return', 'Ringing',
+    'SayAlpha', 'SayDigits', 'SayNumber', 'SayPhonetic', 'SayUnixTime', 'SendDTMF', 'SendFAX',
+    'SendImage', 'SendText', 'SendURL', 'Set', 'SetAMAFlags', 'SetCallerPres', 'SetMusicOnHold',
+    'SIPAddHeader', 'SIPDtmfMode', 'SIPRemoveHeader', 'SLAStation', 'SLATrunk', 'SMS', 'SoftHangup',
+    'StackPop', 'StartMusicOnHold', 'StopMixMonitor', 'StopMonitor', 'StopMusicOnHold',
+    'StopPlayTones', 'System', 'TestClient', 'TestServer', 'Transfer', 'TryExec', 'TrySystem',
+    'UnpauseMonitor', 'UnpauseQueueMember', 'UserEvent', 'Verbose',
+    'VMAuthenticate', 'VMSayName', 'VoiceMail', 'VoiceMailMain',
+    'Wait', 'WaitExten', 'WaitForNoise', 'WaitForRing', 'WaitForSilence', 'WaitMusicOnHold', 'WaitUntil',
+    'While', 'Zapateller'
     ]
