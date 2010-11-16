@@ -1965,7 +1965,7 @@ INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initco
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
                               'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',
                               NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);
+                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);
 
 
 DROP TABLE IF EXISTS `voicemail`;
@@ -2197,7 +2197,7 @@ CREATE TABLE `general`
  PRIMARY KEY(`id`)
 );
 
-INSERT INTO `general` VALUES (1, 'Europe/Paris');
+INSERT INTO `general` VALUES (1, 'Europe/Paris', NULL, NULL);
 
 
 COMMIT;
