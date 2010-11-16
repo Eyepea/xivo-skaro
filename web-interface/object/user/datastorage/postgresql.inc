@@ -18,28 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
+dwho_file::required(array(XIVO_PATH_OBJECT,'user','datastorage','abstract','sql.inc'),true);
 
-$array['mysql'] = array();
-$array['mysql']['label'] = 'MySQL';
-$array['mysql']['meta'] = 'sql';
-$array['mysql']['extension'] = 'mysql';
-$array['mysql']['ssl'] = true;
+class xivo_user_postgresql extends xivo_user_abstract_sql
+{
 
-$array['sqlite'] = array();
-$array['sqlite']['label'] = 'SQLite';
-$array['sqlite']['meta'] = 'sql';
-$array['sqlite']['extension'] = 'sqlite';
-
-$array['postgresql'] = array();
-$array['postgresql']['label'] = 'PostgreSQL';
-$array['postgresql']['meta'] = 'sql';
-$array['postgresql']['extension'] = 'pgsql';
-
-$array['ldap'] = array();
-$array['ldap']['label'] = 'LDAP';
-$array['ldap']['meta'] = 'ldap';
-$array['ldap']['extension'] = 'ldap';
-$array['ldap']['ssl'] = true;
+}
 
 ?>
