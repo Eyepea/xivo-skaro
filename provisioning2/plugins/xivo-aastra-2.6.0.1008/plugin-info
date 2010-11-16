@@ -1,0 +1,5 @@
+[general]
+;; version -- the plugin version
+version: 1
+;; description -- a short description of this plugin
+description: Plugin for Aastra 6731i and 6757i in version 2.6.0.1008.

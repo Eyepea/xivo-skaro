@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<firmware-settings>
+  <firmware perm="R">http://{{prov_ip}}:{{prov_http_port|d('80')}}/firmware/snom320-8.4.18-SIP-f.bin</firmware>
+</firmware-settings>
