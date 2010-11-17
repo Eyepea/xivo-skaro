@@ -1750,8 +1750,10 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 
 		$r = dwho_uint($limit[0]);
 
+		// *LIMIT #, #* is not a standard SQL notation
+		// use *LIMIT # OFFSET #* instead
 		if(isset($limit[1]) === true)
-			$r .= ', '.dwho_uint($limit[1]);
+			$r = dwho_uint($limit[1]).' OFFSET '.$r;
 
 		return($r);
 	}

@@ -192,9 +192,12 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		$this->_query = $query;
 		$this->select_db();
 
-		//var_dump($query);
+		$this->_debug = true;
 		if(($this->_result = pg_query($this->_link, $this->_query)) === false && (bool) $this->_debug === true)
+		{
+			var_dump(debug_backtrace());
 			$this->halt();
+		}
 
 		return($this->_result);
 	}
