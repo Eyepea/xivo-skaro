@@ -397,7 +397,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		if($type === 'unix')
 			$func = 'FROM_UNIXTIME';
 		else
-			$func = 'DATE_FORMAT';
+			$func = 'TO_CHAR'; //'DATE_FORMAT';
 
 		if($column === '')
 			$column = ($time === 'utc' ? 'UTC' : 'CURRENT').'_TIMESTAMP()';

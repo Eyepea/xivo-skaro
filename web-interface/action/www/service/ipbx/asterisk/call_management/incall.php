@@ -25,7 +25,7 @@ $act     = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
 $context = strval($prefs->get('context', ''));
-$sort    = $prefs->flipflop('sort', 'fullname');
+$sort    = $prefs->flipflop('sort', 'exten');
 
 $info = array();
 

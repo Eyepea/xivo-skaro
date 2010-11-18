@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
+#
 $form = &$this->get_module('form');
 
 $info = $this->get_var('info');
@@ -30,7 +30,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
+<div id="sb-part-first" class="b">
 <?php
 	echo
 		$form->text(array('desc'	=> $this->bbf('fm_name'),

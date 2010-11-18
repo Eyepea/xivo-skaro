@@ -112,15 +112,6 @@ $array['element']['nat']['value'] = array('no','yes','never','route');
 $array['element']['nat']['default'] = '';
 $array['element']['nat']['null'] = true;
 
-$array['element']['canreinvite'] = array();
-$array['element']['canreinvite']['value'] = array('no'			=> 'no',
-						  'yes'			=> 'yes',
-						  'update'		=> 'update',
-						  'nonat'		=> 'nonat',
-						  'update,nonat'	=> 'update-nonat');
-$array['element']['canreinvite']['default'] = '';
-$array['element']['canreinvite']['null'] = true;
-
 $array['element']['promiscredir'] = array();
 $array['element']['promiscredir']['value'] = array(1,0);
 $array['element']['promiscredir']['default'] = '';
@@ -211,16 +202,6 @@ $array['element']['t38pt_udptl'] = array();
 $array['element']['t38pt_udptl']['value'] = array(1,0);
 $array['element']['t38pt_udptl']['default'] = '';
 $array['element']['t38pt_udptl']['null'] = true;
-
-$array['element']['t38pt_rtp'] = array();
-$array['element']['t38pt_rtp']['value'] = array(1,0);
-$array['element']['t38pt_rtp']['default'] = '';
-$array['element']['t38pt_rtp']['null'] = true;
-
-$array['element']['t38pt_tcp'] = array();
-$array['element']['t38pt_tcp']['value'] = array(1,0);
-$array['element']['t38pt_tcp']['default'] = '';
-$array['element']['t38pt_tcp']['null'] = true;
 
 $array['element']['t38pt_usertpsource'] = array();
 $array['element']['t38pt_usertpsource']['value'] = array(1,0);
@@ -449,7 +430,6 @@ $array['filter']['cid_number'] = array('set' => false,'chk' => 2);
 $array['filter']['maxcallbitrate'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,1860));
 $array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('no','port','invite','port,invite'));
 $array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','yes','never','route'));
-$array['filter']['canreinvite'] = array('set' => false,'chk' => 2,'key' => array('no','yes','update','nonat','update,nonat'));
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['videosupport'] = array('set' => false,'chk' => 2,'bool' => true);
@@ -469,8 +449,6 @@ $array['filter']['mohsuggest'] = array('set' => false,'chk' => 0);
 $array['filter']['useclientcode'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['progressinband'] = array('set' => false,'chk' => 2,'key' => array('no','yes','never'));
 $array['filter']['t38pt_udptl'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['t38pt_rtp'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['t38pt_tcp'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['t38pt_usertpsource'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['rtptimeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['rtpholdtimeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));

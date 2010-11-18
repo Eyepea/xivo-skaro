@@ -37,7 +37,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 				      $this->_table['callfilter'].'.id = cfilterm1.callfilterid');
 
 		$this->_dso->leftjoin(array('user1' => $this->_table['userfeatures']),
-				      'cfilterm1.typeval = user1.id',
+				      $this->_dso->cast('cfilterm1.typeval','int').' = user1.id',
 				      null,
 				      array('member_id' => 'id',
 					    'member_context' => 'context',
@@ -45,13 +45,13 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 					    'member_lastname' => 'lastname',
 					    'member_number' => 'number',
 					    'member_name' => 'name',
-					    'linked' => (object) 'MAX(IFNULL(user2.id,0))'));
+					    'linked' => (object) 'MAX(COALESCE(user2.id,0))'));
 
 		$this->_dso->leftjoin(array('cfilterm2' => $this->_table['callfiltermember']),
 				      $this->_table['callfilter'].'.id = cfilterm2.callfilterid');
 
 		$this->_dso->leftjoin(array('user2' => $this->_table['userfeatures']),
-				      'cfilterm2.typeval = user2.id');
+				      $this->_dso->cast('cfilterm2.typeval','int').' = user2.id');
 
 		$arr['type'] = $type;
 
@@ -68,16 +68,32 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 			$this->_dso->joinwhere('cfilterm1',array('type' => 'user','bstype' => 'boss'));
 
 			$this->_dso->andjoinwhere('user1',array('bsfilter' => 'boss'));
-			$this->_dso->andjoinwherenot('user1','IFNULL(user1.number,\'\') = \'\'');
+			$this->_dso->andjoinwherenot('user1','COALESCE(user1.number,\'\') = \'\'');
 
 			$this->_dso->joinwhere('cfilterm2',array('type' => 'user','bstype' => 'secretary'));
 
 			$this->_dso->andjoinwhere('user2',array('bsfilter' => 'secretary'));
 			$this->_dso->andjoinwhere('user2','user1.context = user2.context');
-			$this->_dso->andjoinwherenot('user2','IFNULL(user2.number,\'\') = \'\'');
+			$this->_dso->andjoinwherenot('user2','COALESCE(user2.number,\'\') = \'\'');
 		}
 
 		$this->_dso->new_group('id',$this->_table['callfilter']);
+		$this->_dso->add_group('name',$this->_table['callfilter']);
+		$this->_dso->add_group('context',$this->_table['callfilter']);
+		$this->_dso->add_group('type',$this->_table['callfilter']);
+		$this->_dso->add_group('bosssecretary',$this->_table['callfilter']);
+		$this->_dso->add_group('callfrom',$this->_table['callfilter']);
+		$this->_dso->add_group('ringseconds',$this->_table['callfilter']);
+		$this->_dso->add_group('commented',$this->_table['callfilter']);
+		$this->_dso->add_group('description',$this->_table['callfilter']);
+
+		$this->_dso->add_group('id','user1');
+		$this->_dso->add_group('context','user1');
+		$this->_dso->add_group('firstname','user1');
+		$this->_dso->add_group('lastname','user1');
+		$this->_dso->add_group('number','user1');
+		$this->_dso->add_group('name','user1');
+
 		$this->_dso->new_order($order,null,$this->_table['callfilter']);
 		$this->_dso->limit($limit);
 
@@ -99,7 +115,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 		$this->_dso->new_select($this->_table['callfiltermember']);
 
 		$this->_dso->innerjoin($this->_table['userfeatures'],
-				       $this->_table['callfiltermember'].'.typeval = '.$this->_table['userfeatures'].'.id',
+				       $this->_dso->cast($this->_table['callfiltermember'].'.typeval','int').' = '.$this->_table['userfeatures'].'.id',
 				       null,
 				       array('member_context' => 'context',
 					     'member_firstname' => 'firstname',
@@ -148,7 +164,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 			$where['disable'] = intval((bool) $disable);
 
 		$this->_dso->where($where);
-		$this->_dso->andwherenot('IFNULL(number,\'\') = \'\'');
+		$this->_dso->andwherenot('COALESCE(number,\'\') = \'\'');
 
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
@@ -163,11 +179,11 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 	{
 		$this->_dso->new_select($this->_table['userfeatures']);
 		$this->_dso->leftjoin($this->_table['callfiltermember'],
-				      $this->_table['userfeatures'].'.id = '.$this->_table['callfiltermember'].'.typeval');
+				      $this->_table['userfeatures'].'.id = '.$this->_dso->cast($this->_table['callfiltermember'].'.typeval','int'));
 
 		$this->_dso->where(array('bsfilter' => 'boss','internal' => 0));
 		$this->_dso->joinwhere($this->_table['callfiltermember'],array('bstype' => 'boss','type' => 'user'));
-		$this->_dso->andwherenot('IFNULL('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
+		$this->_dso->andwherenot('COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
 		$this->_dso->andwhere($this->_table['callfiltermember'].'.id IS NULL');
 
 		if(($r = $this->_dso->select_all()) !== false && isset($r[0]) === false)

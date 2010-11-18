@@ -475,6 +475,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 	function add($arr,$id=0)
 	{
+		$autoid = true;
 		if(is_array($arr) === false)
 			return(false);
 		else if(empty($id) === false)
@@ -483,9 +484,10 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 				return(false);
 
 			$arr = array_merge($arr,$id);
+			$autoid = false;
 		}
 
-		return($this->_dso->add($arr));
+		return($this->_dso->add($arr,$autoid));
 	}
 
 	function edit($id,$arr,$disable=null,$chkunique=true)

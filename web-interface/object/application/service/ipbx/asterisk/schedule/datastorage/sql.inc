@@ -37,7 +37,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 		$this->_dso->new_select($this->_table['schedule']);
 
 		$this->_dso->innerjoin($this->_table['dialaction'],
-				       $this->_table['schedule'].'.id = '.$this->_table['dialaction'].'.categoryval',
+				       $this->_table['schedule'].'.id = '.$this->_dso->cast($this->_table['dialaction'].'.categoryval','int'),
 				       null,
 				       array('linked','action','actionarg1','actionarg2'));
 
@@ -46,7 +46,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				       'inschedule');
 
 		$this->_dso->leftjoin($this->_table['userfeatures'],
-				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['userfeatures'].'.id',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['userfeatures'].'.id',
 				      null,
 				      array('userfirstname'	=> 'firstname',
 					    'userlastname'	=> 'lastname',
@@ -59,7 +59,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				       'user');
 
 		$this->_dso->leftjoin($this->_table['groupfeatures'],
-				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['groupfeatures'].'.id',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['groupfeatures'].'.id',
 				      null,
 				      array('groupname'		=> 'name',
 					    'groupnumber'	=> 'number',
@@ -73,7 +73,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 					  $this->_table['groupfeatures'].'.deleted = 0');
 
 		$this->_dso->leftjoin($this->_table['queuefeatures'],
-				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['queuefeatures'].'.id',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['queuefeatures'].'.id',
 				      null,
 				      array('queuename'		=> 'name',
 					    'queuenumber'	=> 'number',
@@ -84,10 +84,10 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				       'queue');
 
 		$this->_dso->leftjoin($this->_table['meetmefeatures'],
-				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['meetmefeatures'].'.id',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['meetmefeatures'].'.id',
 				      null,
 				      array('meetmename'	=> 'name',
-					    'meetmenumber'	=> 'number',
+					    'meetmenumber'	=> 'confno',
 					    'meetmecontext'	=> 'context'));
 
 		$this->_dso->joinwhere($this->_table['meetmefeatures'],
@@ -95,7 +95,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				       'meetme');
 
 		$this->_dso->leftjoin($this->_table['voicemail'],
-				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['voicemail'].'.uniqueid',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['voicemail'].'.uniqueid',
 				      null,
 				      array('voicemailfullname'	=> 'fullname',
 					    'voicemailmailbox'	=> 'mailbox',
@@ -106,7 +106,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				       'voicemail');
 
 		$this->_dso->leftjoin(array('scheduledest'	=> $this->_table['schedule']),
-				      $this->_table['dialaction'].'.actionarg1 = scheduledest.id',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = scheduledest.id',
 				      null,
 				      array('schedulename'	=> 'name',
 					    'schedulecontext'	=> 'context'));
@@ -116,7 +116,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				       'schedule');
 
 		$this->_dso->leftjoin($this->_table['voicemenu'],
-				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['voicemenu'].'.id',
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['voicemenu'].'.id',
 				      null,
 				      array('voicemenuname'	=> 'name',
 					    'voicemenunumber'	=> 'number',

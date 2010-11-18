@@ -47,7 +47,8 @@ $array['element']['strategy']['default'] = 'ringall';
 $array['element']['strategy']['setdef'] = true;
 
 $array['element']['servicelevel'] = array();
-$array['element']['servicelevel']['default'] = '';
+$array['element']['servicelevel']['default'] = '0';
+$array['element']['servicelevel']['null'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';

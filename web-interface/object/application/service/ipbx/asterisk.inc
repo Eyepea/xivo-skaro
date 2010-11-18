@@ -559,8 +559,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	function get_destination_meetme($id=0,$number=false)
 	{
 		$order = array();
-		$order['name'] = SORT_ASC;
-		$order['number'] = SORT_ASC;
+		$order['name']    = SORT_ASC;
+		$order['confno']  = SORT_ASC;
 		$order['context'] = SORT_ASC;
 
 		if(($meetmefeatures = &$this->_service->get_module('meetmefeatures')) !== false

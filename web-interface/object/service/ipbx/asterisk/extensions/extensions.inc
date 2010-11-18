@@ -81,8 +81,12 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		$r = array();
 
+		$autoid = true;
 		if(($id = dwho_ulongint($id)) !== 0)
+		{
 			$r['id'] = $id;
+			$autoid = false;
+		}
 
 		$r['context'] = $arr['context'];
 		$r['exten'] = $this->_sre->clean_extension($arr['exten']);
@@ -104,7 +108,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		$r['commented'] = intval((bool) $arr['commented']);
 
-		return($this->_dso->add($r));
+		return($this->_dso->add($r, $autoid));
 	}
 
 	function edit($id,$arr,$disable=null)
