@@ -409,6 +409,11 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		if($type === 'unix')
 			$column = 'UNIX_TIMESTAMP('.$column.')';
 
+		// compliant format
+		$format = str_replace('%Y', 'YYYY', $format);
+		$format = str_replace('%m', 'mm', $format);
+		$format = str_replace('%d', 'dd', $format);
+
 		$r = $func.'('.$column.($format !== '' ? ',\''.$format.'\'' : '').')';
 
 		return($r);
