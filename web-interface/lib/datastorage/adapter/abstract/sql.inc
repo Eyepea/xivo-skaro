@@ -2033,6 +2033,15 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 
 		return($r);
 	}
+
+	/**
+	 * fields casting depends on underlying DBMS
+	 * Each DBMS handler may override this method
+	 */
+	function cast($field, $type)
+	{
+		return $field;
+	}
 }
 
 ?>

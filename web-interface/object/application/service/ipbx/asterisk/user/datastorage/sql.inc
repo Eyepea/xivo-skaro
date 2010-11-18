@@ -95,10 +95,10 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		{
 			if((bool) $initialized === false)
 				$this->_dso->andjoinwhere($this->_table['usersip'],
-							  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
+							  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
 			else
 				$this->_dso->andjoinwherenot($this->_table['usersip'],
-							  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
+							  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
 		}
 
 		return(dwho_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
@@ -281,12 +281,14 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 
 		$this->_dso->new_select($this->_table['userfeatures'],null);
 
+		// NOTE: userfeatures.id is an integer, callfiltermember.typeval a string
+		// we must cast the second to allow comparison (required by PostgreSQL)
 		$this->_dso->innerjoin($this->_table['callfiltermember'],
-				       $this->_table['userfeatures'].'.id = '.$this->_table['callfiltermember'].'.typeval',
+				       $this->_table['userfeatures'].'.id = '. $this->_dso->cast($this->_table['callfiltermember'].'.typeval', 'int'),
 				       null,
 				       'callfilterid');
 
-		$this->_dso->where(array('id' => $id,'internal' => 0),$this->_table['userfeatures']);
+		$this->_dso->where(array('id' => intval($id),'internal' => 0),$this->_table['userfeatures']);
 
 		$this->_dso->joinwhere($this->_table['callfiltermember'],array('type' => 'user','bstype' => $bsfilter));
 		$this->_dso->andjoinwhere($this->_table['callfiltermember'],
@@ -376,8 +378,9 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 
 		$this->_dso->new_select($this->_table['phonefunckey']);
 		$this->_dso->where(array('iduserfeatures' => $id),$this->_table['phonefunckey']);
+
 		$this->_dso->leftjoin($this->_table['userfeatures'],
-				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['userfeatures'].'.id',
+				      $this->_dso->cast($this->_table['phonefunckey'].'.typevalextenumbersright', 'int').' = '.$this->_table['userfeatures'].'.id',
 				      null,
 				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['userfeatures'],
@@ -385,7 +388,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				       'user');
 
 		$this->_dso->leftjoin($this->_table['agentfeatures'],
-				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['agentfeatures'].'.id',
+				      $this->_dso->cast($this->_table['phonefunckey'].'.typevalextenumbersright', 'int').' = '.$this->_table['agentfeatures'].'.id',
 				      null,
 				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['agentfeatures'],
@@ -393,7 +396,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				       'agent');
 
 		$this->_dso->leftjoin($this->_table['groupfeatures'],
-				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['groupfeatures'].'.id',
+				      $this->_dso->cast($this->_table['phonefunckey'].'.typevalextenumbersright', 'int').' = '.$this->_table['groupfeatures'].'.id',
 				      null,
 				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['groupfeatures'],
@@ -403,7 +406,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 					  array('deleted' => 0));
 
 		$this->_dso->leftjoin($this->_table['queuefeatures'],
-				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['queuefeatures'].'.id',
+				      $this->_dso->cast($this->_table['phonefunckey'].'.typevalextenumbersright', 'int').' = '.$this->_table['queuefeatures'].'.id',
 				      null,
 				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['queuefeatures'],
@@ -411,7 +414,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				       'queue');
 
 		$this->_dso->leftjoin($this->_table['meetmefeatures'],
-				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['meetmefeatures'].'.id',
+				      $this->_dso->cast($this->_table['phonefunckey'].'.typevalextenumbersright', 'int').' = '.$this->_table['meetmefeatures'].'.id',
 				      null,
 				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['meetmefeatures'],
