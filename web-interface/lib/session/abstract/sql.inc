@@ -135,12 +135,40 @@ class dwho_session_abstract_sql
 		if($this->_insert !== true)
 			return(true);
 
+		/* REPLACE is not a standard SQL statement
 		$this->_dso->replace($this->_param['table'],
 				     array('identifier'	=> $this->_attrib['identifier'],
 					   'sessid'	=> $sessid,
 					   'start'	=> $now,
 					   'expire'	=> $expire,
-					   'data'	=> $data));
+						 'data'	=> $data));
+		 */
+		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->where(array('sessid' => $sessid));
+
+		if(($r = $this->_dso->select_count()) !== false)
+		{
+				if($r > 0)
+				{
+					$rs = $this->_dso->update($this->_param['table'],
+						array('identifier'	=> $this->_attrib['identifier'],
+							'start'  => $now,
+							'expire'	=> $expire,
+							'data'		=> $data),
+							array('sessid' => $sessid),
+						  null,
+						  true);
+
+				}	else	{
+					$rs = $this->_dso->insert($this->_param['table'],
+						array('identifier'	=> $this->_attrib['identifier'],
+							'sessid'  => $sessid,
+							'start'   => $now,
+							'expire'	=> $expire,
+							'data'		=> $data));
+				}
+		}
+
 
 		return(true);
 	}
