@@ -49,6 +49,25 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		}
 
 		$this->_dso->new_group('name',$this->_table['queuefeatures']);
+		$this->_dso->add_group('id', $this->_table['queuefeatures']);
+		$this->_dso->add_group('number', $this->_table['queuefeatures']);
+		$this->_dso->add_group('context', $this->_table['queuefeatures']);
+		$this->_dso->add_group('data_quality', $this->_table['queuefeatures']);
+		$this->_dso->add_group('hitting_callee', $this->_table['queuefeatures']);
+		$this->_dso->add_group('hitting_caller', $this->_table['queuefeatures']);
+		$this->_dso->add_group('retries', $this->_table['queuefeatures']);
+		$this->_dso->add_group('ring', $this->_table['queuefeatures']);
+		$this->_dso->add_group('transfer_user', $this->_table['queuefeatures']);
+		$this->_dso->add_group('transfer_call', $this->_table['queuefeatures']);
+		$this->_dso->add_group('write_caller', $this->_table['queuefeatures']);
+		$this->_dso->add_group('write_calling', $this->_table['queuefeatures']);
+		$this->_dso->add_group('url', $this->_table['queuefeatures']);
+		$this->_dso->add_group('announceoverride', $this->_table['queuefeatures']);
+		$this->_dso->add_group('timeout', $this->_table['queuefeatures']);
+		$this->_dso->add_group('preprocess_subroutine', $this->_table['queuefeatures']);
+		$this->_dso->add_group('commented', $this->_table['queue']);
+		$this->_dso->add_group('category', $this->_table['queue']);
+
 
 		if(dwho_has_len($value) === true)
 		{
@@ -113,6 +132,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 			array('sum' => (object) 'COUNT(queueskill.id)'));
 
 		$this->_dso->new_group('id', 'queueskillcat');
+		$this->_dso->add_group('name', 'queueskillcat');
 		$this->_dso->new_order('name', null, 'queueskillcat');
 		$this->_dso->limit($limit);
 		

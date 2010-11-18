@@ -51,6 +51,20 @@ class xivo_application_service_asterisk_group_sql extends xivo_application_abstr
 		}
 
 		$this->_dso->new_group('name',$this->_table['groupfeatures']);
+		// PG compat:: must add all columns in SELECT
+		$this->_dso->add_group('id',$this->_table['groupfeatures']);
+		$this->_dso->add_group('number',$this->_table['groupfeatures']);
+		$this->_dso->add_group('context',$this->_table['groupfeatures']);
+		$this->_dso->add_group('transfer_user',$this->_table['groupfeatures']);
+		$this->_dso->add_group('transfer_call',$this->_table['groupfeatures']);
+		$this->_dso->add_group('write_caller',$this->_table['groupfeatures']);
+		$this->_dso->add_group('write_calling',$this->_table['groupfeatures']);
+		$this->_dso->add_group('timeout',$this->_table['groupfeatures']);
+		$this->_dso->add_group('preprocess_subroutine',$this->_table['groupfeatures']);
+		$this->_dso->add_group('deleted',$this->_table['groupfeatures']);
+		$this->_dso->add_group('commented',$this->_table['queue']);
+		$this->_dso->add_group('category',$this->_table['queue']);
+
 
 		if(dwho_has_len($value) === true)
 		{
