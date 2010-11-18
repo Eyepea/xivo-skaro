@@ -48,7 +48,21 @@ class dwho_i18n_abstract_sql
 
 		$arr['obj'] = serialize($arr['obj']);
 
-		return($this->_dso->replace($this->_param['table'],$arr));
+		/* REPLACE is not a standard SQL statement */
+		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->where(array('locale' => $arr['locale'], 'path' => $arr['path']));
+
+		$ret = false;
+		if(($r = $this->_dso->select_count()) !== false)
+		{
+			if($r > 0) {
+					$ret = $this->_dso->update($this->_param['table'], $arr, null, null, true);
+				}	else	{
+					$ret = $this->_dso->insert($this->_param['table'], $arr);
+				}
+		}
+
+		return($ret);
 	}
 
 	function get_cache($arr)
