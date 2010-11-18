@@ -1322,14 +1322,14 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	function skills_add($name, $values)
 	{
 		// save skill category and return autoincremented ID
-		$catid =  $this->_skillcat->add(array('id' => null, 'name' => $name));
+		$catid =  $this->_skillcat->add(array('name' => $name));
 		if(is_null($catid) || $catid === false)
 		{ return(false); }
 
 		// prepare skill save-array
 		foreach(array_values($values) as $value)
 		{
-			$value['id'] = null;
+			unset($value['id']); // id is an autoincremented number
 			$value['catid'] = $catid;
 			$valid = $this->_skill->add($value);
 		}
@@ -1383,7 +1383,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			// new skill value
 			if($value['id'] == -1)
 			{ 
-				$value['id'] = null;
+				unset($value['id']);
 				$valid = $this->_skill->add($value);
 			}
 			else

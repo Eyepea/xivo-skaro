@@ -139,7 +139,8 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		if($replace === true)
 			return($this->_dso->edit($last,$arr));
 
-		return($this->_dso->add($arr));
+		// id is not auto
+		return($this->_dso->add($arr,false));
 	}
 
 	function edit($id,$arr,$disable=null,$delete=false)
