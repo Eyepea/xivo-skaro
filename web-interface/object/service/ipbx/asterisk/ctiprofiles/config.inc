@@ -32,8 +32,11 @@ $array['element']['xlets'] = array();
 $array['element']['xlets']['default'] = '';
 $array['element']['funcs'] = array();
 $array['element']['funcs']['default'] = '';
+
 $array['element']['maxgui'] = array();
-$array['element']['maxgui']['default'] = '';
+$array['element']['maxgui']['default'] = -1;
+$array['element']['maxgui']['null'] = true;
+
 $array['element']['presence'] = array();
 $array['element']['presence']['default'] = '';
 $array['element']['services'] = array();
@@ -49,7 +52,7 @@ $array['filter'] = array();
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['appliname'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['xlets'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
-$array['filter']['maxgui'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
+$array['filter']['maxgui'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
 $array['filter']['presence'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
 $array['filter']['services'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['funcs'] 		= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');

@@ -49,7 +49,9 @@ $array['element']['action_info'] = array();
 $array['element']['action_info']['default'] = '';
 
 $array['element']['focus'] = array();
-$array['element']['focus']['default'] = '';
+$array['element']['focus']['value'] = array(0,1);
+$array['element']['focus']['default'] = 0;
+$array['element']['focus']['set'] = true;
 
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
@@ -66,7 +68,7 @@ $array['filter']['sheet_info'] 	= array('set' => false, 'chk' => 2, 'regexp' => 
 $array['filter']['systray_info'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['sheet_qtui'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['action_info'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
-$array['filter']['focus'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
+$array['filter']['focus'] 	= array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['deletable'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
 ?>

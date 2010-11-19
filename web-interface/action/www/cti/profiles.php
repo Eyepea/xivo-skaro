@@ -403,6 +403,7 @@ switch($act)
 
 $_TPL->set_var('act',$act);
 $_TPL->set_var('idprofiles',$idprofiles);
+$_TPL->set_var('element',$element);
 #$_TPL->set_var('group',$group);
 
 $menu = &$_TPL->get_module('menu');
