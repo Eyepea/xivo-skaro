@@ -330,18 +330,20 @@ class XivoCTICommand(BaseCommand):
     def manage_login(self, loginparams, phase, uinfo):
         if phase == xivo_commandsets.CMD_LOGIN_ID:
             missings = []
-            # warns that the former session did not exit correctly (on a given computer)
-            if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
-                if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
-                    log.warning('lastlogout stopper=%s datetime=%s'
-                                % (loginparams['lastlogout-stopper'],
-                                   loginparams['lastlogout-datetime']))
             for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
                 if argum not in loginparams:
                     missings.append(argum)
             if len(missings) > 0:
                 log.warning('missing args in loginparams : %s' % ','.join(missings))
                 return 'missing:%s' % ','.join(missings)
+
+            # warns that the former session did not exit correctly (on a given computer)
+            if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
+                if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
+                    log.warning('lastlogout userid=%s stopper=%s datetime=%s'
+                                % (loginparams['userid'],
+                                   loginparams['lastlogout-stopper'],
+                                   loginparams['lastlogout-datetime']))
 
             # trivial checks (version, client kind) dealing with the software used
             xivoversion = loginparams.get('xivoversion')
@@ -2013,12 +2015,13 @@ class XivoCTICommand(BaseCommand):
                 if qaction == 'QUEUESTART':
                     last_start = qdate
                 if qaction in ['AGENTLOGIN', 'AGENTCALLBACKLOGIN', 'AGENTLOGOFF', 'AGENTCALLBACKLOGOFF']:
-                    # on asterisk 1.2, there is no Agent/ before AGENTCALLBACKLOGIN and AGENTCALLBACKLOGOFF
                     # on asterisk 1.4, there is no Agent/ before AGENTCALLBACKLOGIN
+                    # (hum..., sometimes there is, actually)
                     if qaction == 'AGENTCALLBACKLOGIN':
-                        agent_channel = 'Agent/' + line[3]
-                    else:
-                        agent_channel = line[3]
+                        if line[1] == 'NONE':
+                            agent_channel = 'Agent/' + line[3]
+                        else:
+                            agent_channel = line[3]
                     if agent_channel.startswith('Agent/') and len(agent_channel) > LENGTH_AGENT:
                         if agent_channel not in self.last_agents[astid]:
                             self.last_agents[astid][agent_channel] = {}
@@ -4758,7 +4761,7 @@ class XivoCTICommand(BaseCommand):
         self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event, ddata, chan)
         log.info('%s AMI Join (Queue) %s %s %s' % (astid, queuename, chan, count))
         self.weblist[queueorgroup][astid].queueentry_update(queueid, chan, position, time.time(),
-            clidnum, clidname)
+                                                            clidnum, clidname)
         event['Calls'] = count
         self.weblist[queueorgroup][astid].update_queuestats(queueid, event)
         tosend = { 'class' : queueorgroup,
@@ -4892,6 +4895,17 @@ class XivoCTICommand(BaseCommand):
                                     self.__ami_rename_now__(astid, chan_old_1, chan_new_1, uniqueid1)
                                     self.__ami_rename_now__(astid, chan_old_2, chan_new_2, uniqueid2)
                                     self.__ami_rename_now__(astid, chan_old_3, chan_new_3, uniqueid3)
+
+                                # queue entry members
+                                if uniqueid2 in self.uniqueids[astid]:
+                                    if 'join' in self.uniqueids[astid][uniqueid2]:
+                                        queueorgroup = self.uniqueids[astid][uniqueid2]['join'].get('queueorgroup')
+                                        queuename = self.uniqueids[astid][uniqueid2]['join'].get('queuename')
+                                        queueid = self.uniqueids[astid][uniqueid2]['join'].get('queueid')
+                                        log.warning('%s : the channel %s was in a %s entry (%s) : new channel %s'
+                                                    % (astid, chan_old_2, queueorgroup, queuename, chan_old_1))
+                                        self.weblist[queueorgroup][astid].queueentry_rename(queueid,
+                                                                                            chan_old_2, chan_old_1)
                             else:
                                 log.warning('%s Rename : chan_old_2 and chan_new_3 do not match modulo <ZOMBIE> : %s %s'
                                             % (astid, chan_old_2, chan_new_3))
@@ -5031,7 +5045,8 @@ class XivoCTICommand(BaseCommand):
                         userinfo['login']['sessiontimestamp'] = time.time()
 
                     if classcomm not in ['keepalive', 'logclienterror', 'history', 'logout']:
-                        log.info('command attempt %s from user:%s : %s' % (classcomm, userid, icommand.struct))
+                        log.info('command attempt %s from user:%s : %s'
+                                 % (classcomm, userid, icommand.struct))
                     if classcomm not in ['keepalive', 'logclienterror', 'history', 'availstate', 'actionfiche']:
                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                     if classcomm == 'meetme':
@@ -5301,7 +5316,9 @@ class XivoCTICommand(BaseCommand):
             [techno, ctx, phoneid, exten] = termin.split('.')
             # print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
             try:
-                hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind, morerecentthan)
+                hist = self.__update_history_call__(self.configs[astid],
+                                                    techno, phoneid, nlines,
+                                                    kind, morerecentthan)
                 for x in hist:
                     ritem = { 'duration' : x[10] }
                     # 'x1' : x[1].replace('"', '')
@@ -6049,16 +6066,16 @@ class XivoCTICommand(BaseCommand):
 
                 if kind == "0": # outgoing calls (all)
                     cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + datecond + orderbycalldate,
-                        columns,
-                        (likestring,))
+                                 columns,
+                                 (likestring,))
                 elif kind == "1": # incoming calls (answered)
                     cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
-                        columns,
-                        (likestring,))
+                                 columns,
+                                 (likestring,))
                 else: # missed calls (received but not answered)
                     cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
-                        columns,
-                        (likestring,))
+                                 columns,
+                                 (likestring,))
                 results = cursor.fetchall()
             except Exception:
                 log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
