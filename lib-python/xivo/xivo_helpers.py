@@ -31,6 +31,7 @@ from xivo import ConfigDict
 from xivo import anysql
 from xivo.BackSQL import backsqlite
 from xivo.BackSQL import backmysql
+from xivo.BackSQL import backpostgresql
 
 log = logging.getLogger("xivo.xivo_helpers")
 
