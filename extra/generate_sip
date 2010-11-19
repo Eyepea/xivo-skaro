@@ -38,23 +38,105 @@ res = cursor.fetchall()
 
 print "[general]"
 for r in res:
-    if r['var_name'] not in ('allow','disallow') and r['var_val'] is not None:
+    if r['var_val'] is None:
+        continue
+
+    if r['var_name'] not in ('allow','disallow'):
         print r['var_name'] + " = " + r['var_val'] 
-    if r['var_name'] == 'allow' and r['var_val'] != None:
+    elif r['var_name'] == 'allow':
         print "disallow = all"
         for c in r['var_val'].split(','):
             print "allow = " + str(c)
 print "\n\n"
 
-cursor.query("SELECT ${columns} FROM usersip WHERE commented = 0 ",
-('name', 'type', 'username', 'secret', 'md5secret', 'context', 'language', 'accountcode', 'amaflags', 'allowtransfer',
-'fromuser', 'fromdomain', 'mailbox', 'subscribemwi', 'buggymwi', 'call-limit', 'callerid', 'fullname', 'cid_number',
-'maxcallbitrate', 'insecure', 'nat', 'canreinvite', 'promiscredir', 'usereqphone', 'videosupport', 'trustrpid',
-'sendrpid', 'allowsubscribe', 'allowoverlap', 'dtmfmode', 'rfc2833compensate', 'qualify', 'g726nonstandard', 'disallow',
-'allow', 'autoframing', 'mohinterpret', 'mohsuggest', 'useclientcode', 'progressinband', 't38pt_udptl', 't38pt_rtp', 't38pt_tcp',
-'t38pt_usertpsource', 'rtptimeout', 'rtpholdtimeout', 'rtpkeepalive', 'deny', 'permit', 'defaultip', 'callgroup', 'pickupgroup',
-'setvar', 'host', 'port', 'regexten', 'subscribecontext', 'fullcontact', 'vmexten', 'callingpres', 'ipaddr', 'regseconds',
-'regserver'))
+cursor.query("SELECT ${columns} FROM usersip WHERE commented = 0 ", (
+ 'name',
+ 'type',
+ 'username',
+ 'secret',
+ 'md5secret',
+ 'context',
+ 'language',
+ 'accountcode',
+ 'amaflags',
+ 'allowtransfer',
+ 'fromuser',
+ 'fromdomain',
+ 'mailbox',
+ 'subscribemwi',
+ 'buggymwi',
+ 'call-limit',
+ 'callerid',
+ 'fullname',
+ 'cid_number',
+ 'maxcallbitrate',
+ 'insecure',
+ 'nat',
+ 'promiscredir',
+ 'usereqphone',
+ 'videosupport',
+ 'trustrpid',
+ 'sendrpid',
+ 'allowsubscribe',
+ 'allowoverlap',
+ 'dtmfmode',
+ 'rfc2833compensate',
+ 'qualify',
+ 'g726nonstandard',
+ 'disallow',
+ 'allow',
+ 'autoframing',
+ 'mohinterpret',
+ 'mohsuggest',
+ 'useclientcode',
+ 'progressinband',
+ 't38pt_udptl',
+ 't38pt_usertpsource',
+ 'rtptimeout',
+ 'rtpholdtimeout',
+ 'rtpkeepalive',
+ 'deny',
+ 'permit',
+ 'defaultip',
+ 'callgroup',
+ 'pickupgroup',
+ 'setvar',
+ 'host',
+ 'port',
+ 'regexten',
+ 'subscribecontext',
+ 'fullcontact',
+ 'vmexten',
+ 'callingpres',
+ 'ipaddr',
+ 'regseconds',
+ 'regserver',
+ 'lastms',
+ 'outboundproxy',
+ 'transport',
+ 'remotesecret',
+ 'directmedia',
+ 'callcounter',
+ 'busylevel',
+ 'ignoresdpversion',
+ 'session-timers',
+ 'session-expires',
+ 'session-minse',
+ 'session-refresher',
+ 'callbackextension',
+ 'registertrying',
+ 'timert1',
+ 'timerb',
+ 'qualifyfreq',
+ 'contactpermit',
+ 'contactdeny',
+ 'unsolicited_mailbox',
+ 'use_q850_reason',
+ 'encryption',
+ 'snom_aoc_enabled',
+ 'maxforwards',
+ 'disallowed_methods',
+ 'textsupport'))
 res = cursor.fetchall()
 
 for k in res:
