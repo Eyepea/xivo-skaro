@@ -22,6 +22,7 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
+$auth = $this->get_var('auth');
 $error = $this->get_var('error');
 $element = $this->get_var('element');
 $moh_list = $this->get_var('moh_list');
@@ -139,13 +140,25 @@ endif;
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-9"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-internals');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#internals"><?=$this->bbf('smenu_internals');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-10"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-internals',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-authentication',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#internals"><?=$this->bbf('smenu_internals');?></a>
+					<a href="#authentication"><?=$this->bbf('smenu_authentication');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -1701,6 +1714,184 @@ endif;
 
 ?>
 </div>
+
+<div id="sb-part-authentication" class="b-nodisplay">
+<?php
+	$type = 'disp';
+	$count = $auth?count($auth):0;
+	$errdisplay = '';
+?>
+	<div class="sb-list">
+		<table cellspacing="0" cellpadding="0" border="0">
+			<thead>
+			<tr class="sb-top">
+
+				<th class="th-left"><?=$this->bbf('fm_col_user');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_secretmode');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_secret');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_realm');?></th>
+				<th class="th-right th-rule">
+					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+									  $this->bbf('col_add'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+							   $this->bbf('col_add'));?>
+				</th>
+			</tr>
+			</thead>
+			<tbody id="disp">
+		<?php
+		if($count > 0):
+			for($i = 0;$i < $count;$i++):
+
+		?>
+			<tr class="fm-paragraph<?=$errdisplay?>">
+				<td class="td-left">
+	<?php
+					//echo $form->hidden(array('name'		=> 'auth[id][]',
+          //                    		 'value'     	=> $auth[$i]['id']));
+
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'auth[user][]',
+							       'id'		=> false,
+							       'label'		=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'		=> $auth[$i]['user'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('auth-user', $this->get_var('error', 'auth', $i, 'user'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo	$form->select(array(
+						'name'		=> 'auth[secretmode][]',
+							'id'		=> false,
+							'key'		=> false,
+							'empty'		=> false,
+							'selected'	=> $auth[$i]['secretmode'],
+							'bbf' => 'fm_auth_secretmode',
+							'bbfopt'	=> array('argmode' => 'paramvalue'),
+							'error'      	=> $this->bbf_args	('auth-secretmode', $this->get_var('error', 'auth', $i, 'secretmode'))
+						),
+						$element['auth']['secretmode']['value']);
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'auth[secret][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'	=> $auth[$i]['secret'],
+							       'default'	=> '',
+			               'error'		=> $this->bbf_args('auth-secret', $this->get_var('error', 'auth', $i, 'secret'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'auth[realm][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'	=> $auth[$i]['realm'],
+							       'default'	=> '',
+			               'error'		=> $this->bbf_args('auth-realm', $this->get_var('error', 'auth', $i, 'realm'))));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+
+		<?php
+			endfor;
+		endif;
+		?>
+			</tbody>
+			<tfoot>
+			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
+				<td colspan="5" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+			</tr>
+			</tfoot>
+		</table>
+		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+			<tbody id="ex-<?=$type?>">
+			<tr class="fm-paragraph">
+				<td class="td-left">
+	<?php
+					echo $form->hidden(array('name'		=> 'auth[id][]',
+                               		 'default'     	=> '-1'));
+
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'auth[user][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo	$form->select(array(
+							'name'		=> 'auth[secretmode][]',
+							'id'		=> false,
+							'key'		=> false,
+							'empty'		=> false,
+						),
+						$element['auth']['secretmode']['value']);
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'auth[secret][]',
+							       'id'		=> false,
+							       'label'		=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'auth[realm][]',
+							       'id'		=> false,
+							       'label'		=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
 
 	<?=$form->submit(array('name'	=> 'submit',
 			       'id'	=> 'it-submit',

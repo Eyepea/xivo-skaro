@@ -20,14 +20,14 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_general extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_sipauthentication extends xivo_service_asterisk_abstract
 {
-	var $_dso     = null;
-	var $_name    = 'general';
-	var $_filter  = false;
-	var $_origin  = false;
+	var $_dso	= null;
+	var $_name	= 'sipauthentication';
+	var $_filter	= false;
+	var $_origin	= false;
 
-	function xivo_service_asterisk_general(&$sre,&$dso)
+	function xivo_service_asterisk_sipauthentication(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -41,13 +41,6 @@ class xivo_service_asterisk_general extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
-	function edit($id, $rs)
-	{
-		$rs = array_merge($this->get(1), $rs);
-		$rs = $this->chk_values($rs,true);
-
-		return(parent::edit($id, $rs));
-	}
 }
 
 ?>

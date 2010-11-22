@@ -116,7 +116,7 @@ dwho.submenu.prototype.select = function(obj,part,last,cname)
 	&& (beforeobj = dwho_eid(this._before['id'])) !== false)
 		beforeobj.className = this._before['class'];
 	
-	var rs = id.match(/^([a-zA-Z0-9-_]*)([0-9]+)$/);
+	var rs = id.match(/^([a-zA-Z0-9-_]*-)([0-9]+)$/);
 
 	if(rs !== null)
 	{

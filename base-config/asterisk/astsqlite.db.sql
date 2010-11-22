@@ -1963,4 +1963,18 @@ CREATE TABLE general
 INSERT INTO general VALUES (1, 'Europe/Paris');
 
 
+DROP TABLE sipauthentication;
+CREATE TABLE sipauthentication
+(
+	id         integer unsigned,
+	usersip_id integer,
+	user       varchar(255) NOT NULL,
+	secretmode varchar(5) NOT NULL, -- md5 or clear
+	secret     varchar(255) NOT NULL,
+	realm      varchar(1024) NOT NULL,
+	PRIMARY KEY(id)
+);
+CREATE INDEX sipauthentication__idx__usersip_id ON sipauthentication(usersip_id);
+
+
 COMMIT;

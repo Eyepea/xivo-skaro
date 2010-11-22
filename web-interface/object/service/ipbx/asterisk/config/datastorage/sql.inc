@@ -332,4 +332,8 @@ $array['general'] = array();
 $array['general']['table'] = 'general';
 $array['general']['primary'] = array('id' => '');
 
+$array['sipauthentication'] = array();
+$array['sipauthentication']['table'] = 'sipauthentication';
+$array['sipauthentication']['primary'] = array('id' => '');
+
 ?>

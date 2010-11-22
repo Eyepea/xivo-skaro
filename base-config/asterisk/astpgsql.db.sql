@@ -2373,6 +2373,22 @@ INSERT INTO "general" VALUES (1, 'Europe/Paris', NULL, NULL);
 SELECT setval('general_id_seq', 2);
 
 
+DROP TABLE IF EXISTS "sipauthentication";
+DROP TYPE  IF EXISTS "sipauthentication_secretmode";
+
+CREATE TYPE "sipauthentication_secretmode" AS ENUM ('md5','clear');
+CREATE TABLE "sipauthentication"
+(
+	"id"         SERIAL,
+	"usersip_id" INTEGER, -- if NULL, then its a general authentication param
+	"user"       VARCHAR(255) NOT NULL,
+	"secretmode" sipauthentication_secretmode NOT NULL,
+	"secret"     VARCHAR(255) NOT NULL,
+	"realm"      VARCHAR(1024) NOT NULL,
+	PRIMARY KEY("id")
+);
+CREATE INDEX "sipauthenticatiob__idx__usersip_id" ON "sipauthentication"("usersip_id");
+
 -- grant all rights to xivo.* for xivo user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '

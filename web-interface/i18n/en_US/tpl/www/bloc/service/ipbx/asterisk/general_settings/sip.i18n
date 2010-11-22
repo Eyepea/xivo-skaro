@@ -1396,3 +1396,28 @@ Authentify OPTIONS requests :
 Config asterisk: auth_options_requests
 
 
+
+; smenu_authentication
+Auth. credentials
+
+; fm_col_user
+Username
+
+; fm_col_secretmode
+Password type
+
+; fm_auth_secretmode(md5)
+MD5
+
+; fm_auth_secretmode(clear)
+Clear
+
+; fm_col_secret
+Password
+
+; fm_col_realm
+Realm
+
+; no_disp
+No credentials
+

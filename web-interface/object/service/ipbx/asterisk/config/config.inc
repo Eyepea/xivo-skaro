@@ -284,6 +284,9 @@ $array['module']['agentqueueskill']['datastorage'] = true;
 $array['module']['general'] = array();
 $array['module']['general']['datastorage'] = true;
 
+$array['module']['sipauthentication'] = array();
+$array['module']['sipauthentication']['datastorage'] = true;
+
 
 
 

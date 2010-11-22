@@ -1509,3 +1509,26 @@ Authentifie les requêtes OPTIONS :
 ; hlp_fm_auth_options_requests
 Config asterisk: auth_options_requests
 
+; smenu_authentication
+Auth.
+
+; fm_col_user
+Identifiant
+
+; fm_col_secretmode
+Type de mot de passe
+
+; fm_auth_secretmode(md5)
+MD5
+
+; fm_auth_secretmode(clear)
+En clair
+
+; fm_col_secret
+Mot de passe
+
+; fm_col_realm
+Nom de domaine
+
+; no_disp
+Aucunes autorisations

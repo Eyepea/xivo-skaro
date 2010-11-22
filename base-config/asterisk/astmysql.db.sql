@@ -2196,8 +2196,21 @@ CREATE TABLE `general`
  `exchange_exten` varchar(128) DEFAULT NULL,
  PRIMARY KEY(`id`)
 );
-
 INSERT INTO `general` VALUES (1, 'Europe/Paris', NULL, NULL);
+
+
+DROP TABLE IF EXISTS `sipauthentication`;
+CREATE TABLE `sipauthentication`
+(
+	`id`         int(10) unsigned auto_increment,
+	`usersip_id` int(10),
+	`user`       varchar(255) NOT NULL,
+	`secretmode` enum('md5','clear') NOT NULL,
+	`secret`     varchar(255) NOT NULL,
+	`realm`      varchar(1024) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+CREATE INDEX `sipauthentication__idx__usersip_id` ON `sipauthentication`(`usersip_id`);
 
 
 COMMIT;

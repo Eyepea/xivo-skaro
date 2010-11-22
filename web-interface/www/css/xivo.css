@@ -302,7 +302,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .sb-smenu li .tab {float: left;background-repeat: repeat-x;background-position: left top;}
 
 #b-content .sb-smenu li span {float: left;width: 10px;height: 16px;background-repeat: no-repeat;background-position: left top;}
-#b-content .sb-smenu li .span-center {padding: 1px 8px 0px 16px;width: auto;}
+#b-content .sb-smenu li .span-center {padding: 1px 6px 0px 12px;width: auto;}
 #b-content .sb-smenu li .span-right {height: 17px;}
 #b-content .sb-smenu .dwsm-blur .tab, #b-content .sb-smenu .dwsm-blur-last .tab, #b-content .sb-smenu .dwsm-blur-before .tab {background-image: url(../img/content/menu/bt-bg-2.gif); color: #999;}
 #b-content .sb-smenu .dwsm-blur .tab a, #b-content .sb-smenu .dwsm-blur-last .tab a, #b-content .sb-smenu .dwsm-blur-before .tab a, #b-content .sb-smenu .dwsm-select-before .tab a {color: #666;}
