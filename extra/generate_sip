@@ -47,7 +47,20 @@ for r in res:
         print "disallow = all"
         for c in r['var_val'].split(','):
             print "allow = " + str(c)
-print "\n\n"
+print ''
+
+
+cursor.query("SELECT ${columns} FROM sipauthentication "
+             "WHERE usersip_id IS NULL",
+             ('user', 'secretmode', 'secret', 'realm'))
+res = cursor.fetchall()
+
+print "[authentication]"
+for r in res:
+	mode = '#' if r['secretmode'] == 'md5' else ':'
+	print "auth = %s%s%s@%s" % (r['user'], mode, r['secret'], r['realm'])
+print ''
+
 
 cursor.query("SELECT ${columns} FROM usersip WHERE commented = 0 ", (
  'name',
