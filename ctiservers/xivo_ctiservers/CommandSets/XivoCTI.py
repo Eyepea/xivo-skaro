@@ -6583,10 +6583,7 @@ class XivoCTICommand(BaseCommand):
 ##    def ami_channelupdate(self, astid, event): return
 ##    def ami_chanspystart(self, astid, event): return
 ##    def ami_chanspystop(self, astid, event): return
-##    def ami_coreshowchannel(self, astid, event): return
-##    def ami_coreshowchannelscomplete(self, astid, event): return
 ##    def ami_dahdishowchannels(self, astid, event): return
-##    def ami_dahdishowchannelscomplete(self, astid, event): return
 ##    def ami_dataget_tree(self, astid, event): return
 ##    def ami_dbgetcomplete(self, astid, event): return
 ##    def ami_dbgetresponse(self, astid, event): return
@@ -6610,23 +6607,18 @@ class XivoCTICommand(BaseCommand):
 ##    def ami_musiconhold(self, astid, event): return
 ##    def ami_newpeeraccount(self, astid, event): return
 ##    def ami_peerentry(self, astid, event): return
-##    def ami_peerlistcomplete(self, astid, event): return
 ##    def ami_pickup(self, astid, event): return
 ##    def ami_placeholder(self, astid, event): return
 ##    def ami_queuememberpenalty(self, astid, event): return
-##    def ami_queuesummary(self, astid, event): return
-##    def ami_queuesummarycomplete(self, astid, event): return
 ##    def ami_receivefax(self, astid, event): return
 ##    def ami_receivefaxstatus(self, astid, event): return
-##    def ami_registrationscomplete(self, astid, event): return
 ##    def ami_registryentry(self, astid, event): return
 ##    def ami_sendfax(self, astid, event): return
 ##    def ami_sendfaxstatus(self, astid, event): return
-##    def ami_showdialplancomplete(self, astid, event): return
 ##    def ami_spanalarm(self, astid, event): return
 ##    def ami_spanalarmclear(self, astid, event): return
 ##    def ami_voicemailuserentry(self, astid, event): return
 ##    def ami_voicemailuserentrycomplete(self, astid, event): return
 ##    def ami_waiteventcomplete(self, astid, event): return
 
-xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
+xivo_commandsets.CommandClasses['xivoctiold'] = XivoCTICommand

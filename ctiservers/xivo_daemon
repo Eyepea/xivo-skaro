@@ -577,6 +577,9 @@ class manage_connection:
                         else:
                             if myline.startswith('Asterisk Call Manager'):
                                 log.info('%s : %s' % (astid, myline))
+                            elif myline == 'ReportBlock:':
+                                # single line in RTCPSent events - ignoring it for the time being
+                                pass
                             else:
                                 log.warning('%s unable to parse %s' % (astid, myline))
                 else:

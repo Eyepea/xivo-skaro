@@ -148,16 +148,6 @@ class AMIClass:
         self.actionid = actionid
         return
 
-    # \brief Requesting a Status.
-    def sendstatus(self):
-        ret = self.sendcommand('Status', [])
-        return ret
-
-    # \brief Requesting the Agents' Status.
-    def sendagents(self):
-        ret = self.sendcommand('Agents', [])
-        return ret
-
     # \brief Requesting the Queues' Status.
     def sendqueuestatus(self, queue = None):
         if queue is None:
@@ -167,22 +157,11 @@ class AMIClass:
                                    [('Queue', queue)])
         return ret
 
-    def sendcoreshowchannels(self):
-        ret = self.sendcommand('CoreShowChannels', [])
-        return ret
-
     # \brief Requesting an ExtensionState.
     def sendextensionstate(self, exten, context):
         ret = self.sendcommand('ExtensionState',
                                [('Exten', exten),
                                 ('Context', context)])
-        return ret
-    def sendparkedcalls(self):
-        ret = self.sendcommand('ParkedCalls', [])
-        return ret
-
-    def sendmeetmelist(self):
-        ret = self.sendcommand('MeetMeList', [])
         return ret
 
     # \brief Logins to the AMI.
@@ -596,18 +575,18 @@ class AMIList:
             # sendmeetmelist before sendstatus : to fill the times spent for various conf rooms
             initphaseid = ''.join(random.sample(__alphanums__, 10))
 
-            conn_ami.setactionid('init_parkedcalls_%s' % initphaseid)
-            conn_ami.sendparkedcalls()
-            conn_ami.setactionid('init_meetmelist_%s' % initphaseid)
-            conn_ami.sendmeetmelist()
-            conn_ami.setactionid('init_status_%s' % initphaseid)
-            conn_ami.sendstatus()
-            conn_ami.setactionid('init_agents_%s' % initphaseid)
-            conn_ami.sendagents()
-            conn_ami.setactionid('init_queues_%s' % initphaseid)
-            conn_ami.sendqueuestatus()
-            conn_ami.setactionid('init_coreshowchannels_%s' % initphaseid)
-            conn_ami.sendcoreshowchannels()
+            for initrequest in ['SIPpeers', 'IAXpeers',
+                                'ParkedCalls', 'MeetmeList',
+                                'Status', 'Agents',
+                                'QueueStatus', 'QueueSummary',
+                                'CoreShowChannels',
+                                'IAXregistry', 'SIPshowregistry', 'VoicemailUsersList',
+                                'ShowDialPlan',
+                                'DAHDIShowChannels']:
+                conn_ami.setactionid('init-%s-%s-%d' % (initrequest.lower(),
+                                                        initphaseid,
+                                                        int(time.time())))
+                conn_ami.sendcommand(initrequest, [])
 
             conn_ami.setactionid('init_close_%s' % initphaseid)
         return
@@ -658,7 +637,7 @@ class AMIList:
 
 
 # define the events, sorted according to their class
-# (defined here include/asterisk/manager.h)
+# (classes are defined in include/asterisk/manager.h)
 
 event_flags = dict()
 event_others = dict()
@@ -730,23 +709,24 @@ event_flags['ORIGINATE'] = []
 event_flags['HOOKRESPONSE'] = []
 
 event_others['replies'] = [
-    'ParkedCallsComplete',
-    'MeetmeList', 'MeetmeListComplete',
-    'Status' , 'StatusComplete',
-    'Agents', 'AgentsComplete',
-    'QueueSummary', 'QueueSummaryComplete',
-    'QueueParams', 'QueueEntry', 'QueueMember', 'QueueStatusComplete',
-    'CoreShowChannel', 'CoreShowChannelsComplete',
     'PeerEntry', 'PeerlistComplete', # after SIPpeers or IAXpeers or ...
+    'ParkedCallsComplete', # after ParkedCalls
+    'MeetmeList', 'MeetmeListComplete', # after MeetMeList
+    'Status' , 'StatusComplete', # after Status
+    'Agents', 'AgentsComplete', # after Agents
+    'QueueParams', 'QueueEntry', 'QueueMember', 'QueueStatusComplete', # after QueueStatus
+    'QueueSummary', 'QueueSummaryComplete', # after QueueSummary
+    'CoreShowChannel', 'CoreShowChannelsComplete', # after CoreShowChannels
+    'RegistryEntry', 'RegistrationsComplete', # in reply to IAXregistry / SIPshowregistry seems to go elsewhere
+    'VoicemailUserEntry', 'VoicemailUserEntryComplete', # in reply to VoicemailUsersList ? XXX when empty
+    'ListDialplan', 'ShowDialPlanComplete', # in reply to ShowDialPlan
+    'DAHDIShowChannels', 'DAHDIShowChannelsComplete', # in reply to DAHDIShowChannels
+
     'LineEntry', 'LinelistComplete', # in reply to SKINNYlines
     'DeviceEntry', 'DevicelistComplete', # in reply to SKINNYdevices
-    'VoicemailUserEntry', 'VoicemailUserEntryComplete', # in reply to VoicemailUserList ? XXX when empty
-    'ListDialplan', 'ShowDialPlanComplete', # in reply to ShowDialPlan
-    'RegistryEntry', 'RegistrationsComplete', # in reply to IAXregistry / SIPshowregistry seems to go elsewhere
 
     'WaitEventComplete',
     'Placeholder', 'DBGetResponse', 'DBGetComplete',
-    'DAHDIShowChannels', 'DAHDIShowChannelsComplete',
     'DataGet Tree'
     ]
 
@@ -801,13 +781,13 @@ manager_commands = [
     'MeetmeMute', 'MeetmeUnmute',
     'ModuleCheck', 'ModuleLoad', 'Ping', 'PlayDTMF',
     'QueueAdd', 'QueueLog', 'QueuePause', 'QueuePenalty', 'QueueReload',
-    'QueueRemove', 'QueueReset', 'QueueRule', 'QueueStatus', 'QueueSummary',
+    'QueueRemove', 'QueueReset', 'QueueRule',
     'MuteAudio', 'Reload',
     'SendText', 'Setvar', 'ShowDialPlan',
     'UserEvent',
     'WaitEvent',
 
-    # general
+    # general (answer is in the Response field)
     'CoreSettings', 'CoreStatus', 'ListCommands',
 
     # call actions
@@ -817,7 +797,9 @@ manager_commands = [
     'CreateConfig', 'GetConfigJSON', 'GetConfig', 'ListCategories', 'UpdateConfig',
 
     # list requests (~ config)
-    'Agents', 'Queues', 'MeetmeList', 'VoicemailUsersList',
+    'Agents', 'MeetmeList', 'VoicemailUsersList', 'QueueStatus', 'QueueSummary',
+
+    'Queues', # this one is actually a CLI command - avoid using it
 
     # list requests (~ statuses)
     'CoreShowChannels', 'ParkedCalls', 'Status',
