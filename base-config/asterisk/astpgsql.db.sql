@@ -17,6 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+CREATE USER asterisk WITH PASSWORD 'proformatique';
+CREATE DATABASE asterisk WITH OWNER asterisk ENCODING 'UTF8';
+
+\connect asterisk;
+CREATE LANGUAGE plpgsql;
+
+BEGIN;
+
+-- GENERIC ENUM TYPES
+DROP TYPE  IF EXISTS "generic_bsfilter" CASCADE;
+CREATE TYPE "generic_bsfilter" AS ENUM ('no', 'boss', 'secretary');
+
+
 DROP TABLE IF EXISTS "accessfeatures";
 DROP TYPE  IF EXISTS "accessfeatures_feature";
 
@@ -26,7 +39,7 @@ CREATE TABLE "accessfeatures" (
  "id" SERIAL,
  "host" varchar(255) NOT NULL DEFAULT '',
  "feature" accessfeatures_feature NOT NULL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -47,8 +60,8 @@ CREATE TABLE "agentfeatures" (
  "passwd" varchar(128) NOT NULL,
  "context" varchar(39) NOT NULL,
  "language" varchar(20) NOT NULL,
- "silent" BOOLEAN NOT NULL DEFAULT FALSE,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "silent" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -64,8 +77,8 @@ CREATE TABLE "agentgroup" (
  "groupid" INTEGER NOT NULL,
  "name" varchar(128) NOT NULL DEFAULT '',
  "groups" varchar(255) NOT NULL DEFAULT '',
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
- "deleted" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "deleted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -75,7 +88,7 @@ CREATE INDEX "agentgroup__idx__name" ON "agentgroup"("name");
 CREATE INDEX "agentgroup__idx__commented" ON "agentgroup"("commented");
 CREATE INDEX "agentgroup__idx__deleted" ON "agentgroup"("deleted");
 
-INSERT INTO "agentgroup" VALUES (1,3,'default','','f','f','');
+INSERT INTO "agentgroup" VALUES (1,3,'default','',0,0,'');
 SELECT setval('agentgroup_id_seq', 2);
 
 -- agent queueskills
@@ -121,7 +134,7 @@ CREATE TABLE "callfilter" (
  "bosssecretary" callfilter_bosssecretary,
  "callfrom" callfilter_callfrom,
  "ringseconds" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -136,10 +149,10 @@ CREATE UNIQUE INDEX "callfilter__uidx__name" ON "callfilter"("name");
 
 DROP TABLE IF EXISTS "callfiltermember";
 DROP TYPE IF EXISTS "callfiltermember_type";
-DROP TYPE IF EXISTS "callfiltermember_bstype";
+--DROP TYPE IF EXISTS "callfiltermember_bstype";
 
 CREATE TYPE "callfiltermember_type" AS ENUM ('user');
-CREATE TYPE "callfiltermember_bstype" AS ENUM ('boss', 'secretary');
+--CREATE TYPE "callfiltermember_bstype" AS ENUM ('boss', 'secretary');
 
 CREATE TABLE "callfiltermember" (
  "id" SERIAL,
@@ -148,8 +161,8 @@ CREATE TABLE "callfiltermember" (
  "typeval" varchar(128) NOT NULL DEFAULT 0,
  "ringseconds" INTEGER NOT NULL DEFAULT 0,
  "priority" INTEGER NOT NULL DEFAULT 0,
- "bstype" callfiltermember_bstype,
- "active" BOOLEAN NOT NULL DEFAULT FALSE,
+ "bstype" generic_bsfilter CHECK (bstype in ('boss', 'secretary')),
+ "active" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -162,7 +175,7 @@ CREATE UNIQUE INDEX "callfiltermember__uidx__callfilterid_type_typeval" ON "call
 DROP TABLE IF EXISTS "cdr";
 CREATE TABLE "cdr" (
  "id" SERIAL,
- "calldate" timestamp DEFAULT timestamp '-infinity',
+ "calldate" TIMESTAMP,
  "clid" varchar(80) NOT NULL DEFAULT '',
  "src" varchar(80) NOT NULL DEFAULT '',
  "dst" varchar(80) NOT NULL DEFAULT '',
@@ -171,8 +184,8 @@ CREATE TABLE "cdr" (
  "dstchannel" varchar(80) NOT NULL DEFAULT '',
  "lastapp" varchar(80) NOT NULL DEFAULT '',
  "lastdata" varchar(80) NOT NULL DEFAULT '',
- "answer" timestamp DEFAULT timestamp '-infinity',
- "end" timestamp DEFAULT timestamp '-infinity',
+ "answer" TIMESTAMP,
+ "end" TIMESTAMP,
  "duration" INTEGER NOT NULL DEFAULT 0,
  "billsec" INTEGER NOT NULL DEFAULT 0,
  "disposition" varchar(9) NOT NULL DEFAULT '',
@@ -201,7 +214,7 @@ CREATE TABLE "context" (
  "name" varchar(39) NOT NULL,
  "displayname" varchar(128) NOT NULL DEFAULT '',
  "entity" varchar(64),
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("name")
 );
@@ -277,11 +290,11 @@ CREATE TABLE "cticontexts" (
  "directories" text NOT NULL,
  "display" text NOT NULL,
  "description" text NOT NULL,
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "cticontexts" VALUES(3,'default','xivodir','Display','Contexte par défaut','t');
+INSERT INTO "cticontexts" VALUES(3,'default','xivodir','Display','Contexte par défaut',1);
 SELECT setval('cticontexts_id_seq', 4);
 
 
@@ -295,12 +308,12 @@ CREATE TABLE "ctidirectories" (
  "match_reverse" text NOT NULL,
  "display_reverse" varchar(255),
  "description" varchar(255),
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctidirectories" VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["{db-fullname}"]','Répertoire XiVO Externe','t');
-INSERT INTO "ctidirectories" VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne','t');
+INSERT INTO "ctidirectories" VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
+INSERT INTO "ctidirectories" VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
 SELECT setval('ctidirectories_id_seq', 3);
 
 DROP TABLE IF EXISTS "ctidirectoryfields";
@@ -325,12 +338,12 @@ CREATE TABLE "ctidisplays" (
  "id" SERIAL,
  "name" varchar(50),
  "data" text NOT NULL,
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctidisplays" VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}','t','Affichage par défaut');
+INSERT INTO "ctidisplays" VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}',1,'Affichage par défaut');
 SELECT setval('ctidisplays_id_seq', 5);
 
 DROP TABLE IF EXISTS "ctimain";
@@ -385,11 +398,11 @@ CREATE TABLE "ctipresences" (
  "id" SERIAL,
  "name" varchar(255),
  "description" varchar(255),
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctipresences" VALUES(1,'xivo','De base non supprimable','f');
+INSERT INTO "ctipresences" VALUES(1,'xivo','De base non supprimable',0);
 SELECT setval('ctipresences_id_seq', 2);
 
 
@@ -404,17 +417,17 @@ CREATE TABLE "ctiprofiles" (
  "presence" varchar(255),
  "services" varchar(255),
  "preferences" varchar(2048),
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiprofiles" VALUES(9,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','','t');
-INSERT INTO "ctiprofiles" VALUES(10,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','','','t');
-INSERT INTO "ctiprofiles" VALUES(11,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','','','t');
-INSERT INTO "ctiprofiles" VALUES(12,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','','t');
-INSERT INTO "ctiprofiles" VALUES(13,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','','','t');
-INSERT INTO "ctiprofiles" VALUES(14,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ],[ "calls", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','','t');
-INSERT INTO "ctiprofiles" VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "messages", "dock", "fcms", "N/A" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database',-1,'Switchboard','switchboard','xivo','','','t');
+INSERT INTO "ctiprofiles" VALUES(9,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(10,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(11,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(12,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(13,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(14,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ],[ "calls", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "messages", "dock", "fcms", "N/A" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database',-1,'Switchboard','switchboard','xivo','','',1);
 SELECT setval('ctiprofiles_id_seq', 16);
 
 
@@ -425,11 +438,11 @@ CREATE TABLE "ctireversedirectories" (
  "extensions" text,
  "directories" text NOT NULL,
  "description" text NOT NULL,
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctireversedirectories" VALUES(1,'*', '*', '["xivodir"]','Répertoires XiVO','t');
+INSERT INTO "ctireversedirectories" VALUES(1,'*', '*', '["xivodir"]','Répertoires XiVO',1);
 SELECT setval('ctireversedirectories_id_seq', 2);
 
 
@@ -445,14 +458,14 @@ CREATE TABLE "ctisheetactions" (
  "systray_info" text,
  "sheet_qtui" text,
  "action_info" text,
- "focus" BOOLEAN,
- "deletable" BOOLEAN,
+ "focus" INTEGER, -- BOOLEAN
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetactions" VALUES(6,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ "","title","","Appel {xivo-direction}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{"10": [ "","urlauto","","http://www.google.fr/search?q={xivo-calleridnum}" ]}','f','t');
-INSERT INTO "ctisheetactions" VALUES(7,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}','f','t');
-INSERT INTO "ctisheetactions" VALUES(8,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} (Custom)" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}','f','t');
+INSERT INTO "ctisheetactions" VALUES(6,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ "","title","","Appel {xivo-direction}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{"10": [ "","urlauto","","http://www.google.fr/search?q={xivo-calleridnum}" ]}',0,1);
+INSERT INTO "ctisheetactions" VALUES(7,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
+INSERT INTO "ctisheetactions" VALUES(8,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} (Custom)" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1);
 SELECT setval('ctisheetactions_id_seq', 9);
 
 
@@ -485,15 +498,15 @@ CREATE TABLE "ctistatus" (
  "actions" varchar(255),
  "color" varchar(20),
  "access_status" varchar(255),
- "deletable" BOOLEAN,
+ "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctistatus" VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5','t');
-INSERT INTO "ctistatus" VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5','t');
-INSERT INTO "ctistatus" VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5','t');
-INSERT INTO "ctistatus" VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5','t');
-INSERT INTO "ctistatus" VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5','t');
+INSERT INTO "ctistatus" VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
 SELECT setval('ctistatus_id_seq', 6);
 
 
@@ -537,7 +550,7 @@ CREATE TABLE "dialaction" (
  "action" dialaction_action NOT NULL,
  "actionarg1" varchar(255) NOT NULL DEFAULT '',
  "actionarg2" varchar(255) NOT NULL DEFAULT '',
- "linked" BOOLEAN NOT NULL DEFAULT FALSE,
+ "linked" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("event","category","categoryval")
 );
 
@@ -549,7 +562,7 @@ CREATE INDEX "dialaction__idx__linked" ON "dialaction"("linked");
 DROP TABLE IF EXISTS "extensions";
 CREATE TABLE "extensions" (
  "id" SERIAL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "context" varchar(39) NOT NULL DEFAULT '',
  "exten" varchar(40) NOT NULL DEFAULT '',
  "priority" INTEGER NOT NULL DEFAULT 0,
@@ -563,46 +576,46 @@ CREATE INDEX "extensions__idx__commented" ON "extensions"("commented");
 CREATE INDEX "extensions__idx__context_exten_priority" ON "extensions"("context","exten","priority");
 CREATE INDEX "extensions__idx__name" ON "extensions"("name");
 
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','_*33.',1,'Macro','agentdynamiclogin|${EXTEN:3}','agentdynamiclogin');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','_*30.',1,'Macro','agentstaticlogtoggle|${EXTEN:3}','agentstaticlogtoggle');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','*34',1,'Macro','calllistening','calllistening');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*667.',1,'Macro','meetme|${EXTEN:4}|','callmeetme');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*665.',1,'Macro','queue|${EXTEN:4}|','callqueue');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','*26',1,'Macro','callrecord','callrecord');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*666.',1,'Macro','user|${EXTEN:4}|','calluser');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*25',1,'Macro','enablednd','enablednd');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*90',1,'Macro','enablevm','enablevm');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*91',1,'Macro','enablevmbox','enablevmbox');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*91.',1,'Macro','enablevmbox|${EXTEN:3}','enablevmboxslt');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*90.',1,'Macro','enablevm|${EXTEN:3}','enablevmslt');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*23.',1,'Macro','feature_forward|busy|${EXTEN:3}','fwdbusy');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*22.',1,'Macro','feature_forward|rna|${EXTEN:3}','fwdrna');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*21.',1,'Macro','feature_forward|unc|${EXTEN:3}','fwdunc');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*20',1,'Macro','fwdundoall','fwdundoall');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*48378',1,'Macro','guestprov','guestprov');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*27',1,'Macro','incallfilter','incallfilter');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*10',1,'Macro','phonestatus','phonestatus');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*8.',1,'Pickup','${EXTEN:2}%${CONTEXT}@PICKUPMARK','pickup');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*56.',1,'Macro','groupmember|queue|add|${EXTEN:3}','queueaddmember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*57.',1,'Macro','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*55.',1,'Macro','groupmember|queue|toggle|${EXTEN:3}','queuetogglemember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*99.',1,'Macro','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','_*93.',1,'Macro','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*97.',1,'Macro','vmbox|${EXTEN:3}','vmboxslt');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','*98',1,'Macro','vmusermsg','vmusermsg');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','*92',1,'Macro','vmuserpurge','vmuserpurge');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'t','xivo-features','_*92.',1,'Macro','vmuserpurge|${EXTEN:3}','vmuserpurgeslt');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),'f','xivo-features','_*96.',1,'Macro','vmuser|${EXTEN:3}','vmuserslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*33.',1,'Macro','agentdynamiclogin|${EXTEN:3}','agentdynamiclogin');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*30.',1,'Macro','agentstaticlogtoggle|${EXTEN:3}','agentstaticlogtoggle');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*667.',1,'Macro','meetme|${EXTEN:4}|','callmeetme');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*665.',1,'Macro','queue|${EXTEN:4}|','callqueue');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','*26',1,'Macro','callrecord','callrecord');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*666.',1,'Macro','user|${EXTEN:4}|','calluser');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*25',1,'Macro','enablednd','enablednd');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*90',1,'Macro','enablevm','enablevm');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*91',1,'Macro','enablevmbox','enablevmbox');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*91.',1,'Macro','enablevmbox|${EXTEN:3}','enablevmboxslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*90.',1,'Macro','enablevm|${EXTEN:3}','enablevmslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*23.',1,'Macro','feature_forward|busy|${EXTEN:3}','fwdbusy');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*22.',1,'Macro','feature_forward|rna|${EXTEN:3}','fwdrna');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*21.',1,'Macro','feature_forward|unc|${EXTEN:3}','fwdunc');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*20',1,'Macro','fwdundoall','fwdundoall');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*48378',1,'Macro','guestprov','guestprov');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}%${CONTEXT}@PICKUPMARK','pickup');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*56.',1,'Macro','groupmember|queue|add|${EXTEN:3}','queueaddmember');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*57.',1,'Macro','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*55.',1,'Macro','groupmember|queue|toggle|${EXTEN:3}','queuetogglemember');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*99.',1,'Macro','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*93.',1,'Macro','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*97.',1,'Macro','vmbox|${EXTEN:3}','vmboxslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*98',1,'Macro','vmusermsg','vmusermsg');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','*92',1,'Macro','vmuserpurge','vmuserpurge');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*92.',1,'Macro','vmuserpurge|${EXTEN:3}','vmuserpurgeslt');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*96.',1,'Macro','vmuser|${EXTEN:3}','vmuserslt');
 
 
 DROP TABLE IF EXISTS "extenumbers";
@@ -689,7 +702,7 @@ CREATE TABLE "features" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -702,22 +715,22 @@ CREATE INDEX "features__idx__filename" ON "features"("filename");
 CREATE INDEX "features__idx__category" ON "features"("category");
 CREATE INDEX "features__idx__var_name" ON "features"("var_name");
 
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','parkext','700');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','context','parkedcalls');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','parkingtime','45');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','parkpos','701-750');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','parkfindnext','no');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','adsipark','no');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','transferdigittimeout','3');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','featuredigittimeout','500');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'t','features.conf','general','courtesytone',NULL);
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'t','features.conf','general','xfersound',NULL);
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'t','features.conf','general','xferfailsound',NULL);
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,'f','features.conf','general','pickupexten','*8');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,'f','features.conf','featuremap','blindxfer','*1');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,'f','features.conf','featuremap','atxfer','*2');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,'f','features.conf','featuremap','automon','*3');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,'f','features.conf','featuremap','disconnect','*0');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkext','700');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','context','parkedcalls');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkingtime','45');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkpos','701-750');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkfindnext','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','adsipark','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','transferdigittimeout','3');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','featuredigittimeout','500');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','courtesytone',NULL);
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','xfersound',NULL);
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','xferfailsound',NULL);
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','pickupexten','*8');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','blindxfer','*1');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','atxfer','*2');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automon','*3');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','disconnect','*0');
 
 
 DROP TABLE IF EXISTS "groupfeatures";
@@ -726,13 +739,13 @@ CREATE TABLE "groupfeatures" (
  "name" varchar(128) NOT NULL,
  "number" varchar(40) NOT NULL DEFAULT '',
  "context" varchar(39) NOT NULL,
- "transfer_user" BOOLEAN NOT NULL DEFAULT FALSE,
- "transfer_call" BOOLEAN NOT NULL DEFAULT FALSE,
- "write_caller" BOOLEAN NOT NULL DEFAULT FALSE,
- "write_calling" BOOLEAN NOT NULL DEFAULT FALSE,
+ "transfer_user" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "transfer_call" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "write_caller" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "write_calling" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "timeout" INTEGER NOT NULL DEFAULT 0,
  "preprocess_subroutine" varchar(39),
- "deleted" BOOLEAN NOT NULL DEFAULT FALSE,
+ "deleted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -752,7 +765,7 @@ CREATE TABLE "handynumbers" (
  "exten" varchar(40) NOT NULL DEFAULT '',
  "trunkfeaturesid" INTEGER NOT NULL DEFAULT 0,
  "type" handynumbers_type NOT NULL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -768,10 +781,10 @@ CREATE TABLE "incall" (
  "exten" varchar(40) NOT NULL,
  "context" varchar(39) NOT NULL,
  "preprocess_subroutine" varchar(39),
- "faxdetectenable" BOOLEAN NOT NULL DEFAULT FALSE,
+ "faxdetectenable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "faxdetecttimeout" INTEGER NOT NULL DEFAULT 4,
  "faxdetectemail" varchar(255) NOT NULL DEFAULT '',
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -799,7 +812,7 @@ CREATE TABLE "ldapfilter" (
  "attrphonenumber" varchar(255) NOT NULL DEFAULT '',
  "additionaltype" ldapfilter_additionaltype NOT NULL,
  "additionaltext" varchar(16) NOT NULL DEFAULT '',
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -831,45 +844,45 @@ CREATE TABLE "meetmefeatures" (
  "admin_externalid" varchar(40),
  "admin_identification" meetmefeatures_admin_identification NOT NULL,
  "admin_mode" meetmefeatures_mode NOT NULL,
- "admin_announceusercount" BOOLEAN NOT NULL DEFAULT FALSE,
+ "admin_announceusercount" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_announcejoinleave" meetmefeatures_announcejoinleave NOT NULL,
- "admin_moderationmode" BOOLEAN NOT NULL DEFAULT FALSE,
- "admin_initiallymuted" BOOLEAN NOT NULL DEFAULT FALSE,
+ "admin_moderationmode" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "admin_initiallymuted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_musiconhold" varchar(128),
- "admin_poundexit" BOOLEAN NOT NULL DEFAULT FALSE,
- "admin_quiet" BOOLEAN NOT NULL DEFAULT FALSE,
- "admin_starmenu" BOOLEAN NOT NULL DEFAULT FALSE,
- "admin_closeconflastmarkedexit" BOOLEAN NOT NULL DEFAULT FALSE,
- "admin_enableexitcontext" BOOLEAN NOT NULL DEFAULT FALSE,
+ "admin_poundexit" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "admin_quiet" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "admin_starmenu" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "admin_closeconflastmarkedexit" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "admin_enableexitcontext" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_exitcontext" varchar(39),
  "user_mode" meetmefeatures_mode NOT NULL,
- "user_announceusercount" BOOLEAN NOT NULL DEFAULT FALSE,
- "user_hiddencalls" BOOLEAN NOT NULL DEFAULT FALSE,
+ "user_announceusercount" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "user_hiddencalls" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_announcejoinleave" meetmefeatures_announcejoinleave NOT NULL,
- "user_initiallymuted" BOOLEAN NOT NULL DEFAULT FALSE,
+ "user_initiallymuted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_musiconhold" varchar(128),
- "user_poundexit" BOOLEAN NOT NULL DEFAULT FALSE,
- "user_quiet" BOOLEAN NOT NULL DEFAULT FALSE,
- "user_starmenu" BOOLEAN NOT NULL DEFAULT FALSE,
- "user_enableexitcontext" BOOLEAN NOT NULL DEFAULT FALSE,
+ "user_poundexit" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "user_quiet" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "user_starmenu" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "user_enableexitcontext" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_exitcontext" varchar(39),
- "talkeroptimization" BOOLEAN NOT NULL DEFAULT FALSE,
- "record" BOOLEAN NOT NULL DEFAULT FALSE,
- "talkerdetection" BOOLEAN NOT NULL DEFAULT FALSE,
- "noplaymsgfirstenter" BOOLEAN NOT NULL DEFAULT FALSE,
+ "talkeroptimization" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "record" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "talkerdetection" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "noplaymsgfirstenter" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "durationm" INTEGER,
- "closeconfdurationexceeded" BOOLEAN NOT NULL DEFAULT FALSE,
+ "closeconfdurationexceeded" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "nbuserstartdeductduration" INTEGER,
  "timeannounceclose" INTEGER,
  "maxusers" INTEGER NOT NULL default 0,
- "startdate" timestamp,
+ "startdate" INTEGER,
  "emailfrom" varchar(255),
  "emailfromname" varchar(255),
  "emailsubject" varchar(255),
  "emailbody" text NOT NULL,
  "preprocess_subroutine" varchar(39),
  "description" text NOT NULL,
- "commented" BOOLEAN DEFAULT FALSE,
+ "commented" INTEGER DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -899,7 +912,7 @@ CREATE TABLE "musiconhold" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -910,10 +923,10 @@ CREATE TABLE "musiconhold" (
 CREATE INDEX "musiconhold__idx__commented" ON "musiconhold"("commented");
 CREATE UNIQUE INDEX "musiconhold__uidx__filename_category_var_name" ON "musiconhold"("filename","category","var_name");
 
-INSERT INTO "musiconhold" VALUES (1,0,0,'f','musiconhold.conf','default','mode','custom');
-INSERT INTO "musiconhold" VALUES (2,0,0,'f','musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
-INSERT INTO "musiconhold" VALUES (3,0,0,'f','musiconhold.conf','default','random','no');
-INSERT INTO "musiconhold" VALUES (4,0,0,'f','musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
+INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','custom');
+INSERT INTO "musiconhold" VALUES (2,0,0,0,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
+INSERT INTO "musiconhold" VALUES (3,0,0,0,'musiconhold.conf','default','random','no');
+INSERT INTO "musiconhold" VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 SELECT setval('musiconhold_id_seq', 5);
 
 
@@ -925,13 +938,13 @@ CREATE TABLE "outcall" (
  "context" varchar(39) NOT NULL,
  "externprefix" varchar(20) NOT NULL DEFAULT '',
  "stripnum" INTEGER NOT NULL DEFAULT 0,
- "setcallerid" BOOLEAN NOT NULL DEFAULT FALSE,
+ "setcallerid" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "callerid" varchar(80) NOT NULL DEFAULT '',
- "useenum" BOOLEAN NOT NULL DEFAULT FALSE,
- "internal" BOOLEAN NOT NULL DEFAULT FALSE,
+ "useenum" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "internal" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "preprocess_subroutine" varchar(39),
  "hangupringtime" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -960,7 +973,7 @@ CREATE TABLE "phone" (
  "model" varchar(16) NOT NULL,
  "proto" varchar(50) NOT NULL,
  "iduserfeatures" INTEGER NOT NULL,
- "isinalan" BOOLEAN NOT NULL DEFAULT FALSE,
+ "isinalan" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("macaddr")
 );
 
@@ -981,7 +994,7 @@ CREATE TABLE "phonebook" (
  "society" varchar(128) NOT NULL DEFAULT '',
  "email" varchar(255) NOT NULL DEFAULT '',
  "url" varchar(255) NOT NULL DEFAULT '',
- "image" bytea,
+ "image" BYTEA,
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1056,8 +1069,8 @@ CREATE TABLE "phonefunckey" (
  "typeextenumbersright" phonefunckey_typeextenumbersright,
  "typevalextenumbersright" varchar(255),
  "label" varchar(32),
- "supervision" BOOLEAN NOT NULL DEFAULT FALSE,
- "progfunckey" BOOLEAN NOT NULL DEFAULT FALSE,
+ "supervision" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "progfunckey" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("iduserfeatures","fknum")
 );
 
@@ -1104,24 +1117,24 @@ CREATE TABLE "queue" (
  "strategy" varchar(11),
  "joinempty" varchar(6),
  "leavewhenempty" varchar(6),
- "eventmemberstatus" BOOLEAN NOT NULL DEFAULT FALSE,
- "eventwhencalled" BOOLEAN NOT NULL DEFAULT FALSE,
- "ringinuse" BOOLEAN NOT NULL DEFAULT FALSE,
- "reportholdtime" BOOLEAN NOT NULL DEFAULT FALSE,
+ "eventmemberstatus" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "eventwhencalled" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "ringinuse" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "reportholdtime" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "memberdelay" INTEGER,
  "weight" INTEGER,
- "timeoutrestart" BOOLEAN NOT NULL DEFAULT FALSE,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "timeoutrestart" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "category" queue_category NOT NULL,
  "timeoutpriority" varchar(10) NOT NULL DEFAULT 'app',
- "autofill" BOOLEAN NOT NULL DEFAULT 't',
- "autopause" BOOLEAN NOT NULL DEFAULT 't',
- "setinterfacevar" BOOLEAN NOT NULL DEFAULT FALSE,
- "setqueueentryvar" BOOLEAN NOT NULL DEFAULT FALSE,
- "setqueuevar" BOOLEAN NOT NULL DEFAULT FALSE,
+ "autofill" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ "autopause" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ "setinterfacevar" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "setqueueentryvar" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "setqueuevar" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "membermacro" varchar(1024),
  "min-announce-frequency" integer NOT NULL DEFAULT 60,
- "random-periodic-announce" BOOLEAN NOT NULL DEFAULT FALSE,
+ "random-periodic-announce" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "announce-position" varchar(1024) NOT NULL DEFAULT 'yes',
  "announce-position-limit" integer NOT NULL DEFAULT 5,
  "defaultrule" varchar(1024),
@@ -1138,15 +1151,15 @@ CREATE TABLE "queuefeatures" (
  "name" varchar(128) NOT NULL,
  "number" varchar(40) NOT NULL DEFAULT '',
  "context" varchar(39),
- "data_quality" BOOLEAN NOT NULL DEFAULT FALSE,
- "hitting_callee" BOOLEAN NOT NULL DEFAULT FALSE,
- "hitting_caller" BOOLEAN NOT NULL DEFAULT FALSE,
- "retries" BOOLEAN NOT NULL DEFAULT FALSE,
- "ring" BOOLEAN NOT NULL DEFAULT FALSE,
- "transfer_user" BOOLEAN NOT NULL DEFAULT FALSE,
- "transfer_call" BOOLEAN NOT NULL DEFAULT FALSE,
- "write_caller" BOOLEAN NOT NULL DEFAULT FALSE,
- "write_calling" BOOLEAN NOT NULL DEFAULT FALSE,
+ "data_quality" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "hitting_callee" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "hitting_caller" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "retries" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "ring" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "transfer_user" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "transfer_call" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "write_caller" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "write_calling" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "url" varchar(255) NOT NULL DEFAULT '',
  "announceoverride" varchar(128) NOT NULL DEFAULT '',
  "timeout" INTEGER NOT NULL DEFAULT 0,
@@ -1169,8 +1182,8 @@ CREATE TABLE "queuemember" (
  "interface" varchar(128) NOT NULL,
  "penalty" INTEGER NOT NULL DEFAULT 0,
  "call-limit" INTEGER NOT NULL DEFAULT 0,
- "paused" BOOLEAN,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "paused" INTEGER, -- BOOLEAN
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "usertype" queuemember_usertype NOT NULL,
  "userid" INTEGER NOT NULL,
  "channel" varchar(25) NOT NULL,
@@ -1194,8 +1207,8 @@ CREATE TABLE "rightcall" (
  "name" varchar(128) NOT NULL DEFAULT '',
  "context" varchar(39) NOT NULL,
  "passwd" varchar(40) NOT NULL DEFAULT '',
- "authorization" BOOLEAN NOT NULL DEFAULT FALSE,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "authorization" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1281,8 +1294,8 @@ CREATE TABLE "schedule" (
  "daynumend" varchar(2),
  "monthbeg" schedule_monthbeg NOT NULL DEFAULT '*',
  "monthend" schedule_monthend,
- "publicholiday" BOOLEAN NOT NULL DEFAULT FALSE,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "publicholiday" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -1304,7 +1317,7 @@ CREATE TABLE "serverfeatures" (
  "serverid" INTEGER NOT NULL,
  "feature" serverfeatures_feature NOT NULL,
  "type" serverfeatures_type NOT NULL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -1320,7 +1333,7 @@ CREATE TABLE "staticagent" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1336,11 +1349,11 @@ CREATE INDEX "staticagent__idx__category" ON "staticagent"("category");
 CREATE INDEX "staticagent__idx__var_name" ON "staticagent"("var_name");
 CREATE INDEX "staticagent__idx__var_val" ON "staticagent"("var_val");
 
-INSERT INTO "staticagent" VALUES (1,0,0,'f','agents.conf','general','persistentagents','yes');
-INSERT INTO "staticagent" VALUES (2,0,0,'f','agents.conf','general','multiplelogin','yes');
-INSERT INTO "staticagent" VALUES (3,0,0,'f','agents.conf','general','recordagentcalls','no');
-INSERT INTO "staticagent" VALUES (4,0,0,'f','agents.conf','general','recordformat','wav');
-INSERT INTO "staticagent" VALUES (5,1,1000000,'f','agents.conf','agents','group',1);
+INSERT INTO "staticagent" VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
+INSERT INTO "staticagent" VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
+INSERT INTO "staticagent" VALUES (3,0,0,0,'agents.conf','general','recordagentcalls','no');
+INSERT INTO "staticagent" VALUES (4,0,0,0,'agents.conf','general','recordformat','wav');
+INSERT INTO "staticagent" VALUES (5,1,1000000,0,'agents.conf','agents','group',1);
 SELECT setval('staticagent_id_seq', 6);
 
 
@@ -1349,7 +1362,7 @@ CREATE TABLE "staticiax" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1362,64 +1375,64 @@ CREATE INDEX "staticiax__idx__filename" ON "staticiax"("filename");
 CREATE INDEX "staticiax__idx__category" ON "staticiax"("category");
 CREATE INDEX "staticiax__idx__var_name" ON "staticiax"("var_name");
 
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','bindport',4569);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','bindaddr','0.0.0.0');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','iaxthreadcount',10);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','iaxmaxthreadcount',100);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','iaxcompat','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','authdebug','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','delayreject','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','trunkfreq',20);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','trunktimestamps','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'t','iax.conf','general','regcontext',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','minregexpire',60);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','maxregexpire',60);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','bandwidth','high');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'t','iax.conf','general','tos',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','jitterbuffer','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','forcejitterbuffer','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','maxjitterbuffer',1000);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','maxjitterinterps',10);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','resyncthreshold',1000);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'t','iax.conf','general','accountcode',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','amaflags','default');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','adsi','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','transfer','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','language','fr_FR');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','mohinterpret','default');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'t','iax.conf','general','mohsuggest',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','encryption','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','maxauthreq',3);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','codecpriority','host');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'t','iax.conf','general','disallow',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'t','iax.conf','general','allow',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','rtcachefriends','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','rtupdate','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','rtignoreregexpire','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','rtautoclear','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','pingtime',20);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','lagrqtime',10);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','nochecksums','no');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','autokill','yes');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','calltokenoptional','0.0.0.0');
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','srvlookup',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','jittertargetextra',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','forceencryption',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','trunkmaxsize',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','trunkmtu',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','cos',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','allowwfwdownload',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','parkinglot',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','maxcallnumbers',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','maxcallnumbers_nonvalidated',NULL);
-INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,'f','iax.conf','general','shrinkcallerid',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','bindport',4569);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','iaxthreadcount',10);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','iaxmaxthreadcount',100);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','iaxcompat','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','authdebug','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','delayreject','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','trunkfreq',20);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','trunktimestamps','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,1,'iax.conf','general','regcontext',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','minregexpire',60);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','maxregexpire',60);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','bandwidth','high');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,1,'iax.conf','general','tos',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','jitterbuffer','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','forcejitterbuffer','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','maxjitterbuffer',1000);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','maxjitterinterps',10);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','resyncthreshold',1000);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,1,'iax.conf','general','accountcode',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','amaflags','default');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','adsi','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','transfer','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','language','fr_FR');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','mohinterpret','default');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,1,'iax.conf','general','mohsuggest',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','encryption','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','maxauthreq',3);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','codecpriority','host');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,1,'iax.conf','general','disallow',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,1,'iax.conf','general','allow',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','rtcachefriends','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','rtupdate','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','rtignoreregexpire','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','rtautoclear','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','pingtime',20);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','lagrqtime',10);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','nochecksums','no');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','autokill','yes');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','calltokenoptional','0.0.0.0');
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','srvlookup',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','jittertargetextra',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','forceencryption',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','trunkmaxsize',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','trunkmtu',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','cos',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','allowwfwdownload',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','parkinglot',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','maxcallnumbers',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','maxcallnumbers_nonvalidated',NULL);
+INSERT INTO "staticiax" VALUES (nextval('staticiax_id_seq'),0,0,0,'iax.conf','general','shrinkcallerid',NULL);
 
 DROP TABLE IF EXISTS "staticmeetme";
 CREATE TABLE "staticmeetme" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1432,12 +1445,12 @@ CREATE INDEX "staticmeetme__idx__filename" ON "staticmeetme"("filename");
 CREATE INDEX "staticmeetme__idx__category" ON "staticmeetme"("category");
 CREATE INDEX "staticmeetme__idx__var_name" ON "staticmeetme"("var_name");
 
-INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,'f','meetme.conf','general','audiobuffers',32);
-INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,'f','meetme.conf','general','schedule','yes');
-INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,'f','meetme.conf','general','logmembercount','yes');
-INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,'f','meetme.conf','general','fuzzystart',300);
-INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,'f','meetme.conf','general','earlyalert',3600);
-INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,'f','meetme.conf','general','endalert',120);
+INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,0,'meetme.conf','general','audiobuffers',32);
+INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,0,'meetme.conf','general','schedule','yes');
+INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,0,'meetme.conf','general','logmembercount','yes');
+INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,0,'meetme.conf','general','fuzzystart',300);
+INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,0,'meetme.conf','general','earlyalert',3600);
+INSERT INTO "staticmeetme" VALUES (nextval('staticmeetme_id_seq'),0,0,0,'meetme.conf','general','endalert',120);
 
 
 DROP TABLE IF EXISTS "staticqueue";
@@ -1445,7 +1458,7 @@ CREATE TABLE "staticqueue" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1458,11 +1471,11 @@ CREATE INDEX "staticqueue__idx__filename" ON "staticqueue"("filename");
 CREATE INDEX "staticqueue__idx__category" ON "staticqueue"("category");
 CREATE INDEX "staticqueue__idx__var_name" ON "staticqueue"("var_name");
 
-INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,'f','queues.conf','general','persistentmembers','yes');
-INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,'f','queues.conf','general','autofill','no');
-INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,'f','queues.conf','general','monitor-type','no');
-INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,'f','queues.conf','general','updatecdr','no');
-INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,'f','queues.conf','general','shared_lastcall','no');
+INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,0,'queues.conf','general','persistentmembers','yes');
+INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,0,'queues.conf','general','autofill','no');
+INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,0,'queues.conf','general','monitor-type','no');
+INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,0,'queues.conf','general','updatecdr','no');
+INSERT INTO "staticqueue" VALUES (nextval('staticqueue_id_seq'),0,0,0,'queues.conf','general','shared_lastcall','no');
 
 
 DROP TABLE IF EXISTS "staticsip";
@@ -1470,7 +1483,7 @@ CREATE TABLE "staticsip" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1483,147 +1496,147 @@ CREATE INDEX "staticsip__idx__filename" ON "staticsip"("filename");
 CREATE INDEX "staticsip__idx__category" ON "staticsip"("category");
 CREATE INDEX "staticsip__idx__var_name" ON "staticsip"("var_name");
 
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','bindport',5060);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','videosupport','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','autocreatepeer','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','allowguest','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','allowsubscribe','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','allowoverlap','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','promiscredir','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','autodomain','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','domain',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','allowexternaldomains','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','usereqphone','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','realm','xivo');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','alwaysauthreject','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','useragent','XiVO PBX');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','buggymwi','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','regcontext',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','callerid','xivo');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','fromdomain',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','sipdebug','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','dumphistory','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','recordhistory','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','callevents','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','tos_sip',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','tos_audio',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','tos_video',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','t38pt_udptl','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','t38pt_usertpsource','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','localnet',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','externip',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','externhost',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','externrefresh',10);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','matchexterniplocally','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','outboundproxy',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','g726nonstandard','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','disallow',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','allow',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','t1min',100);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','relaxdtmf','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rfc2833compensate','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','compactheaders','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtptimeout',0);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtpholdtimeout',0);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtpkeepalive',0);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','directrtpsetup','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','notifymimetype','application/simple-message-summary');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','srvlookup','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','pedantic','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','minexpiry',60);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','maxexpiry',3600);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','defaultexpiry',120);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','registertimeout',20);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','registerattempts',0);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','notifyringing','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','notifyhold','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','allowtransfer','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','maxcallbitrate',384);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','autoframing','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jbenable','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jbforce','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jbmaxsize',200);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jbresyncthreshold',1000);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jbimpl','fixed');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jblog','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','context',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','nat','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','dtmfmode','info');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','qualify','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','useclientcode','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','progressinband','never');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','language','fr_FR');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','mohinterpret','default');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','mohsuggest',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','vmexten','*98');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','trustrpid','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','sendrpid','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','insecure','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtcachefriends','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtupdate','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','ignoreregexpire','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtsavesysname','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','rtautoclear','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'t','sip.conf','general','subscribecontext',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','match_auth_username','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','udpbindaddr','0.0.0.0');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tcpenable','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tcpbindaddr',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlsenable','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlsbindaddr',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlscertfile',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlscafile',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlscadir','/var/lib/asterisk/certs/cadir');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlsdontverifyserver','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tlscipher',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','tos_text',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','cos_sip',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','cos_audio',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','cos_video',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','cos_text',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','mwiexpiry',3600);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','qualifyfreq',60);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','qualifygap',100);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','qualifypeers',1);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','parkinglot',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','permaturemedia',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','sdpsession',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','sdpowner',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','authfailureevents','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','dynamic_exclude_static','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','contactdeny',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','contactpermit',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','shrinkcallerid','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','regextenonqualify','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','timer1',500);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','timerb',32000);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','session-timers',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','session-expires',600);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','session-minse',90);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','session-refresher','uas');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','hash_users',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','hash_peers',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','hash_dialogs',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','notifycid','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','callcounter','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','faxdetect','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','stunaddr',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','directmedia','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','ignoresdpversion','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','jbtargetextra',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','srtp','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','externtcpport',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','externtlsport',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','media_address',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','use_q850_reason','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','snom_aoc_enabled','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','subscribe_network_change_event','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','maxforwards',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','disallow_methods',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','domainsasrealm',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','textsupport',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','videosupport',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,'f','sip.conf','general','auth_options_requests','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','bindport',5060);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','videosupport','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','autocreatepeer','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','allowguest','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','allowsubscribe','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','allowoverlap','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','promiscredir','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','autodomain','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','domain',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','allowexternaldomains','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','usereqphone','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','realm','xivo');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','alwaysauthreject','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','useragent','XiVO PBX');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','buggymwi','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','regcontext',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','callerid','xivo');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','fromdomain',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','sipdebug','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','dumphistory','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','recordhistory','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','callevents','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','tos_sip',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','tos_audio',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','tos_video',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','t38pt_udptl','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','t38pt_usertpsource','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','localnet',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','externip',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','externhost',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','externrefresh',10);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','matchexterniplocally','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','outboundproxy',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','g726nonstandard','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','disallow',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','allow',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','t1min',100);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','relaxdtmf','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rfc2833compensate','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','compactheaders','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtptimeout',0);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtpholdtimeout',0);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtpkeepalive',0);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','directrtpsetup','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','notifymimetype','application/simple-message-summary');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','srvlookup','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','pedantic','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','minexpiry',60);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','maxexpiry',3600);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','defaultexpiry',120);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','registertimeout',20);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','registerattempts',0);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','notifyringing','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','notifyhold','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','allowtransfer','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','maxcallbitrate',384);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','autoframing','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jbenable','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jbforce','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jbmaxsize',200);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jbresyncthreshold',1000);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jbimpl','fixed');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jblog','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','context',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','nat','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','dtmfmode','info');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','qualify','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','useclientcode','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','progressinband','never');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','language','fr_FR');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','mohinterpret','default');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','mohsuggest',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','vmexten','*98');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','trustrpid','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','sendrpid','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','insecure','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtcachefriends','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtupdate','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','ignoreregexpire','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtsavesysname','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtautoclear','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','subscribecontext',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','match_auth_username','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','udpbindaddr','0.0.0.0');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tcpenable','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tcpbindaddr',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlsenable','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlsbindaddr',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlscertfile',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlscafile',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlscadir','/var/lib/asterisk/certs/cadir');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlsdontverifyserver','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tlscipher',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','tos_text',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','cos_sip',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','cos_audio',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','cos_video',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','cos_text',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','mwiexpiry',3600);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','qualifyfreq',60);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','qualifygap',100);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','qualifypeers',1);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','parkinglot',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','permaturemedia',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','sdpsession',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','sdpowner',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','authfailureevents','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','dynamic_exclude_static','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','contactdeny',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','contactpermit',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','shrinkcallerid','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','regextenonqualify','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','timer1',500);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','timerb',32000);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','session-timers',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','session-expires',600);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','session-minse',90);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','session-refresher','uas');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','hash_users',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','hash_peers',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','hash_dialogs',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','notifycid','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','callcounter','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','faxdetect','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','stunaddr',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','directmedia','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','ignoresdpversion','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','jbtargetextra',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','srtp','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','externtcpport',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','externtlsport',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','media_address',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','use_q850_reason','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','snom_aoc_enabled','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','subscribe_network_change_event','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','maxforwards',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','disallow_methods',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','domainsasrealm',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','textsupport',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','videosupport',NULL);
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','auth_options_requests','no');
 
 
 DROP TABLE IF EXISTS "staticvoicemail";
@@ -1631,7 +1644,7 @@ CREATE TABLE "staticvoicemail" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1644,98 +1657,98 @@ CREATE INDEX "staticvoicemail__idx__filename" ON "staticvoicemail"("filename");
 CREATE INDEX "staticvoicemail__idx__category" ON "staticvoicemail"("category");
 CREATE INDEX "staticvoicemail__idx__var_name" ON "staticvoicemail"("var_name");
 
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','maxmsg',100);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','silencethreshold',256);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','minsecs',0);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','maxsecs',0);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','maxsilence',15);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','review','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','operator','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','format','wav');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','maxlogins',3);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','envelope','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','saycid','no');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','cidinternalcontexts',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','sayduration','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','saydurationm',2);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','forcename','no');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','forcegreetings','no');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','tempgreetwarn','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','maxgreet',0);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','skipms',3000);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','sendvoicemail','no');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','usedirectory','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','nextaftercmd','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','dialout',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','callback',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','exitcontext',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','attach','yes');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','volgain',0);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','serveremail','xivo');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','charset','UTF-8');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','fromstring','XiVO PBX');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','emaildateformat','%A %d %B %Y à %H:%M:%S %Z');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','pbxskip','no');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','emailsubject','Messagerie XiVO');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
-
-Vous avez reçu un message d\'une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.
-
-Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l\'écouter ou le consulter en tapant le *98 sur votre téléphone.
-
-Merci.
-
--- Messagerie XiVO --');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','pagerfromstring','XiVO PBX');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','pagersubject',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','pagerbody',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','adsifdn','0000000F');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','adsisec','9BDBF7AC');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','adsiver',1);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','searchcontexts','no');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'f','voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','externnotify',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','smdiport',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','odbcstorage',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','odbctable',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),1,0,'f','voicemail.conf','zonemessages','eu-fr','Europe/Paris|\'vm-received\' q \'digits/at\' kM');
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','moveheard',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','forward_urgent_auto',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','userscontext',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','smdienable',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','externpassnotify',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','externpasscheck',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','directoryinfo',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','pollmailboxes',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','pollfreq',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','imapgreetings',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','greetingsfolder',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','imapparentfolder',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','tz',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','hidefromdir',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','messagewrap',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','minpassword',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-password',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-newpassword',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-passchanged',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-reenterpassword',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-mismatch',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-invalid-password',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','vm-pls-try-again',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','listen-control-forward-key',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','listen-control-reverse-key',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','listen-control-pause-key',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','listen-control-restart-key',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','listen-control-stop-key',NULL);
-INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,'t','voicemail.conf','general','backupdeleted',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','maxmsg',100);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','silencethreshold',256);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','minsecs',0);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','maxsecs',0);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','maxsilence',15);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','review','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','operator','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','format','wav');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','maxlogins',3);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','envelope','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','saycid','no');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','cidinternalcontexts',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','sayduration','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','saydurationm',2);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','forcename','no');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','forcegreetings','no');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','tempgreetwarn','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','maxgreet',0);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','skipms',3000);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','sendvoicemail','no');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','usedirectory','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','nextaftercmd','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','dialout',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','callback',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','exitcontext',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','attach','yes');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','volgain',0);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','serveremail','xivo');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','charset','UTF-8');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','fromstring','XiVO PBX');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','emaildateformat','%A %d %B %Y à %H:%M:%S %Z');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','pbxskip','no');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','emailsubject','Messagerie XiVO');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !'
+''
+'Vous avez reçu un message d''une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.'
+''
+'Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone.'
+''
+'Merci.'
+''
+'-- Messagerie XiVO --');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','pagerfromstring','XiVO PBX');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','pagersubject',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','pagerbody',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','adsifdn','0000000F');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','adsisec','9BDBF7AC');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','adsiver',1);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','searchcontexts','no');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','externnotify',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','smdiport',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','odbcstorage',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','odbctable',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),1,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','moveheard',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','forward_urgent_auto',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','userscontext',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','smdienable',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','externpassnotify',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','externpasscheck',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','directoryinfo',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','pollmailboxes',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','pollfreq',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','imapgreetings',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','greetingsfolder',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','imapparentfolder',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','tz',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','hidefromdir',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','messagewrap',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','minpassword',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-password',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-newpassword',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-passchanged',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-reenterpassword',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-mismatch',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-invalid-password',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','vm-pls-try-again',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','listen-control-forward-key',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','listen-control-reverse-key',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','listen-control-pause-key',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','listen-control-restart-key',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','listen-control-stop-key',NULL);
+INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','backupdeleted',NULL);
 
 DROP TABLE IF EXISTS "staticsccp";
 CREATE TABLE "staticsccp" (
  "id" SERIAL,
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "filename" varchar(128) NOT NULL,
  "category" varchar(128) NOT NULL,
  "var_name" varchar(128) NOT NULL,
@@ -1748,45 +1761,45 @@ CREATE INDEX "staticsccp__idx__filename" ON "staticvoicemail"("filename");
 CREATE INDEX "staticsccp__idx__category" ON "staticvoicemail"("category");
 CREATE INDEX "staticsccp__idx__var_name" ON "staticvoicemail"("var_name");
 
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','servername','Asterisk');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','keepalive',60);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','debug','');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','dateFormat','D.M.Y');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','port',2000);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','firstdigittimeout',16);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','digittimeout',8);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','autoanswer_ring_time',0);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','autoanswer_tone','0x32');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','remotehangup_tone','0x32');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','transfer_tone',0);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','callwaiting_tone','0x2d');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','musicclass','default');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','dnd','on');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','sccp_tos','0x68');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','sccp_cos',4);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','audio_tos','0xB8');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','audio_cos',6);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','video_tos','0x88');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','video_cos',5);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','echocancel','on');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','silencesuppression','off');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','trustphoneip','no');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','private','on');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','protocolversion',11);
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','disallow','all');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','language','fr_FR');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','hotline_enabled','yes');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','hotline_context','xivo-initconfig');
-INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,'f','sccp.conf','general','hotline_extension','sccp');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','servername','Asterisk');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','keepalive',60);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','debug','');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','dateFormat','D.M.Y');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','port',2000);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','firstdigittimeout',16);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','digittimeout',8);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','autoanswer_ring_time',0);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','autoanswer_tone','0x32');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','remotehangup_tone','0x32');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','transfer_tone',0);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','callwaiting_tone','0x2d');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','musicclass','default');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','dnd','on');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','sccp_tos','0x68');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','sccp_cos',4);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','audio_tos','0xB8');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','audio_cos',6);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','video_tos','0x88');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','video_cos',5);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','echocancel','on');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','silencesuppression','off');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','trustphoneip','no');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','private','on');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','protocolversion',11);
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','disallow','all');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','language','fr_FR');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','hotline_enabled','yes');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','hotline_context','xivo-initconfig');
+INSERT INTO "staticsccp" VALUES(nextval('staticsccp_id_seq'),0,0,0,'sccp.conf','general','hotline_extension','sccp');
 
 
 DROP TABLE IF EXISTS "trunkfeatures";
 CREATE TABLE "trunkfeatures" (
  "id" SERIAL,
- "protocol" varchar(50) NOT NULL,
+ "protocol" varchar(50) NOT NULL CHECK (protocol in ('sip', 'iax', 'sccp', 'custom')),
  "protocolid" INTEGER NOT NULL,
  "registerid" INTEGER NOT NULL DEFAULT 0,
- "registercommented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "registercommented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1809,8 +1822,8 @@ CREATE TABLE "usercustom" (
  "context" varchar(39),
  "interface" varchar(128) NOT NULL,
  "intfsuffix" varchar(32) NOT NULL DEFAULT '',
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
- "protocol" usercustom_protocol NOT NULL DEFAULT 'custom',
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "protocol" varchar(15) NOT NULL DEFAULT 'custom' CHECK (protocol = 'custom'), -- ENUM
  "category" usercustom_category NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1825,10 +1838,8 @@ CREATE UNIQUE INDEX "usercustom__uidx__interface_intfsuffix_category" ON "usercu
 
 DROP TABLE IF EXISTS "userfeatures";
 DROP TYPE  IF EXISTS "userfeatures_voicemailtype";
-DROP TYPE  IF EXISTS "userfeatures_bsfilter";
 
 CREATE TYPE "userfeatures_voicemailtype" AS ENUM ('asterisk', 'exchange');
-CREATE TYPE "userfeatures_bsfilter" AS ENUM ('no', 'boss', 'secretary');
 
 CREATE TABLE "userfeatures" (
  "id" SERIAL,
@@ -1845,31 +1856,31 @@ CREATE TABLE "userfeatures" (
  "provisioningid" INTEGER,
  "ringseconds" INTEGER NOT NULL DEFAULT 30,
  "simultcalls" INTEGER NOT NULL DEFAULT 5,
- "enableclient" BOOLEAN NOT NULL DEFAULT 't',
+ "enableclient" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "loginclient" varchar(64) NOT NULL DEFAULT '',
  "passwdclient" varchar(64) NOT NULL DEFAULT '',
  "profileclient" varchar(64) NOT NULL DEFAULT '',
- "enablehint" BOOLEAN NOT NULL DEFAULT 't',
- "enablevoicemail" BOOLEAN NOT NULL DEFAULT FALSE,
- "enablexfer" BOOLEAN NOT NULL DEFAULT FALSE,
- "enableautomon" BOOLEAN NOT NULL DEFAULT FALSE,
- "callrecord" BOOLEAN NOT NULL DEFAULT FALSE,
- "incallfilter" BOOLEAN NOT NULL DEFAULT FALSE,
- "enablednd" BOOLEAN NOT NULL DEFAULT FALSE,
- "enableunc" BOOLEAN NOT NULL DEFAULT FALSE,
+ "enablehint" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ "enablevoicemail" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "enablexfer" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "enableautomon" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "callrecord" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "incallfilter" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "enablednd" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "enableunc" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "destunc" varchar(128) NOT NULL DEFAULT '',
- "enablerna" BOOLEAN NOT NULL DEFAULT FALSE,
+ "enablerna" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "destrna" varchar(128) NOT NULL DEFAULT '',
- "enablebusy" BOOLEAN NOT NULL DEFAULT FALSE,
+ "enablebusy" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "destbusy" varchar(128) NOT NULL DEFAULT '',
  "musiconhold" varchar(128) NOT NULL DEFAULT '',
  "outcallerid" varchar(80) NOT NULL DEFAULT '',
  "mobilephonenumber" varchar(128) NOT NULL DEFAULT '',
- "bsfilter" userfeatures_bsfilter NOT NULL DEFAULT 'no',
+ "bsfilter" generic_bsfilter NOT NULL DEFAULT 'no',
  "preprocess_subroutine" varchar(39),
- "internal" BOOLEAN NOT NULL DEFAULT FALSE,
+ "internal" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "timezone" varchar(128),
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1888,7 +1899,7 @@ CREATE INDEX "userfeatures__idx__commented" ON "userfeatures"("commented");
 CREATE UNIQUE INDEX "userfeatures__uidx__protocol_name" ON "userfeatures"("protocol","name");
 CREATE UNIQUE INDEX "userfeatures__uidx__protocol_protocolid" ON "userfeatures"("protocol","protocolid");
 
-INSERT INTO "userfeatures" VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,NULL,148378,30,5,'f','','','','f','f','f','f','f','f','f','f','','f','','f','','','','','no',NULL,'t',NULL,'f','');
+INSERT INTO "userfeatures" VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,NULL,148378,30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,NULL,0,'');
 SELECT setval('userfeatures_id_seq', 2);
 
 
@@ -1930,21 +1941,21 @@ CREATE TABLE "useriax" (
  "callerid" varchar(160), -- user / peer --
  "fullname" varchar(80), -- user / peer --
  "cid_number" varchar(80), -- user / peer --
- "trunk" BOOLEAN NOT NULL DEFAULT FALSE, -- user / peer --
+ "trunk" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
  "auth" useriax_auth NOT NULL DEFAULT 'plaintext,md5', -- user / peer --
  "encryption" useriax_encryption DEFAULT NULL, -- user / peer --
  "forceencryption" useriax_encryption DEFAULT NULL,
  "maxauthreq" INTEGER, -- general / user --
  "inkeys" varchar(80), -- user / peer --
  "outkey" varchar(80), -- peer --
- "adsi" BOOLEAN, -- general / user / peer --
+ "adsi" INTEGER, -- BOOLEAN -- general / user / peer --
  "transfer" useriax_transfer, -- general / user / peer --
  "codecpriority" useriax_codecpriority, -- general / user --
- "jitterbuffer" BOOLEAN, -- general / user / peer --
- "forcejitterbuffer" BOOLEAN, -- general / user / peer --
- "sendani" BOOLEAN NOT NULL DEFAULT FALSE, -- peer --
+ "jitterbuffer" INTEGER, -- BOOLEAN -- general / user / peer --
+ "forcejitterbuffer" INTEGER, -- BOOLEAN -- general / user / peer --
+ "sendani" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
  "qualify" varchar(4) NOT NULL DEFAULT 'no', -- peer --
- "qualifysmoothing" BOOLEAN NOT NULL DEFAULT FALSE, -- peer --
+ "qualifysmoothing" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
  "qualifyfreqok" INTEGER NOT NULL DEFAULT 60000, -- peer --
  "qualifyfreqnotok" INTEGER NOT NULL DEFAULT 10000, -- peer --
  "timezone" varchar(80), -- peer --
@@ -1964,10 +1975,10 @@ CREATE TABLE "useriax" (
  "peercontext" varchar(80), -- peer --
  "ipaddr" varchar(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
- "immediate" BOOLEAN DEFAULT NULL,
- "protocol" useriax_protocol NOT NULL DEFAULT 'iax',
+ "immediate" INTEGER DEFAULT NULL, -- BOOLEAN
+ "protocol" varchar(15) NOT NULL DEFAULT 'iax' CHECK (protocol = 'iax'), -- ENUM
  "category" useriax_category NOT NULL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "requirecalltoken" varchar(4) NOT NULL DEFAULT 'no', -- peer--
  PRIMARY KEY("id")
 );
@@ -2016,12 +2027,12 @@ CREATE TABLE "usersip" (
  "language" varchar(20), -- general / user / peer --
  "accountcode" varchar(20), -- user / peer --
  "amaflags" useriax_amaflags NOT NULL DEFAULT 'default', -- user / peer --
- "allowtransfer" BOOLEAN, -- general / user / peer --
+ "allowtransfer" INTEGER, -- BOOLEAN -- general / user / peer --
  "fromuser" varchar(80), -- peer --
  "fromdomain" varchar(255), -- general / peer --
  "mailbox" varchar(80), -- peer --
- "subscribemwi" BOOLEAN NOT NULL DEFAULT 't', -- peer --
- "buggymwi" BOOLEAN, -- general / user / peer --
+ "subscribemwi" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN -- peer --
+ "buggymwi" INTEGER, -- BOOLEAN -- general / user / peer --
  "call-limit" INTEGER NOT NULL DEFAULT 0, -- user / peer --
  "callerid" varchar(160), -- general / user / peer --
  "fullname" varchar(80), -- user / peer --
@@ -2029,26 +2040,26 @@ CREATE TABLE "usersip" (
  "maxcallbitrate" INTEGER, -- general / user / peer --
  "insecure" usersip_insecure, -- general / user / peer --
  "nat" usersip_nat, -- general / user / peer --
- "promiscredir" BOOLEAN, -- general / user / peer --
- "usereqphone" BOOLEAN, -- general / peer --
+ "promiscredir" INTEGER, -- BOOLEAN -- general / user / peer --
+ "usereqphone" INTEGER, -- BOOLEAN -- general / peer --
  "videosupport" usersip_videosupport DEFAULT NULL, -- general / user / peer --
- "trustrpid" BOOLEAN, -- general / user / peer --
- "sendrpid" BOOLEAN, -- general / user / peer --
- "allowsubscribe" BOOLEAN, -- general / user / peer --
- "allowoverlap" BOOLEAN, -- general / user / peer --
+ "trustrpid" INTEGER, -- BOOLEAN -- general / user / peer --
+ "sendrpid" INTEGER, -- BOOLEAN -- general / user / peer --
+ "allowsubscribe" INTEGER, -- BOOLEAN -- general / user / peer --
+ "allowoverlap" INTEGER, -- BOOLEAN -- general / user / peer --
  "dtmfmode" usersip_dtmfmode, -- general / user / peer --
- "rfc2833compensate" BOOLEAN, -- general / user / peer --
+ "rfc2833compensate" INTEGER, -- BOOLEAN -- general / user / peer --
  "qualify" varchar(4), -- general / peer --
- "g726nonstandard" BOOLEAN, -- general / user / peer --
+ "g726nonstandard" INTEGER, -- BOOLEAN -- general / user / peer --
  "disallow" varchar(100), -- general / user / peer --
  "allow" varchar(100), -- general / user / peer --
- "autoframing" BOOLEAN, -- general / user / peer --
+ "autoframing" INTEGER, -- BOOLEAN -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --
- "useclientcode" BOOLEAN, -- general / user / peer --
+ "useclientcode" INTEGER, -- BOOLEAN -- general / user / peer --
  "progressinband" usersip_progressinband, -- general / user / peer --
- "t38pt_udptl" BOOLEAN, -- general / user / peer --
- "t38pt_usertpsource" BOOLEAN, -- general / user / peer --
+ "t38pt_udptl" INTEGER, -- BOOLEAN -- general / user / peer --
+ "t38pt_usertpsource" INTEGER, -- BOOLEAN -- general / user / peer --
  "rtptimeout" INTEGER, -- general / peer --
  "rtpholdtimeout" INTEGER, -- general / peer --
  "rtpkeepalive" INTEGER, -- general / peer --
@@ -2064,12 +2075,12 @@ CREATE TABLE "usersip" (
  "subscribecontext" varchar(80), -- general / user / peer --
  "fullcontact" varchar(255), -- peer --
  "vmexten" varchar(40), -- general / peer --
- "callingpres" BOOLEAN, -- user / peer --
+ "callingpres" INTEGER, -- BOOLEAN -- user / peer --
  "ipaddr" varchar(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
  "regserver" varchar(20),
  "lastms" varchar(15) NOT NULL DEFAULT '',
- "protocol" usersip_protocol NOT NULL DEFAULT 'sip',
+ "protocol" varchar(15) NOT NULL DEFAULT 'sip' CHECK (protocol = 'sip'), -- ENUM
  "category" useriax_category NOT NULL,
  "outboundproxy" varchar(1024),
 
@@ -2077,29 +2088,29 @@ CREATE TABLE "usersip" (
  "transport" varchar(255) NOT NULL DEFAULT 'udp',
  "remotesecret" varchar(255) DEFAULT NULL,
  "directmedia" usersip_directmedia DEFAULT NULL,
- "callcounter" BOOLEAN DEFAULT NULL,
+ "callcounter" INTEGER DEFAULT NULL, -- BOOLEAN
  "busylevel" integer DEFAULT NULL,
- "ignoresdpversion" BOOLEAN DEFAULT NULL,
+ "ignoresdpversion" INTEGER DEFAULT NULL, -- BOOLEAN
  "session-timers" usersip_session_timers DEFAULT NULL,
  "session-expires" integer DEFAULT NULL,
  "session-minse" integer DEFAULT NULL,
  "session-refresher" usersip_session_refresher DEFAULT NULL,
  "callbackextension" varchar(255) DEFAULT NULL,
- "registertrying" BOOLEAN DEFAULT NULL,
+ "registertrying" INTEGER DEFAULT NULL, -- BOOLEAN
  "timert1" integer DEFAULT NULL,
  "timerb" integer DEFAULT NULL,
  "qualifyfreq" integer DEFAULT NULL,
  "contactpermit" varchar(1024) DEFAULT NULL,
  "contactdeny" varchar(1024) DEFAULT NULL,
  "unsolicited_mailbox" varchar(1024) DEFAULT NULL,
- "use_q850_reason" BOOLEAN DEFAULT NULL,
- "encryption" BOOLEAN DEFAULT NULL,
- "snom_aoc_enabled" BOOLEAN DEFAULT NULL,
+ "use_q850_reason" INTEGER DEFAULT NULL, -- BOOLEAN
+ "encryption" INTEGER DEFAULT NULL, -- BOOLEAN
+ "snom_aoc_enabled" INTEGER DEFAULT NULL, -- BOOLEAN
  "maxforwards" integer DEFAULT NULL,
  "disallowed_methods" varchar(1024) DEFAULT NULL,
- "textsupport" BOOLEAN DEFAULT NULL,
+ "textsupport" INTEGER DEFAULT NULL, -- BOOLEAN
 
- "commented" BOOLEAN NOT NULL DEFAULT FALSE, -- user / peer --
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
  PRIMARY KEY("id")
 );
 
@@ -2113,13 +2124,13 @@ CREATE INDEX "usersip__idx__lastms" ON "usersip"("lastms");
 CREATE UNIQUE INDEX "usersip__uidx__name" ON "usersip"("name");
 
 INSERT INTO "usersip" VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
-                              NULL,'default',NULL,NULL,NULL,NULL,'f',NULL,0,'Guest',
+                              NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
                               'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',
                               NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,'f');
+                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);
 SELECT setval('usersip_id_seq', 2);
 
 
@@ -2143,17 +2154,17 @@ CREATE TABLE "voicemail" (
  "exitcontext" varchar(39),
  "language" varchar(20),
  "tz" varchar(80),
- "attach" BOOLEAN,
- "saycid" BOOLEAN,
- "review" BOOLEAN,
- "operator" BOOLEAN,
- "envelope" BOOLEAN,
- "sayduration" BOOLEAN,
+ "attach" INTEGER, -- BOOLEAN
+ "saycid" INTEGER, -- BOOLEAN
+ "review" INTEGER, -- BOOLEAN
+ "operator" INTEGER, -- BOOLEAN
+ "envelope" INTEGER, -- BOOLEAN
+ "sayduration" INTEGER, -- BOOLEAN
  "saydurationm" INTEGER,
- "sendvoicemail" BOOLEAN,
- "deletevoicemail" BOOLEAN NOT NULL DEFAULT FALSE,
- "forcename" BOOLEAN,
- "forcegreetings" BOOLEAN,
+ "sendvoicemail" INTEGER, -- BOOLEAN
+ "deletevoicemail" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "forcename" INTEGER, -- BOOLEAN
+ "forcegreetings" INTEGER, -- BOOLEAN
  "hidefromdir" voicemail_hidefromdir NOT NULL DEFAULT 'no',
  "maxmsg" INTEGER,
  "emailsubject" varchar(1024),
@@ -2165,16 +2176,16 @@ CREATE TABLE "voicemail" (
  "attachfmt" varchar(1024),
  "serveremail" varchar(1024),
  "locale" varchar(1024),
- "tempgreetwarn" BOOLEAN DEFAULT NULL,
- "messagewrap" BOOLEAN DEFAULT NULL,
- "moveheard" BOOLEAN DEFAULT NULL,
+ "tempgreetwarn" INTEGER DEFAULT NULL, -- BOOLEAN
+ "messagewrap" INTEGER DEFAULT NULL, -- BOOLEAN
+ "moveheard" INTEGER DEFAULT NULL, -- BOOLEAN
  "minsecs" integer DEFAULT NULL,
  "maxsecs" integer DEFAULT NULL,
- "nextaftercmd" BOOLEAN DEFAULT NULL,
+ "nextaftercmd" INTEGER DEFAULT NULL, -- BOOLEAN
  "backupdeleted" integer DEFAULT NULL,
  "volgain" float DEFAULT NULL,
  "passwordlocation" voicemail_passwordlocation DEFAULT NULL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
 
  PRIMARY KEY("uniqueid")
 );
@@ -2188,7 +2199,7 @@ DROP TABLE IF EXISTS "voicemailfeatures";
 CREATE TABLE "voicemailfeatures" (
  "id" SERIAL,
  "voicemailid" INTEGER,
- "skipcheckpass" BOOLEAN NOT NULL DEFAULT FALSE,
+ "skipcheckpass" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
@@ -2201,7 +2212,7 @@ CREATE TABLE "voicemenu" (
  "name" varchar(29) NOT NULL DEFAULT '',
  "number" varchar(40) NOT NULL,
  "context" varchar(39) NOT NULL,
- "commented" BOOLEAN NOT NULL DEFAULT FALSE,
+ "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -2286,7 +2297,7 @@ CREATE TABLE "usersccp"
  "earlyrtp" varchar(7),                -- none, offhook, dial, ringout, NULL
  "private" varchar(3),                 -- on, off, NULL
  "privacy" varchar(4),                 -- on, off, full, NULL
- "protocol" varchar(4) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
+ "protocol" varchar(4) NOT NULL DEFAULT 'sccp' CHECK(protocol = 'sccp'), -- required for join with userfeatures -- ENUM
 
  -- softkeys
  "softkey_onhook"      varchar(1024),
@@ -2358,6 +2369,19 @@ CREATE TABLE "general"
  PRIMARY KEY("id")
 );
 
-INSERT INTO "general" VALUES (1, 'Europe/Paris');
+INSERT INTO "general" VALUES (1, 'Europe/Paris', NULL, NULL);
 SELECT setval('general_id_seq', 2);
+
+
+-- grant all rights to xivo.* for xivo user
+CREATE OR REPLACE FUNCTION execute(text) 
+RETURNS VOID AS '
+BEGIN
+	execute $1;
+END;
+' LANGUAGE plpgsql;
+SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
+SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
+
+COMMIT;
 
