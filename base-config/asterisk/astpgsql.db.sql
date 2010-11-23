@@ -1635,7 +1635,6 @@ INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','ge
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','disallow_methods',NULL);
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','domainsasrealm',NULL);
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','textsupport',NULL);
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','videosupport',NULL);
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','auth_options_requests','no');
 
 
