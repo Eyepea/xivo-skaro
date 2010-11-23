@@ -42,6 +42,15 @@ $array['tree']['service']['ipbx']['ctiserver'] = array();
 $array['tree']['service']['ipbx']['ctiserver']['configuration']   = true;
 $array['tree']['service']['ipbx']['queuelogger']['configuration'] = true;
 
+$array['tree']['service']['ipbx']['general_settings'] = array();
+$array['tree']['service']['ipbx']['general_settings']['sip']         = true;
+$array['tree']['service']['ipbx']['general_settings']['iax']         = true;
+$array['tree']['service']['ipbx']['general_settings']['sccp']        = true;
+$array['tree']['service']['ipbx']['general_settings']['voicemail']   = true;
+$array['tree']['service']['ipbx']['general_settings']['phonebook']   = true;
+$array['tree']['service']['ipbx']['general_settings']['advanced']    = true;
+$array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
+
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;

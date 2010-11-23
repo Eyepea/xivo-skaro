@@ -84,7 +84,23 @@ $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/gene
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
 $array['service/ipbx/general_settings/outboundmwi'] = 'service/ipbx/index.php/general_settings/outboundmwi/';
 
+// general settings webservices
+$array['service/ipbx/json/restricted/general_settings/sip']         = 'service/ipbx/json.php/restricted/general_settings/sip/';
+$array['service/ipbx/json/restricted/general_settings/iax']         = 'service/ipbx/json.php/restricted/general_settings/iax/';
+$array['service/ipbx/json/restricted/general_settings/sccp']        = 'service/ipbx/json.php/restricted/general_settings/sccp/';
+$array['service/ipbx/json/restricted/general_settings/voicemail']   = 'service/ipbx/json.php/restricted/general_settings/voicemail/';
+$array['service/ipbx/json/restricted/general_settings/phonebook']   = 'service/ipbx/json.php/restricted/general_settings/phonebook/';
+$array['service/ipbx/json/restricted/general_settings/advanced']    = 'service/ipbx/json.php/restricted/general_settings/advanced/';
+$array['service/ipbx/json/restricted/general_settings/outboundmwi'] = 'service/ipbx/json.php/restricted/general_settings/outboundmwi/';
 
+$array['service/ipbx/json/private/general_settings/sip']         = 'service/ipbx/json.php/private/general_settings/sip/';
+$array['service/ipbx/json/private/general_settings/iax']         = 'service/ipbx/json.php/private/general_settings/iax/';
+$array['service/ipbx/json/private/general_settings/sccp']        = 'service/ipbx/json.php/private/general_settings/sccp/';
+$array['service/ipbx/json/private/general_settings/voicemail']   = 'service/ipbx/json.php/private/general_settings/voicemail/';
+$array['service/ipbx/json/private/general_settings/phonebook']   = 'service/ipbx/json.php/private/general_settings/phonebook/';
+$array['service/ipbx/json/private/general_settings/advanced']    = 'service/ipbx/json.php/private/general_settings/advanced/';
+$array['service/ipbx/json/private/general_settings/outboundmwi'] = 'service/ipbx/json.php/private/general_settings/outboundmwi/';
+// -- END
 
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';

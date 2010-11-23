@@ -253,7 +253,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 	function delete_all()
 	{
-		if(($r = $this->_serverfeatures->delete_all()) === false)
+		if(($r = $this->_serverfeatures->delete_all(array())) === false)
 			return false;
 
 		return true;
