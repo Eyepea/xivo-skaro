@@ -52,6 +52,9 @@ $array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';
 $array['xivo/logoff'] = 'xivo/logoff.php';
 
+// just check is user can access webservices
+$array['xivo/configuration/json/restricted/check'] = 'xivo/configuration/json.php/restricted/check/';
+
 $array['xivo/configuration/json/restricted/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
 $array['xivo/configuration/json/restricted/network/interface'] = 'xivo/configuration/json.php/restricted/network/interface/';
 $array['xivo/configuration/json/restricted/network/iproute'] = 'xivo/configuration/json.php/restricted/network/iproute/';

@@ -204,6 +204,10 @@ $array['service/ipbx/asterisk/web_services/private/control_system/restart'] = ar
 
 
 // RESTRICTED
+$array['xivo/configuration/web_services/restricted/check'] = array(
+	'path'		=> 'xivo/configuration/web_services/check',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['xivo/configuration/web_services/restricted/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
 	'define'	=> array(

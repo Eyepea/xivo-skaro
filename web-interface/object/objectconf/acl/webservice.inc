@@ -22,6 +22,8 @@ $array = array();
 $array['tree'] = array();
 $array['tree']['xivo'] = array();
 $array['tree']['xivo']['configuration'] = array();
+$array['tree']['xivo']['configuration']['check'] = true;
+
 $array['tree']['xivo']['configuration']['manage'] = array();
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 
