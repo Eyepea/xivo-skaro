@@ -38,6 +38,7 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     xdname = 'XiVO CTI Server'
     def __init__(self, amilist, ctiports, queued_threads_pipe):
         BaseCommand.__init__(self)
+        self.rename_stack = {}
         return
 
     def ami_fullybooted(self, astid, event):
@@ -109,7 +110,17 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
         log.info('%s ami_masquerade %s' % (astid, event))
         return
     def ami_rename(self, astid, event):
-        log.info('%s ami_rename %s' % (astid, event))
+        if astid not in self.rename_stack:
+            self.rename_stack[astid] = {}
+
+        if len(self.rename_stack[astid]) == 0:
+            self.rename_stack[astid]['tomasq'] = event
+        elif len(self.rename_stack[astid]) == 1:
+            self.rename_stack[astid]['new'] = event
+        elif len(self.rename_stack[astid]) == 2:
+            self.rename_stack[astid]['new'] = event
+            log.info('%s ami_rename %s' % (astid, self.rename_stack[astid]))
+            self.rename_stack[astid] = {}
         return
 
 
@@ -140,6 +151,18 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
         return
 
 
+    # Parking events
+    def ami_unparkedcall(self, astid, event):
+        # log.info('%s ami_unparkedcall %s' % (astid, event))
+        return
+    def ami_parkedcalltimeout(self, astid, event):
+        # log.info('%s ami_parkedcalltimeout %s' % (astid, event))
+        return
+    def ami_parkedcallgiveup(self, astid, event):
+        # log.info('%s ami_parkedcallgiveup %s' % (astid, event))
+        return
+
+
     def ami_varset(self, astid, event):
         # log.info('%s ami_varset %s' % (astid, event))
         return
@@ -165,7 +188,10 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
 ##                                                u'IPaddress': u'192.168.0.147',
 ##                                                u'Forcerport': u'no'}
         return
-    # XXX parked calls
+    def ami_parkedcall(self, astid, event):
+        # WARNING : this event is used in reply to status request as well as an event
+        log.info('%s ami_parkedcall %s' % (astid, event))
+        return
     def ami_meetmelist(self, astid, event):
         # log.info('%s ami_meetmelist %s' % (astid, event))
         return
@@ -190,7 +216,9 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def ami_coreshowchannel(self, astid, event):
         # log.info('%s ami_coreshowchannel %s' % (astid, event))
         return
-    # XXX registrations
+    def ami_registryentry(self, astid, event):
+        # log.info('%s ami_registryentry %s' % (astid, event))
+        return
     def ami_listdialplan(self, astid, event):
         # log.info('%s ami_listdialplan %s' % (astid, event))
         return
