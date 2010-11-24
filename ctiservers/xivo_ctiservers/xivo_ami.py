@@ -660,6 +660,7 @@ event_flags['CALL'] = [ 'MeetmeJoin',
                         'Transfer', # only in chan_sip
                         'Hold', # only in chan_sip and chan_iax2
                         'Masquerade', 'OriginateResponse', 'MessageWaiting', 'MiniVoiceMail',
+                        'ParkedCallStatus', # CLG addendum
                         'ParkedCall', 'UnParkedCall', 'ParkedCallTimeOut', 'ParkedCallGiveUp',
                         'MonitorStart', 'MonitorStop', 'ChanSpyStart', 'ChanSpyStop',
                         'Newchannel',
@@ -776,7 +777,6 @@ manager_commands = [
     'Getvar',
     'JabberSend',
     'LocalOptimizeAway',
-    'Login', 'Logoff',
     'MailboxCount', 'MailboxStatus',
     'MeetmeMute', 'MeetmeUnmute',
     'ModuleCheck', 'ModuleLoad', 'Ping', 'PlayDTMF',
@@ -786,6 +786,9 @@ manager_commands = [
     'SendText', 'Setvar', 'ShowDialPlan',
     'UserEvent',
     'WaitEvent',
+
+    # Connection
+    'Login', 'Logoff',
 
     # general (answer is in the Response field)
     'CoreSettings', 'CoreStatus', 'ListCommands',

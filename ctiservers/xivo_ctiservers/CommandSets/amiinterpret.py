@@ -34,6 +34,9 @@ from xivo_ctiservers.xivo_commandsets import BaseCommand
 
 log = logging.getLogger('xivocti1.8')
 
+log_ami_events_statusrequest = False
+log_ami_events_complete = False
+
 class XivoCTICommand_asterisk_1_8(BaseCommand):
     xdname = 'XiVO CTI Server'
     def __init__(self, amilist, ctiports, queued_threads_pipe):
@@ -44,6 +47,22 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def ami_fullybooted(self, astid, event):
         log.info('%s ami_fullybooted : %s' % (astid, event))
         return
+    def ami_shutdown(self, astid, event):
+        log.info('%s ami_shutdown : %s' % (astid, event))
+        return
+    def ami_channelreload(self, astid, event):
+        # Occurs when there is a reload and the SIP config has changed
+        log.info('%s ami_channelreload : %s' % (astid, event))
+        return
+    def ami_reload(self, astid, event):
+        # Occurs when there is a reload and the CDR or Manager config has changed
+        log.info('%s ami_reload : %s' % (astid, event))
+        return
+    def ami_registry(self, astid, event):
+        # Occurs when there is a reload and the IAX config has changed and there is a registered trunk
+        log.info('%s ami_registry : %s' % (astid, event))
+        return
+
 
     # NewXXX events
     def ami_newstate(self, astid, event):
@@ -109,6 +128,9 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def ami_masquerade(self, astid, event):
         log.info('%s ami_masquerade %s' % (astid, event))
         return
+    def ami_pickup(self, astid, event):
+        log.info('%s ami_pickup %s' % (astid, event))
+        return
     def ami_rename(self, astid, event):
         if astid not in self.rename_stack:
             self.rename_stack[astid] = {}
@@ -150,8 +172,29 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
         # log.info('%s ami_queuecallerabandon %s' % (astid, event))
         return
 
+    def ami_agentcalled(self, astid, event):
+        # log.info('%s ami_agentcalled %s' % (astid, event))
+        return
+    def ami_agentconnect(self, astid, event):
+        # log.info('%s ami_agentconnect %s' % (astid, event))
+        return
+    def ami_agentcomplete(self, astid, event):
+        # log.info('%s ami_agentcomplete %s' % (astid, event))
+        return
+
+    def ami_agentlogin(self, astid, event):
+        # log.info('%s ami_agentlogin %s' % (astid, event))
+        return
+    def ami_agentlogoff(self, astid, event):
+        # log.info('%s ami_agentlogoff %s' % (astid, event))
+        return
+    # XXX TODO handle former AgentCallBacklogin & logoff
+
 
     # Parking events
+    def ami_parkedcall(self, astid, event):
+        log.info('%s ami_parkedcall %s' % (astid, event))
+        return
     def ami_unparkedcall(self, astid, event):
         # log.info('%s ami_unparkedcall %s' % (astid, event))
         return
@@ -169,11 +212,15 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def ami_peerstatus(self, astid, event):
         # log.info('%s ami_peerstatus %s' % (astid, event))
         return
+    def ami_cdr(self, astid, event):
+        # log.info('%s ami_cdr %s' % (astid, event))
+        return
 
 
     # Status replies events
     def ami_peerentry(self, astid, event):
-        log.info('%s ami_peerentry %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_peerentry %s' % (astid, event))
 ##        INFO:xivocti1.8:xivomine ami_peerentry {u'IPport': u'6103',
 ##                                                u'Status': u'Unmonitored',
 ##                                                u'ChanObjectType': u'peer',
@@ -188,83 +235,105 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
 ##                                                u'IPaddress': u'192.168.0.147',
 ##                                                u'Forcerport': u'no'}
         return
-    def ami_parkedcall(self, astid, event):
-        # WARNING : this event is used in reply to status request as well as an event
-        log.info('%s ami_parkedcall %s' % (astid, event))
+    def ami_parkedcallstatus(self, astid, event):
+        if log_ami_events_statusrequest:
+            log.info('%s ami_parkedcallstatus %s' % (astid, event))
         return
     def ami_meetmelist(self, astid, event):
-        # log.info('%s ami_meetmelist %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_meetmelist %s' % (astid, event))
         return
     def ami_status(self, astid, event):
-        # log.info('%s ami_status %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_status %s' % (astid, event))
         return
     def ami_agents(self, astid, event):
-        # log.info('%s ami_agents %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_agents %s' % (astid, event))
         return
     def ami_queueparams(self, astid, event):
-        # log.info('%s ami_queueparams %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_queueparams %s' % (astid, event))
         return
     def ami_queueentry(self, astid, event):
-        # log.info('%s ami_queueentry %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_queueentry %s' % (astid, event))
         return
     def ami_queuemember(self, astid, event):
-        # log.info('%s ami_queuemember %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_queuemember %s' % (astid, event))
         return
     def ami_queuesummary(self, astid, event):
-        # log.info('%s ami_queuesummary %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_queuesummary %s' % (astid, event))
         return
     def ami_coreshowchannel(self, astid, event):
-        # log.info('%s ami_coreshowchannel %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_coreshowchannel %s' % (astid, event))
         return
     def ami_registryentry(self, astid, event):
-        # log.info('%s ami_registryentry %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_registryentry %s' % (astid, event))
         return
     def ami_listdialplan(self, astid, event):
-        # log.info('%s ami_listdialplan %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_listdialplan %s' % (astid, event))
         return
     # XXX dahdi channels
     def ami_voicemailuserentry(self, astid, event):
-        # log.info('%s ami_voicemailuserentry %s' % (astid, event))
+        if log_ami_events_statusrequest:
+            log.info('%s ami_voicemailuserentry %s' % (astid, event))
         return
 
 
     # End of status requests
     def ami_peerlistcomplete(self, astid, event):
-        log.info('%s ami_peerlistcomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_peerlistcomplete %s' % (astid, event))
         return
     def ami_parkedcallscomplete(self, astid, event):
-        # log.info('%s ami_parkedcallscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_parkedcallscomplete %s' % (astid, event))
         return
     def ami_meetmelistcomplete(self, astid, event):
-        # log.info('%s ami_meetmelistcomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_meetmelistcomplete %s' % (astid, event))
         return
     def ami_statuscomplete(self, astid, event):
-        # log.info('%s ami_statuscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_statuscomplete %s' % (astid, event))
         return
     def ami_agentscomplete(self, astid, event):
-        # log.info('%s ami_agentscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_agentscomplete %s' % (astid, event))
         return
     def ami_queuestatuscomplete(self, astid, event):
-        # log.info('%s ami_queuestatuscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_queuestatuscomplete %s' % (astid, event))
         return
     def ami_queuesummarycomplete(self, astid, event):
-        # log.info('%s ami_queuesummarycomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_queuesummarycomplete %s' % (astid, event))
         return
     def ami_coreshowchannelscomplete(self, astid, event):
-        # log.info('%s ami_coreshowchannelscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_coreshowchannelscomplete %s' % (astid, event))
         return
     def ami_registrationscomplete(self, astid, event):
-        # log.info('%s ami_registrationscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_registrationscomplete %s' % (astid, event))
         return
     def ami_showdialplancomplete(self, astid, event):
-        # log.info('%s ami_showdialplancomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_showdialplancomplete %s' % (astid, event))
         return
     def ami_dahdishowchannelscomplete(self, astid, event):
-        # log.info('%s ami_dahdishowchannelscomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_dahdishowchannelscomplete %s' % (astid, event))
         return
     def ami_voicemailuserentrycomplete(self, astid, event):
-        # XXX no such event is received when the list is actually empty
-        log.info('%s ami_voicemailuserentrycomplete %s' % (astid, event))
+        if log_ami_events_complete:
+            log.info('%s ami_voicemailuserentrycomplete %s' % (astid, event))
         return
 
     # receive this kind of events once DTMF has been exchanged between 2 SIP phones

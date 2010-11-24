@@ -332,6 +332,7 @@ class manage_connection:
                                time_uptime)
                     connid.sendall(reply + '\n')
                     # connid.sendall('server capabilities = %s\n' % (','.join()))
+
                 elif usefulmsg.startswith('dumpami'):
                     command_args = usefulmsg.split()
                     if len(command_args) > 1:
@@ -352,6 +353,13 @@ class manage_connection:
                     else:
                         connid.sendall('dumpami status : enable (%s) disable (%s)\n'
                                        % (''.join(dumpami[0]), ''.join(dumpami[1])))
+
+                elif usefulmsg.startswith('devcheckevents'):
+                    for k in sorted(xivo_ami.evfunction_to_method_name.keys()):
+                        v = xivo_ami.evfunction_to_method_name.get(k)
+                        if not hasattr(daemon.commandclass, v):
+                            connid.sendall('devcheckevents : unavailable %s\n' % k)
+
                 elif usefulmsg.startswith('loglevel '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
