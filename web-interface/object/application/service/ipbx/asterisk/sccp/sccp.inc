@@ -56,7 +56,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$res['device'] = array_intersect_key($arr, $this->_usersccp->get_element());
 #		$res['device']['description'] = $arr['callerid'];
-		unset($res['device']['name']);
+#		unset($res['device']['name']);
 		if(isset($arr['allowtransfer']))
 			$res['device']['transfer'] = $arr['allowtransfer'];
 
@@ -130,13 +130,17 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	function add($arr)
 	{
 		$values = $this->_explode_input_array($arr);
-		if(($lineid = $this->_sccpline->add($values['line'])) === false)
+		$line = $this->_sccpline->chk_values($values['line']);
+
+		if(($lineid = $this->_sccpline->add($line)) === false)
 			return false;
 
-		$values['device']['defaultline'] = $lineid;
-		if(($devid  = $this->_usersccp->add($values['device'])) === false)
-		{ $this->_sccpline->delete($lineid);	return false; }
+		$device = $this->_usersccp->chk_values($values['device']);
+		$device['defaultline'] = $lineid;
 
+		if(($devid  = $this->_usersccp->add($device)) === false)
+		{	$this->_sccpline->delete($lineid);	return false; }
+	
 		return $devid;
 	}
 
@@ -148,12 +152,18 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 			if(($user = $this->_usersccp->get($id)) === false)
 				return false;
 
-			if($this->_sccpline->edit($user['defaultline'], $values['line']) === false)
+			$line = $this->_sccpline->chk_values($values['line']);
+			if($line === false)
+				$line = $values['line'];
+
+			if($this->_sccpline->edit($user['defaultline'], $line) === false)
 				return false;
 		}
 
+		$device = $this->_usersccp->chk_values($values['device']);
+		unset($device['defaultline']);
 		if(count($values['device']) > 0
-		&& $this->_usersccp->edit($id, $values['device']) === false)
+		&& $this->_usersccp->edit($id, $device) === false)
 			return false;
 
 		return true;
@@ -164,10 +174,13 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 		if(($arr = $this->_usersccp->get($id, $disable)) === false)
 			return false;
 
+		$line = array();
 		if($arr['defaultline'])
 			$line  = $this->_sccpline->get($arr['defaultline']);
 
-		$arr = array_merge($arr, $line);
+		// line['id'] must not replace user['id']
+		$arr = array_merge($line, $arr);
+
 		if(strlen($arr['addons']) > 0)
 			$arr['addons'] = preg_split('/,/', $arr['addons']);
 		else
@@ -205,9 +218,9 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	*/
 	function delete($id)
 	{
-		$arr = $this->_sccpbutton->get_all_where(array('device_id' => $id, 'type' => 'line'));
-		foreach($arr as $btn)
-			$this->_sccpline->delete_where(array('name' => $btn['options']));
+		//$arr = $this->_sccpbutton->get_all_where(array('device_id' => $id, 'type' => 'line'));
+		//foreach($arr as $btn)
+		//	$this->_sccpline->delete_where(array('name' => $btn['options']));
 
 		$user = $this->_usersccp->get($id);
 		$this->_sccpline->delete($user['defaultline']);

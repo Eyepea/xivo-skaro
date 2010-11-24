@@ -31,6 +31,7 @@ $array['element']['devicetype']['value'] = array('12', '30', '7902', '7905', '79
 
 $array['element']['keepalive'] = array();
 $array['element']['keepalive']['default'] = '';
+$array['element']['keepalive']['null'] = true;
 
 $array['element']['tzoffset'] = array();
 $array['element']['tzoffset']['default'] = '';
@@ -160,6 +161,7 @@ $array['element']['softkey_onhint']['default'] = '';
 
 $array['element']['defaultline'] = array();
 $array['element']['defaultline']['default'] = '';
+$array['element']['defaultline']['null'] = true;
 
 
 dwho::load_class('dwho_network');
@@ -183,7 +185,7 @@ $array['filter']['cfwdall']          = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off'));
 $array['filter']['cfwdbusy']         = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off'));
-$array['filter']['cfwdbnoanswer']    = array('set' => false, 'chk'	=> 2,
+$array['filter']['cfwdnoanswer']    = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off'));
 $array['filter']['mwilamp']          = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off', 'wink', 'flash', 'blink'));

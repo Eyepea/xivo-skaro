@@ -1826,7 +1826,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(($rs = $this->get_result('protocol')) === null)
 				return(false);
 
-			return(($this->_return['protocol'] = $protocol->edit($this->_info['protocol']['id'],$rs)));
+			if(($ret = $protocol->edit($this->_info['protocol']['id'],$rs)) === false)
+			{	$this->_return['protocol'] = $ret; return false; }
+
+			return(($this->_return['protocol'] = $this->update_protocol_setvar($this->_info['protocol']['id'],  $this->_info['userfeatures']['id'])));
 		}
 		else if(($protocolid = $this->add_protocol()) === false)
 			return(false);

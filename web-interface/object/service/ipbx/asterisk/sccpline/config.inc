@@ -74,6 +74,7 @@ $array['element']['secondary_dialtone_digits']['value'] = array(1, 2, 3, 4, 5, 6
 
 $array['element']['secondary_dialtone_tone'] = array();
 $array['element']['secondary_dialtone_tone']['default'] = '';
+$array['element']['secondary_dialtone_tone']['null'] = true;
 
 $array['element']['musicclass'] = array();
 $array['element']['musicclass']['default'] = '';
@@ -90,12 +91,14 @@ $array['element']['audio_tos']['default'] = '';
 
 $array['element']['audio_cos'] = array();
 $array['element']['audio_cos']['default'] = '';
+$array['element']['audio_cos']['null'] = true;
 
 $array['element']['video_tos'] = array();
 $array['element']['video_tos']['default'] = '';
 
 $array['element']['video_cos'] = array();
 $array['element']['video_cos']['default'] = '';
+$array['element']['video_cos']['null'] = true;
 
 $array['element']['echocancel'] = array();
 $array['element']['echocancel']['default'] = '';
@@ -150,7 +153,7 @@ $array['filter']['trnsfvm']                      = array('set' => false, 'chk'	=
 $array['filter']['secondary_dialtone_digits']    = array('set' => false, 'chk'	=> 2,
 	'cast' => 'uint','between' => array(0,9));
 $array['filter']['secondary_dialtone_tone']      = array('set' => false, 'chk'	=> 2,
-	'maxlen' => 10);
+	'cast' => 'uint', 'maxlen' => 10);
 $array['filter']['musicclass']                   = array('set' => false, 'chk'	=> 2,
 	'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['language']                     = array('set' => false, 'chk'	=> 2,
