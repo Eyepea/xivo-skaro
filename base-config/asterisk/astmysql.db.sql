@@ -2211,5 +2211,20 @@ CREATE TABLE `sipauthentication`
 );
 CREATE INDEX `sipauthentication__idx__usersip_id` ON `sipauthentication`(`usersip_id`);
 
+DROP TABLE IF EXISTS `queue_log`;
+CREATE TABLE `queue_log` (
+	`time` datetime,
+  `callid` char(50),
+  `queuename` char(50),
+  `agent` char(50),
+  `event` char(20),
+  `data1` char(50),
+  `data2` char(50),
+  `data3` char(50),
+  `data4` char(50),
+  `data5` char(50)
+);
+CREATE INDEX `queue_log__idx_time` ON `queue_log`(`time`);
+CREATE INDEX `queue_log__idx_queuename` ON `queue_log`(`queuename`);
 
 COMMIT;
