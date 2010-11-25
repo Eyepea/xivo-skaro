@@ -639,7 +639,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function save_step_dbconfig($data)
 	{
-
 		$this->_wizsess['prevstep'] = $this->get_current_step();
 
 		if(dwho_issa('dbconfig',$data) === false
@@ -691,6 +690,21 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 				$qldburi['path'] = $ref['qldb'];
 				break;
 			case 'mysql':
+				$xivodburi['host'] = $ref['host'];
+				$xivodburi['port'] = $ref['port'];
+				$xivodburi['authority'] = array();
+				$xivodburi['authority']['user'] = $ref['xivouser'];
+				$xivodburi['authority']['passwd'] = $ref['xivopass'];
+				$xivodburi['path'] = '/'.$ref['xivodbname'];
+
+				$ipbxdburi['host'] = $ref['host'];
+				$ipbxdburi['port'] = $ref['port'];
+				$ipbxdburi['authority'] = array();
+				$ipbxdburi['authority']['user'] = $ref['ipbxuser'];
+				$ipbxdburi['authority']['passwd'] = $ref['ipbxpass'];
+				$ipbxdburi['path'] = '/'.$ref['ipbxdbname'];
+				break;
+			case 'postgresql':
 				$xivodburi['host'] = $ref['host'];
 				$xivodburi['port'] = $ref['port'];
 				$xivodburi['authority'] = array();

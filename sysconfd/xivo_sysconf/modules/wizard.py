@@ -51,6 +51,8 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
        'asterisk_extconfig_config_filename':    "extconfig.conf",
        'asterisk_res_mysql_config_filename':    "res_mysql.conf",
        'asterisk_cdr_mysql_config_filename':    "cdr_mysql.conf",
+       'asterisk_res_postgresql_config_filename': "res_pgsql.conf",
+       'asterisk_cdr_postgresql_config_filename': "cdr_pgsql.conf",
        'asterisk_res_sqlite_config_filename':   "res_sqlite.conf",
        'asterisk_config_path':                  os.path.join(os.path.sep, 'etc', 'asterisk'),
        'asterisk_tpl_directory':                'asterisk',
@@ -101,12 +103,31 @@ WIZARD_IPBX_ENGINES         = {'asterisk':
                                                      'dbport':  'port',
                                                      'charset': 'charset'},
                                          'modules': ('res_config_mysql.so', 'cdr_addon_mysql.so')},
+                                    'postgresql':
+                                        {'params':  {'charset':    'utf8'},
+
+                                         'res':     {'dbname':  'dbname',
+                                                     'dbuser':  'dbuser',
+                                                     'dbpass':  'dbpass',
+                                                     'dbhost':  'dbhost',
+                                                     'dbport':  'dbport',
+                                                     'charset': 'dbcharset'},
+
+                                         'cdr':     {'dbname':  'dbname',
+                                                     'dbuser':  'user',
+                                                     'dbpass':  'password',
+                                                     'dbhost':  'hostname',
+                                                     'dbport':  'port',
+                                                     'charset': 'charset'},
+                                         'modules': ('res_config_pgsql.so', 'cdr_pgsql.so')},
                                      'sqlite':
                                         {'params':  {'timeout_ms':  150},
                                          'modules': ('res_config_sqlite.so',)}}}}
 
 WIZARD_XIVO_DB_ENGINES      = {'mysql':
                                     {'params':  {'charset':     'utf8'}},
+                               'postgresql':
+                                    {'params':  {}},
                                'sqlite':
                                     {'params':  {'timeout_ms':  150}}}
 
@@ -326,12 +347,53 @@ def asterisk_mysql_config(authority, database, params, options):
 
     return rs
 
+def asterisk_postgresql_config(authority, database, params, options):
+    """
+    Return PostgreSQL options for Asterisk
+    """
+    rs = {}
+
+    xdict = dict(options)
+
+    if isinstance(authority, (tuple, list)):
+        if authority[0]:
+            rs[xdict['dbuser']] = authority[0]
+
+        if authority[1]:
+            rs[xdict['dbpass']] = authority[1]
+
+        if authority[2]:
+            rs[xdict['dbhost']] = authority[2]
+
+        if authority[3]:
+            rs[xdict['dbport']] = authority[3]
+
+    if database:
+        rs[xdict['dbname']] = database
+
+    del(xdict['dbuser'],
+        xdict['dbpass'],
+        xdict['dbhost'],
+        xdict['dbport'],
+        xdict['dbname'])
+
+    if params:
+        for k, v in params.iteritems():
+            if xdict.has_key(k):
+                rs[xdict[k]] = v
+            else:
+                rs[k] = v
+
+    return rs
+
+
 def asterisk_configuration(dburi, dbinfo, dbparams):
     """
     Entry point for Asterisk configuration
     """
     dbname = 'asterisk'
 
+		# MYSQL
     if dburi[0] == 'mysql':
         if dburi[2]:
             if dburi[2][0] == '/':
@@ -358,6 +420,35 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbparams,
                                                       dbinfo['cdr'])},
                           ipbxengine='asterisk')
+		# POSTGRESQL
+    elif dburi[0] == 'postgresql':
+        if dburi[2]:
+            if dburi[2][0] == '/':
+                dbname = dburi[2][1:]
+            else:
+                dbname = dburi[2]
+
+        merge_config_file(Wdc['asterisk_res_postgresql_tpl_file'],
+                          Wdc['asterisk_res_postgresql_custom_tpl_file'],
+                          Wdc['asterisk_res_postgresql_file'],
+                          {'general':
+                                asterisk_postgresql_config(dburi[1],
+                                                      dbname,
+                                                      dbparams,
+                                                      dbinfo['res'])},
+                          ipbxengine='asterisk')
+
+        merge_config_file(Wdc['asterisk_cdr_postgresql_tpl_file'],
+                          Wdc['asterisk_cdr_postgresql_custom_tpl_file'],
+                          Wdc['asterisk_cdr_postgresql_file'],
+                          {'global':
+                                asterisk_mysql_config(dburi[1],
+                                                      dbname,
+                                                      dbparams,
+                                                      dbinfo['cdr'])},
+                          ipbxengine='asterisk')
+
+		# SQLITE
     elif dburi[0] == 'sqlite':
         merge_config_file(Wdc['asterisk_res_sqlite_tpl_file'],
                           Wdc['asterisk_res_sqlite_custom_tpl_file'],
@@ -532,7 +623,7 @@ def safe_init(options):
                                                             Wdc["%s_tpl_directory" % x],
                                                             Wdc["%s_config_filename" % x])
 
-    for x in ('modules', 'extconfig', 'res_mysql', 'cdr_mysql', 'res_sqlite'):
+    for x in ('modules', 'extconfig', 'res_mysql', 'cdr_mysql', 'res_postgresql', 'cdr_postgresql', 'res_sqlite'):
         Wdc["asterisk_%s_file" % x] = os.path.join(Wdc['asterisk_config_path'],
                                                    Wdc["asterisk_%s_config_filename" % x])
 

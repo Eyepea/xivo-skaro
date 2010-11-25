@@ -48,6 +48,37 @@ IPBX database - username :
 ; fm_dbconfig_mysql-ipbxpass
 IPBX database - password :
 
+; fm_dbconfig_mysql-host
+Host :
+
+; fm_dbconfig_mysql-port
+Port :
+
+; fm_dbconfig_postgresql-xivodbname
+XiVO database - name :
+
+; fm_dbconfig_postgresql-xivouser
+XiVO database - username :
+
+; fm_dbconfig_postgresql-xivopass
+XiVO database - password :
+
+; fm_dbconfig_postgresql-ipbxdbname
+IPBX database - name :
+
+; fm_dbconfig_postgresql-ipbxuser
+IPBX database - username :
+
+; fm_dbconfig_postgresql-ipbxpass
+IPBX database - password :
+
+; fm_dbconfig_postgresql-host
+Host :
+
+; fm_dbconfig_postgresql-port
+Port :
+
+
 ; cmt_fm_dbconfig_sqlite-xivodb
 
 ; cmt_fm_dbconfig_sqlite-ipbxdb
@@ -70,4 +101,20 @@ SQLite perfectly fit for a single server, MySQL is required when using HA
 ; cmt_fm_dbconfig_mysql-ipbxuser
 
 ; cmt_fm_dbconfig_mysql-ipbxpass
+
+; cmt_fm_dbconfig_postgresql-host
+
+; cmt_fm_dbconfig_postgresql-port
+
+; cmt_fm_dbconfig_postgresql-xivodbname
+
+; cmt_fm_dbconfig_postgresql-xivouser
+
+; cmt_fm_dbconfig_postgresql-xivopass
+
+; cmt_fm_dbconfig_postgresql-ipbxdbname
+
+; cmt_fm_dbconfig_postgresql-ipbxuser
+
+; cmt_fm_dbconfig_postgresql-ipbxpass
 

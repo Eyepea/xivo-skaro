@@ -48,6 +48,30 @@ Nom d'utilisateur pour la base de données IPBX :
 ; fm_dbconfig_mysql-ipbxpass
 Mot de passe pour la base de données IPBX :
 
+; fm_dbconfig_postgresql-host
+Hôte :
+
+; fm_dbconfig_postgresql-port
+Port :
+
+; fm_dbconfig_postgresql-xivodbname
+Nom de la base de données XIVO :
+
+; fm_dbconfig_postgresql-xivouser
+Nom d'utilisateur pour la base de données XIVO :
+
+; fm_dbconfig_postgresql-xivopass
+Mot de passe pour la base de données XIVO :
+
+; fm_dbconfig_postgresql-ipbxdbname
+Nom de la base de données IPBX :
+
+; fm_dbconfig_postgresql-ipbxuser
+Nom d'utilisateur pour la base de données IPBX :
+
+; fm_dbconfig_postgresql-ipbxpass
+Mot de passe pour la base de données IPBX :
+
 ; cmt_fm_dbconfig_sqlite-xivodb
 
 ; cmt_fm_dbconfig_sqlite-ipbxdb
@@ -70,4 +94,20 @@ SQLite convient pour un serveur unique, MySQL est requis pour la HA
 ; cmt_fm_dbconfig_mysql-ipbxuser
 
 ; cmt_fm_dbconfig_mysql-ipbxpass
+
+; cmt_fm_dbconfig_postgresql-host
+
+; cmt_fm_dbconfig_postgresql-port
+
+; cmt_fm_dbconfig_postgresql-xivodbname
+
+; cmt_fm_dbconfig_postgresql-xivouser
+
+; cmt_fm_dbconfig_postgresql-xivopass
+
+; cmt_fm_dbconfig_postgresql-ipbxdbname
+
+; cmt_fm_dbconfig_postgresql-ipbxuser
+
+; cmt_fm_dbconfig_postgresql-ipbxpass
 

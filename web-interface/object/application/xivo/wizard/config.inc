@@ -47,7 +47,7 @@ $array['ipbximportuser']['field']['incallexten'] = array('incall','exten');
 $array['element'] = array();
 
 $array['element']['dbconfig'] = array();
-$array['element']['dbconfig']['backend']['value'] = array('mysql','sqlite');
+$array['element']['dbconfig']['backend']['value'] = array('mysql','postgresql','sqlite');
 $array['element']['dbconfig']['backend']['default'] = 'sqlite';
 
 $array['element']['dbconfig']['sqlite'] = array();
@@ -84,6 +84,31 @@ $array['element']['dbconfig']['mysql']['ipbxpass']['default'] = '';
 
 $array['element']['dbconfig']['mysql']['ipbxdbname'] = array();
 $array['element']['dbconfig']['mysql']['ipbxdbname']['default'] = 'asterisk';
+
+$array['element']['dbconfig']['postgresql'] = array();
+$array['element']['dbconfig']['postgresql']['host'] = array();
+$array['element']['dbconfig']['postgresql']['host']['default'] = 'localhost';
+
+$array['element']['dbconfig']['postgresql']['port'] = array();
+$array['element']['dbconfig']['postgresql']['port']['default'] = '';
+
+$array['element']['dbconfig']['postgresql']['xivouser'] = array();
+$array['element']['dbconfig']['postgresql']['xivouser']['default'] = '';
+
+$array['element']['dbconfig']['postgresql']['xivopass'] = array();
+$array['element']['dbconfig']['postgresql']['xivopass']['default'] = '';
+
+$array['element']['dbconfig']['postgresql']['xivodbname'] = array();
+$array['element']['dbconfig']['postgresql']['xivodbname']['default'] = 'xivo';
+
+$array['element']['dbconfig']['postgresql']['ipbxuser'] = array();
+$array['element']['dbconfig']['postgresql']['ipbxuser']['default'] = '';
+
+$array['element']['dbconfig']['postgresql']['ipbxpass'] = array();
+$array['element']['dbconfig']['postgresql']['ipbxpass']['default'] = '';
+
+$array['element']['dbconfig']['postgresql']['ipbxdbname'] = array();
+$array['element']['dbconfig']['postgresql']['ipbxdbname']['default'] = 'asterisk';
 
 $array['element']['mainconfig'] = array();
 $array['element']['mainconfig']['hostname'] = array();
@@ -167,7 +192,7 @@ dwho::load_class('dwho_network');
 $array['filter'] = array();
 
 $array['filter']['dbconfig'] = array();
-$array['filter']['dbconfig']['backend'] = array('key' => array('sqlite','mysql'));
+$array['filter']['dbconfig']['backend'] = array('key' => array('sqlite','mysql','postgresql'));
 
 $array['filter']['dbconfig']['sqlite'] = array();
 $array['filter']['dbconfig']['sqlite']['xivodb'] = array('minlen'	=> 4,
@@ -209,6 +234,36 @@ $array['filter']['dbconfig']['mysql']['ipbxpass'] = array('set'		=> false,
 $array['filter']['dbconfig']['mysql']['ipbxdbname'] = array('minlen'	=> 1,
 							    'maxlen'	=> 64,
 							    'regexp'	=> '/^[a-zA-Z0-9_]+$/');
+
+$array['filter']['dbconfig']['postgresql'] = array();
+$array['filter']['dbconfig']['postgresql']['host'] = array('callback'	=> 'dwho_network::valid_host',
+						      'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+										  DWHO_NETWORK_HOST_HOSTNAME)));
+$array['filter']['dbconfig']['postgresql']['port'] = array('set'		=> false,
+						      'chk'		=> 2,
+						      'callback'	=> 'dwho_network::valid_port_number');
+$array['filter']['dbconfig']['postgresql']['xivouser'] = array('set'		=> false,
+							  'chk'		=> 2,
+							  'maxlen'	=> 64,
+							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
+$array['filter']['dbconfig']['postgresql']['xivopass'] = array('set'		=> false,
+							  'chk'		=> 2,
+							  'maxlen'	=> 64,
+							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
+$array['filter']['dbconfig']['postgresql']['xivodbname'] = array('minlen'	=> 1,
+							    'maxlen'	=> 64,
+							    'regexp'	=> '/^[a-zA-Z0-9_]+$/');
+$array['filter']['dbconfig']['postgresql']['ipbxuser'] = array('set'		=> false,
+							  'chk'		=> 2,
+							  'maxlen'	=> 64,
+							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
+$array['filter']['dbconfig']['postgresql']['ipbxpass'] = array('set'		=> false,
+							  'chk'		=> 2,
+							  'maxlen'	=> 64,
+							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
+$array['filter']['dbconfig']['postgresql']['ipbxdbname'] = array('minlen'	=> 1,
+							    'maxlen'	=> 64,
+									'regexp'	=> '/^[a-zA-Z0-9_]+$/');
 
 $array['filter']['mainconfig'] = array();
 $array['filter']['mainconfig']['hostname'] = array('callback'		=> 'dwho_network::valid_host',

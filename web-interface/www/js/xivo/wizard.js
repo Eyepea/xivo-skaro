@@ -43,6 +43,24 @@ var xivo_wz_fm_dbconfig_backend_elt = {
 	'it-dbconfig-mysql-ipbxuser':	{'property':	{disabled: true}},
 	'fd-dbconfig-mysql-ipbxpass':	{'style':	{display: 'none'}},
 	'it-dbconfig-mysql-ipbxpass':	{'property':	{disabled: true}},
+	'fd-dbconfig-postgresql-host':	{'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-host':	{'property':	{disabled: true}},
+	'fd-dbconfig-postgresql-port':	{'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-port':	{'property':	{disabled: true}},
+	'error-dbconfig-postgresql-xivo':	{'style':	{display: 'none'}},
+	'fd-dbconfig-postgresql-xivodbname': {'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-xivodbname': {'property':	{disabled: true}},
+	'fd-dbconfig-postgresql-xivouser':	{'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-xivouser':	{'property':	{disabled: true}},
+	'fd-dbconfig-postgresql-xivopass':	{'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-xivopass':	{'property':	{disabled: true}},
+	'error-dbconfig-postgresql-ipbx':	{'style':	{display: 'none'}},
+	'fd-dbconfig-postgresql-ipbxdbname': {'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-ipbxdbname': {'property':	{disabled: true}},
+	'fd-dbconfig-postgresql-ipbxuser':	{'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-ipbxuser':	{'property':	{disabled: true}},
+	'fd-dbconfig-postgresql-ipbxpass':	{'style':	{display: 'none'}},
+	'it-dbconfig-postgresql-ipbxpass':	{'property':	{disabled: true}},
 	'links':
 		{link:	[['error-dbconfig-sqlite-xivo',0,1],
 			 ['fd-dbconfig-sqlite-xivodb',0,1],
@@ -69,7 +87,25 @@ var xivo_wz_fm_dbconfig_backend_elt = {
 			 ['fd-dbconfig-mysql-ipbxuser',0,1],
 			 ['it-dbconfig-mysql-ipbxuser',0,1],
 			 ['fd-dbconfig-mysql-ipbxpass',0,1],
-			 ['it-dbconfig-mysql-ipbxpass',0,1]]
+			 ['it-dbconfig-mysql-ipbxpass',0,1],
+			 ['fd-dbconfig-postgresql-host',0,1],
+			 ['it-dbconfig-postgresql-host',0,1],
+			 ['fd-dbconfig-postgresql-port',0,1],
+			 ['it-dbconfig-postgresql-port',0,1],
+			 ['error-dbconfig-postgresql-xivo',0,1],
+			 ['fd-dbconfig-postgresql-xivodbname',0,1],
+			 ['it-dbconfig-postgresql-xivodbname',0,1],
+			 ['fd-dbconfig-postgresql-xivouser',0,1],
+			 ['it-dbconfig-postgresql-xivouser',0,1],
+			 ['fd-dbconfig-postgresql-xivopass',0,1],
+			 ['it-dbconfig-postgresql-xivopass',0,1],
+			 ['error-dbconfig-postgresql-ipbx',0,1],
+			 ['fd-dbconfig-postgresql-ipbxdbname',0,1],
+			 ['it-dbconfig-postgresql-ipbxdbname',0,1],
+			 ['fd-dbconfig-postgresql-ipbxuser',0,1],
+			 ['it-dbconfig-postgresql-ipbxuser',0,1],
+			 ['fd-dbconfig-postgresql-ipbxpass',0,1],
+			 ['it-dbconfig-postgresql-ipbxpass',0,1]]
 		}
 };
 
@@ -107,6 +143,29 @@ xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxpass']['style'] = {d
 xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxpass']['property'] = {disabled: false};
 
 xivo_attrib_register('fm_dbconfig_backend-mysql',xivo_wz_fm_dbconfig_backend['mysql']);
+
+xivo_wz_fm_dbconfig_backend['postgresql'] = dwho_clone(xivo_wz_fm_dbconfig_backend_elt);
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-host']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-host']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-port']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-port']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['error-dbconfig-postgresql-xivo']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivodbname']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivodbname']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivouser']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivouser']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivopass']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivopass']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['error-dbconfig-postgresql-ipbx']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxdbname']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxdbname']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxuser']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxuser']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxpass']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxpass']['property'] = {disabled: false};
+
+xivo_attrib_register('fm_dbconfig_backend-postgresql',xivo_wz_fm_dbconfig_backend['postgresql']);
+
 
 function xivo_wizard_chg_dbconfig_backend()
 {
