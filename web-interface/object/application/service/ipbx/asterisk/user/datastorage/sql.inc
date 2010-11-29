@@ -104,7 +104,12 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		return(dwho_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
 	}
 
-	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null)
+	/**
+	 *
+	 * options:
+	 *		- internal: if true, also return internal accounts (*guest* account indeed)
+	*/
+	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null,$internal=false)
 	{
 		$this->_cnt = 0;
 
@@ -129,7 +134,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		if($use_sip === false && $use_iax === false && $use_sccp === false && $use_custom === false)
 			return(false);
 
-		$arr['internal'] = 0;
+		if(!$internal)
+			$arr['internal'] = 0;
 
 		$sip = $iax = $custom = $sccp = array();
 		$sip['category'] = $iax['category'] = $custom['category'] = 'user';
@@ -147,7 +153,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
 
 		if($mode === 'number')
-			$this->_dso->andwherenot('IFNULL('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
+			$this->_dso->andwherenot('COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
 
 		if($use_sip === true)
 		{
@@ -165,10 +171,10 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			{
 				if((bool) $initialized === false)
 					$this->_dso->andjoinwhere($this->_table['usersip'],
-								  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
+								  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
 				else
 					$this->_dso->andjoinwherenot($this->_table['usersip'],
-								  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
+								  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
 			}
 		}
 
@@ -312,7 +318,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->andjoinwhere($this->_table['userfeatures'],
 					  $this->_table['callfiltermember'].'.bstype = '.$this->_table['userfeatures'].'.bsfilter');
 		$this->_dso->andjoinwherenot($this->_table['userfeatures'],
-					     'IFNULL('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
+					     'COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
 
 		$this->_dso->innerjoin($this->_table['callfilter'],
 				       $this->_table['callfiltermember'].'.callfilterid = '.$this->_table['callfilter'].'.id',
@@ -351,7 +357,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				       'cfilterm1.typeval = user1.id');
 		$this->_dso->joinwhere('user1','cfilterm1.bstype = user1.bsfilter');
 		$this->_dso->andjoinwhere('user1',array('id' => $id,'internal' => 0));
-		$this->_dso->andjoinwherenot('user1','IFNULL(user1.number,\'\') = \'\'');
+		$this->_dso->andjoinwherenot('user1','COALESCE(user1.number,\'\') = \'\'');
 
 		$this->_dso->innerjoin(array('cfilterm2' => $this->_table['callfiltermember']),
 				       $this->_table['callfilter'].'.id = cfilterm2.callfilterid',
@@ -366,7 +372,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->andjoinwhere('user2',array('id'		=> $user2id,
 							'context'	=> $context,
 							'internal'	=> 0));
-		$this->_dso->andjoinwherenot('user2','IFNULL(user2.number,\'\') = \'\'');
+		$this->_dso->andjoinwherenot('user2','COALESCE(user2.number,\'\') = \'\'');
 
 		return($this->_dso->select_one());
 	}

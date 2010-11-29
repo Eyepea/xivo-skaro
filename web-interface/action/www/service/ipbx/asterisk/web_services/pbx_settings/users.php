@@ -35,11 +35,13 @@ switch($act)
 				      'extenumbers'		=> true,
 				      'contextnummember'	=> true);
 
+	
 		if(($info = $appuser->get($_QRY->get('id'),
 					  null,
+					  null, // we search in both internal and non-internal users
 					  false,
-					  false,
-					  $nocomponents)) === false)
+						$nocomponents)) === false
+		)
 		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
@@ -112,7 +114,7 @@ switch($act)
 
 		$appuser = &$ipbx->get_application('user',null,false);
 
-		if(($list = $appuser->get_users_list()) === false)
+		if(($list = $appuser->get_users_list(null,null,null,null,false,null,true)) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);

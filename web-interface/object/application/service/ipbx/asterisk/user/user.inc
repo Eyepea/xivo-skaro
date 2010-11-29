@@ -116,6 +116,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(parent::_reset());
 	}
 
+	/**
+	 * NOTE: internal can take 3 values:
+	 *	- false : don't search in internal users
+	 *	- true  : search ONLY in internal users
+	 *	- null  : search in BOTH internal and non-internal users
+	 */
 	function get($id,$disable=null,$internal=false,$where=false,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
@@ -551,9 +557,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_get_users('search_number',$protocols,$disable,$search,$context,$order,$limit,$assoc,$initialized));
 	}
 
-	function get_users_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
+	function get_users_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		return($this->_get_users('list',$protocols,$disable,null,null,$order,$limit,$assoc,$initialized));
+		return($this->_get_users('list',$protocols,$disable,null,null,$order,$limit,$assoc,$initialized,$internal));
 	}
 
 	function get_users_context($context,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
@@ -561,7 +567,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_get_users('context',$protocols,$disable,null,$context,$order,$limit,$assoc,$initialized));
 	}
 
-	function _get_users($action,$protocols=null,$disable=null,$search='',$context='',$order=null,$limit=null,$assoc=false,$initialized=null)
+	function _get_users($action,$protocols=null,$disable=null,$search='',$context='',$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
 		$search = strval($search);
 
@@ -583,9 +589,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				break;
 			case 'list':
 			default:
-				$rs = $this->_dso->get_all($protocols,$disable,$initialized,$order,$limit);
+				$rs = $this->_dso->get_all($protocols,$disable,$initialized,$order,$limit,null,null,null,$internal);
 		}
-
 		$this->_cnt = $this->_dso->get_cnt();
 
 		if($rs === false || ($nb = count($rs)) === 0)

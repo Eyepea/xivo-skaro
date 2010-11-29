@@ -519,7 +519,7 @@ $array['filter']['regserver'] = array('set' => false,'chk' => 0);
 $array['filter']['lastms'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
-$array['filter']['transport'] = array('key' => array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls'));
+$array['filter']['transport'] = array('set' => false, 'key' => array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls'));
 $array['filter']['directmedia'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','nonat','update','update,nonat'));
 $array['filter']['callcounter'] = array('set' => false, 'chk' => 2, 'bool' => true);
 $array['filter']['busylevel'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,100,1));
