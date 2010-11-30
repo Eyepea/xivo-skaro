@@ -23,10 +23,11 @@ __license__ = """
 import os.path
 import re
 from jinja2 import TemplateNotFound
-from xivo import tzinform
 from prov2.plugins import Plugin, StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov2.util import to_mac, from_mac
+from prov2.util import norm_mac, format_mac
+from twisted.internet import defer
+from xivo import tzinform
 
 
 _UA_REGEX = re.compile(r'\bsnom(\d{3})-SIP (\d+\.\d+\.\d+)\b')
@@ -47,8 +48,13 @@ def _http_identifier(request):
         if dev:
             m = _HTTP_FILENAME_REGEX.search(request.path)
             if m:
-                dev['mac'] = to_mac(m.group(1))
+                dev['mac'] = norm_mac(m.group(1))
             return dev
+
+
+class _HTTPDeviceInfoExtractor(object):
+    def extract(self, request, request_type):
+        return defer.succeed(_http_identifier(request))
 
 
 class SnomPlugin(StandardPlugin):
@@ -72,7 +78,7 @@ class SnomPlugin(StandardPlugin):
         return [('Snom', model, '8.4.18') for model in ('320', '820')]
     
     def http_dev_info_extractors(self):
-        return (_http_identifier,)
+        return (_HTTPDeviceInfoExtractor(),)
         
     def configure_common(self, config):
         for tpl_name in ('gui_lang.xml', 'snom320.htm', 'snom320.xml', 'snom320-firmware.xml',
@@ -134,7 +140,7 @@ class SnomPlugin(StandardPlugin):
     
     def configure(self, dev, config):
         model = dev['model']
-        fmted_mac = from_mac(dev['mac'], separator='', uppercase=True)
+        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
         
         try:
             # get device-specific template

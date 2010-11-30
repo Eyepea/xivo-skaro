@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-"""Identification, plugin association and routing services."""
+"""Request processing service definition."""
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -20,324 +20,507 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from prov2.util import to_ip
-from prov2.servers.http import HTTPHookService
-from prov2.servers.tftp.service import TFTPHookService
-from prov2.servers.tftp.packet import ERR_FNF
+from prov2.servers.tftp.service import TFTPNullService
+from twisted.internet import defer
 from twisted.web.resource import Resource, NoResource
+from zope.interface import Interface, implements
 
 
-# XXX should we put 'extract_device_info' and 'retrive_device' in
-# classes such that its more homogenous with the other stuff ?
-# TODO fix/complete the behavior of IdentificationService (lets not forget
-# that its primary role is to add/modify devices from device managers)
-
-
-def tftp_ip_extractor(request):
-    """Return IP address (4-bytes string) from TFTP request (prov2.servers.tftp).""" 
+# TODO delete the two extract_*_ip method
+def extract_tftp_ip(request):
+    """Utility function that return the IP address from a TFTP request
+    object (prov2.servers.tftp).
+    
+    """ 
     return request['address'][0]
 
 
-def http_ip_extractor(request):
-    """Return IP address (4-bytes string) from HTTP request (twisted.web)."""
-    return to_ip(request.getClientIP())
-
-
-# FIXME this or just defining a function ??
-class DeviceInfoExtractor(object):
-    """Interface."""
-    def extract(self, request):
-        pass
-
-
-def extract_device_info(self, request):
-    """Function interface.
-    
-    Return a device info object (less the 'ip' item since its always trivial to
-    extract it) from a request or return an object that evaluates to false in
-    a boolean context if it was not possible to extract information.
-    
-    XXX return a deferred that will callback with a device info object ?
+def extract_http_ip(request):
+    """Utility function that return the IP address from an HTTP request
+    object (twisted.web).
     
     """
-    raise NotImplementedError()
+    return request.getClientIP()
 
 
-class ISCDHCPDeviceInfoExtractor(object):
-    """Extract the MAC address from a request by querying an ISC DHCP server
-    via the OMAPI protocol.
+class IDeviceInfoExtractor(Interface):
+    """A device info extractor object extract device information from
+    requests. In our context, requests are either HTTP or TFTP requests.
+    
+    Informations that can be extracted are:
+    - MAC address
+    - vendor name
+    - model name
+    - version name
+    
+    Note that since it's trivial to extract the IP address from a request,
+    this information MUST NOT be returned by device info extractor objects.
     
     """
     
-    def __init__(self, ip_extractor):
+    def extract(request, request_type):
+        """Return a nonempty device info object from the request or return an
+        object that evaluates to false in a boolean context if no information
+        could be extracted.
+        
+        Note that the IP address MUST NOT be returned in the device info
+        object.
+        
+        request_type is either 'http' or 'tftp'.
+        
+        XXX IN FACT, THIS METHOD RETURN A DEFERRED THAT WILL CALLBACK WITH EITHER
+        A DEVICE INFO OBJECT OR FALSE IF NO INFORMATION COULD BE EXTRACTED.
+        
         """
-        ip_extractor -- a function returning the IP address from a request
+
+
+class NullDeviceInfoExtractor(object):
+    """Device info extractor that never return device information."""
+    
+    implements(IDeviceInfoExtractor)
+    
+    def extract(self, request, request_type):
+        return defer.succeed(None)
+
+    
+class OmapiDeviceInfoExtractor(object):
+    """Extract the MAC address from requests by querying an ISC DHCP server via
+    the OMAPI protocol.
+    
+    """
+    
+    implements(IDeviceInfoExtractor)
+    
+    def __init__(self, extract_ip):
+        """
+        extract_ip -- a callable object taking a request and returning its IP address
         
         """
         # TODO get connection info, etc
-        self._ip_extractor = ip_extractor
-    
-    def _retrieve_mac_from_ip(self, ip):
-            # TODO extract IP, ask an ISC DHCP server via OMAPI for the lease
-            # with this IP, and then extract the MAC address of this (see pypureomapi)
-            raise NotImplementedError()
+        self._extract_ip = extract_ip
         
-    def extract_info(self, request):
-        """Provides the 'extract_device_info' function when bound to an instance."""
-        ip = self._ip_extractor(request)
-        try:
-            mac = self._retrieve_mac_from_ip(ip)
-        except Exception:
-            return None
-        else:
-            return {'mac': mac}
+    def extract(self, request, request_type):
+        # TODO extract IP, ask an ISC DHCP server via OMAPI for the lease
+        # with this IP, and then extract the MAC address of this (see pypureomapi)
+        return defer.fail(NotImplementedError())
 
 
-class ARPDeviceInfoExtractor(object):
-    """Extract the MAC address from a request by looking at the MAC address
-    in the ARP table.
+class ArpDeviceInfoExtractor(object):
+    """Extract the MAC address from requests by looking up the ARP table.
+    
+    Note that this extractor is only useful if the request is on the same
+    broadcast domain as the machine.
     
     """
-    def __init__(self, ip_extractor):
+    
+    implements(IDeviceInfoExtractor)
+    
+    def __init__(self, extract_ip):
         # TODO setup a netlink socket, etc
-        self._ip_extractor = ip_extractor
+        self._extract_ip = extract_ip
     
-    def extract_info(self, request):
-        raise NotImplementedError()
+    def extract(self, request, request_type):
+        return defer.fail(NotImplementedError())
 
 
-class FirstCompositeDeviceInfoExtractor(object):
-    """Composite device info extractor that takes a list of device info
-    extractors, and return the device info object of the first extractor that
-    returned a device info object.
+class TypeBasedDeviceInfoExtractor(object):
+    """A device info extractor that ask another device info extractor
+    depending on the request type of the request.
     
     """
-    def __init__(self):
-        self.extractors = []
+    
+    implements(IDeviceInfoExtractor)
+    
+    def __init__(self, extractor_map=None):
+        self.extractor_map = {} if extractor_map is None else extractor_map
+    
+    def extract(self, request, request_type):
+        if request_type in self.extractor_map:
+            return self.extractor_map[request_type].extract(request, request_type)
+        return defer.succeed(None)
+
+
+class CompositeDeviceInfoExtractor(object):
+    """Abstract base class for device info extractor that return a result
+    based on zero or more underlying device info extractors. Not made to
+    be instantiated.
+    
+    """
+    
+    def __init__(self, extractors=None):
+        self.extractors = [] if extractors is None else extractors
+
+
+class FirstCompositeDeviceInfoExtractor(CompositeDeviceInfoExtractor):
+    """Composite device info extractor that return the device info object of
+    the first extractor that returned a nonempty device info object.
+    
+    """
+    
+    implements(IDeviceInfoExtractor)
+    
+    @defer.inlineCallbacks
+    def extract(self, request, request_type):
+        extractors = self.extractors[:]
+        for extractor in extractors:
+            dev_info = yield extractor.extract(request, request_type)
+            if dev_info:
+                defer.returnValue(dev_info)
+        defer.returnValue(None)
+
+
+class LongestDeviceInfoExtractor(CompositeDeviceInfoExtractor):
+    """Composite device info extractor that return the device info object
+    with the most items.
+    
+    In the case where at least two extractors return a device info object
+    of the same length, the result of the first extractor will be returned.
+    
+    """
+    
+    implements(IDeviceInfoExtractor)
         
-    def extract_info(self, request):
-        """Provides the 'extract_device_info' function when bound to an instance."""
-        for extractor in self.extractors:
-            res = extractor(request)
-            if res:
-                return res
+    @defer.inlineCallbacks
+    def extract(self, request, request_type):
+        dlist = defer.DeferredList([extractor.extract(request, request_type)
+                                    for extractor in self.extractors],
+                                    consumeErrors=True)
+        dev_infos = yield dlist
+        dev_info, length = None, 0
+        for success, cur_dev_info in dev_infos:
+            if success and cur_dev_info and len(cur_dev_info) > length:
+                dev_info, length = cur_dev_info, len(cur_dev_info)
+        defer.returnValue(dev_info)
+
+
+class BaseUpdater(object):
+    """Abstract base class for updater. Not made to be instantiated."""
+    def _do_update(self, dev_info, nonconflicts, conflicts):
+        raise NotImplementedError()
+    
+    def update(self, dev_info, new_dev_info):
+        nonconflicts = {}
+        conflicts = {}
+        for k, v in new_dev_info.iteritems():
+            if k in dev_info:
+                conflicts[k] = v
+            else:
+                nonconflicts[k] = v
+        self._do_update(dev_info, conflicts, nonconflicts)
+
+
+class StandardUpdater(BaseUpdater):
+    def __init__(self, conflict_solver):
+        self._conflict_solver = conflict_solver
+    
+    def _do_update(self, dev_info, nonconflicts, conflicts):
+        dev_info.update(nonconflicts)
+        if conflicts:
+            self._conflict_solver.solve(dev_info, conflicts)
+
+
+class IgnoreConflictSolver(object):
+    def solve(self, dev_info, conflicts):
+        pass
+
+
+class SetConflictSolver(object):
+    def solve(self, dev_info, conflicts):
+        dev_info.update(conflicts)
+
+
+class RemoveUpdater(BaseUpdater):
+    def __init__(self):
+        self._conflicts = set()
+        
+    def _do_update(self, dev_info, nonconflicts, conflicts):
+        for k, v in nonconflicts.iteritems():
+            if k not in self._conflicts:
+                dev_info[k] = v
+        for conflict in conflicts:
+            del dev_info[conflict]
+            self._conflicts.add(conflict)
+
+
+class VotingUpdater(object):
+    def __init__(self):
+        # TODO instead of a map of map, it could be a map of list,
+        # and we could do conflict resolution on conflict resolution (in
+        # the situation of the same value having the same number of vote)
+        self._conflicts = {}
+    
+    def _update_conflicts(self, k, v):
+        conflict_map = self._conflicts.setdefault(k, {})
+        nb_votes = conflict_map.get(v, 0) + 1
+        conflict_map[v] = nb_votes
+    
+    def _solve_conflict(self, res, k):
+        conflict_map = self._conflicts[k]
+        nb_votes, valid = 0, False
+        for cur_ck, cur_nb_votes in conflict_map.iteritems():
+            if cur_nb_votes > nb_votes:
+                valid = True
+                nb_votes = cur_nb_votes
+                ck = cur_ck
+            elif cur_nb_votes == nb_votes:
+                valid = False
+        if valid:
+            res[k] = ck
+    
+    def update(self, dev_info, new_dev_info):
+        for k, v in new_dev_info.iteritems():
+            if k in dev_info or k in self._conflicts:
+                self._update_conflicts(k, v)
+                self._solve_conflict(dev_info, k)
+            else:
+                dev_info[k] = v
+
+
+class CollaboratingDeviceInfoExtractor(CompositeDeviceInfoExtractor):
+    """Composite device info extractor that return a device info object
+    which is the composition of every device info objects returned.
+    
+    """
+    
+    implements(IDeviceInfoExtractor)
+    
+    def __init__(self, updater_factory, extractors=None):
+        CompositeDeviceInfoExtractor.__init__(self, extractors)
+        self._updater_factory = updater_factory
+    
+    @defer.inlineCallbacks
+    def extract(self, request, request_type):
+        dlist = defer.DeferredList([extractor.extract(request, request_type)
+                                    for extractor in self.extractors],
+                                    consumeErrors=True)
+        dev_infos = yield dlist
+        dev_info = {}
+        for success, cur_dev_info in dev_infos:
+            if success and cur_dev_info:
+                updater = self._updater_factory() 
+                updater.update(dev_info, cur_dev_info)
+        defer.returnValue(dev_info)
+
+
+# XXX maybe change the name so that it's more clear that this can have
+#     side effect on the dev manager
+class IDeviceRetriever(Interface):
+    """A device retriever return a device object from device information.
+    
+    Instances providing this interface MAY have some side effect on the
+    device manager, like adding a new entry.
+    
+    """
+    
+    def retrieve(dev_info, dev_mgr):
+        """Return a device object from a device info object or None if it can't
+        find such object.
+        
+        dev_info has ALWAYS the key 'ip' set to the IP address of the device.
+        That means dev_info is always 'true' and dev_info['ip'] never raise
+        a KeyError.
+        
+        """
+
+
+class NullDeviceRetriever(object):
+    """Device retriever who never retrieves anything."""
+    implements(IDeviceRetriever)
+    
+    def retrieve(self, dev_info, dev_mgr):
         return None
 
 
-class MostPreciseCompositeDeviceInfoExtractor(object):
-    """Composite device info extractor that return the device info object which
-    has the more information.
+class IpDeviceRetriever(object):
+    """Retrieve device object by looking up in a device manager for an
+    object which IP is the same as the device info object.
     
     """
-    def __init__(self):
-        self.extractors = []
-        
-    def extract_info(self, request):
-        """Provides the 'extract_device_info' function when bound to an instance."""
-        res, length = None, 0
-        for extractor in self.extractors:
-            cur_res = extractor(request)
-            if cur_res and len(cur_res) > length:
-                res, length = cur_res, len(cur_res)
-        return res
+    implements(IDeviceRetriever)
+    
+    def retrieve(self, dev_info, dev_mgr):
+        dev_id = dev_mgr.find_ip(dev_info['ip'])
+        if dev_id is not None:
+            return dev_mgr[dev_id]
+        return None
 
 
-class CollaboratingCompositeDeviceInfoExtractor(object):
-    """Composite device info extractor that return a device info object which is the
-    union of the device info objects returned.
+class MacDeviceRetriever(object):
+    """Retrieve device object by looking up in a device manager for an
+    object which MAC is the same as the device info object.
     
     """
-    # TODO add conflict resolution behaviour
-    def __init__(self):
-        self.extractors = []
-        
-    def extract_info(self, request):
-        """Provides the 'extract_device_info' function when bound to an instance."""
-        res = {}
-        for extractor in self.extractors:
-            cur_res = extractor(request)
-            if cur_res:
-                res.update(cur_res)
-        return res
-
-
-def retrieve_device(dev_info, dev_mgr):
-    """Function interface.
+    implements(IDeviceRetriever)
     
-    Return a device object from a device manager and a device info
-    object or return an object that evaluates to false in
-    a boolean context if it can't find such object.
+    def retrieve(self, dev_info, dev_mgr):
+        if 'mac' in dev_info:
+            dev_id = dev_mgr.find_mac(dev_info['mac']) 
+            if dev_id is not None:
+                return dev_mgr[dev_id] 
+        return None
+
+
+class AddDeviceRetriver(object):
+    """A device retriever that does no lookup and always add a new device
+    object to the device manager.
+    
+    Mostly useful if used in a FirstCompositeDeviceRetriever at the end of
+    the list, in a way that it will be called only if the other retrievers
+    don't find anything.
     
     """
-    raise NotImplementedError()
-
-
-def retrieve_device_from_ip(dev_info, dev_mgr):
-    if 'ip' in dev_info:
-        try:
-            return dev_mgr.get_by_ip(dev_info['ip'])
-        except KeyError:
-            return None
-    return None
-
-
-def retrieve_device_from_mac(dev_info, dev_mgr):
-    if 'mac' in dev_info:
-        try:
-            return dev_mgr.get_by_mac(dev_info['mac'])
-        except KeyError:
-            return None
-    return None
-
-
-class FallbackCompositeDeviceRetriever(object):
-    def __init__(self):
-        self.retrievers = []
+    implements(IDeviceRetriever)
     
-    def retrieve_device(self, dev_info, dev_mgr):
-        """Provides the 'retrieve_device' function when bound to an instance."""
+    def retrieve(self, dev_info, dev_mgr):
+        dev = dict(dev_info)
+        dev_mgr.add(dev)
+        return dev
+
+
+class FirstCompositeDeviceRetriever(object):
+    """Composite device retriever which return the device its first retriever
+    returns.
+    
+    """
+    
+    def __init__(self, retrievers=None):
+        self.retrievers = [] if retrievers is None else retrievers
+    
+    def retrieve(self, dev_info, dev_mgr):
         for retriever in self.retrievers:
-            dev = retriever(dev_info, dev_mgr)
-            if dev:
+            dev = retriever.retrieve(dev_info, dev_mgr)
+            if dev is not None:
                 return dev
         return None
-    
-    @classmethod
-    def new_mac_then_ip_retriever(cls):
-        res = cls()
-        res.retrievers.append(retrieve_device_from_mac)
-        res.retrievers.append(retrieve_device_from_ip)
-        return res
 
 
-class IdentificationService(object):
-    """A generic device identification service.
+class IDeviceUpdater(Interface):
+    """Update a device object device from an info object. The 'plugin'
+    and 'config' file should not be updated here; more specialized interface
+    have been created to handle these case. They can do it, but they won't
+    be able to ask for a reconfiguration.
     
-    This extract information from requests and then potentially create or
-    update devices in a device manager object with the information retrieved.
+    This operation can have side effect, like updating the device manager.
+    In fact, being able to do side effects is why this interface exist.
+     
+    """
     
-    XXX we could see this as a 'mangle' service; takes a request, extract info,
-    then modify the state of the device manager
+    def update(dev, dev_info, request, request_type):
+        """Update a device object with a device info object. Return true
+        if the device has been updated and should probably be reconfigured,
+        false if it has not.
+        
+        dev -- a nonempty device object
+        dev_info -- a nonempty device info object for which the key 'ip' is
+          always present
+        
+        Pre: dev_info['ip'] doesn't raise KeyError
+        
+        """
+
+
+class NullDeviceUpdater(object):
+    """Device updater that updates nothing."""
+    
+    implements(IDeviceUpdater)
+    
+    def update(self, dev, dev_info, request, request_type):
+        return False
+
+
+class EverythingDeviceUpdater(object):
+    """Device updater that updates everything.
+    
+    XXX This is wild.
     
     """
     
-    # TODO completer le comportement
-    auto_create_no_dev_info = False
-    auto_create_no_dev_info_replace = False
-    auto_create = False
-    auto_create_replace = False
-    auto_update = False
+    implements(IDeviceUpdater)
     
-    def __init__(self, dev_info_extractor, dev_retriever, dev_mgr, ip_extractor, pg_associator):
-        """
-        dev_info_extractor -- an 'extract_device_info' function
-        dev_retriever -- an 'retrieve_device' function
-        dev_mgr -- a device manager object
-        ip_extractor -- a function returning the IP address from a request
-        
-        """
-        self._dev_info_extractor = dev_info_extractor
-        self._dev_retriever = dev_retriever
-        self._dev_mgr = dev_mgr
-        self._ip_extractor = ip_extractor
-        self._pg_associator = pg_associator
+    def update(self, dev, dev_info, request, request_type):
+        # XXX the specification for device object in the device module
+        #     doesn't tell that device object must have a clear and update
+        #     method... so we might want to change the specification so
+        #     this kind of code is correct and 'standard'...
+        dev.clear()
+        dev.update(dev_info)
+        return True     # in fact, its possible that dev_info didn't change
+
+
+class VersionDeviceUpdater(object):
+    """If 'model' in dev and 'version' in dev_info, then update dev['version']
+    to dev_info['version'].
     
-    def identify(self, request):
-        # FIXME semantic issue
-        # extract device information from request (mac, mac?/vendor?/model?/version?)
-        dev = None
-        dev_info = self._dev_info_extractor(request)
-        ip = self._ip_extractor(request)
-        if not dev_info:
-            # not device information could be extracted from the request. That
-            # doesn't mean the device who made the request to us has never
-            # been identified but it limits what we can do...
-            # TODO what are we doing here ?
-            # create a new device object with only an IP address ?
-            # And if we create a new device, what should we do if there's
-            # already a device with this IP in dev_manager ?
-            dev = dev_info = {'ip': ip}
-            if (self.auto_create_no_dev_info and
-                not self._dev_mgr.contains_ip(ip)):
-                self._dev_mgr.add_device(dev_info)
-        else:
-            dev_info['ip'] = ip
-            # retrieve a device from the device information
-            dev = self._dev_retriever(dev_info, self._dev_mgr)
-            if not dev:
-                # TODO what are we doing here ? create device ?
-                if self.auto_create:
-                    dev = dev_info
-                    self._dev_mgr.add_device(dev)
+    """ 
+    
+    implements(IDeviceUpdater)
+    
+    delete_on_no_version = True
+    
+    def update(self, dev, dev_info, request, request_type):
+        updated = False
+        if 'vendor' in dev and 'model' in dev:
+            if 'version' in dev_info:
+                dev['version'] = 'version'
+                updated = True
             else:
-                # TODO what are we doing here ? should we update the
-                # device ? leave this as is ?
-                if self.auto_update:
-                    pass
-                
-        # do plugin association
-        if dev and dev_info and not dev.get('plugin'):
-            dev['plugin'] = self._pg_associator(dev_info)
+                if self.delete_on_no_version and 'version' in dev:
+                    del dev['version']
+                    updated = True
+        return updated
 
 
-class HTTPIdentificationService(HTTPHookService):
-    """An HTTP hook service that does device identification."""
-    
-    def __init__(self, ident_service, service):
-        """
-        ident_service -- an identification service
-        service -- the next HTTP service in the chain
-        
-        """
-        HTTPHookService.__init__(self, service)
-        self._ident_service = ident_service
-    
-    def _pre_handle(self, path, request):
-        self._ident_service.identify(request)
-
-
-class TFTPIdentificationService(TFTPHookService):
-    """A TFTP hook service that does device identification."""
-    
-    def __init__(self, ident_service, service):
-        """
-        ident_service -- an identification service
-        service -- the next TFTP service in the chain
-        
-        """
-        TFTPHookService.__init__(self, service)
-        self._ident_service = ident_service
-    
-    def _pre_handle(self, request):
-        self._ident_service.identify(request)
-
-
-def associate_to_plugin(dev_info):
-    """Function interface.
-    
-    Takes a device info object and return a plugin name to associate to
-    this device or an object that evaluates to false in a boolean context if
-    it has no suggestion.
+class LoggingDeviceUpdater(object):
+    """Doesn't update anything but log a message if there's a difference
+    between the device and the device info objects.
     
     """
-    return NotImplementedError()
-
-
-class StaticPluginAssociator(object):
-    """Associate every device info to the same plugin."""
-    def __init__(self, pg_name):
-        self.pg_name = pg_name
     
-    def associate(self, dev_info):
-        """Provides the 'associate_to_plugin' function when bound to an instance."""
-        return self.pg_name
+    implements(IDeviceUpdater)
+    
+    def update(self, dev, dev_info, request, request_type):
+        # TODO specify the behavior and implement it, if useful
+        return False
 
 
-class StandardMappingPluginAssociator(object):
+class StaticDeviceUpdater(object):
+    """Static device updater that update a key-value pair of the device.
+    
+    If the key is already present in the device, the force_update attribute
+    determine the behavior; if true, this key will be updated, else it
+    won't.
+    
+    """
+    
+    implements(IDeviceUpdater)
+    
+    force_update = False
+    
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+    
+    def update(self, dev, dev_info, request, request_type):
+        if self.force_update or self.key not in dev:
+            old_value = dev.get(self.key)
+            if old_value != self.value:
+                dev[self.key] = self.value
+                return True
+        return False
+
+
+# XXX temporary until the new 'plugin association' infrastructure
+#     is put in place
+class MappingPluginDeviceUpdater(object):
     """Associate a device info to the plugin that says that support this type
     of device. This must be an exact match.
     
     """
+    
+    implements(IDeviceUpdater)
+    
+    force_update = False
+    
     def __init__(self):
         # mapping is a mapping object where keys are (vendor, model, version) tuple and
         # values are plugin name
@@ -347,87 +530,147 @@ class StandardMappingPluginAssociator(object):
         for device_type in plugin.device_types():
             self._mapping[device_type] = plugin.name
     
-    def associate(self, dev_info):
-        """Provides the 'associate_to_plugin' function when bound to an instance."""
-        key = tuple(dev_info.get(k) for k in ['vendor', 'model', 'version'])
-        return self._mapping.get(key)
+    def update(self, dev, dev_info, request, request_type):
+        if self.force_update or 'plugin' not in dev:
+            key = tuple(dev_info.get(k) for k in ['vendor', 'model', 'version'])
+            if key in self._mapping:
+                pg_id = self._mapping[key]
+                old_pg_id = dev.get('plugin')
+                if pg_id != old_pg_id:
+                    dev['plugin'] = pg_id
+                    return True
+        return False
 
 
-class FirstCompositePluginAssociator(object):
-    def __init__(self):
-        self.associators = []
+class CompositeDeviceUpdater(object):
+    implements(IDeviceUpdater)
     
-    def associate(self, dev_info):
-        """Provides the 'associate_to_plugin' function when bound to an instance."""
-        for associator in self.associators:
-            res = associator(dev_info)
-            if res:
-                return res
-        return None
-
-
-class TFTPDeviceBasedRoutingService(object):
-    """A service that does request routing to other services based on
-    the information from the requesting device.
+    def __init__(self, updaters=None):
+        self.updaters = [] if updaters is None else updaters
     
-    - First, from the request IP address, it tries to find a device object
-      from a device manager object.
-    - Next, if it finds it, it tries to find the plugin the device is
-      associated with.
-    - Lastly, it routes the request to the TFTP service of the plugin.
+    def update(self, dev, dev_info, request, request_type):
+        updated = False
+        for updater in self.updaters:
+            updated = updater.update(dev, dev_info, request, request_type) or updated
+        return updated
+
+
+# XXX should we leave the dev_mgr and other manager in this class or should
+#     we inject them in the different 'handler' instances at create time ? This gives
+#     a bit more flexibility and the different manager are long lived objects
+#     (and if they change, we could add a level of indirection to them in a
+#     server or something similar object)
+class RequestProcessingService(object):
+    """The base object responsible for dynamically modifying the process state
+    when processing a request from a device.
     
     """
-    def __init__(self, dev_mgr, services_map):
-        # TODO define more precisely stuff related to services_map
+    dev_info_extractor = NullDeviceInfoExtractor()
+    dev_retriever = NullDeviceRetriever()
+    dev_updater = NullDeviceUpdater()
+    
+    # TODO replace pg_map for a plugin manager
+    def __init__(self, dev_mgr, cfg_mgr, pg_map):
         self._dev_mgr = dev_mgr
-        self._services_map = services_map
+        self._cfg_mgr = cfg_mgr
+        self._pg_map = pg_map
+    
+    @defer.inlineCallbacks
+    def process(self, request, ip, request_type):
+        """Return a deferred that will eventually fire with a the route this
+        request should take when all the side effects of the processing will
+        be completed, so that the service chain can continue.
+        
+        Return None if no route for this request has been found.
+        
+        """
+        # 1. Get a device info object
+        d = self.dev_info_extractor.extract(request, request_type)
+        dev_info = yield d
+        if not dev_info:
+            dev_info = {'ip': ip}
+        else:
+            dev_info['ip'] = ip
+        
+        # 2. Get a device object
+        assert dev_info['ip'] == ip
+        dev = self.dev_retriever.retrieve(dev_info, self._dev_mgr)
+        
+        if dev is None:
+            # no device -> no route
+            defer.returnValue(None)
+        else:
+            # 3.1 Update the device
+            reconfigure = self.dev_updater.update(dev, dev_info, request, request_type)
+            
+            # 3.2 Reconfigure the device
+            if reconfigure:
+                if 'config' in dev and 'plugin' in dev:
+                    cfg_id = dev['config']
+                    pg_id = dev['plugin']
+                    if cfg_id not in self._cfg_mgr or pg_id not in self._pg_map:
+                        # XXX log ?
+                        pass
+                    else:
+                        pg = self._pg_map[pg_id]
+                        cfg = self._cfg_mgr.flatten(cfg_id)
+                        pg.configure(dev, cfg)
+        
+            # 4. return a 'routing destination ID'
+            defer.returnValue(dev.get('plugin'))
+
+
+class HTTPRequestProcessingService(Resource):
+    """A service that does HTTP request processing and routing."""
+    
+    default_service = NoResource('Nowhere to route this request.')
+    """default_service -- an HTTP service (Resource) for which request with invalid
+    route will be routed"""
+    
+    def __init__(self, process_service, service_map):
+        """
+        service_map -- a mapping object where keys are 'route id' (usually plugin id)
+          and object are HTTP service (i.e. twisted.web.resource.Resource).
+        """
+        Resource.__init__(self)
+        self._process_service = process_service
+        self._service_map = service_map
+        
+    @defer.inlineCallbacks
+    def getChild(self, path, request):
+        ip = request.getClientIP()
+        d = self._process_service.process(request, ip, 'http')
+        route_id = yield d
+        
+        if route_id in self._service_map:
+            service = self._service_map[route_id]
+        else:
+            service = self.default_service
+        if service.isLeaf:
+            request.postpath.insert(0, request.prepath.pop())
+            defer.returnValue(service)
+        else:
+            defer.returnValue(service.getChildWithDefault(path, request))
+
+
+class TFTPRequestProcessingService(object):
+    """A service that does TFTP request processing and routing."""
+    
+    default_service = TFTPNullService(errmsg="Nowhere to route this request")
+    
+    def __init__(self, process_service, service_map):
+        self._process_service = process_service
+        self._service_map = service_map
     
     def handle_read_request(self, request, response):
-        ip = tftp_ip_extractor(request)
-        try:
-            device = self._dev_mgr.get_by_ip(ip)
-        except KeyError:
-            response.reject(ERR_FNF, 'Unknown IP')
-        else:
-            pg_name = device.get('plugin')
-            service = self._services_map.get(pg_name)
-            if not service:
-                self._reject('Nowhere to route this device')
+        def aux(route_id):
+            if route_id in self._service_map:
+                service = self._service_map[route_id]
             else:
-                service.handle_read_request(request, response) 
-
-
-class HTTPDeviceBasedRoutingService(Resource):
-    """A service that does request routing to other services based on
-    the information from the requesting device.
-    
-    - First, from the request IP address, it tries to find a device object
-      from a device manager object.
-    - Next, if it finds it, it tries to find the plugin the device is
-      associated with.
-    - Lastly, it routes the request to the HTTP service of the plugin.
-    
-    """
-    
-    def __init__(self, dev_mgr, services_map):
-        Resource.__init__(self)
-        self._dev_mgr = dev_mgr
-        self._services_map = services_map
-        
-    def getChild(self, path, request):
-        ip = http_ip_extractor(request)
-        try:
-            device = self._dev_mgr.get_by_ip(ip)
-        except KeyError:
-            return NoResource('Unknown IP')
-        else:
-            pg_name = device.get('plugin')
-            service = self._services_map.get(pg_name)
-            if not service:
-                return NoResource('Nowhere to route this IP')
-            else:
-                if service.isLeaf:
-                    request.postpath.insert(0, request.prepath.pop())
-                    return service
-                else:
-                    return service.getChildWithDefault(path, request)
+                service = self.default_service
+            service.handle_read_request(request, response)
+            
+        ip = request['address'][0]
+        d = self._process_service.process(request, ip, 'tftp')
+        # XXX not sure about the errback...
+        d.addCallbacks(aux, lambda _: self.default_service.handle_read_request(request, response))

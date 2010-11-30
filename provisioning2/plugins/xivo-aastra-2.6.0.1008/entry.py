@@ -1,6 +1,14 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin for Aastra 6731i and 6757i in version 2.6.0.1008."""
+"""Plugin for Aastra 6731i and 6757i in version 2.6.0.
+
+# TODO we should probably specify...
+#     ...in which version this plugin will upgrade the device (version 2.6.0.2010 right now)
+#     ...which devices this plugin will probably support (Aastra <model>+94xxi in version 2.x.x)
+#     ...which devices this plugin can identify, and how
+#     ...which config parameter the plugin use, and how
+
+"""
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -22,10 +30,12 @@ __license__ = """
 
 import os.path
 import re
+from urllib2 import Request
+from jinja2 import TemplateNotFound
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov2.util import to_mac, from_mac
-from jinja2 import TemplateNotFound
+from prov2.util import norm_mac, format_mac
+from twisted.internet import defer
 from xivo import tzinform
 
 
@@ -36,7 +46,7 @@ def _parse_mac(mac_raw):
     if mac_raw.startswith('MAC:'):
         # looks like a valid MAC token..
         try:
-            return to_mac(mac_raw[len('MAC:'):])
+            return norm_mac(mac_raw[len('MAC:'):])
         except ValueError:
             return
 
@@ -66,12 +76,19 @@ def _ua_identifier(user_agent):
                 dev['version'] = version
             return dev
 
+
 def _http_identifier(request):
     # UA: "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
+    # UA: "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.2010-SIP"
     # UA: "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
     ua = request.getHeader('User-Agent')
     if ua:
         return _ua_identifier(ua)
+    
+
+class _HTTPDeviceInfoExtractor(object):
+    def extract(self, request, request_type):
+        return defer.succeed(_http_identifier(request))
 
 
 class AastraPlugin(StandardPlugin):
@@ -90,7 +107,7 @@ class AastraPlugin(StandardPlugin):
         return self._fetchfw_helper.services()
     
     def http_dev_info_extractors(self):
-        return (_http_identifier,)
+        return (_HTTPDeviceInfoExtractor(),)
     
     def tftp_dev_info_extractors(self):
         # This is not necessary since Aastra are capable of protocol
@@ -104,7 +121,8 @@ class AastraPlugin(StandardPlugin):
         return ()
     
     def device_types(self):
-        return [('Aastra', model, '2.6.0.1008') for model in ('6731i', '6757i')]
+        return [('Aastra', model, version) for model in ('6731i', '6757i')
+                                           for version in ('2.6.0.1008', '2.6.0.2010')]
     
     @classmethod
     def _format_expmod(cls, keynum):
@@ -223,7 +241,7 @@ class AastraPlugin(StandardPlugin):
     
     def configure(self, dev, config):
         model = dev['model']
-        fmted_mac = from_mac(dev['mac'], separator='', uppercase=True)
+        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
         
         try:
             # get device-specific template
@@ -237,6 +255,17 @@ class AastraPlugin(StandardPlugin):
         
         filename = os.path.join(self._tftpboot_dir, fmted_mac + '.cfg')
         self._tpl_helper.dump(tpl, config, filename, self._ENCODING)
+
+    def reload(self, dev_info):
+        # FIXME this is a test, hardcoded value are meaningless outside of my test env
+        ip = dev_info['ip']
+        import subprocess
+        p = subprocess.Popen(['sip-options',
+                              '-m', 'sip:192.168.33.1:5061',
+                              '--method=NOTIFY',
+                              '--extra',
+                              'sip:%s' % ip], stdin=subprocess.PIPE)
+        p.communicate('Event: check-sync')
 
 
 # XXX DHCP support is temporarily set aside
@@ -268,4 +297,3 @@ class AastraPlugin(StandardPlugin):
 #        sname = 'http://%s/' % self._config['http-server-name']
 #        response['options'][TFTPServerNameOption] = TFTPServerNameOption(sname)
 #        response.commit()
-

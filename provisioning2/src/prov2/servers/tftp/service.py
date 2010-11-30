@@ -28,6 +28,7 @@ from prov2.servers.tftp.proto import TFTPProtocol
 
 class TFTPReadService(object):
     """Defines the interface of the TFTP read service."""
+    
     def handle_read_request(self, request, response):
         """Handle a TFTP read request (RRQ).
         
@@ -45,14 +46,24 @@ class TFTPReadService(object):
             the request. You'll get the same behaviour if you call no
             method of the reponse object.
         
+        Note that it's fine not to call one of the response methods before
+        returning the control to the caller, i.e. for an asynchronous use.
+        If you never eventually call one of the response methods, it will
+        implicitly behave like if you would have called the ignore method.
+        
         """
         raise NotImplementedError()
 
 
 class TFTPNullService(object):
     """A read service that always reject the requests."""
+    
+    def __init__(self, errcode=ERR_FNF, errmsg="File not found"):
+        self.errcode = errcode
+        self.errmsg = errmsg
+    
     def handle_read_request(self, request, response):
-        response.reject(ERR_FNF, "File not found")
+        response.reject(self.errcode, self.errmsg)
 
 
 class TFTPStringService(object):

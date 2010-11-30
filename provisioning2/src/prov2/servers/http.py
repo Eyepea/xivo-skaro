@@ -27,26 +27,63 @@ __license__ = """
 """
 
 from twisted.web.resource import Resource
+from twisted.internet import defer
 
 
-class HTTPHookService(Resource):
-    """Base class for non-terminal service."""
+class BaseHTTPHookService(Resource):
+    """Base class for HTTPHookService. Not made to be instantiated directly."""
+    
     def __init__(self, service):
         Resource.__init__(self)
         self._service = service
-    
-    def _pre_handle(self, path, request):
-        """This MAY be overridden in derived classes."""
-        pass
-    
-    def getChild(self, path, request):
-        self._pre_handle(path, request)
+
+    def _next_service(self, path, request):
         resrc = self._service
         if resrc.isLeaf:
             request.postpath.insert(0, request.prepath.pop())
             return resrc
         else:
             return resrc.getChildWithDefault(path, request)
+
+
+class HTTPHookService(BaseHTTPHookService):
+    """Base class for synchronous non-terminal service."""
+    
+    def _pre_handle(self, path, request):
+        """This SHOULD be overridden in derived classes."""
+        pass
+    
+    def getChild(self, path, request):
+        self._pre_handle(path, request)
+        return self._next_service(path, request)
+
+
+class HTTPAsyncHookService(BaseHTTPHookService):
+    """Base class for asynchronous non-terminal service.
+    
+    This is useful if you have a hook service that modify the state of the
+    application but needs to wait for a callback to fire before the service
+    chain can continue, because other services below this hook depends on some
+    yet to come side effect.
+    
+    The callback is only used for flow control -- it should fire with a None
+    value, since this value is going to be ignored. 
+    
+    IT CAN ONLY BE USED WITH A NON STANDARD IMPLEMENTATION OF SITE (see
+    prov2.servers.http_site.Site).
+    
+    """
+
+    def _pre_handle(self, path, request):
+        """This SHOULD be overridden in derived classes and must return a
+        deferred that will eventually fire.
+        
+        """
+        return defer.succeed(None)
+
+    def getChild(self, path, request):
+        d = self._pre_handle(path, request)
+        d.addCallback(lambda _: self._next_service(path, request))
 
 
 class HTTPLogService(HTTPHookService):
@@ -65,7 +102,7 @@ class HTTPLogService(HTTPHookService):
 
 
 if __name__ == '__main__':
-    from twisted.web.server import Site
+    from prov2.servers.http_site import Site
     from twisted.web.resource import NoResource
     from twisted.python import log
     import sys

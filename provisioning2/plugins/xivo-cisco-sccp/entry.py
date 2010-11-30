@@ -28,8 +28,9 @@ __license__ = """
 """
 
 import re
-from prov2.util import to_mac
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper
+from prov2.util import norm_mac
+from twisted.internet import defer
 
 
 _TFTP_FILENAME_REGEX = [
@@ -48,8 +49,13 @@ def _tftp_identifier(packet):
         if m:
             dev = {'vendor': 'Cisco'}
             if m.lastindex == 1:
-                dev['mac'] = to_mac(m.group(1))
+                dev['mac'] = norm_mac(m.group(1))
             return dev
+
+
+class _TFTPDeviceInfoExtractor(object):
+    def extract(self, request, request_type):
+        return defer.succeed(_tftp_identifier(request))
 
 
 class CiscoSccpPlugin(StandardPlugin):
@@ -67,7 +73,7 @@ class CiscoSccpPlugin(StandardPlugin):
         return self._fetchfw_helper.services()
     
     def tftp_dev_info_extractor(self):
-        return (_tftp_identifier,)
+        return (_TFTPDeviceInfoExtractor(),)
     
     def device_types(self):
         return [('Cisco', model, '9.0.3') for model in ('7941G', '7961G')]

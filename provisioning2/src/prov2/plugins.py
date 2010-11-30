@@ -142,13 +142,10 @@ class Plugin(object):
     # Methods for TFTP/HTTP services
     
     def http_dev_info_extractors(self):
-        """Return a sequence of HTTP 'extract_device_info' functions. Return
-        an empty sequence if no HTTP functions are available.
+        """Return a potentially empty sequence of objects providing the
+        IDeviceInfoExtractor interface for HTTP requests.
         
-        An HTTP identifier is a callable object that takes a request object
-        (see twisted.web.http.Request) and return a potentially partial
-        device info object (see prov2.servers.devices.device) if it has
-        identified at least part of the device, else None.
+        In this case, request objects are twisted.web.http.Request objects.
         
         """
         return ()
@@ -163,13 +160,11 @@ class Plugin(object):
         return NoResource('Not found')
     
     def tftp_dev_info_extractors(self):
-        """Return a sequence of TFTP 'extract_device_info' functions. Return
-        an empty sequence if no TFTP functions are available.
-         
-        A TFTP identifier is a callable object that takes a packet object
-        (see prov2.servers.tftp.packet) and return a potentially partial
-        device info object (see prov2.servers.devices.device) if it has
-        identified at least part of the device, else None.
+        """Return a potentially empty sequence of objects providing the
+        IDeviceInfoExtractor interface for TFTP request.
+        
+        In this case, request objects are as defined in the
+        prov2.servers.tftp.service module.
         
         """
         return ()
@@ -205,6 +200,8 @@ class Plugin(object):
         """ 
         pass
     
+    # XXX should configure returns a deferred for flow control, that will fire
+    #     once the configuration is done ?
     def configure(self, dev_info, config):
         """Apply a device specific configuration to a device.
         
@@ -214,9 +211,16 @@ class Plugin(object):
         Raise an error if there's not enough information in dev_info.
         
         """
-        # TODO add an option to mean if the configuration should be 'applied'
-        # (for example by asking the device to reload its configuration file)
-        # or if it should only 'prepare' the environment
+        pass
+    
+    def reload(self, dev_info, config):
+        """Ask the device to reload its configuration files. This only
+        applies to phone that uses configurations files (i.e. Siemens
+        C470IP are excluded for example).
+        
+        Raise an error if the device can't not be asked to reload.
+        
+        """
         pass
 
 

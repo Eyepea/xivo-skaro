@@ -32,7 +32,10 @@ def to_ip(ip_string):
     '\\xc0\\xa8 j'
     
     """
-    return socket.inet_aton(ip_string)
+    try:
+        return socket.inet_aton(ip_string)
+    except socket.error:
+        raise ValueError("'%s' is not a valid dotted quad IPv4 address")
 
 
 def from_ip(packed_ip):
@@ -46,7 +49,20 @@ def from_ip(packed_ip):
     '192.168.32.106'
     
     """
-    return socket.inet_ntoa(packed_ip)
+    try:
+        return socket.inet_ntoa(packed_ip)
+    except socket.error:
+        raise ValueError("'%s' is not a valid packed IPv4 address")
+
+
+def norm_ip(ip_string):
+    """Return a normalized representation of an IPv4 address string, which
+    is the dotted quad notation.
+    
+    Raise a ValueError if the IPv4 address is invalid. 
+    
+    """
+    return from_ip(to_ip(ip_string))
 
 
 _MAC_ADDR = re.compile(r'^[\da-fA-F]{1,2}([:-]?)(?:[\da-fA-F]{1,2}\1){4}[\da-fA-F]{1,2}$')
@@ -91,6 +107,30 @@ def from_mac(packed_mac, separator=':', uppercase=False):
     else:
         fmt = '%02x'
     return separator.join(fmt % ord(e) for e in packed_mac)
+
+
+def norm_mac(mac_string):
+    """Return a lowercase, separated by colon, representation of a MAC
+    address string.
+    
+    Raise a ValueError if the IPv4 address is invalid.
+    
+    >>> norm_mac('0011223344aa')
+    '00:11:22:33:44:aa'
+    >>> norm_mac('0011223344AA')
+    '00:11:22:33:44:aa'
+    >>> norm_mac('00-11-22-33-44-AA')
+    '00:11:22:33:44:aa'
+    >>> norm_mac('00:11:22:33:44:aa')
+    '00:11:22:33:44:aa'
+     
+    """
+    return from_mac(to_mac(mac_string))
+
+
+def format_mac(mac_string, separator=':', uppercase=False):
+    """Return a frelly formatted representation of a MAC address string."""
+    return from_mac(to_mac(mac_string), separator, uppercase)
 
 
 if __name__ == '__main__':

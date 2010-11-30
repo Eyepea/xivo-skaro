@@ -2,8 +2,15 @@
 
 """Device configuration module.
 
+A configuration object (config object) is a mapping object, with value as defined
+below.
+
+A configuration manager (config manager) is a mapping object where keys are
+config IDs (string) and values are tuple (config object, sequence of config
+IDs).
+
 Below is the list of 'standardized' parameters that can be found in
-configuration mapping objects at the plugin level.
+configuration objects at the plugin level.
 
 TODO put more details about the type, valid values, optional/mandatory...
      and maybe put this at somewhere else (plugin module?)
@@ -26,7 +33,7 @@ locale
   The locale name (ex.: fr_FR, en_US)
 simultcalls
   The number of simultaneous calls (ex.: 5)
-subscribemwi
+subscribe_mwi
   A boolean for if we should subscribe for message notification or not
 
 vlan
@@ -132,102 +139,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO delete the 2 next classes, replaced by simple dictionary objects and the
-# flatten_config function
-class Config(dict):
-    """A configuration object... but more precisely...
-    
-    A dictionary that, when a lookup fail, will look into every of its
-    fallback dictionaries.
-    
-    Note that only the get, __getitem__ and __contains__ methods have been
-    overriden -- else it's a standard dictionary objects. This means you
-    can have something like '2 in d'
-    
-    """
-    cfg_manager = None
-    
-    def __init__(self):
-        self.fallbacks = set()
-        # fallbacks might not be the right word... a list of string
-        # which represent configuration name of other dictionary
-    
-    def get(self, key, default=None):
-        try:
-            return self[key]
-        except KeyError:
-            return default
-    
-    def __getitem__(self, key):
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            for fallback in self.fallbacks:
-                # XXX there's a slight problem of exception hiding in the next
-                # 2 lines... if the next line raise an exception but has been
-                # called by this method in another object, the exception will
-                # be hidden
-                config = self.cfg_manager[fallback]
-                try:
-                    return config[key]
-                except KeyError:
-                    pass
-        raise KeyError(key)
-    
-    def __contains__(self, item):
-        try:
-            self[item]
-        except KeyError:
-            return False
-        else:
-            return True
-
-
-class ConfigManager(dict):
-    def __setitem__(self, key, value):
-        """Set an item and set this item configuration manager to
-        this object...
-        
-        """
-        value.cfg_manager = self
-        dict.__setitem__(self, key, value)
-
-    def __delitem__(self, key):
-        """Delete the item and remove all reference to this
-        item from the other configuration objects.
-        
-        """
-        dict.__delitem__(self, key)
-        for config in self.itervalues():
-            config.fallbacks.discard(key)
-
-
-"""
-A configuration object (config object) is a mapping object.
-
-A configuration manager (config manager) is a mapping object where keys are
-config object name and values are tuple (config object, sequence of config
-object names).
-
-"""
-
-def list_config(cfg_manager, cfg_name):
-    """Return a set of all the config object name that a config
-    inherit directly or indirectly, excluding itself in any case.
-    
-    """
-    visited = set()
-    def aux(cur_cfg_name):
-        if cur_cfg_name in visited:
-            return
-        visited.add(cur_cfg_name)
-        cfg_base_names = cfg_manager[cur_cfg_name][1]
-        for cfg_base_name in cfg_base_names:
-            aux(cfg_base_name)
-
-    aux(cfg_name)
-    visited.remove(cfg_name)
-    return visited
+import copy
 
 
 def _rec_update_dict(old_vals, new_vals):
@@ -237,30 +149,54 @@ def _rec_update_dict(old_vals, new_vals):
             if isinstance(old_v, dict):
                 _rec_update_dict(old_v, v)
             else:
-                old_vals[k] = v
+                old_vals[k] = copy.deepcopy(v)
+                ## This also works if we don't want to use deepcopy:
+                #old_vals[k] = {}
+                #_rec_update_dict(old_vals[k], v)
         else:
             old_vals[k] = v
 
 
-def flatten_config(cfg_manager, cfg_name):
-    """Take a config manager and a config name and return a dictionary
-    with all the items inherited from the base config. Dictionary object
-    are correctly updated and not overriden.
-
-    """
-
-    # XXX what should we do with list ? I guess not treating them as a special case
-    # is the right thing to do right now, especially that list can
-    # be modeled as dictionary where keys are numbers
-    res = {}
-    def rec_flatten(cfg_name, visited):
-        if cfg_name in visited:
-            return
-        visited.add(cfg_name)
-        cfg, cfg_base_names = cfg_manager[cfg_name]
-        for cfg_base_name in cfg_base_names:
-            rec_flatten(cfg_base_name, visited.copy())
-        _rec_update_dict(res, cfg)
+class ConfigManager(dict):
+    def list(self, cfg_id):
+        """Return the sequence of base config IDs of a config."""
+        visited = set()
+        def aux(cur_cfg_id):
+            if cur_cfg_id in visited:
+                return
+            visited.add(cur_cfg_id)
+            cfg_base_ids = self[cur_cfg_id][1]
+            for cfg_base_id in cfg_base_ids:
+                aux(cfg_base_id)
     
-    rec_flatten(cfg_name, set())
-    return res
+        aux(cfg_id)
+        visited.remove(cfg_id)
+        return visited
+    
+    def flatten(self, cfg_id):
+        """Return a config object with every parameters from its bases config
+        present.
+        
+        """
+        res = {}
+        def rec_flatten(cur_cfg_id, visited):
+            if cur_cfg_id in visited:
+                return
+            visited.add(cur_cfg_id)
+            cfg, cfg_base_ids = self[cur_cfg_id]
+            for cfg_base_id in cfg_base_ids:
+                rec_flatten(cfg_base_id, visited.copy())
+            _rec_update_dict(res, cfg)
+        
+        rec_flatten(cfg_id, set())
+        return res
+    
+    def remove(self, cfg_id):
+        """Remove config with ID cfg_id from and then remove every reference to
+        this config from the other configs.
+        
+        """ 
+        del self[cfg_id]
+        for _, cfg_base_ids in self.itervalues():
+            if cfg_id in cfg_base_ids:
+                cfg_base_ids.remove(cfg_id)
