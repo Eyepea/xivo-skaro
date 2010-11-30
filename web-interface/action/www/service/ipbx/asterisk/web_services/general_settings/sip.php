@@ -35,6 +35,13 @@ switch($act)
 	case 'view':
 	default:
 		$info = $appgeneralsip->get_all_val_by_category();
+
+		// mwi and register MUST be list of values
+		if(array_key_exists('mwi', $info) && !is_array($info['mwi'][0]))
+			$info['mwi'] = array($info['mwi']);
+		if(array_key_exists('register', $info) && !is_array($info['register'][0]))
+			$info['register'] = array($info['register']);
+
 		$info['authentication'] = $modauth->get_all_where(array('usersip_id' => null));
 
 		$_TPL->set_var('info',$info);

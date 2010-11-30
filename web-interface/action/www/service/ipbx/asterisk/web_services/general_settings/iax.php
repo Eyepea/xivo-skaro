@@ -33,6 +33,9 @@ switch($act)
 	case 'view':
 	default:
 		$info = $appgeneraliax->get_all_val_by_category();
+		// mwi and register MUST be list of values
+		if(array_key_exists('register', $info) && !is_array($info['register'][0]))
+			$info['register'] = array($info['register']);
 
 		$_TPL->set_var('info',$info);
 		break;
