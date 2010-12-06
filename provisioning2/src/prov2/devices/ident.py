@@ -66,7 +66,8 @@ class IDeviceInfoExtractor(Interface):
         Note that the IP address MUST NOT be returned in the device info
         object.
         
-        request_type is either 'http' or 'tftp'.
+        So far, request_type is either 'http' or 'tftp', for HTTP and TFTP
+        request respectively.
         
         XXX IN FACT, THIS METHOD RETURN A DEFERRED THAT WILL CALLBACK WITH EITHER
         A DEVICE INFO OBJECT OR FALSE IF NO INFORMATION COULD BE EXTRACTED.
@@ -74,13 +75,20 @@ class IDeviceInfoExtractor(Interface):
         """
 
 
-class NullDeviceInfoExtractor(object):
-    """Device info extractor that never return device information."""
+class StaticDeviceInfoExtractor(object):
+    """Device info extractor that always return that same device information.
+    
+    Note: can be used as a 'NullDeviceInfoExtractor' if 'self.dev_info is None'.
+    
+    """
     
     implements(IDeviceInfoExtractor)
     
+    def __init__(self, dev_info=None):
+        self.dev_info = dev_info
+
     def extract(self, request, request_type):
-        return defer.succeed(None)
+        return defer.succeed(self.dev_info)
 
     
 class OmapiDeviceInfoExtractor(object):
@@ -137,7 +145,8 @@ class TypeBasedDeviceInfoExtractor(object):
     def extract(self, request, request_type):
         if request_type in self.extractor_map:
             return self.extractor_map[request_type].extract(request, request_type)
-        return defer.succeed(None)
+        else:
+            return defer.succeed(None)
 
 
 class CompositeDeviceInfoExtractor(object):
@@ -295,11 +304,53 @@ class CollaboratingDeviceInfoExtractor(CompositeDeviceInfoExtractor):
                                     consumeErrors=True)
         dev_infos = yield dlist
         dev_info = {}
+        updater = self._updater_factory()
         for success, cur_dev_info in dev_infos:
             if success and cur_dev_info:
-                updater = self._updater_factory() 
                 updater.update(dev_info, cur_dev_info)
         defer.returnValue(dev_info)
+
+
+class PluginDeviceInfoExtractor(object):
+    implements(IDeviceInfoExtractor)
+    
+    def __init__(self, pg_id, pg_mgr):
+        self._pg_id = pg_id
+        self._pg_mgr = pg_mgr
+        
+    def extract(self, request, request_type):
+        # XXX could be more efficient if we could be notified of plugin changes
+        if self._pg_id in self._pg_mgr:
+            pg = self._pg_mgr[self._pg_id]
+            if request_type == 'http':
+                return pg.http_dev_info_extractor.extract(request, request_type)
+            elif request_type == 'tftp':
+                return pg.tftp_dev_info_extractor.extract(request, request_type)
+        return defer.succeed(None)
+
+
+class AllPluginsDeviceInfoExtractor(object):
+    implements(IDeviceInfoExtractor)
+    
+    def __init__(self, extractor_factory, pg_mgr):
+        """
+        extractor_factory -- a function taking a list of extractors and
+          returning an extractor.
+        """
+        self.extractor_factory = extractor_factory
+        self._pg_mgr = pg_mgr
+    
+    def extract(self, request, request_type):
+        # XXX could be more efficient if we could be notified of plugin changes
+        if request_type == 'http':
+            extractor = self.extractor_factory([pg.http_dev_info_extractor() for
+                                                pg in self._pg_mgr.itervalues()])
+            return extractor.extract(request, request_type)
+        elif request_type == 'tftp':
+            extractor = self.extractor_factory([pg.tftp_dev_info_extractor() for
+                                                pg in self._pg_mgr.itervalues()])
+            return extractor.extract(request, request_type)
+        return defer.succeed(None)
 
 
 # XXX maybe change the name so that it's more clear that this can have
@@ -395,13 +446,15 @@ class FirstCompositeDeviceRetriever(object):
 
 
 class IDeviceUpdater(Interface):
-    """Update a device object device from an info object. The 'plugin'
-    and 'config' file should not be updated here; more specialized interface
-    have been created to handle these case. They can do it, but they won't
-    be able to ask for a reconfiguration.
+    """Update a device object device from an info object.
     
-    This operation can have side effect, like updating the device manager.
-    In fact, being able to do side effects is why this interface exist.
+    This operation can have side effect, like updating the device. In fact,
+    being able to do side effects is why this interface exist.
+    
+    Also, you should refrain from doing stupid thing, like removing the
+    'ip' key, or modifying the 'config' value without returning true. This
+    break this interface contract, and will yield to exception, incorrect
+    behaviours elsewhere in the application.  
      
     """
     
@@ -409,6 +462,8 @@ class IDeviceUpdater(Interface):
         """Update a device object with a device info object. Return true
         if the device has been updated and should probably be reconfigured,
         false if it has not.
+        
+        # XXX should specify the return value more clearly
         
         dev -- a nonempty device object
         dev_info -- a nonempty device info object for which the key 'ip' is
@@ -425,6 +480,32 @@ class NullDeviceUpdater(object):
     implements(IDeviceUpdater)
     
     def update(self, dev, dev_info, request, request_type):
+        return False
+
+
+class StaticDeviceUpdater(object):
+    """Static device updater that update a key-value pair of the device.
+    
+    If the key is already present in the device, the force_update attribute
+    determine the behavior; if true, this key will be updated, else it
+    won't.
+    
+    """
+    
+    implements(IDeviceUpdater)
+    
+    force_update = False
+    
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+    
+    def update(self, dev, dev_info, request, request_type):
+        if self.force_update or self.key not in dev:
+            old_value = dev.get(self.key)
+            if old_value != self.value:
+                dev[self.key] = self.value
+                return True
         return False
 
 
@@ -483,34 +564,9 @@ class LoggingDeviceUpdater(object):
         return False
 
 
-class StaticDeviceUpdater(object):
-    """Static device updater that update a key-value pair of the device.
-    
-    If the key is already present in the device, the force_update attribute
-    determine the behavior; if true, this key will be updated, else it
-    won't.
-    
-    """
-    
-    implements(IDeviceUpdater)
-    
-    force_update = False
-    
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-    
-    def update(self, dev, dev_info, request, request_type):
-        if self.force_update or self.key not in dev:
-            old_value = dev.get(self.key)
-            if old_value != self.value:
-                dev[self.key] = self.value
-                return True
-        return False
-
-
 # XXX temporary until the new 'plugin association' infrastructure
-#     is put in place
+#     is put in place. If we keep it, we'll need to modify it to support
+#     plugin 'hot-plugging'.
 class MappingPluginDeviceUpdater(object):
     """Associate a device info to the plugin that says that support this type
     of device. This must be an exact match.
@@ -555,6 +611,71 @@ class CompositeDeviceUpdater(object):
         return updated
 
 
+class IDeviceRouter(Interface):
+    """A device router object return route ID (i.e. a routing destination)
+    from device objects.
+    
+    Note: right now, only plugin ID are valid route ID, and it might stay
+    this way for a long time. So basically, every you see route, think plugin.
+    
+    """
+    
+    def route(dev):
+        """Return a route ID from a device object, or None if there's no
+        route.
+        
+        dev -- either a device object or None.
+        
+        """
+
+
+class PluginDeviceRouter(object):
+    """A device router that return the 'plugin' key from the device object if
+    it exists, or None in any other cases.
+    
+    """
+    
+    implements(IDeviceRouter)
+    
+    def route(self, dev):
+        if dev is None:
+            return None
+        else:
+            return dev.get('plugin')
+
+
+class StaticDeviceRouter(object):
+    """A device router that always return the same route ID.
+    
+    Note: can be used as a 'NullDeviceRouter' if 'self.route_id is None'.
+    
+    """
+    
+    implements(IDeviceRouter)
+    
+    def __init__(self, route_id=None):
+        self.route_id = route_id
+        
+    def route(self, dev):
+        return self.route_id
+
+
+class FirstCompositeDeviceRouter(object):
+    """A composite device router that returns the first not None route ID."""
+    
+    implements(IDeviceRouter)
+    
+    def __init__(self, routers):
+        self.routers = [] if routers is None else routers
+        
+    def route(self, dev):
+        for router in self.routers:
+            route_id = router.route(dev)
+            if route_id is not None:
+                return route_id
+        return None
+
+
 # XXX should we leave the dev_mgr and other manager in this class or should
 #     we inject them in the different 'handler' instances at create time ? This gives
 #     a bit more flexibility and the different manager are long lived objects
@@ -565,15 +686,15 @@ class RequestProcessingService(object):
     when processing a request from a device.
     
     """
-    dev_info_extractor = NullDeviceInfoExtractor()
+    dev_info_extractor = StaticDeviceInfoExtractor()
     dev_retriever = NullDeviceRetriever()
     dev_updater = NullDeviceUpdater()
+    dev_router = StaticDeviceRouter()
     
-    # TODO replace pg_map for a plugin manager
-    def __init__(self, dev_mgr, cfg_mgr, pg_map):
+    def __init__(self, dev_mgr, cfg_mgr, pg_mgr):
         self._dev_mgr = dev_mgr
         self._cfg_mgr = cfg_mgr
-        self._pg_map = pg_map
+        self._pg_mgr = pg_mgr
     
     @defer.inlineCallbacks
     def process(self, request, ip, request_type):
@@ -596,10 +717,8 @@ class RequestProcessingService(object):
         assert dev_info['ip'] == ip
         dev = self.dev_retriever.retrieve(dev_info, self._dev_mgr)
         
-        if dev is None:
-            # no device -> no route
-            defer.returnValue(None)
-        else:
+        # 3. Update the device
+        if dev is not None:
             # 3.1 Update the device
             reconfigure = self.dev_updater.update(dev, dev_info, request, request_type)
             
@@ -608,16 +727,17 @@ class RequestProcessingService(object):
                 if 'config' in dev and 'plugin' in dev:
                     cfg_id = dev['config']
                     pg_id = dev['plugin']
-                    if cfg_id not in self._cfg_mgr or pg_id not in self._pg_map:
+                    if cfg_id not in self._cfg_mgr or pg_id not in self._pg_mgr:
                         # XXX log ?
                         pass
                     else:
-                        pg = self._pg_map[pg_id]
+                        pg = self._pg_mgr[pg_id]
                         cfg = self._cfg_mgr.flatten(cfg_id)
                         pg.configure(dev, cfg)
         
-            # 4. return a 'routing destination ID'
-            defer.returnValue(dev.get('plugin'))
+        # 4. Return a route ID
+        route_id = self.dev_router.route(dev)
+        defer.returnValue(route_id)
 
 
 class HTTPRequestProcessingService(Resource):
@@ -626,15 +746,18 @@ class HTTPRequestProcessingService(Resource):
     default_service = NoResource('Nowhere to route this request.')
     """default_service -- an HTTP service (Resource) for which request with invalid
     route will be routed"""
+    # requets for plugin with no HTTP services will be served by this
+    # (default) service. Message might be confusing at first. 
     
-    def __init__(self, process_service, service_map):
+    
+    def __init__(self, process_service, service_factory, pg_mgr):
         """
-        service_map -- a mapping object where keys are 'route id' (usually plugin id)
-          and object are HTTP service (i.e. twisted.web.resource.Resource).
+        service_factory -- a function taking the plugin ID and the HTTP service
+          of the plugin and returning an HTTP service
         """
-        Resource.__init__(self)
         self._process_service = process_service
-        self._service_map = service_map
+        self.service_factory = service_factory
+        self._pg_mgr = pg_mgr
         
     @defer.inlineCallbacks
     def getChild(self, path, request):
@@ -642,8 +765,9 @@ class HTTPRequestProcessingService(Resource):
         d = self._process_service.process(request, ip, 'http')
         route_id = yield d
         
-        if route_id in self._service_map:
-            service = self._service_map[route_id]
+        if route_id in self._pg_mgr:
+            pg_service = self._pg_mgr[route_id].http_service()
+            service = self.service_factory(route_id, pg_service)
         else:
             service = self.default_service
         if service.isLeaf:
@@ -657,15 +781,17 @@ class TFTPRequestProcessingService(object):
     """A service that does TFTP request processing and routing."""
     
     default_service = TFTPNullService(errmsg="Nowhere to route this request")
-    
-    def __init__(self, process_service, service_map):
+
+    def __init__(self, process_service, service_factory, pg_mgr):
         self._process_service = process_service
-        self._service_map = service_map
+        self.service_factory = service_factory
+        self._pg_mgr = pg_mgr
     
     def handle_read_request(self, request, response):
         def aux(route_id):
-            if route_id in self._service_map:
-                service = self._service_map[route_id]
+            if route_id in self._pg_mgr:
+                pg_service = self._pg_mgr[route_id].tftp_service()
+                service = self.service_factory(pg_service)
             else:
                 service = self.default_service
             service.handle_read_request(request, response)

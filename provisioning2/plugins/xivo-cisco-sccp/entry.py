@@ -73,7 +73,7 @@ class CiscoSccpPlugin(StandardPlugin):
         return self._fetchfw_helper.services()
     
     def tftp_dev_info_extractor(self):
-        return (_TFTPDeviceInfoExtractor(),)
+        return _TFTPDeviceInfoExtractor()
     
     def device_types(self):
         return [('Cisco', model, '9.0.3') for model in ('7941G', '7961G')]

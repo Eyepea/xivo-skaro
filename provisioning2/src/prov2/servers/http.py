@@ -26,8 +26,12 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from twisted.web.resource import Resource
+from twisted.web.resource import IResource, Resource
 from twisted.internet import defer
+
+
+IHTTPService = IResource
+"""An HTTP service exactly the same thing as an IResource.""" 
 
 
 class BaseHTTPHookService(Resource):

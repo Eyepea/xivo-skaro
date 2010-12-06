@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import unittest
-from prov2.devices.config import *
+from prov2.devices.config import ConfigManager 
 
 
 class TestFlattenConfig(unittest.TestCase):
@@ -69,9 +69,28 @@ class TestFlattenConfig(unittest.TestCase):
         self.assertEqual(set(['cfg2', 'cfg1']), cfg_mgr.list('cfg3'))
         self.assertEqual(set([]), cfg_mgr.list('cfg4'))
         self.assertEqual(set(['cfg4', 'cfg3', 'cfg2', 'cfg1']), cfg_mgr.list('cfg5'))
-        
-    def test_do_deep_copy(self):
+
+    def test_flatten_does_deep_copy(self):
         cfg = {1: {2: {3: 3}}}
         cfg_mgr = ConfigManager({'cfg': (cfg, [])})
         self.assertNotEqual(id(cfg[1][2]), id(cfg_mgr.flatten('cfg')[1][2]))
 
+    def test_required_by_simple(self):
+        cfg = {}
+        cfg_mgr = ConfigManager({
+                    'cfg1': (cfg, []),
+                    'cfg2': (cfg, ['cfg1']),
+                    'cfg3': (cfg, ['cfg2']),
+                    'cfg4': (cfg, ['cfg2']),
+                    'cfg5': (cfg, ['cfg2', 'cfg1'])})
+        self.assertEqual(set([]), cfg_mgr.required_by('cfg3'))
+        self.assertEqual(set([]), cfg_mgr.required_by('cfg4'))
+        self.assertEqual(set([]), cfg_mgr.required_by('cfg5'))
+        self.assertEqual(set(['cfg3', 'cfg4', 'cfg5']), cfg_mgr.required_by('cfg2'))
+        self.assertEqual(set(['cfg2', 'cfg3', 'cfg4', 'cfg5']), cfg_mgr.required_by('cfg1'))
+        self.assertEqual(set([]), cfg_mgr.required_by('cfg1', maxdepth=0))
+        self.assertEqual(set(['cfg2', 'cfg5']), cfg_mgr.required_by('cfg1', maxdepth=1))
+
+    def test_required_by_should_raise_on_invalid(self):
+        cfg_mgr = ConfigManager()
+        self.assertRaises(KeyError, cfg_mgr.required_by, 'fa')

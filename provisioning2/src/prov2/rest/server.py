@@ -29,12 +29,12 @@ from twisted.web.resource import Resource, NoResource
 from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web import http
 from prov2.devices.device import DeviceManager
-from prov2.devices.util import simple_id_generator
+from prov2.devices.util import NumericIdGenerator
 from prov2.devices.config import ConfigManager
 from prov2.plugins import PluginManager
 from prov2.rest.util import *
 
-# TODO a lot more input checking is needed
+# TODO input checking
 
 
 PROV2_MIME_TYPE = 'application/vnd.proformatique.prov2+json'
@@ -44,102 +44,47 @@ if _PPRINT:
     json.dumps = functools.partial(json.dumps, sort_keys=True, indent=4)
 
 
-class ConfigurationError(Exception):
-    """Raised when its not possible to configure a device, either because
-    of missing information or because the operation has failed.
-    
-    """
-    pass
-
-
 class RestService(object):
-    # XXX should we have the managers available to the resource for immutable
-    # manipulation ? like flattening a config, or checking if an id is managed
-    # by the manager ?
+    # FIXME useless now that we have an 'application' object ? probably
     
-    def __init__(self, cfg_mgr, dev_mgr, pg_map):
-        self._cfg_mgr = cfg_mgr
-        self._dev_mgr = dev_mgr
-        # FIXME self._plugins is a mapping object where keys are plugin name
-        #       and values are plugin object. This represent all the loaded
-        #       plugins. We are not sure who has the role to load the plugins.
-        #       Should the plugin manager, like the other managers, maintain
-        #       the loaded plugins ? 
-        self._pg_map = pg_map
+    def __init__(self, app):
+        self._app = app
         
     def add_dev(self, dev):
         """Add a device to the device manager and return the ID of the newly
-        created device. This method only add the device to the device manager,
-        it does not configure it; see method reconfigure_dev
+        created device.
         
         dev -- a device object
         
         """
-        return self._dev_mgr.add(dev)
+        return self._app.create_dev(dev)
     
     def remove_dev(self, dev_id):
         """Remove the device with ID dev_id. Raise a KeyError if dev_id is
         not a known device ID.
         
         """
-        del self._dev_mgr[dev_id]
+        self._app.delete_dev(dev_id)
         
     def has_dev(self, dev_id):
-        return dev_id in self._dev_mgr
+        return dev_id in self._app.dev_mgr
     
     def get_dev(self, dev_id):
-        """Return the device object which ID is dev_id, or raise a KeyError."""
-        return self._dev_mgr[dev_id]
+        """Return the device object which ID is dev_id."""
+        return self._app.retrieve_dev(dev_id)
     
     def set_dev(self, dev_id, dev):
         """Set the device object with ID dev_id."""
-        self._dev_mgr[dev_id] = dev
-    
-    def _get_plugin_from_dev(self, dev):
-        if 'plugin' not in dev:
-            raise ConfigurationError("Device has no plugin value")
-        plugin_id = dev['plugin']
-        if plugin_id not in self._pg_map:
-            raise ConfigurationError("Device has unknown plugin value '%s'" % plugin_id)
-        return self._pg_map[plugin_id]
+        self._app.update_dev(dev_id, dev)
     
     def reconfigure_dev(self, dev_id):
-        """Configure the device with ID dev_id, or raise a ConfigurationError
-        if the device has not been configured successfully, or a KeyError
-        if dev_id is not a known device ID.
-        
-        Two common reasons for a device not being able to be configured is:
-        - no plugin associated with the device
-        - no config associated with the device
-        
-        """
-        dev = self._dev_mgr[dev_id]
-        plugin = self._get_plugin_from_dev(dev)
-        
-        if 'config' not in dev:
-            raise ConfigurationError("Device has no config value")
-        cfg_id = dev['config']
-        if cfg_id not in self._cfg_mgr:
-            raise ConfigurationError("Device has unknown config value '%s'" % cfg_id)
-        flat_config = self._cfg_mgr.flatten(cfg_id)
-
-        plugin.configure(dev, flat_config)
-        
+        pass
+    
     def reload_dev(self, dev_id):
-        """Make the device reload its configuration. This makes sense only for
-        device for which the configure and reload process is separate.
-        
-        Raise ConfigurationError if it wants to.
+        """Make the device reload its configuration.
         
         """
-        # XXX This has yet to be seen how its going to be implemented. Are we
-        # going to call an external reload service on the asterisk
-        # for example, which is necessary for things like reloading a Cisco
-        # SCCP phone) and I guess some SIP phone only accept SIP notify if
-        # they comes from their registrar/proxy, this has to be tested, etc.
-        dev = self._dev_mgr[dev_id]
-        plugin = self._get_plugin_from_dev(dev)
-        plugin.reload(dev)
+        pass
     
     def list_dev(self, filter_fun=None):
         """Return the list of (device IDs, device) for which filter_fun(dev) is true.
@@ -148,25 +93,25 @@ class RestService(object):
         
         """ 
         if filter_fun is None:
-            return self._dev_mgr.iteritems()
+            return self._app.dev_mgr.iteritems()
         else:
-            return ((dev_id, dev) for dev_id, dev in self._dev_mgr.iteritems() if filter_fun(dev))
+            return ((dev_id, dev) for dev_id, dev in self._app.dev_mgr.iteritems() if filter_fun(dev))
 
     def remove_cfg(self, cfg_id):
         # TODO currently, this does nothing to any device using this config. We'll
         #      want to clearly specify the behavior
-        self._cfg_mgr.remove(cfg_id)
+        self._app.cfg_mgr.remove(cfg_id)
     
     def has_cfg(self, cfg_id):
-        return cfg_id in self._cfg_mgr
+        return cfg_id in self._app.cfg_mgr
     
     def get_cfg(self, cfg_id):
         """Return a tuple (cfg, cfg_bases_id)."""
-        return self._cfg_mgr[cfg_id]
+        return self._app.cfg_mgr[cfg_id]
     
     def set_cfg(self, cfg_id, cfg):
         """cfg is a tuple (cfg, cfg_bases_id)."""
-        self._cfg_mgr[cfg_id] = cfg
+        self._app.cfg_mgr[cfg_id] = cfg
     
     def list_cfg(self):
         """Return the list of config IDs.
@@ -174,10 +119,10 @@ class RestService(object):
         This return a generator object.
         
         """
-        return self._cfg_mgr.iterkeys()
+        return self._app.cfg_mgr.iterkeys()
     
     def flatten_cfg(self, cfg_id):
-        return self._cfg_mgr.flatten(cfg_id)
+        return self._app.cfg_mgr.flatten(cfg_id)
 
 
 def dev_json_repr(dev, dev_id, dev_uri):
@@ -305,16 +250,14 @@ class DeviceReconfigureResource(Resource):
             request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
             return u"Device not found".encode('UTF-8')
         
-        try:
-            self._service.reconfigure_dev(dev_id)
-        except ConfigurationError, e:
-            request.setResponseCode(http.BAD_REQUEST)
-            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-            resp_content = u"Error while configuring the device: %s" % e
-            return resp_content.encode('UTF-8')
-        else:
-            request.setResponseCode(http.NO_CONTENT)
-            return ""
+        self._service.reconfigure_dev(dev_id)
+        request.setResponseCode(http.NO_CONTENT)
+        return ""
+#        except ConfigurationError, e:
+#            request.setResponseCode(http.BAD_REQUEST)
+#            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+#            resp_content = u"Error while configuring the device: %s" % e
+#            return resp_content.encode('UTF-8')
 
 
 class DeviceReloadResource(Resource):
@@ -331,16 +274,14 @@ class DeviceReloadResource(Resource):
             request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
             return u"Device not found".encode('UTF-8')
         
-        try:
-            self._service.reload_dev(dev_id)
-        except ConfigurationError, e:
-            request.setResponseCode(http.BAD_REQUEST)
-            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-            resp_content = u"Error while configuring the device: %s" % e
-            return resp_content.encode('UTF-8')
-        else:
-            request.setResponseCode(http.NO_CONTENT)
-            return ""
+        self._service.reload_dev(dev_id)
+#        except ConfigurationError, e:
+#            request.setResponseCode(http.BAD_REQUEST)
+#            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+#            resp_content = u"Error while configuring the device: %s" % e
+#            return resp_content.encode('UTF-8')
+        request.setResponseCode(http.NO_CONTENT)
+        return ""
 
 
 class ConfigResource(Resource):
@@ -351,8 +292,6 @@ class ConfigResource(Resource):
     
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
-        # FIXME travailler sur l'affichage, ne pas utiliser la notation en
-        #       tuple et probablement ajouter des hyperliens
         if not self._service.has_cfg(self._cfg_id):
             return NoResource().render(request)
         else:
@@ -488,7 +427,6 @@ class InstallablePluginsResource(Resource):
         request.setHeader('Content-Type', PROV2_MIME_TYPE)
         return json.dumps(res)
 
-    
 
 if __name__ == '__main__':
     import sys
@@ -498,7 +436,7 @@ if __name__ == '__main__':
     root = Resource()
     site = Site(root)
     
-    id_gen = simple_id_generator()
+    id_gen = NumericIdGenerator()
     dev_mgr = DeviceManager(id_gen)
     dev_mgr.add({'mac': '00:11:22:33:44:55',
                  'ip': '192.168.32.105',

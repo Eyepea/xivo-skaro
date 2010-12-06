@@ -47,23 +47,15 @@ __license__ = """
 
 
 class DeviceManager(dict):
+    """A device manager manages device objects. Each device has an unique ID
+    associated to it.
+    
+    """
+    
     # XXX if it's worth it, we could split the 'device management'
     # from the 'search' (search with cache or without cache) and a way
     # to notify the 'searcher' object of change to device manager (observer
     # pattern)
-    def __init__(self, id_gen):
-        self._id_gen = id_gen
-    
-    def add(self, dev):
-        """Add a new device with an automatically generated id
-        to this device manager.
-        
-        Return the ID of the newly added device.
-        
-        """
-        dev_id = self._id_gen.next()
-        self[dev_id] = dev
-        return dev_id
     
     def find(self, fun):
         """Return the first device ID for which fun(dev) is true, or None 

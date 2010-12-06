@@ -29,6 +29,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import atexit
 import time
 import sys
 from ConfigParser import RawConfigParser
@@ -40,29 +41,48 @@ from prov2.servers.http import HTTPLogService
 from prov2.servers.http_site import Site
 from prov2.devices.config import ConfigManager
 from prov2.devices.device import DeviceManager
-from prov2.devices.util import simple_id_generator
+from prov2.devices.util import NumericIdGenerator
 from prov2.plugins import PluginManager
 from prov2.rest.server import RestService, DevicesResource,\
     ConfigsResource, DeviceReconfigureResource, DeviceReloadResource
+from twisted.python.util import println
 
 
-CONFIG_FILENAME = '../../test-resources/etc/prov2.conf'
+class InvalidIdError(Exception):
+    """Raised when a passed ID is invalid, not necessary because of its type,
+    but because of its semantic.
+    
+    """
+    pass
 
-def read_config(filename=CONFIG_FILENAME):
+class UsedIdError(InvalidIdError):
+    """Raised if we try setting/adding a new device with an ID already in
+    used.
+    
+    """
+    pass
+
+
+class UnusedIdError(InvalidIdError):
+    pass
+
+
+def _read_config(filename):
     config = RawConfigParser()
     with open(filename, 'r') as fobj:
         config.readfp(fobj)
-    
+
     # XXX right now, we only transform the RawConfigParser object to
     # a more manipulable mapping of mapping object
-    result = {'plugins': {'plugins_dir': '/var/lib/pf-xivo/prov2/plugins'}}
+    result = {'pg_mgr': {'plugins_dir': '/var/lib/pf-xivo/prov2/plugins',
+                         'cache_dir': '/var/cache/pf-xivo/prov2/plugins'}}
     for section in config.sections():
         in_result = result.setdefault(section, {})
         for option in config.options(section):
             in_result[option] = config.get(section, option)
     
     # check if every mandatory options are specified
-    mandatory = {'plugins': ['server']}
+    mandatory = {'pg_mgr': ['server']}
     for section in mandatory:
         if section not in result:
             raise ValueError('mandatory section "%s" not specified' % section)
@@ -73,60 +93,364 @@ def read_config(filename=CONFIG_FILENAME):
                                  (option, section))
     return result
 
-config = read_config()
-#print config
+
+class Application(object):
+    """
+    Device objects in the device manager used by an application instance
+    have the following restrictions:
+    
+    - 'config' is either absent, or dev['config'] in self.cfg_mgr
+    - 'plugin' is either absent, or dev['plugin'] in self.pg_mgr
+    
+    Config objects (tuple) in the config manager used by an application
+    instance have the following restrictions:
+    
+    - every base config of a config must be in self.cfg_mgr
+    - len(bases) == len(set(bases))
+    
+    """
+    
+    DEF_CONFIG_FILENAME = '../../test-resources/etc/prov2.conf'
+    
+    def __init__(self, config_filename=DEF_CONFIG_FILENAME):
+        config = _read_config(config_filename)
+        self.dev_mgr = DeviceManager()
+        self.cfg_mgr = ConfigManager()
+        self.pg_mgr = PluginManager(config['pg_mgr']['plugins_dir'],
+                                    config['pg_mgr']['cache_dir'],
+                                    {'server': config['pg_mgr']['server']})
+        self._config = config
+        self._dev_id_gen = NumericIdGenerator()
+        self._cfg_id_gen = NumericIdGenerator()
+        
+        for pg_info in self.pg_mgr.list_installed():
+            pg_id = pg_info['name']
+            self._load_pg(pg_id)
+    
+    def close(self):
+        self.pg_mgr.close()
+    
+    # Device operations
+        
+    def _check_valid_dev(self, dev):
+        if 'config' in dev:
+            if dev['config'] not in self.cfg_mgr:
+                raise ValueError('device has invalid config value')
+        if 'plugin' in dev:
+            if dev['plugin'] in self.cfg_mgr:
+                raise ValueError('device has invalid plugin value')
+    
+    def _get_plugin(self, dev):
+        """Return the plugin of dev, or None."""
+        if 'plugin' in dev:
+            pg_id = dev['plugin']
+            if pg_id in self.pg_mgr:
+                return self.pg_mgr[pg_id]
+        return None
+    
+    def _get_config(self, dev):
+        """Return the flattened config of dev, or None."""
+        if 'config' in dev:
+            cfg_id = dev['config']
+            if cfg_id in self.cfg_mgr:
+                return self.cfg_mgr.flatten(cfg_id)
+        return None
+    
+    def _get_plugin_and_config(self, dev):
+        """Return either a tuple (plugin object, config object) or either
+        a tuple (None, None) if one of the two object is not available.
+        
+        """
+        plugin = self._get_plugin(dev)
+        if plugin is not None:
+            config = self._get_config(dev)
+            if config is not None:
+                return plugin, config
+        return None, None
+    
+    def _configure_dev(self, dev):
+        """Call plugin.configure(dev, config) if possible.
+        
+        Its possible if dev has a config ID and a plugin ID which refer to
+        valid config and plugin respectively. 
+        
+        """
+        plugin, config = self._get_plugin_and_config(dev)
+        if plugin is not None:
+            plugin.configure(dev, config)
+    
+    def _deconfigure_dev(self, dev):
+        """Call plugin.deconfigure(dev) if possible.
+        
+        Its possible if dev has a plugin ID which refer to a valid plugin.
+        """
+        plugin = self._get_plugin(dev)
+        if plugin is not None:
+            plugin.deconfigure(dev)
+    
+    def _reload_dev(self, dev):
+        """Call plugin.reload(dev, config) if possible."""
+        plugin, config = self._get_plugin_and_config(dev)
+        if plugin is not None:
+            return plugin.reload(dev, config)
+    
+    def create_dev(self, dev, dev_id=None):
+        """Add a new device to the device manager and return the device ID.
+        
+        dev_id -- a device ID or None
+        
+        Pre:  -dev_id not in self.dev_mgr
+        Post: -dev has been added to the device manager
+              -if dev.get('plugin') in self.pg_mgr \
+                 and dev.get('config') in self.cfg_mgr ->
+                 self.pg_mgr[dev['plugin']].configure(dev, cfg_mgr[dev['config']])
+        """
+        self._check_valid_dev(dev)
+        if dev_id is None:
+            dev_id = self._dev_id_gen.next_id(self.dev_mgr)
+            assert dev_id not in self.dev_mgr
+        elif dev_id in self.dev_mgr:
+            raise UsedIdError(dev_id)
+        self.dev_mgr[dev_id] = dev
+        self._configure_dev(dev)
+        return dev_id
+    
+    def retrieve_dev(self, dev_id):
+        """Equivalent to 'self.dev_mgr[dev_id]'. This is only done so that
+        we have the 4 CRUD operation available (i.e. only for symmetry).
+        
+        """
+        try:
+            return self.dev_mgr[dev_id]
+        except KeyError:
+            raise UnusedIdError(dev_id)
+    
+    def update_dev(self, dev_id, new_dev):
+        """Update the device with dev_id to new_dev. This is a 'replace'
+        operation. If you want only to update some of it's element, you need
+        to first retrieve the device, create a new one from it and update the
+        new device, then call this method.
+        
+        Pre:  - dev_id in self.dev_mgr
+        Post: - deconfigure and configure might have been called... you should
+                look at the source code...
+        
+        """
+        self._check_valid_dev(new_dev)
+        try:
+            old_dev = self.dev_mgr[dev_id]
+        except KeyError:
+            raise UnusedIdError(dev_id)
+        else:
+            self.dev_mgr[dev_id] = new_dev
+            
+            old_cfg_id = old_dev.get('config')
+            new_cfg_id = new_dev.get('config')
+            old_pg_id = old_dev.get('plugin')
+            new_pg_id = new_dev.get('plugin')
+            cfg_diff = old_cfg_id != new_cfg_id
+            pg_diff = old_pg_id != new_pg_id
+            if pg_diff:
+                # next lines use the fact that these call might be no-op
+                self._deconfigure_dev(old_dev)
+                self._configure_dev(new_dev)
+            elif cfg_diff:
+                assert not pg_diff
+                self._configure_dev(new_dev)
+    
+    def delete_dev(self, dev_id):
+        """Remove a device from a device manager.
+        
+        Pre:  - dev_id in self.dev_mgr
+        Post: - deconfigure has been called if the device has been configured
+        
+        """
+        try:
+            dev = self.dev_mgr[dev_id]
+        except KeyError:
+            raise UnusedIdError(dev_id)
+        else:
+            self._deconfigure_dev(dev)
+            
+    def reload_dev(self, dev_id):
+        """Force the device to reload it's configuration."""
+        try:
+            dev = self.dev_mgr[dev_id]
+        except KeyError:
+            raise UnusedIdError(dev_id)
+        else:
+            # XXX what do we do with the callback...
+            return self._reload_dev(dev)
+    
+    # Config operations
+    
+    def _check_valid_cfg(self, cfg):
+        bases = cfg[1]
+        for i, base in enumerate(bases):
+            if base not in self.cfg_mgr or base in bases[:i]:
+                raise ValueError('config has invalid bases value')
+    
+    def _configure_dev_from_cfgs(self, cfg_ids):
+        """Update every devices for which dev.get('config') in cfg_ids.""" 
+        for dev in self.dev_mgr.itervalues():
+            if dev.get('config') in cfg_ids:
+                self._configure_dev(dev)
+    
+    def create_cfg(self, cfg, cfg_id=None):
+        """Add a new config to the config manager and return the config ID.
+        
+        """
+        self._check_valid_cfg(cfg)
+        if cfg_id is None:
+            cfg_id = self._cfg_id_gen.next_id(self.cfg_mgr)
+            assert cfg_id not in self.cfg_mgr
+        elif cfg_id in self.cfg_mgr:
+            raise UsedIdError(cfg_id)
+        self.cfg_mgr[cfg_id] = cfg
+        return cfg_id
+    
+    def retrieve_cfg(self, cfg_id):
+        try:
+            return self.cfg_mgr[cfg_id]
+        except KeyError:
+            raise UnusedIdError(cfg_id)
+    
+    def update_cfg(self, cfg_id, new_cfg):
+        """Update the config with cfg_id to new_cfg.
+        
+        Every device that depends directly or indirectly on this config will
+        be passed as an argument to the configure method of their plugin. 
+        
+        """
+        self._check_valid_cfg(new_cfg)
+        if cfg_id not in self.cfg_mgr:
+            raise UnusedIdError(cfg_id)
+        self.cfg_mgr[cfg_id] = new_cfg
+        
+        # Note that it's possible for a config in the required_by set
+        # not to have been 'modified' by the fact that a config has
+        # been updated. Most common case is if the config override every
+        # parameters that the config cfg_id had/has. 
+        required_by = self.cfg_mgr.required_by(cfg_id)
+        self._configure_dev_from_cfgs(required_by)
+    
+    def delete_cfg(self, cfg_id, force=False):
+        if cfg_id not in self.cfg_mgr:
+            raise UnusedIdError(cfg_id)
+        if self.cfg_mgr.is_required(cfg_id):
+            if not force:
+                raise ValueError('config is required by other configs')
+            else:
+                required_by = self.cfg_mgr.required_by(cfg_id)
+                self.cfg_mgr.remove(cfg_id)
+#                for cfg_id in required_by:
+#                    cfg = self.cfg_mgr[cfg_id]
+#                    bases = cfg[1]
+#                    if cfg_id in bases:
+#                        bases.remove(cfg_id)
+                self._configure_dev_from_cfgs(required_by)
+        else:
+            del self.cfg_mgr[cfg_id]
+    
+    # Plugin operations
+    
+    def _load_pg(self, pg_id):
+        gen_cfg = self._config['general']
+        spec_cfg = self._config.get('pluginconfig_' + pg_id, {})
+        self.pg_mgr.load(pg_id, gen_cfg, spec_cfg)
+    
+    def _configure_dev_from_plugin(self, pg_id):
+        """Call plugin(dev, config) for every devices for which
+        dev.get('plugin') is pg_id.
+        
+        """
+        for dev in self.dev_mgr.itervalues():
+            if dev.get('plugin') == pg_id:
+                self._configure_dev(dev)
+    
+    def install_pg(self, pg_id):
+        """Install the plugin with pg_id.
+        
+        Return an object providing the IProgressOperation interface.
+        
+        Raise an Exception if the plugin is already installed.
+        
+        Raise an Exception if there's no installable plugin with the specified
+        name.
+        
+        Raise an InvalidParameterError if the plugin package is not in cache
+        and no 'server' param has been set.
+        
+        """
+        if self.pg_mgr.is_installed(pg_id):
+            raise Exception("plugin '%s' is already installed" % pg_id)
+        
+        pop = self.pg_mgr.install(pg_id)
+        def on_success(_):
+            self._load_pg(pg_id)
+        pop.deferred.addCallback(on_success)
+        return pop
+
+    def upgrade_pg(self, pg_id):
+        """Upgrade the plugin with pg_id.
+        
+        Same contract as install_pg, except that the plugin must already be
+        installed. 
+        
+        """
+        if not self.pg_mgr.is_installed(pg_id):
+            raise Exception("plugin '%s' is not already installed" % pg_id)
+        
+        pop = self.pg_mgr.upgrade(pg_id)
+        def on_success(_):
+            if pg_id in self.pg_mgr:
+                self.pg_mgr.unload(pg_id)
+            self._load_pg(pg_id)
+            self._configure_dev_from_plugin(pg_id)
+        pop.deferred.addCallback(on_success)
+        return pop
+    
+    def _is_plugin_unused(self, pg_id):
+        for dev in self.dev_mgr.itervalues():
+            if dev.get('plugin') == pg_id:
+                return False
+        return True
+    
+    def uninstall_pg(self, pg_id):
+        """Uninstall the plugin with pg_id.
+
+        Contraty to install and upgrade, this is a synchronous operation. It
+        returns nothing.
+        
+        Raise an Exception if the plugin is not already installed.
+        
+        Raise an Exception if at least one device depends on this plugin.
+        
+        """
+        if not self.pg_mgr.is_installed(pg_id):
+            raise Exception("plugin '%s' is not already installed" % pg_id)
+        if not self._is_plugin_unused(pg_id):
+            raise Exception("plugin '%s' is used by at least a device" % pg_id)
+        
+        self.pg_mgr.uninstall(pg_id)
 
 
-#plugins_dir = '../../plugins'
-#pm = PluginManager(plugins_dir, 'http://127.0.0.1:8000/')
-pm = PluginManager(config['plugins']['plugins_dir'], config['plugins']['server'])
+from twisted.internet import reactor
 
-#pm.update()
-#print list(pm.list_installable())
-#pm.install('xivo-aastra-2.6.0.1008')
-#pm.upgrade()
-#pm.uninstall('xivo-aastra-2.6.0.1008')
-#print list(pm.list_installed())
+app = Application()
+atexit.register(app.close)
 #sys.exit()
 
-# create config dicts
-plugin_config = {}
-for section in config:
-    if section.startswith('pluginconfig_'):
-        pg_name = section[len('pluginconfig_'):]
-        plugin_config[pg_name] = config[section]
+cfg_mgr = app.cfg_mgr
+dev_mgr = app.dev_mgr
+pg_mgr = app.pg_mgr
 
-# load all plugins
-#print plugin_config
-plugins = list(pm.load_all(config['general'], plugin_config))
-pg_map = dict((pg.name, pg) for pg in plugins)
-#pprint(plugins)
-#sys.exit()
-
-# install aastra plugin
-for pg in plugins:
-    if pg.name.startswith('xivo-aastra'):
-        pg_aastra = pg
-        break
-else:
-    print >>sys.stderr, "no aastra plugin"
-    sys.exit(1)
-#print pg_aastra.services()
-list_ed_srv = pg_aastra.services()['list_installed']
-list_able_srv = pg_aastra.services()['list_installable']
-#print list(list_ed_srv())
-#print list(list_able_srv())
-#pg_aastra.services()['install']('aastra-6731i', 'aastra-6757i')
-#sys.exit()
-
-
+# Create some config
 # a 'base' configuration
 xivo_ip = '192.168.33.4'
-prov_ip = '192.168.33.1'
-prov_http_port = '8080'
 base_cfg = {
-    'prov_ip': prov_ip,
-    'prov_http_port': prov_http_port,
+    'prov_ip': '192.168.33.1',
+    'prov_http_port': '8080',
     'locale': 'fr_CA',
     'timezone': 'America/Montreal',
     'subscribe_mwi': False,
@@ -187,16 +511,9 @@ dev1_cfg = {
     }
 }
 
-# common configure of the aastra plugin
-cfg_mgr = ConfigManager()
 cfg_mgr['base'] = (base_cfg, [])
 cfg_mgr['guest'] = (guest_cfg, ['base'])
 cfg_mgr['dev1'] = (dev1_cfg, ['base'])
-#pg_aastra.configure_common(cfg_mgr.flatten('base'))
-#fake_dev = {'mac': '\x00' * 6, 'ip': '\x00' * 4, 'vendor': 'Aastra',
-#            'model': '6731i', 'version': '2.6.0.2010'}
-#pg_aastra.configure(fake_dev, cfg_mgr.flatten('dev1'))
-#sys.exit()
 
 # fake configure a device with aastra plugin
 #def new_fake_params(prefix, param_names):
@@ -217,8 +534,40 @@ cfg_mgr['dev1'] = (dev1_cfg, ['base'])
 #pg_aastra.configure(fake_dev, flat_cfg)
 #sys.exit()
 
-# create a device manager
-dev_mgr = DeviceManager(simple_id_generator())
+
+# update the plugin definition file
+#println(list(pg_mgr.list_installable()))
+#pop = pg_mgr.update()
+#pop.deferred.addCallback(lambda _: println(list(pg_mgr.list_installable())))
+#pop.deferred.addBoth(lambda _: reactor.stop())
+#pm_mgr.uninstall('xivo-aastra-2.6.0.1008')
+#reactor.callLater(15, reactor.stop)
+#reactor.run()
+#sys.exit()
+
+# uninstall the xivo-aastra-plugin
+#print pg_mgr.items()
+#app.uninstall_pg('xivo-aastra-2.6.0.1008')
+#sys.exit()
+
+# install the xivo-aastra plugin
+#println(list(pg_mgr.list_installed()))
+#pop = app.install_pg('xivo-aastra-2.6.0.1008')
+#pop.deferred.addCallback(lambda _: println(list(pg_mgr.list_installed())))
+#pop.deferred.addBoth(lambda _: println(pop.status))
+#pop.deferred.addBoth(lambda _: reactor.stop())
+#reactor.callLater(15, reactor.stop)
+#reactor.run()
+#sys.exit()
+
+# install service of the aastra plugin
+#print pg_aastra.services()
+#list_ed_srv = pg_aastra.services()['list_installed']
+#list_able_srv = pg_aastra.services()['list_installable']
+#print list(list_ed_srv())
+#print list(list_able_srv())
+#pg_aastra.services()['install']('aastra-6731i', 'aastra-6757i')
+#sys.exit()
 
 def metaaff(prefix):
     def aff(message):
@@ -226,12 +575,15 @@ def metaaff(prefix):
     return aff
 
 
-http_xtors = [xtor for pg in plugins for xtor in pg.http_dev_info_extractors()]
-tftp_xtors = [xtor for pg in plugins for xtor in pg.tftp_dev_info_extractors()]
-http_xtor = LongestDeviceInfoExtractor(http_xtors)
-tftp_xtor = LongestDeviceInfoExtractor(tftp_xtors)
-request_dependant_xtor = TypeBasedDeviceInfoExtractor({'http': http_xtor, 'tftp': tftp_xtor})
-root_xtor = request_dependant_xtor
+#http_xtors = [xtor for xtor in map(lambda p: p.http_dev_info_extractor(), plugins) if
+#              xtor is not None]
+#tftp_xtors = [xtor for xtor in map(lambda p: p.tftp_dev_info_extractor(), plugins) if
+#              xtor is not None]
+#http_xtor = LongestDeviceInfoExtractor(http_xtors)
+#tftp_xtor = LongestDeviceInfoExtractor(tftp_xtors)
+#request_dependant_xtor = TypeBasedDeviceInfoExtractor({'http': http_xtor, 'tftp': tftp_xtor})
+all_pg_xtor = AllPluginsDeviceInfoExtractor(LongestDeviceInfoExtractor, pg_mgr)
+root_xtor = all_pg_xtor
 
 ip_retriever = IpDeviceRetriever()
 add_retriever = AddDeviceRetriver()
@@ -240,7 +592,7 @@ root_retriever = cmpz_retriever
 
 static_cfg_updater = StaticDeviceUpdater('config', 'guest')
 pg_updater = MappingPluginDeviceUpdater()
-for pg in plugins:
+for pg in pg_mgr.itervalues():
     pg_updater.add_plugin(pg)
 static_pg_updater = StaticDeviceUpdater('plugin', 'zero')
 class MyWeirdDeviceUpdater():
@@ -263,23 +615,25 @@ class MyWeirdDeviceUpdater():
         return False
 weird_updater = MyWeirdDeviceUpdater()
 every_updater = EverythingDeviceUpdater()
-cmpz_updater = CompositeDeviceUpdater([static_cfg_updater, pg_updater, static_pg_updater, weird_updater])
+cmpz_updater = CompositeDeviceUpdater([static_cfg_updater, pg_updater, static_pg_updater])
 root_updater = cmpz_updater
 
-process_service = RequestProcessingService(dev_mgr, cfg_mgr, pg_map)
+pg_router = PluginDeviceRouter()
+root_router = pg_router
+
+process_service = RequestProcessingService(dev_mgr, cfg_mgr, pg_mgr)
 process_service.dev_info_extractor = root_xtor
 process_service.dev_retriever = root_retriever
 process_service.dev_updater = root_updater
+process_service.dev_router = root_router
 
 
+def tftp_service_factory(pg_id, pg_service):
+    return TFTPLogService(metaaff('tftp-post ' + pg_id + ':'), pg_service)
+    
 # tftp
 def new_tftp_service():
-    postprocess_service_map = {}
-    for pg in plugins:
-        pg_service = pg.tftp_service()
-        postprocess_service_map[pg.name] = TFTPLogService(metaaff('tftp-post ' + pg.name + ':'), pg_service)
-    
-    tftp_process_service = TFTPRequestProcessingService(process_service, postprocess_service_map)
+    tftp_process_service = TFTPRequestProcessingService(process_service, tftp_service_factory, pg_mgr)
     preprocess_service = TFTPLogService(metaaff('tftp-pre:'), tftp_process_service)
 
     return preprocess_service
@@ -287,14 +641,12 @@ def new_tftp_service():
 tftp_service = new_tftp_service()
 
 
+def http_service_factory(pg_id, pg_service):
+    return HTTPLogService(metaaff('tftp-post ' + pg_id + ':'), pg_service)
+
 # http
 def new_http_service():
-    postprocess_service_map = {}
-    for pg in plugins:
-        pg_service = pg.http_service()
-        postprocess_service_map[pg.name] = HTTPLogService(metaaff('http-post ' + pg.name + ':'), pg_service)
-    
-    http_process_service = HTTPRequestProcessingService(process_service, postprocess_service_map)
+    http_process_service = HTTPRequestProcessingService(process_service, http_service_factory, pg_mgr)
     preprocess_service = HTTPLogService(metaaff('http-pre:'), http_process_service)
     
     return preprocess_service
@@ -303,7 +655,7 @@ http_service = new_http_service()
 http_site = Site(http_service)
 
 
-service = RestService(cfg_mgr, dev_mgr, pg_map)
+service = RestService(app)
 dev_res = DevicesResource(service)
 cfg_res = ConfigsResource(service)
 dev_configure_res = DeviceReconfigureResource(service)
@@ -319,7 +671,6 @@ rest_site = Site(root)
 from twisted.python import log
 log.startLogging(sys.stdout)
 
-from twisted.internet import reactor
 reactor.listenUDP(6969, TFTPProtocol(tftp_service))
 reactor.listenTCP(8080, http_site)
 reactor.listenTCP(8081, rest_site)

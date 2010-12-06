@@ -18,9 +18,28 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from zope.interface import Interface, implements
 
-def simple_id_generator(start=0):
-    n = start
-    while True:
-        yield str(n)
-        n += 1
+
+class IIdGenerator(Interface):
+    def next_id(self, used):
+        """Return a unique ID (a string). The returned ID must not be in
+        used (i.e. 'new_id not in used' must be true).
+        
+        """
+
+
+class NumericIdGenerator(object):
+    implements(IIdGenerator)
+    
+    def __init__(self, prefix='', start=0):
+        self.prefix = ''
+        self.n = start
+        
+    def next_id(self, used):
+        n = self.n
+        prefix = self.prefix
+        while prefix + str(n) in used:
+            n += 1
+        self.n = n
+        return prefix + str(n)

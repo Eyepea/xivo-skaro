@@ -78,7 +78,7 @@ class SnomPlugin(StandardPlugin):
         return [('Snom', model, '8.4.18') for model in ('320', '820')]
     
     def http_dev_info_extractors(self):
-        return (_HTTPDeviceInfoExtractor(),)
+        return _HTTPDeviceInfoExtractor(),
         
     def configure_common(self, config):
         for tpl_name in ('gui_lang.xml', 'snom320.htm', 'snom320.xml', 'snom320-firmware.xml',

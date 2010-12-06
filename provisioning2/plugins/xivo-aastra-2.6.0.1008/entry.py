@@ -107,9 +107,9 @@ class AastraPlugin(StandardPlugin):
         return self._fetchfw_helper.services()
     
     def http_dev_info_extractors(self):
-        return (_HTTPDeviceInfoExtractor(),)
+        return _HTTPDeviceInfoExtractor()
     
-    def tftp_dev_info_extractors(self):
+    def tftp_dev_info_extractor(self):
         # This is not necessary since Aastra are capable of protocol
         # selection inside DHCP option 66 (TFTP server name).
         # That said, there is the rare case where one provisioning
@@ -118,7 +118,7 @@ class AastraPlugin(StandardPlugin):
         # configured to do TFTP and the admin guys are too lazy to
         # configure there DHCP server to change the value of option 66.
         # In this case, this might be useful.
-        return ()
+        return None
     
     def device_types(self):
         return [('Aastra', model, version) for model in ('6731i', '6757i')
@@ -234,18 +234,19 @@ class AastraPlugin(StandardPlugin):
             lines.extend(cls._format_dst_change('end', inform['dst']['end']))
         return '\n'.join(lines)
     
-    def configure_common(self, config):
-        tpl = self._tpl_helper.get_template('aastra.cfg')
-        filename = os.path.join(self._tftpboot_dir, 'aastra.cfg')
-        self._tpl_helper.dump(tpl, config, filename, self._ENCODING)
+    def _dev_specific_filename(self, dev):
+        """Return the filename of the device specific configuration file of
+        device dev."""
+        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
+        return os.path.join(self._tftpboot_dir, fmted_mac + '.cfg')
     
     def configure(self, dev, config):
         model = dev['model']
-        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
+        filename = self._dev_specific_filename(dev)
         
         try:
             # get device-specific template
-            tpl = self._tpl_helper.get_template(fmted_mac + '.cfg')
+            tpl = self._tpl_helper.get_template(filename)
         except TemplateNotFound:
             # get model-specific template
             tpl = self._tpl_helper.get_template(model + '.cfg')
@@ -253,12 +254,17 @@ class AastraPlugin(StandardPlugin):
         config['XX_function_keys'] = self._format_function_keys(config['funckey'], model)
         config['XX_timezone'] = self._format_tz_inform(tzinform.get_timezone_info(config['timezone']))
         
-        filename = os.path.join(self._tftpboot_dir, fmted_mac + '.cfg')
         self._tpl_helper.dump(tpl, config, filename, self._ENCODING)
+        
+    def deconfigure(self, dev):
+        filename = self._dev_specific_filename(dev)
+        # Next line should never raise an error if the plugin contract has
+        # been followed
+        os.remove(filename)
 
-    def reload(self, dev_info):
+    def reload(self, dev, config):
         # FIXME this is a test, hardcoded value are meaningless outside of my test env
-        ip = dev_info['ip']
+        ip = dev['ip']
         import subprocess
         p = subprocess.Popen(['sip-options',
                               '-m', 'sip:192.168.33.1:5061',
@@ -266,34 +272,4 @@ class AastraPlugin(StandardPlugin):
                               '--extra',
                               'sip:%s' % ip], stdin=subprocess.PIPE)
         p.communicate('Event: check-sync')
-
-
-# XXX DHCP support is temporarily set aside
-#
-#_VCI_DICT = {
-#    'AastraIPPhone6731i': _AASTRA_6731i_ID,
-#    'AastraIPPhone6757i': _AASTRA_6757i_ID,
-#}
-#
-#def identify_device_dhcp(request):
-#    options = request['options']
-#    if VendorClassIdentifierOption in options:
-#        vci = options[VendorClassIdentifierOption].value
-#        # XXX en fait, on ne connait pas la version exacte, donc ca peut etre un peu
-#        # faux ce qui est retourné
-#        return _VCI_DICT.get(vci)
-#
-#
-#class DhcpService(object):
-#    """Service DHCP du plugin.
-#    
-#    Ajoute les options specifiques au device lors de requete DHCP.
-#    
-#    """
-#    def __init__(self, config):
-#        self._config = config
-#    
-#    def handle_bootrequest(self, request, response):
-#        sname = 'http://%s/' % self._config['http-server-name']
-#        response['options'][TFTPServerNameOption] = TFTPServerNameOption(sname)
-#        response.commit()
+        return defer.succeed(None)

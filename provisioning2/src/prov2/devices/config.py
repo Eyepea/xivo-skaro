@@ -158,18 +158,100 @@ def _rec_update_dict(old_vals, new_vals):
 
 
 class ConfigManager(dict):
+    """A config manager manages config objects. Each config has an unique ID
+    associated to it.
+    
+    """
+    
+    # XXX the req_graph currently doesn't work because the __setitem__
+    #     and __delitem__ method aren't always called when an item is
+    #     added/removed to the dict
+    
+    def __init__(self, *args, **kwargs):
+        dict.__init__(self, *args, **kwargs)
+        self._req_graph = {}
+    
+    def _add_link(self, cfg_id):
+        """Pre: cfg_id in self."""
+        cfg = self[cfg_id]
+        bases = cfg[1]
+        for base in bases:
+            self._req_graph.setdefault(base, set()).add(cfg_id)
+        
+    def _remove_link(self, cfg_id):
+        """Pre: cfg_id in self."""
+        cfg = self[cfg_id]
+        bases = cfg[1]
+        for base in bases:
+            self._req_graph[base].remove(cfg_id)
+    
+    def __setitem__(self, cfg_id, cfg):
+        # This doesn't work since dictionary are using the __setitem__
+        # method not if you call update or call the constructor, etc,
+        # should use composition instead...
+        if cfg_id in self:
+            self._remove_link(cfg_id)
+        dict.__setitem__(self, cfg_id, cfg)
+        self._add_link(cfg_id)
+    
+    def __delitem__(self, cfg_id):
+        self._remove_link(cfg_id)
+        dict.__delitem__(self, cfg_id)
+    
     def list(self, cfg_id):
-        """Return the sequence of base config IDs of a config."""
+        """Return a list of config IDs for which every config is a direct or
+        indirect dependency of cfg_id. The IDs are returned in the same order
+        that the config would be flattened.
+        
+        """
         visited = set()
-        def aux(cur_cfg_id):
-            if cur_cfg_id in visited:
+        def aux(cfg_id):
+            if cfg_id in visited:
                 return
-            visited.add(cur_cfg_id)
-            cfg_base_ids = self[cur_cfg_id][1]
-            for cfg_base_id in cfg_base_ids:
-                aux(cfg_base_id)
+            visited.add(cfg_id)
+            bases = self[cfg_id][1]
+            for base_cfg_id in bases:
+                aux(base_cfg_id)
     
         aux(cfg_id)
+        visited.remove(cfg_id)
+        return visited
+    
+    def is_required(self, cfg_id):
+#        return bool(self._req_graph.get(cfg_id))
+        return bool(self.required_by(cfg_id))
+    
+    def required_by(self, cfg_id, maxdepth=-1):
+        """Return a set of config IDs for which every config has a direct or
+        indirect dependency on config cfg_id.
+        
+        Pre:  cfg_id in self
+        Post: for id in self.required_by(cfg_id): cfg_id in self.list(id)
+        
+        """
+#        return self._req_graph.get(cfg_id, set())
+        # XXX Note that this is extremely inefficient
+        # For example, if you have 1000 configs, and that 999 depends
+        # on the same one, if you call required_by for this config,
+        # it will make 1000 function calls and do 1000 * 1000 "__contains__"
+        # tests.
+        
+        if cfg_id not in self:
+            raise KeyError(cfg_id)
+        visited = set()
+        def aux(cfg_id, maxdepth):
+            if cfg_id in visited:
+                return
+            visited.add(cfg_id)
+            if maxdepth == 0:
+                return
+            maxdepth -= 1
+            for cur_cfg_id, cur_cfg in self.iteritems():
+                cur_bases = cur_cfg[1]
+                if cfg_id in cur_bases:
+                    aux(cur_cfg_id, maxdepth)
+        
+        aux(cfg_id, maxdepth)
         visited.remove(cfg_id)
         return visited
     
@@ -179,16 +261,17 @@ class ConfigManager(dict):
         
         """
         res = {}
-        def rec_flatten(cur_cfg_id, visited):
+        visited = set()
+        def rec_flatten(cur_cfg_id):
             if cur_cfg_id in visited:
                 return
             visited.add(cur_cfg_id)
             cfg, cfg_base_ids = self[cur_cfg_id]
             for cfg_base_id in cfg_base_ids:
-                rec_flatten(cfg_base_id, visited.copy())
+                rec_flatten(cfg_base_id)
             _rec_update_dict(res, cfg)
         
-        rec_flatten(cfg_id, set())
+        rec_flatten(cfg_id)
         return res
     
     def remove(self, cfg_id):
