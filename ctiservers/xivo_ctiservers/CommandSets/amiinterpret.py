@@ -215,6 +215,9 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def ami_cdr(self, astid, event):
         # log.info('%s ami_cdr %s' % (astid, event))
         return
+    def ami_dtmf(self, astid, event):
+        # log.info('%s ami_dtmf %s' % (astid, event))
+        return
 
 
     # Status replies events
@@ -283,6 +286,21 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def ami_voicemailuserentry(self, astid, event):
         if log_ami_events_statusrequest:
             log.info('%s ami_voicemailuserentry %s' % (astid, event))
+        return
+
+
+    # Monitor, Spy
+    def ami_monitorstart(self, astid, event):
+        log.info('%s ami_monitorstart %s' % (astid, event))
+        return
+    def ami_monitorstop(self, astid, event):
+        log.info('%s ami_monitorstop %s' % (astid, event))
+        return
+    def ami_chanspystart(self, astid, event):
+        log.info('%s ami_chanspystart %s' % (astid, event))
+        return
+    def ami_chanspystop(self, astid, event):
+        log.info('%s ami_chanspystop %s' % (astid, event))
         return
 
 

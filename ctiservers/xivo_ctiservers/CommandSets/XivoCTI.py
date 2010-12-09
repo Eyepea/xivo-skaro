@@ -351,13 +351,10 @@ class XivoCTICommand(BaseCommand):
                 return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
             svnversion = loginparams.get('version')
             ident = loginparams.get('ident')
-            if len(ident.split('@')) == 2:
-                [whoami, whatsmyos] = ident.split('@')
-                # return 'wrong_client_identifier:%s' % whoami
-                if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
-                    return 'wrong_os_identifier:%s' % whatsmyos
-            else:
-                return 'wrong_client_os_identifier:%s' % ident
+            whatsmyos = ident.split('-')[0]
+            if whatsmyos.lower() not in ['x11', 'win', 'mac',
+                                         'web', 'android', 'ios']:
+                return 'wrong_client_os_identifier:%s' % whatsmyos
             if (not svnversion.isdigit()) or int(svnversion) < self.required_client_version:
                 return 'version_client:%s;%d' % (svnversion, self.required_client_version)
 
@@ -2813,6 +2810,7 @@ class XivoCTICommand(BaseCommand):
 
     ami_error_responses_list = ['No such channel',
                                 'No such agent',
+                                'Agent already logged in',
                                 'Permission denied',
                                 'Member not dynamic',
                                 'Extension not specified',
@@ -2822,30 +2820,30 @@ class XivoCTICommand(BaseCommand):
                                 'Unable to remove interface from queue: No such queue',
                                 'Unable to remove interface: Not there']
 
+    ami_success_responses_list = ['Channel status will follow',
+                                  'Parked calls will follow',
+                                  'Agents will follow',
+                                  'Queue status will follow',
+                                  'Variable Set',
+                                  'Attended transfer started',
+                                  'Channel Hungup',
+                                  'Park successful',
+                                  'Meetme user list will follow',
+                                  'AOriginate successfully queued',
+                                  'Originate successfully queued',
+                                  'Redirect successful',
+                                  'Started monitoring channel',
+                                  'Stopped monitoring channel',
+                                  'Added interface to queue',
+                                  'Removed interface from queue',
+                                  'Interface paused successfully',
+                                  'Interface unpaused successfully',
+                                  'Agent logged out',
+                                  'Agent logged in']
+
     def amiresponse_success(self, astid, event, nocolon):
         msg = event.get('Message')
         actionid = event.get('ActionID')
-        ami_success_responses_list = ['Channel status will follow',
-                                      'Parked calls will follow',
-                                      'Agents will follow',
-                                      'Queue status will follow',
-                                      'Variable Set',
-                                      'Attended transfer started',
-                                      'Channel Hungup',
-                                      'Park successful',
-                                      'Channels will follow',
-                                      'Meetme user list will follow',
-                                      'AOriginate successfully queued',
-                                      'Originate successfully queued',
-                                      'Redirect successful',
-                                      'Started monitoring channel',
-                                      'Stopped monitoring channel',
-                                      'Added interface to queue',
-                                      'Removed interface from queue',
-                                      'Interface paused successfully',
-                                      'Interface unpaused successfully',
-                                      'Agent logged out',
-                                      'Agent logged in']
         if msg is None:
             if actionid is not None:
                 if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
@@ -2870,7 +2868,7 @@ class XivoCTICommand(BaseCommand):
             self.amiresponse_mailboxstatus(astid, event)
         elif msg == 'Authentication accepted':
             log.info('%s : %s %s' % (astid, msg, nocolon))
-        elif msg in ami_success_responses_list:
+        elif msg in self.ami_success_responses_list:
             if actionid in self.amirequests[astid]:
                 # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.amirequests[astid][actionid]))
                 pass
@@ -3610,6 +3608,10 @@ class XivoCTICommand(BaseCommand):
                             % (astid, agent_number))
         return
 
+    def ami_agentscomplete(self, astid, event):
+        log.info('%s ami_agentscomplete : %s' % (astid, event))
+        return
+
     def __queuemismatch__(self, astid, queuename, origin):
         log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/XiVO)'
                     % (astid, origin, queuename))
@@ -4072,7 +4074,7 @@ class XivoCTICommand(BaseCommand):
         return nlocations
 
     def ami_queuestatuscomplete(self, astid, event):
-        # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
+        log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
         if astid not in self.weblist['queues']:
             log.warning('%s ami_queuestatuscomplete : no queue list has been defined' % astid)
             return
@@ -4080,19 +4082,22 @@ class XivoCTICommand(BaseCommand):
             self.__ami_execute__(astid, 'sendcommand', 'Command',
                                  [('Command', 'queue show %s' % qname)])
 
-        for aid, v in self.last_agents[astid].iteritems():
-            if v:
-                log.info('%s ami_queuestatuscomplete last agents = %s %s' % (astid, aid, v))
-        for qid, vv in self.last_queues[astid].iteritems():
-            for aid, v in vv.iteritems():
-                if v:
-                    if qid in self.weblist['queues'][astid].keeplist and aid in self.weblist['queues'][astid].keeplist[qid]['agents_in_queue']:
-                        qastatus = self.weblist['queues'][astid].keeplist[qid]['agents_in_queue'][aid]
+        ## no real use for that :
+        # for aid, v in self.last_agents[astid].iteritems():
+        # if v:
+        # log.info('%s ami_queuestatuscomplete last agents = %s %s' % (astid, aid, v))
+        for qid, vq in self.last_queues[astid].iteritems():
+            if qid in self.weblist['queues'][astid].keeplist:
+                agents_in_queue = self.weblist['queues'][astid].keeplist[qid]['agents_in_queue']
+                for aid, va in vq.iteritems():
+                    if va and aid in agents_in_queue:
+                        qastatus = agents_in_queue[aid]
                         qastatus['Xivo-QueueMember-StateTime'] = -1
                         if qastatus.get('Paused') == '1':
-                            if 'PAUSE' in v:
-                                qpausetime = int(v['PAUSE'])
+                            if 'PAUSE' in va:
+                                qpausetime = int(va['PAUSE'])
                                 qastatus['Xivo-QueueMember-StateTime'] = qpausetime
+        log.info('%s ami_queuestatuscomplete (done) : %s' % (astid, event))
         return
 
     def ami_userevent(self, astid, event):
@@ -4333,7 +4338,7 @@ class XivoCTICommand(BaseCommand):
         usernum = event.get('Usernum')
         status = (event.get('Status') == 'off')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmenoauthed : unable to find room %s' % (astid, confno))
             return
@@ -4359,7 +4364,7 @@ class XivoCTICommand(BaseCommand):
         confno = event.get('Meetme')
         status = (event.get('Status') == 'on')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmepause : unable to find room %s' % (astid, confno))
             return
@@ -4392,7 +4397,7 @@ class XivoCTICommand(BaseCommand):
         # here we flip/flop the 'not authed' event to an 'authed' event
         authed = ( event.get('NoAuthed') == 'No' )
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, confno))
             return
@@ -4449,7 +4454,7 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         usernum = event.get('Usernum')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
 
         if meetmeref is None:
             log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, confno))
@@ -4489,7 +4494,7 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         usernum = event.get('Usernum')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmemute : unable to find room %s' % (astid, confno))
             return
@@ -4532,7 +4537,7 @@ class XivoCTICommand(BaseCommand):
         calleridname = event.get('CallerIDName')
         authed = (event.get('NoAuthed') == 'No')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmelist : unable to find room %s' % (astid, confno))
             return
@@ -4606,7 +4611,7 @@ class XivoCTICommand(BaseCommand):
             # however knowing how much time has been spent might be useful here
             confno = applidata[0]
             seconds = int(event.get('Seconds'))
-            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
             if meetmeref is not None:
                 if uniqueid in meetmeref['uniqueids']:
                     meetmeref['uniqueids'][uniqueid]['time_start'] = time.time() - seconds
@@ -5312,18 +5317,18 @@ class XivoCTICommand(BaseCommand):
                               % (repstr[:40], len(repstr)))
         return ret
 
-    def __build_history_string__(self, requester_id, nlines, kind, morerecentthan):
+    def __build_history_string__(self, requester_id, nlines, mode, morerecentthan):
         userinfo = self.ulist_ng.keeplist[requester_id]
         astid = userinfo.get('astid')
         termlist = userinfo.get('techlist')
         reply = []
         for termin in termlist:
             [techno, ctx, phoneid, exten] = termin.split('.')
-            # print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
+            # print '__build_history_string__', requester_id, nlines, mode, techno, phoneid
             try:
                 hist = self.__update_history_call__(self.configs[astid],
                                                     techno, phoneid, nlines,
-                                                    kind, morerecentthan)
+                                                    mode, morerecentthan)
                 for x in hist:
                     ritem = { 'duration' : x[10] }
                     # 'x1' : x[1].replace('"', '')
@@ -5333,7 +5338,8 @@ class XivoCTICommand(BaseCommand):
                     except:
                         ritem['ts'] = x[0]
                     ritem['termin'] = termin
-                    if kind == '0':
+                    ritem['mode'] = mode
+                    if mode == '0':
                         ritem['direction'] = 'OUT'
                         num = x[3].replace('"', '')
                         cidname = num
@@ -5344,7 +5350,7 @@ class XivoCTICommand(BaseCommand):
                     reply.append(ritem)
             except Exception:
                 log.exception('history : (client %s, termin %s)'
-                    % (requester_id, termin))
+                              % (requester_id, termin))
 
         if len(reply) > 0:
             # sha1sum = sha.sha(''.join(reply)).hexdigest()
@@ -5705,8 +5711,11 @@ class XivoCTICommand(BaseCommand):
                 return
 
             if typesrc == typedst and typedst == 'ext' and len(whosrc) > 8 and len(whodst) > 8:
-                log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s). Canceling' % (whosrc, whodst))
-                return
+                log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s)'
+                            % (whosrc, whodst))
+                # this warning dates back to revision 6095 - maybe to avoid making arbitrary calls on behalf
+                # of the local telephony system ?
+                # let's keep the warning, without disabling the ability to do it ...
 
             try:
                 if len(exten_dst) > 0:

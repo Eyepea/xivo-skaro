@@ -695,6 +695,9 @@ event_flags['DIALPLAN'] = [ 'Newexten', # in order to handle outgoing calls ?
 
 event_flags['AGI'] = [ 'AGIExec', 'AsyncAGI' ]
 
+# Call Completion events
+# https://wiki.asterisk.org/wiki/download/attachments/9076838/CCSS_architecture.pdf
+
 event_flags['CC'] = [ 'CCAvailable',
                       'CCCallerRecalling', 'CCCallerStartMonitoring', 'CCCallerStopMonitoring',
                       'CCFailure', 'CCMonitorFailed', 'CCOfferTimerStart',
@@ -744,6 +747,7 @@ event_others['extra'] = [
     'HangupRequest',        # (xivo) to know who 'ordered' the hangup (patch submitted to digium in #0018226)
     'SoftHangupRequest',    # (xivo) to know when the hangup was requested from the CLI (patch submitted to digium in #0018226)
 ]
+event_others['extra'] = []
 
 evfunction_to_method_name = dict()
 

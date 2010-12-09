@@ -120,8 +120,9 @@ class xivo_ldap:
             #   self.ldapobj.set_option(ldap.OPT_NETWORK_TIMEOUT,
             #   float(ldapquery.get('network_timeout')))
 
-            if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
-                self.ldapobj.start_tls_s()
+            # XXX how should we handle the starttls option ?
+            # if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
+            # self.ldapobj.start_tls_s()
 
             self.ldapobj.simple_bind_s(ldapuser, ldappass)
         except ldap.LDAPError, exc:
@@ -133,8 +134,8 @@ class xivo_ldap:
             self.__init__(self.iuri)
 
         if self.base_filter:
-            actual_filter = '(&(%s)(%s))' % (self.base_filter.replace('%Q', searchpattern),
-                                             search_filter)
+            actual_filter = '(&(%s)%s)' % (self.base_filter.replace('%Q', searchpattern),
+                                           search_filter)
         else:
             actual_filter = search_filter
 
