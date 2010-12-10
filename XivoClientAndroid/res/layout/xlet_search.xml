@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+    
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/user_name_header"
+    android:textSize="16sp"
+    android:paddingBottom="10dp"
+    android:text="@string/presentation" >
+</TextView>
+
+    <!-- List Divider -->
+    <View android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <!-- ListView (grid_items) -->
+    <LinearLayout android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <ListView android:id="@+id/users_list"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent">
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:padding="5dp">
+  <EditText
+  android:id="@+id/servicesAskPhone"
+  android:layout_width="250dp"
+  android:layout_height="wrap_content"
+  android:hint="@string/servicesInsertPhone"></EditText>
+
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:orientation="horizontal"
+  android:layout_gravity="center_horizontal"
+  android:gravity="center_horizontal">
+  <Button android:id="@+id/servicesAskCancel" 
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content" 
+          android:text="@string/servicesCancel" 
+          android:visibility="visible" 
+          android:fitsSystemWindows="true" 
+          android:onClick="clickOnCancel" 
+          android:width="100dp">
+  </Button>
+  <Button android:id="@+id/servicesAskOk" 
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content" 
+          android:text="@string/servicesOk" 
+          android:visibility="visible" 
+          android:onClick="clickOnOk" 
+          android:width="100dp" 
+          android:fitsSystemWindows="false">
+</Button>
+
+</LinearLayout>
+</LinearLayout>

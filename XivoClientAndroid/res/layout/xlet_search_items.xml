@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal">
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="180dp"
+    android:layout_height="wrap_content"
+    android:id="@+id/fullname"
+    android:padding="3dp"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:maxLines="1"
+    android:ellipsize="end"
+    android:singleLine="true"
+    android:layout_gravity="top"
+    android:layout_marginTop="3dp">
+</TextView>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="top"
+    android:orientation="horizontal"
+    android:layout_marginTop="30dp" 
+    android:layout_marginBottom="5dp"
+    android:paddingBottom="5dp"
+    >
+    
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/com_phonenum"
+    android:paddingRight="2dp"
+    android:textSize="14sp"
+    android:text="@string/com_phonenum" >
+</TextView>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/phonenum"
+    android:textSize="14sp" >
+</TextView>
+</LinearLayout>
+
+<ImageView android:id="@+id/phoneStatusContact"
+     android:layout_width="30dp" 
+     android:layout_height="30dp"
+     android:layout_marginRight="88dp"
+     android:layout_marginTop="7dp"
+     android:layout_gravity="right" 
+     android:src="@drawable/ic_dial_number_wht"/>
+
+<TextView
+    android:layout_width="70dp"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="70dp"
+    android:layout_marginTop="34dp"
+    android:layout_gravity="right"
+    android:gravity="center"
+    android:text="offline"
+    android:id="@+id/phone_longname_state"
+    android:textSize="10sp"
+    android:visibility="visible"
+    />
+
+<ImageView android:id="@+id/statusContact"
+     android:layout_width="26dp" 
+     android:layout_height="26dp"
+     android:layout_marginRight="20dp"
+     android:layout_marginTop="5dp"
+     android:layout_gravity="right" 
+     android:src="@drawable/personal_trans"/>
+
+<TextView
+    android:layout_width="70dp"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="0dp"
+    android:layout_marginTop="34dp"
+    android:layout_gravity="right"
+    android:gravity="center"
+    android:text="offline"
+    android:id="@+id/longname_state"
+    android:textSize="10sp"
+    android:visibility="visible"
+    />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/stateid"
+    android:visibility="invisible"
+    />
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/phoneStateCode"
+    android:visibility="invisible"
+    />
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/phoneStateColor"
+    android:visibility="invisible"
+    />
+</FrameLayout>

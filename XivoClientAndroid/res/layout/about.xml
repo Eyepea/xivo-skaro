@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/ScrollViewAbout" 
+  android:layout_width="fill_parent" 
+  android:layout_height="wrap_content">
+
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:scrollbars="vertical"
+  android:gravity="center_horizontal">
+
+<TextView android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/credits"
+android:textSize="16sp"
+android:textStyle="bold"></TextView>
+<TextView android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/credits_part0"></TextView>
+<TextView android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/credits_part1"
+android:layout_marginTop="10dp"></TextView>
+<TextView android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/credits_part2"></TextView>
+
+<TextView android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/gpl"
+android:layout_marginTop="10dp"></TextView>
+<TextView android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="@string/gpl_part1"
+android:layout_marginTop="10dp"></TextView>
+<TextView android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="@string/gpl_part2"></TextView>
+
+</LinearLayout>
+</ScrollView>

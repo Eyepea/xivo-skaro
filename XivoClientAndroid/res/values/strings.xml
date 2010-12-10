@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xivo Client</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="connected">User connected</string>
+    <string name="ok">OK</string>
+
+    <!-- Menu strings -->
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="exit">Exit</string>
+
+    <!-- Preferences strings -->
+    <string name="save_login">Save login / password</string>
+    <string name="server_address">Server address</string>
+    <string name="server_port">Server port</string>
+    <string name="mobile_number">Mobile number</string>
+    <string name="use_mobile">Use mobile n° for calls</string>
+    <string name="use_mobile_on">Mobile calls</string>
+    <string name="use_mobile_off">Default calls</string>
+    <string name="mobile_number_used">Use mobile number for calls</string>
+    <string name="connection">Connection</string>
+    <string name="calling_settings">Calling</string>
+    <string name="context">Context</string>
+
+    <!-- Messages strings -->
+    <string name="connection_failed">Connection failed</string>
+    <string name="bad_host">Connection failed : bad server or port</string>
+    <string name="not_cti_server">Connection failed : not a Xivo CTI server</string>
+    <string name="no_web_connection">Connection failed : network unavailable</string>
+    <string name="bad_login_password">Connection failed : bad login or password</string>
+    <string name="connection_ok">Connection ok</string>
+    <string name="login_ok">User logged</string>
+    <string name="loading">Please wait while loading ...</string>
+    <string name="calling_title">Xivo call</string>
+    <string name="calling">Sending a call to number %s ...</string>
+    <string name="call_ok">The call has been transmitted</string>
+    <string name="call_no_phone_number">Impossible call : no phone number available</string>
+    <string name="notif_xivo">Xivo is online and working, click here</string>
+    <string name="notif_xivo_title">Xivo online</string>
+   
+    <!-- Others -->
+    <string name="context_action">Action</string>
+    <string name="context_action_call">"Call %s (%s)"</string>
+    <string name="context_action_call_short">"Call %s"</string>
+
+    <!-- Xlets descriptions
+         IMPORTANT : use this file to put label and description
+         of your xlet unless it won't be loaded !
+     -->
+    <string name="xlet_identity_label">identity</string>
+    <string name="xlet_identity_desc">Identity</string>
+    <string name="xlet_dial_label">dial</string>
+    <string name="xlet_dial_desc">Dialer</string>
+    <string name="xlet_features_label">features</string>
+    <string name="xlet_features_desc">Services</string>
+    <string name="xlet_history_label">history</string>
+    <string name="xlet_history_desc">Call logs</string>
+    <string name="xlet_search_label">search</string>
+    <string name="xlet_search_desc">Contacts</string>
+
+</resources>

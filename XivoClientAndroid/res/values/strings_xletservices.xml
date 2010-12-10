@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Xlet Services strings -->
+    <string name="servicesServicesText">Services</string>
+    <string name="ServicesFwdTitle">Forwarding</string>
+    <string name="servicesCallrecordText">Call recording</string>
+    <string name="servicesIncallfilterText">Incall filtering</string>
+    <string name="servicesEnabledndText">"Do not disturb" mode</string>
+    <string name="servicesForwardText">Call Forwarding</string>
+    <string name="servicesFwdrna">Forward on non-answer</string>
+    <string name="servicesFwdbusy">Forward on busy</string>
+    <string name="servicesFwdunc">Forward unconditional</string>
+    <string name="servicesInsertPhone">Insert a phone number</string>
+    <string name="servicesCancel">Cancel</string>
+    <string name="servicesOk">Ok</string>
+    <string name="servicesPhone">"Phone : "</string>
+    
+</resources>

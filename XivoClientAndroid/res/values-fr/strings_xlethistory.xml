@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Xlet History strings -->
+    <string name="history_fullname_title">Numéro de tél.</string>
+    <string name="history_date_title">Date</string>
+    <string name="history_duration_title">Durée</string>
+</resources>

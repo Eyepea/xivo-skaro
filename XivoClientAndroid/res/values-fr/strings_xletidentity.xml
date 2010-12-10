@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Xlet Identity strings -->
+    <string name="user_identity">Utilisateur</string>
+    <string name="presentation_state">Choisir un état</string>
+</resources>
