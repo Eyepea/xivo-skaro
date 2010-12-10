@@ -105,6 +105,9 @@ if($act === 'list'):
 			<a href="#" id="toolbar-advanced-menu-disable"><?=$this->bbf('toolbar_adv_menu_disable');?></a>
 		</li>
 		<li>
+			<a href="#" id="toolbar-advanced-menu-autoprov"><?=$this->bbf('toolbar_adv_menu_autoprov');?></a>
+		</li>
+		<li>
 			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
@@ -112,6 +115,7 @@ if($act === 'list'):
 		</li>
 	</ul>
 </div>
+
 
 <script type="text/javascript">
 dwho.dom.set_onload(function()
@@ -138,9 +142,48 @@ dwho.dom.set_onload(function()
 					dwho.fm[xivo_toolbar_form_name]['act'].value = 'deletes';
 					dwho.fm[xivo_toolbar_form_name].submit();
 				}
-			   });
+				 });
+
+	dwho.dom.add_event('click', dwho_eid('toolbar-advanced-menu-autoprov'),
+		function(e) {
+			document.getElementById('autoprov_reboot').checked = false;
+
+			dialog = document.getElementById('autoprov_dialog');
+			dialog.style.visibility= 'visible';
+
+		});
 });
+
+
+function autoprov_cancel()
+{
+	dialog = document.getElementById('autoprov_dialog');
+	dialog.style.visibility= 'hidden';
+
+	return false;
+}
+
+function autoprov_validate()
+{
+	dialog = document.getElementById('autoprov_dialog');
+	dialog.style.visibility= 'hidden';
+
+	dwho.fm[xivo_toolbar_form_name]['act'].value = 'autoprov';
+	dwho.fm[xivo_toolbar_form_name]['reboot'].value = document.getElementById('autoprov_reboot').checked;
+	dwho.fm[xivo_toolbar_form_name].submit();
+
+	return false;
+}
 </script>
+
+<div id="autoprov_dialog" class="dialog">
+	<form action="#">
+		<input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/>
+		<input type="submit" value="<?=$this->bbf('autoprov_cancel');?>" onclick="return autoprov_cancel();";/>
+		<input type="submit" value="<?=$this->bbf('autoprov_validate');?>" onclick="return autoprov_validate();" />
+	</form>
+</div>
+
 <?php
 
 endif;

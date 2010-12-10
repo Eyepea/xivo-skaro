@@ -235,7 +235,10 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		unset($arr['vendor'],$arr['model']);
 
-		$arr['actions'] = 'yes';
+		//NOTE: actions = yes means reboot phone
+		//      we want it to be optional (set only if not defined)
+		if(!isset($arr['actions']))
+			$arr['actions'] = 'yes';
 
 		if(($mod !== 'guest' && $mod !== 'prov') === true
 		|| $this->_send_sockprov_mode('notification',$arr,$mod) === false)

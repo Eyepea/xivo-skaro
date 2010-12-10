@@ -58,6 +58,9 @@ $page = $url->pager($pager['pages'],
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
 
+		$form->hidden(array('name'	=> 'reboot',
+				    'value'	=> '')),
+
 		$form->hidden(array('name'	=> 'page',
 				    'value'	=> $pager['page'])),
 

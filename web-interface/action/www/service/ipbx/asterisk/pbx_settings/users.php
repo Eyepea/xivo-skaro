@@ -123,6 +123,11 @@ switch($act)
 
 		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 		break;
+
+	case 'autoprov':
+		$appuser = &$ipbx->get_application('user');
+		$appuser->mass_provisioning($_QR['users'], $_QR['reboot']=='true');
+
 	case 'list':
 	default:
 		$act = 'list';

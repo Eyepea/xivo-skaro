@@ -2754,6 +2754,28 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		
 		return $pwd;
 	}
+
+	function mass_provisioning($userids, $reboot=false)
+	{
+		foreach($userids as $userid)
+		{
+			//$this->_info['userfeatures'] = array('id' => $userid);
+			$this->_info['userfeatures'] = $this->_userfeatures->get($userid);
+			$this->_get_autoprov();
+			if(is_null($this->_info['autoprov']['macaddr']))
+				continue;
+
+			$cmd = array(
+				'from'           => 'webi',
+				'iduserfeatures' => $userid,
+				'proto'          => $this->_info['userfeatures']['protocol'],
+				'macaddr'        => $this->_info['autoprov']['macaddr'],
+				'actions'        => $reboot?'yes':'no'
+			);
+
+			$this->_autoprov->notification($cmd, 'prov');
+		}
+	}
 }
 
 ?>
