@@ -34,3 +34,7 @@ pf_profor-banner
 #pf_ftbfs_configure_PTHREAD_ONCE_INIT_test_fix
 #pf_file_copy_keeps_modes
 #pf_manager_rename
+
+# digium patches
+dig_18350_chansip_mwi.patch
+dig_27789_chansip_nullpeer.patch
