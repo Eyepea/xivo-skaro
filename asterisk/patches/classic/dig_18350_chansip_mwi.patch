@@ -1,89 +1,27 @@
-Index: channels/chan_sip.c
+gbour gbour@proformatique.com
+Index: asterisk-1.8.1/channels/chan_sip.c
 ===================================================================
---- channels/chan_sip.c	(revision 297775)
-+++ channels/chan_sip.c	(working copy)
-@@ -7572,32 +7572,31 @@
- 	enum sip_transport transport = SIP_TRANSPORT_UDP;
- 	char buf[256] = "";
- 	char *username = NULL, *hostname = NULL, *secret = NULL, *authuser = NULL, *porta = NULL, *mailbox = NULL;
--	
-+
- 	if (!value) {
- 		return -1;
- 	}
--	
-+
+--- asterisk-1.8.1.orig/channels/chan_sip.c	2010-12-10 11:35:47.441896899 +0100
++++ asterisk-1.8.1/channels/chan_sip.c	2010-12-10 11:40:21.017397490 +0100
+@@ -7571,10 +7571,9 @@
+ 	
  	ast_copy_string(buf, value, sizeof(buf));
  
 -	sip_parse_host(buf, lineno, &username, &portnum, &transport);
 -	
 -	if ((hostname = strrchr(username, '@'))) {
-+	if ((hostname = strrchr(buf, '@'))) {
++  if ((hostname = strrchr(buf, '@'))) {
  		*hostname++ = '\0';
-+		username = buf;
++    username = buf;
  	}
--	
-+
+ 	
  	if ((secret = strchr(username, ':'))) {
- 		*secret++ = '\0';
- 		if ((authuser = strchr(secret, ':'))) {
- 			*authuser++ = '\0';
- 		}
- 	}
--	
-+
- 	if ((mailbox = strchr(hostname, '/'))) {
- 		*mailbox++ = '\0';
+@@ -7589,7 +7588,7 @@
  	}
  
  	if (ast_strlen_zero(username) || ast_strlen_zero(hostname) || ast_strlen_zero(mailbox)) {
 -		ast_log(LOG_WARNING, "Format for MWI subscription is user[:secret[:authuser]]@host[:port][/mailbox] at line %d\n", lineno);
-+		ast_log(LOG_WARNING, "Format for MWI subscription is user[:secret[:authuser]]@host[:port]/mailbox at line %d\n", lineno);
++    ast_log(LOG_WARNING, "Format for MWI subscription is user[:secret[:authuser]]@host[:port]/mailbox at line %d\n", lineno);
  		return -1;
  	}
  	
-@@ -7608,11 +7607,11 @@
- 			return -1;
- 		}
- 	}
--	
-+
- 	if (!(mwi = ast_calloc_with_stringfields(1, struct sip_subscription_mwi, 256))) {
- 		return -1;
- 	}
--	
-+
- 	ASTOBJ_INIT(mwi);
- 	ast_string_field_set(mwi, username, username);
- 	if (secret) {
-@@ -7629,7 +7628,7 @@
- 	
- 	ASTOBJ_CONTAINER_LINK(&submwil, mwi);
- 	ASTOBJ_UNREF(mwi, sip_subscribe_mwi_destroy);
--	
-+
- 	return 0;
- }
- 
-Index: configs/sip.conf.sample
-===================================================================
---- configs/sip.conf.sample	(revision 297775)
-+++ configs/sip.conf.sample	(working copy)
-@@ -680,12 +680,15 @@
- 
- ;----------------------------------------- OUTBOUND MWI SUBSCRIPTIONS -------------------------
- ; Asterisk can subscribe to receive the MWI from another SIP server and store it locally for retrieval
--; by other phones.
-+; by other phones. At this time, you can only subscribe using UDP as the transport.
- ; Format for the mwi register statement is:
--;       mwi => user[:secret[:authuser]]@host[:port][/mailbox]
-+;       mwi => user[:secret[:authuser]]@host[:port]/mailbox
- ;
- ; Examples:
- ;mwi => 1234:password@mysipprovider.com/1234
-+;mwi => 1234:password@myportprovider.com:6969/1234
-+;mwi => 1234:password:authuser@myauthprovider.com/1234
-+;mwi => 1234:password:authuser@myauthportprovider.com:6969/1234
- ;
- ; MWI received will be stored in the 1234 mailbox of the SIP_Remote context. It can be used by other phones by following the below:
- ; mailbox=1234@SIP_Remote
