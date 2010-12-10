@@ -150,7 +150,6 @@ dwho.dom.set_onload(function()
 
 			dialog = document.getElementById('autoprov_dialog');
 			dialog.style.visibility= 'visible';
-
 		});
 });
 
@@ -177,11 +176,31 @@ function autoprov_validate()
 </script>
 
 <div id="autoprov_dialog" class="dialog">
-	<form action="#">
-		<input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/>
-		<input type="submit" value="<?=$this->bbf('autoprov_cancel');?>" onclick="return autoprov_cancel();";/>
-		<input type="submit" value="<?=$this->bbf('autoprov_validate');?>" onclick="return autoprov_validate();" />
-	</form>
+	<table>
+		<tbody>
+			<tr class="sb-top">
+				<th class="th-left"><span>&nbsp;</span></th>
+				<th class="th-center"><span>&nbsp;</span></th>
+				<th class="th-right"><span>&nbsp;</span></th>	
+			</tr>
+			<tr class="l-infos-2on2">
+				<th class="content-left"><span>&nbsp;</span></th>
+				<th class="content">
+					<form action="#">
+						<input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/>
+						<input type="submit" value="<?=$this->bbf('autoprov_cancel');?>" onclick="return autoprov_cancel();";/>
+						<input type="submit" value="<?=$this->bbf('autoprov_validate');?>" onclick="return autoprov_validate();" />
+					</form>
+				</th>
+				<th class="content-right"></th>
+			</tr>
+			<tr class="sb-bottom">
+				<th class="th-left"><span>&nbsp;</span></th>
+				<th class="th-center"><span>&nbsp;</span></th>
+				<th class="th-right"><span>&nbsp;</span></th>	
+			</tr>
+		</tbody>
+	</table>
 </div>
 
 <?php
