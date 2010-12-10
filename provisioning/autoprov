@@ -335,13 +335,13 @@ class SQLBackEnd:
             ("SELECT ${columns} "
              "FROM %s "
              "LEFT OUTER JOIN %s AS extenumleft "
-             "ON  %s.typeextenumbers = extenumleft.type "
+             "ON  %s.typeextenumbers::char = extenumleft.type::char "
              "AND %s.typevalextenumbers = extenumleft.typeval "
              "LEFT OUTER JOIN %s AS extenumright "
-             "ON  %s.typeextenumbersright = extenumright.type "
+             "ON  %s.typeextenumbersright::char = extenumright.type::char "
              "AND %s.typevalextenumbersright = extenumright.typeval "
              "LEFT OUTER JOIN %s "
-             "ON %s.typevalextenumbersright = %s.id "
+             "ON %s.typevalextenumbersright::int = %s.id "
              "WHERE iduserfeatures = %%s")
              % (FK_TABLE,
                 XNUM_TABLE,
@@ -471,12 +471,25 @@ class SQLBackEnd:
         'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
         """
         columns = ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan')
-        self.sql_modify(
-            ("REPLACE INTO %s (${columns})"
-             " VALUES (%s, %s, %s, %s, %s, %s)")
-             % (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
-            columns,
-            [ phone[x] for x in columns ])
+
+        dbval = self.sql_select_one("SELECT ${columns} FROM %s WHERE macaddr = %s" % (TABLE, '%s'), columns, (phone['macaddr'],))
+
+        if not dbval:
+            self.sql_modify(("INSERT INTO %s (${columns})"
+                " VALUES (%s, %s, %s, %s, %s, %s)")
+                % (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
+                columns,
+                [ phone[x] for x in columns ])
+        else:
+            self.sql_modify("UPDATE %s SET "
+                "macaddr = %s, "
+                "vendor  = %s, "
+                "model   = %s, "
+                "proto   = %s, "
+                "iduserfeatures = %s, "
+                "isinalan = %s "
+                "WHERE macaddr = '%s'" % (TABLE, '%s', '%s', '%s', '%s', '%s', '%s', phone['macaddr']), (), 
+                [phone[x] for x in columns])
 
     def phone_by_iduserfeatures(self, iduserfeatures):
         """
