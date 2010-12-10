@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Xlet Directory strings -->
+    <string name="presentation">Select a contact</string>
+    <string name="com_phonenum">Phone : </string>
+</resources>

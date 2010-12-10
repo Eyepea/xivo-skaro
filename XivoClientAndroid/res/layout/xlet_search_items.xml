@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal">
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/fullname"
+    android:padding="3dp"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:layout_gravity="top"
+    android:layout_marginTop="3dp">
+</TextView>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="top"
+    android:orientation="horizontal"
+    android:layout_marginTop="30dp" 
+    android:layout_marginBottom="5dp"
+    android:paddingBottom="5dp">
+    
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/com_phonenum"
+    android:paddingRight="2dp"
+    android:textSize="14sp"
+    android:text="@string/com_phonenum" >
+</TextView>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/phonenum"
+    android:textSize="14sp" >
+</TextView>
+</LinearLayout>
+
+<ImageView android:id="@+id/statusContact"
+     android:layout_width="50dp" 
+     android:layout_height="50dp"
+     android:layout_marginRight="5dp"
+     android:layout_gravity="right" 
+     android:src="@drawable/sym_presence_offline"/>
+
+<!-- 
+<ImageButton android:id="@+id/callingButton" 
+     android:layout_width="50dp" 
+     android:layout_height="50dp"
+     android:layout_marginRight="3dp"
+     android:layout_marginTop="5dp"
+     android:layout_gravity="right"
+     android:src="@drawable/sym_call" android:layout_marginBottom="5dp"/>
+      -->
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/stateid"
+    android:visibility="invisible"
+    />
+
+</FrameLayout>
