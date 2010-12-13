@@ -37,7 +37,11 @@
     <string name="call_ok">"L\'appel a été transmis"</string>
     <string name="call_no_phone_number">Appel impossible : pas de numéro disponible</string>
     <string name="calling">Appel en cours du numéro %s ...</string>
-   
+    
+    <!-- Others -->
+    <string name="context_action">Action</string>
+    <string name="context_action_call">"Appeler %1$s (%2$s)"</string>
+    <string name="context_action_call_short">"Appeler %s"</string>   
 
     <!-- Xlets descriptions
          IMPORTANT : use this file to put label and description
