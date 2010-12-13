@@ -139,7 +139,7 @@ for (context,) in res:
                  "AND phonefunckey.typeextenumbersright IN ('user', 'group', 'queue', 'meetme') "
                  "AND phonefunckey.supervision = 1 "
                  "LEFT OUTER JOIN extenumbers "
-                 "ON phonefunckey.typeextenumbersright = extenumbers.type "
+                 "ON phonefunckey.typeextenumbersright::char = extenumbers.type::char "
                  "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
                  "WHERE userfeatures.context = %s",
                  ('phonefunckey.typeextenumbersright',
@@ -181,10 +181,10 @@ for (context,) in res:
                  "AND phonefunckey.typeextenumbersright = 'user' "
                  "AND phonefunckey.supervision = 1 "
                  "INNER JOIN extenumbers AS extenumright "
-                 "ON phonefunckey.typeextenumbersright = extenumright.type "
+                 "ON phonefunckey.typeextenumbersright::char = extenumright.type::char "
                  "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
                  "WHERE userfeatures.context = %s "
-                 "AND IFNULL(userfeatures.number,'') != ''",
+                 "AND COALESCE(userfeatures.number,'') != ''",
                  ('extenumright.exten', 'userfeatures.number'),
                  (context,))
     res2 = cursor.fetchall()
@@ -206,7 +206,7 @@ for (context,) in res:
                  "AND phonefunckey.supervision = 1 "
                  "AND phonefunckey.progfunckey = 1 "
                  "INNER JOIN extenumbers AS extenumleft "
-                 "ON phonefunckey.typeextenumbers = extenumleft.type "
+                 "ON phonefunckey.typeextenumbers::char = extenumleft.type::char "
                  "AND phonefunckey.typevalextenumbers = extenumleft.typeval "
                  "WHERE userfeatures.context = %s",
                  ('phonefunckey.iduserfeatures',
