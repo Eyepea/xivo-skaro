@@ -43,7 +43,7 @@
    
     <!-- Others -->
     <string name="context_action">Action</string>
-    <string name="context_action_call">"Call %s (%s)"</string>
+    <string name="context_action_call">"Call %1$s (%2$s)"</string>
     <string name="context_action_call_short">"Call %s"</string>
 
     <!-- Xlets descriptions
