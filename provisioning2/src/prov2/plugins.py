@@ -23,22 +23,21 @@ __license__ = """
 import ConfigParser
 import contextlib
 import os
-import urllib2
 import urlparse
 import shutil
 import tarfile
-import tempfile
-import fetchfw2.storage
-import fetchfw2.package
 from prov2 import progressop
 from prov2.servers.tftp.service import TFTPFileService
 from twisted.internet import defer
-from twisted.web.resource import Resource
+from twisted.internet.defer import Deferred
+from twisted.web.resource import Resource, NoResource
 from twisted.web.static import File
 from jinja2.loaders import FileSystemLoader
 from jinja2.environment import Environment
-from fetchfw2.download import DefaultDownloader, AuthenticatingDownloader,\
-    CiscoDownloader, NortelDownloader
+from fetchfw2.download import new_handlers, new_downloaders
+from fetchfw2.package import PackageManager, DefaultInstaller
+from fetchfw2.storage import RemoteFileBuilder, InstallationMgrBuilder,\
+    DefaultPackageStorage
 from zope.interface import Attribute, Interface, implements
 
 
@@ -67,6 +66,9 @@ class IPluginResource(Resource):
     interface with behaviour similar to Resource.
     
     """
+    def getChild(self, path, request):
+        return IPluginHTTPServiceAdapter(NoResource("No such child resource."))
+    
     def render(self, request, dev_id):
         m = getattr(self, 'render_' + request.method, None)
         if not m:
@@ -111,73 +113,114 @@ class IPluginTFTPReadServiceAdapter(object):
         return self._tftp_service.handle_read_request(request, response)
 
 
-# Normalized/standardized service defintion
-# XXX experimental, interfaces are not defined properly
+# Standardized service defintion
 
 class IInstallService(Interface):
     """Interface for an install service.
     
-    These services are identified with the string "install" (or "pg.service.install" ?).
+    These services are identified by the string "install".
     
-    It offers a download/install/uninstall service, where file are downloaded
-    and are then extracted somewhere to be used to serve requests.
+    It offers a download/install/uninstall service, where files can be
+    downloaded and manipulated in a way they can be used by the plugin to
+    offer extra functionalities.
     
-    This service is useful/necessary if some files that a plugin make use
-    can't be bundled with it (because it doesn't have the right to distribute
-    these files), or because they are optional and the plugin want to
+    This service is useful/necessary if some files that a plugin use
+    can't be bundled with it because it doesn't have the right to distribute
+    these files, or because they are optional and the plugin want to
     let the choice to the user.
     
     """
     def install(pkg_id):
-        """Install the package with ID pkg_id.
+        """Install a package.
         
         The package SHOULD be reinstalled even if it seemed to be installed.
         
-        Raise an Exception if pkg_id is unknown.
+        Return an object providing the IProgressOperation interface.
         
-        XXX Returned a deferred... and something to keep with the progression...
-            so in fact it should return an object that has an attribute which
-            is a deferred, but where we can check for the progression, and which
-            we can cancel...
+        Raise an Exception if there's already an install operation in progress
+        for the package.
+        
+        Raise an Exception if pkg_id is unknown.
         
         """
     
     def uninstall(pkg_id):
-        """Uninstall the package with ID pkg_id.
+        """Uninstall a package.
         
         Raise an Exception if pkg_id is unknown.
         
         """
     
     def list_installable():
-        pass
+        """Return a list of the packages that are installable.
+        
+        Each item in the list is a dictionary with the following keys:    
+          id -- the identifier of the package
+        
+        The following keys are optional:
+          dsize -- the download size of the package, in bytes
+          isize -- the installed size of the package, in bytes
+        
+        """
     
     def list_installed():
-        pass
+        """Return a list of the packages that are installed.
+        
+        Each item in the list is a dictionary with the following keys:
+          id -- the identifier of the package
+        
+        """
 
 
-class InvalidParameterError(object):
+class InvalidParameterError(Exception):
     pass
 
+
 class IConfigureService(Interface):
-    """Interface for a configuration service.
+    """Interface for a simple configuration service.
     
-    These services are identified with the string "configure" (or "pg.service.configure" ?).
+    These services are identified with the string "configure".
     
     These services are similar to key-value store, where you can set a value
     for...
     
-    Note that there's no transaction semantic in configuration services.
+    The keys used MUST be strings.
     
     """
-    def __getitem__(key):
-        pass
-    
-    def __setitem__(key, value):
-        pass
-    
-    def __delitem__(key):
-        pass
+    def get(key):
+        """Return the value associated with a key.
+        
+        The object returned might not be a string, but it MUST have the
+        following property:
+          str_val1 = str(self.get(key))
+          self.set(key, str_val1)
+          str_val2 = str(self.get(key))
+          str_val1 == str_val2
+        with str_val1 (and str_val2) being meaningful value for the parameter.
+        
+        If there's no value associated with key, return None. This means the
+        None value can't be associated with a key.
+        
+        Raise a KeyError if key is not a known valid key. 
+        
+        """
+
+    def set(key, value):
+        """Associate a value with a key.
+        
+        The object MUST be ready to accept value as a string, although it
+        MAY change this value to a different representation. Once this
+        value is set, the property of the get method must be respected.
+        
+        If value is None, this is equivalent to 'deleting' the value. This
+        means None has a special meaning and can't be used a value.
+        
+        Raise an InvalidParameterError if the value for this key is not
+        valid/acceptable.
+        
+        Raise a KeyError if key is not a known valid key.
+        
+        """
     
     def description():
         """Return a dictionary where keys are the key that can be set, and
@@ -195,7 +238,7 @@ class IUnknownService(Interface):
 
 # 'Non-instantaneous' operation interface
 # XXX name is not really good... and in fact, since it's close to a deferred,
-#     we might want this to be a class deriving from deferred and adding the
+#     we might want this to be a class deriving from Deferred and adding the
 #     'status' attribute (hoping it will never get used in the future) so that
 #     we could use the already existing deferred infrastructure
 class IProgressingOperation(Interface):
@@ -299,11 +342,11 @@ class Plugin(object):
         This is used so that plugins can offer additional services in a
         standard way.
         
-        If the 'service name' is one of the standardised service name, then
+        If the 'service name' is one of the standardized service name, then
         the corresponding 'service object' must provide the 'standardized
         service interface' associated with this name.
         
-        If the 'service name' is not one of the standardised service name,
+        If the 'service name' is not one of the standardized service name,
         then it must provide the IUnknownService interface.
         
         """
@@ -524,6 +567,68 @@ class TemplatePluginHelper(object):
         template.stream(context).dump(tmp_filename, encoding, errors)
         os.rename(tmp_filename, filename)
 
+        
+class _AsyncPackageManager(PackageManager):
+    """Custom async package manager. The interface is a bit different from
+    the standard PackageManager, but it's ok since it's to be used only
+    internally.
+    
+    """
+    
+    def install(self, pkg_id):
+        """Return a POP."""
+        from twisted.internet import reactor
+        async_installer = _AsyncInstaller(reactor)
+        reactor.callInThread(async_installer, [pkg_id], self._installable_pkgs, self._installed_pkgs)
+        return async_installer
+    
+    def upgrade(self, *args, **kwargs):
+        raise NotImplementedError('async version not implemented because not needed')
+
+
+class _AsyncInstaller(DefaultInstaller):
+    implements(IProgressingOperation)
+    
+    def __init__(self, reactor, **kwargs):
+        DefaultInstaller.__init__(self, **kwargs)
+        self._reactor = reactor
+        self.deferred = Deferred()
+        self.status = 'progress'
+        
+    def __call__(self, pkg_names, installable_pkgs, installed_pkgs):
+        """Note: SHOULD be called in a separate thread since its blocking."""
+        try:
+            # 1. Process package names
+            clean_pkg_names = self._clean_pkg_names(pkg_names, installable_pkgs, installed_pkgs)
+            to_install_pkgs = self._get_pkgs_to_install(clean_pkg_names, installable_pkgs, installed_pkgs)
+            # 2. Download the files
+            self._pre_download(to_install_pkgs)
+            # TODO override download so that the status is updated
+            self._download(to_install_pkgs)
+        except Exception, e:
+            self.status = 'fail'
+            self._reactor.callFromThread(self.deferred.errback, e)
+            raise
+        else:
+            def second_step():
+                # this part is made to be executed in the reactor thread
+                try:
+                    # 3. Install packages
+                    self._pre_install(to_install_pkgs)
+                    new_pkgs = self._install(to_install_pkgs)
+                    self._post_install(new_pkgs)
+                    # 4. step normally done in package manager -- update installed_pkgs
+                    for new_pkg in new_pkgs:
+                        installed_pkgs[new_pkg.name] = new_pkg
+                    installed_pkgs.flush()
+                    # 5. fire callback
+                    self.status = 'success'
+                    self.deferred.callback(None)
+                except Exception, e:
+                    self.status = 'fail'
+                    self.deferred.errback(e)
+            self._reactor.callFromThread(second_step)
+
 
 class FetchfwPluginHelper(object):
     """Helper for plugins that needs to download files to really
@@ -531,7 +636,7 @@ class FetchfwPluginHelper(object):
     
     """
     
-    # TODO make the service asynchronous
+    implements(IInstallService)
     
     PKG_DIR = 'pkgs'
     """Directory where the package definitions are stored."""
@@ -542,58 +647,87 @@ class FetchfwPluginHelper(object):
     TFTPBOOT_DIR = os.path.join('var', 'lib', 'tftpboot')
     """Base directory where the files are extracted."""
     
-    @staticmethod
-    def _create_downloaders(http_proxy=None):
-        supp_handlers = []
-        if http_proxy:
-            supp_handlers = urllib2.ProxyHandler({'http': http_proxy})
-        default = DefaultDownloader(*supp_handlers)
-        auth = AuthenticatingDownloader(*supp_handlers)
-        cisco = CiscoDownloader(*supp_handlers)
-        nortel = NortelDownloader(default)
-        return {'default': default, 'auth': auth, 'cisco': cisco, 'nortel': nortel}
+    @classmethod
+    def new_rfile_builder(cls, http_proxy=None, ftp_proxy=None):
+        handlers = new_handlers(http_proxy, ftp_proxy)
+        dlers = new_downloaders(handlers)
+        return RemoteFileBuilder(dlers)
     
-    def __init__(self, plugin_dir, http_proxy=None):
+    def __init__(self, plugin_dir, rfile_builder=None, installation_mgr_builder=None):
         self._plugin_dir = plugin_dir
-        self.downloaders = self._create_downloaders(http_proxy)
+        if rfile_builder is None:
+            rfile_builder = self.new_rfile_builder()
+        if installation_mgr_builder is None:
+            installation_mgr_builder = InstallationMgrBuilder()
 
         pkg_dir = os.path.join(plugin_dir, self.PKG_DIR)
         cache_dir = os.path.join(plugin_dir, self.CACHE_DIR)        
         installed_dir = os.path.join(plugin_dir, self.INSTALLED_DIR)
         doc_root = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
-        storage = fetchfw2.storage.DefaultPackageStorage(cache_dir, pkg_dir, installed_dir,
-                                                         self.downloaders, {'DOC_ROOT': doc_root})
-        self._pkg_manager = fetchfw2.package.PackageManager(storage)
+        storage = DefaultPackageStorage(cache_dir, pkg_dir, installed_dir,
+                                        rfile_builder, installation_mgr_builder,
+                                        {'DOC_ROOT': doc_root})
+        self._async_pkg_manager = _AsyncPackageManager(storage)
+        self._in_install_set = set()
     
-    def _install(self, *args):
-        """Install the packages in args.
+    def install(self, pkg_id):
+        """Install a package.
         
-        args -- a sequence of package name to install
+        See IInstallService.install.
          
         """
-        self._pkg_manager.install(args)
+        if pkg_id in self._in_install_set:
+            raise Exception("an install operation for pkg '%s' is already in progress" % pkg_id)
+        if pkg_id not in self._async_pkg_manager.installable_pkgs:
+            raise Exception('package not found')
+
+        # FIXME -- right now, it's possible to have 2 download for the same
+        #          file at the same time, which would lead to some bad things
+        #          We could mitigate this by using a remote file object that
+        #          download to an arbitrarly name file before renaming, so we
+        #          could have 2 download of the same file at the same time with
+        #          I believe no consequence
+        pop = self._async_pkg_manager.install(pkg_id)
+        self._in_install_set.add(pkg_id)
+        def on_success_or_error(_):
+            self._in_install_set.remove(pkg_id)
+        pop.deferred.addBoth(on_success_or_error)
+        return pop
     
-    def _uninstall(self, *args):
-        """See _install."""
-        self._pkg_manager.uninstall(args)
-    
-    def _list_installed(self):
-        """Return the list (in the form of a generator) of installed package
-        name.
+    def uninstall(self, pkg_id):
+        """Uninstall a package.
+        
+        See IInstallService.uninstall.
         
         """
-        self._pkg_manager.installed_pkgs.reload()
-        return self._pkg_manager.installed_pkgs.iterkeys()
+        self._async_pkg_manager.uninstall((pkg_id,))
 
-    def _list_installable(self):
-        """See _list_installed."""
-        return self._pkg_manager.installable_pkgs.iterkeys()
+    def list_installable(self):
+        """Return a list of the packages that are isntallable.
+        
+        See IInstallService.list_installable.
+        
+        """
+        installable_pkgs = self._async_pkg_manager.installable_pkgs
+        res = []
+        for pkg in installable_pkgs.itervalues():
+            dsize = sum(rfile.size for rfile in pkg.remote_files)
+            res.append({'id': pkg.name, 'dsize': dsize})
+        return res
+        
+    def list_installed(self):
+        """Return a list of the packages that are installed.
+        
+        See IInstallService.list_installed.
+        
+        """
+        installed_pkgs = self._async_pkg_manager.installed_pkgs
+        installed_pkgs.reload()
+        return [{'id': pkg.name} for pkg in installed_pkgs.itervalues()]
     
     def services(self):
-        return {'install': self._install,
-                'uninstall': self._uninstall,
-                'list_installed': self._list_installed,
-                'list_installable': self._list_installable}
+        """Return the following dictionary: {'install': self}."""
+        return {'install': self}
 
 
 class _PluginManagerConfigureService(object):
@@ -609,31 +743,27 @@ class _PluginManagerConfigureService(object):
     # TODO we should extract what's common between all ConfigureService... but
     #      then we should implement another ConfigureService first...
     def __init__(self, dict={}):
-        self._dict = {}
+        self._dict = {'server': None}
         for k, v in dict.iteritems():
-            self[k] = v
+            self._dict[k] = v
     
-    def __contains__(self, key):
-        return key in self._dict
-    
-    def __getitem__(self, key):
-        return self._dict[key]
-    
-    def _check_server(self, value):
+    def _process_server(self, value):
+        if value is None:
+            return None
         o = urlparse.urlparse(value)
         if o.scheme != 'http' or not o.netloc:
             raise InvalidParameterError("invalid 'server' value: '%s'" % value)
+        return value
     
-    def __setitem__(self, key, value):
-        if not isinstance(key, basestring):
-            raise ValueError('key must be a string or unicode string')
-        if key not in ('server',):
-            raise ValueError('invalid key')
-        self._check_server(value)
+    def get(self, key):
+        return self._dict[key]
+    
+    def set(self, key, value):
+        if key not in self._dict:
+            raise KeyError('unknown key')
+        if key == 'server':
+            value = self._process_server(value)
         self._dict[key] = value
-    
-    def __delitem__(self, key):
-        del self._dict[key]
     
     def description(self):
         return {"server": "The base address of the plugins repository"}
@@ -677,8 +807,6 @@ class PluginManager(object):
     An 'installable plugin info' is a 'plugin info' object + the following keys:
       filename -- the name of the file to download on the remote server (i.e.
                   the name of the plugin package)
-
-    A configuration service is available via the attribute 'configure_service'.
     
     """
     
@@ -703,8 +831,10 @@ class PluginManager(object):
         """
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
-        self.configure_service = _PluginManagerConfigureService(params)
+        self._configure_service = _PluginManagerConfigureService(params)
         self._plugins = {}
+        self._in_update = False
+        self._in_install_set = set()
         
     def close(self):
         """Close the plugin manager.
@@ -715,14 +845,22 @@ class PluginManager(object):
         for plugin in self._plugins.itervalues():
             plugin.close()
         self._plugins.clear()
-            
+    
+    def configure_service(self):
+        """Return an object providing the IConfigureService interface.
+        
+        You can then configure certain aspect of the plugin manager via this
+        object.
+        
+        """
+        return self._configure_service
+    
     def _def_pathname(self):
         return os.path.join(self._plugins_dir, self._DEF_FILENAME)
 
     def _join_server_url(self, p):
-        try:
-            server = self.configure_service['server']
-        except KeyError:
+        server = self._configure_service.get('server')
+        if server is None:
             raise InvalidParameterError("no 'server' param available")
         else:
             if server.endswith('/'):
@@ -779,6 +917,9 @@ class PluginManager(object):
 
         Return an object providing the IProgressOperation interface.
         
+        Raise an Exception if there's already an install/upgrade operation
+        in progress for the plugin.
+        
         Raise an Exception if there's no installable plugin with the specified
         name.
         
@@ -786,18 +927,24 @@ class PluginManager(object):
         and no 'server' param has been set.
         
         """
+        if name in self._in_install_set:
+            raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % name)
+        
         pg_info = self._get_installable_pg_info(name)
         if pg_info is None:
             raise ValueError('plugin not found')
         
         cache_filename = os.path.join(self._cache_dir, pg_info['filename'])
         if not self._is_in_cache(cache_filename):
+            self._in_install_set.add(name)
             dl_pop = self._download_plugin(pg_info['filename'], cache_filename)
             proxy_pop = _InstallProxyProgressingOperation(dl_pop)
             def on_error(failure):
+                self._in_install_set.remove(name)
                 proxy_pop._status = 'fail'
                 proxy_pop.deferred.errback(failure)
             def on_success(_):
+                self._in_install_set.remove(name)
                 try:
                     self._extract_plugin(cache_filename)
                 except Exception, e:
@@ -842,6 +989,8 @@ class PluginManager(object):
         
         Return an object providing the IProgressingOperation interface.
         
+        Raise an Exception if there's already an update operation in progress.
+        
         Raise an InvalidParameterError if no 'server' param has been set,
         or has an invalid value.
         
@@ -853,6 +1002,9 @@ class PluginManager(object):
           changed
         
         """
+        if self._in_update:
+            raise Exception("an update operation is already in progress")
+
         url = self._join_server_url(self._DEF_FILENAME)
         def_pathname = self._def_pathname()
         tmp_pathname = def_pathname + '.tmp'
@@ -864,11 +1016,14 @@ class PluginManager(object):
             fdst.close()
             os.remove(tmp_pathname)
         else:
+            self._in_update = True
             def on_error(failure):
+                self._in_update = False
                 fdst.close()
                 os.remove(tmp_pathname)
                 return failure
             def on_success(_):
+                self._in_update = False
                 fdst.close()
                 os.rename(tmp_pathname, def_pathname)
             pop.deferred.addCallbacks(on_success, on_error)
@@ -894,7 +1049,7 @@ class PluginManager(object):
         The generator will eventually raise an Exception if the plugin definition
         file is invalid/corrupted. If this file is absent, no error is raised,
         but the generator will yield no items (i.e. like an 'empty' plugin
-        info file).
+        definition file).
         
         """
         config = ConfigParser.RawConfigParser()
@@ -937,7 +1092,7 @@ class PluginManager(object):
         
         The generator will eventually raise an Exception if, in the plugins
         directory, there's a directory which has a missing or invalid plugin
-        definition file.
+        info file.
         
         """
         for rel_plugin_dir in os.listdir(self._plugins_dir):
@@ -959,7 +1114,7 @@ class PluginManager(object):
           version -- the version of the plugin
           filename -- the name of the package in which the plugin is packaged
         
-        This method will raise an Exception in the same cicumstances as the
+        This method will raise an Exception in the same circumstances as the
         generator returned by the list_installed method.
         
         The generator will raise an Exception in the same circumstances as the

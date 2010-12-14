@@ -44,7 +44,11 @@ from prov2.devices.device import DeviceManager
 from prov2.devices.util import NumericIdGenerator
 from prov2.plugins import PluginManager
 from prov2.rest.server import RestService, DevicesResource,\
-    ConfigsResource, DeviceReconfigureResource, DeviceReloadResource
+    ConfigsResource, DeviceReconfigureResource, DeviceReloadResource,\
+    PluginMgrUpdateResource, PluginMgrListInstallableResource,\
+    PluginMgrListInstalledResource, PluginMgrListUpgradeableResource,\
+    PluginMgrConfigureResource, PluginMgrInstallResource, PluginMgrUninstallRecourse,\
+    PluginMgrUpgradeResource, PluginsResource
 from twisted.python.util import println
 
 
@@ -378,6 +382,9 @@ class Application(object):
         Raise an Exception if there's no installable plugin with the specified
         name.
         
+        Raise an Exception if there's already an install/upgrade operation
+        in progress for the plugin.
+        
         Raise an InvalidParameterError if the plugin package is not in cache
         and no 'server' param has been set.
         
@@ -401,6 +408,7 @@ class Application(object):
         if not self.pg_mgr.is_installed(pg_id):
             raise Exception("plugin '%s' is not already installed" % pg_id)
         
+        # XXX we probably want to cheeck that the plugin is 'really' upgradeable
         pop = self.pg_mgr.upgrade(pg_id)
         def on_success(_):
             if pg_id in self.pg_mgr:
@@ -433,6 +441,7 @@ class Application(object):
             raise Exception("plugin '%s' is used by at least a device" % pg_id)
         
         self.pg_mgr.uninstall(pg_id)
+        self.pg_mgr.unload(pg_id)
 
 
 from twisted.internet import reactor
@@ -655,16 +664,46 @@ http_service = new_http_service()
 http_site = Site(http_service)
 
 
+root = Resource()
 service = RestService(app)
+
 dev_res = DevicesResource(service)
-cfg_res = ConfigsResource(service)
 dev_configure_res = DeviceReconfigureResource(service)
 dev_reload_res = DeviceReloadResource(service)
-root = Resource()
 root.putChild('devices', dev_res)
 root.putChild('dev_reconfigure', dev_configure_res)
 root.putChild('dev_reload', dev_reload_res)
+
+cfg_res = ConfigsResource(service)
 root.putChild('configs', cfg_res)
+
+pg_config_res = PluginMgrConfigureResource(pg_mgr)
+pg_update_res = PluginMgrUpdateResource(pg_mgr)
+pg_list_able_res = PluginMgrListInstallableResource(pg_mgr)
+pg_list_ed_res = PluginMgrListInstalledResource(pg_mgr)
+pg_list_upgradeable_res = PluginMgrListUpgradeableResource(pg_mgr)
+pg_install_res = PluginMgrInstallResource(app)
+pg_upgrade_res = PluginMgrUpgradeResource(app)
+pg_uninstall_res = PluginMgrUninstallRecourse(app)
+pg_plugins_res = PluginsResource(pg_mgr)
+pg_mgr_res = Resource()
+pg_mgr_res.putChild('config', pg_config_res)
+pg_mgr_res.putChild('update', pg_update_res)
+pg_mgr_res.putChild('installable', pg_list_able_res)
+pg_mgr_res.putChild('installed', pg_list_ed_res)
+pg_mgr_res.putChild('upgradeable', pg_list_upgradeable_res)
+pg_mgr_res.putChild('install', pg_install_res)
+pg_mgr_res.putChild('upgrade', pg_upgrade_res)
+pg_mgr_res.putChild('uninstall', pg_uninstall_res)
+pg_mgr_res.putChild('plugins', pg_plugins_res)
+root.putChild('pg_mgr', pg_mgr_res)
+
+class DebugResource(Resource):
+    def render_GET(self, request):
+        le_app = app
+        print id(le_app)
+        return ""
+root.putChild('debug', DebugResource())
 rest_site = Site(root)
 
 

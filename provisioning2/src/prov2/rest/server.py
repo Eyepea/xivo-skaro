@@ -26,12 +26,10 @@ __license__ = """
 import simplejson as json
 from twisted.python import log
 from twisted.web.resource import Resource, NoResource
-from twisted.web.server import Site, NOT_DONE_YET
+from twisted.web.server import NOT_DONE_YET
 from twisted.web import http
-from prov2.devices.device import DeviceManager
 from prov2.devices.util import NumericIdGenerator
-from prov2.devices.config import ConfigManager
-from prov2.plugins import PluginManager
+from prov2.plugins import InvalidParameterError
 from prov2.rest.util import *
 
 # TODO input checking
@@ -125,6 +123,12 @@ class RestService(object):
         return self._app.cfg_mgr.flatten(cfg_id)
 
 
+def _process_request_failed(request, e, response_code):
+    request.setResponseCode(response_code)
+    request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+    return str(e).encode('UTF-8')
+
+
 def dev_json_repr(dev, dev_id, dev_uri):
     """Return a application/vnd.proformatique.prov2+json representation of
     a device.
@@ -213,9 +217,6 @@ class DevicesResource(Resource):
             
         devices = []
         for dev_id, dev in self._service.list_dev(filter_fun):
-            # TODO here we should transform 'ip' and 'mac' to their human
-            #      readable form. What might be more useful is to always use
-            #      these values as their normalized human readable form.
             devices.append({'id': dev_id,
                             'device': dev,
                             'links': [{'rel': 'device', 'href': request.path + '/' + dev_id}]})
@@ -236,6 +237,8 @@ class DevicesResource(Resource):
         return dev_json_repr(dev, dev_id, dev_uri)
 
 
+# XXX useless, call to Plugin.configure is automatic and managed by the
+#     application
 class DeviceReconfigureResource(Resource):
     def __init__(self, service):
         Resource.__init__(self)
@@ -253,11 +256,6 @@ class DeviceReconfigureResource(Resource):
         self._service.reconfigure_dev(dev_id)
         request.setResponseCode(http.NO_CONTENT)
         return ""
-#        except ConfigurationError, e:
-#            request.setResponseCode(http.BAD_REQUEST)
-#            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-#            resp_content = u"Error while configuring the device: %s" % e
-#            return resp_content.encode('UTF-8')
 
 
 class DeviceReloadResource(Resource):
@@ -275,11 +273,6 @@ class DeviceReloadResource(Resource):
             return u"Device not found".encode('UTF-8')
         
         self._service.reload_dev(dev_id)
-#        except ConfigurationError, e:
-#            request.setResponseCode(http.BAD_REQUEST)
-#            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-#            resp_content = u"Error while configuring the device: %s" % e
-#            return resp_content.encode('UTF-8')
         request.setResponseCode(http.NO_CONTENT)
         return ""
 
@@ -375,104 +368,483 @@ class ConfigsResource(Resource):
         return json.dumps({'configs': configs})
 
 
-class InstalledPluginResource(Resource):
-    def __init__(self, id, pg_mgr):
+class PopResource(Resource):
+    # Pop is for 'Progress OPeration'
+    # Note that render_DELETE might be implemented in classes creating these
+    # objects, and not on the class itself
+    def __init__(self, pop):
+        """
+        pop -- an object providing the IProgressingOperation interface
+        """
         Resource.__init__(self)
-        self._pg_id = id
-        self._pg_mgr = pg_mgr
-        
+        self._pop = pop
+
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
-        """Get information about this plugin, i.e. some generic information
-        and the subservices this plugin expose.
-        
-        """
-        pass
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({'pop.status': self._pop.status})
+
+
+class PluginMgrUpdateResource(Resource):
+    def __init__(self, pg_mgr, id_gen=None):
+        Resource.__init__(self)
+        self._pg_mgr = pg_mgr
+        self._id_gen = NumericIdGenerator() if id_gen is None else id_gen
+        self._childs = {}
     
+    def getChild(self, path, request):
+        if path in self._childs:
+            return self._childs[path]
+        else:
+            return Resource.getChild(self, path, request)
+
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        # right now, we can ignore the content, since it's supposed to be empty
+        try:
+            pop = self._pg_mgr.update()
+        except Exception, e:
+            # XXX not the right response code... but which one is ?
+            return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
+        else:
+            id = self._id_gen.next_id(self._childs)
+            pop_res = PopResource(pop)
+            def on_pop_delete(request):
+                del self._childs[id]
+                request.setResponseCode(http.NO_CONTENT)
+                return ""
+            pop_res.render_DELETE = on_pop_delete
+            self._childs[id] = pop_res
+            
+            request.setResponseCode(http.ACCEPTED)
+            request.setHeader('Location', request.path + '/' + id)
+            return ""
+
+
+# The 3 PluginListXXX resource are closely similar... means we could refactor...
+class PluginMgrListInstallableResource(Resource):
+    def __init__(self, pg_mgr):
+        Resource.__init__(self)
+        self._pg_mgr = pg_mgr
+    
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        list = [{'id': e['name'], 'version': e['version']} for e in
+                self._pg_mgr.list_installable()]
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({'pg_infos': list})
+
+
+class PluginMgrListInstalledResource(Resource):
+    def __init__(self, pg_mgr):
+        Resource.__init__(self)
+        self._pg_mgr = pg_mgr
+    
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        list = []
+        for e in self._pg_mgr.list_installed():
+            # XXX e['name'] should probably be url-encoded and the base url
+            #     should probably not be hard coded
+            links = [{'rel': 'plugin', 'href': '/pg_mgr/plugins/%s' % e['name']}]
+            cur = {'id': e['name'], 'version': e['version'], 'links': links}
+            list.append(cur)
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({'pg_infos': list})
+        
+
+class PluginMgrListUpgradeableResource(Resource):
+    def __init__(self, pg_mgr):
+        Resource.__init__(self)
+        self._pg_mgr = pg_mgr
+    
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        list = [{'id': e['name'], 'version': e['version']} for e in
+                self._pg_mgr.list_upgradeable()]
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({'pg_infos': list})
+
+
+class PluginMgrConfigureParamResource(Resource):
+    def __init__(self, cfg_service, param):
+        Resource.__init__(self)
+        self._cfg_service = cfg_service
+        self._param = param
+    
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        value = self._cfg_service.get(self._param)
+        if value is None:
+            return json.dumps({})
+        else:
+            return json.dumps({'value': value})
+    
+    @content_type([PROV2_MIME_TYPE])
     def render_PUT(self, request):
-        """Install this plugin if it's not installed.
-        
-        There's a problem though -- in this case, PUT is not idempotent.
-        
-        """
-    
-    def render_DELETE(self, request):
-        """Uninstall this plugin if it's installed."""
+        content = json.loads(request.content.getvalue())
+        if 'value' in content:
+            value = content['value']
+        else:
+            value = None
+        try:
+            self._cfg_service.set(self._param, value)
+        except InvalidParameterError, e:
+            # XXX not the 'right' response code
+            request.setResponseCode(http.BAD_REQUEST)
+            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+            return str(e).encode('UTF-8')
+        else:
+            request.setResponseCode(http.NO_CONTENT)
+            return ""
 
 
-class InstalledPluginsResource(Resource):
+class PluginMgrConfigureResource(Resource):
     def __init__(self, pg_mgr):
         Resource.__init__(self)
         self._pg_mgr = pg_mgr
-        
+    
+    def getChild(self, path, request):
+        cfg_service = self._pg_mgr.configure_service()
+        if path not in cfg_service.description():
+            return NoResource()
+        else:
+            res = PluginMgrConfigureParamResource(cfg_service, path)
+            return res
+    
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
-        res = list(self._pg_mgr.list_installed())
+        cfg_service = self._pg_mgr.configure_service()
+        params = {}
+        for key in cfg_service.description().iterkeys():
+            # XXX urlquote p_uri (in fact, only key)
+            p_uri = request.path + '/' + key
+            p_value = {'links': [{'rel': 'config.param', 'href': p_uri}]}
+            value = cfg_service.get(key)
+            if value is not None:
+                p_value['value'] = str(value)
+            params[key] = p_value
+        
         request.setResponseCode(http.OK)
         request.setHeader('Content-Type', PROV2_MIME_TYPE)
-        return json.dumps(res)
-    
+        return json.dumps({'config': params})
 
-class InstallablePluginsResource(Resource):
+
+class _PluginMgrInstallUpgradeResource(Resource):
+    def __init__(self, app, id_gen=None):
+        Resource.__init__(self)
+        self._app = app
+        self._id_gen = NumericIdGenerator() if id_gen is None else id_gen
+        self._childs = {}
+
+    def getChild(self, path, request):
+        if path in self._childs:
+            return self._childs[path]
+        else:
+            return Resource.getChild(self, path, request)
+    
+    def _do_call_app(self, pg_id):
+        raise NotImplementedError('must be implemented in derived class')
+    
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        content = json.loads(request.content.getvalue())
+        try:
+            pg_id = content['id']
+        except KeyError, e:
+            # XXX not the 'right' response code
+            return _process_request_failed(request, e, http.BAD_REQUEST)
+        else:
+            try:
+                pop = self._do_call_app(pg_id)
+            except Exception, e:
+                return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
+            else:
+                id = self._id_gen.next_id(self._childs)
+                pop_res = PopResource(pop)
+                def on_pop_delete(request):
+                    del self._childs[id]
+                    request.setResponseCode(http.NO_CONTENT)
+                    return ""
+                pop_res.render_DELETE = on_pop_delete
+                self._childs[id] = pop_res
+                
+                request.setResponseCode(http.ACCEPTED)
+                request.setHeader('Location', request.path + '/' + id)
+                return ""
+
+
+class PluginMgrInstallResource(_PluginMgrInstallUpgradeResource):
+    def _do_call_app(self, pg_id):
+        return self._app.install_pg(pg_id)
+
+
+class PluginMgrUpgradeResource(_PluginMgrInstallUpgradeResource):
+    def _do_call_app(self, pg_id):
+        return self._app.upgrade_pg(pg_id)
+
+
+class PluginMgrUninstallRecourse(Resource):
+    def __init__(self, app):
+        Resource.__init__(self)
+        self._app = app
+    
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        content = json.loads(request.content.getvalue())
+        try:
+            pg_id = content['id']
+        except KeyError, e:
+            # XXX not the 'right' response code
+            return _process_request_failed(request, e, http.BAD_REQUEST)
+        else:
+            try:
+                self._app.uninstall_pg(pg_id)
+            except Exception, e:
+                return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
+            else:
+                request.setResponseCode(http.NO_CONTENT)
+                return ""
+
+
+class PluginsResource(Resource):
     def __init__(self, pg_mgr):
         Resource.__init__(self)
         self._pg_mgr = pg_mgr
-        
+        # FIXME we want to create PluginResource only once so that they can
+        #       hold information for the lifetime of the plugin. The problem
+        #       is, we need to support plugin hotswapping, and this clearly
+        #       doesn't, especially that this resource is usually create at
+        #       'start' time
+        self._childs = dict((pg_id, PluginResource(pg_obj)) for
+                            (pg_id, pg_obj) in pg_mgr.iteritems())
+    
+    def getChild(self, path, request):
+        try:
+            return self._childs[path]
+        except KeyError:
+            return Resource.getChild(self, path, request)
+
+
+class PluginResource(Resource):
+    def __init__(self, pg):
+        Resource.__init__(self)
+        self._id = pg.name
+        self._service_res = PluginServicesResource(pg.services())
+    
+    def getChild(self, path, request):
+        if path == "services":
+            return self._service_res
+        return Resource.getChild(self, path, request)
+    
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
-        res = list(self._pg_mgr.list_installable())
-        for e in res:
-            del e['filename']
         request.setResponseCode(http.OK)
         request.setHeader('Content-Type', PROV2_MIME_TYPE)
-        return json.dumps(res)
+        res = {"id": self._id,
+               "links": [{"rel": "services",
+                          "href": request.path + '/' + 'services'}]}
+        return json.dumps({"plugin": res})
 
 
-if __name__ == '__main__':
-    import sys
+class PluginInstallServiceResource(Resource):
+    def __init__(self, install_service):
+        Resource.__init__(self)
+        self._childs = {
+            'install': PluginInstallServiceInstallResource(install_service),
+            'uninstall': PluginInstallServiceUninstallResource(install_service),
+            'installable': PluginInstallServiceListInstallableResource(install_service),
+            'installed': PluginInstallServiceListInstalledResource(install_service)
+        }
     
-    log.startLogging(sys.stderr)
+    def getChild(self, path, request):
+        try:
+            return self._childs[path]
+        except KeyError:
+            return Resource.getChild(self, path, request)
     
-    root = Resource()
-    site = Site(root)
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        links = [{"rel": "service.install." + e, "href": request.path + '/' + e} for e in self._childs]
+        res = {"type": "service.install",
+               "links": links}
+        return json.dumps({'service': res})
+
+
+class PluginInstallServiceInstallResource(Resource):
+    def __init__(self, install_service, id_gen=None):
+        Resource.__init__(self)
+        self._srv = install_service
+        self._id_gen = NumericIdGenerator() if id_gen is None else id_gen
+        self._childs = {}
     
-    id_gen = NumericIdGenerator()
-    dev_mgr = DeviceManager(id_gen)
-    dev_mgr.add({'mac': '00:11:22:33:44:55',
-                 'ip': '192.168.32.105',
-                 'vendor': 'Aastra',
-                 'model': '6731i',
-                 'config': '01'})
-    dev_mgr.add({'ip': '0.0.0.0',
-                 'vendor': 'Snom',
-                 })
-    dev_mgr.add({'mac': '00:99:88:33:44:55',
-                 'ip': '192.168.32.106',
-                 'vendor': 'Aastra',
-                 'model': '6757i',
-                 'config': '01',
-                 'plugins': 'xivo-aastra-2.6.0.2010'})
-    cfg_mgr = ConfigManager({'base': [{'prov_ip': '192.168.32.2', 'admin_passwd': '23456'}, []],
-                             'dev-2': [{'admin_passwd': '54545'}, ['base']]})
-    pg_mgr = PluginManager('/var/tmp/pf-xivo/prov2/plugins', 'http://xivo-test-prov2:8000/')
-    plugins = list(pg_mgr.load_all())
-    pg_map = dict((pg.name, pg) for pg in plugins)
+    def getChild(self, path, request):
+        if path in self._childs:
+            return self._childs[path]
+        else:
+            return Resource.getChild(self, path, request)
+        
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        content = json.loads(request.content.getvalue())
+        try:
+            pkg_id = content['id']
+        except KeyError, e:
+            # XXX not the 'right' response code
+            return _process_request_failed(request, e, http.BAD_REQUEST)
+        else:
+            try:
+                pop = self._srv.install(pkg_id)
+            except Exception, e:
+                return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
+            else:
+                id = self._id_gen.next_id(self._childs)
+                pop_res = PopResource(pop)
+                def on_pop_delete(request):
+                    del self._childs[id]
+                    request.setResponseCode(http.NO_CONTENT)
+                    return ""
+                pop_res.render_DELETE = on_pop_delete
+                self._childs[id] = pop_res
+                
+                request.setResponseCode(http.ACCEPTED)
+                request.setHeader('Location', request.path + '/' + id)
+                return ""
+
+
+class PluginInstallServiceUninstallResource(Resource):
+    def __init__(self, install_service):
+        Resource.__init__(self)
+        self._srv = install_service
     
-    plugins = Resource()
-    plugins.putChild('installed', InstalledPluginsResource(pg_mgr))
-    plugins.putChild('installable', InstallablePluginsResource(pg_mgr))
-    root.putChild('plugins', plugins)
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        content = json.loads(request.content.getvalue())
+        try:
+            pkg_id = content['id']
+        except KeyError, e:
+            # XXX not the 'right' response code
+            return _process_request_failed(request, e, http.BAD_REQUEST)
+        else:
+            try:
+                self._srv.uninstall(pkg_id)
+            except Exception, e:
+                return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
+            else:
+                request.setResponseCode(http.NO_CONTENT)
+                return ""
+
+
+class PluginInstallServiceListInstalledResource(Resource):
+    def __init__(self, install_service):
+        Resource.__init__(self)
+        self._srv = install_service
     
-    service = RestService(cfg_mgr, dev_mgr, pg_map)
-    dev_res = DevicesResource(service)
-    cfg_res = ConfigsResource(service)
-    dev_configure_res = DeviceReconfigureResource(service)
-    dev_reload_res = DeviceReloadResource(service)
-    root.putChild('devices', dev_res)
-    root.putChild('configs', cfg_res)
-    root.putChild('dev_reconfigure', dev_configure_res)
-    root.putChild('dev_reload', dev_reload_res)
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        list = [{'id': e['id']} for e in self._srv.list_installed()]
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({'pkg_infos': list})
+
+
+class PluginInstallServiceListInstallableResource(Resource):
+    def __init__(self, install_service):
+        Resource.__init__(self)
+        self._srv = install_service
     
-    from twisted.internet import reactor
-    reactor.listenTCP(8081, site)
-    reactor.run()
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        list = []
+        for e in self._srv.list_installable():
+            d = {'id': e['id']}
+            if 'dsize' in e:
+                d['dsize'] = e['dsize']
+            if 'isize' in e:
+                d['isize'] = e['isize']
+            list.append(d)
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({'pkg_infos': list})
+
+
+class PluginUnknownServiceResource(Resource):
+    def __init__(self, service):
+        Resource.__init__(self)
+        self._service = service
+    
+    def getChild(self, path, request):
+        if path == 'do':
+            return PluginUnknownDoServiceResource(self._service)
+        else:
+            return Resource.getChild(self, path, request)
+    
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        return json.dumps({"service": {"type": "service.unknown",
+                                       "links": [{"rel": "service.unknown.do",
+                                                  "href": self.path + '/' + 'do'}]}})
+
+
+class PluginUnknownDoServiceResource(Resource):
+    def __init__(self, service):
+        Resource.__init__(self)
+        self._service = service
+    
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        content = json.loads(request.content.getvalue())
+        value = content['value']
+        try:
+            ret_value = self._service.do(value)
+        except Exception, e:
+            return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
+        else:
+            request.setResponseCode(http.OK)
+            request.setHeader('Content-Type', PROV2_MIME_TYPE)
+            return json.dumps({'value': str(ret_value)})
+
+
+class PluginServicesResource(Resource):
+    STANDARDIZED_SRVS = {
+        "install": "service.install",
+        "configure": "service.configure"
+    }
+    RES_FACTORIES = {
+        "install": PluginInstallServiceResource,
+    }
+    
+    def __init__(self, services):
+        Resource.__init__(self)
+        self._childs = {}
+        for srv_name, srv_obj in services.iteritems():
+            factory = self.RES_FACTORIES.get(srv_name, PluginUnknownServiceResource)
+            resource = factory(srv_obj)
+            self._childs[srv_name] = resource
+        
+    def getChild(self, path, request):
+        try:
+            return self._childs[path]
+        except KeyError:
+            return Resource.getChild(self, path, request)
+    
+    @accept([PROV2_MIME_TYPE])
+    def render_GET(self, request):
+        request.setResponseCode(http.OK)
+        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        res = []
+        for srv_name in self._childs:
+            type = self.STANDARDIZED_SRVS.get(srv_name, 'service.unknown')
+            res.append({'type': type, 'links': [{'rel': type, 'href': request.path + '/' + srv_name}]})
+        return json.dumps({"services": res})
+

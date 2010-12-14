@@ -1,0 +1,250 @@
+[pkg_cisco-7902]
+desc: Firmware and locale files for Cisco 7902G (SCCP)
+version: 8.0.2
+files: file_cisco-7902fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7905]
+desc: Firmware and locale files for Cisco 7905G (SCCP)
+version: 8.0.3
+files: file_cisco-7905fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7906-7911]
+desc: Firmware and locale files for Cisco 7906G and 7911G (SCCP)
+version: 9.0.3
+files: file_cisco-7906-7911fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7910]
+desc: Firmware and locale files for Cisco 7910G (SCCP)
+version: 5.0.7
+files: file_cisco-7910fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7912]
+desc: Firmware and locale files for Cisco 7912G (SCCP)
+version: 8.0.4
+files: file_cisco-7912fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7914]
+desc: Firmware for Cisco Expansion Module 7914G (SCCP)
+version: 5.0.4
+files: file_cisco-7914fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7915]
+desc: Firmware for Cisco Expansion Module 7915G (SCCP)
+version: 1.0.4
+files: file_cisco-7915fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7916]
+desc: Firmware for Cisco Expansion Module 7916G (SCCP)
+version: 1.0.4
+files: file_cisco-7916fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7931]
+desc: Firmware and locale files for Cisco 7931G (SCCP)
+version: 9.0.3
+files: file_cisco-7931fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7940-7960]
+desc: Firmware and locale files for Cisco 7940G and 7960G (SCCP)
+version: 8.1.2
+files: file_cisco-7940-7960fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7941-7961]
+desc: Firmware and locale files for Cisco 7941G and 7961G (SCCP)
+version: 9.0.3
+files: file_cisco-7941-7961fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7942-7962]
+desc: Firmware and locale files for Cisco 7942G and 7962G (SCCP)
+version: 9.0.3
+files: file_cisco-7942-7962fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7945-7965]
+desc: Firmware and locale files for Cisco 7945G and 7965G (SCCP)
+version: 9.0.3
+files: file_cisco-7945-7965fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7970-7971]
+desc: Firmware and locale files for Cisco 7970G, 7971G and 7971GE (SCCP)
+version: 9.0.3
+files: file_cisco-7970-7971fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7975]
+desc: Firmware and locale files for Cisco 7975G (SCCP)
+version: 9.0.3
+files: file_cisco-7975fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-networklocale]
+desc: Network locale for Cisco 79xx (SCCP)
+version: 9.0.2
+files: file_cisco-networklocale
+install_proc: install_cisco-networklocale
+
+[pkg_cisco-userlocale_de_DE]
+desc: de_DE user locale for Cisco 79xx (SCCP)
+version: 9.0.2
+files: file_cisco-userlocale_de_DE
+install_proc: install_cisco-userlocale
+
+[pkg_cisco-userlocale_es_ES]
+desc: es_ES user locale for Cisco 79xx (SCCP)
+version: 9.0.2
+files: file_cisco-userlocale_es_ES
+install_proc: install_cisco-userlocale
+
+[pkg_cisco-userlocale_fr_FR]
+desc: fr_FR user locale for Cisco 79xx (SCCP)
+version: 9.0.2
+files: file_cisco-userlocale_fr_FR
+install_proc: install_cisco-userlocale
+
+
+
+[install_cisco-7900fw]
+a-b: unzip $FILE1
+b-c: cp * $DOC_ROOT/
+
+[install_cisco-networklocale]
+a-b: unsign $FILE1 f.tgz
+b-c: untar f.tgz
+c-d: untar *.tar
+d-e: cp usr/local/cm/tftp/canada
+        usr/local/cm/tftp/france
+        usr/local/cm/tftp/germany
+        usr/local/cm/tftp/spain
+        $DOC_ROOT/Cisco/i18n/
+
+[install_cisco-userlocale]
+a-b: unsign $FILE1 f.tgz
+b-c: untar f.tgz
+c-d: untar *.tar
+d-e: cp usr/local/cm/tftp/* $DOC_ROOT/Cisco/i18n/
+
+
+
+[file_cisco-7902fw]
+url: http://download-sj.cisco.com/swc/esd/02/278078615/contract/cmterm-7902G-sccp.8-0-2.zip
+size: 329363
+sha1sum: 691fb351d9228bd193dcb78cb1e7ddec73ccf835
+
+[file_cisco-7905fw]
+url: http://download-sj.cisco.com/swc/esd/02/273941556/contract/cmterm-7905G-sccp.8-0-3.zip
+size: 673168
+sha1sum: c68b1ddddc06ab7bc85eef2a5956d6a58844d700
+downloader: x-cisco
+
+[file_cisco-7906-7911fw]
+url: http://download-sj.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.9-0-3.zip
+size: 5066707
+sha1sum: 02f37cd69aab190d018d13f86ccdc61cc2bb4235
+downloader: x-cisco
+
+[file_cisco-7910fw]
+url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp.5-0-7.zip
+size: 592359
+sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
+downloader: x-cisco
+
+[file_cisco-7912fw]
+url: http://download-sj.cisco.com/swc/esd/02/278115698/contract/cmterm-7912G-sccp.8-0-4.zip
+size: 339004
+sha1sum: 5c93605519fb691690b3c1eefc67127e85497892
+downloader: x-cisco
+
+[file_cisco-7914fw]
+url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp.5-0-4.zip
+size: 26206
+sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
+downloader: x-cisco
+
+[file_cisco-7915fw]
+url: http://download-sj.cisco.com/swc/esd/03/282159701/contract/cmterm-7915.1-0-4.zip
+size: 64899
+sha1sum: 3897cb03c3cd76e031375b52a2275aa5d82a1674
+downloader: x-cisco
+
+[file_cisco-7916fw]
+url: http://download-sj.cisco.com/swc/esd/03/282159702/contract/cmterm-7916.1-0-4.zip
+size: 76859
+sha1sum: 4643db66e2c8b1800eee1ca110297b01c481bbcc
+downloader: x-cisco
+
+[file_cisco-7931fw]
+url: http://download-sj.cisco.com/swc/esd/04/280799963/contract/cmterm-7931-sccp.9-0-3.zip
+size: 5056948
+sha1sum: 9e85007387de085ebb0e8becf16197bacc01caa9
+downloader: x-cisco
+
+[file_cisco-7940-7960fw]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
+size: 701384
+sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
+downloader: x-cisco
+
+[file_cisco-7941-7961fw]
+url: http://download-sj.cisco.com/swc/esd/04/279251499/contract/cmterm-7941_7961-sccp.9-0-3.zip
+size: 5170819
+sha1sum: 3ff5b72ced1a8df06ad43727439fe0b497809c57
+downloader: x-cisco
+
+[file_cisco-7942-7962fw]
+url: http://download-sj.cisco.com/swc/esd/04/281346593/contract/cmterm-7942_7962-sccp.9-0-3.zip
+size: 5763153
+sha1sum: 752deea2d776790be5f6b43e93687193e00bec35
+downloader: x-cisco
+
+[file_cisco-7945-7965fw]
+url: http://download-sj.cisco.com/swc/esd/04/281346594/contract/cmterm-7945_7965-sccp.9-0-3.zip
+size: 5891955
+sha1sum: 98eb810de064cf777eb4660426aaa1e202413e78
+downloader: x-cisco
+
+[file_cisco-7970-7971fw]
+url: http://download-sj.cisco.com/swc/esd/04/278436620/contract/cmterm-7970_7971-sccp.9-0-3.zip
+size: 5279034
+sha1sum: 04e8620c3b84d761f9654cdcc20c837c35944cc7
+downloader: x-cisco
+
+[file_cisco-7975fw]
+url: http://download-sj.cisco.com/swc/esd/04/281346597/contract/cmterm-7975-sccp.9-0-3.zip
+size: 5891350
+sha1sum: f9d72ce5953cfd1364d33e218d941d5c1015ff28
+downloader: x-cisco
+
+[file_cisco-networklocale]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-combined_network-9.0.2.1000-1.cop.sgn
+size: 9351296
+sha1sum: f08e688de664d7e6d4fb19377cc057e5fc251d1d
+downloader: x-cisco
+
+[file_cisco-userlocale_de_DE]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-de_DE-9.0.2.1000-1.cop.sgn
+size: 3561211
+sha1sum: b5fb97239f7f3414557d7bc10606d66c2123ddff
+downloader: x-cisco
+
+[file_cisco-userlocale_es_ES]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-es_ES-9.0.2.1000-1.cop.sgn
+size: 4306710
+sha1sum: 20a7a6e89a91c4df7119557423f533d207a1ee87
+downloader: x-cisco
+
+[file_cisco-userlocale_fr_FR]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-fr_FR-9.0.2.1000-1.cop.sgn
+size: 4397839
+sha1sum: 326407685f6950e6d4b06c692a2243a218aaf62e
+downloader: x-cisco

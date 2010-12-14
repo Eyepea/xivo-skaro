@@ -41,5 +41,5 @@ class NumericIdGenerator(object):
         prefix = self.prefix
         while prefix + str(n) in used:
             n += 1
-        self.n = n
+        self.n = n + 1
         return prefix + str(n)

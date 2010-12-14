@@ -30,7 +30,6 @@ __license__ = """
 
 import os.path
 import re
-from urllib2 import Request
 from jinja2 import TemplateNotFound
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
@@ -99,8 +98,8 @@ class AastraPlugin(StandardPlugin):
     
     def __init__(self, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
-        # XXX I think next line could be moved in StandardPlugin
-        self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, gen_cfg.get('http_proxy'))
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
+        self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
     def services(self):

@@ -71,7 +71,8 @@ class SnomPlugin(StandardPlugin):
     
     def __init__(self, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
-        self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, gen_cfg.get('http_proxy'))
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
+        self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
     
     def device_types(self):
