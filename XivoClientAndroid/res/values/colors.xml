@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-<color name="line_1">#666</color>
-<color name="line_2">#999</color>
-<color name="xivo_default_view">#00FFFFFF</color>
-<color name="xivo_default_pressed">#FF9900</color>
-<color name="xivo_default_focus">#FF6600</color>
-</resources>
