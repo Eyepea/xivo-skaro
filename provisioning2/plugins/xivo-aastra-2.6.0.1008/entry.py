@@ -101,27 +101,23 @@ class AastraPlugin(StandardPlugin):
         rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
         self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
+        self.services = self._fetchfw_helper.services() 
         
-    def services(self):
-        return self._fetchfw_helper.services()
+    http_dev_info_extractor = _HTTPDeviceInfoExtractor()
     
-    def http_dev_info_extractors(self):
-        return _HTTPDeviceInfoExtractor()
+    tftp_dev_info_extractor = None
+    # This is not necessary since Aastra are capable of protocol
+    # selection inside DHCP option 66 (TFTP server name).
+    # That said, there is the rare case where one provisioning
+    # server were replaced by this one, and the new one has the
+    # same IP address than the old one and the phones were
+    # configured to do TFTP and the admin guys are too lazy to
+    # configure there DHCP server to change the value of option 66.
+    # In this case, this might be useful.
     
-    def tftp_dev_info_extractor(self):
-        # This is not necessary since Aastra are capable of protocol
-        # selection inside DHCP option 66 (TFTP server name).
-        # That said, there is the rare case where one provisioning
-        # server were replaced by this one, and the new one has the
-        # same IP address than the old one and the phones were
-        # configured to do TFTP and the admin guys are too lazy to
-        # configure there DHCP server to change the value of option 66.
-        # In this case, this might be useful.
-        return None
-    
-    def device_types(self):
-        return [('Aastra', model, version) for model in ('6731i', '6757i')
-                                           for version in ('2.6.0.1008', '2.6.0.2010')]
+    device_types = [('Aastra', model, version) for
+                    model in ('6731i', '6757i') for
+                    version in ('2.6.0.1008', '2.6.0.2010')]
     
     @classmethod
     def _format_expmod(cls, keynum):

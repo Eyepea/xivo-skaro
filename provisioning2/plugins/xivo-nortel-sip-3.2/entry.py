@@ -71,9 +71,6 @@ class NortelPlugin(StandardPlugin):
         rfile_builder = RemoteFileBuilder(dlers)
         enhanced_rfile_builder = NortelEnhancedRemoteFileBuilder(rfile_builder, nortel_dler) 
         self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, enhanced_rfile_builder)
-    
-    def services(self):
-        return self._fetchfw_helper.services()
-    
-    def device_types(self):
-        return [('Nortel', model, 'SIP/3.2') for model in ('1220',)]
+        self.services = self._fetchfw_helper.services()
+
+    device_types = [('Nortel', model, 'SIP/3.2') for model in ('1220',)]

@@ -27,6 +27,7 @@ import urlparse
 import shutil
 import tarfile
 from prov2 import progressop
+from prov2.servers.http import IHTTPService
 from prov2.servers.tftp.service import TFTPFileService
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
@@ -45,18 +46,20 @@ from zope.interface import Attribute, Interface, implements
 # TODO support plugin package signing... this will be important for safety
 #      since plugin aren't sandboxed
 
-
 # Plugin service definition
-# XXX experimental -- right now no plugins implement these interface but we
-#     think it might be interesting to pass a dev_id along the requests such
-#     that its possible to create 'pull type dynamic' plugin.
-#     This would necessitate some changes in the RequestProcessing classes.
-
-class IPluginHTTPService(Interface):
-    def render(self, request, dev_id):
+# XXX at first, we'll inject the device object into the request objets,
+#     this is simpler, but has the disadvantage of not being that much
+#     clean
+class IPluginHTTPService(IHTTPService):
+    """A plugin HTTP service is an HTTP service with its method render
+    extended to receive a device id that identifies the device making the
+    request.
+    
+    """
+    def render(self, request, dev):
         """
         dev_id -- the device ID of the device making the request, or None
-          if no device is associated to this request
+          if no device is associated with this request
         
         """
 
@@ -69,19 +72,22 @@ class IPluginResource(Resource):
     def getChild(self, path, request):
         return IPluginHTTPServiceAdapter(NoResource("No such child resource."))
     
-    def render(self, request, dev_id):
+    def render(self, request, dev):
         m = getattr(self, 'render_' + request.method, None)
         if not m:
             # This needs to be here until the deprecated subclasses of the
             # below three error resources in twisted.web.error are removed.
             from twisted.web.error import UnsupportedMethod
             raise UnsupportedMethod(getattr(self, 'allowedMethods', ()))
-        return m(request, dev_id)
+        return m(request, dev)
     
-    def render_HEAD(self, request, dev_id):
-        return self.render_GET(request, dev_id)
+    def render_HEAD(self, request, dev):
+        return self.render_GET(request, dev)
 
 
+# TODO correct adaption for non-leaf service (adapt the returned child?)
+# XXX transparent proxy, i.e. overriding the __getattr__ and __setattr__
+#     method and forward the call to the adaptee ?
 class IPluginHTTPServiceAdapter(object):
     """Adapter that adapt a IHTTPService to a IPluginHTTPService."""
     implements(IPluginHTTPService)
@@ -89,12 +95,18 @@ class IPluginHTTPServiceAdapter(object):
     def __init__(self, http_service):
         self._http_service = http_service
     
-    def render(self, request, dev_id):
+    def getChildWithDefault(self, name, request):
+        return self._http_service.getChildWithDefault(name, request)
+    
+    def putChild(self, child):
+        return self._http_service.putChild(child)
+    
+    def render(self, request, dev):
         return self._http_service.render(request)
 
 
 class IPluginTFTPReadService(Interface):
-    def handle_read_request(self, request, response, dev_id):
+    def handle_read_request(self, request, response, dev):
         """
         dev_id -- the device ID of the device making the request, or None
           if no device is associated to this request
@@ -109,7 +121,7 @@ class IPluginTFTPReadServiceAdapter(object):
     def __init__(self, tftp_service):
         self._tftp_service = tftp_service
     
-    def handle_read_request(self, request, response, dev_id):
+    def handle_read_request(self, request, response, dev):
         return self._tftp_service.handle_read_request(request, response)
 
 
@@ -260,6 +272,9 @@ class IProgressingOperation(Interface):
                 """)
 
 
+# XXX turn this into an Interface and make the distinction between what
+#     should be accessible as attributes and what should be accesible as
+#     methods
 class Plugin(object):
     """Base class and entry point of every plugin.
     
@@ -292,6 +307,10 @@ class Plugin(object):
     _pluging_dir -- the base directory in which the plugin is
     _gen_cfg -- a read-only general configuration mapping object
     _spec_cfg -- a read-only plugin-specific configuration mapping object
+    http_dev_info_extractor
+    http_service
+    tftp_dev_info_extractor
+    tftp_service
     
     Plugin class that are made to be instantiated (i.e. the one doing the
     real job, and not superclass that helps it) must have an attribute
@@ -335,22 +354,21 @@ class Plugin(object):
     
     # Methods for additional plugin services
     
-    def services(self):
-        """Return a dictionary where keys are 'service name' and values are
-        'service object'.
-        
-        This is used so that plugins can offer additional services in a
-        standard way.
-        
-        If the 'service name' is one of the standardized service name, then
-        the corresponding 'service object' must provide the 'standardized
-        service interface' associated with this name.
-        
-        If the 'service name' is not one of the standardized service name,
-        then it must provide the IUnknownService interface.
-        
-        """
-        return {}
+    services = {}
+    """Return a dictionary where keys are 'service name' and values are
+    'service object'.
+    
+    This is used so that plugins can offer additional services in a
+    standard way.
+    
+    If the 'service name' is one of the standardized service name, then
+    the corresponding 'service object' must provide the 'standardized
+    service interface' associated with this name.
+    
+    If the 'service name' is not one of the standardized service name,
+    then it must provide the IUnknownService interface.
+    
+    """
     
     # Methods for TFTP/HTTP services
     
@@ -358,58 +376,61 @@ class Plugin(object):
     #     the request being passed as an argument, we could have only one
     #     'dev_info_extractor' for each plugin. The plugin could then use the
     #     different 'generic' device info extractor (splitter and composite)
-    def http_dev_info_extractor(self):
-        """Return an object providing the IDeviceInfoExtractor interface for
-        HTTP requests or None if there's no such object.
-        
-        In this case, request objects are twisted.web.http.Request objects.
-        
-        """
-        return None
+    http_dev_info_extractor = None
+    """Return an object providing the IDeviceInfoExtractor interface for
+    HTTP requests or None if there's no such object.
     
-    def http_service(self):
-        """Return the HTTP service of this plugin, or None if the plugin
-        doesn't offer a TFTP service.
-        
-        In the case the plugins has no HTTP service, HTTP requests for the
-        plugin will be served by the default HTTP service (normally done in
-        a HTTPRequestProcessing object).
-        
-        """
-        return None
+    In this case, request objects are twisted.web.http.Request objects.
     
-    def tftp_dev_info_extractor(self):
-        """Return an object providing the IDeviceInfoExtractor interface for
-        TFTP request or None if there's no such object.
-        
-        In this case, request objects are as defined in the
-        prov2.servers.tftp.service module.
-        
-        """
-        return None
+    """
+    
+    http_service = None
+    """The HTTP service of this plugin, or None if the plugin doesn't offer
+    an HTTP service.
+    
+    In the case the plugins has no HTTP service, HTTP requests for the
+    plugin will be served by the default HTTP service (normally done in
+    a HTTPRequestProcessing object).
+    
+    XXX the request object passed to the render method of this service
+    has a 'prov2_dev' attribute set to the device object which is doing
+    this request, or None (but the attribute is always present).
+    
+    """
+    
+    tftp_dev_info_extractor = None
+    """Return an object providing the IDeviceInfoExtractor interface for
+    TFTP request or None if there's no such object.
+    
+    In this case, request objects are as defined in the
+    prov2.servers.tftp.service module.
+    
+    """
 
-    def tftp_service(self):
-        """Return the TFTP service of this plugin, or None if the plugin
-        doesn't offer a TFTP service.
-        
-        In the case the plugins has no TFTP service, TFTP requests for the
-        plugin will be served by the default TFTP service (normally done in
-        a TFTPRequestProcessing object).
-        
-        """
-        return None
+    tftp_service = None
+    """The TFTP service of this plugin, or None if the plugin
+    doesn't offer a TFTP service.
     
-    def device_types(self):
-        """Return a sequence of (vendor, model, version) tuple that this plugin explicitly
-        supports.
-        
-        Useful if we want to do automatic device-plugin association.
-        XXX in fact, will be mostly useful to list to the user which models
-        are supported by the plugin; this is not enough powerful to do
-        interesting automatic device-plugin association
-        
-        """
-        return ()
+    In the case the plugins has no TFTP service, TFTP requests for the
+    plugin will be served by the default TFTP service (normally done in
+    a TFTPRequestProcessing object).
+    
+    XXX the request object passed to the handle_read_request method of this
+    service has a 'prov2_dev' key set to the device object which is doing
+    this request, or None (but the attribute is always present).
+    
+    """
+    
+    device_types = ()
+    """Return a sequence of (vendor, model, version) tuple that this plugin explicitly
+    supports.
+    
+    Useful if we want to do automatic device-plugin association.
+    XXX in fact, will be mostly useful to list to the user which models
+    are supported by the plugin; this is not enough powerful to do
+    interesting automatic device-plugin association
+    
+    """
     
     # Methods for device configuration
     
@@ -439,6 +460,9 @@ class Plugin(object):
         - a device object with a config associated with it has been assigned
           to this plugin
         - the config object used by a device has been updated
+        
+        TODO should the configure method always be called when a device
+             object is updated ? 
         
         This method is mostly useful for 'pull type' plugins, especially static
         pull type plugin. For these plugin, this is the right time to write the
@@ -533,19 +557,16 @@ class StandardPlugin(Plugin):
     which helps with repeating tasks, etc etc, this is a bad description.
     
     """
-    # XXX is the name right ? StandardPhonePlugin ? StandardXivoPlugin ?
     TFTPBOOT_DIR = os.path.join('var', 'lib', 'tftpboot')
     
     def __init__(self, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
         self._tftpboot_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
+        self.tftp_service = TFTPFileService(self._tftpboot_dir)
+        # TODO this permits directory listing, which might or might not
+        #      be desirable
+        self.http_service = File(self._tftpboot_dir)  
     
-    def tftp_service(self):
-        return TFTPFileService(self._tftpboot_dir)
-    
-    def http_service(self):
-        return File(self._tftpboot_dir)
-
 
 class TemplatePluginHelper(object):
     DEFAULT_TPL_DIR = 'templates'
@@ -681,12 +702,12 @@ class FetchfwPluginHelper(object):
         if pkg_id not in self._async_pkg_manager.installable_pkgs:
             raise Exception('package not found')
 
-        # FIXME -- right now, it's possible to have 2 download for the same
-        #          file at the same time, which would lead to some bad things
-        #          We could mitigate this by using a remote file object that
-        #          download to an arbitrarly name file before renaming, so we
-        #          could have 2 download of the same file at the same time with
-        #          I believe no consequence
+        # FIXME right now, it's possible to have 2 download for the same
+        #       file at the same time, which would lead to some bad things
+        #       We could mitigate this by using a remote file object that
+        #       download to an arbitrarly name file before renaming, so we
+        #       could have 2 download of the same file at the same time with
+        #       I believe no consequence
         pop = self._async_pkg_manager.install(pkg_id)
         self._in_install_set.add(pkg_id)
         def on_success_or_error(_):

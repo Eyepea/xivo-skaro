@@ -143,12 +143,8 @@ class CiscoSccpPlugin(StandardPlugin):
         self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         if 'username' in spec_cfg and 'password' in spec_cfg:
             self._cisco_dler.set_password(spec_cfg['username'], spec_cfg['password'])
+        self.services = self._fetchfw_helper.services() 
     
-    def services(self):
-        return self._fetchfw_helper.services()
+    tftp_dev_info_extractor = _TFTPDeviceInfoExtractor() 
     
-    def tftp_dev_info_extractor(self):
-        return _TFTPDeviceInfoExtractor()
-    
-    def device_types(self):
-        return [('Cisco', model, 'SCCP/9.0.3') for model in ('7941G', '7961G')]
+    device_types = [('Cisco', model, 'SCCP/9.0.3') for model in ('7941G', '7961G')]

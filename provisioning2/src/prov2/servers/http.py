@@ -31,7 +31,7 @@ from twisted.internet import defer
 
 
 IHTTPService = IResource
-"""An HTTP service exactly the same thing as an IResource.""" 
+"""An HTTP service is exactly the same thing as an IResource.""" 
 
 
 class BaseHTTPHookService(Resource):

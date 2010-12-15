@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin that offers no configuration service and rejects TFTP/HTTP requests."""
+"""Plugin that offers no configuration service and rejects TFTP/HTTP requests
+by returning file not found errors.
+
+"""
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -21,9 +24,14 @@ __license__ = """
 """
 
 from prov2.plugins import Plugin
+from prov2.servers.tftp.service import TFTPNullService
+from twisted.web.resource import NoResource
 
+
+MSG = 'Null plugin always reject requests'
 
 class NullPlugin(Plugin):
     IS_PLUGIN = True
-    # No need to override anything since by default the Plugin class
-    # has the correct behavior
+    
+    http_service = NoResource(MSG)
+    tftp_service = TFTPNullService(errmsg=MSG) 

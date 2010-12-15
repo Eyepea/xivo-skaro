@@ -187,6 +187,7 @@ class Application(object):
         """Call plugin.deconfigure(dev) if possible.
         
         Its possible if dev has a plugin ID which refer to a valid plugin.
+        
         """
         plugin = self._get_plugin(dev)
         if plugin is not None:
@@ -569,15 +570,6 @@ cfg_mgr['dev1'] = (dev1_cfg, ['base'])
 #reactor.run()
 #sys.exit()
 
-# install service of the aastra plugin
-#print pg_aastra.services()
-#list_ed_srv = pg_aastra.services()['list_installed']
-#list_able_srv = pg_aastra.services()['list_installable']
-#print list(list_ed_srv())
-#print list(list_able_srv())
-#pg_aastra.services()['install']('aastra-6731i', 'aastra-6757i')
-#sys.exit()
-
 def metaaff(prefix):
     def aff(message):
         print prefix, message
@@ -599,11 +591,11 @@ add_retriever = AddDeviceRetriver()
 cmpz_retriever = FirstCompositeDeviceRetriever([ip_retriever, add_retriever])
 root_retriever = cmpz_retriever
 
-static_cfg_updater = StaticDeviceUpdater('config', 'guest')
+guest_cfg_updater = StaticDeviceUpdater('config', 'guest')
 pg_updater = MappingPluginDeviceUpdater()
 for pg in pg_mgr.itervalues():
     pg_updater.add_plugin(pg)
-static_pg_updater = StaticDeviceUpdater('plugin', 'zero')
+zero_pg_updater = StaticDeviceUpdater('plugin', 'zero')
 class MyWeirdDeviceUpdater():
     def update(self, dev, dev_info, request, request_type):
         if request_type == 'http' and request.path.endswith('aastra.cfg'):
@@ -624,13 +616,14 @@ class MyWeirdDeviceUpdater():
         return False
 weird_updater = MyWeirdDeviceUpdater()
 every_updater = EverythingDeviceUpdater()
-cmpz_updater = CompositeDeviceUpdater([static_cfg_updater, pg_updater, static_pg_updater])
+cmpz_updater = CompositeDeviceUpdater([guest_cfg_updater, pg_updater])
 root_updater = cmpz_updater
 
 pg_router = PluginDeviceRouter()
-root_router = pg_router
+static_router = StaticDeviceRouter('test-pull-dyn')
+root_router = static_router
 
-process_service = RequestProcessingService(dev_mgr, cfg_mgr, pg_mgr)
+process_service = RequestProcessingService(app)
 process_service.dev_info_extractor = root_xtor
 process_service.dev_retriever = root_retriever
 process_service.dev_updater = root_updater
@@ -642,7 +635,8 @@ def tftp_service_factory(pg_id, pg_service):
     
 # tftp
 def new_tftp_service():
-    tftp_process_service = TFTPRequestProcessingService(process_service, tftp_service_factory, pg_mgr)
+    tftp_process_service = TFTPRequestProcessingService(process_service, pg_mgr)
+    tftp_process_service.service_factory = tftp_service_factory
     preprocess_service = TFTPLogService(metaaff('tftp-pre:'), tftp_process_service)
 
     return preprocess_service
@@ -655,7 +649,8 @@ def http_service_factory(pg_id, pg_service):
 
 # http
 def new_http_service():
-    http_process_service = HTTPRequestProcessingService(process_service, http_service_factory, pg_mgr)
+    http_process_service = HTTPRequestProcessingService(process_service, pg_mgr)
+    http_process_service.service_factory = http_service_factory
     preprocess_service = HTTPLogService(metaaff('http-pre:'), http_process_service)
     
     return preprocess_service

@@ -26,22 +26,8 @@ from twisted.web.resource import Resource, NoResource
 from zope.interface import Interface, implements
 
 
-# TODO delete the two extract_*_ip method
-def extract_tftp_ip(request):
-    """Utility function that return the IP address from a TFTP request
-    object (prov2.servers.tftp).
-    
-    """ 
-    return request['address'][0]
-
-
-def extract_http_ip(request):
-    """Utility function that return the IP address from an HTTP request
-    object (twisted.web).
-    
-    """
-    return request.getClientIP()
-
+# TODO handle the case where ProcessingService.process return a Deferred
+#      that fires it's errback. In TFTP and HTTP request processing service.
 
 class IDeviceInfoExtractor(Interface):
     """A device info extractor object extract device information from
@@ -343,27 +329,34 @@ class AllPluginsDeviceInfoExtractor(object):
     def extract(self, request, request_type):
         # XXX could be more efficient if we could be notified of plugin changes
         if request_type == 'http':
-            extractor = self.extractor_factory([pg.http_dev_info_extractor() for
-                                                pg in self._pg_mgr.itervalues()])
+            pg_extractors = []
+            for pg in self._pg_mgr.itervalues():
+                pg_extractor = pg.http_dev_info_extractor()
+                if pg_extractor is not None:
+                    pg_extractors.append(pg_extractor)
+            extractor = self.extractor_factory(pg_extractors)
             return extractor.extract(request, request_type)
         elif request_type == 'tftp':
-            extractor = self.extractor_factory([pg.tftp_dev_info_extractor() for
-                                                pg in self._pg_mgr.itervalues()])
+            pg_extractors = []
+            for pg in self._pg_mgr.itervalues():
+                pg_extractor = pg.tftp_dev_info_extractor()
+                if pg_extractor is not None:
+                    pg_extractors.append(pg_extractor)
+            extractor = self.extractor_factory(pg_extractors)
             return extractor.extract(request, request_type)
         return defer.succeed(None)
 
 
-# XXX maybe change the name so that it's more clear that this can have
-#     side effect on the dev manager
+# do we want to receive an app object or should object store it locally ?
 class IDeviceRetriever(Interface):
     """A device retriever return a device object from device information.
     
     Instances providing this interface MAY have some side effect on the
-    device manager, like adding a new entry.
+    application, like adding a new device.
     
     """
     
-    def retrieve(dev_info, dev_mgr):
+    def retrieve(dev_info, app):
         """Return a device object from a device info object or None if it can't
         find such object.
         
@@ -378,7 +371,7 @@ class NullDeviceRetriever(object):
     """Device retriever who never retrieves anything."""
     implements(IDeviceRetriever)
     
-    def retrieve(self, dev_info, dev_mgr):
+    def retrieve(self, dev_info, app):
         return None
 
 
@@ -389,7 +382,8 @@ class IpDeviceRetriever(object):
     """
     implements(IDeviceRetriever)
     
-    def retrieve(self, dev_info, dev_mgr):
+    def retrieve(self, dev_info, app):
+        dev_mgr = app.dev_mgr
         dev_id = dev_mgr.find_ip(dev_info['ip'])
         if dev_id is not None:
             return dev_mgr[dev_id]
@@ -403,7 +397,8 @@ class MacDeviceRetriever(object):
     """
     implements(IDeviceRetriever)
     
-    def retrieve(self, dev_info, dev_mgr):
+    def retrieve(self, dev_info, app):
+        dev_mgr = app.dev_mgr
         if 'mac' in dev_info:
             dev_id = dev_mgr.find_mac(dev_info['mac']) 
             if dev_id is not None:
@@ -422,9 +417,9 @@ class AddDeviceRetriver(object):
     """
     implements(IDeviceRetriever)
     
-    def retrieve(self, dev_info, dev_mgr):
+    def retrieve(self, dev_info, app):
         dev = dict(dev_info)
-        dev_mgr.add(dev)
+        app.create_dev(dev)
         return dev
 
 
@@ -455,7 +450,7 @@ class IDeviceUpdater(Interface):
     'ip' key, or modifying the 'config' value without returning true. This
     break this interface contract, and will yield to exception, incorrect
     behaviours elsewhere in the application.  
-     
+    
     """
     
     def update(dev, dev_info, request, request_type):
@@ -583,7 +578,7 @@ class MappingPluginDeviceUpdater(object):
         self._mapping = {}
     
     def add_plugin(self, plugin):
-        for device_type in plugin.device_types():
+        for device_type in plugin.device_types:
             self._mapping[device_type] = plugin.name
     
     def update(self, dev, dev_info, request, request_type):
@@ -612,16 +607,13 @@ class CompositeDeviceUpdater(object):
 
 
 class IDeviceRouter(Interface):
-    """A device router object return route ID (i.e. a routing destination)
+    """A device router object return plugin ID (i.e. a routing destination)
     from device objects.
-    
-    Note: right now, only plugin ID are valid route ID, and it might stay
-    this way for a long time. So basically, every you see route, think plugin.
     
     """
     
     def route(dev):
-        """Return a route ID from a device object, or None if there's no
+        """Return a plugin ID from a device object, or None if there's no
         route.
         
         dev -- either a device object or None.
@@ -645,19 +637,19 @@ class PluginDeviceRouter(object):
 
 
 class StaticDeviceRouter(object):
-    """A device router that always return the same route ID.
+    """A device router that always return the same plugin ID.
     
-    Note: can be used as a 'NullDeviceRouter' if 'self.route_id is None'.
+    Note: can be used as a 'NullDeviceRouter' if 'self.pg_id is None'.
     
     """
     
     implements(IDeviceRouter)
     
-    def __init__(self, route_id=None):
-        self.route_id = route_id
+    def __init__(self, pg_id=None):
+        self.pg_id = pg_id
         
     def route(self, dev):
-        return self.route_id
+        return self.pg_id
 
 
 class FirstCompositeDeviceRouter(object):
@@ -670,9 +662,9 @@ class FirstCompositeDeviceRouter(object):
         
     def route(self, dev):
         for router in self.routers:
-            route_id = router.route(dev)
-            if route_id is not None:
-                return route_id
+            pg_id = router.route(dev)
+            if pg_id is not None:
+                return pg_id
         return None
 
 
@@ -691,18 +683,21 @@ class RequestProcessingService(object):
     dev_updater = NullDeviceUpdater()
     dev_router = StaticDeviceRouter()
     
-    def __init__(self, dev_mgr, cfg_mgr, pg_mgr):
-        self._dev_mgr = dev_mgr
-        self._cfg_mgr = cfg_mgr
-        self._pg_mgr = pg_mgr
+    def __init__(self, app):
+        self._app = app
+        self._dev_mgr = app.dev_mgr
+        self._cfg_mgr = app.cfg_mgr
+        self._pg_mgr = app.pg_mgr
     
     @defer.inlineCallbacks
     def process(self, request, ip, request_type):
-        """Return a deferred that will eventually fire with a the route this
-        request should take when all the side effects of the processing will
-        be completed, so that the service chain can continue.
+        """Return a deferred that will eventually fire with a (dev, pg_id)
+        pair:
         
-        Return None if no route for this request has been found.
+        - dev is a device object or None, identifying which device is doing
+          this request.
+        - pg_id is a plugin identifier or None, identifying which plugin should
+          continue to process this request.
         
         """
         # 1. Get a device info object
@@ -715,7 +710,7 @@ class RequestProcessingService(object):
         
         # 2. Get a device object
         assert dev_info['ip'] == ip
-        dev = self.dev_retriever.retrieve(dev_info, self._dev_mgr)
+        dev = self.dev_retriever.retrieve(dev_info, self._app)
         
         # 3. Update the device
         if dev is not None:
@@ -735,41 +730,55 @@ class RequestProcessingService(object):
                         cfg = self._cfg_mgr.flatten(cfg_id)
                         pg.configure(dev, cfg)
         
-        # 4. Return a route ID
-        route_id = self.dev_router.route(dev)
-        defer.returnValue(route_id)
+        # 4. Return a plugin ID
+        pg_id = self.dev_router.route(dev)
+        defer.returnValue((dev, pg_id))
+
+
+def _null_service_factory(pg_id, pg_service):
+    return pg_service
 
 
 class HTTPRequestProcessingService(Resource):
-    """A service that does HTTP request processing and routing."""
+    """An HTTP service that does HTTP request processing and routing to
+    the HTTP service of plugins.
+    
+    It's possible to add additional processing between this service and the
+    plugin service by using a 'service factory' object which is a callable
+    taking a plugin ID and a HTTP service and return a new service that will
+    be used to continue with the processing of the request.
+    
+    Note that in the case the plugin doesn't offer an HTTP service, the
+    'service factory' object is not used and the request is processed by
+    the default service.
+    
+    If the process service returns an unknown plugin ID, a default service
+    is used to continue with the request processing.
+    
+    """
     
     default_service = NoResource('Nowhere to route this request.')
-    """default_service -- an HTTP service (Resource) for which request with invalid
-    route will be routed"""
-    # requets for plugin with no HTTP services will be served by this
-    # (default) service. Message might be confusing at first. 
+    service_factory = _null_service_factory
     
-    
-    def __init__(self, process_service, service_factory, pg_mgr):
-        """
-        service_factory -- a function taking the plugin ID and the HTTP service
-          of the plugin and returning an HTTP service
-        """
+    def __init__(self, process_service, pg_mgr):
+        Resource.__init__(self)
         self._process_service = process_service
-        self.service_factory = service_factory
         self._pg_mgr = pg_mgr
-        
+    
     @defer.inlineCallbacks
     def getChild(self, path, request):
         ip = request.getClientIP()
         d = self._process_service.process(request, ip, 'http')
-        route_id = yield d
+        dev, pg_id = yield d
         
-        if route_id in self._pg_mgr:
-            pg_service = self._pg_mgr[route_id].http_service()
-            service = self.service_factory(route_id, pg_service)
-        else:
-            service = self.default_service
+        # Here we 'inject' the device object into the request object
+        request.prov2_dev = dev
+
+        service = self.default_service        
+        if pg_id in self._pg_mgr:
+            pg_service = self._pg_mgr[pg_id].http_service
+            if pg_service is not None:
+                service = self.service_factory(pg_id, pg_service)
         if service.isLeaf:
             request.postpath.insert(0, request.prepath.pop())
             defer.returnValue(service)
@@ -778,25 +787,30 @@ class HTTPRequestProcessingService(Resource):
 
 
 class TFTPRequestProcessingService(object):
-    """A service that does TFTP request processing and routing."""
+    """A TFTP read service that does TFTP request processing and routing to
+    the TFTP read service of plugins.
+    
+    """
     
     default_service = TFTPNullService(errmsg="Nowhere to route this request")
+    service_factory = _null_service_factory
 
-    def __init__(self, process_service, service_factory, pg_mgr):
+    def __init__(self, process_service, pg_mgr):
         self._process_service = process_service
-        self.service_factory = service_factory
         self._pg_mgr = pg_mgr
     
     def handle_read_request(self, request, response):
-        def aux(route_id):
-            if route_id in self._pg_mgr:
-                pg_service = self._pg_mgr[route_id].tftp_service()
-                service = self.service_factory(pg_service)
-            else:
-                service = self.default_service
+        def aux((dev, pg_id)):
+            # Here we 'inject' the device object into the request object
+            request['prov2_dev'] = dev
+            
+            service = self.default_service
+            if pg_id in self._pg_mgr:
+                pg_service = self._pg_mgr[pg_id].tftp_service
+                if pg_service is not None:
+                    service = self.service_factory(pg_id, pg_service)
             service.handle_read_request(request, response)
             
         ip = request['address'][0]
         d = self._process_service.process(request, ip, 'tftp')
-        # XXX not sure about the errback...
-        d.addCallbacks(aux, lambda _: self.default_service.handle_read_request(request, response))
+        d.addCallback(aux)

@@ -74,13 +74,12 @@ class SnomPlugin(StandardPlugin):
         rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
         self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
+        self.services = self._fetchfw_helper.services()
     
-    def device_types(self):
-        return [('Snom', model, '8.4.18') for model in ('320', '820')]
+    http_dev_info_extractor = _HTTPDeviceInfoExtractor()
     
-    def http_dev_info_extractors(self):
-        return _HTTPDeviceInfoExtractor(),
-        
+    device_types = [('Snom', model, '8.4.18') for model in ('320', '820')]
+    
     def configure_common(self, config):
         for tpl_name in ('gui_lang.xml', 'snom320.htm', 'snom320.xml', 'snom320-firmware.xml',
                          'snom820.htm', 'snom820.xml', 'snom820-firmware.xml', 'snom-general.xml',

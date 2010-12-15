@@ -24,12 +24,13 @@ import os
 import StringIO
 from prov2.servers.tftp.packet import ERR_FNF
 from prov2.servers.tftp.proto import TFTPProtocol
+from zope.interface import Interface
 
 
-class TFTPReadService(object):
-    """Defines the interface of the TFTP read service."""
+class ITFTPReadService(Interface):
+    """A TFTP read service handles TFTP read requests (RRQ)."""
     
-    def handle_read_request(self, request, response):
+    def handle_read_request(request, response):
         """Handle a TFTP read request (RRQ).
         
         request is a dictionary with the following keys:
@@ -52,7 +53,6 @@ class TFTPReadService(object):
         implicitly behave like if you would have called the ignore method.
         
         """
-        raise NotImplementedError()
 
 
 class TFTPNullService(object):
@@ -102,20 +102,6 @@ class TFTPFileService(object):
                 response.reject(ERR_FNF, 'File not found')
             else:
                 response.accept(fobj)
-
-
-class TFTPStaticIPRoutingService(object):
-    # XXX test service -- has no real use
-    def __init__(self, route):
-        self._route = route
-        
-    def handle_read_request(self, request, response):
-        ip_addr = request['address'][0]
-        if ip_addr in self._route:
-            service = self._route[ip_addr]
-            service.handle_read_request(request, response)
-        else:
-            response.reject(ERR_FNF, 'No route found')
 
 
 class TFTPHookService(object):
@@ -191,8 +177,6 @@ if __name__ == '__main__':
    directives and suggestions on TFTP.
 """)
     null_service = TFTPNullService()
-    routing_service = TFTPStaticIPRoutingService({'127.0.0.1': test_service,
-                                                 '192.168.32.106': null_service})
     def aff(msg):
         print >>sys.stderr, msg
     log_service = TFTPLogService(aff, null_service)

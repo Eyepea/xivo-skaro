@@ -29,16 +29,16 @@ from prov2.servers.tftp.service import TFTPFileService
 from twisted.web.static import File
 
 
+# XXX note that right now, this class is the same as the StandardPlugin class,
+#     so we should either modify the StandardPlugin class, or make this class
+#     inherit from it
 class ZeroPlugin(Plugin):
     IS_PLUGIN = True
     
-    def _doc_root(self):
-        return os.path.join(self._plugin_dir, 'var', 'lib', 'tftpboot')
-    
-    def tftp_service(self):
-        return TFTPFileService(self._doc_root())
-    
-    def http_service(self):
-        # FIXME this permits directory listing, which might nobe desirable
-        # FIXME also, not sure of what we should do with the content-type
-        return File(self._doc_root(), 'text/plain')
+    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
+        Plugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
+        doc_root = os.path.join(self._plugin_dir, 'var', 'lib', 'tftpboot')
+        self.tftp_service = TFTPFileService(doc_root)
+        # TODO this permits directory listing, which might or might not be
+        #      desirable
+        self.http_service = File(doc_root)
