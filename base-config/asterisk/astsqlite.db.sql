@@ -1976,9 +1976,21 @@ CREATE TABLE sipauthentication
 );
 CREATE INDEX sipauthentication__idx__usersip_id ON sipauthentication(usersip_id);
 
+
+DROP TABLE iaxcallnumberlimits;
+CREATE TABLE iaxcallnumberlimits
+(
+ id          integer unsigned,
+ destination varchar(39) NOT NULL,
+ netmask     varchar(39) NOT NULL,
+ calllimits  integer NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+
 DROP TABLE queue_log;
 CREATE TABLE queue_log (
-	time integer,
+	time char(30),
   callid char(50),
   queuename char(50),
   agent char(50),

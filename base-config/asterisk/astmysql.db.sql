@@ -2211,6 +2211,18 @@ CREATE TABLE `sipauthentication`
 );
 CREATE INDEX `sipauthentication__idx__usersip_id` ON `sipauthentication`(`usersip_id`);
 
+
+DROP TABLE IF EXISTS `iaxcallnumberlimits`;
+CREATE TABLE `iaxcallnumberlimits`
+(
+ `id`          int(10) unsigned auto_increment,
+ `destination` varchar(39) NOT NULL,
+ `netmask`     varchar(39) NOT NULL,
+ `calllimits`  int NOT NULL DEFAULT 0,
+ PRIMARY KEY(`id`)
+);
+
+
 DROP TABLE IF EXISTS `queue_log`;
 CREATE TABLE `queue_log` (
 	`time` datetime,

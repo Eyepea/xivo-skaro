@@ -2386,12 +2386,23 @@ CREATE TABLE "sipauthentication"
 	"realm"      VARCHAR(1024) NOT NULL,
 	PRIMARY KEY("id")
 );
-CREATE INDEX "sipauthenticatiob__idx__usersip_id" ON "sipauthentication"("usersip_id");
+CREATE INDEX "sipauthentication__idx__usersip_id" ON "sipauthentication"("usersip_id");
+
+
+DROP TABLE IF EXISTS "iaxcallnumberlimits";
+CREATE TABLE "iaxcallnumberlimits" (
+ "id"          SERIAL,
+ "destination" VARCHAR(39) NOT NULL,
+ "netmask"     VARCHAR(39) NOT NULL,
+ "calllimits"  INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY("id")
+);
+
 
 DROP TABLE IF EXISTS "queue_log" ;
 CREATE TABLE "queue_log" (
-	"time" INTEGER,
-  "callid" char(50),
+	"time"      char(30),
+  "callid"    char(50),
   "queuename" char(50),
   "agent" char(50),
   "event" char(20),
