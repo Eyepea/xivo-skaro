@@ -23,8 +23,8 @@ if [ -e "${DEST_PATH}/${FILENAME}" ]; then
 	exit 0
 fi
 
-UPFILENAME="freeswitch-${UPVERSION}.orig.tar.bz2"
-URL="http://files.freeswitch.org/freeswitch-${UPVERSION}.tar.bz2"
+UPFILENAME="freeswitch-${UPVERSION}.orig.tar.gz"
+URL="http://files.freeswitch.org/freeswitch-${UPVERSION}.tar.gz"
 
 echo "Downloading ${UPFILENAME} from ${URL}"
 wget -nv -T10 -t3 -O ${DEST_PATH}/${UPFILENAME} ${URL}
@@ -37,7 +37,7 @@ fi
 echo "Repacking as DFSG-free..."
 mkdir -p ${DEST_PATH}/freeswitch-${UPVERSION}.tmp/
 cd ${DEST_PATH}/freeswitch-${UPVERSION}.tmp
-tar xfj ../${UPFILENAME}
+tar xfz ../${UPFILENAME}
 if [ -e "freeswitch-${UPVERSION}" ]; then
 	(
 	cd freeswitch-${UPVERSION}
