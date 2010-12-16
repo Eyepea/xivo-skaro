@@ -24,7 +24,6 @@ __license__ = """
 """
 
 import simplejson as json
-from twisted.python import log
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web import http
@@ -40,87 +39,6 @@ _PPRINT = True
 if _PPRINT:
     import functools
     json.dumps = functools.partial(json.dumps, sort_keys=True, indent=4)
-
-
-class RestService(object):
-    # FIXME useless now that we have an 'application' object ? probably
-    
-    def __init__(self, app):
-        self._app = app
-        
-    def add_dev(self, dev):
-        """Add a device to the device manager and return the ID of the newly
-        created device.
-        
-        dev -- a device object
-        
-        """
-        return self._app.create_dev(dev)
-    
-    def remove_dev(self, dev_id):
-        """Remove the device with ID dev_id. Raise a KeyError if dev_id is
-        not a known device ID.
-        
-        """
-        self._app.delete_dev(dev_id)
-        
-    def has_dev(self, dev_id):
-        return dev_id in self._app.dev_mgr
-    
-    def get_dev(self, dev_id):
-        """Return the device object which ID is dev_id."""
-        return self._app.retrieve_dev(dev_id)
-    
-    def set_dev(self, dev_id, dev):
-        """Set the device object with ID dev_id."""
-        self._app.update_dev(dev_id, dev)
-    
-    def reconfigure_dev(self, dev_id):
-        pass
-    
-    def reload_dev(self, dev_id):
-        """Make the device reload its configuration.
-        
-        """
-        pass
-    
-    def list_dev(self, filter_fun=None):
-        """Return the list of (device IDs, device) for which filter_fun(dev) is true.
-        
-        This return a generator object.
-        
-        """ 
-        if filter_fun is None:
-            return self._app.dev_mgr.iteritems()
-        else:
-            return ((dev_id, dev) for dev_id, dev in self._app.dev_mgr.iteritems() if filter_fun(dev))
-
-    def remove_cfg(self, cfg_id):
-        # TODO currently, this does nothing to any device using this config. We'll
-        #      want to clearly specify the behavior
-        self._app.cfg_mgr.remove(cfg_id)
-    
-    def has_cfg(self, cfg_id):
-        return cfg_id in self._app.cfg_mgr
-    
-    def get_cfg(self, cfg_id):
-        """Return a tuple (cfg, cfg_bases_id)."""
-        return self._app.cfg_mgr[cfg_id]
-    
-    def set_cfg(self, cfg_id, cfg):
-        """cfg is a tuple (cfg, cfg_bases_id)."""
-        self._app.cfg_mgr[cfg_id] = cfg
-    
-    def list_cfg(self):
-        """Return the list of config IDs.
-        
-        This return a generator object.
-        
-        """
-        return self._app.cfg_mgr.iterkeys()
-    
-    def flatten_cfg(self, cfg_id):
-        return self._app.cfg_mgr.flatten(cfg_id)
 
 
 def _process_request_failed(request, e, response_code):
@@ -143,14 +61,14 @@ def dev_json_repr(dev, dev_id, dev_uri):
 
 
 class DeviceResource(Resource):
-    def __init__(self, service, dev_id):
+    def __init__(self, app, dev_id):
         Resource.__init__(self)
-        self._service = service
+        self._app = app
         self._dev_id = dev_id
     
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
-        dev = self._service.get_dev(self._dev_id)
+        dev = self._app.retrieve_dev(self._dev_id)
         
         request.setResponseCode(http.OK)
         request.setHeader('Content-Type', PROV2_MIME_TYPE)
@@ -160,7 +78,7 @@ class DeviceResource(Resource):
         # This will delete the entry in the device manager and this object should
         # now be unreacheable from the REST API, and since we are single threaded, no
         # need to be worried of race conditions
-        self._service.remove_dev(self._dev_id)
+        self._app.delete_dev(self._dev_id)
         request.setResponseCode(http.NO_CONTENT)
         # next lines are tricks for twisted to omit the 'Content-Type' and 'Content-Length'
         # of 'No content' response. This is not strictly necessary per the RFC, but it certainly
@@ -173,7 +91,7 @@ class DeviceResource(Resource):
     def render_PUT(self, request):
         content = json.loads(request.content.getvalue())
         dev = content['device']
-        self._service.set_dev(self._dev_id, dev)
+        self._app.update_dev(self._dev_id, dev)
         
         request.setResponseCode(http.NO_CONTENT)
         request.responseHeaders.removeHeader('Content-Type')
@@ -181,18 +99,16 @@ class DeviceResource(Resource):
 
 
 class DevicesResource(Resource):
-    def __init__(self, service):
+    def __init__(self, app):
         Resource.__init__(self)
-        self._service = service
+        self._app = app
     
     def getChild(self, path, request):
-        if not path:
-            return Resource.getChild(self, path, request)
         dev_id = path
-        if self._service.has_dev(dev_id):
-            return DeviceResource(self._service, dev_id)
+        if dev_id in self._app.dev_mgr:
+            return DeviceResource(self._app, dev_id)
         else:
-            return NoResource()
+            return Resource.getChild(self, path, request)
     
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
@@ -214,9 +130,11 @@ class DevicesResource(Resource):
                     filter_fun = lambda x: x[key] == value
         else:
             filter_fun = None
-            
+        
+        dev_mgr = self._app.dev_mgr
         devices = []
-        for dev_id, dev in self._service.list_dev(filter_fun):
+        for dev_id in dev_mgr.filter(filter_fun):
+            dev = dev_mgr[dev_id]
             devices.append({'id': dev_id,
                             'device': dev,
                             'links': [{'rel': 'device', 'href': request.path + '/' + dev_id}]})
@@ -228,7 +146,7 @@ class DevicesResource(Resource):
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         dev = content['device']
-        dev_id = self._service.add_dev(dev)
+        dev_id = self._app.create_dev(dev)
         dev_uri = request.path + '/' + dev_id
         
         request.setResponseCode(http.CREATED)
@@ -237,55 +155,34 @@ class DevicesResource(Resource):
         return dev_json_repr(dev, dev_id, dev_uri)
 
 
-# XXX useless, call to Plugin.configure is automatic and managed by the
-#     application
-class DeviceReconfigureResource(Resource):
-    def __init__(self, service):
+class DeviceSynchronizeResource(Resource):
+    def __init__(self, app):
         Resource.__init__(self)
-        self._service = service
+        self._app = app
         
     @content_type([PROV2_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         dev_id = content['id']
-        if not self._service.has_dev(dev_id):
+        if dev_id not in self._app.dev_mgr:
             request.setResponseCode(http.BAD_REQUEST)
             request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
             return u"Device not found".encode('UTF-8')
         
-        self._service.reconfigure_dev(dev_id)
-        request.setResponseCode(http.NO_CONTENT)
-        return ""
-
-
-class DeviceReloadResource(Resource):
-    def __init__(self, service):
-        Resource.__init__(self)
-        self._service = service
-        
-    @content_type([PROV2_MIME_TYPE])
-    def render_POST(self, request):
-        content = json.loads(request.content.getvalue())
-        dev_id = content['id']
-        if not self._service.has_dev(dev_id):
-            request.setResponseCode(http.BAD_REQUEST)
-            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-            return u"Device not found".encode('UTF-8')
-        
-        self._service.reload_dev(dev_id)
+        self._app.synchronize_dev(dev_id)
         request.setResponseCode(http.NO_CONTENT)
         return ""
 
 
 class ConfigResource(Resource):
-    def __init__(self, service, cfg_id):
+    def __init__(self, app, cfg_id):
         Resource.__init__(self)
-        self._service = service
+        self._app = app
         self._cfg_id = cfg_id
     
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
-        if not self._service.has_cfg(self._cfg_id):
+        if self._cfg_id not in self._app.cfg_mgr:
             return NoResource().render(request)
         else:
             if request.args.get('f', [None])[0] not in ('i', 'c'):
@@ -301,7 +198,7 @@ class ConfigResource(Resource):
                 return self._comp_repr()
     
     def _ind_repr(self):
-        cfg, cfg_bases = self._service.get_cfg(self._cfg_id)
+        cfg, cfg_bases = self._app.retrieve_cfg(self._cfg_id)
         bases = []
         for cfg_base_id in cfg_bases:
             bases.append({'id': cfg_base_id,
@@ -313,17 +210,17 @@ class ConfigResource(Resource):
                                      {'rel': 'config-c', 'href': '/configs/' + self._cfg_id + '?f=c'}]})
     
     def _comp_repr(self):
-        flat_cfg = self._service.flatten_cfg(self._cfg_id)
+        flat_cfg = self._app.cfg_mgr.flatten(self._cfg_id)
         return json.dumps({'config': flat_cfg,
                            'id': self._cfg_id,
                            'links': [{'rel': 'config-i', 'href': '/configs/' + self._cfg_id + '?f=i'},
                                      {'rel': 'config-c', 'href': '/configs/' + self._cfg_id + '?f=c'}]})
     
     def render_DELETE(self, request):
-        if not self._service.has_cfg(self._cfg_id):
+        if self._cfg_id not in self._app.cfg_mgr:
             return NoResource().render(request)
         else:
-            self._service.remove_cfg(self._cfg_id)
+            self._app.delete_cfg(self._cfg_id)
             request.setResponseCode(http.NO_CONTENT)
             # next lines are tricks for twisted to omit the 'Content-Type' and 'Content-Length'
             # of 'No content' response. This is not strictly necessary per the RFC, but it certainly
@@ -338,7 +235,10 @@ class ConfigResource(Resource):
         received = json.loads(request.content.getvalue())
         config = received['config']
         cfg_bases = [cfg_base_entry['id'] for cfg_base_entry in received['config-bases']]
-        self._service.set_cfg(self._cfg_id, (config, cfg_bases))
+        if self._cfg_id in self._app.cfg_mgr:
+            self._app.update_cfg(self._cfg_id, (config, cfg_bases))
+        else:
+            self._app.create_cfg((config, cfg_bases), self._cfg_id)
 
         request.setResponseCode(http.NO_CONTENT)
         request.responseHeaders.removeHeader('Content-Type')
@@ -346,20 +246,18 @@ class ConfigResource(Resource):
 
 
 class ConfigsResource(Resource):
-    def __init__(self, service):
+    def __init__(self, app):
         Resource.__init__(self)
-        self._service = service
+        self._app = app
         
     def getChild(self, path, request):
-        if not path:
-            return Resource.getChild(self, path, request)
         cfg_id = path
-        return ConfigResource(self._service, cfg_id)
+        return ConfigResource(self._app, cfg_id)
 
     @accept([PROV2_MIME_TYPE])
     def render_GET(self, request):
         configs = []
-        for cfg_id in self._service.list_cfg():
+        for cfg_id in self._app.cfg_mgr.iterkeys():
             configs.append({'id': cfg_id,
                             'links': [{'rel': 'config-i', 'href': request.path + '/' + cfg_id + '?f=i'},
                                       {'rel': 'config-c', 'href': request.path + '/' + cfg_id + '?f=c'}]})

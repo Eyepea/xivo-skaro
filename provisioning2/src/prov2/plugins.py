@@ -27,11 +27,9 @@ import urlparse
 import shutil
 import tarfile
 from prov2 import progressop
-from prov2.servers.http import IHTTPService
 from prov2.servers.tftp.service import TFTPFileService
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
-from twisted.web.resource import Resource, NoResource
 from twisted.web.static import File
 from jinja2.loaders import FileSystemLoader
 from jinja2.environment import Environment
@@ -45,85 +43,6 @@ from zope.interface import Attribute, Interface, implements
 # TODO take proxy into account for downloading
 # TODO support plugin package signing... this will be important for safety
 #      since plugin aren't sandboxed
-
-# Plugin service definition
-# XXX at first, we'll inject the device object into the request objets,
-#     this is simpler, but has the disadvantage of not being that much
-#     clean
-class IPluginHTTPService(IHTTPService):
-    """A plugin HTTP service is an HTTP service with its method render
-    extended to receive a device id that identifies the device making the
-    request.
-    
-    """
-    def render(self, request, dev):
-        """
-        dev_id -- the device ID of the device making the request, or None
-          if no device is associated with this request
-        
-        """
-
-
-class IPluginResource(Resource):
-    """Base class for classes that want to implement the IPluginHTTPService
-    interface with behaviour similar to Resource.
-    
-    """
-    def getChild(self, path, request):
-        return IPluginHTTPServiceAdapter(NoResource("No such child resource."))
-    
-    def render(self, request, dev):
-        m = getattr(self, 'render_' + request.method, None)
-        if not m:
-            # This needs to be here until the deprecated subclasses of the
-            # below three error resources in twisted.web.error are removed.
-            from twisted.web.error import UnsupportedMethod
-            raise UnsupportedMethod(getattr(self, 'allowedMethods', ()))
-        return m(request, dev)
-    
-    def render_HEAD(self, request, dev):
-        return self.render_GET(request, dev)
-
-
-# TODO correct adaption for non-leaf service (adapt the returned child?)
-# XXX transparent proxy, i.e. overriding the __getattr__ and __setattr__
-#     method and forward the call to the adaptee ?
-class IPluginHTTPServiceAdapter(object):
-    """Adapter that adapt a IHTTPService to a IPluginHTTPService."""
-    implements(IPluginHTTPService)
-    
-    def __init__(self, http_service):
-        self._http_service = http_service
-    
-    def getChildWithDefault(self, name, request):
-        return self._http_service.getChildWithDefault(name, request)
-    
-    def putChild(self, child):
-        return self._http_service.putChild(child)
-    
-    def render(self, request, dev):
-        return self._http_service.render(request)
-
-
-class IPluginTFTPReadService(Interface):
-    def handle_read_request(self, request, response, dev):
-        """
-        dev_id -- the device ID of the device making the request, or None
-          if no device is associated to this request
-        
-        """
-
-
-class IPluginTFTPReadServiceAdapter(object):
-    """Adapter that adapt a ITFTPReadService to a IPluginTFTPReadService."""
-    implements(IPluginTFTPReadService)
-    
-    def __init__(self, tftp_service):
-        self._tftp_service = tftp_service
-    
-    def handle_read_request(self, request, response, dev):
-        return self._tftp_service.handle_read_request(request, response)
-
 
 # Standardized service defintion
 
@@ -520,8 +439,7 @@ class Plugin(object):
         """
         pass
     
-    # XXX rename 'reload' to 'synchronize' ?
-    def reload(self, dev, config):
+    def synchronize(self, dev, config):
         """Force the device to synchronize its configuration so that its the
         same as the one in the config object.
         

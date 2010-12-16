@@ -14,6 +14,7 @@ configuration objects at the plugin level.
 
 TODO put more details about the type, valid values, optional/mandatory...
      and maybe put this at somewhere else (plugin module?)
+XXX keys and values should be in unicode when applicable
 
 proto
   The protocol to use. Current valid value are 'SIP' and 'SCCP'.

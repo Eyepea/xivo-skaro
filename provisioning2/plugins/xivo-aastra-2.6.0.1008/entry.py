@@ -257,7 +257,7 @@ class AastraPlugin(StandardPlugin):
         # been followed
         os.remove(filename)
 
-    def reload(self, dev, config):
+    def synchronize(self, dev, config):
         # FIXME this is a test, hardcoded value are meaningless outside of my test env
         ip = dev['ip']
         import subprocess

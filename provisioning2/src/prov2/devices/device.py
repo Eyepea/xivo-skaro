@@ -2,6 +2,10 @@
 
 """Device-related stuff module...
 
+XXX keys and values should be in unicode when applicable 
+XXX like config, there should be a way to put extra information into device
+    object in a way it's can't conflict with future addition
+
 A device info object is a mapping object with the following keys:
   mac -- the normalized MAC address of this device 
   ip -- the (last seen) normalized IP address of this device

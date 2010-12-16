@@ -331,7 +331,7 @@ class AllPluginsDeviceInfoExtractor(object):
         if request_type == 'http':
             pg_extractors = []
             for pg in self._pg_mgr.itervalues():
-                pg_extractor = pg.http_dev_info_extractor()
+                pg_extractor = pg.http_dev_info_extractor
                 if pg_extractor is not None:
                     pg_extractors.append(pg_extractor)
             extractor = self.extractor_factory(pg_extractors)
@@ -339,7 +339,7 @@ class AllPluginsDeviceInfoExtractor(object):
         elif request_type == 'tftp':
             pg_extractors = []
             for pg in self._pg_mgr.itervalues():
-                pg_extractor = pg.tftp_dev_info_extractor()
+                pg_extractor = pg.tftp_dev_info_extractor
                 if pg_extractor is not None:
                     pg_extractors.append(pg_extractor)
             extractor = self.extractor_factory(pg_extractors)

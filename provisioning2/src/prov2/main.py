@@ -43,8 +43,8 @@ from prov2.devices.config import ConfigManager
 from prov2.devices.device import DeviceManager
 from prov2.devices.util import NumericIdGenerator
 from prov2.plugins import PluginManager
-from prov2.rest.server import RestService, DevicesResource,\
-    ConfigsResource, DeviceReconfigureResource, DeviceReloadResource,\
+from prov2.rest.server import DevicesResource,\
+    ConfigsResource, DeviceSynchronizeResource,\
     PluginMgrUpdateResource, PluginMgrListInstallableResource,\
     PluginMgrListInstalledResource, PluginMgrListUpgradeableResource,\
     PluginMgrConfigureResource, PluginMgrInstallResource, PluginMgrUninstallRecourse,\
@@ -193,11 +193,11 @@ class Application(object):
         if plugin is not None:
             plugin.deconfigure(dev)
     
-    def _reload_dev(self, dev):
-        """Call plugin.reload(dev, config) if possible."""
+    def _synchronize_dev(self, dev):
+        """Call plugin.synchronize(dev, config) if possible."""
         plugin, config = self._get_plugin_and_config(dev)
         if plugin is not None:
-            return plugin.reload(dev, config)
+            return plugin.synchronize(dev, config)
     
     def create_dev(self, dev, dev_id=None):
         """Add a new device to the device manager and return the device ID.
@@ -277,15 +277,15 @@ class Application(object):
         else:
             self._deconfigure_dev(dev)
             
-    def reload_dev(self, dev_id):
-        """Force the device to reload it's configuration."""
+    def synchronize_dev(self, dev_id):
+        """Force the device to synchronize it's configuration."""
         try:
             dev = self.dev_mgr[dev_id]
         except KeyError:
             raise UnusedIdError(dev_id)
         else:
             # XXX what do we do with the callback...
-            return self._reload_dev(dev)
+            return self._synchronize_dev(dev)
     
     # Config operations
     
@@ -576,9 +576,9 @@ def metaaff(prefix):
     return aff
 
 
-#http_xtors = [xtor for xtor in map(lambda p: p.http_dev_info_extractor(), plugins) if
+#http_xtors = [xtor for xtor in map(lambda p: p.http_dev_info_extractor, plugins) if
 #              xtor is not None]
-#tftp_xtors = [xtor for xtor in map(lambda p: p.tftp_dev_info_extractor(), plugins) if
+#tftp_xtors = [xtor for xtor in map(lambda p: p.tftp_dev_info_extractor, plugins) if
 #              xtor is not None]
 #http_xtor = LongestDeviceInfoExtractor(http_xtors)
 #tftp_xtor = LongestDeviceInfoExtractor(tftp_xtors)
@@ -660,16 +660,13 @@ http_site = Site(http_service)
 
 
 root = Resource()
-service = RestService(app)
 
-dev_res = DevicesResource(service)
-dev_configure_res = DeviceReconfigureResource(service)
-dev_reload_res = DeviceReloadResource(service)
+dev_res = DevicesResource(app)
+dev_reload_res = DeviceSynchronizeResource(app)
 root.putChild('devices', dev_res)
-root.putChild('dev_reconfigure', dev_configure_res)
-root.putChild('dev_reload', dev_reload_res)
+root.putChild('dev_sync', dev_reload_res)
 
-cfg_res = ConfigsResource(service)
+cfg_res = ConfigsResource(app)
 root.putChild('configs', cfg_res)
 
 pg_config_res = PluginMgrConfigureResource(pg_mgr)
