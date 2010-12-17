@@ -1138,6 +1138,7 @@ CREATE TABLE "queue" (
  "announce-position" varchar(1024) NOT NULL DEFAULT 'yes',
  "announce-position-limit" integer NOT NULL DEFAULT 5,
  "defaultrule" varchar(1024),
+ "stats_qos" smallint NOT NULL DEFAULT 0,
  PRIMARY KEY("name")
 );
 

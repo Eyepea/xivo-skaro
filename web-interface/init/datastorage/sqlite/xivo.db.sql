@@ -347,6 +347,44 @@ CREATE TABLE ha_peer (
  PRIMARY KEY (iface, host)
 );
 
+--- STATS ---
+DROP TABLE stats_conf;
+CREATE TABLE stats_conf (
+ id int(10) unsigned,
+ id_stats_workweek INTEGER NOT NULL DEFAULT 0,
+ name varchar(64) NOT NULL DEFAULT '',
+ hour_start time NOT NULL,
+ hour_end time NOT NULL,
+ period1 varchar(16) NOT NULL DEFAULT 0,
+ period2 varchar(16) NOT NULL DEFAULT 0,
+ period3 varchar(16) NOT NULL DEFAULT 0,
+ period4 varchar(16) NOT NULL DEFAULT 0,
+ period5 varchar(16) NOT NULL DEFAULT 0,
+ disable tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);i
+
+CREATE INDEX stats_conf__idx__id_stats_workweek ON stats_conf(id_stats_workweek);
+CREATE INDEX stats_conf__idx__disable ON stats_conf(disable);
+CREATE UNIQUE INDEX stats_conf__uidx__name ON stats_conf(name);
+
+
+DROP TABLE stats_workweek;
+CREATE TABLE stats_workweek (
+ id int(10) unsigned,
+ monday tinyint(1) NOT NULL DEFAULT 0,
+ tuesday tinyint(1) NOT NULL DEFAULT 0,
+ wednesday tinyint(1) NOT NULL DEFAULT 0,
+ thursday tinyint(1) NOT NULL DEFAULT 0,
+ friday tinyint(1) NOT NULL DEFAULT 0,
+ saturday tinyint(1) NOT NULL DEFAULT 0,
+ sunday tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
 -- provisioning
 DROP TABLE provisioning;
 CREATE TABLE provisioning (

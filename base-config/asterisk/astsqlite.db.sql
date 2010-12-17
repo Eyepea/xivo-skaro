@@ -978,6 +978,7 @@ CREATE TABLE queue (
  category char(5) NOT NULL,
  autopause tinyint(1) NOT NULL DEFAULT 0,
  setinterfacevar tinyint(1) NOT NULL DEFAULT 0,
+ stats_qos smallint(4) NOT NULL DEFAULT 0,
  PRIMARY KEY(name)
 );
 
