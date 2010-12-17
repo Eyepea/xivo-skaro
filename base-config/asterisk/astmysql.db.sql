@@ -1039,7 +1039,6 @@ CREATE TABLE `queue` (
  `announce-position` varchar(1024) NOT NULL DEFAULT 'yes',
  `announce-position-limit` integer unsigned NOT NULL DEFAULT 5,
  `defaultrule` varchar(1024),
- `stats_qos` smallint(4) NOT NULL DEFAULT 0,
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -1066,6 +1065,7 @@ CREATE TABLE `queuefeatures` (
  `announceoverride` varchar(128) NOT NULL DEFAULT '',
  `timeout` smallint(4) unsigned NOT NULL DEFAULT 0,
  `preprocess_subroutine` varchar(39),
+ `stats_qos` smallint(4) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
