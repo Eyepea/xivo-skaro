@@ -406,10 +406,16 @@ CREATE TABLE "ha_peer" (
 DROP TABLE IF EXISTS "stats_conf";
 CREATE TABLE "stats_conf" (
  "id" SERIAL,
- "id_stats_workweek" INTEGER NOT NULL DEFAULT 0,
  "name" varchar(64) NOT NULL DEFAULT '',
  "hour_start" time NOT NULL,
  "hour_end" time NOT NULL,
+ "monday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
+ "tuesday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
+ "wednesday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
+ "thursday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
+ "friday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
+ "saturday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
+ "sunday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
  "period1" varchar(16) NOT NULL DEFAULT 0,
  "period2" varchar(16) NOT NULL DEFAULT 0,
  "period3" varchar(16) NOT NULL DEFAULT 0,
@@ -420,24 +426,8 @@ CREATE TABLE "stats_conf" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "stats_conf__idx__id_stats_workweek" ON "stats_conf"("id_stats_workweek");
 CREATE INDEX "stats_conf__idx__disable" ON "stats_conf"("disable");
 CREATE UNIQUE INDEX "stats_conf__uidx__name" ON "stats_conf"("name");
-
-
-DROP TABLE IF EXISTS "stats_workweek";
-CREATE TABLE "stats_workweek" (
- "id" SERIAL,
- "monday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "tuesday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "wednesday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "thursday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "friday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "saturday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "sunday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
- "description" text NOT NULL,
- PRIMARY KEY("id")
-);
 
 
 -- provisioning
