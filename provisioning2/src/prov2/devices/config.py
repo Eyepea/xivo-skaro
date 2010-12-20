@@ -12,28 +12,37 @@ IDs).
 Below is the list of 'standardized' parameters that can be found in
 configuration objects at the plugin level.
 
+Note that every time you see a string or see a reference to a string, think
+about a unicode string, and not a python 'byte' string. This is true for keys
+and values. 
+
 TODO put more details about the type, valid values, optional/mandatory...
-     and maybe put this at somewhere else (plugin module?)
-XXX keys and values should be in unicode when applicable
+
+An IP address is a string IPv4 address in dotted quad notation.
+A port number is an integer between 1 and 65535 inclusive.
 
 proto
   The protocol to use. Current valid value are 'SIP' and 'SCCP'.
 prov_ip
-  The provisioning server IP address (dotted quad)
+  The provisioning server IP address.
 prov_http_port
   The provisioning server HTTP port number (default: 80)
 ntp_server
-  The NTP server IP address
+  The NTP server IP address.
 admin_user
-  The administrator username
+  The administrator username. This is an unicode string.
 admin_passwd
-  The administrator password
+  The administrator password. This is an unicode string.
 timezone
-  The timezone name (from the tz/zoneinfo/Olson database)
+  The timezone name (from the tz/zoneinfo/Olson database).
+  - Ex.: 'Europe/Paris', 'America/Montreal'
 locale
-  The locale name (ex.: fr_FR, en_US)
+  The locale name. This is an ISO 639-1 code followed by an ISO 3166-1 alpha-2
+  code. The codes are similar to what is found in /etc/locale.gen, except that
+  it doesn't use the modifier and charset part.
+  - Ex.: 'fr_FR', 'en_CA'
 simultcalls
-  The number of simultaneous calls (ex.: 5)
+  The number of simultaneous calls (ex.: 5). This is a positive integer.
 subscribe_mwi
   A boolean for if we should subscribe for message notification or not
 
@@ -74,6 +83,17 @@ sip
           The password used to authenticate
         mailbox (?)
           The mailbox ID/number
+
+sccp
+  A dictionary with the following keys
+    call_managers
+      A dictionary where keys are priority number and value are dictionary
+      with the following keys:
+        
+        ip
+          The call manager IP address
+        port
+          The call manager port number (default: 2000)
 
 exten
   A dictionary with the following keys

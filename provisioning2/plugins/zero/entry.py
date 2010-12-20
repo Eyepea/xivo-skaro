@@ -37,7 +37,7 @@ class ZeroPlugin(Plugin):
     
     def __init__(self, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
-        doc_root = os.path.join(self._plugin_dir, 'var', 'lib', 'tftpboot')
+        doc_root = os.path.join(self._plugin_dir, 'var', 'tftpboot')
         self.tftp_service = TFTPFileService(doc_root)
         # TODO this permits directory listing, which might or might not be
         #      desirable

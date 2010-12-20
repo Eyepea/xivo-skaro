@@ -1,0 +1,91 @@
+[pkg_cisco-7906-7911]
+desc: Firmware files for Cisco 7906G and 7911G (SCCP)
+version: 9.0.3
+files: file_cisco-7906-7911fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7931]
+desc: Firmware files for Cisco 7931G (SCCP)
+version: 9.0.3
+files: file_cisco-7931fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7941-7961]
+desc: Firmware files for Cisco 7941G/7941G-GE and 7961G/7961G-GE (SCCP)
+version: 9.0.3
+files: file_cisco-7941-7961fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7942-7962]
+desc: Firmware files for Cisco 7942G and 7962G (SCCP)
+version: 9.0.3
+files: file_cisco-7942-7962fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7945-7965]
+desc: Firmware files for Cisco 7945G and 7965G (SCCP)
+version: 9.0.3
+files: file_cisco-7945-7965fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7970-7971]
+desc: Firmware files for Cisco 7970G, 7971G and 7971GE (SCCP)
+version: 9.0.3
+files: file_cisco-7970-7971fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7975]
+desc: Firmware files for Cisco 7975G (SCCP)
+version: 9.0.3
+files: file_cisco-7975fw
+install_proc: install_cisco-7900fw
+
+
+
+[install_cisco-7900fw]
+a-b: unzip $FILE1
+b-c: cp * $DOC_ROOT/
+
+
+
+[file_cisco-7906-7911fw]
+url: http://download-sj.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.9-0-3.zip
+size: 5066707
+sha1sum: 02f37cd69aab190d018d13f86ccdc61cc2bb4235
+downloader: x-cisco
+
+[file_cisco-7931fw]
+url: http://download-sj.cisco.com/swc/esd/04/280799963/contract/cmterm-7931-sccp.9-0-3.zip
+size: 5056948
+sha1sum: 9e85007387de085ebb0e8becf16197bacc01caa9
+downloader: x-cisco
+
+[file_cisco-7941-7961fw]
+url: http://download-sj.cisco.com/swc/esd/04/279251499/contract/cmterm-7941_7961-sccp.9-0-3.zip
+size: 5170819
+sha1sum: 3ff5b72ced1a8df06ad43727439fe0b497809c57
+downloader: x-cisco
+
+[file_cisco-7942-7962fw]
+url: http://download-sj.cisco.com/swc/esd/04/281346593/contract/cmterm-7942_7962-sccp.9-0-3.zip
+size: 5763153
+sha1sum: 752deea2d776790be5f6b43e93687193e00bec35
+downloader: x-cisco
+
+[file_cisco-7945-7965fw]
+url: http://download-sj.cisco.com/swc/esd/04/281346594/contract/cmterm-7945_7965-sccp.9-0-3.zip
+size: 5891955
+sha1sum: 98eb810de064cf777eb4660426aaa1e202413e78
+downloader: x-cisco
+
+[file_cisco-7970-7971fw]
+url: http://download-sj.cisco.com/swc/esd/04/278436620/contract/cmterm-7970_7971-sccp.9-0-3.zip
+size: 5279034
+sha1sum: 04e8620c3b84d761f9654cdcc20c837c35944cc7
+downloader: x-cisco
+
+[file_cisco-7975fw]
+url: http://download-sj.cisco.com/swc/esd/04/281346597/contract/cmterm-7975-sccp.9-0-3.zip
+size: 5891350
+sha1sum: f9d72ce5953cfd1364d33e218d941d5c1015ff28
+downloader: x-cisco

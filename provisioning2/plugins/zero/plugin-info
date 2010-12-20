@@ -1,4 +1,4 @@
 [general]
 version: 1
 description: Plugin that offers no configuration service and serves TFTP/HTTP
-             requests in its var/lib/tftpboot directory.
+             requests in its var/tftpboot directory.

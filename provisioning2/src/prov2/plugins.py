@@ -226,16 +226,24 @@ class Plugin(object):
     _pluging_dir -- the base directory in which the plugin is
     _gen_cfg -- a read-only general configuration mapping object
     _spec_cfg -- a read-only plugin-specific configuration mapping object
+    services
     http_dev_info_extractor
     http_service
     tftp_dev_info_extractor
     tftp_service
+    device_types
     
     Plugin class that are made to be instantiated (i.e. the one doing the
     real job, and not superclass that helps it) must have an attribute
     'IS_PLUGIN' that evaluates to true in a boolean context or it won't be
     loaded. This is necessary to distinguish real plugin class from
     'helper' plugin superclasses. XXX This is ugly tough
+    
+    At load time, the 'execfile_' name is available in the global namespace
+    of the entry file. It can be used to 'import' other files in the same or
+    sub directory of the entry plugin file. This methods is similar to
+    execfile, except that the working directory is changed to the plugin
+    directory.
     
     """
     name = None
@@ -373,15 +381,14 @@ class Plugin(object):
         device dev. This method MUST not synchronize the configuration between
         the phone and the provisioning server. This method is called only to
         synchronize the config between the config manager and the plugin. See
-        the method reload for more info on the device configuration life cycle. 
+        the synchronize method for more info on the device configuration life cycle. 
         
         This method is called in these cases:
-        - a device object with a config associated with it has been assigned
+        - a device object with a config associated to it has been assigned
           to this plugin
         - the config object used by a device has been updated
-        
-        TODO should the configure method always be called when a device
-             object is updated ? 
+        - one of the mac, ip, vendor, model or version key of a device object
+          managed by this plugin has been updated
         
         This method is mostly useful for 'pull type' plugins, especially static
         pull type plugin. For these plugin, this is the right time to write the
@@ -391,7 +398,13 @@ class Plugin(object):
         
         Pre:  dev is a device object (can't be None)
               config is a 'flat' config object (can't be None). The plugin
-                is free to modify this object (it won't affect anything) 
+                is free to modify this object (it won't affect anything).
+                The meaning of the value in the config object are defined in
+                the config module. Note that there's no guarantee that any of
+                the value will be present. Also, to keep the phone in sync with
+                the config, if a supported key is not present in the config,
+                the plugin should configure the phone so that this key as its
+                default or null value.
         Post: after a call to this method, if device dev does a request for
                 its configuration file, its configuration will be as the
                 config object
@@ -456,8 +469,8 @@ class Plugin(object):
                 object.
         Post: if the device was online, its config has been reloaded
         
-        Raise a NotImplementedError if the plugin doesn't know how to
-        reload a device.
+        Raise an Exception if the plugin doesn't know how to synchronize the
+        device.
         
         Return a Deferred object that fire its callback with a None value if
         the reload seems to have been succesful, else fire its errback with an
@@ -467,7 +480,7 @@ class Plugin(object):
         meaningfull of the reason why the device did not reload ?
          
         """
-        raise NotImplementedError("No known way to reload the device")
+        raise Exception("No known way to reload the device")
 
 
 class StandardPlugin(Plugin):
@@ -475,7 +488,7 @@ class StandardPlugin(Plugin):
     which helps with repeating tasks, etc etc, this is a bad description.
     
     """
-    TFTPBOOT_DIR = os.path.join('var', 'lib', 'tftpboot')
+    TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
     
     def __init__(self, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
@@ -581,9 +594,9 @@ class FetchfwPluginHelper(object):
     """Directory where the package definitions are stored."""
     CACHE_DIR = os.path.join('var', 'cache')
     """Directory where the downloaded files are stored/cached."""
-    INSTALLED_DIR = os.path.join('var', 'lib', 'installed')
+    INSTALLED_DIR = os.path.join('var', 'installed')
     """Directory where the 'installed packages DB' is stored."""
-    TFTPBOOT_DIR = os.path.join('var', 'lib', 'tftpboot')
+    TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
     """Base directory where the files are extracted."""
     
     @classmethod
@@ -1068,6 +1081,32 @@ class PluginManager(object):
                       plugin['version'] > installed.get(plugin['name'], ''))
         return upgradable
     
+    @staticmethod
+    def _add_execfile(pg_globals, plugin_dir):
+        """Add 'execfile_' to pg_globals."""
+        def aux(filename, *args, **kwargs):
+            if args:
+                globals = args[0]
+                args = args[1:]
+            elif 'globals' in kwargs:
+                globals = kwargs['globals']
+                del kwargs['globals']
+            else:
+                globals = pg_globals
+            # reinject execfile_ if not present
+            if 'execfile_' not in globals:
+                globals['execfile_'] = aux
+            # if filename is relative, then it must be relative to the plugin dir
+            if not os.path.isabs(filename):
+                filename = os.path.join(plugin_dir, filename)
+            execfile(filename, globals, *args, **kwargs)
+        pg_globals['execfile_'] = aux
+    
+    def _execplugin(self, plugin_dir, pg_globals):
+        entry_file = os.path.join(plugin_dir, self._ENTRY_FILENAME)
+        self._add_execfile(pg_globals, plugin_dir)
+        execfile(entry_file, pg_globals)
+    
     def load(self, name, gen_cfg={}, spec_cfg={}):
         """Load a plugin.
         
@@ -1088,9 +1127,8 @@ class PluginManager(object):
         if name in self._plugins:
             raise Exception("plugin '%s' is already loaded" % name)
         plugin_dir = os.path.join(self._plugins_dir, name)
-        py_file = os.path.join(plugin_dir, self._ENTRY_FILENAME)
         plugin_globals = {}
-        execfile(py_file, plugin_globals)
+        self._execplugin(plugin_dir, plugin_globals)
         for el in plugin_globals.itervalues():
             if (isinstance(el, type) and 
                 issubclass(el, Plugin) and

@@ -1,6 +1,9 @@
 ;; Plugins definition file. This file is downloaded from the plugin download
 ;; server and kept locally.
 
+; TODO add optional description key for each plugin section
+; TODO rename defs for defs.db ?
+
 ;; The name of the plugin follows the 'plugin_' string
 ;[plugin_xivo-aastra-2.6.0.1008]
 ;; filename -- the filename of the plugin file to download

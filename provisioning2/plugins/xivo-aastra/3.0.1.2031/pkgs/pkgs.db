@@ -1,0 +1,33 @@
+[pkg_aastra-6739i]
+desc: Firmware for Aastra 6739i
+version: 3.0.1.2031
+files: file_aastra-6739fw
+install_proc: install_aastra-fw
+
+[pkg_aastra-lang3]
+desc: Language files for Aastra firmware 3.x
+version: 3.0.1.38.1002
+files: file_aastra-lang3
+install_proc: install_aastra-lang
+
+
+
+[install_aastra-fw]
+a-b: unzip $FILE1
+b-c: cp *.st $DOC_ROOT/
+
+[install_aastra-lang]
+a-b: unzip $FILE1
+b-c: cp * $DOC_ROOT/i18n/
+
+
+
+[file_aastra-6739fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-B7AC4F08/03/6739i_FC-001274-00_REV05_6739i_3_0_1_2031_11_2010.zip
+size: 4497974
+sha1sum: 6c0e485966794c6a490841cad11e124ed20db7ae
+
+[file_aastra-lang3]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip
+size: 138130
+sha1sum: fd79b1909b41254b864e4f993675a81d87209288

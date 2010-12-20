@@ -1,0 +1,72 @@
+[pkg_cisco-7902]
+desc: Firmware files for Cisco 7902G (SCCP)
+version: 8.0.2
+files: file_cisco-7902fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7905]
+desc: Firmware files for Cisco 7905G (SCCP)
+version: 8.0.3
+files: file_cisco-7905fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7910]
+desc: Firmware files for Cisco 7910G (SCCP)
+version: 5.0.7
+files: file_cisco-7910fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7912]
+desc: Firmware and locale files for Cisco 7912G (SCCP)
+version: 8.0.4
+files: file_cisco-7912fw
+install_proc: install_cisco-7900fw
+
+[pkg_cisco-7940-7960]
+desc: Firmware and locale files for Cisco 7940G and 7960G (SCCP)
+version: 8.1.2
+files: file_cisco-7940-7960fw
+install_proc: install_cisco-7900fw
+
+
+
+[install_cisco-7900fw]
+a-b: unzip $FILE1
+b-c: cp * $DOC_ROOT/
+
+
+
+[file_cisco-7902fw]
+; Released on June 2006
+url: http://download-sj.cisco.com/swc/esd/02/278078615/contract/cmterm-7902G-sccp.8-0-2.zip
+size: 329363
+sha1sum: 691fb351d9228bd193dcb78cb1e7ddec73ccf835
+downloader: x-cisco
+
+[file_cisco-7905fw]
+; Released on April 2007
+url: http://download-sj.cisco.com/swc/esd/02/273941556/contract/cmterm-7905G-sccp.8-0-3.zip
+size: 673168
+sha1sum: c68b1ddddc06ab7bc85eef2a5956d6a58844d700
+downloader: x-cisco
+
+[file_cisco-7910fw]
+; Released on May 2005
+url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp.5-0-7.zip
+size: 592359
+sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
+downloader: x-cisco
+
+[file_cisco-7912fw]
+; Released on January 2008
+url: http://download-sj.cisco.com/swc/esd/02/278115698/contract/cmterm-7912G-sccp.8-0-4.zip
+size: 339004
+sha1sum: 5c93605519fb691690b3c1eefc67127e85497892
+downloader: x-cisco
+
+[file_cisco-7940-7960fw]
+; Released on August 2009
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
+size: 701384
+sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
+downloader: x-cisco
