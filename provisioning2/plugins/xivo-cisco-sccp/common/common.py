@@ -115,7 +115,7 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
         assert request_type == 'tftp'
         return defer.succeed(self._do_extract(request))
     
-    _TFTP_FILENAME_REGEX = [
+    _FILENAME_REGEX = [
         # We know this pattern is not unique to the 7900
         re.compile(r'^SEP[\dA-F]{12}\.cnf\.xml$'),
         re.compile(r'^CTLSEP([\dA-F]{12})\.tlv$'),
@@ -127,13 +127,13 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
     def _do_extract(self, request):
         packet = request['packet']
         filename = packet['filename']
-        for regex in self._TFTP_FILENAME_REGEX:
+        for regex in self._FILENAME_REGEX:
             m = regex.match(filename)
             if m:
-                dev = {'vendor': 'Cisco'}
+                dev_info = {'vendor': 'Cisco'}
                 if m.lastindex == 1:
-                    dev['mac'] = norm_mac(m.group(1))
-                return dev
+                    dev_info['mac'] = norm_mac(m.group(1))
+                return dev_info
 
 
 _ZONE_MAP = {
@@ -240,8 +240,8 @@ class BaseCiscoSccpPlugin(StandardPlugin):
     _TZ_MAP = _gen_tz_map()
     _TZ_VALUE_DEFAULT = 'Eastern Standard/Daylight Time'
     
-    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
-        StandardPlugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
+    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
+        StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         
         handlers = new_handlers(gen_cfg.get('http_proxy'))
         dlers = new_downloaders(handlers)
@@ -305,18 +305,11 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         
         """
         fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
-        return os.path.join(self._tftpboot_dir, 'SEP' + fmted_mac + '.cfg.xml')
+        return 'SEP' + fmted_mac + '.cfg.xml'
     
     def configure(self, dev, config):
-        model = dev['model']
         filename = self._dev_specific_filename(dev)
-        
-        try:
-            # get device-specific template
-            tpl = self._tpl_helper.get_template(filename + '.tpl')
-        except TemplateNotFound:
-            # get model-specific template
-            tpl = self._tpl_helper.get_template(model + '.tpl')
+        tpl = self._tpl_helper.get_dev_template(filename, name)
         
         # TODO check support for addons, and test what the addOnModules is
         #      really doing...
@@ -324,11 +317,12 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         config['XX_lang'] = self._get_xx_language(config)
         config['XX_timezone'] = self._get_xx_timezone(config)
         
+        path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, config, filename, self._ENCODING)
     
     def deconfigure(self, dev):
         filename = self._dev_specific_filename(dev)
-        os.remove(filename)
+        os.remove(os.path.join(self._tftpboot_dir, filename))
     
     def synchronize(self, dev, config):
         # The only known way to synchronize SCCP device is to do an

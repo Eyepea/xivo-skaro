@@ -45,24 +45,29 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         'Aastra6739i': '6739i',
         'Aastra51i': '6751i',       # not tested
         'Aastra53i': '6753i',       # not tested
-        'Aastra55i': '6755i',       # not tested
+        'Aastra55i': '6755i',
         'Aastra57i': '6757i',
     }
     
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
-            return self._extract_from_ua(ua)
+            dev_info = {}
+            self._extract_from_ua(ua, dev_info)
+            if dev_info:
+                dev_info['vendor'] = 'Aastra'
+                return dev_info
         
-    def _extract_from_ua(self, ua):
-        # UA: "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.2010-SIP"
-        # UA: "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
-        # UA: "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.0.1.2024-SIP"
-        # UA: "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
+    def _extract_from_ua(self, ua, dev_info):
+        # HTTP User-Agent:
+        #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
+        #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.2010-SIP"
+        #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.0.1.2024-SIP"
+        #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
+        #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
         tokens = user_agent.split()
         if len(tokens) == 3:
             model_raw, mac_raw, version_raw = tokens
-            dev_info = {}
             model = self._parse_model(model_raw)
             if model:
                 dev_info['model'] = model
@@ -72,9 +77,6 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
             version = self._parse_version(version_raw)
             if version:
                 dev_info['version'] = version
-            if dev_info:
-                dev_info['vendor'] = 'Aastra'
-            return dev_info
     
     def _parse_model(self, model_raw):
         return self._UA_MODELS_MAP.get(model_raw)
@@ -121,8 +123,8 @@ class BaseAastraPlugin(StandardPlugin):
         },
     }
     
-    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
-        StandardPlugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
+    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
+        StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
         self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
@@ -250,7 +252,7 @@ class BaseAastraPlugin(StandardPlugin):
             lines.extend(cls._format_dst_change('end', inform['dst']['end']))
         return '\n'.join(lines)
     
-    def _get_xx_function_keys(self, config):
+    def _get_xx_fkeys(self, config):
         if 'funckey' in config:
             return self._format_function_keys(config['funckey'], model)
         else:
@@ -276,25 +278,18 @@ class BaseAastraPlugin(StandardPlugin):
         
         """
         fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
-        return os.path.join(self._tftpboot_dir, fmted_mac + '.cfg')
+        return fmted_mac + '.cfg'
     
     def configure(self, dev, config):
-        # TODO add support for unknown model
-        model = dev['model']
         filename = self._dev_specific_filename(dev)
+        tpl = self._tpl_helper.get_dev_template(filename, dev)
         
-        try:
-            # get device-specific template
-            tpl = self._tpl_helper.get_template(filename + '.tpl')
-        except TemplateNotFound:
-            # get model-specific template
-            tpl = self._tpl_helper.get_template(model + '.tpl')
-        
-        config['XX_function_keys'] = self._get_xx_function_keys(config)
+        config['XX_fkeys'] = self._get_xx_fkeys(config)
         config['XX_timezone'] = self._get_xx_timezone(config)
         config['XX_dict'] = self._get_xx_dict(config)
         
-        self._tpl_helper.dump(tpl, config, filename, self._ENCODING)
+        path = os.path.join(self._tftpboot_dir, filename)
+        self._tpl_helper.dump(tpl, config, path, self._ENCODING)
     
     def deconfigure(self, dev):
         filename = self._dev_specific_filename(dev)

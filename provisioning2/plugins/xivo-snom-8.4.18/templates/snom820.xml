@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<settings>
-  <phone-settings>
-    <setting_server perm="R">http://{{prov_ip}}:{{prov_http_port|d('80')}}/snom820.htm</setting_server>
-    <firmware_status perm="R">http://{{prov_ip}}:{{prov_http_port|d('80')}}/snom820-firmware.xml</firmware_status>
-  </phone-settings>
-</settings>

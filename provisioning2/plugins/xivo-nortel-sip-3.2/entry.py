@@ -61,8 +61,8 @@ class NortelPlugin(StandardPlugin):
     #     device configuration...
     IS_PLUGIN = True
     
-    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
-        StandardPlugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
+    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
+        StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         
         handlers = new_handlers(gen_cfg.get('http_proxy'))
         dlers = new_downloaders(handlers)

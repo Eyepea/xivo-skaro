@@ -31,8 +31,9 @@ from prov2.servers.tftp.service import TFTPFileService
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
 from twisted.web.static import File
-from jinja2.loaders import FileSystemLoader
 from jinja2.environment import Environment
+from jinja2.exceptions import TemplateNotFound
+from jinja2.loaders import FileSystemLoader
 from fetchfw2.download import new_handlers, new_downloaders
 from fetchfw2.package import PackageManager, DefaultInstaller
 from fetchfw2.storage import RemoteFileBuilder, InstallationMgrBuilder,\
@@ -248,7 +249,7 @@ class Plugin(object):
     """
     name = None
     
-    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
+    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         """Create a new plugin instance.
         
         This method is the first method called in the plugin loading process.
@@ -258,11 +259,13 @@ class Plugin(object):
         active between the time of its creation and the time its close method
         is called.
         
+        app -- the application object
         plugin_dir -- the root directory where the plugin lies
         gen_cfg -- a dictionary with generic configuration key-values
         spec_cfg --  a dictionary with plugin-specific configuration key-values
         
         """
+        self._app = app
         self._plugin_dir = plugin_dir
         self._gen_cfg = gen_cfg
         self._spec_cfg = spec_cfg
@@ -490,8 +493,8 @@ class StandardPlugin(Plugin):
     """
     TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
     
-    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
-        Plugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
+    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
+        Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         self._tftpboot_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
         self.tftp_service = TFTPFileService(self._tftpboot_dir)
         # TODO this permits directory listing, which might or might not
@@ -511,6 +514,26 @@ class TemplatePluginHelper(object):
         loader = FileSystemLoader([custom_dir, default_dir])
         self._env = Environment(trim_blocks=True, loader=loader)
         
+    def get_dev_template(self, filename, dev):
+        """Get the device template used for the device specific configuration
+        file.
+        
+        """
+        # get device-specific template
+        try:
+            return self._env.get_template(filename + '.tpl')
+        except TemplateNotFound:
+            pass
+        # get model-specific template
+        if 'model' in dev:
+            model = dev['model']
+            try:
+                return self._tpl_helper.get_template(model + '.tpl')
+            except TemplateNotFound:
+                pass
+        # get base template
+        return self._tpl_helper.get_template('base.tpl')
+    
     def get_template(self, name):
         return self._env.get_template(name)
     
@@ -518,6 +541,9 @@ class TemplatePluginHelper(object):
         tmp_filename = filename + '.tmp'
         template.stream(context).dump(tmp_filename, encoding, errors)
         os.rename(tmp_filename, filename)
+    
+    def render(self, template, context, encoding='UTF-8', errors='strict'):
+        return template.render(context).encode(encoding, errors)
 
         
 class _AsyncPackageManager(PackageManager):
@@ -773,14 +799,16 @@ class PluginManager(object):
     _INFO_FILENAME = 'plugin-info'
     """The name of the plugin information file."""
     
-    def __init__(self, plugins_dir, cache_dir, params={}):
+    def __init__(self, app, plugins_dir, cache_dir, params={}):
         """
+        app -- an application object
         plugins_dir -- the directory where plugins are installed
         cache_dir -- a directory where plugin-package are downloaded, or None
           if no cache is to be used
         params -- a dictionary holding the 
         
         """
+        self._app = app
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
         self._configure_service = _PluginManagerConfigureService(params)
@@ -1134,7 +1162,7 @@ class PluginManager(object):
                 issubclass(el, Plugin) and
                 hasattr(el, 'IS_PLUGIN') and
                 getattr(el, 'IS_PLUGIN')):
-                    plugin = el(plugin_dir, gen_cfg, spec_cfg)
+                    plugin = el(self._app, plugin_dir, gen_cfg, spec_cfg)
                     plugin.name = name
                     self._plugins[name] = plugin
                     return

@@ -2,23 +2,17 @@
 <settings>
   <phone-settings>
     <time_24_format perm="R">on</time_24_format>
-    
     <admin_mode perm="R">on</admin_mode>
-    <admin_mode_password perm="R">{{ admin_passwd|d('22222') }}</admin_mode_password>
     <display_method perm="R">display_name_number</display_method>
     <http_user perm="R">guest</http_user>
     <http_pass perm="R">guest</http_pass>
-    <ntp_server perm="R">{{ ntp_server }}</ntp_server>
     <pnp_config perm="R">off</pnp_config>
     <update_policy perm="R">auto_update</update_policy>
     <user_dtmf_info idx="1" perm="R">on</user_dtmf_info>
     <user_server_type idx="1" perm="R">Default</user_server_type>
-    {% if vlan %}
-    <vlan perm="R">{{ vlan['id'] }} {{ vlan['prio'] }}</vlan>
-    {% endif %}
-    <mwi_dialtone perm="R">normal</mwi_dialtone> 
+    <mwi_dialtone perm="R">normal</mwi_dialtone>
     <subscription_delay perm="R">100</subscription_delay>
-
+    
     <!-- http://wiki.snom.com/Interoperability/PBX/Asterisk-->
     <call_completion perm="R">off</call_completion>
     <challenge_response perm="R">off</challenge_response>

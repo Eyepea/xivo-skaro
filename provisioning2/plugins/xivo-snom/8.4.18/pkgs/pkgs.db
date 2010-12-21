@@ -1,17 +1,17 @@
 [pkg_snom-300]
-desc: Firmware and language files for Snom 300
+desc: Firmware files for Snom 300
 version: 8.4.18
 files: file_snom-300fw
 install_proc: install_snom-fw
 
 [pkg_snom-320]
-desc: Firmware and language files for Snom 320
+desc: Firmware files for Snom 320
 version: 8.4.18
 files: file_snom-320fw
 install_proc: install_snom-fw
 
 [pkg_snom-360]
-desc: Firmware and language files for Snom 360
+desc: Firmware files for Snom 360
 version: 8.4.18
 files: file_snom-360fw
 install_proc: install_snom-fw

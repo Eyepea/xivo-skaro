@@ -35,8 +35,8 @@ from twisted.web.static import File
 class ZeroPlugin(Plugin):
     IS_PLUGIN = True
     
-    def __init__(self, plugin_dir, gen_cfg, spec_cfg):
-        Plugin.__init__(self, plugin_dir, gen_cfg, spec_cfg)
+    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
+        Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         doc_root = os.path.join(self._plugin_dir, 'var', 'tftpboot')
         self.tftp_service = TFTPFileService(doc_root)
         # TODO this permits directory listing, which might or might not be

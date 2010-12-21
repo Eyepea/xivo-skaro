@@ -120,7 +120,8 @@ class Application(object):
         config = _read_config(config_filename)
         self.dev_mgr = DeviceManager()
         self.cfg_mgr = ConfigManager()
-        self.pg_mgr = PluginManager(config['pg_mgr']['plugins_dir'],
+        self.pg_mgr = PluginManager(self,
+                                    config['pg_mgr']['plugins_dir'],
                                     config['pg_mgr']['cache_dir'],
                                     {'server': config['pg_mgr']['server']})
         self._config = config
@@ -621,7 +622,7 @@ root_updater = cmpz_updater
 
 pg_router = PluginDeviceRouter()
 static_router = StaticDeviceRouter('test-pull-dyn')
-root_router = static_router
+root_router = pg_router
 
 process_service = RequestProcessingService(app)
 process_service.dev_info_extractor = root_xtor
@@ -645,7 +646,7 @@ tftp_service = new_tftp_service()
 
 
 def http_service_factory(pg_id, pg_service):
-    return HTTPLogService(metaaff('tftp-post ' + pg_id + ':'), pg_service)
+    return HTTPLogService(metaaff('http-post ' + pg_id + ':'), pg_service)
 
 # http
 def new_http_service():

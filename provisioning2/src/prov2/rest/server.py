@@ -129,7 +129,7 @@ class DevicesResource(Resource):
                     value = value[0]
                     filter_fun = lambda x: x[key] == value
         else:
-            filter_fun = None
+            filter_fun = lambda x: True
         
         dev_mgr = self._app.dev_mgr
         devices = []
@@ -534,7 +534,7 @@ class PluginResource(Resource):
     def __init__(self, pg):
         Resource.__init__(self)
         self._id = pg.name
-        self._service_res = PluginServicesResource(pg.services())
+        self._service_res = PluginServicesResource(pg.services)
     
     def getChild(self, path, request):
         if path == "services":

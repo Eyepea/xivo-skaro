@@ -31,13 +31,12 @@ sip line{{ line_no }} backup proxy ip: {{ line['backup_proxy_ip']|d('0.0.0.0') }
 sip line{{ line_no }} backup proxy port: 5060
 sip line{{ line_no }} backup registrar ip: {{ line['backup_registrar_ip']|d('0.0.0.0') }}
 sip line{{ line_no }} backup registrar port: 5060
-
 sip line{{ line_no }} screen name: {{ line['display_name'] }}
 sip line{{ line_no }} screen name 2: {{ line['user_id'] }}
 sip line{{ line_no }} auth name: {{ line['auth_id'] }}
 sip line{{ line_no }} password: {{ line['passwd'] }}
 sip line{{ line_no }} user name: {{ line['user_id'] }}
-sip line{{ line_no }} display name {{ line['display_name'] }}
+sip line{{ line_no }} display name: {{ line['display_name'] }}
 {% endfor %}
 
 sip explicit mwi subscription: {{ subscribe_mwi|int }}
@@ -72,4 +71,4 @@ input language: English
 {% endif %}
 
 {{ XX_timezone }}
-{{ XX_function_keys }}
+{{ XX_fkeys }}

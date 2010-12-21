@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<firmware-settings>
+  <firmware perm="R">http://{{prov_ip}}:{{prov_http_port|d('80')}}/firmware/#FW_FILENAME#</firmware>
+</firmware-settings>
