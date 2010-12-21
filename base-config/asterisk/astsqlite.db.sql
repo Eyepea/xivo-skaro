@@ -1991,16 +1991,12 @@ CREATE TABLE iaxcallnumberlimits
 
 DROP TABLE queue_log;
 CREATE TABLE queue_log (
-	time char(30),
+  time char(10),
   callid char(50),
   queuename char(50),
   agent char(50),
   event char(20),
-  data1 char(50),
-  data2 char(50),
-  data3 char(50),
-  data4 char(50),
-  data5 char(50)
+  data char(255)
 );
 CREATE INDEX queue_log__idx_time ON queue_log(time);
 CREATE INDEX queue_log__idx_queuename ON queue_log(queuename);
