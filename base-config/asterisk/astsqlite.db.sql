@@ -1991,7 +1991,7 @@ CREATE TABLE iaxcallnumberlimits
 
 DROP TABLE queue_log;
 CREATE TABLE queue_log (
-  time char(10),
+  time char(30),
   callid char(50),
   queuename char(50),
   agent char(50),
