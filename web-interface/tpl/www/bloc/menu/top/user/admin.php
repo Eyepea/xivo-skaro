@@ -56,6 +56,10 @@ $this->file_include('bloc/menu/top/user/loginbox');
 								   'graphs');?>
 					</li>
 					<?php endif; ?>
+					<li>
+						<?=$url->href_html($this->bbf('mn_sub_top_services_statistiques'),
+								   'statistics');?>
+					</li>
 				</ul>
 			</div>
 		</li>

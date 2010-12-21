@@ -401,7 +401,6 @@ CREATE TABLE "ha_peer" (
  PRIMARY KEY ("iface", "host")
 );
 
-
 --- STATS ---
 DROP TABLE IF EXISTS "stats_conf";
 CREATE TABLE "stats_conf" (

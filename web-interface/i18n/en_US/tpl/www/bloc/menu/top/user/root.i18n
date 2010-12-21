@@ -19,6 +19,9 @@ Monitoring
 ; mn_sub_top_services_stats
 Graphics
 
+; mn_sub_top_services_statistiques
+Statistics
+
 ; mn_top_configuration
 Configuration
 

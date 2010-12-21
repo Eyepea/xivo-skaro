@@ -22,6 +22,8 @@ define('XIVO_PATH_ROOT',dirname(__FILE__));
 
 require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'xivo.inc');
 
+ini_set('error_reporting', E_ALL);
+
 $_XIVO = &dwho_gct::set_get(new xivo());
 
 $_CF = &dwho_gat::get('_CF');

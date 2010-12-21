@@ -84,4 +84,9 @@ $array['provisioning'] = array();
 $array['provisioning']['table'] = 'provisioning';
 $array['provisioning']['primary'] = array('id' => '');
 
+$array['stats_conf'] = array();
+$array['stats_conf']['table'] = 'stats_conf';
+$array['stats_conf']['primary'] = array('id' => '');
+
+
 ?>

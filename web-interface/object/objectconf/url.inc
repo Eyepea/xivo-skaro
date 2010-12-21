@@ -208,7 +208,6 @@ $array['cti/restart']            = 'cti/index.php/restart/';
 
 $array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';
 $array['service/ipbx/json/private/ctiserver/configuration']    = 'service/ipbx/json.php/private/ctiserver/configuration/';
-
 $array['service/ipbx/json/private/queuelogger/configuration']  = 'service/ipbx/json.php/private/queuelogger/configuration';
 
 
@@ -224,5 +223,12 @@ $array['graphs/munin/network']      = 'graphs/munin/index.php/network';
 $array['graphs/munin/system']       = 'graphs/munin/index.php/system';
 $array['graphs/munin/other']        = 'graphs/munin/index.php/other';
 
+
+// statistiques
+$array['statistics']				= 'statistics/index.php';
+$array['statistics/stats1']			= 'statistics/index.php/stats1';
+$array['statistics/stats2']			= 'statistics/index.php/stats2';
+$array['statistics/stats3']			= 'statistics/index.php/stats3';
+$array['statistics/configuration']		= 'statistics/index.php/configuration/';
 
 ?>

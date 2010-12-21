@@ -212,6 +212,9 @@ $array['module']['queueskillcat']['datastorage'] = true;
 $array['module']['queueskillrule'] = array();
 $array['module']['queueskillrule']['datastorage'] = true;
 
+$array['module']['queue_log'] = array();
+$array['module']['queue_log']['datastorage'] = true;
+
 $array['module']['rightcall'] = array();
 $array['module']['rightcall']['datastorage'] = true;
 

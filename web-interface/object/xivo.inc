@@ -20,11 +20,11 @@
 
 class xivo_object
 {
-	var $_conf		= array();
+	var $_conf			= array();
 	var $_module		= array();
 	var $_application	= array();
 	var $_identity		= array();
-	var $_dso		= null;
+	var $_dso			= null;
 	var $_dsoconf		= array();
 
 	function xivo_object()
@@ -283,7 +283,8 @@ class xivo_object
 	{
 		if(is_object($this->_dso) === true)
 			$dso = &$this->_dso;
-		else if($this->_load_dso() === true && is_object($this->_dso) === true)
+		else if($this->_load_dso() === true 
+		&& is_object($this->_dso) === true)
 			$dso = &$this->_dso;
 		else
 			return(false);
@@ -323,7 +324,8 @@ class xivo_object
 		if($param === false && $this->_load_dso_config($metatype) === true)
 			$param = &$this->_dsoconf[$metatype];
 
-		if($param === false || xivo::load_class($class,$dir,$metatype,false) === false)
+		if($param === false 
+		|| xivo::load_class($class,$dir,$metatype,false) === false)
 			return($param);
 
 		return(new $class($dso,&$param));

@@ -212,6 +212,10 @@ $array['queueskillrule'] = array();
 $array['queueskillrule']['table'] = 'queueskillrule';
 $array['queueskillrule']['primary'] = array('id' => '');
 
+$array['queue_log'] = array();
+$array['queue_log']['table'] = 'queue_log';
+$array['queue_log']['primary'] = array('time' => '');
+
 $array['rightcall'] = array();
 $array['rightcall']['table'] = 'rightcall';
 $array['rightcall']['primary'] = array('id' => '');

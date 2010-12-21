@@ -73,6 +73,9 @@ $array['module']['server']['datastorage'] = true;
 $array['module']['provisioning'] = array();
 $array['module']['provisioning']['datastorage'] = true;
 
+$array['module']['stats_conf'] = array();
+$array['module']['stats_conf']['datastorage'] = true;
+
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 
