@@ -20,7 +20,7 @@
 
 require_once('xivo.php');
 
-$go = in_array('go', $_GET)?$_GET['go']:null;
+$go = array_key_exists('go', $_GET)?$_GET['go']:null;
 
 if($_USR->mk_active() === false)
 	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));

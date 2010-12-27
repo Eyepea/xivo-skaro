@@ -29,6 +29,6 @@ dwho_logw('logoff',$login,'logoff');
 
 xivo_user::logoff();
 
-$_QRY->go($_TPL->url('index'), in_array('go', $_GET)?array('go' => $_GET['go']):null);
+$_QRY->go($_TPL->url('index'), array_key_exists('go', $_GET)?array('go' => $_GET['go']):null);
 
 ?>

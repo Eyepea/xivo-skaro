@@ -30,7 +30,7 @@ if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
 	die(include($action_path));
 }
 
-$go = in_array('go', $_GET)?$_GET['go']:null;
+$go = array_key_exists('go', $_GET)?$_GET['go']:null;
 
 if(xivo_user::is_valid() === true)
 	$_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
