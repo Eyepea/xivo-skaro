@@ -1,0 +1,12 @@
+This line is not in a section and is therefore invalid
+
+[section1]
+value1
+
+[section2]
+
+[section3]
+value1
+value2
+
+value3

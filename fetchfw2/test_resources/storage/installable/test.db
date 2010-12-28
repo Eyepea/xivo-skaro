@@ -1,0 +1,27 @@
+[pkg_simple1]
+desc: Simple package definition 1
+version: 20100920-1
+hidden: yes
+files: file_file1
+install_proc: install_simple1
+
+[file_file1]
+url: file:///tmp/test.zip
+size: 526
+sha1sum: c39fb1ffb99e16da2801dbd605edfbe98fdc5baf
+
+[install_simple1]
+a-b: unzip $FILE1
+b-c: cp * /tmp/test-fetchfw2/
+
+[pkg_simple2]
+desc: Simple package definition 2
+version: 20100920-1
+hidden: no
+depends: pkg_simple1
+files: file_file1
+install_proc: install_simple2
+
+[install_simple2]
+a-b: unzip $FILE1
+b-c: cp  file0.txt /tmp/test-fetchfw2/pkg/s2/newf0name.txt
