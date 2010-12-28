@@ -58,7 +58,7 @@ class CiscoDownloader(DefaultDownloader):
     _C14N_LOGIN_URL = 'http://www.cisco.com/cgi-bin/login'
     
     def __init__(self, handlers):
-        DefaultDownloader.__init__(self, *handlers)
+        DefaultDownloader.__init__(self, handlers)
         self._cookiejar = cookielib.CookieJar()
         self._opener.add_handler(urllib2.HTTPCookieProcessor(self._cookiejar))
         self._form_params = None
@@ -117,7 +117,7 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
     
     _FILENAME_REGEX = [
         # We know this pattern is not unique to the 7900
-        re.compile(r'^SEP[\dA-F]{12}\.cnf\.xml$'),
+        re.compile(r'^SEP([\dA-F]{12})\.cnf\.xml$'),
         re.compile(r'^CTLSEP([\dA-F]{12})\.tlv$'),
         re.compile(r'^ITLSEP([\dA-F]{12})\.tlv$'),
         re.compile(r'^ITLFile\.tlv$'),
@@ -309,7 +309,7 @@ class BaseCiscoSccpPlugin(StandardPlugin):
     
     def configure(self, dev, config):
         filename = self._dev_specific_filename(dev)
-        tpl = self._tpl_helper.get_dev_template(filename, name)
+        tpl = self._tpl_helper.get_dev_template(filename, dev)
         
         # TODO check support for addons, and test what the addOnModules is
         #      really doing...
@@ -318,7 +318,7 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         config['XX_timezone'] = self._get_xx_timezone(config)
         
         path = os.path.join(self._tftpboot_dir, filename)
-        self._tpl_helper.dump(tpl, config, filename, self._ENCODING)
+        self._tpl_helper.dump(tpl, config, path, self._ENCODING)
     
     def deconfigure(self, dev):
         filename = self._dev_specific_filename(dev)

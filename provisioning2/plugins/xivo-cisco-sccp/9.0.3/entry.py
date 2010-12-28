@@ -5,7 +5,7 @@
 """
 
 common_globals = {}
-_execfile('common.py', common_globals)
+execfile_('common.py', common_globals)
 
 
 VENDOR = 'Cisco'

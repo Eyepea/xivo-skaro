@@ -23,11 +23,13 @@ __license__ = """
 import ConfigParser
 import contextlib
 import os
-import urlparse
 import shutil
 import tarfile
+import weakref
 from prov2 import progressop
 from prov2.servers.tftp.service import TFTPFileService
+from prov2.services import AttrConfigureServiceParam, BaseConfigureService,\
+    IInstallService
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
 from twisted.web.static import File
@@ -44,129 +46,6 @@ from zope.interface import Attribute, Interface, implements
 # TODO take proxy into account for downloading
 # TODO support plugin package signing... this will be important for safety
 #      since plugin aren't sandboxed
-
-# Standardized service defintion
-
-class IInstallService(Interface):
-    """Interface for an install service.
-    
-    These services are identified by the string "install".
-    
-    It offers a download/install/uninstall service, where files can be
-    downloaded and manipulated in a way they can be used by the plugin to
-    offer extra functionalities.
-    
-    This service is useful/necessary if some files that a plugin use
-    can't be bundled with it because it doesn't have the right to distribute
-    these files, or because they are optional and the plugin want to
-    let the choice to the user.
-    
-    """
-    def install(pkg_id):
-        """Install a package.
-        
-        The package SHOULD be reinstalled even if it seemed to be installed.
-        
-        Return an object providing the IProgressOperation interface.
-        
-        Raise an Exception if there's already an install operation in progress
-        for the package.
-        
-        Raise an Exception if pkg_id is unknown.
-        
-        """
-    
-    def uninstall(pkg_id):
-        """Uninstall a package.
-        
-        Raise an Exception if pkg_id is unknown.
-        
-        """
-    
-    def list_installable():
-        """Return a list of the packages that are installable.
-        
-        Each item in the list is a dictionary with the following keys:    
-          id -- the identifier of the package
-        
-        The following keys are optional:
-          dsize -- the download size of the package, in bytes
-          isize -- the installed size of the package, in bytes
-        
-        """
-    
-    def list_installed():
-        """Return a list of the packages that are installed.
-        
-        Each item in the list is a dictionary with the following keys:
-          id -- the identifier of the package
-        
-        """
-
-
-class InvalidParameterError(Exception):
-    pass
-
-
-class IConfigureService(Interface):
-    """Interface for a simple configuration service.
-    
-    These services are identified with the string "configure".
-    
-    These services are similar to key-value store, where you can set a value
-    for...
-    
-    The keys used MUST be strings.
-    
-    """
-    def get(key):
-        """Return the value associated with a key.
-        
-        The object returned might not be a string, but it MUST have the
-        following property:
-          str_val1 = str(self.get(key))
-          self.set(key, str_val1)
-          str_val2 = str(self.get(key))
-          str_val1 == str_val2
-        with str_val1 (and str_val2) being meaningful value for the parameter.
-        
-        If there's no value associated with key, return None. This means the
-        None value can't be associated with a key.
-        
-        Raise a KeyError if key is not a known valid key. 
-        
-        """
-
-    def set(key, value):
-        """Associate a value with a key.
-        
-        The object MUST be ready to accept value as a string, although it
-        MAY change this value to a different representation. Once this
-        value is set, the property of the get method must be respected.
-        
-        If value is None, this is equivalent to 'deleting' the value. This
-        means None has a special meaning and can't be used a value.
-        
-        Raise an InvalidParameterError if the value for this key is not
-        valid/acceptable.
-        
-        Raise a KeyError if key is not a known valid key.
-        
-        """
-    
-    def description():
-        """Return a dictionary where keys are the key that can be set, and
-        values are a short description of the key, and the possible value.
-        
-        """
-
-
-class IUnknownService(Interface):
-    """Interface for non-normalized service."""
-    
-    def do(value):
-        """Do something and return a string from a string."""
-
 
 # 'Non-instantaneous' operation interface
 # XXX name is not really good... and in fact, since it's close to a deferred,
@@ -528,11 +407,11 @@ class TemplatePluginHelper(object):
         if 'model' in dev:
             model = dev['model']
             try:
-                return self._tpl_helper.get_template(model + '.tpl')
+                return self._env.get_template(model + '.tpl')
             except TemplateNotFound:
                 pass
         # get base template
-        return self._tpl_helper.get_template('base.tpl')
+        return self._env.get_template('base.tpl')
     
     def get_template(self, name):
         return self._env.get_template(name)
@@ -708,45 +587,6 @@ class FetchfwPluginHelper(object):
         return {'install': self}
 
 
-class _PluginManagerConfigureService(object):
-    """Configure service for the plugin manager.
-    
-    server -- a partial URL of the server where to download plugins and
-      plugins definition (string)
-    
-    """
-    implements(IConfigureService)
-    
-    # TODO complete, this is just a mockup
-    # TODO we should extract what's common between all ConfigureService... but
-    #      then we should implement another ConfigureService first...
-    def __init__(self, dict={}):
-        self._dict = {'server': None}
-        for k, v in dict.iteritems():
-            self._dict[k] = v
-    
-    def _process_server(self, value):
-        if value is None:
-            return None
-        o = urlparse.urlparse(value)
-        if o.scheme != 'http' or not o.netloc:
-            raise InvalidParameterError("invalid 'server' value: '%s'" % value)
-        return value
-    
-    def get(self, key):
-        return self._dict[key]
-    
-    def set(self, key, value):
-        if key not in self._dict:
-            raise KeyError('unknown key')
-        if key == 'server':
-            value = self._process_server(value)
-        self._dict[key] = value
-    
-    def description(self):
-        return {"server": "The base address of the plugins repository"}
-
-
 class StaticProgressingOperation(object):
     def __init__(self, deferred, status):
         self.deferred = deferred
@@ -772,10 +612,41 @@ class _InstallProxyProgressingOperation(object):
             return self._pop.status
         return self._status
 
+
+class IPluginManagerObserver(object):
+    """Interface that objects which want to be notified of plugin
+    loading/unloading MUST provide.
+    
+    """
+    def pg_load(pg_id):
+        pass
+    
+    def pg_unload(pg_id):
+        pass
+
+
+class BasePluginManagerObserver(object):
+    def __init__(self, pg_load=None, pg_unload=None):
+        self._pg_load = pg_load
+        self._pg_unload = pg_unload
+    
+    def pg_load(self, pg_id):
+        if self._pg_load is not None:
+            self._pg_load(pg_id)
+    
+    def pg_unload(self, pg_id):
+        if self._pg_unload is not None:
+            self._pg_unload(pg_id)
+
+
 # XXX we could use 'id' instead of 'name' since we are using 'id' at the other
 #     places
 class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
+    
+    PgMgr objects have a 'server' attribute which represent the base address
+    of the plugins repository (ex.: http://www.example.com/prov2/stable). It
+    can be set to None if no server is specified.
     
     A 'plugin info' object is a mapping object with the following keys:
       name -- the plugin name
@@ -799,32 +670,35 @@ class PluginManager(object):
     _INFO_FILENAME = 'plugin-info'
     """The name of the plugin information file."""
     
-    def __init__(self, app, plugins_dir, cache_dir, params={}):
+    def __init__(self, app, plugins_dir, cache_dir):
         """
         app -- an application object
         plugins_dir -- the directory where plugins are installed
         cache_dir -- a directory where plugin-package are downloaded, or None
           if no cache is to be used
-        params -- a dictionary holding the 
         
         """
         self._app = app
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
-        self._configure_service = _PluginManagerConfigureService(params)
-        self._plugins = {}
+        # XXX move the cfg_service stuff out of the PgMgr ?
+        server_p = AttrConfigureServiceParam(self, 'server',
+                                             'The base address of the plugins repository')
+        self._cfg_service = BaseConfigureService({'server': server_p})
         self._in_update = False
         self._in_install_set = set()
-        
+        self._observers = weakref.WeakKeyDictionary()
+        self._plugins = {}
+        self.server = None
+    
     def close(self):
         """Close the plugin manager.
         
         This will unload any loaded plugin.
         
         """
-        for plugin in self._plugins.itervalues():
-            plugin.close()
-        self._plugins.clear()
+        for name in self._plugins:
+            self._unload_and_notify(name)
     
     def configure_service(self):
         """Return an object providing the IConfigureService interface.
@@ -833,15 +707,15 @@ class PluginManager(object):
         object.
         
         """
-        return self._configure_service
+        return self._cfg_service
     
     def _def_pathname(self):
         return os.path.join(self._plugins_dir, self._DEF_FILENAME)
 
     def _join_server_url(self, p):
-        server = self._configure_service.get('server')
+        server = self._server
         if server is None:
-            raise InvalidParameterError("no 'server' param available")
+            raise ValueError("'server' has no value set")
         else:
             if server.endswith('/'):
                 return server + p
@@ -870,7 +744,7 @@ class PluginManager(object):
         try:
             pop = progressop.request(url, fdst)
         except Exception:
-            raise InvalidParameterError("probably invalid 'server' param")
+            raise ValueError("invalid 'server' value")
             fdst.close()
             os.remove(tmp_filename)
         else:
@@ -992,7 +866,7 @@ class PluginManager(object):
         try:
             pop = progressop.request(url, fdst)
         except Exception:
-            raise InvalidParameterError("probably invalid 'server' param")
+            raise ValueError("invalid 'server' value")
             fdst.close()
             os.remove(tmp_pathname)
         else:
@@ -1135,6 +1009,40 @@ class PluginManager(object):
         self._add_execfile(pg_globals, plugin_dir)
         execfile(entry_file, pg_globals)
     
+    def attach(self, observer):
+        """Attach an IPluginManagerObserver object to this plugin manager.
+        
+        Note that since observers are weakly referenced, you MUST keep a
+        reference to each one somewhere in the application if you want them
+        not to be immediatly garbage collected.
+        
+        """
+        if observer not in self._observers:
+            self._observers[observer] = None
+    
+    def detach(self, observer):
+        """Detach an IPluginManagerObserver object to this plugin manager."""
+        try:
+            del self._observers[observer]
+        except KeyError:
+            pass
+    
+    def _notify(self, pg_id, action):
+        # action is either 'load' or 'unload'
+        for ob in self._observers.keys():
+            fun = getattr(ob, 'pg_' + action)
+            fun(pg_id)
+    
+    def _load_and_notify(self, name, plugin):
+        self._plugins[name] = plugin
+        self._notify(name, 'load')
+    
+    def _unload_and_notify(self, name):
+        plugin = self._plugins[name]
+        plugin.close()
+        del self._plugins[name]
+        self._notify(name, 'unload')
+    
     def load(self, name, gen_cfg={}, spec_cfg={}):
         """Load a plugin.
         
@@ -1164,7 +1072,7 @@ class PluginManager(object):
                 getattr(el, 'IS_PLUGIN')):
                     plugin = el(self._app, plugin_dir, gen_cfg, spec_cfg)
                     plugin.name = name
-                    self._plugins[name] = plugin
+                    self._load_and_notify(name, plugin)
                     return
         else:
             raise Exception("pg '%s': no plugin class found in file" % name)
@@ -1175,9 +1083,7 @@ class PluginManager(object):
         Raise an Exception if the plugin is not loaded.
         
         """
-        plugin = self._plugins[name]
-        plugin.close()
-        del self._plugins[name]
+        self._unload_and_notify(name)
 
     def load_all(self, gen_cfg={}, spec_cfg_map={}):
         """Load all the installed plugins.

@@ -65,7 +65,7 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.0.1.2024-SIP"
         #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
-        tokens = user_agent.split()
+        tokens = ua.split()
         if len(tokens) == 3:
             model_raw, mac_raw, version_raw = tokens
             model = self._parse_model(model_raw)
@@ -196,6 +196,8 @@ class BaseAastraPlugin(StandardPlugin):
     
     @classmethod
     def _format_function_keys(cls, funckey, model):
+        if model is None:
+            return ''
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
@@ -252,7 +254,7 @@ class BaseAastraPlugin(StandardPlugin):
             lines.extend(cls._format_dst_change('end', inform['dst']['end']))
         return '\n'.join(lines)
     
-    def _get_xx_fkeys(self, config):
+    def _get_xx_fkeys(self, config, model):
         if 'funckey' in config:
             return self._format_function_keys(config['funckey'], model)
         else:
@@ -284,7 +286,7 @@ class BaseAastraPlugin(StandardPlugin):
         filename = self._dev_specific_filename(dev)
         tpl = self._tpl_helper.get_dev_template(filename, dev)
         
-        config['XX_fkeys'] = self._get_xx_fkeys(config)
+        config['XX_fkeys'] = self._get_xx_fkeys(config, dev.get('model'))
         config['XX_timezone'] = self._get_xx_timezone(config)
         config['XX_dict'] = self._get_xx_dict(config)
         

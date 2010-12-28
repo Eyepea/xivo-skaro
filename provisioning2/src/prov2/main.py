@@ -86,7 +86,8 @@ def _read_config(filename):
             in_result[option] = config.get(section, option)
     
     # check if every mandatory options are specified
-    mandatory = {'pg_mgr': ['server']}
+    #mandatory = {'pg_mgr': ['server']}
+    mandatory = {}
     for section in mandatory:
         if section not in result:
             raise ValueError('mandatory section "%s" not specified' % section)
@@ -122,8 +123,9 @@ class Application(object):
         self.cfg_mgr = ConfigManager()
         self.pg_mgr = PluginManager(self,
                                     config['pg_mgr']['plugins_dir'],
-                                    config['pg_mgr']['cache_dir'],
-                                    {'server': config['pg_mgr']['server']})
+                                    config['pg_mgr']['cache_dir'])
+        if 'server' in config['pg_mgr']:
+            self.pg_mgr.server = config['pg_mgr']['server']
         self._config = config
         self._dev_id_gen = NumericIdGenerator()
         self._cfg_id_gen = NumericIdGenerator()
@@ -616,8 +618,9 @@ class MyWeirdDeviceUpdater():
                 return False
         return False
 weird_updater = MyWeirdDeviceUpdater()
+add_info_updater = AddInfoDeviceUpdater()
 every_updater = EverythingDeviceUpdater()
-cmpz_updater = CompositeDeviceUpdater([guest_cfg_updater, pg_updater])
+cmpz_updater = CompositeDeviceUpdater([add_info_updater, guest_cfg_updater, pg_updater])
 root_updater = cmpz_updater
 
 pg_router = PluginDeviceRouter()

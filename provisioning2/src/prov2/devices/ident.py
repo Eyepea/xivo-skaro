@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 """Request processing service definition."""
+from prov2.plugins import BasePluginManagerObserver
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -303,16 +304,27 @@ class PluginDeviceInfoExtractor(object):
     def __init__(self, pg_id, pg_mgr):
         self._pg_id = pg_id
         self._pg_mgr = pg_mgr
-        
-    def extract(self, request, request_type):
-        # XXX could be more efficient if we could be notified of plugin changes
+        self._set_pg()
+        # observe plugin loading/unloading
+        obs = BasePluginManagerObserver(self._set_pg, self._set_pg)
+        pg_mgr.attach(obs)
+    
+    def _set_pg(self, *args):
         if self._pg_id in self._pg_mgr:
-            pg = self._pg_mgr[self._pg_id]
+            self._pg = self._pg_mgr[self._pg_id]
+        else:
+            self._pg = None
+    
+    def extract(self, request, request_type):
+        if self._plugin is None:
+            return defer.succeed(None)
+        else:
             if request_type == 'http':
-                return pg.http_dev_info_extractor.extract(request, request_type)
-            elif request_type == 'tftp':
-                return pg.tftp_dev_info_extractor.extract(request, request_type)
-        return defer.succeed(None)
+                xtor = self._pg.http_dev_info_extractor
+            else:
+                assert request_type == 'tftp'
+                xtor = self._pg.tftp_dev_info_extractor
+            return xtor.extract(request, request_type)
 
 
 class AllPluginsDeviceInfoExtractor(object):
@@ -325,26 +337,39 @@ class AllPluginsDeviceInfoExtractor(object):
         """
         self.extractor_factory = extractor_factory
         self._pg_mgr = pg_mgr
+        self._set_http_xtor()
+        self._set_tftp_xtor()
+        # observe plugin loading/unloading
+        obs = BasePluginManagerObserver(self._set_xtors, self._set_xtors)
+        pg_mgr.attach(obs)
+    
+    def _set_xtors(self):
+        self._set_http_xtor()
+        self._set_tftp_xtor()
+    
+    def _set_http_xtor(self):
+        pg_extractors = []
+        for pg in self._pg_mgr.itervalues():
+            pg_extractor = pg.http_dev_info_extractor
+            if pg_extractor is not None:
+                pg_extractors.append(pg_extractor)
+        self._http_xtor = self.extractor_factory(pg_extractors)
+    
+    def _set_tftp_xtor(self):
+        pg_extractors = []
+        for pg in self._pg_mgr.itervalues():
+            pg_extractor = pg.tftp_dev_info_extractor
+            if pg_extractor is not None:
+                pg_extractors.append(pg_extractor)
+        self._tftp_xtor = self.extractor_factory(pg_extractors)
     
     def extract(self, request, request_type):
-        # XXX could be more efficient if we could be notified of plugin changes
         if request_type == 'http':
-            pg_extractors = []
-            for pg in self._pg_mgr.itervalues():
-                pg_extractor = pg.http_dev_info_extractor
-                if pg_extractor is not None:
-                    pg_extractors.append(pg_extractor)
-            extractor = self.extractor_factory(pg_extractors)
-            return extractor.extract(request, request_type)
-        elif request_type == 'tftp':
-            pg_extractors = []
-            for pg in self._pg_mgr.itervalues():
-                pg_extractor = pg.tftp_dev_info_extractor
-                if pg_extractor is not None:
-                    pg_extractors.append(pg_extractor)
-            extractor = self.extractor_factory(pg_extractors)
-            return extractor.extract(request, request_type)
-        return defer.succeed(None)
+            xtor = self._http_xtor
+        else:
+            assert request_type == 'tftp'
+            xtor = self._tftp_xtor
+        return xtor.extract(request, request_type)
 
 
 # do we want to receive an app object or should object store it locally ?
@@ -504,6 +529,23 @@ class StaticDeviceUpdater(object):
         return False
 
 
+class AddInfoDeviceUpdater(object):
+    """Device updater that add any missing information to the device from
+    the device info.
+    
+    """
+    
+    implements(IDeviceUpdater)
+    
+    def update(self, dev, dev_info, request, request_type):
+        updated = False
+        for key in dev_info:
+            if key not in dev:
+                dev[key] = dev_info[key]
+                updated = True
+        return updated
+
+
 class EverythingDeviceUpdater(object):
     """Device updater that updates everything.
     
@@ -521,6 +563,18 @@ class EverythingDeviceUpdater(object):
         dev.clear()
         dev.update(dev_info)
         return True     # in fact, its possible that dev_info didn't change
+
+
+class IpDeviceUpdater(object):
+    """Device updater that updates the IP address."""
+    
+    implements(IDeviceUpdater)
+    
+    def update(self, dev, dev_info, request, request_type):
+        if dev['ip'] != dev_info['ip']:
+            dev['ip'] = dev_info['ip']
+            return True
+        return False
 
 
 class VersionDeviceUpdater(object):

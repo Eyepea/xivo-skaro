@@ -28,7 +28,7 @@ from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web import http
 from prov2.devices.util import NumericIdGenerator
-from prov2.plugins import InvalidParameterError
+from prov2.services import InvalidParameterError
 from prov2.rest.util import *
 
 # TODO input checking
