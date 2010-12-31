@@ -30,41 +30,11 @@ Config asterisk: persistentagents
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
 
-; fm_agentoptions_musiconhold
-Musique d'attente:
-
-; fm_agentoptions_ackcall-opt(no)
-Non
-
-; fm_agentoptions_ackcall-opt(yes)
-Oui
-
-; fm_agentoptions_ackcall-opt(always)
-Toujours
-
 ; fm_agentoptions_endcall
 Activer la possibilité de raccrocher avec un DTMF :
 
-; fm_agentoptions_autologoff
-Temps de sonnerie avant déconnexion :
-
-; fm_agentoptions_autologoff-opt(0)
-Illimité
-
-; fm_agentoptions_autologoff-opt
-%s secondes
-
 ; fm_agentoptions_autologoffunavail
 Déconnexion automatique si le canal est indisponible :
-
-; fm_agentoptions_wrapuptime
-Délai de réattribution d'appel :
-
-; fm_agentoptions_wrapuptime-opt(0)
-Désactivé
-
-; fm_agentoptions_wrapuptime-opt-seconds
-%s secondes
 
 ; fm_agentoptions_maxlogintries
 Nombre de tentatives de connexion :
@@ -99,44 +69,17 @@ Fichier son de fin d'un appel :
 ; fm_agentoptions_goodbye-opt(default)
 Défaut
 
-; fm_agentoptions_ackcall
-Requérir un DTMF avant de prendre un appel :
-
-; fm_agentoptions_enddtmf
-DTMF requis : 
-
-; fm_agentoptions_acceptdtmf
-DTMF requis : 
-
 ; fm_agentoptions_savecallsin
 Répertoire contenant les enregistrements des conversations : 
 
 ; hlp_fm_agentoptions_maxlogintries
 Config asterisk: maxlogintries
 
-; hlp_fm_agentoptions_autologoff
-Config asterisk: autologoff
-
 ; hlp_fm_agentoptions_autologoffunavail
 Config asterisk: autologoffunavail
 
-; hlp_fm_agentoptions_ackcall
-Config asterisk: ackcall
-
-; hlp_fm_agentoptions_acceptdtmf
-Config asterisk: acceptdtmf
-
 ; hlp_fm_agentoptions_endcall
 Config asterisk: endcall
-
-; hlp_fm_agentoptions_enddtmf
-Config asterisk: enddtmf
-
-; hlp_fm_agentoptions_warpuptime
-Config asterisk: warpuptime
-
-; hlp_fm_agentoptions_musiconhold
-Config asterisk: musiconhold
 
 ; hlp_fm_agentoptions_goodbye
 Config asterisk: goodbye

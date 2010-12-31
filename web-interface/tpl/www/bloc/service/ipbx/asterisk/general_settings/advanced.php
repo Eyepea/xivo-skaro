@@ -145,38 +145,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'generalagents-multiplelogin',
 				      'default'	=> $element['generalagents']['multiplelogin']['default'],
 				      'help'	=> $this->bbf('hlp_fm_generalagents_multiplelogin'),
-							'checked'	=> $this->get_var('generalagents','multiplelogin','var_val')));
-
-		// agents options
-		if(($moh_list = $this->get_var('moh_list')) !== false):
-			echo	$form->select(array('desc'	=> $this->bbf('fm_agentoptions_musiconhold'),
-					    'name'	=> 'agentoptions[musiconhold]',
-					    'labelid'	=> 'agentoptions-musiconhold',
-					    'key'	=> 'category',
-					    'default'	=> $element['agentoptions']['musiconhold']['default'],
-					    'selected'	=> $info['agentoptions']['musiconhold']['var_val']),
-				      $moh_list);
-		endif;
-
-		echo $form->select(array('desc'	=> $this->bbf('fm_agentoptions_ackcall'),
-				    'name'	=> 'agentoptions[ackcall]',
-				    'labelid'	=> 'agentoptions-ackcall',
-				    'key'	=> false,
-				    'help'	=> $this->bbf('hlp_fm_agentoptions_ackcall'),
-				    'bbf'	=> 'fm_agentoptions_ackcall-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['agentoptions']['ackcall']['default'],
-				    'selected'	=> $info['agentoptions']['ackcall']['var_val']),
-			      $element['agentoptions']['ackcall']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_acceptdtmf'),
-				    'name'	=> 'agentoptions[acceptdtmf]',
-				    'labelid'	=> 'agentoptions-acceptdtmf',
-				    'key'	=> false,
-				    'help'	=> $this->bbf('hlp_fm_agentoptions_acceptdtmf'),
-				    'default'	=> $element['agentoptions']['acceptdtmf']['default'],
-				    'selected'	=> $info['agentoptions']['acceptdtmf']['var_val']),
-			      $element['agentoptions']['acceptdtmf']['value']),
+							'checked'	=> $this->get_var('generalagents','multiplelogin','var_val'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_endcall'),
 				      'name'	=> 'agentoptions[endcall]',
@@ -185,46 +154,12 @@ if(isset($error_js[0]) === true)
 				      'default'	=> $element['agentoptions']['endcall']['default'],
 				      'checked' => $info['agentoptions']['endcall']['var_val'])),
 
-		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_enddtmf'),
-				    'name'	=> 'agentoptions[enddtmf]',
-				    'labelid'	=> 'agentoptions-enddtmf',
-				    'key'	=> false,
-				    'help'	=> $this->bbf('hlp_fm_agentoptions_enddtmf'),
-				    'default'	=> $element['agentoptions']['enddtmf']['default'],
-				    'selected'	=> $info['agentoptions']['enddtmf']['var_val']),
-			      $element['agentoptions']['enddtmf']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_autologoff'),
-				    'name'	=> 'agentoptions[autologoff]',
-				    'labelid'	=> 'agentoptions-autologoff',
-				    'key'	=> false,
-				    'help'	=> $this->bbf('hlp_fm_agentoptions_autologoff'),
-				    'bbf'	=> 'fm_agentoptions_autologoff-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['agentoptions']['autologoff']['default'],
-				    'selected'	=> $info['agentoptions']['autologoff']['var_val']),
-			      $element['agentoptions']['autologoff']['value']),
-
 		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_autologoffunavail'),
 				      'name'	=> 'agentoptions[autologoffunavail]',
 				      'labelid'	=> 'agentoptions-autologoffunavail',
 					    'help'	=> $this->bbf('hlp_fm_agentoptions_autologoffunavail'),
 				      'default'	=> $element['agentoptions']['autologoffunavail']['default'],
 				      'checked' => $info['agentoptions']['autologoffunavail']['var_val'])),
-
-		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_wrapuptime'),
-				    'name'	=> 'agentoptions[wrapuptime]',
-				    'labelid'	=> 'agentoptions-wrapuptime',
-				    'key'	=> false,
-				    'help'	=> $this->bbf('hlp_fm_agentoptions_warpuptime'),
-				    'bbf'	=> 'time-opt',
-				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
-							 'time'		=> array(
-									'from'		=> 'millisecond',
-									'format'	=> '%s')),
-				    'selected'	=> $info['agentoptions']['wrapuptime']['var_val'],
-				    'default'	=> $element['agentoptions']['wrapuptime']['default']),
-			      $element['agentoptions']['wrapuptime']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_maxlogintries'),
 				    'name'	=> 'agentoptions[maxlogintries]',

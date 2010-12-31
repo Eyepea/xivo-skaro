@@ -291,7 +291,71 @@ endif;
 				      'name'	=> 'agentfeatures[silent]',
 				      'labelid'	=> 'agentfeatures-silent',
 				      'default'	=> $element['agentfeatures']['silent']['default'],
-				      'checked'	=> $info['agentfeatures']['silent']));
+							'checked'	=> $info['agentfeatures']['silent']));
+
+		if(($moh_list = $this->get_var('moh_list')) !== false):
+			echo	$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_musiconhold'),
+					    'name'	=> 'agentfeatures[musiconhold]',
+					    'labelid'	=> 'agentfeatures-musiconhold',
+					    'key'	=> 'category',
+					    'default'	=> $element['agentfeatures']['musiconhold']['default'],
+					    'selected'	=> $info['agentfeatures']['musiconhold']['var_val']),
+				      $moh_list);
+		endif;
+
+		echo $form->select(array('desc'	=> $this->bbf('fm_agentfeatures_ackcall'),
+				    'name'	=> 'agentfeatures[ackcall]',
+				    'labelid'	=> 'agentfeatures-ackcall',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentfeatures_ackcall'),
+				    'bbf'	=> 'fm_agentfeatures_ackcall-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['agentfeatures']['ackcall']['default'],
+				    'selected'	=> $info['agentfeatures']['ackcall']['var_val']),
+			      $element['agentfeatures']['ackcall']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_acceptdtmf'),
+				    'name'	=> 'agentfeatures[acceptdtmf]',
+				    'labelid'	=> 'agentfeatures-acceptdtmf',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentfeatures_acceptdtmf'),
+				    'default'	=> $element['agentfeatures']['acceptdtmf']['default'],
+				    'selected'	=> $info['agentfeatures']['acceptdtmf']['var_val']),
+			      $element['agentfeatures']['acceptdtmf']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_enddtmf'),
+				    'name'	=> 'agentfeatures[enddtmf]',
+				    'labelid'	=> 'agentfeatures-enddtmf',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentfeatures_enddtmf'),
+				    'default'	=> $element['agentfeatures']['enddtmf']['default'],
+				    'selected'	=> $info['agentfeatures']['enddtmf']['var_val']),
+			      $element['agentfeatures']['enddtmf']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_autologoff'),
+				    'name'	=> 'agentfeatures[autologoff]',
+				    'labelid'	=> 'agentfeatures-autologoff',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentfeatures_autologoff'),
+				    'bbf'	=> 'fm_agentfeatures_autologoff-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['agentfeatures']['autologoff']['default'],
+				    'selected'	=> $info['agentfeatures']['autologoff']['var_val']),
+			      $element['agentfeatures']['autologoff']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_wrapuptime'),
+				    'name'	=> 'agentfeatures[wrapuptime]',
+				    'labelid'	=> 'agentfeatures-wrapuptime',
+				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_agentfeatures_warpuptime'),
+				    'bbf'	=> 'time-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%s')),
+				    'selected'	=> $info['agentfeatures']['wrapuptime']['var_val'],
+				    'default'	=> $element['agentfeatures']['wrapuptime']['default']),
+			      $element['agentfeatures']['wrapuptime']['value']);
 
 ?>
 	<div class="fm-paragraph fm-description">

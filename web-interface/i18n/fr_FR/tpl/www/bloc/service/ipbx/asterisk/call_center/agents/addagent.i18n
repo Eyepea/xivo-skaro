@@ -92,3 +92,60 @@ Le poids saisi n'est pas un nombre entier
 ; error_fm_queueskill_weight(unbound)
 Le poids doit être un nombre entier compris entre 0 et 100
 
+; fm_agentfeatures_musiconhold
+Musique d'attente:
+
+; fm_agentfeatures_ackcall-opt(no)
+Non
+
+; fm_agentfeatures_ackcall-opt(yes)
+Oui
+
+; fm_agentfeatures_ackcall-opt(always)
+Toujours
+
+; fm_agentfeatures_autologoff
+Temps de sonnerie avant déconnexion :
+
+; fm_agentfeatures_autologoff-opt(0)
+Illimité
+
+; fm_agentfeatures_autologoff-opt
+%s secondes
+
+; fm_agentfeatures_wrapuptime
+Délai de réattribution d'appel :
+
+; fm_agentfeatures_wrapuptime-opt(0)
+Désactivé
+
+; fm_agentfeatures_wrapuptime-opt-seconds
+%s secondes
+
+; fm_agentfeatures_ackcall
+Requérir un DTMF avant de prendre un appel :
+
+; fm_agentfeatures_enddtmf
+DTMF requis : 
+
+; fm_agentfeatures_acceptdtmf
+DTMF requis : 
+
+; hlp_fm_agentfeatures_autologoff
+Config asterisk: autologoff
+
+; hlp_fm_agentfeatures_ackcall
+Config asterisk: ackcall
+
+; hlp_fm_agentfeatures_acceptdtmf
+Config asterisk: acceptdtmf
+
+; hlp_fm_agentfeatures_enddtmf
+Config asterisk: enddtmf
+
+; hlp_fm_agentfeatures_warpuptime
+Config asterisk: warpuptime
+
+; hlp_fm_agentfeatures_musiconhold
+Config asterisk: musiconhold
+

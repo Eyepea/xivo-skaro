@@ -22,41 +22,15 @@ $array = array();
 
 $array['element'] = array();
 
-$array['element']['ackcall'] = array();
-$array['element']['ackcall']['value'] = array('no','yes','always');
-$array['element']['ackcall']['default'] = 'no';
-
-$array['element']['acceptdtmf'] = array();
-$array['element']['acceptdtmf']['value'] = array('0','1','2','3','4','5','6','7','8','9','*','#');
-$array['element']['acceptdtmf']['default'] = '#';
-$array['element']['acceptdtmf']['null'] = true;
-
 $array['element']['endcall'] = array();
 $array['element']['endcall']['value'] = array('no','yes');
 $array['element']['endcall']['default'] = 'yes';
 $array['element']['endcall']['set'] = true;
 
-$array['element']['enddtmf'] = array();
-$array['element']['enddtmf']['value'] = array('0','1','2','3','4','5','6','7','8','9','*','#');
-$array['element']['enddtmf']['default'] = '#';
-$array['element']['enddtmf']['null'] = true;
-
-$array['element']['autologoff'] = array();
-$array['element']['autologoff']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
-$array['element']['autologoff']['default'] = 0;
-$array['element']['autologoff']['setdef'] = true;
-
 $array['element']['autologoffunavail'] = array();
 $array['element']['autologoffunavail']['value'] = array('no','yes');
 $array['element']['autologoffunavail']['default'] = 'no';
 $array['element']['autologoffunavail']['set'] = true;
-
-$array['element']['wrapuptime'] = array();
-$array['element']['wrapuptime']['value'] = array(0,5000,10000,15000,20000,
-						 25000,30000,35000,40000,
-						 45000,50000,55000,60000);
-$array['element']['wrapuptime']['default'] = 0;
-$array['element']['wrapuptime']['setdef'] = true;
 
 $array['element']['maxlogintries'] = array();
 $array['element']['maxlogintries']['value'] = range(0,10);
@@ -66,9 +40,6 @@ $array['element']['maxlogintries']['setdef'] = true;
 $array['element']['goodbye'] = array();
 $array['element']['goodbye']['default'] = 'vm-goodbye';
 $array['element']['goodbye']['setdef'] = true;
-
-$array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
 
 $array['element']['updatecdr'] = array();
 $array['element']['updatecdr']['value'] = array('no','yes');
@@ -98,25 +69,13 @@ $array['element']['custom_beep']['default'] = 'beep';
 $array['element']['custom_beep']['setdef'] = true;
 
 $array['filter'] = array();
-$array['filter']['ackcall'] = array('key' => array('no','yes','always'));
-$array['filter']['acceptdtmf'] = array('set' => false,
-					'chk'    => 2,
-					'key'    => array('0','1','2','3','4','5','6','7','8','9','*','#'));
 $array['filter']['endcall'] = array('bool' => true);
-$array['filter']['enddtmf'] = array('set' => false,
-					'chk'    => 2,
-					'key'    => array('0','1','2','3','4','5','6','7','8','9','*','#'));
-$array['filter']['autologoff'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['autologoffunavail'] = array('bool' => true);
-$array['filter']['wrapuptime'] = array('key' => array(0,5000,10000,15000,20000,
-						      25000,30000,35000,40000,
-						      45000,50000,55000,60000));
 $array['filter']['maxlogintries'] = array('cast' => 'uint','between' => array(0,10));
 $array['filter']['goodbye'] = array('set'	=> false,
 				    'chk'	=> 2,
 				    'maxlen'	=> 255,
 				    'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.'$/');
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['updatecdr'] = array('bool' => true);
 $array['filter']['recordagentcalls'] = array('bool' => true);
 $array['filter']['recordformat'] = array('set'	=> false,
