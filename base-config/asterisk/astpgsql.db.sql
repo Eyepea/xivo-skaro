@@ -50,6 +50,9 @@ CREATE UNIQUE INDEX "accessfeatures__uidx__host_feature" ON "accessfeatures"("ho
 
 
 DROP TABLE IF EXISTS "agentfeatures";
+DROP TYPE  IF EXISTS "agentfeatures_ackcall";
+
+CREATE TYPE agentfeatures_ackcall AS ENUM ('no','yes','always');
 CREATE TABLE "agentfeatures" (
  "id" SERIAL,
  "agentid" INTEGER NOT NULL,
@@ -61,6 +64,15 @@ CREATE TABLE "agentfeatures" (
  "context" varchar(39) NOT NULL,
  "language" varchar(20) NOT NULL,
  "silent" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ -- features
+ "autologoff" INTEGER DEFAULT NULL,
+ "ackcall"    agentfeatures_ackcall NOT NULL DEFAULT 'no',
+ "acceptdtmf" VARCHAR(1) NOT NULL DEFAULT '#',
+ "enddtmf"    VARCHAR(1) NOT NULL DEFAULT '*',
+ "wrapuptime" INTEGER DEFAULT NULL,
+ "musiconhold" VARCHAR(80) DEFAULT NULL,
+ "group"      VARCHAR(255) DEFAULT NULL,
+
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")

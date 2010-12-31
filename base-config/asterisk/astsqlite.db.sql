@@ -45,6 +45,15 @@ CREATE TABLE agentfeatures (
  context varchar(39) NOT NULL,
  language varchar(20) NOT NULL,
  silent tinyint(1) NOT NULL DEFAULT 0,
+ -- features
+ "autologoff" INTEGER DEFAULT NULL,
+ "ackcall"    VARCHAR(6) NOT NULL DEFAULT 'no',
+ "acceptdtmf" VARCHAR(1) NOT NULL DEFAULT '#',
+ "enddtmf"    VARCHAR(1) NOT NULL DEFAULT '*',
+ "wrapuptime" INTEGER DEFAULT NULL,
+ "musiconhold" VARCHAR(80) DEFAULT NULL,
+ "group"      VARCHAR(255) DEFAULT NULL,
+
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
