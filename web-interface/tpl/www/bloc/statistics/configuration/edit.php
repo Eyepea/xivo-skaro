@@ -27,63 +27,16 @@ $form = &$this->get_module('form');
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
+<?php $this->file_include('bloc/statistics/configuration/submenu'); ?>	
 
-	<div class="sb-smenu">
-		<ul>
-			<li id="dwsm-tab-1"
-			    class="dwsm-blur"
-			    onclick="dwho_submenu.select(this,'sb-part-first');"
-			    onmouseout="dwho_submenu.blur(this);"
-			    onmouseover="dwho_submenu.focus(this);">
-				<div class="tab">
-					<span class="span-center"><a href="#first"><?=$this->bbf('smenu_general');?></a></span>
-				</div>
-				<span class="span-right">&nbsp;</span>
-			</li>
-			<li id="dwsm-tab-2"
-			    class="dwsm-blur"
-			    onclick="dwho_submenu.select(this,'sb-part-workweek');"
-			    onmouseout="dwho_submenu.blur(this);"
-			    onmouseover="dwho_submenu.focus(this);">
-				<div class="tab">
-					<span class="span-center"><a href="#workweek"><?=$this->bbf('smenu_workweek');?></a></span>
-				</div>
-				<span class="span-right">&nbsp;</span>
-			</li>
-			<li id="dwsm-tab-3"
-			    class="dwsm-blur-last"
-			    onclick="dwho_submenu.select(this,'sb-part-last',1);"
-			    onmouseout="dwho_submenu.blur(this,1);"
-			    onmouseover="dwho_submenu.focus(this,1);">
-				<div class="tab">
-					<span class="span-center"><a href="#last"><?=$this->bbf('smenu_queues');?></a></span>
-				</div>
-				<span class="span-right">&nbsp;</span>
-			</li>
-		</ul>
-	</div>
-	
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8">
-<?php
-		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
-					    'value'	=> DWHO_SESS_ID)),
-
-			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'edit')),
-
-			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1)),
-
-			$form->hidden(array('name'	=> 'id',
-					    'value'	=> $this->get_var('id')));
-
-		$this->file_include('bloc/statistics/configuration/form');
-
-		echo	$form->submit(array('name'	=> 'submit',
-					    'id'	=> 'it-submit',
-					    'value'	=> $this->bbf('fm_bt-save')));
-?>
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue');">
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
+<?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
+<?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
+<?php $this->file_include('bloc/statistics/configuration/form'); ?>
+<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 		</form>
 	</div>
 	<div class="sb-foot xspan">

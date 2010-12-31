@@ -69,6 +69,14 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 
 		return(parent::edit($id,$arr));
 	}
+	
+	function get_all_wherein($id,$where)
+	{
+		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
+			return(false);
+
+		return($list);
+	}
 
 	function get_all_except($id=0,$number=false,$order=null,$limit=null)
 	{

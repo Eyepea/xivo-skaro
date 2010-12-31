@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
-$basedir = '/img/graphs/pchart/';
+$array = array();
 
-if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
-	die('Can\'t load xivo_statistics object');
+$array['element'] = array();
 
-$xivo_statistics = new xivo_statistics();
+$array['element']['stats_conf_id'] = array();
+$array['element']['stats_conf_id']['default'] = 0;
 
-$_TPL->set_var('basedir',$basedir);
+$array['element']['queuefeatures_id'] = array();
+$array['element']['queuefeatures_id']['default'] = 0;
+
+
+$array['filter'] = array();
+$array['filter']['stats_conf_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
+$array['filter']['queuefeatures_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
 
 ?>

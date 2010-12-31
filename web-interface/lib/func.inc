@@ -945,6 +945,41 @@ function dwho_last_key(&$a,$sort=SORT_NUMERIC)
 	return(end($ak));
 }
 
+function dwho_sec_to_human($sec,$d=true,$h=true,$m=true,$s=false) {
+
+	$sec = dwho_calc_duration('','',$sec);
+
+	$res = '';
+	if($d === true
+	&& $sec['d'] != 0)
+		$res .= $sec['d'].'j ';
+	elseif(((bool) $d) === false
+	&& $sec['d'] != 0)
+	{
+		$sec['h'] = $sec['d']*24;
+	}
+		
+	if($h === true
+	&& $sec['h'] != 0)
+		$res .= $sec['h'].'h ';
+		
+	if($m === true
+	&& $sec['m'] != 0)
+		$res .= $sec['m'].'m ';
+		
+	if($s === true
+	&& $sec['s'] != 0)
+		$res .= round($sec['s'],0).'s';
+
+	if($sec['d'] == 0
+	&& $sec['h'] == 0
+	&& $sec['m'] == 0
+	&& $sec['s'] == 0)
+		$res = 0;
+
+	return($res);
+}
+
 function dwho_calc_time($from,$time,$format,$valzero=true)
 {
 	$valzero = (bool) $valzero;
@@ -1070,6 +1105,64 @@ function dwho_calc_duration($beg,$end,$diff=false,$unset=false)
 		unset($r['m']);
 
 	return($r);
+}
+
+function dwho_date_parse_from_format($stFormat, $stData)
+{
+    $aDataRet 			= array();
+    $aDataRet['day'] 	= 0;
+    $aDataRet['month'] 	= 0;
+    $aDataRet['year'] 	= 0;
+    $aDataRet['hour'] 	= 0;
+    $aDataRet['minute'] = 0;
+    $aDataRet['second'] = 0;
+    $aPieces = split('[:/.\ \-]', $stFormat);
+    $aDatePart = split('[:/.\ \-]', $stData);
+    foreach($aPieces as $key=>$chPiece)
+    {
+        switch ($chPiece)
+        {
+            case 'd':
+            case 'j':
+                $aDataRet['day'] = $aDatePart[$key];
+                break;
+            case 'F':
+            case 'M':
+            case 'm':
+            case 'n':
+                $aDataRet['month'] = $aDatePart[$key];
+                break;
+            case 'o':
+            case 'Y':
+            case 'y':
+                $aDataRet['year'] = $aDatePart[$key];
+                break;
+            case 'g':
+            case 'G':
+            case 'h':
+            case 'H':
+                $aDataRet['hour'] = $aDatePart[$key];
+                break;
+            case 'i':
+                $aDataRet['minute'] = $aDatePart[$key];
+                break;
+            case 's':
+                $aDataRet['second'] = $aDatePart[$key];
+                break;
+        }
+    }
+    return($aDataRet);
+}
+
+function dwho_change_date_format($stDate,$stFormatFrom,$stFormatTo)
+{
+  $date = dwho_date_parse_from_format($stFormatFrom,$stDate);
+  return(date($stFormatTo,mktime($date['hour'],
+                                    $date['minute'],
+                                    $date['second'],
+                                    $date['month'],
+                                    $date['day'],
+                                    $date['year'])));
 }
 
 function dwho_calc_page($page,$nb,$total)

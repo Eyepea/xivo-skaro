@@ -76,6 +76,12 @@ $array['module']['provisioning']['datastorage'] = true;
 $array['module']['stats_conf'] = array();
 $array['module']['stats_conf']['datastorage'] = true;
 
+$array['module']['stats_conf_queue'] = array();
+$array['module']['stats_conf_queue']['datastorage'] = true;
+
+$array['module']['stats_conf_agent'] = array();
+$array['module']['stats_conf_agent']['datastorage'] = true;
+
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 

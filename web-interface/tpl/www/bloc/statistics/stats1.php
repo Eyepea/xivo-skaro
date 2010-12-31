@@ -24,6 +24,7 @@ $basedir = $this->get_var('basedir');
 $queue_log = $this->get_var('queue_log');
 $conf = $this->get_var('conf');
 $ls_queue = $this->get_var('ls_queue');
+$table1 = $this->get_var('table1');
 
 #var_dump($statistics);
 
@@ -38,12 +39,17 @@ $ls_queue = $this->get_var('ls_queue');
 	
 <?php
 
+echo $table1->render_html();
+
 #var_dump($queue_log);
 #var_dump($conf);
 #var_dump($ls_queue);
-
- ?>
+/*
  		<img src="<?=$basedir?>example2.png" />
+ 		<img src="<?=$basedir?>Naked.png" />
+ */
+ ?>
+ 		<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

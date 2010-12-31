@@ -88,5 +88,13 @@ $array['stats_conf'] = array();
 $array['stats_conf']['table'] = 'stats_conf';
 $array['stats_conf']['primary'] = array('id' => '');
 
+$array['stats_conf_queue'] = array();
+$array['stats_conf_queue']['table'] = 'stats_conf_queue';
+$array['stats_conf_queue']['primary'] = array('stats_conf_id' => '');
+
+$array['stats_conf_agent'] = array();
+$array['stats_conf_agent']['table'] = 'stats_conf_agent';
+$array['stats_conf_agent']['primary'] = array('stats_conf_id' => '');
+
 
 ?>

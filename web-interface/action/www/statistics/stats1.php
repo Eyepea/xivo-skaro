@@ -20,60 +20,70 @@
 
 include(dirname(__FILE__).'/common.php');
 
-/*
-// Dataset definition 
- $DataSet = new pData;
- $DataSet->AddPoint(array(1,4,3,4,3,3,2,1,0,7,4,3,2,3,3,5,1,0,7),"Serie1");
- $DataSet->AddPoint(array(1,4,2,6,2,3,0,1,5,1,2,4,5,2,1,0,6,4,2),"Serie2");
- $DataSet->AddAllSeries();
- $DataSet->SetAbsciseLabelSerie();
- $DataSet->SetSerieName("January","Serie1");
- $DataSet->SetSerieName("February","Serie2");
-
- // Initialise the graph
- $Test = new pChart(700,230);
- $Test->setFixedScale(-2,8);
- $Test->setFontProperties($glibpchart."tahoma.ttf",8);
- $Test->setGraphArea(50,30,585,200);
- $Test->drawFilledRoundedRectangle(7,7,693,223,5,240,240,240);
- $Test->drawRoundedRectangle(5,5,695,225,5,230,230,230);
- $Test->drawGraphArea(255,255,255,TRUE);
- $Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_NORMAL,150,150,150,TRUE,0,2);
- $Test->drawGrid(4,TRUE,230,230,230,50);
-
- // Draw the 0 line
- $Test->setFontProperties($glibpchart."tahoma.ttf",6);
- $Test->drawTreshold(0,143,55,72,TRUE,TRUE);
-
- // Draw the cubic curve graph
- $Test->drawCubicCurve($DataSet->GetData(),$DataSet->GetDataDescription());
-
- // Finish the graph
- $Test->setFontProperties($glibpchart."tahoma.ttf",8);
- $Test->drawLegend(600,30,$DataSet->GetDataDescription(),255,255,255);
- $Test->setFontProperties($glibpchart."tahoma.ttf",10);
- $Test->drawTitle(50,22,"Example 2",50,50,50,585);
- #$Test->Stroke();
- $Test->Render($gdir.'example2.png');
-*/
- 
-$rows = array();
-$statistics->set_rows($rows);
+$appqueue = &$ipbx->get_application('queue');
+$queue_qos = $appqueue->get_qos();
 
 $appqueue = &$ipbx->get_application('queue');
 $list_queue = $appqueue->get_queues_list();
 
+$appagent = &$ipbx->get_application('agent');
+$list_agent = $appagent->get_agentfeatures();
+
 $appqueue_log = &$ipbx->get_application('queue_log');
-$queue_log = $appqueue_log->get_queue_logs_list();
+$ls_queue_log = $appqueue_log->get_queue_logs_list();
 
 $appstats_conf = &$_XOBJ->get_application('stats_conf');
-$conf = $appstats_conf->get(5);
+$conf = $appstats_conf->get(14);
 
-$statistics->init_queue($list_queue);
+if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
+	die('Can\'t load xivo_statistics_queue object');
 
+$tmp = new xivo_statistics_queue();
+$tmp->set_queue_log($ls_queue_log);
+$tmp->set_data_custom('qos',$queue_qos);
+$tmp->parse_log();
+
+$xivo_statistics->set_name('queue');
+
+$xivo_statistics->set_rows('queuename',$list_queue,'name');
+
+$xivo_statistics->set_data_custom('queue',$tmp->_result['queue']);
+
+$xivo_statistics->add_col('presented',
+					'direct',
+					'custom:queue,[name],presented');
+$xivo_statistics->add_col('answered',
+					'direct',
+					'custom:queue,[name],answered');
+$xivo_statistics->add_col('abandoned',
+					'direct',
+					'custom:queue,[name],abandoned');
+$xivo_statistics->add_col('deterred',
+					'direct',
+					'custom:queue,[name],deterred');
+$xivo_statistics->add_col('rerouted',
+					'direct',
+					'custom:queue,[name],rerouted');
+$xivo_statistics->add_col('home_rated',
+					'expression',
+					'{custom:queue,[name],answered}/{custom:queue,[name],presented}',
+					'percent');
+$xivo_statistics->add_col('qos',
+					'expression',
+					'{custom:queue,[name],qos}/{custom:queue,[name],answered}',
+					'percent');
+
+$xivo_statistics->gener();
+#$xivo_statistics->render_graph();
+$table1 = $xivo_statistics;
+#$xivo_statistics->reset();
+
+
+$_TPL->set_var('statistics',$xivo_statistics);
 $_TPL->set_var('conf',$conf);
 $_TPL->set_var('ls_queue',$list_queue);
-$_TPL->set_var('queue_log',$queue_log);
+$_TPL->set_var('queue_log',$list_queue_log);
+$_TPL->set_var('table1',$table1);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
@@ -84,4 +94,3 @@ $_TPL->set_struct('statistics/index');
 $_TPL->display('index');
 
 ?>
-

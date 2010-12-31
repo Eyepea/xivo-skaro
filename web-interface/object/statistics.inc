@@ -18,13 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-dwho::load_class('dwho_uri');
-
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));	
-
-class dwho_tpl_statistics extends dwho_tpl_module
+class xivo_statistics
 {
-	public	 $_tpl			= null;
 	private  $_name			= '';
 	private  $_data			= array();
 	private  $_data_custom	= array();
@@ -33,11 +28,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	private  $_prepare_rows	= array();
 	private  $_prepare_cols	= array();
 	private	 $_var_to_eval	= array();
-	private  $_counter		= array();
 							
-	public function __construct(&$tpl)
+	public function __construct()
 	{
-		$this->_tpl = &$tpl;
 	}
 	
 	public function reset()
@@ -416,42 +409,87 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				
 		// Dataset definition 
 		$DataSet = new pData;
+		
+		/*
+		// Generate some data...  
+		$DataSet->AddPoint(array("queue8001","queue8002","queue8003"),"Serie1");  
+		$DataSet->AddPoint(array(32,54,80),"aa");  
+		$DataSet->AddPoint(array(1,1,2),"bb"); 
+		$DataSet->AddPoint(array(84,25,65),"cc"); 
+		  
+		// This will mark both Serie1 & Serie2 as "graphable"  
+		$DataSet->AddSerie("aa");  
+		$DataSet->AddSerie("bb"); 
+		$DataSet->AddSerie("cc");  
+		  
+		// Set Serie as abcisse label  
+		$DataSet->SetAbsciseLabelSerie("Serie1");
+		*/
+		$abcisse_label = array();
+		foreach ($this->_data_table as $row => $cols)
+			array_push($abcisse_label,$row);
+			
+		$DataSet->AddPoint($abcisse_label,"Serie1");
+		
+		var_dump($abcisse_label);
+		
+		$i=0;
 		foreach ($this->_data_table as $row => $cols)
 		{
 			$tmp = array();
-			$r=0;
 			foreach ($cols as $colname => $colvalue)
 			{
-				if ($r>4)
-					continue;
-					
 				if (empty($colvalue) === true)
 					array_push($tmp,0);
 				else
 				{
 					if (($val = $this->eval_result_data($colvalue)) === null
 					|| is_numeric($val) === false)
-						continue;					
-					array_push($tmp,$val);
+						array_push($tmp,0);
+					else
+						array_push($tmp,$val);
 				}
-				$r++;
 			}
-		 	$DataSet->AddPoint($tmp,'serie-'.$row);
+			var_dump($tmp);
+	 			$DataSet->AddPoint($tmp,$colname);
+				var_dump($colname);
+				 		$i++;
 		}
 		
+		$i=0;
+		foreach ($this->_data_table as $row => $cols)
+		{
+			foreach ($cols as $colname => $colvalue)
+			{
+				if($i===0){
+					$DataSet->AddSerie($colname);
+					var_dump($colname);
+					
+				}
+	 			$i++;
+			}
+		}
+				
+		$DataSet->SetAbsciseLabelSerie("Serie1");
+		
+		/*
+		$DataSet->AddPoint(array(1,2,3,4),'serie-lol');
+		$DataSet->AddPoint(array(5,6,7,8),'serie-lol2');
 		$DataSet->AddAllSeries();
 		$DataSet->SetAbsciseLabelSerie();
-		 
-		foreach ($this->_data_table as $row => $cols)
-			$DataSet->SetSerieName($row,'serie-'.$row);
+		$DataSet->SetSerieName('lol','serie-lol');
+		$DataSet->SetSerieName('lol2','serie-lol2');
+		*/
 		
 		// Initialise the graph
-		$Test = new pChart(700,230);		 
+		$Test = new pChart(800,230);		 
 		#$Test->setFixedScale(0,100);
 		$Test->setFontProperties($gfontspchart."tahoma.ttf",8);
-		$Test->setGraphArea(50,30,680,200);
-		$Test->drawFilledRoundedRectangle(7,7,693,223,5,240,240,240);
-		$Test->drawRoundedRectangle(5,5,695,225,5,230,230,230);
+		$Test->setGraphArea(50,30,700,200);
+		
+		$Test->drawFilledRoundedRectangle(7,7,710,223,5,240,240,240);
+		$Test->drawRoundedRectangle(5,5,710,225,5,230,230,230);
+		
 		$Test->drawGraphArea(255,255,255,TRUE);
 		$Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_NORMAL,150,150,150,TRUE,0,2,TRUE);
 		$Test->drawGrid(4,TRUE,230,230,230,50);
@@ -465,7 +503,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 		// Finish the graph
 		$Test->setFontProperties($gfontspchart."tahoma.ttf",8);
-		$Test->drawLegend(596,150,$DataSet->GetDataDescription(),255,255,255);
+		$Test->drawLegend(700,15,$DataSet->GetDataDescription(),255,255,255);
 		$Test->setFontProperties($gfontspchart."tahoma.ttf",10);
 		$Test->drawTitle(50,22,$name,50,50,50,585);
 		#$Test->Stroke();

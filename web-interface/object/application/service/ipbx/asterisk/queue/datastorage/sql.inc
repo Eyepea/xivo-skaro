@@ -27,6 +27,22 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 				'queue'		=> '',
 				'queuemember'	=> '');
 
+	function get_qos($key_assoc='name')
+	{
+		$this->_dso->new_select($this->_table['queuefeatures'],array('id','name','number','stats_qos'));
+		
+		$r = $this->_dso->select_all(null,true,false,$key_assoc);
+
+		if(($this->_cnt = $this->_dso->select_distinct_count_singlecolumn(
+							null,
+							'id',
+							$this->_table['queuefeatures'])) === false
+		|| empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_dso->new_select($this->_table['queuefeatures']);

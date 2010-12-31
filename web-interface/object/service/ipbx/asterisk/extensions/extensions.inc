@@ -548,7 +548,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$apparg2 = array_slice($appdata,$nbarg);
 
 			if(empty($apparg2) === false)
-				$apparg1[$nbarg-1] .= '|'.implode('|',$apparg2);
+				$apparg1[$nbarg-1] .= ','.implode(',',$apparg2);
 
 			$appdata = $apparg1;
 		}
@@ -563,9 +563,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(isset($cfg['appdata']) === true)
 			$r['appdata'] = vsprintf(dwho_printf_escape($cfg['appdata'],count($rs)),$rs);
 		else if(strcasecmp('macro',$r['app']) !== 0)
-			$r['appdata'] = rtrim(implode('|',$rs),'|');
+			$r['appdata'] = rtrim(implode(',',$rs),',');
 		else
-			$r['appdata'] = implode('|',$rs);
+			$r['appdata'] = implode(',',$rs);
 
 		return($r);
 	}

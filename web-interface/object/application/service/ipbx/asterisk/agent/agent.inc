@@ -254,6 +254,26 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function get_agentfeatures($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$rs = $this->_agentfeatures->get_all_assoc();
+
+		if($rs === false || ($nb = count($rs)) === 0)
+		{
+			$this->_cnt = $this->_agentfeatures->get_cnt();
+			return(false);
+		}
+
+		$this->_cnt = $this->_agentfeatures->get_cnt();
+
+		if(empty($rs) === true)
+			return(false);
+		else if((bool) $assoc === false)
+			return(array_values($rs));
+
+		return($rs);
+	}
+
 	function set_add($arr)
 	{
 		return($this->_set('add',$arr));

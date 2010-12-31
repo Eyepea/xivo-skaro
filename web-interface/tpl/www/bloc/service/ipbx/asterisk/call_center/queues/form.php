@@ -146,7 +146,16 @@ endif;
 				  'default'	=> $element['queuefeatures']['preprocess_subroutine']['default'],
 				  'value'	=> $info['queuefeatures']['preprocess_subroutine'],
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error','queuefeatures','preprocess_subroutine'))));
+					   $this->get_var('error','queuefeatures','preprocess_subroutine')))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_stats_qos'),
+				  'name'	=> 'queuefeatures[stats_qos]',
+				  'labelid' => 'queuefeatures-stats_qos',
+				  'size'	=> 5,
+				  'default'	=> $element['queuefeatures']['stats_qos']['default'],
+				  'value'	=> $info['queuefeatures']['stats_qos'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error','queuefeatures','stats_qos'))));
 ?>
 </div>
 

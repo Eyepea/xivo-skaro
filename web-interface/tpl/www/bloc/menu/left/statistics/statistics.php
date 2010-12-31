@@ -34,6 +34,10 @@ $url  = &$this->get_module('url');
 				<?=$url->href_html($this->bbf('mn_left_configuration'),
 						   'statistics/configuration','act=list');?>
 			</dd>
+			<dd id="mn-2">
+				<?=$url->href_html($this->bbf('mn_left_configuration-qos'),
+						   'statistics/configuration','act=qos');?>
+			</dd>
 			<dt><?=$this->bbf('mn_left_ti_general');?></dt>
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_statistics-1'),

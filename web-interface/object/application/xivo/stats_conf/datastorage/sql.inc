@@ -23,7 +23,8 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','data
 class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstract_datastorage_sql
 {
 	var $_table	= array(
-				'stats_conf'		=> '');
+				'stats_conf'		=> '',
+				'stats_conf_queue'	=> '');
 
 	function get($id)
 	{

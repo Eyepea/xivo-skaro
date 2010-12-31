@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009-2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
-$basedir = '/img/graphs/pchart/';
+xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
-if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
-	die('Can\'t load xivo_statistics object');
+class xivo_object_stats_conf_queue_sql extends xivo_object_abstract_sql
+{
+	var $_unique	= '';
 
-$xivo_statistics = new xivo_statistics();
+	function delete_where($where,$disable=null,$id=null) {
 
-$_TPL->set_var('basedir',$basedir);
+		return($this->_dso->delete_where($where,$disable,$id));
+
+	}
+
+	public function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		return(parent::add($arr,false));
+	}
+}
 
 ?>

@@ -71,6 +71,34 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 		return($r);
 	}
+	
+	function get_all_assoc()
+	{
+		if(($list = $this->_dso->get_all_assoc()) === false)
+			return(false);
+
+		foreach($list as $key => &$r)
+			$list[$key] = $this->_prepare($r);
+
+		if(empty($list) === true)
+			$list = false;
+
+		return($list);
+	}
+	
+	function get_all_wherein($id,$where)
+	{
+		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
+			return(false);
+
+		foreach($list as $key => &$r)
+			$list[$key] = $this->_prepare($r);
+
+		if(empty($list) === true)
+			$list = false;
+
+		return($list);
+	}
 }
 
 ?>

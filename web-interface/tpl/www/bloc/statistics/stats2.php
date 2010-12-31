@@ -17,19 +17,36 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$url     = &$this->get_module('url');
+
+$url = &$this->get_module('url');
+
+$basedir = $this->get_var('basedir');
+$queue_log = $this->get_var('queue_log');
+$conf = $this->get_var('conf');
+$ls_queue = $this->get_var('ls_queue');
+$table1 = $this->get_var('table1');
 
 ?>
-<div id="sr-users" class="b-infos b-form">
+<div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-        
-	stats2
+	
+<?php
 
+echo $table1->render_html();
+
+#var_dump($queue_log);
+#var_dump($conf);
+#var_dump($ls_queue);
+/*
+ 		<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
+ */
+ ?>
+ 		<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -37,4 +54,3 @@ $url     = &$this->get_module('url');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
-

@@ -18,18 +18,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-$form = &$this->get_module('form');
 
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
+
+$queue = $this->get_var('queue');
+$agent = $this->get_var('agent');
 $info = $this->get_var('info');
 $element = $this->get_var('element');
 
-#var_dump($info);
-#var_dump($this->get_var('error'));
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
+if($this->get_var('fm_save') === false)
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 			<div id="sb-part-first" class="b-nodisplay">
@@ -175,28 +175,120 @@ endif;
 ?>
 			</div>
 			
-			<div id="sb-part-last" class="b-nodisplay">
-				<p>
-					<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_queue_qos');?></label>
-				</p>
+			<div id="sb-part-queue" class="b-nodisplay">
 <?php
-	if(($list = $this->get_var('ls_queue')) === false 
-	|| ($nb = count($list)) === 0):
+	if($queue['list'] !== false):
 ?>
-				<?=$this->bbf('no_displays');?>
+				<div id="queuelist" class="fm-paragraph fm-multilist">
+					<div class="slt-outlist">
+						<?=$form->select(array('name'		=> 'queuelist',
+								       'label'		=> false,
+								       'id'		=> 'it-queuelist',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false,
+								       'key'		=> 'name',
+								       'altkey'		=> 'id'),
+										$queue['list']);?>
+					</div>
+			
+					<div class="inout-list">
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-queuelist','it-queue');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_inqueue');?>">
+							<?=$url->img_html('img/site/button/arrow-left.gif',
+									  $this->bbf('bt_inqueue'),
+									  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-queue','it-queuelist');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_outqueue');?>">
+							<?=$url->img_html('img/site/button/arrow-right.gif',
+									  $this->bbf('bt_outqueue'),
+									  'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
+					</div>
+			
+					<div class="slt-inlist">
+						<?=$form->select(array('name'		=> 'queue[]',
+								       'label'		=> false,
+								       'id'		=> 'it-queue',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false,
+								       'key'		=> 'name',
+								       'altkey'		=> 'id'),
+									   $queue['slt']);?>
+					</div>
+				</div>
+				<div class="clearboth"></div>
 <?php
 	else:
-		for($i = 0;$i < $nb;$i++):
-			$ref = &$list[$i];
-			
-	echo	$form->text(array('desc'	=> $ref['name'],
-				  'name'	=> 'stats_qos['.$ref['id'].']',
-				  'labelid'	=> $ref['name'],
-				  'size'	=> 5,
-				  'default'	=> 0,
-				  'value'	=> $ref['stats_qos']));
-
-		endfor;
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_queue'),
+					'service/ipbx/call_center/queues',
+					'act=add'),
+			'</div>';
 	endif;
 ?>
+				
+			</div>
+			
+			<div id="sb-part-last" class="b-nodisplay">
+<?php
+	if($agent['list'] !== false):
+?>
+				<div id="agentlist" class="fm-paragraph fm-multilist">
+					<div class="slt-outlist">
+						<?=$form->select(array('name'	=> 'agentlist',
+								       'label'		=> false,
+								       'id'			=> 'it-agentlist',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false,
+								       'key'		=> 'fullname',
+								       'altkey'		=> 'id'),
+										$agent['list']);?>
+					</div>
+			
+					<div class="inout-list">
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-agentlist','it-agent');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_inagent');?>">
+							<?=$url->img_html('img/site/button/arrow-left.gif',
+									  $this->bbf('bt_inagent'),
+									  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-agent','it-agentlist');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_outagent');?>">
+							<?=$url->img_html('img/site/button/arrow-right.gif',
+									  $this->bbf('bt_outagent'),
+									  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
+					</div>
+			
+					<div class="slt-inlist">
+						<?=$form->select(array('name'	=> 'agent[]',
+								       'label'		=> false,
+								       'id'			=> 'it-agent',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false,
+								       'key'		=> 'fullname',
+								       'altkey'		=> 'id'),
+									   $agent['slt']);?>
+					</div>
+				</div>
+				<div class="clearboth"></div>
+<?php
+	else:
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_agent'),
+					'service/ipbx/call_center/agents',
+					'act=add'),
+			'</div>';
+	endif;
+?>
+				
 			</div>

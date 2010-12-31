@@ -37,10 +37,21 @@ $appstats_conf = &$_XOBJ->get_application('stats_conf');
 switch($act)
 {
 	case 'add':
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
+
+		$queue = array();
+		$queue['slt'] = array();
+		
+		$appqueue = &$ipbx->get_application('queue');
+		$queue['list'] = $appqueue->get_queues_list(null,null,null,true);
+		
+		$agent = array();
+		$agent['slt'] = array();
+		
+		$appagent = &$ipbx->get_application('agent');
+		$agent['list'] = $appagent->get_agentfeatures(null,null,null,true);
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('stats_qos',$_QR) === true
 		&& dwho_issa('stats_conf',$_QR) === true
 		&& dwho_issa('workhour_start',$_QR) === true
 		&& dwho_issa('workhour_end',$_QR) === true)
@@ -55,21 +66,61 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('statistics/configuration'),$param);
 		}
-		$appqueue = &$ipbx->get_application('queue');
-		$list_queue = $appqueue->get_queues_list();
+
+		dwho::load_class('dwho_sort');
+
+		if($queue['list'] !== false && dwho_ak('queue',$result) === true)
+		{
+			$queue['slt'] = dwho_array_intersect_key($result['queue'],$queue['list'],'id');
+
+			if($queue['slt'] !== false)
+			{
+				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
+
+				$queuesort = new dwho_sort(array('key' => 'name'));
+				uasort($queue['slt'],array(&$queuesort,'str_usort'));
+			}
+		}
+
+		if($agent['list'] !== false && dwho_ak('agent',$return) === true)
+		{
+			$agent['slt'] = dwho_array_intersect_key($return['agent'],$agent['list'],'id');
+
+			if($agent['slt'] !== false)
+			{
+				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
+
+				$agentsort = new dwho_sort(array('key' => 'name'));
+				uasort($agent['slt'],array(&$agentsort,'str_usort'));
+			}
+		}
 		
-		$_TPL->set_var('info'   ,$result);
-		$_TPL->set_var('error'  ,$error);
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appstats_conf->get_elements());
-		$_TPL->set_var('ls_queue',$list_queue);
+		$_TPL->set_var('queue',$queue);
+		$_TPL->set_var('agent',$agent);
 		break;
 	case 'edit':
 		
-		if(isset($_QR['id']) === false || ($info = $appstats_conf->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false || ($info = &$appstats_conf->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('statistics/configuration'),$param);
 			
-		$return = $fm_save = null;
+		$result = $fm_save = $error = null;
+		$return = &$info;
+		
+		$queue = array();
+		$queue['slt'] = array();
+		
+		$appqueue = &$ipbx->get_application('queue');
+		$queue['list'] = $appqueue->get_queues_list(null,null,null,true);
+		
+		$agent = array();
+		$agent['slt'] = array();
+		
+		$appagent = &$ipbx->get_application('agent');
+		$agent['list'] = $appagent->get_agentfeatures(null,null,null,true);
 		
 		$info_hour_start = explode(':',$info['stats_conf']['hour_start']);
 		$workhour_start = array();
@@ -81,12 +132,10 @@ switch($act)
 		$workhour_end['m'] = $info_hour_end[1];
 		
 		if(isset($_QR['fm_send']) === true 
-		&& dwho_issa('stats_qos',$_QR) === true
 		&& dwho_issa('stats_conf',$_QR) === true
 		&& dwho_issa('workhour_start',$_QR) === true
 		&& dwho_issa('workhour_end',$_QR) === true)
 		{
-			$return = &$info;
 			$workhour_start = $_QR['workhour_start'];
 			$workhour_end = $_QR['workhour_end'];
 
@@ -100,9 +149,34 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('statistics/configuration'),$param);
 		}
-		
-		$appqueue = &$ipbx->get_application('queue');
-		$list_queue = $appqueue->get_queues_list();
+
+		dwho::load_class('dwho_sort');
+
+		if($queue['list'] !== false && dwho_ak('queue',$return) === true)
+		{
+			$queue['slt'] = dwho_array_intersect_key($return['queue'],$queue['list'],'id');
+
+			if($queue['slt'] !== false)
+			{
+				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
+
+				$queuesort = new dwho_sort(array('key' => 'name'));
+				uasort($queue['slt'],array(&$queuesort,'str_usort'));
+			}
+		}
+
+		if($agent['list'] !== false && dwho_ak('agent',$return) === true)
+		{
+			$agent['slt'] = dwho_array_intersect_key($return['agent'],$agent['list'],'id');
+
+			if($agent['slt'] !== false)
+			{
+				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
+
+				$agentsort = new dwho_sort(array('key' => 'name'));
+				uasort($agent['slt'],array(&$agentsort,'str_usort'));
+			}
+		}
 		
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);
@@ -110,8 +184,9 @@ switch($act)
 		$_TPL->set_var('id',$_QR['id']);
 		$_TPL->set_var('element',$appstats_conf->get_elements());	
 		$_TPL->set_var('workhour_start',$workhour_start);
-		$_TPL->set_var('workhour_end',$workhour_end);	
-		$_TPL->set_var('ls_queue',$list_queue);
+		$_TPL->set_var('workhour_end',$workhour_end);
+		$_TPL->set_var('queue',$queue);
+		$_TPL->set_var('agent',$agent);
 		
 		break;
 	case 'delete':
@@ -160,6 +235,30 @@ switch($act)
 		}
 
 		$_QRY->go($_TPL->url('statistics/configuration'),$param);
+		break;		
+	case 'qos':
+		$return = $fm_save = null;
+		
+		if(isset($_QR['fm_send']) === true 
+		&& dwho_issa('stats_qos',$_QR) === true)
+		{
+			if($appstats_conf->set_stats_qos($_QR['stats_qos']) === false
+			|| $appstats_conf->edit_queuefeatures() === false)
+			{
+				$fm_save = false;
+				$result = $appstats_conf->get_result();
+				$error  = $appstats_conf->get_error();
+			}
+			else
+				$fm_save = true;
+		}
+		
+		$appqueue = &$ipbx->get_application('queue');
+		$list_queue = $appqueue->get_queues_list();
+		
+		$_TPL->set_var('error'  ,$error);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('ls_queue',$list_queue);
 		break;
 	case 'list':
 	default:
