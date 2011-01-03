@@ -19,6 +19,11 @@
 
 $url     = &$this->get_module('url');
 
+$basedir = $this->get_var('basedir');
+$queue_log = $this->get_var('queue_log');
+$conf = $this->get_var('conf');
+$table1 = $this->get_var('table1');
+
 ?>
 <div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -27,9 +32,16 @@ $url     = &$this->get_module('url');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-        
-	stats3
+		<div class="sb-list"> 
+<?php
 
+echo $table1->render_html();
+
+#var_dump($queue_log);
+#var_dump($conf);
+#var_dump($ls_queue);
+?>
+		</div>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

@@ -18,37 +18,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_statistics_agent
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
+
+class xivo_statistics_agent extends xivo_statistics_abstract
 {
-	
-	private $_queue_log_conf= array();
-	private $_queue_log 	= array();
-	private $_data_custom 	= array();
-	private $_counter	 	= array();
-	public	$_result 		= array();
-	
-	public function __construct()
+		
+	public function __construct($conf,$queue_log)
 	{
-		if(($this->_queue_log_conf = &dwho_gat::load_get('queue_log',DWHO_PATH_CONF)) === false)
-			trigger_error('Failed to load queue_log configuration',E_USER_ERROR);		
-	}
-	
-	public function set_queue_log($queue_log)
-	{
-		$this->_queue_log = $queue_log;
-	}
-	
-	public function set_data_custom($key,$data)
-	{
-		$this->_data_custom[$key] = $data;
+		parent::__construct($conf,$queue_log);		
 	}
 	
 	public function parse_log()
 	{
 		$res = &$this->_result;
-	
-		if (isset($res['agent']) === false)
-			$res['agent'] = array();
 			
 		$nb_ql = count($this->_queue_log);
 		for ($u=0;$u<$nb_ql;$u++)
@@ -64,9 +46,9 @@ class xivo_statistics_agent
 			$agent 		= strtolower($queue_log['agent']);
 			$event 		= $queue_log['event'];
 			
-			if (isset($res['agent'][$agent]) === false)
+			if (isset($res[$agent]) === false)
 			{
-				$data_process = &$res['agent'][$agent];
+				$data_process = &$res[$agent];
 				$data_process = array();
 				$data_process['logintime'] = array();
 				$data_process['logintime']['type'] = 'time';
@@ -106,155 +88,62 @@ class xivo_statistics_agent
 			switch ($event)
 			{
 				# AGENTLOGIN(channel)				
-				# AGENTLOGOFF(channel|logintime)
 				case 'AGENTLOGIN':
+				# AGENTLOGOFF(channel|logintime)
 				case 'AGENTLOGOFF':
+					$logintime = 0;
 					if (TRUE)
-					{
-						$this->eval_during_time($agent,$event,'AGENTLOGIN','AGENTLOGOFF',$time,'logintime');
-					}
+						$logintime = $this->eval_during_time($agent,$event,'AGENTLOGIN','AGENTLOGOFF',$time);
 					elseif($event === 'AGENTLOGOFF')
-					{					
 						$logintime = $this->eval_data_queue_log($queue_log,'AGENTLOGOFF','logintime');
-						$this->increment_time_agent($agent,$logintime,'logintime');
-					}
+					$this->update_result(array($agent,'logintime'),$logintime);
 					break;
-				# CONNECT(holdtime|bridgedchanneluniqueid) 
+				# CONNECT(holdtime|bridgedchanneluniqueid)
 				case 'CONNECT':
 					$holdtime = $this->eval_data_queue_log($queue_log,'CONNECT','holdtime');
-					$this->increment_time_agent($agent,$holdtime,'holdtime');
-					$this->increment_time_agent($agent,1,'connect');
+					$this->update_result(array($agent,'holdtime'),$holdtime);
+					$this->update_result(array($agent,'connect'),1);
 					break;
-				# COMPLETEAGENT(holdtime|calltime|origposition) 
+				# COMPLETEAGENT(holdtime|calltime|origposition)
 				case 'COMPLETEAGENT':
 					$calltime = $this->eval_data_queue_log($queue_log,'COMPLETEAGENT','calltime');
-					$this->increment_time_agent($agent,$calltime,'calltime');
+					$this->update_result(array($agent,'calltime'),$calltime);
 					$holdtime = $this->eval_data_queue_log($queue_log,'COMPLETEAGENT','holdtime');
-					$this->increment_time_agent($agent,$holdtime,'holdtime');
-					$this->increment_time_agent($agent,1,'completeagent');
+					$this->update_result(array($agent,'holdtime'),$holdtime);
+					$this->update_result(array($agent,'completeagent'),1);
 					break;
-				# COMPLETECALLER(holdtime|calltime|origposition) 
+				# COMPLETECALLER(holdtime|calltime|origposition)
 				case 'COMPLETECALLER':
 					$calltime = $this->eval_data_queue_log($queue_log,'COMPLETECALLER','calltime');
-					$this->increment_time_agent($agent,$calltime,'calltime');
+					$this->update_result(array($agent,'calltime'),$calltime);
 					$holdtime = $this->eval_data_queue_log($queue_log,'COMPLETECALLER','holdtime');
-					$this->increment_time_agent($agent,$holdtime,'holdtime');
-					$this->increment_time_agent($agent,1,'completecaller');
+					$this->update_result(array($agent,'holdtime'),$holdtime);
+					$this->update_result(array($agent,'completecaller'),1);
 					break;
 				# RINGNOANSWER(ringtime)
 				case 'RINGNOANSWER':
 					$ringtime = $this->eval_data_queue_log($queue_log,'RINGNOANSWER','ringtime');
-					$this->increment_time_agent($agent,$ringtime,'ringtime');
-					$this->increment_time_agent($agent,1,'ringnoanswer');
-					break;			
-				# TRANSFER(extension|context|holdtime|calltime) 
+					$this->update_result(array($agent,'ringtime'),$ringtime);
+					$this->update_result(array($agent,'ringnoanswer'),1);
+					break;
+				# TRANSFER(extension|context|holdtime|calltime)
 				case 'TRANSFER':
-					$this->increment_time_agent($agent,1,'transfer');
+					$this->update_result(array($agent,'transfer'),1);
 					break;
 				# ABANDON(positionorig|positionwaittime)
 				case 'ABANDON':
-					$this->increment_time_agent($agent,1,'abandon');
+					$this->update_result(array($agent,'abandon'),1);
 					break;
 				# PAUSE()
-				# UNPAUSE()
 				case 'PAUSE':
+				# UNPAUSE()
 				case 'UNPAUSE':
-					$this->eval_during_time($agent,$event,'PAUSE','UNPAUSE',$time,'pausetime');
+					$pausetime = $this->eval_during_time($agent,$event,'PAUSE','UNPAUSE',$time);
+					$this->update_result(array($agent,'pausetime'),$pausetime);
 					break;
 				default:
 			}			
 		}
-	}
-
-	private function eval_data_queue_log($queue_log_entry,$event,$type)
-	{			
-		$conf = $this->_queue_log_conf;
-		
-		if (isset($conf[$event]) === false
-		|| in_array($type,$conf[$event]) === false)
-			return(0);
-			
-		$pos = 0;
-		$nb = count($conf[$event]);
-		for ($i=0;$i<$nb;$i++)
-			if ($conf[$event][$i] === $type)
-				$pos = $i+1;	
-			
-		if (isset($queue_log['data']) === true
-		&& dwho_empty($queue_log['data']) === false)
-		{
-			$data = explode($queue_log_entry['data']);
-			return($data[$pos]);
-		}
-		elseif (isset($queue_log_entry['data'.$pos])
-		&& dwho_empty($queue_log_entry['data'.$pos]) === false)
-		{
-			return($queue_log_entry['data'.$pos]);
-		}
-			
-		return(0);		
-	}
-
-	private function eval_during_time($agent,$event,$eventstart,$eventend,$time,$type)
-	{			
-		if (isset($this->_counter[$agent]) === false)
-		{
-			$this->_counter[$agent] = array();
-			$this->_counter[$agent][$eventstart] = 0;
-			$this->_counter[$agent]['c'] = 0;
-		}
-			
-		$counter = &$this->_counter[$agent];
-		
-		$timearr = explode('.',$time);
-		$timeprocess = dwho_change_date_format($timearr[0],'Y-m-d H:i:s','U');
-			
-		switch ($event)
-		{
-			case $eventstart:
-					
-				if (false
-				&& $counter['c'] === 1
-				&& $counter[$event] !== 0)
-				{
-					$diff = $timeprocess - $counter[$event];
-					$this->increment_time_agent($agent,$diff,$type);
-				}
-				$counter['c'] = 1;
-				$counter[$event] = $timeprocess;
-				break;
-			case $eventend:				
-				$diff = $timeprocess - $counter[$eventstart];
-		
-				$this->increment_time_agent($agent,$diff,$type);
-				
-				$counter['c'] = 0;
-				$counter[$eventstart] = 0;
-				break;
-			default:
-		}
-	}
-	
-	private function increment_time_agent($agent,$str,$type,$operator='+')
-	{
-		$res = &$this->_result;		
-		if (isset($res['agent'][$agent]) === false
-		|| isset($res['agent'][$agent][$type]) === false)
-			return(false);
-			
-		$result = &$res['agent'][$agent][$type]['result'];
-			
-		switch($operator)
-		{
-			case '+':
-				$result += $str;
-				break;
-			case '-':
-				$result -= $str;
-				break;
-			default:
-		}
-		return(true);
 	}
 
 }

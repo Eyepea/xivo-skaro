@@ -21,10 +21,12 @@
 class xivo_statistics
 {
 	private  $_name			= '';
+	private  $_col_head		= '';
+	private  $_struct		= array();
 	private  $_data			= array();
 	private  $_data_custom	= array();
-	private  $_result		= array();
 	private  $_data_table	= array();
+	private  $_result		= array();
 	private  $_prepare_rows	= array();
 	private  $_prepare_cols	= array();
 	private	 $_var_to_eval	= array();
@@ -35,13 +37,14 @@ class xivo_statistics
 	
 	public function reset()
 	{
+		$this->_name			= '';
+		$this->_data			= array();
 		$this->_data_custom		= array();
 		$this->_data_table		= array();
 		$this->_result			= array();
 		$this->_prepare_rows	= array();
 		$this->_prepare_cols	= array();
 		$this->_var_to_eval		= array();
-		$this->_counter			= array();
 	}
 	
 	public function set_name($name)
@@ -84,8 +87,22 @@ class xivo_statistics
 		}		
 	}
 	
-	public function add_col($label,$type,$expression,$format='int',$order=null) 
+	public function set_col_struct($str) 
 	{		
+		$this->_col_head = $str;
+	}
+	
+	public function add_col($label,$type,$expression,$format='int',$order=null) 
+	{
+		if (empty($this->_col_head) === true)
+			$this->_col_head = 'default';
+		
+		if (isset($this->_struct[$this->_col_head]) === false)
+			$this->_struct[$this->_col_head] = array();
+			
+		$refstruct = &$this->_struct[$this->_col_head];
+		array_push($refstruct, $label);
+			
 		$ref = &$this->_prepare_cols;
 		$arr = array();
 		$arr['label'] = $label;
@@ -94,6 +111,7 @@ class xivo_statistics
 		$arr['format'] = $format;
 		$arr['order'] = $order;
 		array_push($ref, $arr);
+		return(true);
 	}
 	
 	private function get_data_rows()
@@ -122,7 +140,7 @@ class xivo_statistics
 			
 		$row_key = array_shift(array_keys($data_rows));
 		$row_value = $data_rows[$row_key];
-		$data_table = &$this->_data_table;				
+		$data_table = &$this->_data_table;
 		$nb_row_value = count($row_value);
 			
 		for ($t=0;$t<$nb_row_value;$t++)
@@ -189,7 +207,6 @@ class xivo_statistics
 				$row_data_table[$label]['result'] = $result;
 			}
 		}
-		#var_dump('###################################################');
 		
 		return(false);
 	}
@@ -289,8 +306,7 @@ class xivo_statistics
 			$ref = $ref[$key];
 		}
 	
-		return($ref);
-	
+		return($ref);	
 	}
   
 	private function get_result_formated($format,$str)
@@ -334,7 +350,7 @@ class xivo_statistics
 				$str = $result.' %';
 				break;
 			case 'time':
-				$str = dwho_sec_to_human($result,false);
+				$str = dwho_sec_to_human($result,false,true,true,true);
 				break;
 			default:
 				$str = 'null_data';
@@ -348,43 +364,75 @@ class xivo_statistics
 	}
 	
 	public function render_html()
-	{
-		$return = '';
-		$return .= '<table class="sb-statistics" border=1 width=100%>';		
+	{	
+		$return = '<form action="#" name="fm-stats-list" method="post" accept-charset="utf-8">';
+		$return .= '<table cellspacing="0" cellpadding="0" border="0">';
+		
+		$return .= '<thead>';
+		$return .= '<tr class="sb-top">';
+		$return .= '<th class="th-left">&nbsp;</th>';
+		$return .= '<th class="th-center">&nbsp;</th>';	
+		foreach($this->_struct as $keystruct => $datastruct)
+		{
+			$return .= '<th class="th-center" colspan="'.((count($datastruct))).'">'.$keystruct.'</th>';
+		}
+		$return .= '<th class="th-right">&nbsp;</th>';
+		$return .= '</tr>';
+		$return .= '</thead>';
 		
 		$y=0;
 		foreach ($this->_data_table as $row => $cols)
 		{
-			if ($y===0)
-			{
-				$return .= '<tr>';
-				$return .= '<td>&nbsp;</td>';	
-				foreach ($cols as $colname => $colvalue)
-					$return .= '<td>'.$colname.'</td>';
-				$return .= '</tr>';
-			}
+			if ($y>0)
+				continue;
+			
+			$return .= '<thead>';
+			$return .= '<tr class="sb-top">';
+			$return .= '<th class="th-left">&nbsp;</th>';
+			$return .= '<th class="th-center">&nbsp;</th>';	
+			foreach ($cols as $colname => $colvalue)
+				$return .= '<th class="th-center">'.$colname.'</th>';
+			$return .= '<th class="th-right">&nbsp;</th>';
+			$return .= '</tr>';
+			$return .= '</thead>';
+			
 			$y++;
 		}
 		
-		#$return .= '<td>&nbsp;</td>';
+		$c=0;
 		foreach ($this->_data_table as $row => $cols)
 		{
-			$return .= '<tr>';
-			$return .= '<td>'.$row.'</td>';	
-				foreach ($cols as $colname => $colvalue)
+			$return .= '<tbody id="disp">';
+			$return .= '<tr class="fm-paragraph l-infos-'.(($c % 2) + 1).'on2">';
+			$return .= '<td class="td-left"><input type="checkbox" name="stats[]" id="it-stats-0" class="it-checkbox" value="1" /></td>';	
+			$return .= '<td class="txt-left" title="'.dwho_alttitle($row).'">'.$row.'</td>';	
+			$nb_cols = 1;
+			foreach ($cols as $colname => $colvalue)
+			{
+				if (empty($colvalue) === true)
 				{
-					if (empty($colvalue) === true)
-					{
-						$return .= '<td>no_data</td>';
-						continue;
-					}
-					
-					$return .= '<td>'.$this->eval_result_data($colvalue).'</td>';
+					$return .= '<td>no_data</td>';
+					continue;
 				}
+				
+				$return .= '<td>'.$this->eval_result_data($colvalue).'</td>';
+				$nb_cols++;
+			}
+			$return .= '<td class="td-right">&nbsp;</td>';	
 			$return .= '</tr>';
+			$return .= '</tbody>';
+			$c++;
 		}
-		
+		/*
+		$return .= '
+		<tfoot> 
+			<tr id="no-disp" class="b-nodisplay"> 
+				<td colspan="'.(($nb_cols)).'" class="td-single">Aucunes autorisations</td> 
+			</tr> 
+		</tfoot>';
+		*/
 		$return .= '</table>';
+		$return .= '</form>';
 		
 		return( $return );
 	}

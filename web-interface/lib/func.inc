@@ -946,7 +946,8 @@ function dwho_last_key(&$a,$sort=SORT_NUMERIC)
 }
 
 function dwho_sec_to_human($sec,$d=true,$h=true,$m=true,$s=false) {
-
+	
+	$sec = (int) $sec;
 	$sec = dwho_calc_duration('','',$sec);
 
 	$res = '';

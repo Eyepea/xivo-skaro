@@ -38,8 +38,7 @@ $conf = $appstats_conf->get(14);
 if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
 
-$tmp = new xivo_statistics_queue();
-$tmp->set_queue_log($ls_queue_log);
+$tmp = new xivo_statistics_queue($conf,$ls_queue_log);
 $tmp->set_data_custom('qos',$queue_qos);
 $tmp->parse_log();
 
@@ -47,8 +46,9 @@ $xivo_statistics->set_name('queue');
 
 $xivo_statistics->set_rows('queuename',$list_queue,'name');
 
-$xivo_statistics->set_data_custom('queue',$tmp->_result['queue']);
+$xivo_statistics->set_data_custom('queue',$tmp->_result);
 
+$xivo_statistics->set_col_struct('lol');
 $xivo_statistics->add_col('presented',
 					'direct',
 					'custom:queue,[name],presented');
@@ -58,12 +58,31 @@ $xivo_statistics->add_col('answered',
 $xivo_statistics->add_col('abandoned',
 					'direct',
 					'custom:queue,[name],abandoned');
-$xivo_statistics->add_col('deterred',
+
+$xivo_statistics->set_col_struct('deterred');
+$xivo_statistics->add_col('on_close',
 					'direct',
 					'custom:queue,[name],deterred');
-$xivo_statistics->add_col('rerouted',
+$xivo_statistics->add_col('on_saturation',
+					'direct',
+					'custom:queue,[name],deterred');
+
+$xivo_statistics->set_col_struct('rerouted');
+$xivo_statistics->add_col('on_hangup',
 					'direct',
 					'custom:queue,[name],rerouted');
+$xivo_statistics->add_col('on_guide',
+					'direct',
+					'custom:queue,[name],rerouted');
+$xivo_statistics->add_col('on_number',
+					'direct',
+					'custom:queue,[name],rerouted');
+
+$xivo_statistics->set_col_struct('default');
+$xivo_statistics->add_col('average_time_waiting',
+					'expression',
+					'{custom:queue,[name],total_time_waiting}/{custom:queue,[name],answered}',
+					'time');
 $xivo_statistics->add_col('home_rated',
 					'expression',
 					'{custom:queue,[name],answered}/{custom:queue,[name],presented}',

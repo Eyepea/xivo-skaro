@@ -38,20 +38,21 @@ $conf = $appstats_conf->get(14);
 if(xivo::load_class('xivo_statistics_agent',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','agent',false) === false)
 	die('Can\'t load xivo_statistics_agent object');
 
-$tmp = new xivo_statistics_agent();
-$tmp->set_queue_log($ls_queue_log);
+$tmp = new xivo_statistics_agent($conf,$ls_queue_log);
 $tmp->parse_log();
 
 $xivo_statistics->set_name('agent');
 
 $xivo_statistics->set_rows('agent',$list_agent,'number');
 
-$xivo_statistics->set_data_custom('agent',$tmp->_result['agent']);
+$xivo_statistics->set_data_custom('agent',$tmp->_result);
 
 $xivo_statistics->add_col('productivity',
 					'expression',
 					'{custom:agent,agent/[number],calltime}/{custom:agent,agent/[number],logintime}',
 					'percent');
+
+$xivo_statistics->set_col_struct('call_counter');
 $xivo_statistics->add_col('treaties',
 					'direct',
 					'custom:agent,agent/[number],connect');
@@ -64,6 +65,7 @@ $xivo_statistics->add_col('missed',
 $xivo_statistics->add_col('outgoing',
 					'direct',
 					'-');
+$xivo_statistics->set_col_struct('total_time');
 $xivo_statistics->add_col('login',
 					'direct',
 					'custom:agent,agent/[number],logintime');
@@ -74,6 +76,24 @@ $xivo_statistics->add_col('available',
 $xivo_statistics->add_col('pause',
 					'direct',
 					'custom:agent,agent/[number],pausetime');
+$xivo_statistics->add_col('traitment',
+					'direct',
+					'0',
+					'time');
+
+$xivo_statistics->set_col_struct('average_time');
+$xivo_statistics->add_col('dmt',
+					'direct',
+					'0',
+					'time');
+$xivo_statistics->add_col('dmmeg',
+					'direct',
+					'0',
+					'time');
+$xivo_statistics->add_col('dmwu',
+					'direct',
+					'0',
+					'time');
 
 $xivo_statistics->gener();
 #$xivo_statistics->render_graph();

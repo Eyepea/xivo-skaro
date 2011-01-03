@@ -26,15 +26,15 @@ $conf = $this->get_var('conf');
 $ls_queue = $this->get_var('ls_queue');
 $table1 = $this->get_var('table1');
 
-?>
+?>	
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-	<div class="sb-content">
-	
+	<div class="sb-content"> 
+		<div class="sb-list"> 
 <?php
 
 echo $table1->render_html();
@@ -43,11 +43,11 @@ echo $table1->render_html();
 #var_dump($conf);
 #var_dump($ls_queue);
 /*
- 		<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
+ 	<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
  */
  ?>
- 		<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
-    </div>
+		</div>
+	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center">&nbsp;</span>
