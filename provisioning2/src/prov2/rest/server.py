@@ -23,13 +23,18 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import simplejson as json
+import binascii
+try:
+    import json
+except ImportError:
+    import simplejson as json
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web import http
 from prov2.devices.util import NumericIdGenerator
 from prov2.services import InvalidParameterError
 from prov2.rest.util import *
+from prov2.util import norm_mac, norm_ip
 
 # TODO input checking
 
@@ -41,10 +46,10 @@ if _PPRINT:
     json.dumps = functools.partial(json.dumps, sort_keys=True, indent=4)
 
 
-def _process_request_failed(request, e, response_code):
+def _process_request_failed(request, err_msg, response_code=http.BAD_REQUEST):
     request.setResponseCode(response_code)
     request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-    return str(e).encode('UTF-8')
+    return str(err_msg).encode('UTF-8')
 
 
 def dev_json_repr(dev, dev_id, dev_uri):
@@ -456,8 +461,7 @@ class _PluginMgrInstallUpgradeResource(Resource):
         try:
             pg_id = content['id']
         except KeyError, e:
-            # XXX not the 'right' response code
-            return _process_request_failed(request, e, http.BAD_REQUEST)
+            return _process_request_failed(request, e)
         else:
             try:
                 pop = self._do_call_app(pg_id)
@@ -499,8 +503,7 @@ class PluginMgrUninstallRecourse(Resource):
         try:
             pg_id = content['id']
         except KeyError, e:
-            # XXX not the 'right' response code
-            return _process_request_failed(request, e, http.BAD_REQUEST)
+            return _process_request_failed(request, e)
         else:
             try:
                 self._app.uninstall_pg(pg_id)
@@ -596,8 +599,7 @@ class PluginInstallServiceInstallResource(Resource):
         try:
             pkg_id = content['id']
         except KeyError, e:
-            # XXX not the 'right' response code
-            return _process_request_failed(request, e, http.BAD_REQUEST)
+            return _process_request_failed(request, e)
         else:
             try:
                 pop = self._srv.install(pkg_id)
@@ -629,8 +631,7 @@ class PluginInstallServiceUninstallResource(Resource):
         try:
             pkg_id = content['id']
         except KeyError, e:
-            # XXX not the 'right' response code
-            return _process_request_failed(request, e, http.BAD_REQUEST)
+            return _process_request_failed(request, e)
         else:
             try:
                 self._srv.uninstall(pkg_id)
@@ -746,3 +747,39 @@ class PluginServicesResource(Resource):
             res.append({'type': type, 'links': [{'rel': type, 'href': request.path + '/' + srv_name}]})
         return json.dumps({"services": res})
 
+
+class DHCPInfoResource(Resource):
+    """
+    DHCP infos can be found in the dhcp_infos attribute.
+    
+    """
+    def __init__(self):
+        Resource.__init__(self)
+        self.dhcp_infos = {}
+    
+    def _transform_dhcp_opts(self, raw_dhcp_opts):
+        dhcp_opts = {}
+        for raw_dhcp_opt in raw_dhcp_opts:
+            code = int(raw_dhcp_opt[:3], 10)
+            value = binascii.unhexlify(raw_dhcp_opt[3:])
+            dhcp_opts[code] = value
+        return dhcp_opts
+    
+    @content_type([PROV2_MIME_TYPE])
+    def render_POST(self, request):
+        content = json.loads(request.content.getvalue())
+        op = content['op'].encode('ascii')
+        ip = norm_ip(content['ip'].encode('ascii'))
+        if op == 'commit':
+            mac = norm_mac(content['mac'].encode('ascii'))
+            dhcp_opts = self._transform_dhcp_opts(content['dhcp_opts'])
+            self.dhcp_infos[ip] = {'mac': mac, 'dhcp_opts': dhcp_opts}
+            request.setResponseCode(http.NO_CONTENT)
+            return ""
+        elif op in ('expiry', 'release'):
+            if ip in self.dhcp_infos:
+                del self.dhcp_infos[ip]
+            request.setResponseCode(http.NO_CONTENT)
+            return ""
+        else:
+            return _process_request_failed(request, 'invalid commit value')

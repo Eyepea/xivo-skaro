@@ -181,6 +181,17 @@ class Plugin(object):
     
     # Methods for TFTP/HTTP services
     
+    # Contrary to TFTP and HTTP, there's no DHCP service, but only an extractor
+    dhcp_dev_info_extractor = None
+    """Return an object providing the IDeviceInfoExtrace interface for
+    DHCP request or None if there's no such object.
+    
+    Request objects are dictionaries. There's one interesting key, 'dhcp_opts',
+    which value is a dictionary which keys are integer representing the DHCP
+    code option and value the raw DHCP value found in the client request.
+    
+    """
+    
     # XXX now that device info extraction has been unified, with the type of
     #     the request being passed as an argument, we could have only one
     #     'dev_info_extractor' for each plugin. The plugin could then use the

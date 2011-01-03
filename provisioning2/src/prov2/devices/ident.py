@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 
 """Request processing service definition."""
-from prov2.plugins import BasePluginManagerObserver
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -21,6 +20,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from prov2.plugins import BasePluginManagerObserver
 from prov2.servers.tftp.service import TFTPNullService
 from twisted.internet import defer
 from twisted.web.resource import Resource, NoResource
@@ -29,6 +29,31 @@ from zope.interface import Interface, implements
 
 # TODO handle the case where ProcessingService.process return a Deferred
 #      that fires it's errback. In TFTP and HTTP request processing service.
+
+def _extract_tftp_ip(request):
+    """Utility function that return the IP address from a TFTP request
+    object (prov2.servers.tftp).
+    
+    """ 
+    return request['address'][0]
+
+
+def _extract_http_ip(request):
+    """Utility function that return the IP address from an HTTP request
+    object (twisted.web).
+    
+    """
+    return request.getClientIP()
+
+
+def _extract_ip(request, request_type):
+    if request_type == 'http':
+        return _extract_http_ip(request)
+    elif request_type == 'tftp':
+        return _extract_tftp_ip(request)
+    else:
+        return None
+
 
 class IDeviceInfoExtractor(Interface):
     """A device info extractor object extract device information from
@@ -78,26 +103,39 @@ class StaticDeviceInfoExtractor(object):
         return defer.succeed(self.dev_info)
 
     
-class OmapiDeviceInfoExtractor(object):
-    """Extract the MAC address from requests by querying an ISC DHCP server via
-    the OMAPI protocol.
+class DHCPDeviceInfoExtractor(object):
+    """Extract the MAC address from requests and other information with the
+    help of external DHCP information.
     
     """
     
     implements(IDeviceInfoExtractor)
     
-    def __init__(self, extract_ip):
+    def __init__(self, dhcp_infos, dhcp_xtor):
         """
-        extract_ip -- a callable object taking a request and returning its IP address
-        
+        dhcp_info_src -- a mapping object where keys are IP address and values are
+          mapping object with the 'mac' and 'dhcp_opts' keys, where the value of
+          'mac' is a MAC address (in normalized format) and the value of 'dhcp_opts'
+          is another mapping object where keys are integer representing the code of
+          a DHCP option and value are the raw option value as a string
+        dhcp_xtor -- a device info extractor that accept DHCP info object and a
+          request type of 'dhcp' and return a device info object (without the
+          MAC address).
         """
-        # TODO get connection info, etc
-        self._extract_ip = extract_ip
-        
+        self._dhcp_infos = dhcp_infos
+        self._dhcp_xtor = dhcp_xtor
+    
     def extract(self, request, request_type):
-        # TODO extract IP, ask an ISC DHCP server via OMAPI for the lease
-        # with this IP, and then extract the MAC address of this (see pypureomapi)
-        return defer.fail(NotImplementedError())
+        ip = _extract_ip(request, request_type)
+        if ip not in self._dhcp_infos:
+            return defer.succeed(None)
+        else:
+            dhcp_info = self._dhcp_infos[ip]
+            dev_info = self._dhcp_xtor.extract(dhcp_info, 'dhcp')
+            if not dev_info:
+                dev_info = {}
+            dev_info['mac'] = dhcp_info['mac']
+            return defer.succeed(dev_info)
 
 
 class ArpDeviceInfoExtractor(object):
@@ -337,8 +375,7 @@ class AllPluginsDeviceInfoExtractor(object):
         """
         self.extractor_factory = extractor_factory
         self._pg_mgr = pg_mgr
-        self._set_http_xtor()
-        self._set_tftp_xtor()
+        self._set_xtors()
         # observe plugin loading/unloading
         obs = BasePluginManagerObserver(self._set_xtors, self._set_xtors)
         pg_mgr.attach(obs)
@@ -346,6 +383,15 @@ class AllPluginsDeviceInfoExtractor(object):
     def _set_xtors(self):
         self._set_http_xtor()
         self._set_tftp_xtor()
+        self._set_dhcp_xtor()
+    
+    def _set_dhcp_xtor(self):
+        pg_extractors = []
+        for pg in self._pg_mgr.itervalues():
+            pg_extractor = pg.dhcp_dev_info_extractor
+            if pg_extractor is not None:
+                pg_extractors.append(pg_extractor)
+        self._dhcp_xtor = self.extractor_factory(pg_extractors)
     
     def _set_http_xtor(self):
         pg_extractors = []
@@ -364,12 +410,12 @@ class AllPluginsDeviceInfoExtractor(object):
         self._tftp_xtor = self.extractor_factory(pg_extractors)
     
     def extract(self, request, request_type):
-        if request_type == 'http':
-            xtor = self._http_xtor
+        try:
+            xtor = getattr(self, '_%s_xtor' % request_type)
+        except AttributeError, e:
+            raise AssertionError(e)
         else:
-            assert request_type == 'tftp'
-            xtor = self._tftp_xtor
-        return xtor.extract(request, request_type)
+            return xtor.extract(request, request_type)
 
 
 # do we want to receive an app object or should object store it locally ?

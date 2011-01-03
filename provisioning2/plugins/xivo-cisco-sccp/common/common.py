@@ -40,7 +40,6 @@ import urllib2
 from fetchfw2.download import DefaultDownloader, InvalidCredentialsError,\
     DownloadError, new_handlers, new_downloaders
 from fetchfw2.storage import RemoteFileBuilder
-from jinja2.exceptions import TemplateNotFound
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from prov2.util import norm_mac, format_mac
@@ -108,6 +107,32 @@ class CiscoDownloader(DefaultDownloader):
             url = login.geturl()
             #logger.debug("Form URL is '%s'", url)
             return url
+
+
+class BaseCiscoDHCPDeviceInfoExtractor(object):
+    def extract(self, request, request_type):
+        assert request_type == 'dhcp'
+        return defer.succeed(self._do_extract(request))
+    
+    _VDI_REGEX = re.compile('\\s(?:79(\\d\\d)|CP-79(\\d\\d)G(?:-GE)?\x00)$')
+    
+    def _do_extract(self, request):
+        if 60 in request:
+            return self._extract_from_vdi(request[60])
+    
+    def _extract_from_vdi(self, vdi, dev_info):
+        # Vendor class identifier:
+        #   "Cisco Systems, Inc. IP Phone 7912" (Cisco 7912 9.0.3)
+        #   "Cisco Systems, Inc. IP Phone CP-7940G\x00" (Cisco 7940 8.1.2)
+        #   "Cisco Systems, Inc. IP Phone CP-7941G\x00" (Cisco 7941 9.0.3)
+        #   "Cisco Systems, Inc. IP Phone CP-7960G\x00" (Cisco 7960 8.1.2)
+        if vdi.startswith('Cisco Systems, Inc. IP Phone'):
+            dev_info = {'vendor':  'Cisco'}
+            m = self._VDI_REGEX.search(vdi)
+            if m:
+                model_num = m.group(1) or m.group(2)
+                dev_info['model'] = '79' + model_num + 'G'
+            return dev_info
 
 
 class BaseCiscoTFTPDeviceInfoExtractor(object):
@@ -255,6 +280,7 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         # TODO add configure service...
         self.services = self._fetchfw_helper.services() 
     
+    dhcp_dev_info_extractor = BaseCiscoDHCPDeviceInfoExtractor()
     tftp_dev_info_extractor = BaseCiscoTFTPDeviceInfoExtractor() 
     
     def _get_xx_language(self, config):

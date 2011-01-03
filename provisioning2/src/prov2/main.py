@@ -48,7 +48,7 @@ from prov2.rest.server import DevicesResource,\
     PluginMgrUpdateResource, PluginMgrListInstallableResource,\
     PluginMgrListInstalledResource, PluginMgrListUpgradeableResource,\
     PluginMgrConfigureResource, PluginMgrInstallResource, PluginMgrUninstallRecourse,\
-    PluginMgrUpgradeResource, PluginsResource
+    PluginMgrUpgradeResource, PluginsResource, DHCPInfoResource
 from twisted.python.util import println
 
 
@@ -578,6 +578,7 @@ def metaaff(prefix):
         print prefix, message
     return aff
 
+dhcpinfo_res = DHCPInfoResource()
 
 #http_xtors = [xtor for xtor in map(lambda p: p.http_dev_info_extractor, plugins) if
 #              xtor is not None]
@@ -587,7 +588,9 @@ def metaaff(prefix):
 #tftp_xtor = LongestDeviceInfoExtractor(tftp_xtors)
 #request_dependant_xtor = TypeBasedDeviceInfoExtractor({'http': http_xtor, 'tftp': tftp_xtor})
 all_pg_xtor = AllPluginsDeviceInfoExtractor(LongestDeviceInfoExtractor, pg_mgr)
-root_xtor = all_pg_xtor
+dhcp_xtor = DHCPDeviceInfoExtractor(dhcpinfo_res.dhcp_infos, all_pg_xtor)
+collab_xtor = CollaboratingDeviceInfoExtractor(VotingUpdater, [dhcp_xtor, all_pg_xtor])
+root_xtor = collab_xtor
 
 ip_retriever = IpDeviceRetriever()
 add_retriever = AddDeviceRetriver()
@@ -669,6 +672,7 @@ dev_res = DevicesResource(app)
 dev_reload_res = DeviceSynchronizeResource(app)
 root.putChild('devices', dev_res)
 root.putChild('dev_sync', dev_reload_res)
+root.putChild('dhcpinfo', dhcpinfo_res)
 
 cfg_res = ConfigsResource(app)
 root.putChild('configs', cfg_res)
