@@ -22,10 +22,23 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 
 class xivo_statistics_agent extends xivo_statistics_abstract
 {
+	
+	private	$_field	= array('logintime'			=> array('type' => 'time'),
+							'holdtime'			=> array('type' => 'time'),
+							'calltime'			=> array('type' => 'time'),
+							'ringtime'			=> array('type' => 'time'),
+							'pausetime'			=> array('type' => 'time'),
+							'connect'			=> array('type' => 'int'),
+							'completeagent'		=> array('type' => 'int'),
+							'completecaller'	=> array('type' => 'int'),
+							'ringnoanswer'		=> array('type' => 'int'),
+							'transfer'			=> array('type' => 'int'),
+							'abandon'			=> array('type' => 'int'),
+							'traitmenttime'		=> array('type' => 'time'));
 		
-	public function __construct($conf,$queue_log)
+	public function __construct(&$_XOBJ,&$ipbx)
 	{
-		parent::__construct($conf,$queue_log);		
+		parent::__construct(&$_XOBJ,&$ipbx);
 	}
 	
 	public function parse_log()
@@ -50,39 +63,13 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 			{
 				$data_process = &$res[$agent];
 				$data_process = array();
-				$data_process['logintime'] = array();
-				$data_process['logintime']['type'] = 'time';
-				$data_process['logintime']['result'] = 0;
-				$data_process['holdtime'] = array();
-				$data_process['holdtime']['type'] = 'time';
-				$data_process['holdtime']['result'] = 0;
-				$data_process['calltime'] = array();
-				$data_process['calltime']['type'] = 'time';
-				$data_process['calltime']['result'] = 0;
-				$data_process['ringtime'] = array();
-				$data_process['ringtime']['type'] = 'time';
-				$data_process['ringtime']['result'] = 0;
-				$data_process['pausetime'] = array();
-				$data_process['pausetime']['type'] = 'time';
-				$data_process['pausetime']['result'] = 0;
-				$data_process['connect'] = array();
-				$data_process['connect']['type'] = 'int';
-				$data_process['connect']['result'] = 0;
-				$data_process['completeagent'] = array();
-				$data_process['completeagent']['type'] = 'int';
-				$data_process['completeagent']['result'] = 0;
-				$data_process['completecaller'] = array();
-				$data_process['completecaller']['type'] = 'int';
-				$data_process['completecaller']['result'] = 0;
-				$data_process['ringnoanswer'] = array();
-				$data_process['ringnoanswer']['type'] = 'int';
-				$data_process['ringnoanswer']['result'] = 0;
-				$data_process['transfer'] = array();
-				$data_process['transfer']['type'] = 'int';
-				$data_process['transfer']['result'] = 0;
-				$data_process['abandon'] = array();
-				$data_process['abandon']['type'] = 'int';
-				$data_process['abandon']['result'] = 0;
+				
+				foreach ($this->_field as $k => $field)
+				{
+					$data_process[$k] = array();
+					$data_process[$k]['type'] = $field['type'];
+					$data_process[$k]['result'] = 0;
+				}
 			}
 			
 			switch ($event)
@@ -102,12 +89,14 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 				case 'CONNECT':
 					$holdtime = $this->eval_data_queue_log($queue_log,'CONNECT','holdtime');
 					$this->update_result(array($agent,'holdtime'),$holdtime);
+					$this->update_result(array($agent,'traitmenttime'),$holdtime);
 					$this->update_result(array($agent,'connect'),1);
 					break;
 				# COMPLETEAGENT(holdtime|calltime|origposition)
 				case 'COMPLETEAGENT':
 					$calltime = $this->eval_data_queue_log($queue_log,'COMPLETEAGENT','calltime');
 					$this->update_result(array($agent,'calltime'),$calltime);
+					$this->update_result(array($agent,'traitmenttime'),$calltime);
 					$holdtime = $this->eval_data_queue_log($queue_log,'COMPLETEAGENT','holdtime');
 					$this->update_result(array($agent,'holdtime'),$holdtime);
 					$this->update_result(array($agent,'completeagent'),1);
@@ -116,6 +105,7 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 				case 'COMPLETECALLER':
 					$calltime = $this->eval_data_queue_log($queue_log,'COMPLETECALLER','calltime');
 					$this->update_result(array($agent,'calltime'),$calltime);
+					$this->update_result(array($agent,'traitmenttime'),$calltime);
 					$holdtime = $this->eval_data_queue_log($queue_log,'COMPLETECALLER','holdtime');
 					$this->update_result(array($agent,'holdtime'),$holdtime);
 					$this->update_result(array($agent,'completecaller'),1);
@@ -124,6 +114,7 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 				case 'RINGNOANSWER':
 					$ringtime = $this->eval_data_queue_log($queue_log,'RINGNOANSWER','ringtime');
 					$this->update_result(array($agent,'ringtime'),$ringtime);
+					$this->update_result(array($agent,'traitmenttime'),$ringtime);
 					$this->update_result(array($agent,'ringnoanswer'),1);
 					break;
 				# TRANSFER(extension|context|holdtime|calltime)
@@ -140,9 +131,10 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 				case 'UNPAUSE':
 					$pausetime = $this->eval_during_time($agent,$event,'PAUSE','UNPAUSE',$time);
 					$this->update_result(array($agent,'pausetime'),$pausetime);
+					$this->update_result(array($agent,'traitmenttime'),$pausetime);
 					break;
 				default:
-			}			
+			}
 		}
 	}
 

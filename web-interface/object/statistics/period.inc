@@ -23,9 +23,11 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_period extends xivo_statistics_abstract
 {
 	
-	public function __construct($conf,$queue_log)
+	private	$_field	= array();
+	
+	public function __construct(&$_XOBJ,&$ipbx)
 	{
-		parent::__construct($conf,$queue_log);
+		parent::__construct(&$_XOBJ,&$ipbx);
 	}
 	
 	public function parse_log()

@@ -29,7 +29,6 @@ $url     = &$this->get_module('url');
 	</h3>
 	<div class="sb-content">
 
-	index
 
     </div>
 	<div class="sb-foot xspan">
@@ -38,3 +37,8 @@ $url     = &$this->get_module('url');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
+
+<?php 
+$bench = $this->get_var('bench');
+echo round(($bench*1000),3), 'ms';
+?>

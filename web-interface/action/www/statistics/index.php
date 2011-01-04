@@ -18,9 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+include(dirname(__FILE__).'/common.php');
+
+if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
+	die('Can\'t load xivo_statistics_queue object');
+
+$stats_queue = new xivo_statistics_queue(&$_XOBJ,&$ipbx);
+
+if (isset($_QR['confid']) === true)
+	$stats_queue->set_idconf($_QR['confid']);
+
+$_TPL->set_var('confid',$stats_queue->get_idconf());
+
+$bench_end = microtime(true);
+$_TPL->set_var('bench',($bench_end - $bench_start));
+
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/statistics/statistics');
+$menu->set_toolbar('toolbar/statistics');
 
 $_TPL->set_bloc('main',"statistics/index");
 $_TPL->set_struct('statistics/index');

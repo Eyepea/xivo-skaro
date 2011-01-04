@@ -23,30 +23,20 @@ include(dirname(__FILE__).'/common.php');
 $appqueue = &$ipbx->get_application('queue');
 $queue_qos = $appqueue->get_qos();
 
-$appqueue = &$ipbx->get_application('queue');
-$list_queue = $appqueue->get_queues_list();
-
-$appagent = &$ipbx->get_application('agent');
-$list_agent = $appagent->get_agentfeatures();
-
-$appqueue_log = &$ipbx->get_application('queue_log');
-$ls_queue_log = $appqueue_log->get_queue_logs_list();
-
-$appstats_conf = &$_XOBJ->get_application('stats_conf');
-$conf = $appstats_conf->get(14);
-
 if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
 
-$tmp = new xivo_statistics_queue($conf,$ls_queue_log);
-$tmp->set_data_custom('qos',$queue_qos);
-$tmp->parse_log();
+$stats_queue = new xivo_statistics_queue(&$_XOBJ,&$ipbx);
+if (isset($_QR['confid']) === true)
+	$stats_queue->set_idconf($_QR['confid']);
+$stats_queue->set_data_custom('qos',$queue_qos);
+$stats_queue->parse_log();
 
 $xivo_statistics->set_name('queue');
 
-$xivo_statistics->set_rows('queuename',$list_queue,'name');
+$xivo_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name');
 
-$xivo_statistics->set_data_custom('queue',$tmp->_result);
+$xivo_statistics->set_data_custom('queue',$stats_queue->_result);
 
 $xivo_statistics->set_col_struct('lol');
 $xivo_statistics->add_col('presented',
@@ -62,21 +52,21 @@ $xivo_statistics->add_col('abandoned',
 $xivo_statistics->set_col_struct('deterred');
 $xivo_statistics->add_col('on_close',
 					'direct',
-					'custom:queue,[name],deterred');
+					'custom:queue,[name],deterred_on_close');
 $xivo_statistics->add_col('on_saturation',
 					'direct',
-					'custom:queue,[name],deterred');
+					'custom:queue,[name],deterred_on_saturation');
 
 $xivo_statistics->set_col_struct('rerouted');
-$xivo_statistics->add_col('on_hangup',
+$xivo_statistics->add_col('on_hungup',
 					'direct',
-					'custom:queue,[name],rerouted');
+					'custom:queue,[name],rerouted_on_hungup');
 $xivo_statistics->add_col('on_guide',
 					'direct',
-					'custom:queue,[name],rerouted');
+					'custom:queue,[name],rerouted_on_guide');
 $xivo_statistics->add_col('on_number',
 					'direct',
-					'custom:queue,[name],rerouted');
+					'custom:queue,[name],rerouted_on_number');
 
 $xivo_statistics->set_col_struct('default');
 $xivo_statistics->add_col('average_time_waiting',
@@ -91,6 +81,10 @@ $xivo_statistics->add_col('qos',
 					'expression',
 					'{custom:queue,[name],qos}/{custom:queue,[name],answered}',
 					'percent');
+/*
+var_dump($xivo_statistics->get_val_expression('custom:queue,[name],total_time_waiting','queue8001'));
+var_dump($xivo_statistics->get_val_expression('custom:queue,[name],answered','queue8001'));
+*/
 
 $xivo_statistics->gener();
 #$xivo_statistics->render_graph();
@@ -98,15 +92,16 @@ $table1 = $xivo_statistics;
 #$xivo_statistics->reset();
 
 
-$_TPL->set_var('statistics',$xivo_statistics);
-$_TPL->set_var('conf',$conf);
-$_TPL->set_var('ls_queue',$list_queue);
-$_TPL->set_var('queue_log',$list_queue_log);
+$_TPL->set_var('confid',$stats_queue->get_idconf());
 $_TPL->set_var('table1',$table1);
+
+$bench_end = microtime(true);
+$_TPL->set_var('bench',($bench_end - $bench_start));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/statistics/statistics');
+$menu->set_toolbar('toolbar/statistics');
 
 $_TPL->set_bloc('main',"statistics/stats1");
 $_TPL->set_struct('statistics/index');

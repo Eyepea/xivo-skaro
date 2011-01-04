@@ -229,6 +229,7 @@ $array['statistics']				= 'statistics/index.php';
 $array['statistics/stats1']			= 'statistics/index.php/stats1';
 $array['statistics/stats2']			= 'statistics/index.php/stats2';
 $array['statistics/stats3']			= 'statistics/index.php/stats3';
+$array['statistics/stats4']			= 'statistics/index.php/stats4';
 $array['statistics/configuration']		= 'statistics/index.php/configuration/';
 
 ?>

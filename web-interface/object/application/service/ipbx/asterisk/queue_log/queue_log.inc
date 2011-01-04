@@ -55,29 +55,48 @@ class xivo_application_service_asterisk_queue_log extends xivo_application_aster
 		return($this->_queue_log->get_all_except($name,$order,$limit,$assoc));
 	}
 
-	function get_queue_logs_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	function get_queue_logs_search($search,$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_queue_logs('search',$search,$disable,$order,$limit,$assoc));
+		return($this->_get_queue_logs('search',$search,$order,$limit,$assoc));
 	}
 
-	function get_queue_logs_list($disable=null,$order=null,$limit=null,$assoc=false)
+	function get_queue_logs_list($order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_queue_logs('list',null,$disable,$order,$limit,$assoc));
+		return($this->_get_queue_logs('list',null,$order,$limit,$assoc));
 	}
 
-	function _get_queue_logs($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	function _get_queue_logs($action,$search='',$order=null,$limit=null,$assoc=false)
 	{
 		$search = strval($search);
 
 		switch($action)
 		{
 			case 'search':
-				$rs = $this->_queue_log->search($search,$disable,$order,$limit);
+				$rs = $this->_queue_log->search($search,$order,$limit);
 				break;
 			case 'list':
 			default:
-				$rs = $this->_queue_log->get_all($disable,true,$order,$limit);
+				$rs = $this->_queue_log->get_all(null,true,$order,$limit);
 		}
+
+		$this->_cnt = $this->_queue_log->get_cnt();
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$this->_cnt = $this->_queue_log->get_cnt();
+
+		if(empty($rs) === true)
+			return(false);
+		else if((bool) $assoc === false)
+			return(array_values($rs));
+
+		return($rs);
+	}
+
+	function get_queue_logs_stats($dstart,$dend,$agent,$queue,$order=null,$limit=null,$assoc=false)
+	{		
+		$rs = $this->_queue_log->stats($dstart,$dend,$agent,$queue,$order,$limit);
 
 		$this->_cnt = $this->_queue_log->get_cnt();
 

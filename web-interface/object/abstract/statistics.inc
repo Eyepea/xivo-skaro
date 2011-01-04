@@ -18,15 +18,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 class xivo_statistics_abstract
 {
 	
+	private	$_xobj		 		= null;	
+	private	$_ipbx		 		= null;	
 	public 	$_queue_log_conf	= array();
 	public 	$_queue_log 		= array();
 	public 	$_data_custom 		= array();
 	public 	$_counter	 		= array();
 	public 	$_conf		 		= array();
+	public 	$_statsconfsess		= array();
 	public 	$_period	 		= array('period1'	=> array(
 											'exp'	=> '',
 											'beg'	=> 0,
@@ -54,22 +56,63 @@ class xivo_statistics_abstract
 											));
 	public		$_result 			= array();
 	
-	public function __construct($conf,$queue_log)
+	public function __construct(&$xobj,&$ipbx)
 	{
-		if ($this->set_conf($conf) === false)
+		if (is_object($xobj) === false
+		|| is_object($ipbx) === false)
+			return(false);
+		
+		$this->_xobj = &$xobj;
+		$this->_ipbx = &$ipbx;
+		
+		if(dwho_issa('_statsconf',$_SESSION) === false)
+			$_SESSION['_statsconf'] = array();
+			
+		$this->_statsconfsess = &$_SESSION['_statsconf'];
+		
+		if($this->load_conf() === false)
 			trigger_error('Failed to statistics configuration',E_USER_ERROR);
-		$this->set_queue_log($queue_log);
+			
+		if($this->load_queuelog() === false)
+			trigger_error('Failed to load queuelog data',E_USER_ERROR);
+		
 		if(($this->_queue_log_conf = &dwho_gat::load_get('queue_log',DWHO_PATH_CONF)) === false)
-			trigger_error('Failed to load queue_log configuration',E_USER_ERROR);
+			trigger_error('Failed to load queuelog configuration',E_USER_ERROR);
 	}
 	
-	private function set_conf($conf)
+	public function set_idconf($confid)
+	{	
+		$this->_statsconfsess['id'] = (int) $confid;
+	}
+	
+	public function get_idconf()
+	{	
+		if (isset($this->_statsconfsess['id']) === false
+		|| ($confid = $this->_statsconfsess['id']) === 0)
+			return(false);
+		
+		return($confid);
+	}
+	
+	private function load_conf()
 	{
-		if (is_array($conf) === false
+		if (($confid = $this->get_idconf()) === false)
+			return(false);
+			
+		$appstats_conf = $this->_xobj->get_application('stats_conf');
+
+		if (($conf = $appstats_conf->get($confid)) === false
+		|| is_array($conf) === false
 		|| isset($conf['stats_conf']) === false)
 			return(false);
 		
 		$this->_conf = $conf;
+		$this->init_conf();
+	}
+	
+	private function init_conf()
+	{		
+		$conf = $this->_conf;
 		
 		$stats_conf = $conf['stats_conf'];
 		
@@ -90,9 +133,73 @@ class xivo_statistics_abstract
 		return(true);
 	}
 	
-	private function set_queue_log($queue_log)
+	private function load_queuelog()
 	{
-		$this->_queue_log = $queue_log;
+		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
+			return(false);
+		
+		$queue = array_values($this->_conf['queue']);
+		$nb_queue = count($this->_conf['queue']);
+		$agent = array_values($this->_conf['agent']);
+		$nb_agent = count($this->_conf['agent']);
+		
+		$ls_queuename = array();
+		for($i=0;$i<$nb_queue;$i++)
+			array_push($ls_queuename,$queue[$i]['name']);
+			
+		$ls_agent = array();
+		for($i=0;$i<$nb_agent;$i++)
+		{
+			array_push($ls_agent,'agent/'.$agent[$i]['number']);
+			array_push($ls_agent,'Agent/'.$agent[$i]['number']);
+		}
+			
+		$dstart = '';
+		$dend = '';	
+
+		$this->_queue_log = $appqueue_log->get_queue_logs_stats($dstart,$dend,$ls_agent,$ls_queuename);
+		
+		return(true);
+	}
+	
+	public function get_queue_list()
+	{			
+		if (($appqueue = &$this->_ipbx->get_application('queue')) === false)
+			return(false);
+		
+		$list_queue = $appqueue->get_queues_list();
+		
+		$queue = array_values($list_queue);
+		$nb_queue = count($queue);
+				
+		$res = array();
+		for($i=0;$i<$nb_queue;$i++)
+		{
+			if (array_key_exists($queue[$i]['id'],$this->_conf['queue']) === true)
+				array_push($res,$queue[$i]);
+		}
+		
+		return($res);
+	}
+	
+	public function get_agent_list()
+	{			
+		if (($appagent = &$this->_ipbx->get_application('agent')) === false)
+			return(false);
+		
+		$list_agent = $appagent->get_agentfeatures();
+		
+		$agent = array_values($list_agent);
+		$nb_agent = count($agent);
+				
+		$res = array();
+		for($i=0;$i<$nb_agent;$i++)
+		{
+			if (array_key_exists($agent[$i]['id'],$this->_conf['agent']) === true)
+				array_push($res,$agent[$i]);
+		}
+		
+		return($res);
 	}
 	
 	public function set_data_custom($key,$data)
@@ -129,46 +236,54 @@ class xivo_statistics_abstract
 		return(0);		
 	}
 
-	public function eval_during_time($key,$event,$eventstart,$eventend,$time)
+	public function eval_during_time($key,$eventprocess,$eventstart,$eventend,$time)
 	{			
 		if (isset($this->_counter[$key]) === false)
-		{
 			$this->_counter[$key] = array();
-			$this->_counter[$key][$eventstart] = 0;
-			$this->_counter[$key]['c'] = 0;
+			
+		if (isset($this->_counter[$key][$eventstart]) === false)
+		{
+			$this->_counter[$key][$eventstart] = array();
+			$this->_counter[$key][$eventstart]['start'] = 0;
+			$this->_counter[$key][$eventstart]['token'] = 0;
+			$this->_counter[$key][$eventstart]['total'] = 0;
 		}
-			
-		$counter = &$this->_counter[$key];
+					
+		$counter = &$this->_counter[$key][$eventstart];
 		$timearr = explode('.',$time);
-		$timeprocess = dwho_change_date_format($timearr[0],'Y-m-d H:i:s','U');
+		
+		if (preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',$timearr[0]) !== 1)
+			return(false);
 			
+		$timeprocess = (int) dwho_change_date_format($timearr[0],'Y-m-d H:i:s','U');
+		
 		$rs = 0;
-		switch ($event)
+		switch ($eventprocess)
 		{
 			case $eventstart:
-				if (false
-				&& $counter['c'] === 1
-				&& $counter[$event] !== 0)
-					$rs = ($timeprocess - $counter[$event]);
-				$counter['c'] = 1;
-				$counter[$event] = $timeprocess;
+				if ($counter['token'] === 1
+				&& $counter['start'] !== 0)
+					$rs = ($timeprocess - $counter['start']);	
+				$counter['token'] = 1;
+				$counter['start'] = $timeprocess;		
 				break;
 			case $eventend:
-				$rs = ($timeprocess - $counter[$eventstart]);
-				$counter['c'] = 0;
-				$counter[$eventstart] = 0;
+				if ($counter['token'] === 0)
+					continue;
+				$rs = ($timeprocess - $counter['start']);					
+				$counter['token'] = 0;
+				$counter['start'] = 0;
 				break;
 			default:
 		}
+		
+		$counter['total'] += $rs;
+		
 		return($rs);
 	}
 	
 	public function update_result($var,$str,$operator='+')
 	{
-		/*
-		$res = &$this->_result;			
-		$res = &$res[$key][$type]['result'];
-		*/
 		if (($res = call_user_func_array(array($this,'eval_result_var'), $var)) === null
 		|| isset($res['result']) === false)
 			return(false);
@@ -189,6 +304,20 @@ class xivo_statistics_abstract
 		$this->set_result_var($result,$var);
 		
 		return(true);
+	}
+	
+	private function set_result_var($result,$arr)
+	{	
+		$var = &$this->_result;
+		
+		for($i = 0;$i < count($arr);$i++)
+		{
+			$key = $arr[$i];
+			if (isset($var[$key]) === true)
+				$var = &$var[$key];
+		}
+		
+		$var['result'] = $result;	
 	}
 	
 	private function eval_result_var() 
@@ -221,20 +350,6 @@ class xivo_statistics_abstract
 		}
 	
 		return($ref);	
-	}
-	
-	private function set_result_var($result,$arr)
-	{	
-		$var = &$this->_result;
-		
-		for($i = 0;$i < count($arr);$i++)
-		{
-			$key = $arr[$i];
-			if (isset($var[$key]) === true)
-				$var = &$var[$key];
-		}
-		
-		$var['result'] = $result;	
 	}
 	
 }

@@ -22,7 +22,6 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_disable	= null;
 
 	function search($arr,$order=null,$limit=null)
 	{
@@ -54,6 +53,44 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			return(false);
 
 		return(true);
+	}
+
+	function stats($dstart,$dend,$agent,$queue,$order=null,$limit=null)
+	{
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_table);
+		
+		#$this->_dso->wherein('agent',$agent);
+		#$this->_dso->andwherein('queuename',$queue);
+	/*
+		$this->_dso->wherein('id','');
+		
+		$this->_dso->wherecontain('firstname',$value);
+		$this->_dso->orwherecontain('lastname',$value);
+		$this->_dso->orwherecontain('number',$value);
+
+		if(($concat = $this->_dso->concat(array((object) 'firstname',
+							' ',
+							(object) 'lastname'))) !== false)
+			$this->_dso->orwherecontain((object) $concat,$value,true);
+
+		if($this->_dso->aggregate_where() === false)
+			return(false);
+	*/
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 	}
 }
 

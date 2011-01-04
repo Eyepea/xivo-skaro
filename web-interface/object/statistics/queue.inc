@@ -23,9 +23,21 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_queue extends xivo_statistics_abstract
 {
 	
-	public function __construct($conf,$queue_log)
+	private	$_field	= array('presented'				=> array('type' => 'int'),
+							'answered'				=> array('type' => 'int'),
+							'abandoned'				=> array('type' => 'int'),
+							'deterred_on_close'		=> array('type' => 'int'),
+							'deterred_on_saturation'=> array('type' => 'int'),
+							'rerouted_on_hungup'	=> array('type' => 'int'),
+							'rerouted_on_guide'		=> array('type' => 'int'),
+							'rerouted_on_number'	=> array('type' => 'int'),
+							'total_time_waiting'	=> array('type' => 'int'),
+							'home_rated'			=> array('type' => 'percent'),
+							'qos'					=> array('type' => 'int'));
+	
+	public function __construct(&$_XOBJ,&$ipbx)
 	{
-		parent::__construct($conf,$queue_log);
+		parent::__construct(&$_XOBJ,&$ipbx);
 	}
 	
 	public function parse_log()
@@ -50,30 +62,13 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			{
 				$data_process = &$res[$queuename];
 				$data_process = array();
-				$data_process['presented'] = array();
-				$data_process['presented']['type'] = 'int';
-				$data_process['presented']['result'] = 0;
-				$data_process['answered'] = array();
-				$data_process['answered']['type'] = 'int';
-				$data_process['answered']['result'] = 0;
-				$data_process['abandoned'] = array();
-				$data_process['abandoned']['type'] = 'int';
-				$data_process['abandoned']['result'] = 0;
-				$data_process['deterred'] = array();
-				$data_process['deterred']['type'] = 'int';
-				$data_process['deterred']['result'] = 0;
-				$data_process['rerouted'] = array();
-				$data_process['rerouted']['type'] = 'int';
-				$data_process['rerouted']['result'] = 0;
-				$data_process['total_time_waiting'] = array();
-				$data_process['total_time_waiting']['type'] = 'int';
-				$data_process['total_time_waiting']['result'] = 0;
-				$data_process['home_rated'] = array();
-				$data_process['home_rated']['type'] = 'percent';
-				$data_process['home_rated']['result'] = 0;
-				$data_process['qos'] = array();
-				$data_process['qos']['type'] = 'int';
-				$data_process['qos']['result'] = 0;
+				
+				foreach ($this->_field as $k => $field)
+				{
+					$data_process[$k] = array();
+					$data_process[$k]['type'] = $field['type'];
+					$data_process[$k]['result'] = 0;
+				}
 			}
 			
 			switch ($event)
@@ -94,10 +89,18 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 					&& ($stats_qos = (int) $this->_data_custom['qos'][$queuename]['stats_qos']) !== 0
 					&& $holdtime << $stats_qos)
 						$this->update_result(array($queuename,'qos'),1);
-					break;		
+					break;
+				# EXITEMPTY(position|origposition|waittime)
+				case 'EXITEMPTY':
+					$this->update_result(array($queuename,'rerouted_on_hungup'),1);
+					break;					 
+				# EXITWITHTIMEOUT(position)
+				case 'EXITWITHTIMEOUT':
+					$this->update_result(array($queuename,'rerouted_on_guide'),1);
+					break;
 				# TRANSFER(extension|context|holdtime|calltime) 
 				case 'TRANSFER':
-					$this->update_result(array($queuename,'rerouted'),1);
+					$this->update_result(array($queuename,'rerouted_on_number'),1);
 					break;
 				# ABANDON(positionorig|positionwaittime)
 				case 'ABANDON':

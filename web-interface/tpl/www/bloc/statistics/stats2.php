@@ -35,17 +35,8 @@ $table1 = $this->get_var('table1');
 	</h3>
 	<div class="sb-content"> 
 		<div class="sb-list"> 
-<?php
-
-echo $table1->render_html();
-
-#var_dump($queue_log);
-#var_dump($conf);
-#var_dump($ls_queue);
-/*
- 	<img src="<?=$basedir?><?=$table1->get_name()?>.png" />
- */
- ?>
+			<?=$table1->render_html();?>
+ 			<!-- <img src="<?=$basedir?><?=$table1->get_name()?>.png" /> -->
 		</div>
 	</div>
 	<div class="sb-foot xspan">
@@ -54,3 +45,9 @@ echo $table1->render_html();
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
+
+
+<?php 
+$bench = $this->get_var('bench');
+echo round(($bench*1000),3), 'ms';
+?>

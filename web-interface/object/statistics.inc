@@ -21,7 +21,7 @@
 class xivo_statistics
 {
 	private  $_name			= '';
-	private  $_col_head		= '';
+	private  $_col_struct	= '';
 	private  $_struct		= array();
 	private  $_data			= array();
 	private  $_data_custom	= array();
@@ -38,6 +38,7 @@ class xivo_statistics
 	public function reset()
 	{
 		$this->_name			= '';
+		$this->_col_struct		= '';
 		$this->_data			= array();
 		$this->_data_custom		= array();
 		$this->_data_table		= array();
@@ -89,18 +90,18 @@ class xivo_statistics
 	
 	public function set_col_struct($str) 
 	{		
-		$this->_col_head = $str;
+		$this->_col_struct = $str;
 	}
 	
 	public function add_col($label,$type,$expression,$format='int',$order=null) 
 	{
-		if (empty($this->_col_head) === true)
-			$this->_col_head = 'default';
+		if (empty($this->_col_struct) === true)
+			$this->_col_struct = 'default';
 		
-		if (isset($this->_struct[$this->_col_head]) === false)
-			$this->_struct[$this->_col_head] = array();
+		if (isset($this->_struct[$this->_col_struct]) === false)
+			$this->_struct[$this->_col_struct] = array();
 			
-		$refstruct = &$this->_struct[$this->_col_head];
+		$refstruct = &$this->_struct[$this->_col_struct];
 		array_push($refstruct, $label);
 			
 		$ref = &$this->_prepare_cols;
@@ -167,30 +168,33 @@ class xivo_statistics
 				$rs = 0;
 				switch($type) 
 				{
-					case 'direct':
-						
-						$val = $this->eval_expression($expression,$rowlabel);
-						
-						if (is_array($val) === false)
-							break;
+					case 'direct':						
+						$std = '#^([\w,:/\[\]]+)#i';
 							
-						$format = $val['type'];
-						$rs = $val['result'];
-						
+						# custom:queue,[name],deterred	
+						if(preg_match($std,$expression,$out) === 1)
+						{		
+							$val = $this->eval_expression($expression,$rowlabel);
+							
+							if (is_array($val) === false)
+								break;
+								
+							$format = $val['type'];
+							$rs = $val['result'];
+						}						
 						break;
 					case 'expression':
-						
-						$std = '#^{([\w,:/\[\]]+)}([/+*\-]{1}){([\w,:/\[\]]+)}#i';
+						$ope = '#^{([\w,:/\[\]]+)}([/+*\-]{1}){([\w,:/\[\]]+)}#i';
 						$stdif = '#^if\({([\w,:]+)}([><=]{1}){([\w,:\[\]:]+)}\)=([\w]+)([/+*\-]{0,1})([a-z]*)#i';						
 						$multif = '#^if\(([\w,:><=\[\]\}\{&\|]+)\)=([\w]+)([/+*\-]{0,1})([a-z]*)#i';
 							
 						# {custom:agent,agent/[number],calltime}/{custom:agent,agent/[number],logintime}
-						if(preg_match($std,$expression,$out) === 1)
+						if(preg_match($ope,$expression,$out) === 1)
 						{
 							$val1 = $this->eval_expression($out[1],$rowlabel);
 							if (is_array($val1) === true)
 								$val1 = $val1['result'];
-								
+							
 							$val2 = $this->eval_expression($out[3],$rowlabel);
 							if (is_array($val2) === true)
 								$val2 = $val2['result'];
@@ -201,7 +205,7 @@ class xivo_statistics
 					default:
 				}
 				
-				$result = $this->get_result_formated($format,$rs);
+				$result = $this->get_result_formated($rs,$format);
 				$row_data_table[$label]['expression'] = $expression;
 				$row_data_table[$label]['format'] = $format;
 				$row_data_table[$label]['result'] = $result;
@@ -212,7 +216,14 @@ class xivo_statistics
 	}
 	
 	private function eval_calculator($val1,$val2,$operator)
-	{							
+	{
+		if (is_array($val1) === true
+		&& isset($val1['result']) === true)
+			$val1 = $val1['result'];
+		if (is_array($val2) === true
+		&& isset($val2['result']) === true)
+			$val2 = $val2['result'];
+			
 		switch($operator)
 		{
 			case '/':
@@ -231,7 +242,17 @@ class xivo_statistics
 				$rs = 0;
 		}
 		return($rs);
-	}		
+	}
+	
+	public function get_val_expression($expression,$customevalvar=null,$format=null)
+	{
+		$rs = $this->eval_expression($expression,$customevalvar);
+		
+		if (is_null($format) === true)
+			return($rs);
+		
+		return($this->get_result_formated($format,$rs));
+	}
 	
 	private function eval_expression($expr,$customevalvar=null)
 	{							
@@ -264,13 +285,14 @@ class xivo_statistics
 			$key = $dcs[$i];
 			if (preg_match('#^\[([a-z]+)\]#i',$key,$dcsout) === 1)
 				array_push($tmp,$customevalvar);
-			elseif (preg_match('#^([\w/]+)\[([a-z]+)\]#i',$key,$dcsout) === 1)
+			elseif (preg_match('#^([\w/]+)\[([a-z]+)\]#i',$key,$dcsout) === 1
+			&& is_null($customevalvar) === false)
 				array_push($tmp,$dcsout[1].$customevalvar);
 			else
 				array_push($tmp,$key);
 		}
 		
-		$var = call_user_func_array(array($this, 'eval_var'), $tmp);
+		$var = call_user_func_array(array($this,'eval_var'), $tmp);
 		
 		return($var);
 	}
@@ -309,9 +331,18 @@ class xivo_statistics
 		return($ref);	
 	}
   
-	private function get_result_formated($format,$str)
+	private function get_result_formated($str,$type=null)
 	{		
-		switch ($format)
+		if (is_array($str) === true
+		&& isset($str['result']) === true)
+			$str = $str['result'];
+			
+		if (is_array($str) === true
+		&& isset($str['fype']) === true
+		&& empty($str['type']) === false)
+			$type = $str['type'];
+		
+		switch ($type)
 		{
 			case 'int':
 				return((int) $str);
@@ -371,12 +402,16 @@ class xivo_statistics
 		$return .= '<thead>';
 		$return .= '<tr class="sb-top">';
 		$return .= '<th class="th-left">&nbsp;</th>';
-		$return .= '<th class="th-center">&nbsp;</th>';	
+		$return .= '<th class="th-center">&nbsp;</th>';
+		$c=0;
 		foreach($this->_struct as $keystruct => $datastruct)
 		{
-			$return .= '<th class="th-center" colspan="'.((count($datastruct))).'">'.$keystruct.'</th>';
+			if ($c < count($this->_struct)-1)
+				$return .= '<th class="th-center" colspan="'.(count($datastruct)).'">'.$keystruct.'</th>';
+			else
+				$return .= '<th class="th-right" colspan="'.(count($datastruct)).'">'.$keystruct.'</th>';
+			$c++;			
 		}
-		$return .= '<th class="th-right">&nbsp;</th>';
 		$return .= '</tr>';
 		$return .= '</thead>';
 		
@@ -390,12 +425,17 @@ class xivo_statistics
 			$return .= '<tr class="sb-top">';
 			$return .= '<th class="th-left">&nbsp;</th>';
 			$return .= '<th class="th-center">&nbsp;</th>';	
+			$c=0;
 			foreach ($cols as $colname => $colvalue)
-				$return .= '<th class="th-center">'.$colname.'</th>';
-			$return .= '<th class="th-right">&nbsp;</th>';
+			{
+				if ($c < count($cols)-1)
+					$return .= '<th class="th-center">'.$colname.'</th>';
+				else
+					$return .= '<th class="th-right">'.$colname.'</th>';
+				$c++;
+			}
 			$return .= '</tr>';
-			$return .= '</thead>';
-			
+			$return .= '</thead>';			
 			$y++;
 		}
 		
@@ -407,6 +447,7 @@ class xivo_statistics
 			$return .= '<td class="td-left"><input type="checkbox" name="stats[]" id="it-stats-0" class="it-checkbox" value="1" /></td>';	
 			$return .= '<td class="txt-left" title="'.dwho_alttitle($row).'">'.$row.'</td>';	
 			$nb_cols = 1;
+			$i=0;
 			foreach ($cols as $colname => $colvalue)
 			{
 				if (empty($colvalue) === true)
@@ -415,10 +456,13 @@ class xivo_statistics
 					continue;
 				}
 				
-				$return .= '<td>'.$this->eval_result_data($colvalue).'</td>';
+				if ($i < count($cols)-1)
+					$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
+				else
+					$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';
 				$nb_cols++;
+				$i++;
 			}
-			$return .= '<td class="td-right">&nbsp;</td>';	
 			$return .= '</tr>';
 			$return .= '</tbody>';
 			$c++;

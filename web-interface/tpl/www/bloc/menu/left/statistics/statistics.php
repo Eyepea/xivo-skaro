@@ -29,6 +29,11 @@ $url  = &$this->get_module('url');
 	</dt>
 	<dd>
 		<dl>
+			<dt><?=$this->bbf('mn_left_ti_home');?></dt>
+			<dd id="mn-1">
+				<?=$url->href_html($this->bbf('mn_left_home'),
+						   'statistics','');?>
+			</dd>
 			<dt><?=$this->bbf('mn_left_ti_configuration');?></dt>
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_configuration'),
@@ -50,6 +55,10 @@ $url  = &$this->get_module('url');
 			<dd id="mn-3">
 				<?=$url->href_html($this->bbf('mn_left_statistics-3'),
 						   'statistics/stats3');?>
+			</dd>
+			<dd id="mn-4">
+				<?=$url->href_html($this->bbf('mn_left_statistics-4'),
+						   'statistics/stats4');?>
 			</dd>
 		</dl>
 	</dd>

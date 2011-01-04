@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$bench_start = microtime(true);
+
 $gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
 $basedir = '/img/graphs/pchart/';
 
@@ -26,6 +28,9 @@ if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
 
 $xivo_statistics = new xivo_statistics();
 
+$appstats_conf = &$_XOBJ->get_application('stats_conf');
+$list = $appstats_conf->get_stats_conf_list();
+$_TPL->set_var('listconf',$list);
 $_TPL->set_var('basedir',$basedir);
 
 ?>

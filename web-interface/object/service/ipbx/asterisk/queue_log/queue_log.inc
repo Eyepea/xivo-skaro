@@ -39,6 +39,14 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+	
+	function stats($dstart,$dend,$agent,$queue,$order=null,$limit=null)
+	{
+		if(($result = $this->_dso->stats($dstart,$dend,$agent,$queue,$order,$limit)) === false)
+			return(null);
+
+		return($result);		
+	}
 
 	function search($arr,$order=null,$limit=null)
 	{
@@ -49,18 +57,6 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 
 		if(($result = $this->_dso->search($search,$order,$limit)) === false)
 			return(null);
-
-		$nb = count($result);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$result[$i];
-
-			if(isset($ref['amaflags']) === false)
-				$ref['amaflags'] = 0;
-
-			$ref['amaflagsmeta'] = $this->amaflags_meta($ref['amaflags']);
-		}
 
 		return($result);
 	}
