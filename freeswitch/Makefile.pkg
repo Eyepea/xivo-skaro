@@ -5,13 +5,14 @@
 # $Date: 2010-05-06 16:12:24 +0200 (Thu, 06 May 2010) $
 
 include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
 
 DEB_PKG = "freeswitch"
 TARBALL_DIR := $(shell mktemp -d)
 
 FSVER = $(shell cat $(MODULE_PATH)/FREESWITCH-VERSION)
 TARBALL_NAME = "freeswitch_$(FSVER)+dfsg.orig.tar.gz"
-UPSTREAM_VER = $(FSVER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
+UPSTREAM_VER = $(FSVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
 default:
