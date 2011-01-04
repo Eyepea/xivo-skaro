@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DH_VERBOSE=1
+%:
+	dh $@
+
+override_dh_install:
+	mv $(CURDIR)/debian/tmp/etc/pf-xivo/confgen.conf $(CURDIR)/debian/pf-xivo-confgen/etc/pf-xivo
+	mv $(CURDIR)/debian/tmp/usr/bin/confgen $(CURDIR)/debian/pf-xivo-confgen/usr/bin
+	mv $(CURDIR)/debian/tmp/etc/pf-xivo/confgend.conf $(CURDIR)/debian/pf-xivo-confgend/etc/pf-xivo
+	mv $(CURDIR)/debian/tmp/usr/ $(CURDIR)/debian/pf-xivo-confgend/
+
+dh_clean:
+	rm -rf $(CURDIR)/build

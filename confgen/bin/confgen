@@ -1,0 +1,81 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+
+import sys, ConfigParser
+
+from twisted.python             import usage
+from twisted.internet           import reactor
+from twisted.internet.protocol  import Protocol, ClientFactory
+
+
+class ConfigGetter(Protocol):
+	"""
+	"""
+	#def __init__(self):
+	#	self.timeout = 5
+
+	def connectionMade(self):
+		self.transport.write(self.factory.key)
+
+	def dataReceived(self, data):
+		print data
+		self.transport.loseConnection()
+
+class ConfigGetterFactory(ClientFactory):
+	protocol = ConfigGetter
+
+	def __init__(self, key):
+		self.key    = key
+		self.exit = 0 #exit status
+
+	def clientConnectionFailed(self, connector, reason):
+		self.exit = 1
+		reactor.stop()
+
+	def clientConnectionLost(self, connector, reason):
+		reactor.stop()
+
+class Options(usage.Options):
+	optParameters = [
+			['server' , 's', 'localhost', 'confgend server host/ip', str],
+			['port'   , 'p', 5035       , 'confgend server port', int],
+			['timeout', 't', 5          , 'connexion timeout', int],
+			# configuration file
+			['conf'   , 'c', '/etc/pf-xivo/confgen.conf', 'Configuration file', str],
+	]
+
+	def parseArgs(self, confkey):
+		self['confkey'] = confkey
+
+if __name__ == '__main__':
+	"""
+
+		NOTE: commandline options overrides config file values
+	"""
+	o = Options()
+	o.parseOptions()
+
+	config = ConfigParser.ConfigParser()
+	config.read(o['conf'])
+	for key, value in config.items('confgen'):
+		if key not in o.defaults:
+			raise Exception("Unknown '%s' key in %s configuration file" % (key, o['conf']))
+
+		# coerce value
+		if key in o._dispatch:
+			#NOTE: cannot directly use CoerceParameter.dispatch() as it affect result to opts dict
+			try:
+				value = o._dispatch[key].coerce(value)
+			except ValueError, e:
+				raise Exception("*%s* key in *%s* configuration file is invalid type" % (key, o['conf']))
+
+		# replace if not set inline
+		if o[key] == o.defaults[key]:
+			o[key] = value
+	
+
+	f = ConfigGetterFactory(o['confkey'])
+	reactor.connectTCP(o['server'], o['port'], f, timeout=o['timeout'])
+	reactor.run()
+
+	sys.exit(f.exit)

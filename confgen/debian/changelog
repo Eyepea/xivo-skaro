@@ -1,0 +1,11 @@
+pf-xivo-confgen (1.2.0-1) pf-xivo-skaro-dev; urgency=low
+
+  * People branch .
+
+ -- Guillaume Bour <gbour@proformatique.com>  Thu, 08 Dec 2010 16:27:45 +0100
+
+pf-xivo-confgen (1.2.0) lenny-xivo-skaro-gbour; urgency=low
+
+  * Initial release.
+
+ -- Nicolas HICHER (atarakt) <nhicher@proformatique.com>  Tue, 07 Dec 2010 15:39:42 +0100

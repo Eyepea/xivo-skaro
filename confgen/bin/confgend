@@ -1,0 +1,133 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+import sys, ConfigParser
+
+from twisted.python             import usage
+from twisted.internet           import reactor
+from twisted.internet.protocol  import Protocol, ServerFactory
+
+import backends, frontends, cache
+
+
+class Confgen(Protocol):
+	def dataReceived(self, data):
+		if data[-1] == '\n':
+			data = data[:-1]
+
+		print "serving", data
+
+		# 'asterisk/sip.conf' => ('asterisk', 'sip_conf')
+		try:
+			(frontend, callback) = data.split('/')
+			callback = callback.replace('.', '_')
+		except:
+			print "cannot split"; return
+
+		if not hasattr(frontends, frontend):
+			print "frontend not found"; return
+
+		if frontend not in self.factory.frontends:
+			print "callback not found"; return
+		
+		try:
+			content = getattr(self.factory.frontends[frontend], callback)()
+		except Exception, e:
+			content = None
+
+		if content is None:
+			# get cache content
+			print "cache hit on %s" % data
+			content = self.factory.cache.get(data)
+		else:
+			# write to cache
+			self.factory.cache.put(data, content)
+
+		self.transport.write(content)
+		self.transport.loseConnection()
+
+
+class ConfgendFactory(ServerFactory):
+	protocol = Confgen
+
+	def __init__(self, frontnames, backend, cachedir, config):
+		backend = getattr(backends, backend)(**backendOpts(config, backend))
+
+		self.frontends = {}
+		for f in frontnames:
+			self.frontends[f] = getattr(frontends, f)(backend, **frontendOpts(config, f))
+
+		self.cache = cache.FileCache(cachedir)
+
+
+class Options(usage.Options):
+	optParameters = [
+		['listen'   , 'l', '*' , 'listen interface (* = all)', str],
+		['port'     , 'p', 5035, 'confgend server port'      , int],
+		['backend'  , 'b', None, 'backend data provider'     , str],
+		['frontends', 'f', None, 'frontend data generators (comma separated)', str],
+		['cache'    , 'a', '/var/lib/confgend', 'config cache', str],
+			# configuration file
+		['conf'     , 'c', '/etc/pf-xivo/confgend.conf', 'Configuration file', str],
+	]
+
+
+def backendOpts(config, name):
+	if not config.has_section('backend-'+name):
+		return dict()
+
+	return dict(config.items('backend-'+name))
+
+def frontendOpts(config, name):
+	if not config.has_section('frontend-'+name):
+		return dict()
+
+	return dict(config.items('frontend-'+name))
+
+
+if __name__ == '__main__':
+	"""
+
+		NOTE: commandline options overrides config file values
+	"""
+	o = Options()
+	o.parseOptions()
+
+	config = ConfigParser.ConfigParser()
+	config.read(o['conf'])
+	for key, value in config.items('confgend'):
+		if key not in o.defaults:
+			raise Exception("Unknown '%s' key in %s configuration file" % (key, o['conf']))
+
+		# coerce value
+		if key in o._dispatch:
+			#NOTE: cannot directly use CoerceParameter.dispatch() as it affect result to opts dict
+			try:
+				value = o._dispatch[key].coerce(value)
+			except ValueError, e:
+				raise Exception("*%s* key in *%s* configuration file is invalid type" % (key, o['conf']))
+
+		# replace if not set inline
+		if o[key] == o.defaults[key]:
+			o[key] = value
+
+	if o['backend'] is None:
+		raise Exception("No backend defined")
+	elif not hasattr(backends, o['backend']):
+		raise Exception("Unknown *%s* backend" % o['backend'])
+
+	if o['frontends'] is None:
+		raise Exception("No frontends defined")
+	else:
+		o['frontends'] = o['frontends'].split(',')
+		for f in o['frontends']:
+			if not hasattr(frontends, f):
+				raise Exception("Unknown *%s* frontend" % f)
+
+	if o['listen'] == '*':
+		o['listen'] = ''
+	
+
+	f = ConfgendFactory(o['frontends'], o['backend'], o['cache'], config)
+	reactor.listenTCP(o['port'], f, interface=o['listen'])
+	reactor.run()
+
