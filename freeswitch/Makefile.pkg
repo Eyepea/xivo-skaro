@@ -12,7 +12,7 @@ TARBALL_DIR := $(shell mktemp -d)
 
 FSVER = $(shell cat $(MODULE_PATH)/FREESWITCH-VERSION)
 TARBALL_NAME = "freeswitch_$(FSVER)+dfsg.orig.tar.gz"
-UPSTREAM_VER = $(FSVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
+UPSTREAM_VER = $(FSVER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
 default:
