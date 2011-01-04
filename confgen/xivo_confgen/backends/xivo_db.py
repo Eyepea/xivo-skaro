@@ -26,7 +26,7 @@ from sqlalchemy.ext.sqlsoup    import SqlSoup
 from sqlalchemy.sql.expression import and_
 from sqlalchemy.sql            import select
 
-from backend import Backend
+from confgen.backend import Backend
 
 
 def mapped_set(self, key, value):
@@ -119,6 +119,27 @@ class AgentUsersHandler(SpecializedHandler):
 		conn = self.db.engine.connect()
 		return conn.execute(q).fetchall()
 
+class UserQueueskillsHandler(SpecializedHandler):
+	def all(self, *args, **kwargs):
+		(_u, _f, _s) = [getattr(self.db, o).table for o in ('userqueueskill',	'userfeatures', 'queueskill')]
+		q = select(
+			[_f.c.id, _s.c.name, _u.c.weight],
+			_and(_u.c.userid == _f.c.id, _u.c.skillid == _s.c.id)
+		)
+
+		conn = self.db.engine.connect()
+		return conn.execute(q).fetchall()
+
+class AgentQueueskillsHandler(SpecializedHandler):
+	def all(self, *args, **kwargs):
+		(_a, _f, _s) = [getattr(self.db, o).table for o in ('agentqueueskill',	'agentfeatures', 'queueskill')]
+		q = select(
+			[_f.c.id, _s.c.name, _a.c.weight],
+			_and(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
+		)
+
+		conn = self.db.engine.connect()
+		return conn.execute(q).fetchall()
 
 class QObject(object):
 	_translation = {
@@ -147,6 +168,10 @@ class QObject(object):
 		'voicemails'    : ('voicemail',),
 		'queues'        : ('queue',),
 		'queuemembers'  : ('queuemember',),
+
+		'userqueueskills': UserQueueskillsHandler,
+		'agentqueueskills': AgentQueueskillsHandler,
+		'queueskillrules': ('queueskillrule',),
 	}
 
 	def __init__(self, db, name):

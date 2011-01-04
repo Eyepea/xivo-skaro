@@ -16,7 +16,7 @@ setup(
 	url='http://wiki.xivo.fr/',
 	license='GPLv3',
 	 
-	packages=['confgen'],
+	packages=['confgen', 'confgen.frontends', 'confgen.backends'],
 	package_dir={'confgen': 'xivo_confgen'},
 	scripts=['bin/confgen', 'bin/confgend'],
 	data_files=[('/etc/pf-xivo', ['etc/confgen.conf', 'etc/confgend.conf'])],

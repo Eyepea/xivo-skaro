@@ -6,7 +6,7 @@ from twisted.python             import usage
 from twisted.internet           import reactor
 from twisted.internet.protocol  import Protocol, ServerFactory
 
-import backends, frontends, cache
+from confgen import backends, frontends, cache
 
 
 class Confgen(Protocol):

@@ -18,8 +18,8 @@ __license__ = """
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
-from cStringIO import StringIO
-from frontend  import Frontend
+from cStringIO        import StringIO
+from confgen.frontend import Frontend
 
 class AsteriskFrontend(Frontend):
 	def sip_conf(self):
@@ -439,6 +439,45 @@ class AsteriskFrontend(Frontend):
 		print >>o, '\n[featuremap]'
 		for f in self.backend.features.all(commented=False, category='featuremap'):
 			print >>o, "%s = %s" % (f['var_name'], f['var_val'])
+
+		return o.getvalue()
+
+
+	def queueskills_conf(self):
+		"""Generate queueskills.conf asterisk configuration file
+		"""
+		o = StringIO()
+
+		userid = None
+		for sk in self.userqueueskills.all():
+			if userid != sk['id']:
+				print >>o, "\n[user-%d]" % sk['id']
+				userid = sk['id']
+
+			print >>o, "%s = %s" % (sk['name'], sk['weight'])
+
+		agentid = None
+		for sk in self.agentqueueskills.all():
+			if agentid != sk['id']:
+				print >>o, "\n[agent-%d]" % sk['id']
+				agentid = sk['id']
+
+			print >>o, "%s = %s" % (sk['name'], sk['weight'])
+
+		return o.getvalue()
+
+
+	def queueskillrules_conf(self):
+		"""Generate queueskillrules.conf asterisk configuration file
+		"""
+		o = StringIO()
+
+		for r in self.queueskillrules.all():
+			print >>o, "\n[%s]" % r['name']
+
+			if 'rule' in r and r['rule'] is not None:
+				for rule in r['rule'].split(';'):
+					print >>o, "rule = %s" % rule
 
 		return o.getvalue()
 	

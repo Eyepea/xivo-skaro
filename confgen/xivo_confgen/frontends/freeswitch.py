@@ -20,7 +20,7 @@ __license__ = """
 """
 import re
 import xml.etree.ElementTree as et
-from frontend  import Frontend
+from confgen.frontend  import Frontend
 
 class FreeSwitchFrontend(Frontend):
 	def directory(self):
