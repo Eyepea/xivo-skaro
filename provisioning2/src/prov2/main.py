@@ -35,6 +35,8 @@ import sys
 from ConfigParser import RawConfigParser
 from pprint import pprint
 from prov2.devices.ident import *
+from prov2.devices.pgasso import PluginAssociatorDeviceUpdater,\
+    AlphabeticConflictSolver
 from prov2.servers.tftp.service import TFTPLogService
 from prov2.servers.tftp.proto import TFTPProtocol
 from prov2.servers.http import HTTPLogService
@@ -592,15 +594,15 @@ dhcp_xtor = DHCPDeviceInfoExtractor(dhcpinfo_res.dhcp_infos, all_pg_xtor)
 collab_xtor = CollaboratingDeviceInfoExtractor(VotingUpdater, [dhcp_xtor, all_pg_xtor])
 root_xtor = collab_xtor
 
+mac_retriever = MacDeviceRetriever()
 ip_retriever = IpDeviceRetriever()
 add_retriever = AddDeviceRetriver()
-cmpz_retriever = FirstCompositeDeviceRetriever([ip_retriever, add_retriever])
+cmpz_retriever = FirstCompositeDeviceRetriever([mac_retriever, add_retriever])
 root_retriever = cmpz_retriever
 
 guest_cfg_updater = StaticDeviceUpdater('config', 'guest')
-pg_updater = MappingPluginDeviceUpdater()
-for pg in pg_mgr.itervalues():
-    pg_updater.add_plugin(pg)
+pg_sstor_solver = AlphabeticConflictSolver()
+pg_auto_updater = PluginAssociatorDeviceUpdater(pg_mgr, pg_sstor_solver)
 zero_pg_updater = StaticDeviceUpdater('plugin', 'zero')
 class MyWeirdDeviceUpdater():
     def update(self, dev, dev_info, request, request_type):
@@ -623,7 +625,7 @@ class MyWeirdDeviceUpdater():
 weird_updater = MyWeirdDeviceUpdater()
 add_info_updater = AddInfoDeviceUpdater()
 every_updater = EverythingDeviceUpdater()
-cmpz_updater = CompositeDeviceUpdater([add_info_updater, guest_cfg_updater, pg_updater])
+cmpz_updater = CompositeDeviceUpdater([add_info_updater, guest_cfg_updater, pg_auto_updater])
 root_updater = cmpz_updater
 
 pg_router = PluginDeviceRouter()

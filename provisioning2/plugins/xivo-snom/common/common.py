@@ -23,7 +23,10 @@ __license__ = """
 import os.path
 import re
 from jinja2 import TemplateNotFound
-from prov2.plugins import Plugin, StandardPlugin, FetchfwPluginHelper,\
+from prov2.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+    PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT,\
+    INCOMPLETE_SUPPORT
+from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from prov2.util import norm_mac, format_mac
 from twisted.internet import defer
@@ -68,6 +71,46 @@ class BaseSnomHTTPDeviceInfoExtractor(object):
         m = self._FILENAME_REGEX.search(filename)
         if m:
             dev_info['mac'] = norm_mac(m.group(1))
+
+
+class BaseSnomPgAssociator(BasePgAssociator):
+    def __init__(self, models, version, compat_models):
+        self._models = models
+        self._version = version
+        self._compat_models = compat_models
+        
+    def _do_associate(self, vendor, model, version):
+        if vendor == 'Snom':
+            if version is None:
+                # Could be an old version with no XML support
+                return PROBABLE_SUPPORT
+            assert version is not None
+            if self._is_incompatible_version(version):
+                return NO_SUPPORT
+            if model in self._models:
+                if version == self._version:
+                    return FULL_SUPPORT
+                return COMPLETE_SUPPORT
+            if model in self._compat_models:
+                return INCOMPLETE_SUPPORT
+            return PROBABLE_SUPPORT
+        return IMPROBABLE_SUPPORT
+    
+    def _is_incompatible_version(self, version):
+        """
+        Pre: model is not None
+             version is not None
+        """
+        # XXX if we support snom m3 one day, this will need to be
+        #     changed or overriden... or if we add support for an
+        #     old (6) firmware to enable automatic upgrade...
+        try:
+            maj_version = int(version[0])
+            if maj_version < 7:
+                return True
+        except (IndexError, ValueError):
+            pass
+        return False
 
 
 class BaseSnomHTTPService(Resource):

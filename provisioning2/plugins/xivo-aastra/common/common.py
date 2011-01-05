@@ -25,10 +25,10 @@ __license__ = """
 """
 
 import os.path
-import re
-from jinja2 import TemplateNotFound
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
+from prov2.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
+    INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
 from prov2.util import norm_mac, format_mac
 from twisted.internet import defer
 from xivo import tzinform
@@ -57,7 +57,7 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
             if dev_info:
                 dev_info['vendor'] = 'Aastra'
                 return dev_info
-        
+    
     def _extract_from_ua(self, ua, dev_info):
         # HTTP User-Agent:
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
@@ -93,6 +93,25 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         if version_raw.startswith('V:') and version_raw.endswith('-SIP'):
             # looks like a valid version token...
             return version_raw[len('V:'):-len('-SIP')]
+
+
+class BaseAastraPgAssociator(BasePgAssociator):
+    def __init__(self, models, version, compat_models):
+        BasePgAssociator.__init__(self)
+        self._models = models
+        self._version = version
+        self._compat_models = compat_models
+    
+    def _do_associate(self, vendor, model, version):
+        if vendor == 'Aastra':
+            if model in self._models:
+                if version == self._version:
+                    return FULL_SUPPORT
+                return COMPLETE_SUPPORT
+            if model in self._compat_models:
+                return INCOMPLETE_SUPPORT
+            return PROBABLE_SUPPORT
+        return IMPROBABLE_SUPPORT
 
 
 class BaseAastraPlugin(StandardPlugin):

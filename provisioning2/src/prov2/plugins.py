@@ -241,8 +241,10 @@ class Plugin(object):
     
     """
     
+    # TODO move this information so it's accessible before the plugin is
+    #      installed (i.e. in the description)... and remove it from here
     device_types = ()
-    """Return a sequence of (vendor, model, version) tuple that this plugin explicitly
+    """Sequence of (vendor, model, version) tuple that this plugin explicitly
     supports.
     
     Useful if we want to do automatic device-plugin association.
@@ -251,6 +253,13 @@ class Plugin(object):
     interesting automatic device-plugin association
     
     """
+    
+    pg_associator = None
+    """Return an object providing the IPluginAssociator interface, or None if
+    the plugin doesn't have a plugin associator.
+    
+    """
+    
     
     # Methods for device configuration
     

@@ -659,40 +659,6 @@ class LoggingDeviceUpdater(object):
         return False
 
 
-# XXX temporary until the new 'plugin association' infrastructure
-#     is put in place. If we keep it, we'll need to modify it to support
-#     plugin 'hot-plugging'.
-class MappingPluginDeviceUpdater(object):
-    """Associate a device info to the plugin that says that support this type
-    of device. This must be an exact match.
-    
-    """
-    
-    implements(IDeviceUpdater)
-    
-    force_update = False
-    
-    def __init__(self):
-        # mapping is a mapping object where keys are (vendor, model, version) tuple and
-        # values are plugin name
-        self._mapping = {}
-    
-    def add_plugin(self, plugin):
-        for device_type in plugin.device_types:
-            self._mapping[device_type] = plugin.name
-    
-    def update(self, dev, dev_info, request, request_type):
-        if self.force_update or 'plugin' not in dev:
-            key = tuple(dev_info.get(k) for k in ['vendor', 'model', 'version'])
-            if key in self._mapping:
-                pg_id = self._mapping[key]
-                old_pg_id = dev.get('plugin')
-                if pg_id != old_pg_id:
-                    dev['plugin'] = pg_id
-                    return True
-        return False
-
-
 class CompositeDeviceUpdater(object):
     implements(IDeviceUpdater)
     

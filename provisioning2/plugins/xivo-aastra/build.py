@@ -25,7 +25,6 @@ def build_3_0_1_2031(path):
     check_call(['rsync', '-rlpt', '--exclude', '.*',
                 '--include', '/templates/6739i.tpl',
                 '--include', '/templates/base.tpl',
-                '--include', '/templates/unknown.tpl',
                 '--exclude', '/templates/*',
                 'common/', path])
     

@@ -28,10 +28,15 @@ execfile_('common.py', common_globals)
 
 VENDOR = 'Aastra'
 MODELS = ['6739i']
+COMPAT_MODELS = ['6730i', '6731i', '6751i', '6753i', '6755i', '6757i',
+                 '9143i', '9480i']
 VERSION = '3.0.1.2031'
+
 
 class AastraPlugin(common_globals['BaseAastraPlugin']):
     IS_PLUGIN = True
     
-    device_types = [(VENDOR, model, VERSION) for
-                    model in MODELS]
+    device_types = [(VENDOR, model, VERSION) for model in MODELS]
+    
+    pg_associator = common_globals['BaseAastraPgAssociator'](MODELS, VERSION,
+                                                             COMPAT_MODELS)

@@ -40,6 +40,9 @@ import urllib2
 from fetchfw2.download import DefaultDownloader, InvalidCredentialsError,\
     DownloadError, new_handlers, new_downloaders
 from fetchfw2.storage import RemoteFileBuilder
+from prov2.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+    NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT, \
+    INCOMPLETE_SUPPORT
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from prov2.util import norm_mac, format_mac
@@ -107,6 +110,35 @@ class CiscoDownloader(DefaultDownloader):
             url = login.geturl()
             #logger.debug("Form URL is '%s'", url)
             return url
+
+
+class BaseCiscoPgAssociator(BasePgAssociator):
+    _COMPAT_MODEL_REGEX = re.compile(r'^79\d\dG$')
+    
+    def __init__(self, model_version):
+        self._model_version = model_version
+    
+    def _do_associate(self, vendor, model, version):
+        if vendor == 'Cisco':
+            if version is None:
+                # Could be either in SIP or SCCP...
+                return PROBABLE_SUPPORT
+            if model is None:
+                # There's so many Cisco models it's hard to say something
+                # precise when we have no model information
+                return PROBABLE_SUPPORT
+            assert version is not None
+            assert model is not None
+            if version.endswith('/SIP'):
+                return NO_SUPPORT
+            if model in self._model_version:
+                if version == self._model_version[model]:
+                    return FULL_SUPPORT
+                return COMPLETE_SUPPORT
+            if self._COMPAT_MODEL_REGEX.match(model):
+                return INCOMPLETE_SUPPORT
+            return PROBABLE_SUPPORT
+        return IMPROBABLE_SUPPORT
 
 
 class BaseCiscoDHCPDeviceInfoExtractor(object):
