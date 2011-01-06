@@ -103,7 +103,7 @@ $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsip->get_context_list());
 $_TPL->set_var('tlscertfiles', $appgeneralsip->get_certificate_files('cert', $config['tls']['certdir']));
-$_TPL->set_var('tlscafiles', $appgeneralsip->get_certificate_files('ca', $config['tls']['certdir']));
+$_TPL->set_var('tlscafiles', $appgeneralsip->get_certificate_files('cert', $config['tls']['cadir']));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

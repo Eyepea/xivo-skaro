@@ -28,7 +28,7 @@ if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'stati
 
 $stats_queue = new xivo_statistics_queue(&$_XOBJ,&$ipbx);
 if (isset($_QR['confid']) === true)
-	$stats_queue->set_idconf($_QR['confid']);
+	$stats_queue->set_idconf($_QR['confid'],true);
 $stats_queue->set_data_custom('qos',$queue_qos);
 $stats_queue->parse_log();
 
@@ -86,10 +86,9 @@ var_dump($xivo_statistics->get_val_expression('custom:queue,[name],total_time_wa
 var_dump($xivo_statistics->get_val_expression('custom:queue,[name],answered','queue8001'));
 */
 
-$xivo_statistics->gener();
-#$xivo_statistics->render_graph();
+$xivo_statistics->gener_table();
+$xivo_statistics->gener_graph('t1','stats1');
 $table1 = $xivo_statistics;
-#$xivo_statistics->reset();
 
 
 $_TPL->set_var('confid',$stats_queue->get_idconf());

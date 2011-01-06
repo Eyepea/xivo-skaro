@@ -18,6 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+define('PCHART_PATH_ROOT',DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'pchart'.DIRECTORY_SEPARATOR);
+define('PCHART_PATH_IMG',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/');
+define('PCHART_IMG_DIR','/img/graphs/pchart/');
+	
+if (dwho_file::is_d(PCHART_PATH_IMG) === false
+&& mkdir(PCHART_PATH_IMG, 0775, true) === false)
+	die('ERR: set rwx mode to '.PCHART_PATH_IMG);
+
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'file.inc');
 
 function dwho_load_lib_pchart($libdir)

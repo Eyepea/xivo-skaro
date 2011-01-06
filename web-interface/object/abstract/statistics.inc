@@ -80,9 +80,11 @@ class xivo_statistics_abstract
 			trigger_error('Failed to load queuelog configuration',E_USER_ERROR);
 	}
 	
-	public function set_idconf($confid)
+	public function set_idconf($confid,$reloadconf=false)
 	{	
 		$this->_statsconfsess['id'] = (int) $confid;
+		if ($reloadconf !== false)
+			$this->load_conf();
 	}
 	
 	public function get_idconf()

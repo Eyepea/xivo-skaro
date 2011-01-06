@@ -20,6 +20,7 @@
 
 class xivo_statistics
 {
+	private  $_basedir		= '';
 	private  $_name			= '';
 	private  $_col_struct	= '';
 	private  $_struct		= array();
@@ -35,19 +36,6 @@ class xivo_statistics
 	{
 	}
 	
-	public function reset()
-	{
-		$this->_name			= '';
-		$this->_col_struct		= '';
-		$this->_data			= array();
-		$this->_data_custom		= array();
-		$this->_data_table		= array();
-		$this->_result			= array();
-		$this->_prepare_rows	= array();
-		$this->_prepare_cols	= array();
-		$this->_var_to_eval		= array();
-	}
-	
 	public function set_name($name)
 	{			
 		$this->_name = $name;
@@ -57,6 +45,12 @@ class xivo_statistics
 	{			
 		return($this->_name);
 	}
+
+	
+	public function set_basedir($name)
+	{			
+		$this->_basedir = $name;
+	}	
 	
 	public function set_data_custom($key,$arr)
 	{
@@ -72,20 +66,23 @@ class xivo_statistics
 		if(is_array($arr) === false 
 		|| ($nb = count($arr)) === 0)
 			return(false);
-		else
+		
+		$this->_prepare_rows[$key] = array();
+		$tmp = array();
+		for($i=0;$i<$nb;$i++)
 		{
-			$this->_prepare_rows[$key] = array();
-			$tmp = array();
-			for($i = 0;$i < $nb;$i++)
-			{
-				$ref  = &$arr[$i];
-				if (isset($ref[$field]) === false)
-					return(false);
-				array_push($tmp, $ref[$field]);
-			}
-			$this->_prepare_rows[$key] = $tmp;
-			return(true);
-		}		
+			$ref  = &$arr[$i];
+			if (isset($ref[$field]) === false)
+				continue;
+			array_push($tmp, $ref[$field]);
+		}
+		$this->_prepare_rows[$key] = $tmp;
+		return(true);
+	}
+	
+	public function has_data()
+	{
+		return(!empty($this->_data_table));
 	}
 	
 	public function set_col_struct($str) 
@@ -203,8 +200,7 @@ class xivo_statistics
 						}
 						break;
 					default:
-				}
-				
+				}				
 				$result = $this->get_result_formated($rs,$format);
 				$row_data_table[$label]['expression'] = $expression;
 				$row_data_table[$label]['format'] = $format;
@@ -389,20 +385,22 @@ class xivo_statistics
 		return($str);
 	}
 	
-	public function gener()
+	public function gener_table()
 	{
 		$this->init_data_table();
 	}
 	
-	public function render_html()
+	public function render_html($chkbox=true,$rowname=true)
 	{	
 		$return = '<form action="#" name="fm-stats-list" method="post" accept-charset="utf-8">';
 		$return .= '<table cellspacing="0" cellpadding="0" border="0">';
 		
 		$return .= '<thead>';
 		$return .= '<tr class="sb-top">';
-		$return .= '<th class="th-left">&nbsp;</th>';
-		$return .= '<th class="th-center">&nbsp;</th>';
+		if ($chkbox === true)
+			$return .= '<th class="th-left">&nbsp;</th>';
+		if ($rowname === true)
+			$return .= '<th class="th-center">&nbsp;</th>';
 		$c=0;
 		foreach($this->_struct as $keystruct => $datastruct)
 		{
@@ -410,7 +408,7 @@ class xivo_statistics
 				$return .= '<th class="th-center" colspan="'.(count($datastruct)).'">'.$keystruct.'</th>';
 			else
 				$return .= '<th class="th-right" colspan="'.(count($datastruct)).'">'.$keystruct.'</th>';
-			$c++;			
+			$c++;
 		}
 		$return .= '</tr>';
 		$return .= '</thead>';
@@ -423,8 +421,10 @@ class xivo_statistics
 			
 			$return .= '<thead>';
 			$return .= '<tr class="sb-top">';
-			$return .= '<th class="th-left">&nbsp;</th>';
-			$return .= '<th class="th-center">&nbsp;</th>';	
+			if ($chkbox === true)
+				$return .= '<th class="th-left">&nbsp;</th>';
+			if ($rowname === true)
+				$return .= '<th class="th-center">&nbsp;</th>';	
 			$c=0;
 			foreach ($cols as $colname => $colvalue)
 			{
@@ -444,8 +444,10 @@ class xivo_statistics
 		{
 			$return .= '<tbody id="disp">';
 			$return .= '<tr class="fm-paragraph l-infos-'.(($c % 2) + 1).'on2">';
-			$return .= '<td class="td-left"><input type="checkbox" name="stats[]" id="it-stats-0" class="it-checkbox" value="1" /></td>';	
-			$return .= '<td class="txt-left" title="'.dwho_alttitle($row).'">'.$row.'</td>';	
+			if ($chkbox === true)
+				$return .= '<td class="td-left"><input type="checkbox" name="stats[]" id="it-stats-0" class="it-checkbox" value="1" /></td>';	
+			if ($rowname === true)
+				$return .= '<td class="txt-left" title="'.dwho_alttitle($row).'">'.$row.'</td>';	
 			$nb_cols = 1;
 			$i=0;
 			foreach ($cols as $colname => $colvalue)
@@ -481,127 +483,138 @@ class xivo_statistics
 		return( $return );
 	}
 	
-	public function render_graph()
+	public function gener_graph($type,$name)
 	{
-		require(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'pchart.inc');		
+		require(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'pchart.inc');
 		
-		$glibpchart = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'pchart/class/';
-		dwho_load_lib_pchart($glibpchart);
-			
-		$gfontspchart = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'pchart/fonts/';
+		$dir = PCHART_PATH_IMG.$this->_name;
 		
-		$name = $this->_name;
-		$gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
+		if (dwho_file::is_d($dir) === false
+		&& mkdir($dir,0775) === false)
+			die('ERR: set rwx mode to '.$dir);
 		
-		if (is_dir($gdir) === false
-		&& mkdir($gdir, 0775, true) === false)
-			die('ERR: set rwx mode to '.$gdir);
+		switch($type)
+		{
+			case 't1':
+				$this->gener_graph_t1($name);
+				break;
+			default:
+				$this->gener_graph_t1($name);
+		}
+	}
+	
+	public function get_graph($name)
+	{
+		return( '<img src="'.$this->_basedir.$this->_name.DIRECTORY_SEPARATOR.$name.'.png" alt="" />' );
+	}
+	
+	private function gener_graph_t1($name)
+	{
 		
-		$basedir = '/img/graphs/pchart/'.$name.'/';
-				
-		// Dataset definition 
-		$DataSet = new pData;
+		$pfonts = PCHART_PATH_ROOT.'fonts'.DIRECTORY_SEPARATOR;
+		$plib = PCHART_PATH_ROOT.'class'.DIRECTORY_SEPARATOR;
+		dwho_load_lib_pchart($plib);
 		
-		/*
-		// Generate some data...  
-		$DataSet->AddPoint(array("queue8001","queue8002","queue8003"),"Serie1");  
-		$DataSet->AddPoint(array(32,54,80),"aa");  
-		$DataSet->AddPoint(array(1,1,2),"bb"); 
-		$DataSet->AddPoint(array(84,25,65),"cc"); 
-		  
-		// This will mark both Serie1 & Serie2 as "graphable"  
-		$DataSet->AddSerie("aa");  
-		$DataSet->AddSerie("bb"); 
-		$DataSet->AddSerie("cc");  
-		  
-		// Set Serie as abcisse label  
-		$DataSet->SetAbsciseLabelSerie("Serie1");
-		*/
+		$MyData = new pData();
+		
+		$nbDataTable = count($this->_data_table);
+		
 		$abcisse_label = array();
 		foreach ($this->_data_table as $row => $cols)
 			array_push($abcisse_label,$row);
 			
-		$DataSet->AddPoint($abcisse_label,"Serie1");
+		asort($abcisse_label);
+		$MyData->AddPoints($abcisse_label,$this->_name);
+		$MyData->setAbscissa($this->_name);
 		
-		var_dump($abcisse_label);
-		
-		$i=0;
+		$lsdata = array();
 		foreach ($this->_data_table as $row => $cols)
 		{
-			$tmp = array();
-			foreach ($cols as $colname => $colvalue)
-			{
-				if (empty($colvalue) === true)
-					array_push($tmp,0);
+			$colsk = array_keys($cols);
+			$colsv = array_values($cols);
+			for ($i=0;$i<count($cols);$i++)
+			{			
+				$colk = &$colsk[$i];
+				$colv = &$colsv[$i];		
+						
+				if($colv['format'] !== 'int')
+					continue;
+				
+				if (isset($lsdata[$colk]) === false)
+					$lsdata[$colk] = array();
+				
+				if (empty($colv) === true)
+					array_push($lsdata[$colk],0);
 				else
 				{
-					if (($val = $this->eval_result_data($colvalue)) === null
+					if (($val = $this->eval_result_data($colv)) === null
 					|| is_numeric($val) === false)
-						array_push($tmp,0);
+						array_push($lsdata[$colk],0);
 					else
-						array_push($tmp,$val);
+						array_push($lsdata[$colk],$val);
 				}
 			}
-			var_dump($tmp);
-	 			$DataSet->AddPoint($tmp,$colname);
-				var_dump($colname);
-				 		$i++;
 		}
 		
-		$i=0;
-		foreach ($this->_data_table as $row => $cols)
+		foreach ($lsdata as $k => $v)
 		{
-			foreach ($cols as $colname => $colvalue)
-			{
-				if($i===0){
-					$DataSet->AddSerie($colname);
-					var_dump($colname);
-					
-				}
-	 			$i++;
-			}
+	 		$MyData->AddPoints($v,$k);
 		}
-				
-		$DataSet->SetAbsciseLabelSerie("Serie1");
 		
-		/*
-		$DataSet->AddPoint(array(1,2,3,4),'serie-lol');
-		$DataSet->AddPoint(array(5,6,7,8),'serie-lol2');
-		$DataSet->AddAllSeries();
-		$DataSet->SetAbsciseLabelSerie();
-		$DataSet->SetSerieName('lol','serie-lol');
-		$DataSet->SetSerieName('lol2','serie-lol2');
-		*/
+		$graph_w = 750;
+		$graph_h = (int) ($nbDataTable * 200);
+		# X1,Y1 is the top left corner of the bounding box.
+		$graph_area_tl_w = (int) ($graph_w - ($graph_w - 80));
+		$graph_area_tl_h = (int) ($graph_h - ($graph_h - 30));
+		# X2,Y2 is the borrom right corner of the bounding box.
+		$graph_area_br_w = (int) ($graph_w - 20);
+		$graph_area_br_h = (int) ($graph_h - 20);
 		
-		// Initialise the graph
-		$Test = new pChart(800,230);		 
-		#$Test->setFixedScale(0,100);
-		$Test->setFontProperties($gfontspchart."tahoma.ttf",8);
-		$Test->setGraphArea(50,30,700,200);
+		/* Create the pChart object */
+		$myPicture = new pImage($graph_w,$graph_h,$MyData); 
+		$myPicture->drawGradientArea(0,0,$graph_w,$graph_h,DIRECTION_VERTICAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>100)); 
+		$myPicture->drawGradientArea(0,0,$graph_w,$graph_h,DIRECTION_HORIZONTAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>20)); 
+		$myPicture->setFontProperties(array("FontName"=>$pfonts."verdana.ttf","FontSize"=>6)); 
 		
-		$Test->drawFilledRoundedRectangle(7,7,710,223,5,240,240,240);
-		$Test->drawRoundedRectangle(5,5,710,225,5,230,230,230);
+		/* Draw the chart scale */
+		$myPicture->setGraphArea($graph_area_tl_w,$graph_area_tl_h,$graph_area_br_w,$graph_area_br_h);
+		#$myPicture->setGraphArea(100,30,680,180);
+		$myPicture->drawScale(array("CycleBackground"=>TRUE,"DrawSubTicks"=>TRUE,"GridR"=>0,"GridG"=>0,"GridB"=>0,"GridAlpha"=>10,"Pos"=>SCALE_POS_TOPBOTTOM));		
+		$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 		
-		$Test->drawGraphArea(255,255,255,TRUE);
-		$Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_NORMAL,150,150,150,TRUE,0,2,TRUE);
-		$Test->drawGrid(4,TRUE,230,230,230,50);
+		/* Draw the chart */
+		$myPicture->drawBarChart(array("DisplayPos"=>LABEL_POS_INSIDE,"DisplayValues"=>TRUE,"Rounded"=>TRUE,"Surrounding"=>30));
 		
-		// Draw the 0 line
-		$Test->setFontProperties($gfontspchart."tahoma.ttf",6);
-		$Test->drawTreshold(0,143,55,72,TRUE,TRUE);
-		
-		// Draw the bar graph
-		$Test->drawBarGraph($DataSet->GetData(),$DataSet->GetDataDescription(),TRUE,80);
-		
-		// Finish the graph
-		$Test->setFontProperties($gfontspchart."tahoma.ttf",8);
-		$Test->drawLegend(700,15,$DataSet->GetDataDescription(),255,255,255);
-		$Test->setFontProperties($gfontspchart."tahoma.ttf",10);
-		$Test->drawTitle(50,22,$name,50,50,50,585);
-		#$Test->Stroke();
-		$Test->Render($gdir.$name.'.png');
-		
+		/* Write the legend */
+		$myPicture->drawLegend(15,5,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
+
+		$myPicture->Render(PCHART_PATH_IMG.$this->_name.DIRECTORY_SEPARATOR.$name.'.png');
 	}	
+	
+	public function reset_all()
+	{
+		$this->_name			= '';
+		$this->_col_struct		= '';
+		$this->_struct			= array();
+		$this->_data			= array();
+		$this->_data_custom		= array();
+		$this->_data_table		= array();
+		$this->_result			= array();
+		$this->_prepare_rows	= array();
+		$this->_prepare_cols	= array();
+		$this->_var_to_eval		= array();
+	}
+	
+	public function reset_col()
+	{
+		$this->_name			= '';
+		$this->_col_struct		= '';
+		$this->_struct			= array();
+		$this->_data_table		= array();
+		$this->_result			= array();
+		$this->_prepare_cols	= array();
+		$this->_var_to_eval		= array();
+	}
 
 }
 

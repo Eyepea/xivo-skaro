@@ -28,6 +28,8 @@ if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
 
 $xivo_statistics = new xivo_statistics();
 
+$xivo_statistics->set_basedir($basedir);
+
 $appstats_conf = &$_XOBJ->get_application('stats_conf');
 $list = $appstats_conf->get_stats_conf_list();
 $_TPL->set_var('listconf',$list);

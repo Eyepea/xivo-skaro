@@ -25,7 +25,7 @@ if(xivo::load_class('xivo_statistics_agent',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'stati
 
 $stats_agent = new xivo_statistics_agent(&$_XOBJ,&$ipbx);
 if (isset($_QR['confid']) === true)
-	$stats_agent->set_idconf($_QR['confid']);
+	$stats_agent->set_idconf($_QR['confid'],true);
 $stats_agent->parse_log();
 
 $xivo_statistics->set_name('agent');
@@ -64,8 +64,8 @@ $xivo_statistics->add_col('totalwithdrawal',
 					'direct',
 					'custom:agent,agent/[number],pausetime');
 
-$xivo_statistics->gener();
-#$xivo_statistics->render_graph();
+$xivo_statistics->gener_table();
+$xivo_statistics->gener_graph('t1','stats1');
 $table1 = $xivo_statistics;
 #$xivo_statistics->reset();
 

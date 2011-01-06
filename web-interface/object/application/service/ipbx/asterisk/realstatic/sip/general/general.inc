@@ -150,6 +150,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		$files = array();
 		foreach(scandir($path) as $file)
 		{
+
 			if($file[0] == '.' || !is_file("$path/$file"))
 				continue;
 

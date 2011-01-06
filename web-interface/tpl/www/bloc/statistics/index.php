@@ -20,6 +20,12 @@
 
 $url     = &$this->get_module('url');
 
+$basedir = $this->get_var('basedir');
+$table_total = $this->get_var('table_total');
+$table_time = $this->get_var('table_time');
+$table_average = $this->get_var('table_average');
+$table_percent = $this->get_var('table_percent');
+
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -28,8 +34,12 @@ $url     = &$this->get_module('url');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-
-
+		<div class="sb-list"> 
+			<p><?=$table_total?></p>
+			<p><?=$table_time?></p>
+			<p><?=$table_average?></p>
+			<p><?=$table_percent?></p>
+   	 	</div>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

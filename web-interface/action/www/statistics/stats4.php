@@ -25,7 +25,7 @@ if(xivo::load_class('xivo_statistics_period',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'stat
 	
 $stats_period = new xivo_statistics_period(&$_XOBJ,&$ipbx);
 if (isset($_QR['confid']) === true)
-	$stats_period->set_idconf($_QR['confid']);
+	$stats_period->set_idconf($_QR['confid'],true);
 $stats_period->parse_log();
 
 $xivo_statistics->set_name('period');
@@ -68,8 +68,8 @@ $xivo_statistics->add_col('aperiod5',
 					'direct',
 					'custom:period,[queuename],abandoned,period5');
 
-$xivo_statistics->gener();
-#$xivo_statistics->render_graph();
+$xivo_statistics->gener_table();
+$xivo_statistics->gener_graph('t1','stats1');
 $table1 = $xivo_statistics;
 #$xivo_statistics->reset();
 

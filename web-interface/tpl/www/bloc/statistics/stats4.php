@@ -20,8 +20,6 @@
 $url     = &$this->get_module('url');
 
 $basedir = $this->get_var('basedir');
-$queue_log = $this->get_var('queue_log');
-$conf = $this->get_var('conf');
 $table1 = $this->get_var('table1');
 
 ?>
@@ -33,7 +31,19 @@ $table1 = $this->get_var('table1');
 	</h3>
 	<div class="sb-content">
 		<div class="sb-list"> 
-			<?=$table1->render_html();?>
+<?php
+	if ($table1->has_data() === false):
+		echo 'no_data';
+	else :
+		echo $table1->render_html();
+?>
+		<p>&nbsp;</p>
+ 		<p class="stats-graph-img">
+ 			<?=$table1->get_graph('stats1')?>
+  		</p>
+<?php
+	endif;
+?>
 		</div>
     </div>
 	<div class="sb-foot xspan">
