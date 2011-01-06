@@ -1532,3 +1532,9 @@ Nom de domaine
 
 ; no_disp
 Aucunes autorisations
+
+; fm_transport
+Protocoles réseau : 
+
+; hlp_fm_transport
+Config asterisk: transport

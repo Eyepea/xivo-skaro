@@ -734,6 +734,10 @@ $array['element']['srtp']['value']    = array('no', 'yes');
 $array['element']['srtp']['default']  = 'no';
 $array['element']['srtp']['set']      = true;
 
+$array['element']['transport'] = array();
+$array['element']['transport']['value'] = array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls');
+$array['element']['transport']['default'] = 'udp';
+
 
 
 dwho::load_class('dwho_network');
@@ -932,5 +936,6 @@ $array['filter']['auth_options_requests'] = array('bool' => true);
 
 
 $array['filter']['srtp'] = array('bool' => true);
+$array['filter']['transport'] = array('set' => false, 'key' => array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls'));
 
 ?>

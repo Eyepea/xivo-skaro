@@ -556,6 +556,15 @@ endif;
  				    'error'		 => $this->bbf_args('error',
 			   $this->get_var('error', 'externhost')) )),
 
+    $form->select(array('desc'  => $this->bbf('fm_transport'),
+            'name'     => 'transport',
+            'labelid'  => 'transport',
+            'key'      => false,
+            'help'     => $this->bbf('hlp_fm_transport'),
+            'selected' => $this->get_var('info','transport','var_val'),
+            'default'  => $element['transport']['default']),
+         $element['transport']['value']),
+		
     $form->text(array('desc'  => $this->bbf('fm_externtcpport'),
             'name'     => 'externtcpport',
             'labelid'  => 'externtcpport',
