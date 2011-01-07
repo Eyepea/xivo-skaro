@@ -33,7 +33,7 @@ class ConfigGetterFactory(ClientFactory):
 		reactor.stop()
 
 	def clientConnectionLost(self, connector, reason):
-		Freactor.stop()
+		reactor.stop()
 
 class Options(usage.Options):
 	optParameters = [
