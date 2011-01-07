@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 
-import sys, ConfigParser
+import sys, os.path, ConfigParser
 
 from twisted.python             import usage
 from twisted.internet           import reactor
@@ -33,7 +33,7 @@ class ConfigGetterFactory(ClientFactory):
 		reactor.stop()
 
 	def clientConnectionLost(self, connector, reason):
-		reactor.stop()
+		Freactor.stop()
 
 class Options(usage.Options):
 	optParameters = [
@@ -47,13 +47,19 @@ class Options(usage.Options):
 	def parseArgs(self, confkey):
 		self['confkey'] = confkey
 
+	def getSynopsis(self):
+		return "Usage: %s [options] frontend/conffile" % os.path.basename(sys.argv[0])
+
 if __name__ == '__main__':
 	"""
 
 		NOTE: commandline options overrides config file values
 	"""
 	o = Options()
-	o.parseOptions()
+	try:
+		o.parseOptions()
+	except usage.UsageError:
+		print o; sys.exit(1)
 
 	config = ConfigParser.ConfigParser()
 	config.read(o['conf'])

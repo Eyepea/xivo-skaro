@@ -5,6 +5,7 @@ import sys, ConfigParser
 from twisted.python             import usage
 from twisted.internet           import reactor
 from twisted.internet.protocol  import Protocol, ServerFactory
+from twisted.application        import service, internet
 
 from confgen import backends, frontends, cache
 
@@ -84,50 +85,55 @@ def frontendOpts(config, name):
 	return dict(config.items('frontend-'+name))
 
 
+o = Options()
 if __name__ == '__main__':
 	"""
 
 		NOTE: commandline options overrides config file values
 	"""
-	o = Options()
 	o.parseOptions()
 
-	config = ConfigParser.ConfigParser()
-	config.read(o['conf'])
-	for key, value in config.items('confgend'):
-		if key not in o.defaults:
-			raise Exception("Unknown '%s' key in %s configuration file" % (key, o['conf']))
+config = ConfigParser.ConfigParser()
+config.read(o['conf'])
+for key, value in config.items('confgend'):
+	if key not in o.defaults:
+		raise Exception("Unknown '%s' key in %s configuration file" % (key, o['conf']))
 
-		# coerce value
-		if key in o._dispatch:
-			#NOTE: cannot directly use CoerceParameter.dispatch() as it affect result to opts dict
-			try:
-				value = o._dispatch[key].coerce(value)
-			except ValueError, e:
-				raise Exception("*%s* key in *%s* configuration file is invalid type" % (key, o['conf']))
+	# coerce value
+	if key in o._dispatch:
+		#NOTE: cannot directly use CoerceParameter.dispatch() as it affect result to opts dict
+		try:
+			value = o._dispatch[key].coerce(value)
+		except ValueError, e:
+			raise Exception("*%s* key in *%s* configuration file is invalid type" % (key, o['conf']))
 
-		# replace if not set inline
-		if o[key] == o.defaults[key]:
-			o[key] = value
+	# replace if not set inline
+	if o[key] == o.defaults[key]:
+		o[key] = value
 
-	if o['backend'] is None:
-		raise Exception("No backend defined")
-	elif not hasattr(backends, o['backend']):
-		raise Exception("Unknown *%s* backend" % o['backend'])
+if o['backend'] is None:
+	raise Exception("No backend defined")
+elif not hasattr(backends, o['backend']):
+	raise Exception("Unknown *%s* backend" % o['backend'])
 
-	if o['frontends'] is None:
-		raise Exception("No frontends defined")
-	else:
-		o['frontends'] = o['frontends'].split(',')
-		for f in o['frontends']:
-			if not hasattr(frontends, f):
-				raise Exception("Unknown *%s* frontend" % f)
+if o['frontends'] is None:
+	raise Exception("No frontends defined")
+else:
+	o['frontends'] = o['frontends'].split(',')
+	for f in o['frontends']:
+		if not hasattr(frontends, f):
+			raise Exception("Unknown *%s* frontend" % f)
 
-	if o['listen'] == '*':
-		o['listen'] = ''
+if o['listen'] == '*':
+	o['listen'] = ''
 	
 
-	f = ConfgendFactory(o['frontends'], o['backend'], o['cache'], config)
+f = ConfgendFactory(o['frontends'], o['backend'], o['cache'], config)
+if __name__ == '__main__':
 	reactor.listenTCP(o['port'], f, interface=o['listen'])
 	reactor.run()
+
+application = service.Application('confgend')
+svc = internet.TCPServer(o['port'], f, interface=o['listen'])
+svc.setServiceParent(application)
 
