@@ -122,8 +122,8 @@ class AsteriskFrontend(Frontend):
 		if len(items) > 0:
 			print >>o, '\n[callnumberlimits]'
 
-			for item in items:
-				print >>o, "%s/%s = %s" % (item['destination'], item['netmask'], item['calllimits'])
+			for auth in items:
+				print >>o, "%s/%s = %s" % (auth['destination'], auth['netmask'], auth['calllimits'])
 
 
 		# section::trunks
