@@ -1307,7 +1307,7 @@ INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','forceencryption
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','trunkmaxsize',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','trunkmtu',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','cos',NULL);
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','allowwfwdownload',NULL);
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','allowfwdownload',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','parkinglot',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxcallnumbers',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxcallnumbers_nonvalidated',NULL);
