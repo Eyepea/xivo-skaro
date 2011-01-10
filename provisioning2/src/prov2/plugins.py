@@ -111,7 +111,6 @@ class Plugin(object):
     http_service
     tftp_dev_info_extractor
     tftp_service
-    device_types
     
     Plugin class that are made to be instantiated (i.e. the one doing the
     real job, and not superclass that helps it) must have an attribute
@@ -238,19 +237,6 @@ class Plugin(object):
     XXX the request object passed to the handle_read_request method of this
     service has a 'prov2_dev' key set to the device object which is doing
     this request, or None (but the attribute is always present).
-    
-    """
-    
-    # TODO move this information so it's accessible before the plugin is
-    #      installed (i.e. in the description)... and remove it from here
-    device_types = ()
-    """Sequence of (vendor, model, version) tuple that this plugin explicitly
-    supports.
-    
-    Useful if we want to do automatic device-plugin association.
-    XXX in fact, will be mostly useful to list to the user which models
-    are supported by the plugin; this is not enough powerful to do
-    interesting automatic device-plugin association
     
     """
     

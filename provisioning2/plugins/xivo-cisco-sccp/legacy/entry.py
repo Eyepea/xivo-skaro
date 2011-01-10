@@ -8,7 +8,6 @@ common_globals = {}
 execfile_('common.py', common_globals)
 
 
-VENDOR = 'Cisco'
 MODEL_VERSION = {'7902G': '8.0.2/SCCP',
                  '7905G': '8.0.3/SCCP',
                  '7910G': '5.0.7/SCCP',
@@ -20,7 +19,4 @@ MODEL_VERSION = {'7902G': '8.0.2/SCCP',
 class CiscoSccpPlugin(common_globals['BaseCiscoSccpPlugin']):
     IS_PLUGIN = True
     
-    device_types = [(VENDOR, model, version) for model, version in
-                    MODEL_VERSION.iteritems()]
-
     pg_associator = common_globals['BaseCiscoPgAssociator'](MODEL_VERSION)
