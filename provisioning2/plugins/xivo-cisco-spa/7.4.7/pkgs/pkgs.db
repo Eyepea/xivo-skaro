@@ -1,0 +1,65 @@
+[pkg_cisco-spa50x-30x]
+desc: Firmware files for Cisco SPA50XG and SPA30XG
+version: 7.4.7
+files: file_cisco-spa50x-30xfw
+install_proc: install_cisco-spa500fw
+
+[pkg_cisco-spa525G]
+desc: Firmware files for Cisco SPA525G
+version: 7.4.7
+files: file_cisco-spa525fw
+install_proc: install_cisco-spa500fw
+
+[pkg_cisco-spa50x-30xlang]
+desc: Language files for Cisco SPA50XG and SPA30XG
+version: 7.4.6
+files: file_cisco-spa50x-30xlang
+install_proc: install_cisco-spa50x-30xlang
+
+[pkg_cisco-spa525lang]
+desc: Language files for Cisco SPA525
+version: 7.4.6
+files: file_cisco-spa525lang
+install_proc: install_cisco-spa525lang
+
+
+
+[install_cisco-spa500fw]
+a-b: unzip $FILE1
+b-c: cp *.bin $DOC_ROOT/firmware/
+
+[install_cisco-spa50x-30xlang]
+a-b: unzip $FILE1
+b-c: cp */spa50x_30x_de* $DOC_ROOT/i18n/spa50x_30x_de.xml
+b-d: cp */spa50x_30x_en* $DOC_ROOT/i18n/spa50x_30x_en.xml
+b-e: cp */spa50x_30x_es* $DOC_ROOT/i18n/spa50x_30x_es.xml
+b-f: cp */spa50x_30x_fr* $DOC_ROOT/i18n/spa50x_30x_fr.xml
+
+[install_cisco-spa525lang]
+a-b: unzip $FILE1
+b-c: cp */spa525_de* $DOC_ROOT/i18n/spa525_de.xml
+b-d: cp */spa525_en* $DOC_ROOT/i18n/spa525_en.xml
+b-e: cp */spa525_es* $DOC_ROOT/i18n/spa525_es.xml
+b-f: cp */spa525_fr* $DOC_ROOT/i18n/spa525_fr.xml
+
+
+
+[file_cisco-spa50x-30xfw]
+url: http://download-sj.cisco.com/swc/esd/04/282724524/anon/spa50x-30x-7-4-7.zip
+size: 11873085
+sha1sum: 9cc56f7cc344868d71f6025d22b771d6d2732f6d
+
+[file_cisco-spa525fw]
+url: http://download-sj.cisco.com/swc/esd/04/282414147/anon/spa525g-7-4-7.zip
+size: 10083336
+sha1sum: f731c081bcb119774f03c9e04ffba0ac086bf593
+
+[file_cisco-spa50x-30xlang]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-8-71741/spa50x_30x_v746.zip
+size: 127995
+sha1sum: e681bd835d154cf849ea21468a00a88996a7c0fe
+
+[file_cisco-spa525lang]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-3-71742/spa525_v746.zip
+size: 223906
+sha1sum: 0b442d71304599d69774607b6462acde0a4b1cc8

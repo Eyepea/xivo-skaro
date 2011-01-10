@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <settings>
   <phone-settings>
-    <setting_server perm="R">http://{{prov_ip}}:{{prov_http_port|d('80')}}/snom#MODEL#.htm</setting_server>
-    <firmware_status perm="R">http://{{prov_ip}}:{{prov_http_port|d('80')}}/snom#MODEL#-firmware.xml</firmware_status>
+    <setting_server perm="R">http://{{ ip }}:{{ http_port }}/snom#MODEL#.htm</setting_server>
+    <firmware_status perm="R">http://{{ ip }}:{{ http_port }}/snom#MODEL#-firmware.xml</firmware_status>
   </phone-settings>
 </settings>

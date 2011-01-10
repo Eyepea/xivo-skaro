@@ -51,6 +51,7 @@ from prov2.rest.server import DevicesResource,\
     PluginMgrListInstalledResource, PluginMgrListUpgradeableResource,\
     PluginMgrConfigureResource, PluginMgrInstallResource, PluginMgrUninstallRecourse,\
     PluginMgrUpgradeResource, PluginsResource, DHCPInfoResource
+from prov2.util import norm_ip
 from twisted.python.util import println
 
 
@@ -73,13 +74,25 @@ class UnusedIdError(InvalidIdError):
     pass
 
 
+def _port_number(str):
+    # Return a port number as an integer or raise a ValueError
+    port = int(str)
+    if not 1 <= port <= 65535:
+        raise ValueError('invalid port number "%s"' % str)
+    return port
+
+
+def _ip_address(str):
+    # Return an IP address as a string or raise a ValueError
+    return norm_ip(str)
+
+
 def _read_config(filename):
     config = RawConfigParser()
     with open(filename, 'r') as fobj:
         config.readfp(fobj)
 
-    # XXX right now, we only transform the RawConfigParser object to
-    # a more manipulable mapping of mapping object
+    # generate a mapping of mapping object from a RawConfigParser object
     result = {'pg_mgr': {'plugins_dir': '/var/lib/pf-xivo/prov2/plugins',
                          'cache_dir': '/var/cache/pf-xivo/prov2/plugins'}}
     for section in config.sections():
@@ -88,8 +101,7 @@ def _read_config(filename):
             in_result[option] = config.get(section, option)
     
     # check if every mandatory options are specified
-    #mandatory = {'pg_mgr': ['server']}
-    mandatory = {}
+    mandatory = {'common_config': ['ip', 'http_port', 'tftp_port']}
     for section in mandatory:
         if section not in result:
             raise ValueError('mandatory section "%s" not specified' % section)
@@ -98,6 +110,17 @@ def _read_config(filename):
             if option not in in_result:
                 raise ValueError('mandatory option "%s" in section "%s" not specified' %
                                  (option, section))
+    
+    # check and transform values that needs to be checked/transformed
+    transform = {'common_config': {'ip': _ip_address,
+                                   'http_port': _port_number,
+                                   'tftp_port': _port_number}}
+    for section in transform:
+        if section in result:
+            in_result = result[section]
+            for key, transform_fun in transform.iteritems():
+                if key in in_result:
+                    in_result[key] = transform_fun(in_result[key])
     return result
 
 
@@ -131,11 +154,8 @@ class Application(object):
         self._config = config
         self._dev_id_gen = NumericIdGenerator()
         self._cfg_id_gen = NumericIdGenerator()
+        self._load_all_pg()
         
-        for pg_info in self.pg_mgr.list_installed():
-            pg_id = pg_info['name']
-            self._load_pg(pg_id)
-    
     def close(self):
         self.pg_mgr.close()
     
@@ -158,11 +178,20 @@ class Application(object):
         return None
     
     def _get_config(self, dev):
-        """Return the flattened config of dev, or None."""
+        """Return the flattened config of dev augmented with parameters from
+        the common config, or None.
+        
+        """
         if 'config' in dev:
             cfg_id = dev['config']
             if cfg_id in self.cfg_mgr:
-                return self.cfg_mgr.flatten(cfg_id)
+                config = self.cfg_mgr.flatten(cfg_id)
+                # Non overwriting update of the common config
+                common_config = self._config['common_config']
+                for key in common_config:
+                    if key not in config:
+                        config[key] = common_config[key]
+                return config
         return None
     
     def _get_plugin_and_config(self, dev):
@@ -364,10 +393,22 @@ class Application(object):
     
     # Plugin operations
     
+    def _load_all_pg(self):
+        for pg_info in self.pg_mgr.list_installed():
+            pg_id = pg_info['name']
+            self._load_pg(pg_id)
+        
     def _load_pg(self, pg_id):
         gen_cfg = self._config['general']
         spec_cfg = self._config.get('pluginconfig_' + pg_id, {})
         self.pg_mgr.load(pg_id, gen_cfg, spec_cfg)
+        self._common_configure(pg_id)
+    
+    def _common_configure(self, pg_id):
+        # Pre: pg_id in self.pg_mgr
+        pg = self.pg_mgr[pg_id]
+        config = self._config['common_config']
+        pg.configure_common(config)
     
     def _configure_dev_from_plugin(self, pg_id):
         """Call plugin(dev, config) for every devices for which
@@ -414,7 +455,7 @@ class Application(object):
         if not self.pg_mgr.is_installed(pg_id):
             raise Exception("plugin '%s' is not already installed" % pg_id)
         
-        # XXX we probably want to cheeck that the plugin is 'really' upgradeable
+        # XXX we probably want to check that the plugin is 'really' upgradeable
         pop = self.pg_mgr.upgrade(pg_id)
         def on_success(_):
             if pg_id in self.pg_mgr:
@@ -464,8 +505,8 @@ pg_mgr = app.pg_mgr
 # a 'base' configuration
 xivo_ip = '192.168.33.4'
 base_cfg = {
-    'prov_ip': '192.168.33.1',
-    'prov_http_port': '8080',
+    'ip': '192.168.33.1',
+    'http_port': '8080',
     'locale': 'fr_CA',
     'timezone': 'America/Montreal',
     'subscribe_mwi': False,
@@ -712,6 +753,7 @@ rest_site = Site(root)
 from twisted.python import log
 log.startLogging(sys.stdout)
 
+# TODO use parameters from config file
 reactor.listenUDP(6969, TFTPProtocol(tftp_service))
 reactor.listenTCP(8080, http_site)
 reactor.listenTCP(8081, rest_site)

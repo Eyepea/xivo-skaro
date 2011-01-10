@@ -152,7 +152,7 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
         if 60 in request:
             return self._extract_from_vdi(request[60])
     
-    def _extract_from_vdi(self, vdi, dev_info):
+    def _extract_from_vdi(self, vdi):
         # Vendor class identifier:
         #   "Cisco Systems, Inc. IP Phone 7912" (Cisco 7912 9.0.3)
         #   "Cisco Systems, Inc. IP Phone CP-7940G\x00" (Cisco 7940 8.1.2)

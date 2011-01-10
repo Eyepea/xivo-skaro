@@ -24,7 +24,7 @@ def build_9_0_3(path):
             ('7970G', '70'),
             ('7971G', '70'),
             ('7975G', '75')]
-    check_call(['rsync', '-rlpt', '--exclude', '.*',
+    check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '/templates/*.mtpl',
                 'common/', path])
     
@@ -35,7 +35,7 @@ def build_9_0_3(path):
             check_call(['sed', sed_script, 'common/templates/model.mtpl'],
                         stdout=f)
     
-    check_call(['rsync', '-rlpt', '--exclude', '.*',
+    check_call(['rsync', '-rlp', '--exclude', '.*',
                 '9.0.3/', path])
 
 
@@ -48,7 +48,7 @@ def build_legacy(path):
             ('7940G', 'P00308010200'),
             ('7960G', 'P00308010200')]
     
-    check_call(['rsync', '-rlpt', '--exclude', '.*',
+    check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '/templates/*.mtpl',
                 'common/', path])
     
@@ -59,5 +59,5 @@ def build_legacy(path):
             check_call(['sed', sed_script, 'common/templates/model.mtpl'],
                         stdout=f)
     
-    check_call(['rsync', '-rlpt', '--exclude', '.*',
+    check_call(['rsync', '-rlp', '--exclude', '.*',
                 'legacy/', path])

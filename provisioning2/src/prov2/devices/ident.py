@@ -477,6 +477,27 @@ class MacDeviceRetriever(object):
         return None
 
 
+class SerialNumberDeviceRetriever(object):
+    """Retrieve device object by looking up in a device manager for an
+    object which serial number is the same as the device info object.
+    
+    """
+    implements(IDeviceRetriever)
+    
+    def retrieve(self, dev_info, app):
+        dev_mgr = app.dev_mgr
+        if 'sn' in dev_info:
+            serial_number = dev_info['sn']
+            def _find_fun(dev):
+                if dev.get('sn') == serial_number:
+                    return True
+                return False
+            dev_id = dev_mgr.find(_find_fun) 
+            if dev_id is not None:
+                return dev_mgr[dev_id] 
+        return None
+
+
 class AddDeviceRetriver(object):
     """A device retriever that does no lookup and always add a new device
     object to the device manager.

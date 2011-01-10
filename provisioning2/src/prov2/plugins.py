@@ -263,15 +263,18 @@ class Plugin(object):
     
     # Methods for device configuration
     
-    # XXX scheduled for deletion -- lets see if its possible to do without
-    #     this, and I guess it is, but it might be impratical, but let's
-    #     implement only once we'll see that we're boned
     def configure_common(self, config):
         """Apply a non-device specific configuration to the plugin. In typical
-        case, this will configure the 'common file' shared by all the devices.
+        case, this will configure the 'common files' shared by all the devices.
         
-        config is a mapping object with all the configurations parameters.
-        Plugin class can modify this object.
+        This method is called automatically the first time an installed plugin
+        is loaded, and also called when there's a change to the common config.
+        Note that this method might also be called more often than
+        technically needed.
+        
+        config is a mapping object with all the common configurations
+        parameters. An 'ip', 'http_port' and 'tftp_port' parameters are
+        guaranteed to be present. Plugin class can modify this object.
         
         This method is synchronous/blocking.
         
@@ -411,7 +414,7 @@ class TemplatePluginHelper(object):
         custom_dir = os.path.join(plugin_dir, self.CUSTOM_TPL_DIR)
         default_dir = os.path.join(plugin_dir, self.DEFAULT_TPL_DIR)
         loader = FileSystemLoader([custom_dir, default_dir])
-        self._env = Environment(trim_blocks=True, loader=loader)
+        self._env = Environment(loader=loader)
         
     def get_dev_template(self, filename, dev):
         """Get the device template used for the device specific configuration

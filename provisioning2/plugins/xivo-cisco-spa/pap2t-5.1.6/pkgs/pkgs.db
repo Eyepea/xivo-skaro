@@ -1,0 +1,18 @@
+[pkg_cisco-pap2t]
+desc: Firmware files for Cisco PAP2T
+version: 5.1.6
+files: file_cisco-pap2tfw
+install_proc: install_cisco-zipfw
+
+
+
+[install_cisco-zipfw]
+a-b: unzip $FILE1
+b-c: cp *.bin $DOC_ROOT/firmware/
+
+
+
+[file_cisco-pap2tfw]
+url: http://download-sj.cisco.com/swc/esd/03/282414114/anon/PAP2T_v5.1.6_fw.zip
+size: 1504430
+sha1sum: c8a2c48e06e3bd89de6f444824a41ebc7e1d57f5

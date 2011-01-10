@@ -1,13 +1,13 @@
 {# Can use an IP address or a FQDN #}
-http server: {{ prov_ip }}
-http port: {{ prov_http_port|d('80') }}
+http server: {{ ip }}
+http port: {{ http_port }}
 
-admin password: {{ admin_passwd|d('22222') }}
+admin password: {{ admin_passwd|d('65535') }}
 
 {# VLAN settings #}
 {% if vlan and vlan['enabled'] %}
 tagging enabled: 1
-vlan id: {{ vlan['id']|d(1) }}
+vlan id: {{ vlan['id'] }}
 vlan id port 1: 4095
 {% else %}
 tagging enabled: 0
@@ -32,7 +32,7 @@ sip line{{ line_no }} backup proxy port: 5060
 sip line{{ line_no }} backup registrar ip: {{ line['backup_registrar_ip']|d('0.0.0.0') }}
 sip line{{ line_no }} backup registrar port: 5060
 sip line{{ line_no }} screen name: {{ line['display_name'] }}
-sip line{{ line_no }} screen name 2: {{ line['user_id'] }}
+sip line{{ line_no }} screen name 2: {{ line['number'] }}
 sip line{{ line_no }} auth name: {{ line['auth_id'] }}
 sip line{{ line_no }} password: {{ line['passwd'] }}
 sip line{{ line_no }} user name: {{ line['user_id'] }}

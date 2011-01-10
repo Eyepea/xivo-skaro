@@ -21,12 +21,15 @@ TODO put more details about the type, valid values, optional/mandatory...
 An IP address is a string IPv4 address in dotted quad notation.
 A port number is an integer between 1 and 65535 inclusive.
 
+ip
+  The provisioning server IP address. Always present.
+http_port
+  The provisioning server HTTP port number. Always present.
+tftp_port
+  The provisioning server TFTP port number. Always present.
+
 proto
   The protocol to use. Current valid value are 'SIP' and 'SCCP'.
-prov_ip
-  The provisioning server IP address.
-prov_http_port
-  The provisioning server HTTP port number (default: 80)
 ntp_server
   The NTP server IP address.
 admin_user
@@ -75,6 +78,8 @@ sip
           The outbound proxy IP
         display_name
           The display name for caller ID
+        number
+          The extension number
         user_id
           The user ID/username of this SIP identify.
         auth_id

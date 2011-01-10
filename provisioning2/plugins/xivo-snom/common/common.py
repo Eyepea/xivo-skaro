@@ -189,12 +189,8 @@ class BaseSnomPlugin(StandardPlugin):
         return "\n".join(fk_config_lines)
     
     def _get_xx_lang(self, config):
-        xx_lang = None
         if 'locale' in config:
-            locale = config['locale']
-            if locale in self._XX_LANG:
-                xx_lang = self._XX_LANG[locale]
-        return xx_lang
+            return self._XX_LANG.get(config['locale'])
     
     def _format_dst_change(self, dst_change):
         fmted_time = '%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)

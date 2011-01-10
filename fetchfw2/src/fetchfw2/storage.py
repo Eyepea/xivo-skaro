@@ -161,7 +161,7 @@ class RemoteFileBuilder(object):
             filename = os.path.basename(url)
         path = os.path.join(cache_dir, filename)
         if config.has_option(section, 'downloader'):
-            downloader_name = config.get(section, 'downloader').split()
+            downloader_name = config.get(section, 'downloader')
         else:
             downloader_name = 'default'
         try:

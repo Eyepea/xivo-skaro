@@ -7,7 +7,8 @@ XXX like config, there should be a way to put extra information into device
     object in a way it's can't conflict with future addition
 
 A device info object is a mapping object with the following keys:
-  mac -- the normalized MAC address of this device 
+  mac -- the normalized MAC address of this device
+  sn -- the serial number of this device (string)
   ip -- the (last seen) normalized IP address of this device
   vendor -- the vendor name of this device (string)
   model -- the model name of this device (string)

@@ -7,7 +7,7 @@
     <vlan perm="R"></vlan>
     {% endif %}
     
-    <admin_mode_password perm="R">{{ admin_passwd|d('22222')|e }}</admin_mode_password>
+    <admin_mode_password perm="R">{{ admin_passwd|d('65535')|e }}</admin_mode_password>
     <ntp_server perm="R">{{ ntp_server }}</ntp_server>
     
     {% for line_no, line in sip['lines'].iteritems() %}
