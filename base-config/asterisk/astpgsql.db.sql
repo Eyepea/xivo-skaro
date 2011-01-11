@@ -697,8 +697,8 @@ INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*735.','32e9b3
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*8.','b349d094036a97a7e0631ba60de759a9597c1c3a','','extenfeatures','pickup');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*56.','95d84232b10af6f6905dcd22f4261a4550461c7d','','extenfeatures','queueaddmember');
-INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*57.','3ad1e945e85735f6417e5a0aba7fde3bc9d2ffec','','extenfeatures','queuetogglemember');
-INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*55.','f8085e23f56e5433006483dee5fe3db8c94a0a06','','extenfeatures','queueremovemember');
+INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*57.','3ad1e945e85735f6417e5a0aba7fde3bc9d2ffec','','extenfeatures','queueremovemember');
+INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*55.','f8085e23f56e5433006483dee5fe3db8c94a0a06','','extenfeatures','queuetogglemember');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*9','e28d0f359da60dcf86340435478b19388b1b1d05','','extenfeatures','recsnd');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*99.','6c92223f2ea0cfd9fad3db2f288ebdc9c64dc8f5','','extenfeatures','vmboxmsgslt');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*93.','7d891f90799fd6cb5bc85c4bd227a3357096be8f','','extenfeatures','vmboxpurgeslt');
@@ -1649,6 +1649,7 @@ INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','ge
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','domainsasrealm',NULL);
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','textsupport',NULL);
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','auth_options_requests','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','transport','udp');
 
 
 DROP TABLE IF EXISTS "staticvoicemail";
