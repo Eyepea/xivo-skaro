@@ -290,6 +290,9 @@ $array['module']['general']['datastorage'] = true;
 $array['module']['sipauthentication'] = array();
 $array['module']['sipauthentication']['datastorage'] = true;
 
+$array['module']['iaxcallnumberlimits'] = array();
+$array['module']['iaxcallnumberlimits']['datastorage'] = true;
+
 
 
 

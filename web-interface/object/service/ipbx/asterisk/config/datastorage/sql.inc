@@ -340,4 +340,8 @@ $array['sipauthentication'] = array();
 $array['sipauthentication']['table'] = 'sipauthentication';
 $array['sipauthentication']['primary'] = array('id' => '');
 
+$array['iaxcallnumberlimits'] = array();
+$array['iaxcallnumberlimits']['table'] = 'iaxcallnumberlimits';
+$array['iaxcallnumberlimits']['primary'] = array('id' => '');
+
 ?>
