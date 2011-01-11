@@ -20,24 +20,56 @@
 
 $appiax = &$ipbx->get_apprealstatic('iax');
 $appgeneraliax = &$appiax->get_module('general');
+$modcalllimits = &$ipbx->get_module('iaxcallnumberlimits');
 
 $fm_save = $error = null;
 
 $info = $appgeneraliax->get_all_by_category();
+$calllimits = $modcalllimits->get_all();
 
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
+	
+	// calllimits
+	$calllimits = array();
+	$error  = array('calllimits' => array());
 
-	if(($rs = $appgeneraliax->set_save_all($_QR)) !== false)
+	for($i = 0; $i < count($_QR['calllimits']['destination'])-1; $i++)
 	{
-		$info = $rs['result'];
-		$error = $rs['error'];
-		$fm_save = empty($error);
+		$calllimits[] = array(
+			'destination' => $_QR['calllimits']['destination'][$i],
+			'netmask'     => $_QR['calllimits']['netmask'][$i],
+			'calllimits'  => $_QR['calllimits']['calllimits'][$i]
+		);
+
+		if($modcalllimits->chk_values($calllimits[count($calllimits)-1]) === false)
+		{ $error['calllimits'][$i] = $modcalllimits->get_filter_error(); continue; }
+	}
+
+	// error on call limits
+	if(count($error['calllimits']) > 0)
+	{
+		$fm_save = false;
+	} else {
+		$modcalllimits->delete_all();
+
+		foreach($calllimits as $_calllimits)
+			$modcalllimits->add($_calllimits);
+
+		unset($_QR['calllimits']);
+
+		if(($rs = $appgeneraliax->set_save_all($_QR)) !== false)
+		{
+			$info = $rs['result'];
+			$error = $rs['error'];
+			$fm_save = empty($error);
+		}
 	}
 }
 
 $element = $appgeneraliax->get_element();
+$element['calllimits'] = $modcalllimits->get_element();
 
 if(dwho_issa('allow',$element) === true
 && dwho_issa('value',$element['allow']) === true
@@ -53,6 +85,7 @@ $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('info',$info);
+$_TPL->set_var('calllimits',$calllimits);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneraliax->get_musiconhold());

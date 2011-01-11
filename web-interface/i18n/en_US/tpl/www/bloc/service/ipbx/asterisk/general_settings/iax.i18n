@@ -553,3 +553,109 @@ Disabled
 ; hlp_fm_language
 Asterisk config: language
 
+;; asterisk 1.8
+; fm_srvlookup
+SRV lookup:
+
+; hlp_fm_srvlookup
+Asterisk config: srvlookup
+
+; fm_jittertargetextra
+Jitter target extra:
+
+; hlp_fm_jittertargetextra
+Asterisk config: jitterbufferextra
+
+; fm_forceencryption
+Force encryption:
+
+; hlp_fm_forceencryption
+Asterisk config: forceencryption
+
+; fm_trunkmaxsize
+Trunks max size:
+
+; hlp_fm_trunkmaxsize
+Asterisk config: trunkmaxsize
+
+; fm_trunkmtu
+Trunks MTU:
+
+; hlp_fm_trunkmtu
+Asterisk config: trunkmtu
+
+; fm_cos
+COS: 
+
+; hlp_fm_cos
+Asterisk config: cos
+
+; fm_cos-opt(1)
+1
+
+; fm_cos-opt(2)
+2
+
+; fm_cos-opt(3)
+3
+
+; fm_cos-opt(4)
+4
+
+; fm_cos-opt(5)
+5
+
+; fm_cos-opt(6)
+6
+
+; fm_cos-opt(7)
+7
+
+; fm_allowfwdownload
+Allow firmware download:
+
+; hlp_fm_allowfwdownload
+Asterisk config: allowfwdownload
+
+; fm_parkinglot
+Default parkinglot:
+
+; hlp_fm_parkinglot
+Asterisk config: parkinglot
+
+; fm_maxcallnumbers
+Max call numbers (per remote IP):
+
+; hlp_fm_maxcallnumbers
+Asterisk config: maxcallnumbers
+
+; fm_maxcallnumbers_nonvalidated
+Max call numbers (total calls, when tokens validation activated):
+
+; hlp_fm_maxcallnumbers_nonvalidated
+Asterisk config: maxcallnumbers_nonvalidated
+
+; fm_shrinkcallerid
+Shrink CallerID:
+
+; hlp_fm_shrinkcallerid
+Asterisk config: shrinkcallerid
+
+; smenu_calllimits
+Call limits
+
+; fm_col_destination
+Destination
+
+; fm_col_netmask
+Netmask
+
+; fm_col_calllimits
+Call limits (per IP)
+
+; title_pernetwork_calllimits
+Call number limits per IP address ranges (limits take effect for every individual
+address within range)
+
+; no_disp
+No entries

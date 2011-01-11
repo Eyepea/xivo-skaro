@@ -25,6 +25,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appiax        = &$ipbx->get_apprealstatic('iax');
 $appgeneraliax = &$appiax->get_module('general');
+$modcalllimits = &$ipbx->get_module('iaxcallnumberlimits');
 
 $act = $_QRY->get('act');
 
@@ -36,6 +37,10 @@ switch($act)
 		// mwi and register MUST be list of values
 		if(array_key_exists('register', $info) && !is_array($info['register'][0]))
 			$info['register'] = array($info['register']);
+
+		$info['callnumberlimits'] = $modcalllimits->get_all();
+		if($info['callnumberlimits'] === false)
+			$info['callnumberlimits'] = array();
 
 		$_TPL->set_var('info',$info);
 		break;

@@ -21,8 +21,9 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$element = $this->get_var('element');
-$moh_list = $this->get_var('moh_list');
+$element      = $this->get_var('element');
+$calllimits   = $this->get_var('calllimits');
+$moh_list     = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
@@ -91,13 +92,25 @@ endif;
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-5"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-advanced');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#advanced"><?=$this->bbf('smenu_advanced');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-6"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-calllimits',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#last"><?=$this->bbf('smenu_advanced');?></a>
+					<a href="#calllimits"><?=$this->bbf('smenu_calllimits');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -571,7 +584,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-advanced" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_pingtime'),
 				    'name'		=> 'pingtime',
@@ -662,7 +675,20 @@ endif;
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'parkinglot')) )),
 
-    $form->select(array('desc'  => $this->bbf('fm_maxcallnumbers'),
+    $form->checkbox(array('desc'  => $this->bbf('fm_shrinkcallerid'),
+              'name'    => 'shrinkcallerid',
+              'labelid' => 'shrinkcallerid',
+              'help'    => $this->bbf('hlp_fm_shrinkcallerid'),
+              'checked' => $this->get_var('info','shrinkcallerid','var_val'),
+              'default' => $element['shrinkcallerid']['default']));
+
+
+?>
+</div>
+
+<div id="sb-part-calllimits" class="b-nodisplay">
+<?php
+    echo $form->select(array('desc'  => $this->bbf('fm_maxcallnumbers'),
             'name'     => 'maxcallnumbers',
             'labelid'  => 'maxcallnumbers',
             'key'      => false,
@@ -678,17 +704,155 @@ endif;
             'help'     => $this->bbf('hlp_fm_maxcallnumbers_nonvalidated'),
             'selected' => $this->get_var('info','maxcallnumbers_nonvalidated','var_val'),
             'default'  => $element['maxcallnumbers_nonvalidated']['default']),
-        $element['maxcallnumbers_nonvalidated']['value']),
-
-    $form->checkbox(array('desc'  => $this->bbf('fm_shrinkcallerid'),
-              'name'    => 'shrinkcallerid',
-              'labelid' => 'shrinkcallerid',
-              'help'    => $this->bbf('hlp_fm_shrinkcallerid'),
-              'checked' => $this->get_var('info','shrinkcallerid','var_val'),
-              'default' => $element['shrinkcallerid']['default']));
-
-
+        $element['maxcallnumbers_nonvalidated']['value']);
 ?>
+
+<?php
+	$type = 'disp';
+	$count = $calllimits?count($calllimits):0;
+	$errdisplay = '';
+?>
+	<br/><br/>
+	<div class="sb-list">
+	<p><?= $this->bbf('title_pernetwork_calllimits'); ?></p>
+		<table cellspacing="0" cellpadding="0" border="0">
+			<thead>
+			<tr class="sb-top">
+
+				<th class="th-left"><?=$this->bbf('fm_col_destination');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_netmask');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_calllimits');?></th>
+				<th class="th-right th-rule">
+					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+									  $this->bbf('col_add'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+							   $this->bbf('col_add'));?>
+				</th>
+			</tr>
+			</thead>
+			<tbody id="disp">
+		<?php
+		if($count > 0):
+			for($i = 0;$i < $count;$i++):
+
+		?>
+			<tr class="fm-paragraph<?=$errdisplay?>">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'calllimits[destination][]',
+							       'id'		=> false,
+							       'label'		=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'		=> $calllimits[$i]['destination'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('calllimits-destination', $this->get_var('error', 'calllimits', $i, 'destination'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'calllimits[netmask][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'	=> $calllimits[$i]['netmask'],
+							       'default'	=> '',
+			               'error'		=> $this->bbf_args('calllimits-netmask', $this->get_var('error', 'calllimits', $i, 'netmask'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'calllimits[calllimits][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'	=> $calllimits[$i]['calllimits'],
+							       'default'	=> '',
+			               'error'		=> $this->bbf_args('calllimits-calllimits', $this->get_var('error', 'calllimits', $i, 'calllimits'))));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+
+		<?php
+			endfor;
+		endif;
+		?>
+			</tbody>
+			<tfoot>
+			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
+				<td colspan="4" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+			</tr>
+			</tfoot>
+		</table>
+		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+			<tbody id="ex-<?=$type?>">
+			<tr class="fm-paragraph">
+				<td class="td-left">
+	<?php
+					echo $form->hidden(array('name'		=> 'calllimits[id][]',
+                               		 'default'     	=> '-1'));
+
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'calllimits[destination][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'calllimits[netmask][]',
+							       'id'		=> false,
+							       'label'		=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'calllimits[calllimits][]',
+							       'id'		=> false,
+							       'label'		=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
 	<?=$form->submit(array('name'	=> 'submit',
 			       'id'		=> 'it-submit',

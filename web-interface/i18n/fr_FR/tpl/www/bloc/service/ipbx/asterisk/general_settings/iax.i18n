@@ -546,7 +546,7 @@ Propriétés du protocole IAX sauvegardées avec succès
 Activer les requêtes SRV pour les appels sortants: 
 
 ; hlp_fm_srvlookup
-onfig asterisk: srvlookup
+Config asterisk: srvlookup
 
 ; fm_jittertargetextra
 Valeur d'alignement du jitter: 
@@ -629,3 +629,20 @@ Nettoyer le caller-id:
 ; hlp_fm_shrinkcallerid
 Config asterisk: shrinkcallerid
 
+; smenu_calllimits
+Limitations des appels
+
+; fm_col_destination
+Destination
+
+; fm_col_netmask
+Masque réseau
+
+; fm_col_calllimits
+Nombre max d'appels (par IP)
+
+; title_pernetwork_calllimits
+Limitation du nombre d'appels par sous-réseau (la limite vaut pour chaque IP du sous-réseau) :
+
+; no_disp
+Aucune entrée
