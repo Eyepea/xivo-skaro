@@ -1,25 +1,39 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-"""Small daemon program that is used to push DHCP status information into
-the provisioning server.
+"""Small daemon program that is used to push DHCP information to a
+provisioning server.
 
-DHCP status information is passed to it by the dxtorc application and this
-information is then cached and sent if there was a change.
+DHCP information is passed to it by the dxtorc application.
 
-  dxtord -u user:pwd http://example.com:8000/dev_mgr
+"""
 
-Where the URI point to the 'device manager' resource of the REST API of a
-provisioning server. The username/password is used if the agent has to
-authenticate to the provisioning server.
+__version__ = "$Revision $ $Date $"
+__license__ = """
+    Copyright (C) 2010-2011  Proformatique
 
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
 try:
     import json
 except ImportError:
     import simplejson as json
+import ConfigParser
 import logging
+import optparse
 import os
 import urllib2
 import urlparse
@@ -27,6 +41,7 @@ import socket
 import sys
 from logging.handlers import SysLogHandler
 
+CONFIG_FILE      = '/etc/pf-xivo/dxtora.conf'
 PID_FILE         = '/var/run/dxtora.pid'
 UNIX_SERVER_ADDR = '/var/run/dxtora.ctl'
 PROV2_MIME_TYPE  = 'application/vnd.proformatique.prov2+json'
@@ -112,12 +127,11 @@ class ProvServerDHCPInfoSink(object):
     Send the DHCP information to a provisioning server via its REST API.
     
     """
-    def __init__(self, base_uri, userpass=None):
+    def __init__(self, base_uri, username=None, password=None):
         handlers = []
-        if userpass:
-            user, passwd = userpass.split(':', 1)
+        if username and password:
             pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            pwd_manager.add_password(None, base_uri, user, passwd)
+            pwd_manager.add_password(None, base_uri, username, password)
             basic_handler = urllib2.HTTPBasicAuthHandler(pwd_manager)
             digest_handler = urllib2.HTTPDigestAuthHandler(pwd_manager)
             handlers.extend((basic_handler, digest_handler))
@@ -322,6 +336,66 @@ class PidFile(object):
         self._remove_pid_file()
 
 
+def _read_config_default():
+    return {'general':
+                {'cache': True,
+                 'retries': 0,
+                 'foreground': False},
+            'prov_server':
+                {}}
+
+
+def _read_config_from_file(filename):
+    config = ConfigParser.RawConfigParser()
+    fobj = open(filename)
+    try:
+        config.readfp(fobj)
+    finally:
+        fobj.close()
+    
+    result = {'general': {}, 'prov_server': {}}
+    def _get(section, option, getname='get'):
+        if config.has_option(section, option):
+            getfun = getattr(config, getname)
+            result[section][option] = getfun(section, option)
+    _get('general', 'cache', 'getboolean')
+    _get('general', 'retries', 'getint')
+    _get('prov_server', 'dev_mgr_uri')
+    _get('prov_server', 'username')
+    _get('prov_server', 'password')
+    return result
+
+
+def _read_config_from_commandline():
+    parser = optparse.OptionParser()
+    parser.add_option('-u', '--user', dest='user',
+                      help='user name and password for server authentication')
+    parser.add_option('-f', '--foreground', action='store_true', dest='foreground',
+                      help="don't daemonize")
+    opt, args = parser.parse_args()
+    
+    result = {'general': {}, 'prov_server': {}}
+    if opt.foreground:
+        result['general']['foreground'] = opt.foreground
+    if opt.user:
+        user, passwd = opt.user.split(':', 1)
+        result['prov_server']['username'] = user
+        result['prov_server']['password'] = passwd
+    if len(args) >= 1:
+        result['prov_server']['dev_mgr_uri'] = args[0]
+    return result
+
+
+def _read_config(filename):
+    config = _read_config_default()
+    def _update(new_config):
+        for key in ['general', 'prov_server']:
+            config[key].update(new_config[key])
+    _update(_read_config_from_file(filename))
+    _update(_read_config_from_commandline())
+    return config
+
+
 def _remove(file):
     # remove the file if present in a way that doesn't modify the stack
     # trace and doesn't raise an exception
@@ -364,22 +438,17 @@ def _daemonize():
 
 
 def _sig_handler(signum, frame):
+    logger.info('Received signal, exiting.')
     raise SystemExit()
 
 
 def main():
-    import optparse
     import signal
 
-    parser = optparse.OptionParser()
-    parser.add_option('-u', '--user', dest='user',
-                      help='user name and password for server authentication')
-    parser.add_option('-f', '--foreground', action='store_true', dest='foreground',
-                      help="don't daemonize")
-    opt, args = parser.parse_args()
+    config = _read_config(CONFIG_FILE)
     
     logger.setLevel(logging.INFO)
-    if opt.foreground:
+    if config['general']['foreground']:
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s:%(lineno)3d - %(name)s: %(message)s"))
         logger.addHandler(handler)
@@ -388,17 +457,20 @@ def main():
         handler.setFormatter(logging.Formatter("dxtora[%(process)d]: %(message)s"))
         logger.addHandler(handler)
 
-    if len(args) != 1:
-        print >>sys.stderr, 'error: need 1 argument (%d given)' % len(args)
+    if 'dev_mgr_uri' not in config['prov_server']:
+        logger.error('error: no device manager URI specified. Exiting.')
         sys.exit(1)
-    base_uri = args[0]
+    base_uri = config['prov_server']['dev_mgr_uri']
     
     source = UnixSocketDHCPInfoSource(UNIX_SERVER_ADDR)
     try:
-        sink = CachingDHCPInfoSink(ProvServerDHCPInfoSink(base_uri, opt.user))
-        #sink = StreamDHCPInfoSink(sys.stderr)
+        username = config['prov_server'].get('username')
+        password = config['prov_server'].get('password')
+        sink = ProvServerDHCPInfoSink(base_uri, username, password)
         try:
-            if not opt.foreground:
+            if config['general']['cache']:
+                sink = CachingDHCPInfoSink(sink)
+            if not config['general']['foreground']:
                 _daemonize()
             pidfile = PidFile(PID_FILE)
             try:

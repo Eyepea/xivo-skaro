@@ -1,32 +1,52 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-"""Small client program that send DHCP information to the transfer agent via
-a Unix [datagram] socket.
+"""Small client program that send DHCP information to a transfer agent via
+a Unix datagram socket.
 
-The client takes the DHCP information via it's command line. For example, if
+The client takes the DHCP information from its command line. For example, if
 the lease 192.168.1.1 has just been committed by the DHCP server to the DHCP
-client with the MAC address 00:11:22:33:44:55, if the script had been call
+client with the MAC address 00:11:22:33:44:55, if the script had been called
 from a shell, it could have look like:
 
-  dxtorc.py 'commit' '192.168.1.1' '00:11:22:33:44:55'
+  dxtorc 'commit' '192.168.1.1' '00:11:22:33:44:55'
 
-It can also take additional info about the DHCP request, for example, the
-option vendor-class-identifier with value of 'foobar':
+It can also take additional info about the DHCP request. Here's an example
+of sending the value of the vendor-class-identifier option, in this case,
+'foobar':
 
-  dxtorc.py 'commit' '192.168.1.1' '00:11:22:33:44:55' '060666f6f6261720a'
+  dxtorc 'commit' '192.168.1.1' '00:11:22:33:44:55' '060666f6f6261720a'
 
-Note: 60 is the DHCP code for the option vendor class identifier [RFC2132], and
-      everything after the first 3 digit is the option value represented in
-      hexadecimal.
+Note: the first 3 digits represent the decimal value of the DHCP option and
+      everything after is the hexadecimal representation of the raw value
+      of the option.
 
 Empty arguments after the MAC address are ignored.
 
 The first argument can also be one of 'release' or 'expiry'. In this case,
 only the IP address needs to be passed to the client:
 
-  xtorc.py 'release' '192.168.1.1'
+  dxtorc 'release' '192.168.1.1'
 
+"""
+
+__version__ = "$Revision $ $Date $"
+__license__ = """
+    Copyright (C) 2010-2011  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
 import socket
