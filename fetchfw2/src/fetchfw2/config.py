@@ -33,8 +33,8 @@ logger = logging.getLogger(__name__)
 
 DEF_CFG_FILENAME = '/etc/pf-xivo/fetchfw2.conf'
 DEF_CFG = {
-   'cache_dir': '/var/cache/pf-xivo/fetchfw/files',
-   'storage_dir': '/var/lib/pf-xivo/fetchfw',
+   'cache_dir': '/var/cache/pf-xivo/fetchfw2',
+   'storage_dir': '/var/lib/pf-xivo/fetchfw2',
    'auth_sections': [],
 }
 

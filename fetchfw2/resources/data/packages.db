@@ -10,290 +10,6 @@
 # conflict: ?
 # provides: ?
 
-[pkg_aastra]
-desc: Meta-package for all supported Aastra phones
-version: 20100917-1
-depends: pkg_aastra-6730i pkg_aastra-6731i pkg_aastra-6739i pkg_aastra-6751i pkg_aastra-6753i pkg_aastra-6755i pkg_aastra-6757i
-
-[pkg_aastra-6730i]
-desc: Firmware and language files for Aastra 6730i
-version: 2.6.0.1008-1
-depends: pkg_aastra-lang2
-files: file_aastra-6730fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-6731i]
-desc: Firmware and language files for Aastra 6731i
-version: 2.6.0.1008-1
-depends: pkg_aastra-lang2
-files: file_aastra-6731fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-6739i]
-desc: Firmware and language files for Aastra 6739i
-version: 3.0.1.2024-1
-depends: pkg_aastra-lang3
-files: file_aastra-6739fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-6751i]
-desc: Firmware and language files for Aastra 6751i
-version: 2.6.0.1008-1
-depends: pkg_aastra-lang2
-files: file_aastra-6751fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-6753i]
-desc: Firmware and language files for Aastra 6753i
-version: 2.6.0.1008-1
-depends: pkg_aastra-lang2
-files: file_aastra-6753fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-6755i]
-desc: Firmware and language files for Aastra 6755i
-version: 2.6.0.1008-1
-depends: pkg_aastra-lang2
-files: file_aastra-6755fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-6757i]
-desc: Firmware and language files for Aastra 6757i
-version: 2.6.0.1008-1
-depends: pkg_aastra-lang2
-files: file_aastra-6757fw
-install_proc: install_aastra-fw
-
-[pkg_aastra-lang2]
-desc: Language files for Aastra firmware 2.x
-version: 2.6.0.1005-1
-hidden: yes
-files: file_aastra-lang2
-install_proc: install_aastra-lang
-
-[pkg_aastra-lang3]
-desc: Language files for Aastra firmware 3.x
-version: 3.0.1.38.1002-1
-hidden: yes
-files: file_aastra-lang3
-install_proc: install_aastra-lang
-
-
-
-[pkg_cisco-7902]
-desc: Firmware and locale files for Cisco 7902G (SCCP)
-version: 8.0.2-1
-depends: pkg_cisco-locale
-files: file_cisco-7902fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7905]
-desc: Firmware and locale files for Cisco 7905G (SCCP)
-version: 8.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7905fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7906-7911]
-desc: Firmware and locale files for Cisco 7906G and 7911G (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7906-7911fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7910]
-desc: Firmware and locale files for Cisco 7910G (SCCP)
-version: 5.0.7-1
-depends: pkg_cisco-locale
-files: file_cisco-7910fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7912]
-desc: Firmware and locale files for Cisco 7912G (SCCP)
-version: 8.0.4-1
-depends: pkg_cisco-locale
-files: file_cisco-7912fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7914]
-desc: Firmware for Cisco Expansion Module 7914G (SCCP)
-version: 5.0.4-1
-files: file_cisco-7914fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7915]
-desc: Firmware for Cisco Expansion Module 7915G (SCCP)
-version: 1.0.4-1
-files: file_cisco-7915fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7916]
-desc: Firmware for Cisco Expansion Module 7916G (SCCP)
-version: 1.0.4-1
-files: file_cisco-7916fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7931]
-desc: Firmware and locale files for Cisco 7931G (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7931fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7940-7960]
-desc: Firmware and locale files for Cisco 7940G and 7960G (SCCP)
-version: 8.1.2-1
-depends: pkg_cisco-locale
-files: file_cisco-7940-7960fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7941-7961]
-desc: Firmware and locale files for Cisco 7941G and 7961G (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7941-7961fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7942-7962]
-desc: Firmware and locale files for Cisco 7942G and 7962G (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7942-7962fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7945-7965]
-desc: Firmware and locale files for Cisco 7945G and 7965G (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7945-7965fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7970-7971]
-desc: Firmware and locale files for Cisco 7970G, 7971G and 7971GE (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7970-7971fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-7975]
-desc: Firmware and locale files for Cisco 7975G (SCCP)
-version: 9.0.3-1
-depends: pkg_cisco-locale
-files: file_cisco-7975fw
-install_proc: install_cisco-7900fw
-
-[pkg_cisco-locale]
-desc: Locale files for Cisco 79xx (SCCP)
-version: 9.0.2-1
-hidden: yes
-depends: pkg_cisco-networklocale pkg_cisco-userlocale_es_ES pkg_cisco-userlocale_de_DE pkg_cisco-userlocale_fr_FR
-
-[pkg_cisco-networklocale]
-desc: Network locale for Cisco 79xx (SCCP)
-version: 9.0.2-1
-hidden: yes
-files: file_cisco-networklocale
-install_proc: install_cisco-networklocale
-
-[pkg_cisco-userlocale_de_DE]
-desc: de_DE user locale for Cisco 79xx (SCCP)
-version: 9.0.2-1
-hidden: yes
-files: file_cisco-userlocale_de_DE
-install_proc: install_cisco-userlocale
-
-[pkg_cisco-userlocale_es_ES]
-desc: es_ES user locale for Cisco 79xx (SCCP)
-version: 9.0.2-1
-hidden: yes
-files: file_cisco-userlocale_es_ES
-install_proc: install_cisco-userlocale
-
-[pkg_cisco-userlocale_fr_FR]
-desc: fr_FR user locale for Cisco 79xx (SCCP)
-version: 9.0.2-1
-hidden: yes
-files: file_cisco-userlocale_fr_FR
-install_proc: install_cisco-userlocale
-
-
-
-[pkg_cisco-spa50x-30x]
-desc: Firmware and language files for Cisco SPA50XG and SPA30XG
-version: 7.4.4-1
-depends: pkg_cisco-spa50x-30xlang
-files: file_cisco-spa50x-30xfw
-install_proc: install_cisco-spa500fw
-
-[pkg_cisco-spa525G]
-desc: Firmware and language files for Cisco SPA525G
-version: 7.4.4-1
-depends: pkg_cisco-spa525lang
-files: file_cisco-spa525fw
-install_proc: install_cisco-spa500fw
-
-[pkg_cisco-spa50x-30xlang]
-desc: Language files for Cisco SPA50XG and SPA30XG
-version: 7.4.5-1
-hidden: yes
-files: file_cisco-spa50x-30xlang
-install_proc: install_cisco-spa50x-30xlang
-
-[pkg_cisco-spa525lang]
-desc: Language files for Cisco SPA525
-version: 7.4.5-1
-hidden: yes
-files: file_cisco-spa525lang
-install_proc: install_cisco-spa525lang
-
-
-
-# TODO the package definitions for the linksys ATA are missing
-
-[pkg_linksys-spa901]
-desc: Firmware for Linksys SPA901
-version: 5.1.5-1
-files: file_linksys-spa901fw
-install_proc: install_linksys-dblzipfw spa901--5.1.5.zip
-
-[pkg_linksys-spa921-941]
-desc: Firmware for Linksys SPA921 and SPA941
-version: 5.1.8-1
-files: file_linksys-spa921-941fw
-install_proc: install_linksys-dblzipfw spa941-5.1.8.zip
-
-[pkg_linksys-spa922-942]
-desc: Firmware and language files for Linksys SPA922 and SPA942
-version: 6.1.5a-1
-depends: pkg_linksys-spa9x2lang
-files: file_linksys-spa922-942fw
-install_proc: install_linksys-dblzipfw SPA942_6.1.5a.zip
-
-[pkg_linksys-spa962]
-desc: Firmware and language files for Linksys SPA962
-version: 6.1.5a-1
-depends: pkg_linksys-spa9x2lang
-files: file_linksys-spa962fw
-install_proc: install_linksys-dblzipfw SPA962_6.1.5a.zip
-
-[pkg_linksys-spa9x2lang]
-desc: Language files for Linksys SPA9X2
-version: 6.1.5-1
-hidden: yes
-files: file_linksys-spa9x2lang
-install_proc: install_linksys-spa9x2lang
-
-
-
-[pkg_nortel-ip1220]
-desc: Firmware for Nortel IP Phone 1220/Avaya 1220 IP Deskphone
-version: 3.2-1
-hidden: no
-files: file_nortel-ip1220fw
-install_proc: install_nortel-fw
-
-
-
 [pkg_polycom-32]
 desc: Firmware and language files for Polycom SPIP 330, 335, 450, etc
 version: 3.2.3-1
@@ -329,60 +45,6 @@ install_proc: install_siemens-fw s675ip
 
 
 
-[pkg_snom-300]
-desc: Firmware and language files for Snom 300
-version: 8.4.18-1
-depends: pkg_snom-lang
-files: file_snom-300fw
-install_proc: install_snom-fw
-
-[pkg_snom-320]
-desc: Firmware and language files for Snom 320
-version: 8.4.18-1
-depends: pkg_snom-lang
-files: file_snom-320fw
-install_proc: install_snom-fw
-
-[pkg_snom-360]
-desc: Firmware and language files for Snom 360
-version: 8.4.18-1
-depends: pkg_snom-lang
-files: file_snom-360fw
-install_proc: install_snom-fw
-
-[pkg_snom-370]
-desc: Firmware for Snom 370
-version: 8.4.18-1
-files: file_snom-370fw
-install_proc: install_snom-fw
-
-[pkg_snom-820]
-desc: Firmware for Snom 820
-version: 8.4.18-1
-files: file_snom-820fw
-install_proc: install_snom-fw
-
-[pkg_snom-821]
-desc: Firmware for Snom 821
-version: 8.4.18-1
-files: file_snom-821fw
-install_proc: install_snom-fw
-
-[pkg_snom-870]
-desc: Firmware for Snom 870
-version: 8.4.18-1
-files: file_snom-870fw
-install_proc: install_snom-fw
-
-[pkg_snom-lang]
-desc: Language files for Snom 3x0
-version: 8.4.18-1
-hidden: yes
-files: file_snom-lang
-install_proc: install_snom-lang
-
-
-
 [pkg_thomson-st2022]
 desc: Firmware for Thomson ST2022
 version: 4.69-1
@@ -409,3 +71,102 @@ version: 01.10.3.4-1
 files: file_zenitel-ipstationfw
 install_proc: install_zenitel-ipstationfw
 
+
+
+[pkg_digium-oct6114-128]
+desc: Firmware for Digium VPMOCT128M/VPM450M.
+version: 1.05.01
+files: file_digium-oct61114-128fw
+install_proc: install_digium-fw
+
+[pkg_digium-oct6114-064]
+desc: Firmware for Digium VPMOCT064M.
+version: 1.05.01
+files: file_digium-oct61114-064fw
+install_proc: install_digium-fw
+
+[pkg_digium-tc400m]
+desc: Firmware for Digium TC400M.
+version: MR6.12
+files: file_digium-tc400mfw
+install_proc: install_digium-fw
+
+[pkg_digium-vpmadt032]
+desc: Firmware for Digium VPMADT032.
+version: 1.07
+files: file_digium-vpmadt032fw
+install_proc: install_digium-fw
+
+
+
+[pkg_sangoma-a101dm]
+desc: Firmware for Sangoma AFT A101D.
+version: 37
+files: file_sangoma-a101dmfw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a102dm]
+desc: Firmware for Sangoma AFT A102D.
+version: 37
+files: file_sangoma-a102dmfw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a104dm]
+desc: Firmware for Sangoma AFT A104D.
+version: 43
+files: file_sangoma-a104dmfw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a108dm]
+desc: Firmware for Sangoma AFT A108D.
+version: 43
+files: file_sangoma-a108dmfw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a200]
+desc: Firmware for Sangoma AFT A200.
+version: 13
+files: file_sangoma-a200fw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a400]
+desc: Firmware for Sangoma AFT A400.
+version: 11
+files: file_sangoma-a400fw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a500]
+desc: Firmware for Sangoma AFT A500.
+version: 35
+files: file_sangoma-a500fw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-b600]
+desc: Firmware for Sangoma AFT B600.
+version: 02
+files: file_sangoma-b600fw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-b601]
+desc: Firmware for Sangoma AFT B601.
+version: 04
+files: file_sangoma-b601fw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-b700]
+desc: Firmware for Sangoma AFT B700.
+version: 35
+files: file_sangoma-b700fw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-a14x]
+desc: Firmware for Sangoma AFT A14X.
+version: 7
+files: file_sangoma-a14xfw
+install_proc: install_sangoma-fw
+
+[pkg_sangoma-echocan]
+desc: Echo canceller for all cards.
+version: 3.5.18
+files: file_sangoma-echocan
+install_proc: install-sangoma-echocan

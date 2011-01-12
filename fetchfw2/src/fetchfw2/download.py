@@ -132,27 +132,28 @@ class RemoteFile(object):
                 logger.exception("could not create tmp dl file '%s'", pathname_tmp)
                 raise FilePermissionDownloadError("error: couldn't create tmp destination file '%s': %s" % (pathname_tmp, e))
             else:
-                hooks = [factory() for factory in self.hook_factories]
-                hooks.extend(supp_hooks)
-                with contextlib.closing(self.downloader.download(self.url)) as dlfile:
-                    # XXX we might want to start the hooks before the self.downloader.download(self.url)
-                    for hook in hooks:
-                        hook.start()
-                    try:
-                        while True:
-                            bytes = dlfile.read(self._BLOCK_SIZE)
-                            if not bytes:
-                                break
+                try:
+                    hooks = [factory() for factory in self.hook_factories]
+                    hooks.extend(supp_hooks)
+                    with contextlib.closing(self.downloader.download(self.url)) as dlfile:
+                        # XXX we might want to start the hooks before the self.downloader.download(self.url)
+                        for hook in hooks:
+                            hook.start()
+                        try:
+                            while True:
+                                bytes = dlfile.read(self._BLOCK_SIZE)
+                                if not bytes:
+                                    break
+                                for hook in hooks:
+                                    hook.update(bytes)
+                                outfile.write(bytes)
                             for hook in hooks:
-                                hook.update(bytes)
-                            outfile.write(bytes)
-                        for hook in hooks:
-                            hook.finish()
-                    finally:
-                        for hook in hooks:
-                            hook.close()
-            finally:
-                outfile.close()
+                                hook.finish()
+                        finally:
+                            for hook in hooks:
+                                hook.close()
+                finally:
+                    outfile.close()
             try:
                 os.rename(pathname_tmp, self.path)
             except OSError, e:

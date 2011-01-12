@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
 from __future__ import with_statement
@@ -25,10 +25,7 @@ import logging
 import optparse
 import os
 import sys
-
-import fetchfw2.cli as cli
-import fetchfw2.config as config
-import fetchfw2.util as util
+from fetchfw2 import cli, config, util
 
 
 def install(pkg_manager, opt, args):

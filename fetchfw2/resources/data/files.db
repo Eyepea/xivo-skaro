@@ -3,259 +3,7 @@
 ; size: SIZE
 ; sha1sum: LOWERCASE_SHA1SUM
 ; filename: FILENAME (opt: default=basename(URL))
-; downloader: [auth | cisco | default | nortel NNAKAMAIAUTH] (opt: default=default)
-
-[file_aastra-6730fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6730i_FC-001240-03-REV02_sr_2.6.0.1008_1008.zip
-size: 1805951
-sha1sum: c9dd328c38e97408c538b7da0efe5f96108cbb48
-
-[file_aastra-6731fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6731i_FC-001224-04-REV02_sr_2.6.0.1008_1008.zip
-size: 1806663
-sha1sum: a5119cb27872fb99f900c1c0e037448c4c246ea3
-
-[file_aastra-6739fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6739i_FC-001274-00_REV03_3_0_1_2024_1008.zip
-size: 4496869
-sha1sum: cbbbc7bb517825eb519f09c5c367be325fe79fc3
-
-[file_aastra-6751fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6751i_FC-001126-06-REV02_sr_2.6.0.1008_1008.zip
-size: 1752731
-sha1sum: 47a2db7c2f5cf7bb73429184f41a7c77f797f800
-
-[file_aastra-6753fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6753i_FC-001086-10-REV02_sr_2.6.0.1008_1008.zip
-size: 2602715
-sha1sum: 0dded91fbdb0afa5cf1506cfd8fb6090ff4bcc7c
-
-[file_aastra-6755fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6755i_FC-001087-11-REV02_sr_2.6.0.1008_1008.zip
-size: 2635591
-sha1sum: a49eedcda0eb2f9bdbde9f4888af0426263b406d
-
-[file_aastra-6757fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/6757i_FC-001088-10-REV02_sr_2.6.0.1008_1008.zip
-size: 2635437
-sha1sum: 650c1b96e52fac24f28a959c0c150217ed3d0d2c
-
-[file_aastra-lang2]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip
-size: 145824
-sha1sum: 859de6f9b34ae3eb0addd18175af3ec9cef735d4
-
-[file_aastra-lang3]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0A781896-432B022B/03/LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip
-size: 138130
-sha1sum: fd79b1909b41254b864e4f993675a81d87209288
-
-
-
-[file_cisco-7902fw]
-url: http://download-sj.cisco.com/swc/esd/02/278078615/contract/cmterm-7902G-sccp.8-0-2.zip
-size: 329363
-sha1sum: 691fb351d9228bd193dcb78cb1e7ddec73ccf835
-
-[file_cisco-7905fw]
-url: http://download-sj.cisco.com/swc/esd/02/273941556/contract/cmterm-7905G-sccp.8-0-3.zip
-size: 673168
-sha1sum: c68b1ddddc06ab7bc85eef2a5956d6a58844d700
-downloader: cisco
-
-[file_cisco-7906-7911fw]
-url: http://download-sj.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.9-0-3.zip
-size: 5066707
-sha1sum: 02f37cd69aab190d018d13f86ccdc61cc2bb4235
-downloader: cisco
-
-[file_cisco-7910fw]
-url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp.5-0-7.zip
-size: 592359
-sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
-downloader: cisco
-
-[file_cisco-7912fw]
-url: http://download-sj.cisco.com/swc/esd/02/278115698/contract/cmterm-7912G-sccp.8-0-4.zip
-size: 339004
-sha1sum: 5c93605519fb691690b3c1eefc67127e85497892
-downloader: cisco
-
-[file_cisco-7914fw]
-url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp.5-0-4.zip
-size: 26206
-sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
-downloader: cisco
-
-[file_cisco-7915fw]
-url: http://download-sj.cisco.com/swc/esd/03/282159701/contract/cmterm-7915.1-0-4.zip
-size: 64899
-sha1sum: 3897cb03c3cd76e031375b52a2275aa5d82a1674
-downloader: cisco
-
-[file_cisco-7916fw]
-url: http://download-sj.cisco.com/swc/esd/03/282159702/contract/cmterm-7916.1-0-4.zip
-size: 76859
-sha1sum: 4643db66e2c8b1800eee1ca110297b01c481bbcc
-downloader: cisco
-
-[file_cisco-7931fw]
-url: http://download-sj.cisco.com/swc/esd/04/280799963/contract/cmterm-7931-sccp.9-0-3.zip
-size: 5056948
-sha1sum: 9e85007387de085ebb0e8becf16197bacc01caa9
-downloader: cisco
-
-[file_cisco-7940-7960fw]
-url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
-size: 701384
-sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
-downloader: cisco
-
-[file_cisco-7941-7961fw]
-url: http://download-sj.cisco.com/swc/esd/04/279251499/contract/cmterm-7941_7961-sccp.9-0-3.zip
-size: 5170819
-sha1sum: 3ff5b72ced1a8df06ad43727439fe0b497809c57
-downloader: cisco
-
-[file_cisco-7942-7962fw]
-url: http://download-sj.cisco.com/swc/esd/04/281346593/contract/cmterm-7942_7962-sccp.9-0-3.zip
-size: 5763153
-sha1sum: 752deea2d776790be5f6b43e93687193e00bec35
-downloader: cisco
-
-[file_cisco-7945-7965fw]
-url: http://download-sj.cisco.com/swc/esd/04/281346594/contract/cmterm-7945_7965-sccp.9-0-3.zip
-size: 5891955
-sha1sum: 98eb810de064cf777eb4660426aaa1e202413e78
-downloader: cisco
-
-[file_cisco-7970-7971fw]
-url: http://download-sj.cisco.com/swc/esd/04/278436620/contract/cmterm-7970_7971-sccp.9-0-3.zip
-size: 5279034
-sha1sum: 04e8620c3b84d761f9654cdcc20c837c35944cc7
-downloader: cisco
-
-[file_cisco-7975fw]
-url: http://download-sj.cisco.com/swc/esd/04/281346597/contract/cmterm-7975-sccp.9-0-3.zip
-size: 5891350
-sha1sum: f9d72ce5953cfd1364d33e218d941d5c1015ff28
-downloader: cisco
-
-[file_cisco-networklocale]
-url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-combined_network-9.0.2.1000-1.cop.sgn
-size: 9351296
-sha1sum: f08e688de664d7e6d4fb19377cc057e5fc251d1d
-downloader: cisco
-
-[file_cisco-userlocale_de_DE]
-url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-de_DE-9.0.2.1000-1.cop.sgn
-size: 3561211
-sha1sum: b5fb97239f7f3414557d7bc10606d66c2123ddff
-downloader: cisco
-
-[file_cisco-userlocale_es_ES]
-url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-es_ES-9.0.2.1000-1.cop.sgn
-size: 4306710
-sha1sum: 20a7a6e89a91c4df7119557423f533d207a1ee87
-downloader: cisco
-
-[file_cisco-userlocale_fr_FR]
-url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-fr_FR-9.0.2.1000-1.cop.sgn
-size: 4397839
-sha1sum: 326407685f6950e6d4b06c692a2243a218aaf62e
-downloader: cisco
-
-
-
-[file_cisco-spa50x-30xfw]
-url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282724524/guest/spa5x5-7-4-4.zip
-size: 7607391
-sha1sum: 2e4173d847170837011cb58b6107ad765041bc5d
-downloader: cisco
-
-[file_cisco-spa525fw]
-url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282414147/guest/spa525g-7-4-4.zip
-size: 10562212
-sha1sum: fd89788a118aa132c9d721d7c969c696fb62f0df
-downloader: cisco
-
-[file_cisco-spa50x-30xlang]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-2-67252/spa50x_30x_v745.zip
-size: 69437
-sha1sum: fecbded0ba1a187d325eb44db8a69bd32a47849d
-downloader: cisco
-
-[file_cisco-spa525lang]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-1-67251/spa525_v745.zip
-size: 120137
-sha1sum: c57412fb760767c20103d8a5a093d0f00817c660
-downloader: cisco
-
-
-
-[file_linksys-pap2tfw]
-url: http://download-sj.cisco.com/swc/esd/03/282414114/anon/PAP2T_v5.1.6_fw.zip
-size: 1504430
-sha1sum: c8a2c48e06e3bd89de6f444824a41ebc7e1d57f5
-
-[file_linksys-spa2102fw]
-url: http://download-sj.cisco.com/swc/esd/03/282414111/anon/SPA2102_Firmware.zip
-size: 3424733
-sha1sum: e735d328e29d5a5ce17f381350a6c623c3b70436
-
-[file_linksys-spa3102fw]
-url: http://download-sj.cisco.com/swc/esd/03/282414112/anon/SPA3102_5.1.10.zip
-size: 2086224
-sha1sum: 3281b0adc7f4e1e86e16f3f76100df478ba221b0
-
-[file_linksys-spa400fw]
-url: http://www.cisco.com/en/US/prod/voicesw/ps6788/vcallcon/ps10030/ps10032/SPA400_Firmware.ZIP
-size: 3535794
-sha1sum: 947556fd4ccd089e76f41c954f66da63055ddfe9
-
-[file_linksys-spa8000fw]
-url: http://download-sj.cisco.com/swc/esd/03/282414110/anon/SPA8000_v6.1.3_fw.zip
-size: 2290349
-sha1sum: 043ddf18fae067e012b3e7f0f495bf82d4ecd4b1
-
-[file_linksys-spa901fw]
-url: http://download-sj.cisco.com/swc/esd/03/282414119/anon/spa901--5.1.5.zip
-size: 1607399
-sha1sum: 2cc6bfeb64812ca80a69cbe51296e3db2b68a491
-
-[file_linksys-spa921-941fw]
-filename: spa941-5-1-8.zip
-url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10038/SPA941_Firmware.zip
-size: 2058390
-sha1sum: 12c1891c22d037736d11f866ba4b82a2fe1a4e5d
-
-[file_linksys-spa922-942fw]
-filename: spa942-6-1-5a.zip
-url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10039/SPA942_Firmware.zip
-size: 4996209
-sha1sum: 0fe2d285981aacc5ce38e828973557021d0496e0
-
-[file_linksys-spa962fw]
-filename: spa962-6-1-5a.zip
-url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10040/SPA962_Firmware.zip
-size: 5706866
-sha1sum: 4c9671873c241c679285065b495b5d7cf29f6975
-
-[file_linksys-spa9x2lang]
-url: https://supportforums.cisco.com/servlet/JiveServlet/downloadBody/9931-102-1-22413/SPA9X2_Dictionaries_v615.zip
-size: 215186
-sha1sum: 5b4fcb2d822b2eea6743fa873894d54ed4ba713f
-
-
-
-[file_nortel-ip1220fw]
-url: http://www116.nortel.com/software/i/ipphones/12xx/SIP12x0e03.02.16.00.bin
-size: 3999622
-sha1sum: 5ae3853c30a0ef61ba3f66d382fcafc0706e529e
-downloader: nortel
-x-nnAmakaiAuth: access=/software/i/ipphones/12xx/SIP12x0e03.02.16.00.bin*~md5=e518d8db607312349dabb60e240e1495
-
-
+; downloader: [auth | default] (opt: default=default)
 
 [file_polycom-bootrom42]
 url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_BootROM_4_2_2_release_sig.zip
@@ -273,48 +21,6 @@ sha1sum: 3b709a6a764753e6a99e972779c06c71e4471fec
 url: http://gigaset.siemens.com/chagall/2/chagall214_02.bin
 size: 1835008
 sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
-
-
-
-[file_snom-300fw]
-url: http://provisioning.snom.com/download/fw/snom300-8.4.18-SIP-f.bin
-size: 3281780
-sha1sum: bc7151327a6422f4ccb61cd15947d3b17912c122
-
-[file_snom-320fw]
-url: http://provisioning.snom.com/download/fw/snom320-8.4.18-SIP-f.bin
-size: 3295360
-sha1sum: 50a15cc95af7997d2349c0a09148be04113914d9
-
-[file_snom-360fw]
-url: http://provisioning.snom.com/download/fw/snom360-8.4.18-SIP-f.bin
-size: 3340496
-sha1sum: 71d3e3ffb4a799b2846068203c8cbf67d8007ec0
-
-[file_snom-370fw]
-url: http://provisioning.snom.com/download/fw/snom370-8.4.18-SIP-f.bin
-size: 4633584
-sha1sum: fc7fcb8b2bce7fe44d569208bc47f6be3f136c9a
-
-[file_snom-820fw]
-url: http://provisioning.snom.com/download/fw/snom820-8.4.18-SIP-r.bin
-size: 31510688
-sha1sum: e24df5a42f7fb905cb54e5f1dea4e86c6bf1d956
-
-[file_snom-821fw]
-url: http://provisioning.snom.com/download/fw/snom821-8.4.18-SIP-r.bin
-size: 20767008
-sha1sum: 64b25c00e58a8cf5b4e3d689b6954cfe0a1f02f8
-
-[file_snom-870fw]
-url: http://provisioning.snom.com/download/fw/snom870-8.4.18-SIP-r.bin
-size: 21887168
-sha1sum: f39b66bfc84d33b5e79d82947d5e8e6618adbfad
-
-[file_snom-lang]
-url: http://fox.snom.com/config/snomlang-8.4.18.tgz
-size: 808338
-sha1sum: 9b403c1ee5e355e22e489c5604013ff5b01f420e
 
 
 
@@ -343,3 +49,87 @@ url: https://alphasupport.zenitel.com/alphawiki/downloads/A100G80200.01_10_3_4.z
 size: 5003951
 sha1sum: 304c2037491f9ab2c75a89ad0791460cfd08a0d4
 downloader: auth
+
+
+
+[file_digium-oct61114-128fw]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-128-1.05.01.tar.gz
+size: 165849
+sha1sum: bcf07434f4589d07d9b5f67f7b3a8fb115aa9229
+
+[file_digium-oct61114-064fw]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-064-1.05.01.tar.gz
+size: 165869
+sha1sum: 2fb8e5f4f7aedb285ffa21632efd45af877eacd4
+
+[file_digium-tc400mfw]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-tc400m-MR6.12.tar.gz
+size: 1750035
+sha1sum: 9206abda4c9cf192e8cae7e707f2e4e65beb8f87
+
+[file_digium-vpmadt032fw]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-vpmadt032-1.07.tar.gz
+size: 41376
+sha1sum: fd470e7aec0db62e3750aa4819ff03b70c6e9977
+
+
+
+[file_sangoma-a101dmfw]
+url: ftp://ftp.sangoma.com/firmware/A101dm_0040_V37.BIN
+size: 212392
+sha1sum: 71f1906d8ec593f732198291a8dbe7c934edb999
+
+[file_sangoma-a102dmfw]
+url: ftp://ftp.sangoma.com/firmware/A102dm_0040_V37.BIN
+size: 212392
+sha1sum: 39491b91796269acbc16bbe8b6c1d848b9ecdd1a
+
+[file_sangoma-a104dmfw]
+url: ftp://ftp.sangoma.com/firmware/A104dm_0100_V43.BIN
+size: 402936
+sha1sum: fefbb2d0effd67fb642e43d04ff396e565acfcb1
+
+[file_sangoma-a108dmfw]
+url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V43.BIN
+size: 402936
+sha1sum: 4afabcf22c5a2e64f2ba62e04a3a6dab7a619bf8
+
+[file_sangoma-a200fw]
+url: ftp://ftp.sangoma.com/firmware/A200_0040_V13.BIN
+size: 212392
+sha1sum: 6d15bbf1e37985573b217e2c6e2c09ab36ec51bf
+
+[file_sangoma-a400fw]
+url: ftp://ftp.sangoma.com/firmware/A400_0040_V11.BIN
+size: 212392
+sha1sum: 2df9a41b96b2381002db677886cdc03509e8705f
+
+[file_sangoma-a500fw]
+url: ftp://ftp.sangoma.com/firmware/A500_0040_V35.BIN
+size: 212392
+sha1sum: 1a2871119d02e1af30c0b84708448e4da453e5aa
+
+[file_sangoma-b600fw]
+url: ftp://ftp.sangoma.com/firmware/B600_0025_V02.BIN
+size: 169216
+sha1sum: ac3aba913ebdcc48309ccb0b62fa8d6366958b57
+
+[file_sangoma-b601fw]
+url: ftp://ftp.sangoma.com/firmware/B601_0025_V04.BIN
+size: 169216
+sha1sum: 9a6605cb2d2bb06c66af0a8841e882d9e2284b34
+
+[file_sangoma-b700fw]
+url: ftp://ftp.sangoma.com/firmware/B700_0040_V35.BIN
+size: 212392
+sha1sum: c8003ff4bac7f8a64514c860e90079c5e9806bf0
+
+[file_sangoma-a14xfw]
+url: ftp://ftp.sangoma.com/firmware/A140_0100_V07.BIN
+size: 402936
+sha1sum: 28ffa475ab151fecaac33b018720edf2b0c1bbfc
+
+[file_sangoma-echocan]
+url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.18.tgz
+size: 15957879
+sha1sum: d6fd4c98bac0ea5718066cfed80367ca0cc5e02a

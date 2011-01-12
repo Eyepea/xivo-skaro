@@ -1,78 +1,3 @@
-[install_aastra-fw]
-a-b: unzip $FILE1
-b-c: cp *.st $DOC_ROOT/Aastra/
-
-[install_aastra-lang]
-a-b: unzip $FILE1
-b-c: cp * $DOC_ROOT/Aastra/i18n/
-
-
-
-[install_cisco-7900fw]
-a-b: unzip $FILE1
-b-c: cp * $DOC_ROOT/
-
-[install_cisco-networklocale]
-a-b: unsign $FILE1 f.tgz
-b-c: untar f.tgz
-c-d: untar *.tar
-d-e: cp usr/local/cm/tftp/canada
-        usr/local/cm/tftp/france
-        usr/local/cm/tftp/germany
-        usr/local/cm/tftp/spain
-        $DOC_ROOT/Cisco/i18n/
-
-[install_cisco-userlocale]
-a-b: unsign $FILE1 f.tgz
-b-c: untar f.tgz
-c-d: untar *.tar
-d-e: cp usr/local/cm/tftp/* $DOC_ROOT/Cisco/i18n/
-
-
-
-[install_cisco-spa500fw]
-a-b: unzip $FILE1
-b-c: cp *.bin $DOC_ROOT/CiscoSMB/firmware/
-
-[install_cisco-spa50x-30xlang]
-a-b: unzip $FILE1
-b-c: cp */spa50x_30x_de* $DOC_ROOT/CiscoSMB/i18n/spa50x_30x_de.xml
-b-d: cp */spa50x_30x_en* $DOC_ROOT/CiscoSMB/i18n/spa50x_30x_en.xml
-b-e: cp */spa50x_30x_es* $DOC_ROOT/CiscoSMB/i18n/spa50x_30x_es.xml
-b-f: cp */spa50x_30x_fr* $DOC_ROOT/CiscoSMB/i18n/spa50x_30x_fr.xml
-
-[install_cisco-spa525lang]
-a-b: unzip $FILE1
-b-c: cp */spa525_de* $DOC_ROOT/CiscoSMB/i18n/spa525_de.xml
-b-d: cp */spa525_en* $DOC_ROOT/CiscoSMB/i18n/spa525_en.xml
-b-e: cp */spa525_es* $DOC_ROOT/CiscoSMB/i18n/spa525_es.xml
-b-f: cp */spa525_fr* $DOC_ROOT/CiscoSMB/i18n/spa525_fr.xml
-
-
-
-[install_linksys-zipfw]
-a-b: unzip $FILE1
-b-c: cp *.bin $DOC_ROOT/Linksys/firmware/
-
-[install_linksys-dblzipfw]
-a-b: unzip $FILE1
-b-c: unzip $ARG1
-c-d: cp *.bin $DOC_ROOT/Linksys/firmware/
-
-[install_linksys-spa9x2lang]
-a-b: unzip $FILE1
-b-c: cp de*.xml $DOC_ROOT/Linksys/i18n/deS.xml
-b-d: cp en*.xml $DOC_ROOT/Linksys/i18n/enS.xml
-b-e: cp es*.xml $DOC_ROOT/Linksys/i18n/esS.xml
-b-f: cp fr*.xml $DOC_ROOT/Linksys/i18n/frS.xml
-
-
-
-[install_nortel-fw]
-a-b: cp $FILE1 $DOC_ROOT/Nortel/firmware/
-
-
-
 [install_polycom-bootrom42]
 a-b: unzip $FILE1
 b-c: cp * $DOC_ROOT/Polycom/
@@ -89,15 +14,6 @@ a-b: cp $FILE1 $DOC_ROOT/Siemens/firmware/$ARG1/
 
 
 
-[install_snom-lang]
-a-b: untar $FILE1
-b-c: cp snomlang/* $DOC_ROOT/Snom/i18n/
-
-[install_snom-fw]
-a-b: cp $FILE1 $DOC_ROOT/Snom/firmware/
-
-
-
 [install_thomson-fw]
 a-b: unzip $FILE1
 b-c: cp */Binary/$ARG1 $DOC_ROOT/Thomson/binary/
@@ -107,3 +23,18 @@ b-c: cp */Binary/$ARG1 $DOC_ROOT/Thomson/binary/
 [install_zenitel-ipstationfw]
 a-b: unzip $FILE1
 b-c: cp *.bin $DOC_ROOT/
+
+
+
+[install_digium-fw]
+a-b: untar $FILE1 
+b-c: cp * $KFW_ROOT/
+
+
+
+[install_sangoma-fw]
+a-b: cp $FILE1 /etc/wanpipe/firmware/
+
+[install-sangoma-echocan]
+a-b: untar $FILE1
+b-c: cp */wan_ec/*.ima /etc/wanpipe/wan_ec/
