@@ -14,26 +14,38 @@ Phone Hints
 Profiles
 
 ; mn_left_ctisettings-directories
-Directories : Definitions
+Definitions
 
 ; mn_left_ctisettings-reversedirectories
-Directories : Reverse
+Reverse directories
 
 ; mn_left_ctisettings-contexts
-Directories : Direct
+Direct directories
 
 ; mn_left_ctisettings-displays
-Directories : Display
+Display filters
 
 ; mn_left_ctisettings-sheetactions
-Sheets : Actions
+Actions
 
 ; mn_left_ctisettings-sheetevents
-Sheets : Events
+Events
 
 ; mn_left_ctisettings-restart
 Restart CTI server
 
 ; ctisettings_restart_confirm
 Are you sure you want to restart CTI server ?
+
+; mn_left_ti_generalsettings
+General settings
+
+; mn_left_ti_directories
+Directories
+
+; mn_left_ti_sheets
+Sheets
+
+; mn_left_ti_controlsystem
+Control
 

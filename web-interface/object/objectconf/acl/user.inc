@@ -83,18 +83,21 @@ $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 // cti
 $array['tree']['service']['cti'] = array();
-$array['tree']['service']['cti']['general']            = true;
-$array['tree']['service']['cti']['presences']          = true;
-$array['tree']['service']['cti']['phonehints']         = true;
-$array['tree']['service']['cti']['profiles']           = true;
-$array['tree']['service']['cti']['directories']        = true;
-$array['tree']['service']['cti']['reversedirectories'] = true;
-$array['tree']['service']['cti']['displays']           = true;
-$array['tree']['service']['cti']['contexts']           = true;
-$array['tree']['service']['cti']['sheetactions']       = true;
-$array['tree']['service']['cti']['sheetevents']        = true;
-$array['tree']['service']['cti']['restart']            = true;
-
+$array['tree']['service']['cti']['general_settings']                  = array();
+$array['tree']['service']['cti']['general_settings']['general']       = true;
+$array['tree']['service']['cti']['general_settings']['presences']     = true;
+$array['tree']['service']['cti']['general_settings']['phonehints']    = true;
+$array['tree']['service']['cti']['general_settings']['profiles']      = true;
+$array['tree']['service']['cti']['directories']                       = array();
+$array['tree']['service']['cti']['directories']['directories']        = true;
+$array['tree']['service']['cti']['directories']['reversedirectories'] = true;
+$array['tree']['service']['cti']['directories']['displays']           = true;
+$array['tree']['service']['cti']['directories']['contexts']           = true;
+$array['tree']['service']['cti']['sheets']                            = array();
+$array['tree']['service']['cti']['sheets']['sheetactions']            = true;
+$array['tree']['service']['cti']['sheets']['sheetevents']             = true;
+$array['tree']['service']['cti']['control_system']                    = array();
+$array['tree']['service']['cti']['control_system']['restart']         = true;
 
 // monitoring
 $array['tree']['service']['monitoring'] = array();

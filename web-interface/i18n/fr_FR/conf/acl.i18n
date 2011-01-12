@@ -73,37 +73,49 @@ Configuration
 ; acl(service-cti)
 Serveurs CTI
 
-; acl(service-cti-general)
+; acl(service-cti-general_settings)
+Paramètres globaux
+
+; acl(service-cti-general_settings-general)
 Options générales
 
-; acl(service-cti-presences)
+; acl(service-cti-general_settings-presences)
 Présences
 
-; acl(service-cti-phonehints)
+; acl(service-cti-general_settings-phonehints)
 Présences téléphoniques
 
-; acl(service-cti-profiles)
+; acl(service-cti-general_settings-profiles)
 Profiles
 
 ; acl(service-cti-directories)
 Répertoires
 
-; acl(service-cti-reversedirectories)
+; acl(service-cti-directories-directories)
+Définitions
+
+; acl(service-cti-directories-reversedirectories)
 Répertoires inverses
 
-; acl(service-cti-displays)
+; acl(service-cti-directories-displays)
 Filtres d'affichage
 
-; acl(service-cti-contexts)
-Contextes
+; acl(service-cti-directories-contexts)
+Répertoires directs
 
-; acl(service-cti-sheetactions)
-Fiches : Actions
+; acl(service-cti-sheets)
+Fiches
 
-; acl(service-cti-sheetevents)
-Fiches : Evènements
+; acl(service-cti-sheets-sheetactions)
+Actions
 
-; acl(service-cti-restart)
+; acl(service-cti-sheets-sheetevents)
+Evènements
+
+; acl(service-cti-control_system)
+Système de contrôle
+
+; acl(service-cti-control_system-restart)
 Redémarrage du serveur CTI
 
 ; acl(service-ipbx-pbx_settings)

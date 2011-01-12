@@ -217,6 +217,54 @@ Avancés
 ; acl(service-ipbx-ctiserver)
 CTI server
 
+; acl(service-cti)
+CTI server
+
+; acl(service-cti-general_settings)
+General settings
+
+; acl(service-cti-general_settings-general)
+General
+
+; acl(service-cti-general_settings-presences)
+Presences
+
+; acl(service-cti-general_settings-phonehints)
+Phone hints
+
+; acl(service-cti-general_settings-profiles)
+Profiles
+
+; acl(service-cti-directories)
+Directories
+
+; acl(service-cti-directories-directories)
+Definitions
+
+; acl(service-cti-directories-reversedirectories)
+Reverse directories
+
+; acl(service-cti-directories-displays)
+Display filters
+
+; acl(service-cti-directories-contexts)
+Direct directories
+
+; acl(service-cti-sheets)
+Sheets
+
+; acl(service-cti-sheets-sheetactions)
+Actions
+
+; acl(service-cti-sheets-sheetevents)
+Events
+
+; acl(service-cti-control_system)
+Control
+
+; acl(service-cti-control_system-restart)
+Restart CTI server
+
 ; acl(service-ipbx-ctiserver-configuration)
 Configuration
 

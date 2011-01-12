@@ -23,7 +23,14 @@ require_once('xivo.php');
 if($_USR->mk_active() === false)
 	$_QRY->go($_TPL->url('xivo/logoff'));
 
-if(xivo_user::chk_acl('','','service/cti'.$_SERVER['PATH_INFO']) === false)
+// search leaf full path (inverse resolution)
+$leaf = trim($_SERVER['PATH_INFO'], '/');
+$tree = xivo_user_acl::get_full_tree();
+foreach($tree['service']['child']['cti']['child'] as $k => $node)
+	if(array_key_exists($leaf, $node['child']))
+		$leaf = $node['child'][$leaf]['path'];
+
+if(xivo_user::chk_acl('','',$leaf) === false)
 	$_QRY->go($_TPL->url('xivo'));
 
 $ipbx = &$_SRE->get('ipbx');

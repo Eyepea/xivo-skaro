@@ -14,26 +14,38 @@ Statuts des terminaisons
 Profils
 
 ; mn_left_ctisettings-directories
-Répertoires : Définitions
+Définitions
 
 ; mn_left_ctisettings-reversedirectories
-Répertoires : Inverse
+Répertoires inverses
 
 ; mn_left_ctisettings-contexts
-Répertoires : Direct
+Répertoires directs
 
 ; mn_left_ctisettings-displays
-Répertoires : Affichage
+Filtres d'affichage
 
 ; mn_left_ctisettings-sheetactions
-Fiches : Actions
+Actions
 
 ; mn_left_ctisettings-sheetevents
-Fiches : Événements
+Événements
 
 ; mn_left_ctisettings-restart
 Redémarrer le serveur CTI
 
 ; ctisettings_restart_confirm
 Êtes-vous sûr de vouloir appliquer le serveur CTI ?
+
+; mn_left_ti_generalsettings
+Paramètres globaux
+
+; mn_left_ti_directories
+Répertoires
+
+; mn_left_ti_sheets
+Fiches
+
+; mn_left_ti_controlsystem
+Système de contrôle
 

@@ -45,17 +45,20 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					<?php 
 					if(xivo_user::chk_acl_section('service/cti') === true): 
 						// get 1st authorized subsection
-						foreach($_SESSION['_ACL']['user']['service']['cti'] as $sect => $acl)
+						foreach($_SESSION['_ACL']['user']['service']['cti'] as $sect => $subsecs)
 						{
-							if($acl)
+							foreach($subsecs as $subsec => $acl)
 							{
+								if($acl)
+								{
 					?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_cti'),
-								   'cti/'.$sect);?>
+								   'cti/'.$subsec);?>
 					</li>
 					<?php 
-								break;
+								break 2;
+								}
 							}
 						}
 					
