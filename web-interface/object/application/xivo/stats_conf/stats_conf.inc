@@ -446,12 +446,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	}
 
 	public function edit_agent()
-	{
+	{		
 		if(($rs = $this->get_result('agent')) === null
 		|| $rs === false
 		|| $this->_return['stats_conf'] === false
 		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+			return(false);			
 		
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];

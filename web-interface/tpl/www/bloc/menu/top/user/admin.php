@@ -38,10 +38,16 @@ $this->file_include('bloc/menu/top/user/loginbox');
 			<span class="span-right">&nbsp;</span>
 			<div class="stab">
 				<ul>
+					<?php 
+					if(xivo_user::chk_acl_section('service/ipbx') === true):
+					?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_ipbx'),
 								   'service/ipbx');?>
 					</li>
+					<?php
+					endif; 
+					?>
 					<?php 
 					if(xivo_user::chk_acl_section('service/cti') === true): 
 						// get 1st authorized subsection
@@ -64,22 +70,24 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					
 					endif; 
 					?>
-			    <?php if(xivo_user::chk_acl_section('service/monitoring') === true): ?>
+			   		<?php if(xivo_user::chk_acl_section('service/monitoring') === true): ?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
 								   'xivo');?>
 					</li>
 					<?php endif; ?>
-			    <?php if(xivo_user::chk_acl_section('service/graphs/munin') === true): ?>
+			   		<?php if(xivo_user::chk_acl_section('service/graphs/munin') === true): ?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_stats'),
 								   'graphs');?>
 					</li>
 					<?php endif; ?>
+			   		<?php if(xivo_user::chk_acl_section('service/statistics') === true): ?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_statistiques'),
 								   'statistics');?>
 					</li>
+					<?php endif; ?>
 				</ul>
 			</div>
 		</li>

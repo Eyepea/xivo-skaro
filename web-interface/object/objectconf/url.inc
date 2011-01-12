@@ -225,11 +225,12 @@ $array['graphs/munin/other']        = 'graphs/munin/index.php/other';
 
 
 // statistiques
-$array['statistics']				= 'statistics/index.php';
-$array['statistics/stats1']			= 'statistics/index.php/stats1';
-$array['statistics/stats2']			= 'statistics/index.php/stats2';
-$array['statistics/stats3']			= 'statistics/index.php/stats3';
-$array['statistics/stats4']			= 'statistics/index.php/stats4';
-$array['statistics/configuration']		= 'statistics/index.php/configuration/';
+$array['statistics']					= 'statistics/index.php';
+$array['statistics/call_center/index']				= 'statistics/call_center/index.php/index';
+$array['statistics/call_center/stats1']				= 'statistics/call_center/index.php/stats1';
+$array['statistics/call_center/stats2']				= 'statistics/call_center/index.php/stats2';
+$array['statistics/call_center/stats3']				= 'statistics/call_center/index.php/stats3';
+$array['statistics/call_center/stats4']				= 'statistics/call_center/index.php/stats4';
+$array['statistics/call_center/configuration']		= 'statistics/call_center/index.php/configuration/';
 
 ?>

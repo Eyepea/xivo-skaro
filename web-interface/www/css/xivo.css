@@ -74,8 +74,7 @@ pre {text-align: left;}
 #b-lmenu {width: 200px;float: left;margin-left: 2px;}
 #bc-content {float: left;margin-left: 6px;}
 
-.fm-paragraph {padding: 3px;}
-.fm-paragraph {text-align: left;}
+.fm-paragraph {padding: 3px;text-align: left;}
 .fm-paragraph input {padding: 0px 2px;}
 .fm-paragraph select {max-width: 350px;}
 .fm-paragraph textarea, .fm-paragraph select {padding-left: 2px;}

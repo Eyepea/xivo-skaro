@@ -386,8 +386,10 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		$time = strtolower($time);
 		$format = (string) $format;
 		$table = trim($table);
+		
+		$field = $column;
 
-		if(($type !== 'unix' && $type !== 'date') === true
+		if(($type !== 'unix' && $type !== 'date' && $type !== 'datetime') === true
 		|| ($time !== '' && $time !== 'localtime' && $time !== 'utc') === true)
 			return(false);
 		else if($table === '')
@@ -399,6 +401,8 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 		if($type === 'unix')
 			$func = 'FROM_UNIXTIME';
+		elseif($type === 'datetime')
+			$func = 'TO_TIMESTAMP'; //'DATETIME_FORMAT';
 		else
 			$func = 'TO_CHAR'; //'DATE_FORMAT';
 
@@ -414,10 +418,13 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 		// compliant format
 		$format = str_replace('%Y', 'YYYY', $format);
-		$format = str_replace('%m', 'mm', $format);
-		$format = str_replace('%d', 'dd', $format);
+		$format = str_replace('%m', 'MM', $format);
+		$format = str_replace('%d', 'DD', $format);
+		$format = str_replace('%H', 'HH24', $format);
+		$format = str_replace('%i', 'MI', $format);
+		$format = str_replace('%s', 'SS', $format);
 
-		$r = $func.'('.$column.($format !== '' ? ',\''.$format.'\'' : '').')';
+		$r = $func.'('.$column.($format !== '' ? ', \''.$format.'\'' : '').')';
 
 		return($r);
 	}

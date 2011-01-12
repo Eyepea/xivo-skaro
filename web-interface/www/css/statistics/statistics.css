@@ -1,0 +1,45 @@
+/*
+ * XiVO Web-Interface
+ * Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+#b-tmenu #toolbar {}
+#b-tmenu #toolbar #fm-cal {color: #ffffff;margin-left: 30px; width: 450px;float: left;text-align: center;padding: 0;}
+#b-tmenu #toolbar .fm-paragraph {color: #ffffff;margin-left: 25px; width: 150px;float: left;text-align: center;}
+
+#s-asterisk .b-list .b-total, #s-asterisk .sb-list .b-total {float: left;}
+
+#sr-stats .fm-multifield {width: auto;display: inline;padding: 0px 2px;margin: 0;}
+#sr-stats .fm-multifield label {padding: 0px;}
+#sr-stats .fm-multifield .fm-desc-inline {min-width: 5%;text-align: right;}
+#sr-stats #cal-dbeg {margin: 2px 0px 0px 25px;position: absolute;}
+#sr-stats #cal-dend {margin: 2px 0px 0px 25px;position: absolute;}
+
+#b-lmenu #dashboard .barre {text-decoration: line-through;}
+#b-lmenu #dashboard .paragraph {padding-top: 3px;text-align: left;}
+
+#b-lmenu #dashboard .sb-top {text-align: center;font-weight: bold;}
+#b-lmenu #dashboard .sb-top span {padding: 3px 0px;height: 15px;}
+#b-lmenu #dashboard .sb-top .span-left {background-image: url(../../img/content/t-left.gif);}
+#b-lmenu #dashboard .sb-top .span-center {width: 180px;background-image: url(../../img/content/t-bg.gif); background-repeat: repeat-x;}
+#b-lmenu #dashboard .sb-top .span-right {background-image: url(../../img/content/t-right.gif);}
+
+#b-lmenu #dashboard .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 5px 10px;}
+
+#b-lmenu #dashboard .sb-foot span {padding: 5px 0px 4px;height: 5px;}
+#b-lmenu #dashboard .sb-foot .span-left {background-image: url(../../img/content/f-left.gif);}
+#b-lmenu #dashboard .sb-foot .span-center {width: 180px;background-image: url(../../img/content/f-bg.gif);background-repeat: repeat-x;}
+#b-lmenu #dashboard .sb-foot .span-right {background-image: url(../../img/content/f-right.gif);}

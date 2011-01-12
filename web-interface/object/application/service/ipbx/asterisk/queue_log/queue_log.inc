@@ -22,7 +22,7 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_queue_log extends xivo_application_asterisk_abstract
 {
-	var $_dso		= null;
+	var $_dso			= null;
 	var $_queue_log		= false;
 
 	function xivo_application_service_asterisk_queue_log(&$service,&$dso,$param=null)
@@ -84,8 +84,6 @@ class xivo_application_service_asterisk_queue_log extends xivo_application_aster
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
 
-		$this->_cnt = $this->_queue_log->get_cnt();
-
 		if(empty($rs) === true)
 			return(false);
 		else if((bool) $assoc === false)
@@ -94,16 +92,35 @@ class xivo_application_service_asterisk_queue_log extends xivo_application_aster
 		return($rs);
 	}
 
-	function get_queue_logs_stats($dstart,$dend,$agent,$queue,$order=null,$limit=null,$assoc=false)
+	function count_queue_logs_stats($conf,$type,$value,$event,$addwhere=null)
+	{	
+		$this->_cnt = $this->_queue_log->get_cnt();
+		return($this->_queue_log->count_stats($conf,$type,$value,$event,$addwhere));		
+	}
+	
+	function sum_queue_logs_stats($conf,$type,$value,$event,$field,$addwhere=null)
 	{		
-		$rs = $this->_queue_log->stats($dstart,$dend,$agent,$queue,$order,$limit);
+		if(($rs = $this->_queue_log->get_sum_stats($conf,$type,$value,$event,$field,$addwhere)) === false)
+			return(0);
+				
+		$this->_cnt = $this->_queue_log->get_cnt();
+		
+		$sum = array_sum($rs);
+		
+		return($sum);
+	}
+
+	function get_queue_logs_stats($conf,$type,$data,$order=null,$limit=null,$assoc=false)
+	{		
+		if (is_null($conf) === true)
+			return(false);
+			
+		$rs = $this->_queue_log->stats($conf,$type,$data,$order,$limit);
 
 		$this->_cnt = $this->_queue_log->get_cnt();
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
-
-		$this->_cnt = $this->_queue_log->get_cnt();
 
 		if(empty($rs) === true)
 			return(false);

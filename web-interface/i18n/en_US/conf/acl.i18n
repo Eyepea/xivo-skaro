@@ -379,4 +379,16 @@ Configuration
 Provisioning
  
 ; acl(xivo-configuration-provisioning-general)
-General   
+General 
+
+; acl(service-statistics)
+Statistics
+
+; acl(service-statistics-call_center)
+Statistics call center
+
+; acl(service-statistics-call_center-configuration)
+Configuration
+
+; acl(service-statistics-call_center-data)
+Data

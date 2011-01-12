@@ -29,7 +29,7 @@ if(xivo_user::chk_acl('','','service/graphs') === false)
 $action_path = $_LOC->get_action_path('graphs/index',0);
 
 if($action_path === false)
-	echo "err"; //$_QRY->go($_TPL->url('xivo/logoff'));
+	$_QRY->go($_TPL->url('xivo/logoff'));
 
 die(include($action_path));
 

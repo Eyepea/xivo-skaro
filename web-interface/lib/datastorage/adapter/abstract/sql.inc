@@ -1428,6 +1428,11 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		return($r);
 	}
 
+	function wheredatetime($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('datetime',$column,$dbeg,$dend,$table,$format,$time,true,false));
+	}
+
 	function wheredate($column,$dbeg,$dend='',$table='',$format='',$time='')
 	{
 		return($this->andwheredate($column,$dbeg,$dend,$table,$format,$time));

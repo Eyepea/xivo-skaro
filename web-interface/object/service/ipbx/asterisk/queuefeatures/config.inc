@@ -102,6 +102,6 @@ $array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','ma
 $array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['timeout'] = array('key' => array(0,30,60,90,120,180,240,300,360,420,480,540,600,900,1200,1500,1800));
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['stats_qos'] = array('set' => false,'cast' => 'uint');
+#$array['filter']['stats_qos'] = array('set' => false,'cast' => 'uint');
 
 ?>

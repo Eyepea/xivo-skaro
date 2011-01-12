@@ -21,19 +21,8 @@
 require_once('xivo.php');
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
-	
-$ipbx = &$_SRE->get('ipbx');
+	$_QRY->go($_TPL->url('xivo/logoff'));	
 
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_css('css/statistics/statistics.css');
-
-$action_path = $_LOC->get_action_path('statistics',0);
-
-if($action_path === false
-&& ($action_path = $_LOC->get_action_path('statistics/index',0)) === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
-
-die(include($action_path));
+$_QRY->go($_TPL->url('statistics/call_center/index'));
 
 ?>

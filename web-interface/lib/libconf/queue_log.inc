@@ -134,7 +134,7 @@ $array	= array(
 	 * The only way to be 100% sure that you will get this event when a transfer is performed by a queue 
 	 * member is to use the built-in transfer functionality of Asterisk.
 	 */
-	'TRANSFER'	=> array('extension','context','holdtime','calltime',origposition),
+	'TRANSFER'	=> array('extension','context','holdtime','calltime','origposition'),
 
 );
 				

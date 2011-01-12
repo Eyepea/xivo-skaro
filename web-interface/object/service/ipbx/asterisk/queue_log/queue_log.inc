@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'queue_log';
+	var $_dso		= null;
+	var $_name		= 'queue_log';
 	var $_filter	= false;
 
 	function xivo_service_asterisk_queue_log(&$sre,&$dso)
@@ -40,12 +40,22 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 	
-	function stats($dstart,$dend,$agent,$queue,$order=null,$limit=null)
+	function stats($conf,$type,$data,$order=null,$limit=null)
 	{
-		if(($result = $this->_dso->stats($dstart,$dend,$agent,$queue,$order,$limit)) === false)
-			return(null);
+		if(($result = $this->_dso->stats($conf,$type,$data,$order,$limit)) === false)
+			return(false);
 
-		return($result);		
+		return($result);
+	}
+
+	function get_sum_stats($conf,$type,$value,$event,$field,$addwhere=null)
+	{
+		return($this->_dso->stats_sum_by_type($conf,$type,$value,$event,$field,$addwhere));
+	}
+
+	function count_stats($conf,$type,$value,$event,$addwhere=null)
+	{
+		return($this->_dso->stats_count_by_type($conf,$type,$value,$event,$addwhere));
 	}
 
 	function search($arr,$order=null,$limit=null)

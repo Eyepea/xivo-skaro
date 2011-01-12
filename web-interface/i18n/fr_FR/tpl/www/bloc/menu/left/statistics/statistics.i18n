@@ -1,0 +1,39 @@
+
+; mn_left_name
+Statistiques
+
+; mn_left_ti_home
+Résumé
+
+; mn_left_home
+Global
+
+; mn_left_name_call_center
+Statistiques Centre d'appel
+
+; mn_left_home_call_center
+Accueil
+
+; mn_left_ti_configuration_call_center
+Configuration
+
+; mn_left_configuration_call_center
+Général
+
+; mn_left_configuration_call_center-qos
+Qualité de service
+
+; mn_left_ti_statistics_call_center
+Données
+
+; mn_left_statistics_call_center-1
+Fil d'attente
+
+; mn_left_statistics_call_center-2
+Agents performance
+
+; mn_left_statistics_call_center-3
+Détails par période
+
+; mn_left_statistics_call_center-4
+Agents détails / durées

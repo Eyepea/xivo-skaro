@@ -69,7 +69,6 @@ $_TPL->set_var('basedir', $basedir);
 $_TPL->set_var('domain' , $domain);
 $_TPL->set_var('graphs' , $module_tree);
 $_TPL->set_var('freqs'  , $freqs);
-
 $_TPL->set_var('tree'   , $graph_tree);
 
 $menu = &$_TPL->get_module('menu');

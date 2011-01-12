@@ -23,7 +23,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract_sql
 {
 
-	function search($arr,$order=null,$limit=null)
+	public function search($arr,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;
 
@@ -47,22 +47,141 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function _search_where($arr)
+	public function _search_where($arr)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
 		return(true);
 	}
+	
+	public function stats_sum_by_type($conf,$type,$value,$event,$fieldsum,$addwhere=null)
+	{			
+		$this->_cnt = 0;
 
-	function stats($dstart,$dend,$agent,$queue,$order=null,$limit=null)
+		# not possible field => function sum(character varying) does not exist
+		#$field = array((object) "SUM('$fieldsum')");
+		
+		$this->_dso->new_select($this->_table,array($fieldsum));
+	
+		switch ($type)
+		{
+			case 'agent':		
+				if (is_array($value) === true)
+					$this->_dso->wherein('agent',$value);
+				else
+					$this->_dso->where(array('agent' => $value));
+				break;
+			case 'queue':
+				if (is_array($value) === true)
+					$this->_dso->wherein('queuename',$value);
+				else
+					$this->_dso->where(array('queuename' => $value));
+				break;
+			default:
+				return(false);
+		}
+		
+		$this->_dso->andwhere(array('event' => $event));
+		
+		if (is_null($addwhere) === false)
+			$this->_dso->andwhere($addwhere);
+			
+		#$this->_dso->andwhere('"time" > \'2010-12-01 00:00:01\'');
+		#$this->_dso->andwhere('"time" < \'2010-12-01 23:59:59\'');	
+		
+		#$this->_dso-> wherebetween('time','2010-12-01 00:00:01','2010-12-01 23:59:59',$this->_table);
+			
+		#$this->_dso->wheredatetime('time','2010-12-20 00:00:01','2010-12-20 23:59:59',$this->_table,'datetime');
+		
+		$interval = $conf['interval'];
+			
+		if (empty($interval['dbeg']) === false)
+			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
+		#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+		
+		#$r = $this->_dso->select_all();
+		#$r = $this->_dso->select_distinct_count_singlecolumn('',$fieldsum);
+		$r = $this->_dso->select_singlecolumn();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+	
+	public function stats_count_by_type($conf,$type,$value,$event,$addwhere=null)
+	{			
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_table,array('event'));
+	
+		switch ($type)
+		{
+			case 'agent':
+				if (is_array($value) === true)
+					$this->_dso->wherein('agent',$value);
+				else
+					$this->_dso->where(array('agent' => $value));
+				break;
+			case 'queue':
+				if (is_array($value) === true)
+					$this->_dso->wherein('queuename',$value);
+				else
+					$this->_dso->where(array('queuename' => $value));
+				break;
+			default:
+				return(false);
+		}
+		
+		$this->_dso->andwhere(array('event' => $event));
+		
+		if (is_null($addwhere) === false)
+			$this->_dso->andwhere($addwhere);
+		
+		$interval = $conf['interval'];
+		if (empty($interval['dbeg']) === false)
+			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
+		#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+
+		if(($this->_cnt = $this->_dso->select_count()) === false)
+			$this->_cnt = 0;
+
+		return($this->_cnt);
+	}
+
+	public function stats($conf,$type,$data,$order=null,$limit=null)
 	{
+		if (is_null($conf) === true)
+			return(false);
+			
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table);
 		
-		#$this->_dso->wherein('agent',$agent);
-		#$this->_dso->andwherein('queuename',$queue);
+		switch ($type)
+		{
+			case 'agent':		
+				if (is_array($data) === true)
+					$this->_dso->wherein('agent',$data);
+				else
+					$this->_dso->where(array('agent' => $data));
+				break;
+			case 'queue':
+				if (is_array($data) === true)
+					$this->_dso->wherein('queuename',$data);
+				else
+					$this->_dso->where(array('queuename' => $data));
+				break;
+			default:
+				return(false);
+		}
+		
+		$interval = $conf['interval'];
+			
+		if (empty($interval['dbeg']) === false)
+			$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
 	/*
 		$this->_dso->wherein('id','');
 		

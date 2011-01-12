@@ -22,24 +22,26 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 
 class xivo_statistics_general extends xivo_statistics_abstract
 {
-	
-	private	$_field	= array('logintime'			=> array('type' => 'time'),
-							'holdtime'			=> array('type' => 'time'),
-							'calltime'			=> array('type' => 'time'),
-							'ringtime'			=> array('type' => 'time'),
-							'pausetime'			=> array('type' => 'time'),
-							'connect'			=> array('type' => 'int'),
-							'enterqueue'		=> array('type' => 'int'),
-							'completeagent'		=> array('type' => 'int'),
-							'completecaller'	=> array('type' => 'int'),
-							'ringnoanswer'		=> array('type' => 'int'),
-							'transfer'			=> array('type' => 'int'),
-							'abandon'			=> array('type' => 'int'),
-							'traitmenttime'		=> array('type' => 'time'));
+
+	public		$_field	= array('logintime'			=> array('type' => 'time'),
+								'holdtime'			=> array('type' => 'time'),
+								'calltime'			=> array('type' => 'time'),
+								'ringtime'			=> array('type' => 'time'),
+								'pausetime'			=> array('type' => 'time'),
+								'connect'			=> array('type' => 'int'),
+								'enterqueue'		=> array('type' => 'int'),
+								'completeagent'		=> array('type' => 'int'),
+								'completecaller'	=> array('type' => 'int'),
+								'ringnoanswer'		=> array('type' => 'int'),
+								'transfer'			=> array('type' => 'int'),
+								'abandon'			=> array('type' => 'int'),
+								'traitmenttime'		=> array('type' => 'time')
+							);
 		
 	public function __construct(&$_XOBJ,&$ipbx)
 	{
 		parent::__construct(&$_XOBJ,&$ipbx);
+		$this->_method = 'SQL';
 	}
 	
 	public function parse_log()
@@ -58,20 +60,9 @@ class xivo_statistics_general extends xivo_statistics_abstract
 			$callid 	= $queue_log['callid']; 
 			$queuename 	= $queue_log['queuename']; 
 			$agent 		= strtolower($queue_log['agent']);
-			$event 		= $queue_log['event'];
+			$event 		= $queue_log['event'];			
 			
-			if (isset($res['total']) === false)
-			{
-				$data_process = &$res['total'];
-				$data_process = array();
-				
-				foreach ($this->_field as $k => $field)
-				{
-					$data_process[$k] = array();
-					$data_process[$k]['type'] = $field['type'];
-					$data_process[$k]['result'] = 0;
-				}
-			}
+			$this->init_result('total');
 			
 			switch ($event)
 			{			

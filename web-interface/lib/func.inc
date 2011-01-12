@@ -55,6 +55,30 @@ function dwho_constant($name,$default=null)
 	return($default);
 }
 
+function dwho_second_to($sec, $round=null) {
+
+	$sec = floatval($sec);
+
+	$arr = array('s' => pow(10, 0), # second
+		     	'ms' => pow(10, -3), # millisecond
+		     	'µs' => pow(10, -6), # microsecond
+		     	'ns' => pow(10, -9), # nanosecond
+		     	'ps' => pow(10, -12) # picosecond
+		     	);
+
+	$arr_keys = array_keys($arr);
+
+	for($c = 0;$sec <= 1 && $c < 4;$c++)
+		$sec *= 1000;
+
+	if (is_null($round) === false 
+	&& is_numeric($round) === true)
+		$sec = round($sec, $round);
+
+	return($sec.$arr_keys[$c]);
+
+}
+
 function dwho_get_memory($value,$name=true)
 {
 	$get_name = strtolower($value);
@@ -943,6 +967,50 @@ function dwho_last_key(&$a,$sort=SORT_NUMERIC)
 	ksort($ak,$sort);
 
 	return(end($ak));
+}
+
+function dwho_sec_to_time($second) {
+	
+	$second = (int) $second;
+	$sec = dwho_calc_duration('','',$second);
+
+	$res = '';
+		
+	if($sec['d'] != 0
+	|| $sec['h'] != 0)
+	{
+		$h = ($sec['h']+($sec['d']*24));
+		if (strlen($h) === 1)
+			$h = '0'.$h;
+		$res .= $h.':';
+	}
+	else
+		$res .= '00:';
+		
+	if($sec['m'] != 0)
+	{
+		$m = ($sec['m']);
+		if (strlen($m) === 1)
+			$m = '0'.$m;
+		$res .= $m.':';
+	}
+	else
+		$res .= '00:';
+		
+	if($sec['s'] != 0)
+	{
+		$s = round($sec['s'],0);
+		if (strlen($s) === 1)
+			$s = '0'.$s;
+		$res .= $s;
+	}
+
+	if($sec['h'] == 0
+	&& $sec['m'] == 0
+	&& $sec['s'] == 0)
+		$res = '00:00:00';
+
+	return($res);
 }
 
 function dwho_sec_to_human($sec,$d=true,$h=true,$m=true,$s=false) {

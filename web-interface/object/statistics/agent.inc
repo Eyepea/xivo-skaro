@@ -23,25 +23,121 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_agent extends xivo_statistics_abstract
 {
 	
-	private	$_field	= array('logintime'			=> array('type' => 'time'),
-							'holdtime'			=> array('type' => 'time'),
-							'calltime'			=> array('type' => 'time'),
-							'ringtime'			=> array('type' => 'time'),
-							'pausetime'			=> array('type' => 'time'),
-							'connect'			=> array('type' => 'int'),
-							'completeagent'		=> array('type' => 'int'),
-							'completecaller'	=> array('type' => 'int'),
-							'ringnoanswer'		=> array('type' => 'int'),
-							'transfer'			=> array('type' => 'int'),
-							'abandon'			=> array('type' => 'int'),
-							'traitmenttime'		=> array('type' => 'time'));
+	public		$_type		= 'agent';
+	public		$_field	= array('logintime'			=> array('type' => 'time'),
+								'holdtime'			=> array('type' => 'time'),
+								'calltime'			=> array('type' => 'time'),
+								'ringtime'			=> array('type' => 'time'),
+								'pausetime'			=> array('type' => 'time'),
+								'traitmenttime'		=> array('type' => 'time'),
+								'connect'			=> array('type' => 'int'),
+								'completeagent'		=> array('type' => 'int'),
+								'completecaller'	=> array('type' => 'int'),
+								'ringnoanswer'		=> array('type' => 'int'),
+								'transfer'			=> array('type' => 'int'),
+								'abandon'			=> array('type' => 'int')
+						);
 		
 	public function __construct(&$_XOBJ,&$ipbx)
 	{
 		parent::__construct(&$_XOBJ,&$ipbx);
+		$this->_method = 'DB';
+	}
+		
+	public function parse_log()
+	{
+		switch ($this->_method)
+		{
+			case 'DB':
+				$this->parse_log_db();
+				break;
+			case 'PHP':
+				$this->parse_log_php();
+				break;
+			default:
+				return(false);
+		}
+		return(true);
 	}
 	
-	public function parse_log()
+	private function parse_log_db()
+	{		
+		$data = $this->get_list_by_type();
+		$nb_data = count($data);
+		for ($i=0;$i<$nb_data;$i++)
+		{
+			$agent = $data[$i];
+			
+			$agent_num = (int) $agent[0];
+			$this->init_result($agent_num);
+						
+			$val = $this->eval_count_data($agent,'CONNECT');
+			$this->update_result(array($agent_num,'connect'),$val);	
+					
+			$field = $this->eval_field_queue_log('CONNECT','holdtime');
+			$holdtime = $this->eval_sum_data($agent,'CONNECT',$field);
+			$this->update_result(array($agent_num,'holdtime'),$holdtime);
+			$this->update_result(array($agent_num,'traitmenttime'),$holdtime);
+			
+			$val = $this->eval_count_data($agent,'TRANSFER');
+			$this->update_result(array($agent_num,'transfer'),$val);
+			
+			$field = $this->eval_field_queue_log('RINGNOANSWER','ringtime');
+			$ringtime = $this->eval_sum_data($agent,'RINGNOANSWER',$field);
+			$this->update_result(array($agent_num,'ringtime'),$ringtime);
+			$this->update_result(array($agent_num,'traitmenttime'),$ringtime);
+			$val = $this->eval_count_data($agent,'RINGNOANSWER');
+			$this->update_result(array($agent_num,'ringnoanswer'),$val);
+			
+			$val = $this->eval_count_data($agent,'ABANDON');
+			$this->update_result(array($agent_num,'abandon'),$val);	
+						
+			$field = $this->eval_field_queue_log('COMPLETEAGENT','calltime');
+			$calltime = $this->eval_sum_data($agent,'COMPLETEAGENT',$field);
+			$this->update_result(array($agent_num,'calltime'),$calltime);
+			$this->update_result(array($agent_num,'traitmenttime'),$calltime);
+			
+			$field = $this->eval_field_queue_log('COMPLETEAGENT','holdtime');
+			$holdtime = $this->eval_sum_data($agent,'COMPLETEAGENT',$field);
+			$this->update_result(array($agent_num,'holdtime'),$holdtime);
+			
+			$val = $this->eval_count_data($agent,'COMPLETEAGENT');
+			$this->update_result(array($agent_num,'completeagent'),$val);
+						
+			$field = $this->eval_field_queue_log('COMPLETECALLER','calltime');
+			$calltime = $this->eval_sum_data($agent,'COMPLETECALLER',$field);
+			$this->update_result(array($agent_num,'calltime'),$calltime);
+			$this->update_result(array($agent_num,'traitmenttime'),$calltime);
+			
+			$field = $this->eval_field_queue_log('COMPLETECALLER','holdtime');
+			$holdtime = $this->eval_sum_data($agent,'COMPLETECALLER',$field);
+			$this->update_result(array($agent_num,'holdtime'),$holdtime);
+			
+			$val = $this->eval_count_data($agent,'COMPLETECALLER');
+			$this->update_result(array($agent_num,'completecaller'),$val);		
+						
+			$field = $this->eval_field_queue_log('AGENTLOGOFF','logintime');
+			$logintime = $this->eval_sum_data($agent,'AGENTLOGOFF',$field);
+			$this->update_result(array($agent_num,'logintime'),$logintime);
+			
+			$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
+			$logintime = $this->eval_sum_data($agent,'AGENTCALLBACKLOGOFF',$field);
+			$this->update_result(array($agent_num,'logintime'),$logintime);
+			
+			continue;			
+			
+			if (isset($this->_data_custom['qos']) === true
+			&& isset($this->_data_custom['qos'][$queuename]) === true
+			&& ($stats_qos = (int) $this->_data_custom['qos'][$queuename]['stats_qos']) !== 0)
+			{
+				$field = $this->eval_field_queue_log('CONNECT','holdtime');
+				$qos = $this->eval_count_data($queuename,'CONNECT',"$field<'$stats_qos'");
+				$this->update_result(array($queuename,'qos'),$qos);
+			}
+		}
+	}	
+	
+	private function parse_log_php()
 	{
 		$res = &$this->_result;
 			
@@ -54,30 +150,26 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 				$queue_log[$k] = trim($clean);
 						
 			$time 		= $queue_log['time'];
-			$callid 	= $queue_log['callid']; 
-			$queuename 	= $queue_log['queuename']; 
+			$callid 	= $queue_log['callid'];
+			$queuename 	= $queue_log['queuename'];
 			$agent 		= strtolower($queue_log['agent']);
 			$event 		= $queue_log['event'];
 			
-			if (isset($res[$agent]) === false)
-			{
-				$data_process = &$res[$agent];
-				$data_process = array();
-				
-				foreach ($this->_field as $k => $field)
-				{
-					$data_process[$k] = array();
-					$data_process[$k]['type'] = $field['type'];
-					$data_process[$k]['result'] = 0;
-				}
-			}
+			$this->init_result($agent);
 			
 			switch ($event)
 			{
-				# AGENTLOGIN(channel)				
+				# AGENTCALLBACKLOGIN(exten@context) 
+				case 'AGENTCALLBACKLOGIN':
+				# AGENTCALLBACKLOGOFF(exten@context|logintime|reason)
+				case 'AGENTCALLBACKLOGOFF':
+					$logintime = $this->eval_during_time($agent,$event,'AGENTCALLBACKLOGIN','AGENTCALLBACKLOGOFF',$time);
+					$this->update_result(array($agent,'logintime'),$logintime);
+					break;
+				# AGENTLOGIN(channel)
 				case 'AGENTLOGIN':
 				# AGENTLOGOFF(channel|logintime)
-				case 'AGENTLOGOFF':
+				case 'AGENTLOGOFF': 
 					$logintime = 0;
 					if (TRUE)
 						$logintime = $this->eval_during_time($agent,$event,'AGENTLOGIN','AGENTLOGOFF',$time);

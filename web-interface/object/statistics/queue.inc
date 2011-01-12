@@ -23,27 +23,86 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_queue extends xivo_statistics_abstract
 {
 	
-	private	$_field	= array('presented'				=> array('type' => 'int'),
-							'answered'				=> array('type' => 'int'),
-							'abandoned'				=> array('type' => 'int'),
-							'deterred_on_close'		=> array('type' => 'int'),
-							'deterred_on_saturation'=> array('type' => 'int'),
-							'rerouted_on_hungup'	=> array('type' => 'int'),
-							'rerouted_on_guide'		=> array('type' => 'int'),
-							'rerouted_on_number'	=> array('type' => 'int'),
-							'total_time_waiting'	=> array('type' => 'int'),
-							'home_rated'			=> array('type' => 'percent'),
-							'qos'					=> array('type' => 'int'));
+	public		$_type	= 'queue';
+	public		$_field	= array('presented'				=> array('type' => 'int'),
+								'answered'				=> array('type' => 'int'),
+								'abandoned'				=> array('type' => 'int'),
+								'deterred_on_close'		=> array('type' => 'int'),
+								'deterred_on_saturation'=> array('type' => 'int'),
+								'rerouted_on_hungup'	=> array('type' => 'int'),
+								'rerouted_on_guide'		=> array('type' => 'int'),
+								'rerouted_on_number'	=> array('type' => 'int'),
+								'total_time_waiting'	=> array('type' => 'int'),
+								'home_rated'			=> array('type' => 'percent'),
+								'qos'					=> array('type' => 'int')
+							);
 	
-	public function __construct(&$_XOBJ,&$ipbx)
+	public function __construct(&$_XS)
 	{
-		parent::__construct(&$_XOBJ,&$ipbx);
+		parent::__construct(&$_XS);
+		$this->set_method('DB');
 	}
-	
+		
 	public function parse_log()
 	{
-		$res = &$this->_result;
+		switch ($this->_xs->_method)
+		{
+			case 'DB':
+				$this->parse_log_db();
+				break;
+			case 'PHP':
+				$this->parse_log_php();
+				break;
+			default:
+				return(false);
+		}
+	}
+		
+	private function parse_log_db()
+	{		
+		$data = $this->get_list_by_type();
+		$nb_data = count($data);
+		for ($i=0;$i<$nb_data;$i++)
+		{
+			$queuename = $data[$i];
+			$this->init_result($queuename);
 			
+			$enterqueue = $this->eval_count_data($queuename,'ENTERQUEUE');			
+			$this->update_result(array($queuename,'presented'),$enterqueue);
+			
+			$connect = $this->eval_count_data($queuename,'CONNECT');
+			$this->update_result(array($queuename,'answered'),$connect);			
+					
+			$field = $this->eval_field_queue_log('CONNECT','holdtime');
+			$sum = $this->eval_sum_data($queuename,'CONNECT',$field);
+			$this->update_result(array($queuename,'total_time_waiting'),$sum);
+			
+			if (isset($this->_data_custom['qos']) === true
+			&& isset($this->_data_custom['qos'][$queuename]) === true
+			&& ($stats_qos = (int) $this->_data_custom['qos'][$queuename]['stats_qos']) !== 0)
+			{
+				$field = $this->eval_field_queue_log('CONNECT','holdtime');
+				$qos = $this->eval_count_data($queuename,'CONNECT',"$field<'$stats_qos'");
+				$this->update_result(array($queuename,'qos'),$qos);
+			}
+			
+			$abandon = $this->eval_count_data($queuename,'ABANDON');
+			$this->update_result(array($queuename,'abandoned'),$abandon);
+			
+			$exitempty = $this->eval_count_data($queuename,'EXITEMPTY');
+			$this->update_result(array($queuename,'rerouted_on_hungup'),$exitempty);
+			$exitwithtimeout = $this->eval_count_data($queuename,'EXITWITHTIMEOUT');
+			$this->update_result(array($queuename,'rerouted_on_hungup'),$exitwithtimeout);
+			
+			$this->update_result(array($queuename,'rerouted_on_guide'),0);
+			
+			$transfer = $this->eval_count_data($queuename,'TRANSFER');
+			$this->update_result(array($queuename,'rerouted_on_number'),0);
+		}
+	}	
+	
+	private function parse_log_php()
+	{			
 		$nb_ql = count($this->_queue_log);
 		for ($u=0;$u<$nb_ql;$u++)
 		{
@@ -58,21 +117,10 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			$agent 		= strtolower($queue_log['agent']);
 			$event 		= $queue_log['event'];
 			
-			if (isset($res[$queuename]) === false)
-			{
-				$data_process = &$res[$queuename];
-				$data_process = array();
-				
-				foreach ($this->_field as $k => $field)
-				{
-					$data_process[$k] = array();
-					$data_process[$k]['type'] = $field['type'];
-					$data_process[$k]['result'] = 0;
-				}
-			}
+			$this->init_result($queuename);
 			
 			switch ($event)
-			{			
+			{
 				# ENTERQUEUE(url|callerid)
 				case 'ENTERQUEUE':
 					$this->update_result(array($queuename,'presented'),1);
@@ -90,6 +138,10 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 					&& $holdtime << $stats_qos)
 						$this->update_result(array($queuename,'qos'),1);
 					break;
+				# ABANDON(positionorig|positionwaittime)
+				case 'ABANDON':
+					$this->update_result(array($queuename,'abandoned'),1);
+					break;
 				# EXITEMPTY(position|origposition|waittime)
 				case 'EXITEMPTY':
 					$this->update_result(array($queuename,'rerouted_on_hungup'),1);
@@ -101,10 +153,6 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 				# TRANSFER(extension|context|holdtime|calltime) 
 				case 'TRANSFER':
 					$this->update_result(array($queuename,'rerouted_on_number'),1);
-					break;
-				# ABANDON(positionorig|positionwaittime)
-				case 'ABANDON':
-					$this->update_result(array($queuename,'abandoned'),1);
 					break;
 				default:
 			}			

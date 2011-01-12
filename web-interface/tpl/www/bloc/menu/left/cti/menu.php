@@ -118,8 +118,9 @@ $dhtml = &$this->get_module('dhtml');
 					'\'));"'),
 				'</dd>';
 		endif;
+		
+		echo	'</dl>';
 	endif;
-	echo	'</dl>';
 
 ?>
 	</dd>
