@@ -31,8 +31,15 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 	var $_musiconhold	  = array();
 	var $_contextlist	  = array();
 
+	var $_tlscadir      = '';
+	var $_tlscertdir    = '';
+
 	function xivo_application_service_asterisk_realstatic_sip_general(&$service)
 	{
+		$_config = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+		$this->_tlscadir   = $_config['tls']['cadir'];
+		$this->_tlscertdir = $_config['tls']['certdir'];
+		
 		return($this->_init(&$service));
 	}
 
@@ -141,8 +148,33 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		&& isset($this->_musiconhold[$arr['mohsuggest']]) === false)
 			$arr['mohsuggest'] = '';
 
-		return(parent::set_save_all($arr,$disable));
-        
+		if(strlen($arr['tlscertfile']) > 0)
+			$arr['tlscertfile'] = $this->_tlscertdir.'/'.$arr['tlscertfile'];
+		if(strlen($arr['tlscafile']) > 0)
+			$arr['tlscafile'] = $this->_tlscadir.'/'.$arr['tlscafile'];
+
+		$ret = parent::set_save_all($arr,$disable);
+		if($ret === false)
+			return($ret);
+
+		if(array_key_exists('tlscertfile', $ret['result']))
+			$ret['result']['tlscertfile']['var_val'] = substr(strrchr($ret['result']['tlscertfile']['var_val'], '/'), 1);
+		if(array_key_exists('tlscafile', $ret['result']))
+			$ret['result']['tlscafile']['var_val'] = substr(strrchr($ret['result']['tlscafile']['var_val'], '/'), 1);
+
+		return $ret;
+	}
+
+	function get_all_val_by_category($disable=null)
+	{
+		$arr = parent::get_all_val_by_category($disable);
+
+		if(array_key_exists('tlscertfile', $arr))
+			$arr['tlscertfile']['var_val'] = substr(strrchr($arr['tlscertfile']['var_val'], '/'), 1);
+		if(array_key_exists('tlscafile', $arr))
+			$arr['tlscafile']['var_val'] = substr(strrchr($arr['tlscafile']['var_val'], '/'), 1);
+
+		return($arr);
 	}
 
 	function get_certificate_files($type='cert', $path)
