@@ -34,67 +34,67 @@ $dhtml = &$this->get_module('dhtml');
 		echo 	'<dl>';
 
 		if(xivo_user::chk_acl('cti', 'general', 'service') === true):
-			echo	'<dd id="mn-cti--general">',
+			echo	'<dd id="mn-general">',
 				$url->href_html($this->bbf('mn_left_ctisettings-general'),
 					'cti/general'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti', 'presences', 'service') === true):
-			echo	'<dd id="mn-cti--presences">',
+			echo	'<dd id="mn-presences">',
 				$url->href_html($this->bbf('mn_left_ctisettings-presences'),
 					'cti/presences'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','phonehints', 'service') === true):
-			echo	'<dd id="mn-cti--phonehints">',
+			echo	'<dd id="mn-phonehints">',
 				$url->href_html($this->bbf('mn_left_ctisettings-phonehints'),
 					'cti/phonehints'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','profiles', 'service') === true):
-			echo	'<dd id="mn-cti--profiles">',
+			echo	'<dd id="mn-profiles">',
 				$url->href_html($this->bbf('mn_left_ctisettings-profiles'),
 					'cti/profiles'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','directories', 'service') === true):
-			echo	'<dd id="mn-cti--directories">',
+			echo	'<dd id="mn-directories">',
 				$url->href_html($this->bbf('mn_left_ctisettings-directories'),
 					'cti/directories'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','reversedirectories', 'service') === true):
-			echo	'<dd id="mn-cti--reversedirectories">',
+			echo	'<dd id="mn-reversedirectories">',
 				$url->href_html($this->bbf('mn_left_ctisettings-reversedirectories'),
 					'cti/reversedirectories'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','contexts', 'service') === true):
-			echo	'<dd id="mn-cti--contexts">',
+			echo	'<dd id="mn-contexts">',
 				$url->href_html($this->bbf('mn_left_ctisettings-contexts'),
 					'cti/contexts'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','displays', 'service') === true):
-			echo	'<dd id="mn-cti--displays">',
+			echo	'<dd id="mn-displays">',
 				$url->href_html($this->bbf('mn_left_ctisettings-displays'),
 					'cti/displays'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','sheetactions', 'service') === true):
-			echo	'<dd id="mn-cti--sheetactions">',
+			echo	'<dd id="mn-sheetactions">',
 				$url->href_html($this->bbf('mn_left_ctisettings-sheetactions'),
 					'cti/sheetactions'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','sheetevents', 'service') === true):
-			echo	'<dd id="mn-cti--sheetevents">',
+			echo	'<dd id="mn-sheetevents">',
 				$url->href_html($this->bbf('mn_left_ctisettings-sheetevents'),
 					'cti/sheetevents'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','restart', 'service') === true):
-			echo	'<dd id="mn-cti--restart">',
+			echo	'<dd id="mn-restart">',
 				$url->href_html($this->bbf('mn_left_ctisettings-restart'),
 					'cti/restart',
 					null,
