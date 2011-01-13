@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
 """A tool for managing prov2 plugins. 
@@ -10,13 +10,19 @@ This tool can do the following:
 
 """
 
+import ConfigParser
+import glob
 import os
 import shutil
+import tarfile
 from optparse import OptionParser
+from subprocess import check_call, Popen, PIPE
 from sys import exit, stderr
 
-
-BUILD_FILENAME='build.py'
+BUILD_FILENAME = 'build.py'
+DB_FILENAME    = 'plugins.db'
+INFO_FILENAME  = 'plugin-info'
+PACKAGE_SUFFIX = '.tar.bz2'
 
 
 def count(iterable, function=bool):
@@ -30,27 +36,23 @@ def count(iterable, function=bool):
     return len(filter(function, iterable))
 
 
-def is_bplugin(path):
+def _is_bplugin(path):
     """Check if path is a bplugin.
     
     A path is a bplugin if it's a directory and has a file named BUILD_FILENAME
     inside it.
     
     """
-    if os.path.isfile(os.path.join(path, BUILD_FILENAME)):
-        return True
-    else:
-        return False
+    return os.path.isfile(os.path.join(path, BUILD_FILENAME))
 
 
-def list_bplugins(path):
+def _list_bplugins(directory):
     def aux():
-        for name in os.listdir(path):
-            bplugin = os.path.join(path, name)
-            if is_bplugin(bplugin):
-                yield bplugin
-#    return list(aux())
-    return aux()
+        for file in os.listdir(directory):
+            file = os.path.join(directory, file)
+            if _is_bplugin(file):
+                yield file
+    return list(aux())
 
 
 class Bplugin(object):
@@ -101,25 +103,11 @@ class Bplugin(object):
             os.chdir(old_cwd)
 
 
-def build_op(opt, args):
-    # parse 'bdir' option
-    if opt.bdir:
-        bdir = opt.bdir
-        if not os.path.isdir(bdir):
-            print >>stderr, "error: bdir must be a directory ('%s' is not)" % bdir
-            exit(1)
-    else:
-        bdir = os.curdir
-    assert os.path.isdir(bdir)
-    
-    # parse 'pgdir' option
-    if opt.pgdir:
-        pgdir = opt.pgdir
-        if not os.path.isdir(pgdir):
-            print >>stderr, "error: pgdir must be a directory ('%s' is not)" % pgdir
-            exit(1)
-    else:
-        pgdir = os.curdir
+def build_op(opts, args, src_dir, dest_dir):
+    # Pre: src_dir is a directory
+    # Pre: dest_dir is a directory
+    bdir = src_dir
+    pgdir = dest_dir
     
     # parse bplugins and target to build
     if args:
@@ -128,7 +116,7 @@ def build_op(opt, args):
     else:
         # build all plugins from all bplugins
         bplugins_target = {}
-        for bplugin_path in list_bplugins(bdir):
+        for bplugin_path in _list_bplugins(bdir):
             bplugins_target[bplugin_path] = None
     
     # create bplugins object and check targets
@@ -152,41 +140,203 @@ def build_op(opt, args):
     
     # build bplugins
     for bplugin_path, targets in bplugins_target.iteritems():
-        print >>stderr, "Processing targets for bplugin '%s'..." % bplugin_path
+        print "Processing targets for bplugin '%s'..." % bplugin_path
         bplugin = bplugins_obj[bplugin_path]
         for target_id in targets:
             path = os.path.join(pgdir, bplugin.targets[target_id]['pg_id'])
-            if opt.force and os.path.exists(path):
+            if opts.force and os.path.exists(path):
                 shutil.rmtree(path, True)
-            print >>stderr, "  - Building target '%s' in directory '%s'..." % \
+            print "  - Building target '%s' in directory '%s'..." % \
                   (target_id, path)
             bplugin.build(target_id, pgdir)
 
 
-def package_op(opt, args):
-    raise NotImplementedError('not yet')
+def _is_plugin(path):
+    return os.path.isfile(os.path.join(path, INFO_FILENAME))
 
 
-parser = OptionParser()
-parser.add_option('-B', action='store_true', dest='build', help='build plugins from bplugins')
-parser.add_option('-P', action='store_true', dest='package', help='package plugins')
-parser.add_option('--bdir', dest='bdir', help='bplugins directory')
-parser.add_option('--pgdir', dest='pgdir', help='plugins directory')
-parser.add_option('--pkdir', dest='pkdir', help='packages directory')
-parser.add_option('-f', action='store_true', dest='force', help='overwrite file/dir if they exist')
-# XXX verbose not used
-parser.add_option('-v', action='store_true', dest='verbose')
+def _list_plugins(directory):
+    def aux():
+        for file in os.listdir(directory):
+            file = os.path.join(directory, file)
+            if _is_plugin(file):
+                yield file
+    return list(aux())
 
-opt, args = parser.parse_args()
-nb_op = count(getattr(opt, name) for name in ('build', 'package'))
-if nb_op != 1:
-    print >>stderr, "error: only one operation may be used at a time (%s given)" % nb_op
-    exit(1)
-# assert: only one operation is used
 
-if opt.build:
-    build_op(opt, args)
-elif opt.package:
-    package_op(opt, args)
-else:
-    raise AssertionError('unknown operation... this is a bug')
+def _get_plugin_version(plugin):
+    # Pre: plugin is a directory with an INFO_FILENAME file
+    fobj = open(os.path.join(plugin, INFO_FILENAME))
+    try:
+        config = ConfigParser.RawConfigParser()
+        config.readfp(fobj)
+        return config.get('general', 'version')
+    except ConfigParser.Error:
+        print >>stderr, "error: plugin '%s' has invalid plugin info file" % plugin
+        exit(1)
+    finally:
+        fobj.close()
+
+
+def package_op(opts, args, src_dir, dest_dir):
+    pg_dir = src_dir
+    pkg_dir = dest_dir
+    
+    # parse plugins to package
+    if args:
+        plugins = [os.path.join(pg_dir, arg) for arg in args]
+        # make sure plugins are plugins...
+        for plugin in plugins:
+            if not _is_plugin(plugin):
+                print >>stderr, "error: plugin '%s' is missing info file" % plugin
+                exit(1)
+    else:
+        plugins = _list_plugins(pg_dir)
+    
+    # build packages
+    for plugin in plugins:
+        plugin_version = _get_plugin_version(plugin)
+        package = "%s-%s%s" % (os.path.join(pkg_dir, plugin), plugin_version,
+                               PACKAGE_SUFFIX)
+        print "Packaging plugin '%s' into '%s'..." % (plugin, package)
+        check_call(['tar', 'caf', package,
+                    '-C', os.path.dirname(plugin) or os.curdir,
+                    os.path.basename(plugin)])
+
+
+def _list_packages(directory):
+    return glob.glob(os.path.join(directory, '*' + PACKAGE_SUFFIX))
+
+
+def _get_package_filename(package):
+    return os.path.basename(package)
+
+
+def _get_package_name(package):
+    tar_package = tarfile.open(package)
+    try:
+        shortest_name = min(tar_package.getnames())
+        if tar_package.getmember(shortest_name).isdir():
+            return shortest_name
+        else:
+            print >>stderr, "error: package '%s' should have only 1 directory at depth 0" % package
+            exit(1)
+    finally:
+        tar_package.close()
+
+
+def _get_package_description_and_version(package, package_name):
+    # Return a tuple (version, description)
+    tar_package = tarfile.open(package)
+    try:
+        plugin_info_name = os.path.join(package_name, INFO_FILENAME)
+        if plugin_info_name not in tar_package.getnames():
+            print >>stderr, "error: package '%s' has no file '%s'" % (package, plugin_info_name)
+            exit(1)
+        
+        fobj = tar_package.extractfile(plugin_info_name)
+        try:
+            config = ConfigParser.RawConfigParser()
+            config.readfp(fobj, plugin_info_name)
+            description = config.get('general', 'description')
+            version = config.get('general', 'version')
+            return description.replace('\n', ' '), version 
+        except ConfigParser.Error:
+            print >>stderr, "error: package '%s' has invalid plugin-info file" % package
+            exit(1)
+        finally:
+            fobj.close()
+    finally:
+        tar_package.close()
+
+
+def _get_package_info(package):
+    result = {}
+    result['filename'] = _get_package_filename(package)
+    result['name'] = _get_package_name(package)
+    result['description'], result['version'] = \
+        _get_package_description_and_version(package, result['name'])
+    return result
+
+
+def create_db_op(opts, args, src_dir, dest_dir):
+    pkg_dir = src_dir
+    db_file = os.path.join(dest_dir, DB_FILENAME)
+    
+    # parse packages to use to build db file
+    if args:
+        packages = [os.path.join(pkg_dir, arg) for arg in args]
+    else:
+        packages = _list_packages(pkg_dir)
+    
+    # create db file
+    fobj = open(db_file, 'w')
+    try:
+        print "Creating DB file '%s'..." % db_file
+        fobj.write("# This file has been automatically generated\n")
+        for package in packages:
+            print "  Adding package '%s' to db file..." % package
+            package_info = _get_package_info(package)
+            fobj.write('\n')
+            fobj.write('[plugin_%s]\n' % package_info['name'])
+            fobj.write('description: %s\n' % package_info['description'])
+            fobj.write('filename: %s\n' % package_info['filename'])
+            fobj.write('version: %s\n' % package_info['version'])
+    finally:
+        fobj.close()
+    
+
+def _get_directory(opt_value):
+    # Return current dir if opt_value is none, else check if opt_value is
+    # a directory and return it if it is, else write a message and exit
+    if not opt_value:
+        return os.curdir
+    else:
+        if not os.path.isdir(opt_value):
+            print >>stderr, "error: '%s' is not a directory" % opt_value
+            exit(1)
+        return opt_value
+
+
+def _get_directories(opts):
+    # Return a tuple (source_dir, destination_dir)
+    return _get_directory(opts.source), _get_directory(opts.destination)
+
+
+def main():
+    parser = OptionParser()
+    parser.add_option('-B', '--build', action='store_true', dest='build',
+                      help='create plugins from bplugins')
+    parser.add_option('-P', '--package', action='store_true', dest='package',
+                      help='create packages from plugins')
+    parser.add_option('-D', '--db', action='store_true', dest='create_db',
+                      help='create DB file from packages')
+    parser.add_option('-s', '--source', dest='source',
+                      help='source directory')
+    parser.add_option('-d', '--destination', dest='destination',
+                      help='destination directory')
+    # Note: -f is only useful for the 'build' operation, other operation will
+    #       overwrite destination files anyway
+    parser.add_option('-f', action='store_true', dest='force',
+                      help='overwrite file/dir if they exist')
+    # XXX verbose not used
+    parser.add_option('-v', action='store_true', dest='verbose')
+    
+    opts, args = parser.parse_args()
+    nb_op = count(getattr(opts, name) for name in ('build', 'package', 'create_db'))
+    if nb_op != 1:
+        print >>stderr, "error: only one operation may be used at a time (%s given)" % nb_op
+        exit(1)
+    # assert: only one operation is specified
+    
+    src_dir, dest_dir = _get_directories(opts)
+    if opts.build:
+        build_op(opts, args, src_dir, dest_dir)
+    elif opts.package:
+        package_op(opts, args, src_dir, dest_dir)
+    elif opts.create_db:
+        create_db_op(opts, args, src_dir, dest_dir)
+    else:
+        raise AssertionError('unknown operation... this is a bug')
+
+main()
