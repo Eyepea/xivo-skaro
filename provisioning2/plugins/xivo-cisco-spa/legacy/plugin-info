@@ -1,4 +1,4 @@
 [general]
-version: 1
+version: 0.1
 description: Plugin for Cisco SPA901, 921, 922, 941, 942, 962, 2102, 3102,
              8000, 8800 and PAP2T in different versions.

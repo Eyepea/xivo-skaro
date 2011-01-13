@@ -415,7 +415,7 @@ class PluginMgrConfigureResource(Resource):
     
     def getChild(self, path, request):
         cfg_service = self._pg_mgr.configure_service()
-        if path not in cfg_service.description():
+        if path not in cfg_service.description:
             return NoResource()
         else:
             res = PluginMgrConfigureParamResource(cfg_service, path)
@@ -425,7 +425,7 @@ class PluginMgrConfigureResource(Resource):
     def render_GET(self, request):
         cfg_service = self._pg_mgr.configure_service()
         params = {}
-        for key in cfg_service.description().iterkeys():
+        for key in cfg_service.description.iterkeys():
             # XXX urlquote p_uri (in fact, only key)
             p_uri = request.path + '/' + key
             p_value = {'links': [{'rel': 'config.param', 'href': p_uri}]}

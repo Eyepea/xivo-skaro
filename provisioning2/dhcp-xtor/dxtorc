@@ -30,7 +30,7 @@ only the IP address needs to be passed to the client:
 
 """
 
-__version__ = "$Revision $ $Date $"
+__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique
 

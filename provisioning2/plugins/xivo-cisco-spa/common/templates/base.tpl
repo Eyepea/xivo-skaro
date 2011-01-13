@@ -24,12 +24,12 @@
 <Call_Pickup_Code>{{ exten['pickup_prefix'] }}</Call_Pickup_Code>
 <Attendant_Console_Call_Pickup_Code>{{ exten['pickup_prefix'] }}</Attendant_Console_Call_Pickup_Code>
 
-{% if 1 in sip['lines'] %}
+{% if 1 in sip['lines'] -%}
 <Station_Name>{{ sip['lines'][1]['display_name']|e }}</Station_Name>
-{% endif %}
+{% endif -%}
 
 {% block dictionary_server_script -%}
-<Dictionary_Server_Script ua="na"></Dictionary_Server_Script>
+<Dictionary_Server_Script></Dictionary_Server_Script>
 {% endblock -%}
 <Language_Selection>{{ XX_language }}</Language_Selection>
 {{ XX_timezone }}
@@ -46,7 +46,7 @@
 <Auth_ID_{{ line_no }}_>{{ line['auth_id']|e }}</Auth_ID_{{ line_no }}_>
 
 <DTMF_Tx_Method_{{ line_no }}_>INFO</DTMF_Tx_Method_{{ line_no }}_>
-<Voice_Mail_Server_{{ line_no }}_>{{ line['number'] ~ '@' line['proxy'] }}</Voice_Mail_Server_{{ line_no }}_>
+<Voice_Mail_Server_{{ line_no }}_>{{ line['number'] ~ '@' ~ line['proxy'] }}</Voice_Mail_Server_{{ line_no }}_>
 {% endfor -%}
 
 <!-- Function keys definition SHOULD go before the line key definition

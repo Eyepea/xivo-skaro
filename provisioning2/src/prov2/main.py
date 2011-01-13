@@ -30,9 +30,12 @@ __license__ = """
 """
 
 import atexit
-import time
+import ConfigParser
+import logging
+import logging.handlers
+import optparse
 import sys
-from ConfigParser import RawConfigParser
+import time
 from pprint import pprint
 from prov2.devices.ident import *
 from prov2.devices.pgasso import PluginAssociatorDeviceUpdater,\
@@ -54,6 +57,8 @@ from prov2.rest.server import DevicesResource,\
 from prov2.util import norm_ip
 from twisted.python.util import println
 
+logger = logging.getLogger('main')
+
 
 class InvalidIdError(Exception):
     """Raised when a passed ID is invalid, not necessary because of its type,
@@ -74,56 +79,6 @@ class UnusedIdError(InvalidIdError):
     pass
 
 
-def _port_number(str):
-    # Return a port number as an integer or raise a ValueError
-    port = int(str)
-    if not 1 <= port <= 65535:
-        raise ValueError('invalid port number "%s"' % str)
-    return port
-
-
-def _ip_address(str):
-    # Return an IP address as a string or raise a ValueError
-    return norm_ip(str)
-
-
-def _read_config(filename):
-    config = RawConfigParser()
-    with open(filename, 'r') as fobj:
-        config.readfp(fobj)
-
-    # generate a mapping of mapping object from a RawConfigParser object
-    result = {'pg_mgr': {'plugins_dir': '/var/lib/pf-xivo/prov2/plugins',
-                         'cache_dir': '/var/cache/pf-xivo/prov2/plugins'}}
-    for section in config.sections():
-        in_result = result.setdefault(section, {})
-        for option in config.options(section):
-            in_result[option] = config.get(section, option)
-    
-    # check if every mandatory options are specified
-    mandatory = {'common_config': ['ip', 'http_port', 'tftp_port']}
-    for section in mandatory:
-        if section not in result:
-            raise ValueError('mandatory section "%s" not specified' % section)
-        in_result = result[section]
-        for option in mandatory[section]:
-            if option not in in_result:
-                raise ValueError('mandatory option "%s" in section "%s" not specified' %
-                                 (option, section))
-    
-    # check and transform values that needs to be checked/transformed
-    transform = {'common_config': {'ip': _ip_address,
-                                   'http_port': _port_number,
-                                   'tftp_port': _port_number}}
-    for section in transform:
-        if section in result:
-            in_result = result[section]
-            for key, transform_fun in transform.iteritems():
-                if key in in_result:
-                    in_result[key] = transform_fun(in_result[key])
-    return result
-
-
 class Application(object):
     """
     Device objects in the device manager used by an application instance
@@ -140,10 +95,9 @@ class Application(object):
     
     """
     
-    DEF_CONFIG_FILENAME = '../../test-resources/etc/prov2.conf'
-    
-    def __init__(self, config_filename=DEF_CONFIG_FILENAME):
-        config = _read_config(config_filename)
+    def __init__(self, config):
+        logger.info('Creating application...')
+        self._config = config
         self.dev_mgr = DeviceManager()
         self.cfg_mgr = ConfigManager()
         self.pg_mgr = PluginManager(self,
@@ -151,12 +105,12 @@ class Application(object):
                                     config['pg_mgr']['cache_dir'])
         if 'server' in config['pg_mgr']:
             self.pg_mgr.server = config['pg_mgr']['server']
-        self._config = config
         self._dev_id_gen = NumericIdGenerator()
         self._cfg_id_gen = NumericIdGenerator()
         self._load_all_pg()
         
     def close(self):
+        logger.info('Closing application...')
         self.pg_mgr.close()
     
     # Device operations
@@ -215,6 +169,7 @@ class Application(object):
         """
         plugin, config = self._get_plugin_and_config(dev)
         if plugin is not None:
+            logger.info('Calling plugin.configure for plugin "%s"', plugin.name)
             plugin.configure(dev, config)
     
     def _deconfigure_dev(self, dev):
@@ -225,12 +180,14 @@ class Application(object):
         """
         plugin = self._get_plugin(dev)
         if plugin is not None:
+            logger.info('Calling plugin.deconfigure for plugin "%s"', plugin.name)
             plugin.deconfigure(dev)
     
     def _synchronize_dev(self, dev):
         """Call plugin.synchronize(dev, config) if possible."""
         plugin, config = self._get_plugin_and_config(dev)
         if plugin is not None:
+            logger.info('Calling plugin.synchronize for plugin "%s"', plugin.name)
             return plugin.synchronize(dev, config)
     
     def create_dev(self, dev, dev_id=None):
@@ -244,6 +201,7 @@ class Application(object):
                  and dev.get('config') in self.cfg_mgr ->
                  self.pg_mgr[dev['plugin']].configure(dev, cfg_mgr[dev['config']])
         """
+        logger.info('Creating device')
         self._check_valid_dev(dev)
         if dev_id is None:
             dev_id = self._dev_id_gen.next_id(self.dev_mgr)
@@ -251,6 +209,7 @@ class Application(object):
         elif dev_id in self.dev_mgr:
             raise UsedIdError(dev_id)
         self.dev_mgr[dev_id] = dev
+        logger.info('Created device "%s"', dev_id)
         self._configure_dev(dev)
         return dev_id
     
@@ -275,6 +234,7 @@ class Application(object):
                 look at the source code...
         
         """
+        logger.info('Updating device "%s"', dev_id)
         self._check_valid_dev(new_dev)
         try:
             old_dev = self.dev_mgr[dev_id]
@@ -304,6 +264,7 @@ class Application(object):
         Post: - deconfigure has been called if the device has been configured
         
         """
+        logger.info('Deleting device "%s"', dev_id)
         try:
             dev = self.dev_mgr[dev_id]
         except KeyError:
@@ -313,6 +274,7 @@ class Application(object):
             
     def synchronize_dev(self, dev_id):
         """Force the device to synchronize it's configuration."""
+        logger.info('Synchronizing device "%s"', dev_id)
         try:
             dev = self.dev_mgr[dev_id]
         except KeyError:
@@ -339,6 +301,7 @@ class Application(object):
         """Add a new config to the config manager and return the config ID.
         
         """
+        logger.info('Creating config')
         self._check_valid_cfg(cfg)
         if cfg_id is None:
             cfg_id = self._cfg_id_gen.next_id(self.cfg_mgr)
@@ -346,6 +309,7 @@ class Application(object):
         elif cfg_id in self.cfg_mgr:
             raise UsedIdError(cfg_id)
         self.cfg_mgr[cfg_id] = cfg
+        logger.info('Created config "%s"', cfg_id)
         return cfg_id
     
     def retrieve_cfg(self, cfg_id):
@@ -361,6 +325,7 @@ class Application(object):
         be passed as an argument to the configure method of their plugin. 
         
         """
+        logger.info('Updating config "%s"', cfg_id)
         self._check_valid_cfg(new_cfg)
         if cfg_id not in self.cfg_mgr:
             raise UnusedIdError(cfg_id)
@@ -374,6 +339,7 @@ class Application(object):
         self._configure_dev_from_cfgs(required_by)
     
     def delete_cfg(self, cfg_id, force=False):
+        logger.info('Deleting config "%s"', cfg_id)
         if cfg_id not in self.cfg_mgr:
             raise UnusedIdError(cfg_id)
         if self.cfg_mgr.is_required(cfg_id):
@@ -394,6 +360,7 @@ class Application(object):
     # Plugin operations
     
     def _load_all_pg(self):
+        logger.info('Loading all plugins')
         for pg_info in self.pg_mgr.list_installed():
             pg_id = pg_info['name']
             self._load_pg(pg_id)
@@ -401,6 +368,7 @@ class Application(object):
     def _load_pg(self, pg_id):
         gen_cfg = self._config['general']
         spec_cfg = self._config.get('pluginconfig_' + pg_id, {})
+        logger.info('Loading plugin "%s', pg_id)
         self.pg_mgr.load(pg_id, gen_cfg, spec_cfg)
         self._common_configure(pg_id)
     
@@ -408,6 +376,7 @@ class Application(object):
         # Pre: pg_id in self.pg_mgr
         pg = self.pg_mgr[pg_id]
         config = self._config['common_config']
+        logger.info('Calling plugin.configure_common for plugin "%s"', pg_id)
         pg.configure_common(config)
     
     def _configure_dev_from_plugin(self, pg_id):
@@ -436,6 +405,7 @@ class Application(object):
         and no 'server' param has been set.
         
         """
+        logger.info('Installing plugin "%s"', pg_id)
         if self.pg_mgr.is_installed(pg_id):
             raise Exception("plugin '%s' is already installed" % pg_id)
         
@@ -452,6 +422,7 @@ class Application(object):
         installed. 
         
         """
+        logger.info('Upgrading plugin "%s"', pg_id)
         if not self.pg_mgr.is_installed(pg_id):
             raise Exception("plugin '%s' is not already installed" % pg_id)
         
@@ -482,6 +453,7 @@ class Application(object):
         Raise an Exception if at least one device depends on this plugin.
         
         """
+        logger.info('Uninstallating plugin "%s"', pg_id)
         if not self.pg_mgr.is_installed(pg_id):
             raise Exception("plugin '%s' is not already installed" % pg_id)
         if not self._is_plugin_unused(pg_id):
@@ -492,8 +464,122 @@ class Application(object):
 
 
 from twisted.internet import reactor
+from twisted.python import log
 
-app = Application()
+# configure logging...
+def _configure_root_logger():
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s:%(lineno)d - %(name)s: %(message)s"))
+    root_logger.addHandler(handler)
+
+
+_configure_root_logger()
+observer = log.PythonLoggingObserver()
+observer.start()
+
+
+# read config
+def _port_number(str):
+    # Return a port number as an integer or raise a ValueError
+    port = int(str)
+    if not 1 <= port <= 65535:
+        raise ValueError('invalid port number "%s"' % str)
+    return port
+
+
+def _ip_address(str):
+    # Return an IP address as a string or raise a ValueError
+    return norm_ip(str)
+
+
+def _new_empty_config():
+    return {'general': {},
+            'common_config': {},
+            'pg_mgr': {}}
+
+
+def _read_config_default():
+    return {'general':
+                {'config_file': '/etc/pf-xivo/prov2.conf',
+                 'rest_port': 8081},
+            'common_config':
+                {'http_port': 80,
+                 'tftp_port': 69},
+            'pg_mgr':
+                {'plugins_dir': '/var/lib/pf-xivo/prov2/plugins',
+                 'cache_dir': '/var/cache/pf-xivo/prov2'}}
+
+
+def _read_config_from_commandline():
+    parser = optparse.OptionParser()
+    parser.add_option('-f', dest='config_file',
+                      help='name of the configuration file')
+    opt = parser.parse_args()[0]
+    
+    result = _new_empty_config()
+    if opt.config_file:
+        result['general']['config_file'] = opt.config_file
+    return result
+
+
+def _read_config_from_file(filename):
+    config = ConfigParser.RawConfigParser()
+    fobj = open(filename)
+    try:
+        config.readfp(fobj)
+    finally:
+        fobj.close()
+
+    result = _new_empty_config()
+    for section in config.sections():
+        in_result = result.setdefault(section, {})
+        for name, value in config.items(section):
+            in_result[name] = value
+    return result
+
+
+# XXX ugly
+def _read_config():
+    # get a raw config object
+    config = _read_config_default()
+    def _update(new_config):
+        for key in config:
+            config[key].update(new_config[key])
+    # read config from command line twice, once to get the config file, and
+    # another so that the config overrides the one from the file.
+    _update(_read_config_from_commandline())
+    _update(_read_config_from_file(config['general']['config_file']))
+    _update(_read_config_from_commandline())
+    
+    # check that mandatory field are specified
+    mandatory = {'common_config': ['ip', 'http_port', 'tftp_port']}
+    for section in mandatory:
+        config_section = config[section]
+        for option in mandatory[section]:
+            if option not in config_section:
+                raise ValueError('mandatory parameter "%s.%s" not specified' %
+                                 (option, section))
+    
+    # check that values are valid and transform them in the wanted format
+    transform = {'general':
+                     {'rest_port': _port_number},
+                 'common_config':
+                     {'ip': _ip_address,
+                      'http_port': _port_number,
+                      'tftp_port': _port_number}}
+    for section in transform:
+        config_section = config[section]
+        for key, transform_fun in transform[section].iteritems():
+            if key in config_section:
+                config_section[key] = transform_fun(config_section[key])
+    return config
+
+
+
+main_config = _read_config()
+app = Application(main_config)
 atexit.register(app.close)
 #sys.exit()
 
@@ -505,8 +591,6 @@ pg_mgr = app.pg_mgr
 # a 'base' configuration
 xivo_ip = '192.168.33.4'
 base_cfg = {
-    'ip': '192.168.33.1',
-    'http_port': '8080',
     'locale': 'fr_CA',
     'timezone': 'America/Montreal',
     'subscribe_mwi': False,
@@ -621,6 +705,11 @@ def metaaff(prefix):
         print prefix, message
     return aff
 
+def metalog(prefix):
+    def aff(message):
+        logger.info("%s, %s", prefix, message)
+    return aff
+
 dhcpinfo_res = DHCPInfoResource()
 
 #http_xtors = [xtor for xtor in map(lambda p: p.http_dev_info_extractor, plugins) if
@@ -638,7 +727,7 @@ root_xtor = collab_xtor
 mac_retriever = MacDeviceRetriever()
 ip_retriever = IpDeviceRetriever()
 add_retriever = AddDeviceRetriver()
-cmpz_retriever = FirstCompositeDeviceRetriever([mac_retriever, add_retriever])
+cmpz_retriever = FirstCompositeDeviceRetriever([mac_retriever, ip_retriever, add_retriever])
 root_retriever = cmpz_retriever
 
 guest_cfg_updater = StaticDeviceUpdater('config', 'guest')
@@ -681,13 +770,13 @@ process_service.dev_router = root_router
 
 
 def tftp_service_factory(pg_id, pg_service):
-    return TFTPLogService(metaaff('tftp-post ' + pg_id + ':'), pg_service)
+    return TFTPLogService(metalog('tftp-post ' + pg_id + ':'), pg_service)
     
 # tftp
 def new_tftp_service():
     tftp_process_service = TFTPRequestProcessingService(process_service, pg_mgr)
     tftp_process_service.service_factory = tftp_service_factory
-    preprocess_service = TFTPLogService(metaaff('tftp-pre:'), tftp_process_service)
+    preprocess_service = TFTPLogService(metalog('tftp-pre:'), tftp_process_service)
 
     return preprocess_service
 
@@ -695,13 +784,13 @@ tftp_service = new_tftp_service()
 
 
 def http_service_factory(pg_id, pg_service):
-    return HTTPLogService(metaaff('http-post ' + pg_id + ':'), pg_service)
+    return HTTPLogService(metalog('http-post ' + pg_id + ':'), pg_service)
 
 # http
 def new_http_service():
     http_process_service = HTTPRequestProcessingService(process_service, pg_mgr)
     http_process_service.service_factory = http_service_factory
-    preprocess_service = HTTPLogService(metaaff('http-pre:'), http_process_service)
+    preprocess_service = HTTPLogService(metalog('http-pre:'), http_process_service)
     
     return preprocess_service
 
@@ -749,12 +838,7 @@ class DebugResource(Resource):
 root.putChild('debug', DebugResource())
 rest_site = Site(root)
 
-
-from twisted.python import log
-log.startLogging(sys.stdout)
-
-# TODO use parameters from config file
-reactor.listenUDP(6969, TFTPProtocol(tftp_service))
-reactor.listenTCP(8080, http_site)
-reactor.listenTCP(8081, rest_site)
+reactor.listenUDP(main_config['common_config']['tftp_port'], TFTPProtocol(tftp_service))
+reactor.listenTCP(main_config['common_config']['http_port'], http_site)
+reactor.listenTCP(main_config['general']['rest_port'], rest_site)
 reactor.run()

@@ -129,18 +129,18 @@ class _AbstractConnection(DatagramProtocol):
         self._set_timeout()
         
     def _send_next_dgram(self):
-        logger.info('Sending a new datagram')
+        logger.debug('Sending a new datagram')
         try:
             dgram = self._next_dgram()
         except _NoMoreDatagramError:
-            logger.info('No more datagram to send')
+            logger.debug('No more datagram to send')
             self.__do_close()
         else:
             self._send_dgram(dgram)
             self._last_dgram = dgram
     
     def _send_last_dgram(self):
-        logger.info('Resending the last datagram')
+        logger.debug('Resending the last datagram')
         self._send_dgram(self._last_dgram)
             
     def _handle_wrong_tid(self, addr):

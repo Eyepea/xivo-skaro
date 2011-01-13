@@ -22,6 +22,7 @@ __license__ = """
 
 import ConfigParser
 import contextlib
+import logging
 import os
 import shutil
 import tarfile
@@ -42,6 +43,7 @@ from fetchfw2.storage import RemoteFileBuilder, InstallationMgrBuilder,\
     DefaultPackageStorage
 from zope.interface import Attribute, Interface, implements
 
+logger = logging.getLogger('plugins')
 
 # TODO take proxy into account for downloading
 # TODO support plugin package signing... this will be important for safety
@@ -401,31 +403,35 @@ class TemplatePluginHelper(object):
         default_dir = os.path.join(plugin_dir, self.DEFAULT_TPL_DIR)
         loader = FileSystemLoader([custom_dir, default_dir])
         self._env = Environment(loader=loader)
-        
+    
     def get_dev_template(self, filename, dev):
         """Get the device template used for the device specific configuration
         file.
         
         """
         # get device-specific template
+        logger.info('Getting device specific template')
         try:
             return self._env.get_template(filename + '.tpl')
         except TemplateNotFound:
-            pass
+            logger.info('Device specific template not found.')
         # get model-specific template
+        logger.info('Getting model specific template')
         if 'model' in dev:
             model = dev['model']
             try:
                 return self._env.get_template(model + '.tpl')
             except TemplateNotFound:
-                pass
+                logger.info('Model specific template not found.')
         # get base template
+        logger.info('Getting base template')
         return self._env.get_template('base.tpl')
     
     def get_template(self, name):
         return self._env.get_template(name)
     
     def dump(self, template, context, filename, encoding='UTF-8', errors='strict'):
+        logger.info('Writing template to file "%s"', filename)
         tmp_filename = filename + '.tmp'
         template.stream(context).dump(tmp_filename, encoding, errors)
         os.rename(tmp_filename, filename)
@@ -542,6 +548,7 @@ class FetchfwPluginHelper(object):
         See IInstallService.install.
          
         """
+        logger.info('Installing plugin-package "%s"', pkg_id)
         if pkg_id in self._in_install_set:
             raise Exception("an install operation for pkg '%s' is already in progress" % pkg_id)
         if pkg_id not in self._async_pkg_manager.installable_pkgs:
@@ -566,6 +573,7 @@ class FetchfwPluginHelper(object):
         See IInstallService.uninstall.
         
         """
+        logger.info('Uninstalling plugin-package "%s"', pkg_id)
         self._async_pkg_manager.uninstall((pkg_id,))
 
     def list_installable(self):
@@ -674,7 +682,7 @@ class PluginManager(object):
     
     _ENTRY_FILENAME = 'entry.py'
     """The name of the python plugin code."""
-    _DEF_FILENAME = 'defs'
+    _DB_FILENAME = 'plugins.db'
     """The plugin definition filename on the remote and local server."""
     _INFO_FILENAME = 'plugin-info'
     """The name of the plugin information file."""
@@ -706,7 +714,10 @@ class PluginManager(object):
         This will unload any loaded plugin.
         
         """
-        for name in self._plugins:
+        logger.info('Closing plugin manager...')
+        # Note: important not to use an iterator over self._plugins since
+        #       this dictionary is modified in the unload method
+        for name in tuple(self._plugins):
             self._unload_and_notify(name)
     
     def configure_service(self):
@@ -719,10 +730,10 @@ class PluginManager(object):
         return self._cfg_service
     
     def _def_pathname(self):
-        return os.path.join(self._plugins_dir, self._DEF_FILENAME)
+        return os.path.join(self._plugins_dir, self._DB_FILENAME)
 
     def _join_server_url(self, p):
-        server = self._server
+        server = self.server
         if server is None:
             raise ValueError("'server' has no value set")
         else:
@@ -753,9 +764,9 @@ class PluginManager(object):
         try:
             pop = progressop.request(url, fdst)
         except Exception:
-            raise ValueError("invalid 'server' value")
             fdst.close()
             os.remove(tmp_filename)
+            raise ValueError("invalid 'server' value")
         else:
             def on_error(failure):
                 fdst.close()
@@ -790,6 +801,7 @@ class PluginManager(object):
         and no 'server' param has been set.
         
         """
+        logger.info('Installing plugin "%s"', name)
         if name in self._in_install_set:
             raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % name)
         
@@ -833,6 +845,7 @@ class PluginManager(object):
         method and calling the install method.
         
         """
+        logger.info('Upgrading plugin "%s"', name)
         return self.install(name)
         
     def uninstall(self, name):
@@ -841,6 +854,7 @@ class PluginManager(object):
         This does not unload the installed plugin.
         
         """
+        logger.info('Uninstalling plugin "%s"', name)
         pg_info = self._get_installed_pg_info(name)
         if pg_info is None:
             raise ValueError('plugin not found')
@@ -865,19 +879,20 @@ class PluginManager(object):
           changed
         
         """
+        logger.info('Updating the plugin definition file')
         if self._in_update:
             raise Exception("an update operation is already in progress")
 
-        url = self._join_server_url(self._DEF_FILENAME)
+        url = self._join_server_url(self._DB_FILENAME)
         def_pathname = self._def_pathname()
         tmp_pathname = def_pathname + '.tmp'
         fdst = open(tmp_pathname, 'wb')
         try:
             pop = progressop.request(url, fdst)
         except Exception:
-            raise ValueError("invalid 'server' value")
             fdst.close()
             os.remove(tmp_pathname)
+            raise ValueError("invalid 'server' value")
         else:
             self._in_update = True
             def on_error(failure):
@@ -908,6 +923,7 @@ class PluginManager(object):
           name -- the name of the plugin
           version -- the verison of the plugin
           filename -- the name of the package in which the plugin is packaged
+          description -- a short description of the plugin
         
         The generator will eventually raise an Exception if the plugin definition
         file is invalid/corrupted. If this file is absent, no error is raised,
@@ -928,7 +944,9 @@ class PluginManager(object):
                 name = section[len('plugin_'):]
                 filename = config.get(section, 'filename')
                 version = config.get(section, 'version')
-                yield {'name': name, 'filename': filename, 'version': version}
+                description = config.get(section, 'description')
+                yield {'name': name, 'filename': filename, 'version': version,
+                       'description': description}
     
     def _get_installed_pg_info(self, name):
         """Return an 'installed plugin info' object from a name, or None if
@@ -952,6 +970,7 @@ class PluginManager(object):
         Each yielded object is a dictionary with the following keys:
           name -- the name of the plugin
           version -- the verison of the plugin
+          description -- a short description of the plugin
         
         The generator will eventually raise an Exception if, in the plugins
         directory, there's a directory which has a missing or invalid plugin
@@ -962,11 +981,13 @@ class PluginManager(object):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
             if os.path.isdir(abs_plugin_dir):
                 info_pathname = os.path.join(abs_plugin_dir, self._INFO_FILENAME)
+                config = ConfigParser.RawConfigParser()
                 with open(info_pathname, 'r') as fobj:
-                    config = ConfigParser.ConfigParser()
                     config.readfp(fobj)
                 version = config.get('general', 'version')
-                yield {'name': rel_plugin_dir, 'version': version}
+                description = config.get('general', 'description')
+                yield {'name': rel_plugin_dir, 'version': version,
+                       'description': description}
     
     def list_upgradeable(self):
         """Return a generator that yield information the plugins that can be
@@ -1026,11 +1047,13 @@ class PluginManager(object):
         not to be immediatly garbage collected.
         
         """
+        logger.debug('Attaching observer "%s" to plugin manager', id(observer))
         if observer not in self._observers:
             self._observers[observer] = None
     
     def detach(self, observer):
         """Detach an IPluginManagerObserver object to this plugin manager."""
+        logger.debug('Detaching observer "%s" to plugin manager', id(observer))
         try:
             del self._observers[observer]
         except KeyError:
@@ -1038,6 +1061,7 @@ class PluginManager(object):
     
     def _notify(self, pg_id, action):
         # action is either 'load' or 'unload'
+        logger.debug('Notifying observers: %s %s', action, pg_id)
         for ob in self._observers.keys():
             fun = getattr(ob, 'pg_' + action)
             fun(pg_id)
@@ -1069,6 +1093,7 @@ class PluginManager(object):
           parameters. These parameters are specific to every plugins.
         
         """
+        logger.info('Loading plugin "%s"', name)
         if name in self._plugins:
             raise Exception("plugin '%s' is already loaded" % name)
         plugin_dir = os.path.join(self._plugins_dir, name)
@@ -1092,6 +1117,7 @@ class PluginManager(object):
         Raise an Exception if the plugin is not loaded.
         
         """
+        logger.info('Unloading plugin "%s"', name)
         self._unload_and_notify(name)
 
     def load_all(self, gen_cfg={}, spec_cfg_map={}):

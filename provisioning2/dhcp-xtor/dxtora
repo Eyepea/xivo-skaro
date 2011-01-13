@@ -8,7 +8,7 @@ DHCP information is passed to it by the dxtorc application.
 
 """
 
-__version__ = "$Revision $ $Date $"
+__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique
 
@@ -389,7 +389,7 @@ def _read_config_from_commandline():
 def _read_config(filename):
     config = _read_config_default()
     def _update(new_config):
-        for key in ['general', 'prov_server']:
+        for key in config:
             config[key].update(new_config[key])
     _update(_read_config_from_file(filename))
     _update(_read_config_from_commandline())

@@ -201,7 +201,7 @@ class BaseCiscoPlugin(StandardPlugin):
     
     tftp_dev_info_extractor = BaseCiscoTFTPDeviceInfoExtractor()
     
-    def common_configure(self, config):
+    def configure_common(self, config):
         tpl = self._tpl_helper.get_template('common/model.cfg.tpl')
         common_filenames = self._COMMON_FILENAMES
         for filename in common_filenames:
@@ -318,7 +318,7 @@ class BaseCiscoPlugin(StandardPlugin):
     
     def _format_proxy(self, line):
         proxy_value = 'xivo_proxies:SRV=%s:5060:p=0' % line['proxy_ip']
-        if line['backup_proxy_ip']:
+        if 'backup_proxy_ip' in line:
             proxy_value += '|%s:5060:p=1' % line['backup_proxy_ip']
         return proxy_value
     

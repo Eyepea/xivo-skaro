@@ -102,7 +102,7 @@ class _WriteContent(Protocol):
 
 class _DiscardContent(Protocol):
     def connectionMade(self):
-        self.protocol.stopProducing()
+        self.transport.stopProducing()
 
 
 class FTPDownloadFactory(object):
