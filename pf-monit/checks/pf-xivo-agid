@@ -1,0 +1,10 @@
+check process pf-xivo-agid with pidfile /var/run/agid.pid
+	group telephony
+	start program = "/etc/init.d/pf-xivo-agid start"
+	stop  program = "/etc/init.d/pf-xivo-agid stop"
+	if failed host 127.0.0.1 port 4573 use type tcp
+		send "agi_network_script: monitoring\r\n\r\n200 result=1\r\n"
+		expect "Status: OK"
+		timeout 5 seconds
+		then alert #restart
+	if 5 restarts within 5 cycles then timeout

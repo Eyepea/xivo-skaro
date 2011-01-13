@@ -1,0 +1,81 @@
+#!/bin/sh
+
+. /usr/sbin/pf-common-read-config
+
+MONIT_CHECKS=/usr/share/pf-monitoring-monit/checks
+MONIT_SPC_CHECKS=/usr/share/pf-monitoring-monit/checks-spc
+MONIT_CONF_DIR=/etc/monit/conf.d
+
+is_installed()
+{
+  PKG=$1
+  dpkg -l ${PKG} >/dev/null 2>/dev/null;
+}
+
+activate_check()
+{
+  PL=$1
+
+  if [ ! -e ${MONIT_CONF_DIR}/${PL} ]; then
+    ln -s ${MONIT_CHECKS}/${PL} ${MONIT_CONF_DIR}/${PL}
+  fi
+}
+
+deactivate_check()
+{
+  PL=$1
+  rm -f ${MONIT_CONF_DIR}/${PL}
+}
+
+activate_if_installed()
+{
+  PKG=$1
+
+  if is_installed ${PKG}; then
+    ACT=activate_check
+  else
+    ACT=deactivate_check
+  fi
+
+  ${ACT} ${PKG}
+}
+
+
+# commun sys checks
+activate_check base-system
+
+# fs checks
+DEV_LIST=$(mount | awk '{if (substr($5, 1, 3) == "ext") {print $1}}')
+CONFIG=base-fs
+rm -f ${MONIT_CONF_DIR}/${CONFIG}
+for DEV in ${DEV_LIST}; do
+  NAME=$(echo "${DEV}" | sed -r 's#^.*/([^/]+)$#\1#')
+  cat ${MONIT_SPC_CHECKS}/${CONFIG} | sed -e "s@#DEV_PATH#@${DEV}@g" -e "s@#DEV_NAME#@${NAME}@g" >>${MONIT_CONF_DIR}/${CONFIG}
+done
+
+# known services
+for CHECK in ${MONIT_CHECKS}/*; do
+  SRV=$(basename ${CHECK})
+  if [ "${SRV:0:5}" != "base-" ]; then
+    activate_if_installed ${SRV}
+  fi
+done
+
+# Server config
+# (backup old file)
+if [ -e /etc/monit/monitrc ]; then
+  DATE=$(date +%Y%m%d%H%M%S)
+  cp /etc/monit/monitrc /etc/monit/monitrc.${DATE}
+fi
+sed "s/#PRODUCT#/${PRODUCT}/g" /etc/monit/monitrc.tmpl >/etc/monit/monitrc
+
+EMAILS=$(get_full_email_alerts "monit")
+if [ -n "${EMAILS}" ]; then
+  for EM in ${EMAILS}; do
+    echo "set alert ${EM} but not on { instance changed }" >>/etc/monit/monitrc
+  done
+fi
+
+# restart service to take changes into account
+invoke-rc.d monit restart >/dev/null
+

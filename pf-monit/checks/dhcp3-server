@@ -1,0 +1,5 @@
+check process dhcp3-server with pidfile /var/run/dhcpd.pid
+  start program = "/etc/init.d/dhcp3-server start"
+  stop  program = "/etc/init.d/dhcp3-server stop"
+  if failed host 127.0.0.1 port 67 type udp then alert
+  if 5 restarts within 5 cycles then timeout

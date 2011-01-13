@@ -1,0 +1,5 @@
+check process atftpd with pidfile /var/run/atftpd.pid
+  start program = "/etc/init.d/atftpd start"
+  stop  program = "/etc/init.d/atftpd stop"
+  if failed host 127.0.0.1 port 69 type udp then alert
+  if 5 restarts within 5 cycles then timeout

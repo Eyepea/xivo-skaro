@@ -1,0 +1,12 @@
+check process pf-xivo-cti-server with pidfile /var/run/xivo_daemon.pid
+	group telephony
+	depend asterisk
+	start program = "/etc/init.d/pf-xivo-cti-server start"
+	stop program = "/etc/init.d/pf-xivo-cti-server stop"
+	if failed host 127.0.0.1 port 5005 use type tcp
+		send "show_infos\r\n"
+		expect "XIVO-INFO:OK"
+		timeout 10 seconds
+		then alert #restart
+	if 5 restarts within 5 cycles then timeout
+

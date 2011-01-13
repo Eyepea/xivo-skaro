@@ -1,0 +1,10 @@
+check process pf-xivo-provisioning with pidfile /var/run/autoprov.pid
+	group telephony
+	start program = "/etc/init.d/pf-xivo-provisioning start"
+	stop program = "/etc/init.d/pf-xivo-provisioning stop"
+	if failed host 127.0.0.1 port 8666 use type tcp
+		send "GET /list HTTP/1.0\r\nHost: 127.0.0.1\r\nUser-Agent: monit\r\n\r\n"
+		expect "200 OK"
+		then alert #restart
+	if 5 restarts within 5 cycles then timeout
+
