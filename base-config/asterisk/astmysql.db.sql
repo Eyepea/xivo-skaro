@@ -1929,7 +1929,7 @@ CREATE TABLE `usersip` (
  `outboundproxy` varchar(1024),
 
 	-- asterisk 1.8 new values
- `transport` varchar(255) NOT NULL DEFAULT 'udp',
+ `transport` varchar(255) DEFAULT NULL,
  `remotesecret` varchar(255) DEFAULT NULL,
  `directmedia` enum('yes', 'no', 'nonat', 'update', 'update,nonat') DEFAULT NULL,
  `callcounter` tinyint(1) DEFAULT NULL,

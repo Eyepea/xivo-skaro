@@ -2098,7 +2098,7 @@ CREATE TABLE "usersip" (
  "outboundproxy" varchar(1024),
 
 	-- asterisk 1.8 new values
- "transport" varchar(255) NOT NULL DEFAULT 'udp',
+ "transport" varchar(255) DEFAULT NULL,
  "remotesecret" varchar(255) DEFAULT NULL,
  "directmedia" usersip_directmedia DEFAULT NULL,
  "callcounter" INTEGER DEFAULT NULL, -- BOOLEAN

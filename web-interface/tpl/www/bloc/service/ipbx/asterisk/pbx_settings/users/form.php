@@ -1817,12 +1817,14 @@ endif;
 
 	// asterisk 1.8 fields
     $form->select(array('desc'  => $this->bbf('fm_protocol-transport'),
-            'name'    => 'protocol[transport]',
-            'labelid' => 'protocol-transport',
-            'key'   => false,
-            'help'    => $this->bbf('hlp_fm_protocol-transport'),
+            'name'      => 'protocol[transport]',
+            'labelid'   => 'protocol-transport',
+						'key'       => false,
+						'empty'     => true,
+            'help'      => $this->bbf('hlp_fm_protocol-transport'),
             'selected'  => $info['protocol']['transport'],
-            'default' => $element['protocol']['sip']['transport']['default']),
+						'default'   => $element['protocol']['sip']['transport']['default'],
+						'error'     => $this->bbf_args('error', $this->get_var('error','protocol','transport'))),
          $element['protocol']['sip']['transport']['value']),
 
     $form->select(array('desc'  => $this->bbf('fm_protocol-callcounter'),
