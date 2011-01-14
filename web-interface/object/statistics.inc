@@ -20,12 +20,16 @@
 
 class xivo_statistics
 {
-	
+		
+	private	$_xobj		 		= null;	
+	private	$_ipbx		 		= null;	
 	private	$_regex		 		= array('datetime'	=> '/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
 										'date'		=> '/^(\d{4})-(\d{2})-(\d{2})$/',
 										'time'		=> '/^(\d{2}):(\d{2}):(\d{2})$/');	
-	private	$_xobj		 		= null;	
-	private	$_ipbx		 		= null;	
+	private	$_listday			= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+	private	$_listaxetype		= array('type','day','week','month','year');
+	private	$_listmethod		= array('DB','PHP');
+	public 	$_debug				= array();
 	public 	$_queue_log_conf	= array();
 	public 	$_queue_log 		= array();
 	public 	$_conf		 		= array();
@@ -53,9 +57,12 @@ class xivo_statistics
 										);
 	public 	$_interval			= array('dbeg'	=> '',
 										'dend'	=> '');
-	private	$_ls_method			= array('DB','PHP');
+	public 	$_interval_process	= array('dbeg'	=> '',
+										'dend'	=> '');
+	public 	$_objectkey			= 0;
+	public 	$_axetype			= 'type';
 	public 	$_method			= 'DB';
-	public	$_type		 		= '';	
+	public	$_type		 		= '';
 	
 	public function __construct(&$xobj,&$ipbx)
 	{
@@ -71,25 +78,116 @@ class xivo_statistics
 			
 		$this->_statsconfsess = &$_SESSION['_statsconf'];
 		
-		$this->load_interval();
+		$this->load_component();
 		
+		if(($this->_queue_log_conf = dwho_gat::load_get('queue_log',DWHO_PATH_CONF)) === false)
+			trigger_error('Failed to load queuelog configuration',E_USER_ERROR);
+	}
+	
+	public function load_component()
+	{
+		$this->push_debug("load_component()");		
+		$this->load_interval();		
 		$this->load_conf();
 			
 		if ($this->_method === 'PHP')
-			$this->load_queuelog();
+			$this->load_queuelog();		
+	}
+
+	private function load_interval()
+	{
+		$this->push_debug("load_interval()");	
+		if (($interval = $this->get_interval()) === false)
+			return(false);
 		
-		if(($this->_queue_log_conf = &dwho_gat::load_get('queue_log',DWHO_PATH_CONF)) === false)
-			trigger_error('Failed to load queuelog configuration',E_USER_ERROR);
+		$this->_interval = $interval;
+		$this->_interval_process = $interval;
+		return(true);
+	}
+	
+	private function load_conf()
+	{
+		$this->push_debug("load_conf()");	
+		if (($confid = $this->get_idconf()) === false)
+			return(false);
+			
+		$appstats_conf = $this->_xobj->get_application('stats_conf');
+
+		if (($conf = $appstats_conf->get($confid)) === false
+		|| is_array($conf) === false
+		|| isset($conf['stats_conf']) === false)
+			return(false);
+		
+		return($this->init_conf($conf));
+	}
+	
+	private function init_conf($conf)
+	{		
+		$this->push_debug("init_conf()");
+		$this->_conf = $conf;
+		
+		$stats_conf = $conf['stats_conf'];
+		
+		for($i=1;$i<6;$i++)
+		{
+			if (isset($stats_conf['period'.$i]) === false)
+				continue;
+				
+			$this->_period['period'.$i]['exp'] = $stats_conf['period'.$i];
+			
+			if (preg_match('/([0-9]+)[-]{1}([0-9]+)/',$stats_conf['period'.$i],$out) === 1)
+			{
+				$this->_period['period'.$i]['beg'] = (int) $out[1];
+				$this->_period['period'.$i]['end'] = (int) $out[2];
+			}			
+		}
+		return(true);
+	}
+	
+	public function global_init($arr)
+	{
+		$this->push_debug("global_init( array() )",$arr);		
+		
+		if (isset($arr['key']) === true)
+			$this->set_objectkey($arr['key']);
+		else
+			$this->set_axetype('type');
+		
+		if (isset($arr['axetype']) === true)
+			$this->set_axetype($arr['axetype']);
+		
+		if (isset($arr['fm_send']) === true
+		&& isset($arr['act']) === true
+		&& $arr['act'] === 'datecal')
+			$this->set_calendar($arr['datecal']);
+		
+		if (isset($arr['confid']) === true)
+			$this->set_idconf($arr['confid'],true);
+		
+	}
+	
+	public function set_objectkey($key)
+	{			
+		$this->push_debug("set_objectkey( string )",$key);
+		$this->_objectkey = $key;
+	}
+	
+	public function get_objectkey()
+	{			
+		$this->push_debug("get_objectkey( string )");
+		return($this->_objectkey);
 	}
 	
 	public function set_type($type)
 	{			
+		$this->push_debug("set_type( string )",$type);
 		$this->_type = $type;
 	}
 	
 	public function set_method($method)
 	{ 
-		if (in_array($method,$this->_ls_method) === false)
+		$this->push_debug("set_method( array() )",$method);
+		if (in_array($method,$this->_listmethod) === false)
 			return(false);
 			
 		$this->_method = $method;
@@ -97,7 +195,8 @@ class xivo_statistics
 	
 	public function set_idconf($confid,$reloadconf=false)
 	{	
-		$this->_statsconfsess['id'] = (int) $confid;
+		$this->push_debug("set_idconf()",$confid);
+		$this->_statsconfsess['_id'] = (int) $confid;
 		
 		if ($reloadconf !== false)
 		{
@@ -109,11 +208,12 @@ class xivo_statistics
 	}
 	
 	public function set_interval($dbeg,$dend)
-	{ 		
+	{
+		$this->push_debug("set_interval()",array($dbeg,$dend));
 		if (preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',$dbeg) !== 1
-		|| preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',$dend) !== 1)
+		&& preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',$dend) !== 1)
 			return(false);
-			
+		
 		$this->_interval['dbeg'] = $dbeg;
 		$this->_interval['dend'] = $dend;
 		$this->_statsconfsess['_interval'] = $this->_interval;
@@ -121,88 +221,193 @@ class xivo_statistics
 	
 	public function get_interval()
 	{	
-		if (isset($this->_statsconfsess['_interval']) === false
-		|| ($interval = $this->_statsconfsess['_interval']) === 0)
+		$this->push_debug("get_interval()");
+		if (isset($this->_statsconfsess['_interval']) === false)
 			return(false);
 		
-		return($interval);
+		return($this->_statsconfsess['_interval']);
+	}
+	
+	public function get_infocal()
+	{
+		$this->push_debug("get_infocal()");
+		if (($interval = $this->get_interval()) === false
+		|| is_array($interval) === false)
+			return(false);
+	
+		switch ($this->get_axtype())
+		{
+			case 'day':			
+				$dbeg = $interval['dbeg'];
+				$infocal['dday'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y-m-d');
+				break;
+			case 'week':			
+				$dbeg = $interval['dbeg'];
+				$infocal['dweek'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y-m-d');
+				break;
+			case 'month':
+				$dbeg = $interval['dbeg'];
+				$infocal['dmonth'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y-m');
+				break;
+			case 'year':
+				break;
+			case 'type':
+			default:			
+				$dbeg = $interval['dbeg'];
+				$dend = $interval['dend'];
+				
+				$infocal['dbeg'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y-m-d');
+				$infocal['hbeg'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','H:i');
+				$infocal['dend'] = dwho_change_date_format($dend,'Y-m-d H:i:s','Y-m-d');
+				$infocal['hend'] = dwho_change_date_format($dend,'Y-m-d H:i:s','H:i');
+		}
+		return($infocal);
 	}
 	
 	public function set_calendar($arr)
 	{
-		$datecal = $arr;
-		$dbeg = $datecal['dbeg'];
-		$hbeg = $datecal['hbeg'];
-		$dend = $datecal['dend'];
-		$hend = $datecal['hend'];
-		
-		$resbeg = '';
-		$resend = '';
-		
-		if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/',$dbeg) === 1
-		&& preg_match('/^(\d{4})-(\d{2})-(\d{2})$/',$dend) === 1
-		&& preg_match('/^(\d{0,2})[:]{0,1}(\d{0,2})$/',$hbeg,$outhbeg) === 1
-		&& preg_match('/^(\d{0,2})[:]{0,1}(\d{0,2})$/',$hend,$outhend) === 1)
+		$this->push_debug("set_calendar()",$arr);
+		switch ($this->get_axtype())
 		{
-			$resbeg .= $dbeg.' ';
-			$resend .= $dend.' ';
-		
-			if (dwho_empty($outhbeg[1]) === true)
-				$reshbeg = '00:00';
-			elseif (dwho_empty($outhbeg[2]) === true)
-			{
-				if (strlen($outhbeg[1]) === 1)
-					$reshbeg = '0'.$outhbeg[1].':00';
-				else
-					$reshbeg = $outhbeg[1].':00';
-			}
-			else 
-				$reshbeg = $outhbeg[1].':'.$outhbeg[2];
+			case 'day':
+				if(is_array($arr) === true)
+					$dbeg = $arr['dday'];
+				elseif($arr === 'default')
+					$dbeg = date('Y-m-d');
+				else 
+					break;
+				$this->set_interval($dbeg.' 00:00:01',$dbeg.' 23:59:59');
+				break;
+			case 'week':
+				if(is_array($arr) === true)
+					$dbeg = $arr['dweek'];
+				elseif($arr === 'default')
+					$dbeg = date('Y-m-d');
+				$this->set_interval($dbeg.' 00:00:01',$dbeg.' 23:59:59');
+				break;
+			case 'month':
+				if(is_array($arr) === true)
+					$dbeg = $arr['dmonth'];
+				elseif($arr === 'default')
+					$dbeg = date('Y-m');
+				$date = dwho_date_parse_from_format('Y-m',$dbeg);
+				$lastday = strtotime('-1 second',strtotime('+1 month',strtotime($date['month'].'/01/'.$date['year'].' 00:00:00')));
+				$this->set_interval($dbeg.'-01 00:00:01',date('Y-m-d',$lastday).' 23:59:59');
+				break;
+			case 'year':
+				break;
+			case 'type':
+			default:
+				$hbeg = $hend = '';	
+				if(is_array($arr) === true)
+				{
+					$dbeg = $arr['dbeg'];
+					$dend = $arr['dend'];
+					if (isset($arr['hbeg']) === true)
+						$hbeg = $arr['hbeg'];
+					if (isset($arr['hend']) === true)
+						$hend = $arr['hend'];	
+				}				
+				elseif($arr === 'default')
+				{
+					$dbeg = date('Y-m-d');
+					$dend = date('Y-m-d');
+				}
+				else 
+					break;
 				
-			$resbeg .= $reshbeg;
+				$resbeg = '';
+				$resend = '';
 				
-			if (dwho_empty($outhend[1]) === true)
-				$reshend = '23:59';
-			elseif (dwho_empty($outhend[2]) === true)
-			{
-				if (strlen($outhend[1]) === 1)
-					$reshend = '0'.$outhend[1].':59';
-				else
-					$reshend = $outhend[1].':59';
-			}
-			else 
-				$reshend = $outhend[1].':'.$outhend[2];
+				if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/',$dbeg) === 1
+				&& preg_match('/^(\d{4})-(\d{2})-(\d{2})$/',$dend) === 1
+				&& preg_match('/^(\d{0,2})[:]{0,1}(\d{0,2})$/',$hbeg,$outhbeg) === 1
+				&& preg_match('/^(\d{0,2})[:]{0,1}(\d{0,2})$/',$hend,$outhend) === 1)
+				{
+					$resbeg .= $dbeg.' ';
+					$resend .= $dend.' ';
+					
+					if (($conf = $this->get_conf()) !== false
+					&& isset($conf['hour_start']) === true
+					&& isset($conf['hour_end']) === true)
+					{
+						$hour_start = $conf['hour_start'];
+						$hour_end = $conf['hour_end'];
+					}
 				
-			$resend .= $reshend;
-		
-			$resbeg .= ':01';
-			$resend .= ':59';
+					if (dwho_empty($outhbeg[1]) === true)
+					{
+						if (isset($hour_start) === false)
+							$reshbeg = '00:00:01';
+						else
+							$reshbeg = $hour_start;
+					}
+					elseif (dwho_empty($outhbeg[2]) === true)
+					{
+						if (strlen($outhbeg[1]) === 1)
+							$reshbeg = '0'.$outhbeg[1].':00:01';
+						else
+							$reshbeg = $outhbeg[1].':00:01';
+					}
+					else 
+						$reshbeg = $outhbeg[1].':'.$outhbeg[2].':01';
+						
+					$resbeg .= $reshbeg;
+						
+					if (dwho_empty($outhend[1]) === true)
+					{
+						if (isset($hour_end) === false)
+							$reshend = '23:59:59';
+						else
+							$reshend = $hour_end;
+					}
+					elseif (dwho_empty($outhend[2]) === true)
+					{
+						if (strlen($outhend[1]) === 1)
+							$reshend = '0'.$outhend[1].':59:59';
+						else
+							$reshend = $outhend[1].':59:59';
+					}
+					else 
+						$reshend = $outhend[1].':'.$outhend[2].':59';
+						
+					$resend .= $reshend;				
+				}
+				$this->set_interval($resbeg,$resend);
 		}
-		$this->set_interval($resbeg,$resend);
 	}
 	
-	public function get_infocal()
-	{	
-		if (($interval = $this->get_interval()) === false
-		|| is_array($interval) === false)
+	public function get_list_axtype()
+	{
+		$this->push_debug("get_list_axtype()");
+		return($this->_listaxetype);
+	}
+	
+	public function set_axetype($axetype)
+	{
+		$this->push_debug("set_axetype()",$axetype);
+		if (in_array($axetype,$this->_listaxetype) === false)
 			return(false);
 			
-		$infocal = array();
-		$dbeg = $interval['dbeg'];
-		$dend = $interval['dend'];
-		
-		$infocal['dbeg'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y-m-d');
-		$infocal['hbeg'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','H:i');
-		$infocal['dend'] = dwho_change_date_format($dend,'Y-m-d H:i:s','Y-m-d');
-		$infocal['hend'] = dwho_change_date_format($dend,'Y-m-d H:i:s','H:i');
-		
-		return($infocal);
+		$this->_axetype = $axetype;
+		$this->_statsconfsess['_axetype'] = $this->_axetype;
+	}
+	
+	public function get_axtype()
+	{	
+		$this->push_debug("get_axtype()");
+		if (isset($this->_statsconfsess['_axetype']) === false
+		|| ($axetype = $this->_statsconfsess['_axetype']) === '')
+			return(false);
+			
+		return($axetype);
 	}
 	
 	public function get_idconf()
 	{	
-		if (isset($this->_statsconfsess['id']) === false
-		|| ($confid = $this->_statsconfsess['id']) === 0)
+		$this->push_debug("get_idconf()");
+		if (isset($this->_statsconfsess['_id']) === false
+		|| ($confid = $this->_statsconfsess['_id']) === 0)
 			return(false);
 		
 		return($confid);
@@ -210,6 +415,7 @@ class xivo_statistics
 	
 	public function get_conf()
 	{	
+		$this->push_debug("get_conf()");
 		$statsconf = $this->_conf['stats_conf'];
 		
 		if (is_null($statsconf) === true)
@@ -230,88 +436,196 @@ class xivo_statistics
 		$loadconf['hour_start'] = $statsconf['hour_start'];
 		$loadconf['hour_end'] = $statsconf['hour_end'];
 		$loadconf['workweek'] = $workweek;
+		$loadconf['interval'] = $this->_interval;
 		$loadconf['periods'] = $this->_period;
+		$loadconf['objectkey'] = $this->_objectkey;	
+		$loadconf['axetype'] = $this->_axetype;	
 		
 		return($loadconf);
 	}
 	
-	private function load_interval()
+	public function get_interval_process()
 	{
-		if (($interval = $this->get_interval()) === false)
-			return(false);
+		$this->push_debug("get_interval_process()");
+		$interval = $this->_interval_process;
 		
-		$this->_interval = $interval;
-	}
-	
-	private function load_conf()
-	{
-		if (($confid = $this->get_idconf()) === false)
+		if (is_null($interval) === true)
 			return(false);
 			
-		$appstats_conf = $this->_xobj->get_application('stats_conf');
-
-		if (($conf = $appstats_conf->get($confid)) === false
-		|| is_array($conf) === false
-		|| isset($conf['stats_conf']) === false)
-			return(false);
-		
-		$this->_conf = $conf;
-		$this->init_conf();
+		return($interval);		
 	}
 	
-	private function init_conf()
-	{		
-		$conf = $this->_conf;
+	public function get_hour_range()
+	{			
+		$this->push_debug("get_hour_range()");
+		$interval = $this->get_interval();
 		
-		$stats_conf = $conf['stats_conf'];
+		if (is_null($interval) === true)
+			return(false);
+			
+		$rs = array();
+		$rs['interval'] = $interval;
+		return($rs);
 		
-		for($i=1;$i<6;$i++)
+	}
+	
+	public function get_week_range()
+	{
+		$interval = $this->get_interval();
+		$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
+		$week = date('W',mktime(0,0,0,$date['month'],$date['day'],$date['year']));
+		$rs = array();
+		$rs['from'] = strtotime("{$date['year']}-W{$week}-1");
+		$rs['to'] = strtotime("{$date['year']}-W{$week}-7");		
+		return($rs);
+	}
+	
+	public function get_listhour()
+	{	
+		$this->push_debug("get_listhour()");
+		if(($conf = $this->get_conf()) === false)
+			return(false);
+			
+		$hour_start = explode(':',$conf['hour_start']);
+		$hour_end = explode(':',$conf['hour_end']);
+		
+		$rs = array();
+		for ($i=0;$i<=24;$i++)
 		{
-			if (isset($stats_conf['period'.$i]) === false)
+			if ($i < $hour_start[0]
+			|| $i > $hour_end[0])
 				continue;
 				
-			$this->_period['period'.$i]['exp'] = $stats_conf['period'.$i];
-			
-			if (preg_match('/([0-9]+)[-]{1}([0-9]+)/',$stats_conf['period'.$i],$out) === 1)
-			{
-				$this->_period['period'.$i]['beg'] = (int) $out[1];
-				$this->_period['period'.$i]['end'] = (int) $out[2];
-			}			
-		}
+			$tmp = array();
+			$tmp['identity'] = $i.'hour';
+			$tmp['value'] = $i;
+			$tmp['name'] = $i;
+				
+			array_push($rs,$tmp);
+		}		
+		return($rs);
+	}
+	
+	public function get_listday_for_week()
+	{	
+		$this->push_debug("get_listday()");
+		if(($conf = $this->get_conf()) === false)
+			return(false);
 		
-		return(true);
+		$workweek = $conf['workweek'];
+		
+		$rs = array();
+		foreach ($this->_listday as $day)
+		{
+			if (isset($workweek[$day]) === true
+			&& $workweek[$day] === false)
+				continue;
+				
+			$tmp = array();
+			$tmp['identity'] = $day;
+			$tmp['value'] = $day;
+			$tmp['name'] = $day;
+				
+			array_push($rs,$tmp);
+		}
+		return($rs);
+	}
+	
+	public function get_listday_for_month()
+	{
+		$this->push_debug("get_listday()");
+		if(($conf = $this->get_conf()) === false)
+			return(false);
+		
+		$workweek = $conf['workweek'];
+		
+		$date = dwho_date_parse_from_format('Y-m-d H:i:s',$this->_interval['dbeg']);		
+		$lastday = strtotime('-1 second',strtotime('+1 month',strtotime($date['month'].'/01/'.$date['year'].' 00:00:00')));
+		
+		$rs = array();
+		for ($i=1;$i<=date('d',$lastday);$i++)
+		{
+			$time = mktime(0,0,0,$date['month'],$i,$date['year']);
+			if ($workweek[strtolower(date('l',$time))] === false)
+				continue;
+				
+			$tmp = array();
+			$tmp['identity'] = $i;
+			$tmp['value'] = $i;
+			$tmp['name'] = $i;
+				
+			array_push($rs,$tmp);	
+		}
+		return($rs);
+	}
+	
+	public function get_day_from_week_by_name_day($year,$week,$nameday)
+	{
+		$from = strtotime("{$year}-W{$week}-1");
+		$to = strtotime("{$year}-W{$week}-7");
+		
+		$rs = array();
+		for ($i=$from;$i<=$to;$i=strtotime('+1day',$i))
+		{
+			if (date('l',$i) === ucfirst($nameday))
+				return(date('Y-m-d',$i));
+		}
+		return(null);
 	}
 	
 	public function get_list_by_type()
-	{		
+	{
+		$this->push_debug("get_list_by_type()");
+		$data = array();
 		switch ($this->_type)
 		{
 			case 'agent':
-				$agent = array_values($this->_conf['agent']);
-				$nb_agent = count($this->_conf['agent']);
-					
 				$ls_agent = array();
-				for($i=0;$i<$nb_agent;$i++)
+				if ($this->_objectkey === 0)
 				{
-					$number = (string) $agent[$i]['number'];
-					if (isset($ls_agent[$i]) === false)
-						$ls_agent[$i] = array();
-					
-					array_push($ls_agent[$i],$number);
-					array_push($ls_agent[$i],'agent/'.$number);
-					array_push($ls_agent[$i],'Agent/'.$number);
+					$agent = array_values($this->_conf['agent']);
+					$nb_agent = count($this->_conf['agent']);
+					for($i=0;$i<$nb_agent;$i++)
+					{
+						$number = (string) $agent[$i]['number'];
+						if (isset($ls_agent[$i]) === false)
+							$ls_agent[$i] = array();
+						
+						array_push($ls_agent[$i],$number);
+						array_push($ls_agent[$i],'agent/'.$number);
+						array_push($ls_agent[$i],'Agent/'.$number);
+					}
 				}
-		
+				elseif(($id = $this->_objectkey) !== 0)	
+				{	
+					if (($appagent = &$this->_ipbx->get_application('agent')) === false
+					|| ($agent = $appagent->get($id)) === false)
+						break;
+					
+					array_push($ls_agent[0],$agent['number']);
+					array_push($ls_agent[1],'agent/'.$agent['number']);
+					array_push($ls_agent[2],'Agent/'.$agent['number']);
+				}
 				$data = $ls_agent;
 				break;
 			case 'queue':
-				$queue = array_values($this->_conf['queue']);
-				$nb_queue = count($this->_conf['queue']);
-				
 				$ls_queuename = array();
-				for($i=0;$i<$nb_queue;$i++)
-					array_push($ls_queuename,$queue[$i]['name']);
-			
+				if ($this->_objectkey === 0)
+				{
+					$queue = array_values($this->_conf['queue']);
+					$nb_queue = count($this->_conf['queue']);
+					
+					for($i=0;$i<$nb_queue;$i++)
+						array_push($ls_queuename,$queue[$i]['name']);
+				}
+				elseif(($id = $this->_objectkey) !== 0)	
+				{	
+					if (($appqueue = &$this->_ipbx->get_application('queue')) === false
+					|| ($queue = $appqueue->get($id)) === false)
+						break;
+					
+					array_push($ls_queuename,$queue['queuefeatures']['name']);
+				}			
 				$data = $ls_queuename;
 				break;
 			default:
@@ -322,6 +636,7 @@ class xivo_statistics
 	
 	private function load_queuelog()
 	{
+		$this->push_debug("load_queuelog()");
 		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
 			return(false);
 			
@@ -331,15 +646,33 @@ class xivo_statistics
 		if (is_null($conf) === true)
 			return(false);
 			
-		$conf['interval'] = $this->_interval;
+		$conf['axetype'] = $this->_axetype;
+		$conf['interval'] = $this->_interval_process;
 
 		$this->_queue_log = $appqueue_log->get_queue_logs_stats($conf,$this->_type,$data);
 		
 		return(true);
 	}
 	
+	public function get_object_list()
+	{
+		$this->push_debug("get_object_list()");
+		switch ($this->_type)
+		{
+			case 'agent':
+				return($this->get_agent_list());
+				break;
+			case 'queue':
+				return($this->get_queue_list());
+				break;
+			default:
+				return(false);
+		}
+	}
+	
 	public function get_queue_list()
 	{			
+		$this->push_debug("get_queue_list()");
 		if (($appqueue = &$this->_ipbx->get_application('queue')) === false)
 			return(false);
 		
@@ -360,6 +693,7 @@ class xivo_statistics
 	
 	public function get_agent_list()
 	{			
+		$this->push_debug("get_agent_list()");
 		if (($appagent = &$this->_ipbx->get_application('agent')) === false)
 			return(false);
 		
@@ -380,6 +714,7 @@ class xivo_statistics
 	
 	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)
 	{
+		$this->push_debug("db_eval_data()",array($type,$value,$event,$field,$addwhere));
 		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
 			return(false);
 			
@@ -388,7 +723,8 @@ class xivo_statistics
 		if (is_null($conf) === true)
 			return(false);
 			
-		$conf['interval'] = $this->_interval;
+		$conf['axetype'] = $this->_axetype;
+		$conf['interval'] = $this->_interval_process;
 			
 		switch ($type)
 		{
@@ -405,6 +741,7 @@ class xivo_statistics
 
 	public function eval_field_queue_log($event,$type)
 	{			
+		$this->push_debug("eval_field_queue_log()",array($event,$type));
 		$conf = $this->_queue_log_conf;
 		
 		if (isset($conf[$event]) === false
@@ -422,6 +759,7 @@ class xivo_statistics
 
 	public function eval_data_queue_log($queue_log_entry,$event,$type)
 	{			
+		$this->push_debug("eval_data_queue_log()",array($queue_log_entry,$event,$type));
 		$conf = $this->_queue_log_conf;
 		
 		if (isset($conf[$event]) === false
@@ -447,6 +785,22 @@ class xivo_statistics
 		}
 			
 		return(0);		
+	}
+
+	public function push_debug($key,$var=null) {
+
+		if (isset($this->_debug[$key]) === true)
+			$this->_debug[$key.'{'.uniqid().'}'] = $var;
+		else
+			$this->_debug[$key] = $var;
+
+	}
+
+	public function get_debug() {
+
+		return($this->_debug);
+
+
 	}
 	
 }

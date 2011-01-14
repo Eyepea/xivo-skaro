@@ -19,49 +19,56 @@
 #
 
 $form = &$this->get_module('form');
-$url = &$this->get_module('url');
-$context_list = $this->get_var('context_list');
+$dhtml = &$this->get_module('dhtml');
 
-if($context_list === false):
-  $dhtml = &$this->get_module('dhtml');
-  echo	'<div id="fd-protocol-context" class="txt-center">',
-	  $url->href_htmln($this->bbf('create_context'),
-			  'service/ipbx/system_management/context',
-			  'act=add'),
-	  $dhtml->message_error($this->bbf('error_before_create_context'));
-	  '</div>';
-  return;
-endif;
+if(($fm_save = $this->get_var('fm_save')) === true)
+	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
+elseif($fm_save === false)
+	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 
 ?>
-<div id="sr-users" class="b-infos b-form">
+<div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/submenu');
-?>
-
+	
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-group');
-										dwho.form.select('it-queue');
-										dwho.form.select('it-codec');
-										dwho.form.select('it-rightcall');">
+		<form action="#" method="post" accept-charset="utf-8">
 <?php
 		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 					    'value'	=> DWHO_SESS_ID)),
 
-			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'add')),
-
 			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1));
+					    'value'	=> 1)),
 
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/form');
+			$form->hidden(array('name'	=> 'act',
+					    'value'	=> 'qos'));
+?>
+				<p>
+					<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_stats_queue_qos');?></label>
+				</p>
+<?php
+	if(($list = $this->get_var('ls_queue')) === false 
+	|| ($nb = count($list)) === 0):
+?>
+				<?=$this->bbf('no_displays');?>
+<?php
+	else:
+		for($i = 0;$i < $nb;$i++):
+			$ref = &$list[$i];
+			
+	echo	$form->text(array('desc'	=> $this->bbf('fm-queue_name-',$ref['name']),
+				  'name'	=> 'stats_qos['.$ref['id'].']',
+				  'labelid'	=> $ref['name'],
+				  'size'	=> 5,
+				  'default'	=> 0,
+				  'value'	=> $ref['stats_qos']));
 
+		endfor;
+	endif;
+	
 		echo	$form->submit(array('name'	=> 'submit',
 					    'id'	=> 'it-submit',
 					    'value'	=> $this->bbf('fm_bt-save')));

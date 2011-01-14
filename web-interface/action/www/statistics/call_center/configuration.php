@@ -114,13 +114,13 @@ switch($act)
 		$queue['slt'] = array();
 		
 		$appqueue = &$ipbx->get_application('queue');
-		$queue['list'] = $appqueue->get_queues_list(null,null,null,true);
+		$queue['list'] = $appqueue->get_queues_list(null,'name',null,true);
 		
 		$agent = array();
 		$agent['slt'] = array();
 		
 		$appagent = &$ipbx->get_application('agent');
-		$agent['list'] = $appagent->get_agentfeatures(null,null,null,true);
+		$agent['list'] = $appagent->get_agentfeatures(null,'name',null,true);
 		
 		$info_hour_start = explode(':',$info['stats_conf']['hour_start']);
 		$workhour_start = array();
@@ -254,7 +254,7 @@ switch($act)
 		}
 		
 		$appqueue = &$ipbx->get_application('queue');
-		$list_queue = $appqueue->get_queues_list();
+		$list_queue = $appqueue->get_queues_list(null,'name');
 		
 		$_TPL->set_var('error'  ,$error);
 		$_TPL->set_var('fm_save',$fm_save);
@@ -278,7 +278,7 @@ switch($act)
 		if($search !== '')
 			$list = $appstats_conf->get_stats_conf_search($search,null,$order,$limit);
 		else
-			$list = $appstats_conf->get_stats_conf_list();		
+			$list = $appstats_conf->get_stats_conf_list(null,'name');	
 
 		$total = $appstats_conf->get_cnt();
 

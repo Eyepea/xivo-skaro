@@ -183,7 +183,8 @@ switch($act)
 						$out['reversedid'][$curctx] = $curblok;
 					
 					$curctx  = $rdid['context'];
-					if(array_key_exists($out['reversedid'], $curctx))
+					if(is_array($curctx) === true
+					&& array_key_exists($out['reversedid'], $curctx))
 						$curblok = $out['reversedid'][$curctx];
 					else
 						$curblok = array();
@@ -343,8 +344,8 @@ switch($act)
 				foreach($prefs as $p)
 				{
 					$match = array();
-					preg_match($pattern, $p, $match);
-					$prefout[$match[1]] = $match[2];
+					if (preg_match($pattern, $p, $match) === 1)
+						$prefout[$match[1]] = $match[2];
 				}
 				$out['xivocti']['profiles'][$pfid] = array(
 					'xlets' => dwho_json::decode($pf['xlets'], true),

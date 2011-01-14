@@ -59,7 +59,7 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 	{			
 		$this->_cnt = 0;
 
-		# not possible field => function sum(character varying) does not exist
+		# not possible PGSQL: field => function sum(character varying) does not exist
 		#$field = array((object) "SUM('$fieldsum')");
 		
 		$this->_dso->new_select($this->_table,array($fieldsum));
@@ -98,10 +98,10 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			
 		if (empty($interval['dbeg']) === false)
 			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-		#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+			#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
 		
-		#$r = $this->_dso->select_all();
-		#$r = $this->_dso->select_distinct_count_singlecolumn('',$fieldsum);
+		#print($this->_dso->get_select().'<br>');
+		
 		$r = $this->_dso->select_singlecolumn();
 
 		if(($this->_cnt = $this->_dso->select_count()) === false
@@ -143,7 +143,9 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		$interval = $conf['interval'];
 		if (empty($interval['dbeg']) === false)
 			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-		#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+			#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+			
+		#print($this->_dso->get_select().'<br>');
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
@@ -181,7 +183,8 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		$interval = $conf['interval'];
 			
 		if (empty($interval['dbeg']) === false)
-			$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
+			#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
 	/*
 		$this->_dso->wherein('id','');
 		

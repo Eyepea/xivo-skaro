@@ -31,8 +31,28 @@ $stats_queue->set_data_custom('qos',$queue_qos);
 $stats_queue->parse_log();
 
 $tpl_statistics->set_name('queue');
+$tpl_statistics->set_baseurl('statistics/call_center/stats1');
 
-$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name');
+$tpl_statistics->set_data_custom('axetype',$_XS->get_axtype());
+switch ($_XS->get_axtype())
+{
+	case 'day':
+		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'value');
+		$tpl_statistics->set_data_custom('hour_range',$_XS->get_hour_range());
+		break;
+	case 'week':
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'value');
+		$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
+		break;
+	case 'month':
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'value');
+		break;
+	case 'year':
+		break;
+	case 'type':
+	default:
+		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name');
+}
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
@@ -85,6 +105,8 @@ $tpl_statistics->gener_table();
 $table1 = $tpl_statistics;
 
 $_TPL->set_var('table1',$table1);
+$_TPL->set_var('listobject',$_XS->get_object_list());
+$_TPL->set_var('objectkey',$_XS->get_objectkey());
 
 $bench_end = microtime(true);
 $_TPL->set_var('bench',($bench_end - $bench_start));

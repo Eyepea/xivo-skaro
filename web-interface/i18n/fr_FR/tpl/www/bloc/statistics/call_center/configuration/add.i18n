@@ -1,0 +1,71 @@
+
+; title_content_name
+Configuration > Ajouter
+
+; smenu_general
+Général
+
+; smenu_workweek
+Semaine de travail
+
+; smenu_queue
+Fil d'attente
+
+; smenu_agents
+Agents
+
+; fm_description_general
+
+; fm_name
+Nom: 
+
+; stats_conf_workhour
+Heure de travail
+
+; fm_hour_start
+Début: 
+
+; fm_hour_end
+Fin: 
+
+; stats_conf_period
+Périodes
+
+; fm_period1
+Période 1: 
+
+; fm_period2
+Période 2: 
+
+; fm_period3
+Période 3: 
+
+; fm_period4
+Période 4: 
+
+; fm_period5
+Période 5: 
+
+; fm_description
+Déscription: 
+
+; fm_workweek_monday
+Lundi: 
+
+; fm_workweek_tuesday
+Mardi: 
+
+; fm_workweek_wednesday
+Mercredi: 
+
+; fm_workweek_thursday
+Jeudi: 
+
+; fm_workweek_friday
+Vendredi: 
+
+; fm_workweek_saturday
+Samedi: 
+
+; fm_workweek_sunday
+Dimanche: 

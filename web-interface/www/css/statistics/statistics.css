@@ -29,7 +29,7 @@
 #sr-stats #cal-dend {margin: 2px 0px 0px 25px;position: absolute;}
 
 #b-lmenu #dashboard .barre {text-decoration: line-through;}
-#b-lmenu #dashboard .paragraph {padding-top: 3px;text-align: left;}
+#b-lmenu #dashboard .fm-paragraph {padding-top: 3px;text-align: right;}
 
 #b-lmenu #dashboard .sb-top {text-align: center;font-weight: bold;}
 #b-lmenu #dashboard .sb-top span {padding: 3px 0px;height: 15px;}
@@ -37,7 +37,7 @@
 #b-lmenu #dashboard .sb-top .span-center {width: 180px;background-image: url(../../img/content/t-bg.gif); background-repeat: repeat-x;}
 #b-lmenu #dashboard .sb-top .span-right {background-image: url(../../img/content/t-right.gif);}
 
-#b-lmenu #dashboard .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 5px 10px;}
+#b-lmenu #dashboard .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 5px 10px;text-align: right;}
 
 #b-lmenu #dashboard .sb-foot span {padding: 5px 0px 4px;height: 5px;}
 #b-lmenu #dashboard .sb-foot .span-left {background-image: url(../../img/content/f-left.gif);}

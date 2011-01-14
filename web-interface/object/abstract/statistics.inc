@@ -37,6 +37,11 @@ class xivo_statistics_abstract
 		$this->_xs->set_method($method);
 	}
 	
+	public function set_data_custom($key,$data)
+	{
+		$this->_data_custom[$key] = $data;
+	}
+	
 	public function get_list_by_type()
 	{					
 		return($this->_xs->get_list_by_type());
@@ -50,11 +55,6 @@ class xivo_statistics_abstract
 	public function get_agent_list()
 	{			
 		return($this->_xs->get_agent_list());
-	}
-	
-	public function set_data_custom($key,$data)
-	{
-		$this->_data_custom[$key] = $data;
 	}
 	
 	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)

@@ -25,6 +25,8 @@ $bench_start = microtime(true);
 $gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
 $basedir = '/img/graphs/pchart/';
 
+$appstats_conf = &$_XOBJ->get_application('stats_conf');
+
 if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
 	die('Failed to load xivo_statistics object');
 $_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
@@ -32,21 +34,29 @@ $_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
 $tpl_statistics = &$_TPL->get_module('statistics');
 $tpl_statistics->set_basedir($basedir);
 
-if (isset($_QR['fm_send']) === true
-&& isset($_QR['act']) === true
-&& $_QR['act'] === 'datecal')
-	$_XS->set_calendar($_QR['datecal']);
+$_XS->global_init($_QR);
 
-if (isset($_QR['confid']) === true)
-	$_XS->set_idconf($_QR['confid'],true);
+$act = isset($_QR['act']) === true ? $_QR['act'] : '';
+$param = array();
+$param['act'] = 'type';
 
-$appstats_conf = &$_XOBJ->get_application('stats_conf');
-$listconf = $appstats_conf->get_stats_conf_list();
+$_XS->load_component();
 
-$_TPL->set_var('listconf',$listconf);
+/*
+var_dump('###############################');
+var_dump($_XS->_statsconfsess);
+var_dump('###############################');
+*/
+
 $_TPL->set_var('basedir',$basedir);
+$_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));
+$_TPL->set_var('listaxetype',$_XS->get_list_axtype());
 $_TPL->set_var('infocal',$_XS->get_infocal());
 $_TPL->set_var('confid',$_XS->get_idconf());
 $_TPL->set_var('conf',$_XS->get_conf());
+
+
+$dhtml = &$_TPL->get_module('dhtml');
+$dhtml->set_js('js/statistics/call_center/conf.js');
 
 ?>

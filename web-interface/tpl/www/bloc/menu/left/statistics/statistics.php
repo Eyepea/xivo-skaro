@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $conf = $this->get_var('conf');
 $listconf = $this->get_var('listconf');
+$listaxetype = $this->get_var('listaxetype');
 $infocal = $this->get_var('infocal');
 $element = $this->get_var('element');
 
@@ -70,11 +71,11 @@ $element = $this->get_var('element');
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-2'),
 						   'statistics/call_center/stats2');?>
 			</dd>
-			<dd id="mn-4">
+			<dd id="mn-3">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
 						   'statistics/call_center/stats4');?>
 			</dd>
-			<dd id="mn-3">
+			<dd id="mn-4">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
 						   'statistics/call_center/stats3');?>
 			</dd>
@@ -117,61 +118,176 @@ $element = $this->get_var('element');
 ?>
 </dl>
 
+<?php
+	if(is_null($this->get_var('conf')) === false):
+?>
 <div id="dashboard">
 	<div class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('mn_left_name_dashboard');?></span>
 		<span class="span-right">&nbsp;</span>
 	</div>
-	<div class="sb-content">
+	<div class="sb-content">		
 		<div id="sr-stats" class="">
 		<form action="#" method="post" accept-charset="utf-8">
-		<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
-		<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
-		<?=$form->hidden(array('name' => 'act','value' => 'datecal'))?>
-			<div id="fm-cal" class="fm-paragraph fm-multifield">
-				<div class="fm-desc-inline">
-					<label id="lb-dbeg" for="it-dbeg"><?=$this->bbf('fm_dbeg')?></label>
-					<input type="text" name="datecal[dbeg]" id="it-dbeg" value="<?=$infocal['dbeg']?>" size="10"
-						onclick="dwho_eid('cal-dend').style.display = 'none';
-							xivo_calendar_display('cal-dbeg','it-dbeg');"
-						onmouseover="xivo_calendar_body();"
-						onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');"
-					 />
-					<input type="text" name="datecal[hbeg]" id="it-hbeg" value="<?=$infocal['hbeg']?>" size="4" />
+			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
+			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
+			<?=$form->hidden(array('name' => 'act','value' => 'datecal'))?>
+<?php
+	if(is_null($this->get_var('listobject')) === false
+	&& $this->get_var('conf','axetype') !== 'type'):
+?>
+			<div class="fm-paragraph">	
+			<?php
+				echo	$form->select(array('name'	=> 'key',
+							    'id'		=> 'it-conf-key',
+							    'paragraph'	=> false,
+							    'browse'	=> 'key',
+				  				'labelid'	=> 'key',
+				    			'key'		=> 'name',
+					   			'altkey'	=> 'id',
+							    'selected'	=> $this->get_var('objectkey')),
+						      	$this->get_var('listobject'));
+			?>
+			</div>
+<?php
+	elseif(($value = $this->get_var('conf','objectkey')) !== null):
+		echo $form->hidden(array('name' => 'key','value' => $value));
+	endif;
+?>
+			<div class="fm-paragraph">	
+			<?php
+				echo	$form->select(array('name'	=> 'axetype',
+							    'id'		=> 'it-conf-axetype',
+							    'paragraph'	=> false,
+							    'browse'	=> 'axetype',
+				  				'labelid'	=> 'axetype',
+							    'empty'		=> $this->bbf('fm_axetype-default'),
+				    			'key'		=> false,
+							    'bbf'		=> 'fm_axetype-opt',
+							    'bbfopt'	=> array('argmode'	=> $listaxetype),
+							    'selected'	=> $this->get_var('conf','axetype')),
+						      	$listaxetype);
+			?>
+			</div>
+			<div id="it-cal-type" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-type"><?=$this->bbf('fm_dbeg')?></label>
+						<input type="text" name="datecal[dbeg]" id="it-dbeg-type" value="<?=is_null($infocal['dbeg'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dbeg']?>" size="8"
+							onclick="dwho_eid('cal-dend-type').style.display = 'none';
+								xivo_calendar_display('cal-dbeg-type','it-dbeg-type');"
+							onmouseover="xivo_calendar_body();"
+							onmouseout="xivo_calendar_body('cal-dbeg-type','it-dbeg-type');"
+						 />
+						 <!-- 
+						<input type="text" name="datecal[hbeg]" id="it-hbeg" value="<?=is_null($infocal['hbeg'])?'00:00':$infocal['hbeg']?>" size="4" /> 
+						-->
+					</div>
+					<div id="cal-dbeg-type"
+					     class="b-nodisplay"
+					     onmouseover="xivo_calendar_body();"
+					     onmouseout="xivo_calendar_body('cal-dbeg-type','it-dbeg-type');">
+					</div>
+					<div class="fm-desc-inline">
+						<label id="lb-dend" for="it-dend-type"><?=$this->bbf('fm_dend')?></label>
+						<input type="text" name="datecal[dend]" id="it-dend-type" value="<?=is_null($infocal['dend'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dend']?>" size="8"
+						   onclick="dwho_eid('cal-dbeg-type').style.display = 'none';
+							    xivo_calendar_display('cal-dend-type','it-dend-type');"
+						   onmouseover="xivo_calendar_body();"
+						   onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');"
+						 />
+						 <!-- 
+						<input type="text" name="datecal[hend]" id="it-hend" value="<?=is_null($infocal['hend'])?dwho_i18n::strftime_l('%H:%I',null):$infocal['hend']?>" size="4" />
+						 -->
+					</div>
+					<div id="cal-dend-type"
+					     class="b-nodisplay"
+					     onmouseover="xivo_calendar_body();"
+					     onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');">
+					</div>
+					<div class="fm-desc-inline">
+						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+					</div>
 				</div>
-				<div id="cal-dbeg"
-				     class="b-nodisplay"
-				     onmouseover="xivo_calendar_body();"
-				     onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');">
+			</div>
+			<div id="it-cal-day" class="b-nodisplay">
+			<?php #if (isset($infocal['dday']) === true): ?>
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-day"><?=$this->bbf('fm_dday')?></label>
+						<input type="text" name="datecal[dday]" id="it-dbeg-day" value="<?=is_null($infocal['dday'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dday']?>" size="8"
+							onclick="xivo_calendar_display('cal-dbeg-day','it-dbeg-day');"
+							onmouseover="xivo_calendar_body();"
+							onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');"
+						 />
+					</div>
+					<div id="cal-dbeg-day"
+					     class="b-nodisplay"
+					     onmouseover="xivo_calendar_body();"
+					     onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');">
+					</div>
+					<div class="fm-desc-inline">
+						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+					</div>
 				</div>
-				<div class="fm-desc-inline">
-					<label id="lb-dend" for="it-dend"><?=$this->bbf('fm_dend')?></label>
-					<input type="text" name="datecal[dend]" id="it-dend" value="<?=is_null($infocal['dend'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dend']?>" size="10"
-					   onclick="dwho_eid('cal-dbeg').style.display = 'none';
-						    xivo_calendar_display('cal-dend','it-dend');"
-					   onmouseover="xivo_calendar_body();"
-					   onmouseout="xivo_calendar_body('cal-dend','it-dend');"
-					 />
-					<input type="text" name="datecal[hend]" id="it-hend" value="<?=is_null($infocal['hend'])?dwho_i18n::strftime_l('%H:%I',null):$infocal['hend']?>" size="4" />
+			<?php #endif; ?>
+			</div>
+			<div id="it-cal-week" class="b-nodisplay">
+			<?php #if (isset($infocal['dweek']) === true): ?>
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-week"><?=$this->bbf('fm_dweek')?></label>
+						<input type="text" name="datecal[dweek]" id="it-dbeg-week" value="<?=is_null($infocal['dweek'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dweek']?>" size="8"
+							onclick="xivo_calendar_display('cal-dbeg-week','it-dbeg-week');"
+							onmouseover="xivo_calendar_body();"
+							onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');"
+						 />
+					</div>
+					<div id="cal-dbeg-week"
+					     class="b-nodisplay"
+					     onmouseover="xivo_calendar_body();"
+					     onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');">
+					</div>
+					<div class="fm-desc-inline">
+						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+					</div>
 				</div>
-				<div id="cal-dend"
-				     class="b-nodisplay"
-				     onmouseover="xivo_calendar_body();"
-				     onmouseout="xivo_calendar_body('cal-dend','it-dend');">
+			<?php #endif; ?>
+			</div>
+			<div id="it-cal-month" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
+						<input type="text" name="datecal[dmonth]" id="it-dbeg-month" value="<?=is_null($infocal['dmonth'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dmonth']?>" size="8"
+							onclick="xivo_calendar_display('cal-dbeg-month','it-dbeg-month');"
+							onmouseover="xivo_calendar_body();"
+							onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');"
+						 />
+					</div>
+					<div id="cal-dbeg-month"
+					     class="b-nodisplay"
+					     onmouseover="xivo_calendar_body();"
+					     onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');">
+					</div>
+					<div class="fm-desc-inline">
+						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+					</div>
 				</div>
-				<div class="fm-desc-inline">
-					<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+			</div>
+			<div id="it-cal-year" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					year
 				</div>
 			</div>
 		</form>
 		</div>
 		
 		<form action="#" method="post" accept-charset="utf-8">
-		<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
-		<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
-		<?=$form->hidden(array('name' => 'act','value' => 'conf'))?>
-			<div class="fm-paragraph">	
+			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
+			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
+			<?=$form->hidden(array('name' => 'act','value' => 'conf'))?>
+			<div class="fm-paragraph">
 		<?php
 				echo	$form->select(array('name'	=> 'confid',
 							    'id'		=> 'it-toolbar-conf',
@@ -185,6 +301,9 @@ $element = $this->get_var('element');
 		?>
 			</div>
 		</form>
+<?php
+	if($conf !== false):
+?>
 		<p class="paragraph">
 			<?=$this->bbf('conf_time_range')?> <?=substr($conf['hour_start'],0,5)?> - <?=substr($conf['hour_end'],0,5)?>
 		</p>
@@ -202,6 +321,9 @@ $element = $this->get_var('element');
 			endforeach;
 		?>
 		</p>
+<?php
+	endif;
+?>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -216,5 +338,42 @@ dwho.dom.set_onload(function()
 	dwho.dom.add_event('change',
 			   dwho_eid('it-toolbar-conf'),
 			   function(){this.form.submit();});
+
+	var lsaxetype = new Array('<?=implode('\', \'',$listaxetype)?>');
+	dwho.dom.add_event('change',
+			   dwho_eid('it-conf-axetype'),
+			   function(){
+		   			var form = this.form;
+		   			for(var i=0;i<form.elements.length;i++)
+			   		{
+		   				var formElement = form.elements[i];
+		   				var name = formElement.name;
+		   				var value = formElement.value;
+		   				if (name == 'axetype'
+			   			&& dwho_eid('it-cal-'+value) != false)
+		   				{
+		   					for(var u=0;u<lsaxetype.length;u++)
+		   					{
+			   					var divtohide = dwho_eid('it-cal-'+lsaxetype[u]);
+			   					if (divtohide)
+			   						divtohide.style.display = 'none';
+		   					}
+		   					var divtoshow = dwho_eid('it-cal-'+value);
+		   					if (divtoshow)
+		   						divtoshow.style.display = 'block';
+		   				}
+			   		}
+				});
+
+	for(var u=0;u<lsaxetype.length;u++)
+	{
+		var divtoshow = dwho_eid('it-cal-'+lsaxetype[u]);
+		if (lsaxetype[u] == '<?=$this->get_var('conf','axetype')?>'
+		&& divtoshow)
+			divtoshow.style.display = 'block';
+	}
 });
 </script>
+<?php
+	endif;
+?>

@@ -187,3 +187,21 @@ Samedi
 
 ; sunday
 Dimanche
+
+; fm_axetype-default
+Axe d'analyse
+
+; fm_axetype-opt(type)
+Type
+
+; fm_axetype-opt(day)
+Jour
+
+; fm_axetype-opt(week)
+Semaine
+
+; fm_axetype-opt(month)
+Mois
+
+; fm_axetype-opt(year)
+Année
