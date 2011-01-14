@@ -712,13 +712,6 @@ def metalog(prefix):
 
 dhcpinfo_res = DHCPInfoResource()
 
-#http_xtors = [xtor for xtor in map(lambda p: p.http_dev_info_extractor, plugins) if
-#              xtor is not None]
-#tftp_xtors = [xtor for xtor in map(lambda p: p.tftp_dev_info_extractor, plugins) if
-#              xtor is not None]
-#http_xtor = LongestDeviceInfoExtractor(http_xtors)
-#tftp_xtor = LongestDeviceInfoExtractor(tftp_xtors)
-#request_dependant_xtor = TypeBasedDeviceInfoExtractor({'http': http_xtor, 'tftp': tftp_xtor})
 all_pg_xtor = AllPluginsDeviceInfoExtractor(LongestDeviceInfoExtractor, pg_mgr)
 dhcp_xtor = DHCPDeviceInfoExtractor(dhcpinfo_res.dhcp_infos, all_pg_xtor)
 collab_xtor = CollaboratingDeviceInfoExtractor(VotingUpdater, [dhcp_xtor, all_pg_xtor])

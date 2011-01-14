@@ -4,7 +4,7 @@
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -65,38 +65,53 @@ def _extract_ip(request, request_type):
 
 class IDeviceInfoExtractor(Interface):
     """A device info extractor object extract device information from
-    requests. In our context, requests are either HTTP or TFTP requests.
+    requests. In our context, requests are either HTTP, TFTP or DHCP
+    requests.
     
-    Informations that can be extracted are:
+    Example of information that can be extracted are:
     - MAC address
     - vendor name
     - model name
-    - version name
+    - version number
+    - serial number
     
-    Note that since it's trivial to extract the IP address from a request,
-    this information MUST NOT be returned by device info extractor objects.
+    Note: DHCP requests are not processed by the provisioning server per se.
+    The way it works is that DHCP requests can be made available to the
+    provisioning server, which can then used them to help with the extraction
+    of information for TFTP or HTTP requests.
+    
+    For example, since it's always possible to extract the IP of a TFTP/HTTP
+    requests, the provisioning server could then look if it has information on
+    a DHCP requests with this IP address. If it does, it could then extract
+    information from that DHCP requests, and return this information in the
+    device information object that will be returned in the TFTP/HTTP extract
+    operation.
+    
+    This way, for example, you can always extract the MAC address of TFTP
+    requests even if there's no such information in the TFTP request
+    directly.
     
     """
     
     def extract(request, request_type):
-        """Return a nonempty device info object from the request or return an
-        object that evaluates to false in a boolean context if no information
-        could be extracted.
+        """Return a Deferred that will callback with either an non empty
+        device info object or an object that evaluates to false in a boolean
+        context if no information could be extracted.
         
         Note that the IP address MUST NOT be returned in the device info
         object.
         
-        So far, request_type is either 'http' or 'tftp', for HTTP and TFTP
-        request respectively.
-        
-        XXX IN FACT, THIS METHOD RETURN A DEFERRED THAT WILL CALLBACK WITH EITHER
-        A DEVICE INFO OBJECT OR FALSE IF NO INFORMATION COULD BE EXTRACTED.
+        So far, request_type is either 'http', 'tftp' or 'dhcp'.
+        - For 'http', request is a twisted.web.http.Request object.
+        - For 'tftp', request is a prov2.servers.tftp.request object.
+        - For 'dhcp', request is a dictionary object with keys 'mac' and
+          'dhcp_opts'.
         
         """
 
 
 class StaticDeviceInfoExtractor(object):
-    """Device info extractor that always return that same device information.
+    """Device info extractor that always return the same device information.
     
     Note: can be used as a 'NullDeviceInfoExtractor' if 'self.dev_info is None'.
     
@@ -113,8 +128,8 @@ class StaticDeviceInfoExtractor(object):
 
     
 class DHCPDeviceInfoExtractor(object):
-    """Extract the MAC address from requests and other information with the
-    help of external DHCP information.
+    """Device info extractor that return the MAC address and other
+    information from requests with the help of external DHCP information.
     
     """
     
@@ -149,7 +164,8 @@ class DHCPDeviceInfoExtractor(object):
 
 
 class ArpDeviceInfoExtractor(object):
-    """Extract the MAC address from requests by looking up the ARP table.
+    """Device info extractor that return the MAC address from requests by
+    looking up the ARP table.
     
     Note that this extractor is only useful if the request is on the same
     broadcast domain as the machine.
@@ -166,6 +182,7 @@ class ArpDeviceInfoExtractor(object):
         return defer.fail(NotImplementedError())
 
 
+# XXX huh ? As far as I can see, this is useless and might be deleted
 class TypeBasedDeviceInfoExtractor(object):
     """A device info extractor that ask another device info extractor
     depending on the request type of the request.
@@ -240,92 +257,112 @@ class LongestDeviceInfoExtractor(CompositeDeviceInfoExtractor):
         defer.returnValue(dev_info)
 
 
-class BaseUpdater(object):
-    """Abstract base class for updater. Not made to be instantiated."""
-    def _do_update(self, dev_info, nonconflicts, conflicts):
-        raise NotImplementedError()
+def _find_key_conflicts(base, new):
+    """Split the new dictionary into a conflicts and nonconflicts
+    dictionaries, such that:
+    - for key in conflicts: key in base
+    - for key in nonconflicts: key not in base
+    - conflicts.update(nonconflicts) == new
+    - nonconflicts.update(conflicts) == new
     
-    def update(self, dev_info, new_dev_info):
-        nonconflicts = {}
-        conflicts = {}
-        for k, v in new_dev_info.iteritems():
-            if k in dev_info:
-                conflicts[k] = v
-            else:
-                nonconflicts[k] = v
-        self._do_update(dev_info, conflicts, nonconflicts)
+    """
+    conflicts, nonconflicts = {}, {}
+    for k, v in new.iteritems():
+        if k in base:
+            conflicts[k] = v
+        else:
+            nonconflicts[k] = v
+    return conflicts, nonconflicts
 
 
-class StandardUpdater(BaseUpdater):
-    def __init__(self, conflict_solver):
-        self._conflict_solver = conflict_solver
+class FirstSeenUpdater(object):
+    """Updater for CollaboratingDeviceInfoExtractor that, on conflict, keep
+    the first seen value.
     
-    def _do_update(self, dev_info, nonconflicts, conflicts):
-        dev_info.update(nonconflicts)
-        if conflicts:
-            self._conflict_solver.solve(dev_info, conflicts)
-
-
-class IgnoreConflictSolver(object):
-    def solve(self, dev_info, conflicts):
-        pass
-
-
-class SetConflictSolver(object):
-    def solve(self, dev_info, conflicts):
-        dev_info.update(conflicts)
-
-
-class RemoveUpdater(BaseUpdater):
+    """
     def __init__(self):
+        self.dev_info = {}
+    
+    def update(self, dev_info):
+        nonconflicts = _find_key_conflicts(self.dev_info, dev_info)[1]
+        self.dev_info.update(nonconflicts)
+
+
+class LastSeenUpdater(object):
+    """Updater for CollaboratingDeviceInfoExtractor that, on conflict, keep
+    the last seen value.
+    
+    """
+    def __init__(self):
+        self.dev_info = {}
+    
+    def update(self, dev_info):
+        self.dev_info.update(dev_info)
+
+
+class RemoveUpdater(object):
+    """Updater for CollaboratingDeviceInfoExtractor that will return a device
+    info object with only keys that are not in conflict.
+    
+    """
+    
+    def __init__(self):
+        self.dev_info = {}
         self._conflicts = set()
         
-    def _do_update(self, dev_info, nonconflicts, conflicts):
+    def update(self, dev_info):
+        conflicts, nonconflicts = _find_key_conflicts(self.dev_info, dev_info)
         for k, v in nonconflicts.iteritems():
             if k not in self._conflicts:
-                dev_info[k] = v
-        for conflict in conflicts:
-            del dev_info[conflict]
-            self._conflicts.add(conflict)
+                self.dev_info[k] = v
+        for k in conflicts:
+            del self.dev_info[k]
+            self._conflicts.add(k)
 
 
 class VotingUpdater(object):
+    """Updater for CollaboratingDeviceInfoExtractor that will return a device
+    info object such that values are the most popular one.
+    
+    Note that in the case of a tie, it returns any of the most popular values.
+    
+    """
+    
     def __init__(self):
-        # TODO instead of a map of map, it could be a map of list,
-        # and we could do conflict resolution on conflict resolution (in
-        # the situation of the same value having the same number of vote)
-        self._conflicts = {}
+        self._votes = {}
     
-    def _update_conflicts(self, k, v):
-        conflict_map = self._conflicts.setdefault(k, {})
-        nb_votes = conflict_map.get(v, 0) + 1
-        conflict_map[v] = nb_votes
+    def _vote(self, (key, value)):
+        key_pool = self._votes.setdefault(key, {})
+        key_pool[value] = key_pool.get(value, 0) + 1
     
-    def _solve_conflict(self, res, k):
-        conflict_map = self._conflicts[k]
-        nb_votes, valid = 0, False
-        for cur_ck, cur_nb_votes in conflict_map.iteritems():
-            if cur_nb_votes > nb_votes:
-                valid = True
-                nb_votes = cur_nb_votes
-                ck = cur_ck
-            elif cur_nb_votes == nb_votes:
-                valid = False
-        if valid:
-            res[k] = ck
+    def _get_winner(self, key_pool):
+        # Pre: key_pool is non-empty
+        # XXX we are not doing any conflict resolution if key_pool has
+        #     a tie. What's worst is that it's not totally deterministic.
+        return max(key_pool.iteritems(), key=lambda x: x[1])[0]
     
-    def update(self, dev_info, new_dev_info):
-        for k, v in new_dev_info.iteritems():
-            if k in dev_info or k in self._conflicts:
-                self._update_conflicts(k, v)
-                self._solve_conflict(dev_info, k)
-            else:
-                dev_info[k] = v
+    @property
+    def dev_info(self):
+        dev_info = {}
+        for key, key_pool in self._votes.iteritems():
+            dev_info[key] = self._get_winner(key_pool)
+        return dev_info
+    
+    def update(self, dev_info):
+        for item in dev_info.iteritems():
+            self._vote(item)
 
 
 class CollaboratingDeviceInfoExtractor(CompositeDeviceInfoExtractor):
     """Composite device info extractor that return a device info object
     which is the composition of every device info objects returned.
+
+    Takes an Updater factory to control the way the returned device info
+    object is builded.
+    
+    An Updater is an object with an:
+    - 'update' method, taking a dev_info object and returning nothing
+    - 'dev_info' attribute, which is the current computed dev_info
     
     """
     
@@ -342,15 +379,19 @@ class CollaboratingDeviceInfoExtractor(CompositeDeviceInfoExtractor):
                                     for extractor in self.extractors],
                                     consumeErrors=True)
         dev_infos = yield dlist
-        dev_info = {}
         updater = self._updater_factory()
-        for success, cur_dev_info in dev_infos:
-            if success and cur_dev_info:
-                updater.update(dev_info, cur_dev_info)
-        defer.returnValue(dev_info)
+        for success, dev_info in dev_infos:
+            if success and dev_info:
+                updater.update(dev_info)
+        defer.returnValue(updater.dev_info)
 
 
 class PluginDeviceInfoExtractor(object):
+    """Device info extractor that forward extraction requests to the
+    device info extractors of a plugin, if the plugin is loaded.
+    
+    """
+    
     implements(IDeviceInfoExtractor)
     
     def __init__(self, pg_id, pg_mgr):
@@ -369,18 +410,19 @@ class PluginDeviceInfoExtractor(object):
     
     def extract(self, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        if self._plugin is None:
+        if self._pg is None:
             return defer.succeed(None)
         else:
-            if request_type == 'http':
-                xtor = self._pg.http_dev_info_extractor
-            else:
-                assert request_type == 'tftp'
-                xtor = self._pg.tftp_dev_info_extractor
+            xtor = getattr(self._pg, request_type + '_dev_info_extractor')
             return xtor.extract(request, request_type)
 
 
 class AllPluginsDeviceInfoExtractor(object):
+    """Composite device info extractor that forward extraction requests to
+    device info extractors of every loaded plugins.
+    
+    """
+    
     implements(IDeviceInfoExtractor)
     
     def __init__(self, extractor_factory, pg_mgr):
@@ -395,43 +437,23 @@ class AllPluginsDeviceInfoExtractor(object):
         obs = BasePluginManagerObserver(self._set_xtors, self._set_xtors)
         pg_mgr.attach(obs)
     
+    def _xtor_name(self, request_type):
+        return '_%s_xtor' % request_type
+    
     def _set_xtors(self):
-        self._set_http_xtor()
-        self._set_tftp_xtor()
-        self._set_dhcp_xtor()
-    
-    def _set_dhcp_xtor(self):
-        pg_extractors = []
-        for pg in self._pg_mgr.itervalues():
-            pg_extractor = pg.dhcp_dev_info_extractor
-            if pg_extractor is not None:
-                pg_extractors.append(pg_extractor)
-        self._dhcp_xtor = self.extractor_factory(pg_extractors)
-    
-    def _set_http_xtor(self):
-        pg_extractors = []
-        for pg in self._pg_mgr.itervalues():
-            pg_extractor = pg.http_dev_info_extractor
-            if pg_extractor is not None:
-                pg_extractors.append(pg_extractor)
-        self._http_xtor = self.extractor_factory(pg_extractors)
-    
-    def _set_tftp_xtor(self):
-        pg_extractors = []
-        for pg in self._pg_mgr.itervalues():
-            pg_extractor = pg.tftp_dev_info_extractor
-            if pg_extractor is not None:
-                pg_extractors.append(pg_extractor)
-        self._tftp_xtor = self.extractor_factory(pg_extractors)
+        for request_type in ('http', 'tftp', 'dhcp'):
+            pg_extractors = []
+            for pg in self._pg_mgr.itervalues():
+                pg_extractor = getattr(pg, request_type + '_dev_info_extractor')
+                if pg_extractor is not None:
+                    pg_extractors.append(pg_extractor)
+            xtor = self.extractor_factory(pg_extractors)
+            setattr(self, self._xtor_name(request_type), xtor)
     
     def extract(self, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        try:
-            xtor = getattr(self, '_%s_xtor' % request_type)
-        except AttributeError, e:
-            raise AssertionError(e)
-        else:
-            return xtor.extract(request, request_type)
+        xtor = getattr(self, self._xtor_name(request_type))
+        return xtor.extract(request, request_type)
 
 
 # do we want to receive an app object or should object store it locally ?
