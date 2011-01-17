@@ -30,15 +30,15 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','adapter','abstrac
 
 class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abstract
 {
-	var $_query		= '';
-	var $_meta		= 'sql';
+	var $_query			= '';
+	var $_meta			= 'sql';
 	var $_tablecolumn	= array();
 	var $_colalias		= array();
-	var $_join		= array();
+	var $_join			= array();
 	var $_jointype		= array();
 	var $_joinwhere		= array();
 	var $_aggjoinwhere	= array();
-	var $_group		= array();
+	var $_group			= array();
 
 	function _get_scalar($val,$trim=false)
 	{

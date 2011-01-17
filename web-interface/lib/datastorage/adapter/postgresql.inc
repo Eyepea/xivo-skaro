@@ -431,13 +431,12 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 	function cast($field, $type)
 	{
-		/*
 		switch($type)
 		{
 			case 'int':
 				$field .= '::int';
 		}
-		*/
+		
 		return $field;
 	}
 }
