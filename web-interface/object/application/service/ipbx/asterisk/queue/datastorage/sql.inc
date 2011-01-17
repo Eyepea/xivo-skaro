@@ -172,7 +172,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
         // search by ID
         if(!is_null($id))
         {
-            $this->_dso->where("\"queueskill\".\"id\" = $id");
+            $this->_dso->where(array('"queueskill".id' => $id));
         }
         // search by string match (LIKE)
         else if(!is_null($filter))
@@ -205,7 +205,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 
 		// 1. get skill name
 		$this->_dso->new_select('queueskillcat');
-		$this->_dso->where("id = %d", $id);
+		$this->_dso->where(array('id' => $id));
 		$res = $this->_dso->select_single();
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
@@ -217,7 +217,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 
 		// 2. get skill values
 		$this->_dso->new_select('queueskill');
-		$this->_dso->where("catid = %d", $id);
+		$this->_dso->where(array('catid' => $id));
 
 		$res = $this->_dso->select_all(null, true);
 		$this->_dso->reset_order();
@@ -288,7 +288,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 
 		// 1. get skill name
 		$this->_dso->new_select('queueskillrule');
-		$this->_dso->where("id = %d", $id);
+		$this->_dso->where(array('id' => $id));
 
 		$res = $this->_dso->select_single();
 
@@ -305,7 +305,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		{ return false; }
 		
 		$this->_dso->new_select('userqueueskill');
-		$this->_dso->where("userid = $id");
+		$this->_dso->where(array('userid' => $id));
 
 		$this->_dso->leftjoin('queueskill',
 			'queueskill.id = userqueueskill.skillid',
@@ -327,7 +327,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		{ return false; }
 		
 		$this->_dso->new_select('agentqueueskill');
-		$this->_dso->where("agentid = $id");
+		$this->_dso->where(array('agentid' => $id));
 
 		$this->_dso->leftjoin('queueskill',
 			'queueskill.id = agentqueueskill.skillid',

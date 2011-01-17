@@ -28,7 +28,7 @@ class xivo_service_asterisk_userqueueskill_sql extends xivo_service_asterisk_abs
 	function get_skills($userid)
 	{
 		$this->_dso->new_select('userqueueskill', array('weight'));
-		$this->_dso->where("\"userqueueskill\".\"userid\" = $userid");
+		$this->_dso->where(array('"userqueueskill"."userid"' => $userid));
 		$this->_dso->leftjoin('queueskill',
 			'queueskill.id = userqueueskill.skillid',
 			null,
