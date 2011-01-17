@@ -560,8 +560,8 @@ CREATE TABLE "dialaction" (
  "category" dialaction_category,
  "categoryval" varchar(128) NOT NULL DEFAULT '',
  "action" dialaction_action NOT NULL,
- "actionarg1" varchar(255) NOT NULL DEFAULT '',
- "actionarg2" varchar(255) NOT NULL DEFAULT '',
+ "actionarg1" varchar(255) DEFAULT NULL,
+ "actionarg2" varchar(255) DEFAULT NULL,
  "linked" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("event","category","categoryval")
 );

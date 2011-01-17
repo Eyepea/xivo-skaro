@@ -466,8 +466,8 @@ CREATE TABLE dialaction (
  category varchar(10) NOT NULL,
  categoryval varchar(128) NOT NULL DEFAULT '',
  action varchar(64) NOT NULL DEFAULT 'none',
- actionarg1 varchar(255) NOT NULL DEFAULT '',
- actionarg2 varchar(255) NOT NULL DEFAULT '',
+ actionarg1 varchar(255) DEFAULT NULL,
+ actionarg2 varchar(255) DEFAULT NULL,
  linked tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(event,category,categoryval)
 );

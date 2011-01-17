@@ -503,8 +503,8 @@ CREATE TABLE `dialaction` (
                'application:voicemailmain',
                'sound',
                'custom') NOT NULL,
- `actionarg1` varchar(255) NOT NULL DEFAULT '',
- `actionarg2` varchar(255) NOT NULL DEFAULT '',
+ `actionarg1` varchar(255) DEFAULT NULL,
+ `actionarg2` varchar(255) DEFAULT NULL,
  `linked` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`event`,`category`,`categoryval`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
