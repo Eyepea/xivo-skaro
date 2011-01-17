@@ -601,6 +601,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		{
 			if(dwho_has_len($key) === false)
 				continue;
+			
 			else if($set === true)
 			{
 				if($where === true && $val === null && $this->escape($val) === 'NULL')

@@ -219,7 +219,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 	function errno()
 	{
-		if($this->error === false)
+		if($this->_error === false)
 			return -1;
 
 		return 0;
