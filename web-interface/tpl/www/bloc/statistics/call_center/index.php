@@ -36,6 +36,7 @@ $xivo_statistics = $this->get_var('xivo_statistics');
 	</h3>
 	<div class="sb-content">
 		<div class="sb-list"> 
+<?php /*
 			<p><?=$table_total?></p>
 			<!-- 
 			<p>&nbsp;</p>
@@ -64,6 +65,7 @@ $xivo_statistics = $this->get_var('xivo_statistics');
 	 			<?=$xivo_statistics->get_graph('stats_percent')?>
 	  		</p>
 	  		-->
+*/ ?>
    	 	</div>
     </div>
 	<div class="sb-foot xspan">

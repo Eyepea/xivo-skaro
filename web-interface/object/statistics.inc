@@ -156,9 +156,7 @@ class xivo_statistics
 		if (isset($arr['axetype']) === true)
 			$this->set_axetype($arr['axetype']);
 		
-		if (isset($arr['fm_send']) === true
-		&& isset($arr['act']) === true
-		&& $arr['act'] === 'datecal')
+		if (isset($arr['datecal']) === true)
 			$this->set_calendar($arr['datecal']);
 		
 		if (isset($arr['confid']) === true)
@@ -546,11 +544,12 @@ class xivo_statistics
 		for ($i=1;$i<=date('d',$lastday);$i++)
 		{
 			$time = mktime(0,0,0,$date['month'],$i,$date['year']);
-			if ($workweek[strtolower(date('l',$time))] === false)
+			$dayname = strtolower(date('l',$time));
+			if ($workweek[$dayname] === false)
 				continue;
 				
 			$tmp = array();
-			$tmp['identity'] = $i;
+			$tmp['identity'] = $dayname.'-opt('.$i.')';
 			$tmp['value'] = $i;
 			$tmp['name'] = $i;
 				
@@ -581,7 +580,7 @@ class xivo_statistics
 		{
 			case 'agent':
 				$ls_agent = array();
-				if ($this->_objectkey === 0)
+				if (((int) $this->_objectkey) === 0)
 				{
 					$agent = array_values($this->_conf['agent']);
 					$nb_agent = count($this->_conf['agent']);
@@ -596,7 +595,7 @@ class xivo_statistics
 						array_push($ls_agent[$i],'Agent/'.$number);
 					}
 				}
-				elseif(($id = $this->_objectkey) !== 0)	
+				elseif(($id = ((int) $this->_objectkey)) !== 0)	
 				{	
 					if (($appagent = &$this->_ipbx->get_application('agent')) === false
 					|| ($agent = $appagent->get($id)) === false)
@@ -610,7 +609,7 @@ class xivo_statistics
 				break;
 			case 'queue':
 				$ls_queuename = array();
-				if ($this->_objectkey === 0)
+				if (((int) $this->_objectkey) === 0)
 				{
 					$queue = array_values($this->_conf['queue']);
 					$nb_queue = count($this->_conf['queue']);
@@ -618,7 +617,7 @@ class xivo_statistics
 					for($i=0;$i<$nb_queue;$i++)
 						array_push($ls_queuename,$queue[$i]['name']);
 				}
-				elseif(($id = $this->_objectkey) !== 0)	
+				elseif(($id = ((int) $this->_objectkey)) !== 0)	
 				{	
 					if (($appqueue = &$this->_ipbx->get_application('queue')) === false
 					|| ($queue = $appqueue->get($id)) === false)

@@ -28,12 +28,6 @@ $infocal = $this->get_var('infocal');
 ?>
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
 
-
-<?php 
-$bench = $this->get_var('bench');
-echo dwho_second_to($bench,2);
-?>
-
 <?php /*
 
 <div id="sr-stats" class="">

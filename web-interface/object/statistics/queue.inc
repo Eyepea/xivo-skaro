@@ -79,7 +79,7 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			default:
 				$data = $this->get_list_by_type();
 		}
-				
+		
 		$nb_data = count($data);
 		for ($i=0;$i<$nb_data;$i++)
 		{

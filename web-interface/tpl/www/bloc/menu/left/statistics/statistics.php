@@ -127,17 +127,31 @@ $element = $this->get_var('element');
 		<span class="span-center"><?=$this->bbf('mn_left_name_dashboard');?></span>
 		<span class="span-right">&nbsp;</span>
 	</div>
-	<div class="sb-content">		
+	<div class="sb-content">
 		<div id="sr-stats" class="">
 		<form action="#" method="post" accept-charset="utf-8">
 			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
 			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
 			<?=$form->hidden(array('name' => 'act','value' => 'datecal'))?>
+			<div id="it-cal-conf" class="fm-paragraph">
+		<?php
+				echo	$form->select(array('name'	=> 'confid',
+							    'id'		=> 'it-toolbar-conf',
+							    'paragraph'	=> false,
+							    'browse'	=> 'conf',
+							    'empty'		=> $this->bbf('toolbar_fm_conf'),
+							    'key'		=> 'name',
+							    'altkey'	=> 'id',
+							    'selected'	=> $this->get_var('confid')),
+						      	$listconf);
+		?>
+			</div>
 <?php
 	if(is_null($this->get_var('listobject')) === false
+	&& is_null($this->get_var('conf','axetype')) === false
 	&& $this->get_var('conf','axetype') !== 'type'):
 ?>
-			<div class="fm-paragraph">	
+			<div id="it-cal-object" class="fm-paragraph">	
 			<?php
 				echo	$form->select(array('name'	=> 'key',
 							    'id'		=> 'it-conf-key',
@@ -259,7 +273,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
-						<input type="text" name="datecal[dmonth]" id="it-dbeg-month" value="<?=is_null($infocal['dmonth'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dmonth']?>" size="8"
+						<input type="text" name="datecal[dmonth]" id="it-dbeg-month" value="<?=is_null($infocal['dmonth'])?dwho_i18n::strftime_l('%Y-%m',null):$infocal['dmonth']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-month','it-dbeg-month');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');"
@@ -282,25 +296,6 @@ $element = $this->get_var('element');
 			</div>
 		</form>
 		</div>
-		
-		<form action="#" method="post" accept-charset="utf-8">
-			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
-			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
-			<?=$form->hidden(array('name' => 'act','value' => 'conf'))?>
-			<div class="fm-paragraph">
-		<?php
-				echo	$form->select(array('name'	=> 'confid',
-							    'id'		=> 'it-toolbar-conf',
-							    'paragraph'	=> false,
-							    'browse'	=> 'conf',
-							    'empty'		=> $this->bbf('toolbar_fm_conf'),
-							    'key'		=> 'name',
-							    'altkey'	=> 'id',
-							    'selected'	=> $this->get_var('confid')),
-						      	$listconf);
-		?>
-			</div>
-		</form>
 <?php
 	if($conf !== false):
 ?>
@@ -324,6 +319,12 @@ $element = $this->get_var('element');
 <?php
 	endif;
 ?>
+
+<?php 
+$bench = $this->get_var('bench');
+echo dwho_second_to($bench,2);
+?>
+    
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -335,10 +336,11 @@ $element = $this->get_var('element');
 <script type="text/javascript">
 dwho.dom.set_onload(function()
 {
+	/*
 	dwho.dom.add_event('change',
 			   dwho_eid('it-toolbar-conf'),
 			   function(){this.form.submit();});
-
+	*/
 	var lsaxetype = new Array('<?=implode('\', \'',$listaxetype)?>');
 	dwho.dom.add_event('change',
 			   dwho_eid('it-conf-axetype'),
@@ -356,11 +358,19 @@ dwho.dom.set_onload(function()
 		   					{
 			   					var divtohide = dwho_eid('it-cal-'+lsaxetype[u]);
 			   					if (divtohide)
+			   					{
 			   						divtohide.style.display = 'none';
+				   					if (divtohide == 'type')
+				   						dwho_eid('it-cal-object').style.display = 'none';
+			   					}
 		   					}
 		   					var divtoshow = dwho_eid('it-cal-'+value);
 		   					if (divtoshow)
+		   					{
 		   						divtoshow.style.display = 'block';
+			   					if (divtohide != 'type')
+			   						dwho_eid('it-cal-object').style.display = 'block';
+		   					}
 		   				}
 			   		}
 				});

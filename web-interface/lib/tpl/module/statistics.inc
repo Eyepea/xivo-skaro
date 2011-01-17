@@ -32,6 +32,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	private  $_data			= array();
 	private  $_data_custom	= array();
 	private  $_data_table	= array();
+	private  $_data_foot	= array();
 	private  $_result		= array();
 	private  $_prepare_rows	= array();
 	private  $_full_rows	= array();
@@ -160,6 +161,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$nb_row_value = count($full_rows);
 		
 		$data_table = &$this->_data_table;
+		$data_foot = &$this->_data_foot;
 			
 		for ($t=0;$t<$nb_row_value;$t++)
 		{
@@ -167,7 +169,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 			if (isset($rowdata['identity']) === true)
 				$rowidentity = $rowdata['identity'];
-			if (isset($rowdata['fullname']) === true)
+			elseif (isset($rowdata['fullname']) === true)
 				$rowidentity = $rowdata['fullname'];
 			elseif(isset($rowdata['name']) === true)
 				$rowidentity = $rowdata['name'];
@@ -202,6 +204,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				
 				if (isset($row_data_table[$label]) === false)
 					$row_data_table[$label] = array();
+					
+				$row_data_foot = &$data_foot[$label];
 					
 				$rs = 0;
 				switch($type) 
@@ -246,10 +250,17 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$row_data_table[$label]['expression'] = $expression;
 				$row_data_table[$label]['format'] = $format;
 				$row_data_table[$label]['result'] = $result;
+				
+				if (isset($row_data_foot['result']) === false)
+				{
+					$row_data_foot['total'] = true;
+					$row_data_foot['result'] = 0;
+					$row_data_foot['format'] = $format;
+				}
+				$row_data_foot['result'] += $rs;				
 			}
 		}
-		
-		return(false);
+		return(true);
 	}
 	
 	private function eval_calculator($val1,$val2,$operator)
@@ -419,10 +430,14 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			case 'float':
 				$str = (float) $result;
 				break;
-			case 'percent':
+			case 'percent':			
+				if (isset($arr['total']) === true)
+					return('-');
 				$str = $result.' %';
 				break;
-			case 'time':
+			case 'time':			
+				if (isset($arr['total']) === true)
+					return('-');
 				$str = dwho_sec_to_time($result);
 				break;
 			default:
@@ -475,7 +490,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	
 	public function render_html($chkbox=true,$rowname=true)
 	{		
-		$url = &$this->_tpl->get_module('url');
+		$url = &$this->_tpl->get_module('url');		
 
 		$return = '<form action="#" name="fm-stats-list" method="post" accept-charset="utf-8">';
 		$return .= '<table cellspacing="0" cellpadding="0" border="0">';
@@ -553,16 +568,23 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			}	
 			if ($rowname === true)
 			{
+				$bbf = array();
+				$identity = $cols['identity'];
+				if (is_array($cols['identity']) === true)
+				{
+					$identity = $cols['identity'][0];
+					$bbf = $cols['identity'][1];
+				}
 				$return .= '<td class="txt-left">';
 				if ($this->_data_custom['axetype'] === 'type')
-					$return .= $url->href_html($cols['identity'],$this->_baseurl,array('axetype' => 'day','key' => $cols['key']));
+					$return .= $url->href_html($this->bbf($identity,$bbf),$this->_baseurl,array('axetype' => 'day','key' => $cols['key']));
 				else 
-					$return .= $this->bbf($cols['identity']);
+					$return .= $this->bbf($identity,$bbf);
 				$return .= '</td>';
 				$nbcolsup++;
-			}	
+			}
 			$nb_cols = count($cols) + $nbcolsup;
-			$i=0;
+			$i=0;			
 			foreach ($cols as $colname => $colvalue)
 			{
 				$i++;
@@ -573,7 +595,6 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					$return .= '<td>no_data</td>';
 					continue;
 				}
-				
 				if ($i < ($nb_cols - $nbcolsup))
 					$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
 				else
@@ -583,14 +604,29 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			$return .= '</tbody>';
 			$c++;
 		}
-		/*
-		$return .= '
-		<tfoot> 
-			<tr id="no-disp" class="b-nodisplay"> 
-				<td colspan="'.(($nb_cols)).'" class="td-single">Aucunes autorisations</td> 
-			</tr> 
-		</tfoot>';
-		*/
+		
+		$return .= '<tfoot>'; 
+		$return .= '<tr> ';
+		$return .= '<td class="txt-left">Total</td>';
+		$i = 0;			
+		foreach ($this->_data_foot as $colname => $colvalue)
+		{
+			$i++;
+			if (in_array($colname,$this->_ignore_col) === true)
+				continue;
+			if (empty($colvalue) === true)
+			{
+				$return .= '<td>no_data</td>';
+				continue;
+			}
+			if ($i < ($nb_cols - 1))
+				$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
+			else
+				$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';
+		}
+		$return .= '</tr> ';
+		$return .= '</tfoot>';
+		
 		$return .= '</table>';
 		$return .= '</form>';
 		

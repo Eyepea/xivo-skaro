@@ -42,12 +42,6 @@ $param['act'] = 'type';
 
 $_XS->load_component();
 
-/*
-var_dump('###############################');
-var_dump($_XS->_statsconfsess);
-var_dump('###############################');
-*/
-
 $_TPL->set_var('basedir',$basedir);
 $_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));
 $_TPL->set_var('listaxetype',$_XS->get_list_axtype());

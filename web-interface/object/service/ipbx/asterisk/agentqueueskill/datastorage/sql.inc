@@ -27,7 +27,7 @@ class xivo_service_asterisk_agentqueueskill_sql extends xivo_service_asterisk_ab
 	function get_skills($agentid)
 	{
 		$this->_dso->new_select('agentqueueskill', array('weight'));
-		$this->_dso->where(array('"agentqueueskill"."agentid' => $agentid);
+		$this->_dso->where(array('"agentqueueskill"."agentid' => $agentid));
 		$this->_dso->leftjoin('queueskill',
 			'queueskill.id = agentqueueskill.skillid',
 			null,
