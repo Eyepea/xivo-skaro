@@ -172,6 +172,7 @@ class QObject(object):
 		'userqueueskills': UserQueueskillsHandler,
 		'agentqueueskills': AgentQueueskillsHandler,
 		'queueskillrules': ('queueskillrule',),
+		'extensions': ('extensions',),
 	}
 
 	def __init__(self, db, name):
