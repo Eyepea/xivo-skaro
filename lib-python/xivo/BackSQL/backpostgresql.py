@@ -98,4 +98,8 @@ def connect_by_uri(uri):
 def escape(s):
     return '.'.join(['"%s"' % comp for comp in s.split('.')])
 
-anysql.register_uri_backend('postgresql', connect_by_uri, psycopg2, None, escape)
+def cast(fieldname, type):
+    return "%s::%s" % (fieldname, type)
+
+
+anysql.register_uri_backend('postgresql', connect_by_uri, psycopg2, None, escape, cast)

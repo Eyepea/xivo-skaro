@@ -37,6 +37,7 @@ METHOD_CONNECT = 0
 METHOD_MODULE = 1
 METHOD_C14N_URI = 2
 METHOD_ESCAPE = 3
+METHOD_CAST   = 4
 
 log = logging.getLogger("xivo.anysql")
 
@@ -270,6 +271,13 @@ class cursor(object):
     def __set_arraysize(self, arraysize):
         self.__dbapi2_cursor.arraysize = arraysize
 
+    def cast(self, fieldname, type):
+        cast_ = self.__methods[METHOD_CAST]
+        if cast_ is None:
+            return fieldname
+
+        return cast_(fieldname, type)
+
     description = property(__get_description, None, None, "As in DBAPI2.0")
     rowcount    = property(__get_rowcount, None, None, "As in DBAPI2.0")
     arraysize   = property(__get_arraysize, __set_arraysize, None, "As in DBAPI2.0")
@@ -389,7 +397,7 @@ def __compare_api_level(als1, als2):
     else:
         return 0
 
-def register_uri_backend(uri_scheme, create_method, module, c14n_uri_method, escape):
+def register_uri_backend(uri_scheme, create_method, module, c14n_uri_method, escape, cast):
     """
     This method is intended to be used by backends only.
 
@@ -428,7 +436,7 @@ def register_uri_backend(uri_scheme, create_method, module, c14n_uri_method, esc
         raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
     if not urisup.valid_scheme(uri_scheme):
         raise urisup.InvalidSchemeError, "Can't register an invalid URI scheme %r" % uri_scheme
-    __uri_create_methods[uri_scheme] = (create_method, module, c14n_uri_method, escape)
+    __uri_create_methods[uri_scheme] = (create_method, module, c14n_uri_method, escape, cast)
 
 def _get_methods_by_uri(sqluri):
     uri_scheme = urisup.uri_help_split(sqluri)[0]

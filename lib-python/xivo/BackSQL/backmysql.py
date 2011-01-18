@@ -136,4 +136,4 @@ def connect_by_uri(uri):
 def escape(s):
     return '.'.join([('`%s`' % comp.replace('`', '``')) for comp in s.split('.')])
 
-anysql.register_uri_backend('mysql', connect_by_uri, MySQLdb, None, escape)
+anysql.register_uri_backend('mysql', connect_by_uri, MySQLdb, None, escape, None)

@@ -54,4 +54,4 @@ def c14n_uri(uri):
 def escape(s):
     return '.'.join([('"%s"' % comp.replace('"', '""')) for comp in s.split('.')])
 
-anysql.register_uri_backend('sqlite3', connect_by_uri, sqlite3, c14n_uri, escape)
+anysql.register_uri_backend('sqlite3', connect_by_uri, sqlite3, c14n_uri, escape, None)
