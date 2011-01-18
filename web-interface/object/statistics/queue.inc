@@ -74,6 +74,7 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 				$data = $this->_xs->get_listday_for_month();
 				break;
 			case 'year':
+				$data = $this->_xs->get_listmonth();
 				break;
 			case 'type':
 			default:
@@ -88,7 +89,7 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			{
 				case 'day':
 					$key_data = $this->get_list_by_type();
-					$key = $key['value'];
+					$key = $key['key'];
 					$interval = $this->_xs->get_interval();
 					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
 					$dip = array();
@@ -98,7 +99,7 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 					break;
 				case 'week':
 					$key_data = $this->get_list_by_type();
-					$key = $key['value'];
+					$key = $key['key'];
 					$interval = $this->_xs->get_interval();
 					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
 					$week = date('W',mktime(0,0,0,$date['month'],$date['day'],$date['year']));
@@ -112,7 +113,7 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 					break;
 				case 'month':
 					$key_data = $this->get_list_by_type();
-					$key = $key['value'];
+					$key = $key['key'];
 					$interval = $this->_xs->get_interval();
 					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
 					$day_process = mktime(0,0,0,$date['month'],$key,$date['year']);
@@ -121,6 +122,14 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 					$this->_xs->_interval_process = $dip;
 					break;
 				case 'year':
+					$key_data = $this->get_list_by_type();
+					$key = $key['key'];
+					$interval = $this->_xs->get_interval();
+					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
+					$day_process = mktime(0,0,0,$key+1,0,$date['year']);
+					$dip['dbeg'] = date('Y-m',$day_process).'-01 00:00:01';
+					$dip['dend'] = date('Y-m',$day_process).'-31 23:59:59';
+					$this->_xs->_interval_process = $dip;
 					break;
 				case 'type':
 				default:

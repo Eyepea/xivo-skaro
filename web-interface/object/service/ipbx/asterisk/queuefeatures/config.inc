@@ -23,8 +23,8 @@ $array['element'] = array();
 $array['element']['number'] = array();
 $array['element']['number']['default'] = '';
 
-$array['element']['name'] = array();
-$array['element']['name']['default'] = '';
+$array['element']['displayname'] = array();
+$array['element']['displayname']['default'] = '';
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
@@ -83,11 +83,11 @@ $array['element']['preprocess_subroutine']['null'] = true;
 
 $array['element']['stats_qos'] = array();
 $array['element']['stats_qos']['default'] = '';
-$array['element']['stats_qos']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['displayname'] = array('regexp' => '/^[a-z0-9_\.\- ]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['data_quality'] = array('bool' => true);
 $array['filter']['hitting_callee'] = array('bool' => true);
@@ -102,6 +102,6 @@ $array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','ma
 $array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['timeout'] = array('key' => array(0,30,60,90,120,180,240,300,360,420,480,540,600,900,1200,1500,1800));
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
-#$array['filter']['stats_qos'] = array('set' => false,'cast' => 'uint');
+$array['filter']['stats_qos'] = array('set' => false,'chk' => 2,'cast' => 'uint');
 
 ?>

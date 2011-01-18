@@ -248,7 +248,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 			$ref = &$r[$rs[$i]['id']];
 
-			$identity['name'] = $ref['name'];
+			$identity['name'] = $ref['displayname'];
 			$identity['number'] = $ref['number'];
 			$identity['context'] = $ref['context'];
 
@@ -334,12 +334,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| dwho_issa('queuefeatures',$arr) === false
 		|| dwho_issa('queue',$arr) === false)
 			return(false);
+			
+		$name = strtolower($arr['queuefeatures']['displayname']);
+		$name = str_replace(' ','',$name);
+		$arr['queuefeatures']['name'] = $name;
 
 		$this->set_queuefeatures($arr['queuefeatures']);
 
-		$name = strtolower($this->get_result_var('queuefeatures','name'));
-		$number = (string) $this->get_result_var('queuefeatures','number');
-		$context = (string) $this->get_result_var('queuefeatures','context');
+		$number = (string) $arr['queuefeatures']['number'];
+		$context = (string) $arr['queuefeatures']['context'];
 
 		$arr['queue']['name'] = $name;
 

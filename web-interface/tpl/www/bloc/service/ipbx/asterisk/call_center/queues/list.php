@@ -92,7 +92,7 @@ $page = $url->pager($pager['pages'],
 			<label for="it-queues-<?=$i?>" id="lb-queues-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					dwho_trunc($ref['name'],25,'...',false);
+					dwho_trunc($ref['displayname'],25,'...',false);
 ?>
 			</label>
 		</td>

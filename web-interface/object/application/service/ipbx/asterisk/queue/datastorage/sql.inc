@@ -27,9 +27,9 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 				'queue'		=> '',
 				'queuemember'	=> '');
 
-	function get_qos($key_assoc='name')
+	function get_qos($key_assoc='displayname')
 	{
-		$this->_dso->new_select($this->_table['queuefeatures'],array('id','name','number','stats_qos'));
+		$this->_dso->new_select($this->_table['queuefeatures'],array('id','name','displayname','number','stats_qos'));
 		
 		$r = $this->_dso->select_all(null,true,false,$key_assoc);
 
@@ -66,6 +66,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 
 		$this->_dso->new_group('name',$this->_table['queuefeatures']);
 		$this->_dso->add_group('id', $this->_table['queuefeatures']);
+		$this->_dso->add_group('displayname', $this->_table['queuefeatures']);
 		$this->_dso->add_group('number', $this->_table['queuefeatures']);
 		$this->_dso->add_group('context', $this->_table['queuefeatures']);
 		$this->_dso->add_group('data_quality', $this->_table['queuefeatures']);
@@ -89,7 +90,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
-			$this->_dso->wherecontain('name',$value,true,$this->_table['queuefeatures']);
+			$this->_dso->wherecontain('displayname',$value,true,$this->_table['queuefeatures']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['queuefeatures']);
 			$this->_dso->aggregate_where();
 		}
@@ -127,8 +128,8 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 	{
 		$this->_dso->new_select('queueskillcat', array('count' => (object) 'COUNT(*)'));
 		if(!is_null($search) && strlen($search) > 0)
-			$this->_dso->wherecontain("name", $search);
-
+			$this->_dso->orwherecontain("name", $search);
+		
 		$res = $this->_dso->select_all(null, true);
 
 		$this->_dso->reset_order();
@@ -141,7 +142,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 	{
 		$this->_dso->new_select('queueskillcat',array('id', 'name'));
 		if(!is_null($search) && strlen($search) > 0)
-			$this->_dso->wherecontain("name", $search, true, 'queueskillcat');
+			$this->_dso->wherecontain("displayname", $search, true, 'queueskillcat');
 
 		$this->_dso->leftjoin('queueskill',
 			'queueskillcat.id = queueskill.catid',
@@ -177,7 +178,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
         // search by string match (LIKE)
         else if(!is_null($filter))
         {
-            $this->_dso->wherecontain('name'          , $filter, true, 'queueskill');
+            $this->_dso->wherecontain('name'	, $filter, true, 'queueskill');
             $this->_dso->orwherecontain('description' , $filter, true, 'queueskill');
             $this->_dso->orwherecontain('printscreen' , $filter, true, 'queueskill');
             $this->_dso->orwherecontain('name'        , $filter, true, 'queueskillcat');
@@ -223,12 +224,12 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		return array('id' => $id, 'name' => $name, 'values' => $res);
+		return array('id' => $id, 'name' => $name,  'values' => $res);
 	}
 
 	function skills_gettree()
 	{
-		$this->_dso->new_select('queueskill',array('id', 'name'));
+		$this->_dso->new_select('queueskill',array('id','name'));
 		$this->_dso->leftjoin('queueskillcat',
 			'queueskillcat.id = queueskill.catid',
 			null,
@@ -249,7 +250,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 	{
 		$this->_dso->new_select('queueskillrule', array('count' => (object) 'COUNT(*)'));
 		if(!is_null($search) && strlen($search) > 0)
-			$this->_dso->wherecontain("name", $search);
+			$this->_dso->wherecontain("displayname", $search);
 
 		$res = $this->_dso->select_all(null, true);
 

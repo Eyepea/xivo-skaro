@@ -41,13 +41,13 @@ endif;
 <div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_name'),
-				  'name'	=> 'queuefeatures[name]',
+				  'name'	=> 'queuefeatures[displayname]',
 				  'labelid' => 'queuefeatures-name',
 				  'size'	=> 15,
-				  'default'	=> $element['queuefeatures']['name']['default'],
-				  'value'	=> $info['queuefeatures']['name'],
+				  'default'	=> $element['queuefeatures']['displayname']['default'],
+				  'value'	=> $info['queuefeatures']['displayname'],
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error','queuefeatures','name')))),
+					   $this->get_var('error','queuefeatures','displayname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_number'),
 				  'name'	=> 'queuefeatures[number]',
