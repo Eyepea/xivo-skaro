@@ -506,7 +506,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r['queues'] = $this->get_destination_queues($queueid,$number);
 		$r['meetme'] = $this->get_destination_meetme(0,$number);
 		$r['voicemail'] = $this->get_destination_voicemail();
-		$r['schedule'] = $this->get_destination_schedule($scheduleid);
+		//NEW SCHEDULE MODE
+		//$r['schedule'] = $this->get_destination_schedule($scheduleid);
 		$r['voicemenu'] = $this->get_destination_voicemenu();
 
 		return($r);
@@ -589,11 +590,11 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$order = array();
 		$order['name'] = SORT_ASC;
 		$order['context'] = SORT_ASC;
-
+/*
 		if(($schedule = &$this->_service->get_module('schedule')) !== false
 		&& ($r = $schedule->get_all_except($id,$order)) !== false)
 			return($r);
-
+ */
 		return(false);
 	}
 
