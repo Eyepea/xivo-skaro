@@ -18,31 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
+$array = array();
 
-class xivo_service_asterisk_schedule_sql extends xivo_service_asterisk_abstract_sql
-{
-	var $_unique	= 'name';
+$array['element'] = array();
 
-	/*
-	function get_all_except($id,$order=null,$limit=null)
-	{
-		$this->_dso->new_select($this->_table,'*');
+$array['element']['schedule_id'] = array();
+$array['element']['schedule_id']['default'] = '';
 
-		if(isset($this->_forcecolumn) === true)
-			$this->_dso->where($this->_forcecolumn);
+$array['element']['path'] = array();
+$array['element']['path']['default'] = '';
 
-		if(($id = dwho_ulongint($id)) !== 0)
-			$this->_dso->andwherenot(array('id' => $id));
+$array['element']['pathid'] = array();
+$array['element']['pathid']['default'] = '';
 
-		$this->_dso->new_order($order);
-		$this->_dso->limit($limit);
-
-		$r = $this->_dso->select_all();
-
-		$this->_dso->reset_order();
-		$this->_dso->reset_limit();
-	 */
-}
+$array['filter'] = array();
+$array['filter']['schedule_id'] = array('set' => false, 'chk' => 2);
+$array['filter']['path'] = array('set' => false, 'chk' => 2);
+$array['filter']['pathid'] = array('set' => false, 'chk' => 2);
 
 ?>

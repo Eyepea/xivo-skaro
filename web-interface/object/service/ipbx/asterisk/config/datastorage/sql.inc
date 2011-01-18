@@ -344,4 +344,13 @@ $array['iaxcallnumberlimits'] = array();
 $array['iaxcallnumberlimits']['table'] = 'iaxcallnumberlimits';
 $array['iaxcallnumberlimits']['primary'] = array('id' => '');
 
+$array['schedule_path'] = array();
+$array['schedule_path']['table'] = 'schedule_path';
+$array['schedule_path']['primary'] = array('schedule_id' => '', 'path' => '', 'pathid' => '');
+
+$array['schedule_time'] = array();
+$array['schedule_time']['table'] = 'schedule_time';
+$array['schedule_time']['primary'] = array('id' => '');
+
+
 ?>

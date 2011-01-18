@@ -22,7 +22,7 @@ class xivo_service_asterisk_schedule_identity
 {
 	function _prepare_identity(&$data)
 	{
-		$data['identity'] = $data['name'].' ('.$data['context'].')';
+		$data['identity'] = $data['name'].' (plop)';
 
 		return($data);
 	}
@@ -30,7 +30,7 @@ class xivo_service_asterisk_schedule_identity
 	function mk_identity($arr)
 	{
 		if(is_array($arr) === false
-		|| isset($arr['name'],$arr['context']) === false)
+		|| isset($arr['name']) === false)
 			return(false);
 
 		$this->_prepare_identity($arr);

@@ -293,6 +293,13 @@ $array['module']['sipauthentication']['datastorage'] = true;
 $array['module']['iaxcallnumberlimits'] = array();
 $array['module']['iaxcallnumberlimits']['datastorage'] = true;
 
+$array['module']['schedule_path'] = array();
+$array['module']['schedule_path']['datastorage'] = true;
+
+$array['module']['schedule_time'] = array();
+$array['module']['schedule_time']['datastorage'] = true;
+
+
 
 
 

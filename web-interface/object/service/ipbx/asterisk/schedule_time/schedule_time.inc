@@ -18,31 +18,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_schedule_sql extends xivo_service_asterisk_abstract_sql
+class xivo_service_asterisk_schedule_time extends xivo_service_asterisk_abstract
 {
-	var $_unique	= 'name';
+	var $_dso	= null;
+	var $_name	= 'schedule_time';
+	var $_filter	= false;
+	var $_origin	= false;
+	var $_identity	= false;
 
-	/*
-	function get_all_except($id,$order=null,$limit=null)
+	function xivo_service_asterisk_schedule_time(&$sre,&$dso)
 	{
-		$this->_dso->new_select($this->_table,'*');
+		if(is_object($sre) === false)
+			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
-		if(isset($this->_forcecolumn) === true)
-			$this->_dso->where($this->_forcecolumn);
+		if(is_object($dso) === false)
+			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
-		if(($id = dwho_ulongint($id)) !== 0)
-			$this->_dso->andwherenot(array('id' => $id));
+		$this->_sre = &$sre;
+		$this->_dso = &$dso;
 
-		$this->_dso->new_order($order);
-		$this->_dso->limit($limit);
+		$this->_load_config();
+	}
 
-		$r = $this->_dso->select_all();
-
-		$this->_dso->reset_order();
-		$this->_dso->reset_limit();
-	 */
 }
 
 ?>
