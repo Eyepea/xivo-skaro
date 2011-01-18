@@ -72,9 +72,11 @@ $array['element']['action']['default'] = 'none';
 
 $array['element']['actionarg1'] = array();
 $array['element']['actionarg1']['default'] = '';
+$array['element']['actionarg1']['null'] = true;
 
 $array['element']['actionarg2'] = array();
 $array['element']['actionarg2']['default'] = '';
+$array['element']['actionarg2']['null'] = true;
 
 $array['element']['actiontype'] = array();
 $array['element']['actiontype']['value'] = array('none',

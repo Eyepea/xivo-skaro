@@ -129,6 +129,11 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 		if(isset($arr['event']) === true)
 			$arr['event'] = strval($arr['event']);
 
+		if(strlen($arr['actionarg1']) == 0)
+			$arr['actionarg1'] = null;
+		if(strlen($arr['actionarg2']) == 0)
+			$arr['actionarg2'] = null;
+
 		return(parent::add($arr));
 	}
 
