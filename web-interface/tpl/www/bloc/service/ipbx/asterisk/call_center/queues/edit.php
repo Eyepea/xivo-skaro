@@ -47,7 +47,10 @@ $form = &$this->get_module('form');
 					    'value'	=> 1)),
 
 			$form->hidden(array('name'	=> 'id',
-					    'value'	=> $this->get_var('id')));
+					    'value'	=> $this->get_var('id'))),
+
+			$form->hidden(array('name'	=> 'queuefeatures[name]',
+					    'value'	=> $this->get_var('info','queuefeatures','name')));
 
 		$this->file_include('bloc/service/ipbx/asterisk/call_center/queues/form');
 

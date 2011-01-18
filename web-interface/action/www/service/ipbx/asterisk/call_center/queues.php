@@ -243,6 +243,7 @@ switch($act)
 				$fm_save = false;
 				$result = $appqueue->get_result();
 				$error = $appqueue->get_error();
+var_dump($error);
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
