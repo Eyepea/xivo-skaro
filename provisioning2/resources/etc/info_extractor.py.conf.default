@@ -1,0 +1,8 @@
+# Default configuration for the device info extractor
+
+def xtor_factory(xtors):
+    return CollaboratingDeviceInfoExtractor(VotingUpdater, xtors)
+
+all_pg_xtor = AllPluginsDeviceInfoExtractor(xtor_factory, app.pg_mgr)
+dhcp_xtor = DHCPDeviceInfoExtractor(dhcp_infos, all_pg_xtor)
+info_extractor = CollaboratingDeviceInfoExtractor(VotingUpdater, [all_pg_xtor, dhcp_xtor])

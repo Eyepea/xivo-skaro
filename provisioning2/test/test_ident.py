@@ -78,6 +78,17 @@ class TestCollaboratingDevInfoXtor(unittest.TestCase):
             self.fail(failure)
         collab_xtor.extract(None, None).addCallbacks(call, err)
     
+    def test_remove_updater_noop_on_key_conflict_but_no_value_conflict(self):
+        xtors = [StaticDeviceInfoExtractor({'k1': 'v1'}),
+                 StaticDeviceInfoExtractor({'k1': 'v1'}),]
+        
+        collab_xtor = CollaboratingDeviceInfoExtractor(RemoveUpdater, xtors)
+        def call(dev_info):
+            self.assertEqual({'k1': 'v1'}, dev_info)
+        def err(failure):
+            self.fail(failure)
+        collab_xtor.extract(None, None).addCallbacks(call, err)
+    
     def test_voting_updater_votes_for_only_if_only_one(self):
         xtors = [StaticDeviceInfoExtractor({'k1': 'v1'}),]
         

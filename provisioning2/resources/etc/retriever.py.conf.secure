@@ -1,0 +1,18 @@
+# 'Secure' configuration for the device retriever
+#
+# The attack this configuration file prevents is the following:
+# - by default, new devices are automatically added to the device DB when they
+#   are found not to be known by the provisioning server. It is thus possible
+#   for an attacker to fill the device DB with junk by sending carefully
+#   crafted requests to the provisioning server, making the device DB grow
+#   and slowing the whole thing down.
+#
+# Notes:
+# - new devices are no more added automatically to the devices DB. This means
+#   that if you want to provision a new device, you must manually add it
+#   before it can be provisioned.
+
+mac_retriever = MacDeviceRetriever()
+sn_retriever = SerialNumberDeviceRetriever()
+ip_retriever = IpDeviceRetriever()
+retriever = FirstCompositeDeviceRetriever([mac_retriever, sn_retriever, ip_retriever])

@@ -7,7 +7,7 @@ configuration.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -749,13 +749,15 @@ class PluginServicesResource(Resource):
 
 
 class DHCPInfoResource(Resource):
-    """
-    DHCP infos can be found in the dhcp_infos attribute.
-    
-    """
-    def __init__(self):
+    """Resource for pushing DHCP information into the provisioning server."""
+    def __init__(self, dhcp_infos):
+        """
+        dhcp_infos is a dictionary object that will change as the server
+          receive information
+        
+        """
         Resource.__init__(self)
-        self.dhcp_infos = {}
+        self._dhcp_infos = dhcp_infos
     
     def _transform_dhcp_opts(self, raw_dhcp_opts):
         dhcp_opts = {}
@@ -773,13 +775,48 @@ class DHCPInfoResource(Resource):
         if op == 'commit':
             mac = norm_mac(content['mac'].encode('ascii'))
             dhcp_opts = self._transform_dhcp_opts(content['dhcp_opts'])
-            self.dhcp_infos[ip] = {'mac': mac, 'dhcp_opts': dhcp_opts}
+            self._dhcp_infos[ip] = {'mac': mac, 'dhcp_opts': dhcp_opts}
             request.setResponseCode(http.NO_CONTENT)
             return ""
         elif op in ('expiry', 'release'):
-            if ip in self.dhcp_infos:
-                del self.dhcp_infos[ip]
+            if ip in self._dhcp_infos:
+                del self._dhcp_infos[ip]
             request.setResponseCode(http.NO_CONTENT)
             return ""
         else:
             return _process_request_failed(request, 'invalid commit value')
+
+
+def new_root_resource(app, dhcp_infos):
+    root = Resource()
+    dev_res = DevicesResource(app)
+    dev_reload_res = DeviceSynchronizeResource(app)
+    dhcpinfo_res = DHCPInfoResource(dhcp_infos)
+    root.putChild('devices', dev_res)
+    root.putChild('dev_sync', dev_reload_res)
+    root.putChild('dhcpinfo', dhcpinfo_res)
+    
+    cfg_res = ConfigsResource(app)
+    root.putChild('configs', cfg_res)
+    
+    pg_config_res = PluginMgrConfigureResource(app.pg_mgr)
+    pg_update_res = PluginMgrUpdateResource(app.pg_mgr)
+    pg_list_able_res = PluginMgrListInstallableResource(app.pg_mgr)
+    pg_list_ed_res = PluginMgrListInstalledResource(app.pg_mgr)
+    pg_list_upgradeable_res = PluginMgrListUpgradeableResource(app.pg_mgr)
+    pg_install_res = PluginMgrInstallResource(app)
+    pg_upgrade_res = PluginMgrUpgradeResource(app)
+    pg_uninstall_res = PluginMgrUninstallRecourse(app)
+    pg_plugins_res = PluginsResource(app.pg_mgr)
+    pg_mgr_res = Resource()
+    pg_mgr_res.putChild('config', pg_config_res)
+    pg_mgr_res.putChild('update', pg_update_res)
+    pg_mgr_res.putChild('installable', pg_list_able_res)
+    pg_mgr_res.putChild('installed', pg_list_ed_res)
+    pg_mgr_res.putChild('upgradeable', pg_list_upgradeable_res)
+    pg_mgr_res.putChild('install', pg_install_res)
+    pg_mgr_res.putChild('upgrade', pg_upgrade_res)
+    pg_mgr_res.putChild('uninstall', pg_uninstall_res)
+    pg_mgr_res.putChild('plugins', pg_plugins_res)
+    root.putChild('pg_mgr', pg_mgr_res)
+    return root

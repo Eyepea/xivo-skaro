@@ -1,19 +1,10 @@
 # -*- coding: UTF-8 -*-
 
-"""Main module of the provisioning server.
-
-Setup all the stuff and then run...
-
-"""
-
 from __future__ import with_statement
-
-# XXX this is really dirty, you should see this as experimental/prototypal/bunch
-#     of unstructured functional tests
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,33 +20,25 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import atexit
-import ConfigParser
 import logging
 import logging.handlers
-import optparse
-import sys
-import time
-from pprint import pprint
-from prov2.devices.ident import *
-from prov2.devices.pgasso import PluginAssociatorDeviceUpdater,\
-    AlphabeticConflictSolver
-from prov2.servers.tftp.service import TFTPLogService
+import os.path
+import prov2.config
+import prov2.devices.ident
+import prov2.devices.pgasso
 from prov2.servers.tftp.proto import TFTPProtocol
-from prov2.servers.http import HTTPLogService
 from prov2.servers.http_site import Site
 from prov2.devices.config import ConfigManager
 from prov2.devices.device import DeviceManager
 from prov2.devices.util import NumericIdGenerator
 from prov2.plugins import PluginManager
-from prov2.rest.server import DevicesResource,\
-    ConfigsResource, DeviceSynchronizeResource,\
-    PluginMgrUpdateResource, PluginMgrListInstallableResource,\
-    PluginMgrListInstalledResource, PluginMgrListUpgradeableResource,\
-    PluginMgrConfigureResource, PluginMgrInstallResource, PluginMgrUninstallRecourse,\
-    PluginMgrUpgradeResource, PluginsResource, DHCPInfoResource
-from prov2.util import norm_ip
-from twisted.python.util import println
+from prov2.rest.server import new_root_resource
+from twisted.application.service import IServiceMaker, Service, MultiService
+from twisted.application import internet
+from twisted.plugin import IPlugin
+from twisted.python import log
+from twisted.web.resource import Resource
+from zope.interface.declarations import implements
 
 logger = logging.getLogger('main')
 
@@ -66,6 +49,7 @@ class InvalidIdError(Exception):
     
     """
     pass
+
 
 class UsedIdError(InvalidIdError):
     """Raised if we try setting/adding a new device with an ID already in
@@ -95,18 +79,29 @@ class Application(object):
     
     """
     
+    def _split_config(self, config):
+        splitted_config = {}
+        for k, v in config.iteritems():
+            current_dict = splitted_config
+            key_tokens = k.split('.')
+            for key_token in key_tokens[:-1]:
+                current_dict = current_dict.setdefault(key_token, {})
+            current_dict[key_tokens[-1]] = v
+        return splitted_config
+    
     def __init__(self, config):
         logger.info('Creating application...')
-        self._config = config
-        self.dev_mgr = DeviceManager()
         self.cfg_mgr = ConfigManager()
+        self.dev_mgr = DeviceManager()
         self.pg_mgr = PluginManager(self,
-                                    config['pg_mgr']['plugins_dir'],
-                                    config['pg_mgr']['cache_dir'])
-        if 'server' in config['pg_mgr']:
-            self.pg_mgr.server = config['pg_mgr']['server']
+                                    config['general.plugins_dir'],
+                                    config['general.cache_dir'])
+        if 'general.plugin_server' in config:
+            self.pg_mgr.server = config['general.plugin_server']
         self._dev_id_gen = NumericIdGenerator()
         self._cfg_id_gen = NumericIdGenerator()
+        self._splitted_config = self._split_config(config)
+        
         self._load_all_pg()
         
     def close(self):
@@ -140,11 +135,10 @@ class Application(object):
             cfg_id = dev['config']
             if cfg_id in self.cfg_mgr:
                 config = self.cfg_mgr.flatten(cfg_id)
-                # Non overwriting update of the common config
-                common_config = self._config['common_config']
-                for key in common_config:
-                    if key not in config:
-                        config[key] = common_config[key]
+                # Non overwriting update of the config with the common config
+                for k, v in self._splitted_config['common_config'].iteritems():
+                    if k not in config:
+                        config[k] = v
                 return config
         return None
     
@@ -366,8 +360,8 @@ class Application(object):
             self._load_pg(pg_id)
         
     def _load_pg(self, pg_id):
-        gen_cfg = self._config['general']
-        spec_cfg = self._config.get('pluginconfig_' + pg_id, {})
+        gen_cfg = self._splitted_config['general']
+        spec_cfg = self._splitted_config.get('plugin_config', {}).get(pg_id, {})
         logger.info('Loading plugin "%s', pg_id)
         self.pg_mgr.load(pg_id, gen_cfg, spec_cfg)
         self._common_configure(pg_id)
@@ -375,9 +369,8 @@ class Application(object):
     def _common_configure(self, pg_id):
         # Pre: pg_id in self.pg_mgr
         pg = self.pg_mgr[pg_id]
-        config = self._config['common_config']
         logger.info('Calling plugin.configure_common for plugin "%s"', pg_id)
-        pg.configure_common(config)
+        pg.configure_common(self._splitted_config['common_config'])
     
     def _configure_dev_from_plugin(self, pg_id):
         """Call plugin(dev, config) for every devices for which
@@ -463,9 +456,6 @@ class Application(object):
         self.pg_mgr.unload(pg_id)
 
 
-from twisted.internet import reactor
-from twisted.python import log
-
 # configure logging...
 def _configure_root_logger():
     root_logger = logging.getLogger()
@@ -480,114 +470,7 @@ observer = log.PythonLoggingObserver()
 observer.start()
 
 
-# read config
-def _port_number(str):
-    # Return a port number as an integer or raise a ValueError
-    port = int(str)
-    if not 1 <= port <= 65535:
-        raise ValueError('invalid port number "%s"' % str)
-    return port
-
-
-def _ip_address(str):
-    # Return an IP address as a string or raise a ValueError
-    return norm_ip(str)
-
-
-def _new_empty_config():
-    return {'general': {},
-            'common_config': {},
-            'pg_mgr': {}}
-
-
-def _read_config_default():
-    return {'general':
-                {'config_file': '/etc/pf-xivo/prov2.conf',
-                 'rest_port': 8081},
-            'common_config':
-                {'http_port': 80,
-                 'tftp_port': 69},
-            'pg_mgr':
-                {'plugins_dir': '/var/lib/pf-xivo/prov2/plugins',
-                 'cache_dir': '/var/cache/pf-xivo/prov2'}}
-
-
-def _read_config_from_commandline():
-    parser = optparse.OptionParser()
-    parser.add_option('-f', dest='config_file',
-                      help='name of the configuration file')
-    opt = parser.parse_args()[0]
-    
-    result = _new_empty_config()
-    if opt.config_file:
-        result['general']['config_file'] = opt.config_file
-    return result
-
-
-def _read_config_from_file(filename):
-    config = ConfigParser.RawConfigParser()
-    fobj = open(filename)
-    try:
-        config.readfp(fobj)
-    finally:
-        fobj.close()
-
-    result = _new_empty_config()
-    for section in config.sections():
-        in_result = result.setdefault(section, {})
-        for name, value in config.items(section):
-            in_result[name] = value
-    return result
-
-
-# XXX ugly
-def _read_config():
-    # get a raw config object
-    config = _read_config_default()
-    def _update(new_config):
-        for key in config:
-            config[key].update(new_config[key])
-    # read config from command line twice, once to get the config file, and
-    # another so that the config overrides the one from the file.
-    _update(_read_config_from_commandline())
-    _update(_read_config_from_file(config['general']['config_file']))
-    _update(_read_config_from_commandline())
-    
-    # check that mandatory field are specified
-    mandatory = {'common_config': ['ip', 'http_port', 'tftp_port']}
-    for section in mandatory:
-        config_section = config[section]
-        for option in mandatory[section]:
-            if option not in config_section:
-                raise ValueError('mandatory parameter "%s.%s" not specified' %
-                                 (option, section))
-    
-    # check that values are valid and transform them in the wanted format
-    transform = {'general':
-                     {'rest_port': _port_number},
-                 'common_config':
-                     {'ip': _ip_address,
-                      'http_port': _port_number,
-                      'tftp_port': _port_number}}
-    for section in transform:
-        config_section = config[section]
-        for key, transform_fun in transform[section].iteritems():
-            if key in config_section:
-                config_section[key] = transform_fun(config_section[key])
-    return config
-
-
-
-main_config = _read_config()
-app = Application(main_config)
-atexit.register(app.close)
-#sys.exit()
-
-cfg_mgr = app.cfg_mgr
-dev_mgr = app.dev_mgr
-pg_mgr = app.pg_mgr
-
-# Create some config
+# Create some config -- testing purpose only
 # a 'base' configuration
 xivo_ip = '192.168.33.4'
 base_cfg = {
@@ -651,187 +534,189 @@ dev1_cfg = {
     }
 }
 
-cfg_mgr['base'] = (base_cfg, [])
-cfg_mgr['guest'] = (guest_cfg, ['base'])
-cfg_mgr['dev1'] = (dev1_cfg, ['base'])
 
-# fake configure a device with aastra plugin
-#def new_fake_params(prefix, param_names):
-#    return dict((name, prefix + name) for name in param_names)
-#line_1 = new_fake_params('fake_',
-#                         ['proxy_ip', 'registrar_ip', 'backup_proxy_ip', 'backup_registrar_ip',
-#                          'display_name', 'user_id', 'auth_id', 'passwd'])
-#cfg_base = new_fake_params('bfake_', ['subscribe_mwi'])
-#cfg_base.update({'exten': new_fake_params('fake', ['pickup_prefix', 'voicemail', 'fwdunc', 'dnd']),
-#                 'funckey': {1: {'exten': 4000, 'supervision': False, 'label': 'fake_label', 'line': 1}}})
-#cfg_spec = {'sip': {'lines': {1: line_1}, 'dtmfmode': 'fake_dtmfmode'},
-#            'timezone': 'America/Montreal', 'locale': 'fr_CA'}
-#cfg_manager = {'base': (cfg_base, []),
-#               'spec': (cfg_spec, ['base'])}
-#flat_cfg = flatten_config(cfg_manager, 'spec')
-#fake_dev = {'mac': '\x00' * 6, 'ip': '\x00' * 4, 'vendor': 'Aastra',
-#            'model': '6731i', 'version': '2.6.0.1008'}
-#pg_aastra.configure(fake_dev, flat_cfg)
-#sys.exit()
-
-
-# update the plugin definition file
-#println(list(pg_mgr.list_installable()))
-#pop = pg_mgr.update()
-#pop.deferred.addCallback(lambda _: println(list(pg_mgr.list_installable())))
-#pop.deferred.addBoth(lambda _: reactor.stop())
-#pm_mgr.uninstall('xivo-aastra-2.6.0.1008')
-#reactor.callLater(15, reactor.stop)
-#reactor.run()
-#sys.exit()
-
-# uninstall the xivo-aastra-plugin
-#print pg_mgr.items()
-#app.uninstall_pg('xivo-aastra-2.6.0.1008')
-#sys.exit()
-
-# install the xivo-aastra plugin
-#println(list(pg_mgr.list_installed()))
-#pop = app.install_pg('xivo-aastra-2.6.0.1008')
-#pop.deferred.addCallback(lambda _: println(list(pg_mgr.list_installed())))
-#pop.deferred.addBoth(lambda _: println(pop.status))
-#pop.deferred.addBoth(lambda _: reactor.stop())
-#reactor.callLater(15, reactor.stop)
-#reactor.run()
-#sys.exit()
-
-def metaaff(prefix):
-    def aff(message):
-        print prefix, message
-    return aff
-
-def metalog(prefix):
-    def aff(message):
-        logger.info("%s, %s", prefix, message)
-    return aff
-
-dhcpinfo_res = DHCPInfoResource()
-
-all_pg_xtor = AllPluginsDeviceInfoExtractor(LongestDeviceInfoExtractor, pg_mgr)
-dhcp_xtor = DHCPDeviceInfoExtractor(dhcpinfo_res.dhcp_infos, all_pg_xtor)
-collab_xtor = CollaboratingDeviceInfoExtractor(VotingUpdater, [dhcp_xtor, all_pg_xtor])
-root_xtor = collab_xtor
-
-mac_retriever = MacDeviceRetriever()
-ip_retriever = IpDeviceRetriever()
-add_retriever = AddDeviceRetriver()
-cmpz_retriever = FirstCompositeDeviceRetriever([mac_retriever, ip_retriever, add_retriever])
-root_retriever = cmpz_retriever
-
-guest_cfg_updater = StaticDeviceUpdater('config', 'guest')
-pg_sstor_solver = AlphabeticConflictSolver()
-pg_auto_updater = PluginAssociatorDeviceUpdater(pg_mgr, pg_sstor_solver)
-zero_pg_updater = StaticDeviceUpdater('plugin', 'zero')
-class MyWeirdDeviceUpdater():
-    def update(self, dev, dev_info, request, request_type):
-        if request_type == 'http' and request.path.endswith('aastra.cfg'):
-            nb_req = dev.get('x-nb_req', 0)
-            last_update = dev.get('x-last_up', 0)
-            now = time.time()
-            if now - last_update > 120:
-                nb_req += 1
-                dev['x-nb_req'] = nb_req
-                dev['x-last_up'] = now
-                if nb_req % 2 == 0:
-                    dev['config'] = 'dev1'
-                else:
-                    dev['config'] = 'guest'
-                return True
-            else:
-                return False
-        return False
-weird_updater = MyWeirdDeviceUpdater()
-add_info_updater = AddInfoDeviceUpdater()
-every_updater = EverythingDeviceUpdater()
-cmpz_updater = CompositeDeviceUpdater([add_info_updater, guest_cfg_updater, pg_auto_updater])
-root_updater = cmpz_updater
-
-pg_router = PluginDeviceRouter()
-static_router = StaticDeviceRouter('test-pull-dyn')
-root_router = pg_router
-
-process_service = RequestProcessingService(app)
-process_service.dev_info_extractor = root_xtor
-process_service.dev_retriever = root_retriever
-process_service.dev_updater = root_updater
-process_service.dev_router = root_router
-
-
-def tftp_service_factory(pg_id, pg_service):
-    return TFTPLogService(metalog('tftp-post ' + pg_id + ':'), pg_service)
+class ProvisioningService(Service):
+    def __init__(self, config):
+        self._config = config
+        
+    def startService(self):
+        Service.startService(self)
+        self.app = Application(self._config)
+        
+        # XXX next lines are for testing purpose only
+        cfg_mgr = self.app.cfg_mgr
+        cfg_mgr['base'] = (base_cfg, [])
+        cfg_mgr['guest'] = (guest_cfg, ['base'])
+        cfg_mgr['dev1'] = (dev1_cfg, ['base'])
     
-# tftp
-def new_tftp_service():
-    tftp_process_service = TFTPRequestProcessingService(process_service, pg_mgr)
-    tftp_process_service.service_factory = tftp_service_factory
-    preprocess_service = TFTPLogService(metalog('tftp-pre:'), tftp_process_service)
-
-    return preprocess_service
-
-tftp_service = new_tftp_service()
+    def stopService(self):
+        Service.stopService(self)
+        self.app.close()
 
 
-def http_service_factory(pg_id, pg_service):
-    return HTTPLogService(metalog('http-post ' + pg_id + ':'), pg_service)
-
-# http
-def new_http_service():
-    http_process_service = HTTPRequestProcessingService(process_service, pg_mgr)
-    http_process_service.service_factory = http_service_factory
-    preprocess_service = HTTPLogService(metalog('http-pre:'), http_process_service)
+class ProcessService(Service):
+    def __init__(self, prov_service, dhcp_infos, config):
+        self._prov_service = prov_service
+        self._dhcp_infos = dhcp_infos
+        self._config = config
     
-    return preprocess_service
+    def _get_conffile_globals(self):
+        # Pre: hasattr(self._prov_service, 'app')
+        conffile_globals = {}
+        conffile_globals.update(prov2.devices.ident.__dict__)
+        conffile_globals.update(prov2.devices.pgasso.__dict__)
+        conffile_globals['app'] = self._prov_service.app
+        conffile_globals['dhcp_infos'] = self._dhcp_infos
+        return conffile_globals
+    
+    def _create_processor(self, config_dir, name, config_name):
+        # name is the name of the processor, for example 'info_extractor'
+        filename = os.path.join(config_dir, name + '.py.conf.' + config_name)
+        conffile_globals = self._get_conffile_globals()
+        try:
+            execfile(filename, conffile_globals)
+        except Exception, e:
+            logger.error('error while executing process config file "%s": %s', filename, e)
+            raise
+        if name not in conffile_globals:
+            raise Exception('process config file "%s" doesn\'t define a "%s" name',
+                            filename, name)
+        return conffile_globals[name]
+    
+    def startService(self):
+        # Pre: hasattr(self._prov_service, 'app')
+        Service.startService(self)
+        self.request_processing = prov2.devices.ident.RequestProcessingService(self._prov_service.app)
+        config_dir = self._config['general.config_dir']
+        for name in ('info_extractor', 'retriever', 'updater', 'router'):
+            setattr(self.request_processing, 'dev_' + name,
+                    self._create_processor(config_dir, name, self._config['general.' + name]))
 
-http_service = new_http_service()
-http_site = Site(http_service)
+
+class HTTPProcessService(Service):
+    def __init__(self, prov_service, process_service, config):
+        self._prov_service = prov_service
+        self._process_service = process_service
+        self._config = config
+    
+    def startService(self):
+        Service.startService(self)
+        
+        app = self._prov_service.app
+        process_service = self._process_service.request_processing
+        http_process_service = prov2.devices.ident.HTTPRequestProcessingService(process_service,
+                                                                                app.pg_mgr) 
+        site = Site(http_process_service)
+        port = self._config['general.http_port']
+        interface = self._config['general.ip']
+        if interface == '*':
+            interface = ''
+        self._tcp_server = internet.TCPServer(port, site, interface=interface)
+        self._tcp_server.startService()
+
+    def stopService(self):
+        Service.stopService(self)
+        return self._tcp_server.stopService()
 
 
-root = Resource()
+class TFTPProcessService(Service):
+    def __init__(self, prov_service, process_service, config):
+        self._prov_service = prov_service
+        self._process_service = process_service
+        self._config = config
+    
+    def startService(self):
+        Service.startService(self)
+        
+        app = self._prov_service.app
+        process_service = self._process_service.request_processing
+        tftp_process_service = prov2.devices.ident.TFTPRequestProcessingService(process_service,
+                                                                                app.pg_mgr)
+        tftp_protocol = TFTPProtocol(tftp_process_service)
+        port = self._config['general.tftp_port']
+        interface = self._config['general.ip']
+        if interface == '*':
+            interface = ''
+        self._udp_server = internet.UDPServer(port, tftp_protocol, interface=interface)
+        self._udp_server.startService()
+    
+    def stopService(self):
+        Service.stopService(self)
+        return self._udp_server.stopService()
 
-dev_res = DevicesResource(app)
-dev_reload_res = DeviceSynchronizeResource(app)
-root.putChild('devices', dev_res)
-root.putChild('dev_sync', dev_reload_res)
-root.putChild('dhcpinfo', dhcpinfo_res)
 
-cfg_res = ConfigsResource(app)
-root.putChild('configs', cfg_res)
+class RemoteConfigurationService(Service):
+    def __init__(self, prov_service, dhcp_infos, config):
+        self._prov_service = prov_service
+        self._dhcp_infos = dhcp_infos
+        self._config = config
+    
+    def startService(self):
+        Service.startService(self)
+        app = self._prov_service.app
+        root_resource = new_root_resource(app, self._dhcp_infos)
+        rest_site = Site(root_resource)
+        
+        port = self._config['general.rest_port']
+        interface = self._config['general.ip']
+        if interface == '*':
+            interface = ''
+        self._tcp_server = internet.TCPServer(port, rest_site, interface=interface)
+        self._tcp_server.startService()
+    
+    def stopService(self):
+        Service.stopService(self)
+        return self._tcp_server.stopService()
 
-pg_config_res = PluginMgrConfigureResource(pg_mgr)
-pg_update_res = PluginMgrUpdateResource(pg_mgr)
-pg_list_able_res = PluginMgrListInstallableResource(pg_mgr)
-pg_list_ed_res = PluginMgrListInstalledResource(pg_mgr)
-pg_list_upgradeable_res = PluginMgrListUpgradeableResource(pg_mgr)
-pg_install_res = PluginMgrInstallResource(app)
-pg_upgrade_res = PluginMgrUpgradeResource(app)
-pg_uninstall_res = PluginMgrUninstallRecourse(app)
-pg_plugins_res = PluginsResource(pg_mgr)
-pg_mgr_res = Resource()
-pg_mgr_res.putChild('config', pg_config_res)
-pg_mgr_res.putChild('update', pg_update_res)
-pg_mgr_res.putChild('installable', pg_list_able_res)
-pg_mgr_res.putChild('installed', pg_list_ed_res)
-pg_mgr_res.putChild('upgradeable', pg_list_upgradeable_res)
-pg_mgr_res.putChild('install', pg_install_res)
-pg_mgr_res.putChild('upgrade', pg_upgrade_res)
-pg_mgr_res.putChild('uninstall', pg_uninstall_res)
-pg_mgr_res.putChild('plugins', pg_plugins_res)
-root.putChild('pg_mgr', pg_mgr_res)
 
-class DebugResource(Resource):
-    def render_GET(self, request):
-        le_app = app
-        print id(le_app)
-        return ""
-root.putChild('debug', DebugResource())
-rest_site = Site(root)
+class _CompositeConfigSource(object):
+    def __init__(self, options):
+        self._options = options
+        
+    def pull(self):
+        raw_config = {}
+        
+        default = prov2.config.DefaultConfigSource()
+        raw_config.update(default.pull())
+        
+        command_line = prov2.config.CommandLineConfigSource(self._options)
+        raw_config.update(command_line.pull())
+        
+        config_file = prov2.config.ConfigFileConfigSource(raw_config['general.config_file'])
+        raw_config.update(config_file.pull())
+        
+        return raw_config
 
-reactor.listenUDP(main_config['common_config']['tftp_port'], TFTPProtocol(tftp_service))
-reactor.listenTCP(main_config['common_config']['http_port'], http_site)
-reactor.listenTCP(main_config['general']['rest_port'], rest_site)
-reactor.run()
+
+class ProvisioningServiceMaker(object):
+    implements(IServiceMaker, IPlugin)
+    
+    tapname = "prov2"
+    description = "A provisioning server."
+    options = prov2.config.Options
+    
+    def _read_config(self, options):
+        config_sources = [_CompositeConfigSource(options)]
+        return prov2.config.get_config(config_sources)
+    
+    def makeService(self, options):
+        config = self._read_config(options)
+        dhcp_infos = {}
+        top_service = MultiService()
+        
+        prov_service = ProvisioningService(config)
+        prov_service.setServiceParent(top_service)
+        
+        process_service = ProcessService(prov_service, dhcp_infos, config)
+        process_service.setServiceParent(top_service)
+        
+        http_process_service = HTTPProcessService(prov_service, process_service, config)
+        http_process_service.setServiceParent(top_service)
+        
+        tftp_process_service = TFTPProcessService(prov_service, process_service, config)
+        tftp_process_service.setServiceParent(top_service)
+        
+        remote_config_service = RemoteConfigurationService(prov_service, dhcp_infos, config)
+        remote_config_service.setServiceParent(top_service)
+
+        return top_service

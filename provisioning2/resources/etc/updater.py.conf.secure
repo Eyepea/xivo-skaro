@@ -1,0 +1,15 @@
+# 'Secure' configuration for the device updater
+#
+# The attack this configuration file prevents is the following:
+# - by default, device objects are updated when new information is extracted.
+#   That is, if some extracted information from the requests was not present
+#   in the device object, it will be added to it. It is thus possible for an
+#   attacker to update device objects with junk information by sending
+#   carefully crafted requests to the provisioning server.
+#
+# Notes:
+# - you should not use this device updater if you want to automatically
+#   provision new devices, since in some cases, it will not be possible
+#   to configure the new devices correctly.
+
+updater = NullDeviceUpdater()

@@ -315,9 +315,10 @@ class RemoveUpdater(object):
         for k, v in nonconflicts.iteritems():
             if k not in self._conflicts:
                 self.dev_info[k] = v
-        for k in conflicts:
-            del self.dev_info[k]
-            self._conflicts.add(k)
+        for k, v in conflicts.iteritems():
+            if v != self.dev_info[k]:
+                del self.dev_info[k]
+                self._conflicts.add(k)
 
 
 class VotingUpdater(object):
@@ -399,14 +400,15 @@ class PluginDeviceInfoExtractor(object):
         self._pg_mgr = pg_mgr
         self._set_pg()
         # observe plugin loading/unloading
-        obs = BasePluginManagerObserver(self._set_pg, self._set_pg)
+        obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
+                                        self._on_plugin_load_or_unload)
         pg_mgr.attach(obs)
     
-    def _set_pg(self, *args):
-        if self._pg_id in self._pg_mgr:
-            self._pg = self._pg_mgr[self._pg_id]
-        else:
-            self._pg = None
+    def _set_pg(self, ):
+        self._pg = self._pg_mgr.get(self._pg_id)
+        
+    def _on_plugin_load_or_unload(self, pg_id):
+        self._set_pg()
     
     def extract(self, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
@@ -434,7 +436,8 @@ class AllPluginsDeviceInfoExtractor(object):
         self._pg_mgr = pg_mgr
         self._set_xtors()
         # observe plugin loading/unloading
-        obs = BasePluginManagerObserver(self._set_xtors, self._set_xtors)
+        obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
+                                        self._on_plugin_load_or_unload)
         pg_mgr.attach(obs)
     
     def _xtor_name(self, request_type):
@@ -449,6 +452,9 @@ class AllPluginsDeviceInfoExtractor(object):
                     pg_extractors.append(pg_extractor)
             xtor = self.extractor_factory(pg_extractors)
             setattr(self, self._xtor_name(request_type), xtor)
+    
+    def _on_plugin_load_or_unload(self, pg_id):
+        self._set_xtors()
     
     def extract(self, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
@@ -540,7 +546,7 @@ class SerialNumberDeviceRetriever(object):
         return None
 
 
-class AddDeviceRetriver(object):
+class AddDeviceRetriever(object):
     """A device retriever that does no lookup and always add a new device
     object to the device manager.
     
@@ -925,7 +931,7 @@ class HTTPRequestProcessingService(Resource):
     """
     
     default_service = NoResource('Nowhere to route this request.')
-    service_factory = _null_service_factory
+    service_factory = staticmethod(_null_service_factory)
     
     def __init__(self, process_service, pg_mgr):
         Resource.__init__(self)
@@ -960,7 +966,7 @@ class TFTPRequestProcessingService(object):
     """
     
     default_service = TFTPNullService(errmsg="Nowhere to route this request")
-    service_factory = _null_service_factory
+    service_factory = staticmethod(_null_service_factory)
 
     def __init__(self, process_service, pg_mgr):
         self._process_service = process_service

@@ -1,0 +1,3 @@
+# Default configuration for the device router
+
+router = PluginDeviceRouter()

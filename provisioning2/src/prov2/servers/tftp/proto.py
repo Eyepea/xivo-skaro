@@ -2,7 +2,7 @@
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,9 +18,12 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from twisted.internet.protocol import DatagramProtocol
 from prov2.servers.tftp.connection import RFC2347Connection, RFC1350Connection
 from prov2.servers.tftp.packet import *
+
+logger = logging.getLogger('tftp.proto')
 
 
 class _Response(object):
@@ -87,11 +90,13 @@ class TFTPProtocol(DatagramProtocol):
             pkt = parse_dgram(dgram)
         except PacketError:
             # invalid datagram - ignore it
-            pass
+            logger.info('Received invalid TFTP datagram from %s', addr)
         else:
             if pkt['opcode'] == OP_WRQ:
+                logger.info('TFTP write request from %s', addr)
                 self._handle_wrq(pkt, addr)
             elif pkt['opcode'] == OP_RRQ:
+                logger.info('TFTP read request from %s', addr)
                 self._handle_rrq(pkt, addr)
             else:
                 # non-request packet - ignore it
