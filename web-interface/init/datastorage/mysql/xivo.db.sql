@@ -396,7 +396,7 @@ CREATE TABLE `stats_conf` (
  PRIMARY KEY(`id`)
 );
 
-CREATE INDEX `stats_conf__idx__id_stats_workweek` ON `stats_conf`(`id`);
+CREATE INDEX `stats_conf__idx__id` ON `stats_conf`(`id`);
 CREATE INDEX `stats_conf__idx__disable` ON `stats_conf`(`disable`);
 CREATE UNIQUE INDEX `stats_conf__uidx__name` ON `stats_conf`(`name`);
 

@@ -1,6 +1,6 @@
 /*
  * XiVO Base-Config
- * Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
+ * Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2240,9 +2240,15 @@ CREATE TABLE `queue_log` (
   `queuename` char(50),
   `agent` char(50),
   `event` char(20),
-  `data` char(255)
+  `data1` char(255),
+  `data2` char(255),
+  `data3` char(255),
+  `data4` char(255),
+  `data5` char(255)
 );
 CREATE INDEX `queue_log__idx_time` ON `queue_log`(`time`);
 CREATE INDEX `queue_log__idx_queuename` ON `queue_log`(`queuename`);
+CREATE INDEX `queue_log__idx_agent` ON `queue_log`(`agent`);
+CREATE INDEX `queue_log__idx_event` ON `queue_log`(`event`);
 
 COMMIT;

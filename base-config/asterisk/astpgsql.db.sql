@@ -1,7 +1,7 @@
 
 /*
  * XiVO Base-Config
- * Copyright (C) 2010  Proformatique <technique@proformatique.com>
+ * Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1161,6 +1161,7 @@ DROP TABLE IF EXISTS "queuefeatures";
 CREATE TABLE "queuefeatures" (
  "id" SERIAL,
  "name" varchar(128) NOT NULL,
+ "displayname" varchar(128) NOT NULL,
  "number" varchar(40) NOT NULL DEFAULT '',
  "context" varchar(39),
  "data_quality" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -2415,15 +2416,25 @@ CREATE TABLE "iaxcallnumberlimits" (
 
 DROP TABLE IF EXISTS "queue_log" ;
 CREATE TABLE "queue_log" (
-  "time" char(30),
-  "callid" char(50),
-  "queuename" char(50),
-  "agent" char(50),
-  "event" char(20),
-  "data" char(255)
+    "time" character varying(30) DEFAULT ''::character varying NOT NULL,
+    "callid" character varying(32) DEFAULT ''::character varying NOT NULL,
+    "queuename" character varying(50) DEFAULT ''::character varying NOT NULL,
+    "agent" character varying(50) DEFAULT ''::character varying NOT NULL,
+    "event" character varying(20) DEFAULT ''::character varying NOT NULL,
+    "data1" character varying(50),
+    "data2" character varying(50),
+    "data3" character varying(50),
+    "data4" character varying(50),
+    "data5" character varying(50)
 );
-CREATE INDEX "queue_log__idx_time" ON "queue_log"("time");
-CREATE INDEX "queue_log__idx_queuename" ON "queue_log"("queuename");
+
+CREATE INDEX queue_log__idx_time ON queue_log USING btree ("time");
+CREATE INDEX queue_log__idx_queuename ON queue_log USING btree ("queuename");
+CREATE INDEX queue_log__idx_agent ON queue_log USING btree ("agent");
+CREATE INDEX queue_log__idx_event ON queue_log USING btree ("event");
+CREATE INDEX queue_log__idx_data1 ON queue_log USING btree ("data1");
+CREATE INDEX queue_log__idx_data2 ON queue_log USING btree ("data2");
+
 
 -- grant all rights to xivo.* for xivo user
 CREATE OR REPLACE FUNCTION execute(text) 
