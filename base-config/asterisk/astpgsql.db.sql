@@ -1263,60 +1263,51 @@ CREATE UNIQUE INDEX "rightcallmember__uidx__rightcallid_type_typeval" ON "rightc
 
 
 DROP TABLE IF EXISTS "schedule";
-DROP TYPE  IF EXISTS "schedule_daynamebeg";
-DROP TYPE  IF EXISTS "schedule_daynameend";
-DROP TYPE  IF EXISTS "schedule_monthbeg";
-DROP TYPE  IF EXISTS "schedule_monthend";
-
-CREATE TYPE "schedule_daynamebeg" AS ENUM ('*','sun','mon','tue','wed','thu','fri','sat');
-CREATE TYPE "schedule_daynameend" AS ENUM ('sun','mon','tue','wed','thu','fri','sat');
-CREATE TYPE "schedule_monthbeg"   AS ENUM ('*',
-                 'jan',
-                 'feb',
-                 'mar',
-                 'apr',
-                 'may',
-                 'jun',
-                 'jul',
-                 'aug',
-                 'sep',
-                 'oct',
-                 'nov',
-                 'dec');
-CREATE TYPE "schedule_monthend"   AS ENUM ('jan',
-                 'feb',
-                 'mar',
-                 'apr',
-                 'may',
-                 'jun',
-                 'jul',
-                 'aug',
-                 'sep',
-                 'oct',
-                 'nov',
-                 'dec');
-
 CREATE TABLE "schedule" (
- "id" SERIAL,
- "name" varchar(128) NOT NULL DEFAULT '',
- "context" varchar(39) NOT NULL,
- "timebeg" varchar(5) NOT NULL DEFAULT '*',
- "timeend" varchar(5),
- "daynamebeg" schedule_daynamebeg NOT NULL DEFAULT '*',
- "daynameend" schedule_daynameend,
- "daynumbeg" varchar(2) NOT NULL DEFAULT '*',
- "daynumend" varchar(2),
- "monthbeg" schedule_monthbeg NOT NULL DEFAULT '*',
- "monthend" schedule_monthend,
- "publicholiday" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "id"                  SERIAL,
+ "name"                VARCHAR(256) NOT NULL DEFAULT '',
+ "timezone"            VARCHAR(128) DEFAULT NULL, 
+ "fallback_action"     dialaction_action NOT NULL DEFAULT 'none',
+ "fallback_actionid"   INTEGER DEFAULT NULL,
+ "fallback_actionargs" VARCHAR(255) DEFAULT NULL,
+
+ "description"         TEXT DEFAULT NULL,
+ "commented"           INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "schedule__idx__context" ON "schedule"("context");
-CREATE INDEX "schedule__idx__publicholiday" ON "schedule"("publicholiday");
 CREATE INDEX "schedule__idx__commented" ON "schedule"("commented");
-CREATE UNIQUE INDEX "schedule__uidx__name" ON "schedule"("name");
+
+
+DROP TABLE IF EXISTS "schedule_path";
+DROP TYPE  IF EXISTS "schedule_path_type";
+
+CREATE TYPE "schedule_path_type" AS ENUM ('default','incall','outcall','voicemenu');
+CREATE TABLE "schedule_path" (
+ "schedule_id"   INTEGER NOT NULL,
+
+ "path"          schedule_path_type NOT NULL DEFAULT 'default', 
+ "pathid"        INTEGER DEFAULT NULL, 
+ PRIMARY KEY("schedule_id","path","pathid")
+);
+
+
+DROP TABLE IF EXISTS "schedule_time";
+CREATE TABLE "schedule_time" (
+ "id" SERIAL,
+ "schedule_id" INTEGER,
+
+ "hours"       VARCHAR(256) DEFAULT NULL,
+ "workdays"    VARCHAR(512) DEFAULT NULL,
+ "monthdays"   VARCHAR(512) DEFAULT NULL,
+ "months"      VARCHAR(512) DEFAULT NULL,
+
+ "commented"   INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ PRIMARY KEY("id")
+);
+
+--CREATE INDEX "schedule__idx__commented" ON "schedule"("commented");
+CREATE INDEX "schedule_time__idx__scheduleid_commented" ON "schedule_time"("schedule_id","commented");
 
 
 DROP TABLE IF EXISTS "serverfeatures";
