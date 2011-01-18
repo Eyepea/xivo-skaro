@@ -32,6 +32,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	var $_callerid		= false;
 	var $_contextlist	= array();
 	var $_sound		= array();
+	var $_schedule_path = false;
 
 	function xivo_application_service_asterisk_incall(&$service,&$dso,$param=null,$components=true)
 	{
@@ -45,7 +46,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if(($this->_incall = &$this->_service->get_module('incall')) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'incall'))) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'incall'))) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
+		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
@@ -89,6 +91,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if(dwho_ak('callerid',$nocomponents,true) === false)
 			$this->_get_callerid($this->_info['incall']['id']);
+
+		$schedule = $this->_schedule_path->get_where(array('path' => 'incall', 'pathid'	=> $this->_info['incall']['id']));
+		if($schedule !== false)	
+			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
 	}
@@ -323,6 +329,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		&& dwho_has_len($this->get_result_var('incall','faxdetectemail')) === false)
 			$this->_set_result_var('incall','faxdetectenable',false);
 
+		// schedule
+		if(array_key_exists('schedule_id', $arr))
+			$this->_set_result('schedule_id', $arr['schedule_id']);
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -364,7 +374,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->add_macro('exten') === false
 		|| $this->add_rightcall($incallid) === false
 		|| $this->add_contextnummember($incallid) === false
-		|| $this->add_callerid($incallid) === false)
+		|| $this->add_callerid($incallid) === false
+		|| $this->add_schedule_path($incallid) === false)
 		{
 			$r = false;
 			if($incallid !== null)
@@ -383,6 +394,17 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			return(false);
 
 		return(($this->_return['incall'] = $this->_incall->add($rs)));
+	}
+
+	function add_schedule_path($incallid)
+	{
+		$schedule_id = $this->get_result('schedule_id');
+		// no schedule
+		if(is_null($schedule_id))
+			return true;
+
+		$arr = array('schedule_id' => $schedule_id, 'path' => 'incall', 'pathid' => $incallid);
+		return($this->_schedule_path->add($arr));
 	}
 
 	function _reverse_add()
@@ -441,7 +463,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->edit_macro('exten') === false
 		|| $this->edit_rightcall() === false
 		|| $this->edit_contextnummember() === false
-		|| $this->edit_callerid() === false)
+		|| $this->edit_callerid() === false
+		|| $this->edit_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -462,6 +485,19 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$rs['commented'] = $this->_info['incall']['commented'];
 
 		return(($this->_return['incall'] = $this->_incall->edit($this->_info['incall']['id'],$rs)));
+	}
+
+	function edit_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'incall', 'pathid' =>	$this->_info['incall']['id']));
+
+		$schedule_id = $this->get_result('schedule_id');
+		// no schedule
+		if(is_null($schedule_id))
+			return true;
+
+		$arr = array('schedule_id' => $schedule_id, 'path' => 'incall', 'pathid' => $this->_info['incall']['id']);
+		return($this->_schedule_path->add($arr));
 	}
 
 	function edit_dialaction()
@@ -558,7 +594,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->delete_macro('exten') === false
 		|| $this->delete_rightcall() === false
 		|| $this->delete_contextnummember() === false
-		|| $this->delete_callerid() === false)
+		|| $this->delete_callerid() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -580,6 +617,13 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$this->_return['incall'] = $r;
 
 		return($r);
+	}
+
+	function delete_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'incall', 'pathid' =>	$this->_info['incall']['id']));
+
+		return true;
 	}
 
 	function _reverse_delete()

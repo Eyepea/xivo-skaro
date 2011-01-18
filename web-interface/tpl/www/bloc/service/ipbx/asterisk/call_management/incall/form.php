@@ -27,6 +27,7 @@ $element = $this->get_var('element');
 $rightcall = $this->get_var('rightcall');
 $list = $this->get_var('list');
 $context_list = $this->get_var('context_list');
+$schedules = $this->get_var('schedules');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -146,7 +147,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-rightcalls" class="b-nodisplay">
 <?php
 	if($rightcall['list'] !== false):
 ?>
@@ -204,3 +205,20 @@ endif;
 	endif;
 ?>
 </div>
+
+
+<div id="sb-part-schedule" class="b-nodisplay">
+<?php
+		echo $form->select(array('desc'	=> $this->bbf('fm_incall_schedule'),
+				    'name'	    => 'schedule_id',
+				    'labelid'	  => 'schedule_id',
+						'key'	      => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				    'default'  	=> $element['schedule_id']['default'],
+				    'selected'	=> $this->get_var('schedule_id')),
+			      $schedules);
+?>
+</div>
+
+

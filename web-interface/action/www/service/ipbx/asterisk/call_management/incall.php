@@ -27,6 +27,12 @@ $search  = strval($prefs->get('search', ''));
 $context = strval($prefs->get('context', ''));
 $sort    = $prefs->flipflop('sort', 'exten');
 
+$appincall = &$ipbx->get_application('incall');
+$appschedule = &$ipbx->get_application('schedule');
+$apprightcall = &$ipbx->get_application('rightcall',null,false);
+
+$schedules = $appschedule->get_schedules_list();
+
 $info = array();
 
 $param = array();
@@ -38,12 +44,9 @@ if($search !== '')
 switch($act)
 {
 	case 'add':
-		$appincall = &$ipbx->get_application('incall');
-
 		$result = $fm_save = $error = null;
 		$rightcall['slt'] = $rightcall = array();
 
-		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('incall',$_QR) === true)
@@ -104,8 +107,6 @@ switch($act)
 		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'edit':
-		$appincall = &$ipbx->get_application('incall');
-
 		if(isset($_QR['id']) === false || ($info = $appincall->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
@@ -113,7 +114,6 @@ switch($act)
 		$return = &$info;
 		$rightcall['slt'] = $rightcall = array();
 
-		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('incall',$_QR) === true)
@@ -169,6 +169,7 @@ switch($act)
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
 		$_TPL->set_var('context_list',$appincall->get_context_list());
+		$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
@@ -268,6 +269,8 @@ $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/incall');
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('schedules',$schedules);
+
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/incall/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
 $_TPL->display('index');
