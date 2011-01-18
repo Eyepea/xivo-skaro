@@ -37,21 +37,22 @@ $tpl_statistics->set_data_custom('axetype',$_XS->get_axtype());
 switch ($_XS->get_axtype())
 {
 	case 'day':
-		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'value');
+		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
 		$tpl_statistics->set_data_custom('hour_range',$_XS->get_hour_range());
 		break;
 	case 'week':
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'value');
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
 		$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
 		break;
 	case 'month':
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'value');
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'key');
 		break;
 	case 'year':
+		$tpl_statistics->set_rows('month',$_XS->get_listmonth(),'key');
 		break;
 	case 'type':
 	default:
-		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name');
+		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name',true);
 }
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
@@ -59,45 +60,45 @@ $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('presented',
 					'direct',
-					'custom:queue,[name],presented');
+					'custom:queue,[key],presented');
 $tpl_statistics->add_col('connect',
 					'direct',
-					'custom:queue,[name],answered');
+					'custom:queue,[key],answered');
 $tpl_statistics->add_col('abandon',
 					'direct',
-					'custom:queue,[name],abandoned');
+					'custom:queue,[key],abandoned');
 
 $tpl_statistics->set_col_struct('deterred');
 $tpl_statistics->add_col('on_close',
 					'direct',
-					'custom:queue,[name],deterred_on_close');
+					'custom:queue,[key],deterred_on_close');
 $tpl_statistics->add_col('on_saturation',
 					'direct',
-					'custom:queue,[name],deterred_on_saturation');
+					'custom:queue,[key],deterred_on_saturation');
 
 $tpl_statistics->set_col_struct('rerouted');
 $tpl_statistics->add_col('on_hungup',
 					'direct',
-					'custom:queue,[name],rerouted_on_hungup');
+					'custom:queue,[key],rerouted_on_hungup');
 $tpl_statistics->add_col('on_guide',
 					'direct',
-					'custom:queue,[name],rerouted_on_guide');
+					'custom:queue,[key],rerouted_on_guide');
 $tpl_statistics->add_col('on_number',
 					'direct',
-					'custom:queue,[name],rerouted_on_number');
+					'custom:queue,[key],rerouted_on_number');
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
 					'expression',
-					'{custom:queue,[name],total_time_waiting}/{custom:queue,[name],answered}',
+					'{custom:queue,[key],total_time_waiting}/{custom:queue,[name],answered}',
 					'time');
 $tpl_statistics->add_col('home_rated',
 					'expression',
-					'{custom:queue,[name],answered}/{custom:queue,[name],presented}',
+					'{custom:queue,[key],answered}/{custom:queue,[name],presented}',
 					'percent');
 $tpl_statistics->add_col('qos',
 					'expression',
-					'{custom:queue,[name],qos}/{custom:queue,[name],answered}',
+					'{custom:queue,[key],qos}/{custom:queue,[name],answered}',
 					'percent');
 
 $tpl_statistics->gener_table();
@@ -107,6 +108,7 @@ $table1 = $tpl_statistics;
 $_TPL->set_var('table1',$table1);
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
+$_TPL->set_var('showdashboard',true);
 
 $bench_end = microtime(true);
 $_TPL->set_var('bench',($bench_end - $bench_start));

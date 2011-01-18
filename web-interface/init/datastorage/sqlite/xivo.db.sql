@@ -375,6 +375,20 @@ CREATE INDEX stats_conf__idx__id ON stats_conf(id);
 CREATE INDEX stats_conf__idx__disable ON stats_conf(disable);
 CREATE UNIQUE INDEX stats_conf__uidx__name ON stats_conf(name);
 
+DROP TABLE stats_conf_agent;
+CREATE TABLE stats_conf_agent (
+    stats_conf_id int(10) NOT NULL,
+    agentfeatures_id int(10) NOT NULL
+);
+CREATE UNIQUE INDEX stats_conf_agent_index ON stats_conf_agent(stats_conf_id,agentfeatures_id);
+
+DROP TABLE stats_conf_queue;
+CREATE TABLE stats_conf_queue (
+    stats_conf_id integer NOT NULL,
+    queuefeatures_id integer NOT NULL
+);
+CREATE UNIQUE INDEX stats_conf_queue_index ON stats_conf_queue(stats_conf_id,queuefeatures_id);
+
 
 -- provisioning
 DROP TABLE provisioning;

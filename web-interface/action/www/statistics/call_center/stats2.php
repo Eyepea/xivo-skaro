@@ -86,6 +86,7 @@ $tpl_statistics->gener_table();
 $table1 = $tpl_statistics;
 
 $_TPL->set_var('table1',$table1);
+$_TPL->set_var('showdashboard',true);
 
 $bench_end = microtime(true);
 $_TPL->set_var('bench',($bench_end - $bench_start));

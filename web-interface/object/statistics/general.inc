@@ -23,6 +23,7 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_general extends xivo_statistics_abstract
 {
 
+	public		$_type		= '';
 	public		$_field	= array('logintime'			=> array('type' => 'time'),
 								'holdtime'			=> array('type' => 'time'),
 								'calltime'			=> array('type' => 'time'),
@@ -38,13 +39,34 @@ class xivo_statistics_general extends xivo_statistics_abstract
 								'traitmenttime'		=> array('type' => 'time')
 							);
 		
-	public function __construct(&$_XOBJ,&$ipbx)
+	public function __construct(&$_XS)
 	{
-		parent::__construct(&$_XOBJ,&$ipbx);
-		$this->_method = 'SQL';
+		parent::__construct(&$_XS);
+		$this->_method = 'DB';
+	}
+		
+	public function parse_log()
+	{
+		switch ($this->_method)
+		{
+			case 'DB':
+				$this->parse_log_db();
+				break;
+			case 'PHP':
+				$this->parse_log_php();
+				break;
+			default:
+				return(false);
+		}
+		return(true);
 	}
 	
-	public function parse_log()
+	public function parse_log_db()
+	{
+	
+	}
+	
+	public function parse_log_php()
 	{
 		$res = &$this->_result;
 			

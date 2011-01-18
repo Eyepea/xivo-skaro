@@ -24,7 +24,8 @@ class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstr
 {
 	var $_table	= array(
 				'stats_conf'		=> '',
-				'stats_conf_queue'	=> '');
+				'stats_conf_queue'	=> '',
+				'stats_conf_agent'	=> '');
 
 	function get($id)
 	{
@@ -38,7 +39,6 @@ class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstr
 			$r = false;
 
 		return($r);
-	
 	}
 
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
@@ -61,8 +61,7 @@ class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstr
 		|| isset($r[0]) === false)
 			$r = false;
 
-		return($r);
-	
+		return($r);	
 	}
 
 	function search($value,$disable=null,$order=null,$limit=null)

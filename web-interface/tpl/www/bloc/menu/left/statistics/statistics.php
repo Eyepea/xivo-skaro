@@ -119,7 +119,7 @@ $element = $this->get_var('element');
 </dl>
 
 <?php
-	if(is_null($this->get_var('conf')) === false):
+	if(is_null($this->get_var('showdashboard')) === false):
 ?>
 <div id="dashboard">
 	<div class="sb-top xspan">
@@ -129,7 +129,7 @@ $element = $this->get_var('element');
 	</div>
 	<div class="sb-content">
 		<div id="sr-stats" class="">
-		<form action="#" method="post" accept-charset="utf-8">
+		<form action="<?=$_SERVER['PHP_SELF']?>" method="post" accept-charset="utf-8">
 			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
 			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
 			<?=$form->hidden(array('name' => 'act','value' => 'datecal'))?>
@@ -169,6 +169,11 @@ $element = $this->get_var('element');
 		echo $form->hidden(array('name' => 'key','value' => $value));
 	endif;
 ?>
+<?php
+	if(is_null($this->get_var('listobject')) === false
+	&& is_null($this->get_var('conf','axetype')) === false
+	&& $this->get_var('conf','axetype') !== 'type'):
+?>
 			<div class="fm-paragraph">	
 			<?php
 				echo	$form->select(array('name'	=> 'axetype',
@@ -184,7 +189,13 @@ $element = $this->get_var('element');
 						      	$listaxetype);
 			?>
 			</div>
+<?php
+	else:
+		echo $form->hidden(array('name' => 'axetype','value' => 'type'));
+	endif;
+?>
 			<div id="it-cal-type" class="b-nodisplay">
+			<?php if (array_key_exists('dbeg',$infocal) === true && array_key_exists('dend',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-type"><?=$this->bbf('fm_dbeg')?></label>
@@ -224,9 +235,10 @@ $element = $this->get_var('element');
 						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 					</div>
 				</div>
+			<?php endif; ?>
 			</div>
 			<div id="it-cal-day" class="b-nodisplay">
-			<?php #if (isset($infocal['dday']) === true): ?>
+			<?php if (array_key_exists('dday',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-day"><?=$this->bbf('fm_dday')?></label>
@@ -245,10 +257,10 @@ $element = $this->get_var('element');
 						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 					</div>
 				</div>
-			<?php #endif; ?>
+			<?php endif; ?>
 			</div>
 			<div id="it-cal-week" class="b-nodisplay">
-			<?php #if (isset($infocal['dweek']) === true): ?>
+			<?php if (array_key_exists('dweek',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-week"><?=$this->bbf('fm_dweek')?></label>
@@ -267,9 +279,10 @@ $element = $this->get_var('element');
 						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 					</div>
 				</div>
-			<?php #endif; ?>
+			<?php endif; ?>
 			</div>
 			<div id="it-cal-month" class="b-nodisplay">
+			<?php if (array_key_exists('dmonth',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
@@ -288,11 +301,20 @@ $element = $this->get_var('element');
 						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 					</div>
 				</div>
+			<?php endif; ?>
 			</div>
 			<div id="it-cal-year" class="b-nodisplay">
+			<?php if (array_key_exists('dyear',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
-					year
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-year"><?=$this->bbf('fm_dyear')?></label>
+						<input type="text" name="datecal[dyear]" id="it-dbeg-year" value="<?=is_null($infocal['dyear'])?dwho_i18n::strftime_l('%Y',null):$infocal['dyear']?>" size="4" />
+					</div>
+					<div class="fm-desc-inline">
+						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+					</div>
 				</div>
+			<?php endif; ?>
 			</div>
 		</form>
 		</div>
@@ -336,11 +358,16 @@ echo dwho_second_to($bench,2);
 <script type="text/javascript">
 dwho.dom.set_onload(function()
 {
-	/*
+<?php
+	if(is_null($this->get_var('conf')) === false
+	&& $this->get_var('conf') === false):
+?>
 	dwho.dom.add_event('change',
 			   dwho_eid('it-toolbar-conf'),
 			   function(){this.form.submit();});
-	*/
+<?php
+	endif;
+?>	
 	var lsaxetype = new Array('<?=implode('\', \'',$listaxetype)?>');
 	dwho.dom.add_event('change',
 			   dwho_eid('it-conf-axetype'),
@@ -360,7 +387,7 @@ dwho.dom.set_onload(function()
 			   					if (divtohide)
 			   					{
 			   						divtohide.style.display = 'none';
-				   					if (divtohide == 'type')
+				   					if (lsaxetype[u] == 'type')
 				   						dwho_eid('it-cal-object').style.display = 'none';
 			   					}
 		   					}
@@ -368,7 +395,7 @@ dwho.dom.set_onload(function()
 		   					if (divtoshow)
 		   					{
 		   						divtoshow.style.display = 'block';
-			   					if (divtohide != 'type')
+			   					if (value != 'type')
 			   						dwho_eid('it-cal-object').style.display = 'block';
 		   					}
 		   				}

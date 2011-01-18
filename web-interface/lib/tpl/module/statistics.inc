@@ -69,7 +69,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$this->_data_custom[$key] = $arr;
 	}
 	
-	public function set_rows($key,$arr,$field) 
+	public function set_rows($key,$arr,$field,$createkey=false) 
 	{
 		if(is_array($arr) === false 
 		|| ($nb = count($arr)) === 0)
@@ -84,9 +84,11 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			$ref = &$arr[$i];
 			if(isset($ref[$field]) === false)
 				continue;
+			if($createkey !== false)
+				$ref['key'] = $ref[$field];
 			array_push($tmp, $ref[$field]);
 		}
-		$this->_prepare_rows[$key] = $tmp;
+		$this->_prepare_rows[$key] = $tmp;		
 		$this->_full_rows = $arr;
 		return(true);
 	}
@@ -180,6 +182,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$rowkey = $rowdata['id'];
 			elseif(isset($rowdata['name']) === true)
 				$rowkey = $rowdata['name'];
+			elseif(isset($rowdata['key']) === true)
+				$rowkey = $rowdata['key'];
 			else 
 				$rowkey = $t;
 				
@@ -275,7 +279,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		switch($operator)
 		{
 			case '/':
-				if ($val2 === 0)
+				if ($val2 === 0
+				|| empty($val1) === true
+				|| empty($val2) === true)
 					$rs = 0;
 				else
 					$rs = ($val1 / $val2);
@@ -490,7 +496,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	
 	public function render_html($chkbox=true,$rowname=true)
 	{		
-		$url = &$this->_tpl->get_module('url');		
+		$url = &$this->_tpl->get_module('url');
 
 		$return = '<form action="#" name="fm-stats-list" method="post" accept-charset="utf-8">';
 		$return .= '<table cellspacing="0" cellpadding="0" border="0">';

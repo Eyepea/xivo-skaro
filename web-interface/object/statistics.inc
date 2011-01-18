@@ -27,6 +27,7 @@ class xivo_statistics
 										'date'		=> '/^(\d{4})-(\d{2})-(\d{2})$/',
 										'time'		=> '/^(\d{2}):(\d{2}):(\d{2})$/');	
 	private	$_listday			= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+	private	$_listmonth			= array('january','february','march','april','may','june','july','august','september','october','november','december');
 	private	$_listaxetype		= array('type','day','week','month','year');
 	private	$_listmethod		= array('DB','PHP');
 	public 	$_debug				= array();
@@ -148,10 +149,15 @@ class xivo_statistics
 	{
 		$this->push_debug("global_init( array() )",$arr);		
 		
-		if (isset($arr['key']) === true)
+		if (isset($arr['key']) === true
+		&& isset($arr['axetype']) === true
+		&& $arr['axetype'] !== 'type')
 			$this->set_objectkey($arr['key']);
 		else
+		{
+			$this->set_objectkey(0);
 			$this->set_axetype('type');
+		}
 		
 		if (isset($arr['axetype']) === true)
 			$this->set_axetype($arr['axetype']);
@@ -160,8 +166,7 @@ class xivo_statistics
 			$this->set_calendar($arr['datecal']);
 		
 		if (isset($arr['confid']) === true)
-			$this->set_idconf($arr['confid'],true);
-		
+			$this->set_idconf($arr['confid'],true);		
 	}
 	
 	public function set_objectkey($key)
@@ -227,12 +232,18 @@ class xivo_statistics
 	}
 	
 	public function get_infocal()
-	{
-		$this->push_debug("get_infocal()");
+	{			
+		$infocal = array();
+		$infocal['dbeg'] = $infocal['hbeg'] = $infocal['dend'] = $infocal['hend'] = null;
+		$infocal['dday'] = null;
+		$infocal['dweek'] = null;
+		$infocal['dmonth'] = null;
+		$infocal['dyear'] = null;
+		
 		if (($interval = $this->get_interval()) === false
 		|| is_array($interval) === false)
-			return(false);
-	
+			return($infocal);
+		
 		switch ($this->get_axtype())
 		{
 			case 'day':			
@@ -248,6 +259,8 @@ class xivo_statistics
 				$infocal['dmonth'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y-m');
 				break;
 			case 'year':
+				$dbeg = $interval['dbeg'];
+				$infocal['dyear'] = dwho_change_date_format($dbeg,'Y-m-d H:i:s','Y');
 				break;
 			case 'type':
 			default:			
@@ -293,6 +306,12 @@ class xivo_statistics
 				$this->set_interval($dbeg.'-01 00:00:01',date('Y-m-d',$lastday).' 23:59:59');
 				break;
 			case 'year':
+				if(is_array($arr) === true)
+					$dbeg = $arr['dyear'];
+				elseif($arr === 'default')
+					$dbeg = date('Y');
+				$date = dwho_date_parse_from_format('Y',$dbeg);
+				$this->set_interval($dbeg.'-01-01 00:00:01',$dbeg.'31-12 23:59:59');
 				break;
 			case 'type':
 			default:
@@ -413,11 +432,11 @@ class xivo_statistics
 	
 	public function get_conf()
 	{	
-		$this->push_debug("get_conf()");
-		$statsconf = $this->_conf['stats_conf'];
-		
-		if (is_null($statsconf) === true)
+		$this->push_debug("get_conf()");		
+		if (isset($this->_conf['stats_conf']) === false)
 			return(false);
+		
+		$statsconf = $this->_conf['stats_conf'];
 
 		$workweek = array();
 		$workweek['monday'] = $statsconf['monday'];
@@ -495,9 +514,9 @@ class xivo_statistics
 				continue;
 				
 			$tmp = array();
-			$tmp['identity'] = $i.'hour';
-			$tmp['value'] = $i;
+			$tmp['identity'] = 'hour-opt('.$i.')';
 			$tmp['name'] = $i;
+			$tmp['key'] = $i;
 				
 			array_push($rs,$tmp);
 		}		
@@ -506,7 +525,7 @@ class xivo_statistics
 	
 	public function get_listday_for_week()
 	{	
-		$this->push_debug("get_listday()");
+		$this->push_debug("get_listday_for_week()");
 		if(($conf = $this->get_conf()) === false)
 			return(false);
 		
@@ -521,8 +540,8 @@ class xivo_statistics
 				
 			$tmp = array();
 			$tmp['identity'] = $day;
-			$tmp['value'] = $day;
 			$tmp['name'] = $day;
+			$tmp['key'] = $day;
 				
 			array_push($rs,$tmp);
 		}
@@ -531,7 +550,7 @@ class xivo_statistics
 	
 	public function get_listday_for_month()
 	{
-		$this->push_debug("get_listday()");
+		$this->push_debug("get_listday_for_month()");
 		if(($conf = $this->get_conf()) === false)
 			return(false);
 		
@@ -550,11 +569,28 @@ class xivo_statistics
 				
 			$tmp = array();
 			$tmp['identity'] = $dayname.'-opt('.$i.')';
-			$tmp['value'] = $i;
-			$tmp['name'] = $i;
+			$tmp['name'] = $dayname;
+			$tmp['key'] = $i;
 				
 			array_push($rs,$tmp);	
 		}
+		return($rs);
+	}
+	
+	public function get_listmonth()
+	{
+		$this->push_debug("get_listmonth()");
+		
+		$rs = array();
+		for ($i=0;$i<=11;$i++)
+		{				
+			$tmp = array();
+			$tmp['identity'] = $this->_listmonth[$i];
+			$tmp['name'] = $this->_listmonth[$i];
+			$tmp['key'] = $i+1;
+				
+			array_push($rs,$tmp);
+		}		
 		return($rs);
 	}
 	
@@ -609,7 +645,8 @@ class xivo_statistics
 				break;
 			case 'queue':
 				$ls_queuename = array();
-				if (((int) $this->_objectkey) === 0)
+				if (((int) $this->_objectkey) === 0
+				&& isset($this->_conf['queue']) === true)
 				{
 					$queue = array_values($this->_conf['queue']);
 					$nb_queue = count($this->_conf['queue']);
@@ -672,7 +709,9 @@ class xivo_statistics
 	public function get_queue_list()
 	{			
 		$this->push_debug("get_queue_list()");
-		if (($appqueue = &$this->_ipbx->get_application('queue')) === false)
+		
+		if (isset($this->_conf['queue']) === false
+		|| ($appqueue = &$this->_ipbx->get_application('queue')) === false)
 			return(false);
 		
 		$list_queue = $appqueue->get_queues_list(null,'name');
@@ -693,7 +732,9 @@ class xivo_statistics
 	public function get_agent_list()
 	{			
 		$this->push_debug("get_agent_list()");
-		if (($appagent = &$this->_ipbx->get_application('agent')) === false)
+		
+		if (isset($this->_conf['agent']) === false
+		|| ($appagent = &$this->_ipbx->get_application('agent')) === false)
 			return(false);
 		
 		$list_agent = $appagent->get_agentfeatures(null,'name');

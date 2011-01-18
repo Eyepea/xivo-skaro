@@ -85,6 +85,10 @@ class xivo_statistics_abstract
 	protected function init_result($key)
 	{
 		$res = &$this->_result;
+		
+		if (is_array($key) === true
+		&& isset($key['value']) === true)
+			$key = $key['value'];
 			
 		if (isset($res[$key]) === false)
 		{
