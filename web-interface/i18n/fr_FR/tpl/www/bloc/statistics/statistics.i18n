@@ -149,14 +149,32 @@ Duré moyenne
 ; no_conf_selected
 Veuillez choisir une configuration á appliquer.
 
+; conf_axetype
+Axe d'analyse: 
+
 ; fm_dbeg
 Début: 
 
 ; fm_dend
 Fin: 
 
+; fm_dday
+Jour: 
+
+; fm_dweek
+Semaine: 
+
+; fm_dmonth
+Mois: 
+
+; fm_dyear
+Année: 
+
 ; fm_bt-cal
 Appliquer
+
+; fm-wait-submit
+Traitement en cours
 
 ; mn_left_name_dashboard
 Tableau de bord
@@ -188,6 +206,42 @@ Samedi
 ; sunday
 Dimanche
 
+; january
+Janvier
+
+; february
+Février
+
+; march
+Mars
+
+; april
+Avril
+
+; may
+Mai
+
+; june
+Juin
+
+; july
+Juillet
+
+; august
+Août
+
+; september
+Séptembre
+
+; october
+Octobre
+
+; november
+Novembre
+
+; december
+Décembre
+
 ; fm_axetype-default
 Axe d'analyse
 
@@ -205,3 +259,33 @@ Mois
 
 ; fm_axetype-opt(year)
 Année
+
+; week_number-opt
+Semaine n°%d
+
+; month_number-opt
+Mois de %s %d
+
+; hour-opt
+%d heure
+
+; monday-opt
+Lundi %d
+
+; tuesday-opt
+Mardi %d
+
+; wednesday-opt
+Mercredi %d
+
+; thursday-opt
+Jeudi %d
+
+; friday-opt
+Vendredi %d
+
+; saturday-opt
+Samedi %d
+
+; sunday-opt
+Dimanche %d

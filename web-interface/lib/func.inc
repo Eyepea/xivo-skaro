@@ -1187,36 +1187,38 @@ function dwho_date_parse_from_format($stFormat, $stData)
     $aDataRet['second'] = 0;
     $aPieces = split('[:/.\ \-]', $stFormat);
     $aDatePart = split('[:/.\ \-]', $stData);
-    foreach($aPieces as $key=>$chPiece)
+    foreach($aPieces as $key => $chPiece)
     {
+        if (isset($aDatePart[$key]) === false)
+        	continue;
         switch ($chPiece)
         {
             case 'd':
             case 'j':
-                $aDataRet['day'] = $aDatePart[$key];
+               		$aDataRet['day'] = (int) $aDatePart[$key];
                 break;
             case 'F':
             case 'M':
             case 'm':
             case 'n':
-                $aDataRet['month'] = $aDatePart[$key];
+                	$aDataRet['month'] = (int) $aDatePart[$key];
                 break;
             case 'o':
             case 'Y':
             case 'y':
-                $aDataRet['year'] = $aDatePart[$key];
+                $aDataRet['year'] = (int) $aDatePart[$key];
                 break;
             case 'g':
             case 'G':
             case 'h':
             case 'H':
-                $aDataRet['hour'] = $aDatePart[$key];
+                $aDataRet['hour'] = (int) $aDatePart[$key];
                 break;
             case 'i':
-                $aDataRet['minute'] = $aDatePart[$key];
+                $aDataRet['minute'] = (int) $aDatePart[$key];
                 break;
             case 's':
-                $aDataRet['second'] = $aDatePart[$key];
+                $aDataRet['second'] = (int) $aDatePart[$key];
                 break;
         }
     }

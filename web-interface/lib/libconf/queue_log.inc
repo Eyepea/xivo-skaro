@@ -136,6 +136,16 @@ $array	= array(
 	 */
 	'TRANSFER'	=> array('extension','context','holdtime','calltime','origposition'),
 
+	/*
+	 * 
+	 */
+	'CLOSED'	=> array(),
+
+	/*
+	 * 
+	 */
+	'FULL'		=> array()
+
 );
 				
 ?>

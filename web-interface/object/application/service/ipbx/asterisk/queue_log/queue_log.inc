@@ -92,15 +92,15 @@ class xivo_application_service_asterisk_queue_log extends xivo_application_aster
 		return($rs);
 	}
 
-	function count_queue_logs_stats($conf,$type,$value,$event,$addwhere=null)
+	function count_queue_logs_stats($type,$value,$event,$interval=null,$addwhere=null)
 	{	
 		$this->_cnt = $this->_queue_log->get_cnt();
-		return($this->_queue_log->count_stats($conf,$type,$value,$event,$addwhere));		
+		return($this->_queue_log->count_stats($type,$value,$event,$interval,$addwhere));		
 	}
 	
-	function sum_queue_logs_stats($conf,$type,$value,$event,$field,$addwhere=null)
+	function sum_queue_logs_stats($type,$value,$event,$field,$interval=null,$addwhere=null)
 	{		
-		if(($rs = $this->_queue_log->get_sum_stats($conf,$type,$value,$event,$field,$addwhere)) === false)
+		if(($rs = $this->_queue_log->get_sum_stats($type,$value,$event,$field,$interval,$addwhere)) === false)
 			return(0);
 				
 		$this->_cnt = $this->_queue_log->get_cnt();

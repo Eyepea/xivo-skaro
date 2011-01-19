@@ -48,14 +48,14 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 		return($result);
 	}
 
-	function get_sum_stats($conf,$type,$value,$event,$field,$addwhere=null)
+	function get_sum_stats($type,$value,$event,$field,$interval=null,$addwhere=null)
 	{
-		return($this->_dso->stats_sum_by_type($conf,$type,$value,$event,$field,$addwhere));
+		return($this->_dso->stats_sum_by_type($type,$value,$event,$field,$interval,$addwhere));
 	}
 
-	function count_stats($conf,$type,$value,$event,$addwhere=null)
+	function count_stats($type,$value,$event,$interval=null,$addwhere=null)
 	{
-		return($this->_dso->stats_count_by_type($conf,$type,$value,$event,$addwhere));
+		return($this->_dso->stats_count_by_type($type,$value,$event,$interval,$addwhere));
 	}
 
 	function search($arr,$order=null,$limit=null)

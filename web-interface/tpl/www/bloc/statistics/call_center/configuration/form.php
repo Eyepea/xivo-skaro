@@ -111,8 +111,10 @@ if($this->get_var('fm_save') === false)
 	
 	echo	$form->text(array('desc'	=> $this->bbf('fm_period'.$i),
 					  'name'	=> 'stats_conf[period'.$i.']',
-					  'labelid'	=> $info['period'.$i],
+					  'labelid'	=> 'period'.$i,
 					  'size'	=> 5,
+					  'help'		=> $this->bbf('hlp_fm_period'),
+					  'required'	=> false,
 					  'default'	=> $element['stats_conf']['period'.$i]['default'],
 					  'value'	=> $info['stats_conf']['period'.$i],
 				 	  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','period'.$i)) ));
@@ -131,7 +133,7 @@ if($this->get_var('fm_save') === false)
 					 'cols'		=> 60,
 					 'rows'		=> 5,
 					 'default'	=> $element['stats_conf']['description']['default']),
-						   $info['description']);?>
+						   $info['stats_conf']['description']);?>
 			</div>
 			</div>
 			

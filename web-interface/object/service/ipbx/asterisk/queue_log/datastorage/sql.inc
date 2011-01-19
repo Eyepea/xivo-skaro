@@ -55,7 +55,7 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		return(true);
 	}
 	
-	public function stats_sum_by_type($conf,$type,$value,$event,$fieldsum,$addwhere=null)
+	public function stats_sum_by_type($type,$value,$event,$fieldsum,$interval=null,$addwhere=null)
 	{			
 		$this->_cnt = 0;
 
@@ -92,13 +92,30 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		
 		#$this->_dso-> wherebetween('time','2010-12-01 00:00:01','2010-12-01 23:59:59',$this->_table);
 			
-		#$this->_dso->wheredatetime('time','2010-12-20 00:00:01','2010-12-20 23:59:59',$this->_table,'datetime');
-		
-		$interval = $conf['interval'];
-			
-		if (empty($interval['dbeg']) === false)
-			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-			#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+		#$this->_dso->wheredatetime('time','2010-12-20 00:00:01','2010-12-20 23:59:59',$this->_table,'datetime');	
+	
+		if (is_null($interval) === false)
+		{
+			if(isset($interval['dbeg']) === true
+			&& isset($interval['dend']) === true)
+			{
+				$this->_dso->wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
+				#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+			}
+			elseif (($nbinterval = count($interval)) > 2)
+			{				
+				$this->_dso->aggregate_where(false,'AND');
+				
+				foreach ($interval as $itl)
+				{
+					$this->_dso->orwhere('"queue_log"."time"::timestamp BETWEEN \''.$itl['dbeg'].'\'::timestamp AND \''.$itl['dend'].'\'::timestamp');
+					#$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
+					#$this->_dso->orwheredatetime('time',$itl['dbeg'],$itl['dend'],$this->_table,'datetime');
+				}
+				
+				$this->_dso->aggregate_where(false,'AND');
+			}
+		}
 		
 		#print($this->_dso->get_select().'<br>');
 		
@@ -111,12 +128,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		return($r);
 	}
 	
-	public function stats_count_by_type($conf,$type,$value,$event,$addwhere=null)
+	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
 	{			
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table,array('event'));
-	
+			
 		switch ($type)
 		{
 			case 'agent':
@@ -140,10 +157,28 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		if (is_null($addwhere) === false)
 			$this->_dso->andwhere($addwhere);
 		
-		$interval = $conf['interval'];
-		if (empty($interval['dbeg']) === false)
-			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-			#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+		if (is_null($interval) === false)
+		{
+			if(isset($interval['dbeg']) === true
+			&& isset($interval['dend']) === true)
+			{
+				$this->_dso->wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
+				#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
+			}
+			elseif (($nbinterval = count($interval)) > 2)
+			{				
+				$this->_dso->aggregate_where(false,'AND');
+				
+				foreach ($interval as $itl)
+				{
+					$this->_dso->orwhere('"queue_log"."time"::timestamp BETWEEN \''.$itl['dbeg'].'\'::timestamp AND \''.$itl['dend'].'\'::timestamp');
+					#$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
+					#$this->_dso->orwheredatetime('time',$itl['dbeg'],$itl['dend'],$this->_table,'datetime');
+				}
+				
+				$this->_dso->aggregate_where(false,'AND');
+			}
+		}
 			
 		#print($this->_dso->get_select().'<br>');
 

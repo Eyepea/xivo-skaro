@@ -29,17 +29,10 @@ $appstats_conf = &$_XOBJ->get_application('stats_conf');
 
 if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
 	die('Failed to load xivo_statistics object');
+	
 $_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
 
-$tpl_statistics = &$_TPL->get_module('statistics');
-$tpl_statistics->set_basedir($basedir);
-
 $_XS->global_init($_QR);
-
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$param = array();
-$param['act'] = 'type';
-
 $_XS->load_component();
 
 $_TPL->set_var('basedir',$basedir);
@@ -49,6 +42,8 @@ $_TPL->set_var('infocal',$_XS->get_infocal());
 $_TPL->set_var('confid',$_XS->get_idconf());
 $_TPL->set_var('conf',$_XS->get_conf());
 
+$tpl_statistics = &$_TPL->get_module('statistics');
+$tpl_statistics->set_basedir($basedir);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/statistics/call_center/conf.js');

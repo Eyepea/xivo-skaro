@@ -38,7 +38,7 @@ switch ($_XS->get_axtype())
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
-		$tpl_statistics->set_data_custom('hour_range',$_XS->get_hour_range());
+		$tpl_statistics->set_data_custom('day_process',$_XS->get_infocal());
 		break;
 	case 'week':
 		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
@@ -46,6 +46,7 @@ switch ($_XS->get_axtype())
 		break;
 	case 'month':
 		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'key');
+		$tpl_statistics->set_data_custom('month_process',$_XS->get_infocal());
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',$_XS->get_listmonth(),'key');
@@ -90,15 +91,15 @@ $tpl_statistics->add_col('on_number',
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
 					'expression',
-					'{custom:queue,[key],total_time_waiting}/{custom:queue,[name],answered}',
+					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],answered}',
 					'time');
 $tpl_statistics->add_col('home_rated',
 					'expression',
-					'{custom:queue,[key],answered}/{custom:queue,[name],presented}',
+					'{custom:queue,[key],answered}/{custom:queue,[key],presented}',
 					'percent');
 $tpl_statistics->add_col('qos',
 					'expression',
-					'{custom:queue,[key],qos}/{custom:queue,[name],answered}',
+					'{custom:queue,[key],qos}/{custom:queue,[key],answered}',
 					'percent');
 
 $tpl_statistics->gener_table();

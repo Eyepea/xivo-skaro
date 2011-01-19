@@ -237,7 +237,7 @@ switch($act)
 		$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
 		break;		
 	case 'qos':
-		$return = $fm_save = null;
+		$return = $error = $fm_save = null;
 		
 		if(isset($_QR['fm_send']) === true 
 		&& dwho_issa('stats_qos',$_QR) === true)
@@ -256,7 +256,7 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 		$list_queue = $appqueue->get_queues_list(null,'name');
 		
-		$_TPL->set_var('error'  ,$error);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('ls_queue',$list_queue);
 		break;

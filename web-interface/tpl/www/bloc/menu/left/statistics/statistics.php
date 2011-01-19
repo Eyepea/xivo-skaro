@@ -73,11 +73,11 @@ $element = $this->get_var('element');
 			</dd>
 			<dd id="mn-3">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
-						   'statistics/call_center/stats4');?>
+						   'statistics/call_center/stats3');?>
 			</dd>
 			<dd id="mn-4">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
-						   'statistics/call_center/stats3');?>
+						   'statistics/call_center/stats4');?>
 			</dd>
 <?php
 	endif;
@@ -129,7 +129,7 @@ $element = $this->get_var('element');
 	</div>
 	<div class="sb-content">
 		<div id="sr-stats" class="">
-		<form action="<?=$_SERVER['PHP_SELF']?>" method="post" accept-charset="utf-8">
+		<form action="<?=$_SERVER['PHP_SELF']?>" method="post" accept-charset="utf-8" onsubmit="fm_chk();">
 			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
 			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
 			<?=$form->hidden(array('name' => 'act','value' => 'datecal'))?>
@@ -150,6 +150,15 @@ $element = $this->get_var('element');
 	if(is_null($this->get_var('listobject')) === false
 	&& is_null($this->get_var('conf','axetype')) === false
 	&& $this->get_var('conf','axetype') !== 'type'):
+	
+		$listobject = $this->get_var('listobject');
+		foreach ($listobject as $k => &$v)
+		{
+			if (isset($v['displayname']) === false)
+				$v['displayname'] = $v['fullname'];
+			$v['displayname'] = dwho_trunc(&$v['displayname'],18,'...',5);
+		}
+	
 ?>
 			<div id="it-cal-object" class="fm-paragraph">	
 			<?php
@@ -158,10 +167,10 @@ $element = $this->get_var('element');
 							    'paragraph'	=> false,
 							    'browse'	=> 'key',
 				  				'labelid'	=> 'key',
-				    			'key'		=> 'name',
+				    			'key'		=> 'displayname',
 					   			'altkey'	=> 'id',
 							    'selected'	=> $this->get_var('objectkey')),
-						      	$this->get_var('listobject'));
+						      	$listobject);
 			?>
 			</div>
 <?php
@@ -175,6 +184,7 @@ $element = $this->get_var('element');
 	&& $this->get_var('conf','axetype') !== 'type'):
 ?>
 			<div class="fm-paragraph">	
+			<?=$this->bbf('conf_axetype')?>
 			<?php
 				echo	$form->select(array('name'	=> 'axetype',
 							    'id'		=> 'it-conf-axetype',
@@ -231,9 +241,6 @@ $element = $this->get_var('element');
 					     onmouseover="xivo_calendar_body();"
 					     onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');">
 					</div>
-					<div class="fm-desc-inline">
-						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
-					</div>
 				</div>
 			<?php endif; ?>
 			</div>
@@ -252,9 +259,6 @@ $element = $this->get_var('element');
 					     class="b-nodisplay"
 					     onmouseover="xivo_calendar_body();"
 					     onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');">
-					</div>
-					<div class="fm-desc-inline">
-						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 					</div>
 				</div>
 			<?php endif; ?>
@@ -275,9 +279,6 @@ $element = $this->get_var('element');
 					     onmouseover="xivo_calendar_body();"
 					     onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');">
 					</div>
-					<div class="fm-desc-inline">
-						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
-					</div>
 				</div>
 			<?php endif; ?>
 			</div>
@@ -297,9 +298,6 @@ $element = $this->get_var('element');
 					     onmouseover="xivo_calendar_body();"
 					     onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');">
 					</div>
-					<div class="fm-desc-inline">
-						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
-					</div>
 				</div>
 			<?php endif; ?>
 			</div>
@@ -310,12 +308,12 @@ $element = $this->get_var('element');
 						<label id="lb-dbeg" for="it-dbeg-year"><?=$this->bbf('fm_dyear')?></label>
 						<input type="text" name="datecal[dyear]" id="it-dbeg-year" value="<?=is_null($infocal['dyear'])?dwho_i18n::strftime_l('%Y',null):$infocal['dyear']?>" size="4" />
 					</div>
-					<div class="fm-desc-inline">
-						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
-					</div>
 				</div>
 			<?php endif; ?>
 			</div>
+					<div class="fm-desc-inline">
+						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+					</div>
 		</form>
 		</div>
 <?php
@@ -355,7 +353,11 @@ echo dwho_second_to($bench,2);
 	</div>
 </div>
 		
-<script type="text/javascript">
+<script type="text/javascript">	
+function fm_chk(){
+	dwho_eid('it-submit').disabled = true;
+	dwho_eid('it-submit').value = '<?=$this->bbf('fm-wait-submit')?>';
+};
 dwho.dom.set_onload(function()
 {
 <?php

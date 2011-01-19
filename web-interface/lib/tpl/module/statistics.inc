@@ -467,20 +467,19 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			switch ($axetype)
 			{
 				case 'day':
-					$hour_range = $this->_data_custom['hour_range'];
-					$interval = $hour_range['interval'];
-					$date = dwho_change_date_format($interval['dbeg'],'Y-m-d H:i:s','D, d M Y');
-					$return .= $date;
+					$day_process = $this->_data_custom['day_process'];
+					$return .= dwho_change_date_format($day_process['dday'],'Y-m-d','D, d M Y');
 					break;
 				case 'week':
 					$week_range = $this->_data_custom['week_range'];
 					$from = $week_range['from'];
 					$to = $week_range['to'];
-					$return .= $this->bbf('week_number',date('W',$from));
+					$return .= $this->bbf('week_number-opt',array(date('W',$from),date('Y',$from)));
 					$return .= ' => ';
 					$return .= date('Y-m-d',$from).' - '.date('Y-m-d',$to);
 					break;
 				case 'month':
+					$month_process = $this->_data_custom['month_process'];
 					break;
 				case 'year':
 					break;

@@ -27,46 +27,71 @@ $stats_agent = new xivo_statistics_agent(&$_XS);
 $stats_agent->parse_log();
 
 $tpl_statistics->set_name('agent');
+$tpl_statistics->set_baseurl('statistics/call_center/stats3');
 
-$tpl_statistics->set_rows('agent',$stats_agent->get_agent_list(),'number');
+$tpl_statistics->set_data_custom('axetype',$_XS->get_axtype());
+switch ($_XS->get_axtype())
+{
+	case 'day':
+		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
+		$tpl_statistics->set_data_custom('day_process',$_XS->get_infocal());
+		break;
+	case 'week':
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
+		$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
+		break;
+	case 'month':
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'key');
+		$tpl_statistics->set_data_custom('month_process',$_XS->get_infocal());
+		break;
+	case 'year':
+		$tpl_statistics->set_rows('month',$_XS->get_listmonth(),'key');
+		break;
+	case 'type':
+	default:
+		$tpl_statistics->set_rows('agent',$stats_agent->get_agent_list(),'number',true);
+}
+
 
 $tpl_statistics->set_data_custom('agent',$stats_agent->_result);
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('login',
 					'direct',
-					'custom:agent,agent/[number],logintime');
+					'custom:agent,[key],logintime');
 
 $tpl_statistics->set_col_struct('traitment');
 $tpl_statistics->add_col('total',
 					'direct',
-					'custom:agent,agent/[number],traitmenttime',
+					'custom:agent,[key],traitmenttime',
 					'time');
 $tpl_statistics->add_col('total_with_talk',
 					'direct',
-					'custom:agent,agent/[number],traitmenttime',
+					'custom:agent,[key],traitmenttime',
 					'time');
 $tpl_statistics->add_col('total_with_wup',
 					'direct',
-					'custom:agent,agent/[number],traitmenttime',
+					'custom:agent,[key],traitmenttime',
 					'time');
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('available',
 					'expression',
-					'{custom:agent,agent/[number],logintime}-{custom:agent,agent/[number],calltime}',
+					'{custom:agent,[key],logintime}-{custom:agent,[key],calltime}',
 					'time');
 
 $tpl_statistics->set_col_struct('withdrawal');
 $tpl_statistics->add_col('totalwithdrawal',
 					'direct',
-					'custom:agent,agent/[number],pausetime');
+					'custom:agent,[key],pausetime');
 
 $tpl_statistics->gener_table();
 #$tpl_statistics->gener_graph('t1','stats1');
 $table1 = $tpl_statistics;
 
 $_TPL->set_var('table1',$table1);
+$_TPL->set_var('listobject',$_XS->get_object_list());
+$_TPL->set_var('objectkey',$_XS->get_objectkey());
 $_TPL->set_var('showdashboard',true);
 
 $bench_end = microtime(true);

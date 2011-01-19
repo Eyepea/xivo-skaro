@@ -80,6 +80,9 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			default:
 				$data = $this->get_list_by_type();
 		}
+					
+		$key_data = $this->get_list_by_type();
+		$interval = $this->_xs->get_interval();
 		
 		$nb_data = count($data);
 		for ($i=0;$i<$nb_data;$i++)
@@ -88,52 +91,19 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			switch ($axetype)
 			{
 				case 'day':
-					$key_data = $this->get_list_by_type();
-					$key = $key['key'];
-					$interval = $this->_xs->get_interval();
-					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
-					$dip = array();
-					$dip['dbeg'] = date('Y-m-d H:i:s',mktime($key,0,0,$date['month'],$date['day'],$date['year']));
-					$dip['dend'] = date('Y-m-d H:i:s',mktime($key+1,0,0,$date['month'],$date['day'],$date['year']));
-					$this->_xs->_interval_process = $dip;
-					break;
 				case 'week':
-					$key_data = $this->get_list_by_type();
-					$key = $key['key'];
-					$interval = $this->_xs->get_interval();
-					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
-					$week = date('W',mktime(0,0,0,$date['month'],$date['day'],$date['year']));
-					$day_process = $this->_xs->get_day_from_week_by_name_day($date['year'],$week,$key);
-					if (is_null($day_process) === true)
-						break;
-					$dip = array();
-					$dip['dbeg'] = $day_process.' 00:00:01';
-					$dip['dend'] = $day_process.' 23:59:59';
-					$this->_xs->_interval_process = $dip;
-					break;
 				case 'month':
-					$key_data = $this->get_list_by_type();
-					$key = $key['key'];
-					$interval = $this->_xs->get_interval();
-					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
-					$day_process = mktime(0,0,0,$date['month'],$key,$date['year']);
-					$dip['dbeg'] = date('Y-m-d',$day_process).' 00:00:01';
-					$dip['dend'] = date('Y-m-d',$day_process).' 23:59:59';
-					$this->_xs->_interval_process = $dip;
-					break;
 				case 'year':
-					$key_data = $this->get_list_by_type();
 					$key = $key['key'];
-					$interval = $this->_xs->get_interval();
-					$date = dwho_date_parse_from_format('Y-m-d H:i:s',$interval['dbeg']);
-					$day_process = mktime(0,0,0,$key+1,0,$date['year']);
-					$dip['dbeg'] = date('Y-m',$day_process).'-01 00:00:01';
-					$dip['dend'] = date('Y-m',$day_process).'-31 23:59:59';
-					$this->_xs->_interval_process = $dip;
+					if (isset($interval[$key]) === true)
+						$this->_xs->_interval_process =  $interval[$key];
 					break;
 				case 'type':
 				default:
 					$key_data = $key;
+					if (count($interval) === 1)
+						$interval = array_shift($interval);
+					$this->_xs->_interval_process =  $interval;
 			}
 			
 			$this->init_result($key);

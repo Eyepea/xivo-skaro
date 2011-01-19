@@ -46,6 +46,9 @@ Période 4:
 ; fm_period5
 Période 5: 
 
+;hlp_fm_period
+eg. 0-20 (pour une périodes de 0 à 20 secondes)
+
 ; fm_description
 Déscription: 
 
