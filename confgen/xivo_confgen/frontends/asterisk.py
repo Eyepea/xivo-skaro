@@ -485,15 +485,14 @@ class AsteriskFrontend(Frontend):
         def extensions_conf(self):
 		"""Generate extensions.conf asterisk configuration file
 		"""
-		self.ex = ''
-
 		o = StringIO()
 
+		ex = None
 		for exten in self.backend.extensions.all(commented=False, order='context'):
-			if exten['context'] != self.ex:
-				self.ex = exten['context']
+			if exten['context'] != ex:
+				ex = exten['context']
 				print >>o, "\n[%s]" % exten['context']
 
-			print >>o, "exten = %s,%s,%s(%s)" % (exten['exten'], exten['priority'], exten['app'], exten['appdata'])
+			print >>o, "exten = %s,%s,%s(%s)" % (exten['exten'], exten['priority'], exten['app'], exten['appdata'].replace('|',','))
 
 		return o.getvalue()
