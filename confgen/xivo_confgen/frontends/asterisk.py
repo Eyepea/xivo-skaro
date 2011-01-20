@@ -498,8 +498,10 @@ class AsteriskFrontend(Frontend):
 			if app == 'Macro':
 				app     = 'Gosub'
 				appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
-
-			print >>o, "exten = %s,%s,%s(%s)" % (exten['exten'], exten['priority'], app, ','.join(appdata))
+				
+			print >>o, "exten = %s,%s,%s" % (exten['exten'], exten['priority'], 'Set(XIVO_BASE_CONTEXT=${CONTEXT})'); prio += 1
+			print >>o, "same  =    n,%s" % 'Set(XIVO_BASE_EXTEN=${EXTEN})'; prio += 1
+			print >>o, "same  =    n,%s(%s)\n" % (app, ','.join(appdata))
 
 
 		return o.getvalue()
