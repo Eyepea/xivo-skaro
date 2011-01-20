@@ -497,7 +497,7 @@ class AsteriskFrontend(Frontend):
 			appdata = list(exten['appdata'].replace('|',',').split(','))
 			if app == 'Macro':
 				app     = 'Gosub'
-				appdata = ('macro-' + appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
+				appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
 
 			print >>o, "exten = %s,%s,%s(%s)" % (exten['exten'], exten['priority'], app, ','.join(appdata))
 
