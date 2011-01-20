@@ -36,6 +36,4 @@ pf_profor-banner
 #pf_manager_rename
 
 # digium patches
-dig_18350_chansip_mwi.patch
-dig_18350_chansip_mwi-sip.conf.sample.patch
 dig_27789_chansip_nullpeer.patch

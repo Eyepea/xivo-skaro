@@ -1,9 +1,9 @@
 gbour gbour@proformatique.com
-Index: asterisk-1.8.2-rc1/channels/chan_sip.c
+Index: asterisk-1.8.3-rc1/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.2-rc1.orig/channels/chan_sip.c	2010-12-28 14:08:01.288724461 -0500
-+++ asterisk-1.8.2-rc1/channels/chan_sip.c	2010-12-28 14:08:49.828724791 -0500
-@@ -25088,6 +25088,16 @@
+--- asterisk-1.8.3-rc1.orig/channels/chan_sip.c	2011-01-20 16:10:22.978090494 -0500
++++ asterisk-1.8.3-rc1/channels/chan_sip.c	2011-01-20 16:10:25.848089847 -0500
+@@ -25103,6 +25103,16 @@
  	/* Divvy up the items separated by slashes */
  	AST_NONSTANDARD_APP_ARGS(args, tmp, '/');
  
