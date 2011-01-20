@@ -5,13 +5,13 @@ Database type :
 Invalid connection parameters
 
 ; error_dbconfig_xivo(connection)
-Cannot connect to the database !
+Cannot connect to the database!
 
 ; error_dbconfig_ipbx(invalid)
 Invalid connection parameters
 
 ; error_dbconfig_ipbx(connection)
-Cannot connect to the database !
+Cannot connect to the database!
 
 ; fm_dbconfig_sqlite-xivodb
 XiVO database :
