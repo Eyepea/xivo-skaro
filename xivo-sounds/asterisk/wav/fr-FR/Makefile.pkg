@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 2919 $
+# $Date: 2008-05-02 09:31:52 -0400 (ven 02 mai 2008) $
+
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
+
+DEB_PKG="pf-asterisk-prompt-fr"
+DEB_TB_DEPS=""
+
+default:
+
