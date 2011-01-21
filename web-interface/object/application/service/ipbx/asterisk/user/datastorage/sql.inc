@@ -310,7 +310,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->andwherenot(array('bstype' => $bsfilter),$this->_table['callfiltermember']);
 
 		$this->_dso->innerjoin($this->_table['userfeatures'],
-				       $this->_table['callfiltermember'].'.typeval = '.$this->_table['userfeatures'].'.id',
+				       $this->_dso->cast($this->_table['callfiltermember'].'.typeval','int').' = '.$this->_table['userfeatures'].'.id',
 				       null,
 				       '*');
 
@@ -354,7 +354,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 							 'bstype'	=> $bsfilter));
 
 		$this->_dso->innerjoin(array('user1' => $this->_table['userfeatures']),
-				       'cfilterm1.typeval = user1.id');
+				       $this->_dso->cast('cfilterm1.typeval','int').' = user1.id');
 		$this->_dso->joinwhere('user1','cfilterm1.bstype = user1.bsfilter');
 		$this->_dso->andjoinwhere('user1',array('id' => $id,'internal' => 0));
 		$this->_dso->andjoinwherenot('user1','COALESCE(user1.number,\'\') = \'\'');
@@ -367,7 +367,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->andjoinwherenot('cfilterm2',array('bstype' => $bsfilter));
 
 		$this->_dso->innerjoin(array('user2' => $this->_table['userfeatures']),
-				       'cfilterm2.typeval = user2.id');
+				       $this->_dso->cast('cfilterm2.typeval','int').' = user2.id');
 		$this->_dso->joinwhere('user2','cfilterm2.bstype = user2.bsfilter');
 		$this->_dso->andjoinwhere('user2',array('id'		=> $user2id,
 							'context'	=> $context,
