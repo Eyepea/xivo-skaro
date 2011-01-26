@@ -31,8 +31,6 @@ import socket
 import struct
 import math
 
-from xivo.UpAllAny import all
-
 from xivo import StreamedLines
 
 
