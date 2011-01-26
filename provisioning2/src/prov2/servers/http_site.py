@@ -1,15 +1,34 @@
 # -*- coding: UTF-8 -*-
 
+"""This module add support to returning Deferred in Resource getChild/getChildWithDefault.
+Only thing you need to do is to use this Site class instead of twisted.web.server.Site.
+
+"""
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import copy
 import string
 from twisted.internet import defer
 from twisted.web import http
 from twisted.web import server
 
-"""This module add support to returning Deferred in Resource getChild/getChildWithDefault.
-Only thing you need to do is to use this Site class instead of twisted.web.server.Site.
-
-"""
 
 class Request(server.Request):
     # originally taken from twisted.web.server.Request
