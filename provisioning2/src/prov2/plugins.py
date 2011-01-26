@@ -4,7 +4,7 @@ from __future__ import with_statement
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -269,9 +269,9 @@ class Plugin(object):
         """ 
         pass
     
-    def configure(self, dev, config):
-        """Configure the plugin so that the config config is applied to the
-        device dev. This method MUST not synchronize the configuration between
+    def configure(self, device, raw_config):
+        """Configure the plugin so that the raw config is applied to the
+        device. This method MUST not synchronize the configuration between
         the phone and the provisioning server. This method is called only to
         synchronize the config between the config manager and the plugin. See
         the synchronize method for more info on the device configuration life cycle. 
@@ -289,8 +289,8 @@ class Plugin(object):
         the config inside the device specific configuration file is in sync
         with the config object from the config manager.
         
-        Pre:  dev is a device object (can't be None)
-              config is a 'flat' config object (can't be None). The plugin
+        Pre:  device is a device object (can't be None)
+              raw_config is a raw config object (can't be None). The plugin
                 is free to modify this object (it won't affect anything).
                 The meaning of the value in the config object are defined in
                 the config module. Note that there's no guarantee that any of
@@ -309,7 +309,7 @@ class Plugin(object):
         """
         pass
     
-    def deconfigure(self, dev):
+    def deconfigure(self, device):
         """Deconfigure the plugin so that the plugin won't configure the
         device.
         
@@ -327,10 +327,14 @@ class Plugin(object):
         Note that deconfigure doesn't mean you should try resetting the
         device to its default value. In fact, you SHOULD NOT do this.
         
-        Pre:  dev is a device object
+        In some rare circumstances, this method might be called more than
+        once for the same device object, so plugin should be prepared to
+        such eventuality.
+        
+        Pre:  device is a device object
               the method 'configure' has been called at least once with the
                 same device object since the last call to deconfigure with
-                the same devie (i.e. a method to deconfigure can only follow
+                the same devie (i.e. a call to deconfigure can only follow
                 a call to the configure method with the same device, and there
                 must not be a call to deconfigure between these 2 calls)
         Post: after a call to this method, if device dev does a request for
@@ -345,14 +349,17 @@ class Plugin(object):
         """
         pass
     
-    def synchronize(self, dev, config):
+    # XXX should call it's errback instead of raising an exception in the case
+    #     the plugin don't know how to resync a device (missing info, or just
+    #     don't know) (?)
+    def synchronize(self, device, raw_config):
         """Force the device to synchronize its configuration so that its the
         same as the one in the config object.
         
         Note that to be succesful, the device must be online...
         
-        Pre:  dev is a device object (can't be None)
-              config is a config object (can't be None)
+        Pre:  device is a device object (can't be None)
+              raw_config is a raw config object (can't be None)
               there has been no change to the config object since the last
                 call to the configure method with the same device object and
                 config object. Said differently, before this call, there has
@@ -703,7 +710,7 @@ class PluginManager(object):
                                              'The base address of the plugins repository')
         self._cfg_service = BaseConfigureService({'server': server_p})
         self._in_update = False
-        self._in_install_set = set()
+        self._in_install = set()
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
         self.server = None
@@ -802,7 +809,7 @@ class PluginManager(object):
         
         """
         logger.info('Installing plugin "%s"', name)
-        if name in self._in_install_set:
+        if name in self._in_install:
             raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % name)
         
         pg_info = self._get_installable_pg_info(name)
@@ -811,15 +818,15 @@ class PluginManager(object):
         
         cache_filename = os.path.join(self._cache_dir, pg_info['filename'])
         if not self._is_in_cache(cache_filename):
-            self._in_install_set.add(name)
+            self._in_install.add(name)
             dl_pop = self._download_plugin(pg_info['filename'], cache_filename)
             proxy_pop = _InstallProxyProgressingOperation(dl_pop)
             def on_error(failure):
-                self._in_install_set.remove(name)
+                self._in_install.remove(name)
                 proxy_pop._status = 'fail'
                 proxy_pop.deferred.errback(failure)
             def on_success(_):
-                self._in_install_set.remove(name)
+                self._in_install.remove(name)
                 try:
                     self._extract_plugin(cache_filename)
                 except Exception, e:

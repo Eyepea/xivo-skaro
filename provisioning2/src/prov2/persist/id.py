@@ -2,7 +2,7 @@
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,28 +18,27 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from zope.interface import Interface, implements
+import binascii
+import uuid
 
 
-class IIdGenerator(Interface):
-    def next_id(self, used):
-        """Return a unique ID (a string). The returned ID must not be in
-        used (i.e. 'new_id not in used' must be true).
-        
-        """
+def numeric_id_generator(prefix=u'', start=0):
+    n = start
+    while True:
+        yield prefix + unicode(n)
+        n += 1 
 
 
-class NumericIdGenerator(object):
-    implements(IIdGenerator)
-    
-    def __init__(self, prefix='', start=0):
-        self.prefix = ''
-        self.n = start
-        
-    def next_id(self, used):
-        n = self.n
-        prefix = self.prefix
-        while prefix + str(n) in used:
-            n += 1
-        self.n = n + 1
-        return prefix + str(n)
+def uuid_id_generator():
+    while True:
+        yield unicode(uuid.uuid4().hex)
+
+
+def urandom_id_generator(length=12):
+    while True:
+        f = open('/dev/urandom')
+        try:
+            id = unicode(binascii.hexlify(f.read(length)))
+        finally:
+            f.close() 
+        yield id

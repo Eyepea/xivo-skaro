@@ -1,15 +1,18 @@
 # -*- coding: UTF-8 -*-
 
-"""Device configuration module.
+"""Config and config collection module.
 
-A configuration object (config object) is a mapping object, with value as defined
-below.
+Config objects are dictionaries, with the usual restrictions associated with
+the fact they may be persisted in a document collection.
 
-A configuration manager (config manager) is a mapping object where keys are
-config IDs (string) and values are tuple (config object, sequence of config
-IDs).
+Config objects have the following standardized keys:
+  id -- the IDs of this config object (unicode) (mandatory)
+  parent_ids -- the IDs of parent config object (list of unicode) (mandatory)
+  raw_config -- the configuration parameters of this config (dict) (mandatory)
 
-Below is the list of 'standardized' parameters that can be found in
+Config collection objects are used as a storage for config objects.
+
+Below is the list of 'standardized' parameters that can be found in raw
 configuration objects at the plugin level.
 
 Note that every time you see a string or see a reference to a string, think
@@ -146,10 +149,11 @@ Parameters should be valid python identifiers since it should be possible to
 use them directly using the standard template format.
 
 """
+from twisted.internet import defer
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -166,6 +170,8 @@ __license__ = """
 """
 
 import copy
+from prov2.persist.common import ID_KEY
+from prov2.persist.util import ForwardingDocumentCollection
 
 
 def _rec_update_dict(old_vals, new_vals):
@@ -183,129 +189,110 @@ def _rec_update_dict(old_vals, new_vals):
             old_vals[k] = v
 
 
-class ConfigManager(dict):
-    """A config manager manages config objects. Each config has an unique ID
-    associated to it.
+class ConfigCollection(ForwardingDocumentCollection):
+    def __init__(self, collection):
+        ForwardingDocumentCollection.__init__(self, collection)
+        self._collection = collection
     
-    """
-    
-    # XXX the req_graph currently doesn't work because the __setitem__
-    #     and __delitem__ method aren't always called when an item is
-    #     added/removed to the dict
-    
-    def __init__(self, *args, **kwargs):
-        dict.__init__(self, *args, **kwargs)
-        self._req_graph = {}
-    
-    def _add_link(self, cfg_id):
-        """Pre: cfg_id in self."""
-        cfg = self[cfg_id]
-        bases = cfg[1]
-        for base in bases:
-            self._req_graph.setdefault(base, set()).add(cfg_id)
-        
-    def _remove_link(self, cfg_id):
-        """Pre: cfg_id in self."""
-        cfg = self[cfg_id]
-        bases = cfg[1]
-        for base in bases:
-            self._req_graph[base].remove(cfg_id)
-    
-    def __setitem__(self, cfg_id, cfg):
-        # This doesn't work since dictionary are using the __setitem__
-        # method not if you call update or call the constructor, etc,
-        # should use composition instead...
-        if cfg_id in self:
-            self._remove_link(cfg_id)
-        dict.__setitem__(self, cfg_id, cfg)
-        self._add_link(cfg_id)
-    
-    def __delitem__(self, cfg_id):
-        self._remove_link(cfg_id)
-        dict.__delitem__(self, cfg_id)
-    
-    def list(self, cfg_id):
-        """Return a list of config IDs for which every config is a direct or
-        indirect dependency of cfg_id. The IDs are returned in the same order
-        that the config would be flattened.
+    def get_ancestors(self, id):
+        """Return a deferred that will fire with the set of ancestors of the
+        config with the given ID, i.e. the set of config ID that the given
+        config depends on, directly or indirectly, or fire with None if id
+        is an unknown id.
         
         """
         visited = set()
-        def aux(cfg_id):
-            if cfg_id in visited:
+        @defer.inlineCallbacks
+        def aux(cur_id):
+            if cur_id in visited:
                 return
-            visited.add(cfg_id)
-            bases = self[cfg_id][1]
-            for base_cfg_id in bases:
-                aux(base_cfg_id)
+            visited.add(cur_id)
+            config = yield self._collection.retrieve(cur_id)
+            if config is not None:
+                for parent_id in config[u'parent_ids']:
+                    yield aux(parent_id)
     
-        aux(cfg_id)
-        visited.remove(cfg_id)
-        return visited
+        def on_success(_):
+            visited.remove(id)
+            # visited will now be empty if id is unknown
+            return visited or None
+        d = aux(id)
+        d.addCallback(on_success)
+        return d
     
-    def is_required(self, cfg_id):
-#        return bool(self._req_graph.get(cfg_id))
-        return bool(self.required_by(cfg_id))
-    
-    def required_by(self, cfg_id, maxdepth=-1):
-        """Return a set of config IDs for which every config has a direct or
-        indirect dependency on config cfg_id.
-        
-        Pre:  cfg_id in self
-        Post: for id in self.required_by(cfg_id): cfg_id in self.list(id)
+    def has_descendants(self, id):
+        """Return a deferred that will fire with true if the config with the
+        given ID has any descendants, else will fire with false.
         
         """
-#        return self._req_graph.get(cfg_id, set())
-        # XXX Note that this is extremely inefficient
-        # For example, if you have 1000 configs, and that 999 depends
-        # on the same one, if you call required_by for this config,
-        # it will make 1000 function calls and do 1000 * 1000 "__contains__"
-        # tests.
+        return self.get_descendants(id, maxdepth=1)
+    
+    def get_descendants(self, id, maxdepth=-1):
+        """Return a deferred that will fire with the set of descendants of the
+        config with the given ID, i.e. the set of config ID that depends on
+        this config, directly or indirectly. 
         
-        if cfg_id not in self:
-            raise KeyError(cfg_id)
+        """
         visited = set()
-        def aux(cfg_id, maxdepth):
-            if cfg_id in visited:
+        @defer.inlineCallbacks
+        def aux(cur_id, maxdepth):
+            if cur_id in visited:
                 return
-            visited.add(cfg_id)
+            visited.add(cur_id)
             if maxdepth == 0:
                 return
             maxdepth -= 1
-            for cur_cfg_id, cur_cfg in self.iteritems():
-                cur_bases = cur_cfg[1]
-                if cfg_id in cur_bases:
-                    aux(cur_cfg_id, maxdepth)
+            configs = yield self._collection.find({u'parent_ids': cur_id}) 
+            for config in configs:
+                assert cur_id in config[u'parent_ids']
+                yield aux(config[ID_KEY], maxdepth)
         
-        aux(cfg_id, maxdepth)
-        visited.remove(cfg_id)
-        return visited
+        def on_success(_):
+            visited.remove(id)
+            return visited
+        d = aux(id, maxdepth)
+        d.addCallback(on_success)
+        return d
     
-    def flatten(self, cfg_id):
-        """Return a config object with every parameters from its bases config
-        present.
+    def get_raw_config(self, id, base_raw_config={}):
+        """Return a deferred that will fire with a raw config with every
+        parameters from its ancestors config, or fire with None if id is not
+        a known ID.
         
         """
-        res = {}
+        # flattened_raw_config is set to a copy of base_raw_config only once
+        # we know that the id is valid. This is a bit ugly, but it's the
+        # simplest thing to do.
+        flattened_raw_config = None
         visited = set()
-        def rec_flatten(cur_cfg_id):
-            if cur_cfg_id in visited:
+        @defer.inlineCallbacks
+        def aux(cur_id):
+            if cur_id in visited:
                 return
-            visited.add(cur_cfg_id)
-            cfg, cfg_base_ids = self[cur_cfg_id]
-            for cfg_base_id in cfg_base_ids:
-                rec_flatten(cfg_base_id)
-            _rec_update_dict(res, cfg)
+            visited.add(cur_id)
+            config = yield self._collection.retrieve(cur_id)
+            if config is not None:
+                if flattened_raw_config is None:
+                    copy.deepcopy(base_raw_config)
+                for base_id in config[u'parent_ids']:
+                    yield aux(base_id)
+                _rec_update_dict(flattened_raw_config, config[u'raw_config'])
         
-        rec_flatten(cfg_id)
-        return res
-    
-    def remove(self, cfg_id):
-        """Remove config with ID cfg_id from and then remove every reference to
-        this config from the other configs.
+        d = aux(id)
+        d.addCallback(lambda _: flattened_raw_config)
+        return d
+
+    @defer.inlineCallbacks
+    def delete_references(self, id):
+        """Delete all the references to the config with the given ID, i.e.
+        for each config with has the given config has a parent, remove the
+        given config from its 'parent_ids' key.
         
-        """ 
-        del self[cfg_id]
-        for _, cfg_base_ids in self.itervalues():
-            if cfg_id in cfg_base_ids:
-                cfg_base_ids.remove(cfg_id)
+        Return a deferred that will fire with None once the operation has
+        been completed.
+        
+        """
+        configs = yield self._collection.find({u'parent_ids': id})
+        for config in configs:
+            config[u'parent_ids'].remove(id)
+            yield self._collection.update(config)

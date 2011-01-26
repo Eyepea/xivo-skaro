@@ -48,6 +48,7 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
         # Vendor class identifier:
         #   "LINKSYS SPA-942" (6.1.5a)
         #   "LINKSYS SPA-962" (6.1.5a)
+        #   "LINKSYS SPA8000" (unknown version)
         #   "Cisco SPA501G" (7.4.4)
         #   "Cisco SPA508G" (7.4.4)
         #   "Cisco SPA525g" (from Cisco doc, unknown version)

@@ -1,40 +1,44 @@
 # -*- coding: UTF-8 -*-
 
-"""Device-related stuff module...
+"""Device and device collection module.
 
-XXX keys and values should be in unicode when applicable 
-XXX like config, there should be a way to put extra information into device
-    object in a way it's can't conflict with future addition
+This module defines 3 kind of objects:
+- device info
+- device
+- device collection
 
-A device info object is a mapping object with the following keys:
-  mac -- the normalized MAC address of this device
-  sn -- the serial number of this device (string)
-  ip -- the (last seen) normalized IP address of this device
-  vendor -- the vendor name of this device (string)
-  model -- the model name of this device (string)
-  version -- the version of the software/firmware of this device (string)
-XXX since it's theoretically possible for some device to be used with different software,
+Device info objects and device objects have some similarities. They both
+are dictionaries, with the usual restrictions associated with the fact
+they may be persisted in a document collection.
+
+They both have the following standardized keys:
+  mac -- the normalized MAC address of this device (unicode)
+  sn -- the serial number of this device (unicode)
+  ip -- the normalized IP address of this device (unicode)
+  vendor -- the vendor name of this device (unicode)
+  model -- the model name of this device (unicode)
+  version -- the version of the software/firmware of this device (unicode)
+  XXX since it's theoretically possible for some device to be used with different software,
     and in these cases a 'version' field is not enough to identify which software its
     using, we might want to add another field like 'firmware' or change the semantic and
     the name of the 'version' field to include not only the version but the firmware name/id
 
-A device object is a device info object + the followings keys:
-  plugin -- the name of the plugin this device is managed by (string)
-  config -- the name of the configuration of this device (string)
+Device objects have also the following standardized keys:
+  id -- the ID of this device object (unicode) (mandatory)
+  plugin -- the ID of the plugin this device is managed by (unicode)
+  config -- the ID of the configuration of this device (unicode)
+  configured -- a boolean indicating if the device has been successfully
+    configured by a plugin. (boolean) (mandatory)
 
-The most meaningful difference between a device object and a device info
-object is that device objects are usually 'registered' with a device manager
-while device info object might or might not be registered with a device
-manager.
+Non-standard keys should begin with 'X_'.
 
-A device manager object is a mapping object where keys are unique device
-identifier (string) and values are device object. 
+Finally, device collection objects are used as a storage for device objects.
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,50 +54,10 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from prov2.persist.util import ForwardingDocumentCollection
 
-class DeviceManager(dict):
-    """A device manager manages device objects. Each device has an unique ID
-    associated to it.
-    
-    """
-    
-    # XXX if it's worth it, we could split the 'device management'
-    # from the 'search' (search with cache or without cache) and a way
-    # to notify the 'searcher' object of change to device manager (observer
-    # pattern)
-    
-    def find(self, fun):
-        """Return the first device ID for which fun(dev) is true, or None 
-        if no such device exist.
-        
-        """
-        for dev_id, dev in self.iteritems():
-            if fun(dev):
-                return dev_id
-        return None
-    
-    def find_ip(self, ip):
-        """Return the first device ID for which dev.get('ip') == ip, or
-        None if no such device exist.
-        
-        This is equivalent to 'find(lambda d: d.get('ip') == ip)' but
-        calling this method might be faster.
-        
-        """
-        return self.find(lambda d: d.get('ip') == ip)
-    
-    def find_mac(self, mac):
-        """Return the first device ID for which dev.get('mac') == mac, or
-        None if no such device exist.
-        
-        This is equivalent to 'find(lambda d: d.get('mac') == mac)' but
-        calling this method might be faster.
-        
-        """
-        return self.find(lambda d: d.get('mac') == mac)
-    
-    def filter(self, fun):
-        """Yield every device IDs for which fun(dev) is true."""
-        for dev_id, dev in self.iteritems():
-            if fun(dev):
-                yield dev_id
+
+class DeviceCollection(ForwardingDocumentCollection):
+    # right now, a device collection is nothing more than a standard
+    # collection
+    pass
