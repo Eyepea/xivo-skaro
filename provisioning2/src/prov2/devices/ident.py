@@ -20,6 +20,10 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# TODO handle the case where ProcessingService.process return a Deferred
+#      that fires it's errback. In TFTP and HTTP request processing service.
+
+import copy
 import logging
 from prov2.plugins import BasePluginManagerObserver
 from prov2.servers.tftp.service import TFTPNullService
@@ -29,21 +33,13 @@ from zope.interface import Interface, implements
 
 logger = logging.getLogger('ident')
 
-# TODO handle the case where ProcessingService.process return a Deferred
-#      that fires it's errback. In TFTP and HTTP request processing service.
-# XXX althought the possibility of returning a deferred in a device info
-#     extractor means more flexibility, it adds complexity (but then,
-#     that's not too bad) but also mean that if we log, we could have
-#     interleaved logging from different request in theory (actually
-#     since we are not using this deferred possibility, this does not
-#     apply). 
 
 def _extract_tftp_ip(request):
     """Utility function that return the IP address from a TFTP request
     object (prov2.servers.tftp).
     
     """ 
-    return request['address'][0]
+    return request['address'][0].decode('ascii')
 
 
 def _extract_http_ip(request):
@@ -51,7 +47,7 @@ def _extract_http_ip(request):
     object (twisted.web).
     
     """
-    return request.getClientIP()
+    return request.getClientIP().decode('ascii')
 
 
 def _extract_ip(request, request_type):
@@ -159,7 +155,7 @@ class DHCPDeviceInfoExtractor(object):
             dev_info = self._dhcp_xtor.extract(dhcp_info, 'dhcp')
             if not dev_info:
                 dev_info = {}
-            dev_info['mac'] = dhcp_info['mac']
+            dev_info[u'mac'] = dhcp_info[u'mac']
             return defer.succeed(dev_info)
 
 
@@ -180,26 +176,6 @@ class ArpDeviceInfoExtractor(object):
     
     def extract(self, request, request_type):
         return defer.fail(NotImplementedError())
-
-
-# XXX huh ? As far as I can see, this is useless and might be deleted
-class TypeBasedDeviceInfoExtractor(object):
-    """A device info extractor that ask another device info extractor
-    depending on the request type of the request.
-    
-    """
-    
-    implements(IDeviceInfoExtractor)
-    
-    def __init__(self, extractor_map=None):
-        self.extractor_map = {} if extractor_map is None else extractor_map
-    
-    def extract(self, request, request_type):
-        logger.debug('In %s', self.__class__.__name__)
-        if request_type in self.extractor_map:
-            return self.extractor_map[request_type].extract(request, request_type)
-        else:
-            return defer.succeed(None)
 
 
 class CompositeDeviceInfoExtractor(object):
@@ -404,7 +380,7 @@ class PluginDeviceInfoExtractor(object):
                                         self._on_plugin_load_or_unload)
         pg_mgr.attach(obs)
     
-    def _set_pg(self, ):
+    def _set_pg(self):
         self._pg = self._pg_mgr.get(self._pg_id)
         
     def _on_plugin_load_or_unload(self, pg_id):
@@ -462,7 +438,6 @@ class AllPluginsDeviceInfoExtractor(object):
         return xtor.extract(request, request_type)
 
 
-# do we want to receive an app object or should object store it locally ?
 class IDeviceRetriever(Interface):
     """A device retriever return a device object from device information.
     
@@ -472,8 +447,8 @@ class IDeviceRetriever(Interface):
     """
     
     def retrieve(dev_info, app):
-        """Return a device object from a device info object or None if it can't
-        find such object.
+        """Return a deferred that will fire with either a device object from
+        a device info object or None if it can't find such object.
         
         dev_info has ALWAYS the key 'ip' set to the IP address of the device.
         That means dev_info is always 'true' and dev_info['ip'] never raise
@@ -500,11 +475,7 @@ class IpDeviceRetriever(object):
     
     def retrieve(self, dev_info, app):
         logger.debug('In %s', self.__class__.__name__)
-        dev_mgr = app.dev_mgr
-        dev_id = dev_mgr.find_ip(dev_info['ip'])
-        if dev_id is not None:
-            return dev_mgr[dev_id]
-        return None
+        return app.dev_find_one({u'ip': dev_info[u'ip']})
 
 
 class MacDeviceRetriever(object):
@@ -516,12 +487,9 @@ class MacDeviceRetriever(object):
     
     def retrieve(self, dev_info, app):
         logger.debug('In %s', self.__class__.__name__)
-        dev_mgr = app.dev_mgr
-        if 'mac' in dev_info:
-            dev_id = dev_mgr.find_mac(dev_info['mac']) 
-            if dev_id is not None:
-                return dev_mgr[dev_id] 
-        return None
+        if u'mac' in dev_info:
+            return app.dev_find_one({u'mac': dev_info[u'mac']})
+        return defer.succeed(None)
 
 
 class SerialNumberDeviceRetriever(object):
@@ -533,17 +501,9 @@ class SerialNumberDeviceRetriever(object):
     
     def retrieve(self, dev_info, app):
         logger.debug('In %s', self.__class__.__name__)
-        dev_mgr = app.dev_mgr
-        if 'sn' in dev_info:
-            serial_number = dev_info['sn']
-            def _find_fun(dev):
-                if dev.get('sn') == serial_number:
-                    return True
-                return False
-            dev_id = dev_mgr.find(_find_fun) 
-            if dev_id is not None:
-                return dev_mgr[dev_id] 
-        return None
+        if u'sn' in dev_info:
+            return app.dev_find_one({u'sn': dev_info[u'sn']})
+        return defer.succeed(None)
 
 
 class AddDeviceRetriever(object):
@@ -557,11 +517,19 @@ class AddDeviceRetriever(object):
     """
     implements(IDeviceRetriever)
     
+    @staticmethod
+    def _new_device_from_dev_info(self, dev_info):
+        device = copy.deepcopy(dev_info)
+        device[u'configured'] = False
+        return device
+    
     def retrieve(self, dev_info, app):
         logger.debug('In %s', self.__class__.__name__)
-        dev = dict(dev_info)
-        app.create_dev(dev)
-        return dev
+        device = self._new_device_from_dev_info(dev_info)
+        
+        d = app.dev_insert(device)
+        d.addCallbacks(lambda _: device, lambda _: None)
+        return d
 
 
 class FirstCompositeDeviceRetriever(object):
@@ -573,13 +541,15 @@ class FirstCompositeDeviceRetriever(object):
     def __init__(self, retrievers=None):
         self.retrievers = [] if retrievers is None else retrievers
     
-    def retrieve(self, dev_info, dev_mgr):
+    @defer.inlineCallbacks
+    def retrieve(self, dev_info, app):
         logger.debug('In %s', self.__class__.__name__)
-        for retriever in self.retrievers:
-            dev = retriever.retrieve(dev_info, dev_mgr)
-            if dev is not None:
-                return dev
-        return None
+        retrievers = self.retrievers[:]
+        for retriever in retrievers:
+            device = yield retriever.retrieve(dev_info, app)
+            if device is not None:
+                defer.returnValue(device)
+        defer.returnValue(None)
 
 
 class IDeviceUpdater(Interface):
@@ -589,18 +559,18 @@ class IDeviceUpdater(Interface):
     being able to do side effects is why this interface exist.
     
     Also, you should refrain from doing stupid thing, like removing the
-    'ip' key, or modifying the 'config' value without returning true. This
-    break this interface contract, and will yield to exception, incorrect
-    behaviours elsewhere in the application.  
+    'ip' key. This break this interface contract, and will yield to
+    exception, incorrect behaviors elsewhere in the application.  
     
     """
     
     def update(dev, dev_info, request, request_type):
-        """Update a device object with a device info object. Return true
-        if the device has been updated and should probably be reconfigured,
-        false if it has not.
+        """Update a device object with a device info object and return true
+        if the device should be forced to be reconfigured, else false.
         
-        # XXX should specify the return value more clearly
+        Forcing device reconfiguration is only useful if you are using some
+        non standard keys. Device reconfiguration is normally automatically
+        handled.
         
         dev -- a nonempty device object
         dev_info -- a nonempty device info object for which the key 'ip' is
@@ -628,6 +598,9 @@ class StaticDeviceUpdater(object):
     determine the behavior; if true, this key will be updated, else it
     won't.
     
+    Its update method always return false, i.e. does not force a device
+    reconfiguration.
+    
     """
     
     implements(IDeviceUpdater)
@@ -644,7 +617,6 @@ class StaticDeviceUpdater(object):
             old_value = dev.get(self.key)
             if old_value != self.value:
                 dev[self.key] = self.value
-                return True
         return False
 
 
@@ -652,18 +624,19 @@ class AddInfoDeviceUpdater(object):
     """Device updater that add any missing information to the device from
     the device info.
     
+    Its update method always return false, i.e. does not force a device
+    reconfiguration.
+    
     """
     
     implements(IDeviceUpdater)
     
     def update(self, dev, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        updated = False
         for key in dev_info:
             if key not in dev:
                 dev[key] = dev_info[key]
-                updated = True
-        return updated
+        return False
 
 
 class EverythingDeviceUpdater(object):
@@ -677,13 +650,9 @@ class EverythingDeviceUpdater(object):
     
     def update(self, dev, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        # XXX the specification for device object in the device module
-        #     doesn't tell that device object must have a clear and update
-        #     method... so we might want to change the specification so
-        #     this kind of code is correct and 'standard'...
         dev.clear()
         dev.update(dev_info)
-        return True     # in fact, its possible that dev_info didn't change
+        return False
 
 
 class IpDeviceUpdater(object):
@@ -693,9 +662,7 @@ class IpDeviceUpdater(object):
     
     def update(self, dev, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        if dev['ip'] != dev_info['ip']:
-            dev['ip'] = dev_info['ip']
-            return True
+        dev[u'ip'] = dev_info[u'ip']
         return False
 
 
@@ -711,28 +678,12 @@ class VersionDeviceUpdater(object):
     
     def update(self, dev, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        updated = False
-        if 'vendor' in dev and 'model' in dev:
-            if 'version' in dev_info:
-                dev['version'] = 'version'
-                updated = True
+        if u'vendor' in dev and u'model' in dev:
+            if u'version' in dev_info:
+                dev[u'version'] = dev_info[u'version']
             else:
-                if self.delete_on_no_version and 'version' in dev:
-                    del dev['version']
-                    updated = True
-        return updated
-
-
-class LoggingDeviceUpdater(object):
-    """Doesn't update anything but log a message if there's a difference
-    between the device and the device info objects.
-    
-    """
-    
-    implements(IDeviceUpdater)
-    
-    def update(self, dev, dev_info, request, request_type):
-        # TODO specify the behavior and implement it, if useful
+                if self.delete_on_no_version and u'version' in dev:
+                    del dev[u'version']
         return False
 
 
@@ -778,7 +729,7 @@ class PluginDeviceRouter(object):
         if dev is None:
             return None
         else:
-            return dev.get('plugin')
+            return dev.get(u'plugin')
 
 
 class StaticDeviceRouter(object):
@@ -815,11 +766,6 @@ class FirstCompositeDeviceRouter(object):
         return None
 
 
-# XXX should we leave the dev_mgr and other manager in this class or should
-#     we inject them in the different 'handler' instances at create time ? This gives
-#     a bit more flexibility and the different manager are long lived objects
-#     (and if they change, we could add a level of indirection to them in a
-#     server or something similar object)
 class RequestProcessingService(object):
     """The base object responsible for dynamically modifying the process state
     when processing a request from a device.
@@ -832,12 +778,9 @@ class RequestProcessingService(object):
     
     def __init__(self, app):
         self._app = app
-        self._dev_mgr = app.dev_mgr
-        self._cfg_mgr = app.cfg_mgr
-        self._pg_mgr = app.pg_mgr
         self._req_id = 0    # used for logging
     
-    def _new_req_id(self):
+    def _new_request_id(self):
         req_id = "%d" % self._req_id
         self._req_id = (self._req_id + 1) % 100
         return req_id
@@ -853,59 +796,53 @@ class RequestProcessingService(object):
           continue to process this request.
         
         """
-        req_id = self._new_req_id()
+        req_id = self._new_request_id()
         logger.info('<%s> Processing %s request from %s', req_id, request_type, ip)
         
         # 1. Get a device info object
         logger.info('<%s> Extracting device info', req_id)
-        d = self.dev_info_extractor.extract(request, request_type)
-        dev_info = yield d
+        dev_info = yield self.dev_info_extractor.extract(request, request_type)
         if not dev_info:
             logger.warning('<%s> No device info extracted', req_id)
-            dev_info = {'ip': ip}
+            dev_info = {u'ip': ip}
         else:
             logger.info('<%s> Extracted device info: %s', req_id, dev_info)
-            dev_info['ip'] = ip
+            dev_info[u'ip'] = ip
         
         # 2. Get a device object
-        assert dev_info['ip'] == ip
+        assert dev_info[u'ip'] == ip
         logger.info('<%s> Retrieving device', req_id)
-        dev = self.dev_retriever.retrieve(dev_info, self._app)
-        if dev is None:
+        device = yield self.dev_retriever.retrieve(dev_info, self._app)
+        if device is None:
             logger.warn('<%s> No device retrieved', req_id)
         else:
-            logger.info('<%s> Retrieved device: %s', req_id, dev)
+            logger.info('<%s> Retrieved device: %s', req_id, device)
         
         # 3. Update the device
-        if dev is not None:
+        if device is not None:
             logger.info('<%s> Updating device', req_id)
             # 3.1 Update the device
-            reconfigure = self.dev_updater.update(dev, dev_info, request, request_type)
+            orig_device = copy.deepcopy(device)
+            force_reconfigure = self.dev_updater.update(device, dev_info,
+                                                        request, request_type)
             
-            # 3.2 Reconfigure the device
-            if reconfigure:
-                logger.info('<%s> Reconfiguring device: %s', req_id, dev)
-                # XXX replace this with a call to an application object ?
-                if 'config' in dev and 'plugin' in dev:
-                    cfg_id = dev['config']
-                    pg_id = dev['plugin']
-                    if cfg_id not in self._cfg_mgr or pg_id not in self._pg_mgr:
-                        # XXX log ?
-                        pass
-                    else:
-                        pg = self._pg_mgr[pg_id]
-                        cfg = self._cfg_mgr.flatten(cfg_id)
-                        pg.configure(dev, cfg)
-                
+            # 3.2 Persist the modification if there was a change
+            if device != orig_device:
+                yield self._app.dev_update(device)
+            
+            # 3.3 Reconfigure the device if needed
+            if force_reconfigure:
+                logger.info('<%s> Reconfiguring device: %s', req_id, device)
+                self._app.reconfigure(device[u'id'])
         
         # 4. Return a plugin ID
         logger.info('<%s> Finding route', req_id)
-        pg_id = self.dev_router.route(dev)
+        pg_id = self.dev_router.route(device)
         if pg_id is None:
             logger.warn('<%s> No route found', req_id)
         else:
             logger.info('<%s> Routing request to plugin %s', req_id, pg_id)
-        defer.returnValue((dev, pg_id))
+        defer.returnValue((device, pg_id))
 
 
 def _null_service_factory(pg_id, pg_service):
@@ -941,8 +878,7 @@ class HTTPRequestProcessingService(Resource):
     @defer.inlineCallbacks
     def getChild(self, path, request):
         ip = request.getClientIP()
-        d = self._process_service.process(request, ip, 'http')
-        dev, pg_id = yield d
+        dev, pg_id = yield self._process_service.process(request, ip, 'http')
         
         # Here we 'inject' the device object into the request object
         request.prov2_dev = dev

@@ -23,34 +23,34 @@ import socket
 
 
 def to_ip(ip_string):
-    """Takes a human readable IP address string (i.e. '127.0.0.1') and return
-    a 4-bytes string representation of it.
+    """Takes a human readable IP address unicode string (i.e. '127.0.0.1')
+    and return a 4-bytes string representation of it.
     
-    >>> to_ip('255.255.255.255')
+    >>> to_ip(u'255.255.255.255')
     '\\xff\\xff\\xff\\xff'
-    >>> to_ip('192.168.32.106')
+    >>> to_ip(u'192.168.32.106')
     '\\xc0\\xa8 j'
     
     """
     try:
-        return socket.inet_aton(ip_string)
+        return socket.inet_aton(ip_string.encode('ascii'))
     except socket.error:
         raise ValueError("'%s' is not a valid dotted quad IPv4 address")
 
 
 def from_ip(packed_ip):
     """Takes a 4-bytes string representation of an IP and return the human
-    readable representation.
+    readable representation as a unicode string.
     
     >>> # Double escape seems to be needed for the doctest module...
     >>> from_ip('\\xff\\xff\\xff\\xff')
-    '255.255.255.255'
+    u'255.255.255.255'
     >>> from_ip('\\xc0\\xa8 j')
-    '192.168.32.106'
+    u'192.168.32.106'
     
     """
     try:
-        return socket.inet_ntoa(packed_ip)
+        return socket.inet_ntoa(packed_ip).decode('ascii')
     except socket.error:
         raise ValueError("'%s' is not a valid packed IPv4 address")
 
@@ -65,11 +65,11 @@ def norm_ip(ip_string):
     return from_ip(to_ip(ip_string))
 
 
-_MAC_ADDR = re.compile(r'^[\da-fA-F]{1,2}([:-]?)(?:[\da-fA-F]{1,2}\1){4}[\da-fA-F]{1,2}$')
+_MAC_ADDR = re.compile(ur'^[\da-fA-F]{1,2}([:-]?)(?:[\da-fA-F]{1,2}\1){4}[\da-fA-F]{1,2}$')
 
 def to_mac(mac_string):
-    """Takes a human readable MAC address string (i.e. 00:1a:2b:33:44:55) and
-    return a 6-bytes string representation of it.
+    """Takes a human readable MAC address unicode string (i.e.
+    u'00:1a:2b:33:44:55') and return a 6-bytes string representation of it.
     
     Here's some accepted value:
     - 00:1a:2b:3c:4d:5e
@@ -89,13 +89,13 @@ def to_mac(mac_string):
         # no separator - length must be equal to 12 in this case
         if len(mac_string) != 12:
             raise ValueError('invalid MAC string')
-        return ''.join(chr(int(mac_string[i:i+2], 16)) for i in xrange(0, 12, 2))
+        return u''.join(unichr(int(mac_string[i:i+2], 16)) for i in xrange(0, 12, 2))
     else:
         tokens = mac_string.split(sep)
-        return ''.join(chr(int(token, 16)) for token in tokens)
+        return u''.join(unichr(int(token, 16)) for token in tokens)
 
 
-def from_mac(packed_mac, separator=':', uppercase=False):
+def from_mac(packed_mac, separator=u':', uppercase=False):
     """Takes a 6-bytes string representation of a MAC address and return the
     human readable representation.
     
@@ -103,9 +103,9 @@ def from_mac(packed_mac, separator=':', uppercase=False):
     if len(packed_mac) != 6:
         raise ValueError('invalid packed MAC')
     if uppercase:
-        fmt = '%02X'
+        fmt = u'%02X'
     else:
-        fmt = '%02x'
+        fmt = u'%02x'
     return separator.join(fmt % ord(e) for e in packed_mac)
 
 
@@ -115,14 +115,14 @@ def norm_mac(mac_string):
     
     Raise a ValueError if the IPv4 address is invalid.
     
-    >>> norm_mac('0011223344aa')
-    '00:11:22:33:44:aa'
-    >>> norm_mac('0011223344AA')
-    '00:11:22:33:44:aa'
-    >>> norm_mac('00-11-22-33-44-AA')
-    '00:11:22:33:44:aa'
-    >>> norm_mac('00:11:22:33:44:aa')
-    '00:11:22:33:44:aa'
+    >>> norm_mac(u'0011223344aa')
+    u'00:11:22:33:44:aa'
+    >>> norm_mac(u'0011223344AA')
+    u'00:11:22:33:44:aa'
+    >>> norm_mac(u'00-11-22-33-44-AA')
+    u'00:11:22:33:44:aa'
+    >>> norm_mac(u'00:11:22:33:44:aa')
+    u'00:11:22:33:44:aa'
      
     """
     return from_mac(to_mac(mac_string))

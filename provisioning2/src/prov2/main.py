@@ -69,18 +69,18 @@ class ProvisioningApplication(object):
         # FIXME should not be hardcoded
         self._cfg_collection = new_dict_collection(numeric_id_generator())
         self._dev_collection = new_dict_collection(numeric_id_generator())
-        self._pg_mgr = PluginManager(self,
+        self.pg_mgr = PluginManager(self,
                                     config['general.plugins_dir'],
                                     config['general.cache_dir'])
         if 'general.plugin_server' in config:
-            self._pg_mgr.server = config['general.plugin_server']
+            self.pg_mgr.server = config['general.plugin_server']
         self._splitted_config = self._split_config(config)
     
     def close(self):
         # XXX note that there might be method still 'running'
         self._cfg_collection.close()
         self._dev_collection.close()
-        self._pg_mgr.close()
+        self.pg_mgr.close()
     
     # device methods
     
@@ -96,7 +96,7 @@ class ProvisioningApplication(object):
         # Return the plugin associated with the device, or None if there's
         # no such plugin
         if u'plugin' in device:
-            return self._pg_mgr.get(device[u'plugin'])
+            return self.pg_mgr.get(device[u'plugin'])
         else:
             return None
     
@@ -236,12 +236,6 @@ class ProvisioningApplication(object):
         The deferred will fire it's errback with an Exception if an 'id'
         key is specified but there's already one device with the same ID.
         
-        The deferred will also fire it's errback with an Exception if
-        the device has been deleted between the time it has been inserted
-        and the time it has been updated. This can happen if you try
-        inserting a device at the same time you try to delete the same
-        device.
-        
         If device has no 'id' key, one will be added after the device is
         successfully inserted.
         
@@ -255,13 +249,6 @@ class ProvisioningApplication(object):
         # is not quite the right type
         id = yield self._dev_collection.insert(device)
         defer.returnValue(id)
-    
-    def dev_retrieve(self, id):
-        """Return a deferred that fire with the device with the given ID, or
-        fire with None if there's no such document.
-        
-        """
-        return self._dev_collection.retrieve(id)
     
     @defer.inlineCallbacks
     def dev_update(self, device):
@@ -315,10 +302,19 @@ class ProvisioningApplication(object):
         if device[u'configured']:
             self._dev_deconfigure_if_possible(device)
     
+    def dev_retrieve(self, id):
+        """Return a deferred that fire with the device with the given ID, or
+        fire with None if there's no such document.
+        
+        """
+        return self._dev_collection.retrieve(id)
+    
     def dev_find(self, selector):
         return self._dev_collection.find(selector)
     
-    # XXX not sure if this method makes much sense
+    def dev_find_one(self, selector):
+        return self._dev_collection.find(selector)
+    
     @defer.inlineCallbacks
     def dev_reconfigure(self, id):
         """Force the reconfiguration of the device. This is usually not
@@ -327,7 +323,7 @@ class ProvisioningApplication(object):
         Return a deferred that will fire with None once the device
         reconfiguration is completed.
         
-        The deferred will fire its erraback with an exception if id is not a
+        The deferred will fire its errback with an exception if id is not a
         valid device ID.
         
         The deferred will fire its errback with an exception if the device can't
@@ -401,14 +397,6 @@ class ProvisioningApplication(object):
         #     may want to catch it and throw a InvalidIdError...
         id = yield self._cfg_collection.insert(config)
         defer.returnValue(id)
-        
-    
-    def cfg_retrieve(self, id):
-        """Return a deferred that fire with the config with the given ID, or
-        fire with None if there's no such document.
-        
-        """
-        return self._cfg_collection.retrieve(id)
     
     @defer.inlineCallbacks
     def cfg_update(self, config):
@@ -492,14 +480,24 @@ class ProvisioningApplication(object):
                 if self._dev_configure(device, plugin, raw_config):
                     yield self._dev_collection.update(device)
     
+    def cfg_retrieve(self, id):
+        """Return a deferred that fire with the config with the given ID, or
+        fire with None if there's no such document.
+        
+        """
+        return self._cfg_collection.retrieve(id)
+    
     def cfg_find(self, selector):
         return self._cfg_collection.find(selector)
+    
+    def cfg_find_one(self, selector):
+        return self._cfg_collection.find_one(selector)
     
     # plugin methods
     
     def _pg_common_configure(self, id):
         # Pre: id in self.pg_mgr
-        plugin = self._pg_mgr[id]
+        plugin = self.pg_mgr[id]
         logger.info('Calling plugin.configure_common for plugin "%s"', id)
         plugin.configure_common(self._splitted_config['common_config'])
         
@@ -507,7 +505,7 @@ class ProvisioningApplication(object):
         gen_cfg = self._splitted_config['general']
         spec_cfg = self._splitted_config.get('plugin_config', {}).get(id, {})
         logger.info('Loading plugin "%s', id)
-        self._pg_mgr.load(id, gen_cfg, spec_cfg)
+        self.pg_mgr.load(id, gen_cfg, spec_cfg)
         self._pg_common_configure(id)
     
     @defer.inlineCallbacks
@@ -537,14 +535,14 @@ class ProvisioningApplication(object):
         
         """
         logger.info('Installing plugin "%s"', id)
-        if self._pg_mgr.is_installed(id):
+        if self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is already installed' % id)
         
         @defer.inlineCallbacks
         def on_success(_):
             self._pg_load(id)
             yield self._pg_configure_all_devices(id)
-        pop = self._pg_mgr.install(id)
+        pop = self.pg_mgr.install(id)
         pop.deferred.addCallback(on_success)
         return pop
     
@@ -556,17 +554,17 @@ class ProvisioningApplication(object):
         
         """
         logger.info('Upgrading plugin "%s"', id)
-        if not self._pg_mgr.is_installed(id):
+        if not self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is not already installed' % id)
         
         @defer.inlineCallbacks
         def on_success(_):
-            if id in self._pg_mgr:
-                self._pg_mgr.unload(id)
+            if id in self.pg_mgr:
+                self.pg_mgr.unload(id)
             self._pg_load(id)
             yield self._pg_configure_all_devices(id)
         # XXX we probably want to check that the plugin is 'really' upgradeable
-        pop = self._pg_mgr.upgrade(id)
+        pop = self.pg_mgr.upgrade(id)
         pop.deferred.addCallback(on_success)
         return pop
     
@@ -582,16 +580,16 @@ class ProvisioningApplication(object):
         
         """
         logger.info('Uninstallating plugin "%s"', id)
-        if not self._pg_mgr.is_installed(id):
+        if not self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is not already installed' % id)
         if not self._is_plugin_unused(id):
             raise Exception('plugin "%s" is used by at least a device' % id)
         
-        self._pg_mgr.uninstall(id)
-        self._pg_mgr.unload(id)
+        self.pg_mgr.uninstall(id)
+        self.pg_mgr.unload(id)
     
     def pg_retrieve(self, id):
-        return self._pg_mgr[id]
+        return self.pg_mgr[id]
 
 
 # configure logging...

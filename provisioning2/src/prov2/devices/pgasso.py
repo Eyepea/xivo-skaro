@@ -61,12 +61,12 @@ class BasePgAssociator(object):
     implements(IPluginAssociator)
     
     def associate(self, dev_info):
-        vendor = dev_info.get('vendor')
+        vendor = dev_info.get(u'vendor')
         if vendor is None:
             return UNKNOWN_SUPPORT
         else:
-            model = dev_info.get('model')
-            version = dev_info.get('version')
+            model = dev_info.get(u'model')
+            version = dev_info.get(u'version')
             return self._do_associate(vendor, model, version)
     
     def _do_associate(self, vendor, model, version):
@@ -129,11 +129,10 @@ class PluginAssociatorDeviceUpdater(object):
         self._solver = conflict_solver
     
     def update(self, dev, dev_info, request, request_type):
-        if self.force_update or 'plugin' not in dev:
+        if self.force_update or u'plugin' not in dev:
             pg_id = self._do_update(dev_info)
             if pg_id:
-                dev['plugin'] = pg_id
-                return True
+                dev[u'plugin'] = pg_id
         return False
     
     def _do_update(self, dev_info):
