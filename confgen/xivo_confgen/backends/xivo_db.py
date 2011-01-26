@@ -23,8 +23,10 @@ warnings.simplefilter('ignore')
 
 from sqlalchemy import *
 from sqlalchemy.ext.sqlsoup    import SqlSoup
-from sqlalchemy.sql.expression import and_
+from sqlalchemy.sql.expression import and_, cast, alias, Alias
+from sqlalchemy.sql.functions  import coalesce
 from sqlalchemy.sql            import select
+from sqlalchemy.types          import VARCHAR
 
 from confgen.backend import Backend
 
@@ -68,6 +70,17 @@ def iterable(mode):
 				ret[0].__class__.__setitem__ = mapped_set
 				ret[0].__class__.iteritems   = mapped_iteritems
 				ret[0].__class__.iterkeys    = mapped_iterkeys
+				ret[0].__class__.get         = lambda self, key, dft: self.__dict__[key] if key in self.__dict__ else dft
+
+			return ret
+
+		def join_wrapper(*args, **kwargs):
+			ret = f(*args, **kwargs)
+			if isinstance(ret, list) and len(ret) > 0:
+				def find(d, k):
+					print d.keys, k, k in d, unicode(k) in d
+					return None
+				ret[0].__class__.__getitem__ = lambda self, key: find(self.__dict__, key)
 
 			return ret
 
@@ -78,6 +91,10 @@ class SpecializedHandler(object):
 	def __init__(self, db, name):
 		self.db   = db
 		self.name = name
+
+	def execute(self, q):
+		conn = self.db.engine.connect()
+		return conn.execute(q)
 
 class SCCPUsersHandler(SpecializedHandler):
 	def all(self, commented=None, order=None, **kwargs):
@@ -124,7 +141,7 @@ class UserQueueskillsHandler(SpecializedHandler):
 		(_u, _f, _s) = [getattr(self.db, o).table for o in ('userqueueskill',	'userfeatures', 'queueskill')]
 		q = select(
 			[_f.c.id, _s.c.name, _u.c.weight],
-			_and(_u.c.userid == _f.c.id, _u.c.skillid == _s.c.id)
+			and_(_u.c.userid == _f.c.id, _u.c.skillid == _s.c.id)
 		)
 
 		conn = self.db.engine.connect()
@@ -135,11 +152,115 @@ class AgentQueueskillsHandler(SpecializedHandler):
 		(_a, _f, _s) = [getattr(self.db, o).table for o in ('agentqueueskill',	'agentfeatures', 'queueskill')]
 		q = select(
 			[_f.c.id, _s.c.name, _a.c.weight],
-			_and(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
+			and_(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
 		)
 
 		conn = self.db.engine.connect()
 		return conn.execute(q).fetchall()
+
+class ExtenumbersHandler(SpecializedHandler):
+	def all(self, features=[], *args, **kwargs):
+		#NOTE: sqlalchemy 4: table, 5: _table
+		(_n, _e) = [getattr(self.db, o)._table for o in ('extenumbers','extensions')] 
+		q = select(
+			[_n.c.typeval, _n.c.exten, _e.c.commented],
+			and_(_n.c.typeval == _e.c.name, _e.c.context == 'xivo-features', _n.c.type == 'extenfeatures',
+				_n.c.typeval.in_(features))
+		)
+
+		return self.execute(q).fetchall()
+
+class HintsHandler(SpecializedHandler):
+	@iterable('list')
+	def all(self, *args, **kwargs):
+		# get users with hint
+		(_u, _v) = [getattr(self.db, o)._table for o in ('userfeatures','voicemail')]
+		q = self.db.join(
+			self.db.userfeatures,
+			self.db.voicemail,
+			and_(_u.c.voicemailid == _v.c.uniqueid, _v.c.commented == 0),
+			isouter=True
+		)
+
+		q = q.filter_by(internal=0, enablehint=1).order_by(self.db.userfeatures.context)
+		return q.all()
+
+class PhonefunckeysHandler(SpecializedHandler):
+	@iterable('list')
+	def all(self, *args, **kwargs):
+		# get all supervised user/group/queue/meetme
+		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
+		q = self.db.join(
+			self.db.join(
+				self.db.userfeatures,
+				self.db.phonefunckey,
+				and_(_u.c.id == _p.c.iduserfeatures, _p.c.typeextenumbers == None, _p.c.typevalextenumbers == None, 
+					_p.c.typeextenumbersright.in_(('user','group','queue','meetme')), _p.c.supervision == 1)
+			),
+			self.db.extenumbers,
+			and_(cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)), _p.c.typevalextenumbersright == _e.c.typeval),
+			isouter=True
+		)
+
+		q = q.order_by(self.db.userfeatures.context)
+		return q.all()
+
+class BSFilterHintsHandler(SpecializedHandler):
+	#@iterable('list')
+	def all(self, *args, **kwargs):
+		# get all supervised bsfilters
+		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
+		#q = self.db.join(
+		#	self.db.join(
+		#		self.db.userfeatures.with_labels(),
+		#		#select([_u.c.id]),
+		#		self.db.phonefunckey.with_labels(),
+		#		and_(_u.c.id == _p.c.iduserfeatures, _p.c.typeextenumbers == 'extenfeatures', _p.c.typevalextenumbers == 'bsfilter', 
+		#			_p.c.typeextenumbersright == 'user', _p.c.supervision == 1)
+		#	),
+		#	self.db.extenumbers.with_labels(),
+		#	and_(cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)), _p.c.typevalextenumbersright == _e.c.typeval),
+		#)
+
+		#q = q.filter(coalesce(self.db.userfeatures.number,'') != '').order_by(self.db.userfeatures.context)
+		#print type(q)
+		#q = q.with_labels()
+		#return q.all()
+
+		q = select(
+			[_e.c.exten, _u.c.number],
+			and_(_u.c.id == _p.c.iduserfeatures, _p.c.typeextenumbers == 'extenfeatures',
+				_p.c.typevalextenumbers == 'bsfilter', _p.c.typeextenumbersright == 'user',
+				_p.c.supervision == 1, 
+				cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)),
+				_p.c.typevalextenumbersright == _e.c.typeval, coalesce(_u.c.number,'') != '')
+		)
+
+		return self.execute(q).fetchall()
+
+
+class ProgfunckeysHintsHandler(SpecializedHandler):
+	def all(self, *args, **kwargs):
+		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
+
+		q = select(
+			[_p.c.iduserfeatures, _p.c.exten, _p.c.typeextenumbers,
+			 _p.c.typevalextenumbers, _p.c.typeextenumbersright,
+			 _p.c.typevalextenumbersright, _e.c.exten.label('leftexten')],
+
+			and_(
+				_u.c.id == _p.c.iduserfeatures, 
+				_p.c.typeextenumbers != None,
+				_p.c.typevalextenumbers != None,
+				_p.c.supervision == 1, 
+				_p.c.progfunckey == 1, 
+				cast(_p.c.typeextenumbers,VARCHAR(255)) == cast(_e.c.type,VARCHAR(255)),
+				_p.c.typevalextenumbers == _e.c.typeval
+			)
+		)
+
+		return self.execute(q).fetchall()
+
 
 class QObject(object):
 	_translation = {
@@ -173,6 +294,15 @@ class QObject(object):
 		'agentqueueskills': AgentQueueskillsHandler,
 		'queueskillrules': ('queueskillrule',),
 		'extensions'    : ('extensions',),
+		'contexts'      : ('context',),
+		'contextincludes': ('contextinclude',),
+
+		'extenumbers'   : ExtenumbersHandler,
+		'voicemenus'    : ('voicemenu',),
+		'hints'         : HintsHandler,
+		'phonefunckeys' : PhonefunckeysHandler,
+		'bsfilterhints' : BSFilterHintsHandler,
+		'progfunckeys'  : ProgfunckeysHintsHandler,
 	}
 
 	def __init__(self, db, name):
@@ -180,7 +310,7 @@ class QObject(object):
 		self.name = name
 
 	@iterable('list')
-	def all(self, commented=None, order=None, **kwargs):
+	def all(self, commented=None, order=None, asc=True, **kwargs):
 		_trans = self._translation.get(self.name, (self.name,))
 		q = getattr(self.db, _trans[0])
 
@@ -200,6 +330,8 @@ class QObject(object):
 
 		## ORDERING
 		if order is not None:
+			if not asc:
+				order = desc(order)
 			q = q.order_by(order)
 
 		return q.all()
