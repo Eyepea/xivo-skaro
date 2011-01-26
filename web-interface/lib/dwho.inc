@@ -307,7 +307,28 @@ class dwho
 				$this->_conf['location']['root_url'] = rtrim($location['general']['root_url'],'/');
 			else
 				die('ERR: Invalid root_url option in general for location configuration');
-		}
+		}		
+	
+		if(is_array($location['cache']) === false)
+			die('ERR: Missing cache section for location configuration');
+		
+		if(isset($location['cache']['statistics']) === false)
+			die('ERR: Missing statistics option in cache for location configuration');
+		
+		if (dwho_file::is_d_w($location['cache']['statistics']) === false
+		&& mkdir($location['cache']['statistics'],0775) === false)
+			die('ERR: Invalid statistics option in cache for location configuration');
+		else 	
+			define('DWHO_PATH_CACHE_STATS',$location['cache']['statistics']);
+	
+		if(isset($location['cache']['pchart']) === false)
+			die('ERR: Missing pchart section for location configuration');
+				
+		if (dwho_file::is_d_w($location['cache']['pchart']) === false
+		&& mkdir($location['cache']['pchart'],0775) === false)
+			die('ERR: Invalid pchart option in cache for location configuration');
+		else 
+			define('DWHO_PATH_CACHE_PCHART',$location['cache']['pchart']);		
 
 		return(true);
 	}

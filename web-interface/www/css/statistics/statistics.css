@@ -43,3 +43,8 @@
 #b-lmenu #dashboard .sb-foot .span-left {background-image: url(../../img/content/f-left.gif);}
 #b-lmenu #dashboard .sb-foot .span-center {width: 180px;background-image: url(../../img/content/f-bg.gif);background-repeat: repeat-x;}
 #b-lmenu #dashboard .sb-foot .span-right {background-image: url(../../img/content/f-right.gif);}
+
+.tab_cache_generation {}
+.tab_cache_generation p {margin: 5px;}
+
+.ui-progressbar-value {background-image: url(/img/pbar-ani.gif);}

@@ -366,6 +366,9 @@ CREATE TABLE stats_conf (
  period3 varchar(16) NOT NULL DEFAULT 0,
  period4 varchar(16) NOT NULL DEFAULT 0,
  period5 varchar(16) NOT NULL DEFAULT 0,
+ dgenercache int(10) unsigned, 
+ dcreate int(10) unsigned, 
+ dupdate int(10) unsigned, 
  disable tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)

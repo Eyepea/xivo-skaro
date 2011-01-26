@@ -420,6 +420,9 @@ CREATE TABLE "stats_conf" (
  "period3" varchar(16) NOT NULL DEFAULT 0,
  "period4" varchar(16) NOT NULL DEFAULT 0,
  "period5" varchar(16) NOT NULL DEFAULT 0,
+ "dgenercache" integer DEFAULT 0, 
+ "dcreate" integer DEFAULT 0, 
+ "dupdate" integer DEFAULT 0, 
  "disable" smallint NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")

@@ -86,4 +86,8 @@ $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;
 $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
+$array['tree']['statistics'] = array();
+$array['tree']['statistics']['call_center'] = array();
+$array['tree']['statistics']['call_center']['genercache'] = true;
+
 ?>

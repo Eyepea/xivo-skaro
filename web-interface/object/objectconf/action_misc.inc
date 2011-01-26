@@ -76,6 +76,13 @@ $array['service/ipbx/asterisk/ui/pbx_settings/extension/search'] = array(
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
 
 
+$array['statistics/ui/call_center/genercache'] = array(
+	'path'		=> 'statistics/ui/call_center',
+	'define'	=> array(
+			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
+			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genercache'));
+
+
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
 	'define'	=> array(

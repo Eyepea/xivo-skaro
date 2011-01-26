@@ -21,7 +21,18 @@ $url     = &$this->get_module('url');
 
 $basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
+$conf = $this->get_var('conf');
 
+if (is_array($conf) === true
+&& isset($conf['periods']) === true):
+	$return = '';
+	foreach($conf['periods'] as $period => $value):
+		$return .= $this->bbf('col_t'.$period);
+		$return .= ': '.$value['beg'].'-'.$value['end'].'s';
+		$return .= ' / ';
+	endforeach;
+	echo $return;
+endif;
 ?>
 <div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">

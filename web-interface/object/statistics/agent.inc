@@ -44,15 +44,17 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 		$this->_method = 'DB';
 	}
 		
-	public function parse_log()
+	public function parse_log($key_data,$key)
 	{
-		switch ($this->_method)
+		if ($this->_xs->get_conf() === false)
+			return(false);
+		switch ($this->_xs->_method)
 		{
 			case 'DB':
-				$this->parse_log_db();
+				return($this->parse_log_db($key_data,$key));
 				break;
 			case 'PHP':
-				$this->parse_log_php();
+				return($this->parse_log_php());
 				break;
 			default:
 				return(false);
@@ -60,117 +62,64 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 		return(true);
 	}
 	
-	private function parse_log_db()
+	private function parse_log_db($key_data,$key)
 	{		
-		$axetype = $this->_xs->get_axtype();
+		$this->init_result($key);
 					
-		$key_data = $this->get_list_by_type();
-		$interval = $this->_xs->get_interval();
-		
-		switch ($axetype)
-		{
-			case 'day':
-				$data = $this->_xs->get_listhour();
-				$key_data = $key_data[0];
-				break;
-			case 'week':
-				$data = $this->_xs->get_listday_for_week();
-				$key_data = $key_data[0];
-				break;
-			case 'month':
-				$data = $this->_xs->get_listday_for_month();
-				$key_data = $key_data[0];
-				break;
-			case 'year':
-				$data = $this->_xs->get_listmonth();
-				$key_data = $key_data[0];
-				break;
-			case 'type':
-			default:
-				$data = $this->get_list_by_type();
-		}
-		
-		$nb_data = count($data);
-		for ($i=0;$i<$nb_data;$i++)
-		{
-			$key = $data[$i];
-			switch ($axetype)
-			{
-				case 'day':
-				case 'week':
-				case 'month':
-				case 'year':
-					$key = $key['key'];
-					if (isset($interval[$key]) === true)
-						$this->_xs->_interval_process =  $interval[$key];
-					break;
-				case 'type':
-				default:
-					$key_data = $key;
-					if (count($interval) === 1)
-						$interval = array_shift($interval);
-					$this->_xs->_interval_process =  $interval;
-					$key = (int) $key_data[0];
-			}
-			
-			$this->init_result($key);
-						
-			$val = $this->eval_count_data($key_data,'CONNECT');
-			$this->update_result(array($key,'connect'),$val);
-					
-			$field = $this->eval_field_queue_log('CONNECT','holdtime');
-			$holdtime = $this->eval_sum_data($key_data,'CONNECT',$field);
-			$this->update_result(array($key,'holdtime'),$holdtime);
-			$this->update_result(array($key,'traitmenttime'),$holdtime);
-			
-			$val = $this->eval_count_data($key_data,'TRANSFER');
-			$this->update_result(array($key,'transfer'),$val);
-			
-			$field = $this->eval_field_queue_log('RINGNOANSWER','ringtime');
-			$ringtime = $this->eval_sum_data($key_data,'RINGNOANSWER',$field);
-			$this->update_result(array($key,'ringtime'),$ringtime);
-			$this->update_result(array($key,'traitmenttime'),$ringtime);
-			$val = $this->eval_count_data($key_data,'RINGNOANSWER');
-			$this->update_result(array($key,'ringnoanswer'),$val);
-			
-			$val = $this->eval_count_data($key_data,'ABANDON');
-			$this->update_result(array($key,'abandon'),$val);	
-						
-			$field = $this->eval_field_queue_log('COMPLETEAGENT','calltime');
-			$calltime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);
-			$this->update_result(array($key,'calltime'),$calltime);
-			$this->update_result(array($key,'traitmenttime'),$calltime);
-			
-			$field = $this->eval_field_queue_log('COMPLETEAGENT','holdtime');
-			$holdtime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);
-			$this->update_result(array($key,'holdtime'),$holdtime);
-			
-			$val = $this->eval_count_data($key_data,'COMPLETEAGENT');
-			$this->update_result(array($key,'completeagent'),$val);
-						
-			$field = $this->eval_field_queue_log('COMPLETECALLER','calltime');
-			$calltime = $this->eval_sum_data($key_data,'COMPLETECALLER',$field);
-			$this->update_result(array($key,'calltime'),$calltime);
-			$this->update_result(array($key,'traitmenttime'),$calltime);
-			
-			$field = $this->eval_field_queue_log('COMPLETECALLER','holdtime');
-			$holdtime = $this->eval_sum_data($key_data,'COMPLETECALLER',$field);
-			$this->update_result(array($key,'holdtime'),$holdtime);
-			
-			$val = $this->eval_count_data($key_data,'COMPLETECALLER');
-			$this->update_result(array($key,'completecaller'),$val);		
-			
-			if ($axetype !== 'day')
-			{
-				$field = $this->eval_field_queue_log('AGENTLOGOFF','logintime');
-				$logintime = $this->eval_sum_data($key_data,'AGENTLOGOFF',$field);
-				$this->update_result(array($key,'logintime'),$logintime);
+		$val = $this->eval_count_data($key_data,'CONNECT');
+		$this->update_result(array($key,'connect'),$val);
 				
-				$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
-				$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field);
-				$this->update_result(array($key,'logintime'),$logintime);
-			}
-		}
+		$field = $this->eval_field_queue_log('CONNECT','holdtime');
+		$holdtime = $this->eval_sum_data($key_data,'CONNECT',$field);
+		$this->update_result(array($key,'holdtime'),$holdtime);
+		$this->update_result(array($key,'traitmenttime'),$holdtime);
+		
+		$val = $this->eval_count_data($key_data,'TRANSFER');
+		$this->update_result(array($key,'transfer'),$val);
+		
+		$field = $this->eval_field_queue_log('RINGNOANSWER','ringtime');
+		$ringtime = $this->eval_sum_data($key_data,'RINGNOANSWER',$field);
+		$this->update_result(array($key,'ringtime'),$ringtime);
+		$this->update_result(array($key,'traitmenttime'),$ringtime);
+		$val = $this->eval_count_data($key_data,'RINGNOANSWER');
+		$this->update_result(array($key,'ringnoanswer'),$val);
+		
+		$val = $this->eval_count_data($key_data,'ABANDON');
+		$this->update_result(array($key,'abandon'),$val);	
+					
+		$field = $this->eval_field_queue_log('COMPLETEAGENT','calltime');
+		$calltime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);
+		$this->update_result(array($key,'calltime'),$calltime);
+		$this->update_result(array($key,'traitmenttime'),$calltime);
+		
+		$field = $this->eval_field_queue_log('COMPLETEAGENT','holdtime');
+		$holdtime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);
+		$this->update_result(array($key,'holdtime'),$holdtime);
+		
+		$val = $this->eval_count_data($key_data,'COMPLETEAGENT');
+		$this->update_result(array($key,'completeagent'),$val);
+					
+		$field = $this->eval_field_queue_log('COMPLETECALLER','calltime');
+		$calltime = $this->eval_sum_data($key_data,'COMPLETECALLER',$field);
+		$this->update_result(array($key,'calltime'),$calltime);
+		$this->update_result(array($key,'traitmenttime'),$calltime);
+		
+		$field = $this->eval_field_queue_log('COMPLETECALLER','holdtime');
+		$holdtime = $this->eval_sum_data($key_data,'COMPLETECALLER',$field);
+		$this->update_result(array($key,'holdtime'),$holdtime);
+		
+		$val = $this->eval_count_data($key_data,'COMPLETECALLER');
+		$this->update_result(array($key,'completecaller'),$val);
+		
+		$field = $this->eval_field_queue_log('AGENTLOGOFF','logintime');
+		$logintime = $this->eval_sum_data($key_data,'AGENTLOGOFF',$field);
+		$this->update_result(array($key,'logintime'),$logintime);
+		
+		$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
+		$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field);
+		$this->update_result(array($key,'logintime'),$logintime);
+		
+		return($this->_result);
 	}	
 	
 	private function parse_log_php()

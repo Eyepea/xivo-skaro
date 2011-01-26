@@ -20,33 +20,33 @@
 
 include(dirname(__FILE__).'/common.php');
 
-$appqueue = &$ipbx->get_application('queue');
-$queue_qos = $appqueue->get_qos();
-
 if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
 
 $stats_queue = new xivo_statistics_queue(&$_XS);
-$stats_queue->set_data_custom('qos',$queue_qos);
-$stats_queue->parse_log();
+$stats_queue->get_data();
 
 $tpl_statistics->set_name('queue');
 $tpl_statistics->set_baseurl('statistics/call_center/stats1');
 
 $tpl_statistics->set_data_custom('axetype',$_XS->get_axtype());
+$itl = $_XS->get_datecal();
 switch ($_XS->get_axtype())
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
-		$tpl_statistics->set_data_custom('day_process',$_XS->get_infocal());
+		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
 	case 'week':
 		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
-		$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
+		#$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
 		break;
 	case 'month':
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'key');
-		$tpl_statistics->set_data_custom('month_process',$_XS->get_infocal());
+		$date = $_XS->all_to_unixtime($itl['dmonth']);
+		$year = date('Y',$date);
+		$month = date('m',$date);
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month($year,$month),'key');
+		$tpl_statistics->set_data_custom('month_process',$_XS->get_datecal());
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',$_XS->get_listmonth(),'key');
@@ -54,6 +54,7 @@ switch ($_XS->get_axtype())
 	case 'type':
 	default:
 		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name',true);
+		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);

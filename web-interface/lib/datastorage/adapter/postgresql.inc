@@ -382,7 +382,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 	function _expr_typetime($type='',$column='',$time='',$format='',$table='')
 	{
 		$type = $type !== '' ? strtolower($type) : 'date';
-		$column = $this->cast(trim($column),$type);
+		$column = trim($column);
 		$time = strtolower($time);
 		$format = (string) $format;
 		$table = trim($table);
@@ -435,9 +435,6 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		{
 			case 'int':
 				$field .= '::int';
-				break;
-			case 'datetime':
-				$field .= '::timestamp';
 				break;
 		}
 		

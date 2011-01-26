@@ -38,7 +38,8 @@ $_XS->load_component();
 $_TPL->set_var('basedir',$basedir);
 $_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));
 $_TPL->set_var('listaxetype',$_XS->get_list_axtype());
-$_TPL->set_var('infocal',$_XS->get_infocal());
+$_TPL->set_var('axetype',$_XS->get_axtype());
+$_TPL->set_var('infocal',$_XS->get_datecal());
 $_TPL->set_var('confid',$_XS->get_idconf());
 $_TPL->set_var('conf',$_XS->get_conf());
 

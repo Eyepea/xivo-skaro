@@ -78,17 +78,16 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$this->_row_key = $field;
 		
 		$this->_prepare_rows[$key] = array();
-		$tmp = array();
-		for($i=0;$i<$nb;$i++)
+		$full_rows = $arr;
+		foreach($arr as $k => &$ref)
 		{
-			$ref = &$arr[$i];
 			if(isset($ref[$field]) === false)
 				continue;
 			if($createkey !== false)
 				$ref['key'] = $ref[$field];
-			array_push($tmp, $ref[$field]);
+			$arr[$k] = $ref;
 		}
-		$this->_prepare_rows[$key] = $tmp;		
+		$this->_prepare_rows[$key] = $arr;
 		$this->_full_rows = $arr;
 		return(true);
 	}
@@ -158,16 +157,13 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		|| ($data_cols = $this->get_data_cols()) === false
 		|| ($full_rows = $this->get_full_rows()) === false)
 			return(false);
-			
-		$row_value = $full_rows;
-		$nb_row_value = count($full_rows);
-		
+				
 		$data_table = &$this->_data_table;
 		$data_foot = &$this->_data_foot;
-			
-		for ($t=0;$t<$nb_row_value;$t++)
+
+		while($full_rows)
 		{
-			$rowdata = $row_value[$t];
+			$rowdata = array_shift($full_rows);
 		
 			if (isset($rowdata['identity']) === true)
 				$rowidentity = $rowdata['identity'];
@@ -178,14 +174,14 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			else 
 				$rowidentity = 'null_data';
 				
-			if (isset($rowdata['id']) === true)
+			if(isset($rowdata['id']) === true)
 				$rowkey = $rowdata['id'];
 			elseif(isset($rowdata['name']) === true)
 				$rowkey = $rowdata['name'];
 			elseif(isset($rowdata['key']) === true)
 				$rowkey = $rowdata['key'];
 			else 
-				$rowkey = $t;
+				die('tpl_statistics_init_data');
 				
 			$rownum = $rowdata[$this->_row_key];
 			
@@ -215,8 +211,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				switch($type) 
 				{
 					case 'direct':						
-						$std = '#^([\w,:/\[\]]+)#i';
-							
+						$std = '#^([\w,:/\[\]]+)#i';							
 						# custom:queue,[name],deterred	
 						if(preg_match($std,$expression,$out) === 1)
 						{		
@@ -436,7 +431,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			case 'float':
 				$str = (float) $result;
 				break;
-			case 'percent':			
+			case 'percent':
 				if (isset($arr['total']) === true)
 					return('-');
 				$str = $result.' %';
@@ -464,6 +459,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		{
 			$axetype = $this->_data_custom['axetype'];
 			$return .= '<p>';
+			/*
 			switch ($axetype)
 			{
 				case 'day':
@@ -487,6 +483,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				default:
 					$return .= '';
 			}
+			*/
 			$return .= '</p>';
 		}
 		
@@ -498,8 +495,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$url = &$this->_tpl->get_module('url');
 
 		$return = '<form action="#" name="fm-stats-list" method="post" accept-charset="utf-8">';
-		$return .= '<table cellspacing="0" cellpadding="0" border="0">';
-		
+		$return .= '<table cellspacing="0" cellpadding="0" border="0">';		
 		$return .= '<thead>';
 		$return .= '<tr class="sb-top">';
 		if ($chkbox === true)
@@ -582,7 +578,14 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				}
 				$return .= '<td class="txt-left">';
 				if ($this->_data_custom['axetype'] === 'type')
-					$return .= $url->href_html($this->bbf($identity,$bbf),$this->_baseurl,array('axetype' => 'day','key' => $cols['key']));
+				{
+					$date_process = $this->_data_custom['date_process'];
+					$return .= $url->href_html($this->bbf($identity,$bbf),
+											$this->_baseurl,
+											array(	'axetype' => 'day',
+													'key' => $cols['key'],
+													'dday' => $date_process['dbeg']));
+				}
 				else 
 					$return .= $this->bbf($identity,$bbf);
 				$return .= '</td>';

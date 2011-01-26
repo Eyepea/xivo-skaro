@@ -129,12 +129,10 @@ $element = $this->get_var('element');
 	</div>
 	<div class="sb-content">
 		<div id="sr-stats" class="">
-		<form action="<?=$_SERVER['PHP_SELF']?>" method="post" accept-charset="utf-8" onsubmit="fm_chk();">
+		<form action="<?=$_SERVER['PHP_SELF']?>" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
 			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
-			<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
-			<?=$form->hidden(array('name' => 'act','value' => 'datecal'))?>
 			<div id="it-cal-conf" class="fm-paragraph">
-		<?php
+<?php
 				echo	$form->select(array('name'	=> 'confid',
 							    'id'		=> 'it-toolbar-conf',
 							    'paragraph'	=> false,
@@ -144,13 +142,12 @@ $element = $this->get_var('element');
 							    'altkey'	=> 'id',
 							    'selected'	=> $this->get_var('confid')),
 						      	$listconf);
-		?>
+?>
 			</div>
 <?php
 	if(is_null($this->get_var('listobject')) === false
-	&& is_null($this->get_var('conf','axetype')) === false
-	&& $this->get_var('conf','axetype') !== 'type'):
-	
+	&& is_null($this->get_var('axetype')) === false
+	&& $this->get_var('axetype') !== 'type'):	
 		$listobject = $this->get_var('listobject');
 		foreach ($listobject as $k => &$v)
 		{
@@ -158,10 +155,9 @@ $element = $this->get_var('element');
 				$v['displayname'] = $v['fullname'];
 			$v['displayname'] = dwho_trunc(&$v['displayname'],18,'...',5);
 		}
-	
 ?>
 			<div id="it-cal-object" class="fm-paragraph">	
-			<?php
+<?php
 				echo	$form->select(array('name'	=> 'key',
 							    'id'		=> 'it-conf-key',
 							    'paragraph'	=> false,
@@ -171,17 +167,17 @@ $element = $this->get_var('element');
 					   			'altkey'	=> 'id',
 							    'selected'	=> $this->get_var('objectkey')),
 						      	$listobject);
-			?>
+?>
 			</div>
 <?php
-	elseif(($value = $this->get_var('conf','objectkey')) !== null):
+	elseif(($value = $this->get_var('objectkey')) !== null):
 		echo $form->hidden(array('name' => 'key','value' => $value));
 	endif;
 ?>
-<?php
+<?php	
 	if(is_null($this->get_var('listobject')) === false
-	&& is_null($this->get_var('conf','axetype')) === false
-	&& $this->get_var('conf','axetype') !== 'type'):
+	&& is_null($this->get_var('axetype')) === false
+	&& $this->get_var('axetype') !== 'type'):
 ?>
 			<div class="fm-paragraph">	
 			<?=$this->bbf('conf_axetype')?>
@@ -195,7 +191,7 @@ $element = $this->get_var('element');
 				    			'key'		=> false,
 							    'bbf'		=> 'fm_axetype-opt',
 							    'bbfopt'	=> array('argmode'	=> $listaxetype),
-							    'selected'	=> $this->get_var('conf','axetype')),
+							    'selected'	=> $this->get_var('axetype')),
 						      	$listaxetype);
 			?>
 			</div>
@@ -209,7 +205,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-type"><?=$this->bbf('fm_dbeg')?></label>
-						<input type="text" name="datecal[dbeg]" id="it-dbeg-type" value="<?=is_null($infocal['dbeg'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dbeg']?>" size="8"
+						<input type="text" name="dbeg" id="it-dbeg-type" value="<?=is_null($infocal['dbeg'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dbeg']?>" size="8"
 							onclick="dwho_eid('cal-dend-type').style.display = 'none';
 								xivo_calendar_display('cal-dbeg-type','it-dbeg-type');"
 							onmouseover="xivo_calendar_body();"
@@ -226,7 +222,7 @@ $element = $this->get_var('element');
 					</div>
 					<div class="fm-desc-inline">
 						<label id="lb-dend" for="it-dend-type"><?=$this->bbf('fm_dend')?></label>
-						<input type="text" name="datecal[dend]" id="it-dend-type" value="<?=is_null($infocal['dend'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dend']?>" size="8"
+						<input type="text" name="dend" id="it-dend-type" value="<?=is_null($infocal['dend'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dend']?>" size="8"
 						   onclick="dwho_eid('cal-dbeg-type').style.display = 'none';
 							    xivo_calendar_display('cal-dend-type','it-dend-type');"
 						   onmouseover="xivo_calendar_body();"
@@ -249,7 +245,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-day"><?=$this->bbf('fm_dday')?></label>
-						<input type="text" name="datecal[dday]" id="it-dbeg-day" value="<?=is_null($infocal['dday'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dday']?>" size="8"
+						<input type="text" name="dday" id="it-dbeg-day" value="<?=is_null($infocal['dday'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dday']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-day','it-dbeg-day');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');"
@@ -268,7 +264,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-week"><?=$this->bbf('fm_dweek')?></label>
-						<input type="text" name="datecal[dweek]" id="it-dbeg-week" value="<?=is_null($infocal['dweek'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dweek']?>" size="8"
+						<input type="text" name="dweek" id="it-dbeg-week" value="<?=is_null($infocal['dweek'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dweek']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-week','it-dbeg-week');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');"
@@ -287,7 +283,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
-						<input type="text" name="datecal[dmonth]" id="it-dbeg-month" value="<?=is_null($infocal['dmonth'])?dwho_i18n::strftime_l('%Y-%m',null):$infocal['dmonth']?>" size="8"
+						<input type="text" name="dmonth" id="it-dbeg-month" value="<?=is_null($infocal['dmonth'])?dwho_i18n::strftime_l('%Y-%m',null):$infocal['dmonth']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-month','it-dbeg-month');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');"
@@ -306,7 +302,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-year"><?=$this->bbf('fm_dyear')?></label>
-						<input type="text" name="datecal[dyear]" id="it-dbeg-year" value="<?=is_null($infocal['dyear'])?dwho_i18n::strftime_l('%Y',null):$infocal['dyear']?>" size="4" />
+						<input type="text" name="dyear" id="it-dbeg-year" value="<?=is_null($infocal['dyear'])?dwho_i18n::strftime_l('%Y',null):$infocal['dyear']?>" size="4" />
 					</div>
 				</div>
 			<?php endif; ?>
@@ -407,7 +403,7 @@ dwho.dom.set_onload(function()
 	for(var u=0;u<lsaxetype.length;u++)
 	{
 		var divtoshow = dwho_eid('it-cal-'+lsaxetype[u]);
-		if (lsaxetype[u] == '<?=$this->get_var('conf','axetype')?>'
+		if (lsaxetype[u] == '<?=$this->get_var('axetype')?>'
 		&& divtoshow)
 			divtoshow.style.display = 'block';
 	}

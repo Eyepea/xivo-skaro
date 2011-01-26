@@ -98,6 +98,15 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td class="td-right" colspan="2">
 <?php
+			echo	$url->href_html($url->img_html('img/site/button/file.gif',
+				 				       $this->bbf('opt_editcache'),
+								       'border="0"'),
+							'statistics/call_center/cache',
+							array('act'		=> 'list',
+				      			  'idconf'	=> $ref['id']),
+							null,
+							$this->bbf('opt_editcache'));
+							
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 							       $this->bbf('opt_modify'),
 							       'border="0"'),

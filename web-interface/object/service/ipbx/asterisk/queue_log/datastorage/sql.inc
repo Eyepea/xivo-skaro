@@ -58,15 +58,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 	public function stats_sum_by_type($type,$value,$event,$fieldsum,$interval=null,$addwhere=null)
 	{			
 		$this->_cnt = 0;
-
-		# not possible PGSQL: field => function sum(character varying) does not exist
-		#$field = array((object) "SUM('$fieldsum')");
 		
 		$this->_dso->new_select($this->_table,array($fieldsum));
 	
 		switch ($type)
 		{
-			case 'agent':		
+			case 'agent':
 				if (is_array($value) === true)
 					$this->_dso->wherein('agent',$value);
 				else
@@ -86,13 +83,6 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		
 		if (is_null($addwhere) === false)
 			$this->_dso->andwhere($addwhere);
-			
-		#$this->_dso->andwhere('"time" > \'2010-12-01 00:00:01\'');
-		#$this->_dso->andwhere('"time" < \'2010-12-01 23:59:59\'');	
-		
-		#$this->_dso-> wherebetween('time','2010-12-01 00:00:01','2010-12-01 23:59:59',$this->_table);
-			
-		#$this->_dso->wheredatetime('time','2010-12-20 00:00:01','2010-12-20 23:59:59',$this->_table,'datetime');	
 	
 		if (is_null($interval) === false)
 		{
@@ -100,32 +90,22 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			&& isset($interval['dend']) === true)
 			{
 				$this->_dso->wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-				#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
 			}
 			elseif (($nbinterval = count($interval)) > 2)
 			{				
-				$this->_dso->aggregate_where(false,'AND');
-				
+				$this->_dso->aggregate_where(false,'AND');		
 				foreach ($interval as $itl)
-				{
-					$this->_dso->orwhere('"queue_log"."time"::timestamp BETWEEN \''.$itl['dbeg'].'\'::timestamp AND \''.$itl['dend'].'\'::timestamp');
-					#$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
-					#$this->_dso->orwheredatetime('time',$itl['dbeg'],$itl['dend'],$this->_table,'datetime');
-				}
-				
+					$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
 				$this->_dso->aggregate_where(false,'AND');
 			}
 		}
 		
-		#print($this->_dso->get_select().'<br>');
-		
 		$r = $this->_dso->select_singlecolumn();
 
-		if(($this->_cnt = $this->_dso->select_count()) === false
-		|| isset($r[0]) === false)
+		if(isset($r[0]) === false)
 			$r = false;
 
-		return($r);
+		return((int) $r[0]);
 	}
 	
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
@@ -163,24 +143,15 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			&& isset($interval['dend']) === true)
 			{
 				$this->_dso->wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-				#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
 			}
 			elseif (($nbinterval = count($interval)) > 2)
 			{				
-				$this->_dso->aggregate_where(false,'AND');
-				
+				$this->_dso->aggregate_where(false,'AND');				
 				foreach ($interval as $itl)
-				{
-					$this->_dso->orwhere('"queue_log"."time"::timestamp BETWEEN \''.$itl['dbeg'].'\'::timestamp AND \''.$itl['dend'].'\'::timestamp');
-					#$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
-					#$this->_dso->orwheredatetime('time',$itl['dbeg'],$itl['dend'],$this->_table,'datetime');
-				}
-				
+					$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
 				$this->_dso->aggregate_where(false,'AND');
 			}
 		}
-			
-		#print($this->_dso->get_select().'<br>');
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
@@ -219,22 +190,7 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			
 		if (empty($interval['dbeg']) === false)
 			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-			#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
-	/*
-		$this->_dso->wherein('id','');
 		
-		$this->_dso->wherecontain('firstname',$value);
-		$this->_dso->orwherecontain('lastname',$value);
-		$this->_dso->orwherecontain('number',$value);
-
-		if(($concat = $this->_dso->concat(array((object) 'firstname',
-							' ',
-							(object) 'lastname'))) !== false)
-			$this->_dso->orwherecontain((object) $concat,$value,true);
-
-		if($this->_dso->aggregate_where() === false)
-			return(false);
-	*/
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
 

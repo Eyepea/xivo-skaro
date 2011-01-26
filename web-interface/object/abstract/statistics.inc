@@ -31,7 +31,227 @@ class xivo_statistics_abstract
 		$this->_xs = &$_XS;
 		$this->_xs->set_type($this->_type);
 	}
-	
+
+	public function get_data()
+	{
+		$axetype = $this->_xs->get_axtype();
+		
+		$itl = $this->_xs->get_datecal();
+		
+		$dbeg = strtotime($itl['dbeg']);
+		$dend = strtotime($itl['dend']);
+		
+		if (($full_list_day = $this->_xs->get_listday_for_interval($dbeg,$dend)) === false
+		|| ($data_listmonth = $this->_xs->get_listmonth_for_interval($dbeg,$dend)) === false)
+			return(false);		
+		
+		$data = $this->get_list_by_type();					
+				
+		if (is_array($data) === true
+		&& count($data) === 1
+		&& isset($data[0]) === true
+		&& isset($data[0]['key']) === true
+		&& is_array($data[0]['key']) === true)					
+			$keyfile = $data[0]['key'][0];
+		else
+			$keyfile = $data[0]['key'];
+		
+		$key_field = 'key';
+		switch ($axetype)
+		{
+			case 'day':
+				$key_data = $this->_xs->get_listhour();			
+				$key_field = 'key';	
+				$date = $this->_xs->all_to_unixtime($itl['dday']);
+				$year = date('Y',$date);
+				$month = date('m',$date);
+				$day = date('d',$date);
+				
+				$keyfile = $data[0]['key'];
+				
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$key = $key_full_data[$key_field];
+					$dip = array();	
+					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
+					$dip['end'] = mktime($key+1,0,0,$month,$day,$year);
+					$this->_xs->_interval_process = $dip;
+					$this->parse_log($keyfile,$key);
+				}
+				break;
+			case 'week':
+				$key_data = $this->_xs->get_listday_for_interval($dbeg,$dend);
+				$key_field = 'dayname';
+				
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$k = $key_full_data[$key_field];
+					
+					if(is_array($k) === true
+					&& isset($k[0]) === true)
+						$k = $k[0];
+						
+					$this->init_result($k);
+					$listmonth = $data_listmonth;
+					while($listmonth)
+					{
+						$key = array_shift($listmonth);
+						$key = $key['key'];
+						$year = substr($key,0,4);
+						$month = substr($key,4,2);
+						
+						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+						|| is_null($month_data) === true)
+							continue;
+						
+						$listdaynum = array_keys($month_data);
+						while($listdaynum)
+						{
+							$day = array_shift($listdaynum);
+							
+							$index = (int) ($year.$month.$day);
+							if ($index !== $key_full_data['key'])
+								continue;					
+						
+							if (isset($full_list_day[$year.$month.$day]) === false)
+								continue;
+							
+							// get day data
+							$data_to_import = $month_data[$day];
+				
+							$listfield = array_keys($data_to_import);
+							while($listfield)
+							{
+								$field = array_shift($listfield);
+						
+								if(isset($data_to_import[$field]['result']) === true
+								&& $data_to_import[$field]['result'] !== 0)
+									$this->update_result(array($k,$field),$data_to_import[$field]['result']);
+							}
+						}
+					}
+				}
+				break;
+			case 'month':
+				$date = $this->_xs->all_to_unixtime($itl['dmonth']);
+				$year = date('Y',$date);
+				$month = date('m',$date);		
+				
+				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+				|| is_null($month_data) === true)
+					break;
+					
+				$this->_result = ($month_data);
+				break;
+			case 'year':
+				$key_field = 'key';
+				$key_data = $this->_xs->get_listmonth();
+				
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$k = $key_full_data[$key_field];
+						
+					$this->init_result($k);
+					$listmonth = $data_listmonth;
+					while($listmonth)
+					{
+						$key = array_shift($listmonth);
+						$key = $key['key'];
+						$year = substr($key,0,4);
+						$month = substr($key,4,2);
+						
+						if (((int) $month) != ((int) $k))
+							continue;
+						
+						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+						|| is_null($month_data) === true)
+							continue;
+						
+						$listdaynum = array_keys($month_data);
+						while($listdaynum)
+						{
+							$day = array_shift($listdaynum);
+						
+							if (isset($full_list_day[$year.$month.$day]) === false)
+								continue;
+							
+							// get day data
+							$data_to_import = $month_data[$day];
+				
+							$listfield = array_keys($data_to_import);
+							while($listfield)
+							{
+								$field = array_shift($listfield);
+						
+								if(isset($data_to_import[$field]['result']) === true
+								&& $data_to_import[$field]['result'] !== 0)
+									$this->update_result(array($k,$field),$data_to_import[$field]['result']);
+							}
+						}
+					}
+				}
+				break;
+			case 'type':
+			default:
+				$key_data = $this->get_list_by_type();
+				$key_field = 'key';
+		
+				$data = $this->get_list_by_type();
+				
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$k = $key_full_data[$key_field];
+					
+					if(is_array($k) === true
+					&& isset($k[0]) === true)
+						$k = $k[0];
+					
+					$keyfile = $k;
+					if (count($data) === 1
+					&& isset($data[0]['key']) === true)
+						$keyfile = $data[0]['key'];
+						
+					$this->init_result($k);
+					$listmonth = $data_listmonth;
+					while($listmonth)
+					{
+						$key = array_shift($listmonth);
+						$key = $key['key'];
+						$year = substr($key,0,4);
+						$month = substr($key,4,2);
+						
+						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+						|| is_null($month_data) === true)
+							continue;
+						$listdaynum = array_keys($month_data);
+						while($listdaynum)
+						{
+							$day = array_shift($listdaynum);
+						
+							if (isset($full_list_day[$year.$month.$day]) === false)
+								continue;
+							
+							// get day data
+							$data_to_import = $month_data[$day];
+				
+							$listfield = array_keys($data_to_import);
+							while($listfield)
+							{
+								$field = array_shift($listfield);						
+								if(isset($data_to_import[$field]['result']) === true
+								&& $data_to_import[$field]['result'] !== 0)
+									$this->update_result(array($k,$field),$data_to_import[$field]['result']);
+							}
+						}
+					}
+				}
+		}
+	}
+		
 	public function set_method($method)
 	{ 
 		$this->_xs->set_method($method);
@@ -43,8 +263,8 @@ class xivo_statistics_abstract
 	}
 	
 	public function get_list_by_type()
-	{					
-		return($this->_xs->get_list_by_type());
+	{
+		return($this->_xs->get_list_by_type($this->_type));
 	}
 	
 	public function get_queue_list()
@@ -133,7 +353,7 @@ class xivo_statistics_abstract
 				&& $counter['start'] !== 0)
 					$rs = ($timeprocess - $counter['start']);	
 				$counter['token'] = 1;
-				$counter['start'] = $timeprocess;		
+				$counter['start'] = $timeprocess;
 				break;
 			case $eventend:
 				if ($counter['token'] === 0)

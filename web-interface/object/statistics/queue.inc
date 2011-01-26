@@ -43,105 +43,64 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 		$this->set_method('DB');
 	}
 		
-	public function parse_log()
+	public function parse_log($key_data,$key)
 	{
+		if ($this->_xs->get_conf() === false)
+			return(false);
 		switch ($this->_xs->_method)
 		{
 			case 'DB':
-				$this->parse_log_db();
+				return($this->parse_log_db($key_data,$key));
 				break;
 			case 'PHP':
-				$this->parse_log_php();
+				return($this->parse_log_php());
 				break;
 			default:
 				return(false);
 		}
 	}
 		
-	private function parse_log_db()
-	{
-		$axetype = $this->_xs->get_axtype();
+	private function parse_log_db($key_data,$key)
+	{		
+		$this->init_result($key);
 		
-		switch ($axetype)
-		{
-			case 'day':
-				$data = $this->_xs->get_listhour();
-				break;
-			case 'week':
-				$data = $this->_xs->get_listday_for_week();
-				break;
-			case 'month':
-				$data = $this->_xs->get_listday_for_month();
-				break;
-			case 'year':
-				$data = $this->_xs->get_listmonth();
-				break;
-			case 'type':
-			default:
-				$data = $this->get_list_by_type();
-		}
-					
-		$key_data = $this->get_list_by_type();
-		$interval = $this->_xs->get_interval();
+		$enterqueue = $this->eval_count_data($key_data,'ENTERQUEUE');			
+		$this->update_result(array($key,'presented'),$enterqueue);
 		
-		$nb_data = count($data);
-		for ($i=0;$i<$nb_data;$i++)
+		$connect = $this->eval_count_data($key_data,'CONNECT');
+		$this->update_result(array($key,'answered'),$connect);
+				
+		$field = $this->eval_field_queue_log('CONNECT','holdtime');
+		$sum = $this->eval_sum_data($key_data,'CONNECT',$field);
+		$this->update_result(array($key,'total_time_waiting'),$sum);
+		
+		$keyobject = $key_data;
+		if (is_array($key_data) === true)
+			$keyobject = ($key_data[0]);
+		
+		if (isset($this->_data_custom['qos']) === true
+		&& isset($this->_data_custom['qos'][$keyobject]) === true
+		&& ($stats_qos = (int) $this->_data_custom['qos'][$keyobject]['stats_qos']) !== 0)
 		{
-			$key = $data[$i];
-			switch ($axetype)
-			{
-				case 'day':
-				case 'week':
-				case 'month':
-				case 'year':
-					$key = $key['key'];
-					if (isset($interval[$key]) === true)
-						$this->_xs->_interval_process =  $interval[$key];
-					break;
-				case 'type':
-				default:
-					$key_data = $key;
-					if (count($interval) === 1)
-						$interval = array_shift($interval);
-					$this->_xs->_interval_process =  $interval;
-			}
-			
-			$this->init_result($key);
-			
-			$enterqueue = $this->eval_count_data($key_data,'ENTERQUEUE');			
-			$this->update_result(array($key,'presented'),$enterqueue);
-			
-			$connect = $this->eval_count_data($key_data,'CONNECT');
-			$this->update_result(array($key,'answered'),$connect);
-					
 			$field = $this->eval_field_queue_log('CONNECT','holdtime');
-			$sum = $this->eval_sum_data($key_data,'CONNECT',$field);
-			$this->update_result(array($key,'total_time_waiting'),$sum);
-			
-			$keyobject = array_shift($this->_xs->get_list_by_type());
-			
-			if (isset($this->_data_custom['qos']) === true
-			&& isset($this->_data_custom['qos'][$keyobject]) === true
-			&& ($stats_qos = (int) $this->_data_custom['qos'][$keyobject]['stats_qos']) !== 0)
-			{
-				$field = $this->eval_field_queue_log('CONNECT','holdtime');
-				$qos = $this->eval_count_data($key_data,'CONNECT',"$field<'$stats_qos'");
-				$this->update_result(array($key,'qos'),$qos);
-			}
-			
-			$abandon = $this->eval_count_data($key_data,'ABANDON');
-			$this->update_result(array($key,'abandoned'),$abandon);
-			
-			$exitempty = $this->eval_count_data($key_data,'EXITEMPTY');
-			$this->update_result(array($key,'rerouted_on_hungup'),$exitempty);
-			$exitwithtimeout = $this->eval_count_data($key_data,'EXITWITHTIMEOUT');
-			$this->update_result(array($key,'rerouted_on_hungup'),$exitwithtimeout);
-			
-			$this->update_result(array($key,'rerouted_on_guide'),0);
-			
-			$transfer = $this->eval_count_data($key_data,'TRANSFER');
-			$this->update_result(array($key,'rerouted_on_number'),0);
+			$qos = $this->eval_count_data($key_data,'CONNECT',array('<', array($field, $stats_qos)));
+			$this->update_result(array($key,'qos'),$qos);
 		}
+		
+		$abandon = $this->eval_count_data($key_data,'ABANDON');
+		$this->update_result(array($key,'abandoned'),$abandon);
+		
+		$exitempty = $this->eval_count_data($key_data,'EXITEMPTY');
+		$this->update_result(array($key,'rerouted_on_hungup'),$exitempty);
+		$exitwithtimeout = $this->eval_count_data($key_data,'EXITWITHTIMEOUT');
+		$this->update_result(array($key,'rerouted_on_hungup'),$exitwithtimeout);
+		
+		$this->update_result(array($key,'rerouted_on_guide'),0);
+		
+		$transfer = $this->eval_count_data($key_data,'TRANSFER');
+		$this->update_result(array($key,'rerouted_on_number'),0);
+		
+		return($this->_result);		
 	}	
 	
 	private function parse_log_php()

@@ -24,25 +24,29 @@ if(xivo::load_class('xivo_statistics_agent',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'stati
 	die('Can\'t load xivo_statistics_agent object');
 
 $stats_agent = new xivo_statistics_agent(&$_XS);
-$stats_agent->parse_log();
+$stats_agent->get_data();
 
 $tpl_statistics->set_name('agent');
 $tpl_statistics->set_baseurl('statistics/call_center/stats2');
 
 $tpl_statistics->set_data_custom('axetype',$_XS->get_axtype());
+$itl = $_XS->get_datecal();
 switch ($_XS->get_axtype())
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
-		$tpl_statistics->set_data_custom('day_process',$_XS->get_infocal());
+		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
 	case 'week':
 		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
-		$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
+		#$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
 		break;
 	case 'month':
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month(),'key');
-		$tpl_statistics->set_data_custom('month_process',$_XS->get_infocal());
+		$date = $_XS->all_to_unixtime($itl['dmonth']);
+		$year = date('Y',$date);
+		$month = date('m',$date);
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month($year,$month),'key');
+		$tpl_statistics->set_data_custom('month_process',$_XS->get_datecal());
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',$_XS->get_listmonth(),'key');
@@ -50,9 +54,8 @@ switch ($_XS->get_axtype())
 	case 'type':
 	default:
 		$tpl_statistics->set_rows('agent',$stats_agent->get_agent_list(),'number',true);
+		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
-
-#var_dump($stats_agent->_result);
 
 $tpl_statistics->set_data_custom('agent',$stats_agent->_result);
 

@@ -68,7 +68,7 @@ function dwho_second_to($sec, $round=null) {
 
 	$arr_keys = array_keys($arr);
 
-	for($c = 0;$sec <= 1 && $c < 4;$c++)
+	for($c = 0;$sec <= 1 && $c < 5;$c++)
 		$sec *= 1000;
 
 	if (is_null($round) === false 
@@ -969,7 +969,19 @@ function dwho_last_key(&$a,$sort=SORT_NUMERIC)
 	return(end($ak));
 }
 
-function dwho_sec_to_time($second) {
+function dwho_his_to_second($his) 
+{
+	$arr = split('[:/]',$his);	
+	$time = 0;
+	$time += ($arr[0] * 3600);
+	$time += ($arr[1] * 60);
+	$time += ($arr[2]);
+
+	return($time);
+}
+
+function dwho_sec_to_time($second) 
+{
 	
 	$second = (int) $second;
 	$sec = dwho_calc_duration('','',$second);

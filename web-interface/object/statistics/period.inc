@@ -31,104 +31,71 @@ class xivo_statistics_period extends xivo_statistics_abstract
 		parent::__construct(&$_XS);
 		$this->_method = 'DB';
 	}
+	
+	protected function init_result($key)
+	{		
+		$res = &$this->_result;
 		
-	public function parse_log()
+		if (is_array($key) === true
+		&& isset($key['value']) === true)
+			$key = $key['value'];
+			
+		if (isset($res[$key]) === false)
+		{
+			$data_process = &$res[$key];
+			$data_process = array();
+					
+			foreach($this->_xs->_period as $k => $v)
+			{
+				if(isset($data_process['answered'][$k]) === false)
+				{
+					$data_process['answered'][$k] = array();
+					$data_process['answered'][$k]['type'] = 'int';
+					$data_process['answered'][$k]['result'] = 0;
+					$data_process['abandoned'][$k] = array();
+					$data_process['abandoned'][$k]['type'] = 'int';
+					$data_process['abandoned'][$k]['result'] = 0;
+				}
+			}
+		}
+		
+		return(true);
+	}
+		
+	public function parse_log($key_data,$key)
 	{
+		if ($this->_xs->get_conf() === false)
+			return(false);
 		switch ($this->_xs->_method)
 		{
 			case 'DB':
-				$this->parse_log_db();
+				return($this->parse_log_db($key_data,$key));
 				break;
 			case 'PHP':
-				$this->parse_log_php();
+				return($this->parse_log_php());
 				break;
 			default:
 				return(false);
 		}
 	}
-	
-	private function parse_log_db()
+		
+	private function parse_log_db($key_data,$key)
 	{
-		$axetype = $this->_xs->get_axtype();
+		$this->init_result($key);
 		
-		switch ($axetype)
-		{
-			case 'day':
-				$data = $this->_xs->get_listhour();
-				break;
-			case 'week':
-				$data = $this->_xs->get_listday_for_week();
-				break;
-			case 'month':
-				$data = $this->_xs->get_listday_for_month();
-				break;
-			case 'year':
-				$data = $this->_xs->get_listmonth();
-				break;
-			case 'type':
-			default:
-				$data = $this->get_list_by_type();
-		}
-					
-		$key_data = $this->get_list_by_type();
-		$interval = $this->_xs->get_interval();
+		foreach($this->_xs->_period as $k => $v)
+		{			
+			if (($pbeg = $v['beg']) === 0
+			&& ($pend = $v['end']) === 0)
+				continue;
+			
+			$field = $this->eval_field_queue_log('CONNECT','holdtime');
+			$connect = $this->eval_count_data($key_data,'CONNECT',array('BETWEEN', array($field,$pbeg,$pend)));
+			$this->update_result(array($key,'answered',$k),$connect);
 		
-		$nb_data = count($data);
-		for ($i=0;$i<$nb_data;$i++)
-		{
-			$key = $data[$i];
-			switch ($axetype)
-			{
-				case 'day':
-				case 'week':
-				case 'month':
-				case 'year':
-					$key = $key['key'];
-					if (isset($interval[$key]) === true)
-						$this->_xs->_interval_process =  $interval[$key];
-					break;
-				case 'type':
-				default:
-					$key_data = $key;
-					if (count($interval) === 1)
-						$interval = array_shift($interval);
-					$this->_xs->_interval_process =  $interval;
-			}
-		
-			$res = &$this->_result;
-					
-			if (isset($res[$key]) === false)
-			{
-				$data_process = &$res[$key];
-				$data_process = array();
-				$data_process['answered'] = array();
-				$data_process['abandoned'] = array();
-				foreach($this->_xs->_period as $k => $v)
-				{
-					if(isset($data_process['answered'][$k]) === false)
-					{
-						$data_process['answered'][$k] = array();
-						$data_process['answered'][$k]['type'] = 'int';
-						$data_process['answered'][$k]['result'] = 0;
-						$data_process['abandoned'][$k] = array();
-						$data_process['abandoned'][$k]['type'] = 'int';
-						$data_process['abandoned'][$k]['result'] = 0;
-					}
-					
-					if (($pbeg = $v['beg']) === 0
-					&& ($pend = $v['end']) === 0)
-						continue;
-					
-					$field = $this->eval_field_queue_log('CONNECT','holdtime');
-					$connect = $this->eval_count_data($key_data,'CONNECT',"\"$field\"::int BETWEEN $pbeg AND $pend");
-					$this->update_result(array($key,'answered',$k),$connect);
-				
-					$field = $this->eval_field_queue_log('ABANDON','waittime');
-					$abandon = $this->eval_count_data($key_data,'ABANDON',"\"$field\"::int BETWEEN $pbeg AND $pend");
-					$this->update_result(array($key,'abandoned',$k),$abandon);
-					
-				}
-			}
+			$field = $this->eval_field_queue_log('ABANDON','waittime');
+			$abandon = $this->eval_count_data($key_data,'CONNECT',array('BETWEEN', array($field,$pbeg,$pend)));
+			$this->update_result(array($key,'abandoned',$k),$abandon);	
 		}
 	}
 	
