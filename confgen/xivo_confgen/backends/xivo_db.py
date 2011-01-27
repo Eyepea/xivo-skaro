@@ -96,9 +96,7 @@ class SpecializedHandler(object):
 
 class SCCPUsersHandler(SpecializedHandler):
 	def all(self, commented=None, order=None, **kwargs):
-		_s = self.db.usersccp.table
-		_u = self.db.userfeatures.table
-		_p = self.db.phone.table
+		(_s, _u, _p) = [getattr(self.db, o)._table for o in	('usersccp','userfeatures','phone')]
 		q  = select(
 			[_s, _p.c.macaddr, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
 			and_(
@@ -108,8 +106,7 @@ class SCCPUsersHandler(SpecializedHandler):
 			)
 		)
 
-		conn = self.db.engine.connect()
-		return conn.execute(q).fetchall()
+		return self.execute(q).fetchall()
 
 	@iterable('single')
 	def default_line(self, id):
@@ -118,8 +115,7 @@ class SCCPUsersHandler(SpecializedHandler):
 
 class AgentUsersHandler(SpecializedHandler):
 	def all(self, commented=None, order=None, **kwargs):
-		_a = self.db.staticagent.table
-		_f = self.db.agentfeatures.table
+		(_a, _f) = [getattr(self.db, o)._table for o in	('staticagent','agentfeatures')]
 		q  = select(
 			[_a.c.var_val, _f.c.autologoff, _f.c.ackcall, _f.c.acceptdtmf, _f.c.enddtmf,
 				_f.c.wrapuptime, _f.c.musiconhold],
@@ -131,13 +127,12 @@ class AgentUsersHandler(SpecializedHandler):
 			)
 		)
 
-		conn = self.db.engine.connect()
-		return conn.execute(q).fetchall()
+		return self.execute(q).fetchall()
 
 
 class UserQueueskillsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
-		(_u, _f, _s) = [getattr(self.db, o).table for o in ('userqueueskill',	'userfeatures', 'queueskill')]
+		(_u, _f, _s) = [getattr(self.db, o)._table for o in ('userqueueskill',	'userfeatures', 'queueskill')]
 		q = select(
 			[_f.c.id, _s.c.name, _u.c.weight],
 			and_(_u.c.userid == _f.c.id, _u.c.skillid == _s.c.id)
@@ -149,7 +144,7 @@ class UserQueueskillsHandler(SpecializedHandler):
 
 class AgentQueueskillsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
-		(_a, _f, _s) = [getattr(self.db, o).table for o in ('agentqueueskill',	'agentfeatures', 'queueskill')]
+		(_a, _f, _s) = [getattr(self.db, o)._table for o in ('agentqueueskill',	'agentfeatures', 'queueskill')]
 		q = select(
 			[_f.c.id, _s.c.name, _a.c.weight],
 			and_(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)

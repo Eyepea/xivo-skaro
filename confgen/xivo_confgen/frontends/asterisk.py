@@ -310,7 +310,7 @@ class AsteriskFrontend(Frontend):
 		for item in self.backend.voicemail.all(commented=False, category='general'):
 			if item['var_name'] == 'emailbody':
 				item['var_val'] = item['var_val'].replace('\n', '\\n')
-			print >>o, "%s = %s" % (item['var_name'], item['var_val'])
+			print >>o, item['var_name'], '=', item['var_val'].encode('utf8')
 
 		print >>o, '\n[zonemessages]'
 		for item in self.backend.voicemail.all(commented=False, category='zonemessages'):
