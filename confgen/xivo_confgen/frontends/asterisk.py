@@ -518,10 +518,13 @@ class AsteriskFrontend(Frontend):
 		xfeatures.update(dict([x['typeval'], {'exten': x['exten'], 'commented': x['commented']}] for x in extenumbers))
 
 		# voicemenus
-		#TODO: NON REALTIME
 		for vm in self.backend.voicemenus.all(commented=0, order='name'):
-			print >>o, "[voicemenu-%s]" % vm['context']
-			print >>o, "switch = Realtime/voicemenu-%s@extensions" % vm['context']
+			print >>o, "[voicemenu-%s]" % vm['name']
+
+			for act in self.backend.extensions.all(context='voicemenu-'+vm['name'],	commented=0):
+				print >>o, "exten = %s,%s,%s(%s)" % \
+						(act['exten'], act['priority'],	act['app'], act['appdata'].replace('|',','))
+
 
 		# foreach active context
 		for ctx in self.backend.contexts.all(commented=False, order='name', asc=False):
