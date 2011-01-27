@@ -64,8 +64,6 @@ def iterable(mode):
 		def list_wrapper(*args, **kwargs):
 			ret = f(*args, **kwargs)
 			if isinstance(ret, list) and len(ret) > 0:
-				#print dir(ret[0])
-
 				ret[0].__class__.__getitem__ = lambda self, key: self.__dict__[key]
 				ret[0].__class__.__setitem__ = mapped_set
 				ret[0].__class__.iteritems   = mapped_iteritems
@@ -136,6 +134,7 @@ class AgentUsersHandler(SpecializedHandler):
 		conn = self.db.engine.connect()
 		return conn.execute(q).fetchall()
 
+
 class UserQueueskillsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
 		(_u, _f, _s) = [getattr(self.db, o).table for o in ('userqueueskill',	'userfeatures', 'queueskill')]
@@ -146,6 +145,7 @@ class UserQueueskillsHandler(SpecializedHandler):
 
 		conn = self.db.engine.connect()
 		return conn.execute(q).fetchall()
+
 
 class AgentQueueskillsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
@@ -158,6 +158,7 @@ class AgentQueueskillsHandler(SpecializedHandler):
 		conn = self.db.engine.connect()
 		return conn.execute(q).fetchall()
 
+
 class ExtenumbersHandler(SpecializedHandler):
 	def all(self, features=[], *args, **kwargs):
 		#NOTE: sqlalchemy 4: table, 5: _table
@@ -169,6 +170,7 @@ class ExtenumbersHandler(SpecializedHandler):
 		)
 
 		return self.execute(q).fetchall()
+
 
 class HintsHandler(SpecializedHandler):
 	@iterable('list')
@@ -183,58 +185,56 @@ class HintsHandler(SpecializedHandler):
 		)
 
 		q = q.filter_by(internal=0, enablehint=1).order_by(self.db.userfeatures.context)
+		if 'context' in kwargs:
+			q = q.filter_by(context=kwargs['context'])
 		return q.all()
 
+
 class PhonefunckeysHandler(SpecializedHandler):
-	@iterable('list')
 	def all(self, *args, **kwargs):
 		# get all supervised user/group/queue/meetme
 		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
-		q = self.db.join(
-			self.db.join(
-				self.db.userfeatures,
-				self.db.phonefunckey,
-				and_(_u.c.id == _p.c.iduserfeatures, _p.c.typeextenumbers == None, _p.c.typevalextenumbers == None, 
-					_p.c.typeextenumbersright.in_(('user','group','queue','meetme')), _p.c.supervision == 1)
-			),
-			self.db.extenumbers,
-			and_(cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)), _p.c.typevalextenumbersright == _e.c.typeval),
-			isouter=True
+		conds = [
+			_u.c.id == _p.c.iduserfeatures, 
+			_p.c.typeextenumbers == None, 
+			_p.c.typevalextenumbers == None, 
+			_p.c.typeextenumbersright.in_(('user','group','queue','meetme')), 
+			_p.c.supervision == 1,
+		]
+		if 'context' in kwargs:
+			conds.append(_u.c.context == kwargs['context'])
+
+		q = select(
+			[_p.c.typeextenumbersright, _p.c.typevalextenumbersright, _e.c.exten],
+			and_(*conds),
+			from_obj=[
+				_p.outerjoin(_e, and_(
+					cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)), 
+					_p.c.typevalextenumbersright == _e.c.typeval))],
 		)
 
-		q = q.order_by(self.db.userfeatures.context)
-		return q.all()
+		return self.execute(q).fetchall()
+
 
 class BSFilterHintsHandler(SpecializedHandler):
-	#@iterable('list')
 	def all(self, *args, **kwargs):
 		# get all supervised bsfilters
 		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
-		#q = self.db.join(
-		#	self.db.join(
-		#		self.db.userfeatures.with_labels(),
-		#		#select([_u.c.id]),
-		#		self.db.phonefunckey.with_labels(),
-		#		and_(_u.c.id == _p.c.iduserfeatures, _p.c.typeextenumbers == 'extenfeatures', _p.c.typevalextenumbers == 'bsfilter', 
-		#			_p.c.typeextenumbersright == 'user', _p.c.supervision == 1)
-		#	),
-		#	self.db.extenumbers.with_labels(),
-		#	and_(cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)), _p.c.typevalextenumbersright == _e.c.typeval),
-		#)
 
-		#q = q.filter(coalesce(self.db.userfeatures.number,'') != '').order_by(self.db.userfeatures.context)
-		#print type(q)
-		#q = q.with_labels()
-		#return q.all()
+		conds = [
+			_u.c.id == _p.c.iduserfeatures, 
+			_p.c.typeextenumbers == 'extenfeatures',
+			_p.c.typevalextenumbers == 'bsfilter', 
+			_p.c.typeextenumbersright == 'user',
+			_p.c.supervision == 1, 
+			cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)),
+			_p.c.typevalextenumbersright == _e.c.typeval, 
+			coalesce(_u.c.number,'') != ''
+		]
+		if 'context' in kwargs:
+			conds.append(_u.c.context == kwargs['context'])
 
-		q = select(
-			[_e.c.exten, _u.c.number],
-			and_(_u.c.id == _p.c.iduserfeatures, _p.c.typeextenumbers == 'extenfeatures',
-				_p.c.typevalextenumbers == 'bsfilter', _p.c.typeextenumbersright == 'user',
-				_p.c.supervision == 1, 
-				cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)),
-				_p.c.typevalextenumbersright == _e.c.typeval, coalesce(_u.c.number,'') != '')
-		)
+		q = select([_e.c.exten, _u.c.number],	and_(*conds))
 
 		return self.execute(q).fetchall()
 
@@ -243,12 +243,7 @@ class ProgfunckeysHintsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
 		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
 
-		q = select(
-			[_p.c.iduserfeatures, _p.c.exten, _p.c.typeextenumbers,
-			 _p.c.typevalextenumbers, _p.c.typeextenumbersright,
-			 _p.c.typevalextenumbersright, _e.c.exten.label('leftexten')],
-
-			and_(
+		conds = [
 				_u.c.id == _p.c.iduserfeatures, 
 				_p.c.typeextenumbers != None,
 				_p.c.typevalextenumbers != None,
@@ -256,7 +251,16 @@ class ProgfunckeysHintsHandler(SpecializedHandler):
 				_p.c.progfunckey == 1, 
 				cast(_p.c.typeextenumbers,VARCHAR(255)) == cast(_e.c.type,VARCHAR(255)),
 				_p.c.typevalextenumbers == _e.c.typeval
-			)
+		]
+		if 'context' in kwargs:
+			conds.append(_u.c.context == kwargs['context'])
+		
+		q = select(
+			[_p.c.iduserfeatures, _p.c.exten, _p.c.typeextenumbers,
+			 _p.c.typevalextenumbers, _p.c.typeextenumbersright,
+			 _p.c.typevalextenumbersright, _e.c.exten.label('leftexten')],
+
+			and_(*conds)
 		)
 
 		return self.execute(q).fetchall()

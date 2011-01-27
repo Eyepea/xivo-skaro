@@ -492,72 +492,16 @@ class AsteriskFrontend(Frontend):
 		"""
 		o = StringIO()
 		conf    = None
-		objtpls = {}
 
-		# load template
+		# load context templates
 		if hasattr(self, 'contextsconf'):
 			conf = OrderedConf.OrderedRawConf(filename=self.contextsconf)
+			if conf.has_conflicting_section_names():
+				raise ValueError, self.contextsconf + " has conflicting section names"
 			if not conf.has_section('template'):
 				raise ValueError, "Template section doesn't exist"
 
-			for ctx in self.backend.contexts.all(commented=False, order='name', asc=False):
-				if conf.has_section('!' + ctx['name']):
-					continue
-
-				print >>o, "[%s]" % ctx['name']
-
-				section = ctx['name'] if conf.has_section(ctx['name']) else 'template'
-
-				objtpl = []
-				for option in conf.iter_options(section):
-					if option.get_name() == 'objtpl':
-						objtpl.append(option.get_value())
-						continue
-
-					print >>o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', ctx['name']))
-				print >>o, ""
- 
-				objtpls[ctx['name']] = objtpl
-
-		# voicemenus
-		#TODO: NON REALTIME
-		for vm in self.backend.voicemenus.all(commented=0, order='name'):
-			print >>o, "[voicemenu-%s]" % vm['context']
-			print >>o, "switch = Realtime/voicemenu-%s@extensions" % vm['context']
-
-		# extensions
-
-		ex = None
-		for exten in self.backend.extensions.all(commented=False, order='context'):
-			if exten['context'] != ex:
-				ex = exten['context']
-				print >>o, "\n[%s]" % exten['context']
-
-			app     = exten['app']
-			appdata = list(exten['appdata'].replace('|',',').split(','))
-			if app == 'Macro':
-				app     = 'Gosub'
-				appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
-				
-#			print >>o, "exten = %s,%s,%s" % (exten['exten'], exten['priority'], 'Set(XIVO_BASE_CONTEXT=${CONTEXT})')
-#			print >>o, "same  =    n,%s" % 'Set(XIVO_BASE_EXTEN=${EXTEN})'
-#			print >>o, "same  =    n,%s(%s)\n" % (app, ','.join(appdata))
-			exten['action'] = "%s(%s)" % (app, ','.join(appdata))
-
-			objtpl = objtpls.get(exten['context'], None)
-			if objtpl is not None:
-				for line in objtpl:
-					prefix = 'exten =' if line.startswith('%%EXTEN') else 'same ='
-
-					def varset(m):
-						return str(exten.get(m.group(1).lower(), ''))
-					line = re.sub('%%([^%]+)%%', varset, line)
-					print >>o, prefix, line
-
-				print >>o
-
-
-		# hints & features
+		# hints & features (init)
 		xfeatures = {
 			'bsfilter':            {},
 			'callgroup':           {},
@@ -573,123 +517,159 @@ class AsteriskFrontend(Frontend):
 		extenumbers = self.backend.extenumbers.all(features=xfeatures.keys())
 		xfeatures.update(dict([x['typeval'], {'exten': x['exten'], 'commented': x['commented']}] for x in extenumbers))
 
-		# phone + features hints
-		ex = None
-		for hint in self.backend.hints.all():
-			if hint['context'] != ex:
-				print >>o, "[%s]" % hint['context']; ex = hint['context']
+		# voicemenus
+		#TODO: NON REALTIME
+		for vm in self.backend.voicemenus.all(commented=0, order='name'):
+			print >>o, "[voicemenu-%s]" % vm['context']
+			print >>o, "switch = Realtime/voicemenu-%s@extensions" % vm['context']
 
-			xid       = hint['id']
-			print xid
-			number    = hint['number']
-			name      = hint['name']
-			proto     = hint['protocol'].upper()
-			if proto == 'IAX':
-				proto = 'IAX2'
-
-			if number:
-				print >>o, "exten = %s,hint,%s/%s" % (number, proto, name)
-
-			if not xfeatures['calluser'].get('commented', 1):
-				#TODO: fkey_extension need to be reviewed (see hexanol)
-				print >>o, "exten = %s,hint,%s/%s" % (xivo_helpers.fkey_extension(
-					xfeatures['calluser']['exten'],	(xid,)),
-					proto, name)
-
-			if not xfeatures['vmusermsg'].get('commented', 1) and int(hint['enablevoicemail']) \
-				 and hint['uniqueid']:
-				print "exten = %s%s,hint,%s/%s" % (xfeatures['vmusermsg']['exten'], number, proto, name)
-
-		# objects(user,group,...) supervision
-		xset = set()
-		ex = None
-		for pkey in self.backend.phonefunckeys.all():
-			print pkey.__dict__
-			if pkey['context'] != ex:
-				print >>o, "[%s]" % pkey['context']; ex = pkey['context']
-
-			xtype       = pkey['typeextenumbersright']
-			calltype    = "call%s" % xtype
-
-			if pkey['exten'] is not None:
-				exten = xivo_helpers.clean_extension(pkey['exten'])
-			elif xfeatures.has_key(calltype) and not xfeatures[calltype].get('commented', 1):
-				exten = xivo_helpers.fkey_extension(
-					xfeatures[calltype]['exten'],
-					(pkey['typevalextenumbersright'],))
-			else:
+		# foreach active context
+		for ctx in self.backend.contexts.all(commented=False, order='name', asc=False):
+			# context name preceded with '!' is ignored
+			if conf.has_section('!' + ctx['name']):
 				continue
 
-			if xtype == 'meetme':
-				xset.add((exten, "MeetMe:%s" % exten))
-			else:
-				xset.add((exten, "Custom:%s" % exten))
+			print >>o, "\n[%s]" % ctx['name']
+			# context includes
+			for row in self.backend.contextincludes.all(context=ctx['name'], order='priority'):
+				print >>o, "include = %s" % row['include']
 
-		for hint in xset:
-			print >>o, "exten = %s,hint,%s" % hint
 
-		# BS filters supervision 
-		bsfilters = self.backend.bsfilterhints.all()
+			tmpl    = []
+			section = ctx['name'] if conf.has_section(ctx['name']) else 'template'
+			for option in conf.iter_options(section):
+				if option.get_name() == 'objtpl':
+					tmpl.append(option.get_value()); continue
+
+				print >>o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', ctx['name']))
+			print >>o
+
+
+			# objects extensions (user, group, ...)
+			for exten in self.backend.extensions.all(context=ctx['name'], commented=False, order='context'):
+				app     = exten['app']
+				appdata = list(exten['appdata'].replace('|',',').split(','))
+				if app == 'Macro':
+					app     = 'Gosub'
+					appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
+				
+				exten['action'] = "%s(%s)" % (app, ','.join(appdata))
+
+				for line in tmpl:
+					prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
+
+					def varset(m):
+						return str(exten.get(m.group(1).lower(), ''))
+					line = re.sub('%%([^%]+)%%', varset, line)
+					print >>o, prefix, line
+				print >>o
+
+
+			# phone (user) hints
+			hints = self.backend.hints.all(context=ctx['name'])
+			if len(hints) > 0:
+				print >>o, "; phones hints"
+
+			for hint in hints:
+				xid       = hint['id']
+				number    = hint['number']
+				name      = hint['name']
+				proto     = hint['protocol'].upper()
+				if proto == 'IAX':
+					proto = 'IAX2'
+
+				if number:
+					print >>o, "exten = %s,hint,%s/%s" % (number, proto, name)
+
+				if not xfeatures['calluser'].get('commented', 1):
+					#TODO: fkey_extension need to be reviewed (see hexanol)
+					print >>o, "exten = %s,hint,%s/%s" % (xivo_helpers.fkey_extension(
+						xfeatures['calluser']['exten'],	(xid,)),
+						proto, name)
+
+				if not xfeatures['vmusermsg'].get('commented', 1) and int(hint['enablevoicemail']) \
+					 and hint['uniqueid']:
+					print >>o, "exten = %s%s,hint,%s/%s" % (xfeatures['vmusermsg']['exten'], number, proto, name)
+
+
+			# objects(user,group,...) supervision
+			phonesfk = self.backend.phonefunckeys.all(context=ctx['name'])
+			if len(phonesfk) > 0:
+				print >>o, "\n; phones supervision"
+
+			xset = set()
+			for pkey in phonesfk:
+				xtype       = pkey['typeextenumbersright']
+				calltype    = "call%s" % xtype
+
+				if pkey['exten'] is not None:
+					exten = xivo_helpers.clean_extension(pkey['exten'])
+				elif xfeatures.has_key(calltype) and not xfeatures[calltype].get('commented', 1):
+					exten = xivo_helpers.fkey_extension(
+						xfeatures[calltype]['exten'],
+						(pkey['typevalextenumbersright'],))
+				else:
+					continue
+
+				xset.add((exten, ("MeetMe:%s" if xtype == 'meetme' else "Custom:%s") % exten))
+
+			for hint in xset:
+				print >>o, "exten = %s,hint,%s" % hint
+
+
+			# BS filters supervision 
+			bsfilters = self.backend.bsfilterhints.all(context=ctx['name'])
  
-		extens    =	set(xivo_helpers.speed_dial_key_extension(xfeatures['bsfilter'].get('exten'),
-			r['exten'], None, r['number'], True) for r in bsfilters)
-		for exten in extens:
-			print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
+			extens    =	set(xivo_helpers.speed_dial_key_extension(xfeatures['bsfilter'].get('exten'),
+				r['exten'], None, r['number'], True) for r in bsfilters)
 
-		# prog funckeys supervision
-		progfunckeys = self.backend.progfunckeys.all()
-		print progfunckeys
+			if len(extens) > 0:
+				print >>o, "\n; BS filters supervision"
+			for exten in extens:
+				print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
 
-		extens = set()
-		for k in progfunckeys:
-			exten = k['exten']
 
-			if exten is None and k['typevalextenumbersright'] is not None:
-				exten = "*%s" % k['typevalextenumbersright']
+			# prog funckeys supervision
+			progfunckeys = self.backend.progfunckeys.all(context=ctx['name'])
+
+			extens = set()
+			for k in progfunckeys:
+				exten = k['exten']
+
+				if exten is None and k['typevalextenumbersright'] is not None:
+					exten = "*%s" % k['typevalextenumbersright']
 
 				extens.add(xivo_helpers.fkey_extension(xfeatures['phoneprogfunckey'].get('exten'),
 					(k['iduserfeatures'], k['leftexten'], exten)))
 
-		print extens
-		for exten in extens:
-			print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
+			if len(extens) > 0:
+				print >>o, "\n; prog funckeys supervision"
+			for exten in extens:
+				print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
 
-		# context includes
-		for row in self.backend.contextincludes.all(order='priority'):
-			print >>o, "include = %s" % row['include']
+			# -- end per-context --
 
-		"""
-    if config.has_section(context):
-        section_name = context
-    else:
-        section_name = 'template'
-
-    for option in config.iter_options(section_name):
-        print "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
-
-
-		"""
+		# XiVO features
 		cfeatures = []
-
 		if not xfeatures['vmusermsg'].get('commented', 1):
 			vmusermsgexten = xfeatures['vmusermsg']['exten']
 
 			for line in (
 					"1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % len(vmusermsgexten),
 					"n,Gosub(xivo-pickup,0,1)",
-					"n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})",
+					"n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT},${XIVO_VMMAIN_OPTIONS})",
 					"n,Hangup()"):
 				cfeatures.append("_%s,%s" % (vmusermsgexten, line))
 
 		for x in ('busy', 'rna', 'unc'):
 			fwdtype = "fwd%s" % x
 			if not xfeatures[fwdtype].get('commented', 1):
-				cfeatures.append("%s,1,Macro(feature_forward|%s|)"
+				cfeatures.append("%s,1,Macro(feature_forward,%s,)"
 					% (xivo_helpers.clean_extension(xfeatures[fwdtype]['exten']), x))
 
 		if cfeatures:
-			print >>o, "[xivo-features]"
+			print >>o, "\n[xivo-features]"
 			print >>o, "exten = " + "\nexten = ".join(cfeatures)
 
-
+		
 		return o.getvalue()
