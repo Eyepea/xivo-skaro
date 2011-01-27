@@ -28,8 +28,8 @@ import prov2.devices.ident
 import prov2.devices.pgasso
 from prov2.servers.tftp.proto import TFTPProtocol
 from prov2.servers.http_site import Site
-from prov2.persist.memory import new_dict_collection
-from prov2.persist.id import numeric_id_generator
+from prov2.persist.memory import MemoryDatabaseFactory
+from prov2.persist.shelve import ShelveDatabaseFactory
 from prov2.persist.common import ID_KEY
 from prov2.plugins import PluginManager
 from prov2.rest.server import new_root_resource
@@ -64,11 +64,10 @@ class ProvisioningApplication(object):
             current_dict[key_tokens[-1]] = v
         return splitted_config
     
-    def __init__(self, config):
+    def __init__(self, database, config):
         logger.info('Creating application...')
-        # FIXME should not be hardcoded
-        self._cfg_collection = new_dict_collection(numeric_id_generator())
-        self._dev_collection = new_dict_collection(numeric_id_generator())
+        self._cfg_collection = database.collection('configs')
+        self._dev_collection = database.collection('devices')
         self.pg_mgr = PluginManager(self,
                                     config['general.plugins_dir'],
                                     config['general.cache_dir'])
@@ -684,21 +683,53 @@ dev1_cfg = {
 
 
 class ProvisioningService(Service):
+    _DB_FACTORIES = {
+        'list': MemoryDatabaseFactory(),
+        'dict': MemoryDatabaseFactory(),
+        'shelve': ShelveDatabaseFactory()
+    }
+    
     def __init__(self, config):
         self._config = config
-        
+
+    def _extract_database_config(self):
+        db_config = {}    
+        for k, v in self._config.iteritems():
+            pre, sep, post = k.partition('.')
+            if pre == 'database' and sep:
+                db_config[post] = v
+        return db_config
+    
+    def _create_database(self):
+        type = self._config['database.type']
+        generator = self._config['database.generator']
+        db_config = self._extract_database_config()
+        db_factory = self._DB_FACTORIES[type]
+        return db_factory.new_database(type, generator, **db_config)
+    
     def startService(self):
         Service.startService(self)
-        self.app = ProvisioningApplication(self._config)
+        self.database = self._create_database()
+        self.app = ProvisioningApplication(self.database, self._config)
         
         # XXX next lines are for testing purpose only
-        self.app.cfg_insert(base_cfg)
-        self.app.cfg_insert(guest_cfg)
-        self.app.cfg_insert(dev1_cfg)
+        def add_cfg(config):
+            d = self.app.cfg_insert(config)
+            d.addErrback(lambda _: None)
+        add_cfg(base_cfg)
+        add_cfg(guest_cfg)
+        add_cfg(dev1_cfg)
     
     def stopService(self):
         Service.stopService(self)
-        self.app.close()
+        try:
+            self.database.close()
+        except Exception:
+            logger.error('error while closing database', exc_info=True)
+        try:
+            self.app.close()
+        except Exception:
+            logger.error('error while closing application', exc_info=True)
 
 
 class ProcessService(Service):

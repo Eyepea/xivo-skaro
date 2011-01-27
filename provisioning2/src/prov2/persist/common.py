@@ -103,3 +103,35 @@ class IDocumentCollection(Interface):
         match the selector, or fire with None if there's no document. 
         
         """
+
+
+class IDatabase(Interface):
+    """A database is a group of zero or more document collections."""
+    
+    def close():
+        """Close the underlying collections and the database. All resources
+        used by the collections and the database should be freed after a call
+        to this method.
+        
+        """
+    
+    def collection(id):
+        """Return the collection with the given id.
+        
+        Raise a ValueError if there's no collection with the given id and/or
+        it's not possible to create it.
+        
+        """
+
+
+class IDatabaseFactory(Interface):
+    def new_database(type, generator, **kwargs):
+        """Return a new database object.
+        
+        - type is a string identifying the type of database to create.
+        - generator is a string identifying the type of generator to use.   
+        
+        Raise a ValueError if this factory doesn't recognize type or generator
+        as valid values, or if additional arguments are missing or invalid.
+        
+        """

@@ -42,3 +42,20 @@ def urandom_id_generator(length=12):
         finally:
             f.close() 
         yield id
+
+
+default_id_generator = uuid_id_generator
+
+
+def get_id_generator_factory(generator_name):
+    """Return an ID generator factory from a generator name, or raise
+    ValueError if the name is unknown.
+    
+    Currently accepted generator name are: default, numeric, uuid and
+    urandom.
+    
+    """
+    try:
+        return globals()[generator_name + '_id_generator']
+    except KeyError:
+        raise ValueError('unknown generator name "%s"' % generator_name)

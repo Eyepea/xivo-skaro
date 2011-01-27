@@ -20,6 +20,7 @@ __license__ = """
 
 # TODO update to use the non-official async mongo driver, and the new
 #      async document collection interface
+# TODO add MongoDatabase and MongoDatabaseFactory
 
 from pymongo.errors import DuplicateKeyError
 from pymongo.objectid import ObjectId

@@ -20,6 +20,7 @@ __license__ = """
 
 import copy
 from prov2.persist.common import ID_KEY
+from prov2.persist.id import get_id_generator_factory
 from prov2.persist.util import new_backend_based_collection
 
 
@@ -92,3 +93,39 @@ def new_dict_collection(generator):
 
 def new_list_collection(generator):
     return new_backend_based_collection(ListSimpleBackend(), generator)
+
+
+class MemoryDatabase(object):
+    def __init__(self, collection_factory, generator_factory):
+        self._collection_factory = collection_factory
+        self._generator_factory = generator_factory
+        self._collections = {}
+    
+    def close(self):
+        self._collections = {}
+    
+    def _new_collection(self, id):
+        generator = self._generator_factory()
+        return self._collection_factory(generator)
+    
+    def collection(self, id):
+        try:
+            return self._collections[id]
+        except KeyError:
+            self._collections[id] = self._new_collection(id)
+            return self._collections[id]
+
+
+class MemoryDatabaseFactory(object):
+    def _get_collection_factory(self, type):
+        if type == 'list':
+            return new_list_collection
+        elif type == 'dict':
+            return new_dict_collection
+        else:
+            raise ValueError('unrecognised type "%s"' % type)
+    
+    def new_database(self, type, generator, **kwargs):
+        collection_factory = self._get_collection_factory(type)
+        generator_factory = get_id_generator_factory(generator)
+        return MemoryDatabase(collection_factory, generator_factory)

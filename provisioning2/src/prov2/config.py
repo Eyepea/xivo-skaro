@@ -35,6 +35,14 @@ The following parameters are defined:
         The TFTP port the phone use to contact the provisioning server.
         Normally the same as general.tftp_port.
     common_config.*
+    database.type
+        The type of the 'database' used for storing devices and configs.
+    database.generator
+        The kind of generator used to generate ID for devices and configs.
+    database.shelve_dir
+        For 'shelve' database, the directory where files are stored.
+    database.mongo_uri
+        For 'mongo' database, the URI of the database.
     plugin_config.*.*
 
 """
@@ -98,6 +106,9 @@ class DefaultConfigSource(object):
         'general.http_port': '80',
         'general.tftp_port': '69',
         'general.rest_port': '8081',
+        'database.type': 'shelve',
+        'database.generator': 'default',
+        'database.shelve_dir': '/var/lib/pf-xivo/prov2/shelvedb',
     }
     
     def pull(self):
@@ -246,6 +257,8 @@ _PARAMS_DEFINITION = {
     'common_config.ip':         (_ip_address, True),
     'common_config.http_port':  (_port_number, True),
     'common_config.tftp_port':  (_port_number, True),
+    'database.type':            (str, True),
+    'database.generator':       (str, True),
 }
 
 
