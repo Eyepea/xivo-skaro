@@ -44,6 +44,11 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		
 		return(true);
 	}
+	
+	public function update_date_genercache($id)
+	{
+		return($this->_stats_conf->update_date_genercache($id));
+	}
 
 	public function load_components()
 	{
@@ -65,19 +70,9 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			return(false);
 			
 		if(empty($r) === true)
-			return(false);
-
-		$r['id'] = (int) $r['id'];
-		$r['disable'] = (bool) $r['disable'];
-		$r['monday'] = (bool) $r['monday'];
-		$r['tuesday'] = (bool) $r['tuesday'];
-		$r['wednesday'] = (bool) $r['wednesday'];
-		$r['thursday'] = (bool) $r['thursday'];
-		$r['friday'] = (bool) $r['friday'];
-		$r['saturday'] = (bool) $r['saturday'];
-		$r['sunday'] = (bool) $r['sunday'];
+			return(false);		
 		
-		$this->_info['stats_conf'] = $r;
+		$this->_info['stats_conf'] = $this->_stats_conf->_prepare($r);
 
 		$this->_get_queue();
 		$this->_get_agent();
@@ -183,7 +178,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{
 			$r[$i] = $rs[$i];
 			$ref = &$r[$i];
-			$ref['disable'] = (bool) $ref['disable'];
+			$ref = $this->_stats_conf->_prepare($ref);
 		}
 
 		if(empty($r) === true)
@@ -502,7 +497,6 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 			switch($key)
 			{
-				/*
 				case 'stats_conf':
 					if(isset($this->_origin['stats_conf']) === false
 					|| $this->_origin['stats_conf'] === false)
@@ -510,7 +504,6 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 					else
 						$this->_stats_conf->edit_origin($this->_origin['stats_conf']);
 					break;
-				*/
 			}
 		}
 

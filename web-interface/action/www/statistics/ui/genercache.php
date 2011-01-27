@@ -18,17 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if(defined('XIVO_LOC_UI_ACL_CATEGORY') === true
-&& defined('XIVO_LOC_UI_ACL_SUBCATEGORY') === true)
-{
-	$access_category = XIVO_LOC_UI_ACL_CATEGORY;
-	$access_subcategory = XIVO_LOC_UI_ACL_SUBCATEGORY;
-}
-else
-{
-	$access_category = 'call_center';
-	$access_subcategory = 'genercache';
-}
+$access_category = 'call_center';
+$access_subcategory = 'genercache';
 
 #include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
@@ -42,16 +33,11 @@ if(isset($_QR['idconf']) === true
 		
 	$_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
 	
-	$idtype =- null;
+	$idtype = null;
 	if (isset($_QR['idtype']) === true)
 		$idtype = $_QR['idtype'];
 	
-	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);
-	
-	#$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],'queue');
-	#$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],'agent');
-	#$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],'period');
-	
+	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);	
 }
 
 ?>

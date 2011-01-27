@@ -19,6 +19,21 @@ Agents
 ; fm_name
 Nom: 
 
+; fm_description_cache
+Les dates pour le cache doivent être sous la forme AAAA-MM.
+
+; cache_during_period
+Période du cache
+
+; fm_dbegcache
+Début: 
+
+; fm_dendcache
+Fin: 
+
+; hlp_fm_dendcache
+Laissez 0 pour que le cache continue au jour le jour...
+
 ; stats_conf_workhour
 Heure de travail
 

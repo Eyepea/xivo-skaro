@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$_I18N->load_file('tpl/www/bloc/statistics/call_center/cache');
+
 dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('cache');
 
@@ -39,6 +41,8 @@ if(isset($_QR['idconf']) === false
 || $_XS->set_idconf($_QR['idconf']) === false
 || $_XS->load_component() === false)
 	return;
+	
+$stats_conf = $_XS->get_conf();
 
 switch($act)
 {
@@ -73,16 +77,24 @@ switch($act)
 			die('Can\'t load xivo_statistics_period object');
 		
 		$stats_period = new xivo_statistics_period(&$_XS);
+			
+		if (($appqueue_log = &$ipbx->get_application('queue_log')) === false
+		|| ($interval = $appqueue_log->get_min_and_max_time()) === false)
+			break;
 		
+		$dbeg = strtotime($interval['min']);
 		$dend = strtotime($interval['max']);
-		$dbeg = mktime(0,0,0,date('m',$dend)-1,1,date('Y',$dend));
+		#$dbeg = mktime(0,0,0,date('m',$dend)-1,1,date('Y',$dend));
+		$dbeg = mktime(0,0,0,date('m',$dend),1,date('Y',$dend));
 		$_XS->generate_cache($idconf,$dbeg,$dend,'period');
+		/*
 		$full_interval = array();
 		$full_interval['beg'] = $dbeg;
 		$full_interval['end'] = $dend;
 		$_XS->_interval_process = $full_interval;
-		$stats_period->parse_log('queue8001',4);		
+		$stats_period->parse_log('queue8001',4);
 		var_dump($stats_period->_result[4]);
+		*/
 		break;
 	case 'list':
 	default:
@@ -101,14 +113,11 @@ switch($act)
 			}
 			$_TPL->set_var('type',$typeprocess);
 			
-			if (($appqueue_log = &$ipbx->get_application('queue_log')) === false
-			|| ($interval = $appqueue_log->get_min_and_max_time()) === false)
-				break;		
-			
-			$dbeg = strtotime($interval['min']);
-			$dend = strtotime($interval['max']);
+			$dbeg = $stats_conf['dbegcache'];
+			$dend = $stats_conf['dendcache'];
 		
-			$listmonth = $_XS->get_listmonth_for_interval($dbeg,$dend);
+			if (($listmonth = $_XS->get_listmonth_for_interval($dbeg,$dend)) === false)
+				break;
 			
 			$_TPL->set_var('listmonth',$listmonth);
 			$_TPL->set_var('dbeg',$dbeg);

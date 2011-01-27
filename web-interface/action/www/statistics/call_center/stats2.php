@@ -29,9 +29,9 @@ $stats_agent->get_data();
 $tpl_statistics->set_name('agent');
 $tpl_statistics->set_baseurl('statistics/call_center/stats2');
 
-$tpl_statistics->set_data_custom('axetype',$_XS->get_axtype());
+$tpl_statistics->set_data_custom('axetype',$_XS->get_axetype());
 $itl = $_XS->get_datecal();
-switch ($_XS->get_axtype())
+switch ($_XS->get_axetype())
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
@@ -115,6 +115,7 @@ $table1 = $tpl_statistics;
 $_TPL->set_var('table1',$table1);
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
+$_TPL->set_var('hascachetype',$_XS->has_cache_type());
 $_TPL->set_var('showdashboard',true);
 
 $bench_end = microtime(true);

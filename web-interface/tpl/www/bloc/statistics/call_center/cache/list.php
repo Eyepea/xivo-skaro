@@ -30,8 +30,10 @@ $listtype = $this->get_var('listtype');
 $dbeg = $this->get_var('dbeg');
 $dend = $this->get_var('dend');
 
+$dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($dend)) : $this->bbf('fm_description_cache-without_end'); 
+
 ?>
-		
+	
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
@@ -40,16 +42,18 @@ $dend = $this->get_var('dend');
 	</h3>
 	<div class="sb-content">
 		<div class="sb-list">		
+		
+		<p>
+			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache',array($dbeg,$dencache));?></label>
+		</p>				
 				
 		<form action="" method="get" accept-charset="utf-8">
 			<?=$form->hidden(array('name' => 'act','value'	=> $act))?>
 			<?=$form->hidden(array('name' => 'idconf','value'	=> $idconf))?>
-			<div class="fm-paragraph">	
-			<?=$this->bbf('conf_axetype')?>
 			<?php
-				echo	$form->select(array('name'	=> 'type',
+				echo	$form->select(array('desc' => $this->bbf('conf_axetype'),
+								'name'		=> 'type',
 							    'id'		=> 'it-conf-type',
-							    'paragraph'	=> false,
 							    'browse'	=> 'type',
 				  				'labelid'	=> 'type',
 							    'empty'		=> $this->bbf('fm_type-default'),
@@ -59,16 +63,21 @@ $dend = $this->get_var('dend');
 							    'selected'	=> $this->get_var('type')),
 						      	$listtype);
 			?>
-			</div>
 		</form>
 		
-		<fieldset id="it-cache-generation" class="tab_cache_generation no-display">
+		<fieldset id="it-cache-generation" class="tab_cache_generation b-nodisplay">
 			<legend><?=$this->bbf('cache_generation_processing');?></legend>
+			<h1><?=$this->bbf('wait_during_traitment');?></h1>
 			<p><h1 id="restitle"></h1></p>
 			<p><div id="resprogressbar"></div></p>
 			<p><div id="rescache"></div></p>
 			<p><div id="rescachetotal"></div></p>
 			<p><div id="resend"></div></p>
+		</fieldset>
+		<fieldset id="it-cache-success" class="tab_cache_generation b-nodisplay">
+			<legend><?=$this->bbf('legend-cache_generation_success');?></legend>
+			<h1><?=$this->bbf('cache_generation_success');?></h1>
+			<p><h1 id="ressuccess"></h1></p>
 		</fieldset>
 		
 <?php 
@@ -76,7 +85,7 @@ $dend = $this->get_var('dend');
 	&& ($list = $this->get_var('list'.$type)) !== null
 	&& ($nb = count($list)) !== 0):
 ?>
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table cellspacing="0" cellpadding="0" border="0" id="t-list-obj">
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_cache_name')?></th>
@@ -99,32 +108,41 @@ $dend = $this->get_var('dend');
 				$name = $ref['name'][0];
 				$identity = $ref['identity'][0];
 			}
+			
+			$basecache = DWHO_PATH_CACHE_STATS.DWHO_SEP_DIR.'cache';
+			$dir = $basecache.DWHO_SEP_DIR.
+					$idconf.DWHO_SEP_DIR.
+					$type.DWHO_SEP_DIR.
+					$key;
+			
+			if (($r = dwho_file::read_d($dir,'file',FILE_R_OK)) === false):
+			    $infoscache = $this->bbf('cache_noexist');
+			else:
+			    sort($r);
 				
-			$dir = XIVO_PATH_ROOT.'/cache/'.$idconf.'/'.$type.'/'.$key;
-			
-		    $r = dwho_file::read_d($dir,'file',FILE_R_OK);
-		    sort($r);
-			
-		    $nbfile = count($r);
-		    
-		    $filefisrt = $r[0];
-		    $filelast = $r[$nbfile-1];
-		    
-		    $tree = array();
-		    foreach($r as $file)
-		    {
-		        array_push($tree,$file);
-		    }
+			    $nbfile = count($r);
+			    
+			    $filefisrt = $r[0];
+			    $filelast = $r[$nbfile-1];
+			    
+			    $tree = array();
+			    foreach($r as $file)
+			    {
+			        array_push($tree,$file);
+			    }
+			    
+			    $infoscache = $this->bbf('cache_exist-nbfile',array($nbfile));
+		    endif;
 			
 			#if (dwho_file::is_f($file) === false
 ?>
-		<tr class="fm-paragraph l-infos-<?=(($i % 2) + 1)?>on2" title="<?=dwho_alttitle('lol')?>">
+		<tr class="l-infos-<?=(($i % 2) + 1)?>on2" title="<?=dwho_alttitle($identity)?>">
 			<td class="td-left"><?=$identity?></td>
-			<td class="td-center">&nbsp;<?=$this->bbf('cache_nbfile',array($nbfile))?></td>
+			<td class="td-center">&nbsp;<?=$infoscache?></td>
 			<td class="td-right">
 				<form action="#" method="post" accept-charset="utf-8" 
 					onsubmit="init_cache();make_gener_cache('<?=$id?>');return(false);">					
-					<input type="submit" name="genercache" value="<?=$this->bbf('cache_regeneration')?>" />					
+					<input type="submit" name="genercache" value="<?=$this->bbf('bt-cache_generation',array($identity))?>" />					
 				</form>
 			</td>
 		</tr>
@@ -132,6 +150,18 @@ $dend = $this->get_var('dend');
 		endfor; 
 ?>
 		</tbody>
+		<tfoot>
+		<tr>
+			<td class="td-left">&nbsp;</td>
+			<td class="td-center">&nbsp;</td>
+			<td class="td-right">
+				<form action="#" method="post" accept-charset="utf-8" 
+					onsubmit="init_cache();make_gener_cache();return(false);">				
+					<input type="submit" name="genercache" value="<?=$this->bbf('bt-cache_generation_all')?>" />					
+				</form>
+			</td>
+		</tr>
+		</tfoot>
 		</table>
 <?php endif; ?>
 		</div>
@@ -151,9 +181,6 @@ dwho.dom.set_onload(function() {
 <?php 
 if (($type = $this->get_var('type')) !== null
 && ($listmonth = $this->get_var('listmonth')) !== null) :
-
-	$dbeg = $this->get_var('dbeg');
-	$dend = $this->get_var('dend');
 	
 	$js_listmonth_firstday = array();
 	$js_listmonth_lastday = array();
@@ -177,6 +204,8 @@ function init_cache()
 {
 	this.counter = 0;
 	this.start = this.start2 = (new Date).getTime();
+	this.avg = new Array();
+	dwho_eid('t-list-obj').style.display = 'none';
 	dwho_eid('it-cache-generation').style.display = 'block'; 
 }
 
@@ -201,7 +230,13 @@ function make_gener_cache(idtype)
 	});
 	
 	if (this.counter >= this.total)
+	{
+		gener_on_success();
 		return;
+	}
+	
+	idtype = (typeof idtype == 'undefined') ? null : idtype;
+	var objectProcessing = (idtype == null) ? '<?=$this->bbf('object_all')?>' : idtype;
 
 	var i = this.counter;
 	var dprocess = listmonthtimestamp[i];
@@ -213,22 +248,47 @@ function make_gener_cache(idtype)
 	
 	var diff = (new Date).getTime() - this.start;
 	var diff2 = (new Date).getTime() - this.start2;
+	this.avg.push(diff2);
 	
-	dwho_eid('restitle').innerHTML = '<?=$this->bbf('object_processing')?> ' + idtype;
+	//dwho_eid('restitle').innerHTML = '<?=$this->bbf('object_processing')?> ' + objectProcessing;
 	var info = '';
 	info += '<p>';
 	info += '<b>' + humandate + '</b> <?=$this->bbf('in_progress')?>';
-	info += ' ........... ';
+	info += '........... ';
 	info += ' <?=$this->bbf('process_last_time_traitment')?> ' + (diff2 / 1000) + 's';
 	info += '</p>';
 	dwho_eid('rescache').innerHTML = info;
 
-	dwho_eid('rescachetotal').innerHTML = '<?=$this->bbf('process_total_time')?> ' + (diff / 1000) + 's';
+	var rescachetotal = '';
+	var total_time = Math.round(diff / 1000);
+	rescachetotal += '<?=$this->bbf('process_total_time')?> ' + total_time + 's';
+	rescachetotal += '<br>';
+	var remaining_time = Math.round((average(this.avg) * (this.total - this.counter)) / 1000);
+	rescachetotal += '<?=$this->bbf('process_remaining_time')?> ' + remaining_time + 's';
+	dwho_eid('rescachetotal').innerHTML = rescachetotal;
 
 	xivo_gener_cache('<?=$idconf?>',listmonthfirstday[i],listmonthlastday[i],'<?=$type?>',idtype);
 	
 	this.start2 = (new Date).getTime();
 }
+
+function average(arr)
+{
+   var items =arr.length
+   var sum = 0
+   for (i = 0; i < items;i++)
+      sum += arr[i]
+   return (sum/items)
+}
+
+function gener_on_success()
+{
+	dwho_eid('it-cache-generation').style.display = 'none'; 
+	dwho_eid('it-cache-success').style.display = 'block'; 
+	//dwho_eid('t-list-obj').style.display = 'block';
+	//dwho_eid('ressuccess').innerHTML = info;
+}
+
 <?php 
 endif;
 ?>

@@ -130,14 +130,22 @@ $element = $this->get_var('element');
 	<div class="sb-content">
 		<div id="sr-stats" class="">
 		<form action="<?=$_SERVER['PHP_SELF']?>" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
-			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID))?>
 			<div id="it-cal-conf" class="fm-paragraph">
 <?php
+$conf_hlp = null;
+if ($conf !== false) :
+	$dbeg = $conf['dbegcache'];
+	$dend = $conf['dendcache'];
+	$dencache = ($dend != 0) ? $this->bbf('hlp_fm_conf_period_cache-with_end',array($dend)) : $this->bbf('hlp_fm_conf_period_cache-without_end'); 
+	$conf_hlp = $this->bbf('hlp_fm_conf_period_cache',array($dbeg,$dencache));
+endif;
+
 				echo	$form->select(array('name'	=> 'confid',
 							    'id'		=> 'it-toolbar-conf',
 							    'paragraph'	=> false,
 							    'browse'	=> 'conf',
 							    'empty'		=> $this->bbf('toolbar_fm_conf'),
+					 			'help'		=> $conf_hlp,
 							    'key'		=> 'name',
 							    'altkey'	=> 'id',
 							    'selected'	=> $this->get_var('confid')),
@@ -156,7 +164,7 @@ $element = $this->get_var('element');
 			$v['displayname'] = dwho_trunc(&$v['displayname'],18,'...',5);
 		}
 ?>
-			<div id="it-cal-object" class="fm-paragraph">	
+			<div id="it-cal-object" class="fm-paragraph">
 <?php
 				echo	$form->select(array('name'	=> 'key',
 							    'id'		=> 'it-conf-key',
@@ -198,22 +206,20 @@ $element = $this->get_var('element');
 <?php
 	else:
 		echo $form->hidden(array('name' => 'axetype','value' => 'type'));
-	endif;
+	endif;	
+	
+	if ($conf !== false) :
 ?>
 			<div id="it-cal-type" class="b-nodisplay">
-			<?php if (array_key_exists('dbeg',$infocal) === true && array_key_exists('dend',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-type"><?=$this->bbf('fm_dbeg')?></label>
-						<input type="text" name="dbeg" id="it-dbeg-type" value="<?=is_null($infocal['dbeg'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dbeg']?>" size="8"
+						<input type="text" name="dbeg" id="it-dbeg-type" value="<?=$infocal['dbeg']?>" size="8"
 							onclick="dwho_eid('cal-dend-type').style.display = 'none';
 								xivo_calendar_display('cal-dbeg-type','it-dbeg-type');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-type','it-dbeg-type');"
 						 />
-						 <!-- 
-						<input type="text" name="datecal[hbeg]" id="it-hbeg" value="<?=is_null($infocal['hbeg'])?'00:00':$infocal['hbeg']?>" size="4" /> 
-						-->
 					</div>
 					<div id="cal-dbeg-type"
 					     class="b-nodisplay"
@@ -222,15 +228,12 @@ $element = $this->get_var('element');
 					</div>
 					<div class="fm-desc-inline">
 						<label id="lb-dend" for="it-dend-type"><?=$this->bbf('fm_dend')?></label>
-						<input type="text" name="dend" id="it-dend-type" value="<?=is_null($infocal['dend'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dend']?>" size="8"
+						<input type="text" name="dend" id="it-dend-type" value="<?=$infocal['dend']?>" size="8"
 						   onclick="dwho_eid('cal-dbeg-type').style.display = 'none';
 							    xivo_calendar_display('cal-dend-type','it-dend-type');"
 						   onmouseover="xivo_calendar_body();"
 						   onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');"
 						 />
-						 <!-- 
-						<input type="text" name="datecal[hend]" id="it-hend" value="<?=is_null($infocal['hend'])?dwho_i18n::strftime_l('%H:%I',null):$infocal['hend']?>" size="4" />
-						 -->
 					</div>
 					<div id="cal-dend-type"
 					     class="b-nodisplay"
@@ -238,14 +241,12 @@ $element = $this->get_var('element');
 					     onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');">
 					</div>
 				</div>
-			<?php endif; ?>
 			</div>
 			<div id="it-cal-day" class="b-nodisplay">
-			<?php if (array_key_exists('dday',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-day"><?=$this->bbf('fm_dday')?></label>
-						<input type="text" name="dday" id="it-dbeg-day" value="<?=is_null($infocal['dday'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dday']?>" size="8"
+						<input type="text" name="dday" id="it-dbeg-day" value="<?=$infocal['dday']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-day','it-dbeg-day');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');"
@@ -257,14 +258,12 @@ $element = $this->get_var('element');
 					     onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');">
 					</div>
 				</div>
-			<?php endif; ?>
 			</div>
 			<div id="it-cal-week" class="b-nodisplay">
-			<?php if (array_key_exists('dweek',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-week"><?=$this->bbf('fm_dweek')?></label>
-						<input type="text" name="dweek" id="it-dbeg-week" value="<?=is_null($infocal['dweek'])?dwho_i18n::strftime_l('%Y-%m-%d',null):$infocal['dweek']?>" size="8"
+						<input type="text" name="dweek" id="it-dbeg-week" value="<?=$infocal['dweek']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-week','it-dbeg-week');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');"
@@ -276,14 +275,12 @@ $element = $this->get_var('element');
 					     onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');">
 					</div>
 				</div>
-			<?php endif; ?>
 			</div>
 			<div id="it-cal-month" class="b-nodisplay">
-			<?php if (array_key_exists('dmonth',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
-						<input type="text" name="dmonth" id="it-dbeg-month" value="<?=is_null($infocal['dmonth'])?dwho_i18n::strftime_l('%Y-%m',null):$infocal['dmonth']?>" size="8"
+						<input type="text" name="dmonth" id="it-dbeg-month" value="<?=$infocal['dmonth']?>" size="8"
 							onclick="xivo_calendar_display('cal-dbeg-month','it-dbeg-month');"
 							onmouseover="xivo_calendar_body();"
 							onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');"
@@ -295,21 +292,21 @@ $element = $this->get_var('element');
 					     onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');">
 					</div>
 				</div>
-			<?php endif; ?>
 			</div>
 			<div id="it-cal-year" class="b-nodisplay">
-			<?php if (array_key_exists('dyear',$infocal) === true): ?>
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-year"><?=$this->bbf('fm_dyear')?></label>
-						<input type="text" name="dyear" id="it-dbeg-year" value="<?=is_null($infocal['dyear'])?dwho_i18n::strftime_l('%Y',null):$infocal['dyear']?>" size="4" />
+						<input type="text" name="dyear" id="it-dbeg-year" value="<?=$infocal['dyear']?>" size="4" />
 					</div>
 				</div>
-			<?php endif; ?>
 			</div>
 					<div class="fm-desc-inline">
 						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 					</div>
+<?php
+	endif;
+?>
 		</form>
 		</div>
 <?php
@@ -357,8 +354,7 @@ function fm_chk(){
 dwho.dom.set_onload(function()
 {
 <?php
-	if(is_null($this->get_var('conf')) === false
-	&& $this->get_var('conf') === false):
+	if(is_null($conf) == true || $conf === false):
 ?>
 	dwho.dom.add_event('change',
 			   dwho_eid('it-toolbar-conf'),

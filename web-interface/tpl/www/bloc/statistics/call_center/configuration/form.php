@@ -32,10 +32,10 @@ if($this->get_var('fm_save') === false)
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 
 ?>
-			<div id="sb-part-first" class="b-nodisplay">
-				<p>
-					<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_general');?></label>
-				</p>				
+	<div id="sb-part-first" class="b-nodisplay">
+		<p>
+			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_general');?></label>
+		</p>
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 				  'name'	=> 'stats_conf[name]',
@@ -45,6 +45,30 @@ if($this->get_var('fm_save') === false)
 				  'value'	=> $info['stats_conf']['name'],
 				  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','name')) ));
 ?>
+	<fieldset id="stats_conf_cache_period">
+		<legend><?=$this->bbf('cache_during_period');?></legend>
+				<p>
+					<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache');?></label>
+				</p>				
+	<?php
+		echo	$form->text(array('desc'	=> $this->bbf('fm_dbegcache'),
+					  'name'	=> 'stats_conf[dbegcache]',
+					  'labelid'	=> 'name',
+					  'size'	=> 6,
+					  'default'	=> $element['stats_conf']['dbegcache']['default'],
+					  'value'	=> $info['stats_conf']['dbegcache'],
+					  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','dbegcache')) ));
+				      	
+		echo	$form->text(array('desc'	=> $this->bbf('fm_dendcache'),
+					  'name'	=> 'stats_conf[dendcache]',
+					  'labelid'	=> 'name',
+					  'size'	=> 6,
+					  'help'	=> $this->bbf('hlp_fm_dendcache'),
+					  'default'	=> $element['stats_conf']['dendcache']['default'],
+					  'value'	=> $info['stats_conf']['dendcache'],
+					  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','dendcache')) ));
+	?>
+	</fieldset>
 	<fieldset id="stats_conf_workhour">
 		<legend><?=$this->bbf('stats_conf_workhour');?></legend>
 		<div class="b-form">

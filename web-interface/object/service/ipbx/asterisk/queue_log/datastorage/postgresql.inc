@@ -53,8 +53,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	{			
 		$this->_cnt = 0;		
 		
-	#	$s = microtime(true);
-	#	var_dump(dwho_second_to((microtime(true) - $s),2));
+		$s = microtime(true);
 
 		$field = array((object) ('SUM(cast("'.$fieldsum.'" as int))'));
 		
@@ -73,6 +72,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				else
 					$this->_dso->where(array('agent' => $value));
 				break;
+			case 'period':
 			case 'queue':
 				if (is_array($value) === true)
 				{
@@ -137,9 +137,10 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				return(false);
 		}
 		
-		#print ($this->_dso->get_select().'<br>');
-		
 		$r = $this->_dso->select_singlecolumn();
+		
+		#print ($this->_dso->get_select().'<br>');
+		#var_dump(dwho_second_to((microtime(true) - $s),2));
 
 		if(isset($r[0]) === false)
 			$r = false;
@@ -149,7 +150,9 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
 	{			
-		$this->_cnt = 0;
+		$this->_cnt = 0;		
+		
+		$s = microtime(true);
 
 		$this->_dso->new_select($this->_table,array('event'));
 		
@@ -162,6 +165,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 					$this->_dso->where(array('agent' => $value));
 				break;
 			case 'queue':
+			case 'period':
 				if (is_array($value) === true)
 					$this->_dso->wherein('queuename',$value);
 				else
@@ -187,10 +191,12 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
 					break;
 				case '<':
+				case '>':
+				case '=':
 					$cast = '';
 					if (is_numeric($value[1]) === true)
 						$cast = '::int';
-					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' < '.$value[1]);
+					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' '.$type.' '.$value[1]);
 					break;
 			}
 		}
@@ -218,13 +224,14 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				$this->_dso->aggregate_where(false,'AND');
 			}
 			else 
-				return(false);
+				return(0);
 		}
-			
-		#print($this->_dso->get_select().'<br>');
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
+		
+		#print ($this->_dso->get_select().'<br>');
+		#var_dump(dwho_second_to((microtime(true) - $s),2));
 
 		return($this->_cnt);
 	}

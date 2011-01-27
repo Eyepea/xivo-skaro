@@ -391,6 +391,8 @@ CREATE TABLE `stats_conf` (
  `period3` varchar(16) NOT NULL DEFAULT 0,
  `period4` varchar(16) NOT NULL DEFAULT 0,
  `period5` varchar(16) NOT NULL DEFAULT 0,
+ `dbegcache` int(10) unsigned, 
+ `dendcache` int(10) unsigned, 
  `dgenercache` int(10) unsigned, 
  `dcreate` int(10) unsigned, 
  `dupdate` int(10) unsigned, 

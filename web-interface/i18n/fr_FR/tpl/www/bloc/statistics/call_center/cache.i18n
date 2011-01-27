@@ -1,0 +1,76 @@
+
+; title_content_name
+Génération du cache pour %s
+
+; conf_axetype
+Choisir: 
+
+; fm_dbeg
+Date de début: 
+
+; fm_dend
+Date de fin: 
+
+; fm_type-default
+
+
+; fm_type-opt
+%s
+
+; fm_description_cache
+Période de cache: %s %s selon la configuration.
+
+; fm_description_cache-with_end
+ à %s 
+ 
+; fm_description_cache-without_end
+jusqu'à ce jour
+
+; object_all
+Tous
+
+; col_cache_name
+Nom
+
+; col_cache_status
+Statut
+
+; cache_noexist
+Cache non existant
+
+; cache_exist-nbfile
+Cache existant avec %d fichiers
+
+; bt-cache_generation
+Générer %s
+
+; bt-cache_generation_all
+Générer tous
+
+; wait_during_traitment
+Veuillez patienter durant le traitement et ne pas rafraichir ou changer de page.
+Cela annulera le travail en cours.
+
+; in_progress
+en cours.
+
+; object_processing
+En cours: 
+
+; cache_generation_processing
+Génération du cache en cours...
+
+; process_last_time_traitment
+Temps de traitement pour la dèrniere génération: 
+
+; process_remaining_time 
+Temps total restant: 
+
+; process_total_time
+Temps total de la progression: 
+
+; legend-cache_generation_success
+Génération terminée !
+
+; cache_generation_success
+Génération réussi !

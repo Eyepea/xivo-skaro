@@ -31,6 +31,20 @@ $array['element']['hour_start']['default'] = 0;
 $array['element']['hour_end'] = array();
 $array['element']['hour_end']['default'] = 0;
 
+$_SRE = &dwho_gct::get('xivo_service');
+$ipbx = &$_SRE->get('ipbx');
+if (($appqueue_log = &$ipbx->get_application('queue_log')) === false
+|| ($interval = $appqueue_log->get_min_and_max_time()) === false)
+	$dbegcachedefault = null;
+else 
+	$dbegcachedefault = strtotime($interval['min']);
+
+$array['element']['dbegcache'] = array();
+$array['element']['dbegcache']['default'] = date('Y-m',$dbegcachedefault);
+
+$array['element']['dendcache'] = array();
+$array['element']['dendcache']['default'] = 0;
+
 $array['element']['workhour']['h'] = array();
 $array['element']['workhour']['h']['value'] = array('00','01','02','03','04','05','06',
 					      '07','08','09',10,11,12,13,14,15,16,17,18,19,20,21,22,23);
@@ -87,6 +101,8 @@ $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['dbegcache'] = array('set' => true,'regexp' => '/^([0-9]{4})-([0-9]{2})$/');
+$array['filter']['dendcache'] = array('set' => true,'regexp' => '/^(([0-9]{4})-([0-9]{2}))|0$/');
 $array['filter']['hour_start'] = array('set' => true,'regexp' => '/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])?$/');
 $array['filter']['hour_end'] = array('set' => true,'regexp' => '/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])?$/');
 $array['filter']['monday'] = array('bool' => true);

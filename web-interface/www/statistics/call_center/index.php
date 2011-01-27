@@ -20,8 +20,10 @@
 
 require_once('xivo.php');
 
+$go = array_key_exists('go', $_GET)?$_GET['go']:null;
+
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
 	
 $location = str_replace('/index.php','',$_LOC->get_current_location());
 
@@ -31,14 +33,14 @@ if(xivo_user::chk_acl('','','service'.$location) === false)
 $ipbx = &$_SRE->get('ipbx');
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_css('css/statistics/statistics.css');
-$dhtml->set_js('js/xivo_calendar.js');
+$dhtml->set_css('/css/statistics/statistics.css');
+$dhtml->set_js('/js/xivo_calendar.js');
 $dhtml->add_js('/struct/js/date.js.php');
 
 $action_path = $_LOC->get_action_path('statistics/call_center',0);
 
 if($action_path === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
 
 die(include($action_path));
 

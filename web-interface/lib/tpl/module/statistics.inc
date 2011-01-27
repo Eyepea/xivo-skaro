@@ -22,6 +22,7 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 class dwho_tpl_statistics extends dwho_tpl_module
 {
 	public	 $_tpl			= null;
+	private	 $_xs			= null;
 	private  $_basedir		= '';
 	private  $_baseurl		= '';
 	private  $_name			= '';
@@ -62,7 +63,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	public function set_baseurl($name)
 	{			
 		$this->_baseurl = $name;
-	}	
+	}
+	
+	public function set_xs(&$obj)
+	{
+		$this->_xs = &$obj;
+	}
 	
 	public function set_data_custom($key,$arr)
 	{			
@@ -220,7 +226,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 							if (is_array($val) === false)
 								break;
 								
-							$format = $val['type'];
+							$format = $val['type'];		
 							$rs = $val['result'];
 						}						
 						break;
@@ -246,6 +252,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					default:
 				}				
 				$result = $this->get_result_formated($rs,$format);
+			
 				$row_data_table[$label]['expression'] = $expression;
 				$row_data_table[$label]['format'] = $format;
 				$row_data_table[$label]['result'] = $result;
@@ -346,6 +353,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			else
 				array_push($tmp,$key);
 		}
+		
 		$var = call_user_func_array(array($this,'eval_var'), $tmp);
 		
 		return($var);
@@ -583,6 +591,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					$return .= $url->href_html($this->bbf($identity,$bbf),
 											$this->_baseurl,
 											array(	'axetype' => 'day',
+													'confid' => $this->_xs->get_idconf(),
 													'key' => $cols['key'],
 													'dday' => $date_process['dbeg']));
 				}
@@ -598,11 +607,11 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$i++;
 				if (in_array($colname,$this->_ignore_col) === true)
 					continue;
-				if (empty($colvalue) === true)
-				{
-					$return .= '<td>no_data</td>';
-					continue;
-				}
+				/*
+				 * if($this->_xs->get_axetype() !== 'day'
+				&& $this->_xs->has_cache_type($row) === false)
+					$return .= '<td>'.$this->bbf('no_cache').'</td>';
+				*/
 				if ($i < ($nb_cols - $nbcolsup))
 					$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
 				else
@@ -622,12 +631,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			$i++;
 			if (in_array($colname,$this->_ignore_col) === true)
 				continue;
-			if (empty($colvalue) === true)
-			{
-				$return .= '<td>no_data</td>';
-				continue;
-			}
-			if ($i < ($nb_cols - 1))
+			elseif ($i < ($nb_cols - 1))
 				$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
 			else
 				$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';

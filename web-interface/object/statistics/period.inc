@@ -23,7 +23,7 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_period extends xivo_statistics_abstract
 {
 	
-	public		$_type		= 'queue';
+	public		$_type		= 'period';
 	public		$_field		= array();
 	
 	public function __construct(&$_XS)
@@ -84,18 +84,22 @@ class xivo_statistics_period extends xivo_statistics_abstract
 		$this->init_result($key);
 		
 		foreach($this->_xs->_period as $k => $v)
-		{			
-			if (($pbeg = $v['beg']) === 0
-			&& ($pend = $v['end']) === 0)
+		{
+			if (($v['beg']) === 0
+			&& ($v['end']) === 0)
 				continue;
+				
+			$operator = 'BETWEEN';
+			if (is_null($v['end']) === true)
+				$operator = '>';
 			
 			$field = $this->eval_field_queue_log('CONNECT','holdtime');
-			$connect = $this->eval_count_data($key_data,'CONNECT',array('BETWEEN', array($field,$pbeg,$pend)));
+			$connect = $this->eval_count_data($key_data,'CONNECT',array($operator, array($field,$v['beg'],$v['end'])));
 			$this->update_result(array($key,'answered',$k),$connect);
 		
 			$field = $this->eval_field_queue_log('ABANDON','waittime');
-			$abandon = $this->eval_count_data($key_data,'CONNECT',array('BETWEEN', array($field,$pbeg,$pend)));
-			$this->update_result(array($key,'abandoned',$k),$abandon);	
+			$abandon = $this->eval_count_data($key_data,'CONNECT',array($operator, array($field,$v['beg'],$v['end'])));
+			$this->update_result(array($key,'abandoned',$k),$abandon);
 		}
 	}
 	

@@ -34,9 +34,13 @@ class xivo_statistics_abstract
 
 	public function get_data()
 	{
-		$axetype = $this->_xs->get_axtype();
+		$axetype = $this->_xs->get_axetype();
 		
-		$itl = $this->_xs->get_datecal();
+		if (($itl = $this->_xs->get_datecal()) === false)
+			return(false);
+			
+		if (is_null($itl['dbeg']) === true)
+			return(false);
 		
 		$dbeg = strtotime($itl['dbeg']);
 		$dend = strtotime($itl['dend']);
@@ -118,18 +122,8 @@ class xivo_statistics_abstract
 							if (isset($full_list_day[$year.$month.$day]) === false)
 								continue;
 							
-							// get day data
-							$data_to_import = $month_data[$day];
-				
-							$listfield = array_keys($data_to_import);
-							while($listfield)
-							{
-								$field = array_shift($listfield);
-						
-								if(isset($data_to_import[$field]['result']) === true
-								&& $data_to_import[$field]['result'] !== 0)
-									$this->update_result(array($k,$field),$data_to_import[$field]['result']);
-							}
+							// update result for day data
+							$this->eval_update_result($month_data[$day],$k);
 						}
 					}
 				}
@@ -178,18 +172,8 @@ class xivo_statistics_abstract
 							if (isset($full_list_day[$year.$month.$day]) === false)
 								continue;
 							
-							// get day data
-							$data_to_import = $month_data[$day];
-				
-							$listfield = array_keys($data_to_import);
-							while($listfield)
-							{
-								$field = array_shift($listfield);
-						
-								if(isset($data_to_import[$field]['result']) === true
-								&& $data_to_import[$field]['result'] !== 0)
-									$this->update_result(array($k,$field),$data_to_import[$field]['result']);
-							}
+							// update result for day data
+							$this->eval_update_result($month_data[$day],$k);
 						}
 					}
 				}
@@ -235,20 +219,34 @@ class xivo_statistics_abstract
 							if (isset($full_list_day[$year.$month.$day]) === false)
 								continue;
 							
-							// get day data
-							$data_to_import = $month_data[$day];
-				
-							$listfield = array_keys($data_to_import);
-							while($listfield)
-							{
-								$field = array_shift($listfield);						
-								if(isset($data_to_import[$field]['result']) === true
-								&& $data_to_import[$field]['result'] !== 0)
-									$this->update_result(array($k,$field),$data_to_import[$field]['result']);
-							}
+							// update result for day data
+							$this->eval_update_result($month_data[$day],$k);
 						}
 					}
 				}
+		}
+	}
+	
+	private function eval_update_result($data_to_eval,$key)
+	{							
+		$listfield = array_keys($data_to_eval);
+		while($listfield)
+		{
+			$field = array_shift($listfield);
+			if(isset($data_to_eval[$field]['result']) === true
+			&& $data_to_eval[$field]['result'] !== 0)
+				$this->update_result(array($key,$field),$data_to_eval[$field]['result']);						
+			elseif(isset($data_to_eval[$field]['result']) === false
+			&& count($data_to_eval[$field]) >> 2)
+			{
+				$listssfield = array_keys($data_to_eval[$field]);
+				while($listssfield)
+				{
+					$ssfield = array_shift($listssfield);
+					if($data_to_eval[$field][$ssfield]['result'] !== 0)
+						$this->update_result(array($key,$field,$ssfield),$data_to_eval[$field][$ssfield]['result']);
+				}	
+			}
 		}
 	}
 		

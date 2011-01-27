@@ -2,6 +2,15 @@
 ; toolbar_fm_conf
 Choisir une configuration
 
+; hlp_fm_conf_period_cache
+Période de cache: %s %s selon la configuration.
+
+; hlp_fm_conf_period_cache-with_end
+ à %s 
+ 
+; hlp_fm_conf_period_cache-without_end
+jusqu'à ce jour
+
 ; toolbar_fm_select_conf
 Choisisser la configuration á appliquer: 
 
@@ -289,3 +298,6 @@ Samedi %d
 
 ; sunday-opt
 Dimanche %d
+
+; no_cache_generated_for 
+Cache %s n'est pas généré

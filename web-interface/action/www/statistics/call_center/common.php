@@ -37,14 +37,15 @@ $_XS->load_component();
 
 $_TPL->set_var('basedir',$basedir);
 $_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));
-$_TPL->set_var('listaxetype',$_XS->get_list_axtype());
-$_TPL->set_var('axetype',$_XS->get_axtype());
+$_TPL->set_var('listaxetype',$_XS->get_list_axetype());
+$_TPL->set_var('axetype',$_XS->get_axetype());
 $_TPL->set_var('infocal',$_XS->get_datecal());
 $_TPL->set_var('confid',$_XS->get_idconf());
 $_TPL->set_var('conf',$_XS->get_conf());
 
 $tpl_statistics = &$_TPL->get_module('statistics');
 $tpl_statistics->set_basedir($basedir);
+$tpl_statistics->set_xs(&$_XS);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/statistics/call_center/conf.js');

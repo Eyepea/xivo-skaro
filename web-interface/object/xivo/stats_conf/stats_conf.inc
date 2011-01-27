@@ -40,9 +40,27 @@ class xivo_object_stats_conf extends xivo_object_abstract
 
 	public function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
+		$data['disable'] = (bool) $data['disable'];
+		$data['monday'] = (bool) $data['monday'];
+		$data['tuesday'] = (bool) $data['tuesday'];
+		$data['wednesday'] = (bool) $data['wednesday'];
+		$data['thursday'] = (bool) $data['thursday'];
+		$data['friday'] = (bool) $data['friday'];
+		$data['saturday'] = (bool) $data['saturday'];
+		$data['sunday'] = (bool) $data['sunday'];
+		$data['dbegcache'] = date('Y-m',$data['dbegcache']);
+		if ($data['dendcache'] != 0)
+			$data['dendcache'] = date('Y-m',$data['dendcache']);
 		$data['disable'] = (bool) $data['disable'];
 
 		return($data);
+	}
+	
+	public function update_date_genercache($id)
+	{
+		$arr['dgenercache'] = time();
+		return(parent::edit($id,$arr,null));
 	}
 
 	public function add($arr,$id=0)
@@ -52,6 +70,11 @@ class xivo_object_stats_conf extends xivo_object_abstract
 
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
+			
+		$arr['dcreate'] = time();
+		$arr['dbegcache'] = strtotime($arr['dbegcache']);
+		if ($arr['dendcache'] !== 0)
+			$arr['dendcache'] = strtotime($arr['dendcache']);
 
 		return(parent::add($arr,$id));
 	}
@@ -62,6 +85,11 @@ class xivo_object_stats_conf extends xivo_object_abstract
 			return(false);
 		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
+			
+		$arr['dupdate'] = time();
+		$arr['dbegcache'] = strtotime($arr['dbegcache']);
+		if ($arr['dendcache'] !== 0)
+			$arr['dendcache'] = strtotime($arr['dendcache']);
 
 		return(parent::edit($id,$arr,$disable));
 	}
