@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision: 9609 $'
-__date__      = '$Date: 2010-11-19 18:23:35 +0100 (Fri, 19 Nov 2010) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
