@@ -423,7 +423,6 @@ CREATE TABLE "stats_conf" (
  "dbegcache" integer DEFAULT 0, 
  "dendcache" integer DEFAULT 0, 
  "dgenercache" integer DEFAULT 0, 
- "dgenercache" integer DEFAULT 0, 
  "dcreate" integer DEFAULT 0, 
  "dupdate" integer DEFAULT 0, 
  "disable" smallint NOT NULL DEFAULT 0, -- BOOLEAN
