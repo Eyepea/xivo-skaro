@@ -74,8 +74,7 @@ class TFTPProtocol(DatagramProtocol):
                 # XXX although I see no reason why, if we want to run the
                 # protocol on any kind of datagram service, we'll need to
                 # change the next line
-                listening_port = reactor.listenUDP(0, connection)
-                connection.listening_port = listening_port
+                reactor.listenUDP(0, connection)
             request = {'address': addr, 'packet': pkt}
             response = _Response(on_reject, on_accept)
             self._service.handle_read_request(request, response)

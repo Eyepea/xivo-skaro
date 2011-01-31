@@ -214,10 +214,6 @@ class RFC1350Connection(_AbstractConnection):
         
         addr -- the address of the remote host.
         fobj -- a file-object that is going to be transmitted. This object will call its close method.
-        
-        XXX you need to set the IListeningPort object returned from a
-        reactor.listenUDP call as the 'listening_port' attribute, or
-        the socket won't be closed when the connection ends.
          
         """
         _AbstractConnection.__init__(self, addr)
@@ -226,12 +222,7 @@ class RFC1350Connection(_AbstractConnection):
     
     def _close(self):
         self._fobj.close()
-        # XXX self.listening_port might be not set if we are serving an empty file, such
-        # that this method is called before the call to reactor.listenUDP returns.
-        try:
-            self.listening_port.stopListening()
-        except AttributeError:
-            logger.warning('No listening_port attribute found - socket won\'t be closed')
+        self.transport.stopListening()
         
     def _next_dgram(self):
         buf = self._fobj.read(512)
@@ -253,10 +244,6 @@ class RFC2347Connection(_AbstractConnection):
         fobj -- a file-object that is going to be transmitted. This object will call the close method.
         oack_dgram -- an option acknowledgement datagram
         
-        XXX you need to set the IListeningPort object returned from a
-        reactor.listenUDP call as the 'listening_port' attribute, or
-        the socket won't be closed when the connection ends.
-        
         """
         _AbstractConnection.__init__(self, addr)
         self._fobj = fobj
@@ -265,11 +252,7 @@ class RFC2347Connection(_AbstractConnection):
     
     def _close(self):
         self._fobj.close()
-        # XXX self.listening_port could be not set
-        try:
-            self.listening_port.stopListening()
-        except AttributeError:
-            logger.warning('No listening_port attribute found - socket won\'t be closed')
+        self.transport.stopListening()
         
     def _next_dgram(self):
         if self._blk_no == -1:
