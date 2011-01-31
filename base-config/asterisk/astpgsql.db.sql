@@ -523,6 +523,7 @@ SELECT setval('ctistatus_id_seq', 6);
 
 
 DROP TABLE IF EXISTS "dialaction";
+DROP TABLE IF EXISTS "schedule"; -- USE dialaction_action
 DROP TYPE IF EXISTS "dialaction_event";
 DROP TYPE IF EXISTS "dialaction_category";
 DROP TYPE IF EXISTS "dialaction_action";
