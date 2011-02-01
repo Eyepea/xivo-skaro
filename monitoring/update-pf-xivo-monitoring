@@ -2,8 +2,8 @@
 
 . /usr/sbin/pf-common-read-config
 
-MONIT_CHECKS=/usr/share/pf-monitoring-monit/checks
-MONIT_SPC_CHECKS=/usr/share/pf-monitoring-monit/checks-spc
+MONIT_CHECKS=/usr/share/pf-xivo-monitoring/checks
+MONIT_SPC_CHECKS=/usr/share/pf-xivo-monitoring/checks-spc
 MONIT_CONF_DIR=/etc/monit/conf.d
 
 is_installed()
