@@ -349,14 +349,11 @@ class Plugin(object):
         """
         pass
     
-    # XXX should call it's errback instead of raising an exception in the case
-    #     the plugin don't know how to resync a device (missing info, or just
-    #     don't know) (?)
     def synchronize(self, device, raw_config):
         """Force the device to synchronize its configuration so that its the
-        same as the one in the config object.
+        same as the one in the raw config object.
         
-        Note that to be succesful, the device must be online...
+        Note that an offline device can't be synchronized...
         
         Pre:  device is a device object (can't be None)
               raw_config is a raw config object (can't be None)
@@ -367,20 +364,19 @@ class Plugin(object):
                 been no call to deconfigure with the same dev object between
                 these calls and no other call to configure with the same dev
                 object.
-        Post: if the device was online, its config has been reloaded
+        Post: its config has been reloaded
         
-        Raise an Exception if the plugin doesn't know how to synchronize the
-        device.
+        Return a Deferred that fire with None if the resync seems to have
+        been successful.
         
-        Return a Deferred object that fire its callback with a None value if
-        the reload seems to have been succesful, else fire its errback with an
-        exception.
+        The deferred will fire its errback with an Exception in the following
+        case:
+          - resynchronization is not supported by this plugin.
+          - not enough information to resynchronize the device.
+          - the resync operation seems to have failed for another reason.
         
-        XXX should we really use the errback or use the callback with a value
-        meaningfull of the reason why the device did not reload ?
-         
         """
-        raise Exception("No known way to reload the device")
+        return defer.fail(Exception("Resynchronization not supported"))
 
 
 class StandardPlugin(Plugin):

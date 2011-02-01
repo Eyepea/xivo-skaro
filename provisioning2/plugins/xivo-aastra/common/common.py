@@ -8,7 +8,7 @@ Support the 6730i, 6731i, 6739i, 6751i, 6753i, 6755i, 6757i.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,12 +25,14 @@ __license__ = """
 """
 
 import os.path
+from prov2 import sip
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from prov2.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
     INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
 from prov2.util import norm_mac, format_mac
 from twisted.internet import defer
+from twisted.python import failure
 from xivo import tzinform
 
 
@@ -312,20 +314,28 @@ class BaseAastraPlugin(StandardPlugin):
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, config, path, self._ENCODING)
     
-    def deconfigure(self, dev):
-        filename = self._dev_specific_filename(dev)
-        # Next line should never raise an error if the plugin contract has
-        # been followed
-        os.remove(filename)
-
-    def synchronize(self, dev, config):
-        # FIXME this is a test, hardcoded value are meaningless outside of my test env
-        ip = dev['ip']
-        import subprocess
-        p = subprocess.Popen(['sip-options',
-                              '-m', 'sip:192.168.33.1:5061',
-                              '--method=NOTIFY',
-                              '--extra',
-                              'sip:%s' % ip], stdin=subprocess.PIPE)
-        p.communicate('Event: check-sync')
-        return defer.succeed(None)
+    def deconfigure(self, device):
+        filename = self._dev_specific_filename(device)
+        try:
+            os.remove(filename)
+        except OSError:
+            # ignore -- probably an already removed file
+            pass
+    
+    def synchronize(self, device, raw_config):
+        try:
+            ip = device[u'ip']
+        except KeyError:
+            return defer.fail(Exception('no IP address'))
+        else:
+            def on_notify_success(status_code):
+                if status_code == 200:
+                    return None
+                else:
+                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
+                    return failure.Failure(e)
+            
+            uri = sip.URI('sip', ip, port=5060)
+            d = sip.send_notify(uri, 'check-sync')
+            d.addCallback(on_notify_success)
+            return d

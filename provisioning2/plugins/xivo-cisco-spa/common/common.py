@@ -6,7 +6,7 @@
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,12 +26,14 @@ import math
 import os.path
 import re
 from xml.sax.saxutils import escape
+from prov2 import sip
 from prov2.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT
 from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from prov2.util import norm_mac, format_mac
 from twisted.internet import defer
+from twisted.python import failure
 from xivo import tzinform
 
 
@@ -353,12 +355,35 @@ class BaseCiscoPlugin(StandardPlugin):
         dst = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, config, dst, self._ENCODING)
     
-    def deconfigure(self, dev):
-        filename = self._dev_specific_filename(dev)
-        # Next line should never raise an error if the plugin contract has
-        # been followed
-        os.remove(filename)
+    def deconfigure(self, device):
+        filename = self._dev_specific_filename(device)
+        try:
+            os.remove(filename)
+        except OSError:
+            # ignore -- probably an already removed file
+            pass
     
-    def synchronize(self, dev, config):
-        # TODO implement asynchronously
-        return defer.fail(NotImplementedError())
+    def synchronize(self, device, raw_config):
+        try:
+            ip = device[u'ip']
+        except KeyError:
+            return defer.fail(Exception('no IP address'))
+        else:
+            def on_notify_success(status_code):
+                if status_code == 200:
+                    return None
+                else:
+                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
+                    return failure.Failure(e)
+            
+            for sip_line in raw_config[u'sip'][u'lines'].itervalues():
+                username = sip_line[u'user_id']
+                password = sip_line[u'passwd']
+                break
+            else:
+                e = Exception('Need at least one configured line to resynchronize')
+                return failure.Failure(e)
+            uri = sip.URI('sip', ip, user=username, port=5060)
+            d = sip.send_notify(uri, 'check-sync', (username, password))
+            d.addCallback(on_notify_success)
+            return d

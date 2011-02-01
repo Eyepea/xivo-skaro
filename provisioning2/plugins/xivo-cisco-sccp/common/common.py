@@ -15,7 +15,7 @@ from __future__ import with_statement
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -378,11 +378,15 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, config, path, self._ENCODING)
     
-    def deconfigure(self, dev):
-        filename = self._dev_specific_filename(dev)
-        os.remove(os.path.join(self._tftpboot_dir, filename))
+    def deconfigure(self, device):
+        filename = self._dev_specific_filename(device)
+        try:
+            os.remove(os.path.join(self._tftpboot_dir, filename))
+        except OSError:
+            # ignore -- probably an already removed file
+            pass
     
-    def synchronize(self, dev, config):
+    def synchronize(self, device, raw_config):
         # The only known way to synchronize SCCP device is to do an
         # 'sccp reload' or 'sccp restart' or similar from Asterisk
-        StandardPlugin.synchronize(self, dev, config)
+        return defer.fail(Exception('Resynchronization not supported for SCCP devices'))
