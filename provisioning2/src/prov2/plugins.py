@@ -251,7 +251,7 @@ class Plugin(object):
     
     # Methods for device configuration
     
-    def configure_common(self, config):
+    def configure_common(self, raw_config):
         """Apply a non-device specific configuration to the plugin. In typical
         case, this will configure the 'common files' shared by all the devices.
         
@@ -260,7 +260,7 @@ class Plugin(object):
         Note that this method might also be called more often than
         technically needed.
         
-        config is a mapping object with all the common configurations
+        raw_config is a raw config object with all the common configurations
         parameters. An 'ip', 'http_port' and 'tftp_port' parameters are
         guaranteed to be present. Plugin class can modify this object.
         
@@ -301,6 +301,8 @@ class Plugin(object):
         Post: after a call to this method, if device dev does a request for
                 its configuration file, its configuration will be as the
                 config object
+        
+        Plugin class can modify the raw_config object.
         
         This method is synchronous/blocking.
         
@@ -365,6 +367,8 @@ class Plugin(object):
                 these calls and no other call to configure with the same dev
                 object.
         Post: its config has been reloaded
+        
+        Plugin class can modify the raw_config object.
         
         Return a Deferred that fire with None if the resync seems to have
         been successful.

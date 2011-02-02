@@ -20,14 +20,21 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# XXX right now, if we install a plugin that has a bug and can't be loaded,
+#     the only way to uninstall it is manually...
+# XXX incoherent handling of exceptions in ProvisioningApplication
+
+import copy
 import logging
 import logging.handlers
+import functools
 import os.path
 import prov2.config
 import prov2.devices.ident
 import prov2.devices.pgasso
 from prov2.servers.tftp.proto import TFTPProtocol
 from prov2.servers.http_site import Site
+from prov2.synchro import DeferredRWLock
 from prov2.persist.memory import MemoryDatabaseFactory
 from prov2.persist.shelve import ShelveDatabaseFactory
 from prov2.persist.common import ID_KEY
@@ -51,8 +58,42 @@ class InvalidIdError(Exception):
     pass
 
 
+def _rlock(fun):
+    # Decorator for instance method of ProvisioningApplication that need to
+    # acquire the read lock
+    @functools.wraps(fun)
+    def aux(self, *args, **kwargs):
+        d = self._rw_lock.read_lock.run(fun, self, *args, **kwargs)
+        return d
+    return aux
+
+    
+def _wlock(fun):
+    # Decorator for instance method of ProvisioningApplicatio that need to
+    # acquire the write lock
+    @functools.wraps(fun)
+    def aux(self, *args, **kwargs):
+        d = self._rw_lock.read_lock.run(fun, self, *args, **kwargs)
+        return d
+    return aux
+
+
 class ProvisioningApplication(object):
-    # FIXME incoherent handling of exceptions
+    """Main logic used to provision devices.
+    
+    Here's the restrictions on the devices/configs/plugins stored by instances
+    of this class:
+    - device can make references to unknown configs or plugins
+    - configs can make references to unknown configs
+    - a plugin can be uninstalled even if some devices make references to it
+    - a config can be removed even if some devices or other configs make
+      reference to it
+    
+    This class enforce the plugin contract.
+    
+    """
+    # Note that, seen from the outside, all method acquiring a lock return a
+    # deferred.
     
     def _split_config(self, config):
         splitted_config = {}
@@ -74,9 +115,10 @@ class ProvisioningApplication(object):
         if 'general.plugin_server' in config:
             self.pg_mgr.server = config['general.plugin_server']
         self._splitted_config = self._split_config(config)
+        self._rw_lock = DeferredRWLock()
     
+    @_wlock
     def close(self):
-        # XXX note that there might be method still 'running'
         self._cfg_collection.close()
         self._dev_collection.close()
         self.pg_mgr.close()
@@ -222,6 +264,7 @@ class ProvisioningApplication(object):
         else:
             defer.returnValue(device)
     
+    @_wlock
     @defer.inlineCallbacks
     def dev_insert(self, device):
         """Insert a new device into the provisioning application.
@@ -243,12 +286,15 @@ class ProvisioningApplication(object):
         
         """
         self._dev_check_validity(device)
-        yield self._dev_configure_if_possible(device)
         # next line might raise an persist.InvalidIdError, which
         # is not quite the right type
         id = yield self._dev_collection.insert(device)
+        updated = yield self._dev_configure_if_possible(device)
+        if updated:
+            yield self._dev_collection.update(device)
         defer.returnValue(id)
     
+    @_wlock
     @defer.inlineCallbacks
     def dev_update(self, device):
         """Update the device.
@@ -282,6 +328,7 @@ class ProvisioningApplication(object):
                 # device has been deleted
                 yield self._dev_collection.update(device)
     
+    @_wlock
     @defer.inlineCallbacks
     def dev_delete(self, id):
         """Delete the device with the given ID.
@@ -314,6 +361,7 @@ class ProvisioningApplication(object):
     def dev_find_one(self, selector):
         return self._dev_collection.find(selector)
     
+    @_wlock
     @defer.inlineCallbacks
     def dev_reconfigure(self, id):
         """Force the reconfiguration of the device. This is usually not
@@ -336,6 +384,7 @@ class ProvisioningApplication(object):
             # next line might raise an exception
             yield self._dev_collection.update(device)
     
+    @_rlock
     @defer.inlineCallbacks
     def dev_synchronize(self, id):
         """Synchronize the physical device with its config.
@@ -374,6 +423,7 @@ class ProvisioningApplication(object):
         else:
             defer.returnValue(config)
     
+    @_wlock
     @defer.inlineCallbacks
     def cfg_insert(self, config):
         """Insert a new config into the provisioning application.
@@ -397,6 +447,7 @@ class ProvisioningApplication(object):
         id = yield self._cfg_collection.insert(config)
         defer.returnValue(id)
     
+    @_wlock
     @defer.inlineCallbacks
     def cfg_update(self, config):
         """Update the config.
@@ -439,6 +490,7 @@ class ProvisioningApplication(object):
                     if self._dev_configure(device, plugin, raw_config):
                         yield self._dev_collection.update(device)
     
+    @_wlock
     @defer.inlineCallbacks
     def cfg_delete(self, id):
         """Delete the config with the given ID. Does not delete any reference
@@ -494,18 +546,37 @@ class ProvisioningApplication(object):
     
     # plugin methods
     
-    def _pg_common_configure(self, id):
-        # Pre: id in self.pg_mgr
+    def _pg_configure_pg(self, id):
+        # Raise an exception if configure_common fail
         plugin = self.pg_mgr[id]
-        logger.info('Calling plugin.configure_common for plugin "%s"', id)
-        plugin.configure_common(self._splitted_config['common_config'])
+        common_config = copy.deepcopy(self._splitted_config['common_config'])
+        logger.info('Configuring plugin "%s"', id)
+        try:
+            plugin.configure_common(common_config)
+        except Exception:
+            logger.error('Error while configuring plugin "%s"', id)
+            raise
         
     def _pg_load(self, id):
+        # Raise an exception if plugin loading or common configuration fail
         gen_cfg = self._splitted_config['general']
         spec_cfg = self._splitted_config.get('plugin_config', {}).get(id, {})
         logger.info('Loading plugin "%s', id)
-        self.pg_mgr.load(id, gen_cfg, spec_cfg)
-        self._pg_common_configure(id)
+        try:
+            self.pg_mgr.load(id, gen_cfg, spec_cfg)
+        except Exception:
+            logger.error('Error while loading plugin "%s"', id, exc_info=True)
+            raise
+        else:
+            self._pg_configure_pg(id)
+    
+    def _pg_unload(self, id):
+        logger.info('Unloading plugin "%s', id)
+        try:
+            self.pg_mgr.unload(id)
+        except Exception:
+            logger.error('Error while unloading plugin "%s"', id, exc_info=True)
+            raise
     
     @defer.inlineCallbacks
     def _pg_configure_all_devices(self, id):
@@ -516,76 +587,91 @@ class ProvisioningApplication(object):
             if updated:
                 yield self._dev_collection.update(device)
     
+    @_wlock
     def pg_install(self, id):
         """Install the plugin with the given id.
         
-        Return an object providing the IProgressOperation interface.
+        Return a deferred that will fire with an object providing the
+        IProgressOperation interface once the plugin installation is started.
         
-        Raise an Exception if the plugin is already installed.
+        The deferred will fire its errback with:
+          - an Exception if the plugin is already installed.
+          - an Exception if there's no installable plugin with the specified
+            name.
+          - an Exception if there's already an install/upgrade operation
+            in progress for the plugin.
+          - an InvalidParameterError if the plugin package is not in cache
+            and no 'server' param has been set.
         
-        Raise an Exception if there's no installable plugin with the specified
-        name.
-        
-        Raise an Exception if there's already an install/upgrade operation
-        in progress for the plugin.
-        
-        Raise an InvalidParameterError if the plugin package is not in cache
-        and no 'server' param has been set.
+        Affected devices are automatically configured if needed.
         
         """
         logger.info('Installing plugin "%s"', id)
         if self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is already installed' % id)
         
-        @defer.inlineCallbacks
         def on_success(_):
+            # next line might raise an exception, which is ok
             self._pg_load(id)
-            yield self._pg_configure_all_devices(id)
+            return self._pg_configure_all_devices(id)
         pop = self.pg_mgr.install(id)
         pop.deferred.addCallback(on_success)
         return pop
     
+    @_wlock
     def pg_upgrade(self, id):
         """Upgrade the plugin with the given id.
         
         Same contract as pg_install, except that the plugin must already be
         installed.
         
+        Affected devices are automatically reconfigured if needed.
+        
         """
         logger.info('Upgrading plugin "%s"', id)
         if not self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is not already installed' % id)
         
-        @defer.inlineCallbacks
         def on_success(_):
             if id in self.pg_mgr:
-                self.pg_mgr.unload(id)
+                # next line might raise an exception, which is ok
+                self._pg_unload(id)
+            # next line might raise an exception, which is ok
             self._pg_load(id)
-            yield self._pg_configure_all_devices(id)
+            return self._pg_configure_all_devices(id)
         # XXX we probably want to check that the plugin is 'really' upgradeable
         pop = self.pg_mgr.upgrade(id)
         pop.deferred.addCallback(on_success)
         return pop
     
+    @_wlock
+    @defer.inlineCallbacks
     def pg_uninstall(self, id):
         """Uninstall the plugin with the given id.
-
-        Contraty to install and upgrade, this is a synchronous operation. It
-        returns nothing.
         
-        Raise an Exception if the plugin is not already installed.
+        Return a deferred that will fire with None once the operation is
+        completed.
         
-        Raise an Exception if at least one device depends on this plugin.
+        The deferred will fire its errback with an Exception if the plugin
+        is not already installed.
+        
+        Affected devices are automatically deconfigured if needed.
         
         """
         logger.info('Uninstallating plugin "%s"', id)
         if not self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is not already installed' % id)
-        if not self._is_plugin_unused(id):
-            raise Exception('plugin "%s" is used by at least a device' % id)
         
         self.pg_mgr.uninstall(id)
-        self.pg_mgr.unload(id)
+        self._pg_unload(id)
+        # soft deconfigure all the device that were configured by this device
+        # note that there is no point in calling plugin.deconfigure for every
+        # of these devices since the plugin is removed anyway
+        affected_devices = yield self._dev_collection.find({u'plugin': id,
+                                                            u'configured': True})
+        for device in affected_devices:
+            device[u'configured'] = False
+            yield self._dev_collection.update(device)
     
     def pg_retrieve(self, id):
         return self.pg_mgr[id]
