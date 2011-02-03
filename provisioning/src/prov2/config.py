@@ -94,10 +94,10 @@ class DefaultConfigSource(object):
     """
     
     _DEFAULT_RAW_CONFIG = {
-        'general.config_file': '/etc/pf-xivo/prov2/prov2.conf',
-        'general.config_dir': '/etc/pf-xivo/prov2',
-        'general.cache_dir': '/var/cache/pf-xivo/prov2',
-        'general.plugins_dir': '/var/lib/pf-xivo/prov2/plugins',
+        'general.config_file': '/etc/pf-xivo/prov/prov.conf',
+        'general.config_dir': '/etc/pf-xivo/prov',
+        'general.cache_dir': '/var/cache/pf-xivo/prov',
+        'general.plugins_dir': '/var/lib/pf-xivo/prov/plugins',
         'general.info_extractor': 'default',
         'general.retriever': 'default',
         'general.updater': 'default',
@@ -108,7 +108,7 @@ class DefaultConfigSource(object):
         'general.rest_port': '8081',
         'database.type': 'shelve',
         'database.generator': 'default',
-        'database.shelve_dir': '/var/lib/pf-xivo/prov2/shelvedb',
+        'database.shelve_dir': '/var/lib/pf-xivo/prov/shelvedb',
     }
     
     def pull(self):
