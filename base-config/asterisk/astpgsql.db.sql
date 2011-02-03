@@ -1266,10 +1266,10 @@ CREATE UNIQUE INDEX "rightcallmember__uidx__rightcallid_type_typeval" ON "rightc
 DROP TABLE IF EXISTS "schedule";
 CREATE TABLE "schedule" (
  "id"                  SERIAL,
- "name"                VARCHAR(256) NOT NULL DEFAULT '',
+ "name"                VARCHAR(255) NOT NULL DEFAULT '',
  "timezone"            VARCHAR(128) DEFAULT NULL, 
  "fallback_action"     dialaction_action NOT NULL DEFAULT 'none',
- "fallback_actionid"   INTEGER DEFAULT NULL,
+ "fallback_actionid"   VARCHAR(255) DEFAULT NULL,
  "fallback_actionargs" VARCHAR(255) DEFAULT NULL,
 
  "description"         TEXT DEFAULT NULL,
@@ -1289,19 +1289,31 @@ CREATE TABLE "schedule_path" (
 
  "path"          schedule_path_type NOT NULL DEFAULT 'default', 
  "pathid"        INTEGER DEFAULT NULL, 
+ "order"         INTEGER NOT NULL,
  PRIMARY KEY("schedule_id","path","pathid")
 );
 
+CREATE INDEX "schedule_path_path" ON "schedule_path"("path","pathid");
+
 
 DROP TABLE IF EXISTS "schedule_time";
+DROP TYPE  IF EXITS  "schedule_time_mode";
+
+CREATE TYPE "schedule_time_mode" AS ENUM ('opened','closed');
 CREATE TABLE "schedule_time" (
  "id" SERIAL,
  "schedule_id" INTEGER,
 
- "hours"       VARCHAR(256) DEFAULT NULL,
- "workdays"    VARCHAR(512) DEFAULT NULL,
+ "mode"        schedule_time_mode NOT NULL DEFAULT 'opened',
+ "hours"       VARCHAR(512) DEFAULT NULL,
+ "weekdays"    VARCHAR(512) DEFAULT NULL,
  "monthdays"   VARCHAR(512) DEFAULT NULL,
  "months"      VARCHAR(512) DEFAULT NULL,
+
+ -- only when mode == 'closed'
+ "action"      dialaction_action DEFAULT NULL,
+ "actionid"    VARCHAR(255) DEFAULT NULL,
+ "actionargs"  VARCHAR(255) DEFAULT NULL,
 
  "commented"   INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
