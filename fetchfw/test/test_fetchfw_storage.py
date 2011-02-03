@@ -22,7 +22,7 @@ import os
 import unittest
 import tempfile
 
-import fetchfw2.storage as storage
+import fetchfw.storage as storage
 
 TEST_RESOURCES_DIR = '../test_resources/storage'
 TEST_INSTALLABLE_DIR = '../test_resources/storage/installable'

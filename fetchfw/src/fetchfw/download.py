@@ -25,7 +25,7 @@ import hashlib
 import logging
 import os
 import urllib2
-from fetchfw2.util import FetchfwError
+from fetchfw.util import FetchfwError
 
 logger = logging.getLogger(__name__)
 

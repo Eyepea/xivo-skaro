@@ -23,8 +23,8 @@ import shutil
 import tempfile
 import unittest
 
-from fetchfw2.install import *
-from fetchfw2.util import *
+from fetchfw.install import *
+from fetchfw.util import *
 
 TEST_RESOURCES_DIR = '../test_resources/install'
 

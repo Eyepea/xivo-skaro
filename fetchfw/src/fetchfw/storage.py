@@ -25,10 +25,10 @@ import logging
 import os
 import re
 
-import fetchfw2.download as download
-import fetchfw2.install as install
-import fetchfw2.package as package
-import fetchfw2.util as util
+import fetchfw.download as download
+import fetchfw.install as install
+import fetchfw.package as package
+import fetchfw.util as util
 
 logger = logging.getLogger(__name__)
 

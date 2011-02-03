@@ -25,6 +25,6 @@ __all__ = ['cli', 'download', 'install', 'package', 'storage', 'util']
 # TODO more complete logger setup (logging.config?)
 _handler = logging.StreamHandler()
 _handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s:%(lineno)d - %(name)s: %(message)s"))
-_logger = logging.getLogger('fetchfw2')
+_logger = logging.getLogger('fetchfw')
 _logger.addHandler(_handler)
 _logger.setLevel(logging.WARNING)

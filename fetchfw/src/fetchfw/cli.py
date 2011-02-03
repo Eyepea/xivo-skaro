@@ -22,8 +22,8 @@ __license__ = """
 
 import logging
 
-from fetchfw2.download import ProgressBarHook
-import fetchfw2.package as package
+from fetchfw.download import ProgressBarHook
+import fetchfw.package as package
 from xivo import progressbar
 
 logger = logging.getLogger(__name__)

@@ -21,8 +21,8 @@ __license__ = """
 """
 
 import logging
-from fetchfw2.install import InstallationError
-from fetchfw2.util import FetchfwError, remove_paths
+from fetchfw.install import InstallationError
+from fetchfw.util import FetchfwError, remove_paths
 
 logger = logging.getLogger(__name__)
 

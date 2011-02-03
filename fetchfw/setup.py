@@ -14,7 +14,7 @@ setup(
     url='http://wiki.xivo.fr/',
     license='GPLv3',
     
-    packages=['fetchfw2'],
+    packages=['fetchfw'],
     package_dir={'': 'src'},
     scripts=['scripts/xivo_fetchfw'],
     data_files=[('/etc/pf-xivo', ['resources/etc/fetchfw.conf']),

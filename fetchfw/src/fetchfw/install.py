@@ -30,7 +30,7 @@ import subprocess
 import tarfile
 import tempfile
 
-from fetchfw2.util import FetchfwError, explode_path, wrap_exception, ends_with, remove_paths
+from fetchfw.util import FetchfwError, explode_path, wrap_exception, ends_with, remove_paths
 
 logger = logging.getLogger(__name__)
 
