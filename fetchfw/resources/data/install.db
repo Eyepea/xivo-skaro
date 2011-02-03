@@ -1,31 +1,3 @@
-[install_polycom-bootrom42]
-a-b: unzip $FILE1
-b-c: cp * $DOC_ROOT/Polycom/
-
-[install_polycom-sipapp32]
-a-b: unzip $FILE1
-b-c: exclude 000000000000.cfg 000000000000-directory~.xml ReadMe.txt
-c-d: cp * $DOC_ROOT/Polycom/
-
-
-
-[install_siemens-fw]
-a-b: cp $FILE1 $DOC_ROOT/Siemens/firmware/$ARG1/
-
-
-
-[install_thomson-fw]
-a-b: unzip $FILE1
-b-c: cp */Binary/$ARG1 $DOC_ROOT/Thomson/binary/
-
-
-
-[install_zenitel-ipstationfw]
-a-b: unzip $FILE1
-b-c: cp *.bin $DOC_ROOT/
-
-
-
 [install_digium-fw]
 a-b: untar $FILE1 
 b-c: cp * $KFW_ROOT/
