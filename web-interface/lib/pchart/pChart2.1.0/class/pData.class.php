@@ -2,9 +2,9 @@
  /*
      pDraw - class to manipulate data arrays
 
-     Version     : 2.0.10
+     Version     : 2.1.0
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 04/01/11
+     Last Update : 26/01/11
 
      This file can be distributed under the license you can find at :
 
@@ -79,8 +79,11 @@
      else
       $this->Data["Series"][$SerieName]["Data"][] = $Values;
 
-     $this->Data["Series"][$SerieName]["Max"] = max($this->stripVOID($this->Data["Series"][$SerieName]["Data"]));
-     $this->Data["Series"][$SerieName]["Min"] = min($this->stripVOID($this->Data["Series"][$SerieName]["Data"]));
+     if ( $Values != VOID )
+      {
+       $this->Data["Series"][$SerieName]["Max"] = max($this->stripVOID($this->Data["Series"][$SerieName]["Data"]));
+       $this->Data["Series"][$SerieName]["Min"] = min($this->stripVOID($this->Data["Series"][$SerieName]["Data"]));
+      }
     }
 
    /* Strip VOID values */
@@ -144,8 +147,49 @@
     { $this->Data["XAxisUnit"] = $Unit; }
 
    /* Set the serie that will be used as abscissa */
-   function setAbscissa($Serie=NULL)
+   function setAbscissa($Serie)
     { if (isset($this->Data["Series"][$Serie])) { $this->Data["Abscissa"] = $Serie; } }
+
+   /* Create a scatter group specifyin X and Y data series */
+   function setScatterSerie($SerieX,$SerieY,$ID=0)
+    { if (isset($this->Data["Series"][$SerieX]) && isset($this->Data["Series"][$SerieY]) ) { $this->initScatterSerie($ID); $this->Data["ScatterSeries"][$ID]["X"] = $SerieX; $this->Data["ScatterSeries"][$ID]["Y"] = $SerieY; } }
+
+   /* Set the description of a given scatter serie */
+   function setScatterSerieDescription($ID,$Description="My serie")
+    { if (isset($this->Data["ScatterSeries"][$ID]) ) { $this->Data["ScatterSeries"][$ID]["Description"] = $Description; } }
+
+   /* Set the icon associated to a given scatter serie */
+   function setScatterSeriePicture($ID,$Picture=NULL)
+    { if (isset($this->Data["ScatterSeries"][$ID]) ) { $this->Data["ScatterSeries"][$ID]["Picture"] = $Picture; } }
+
+   /* Set a scatter serie as "drawable" while calling a rendering function */
+   function setScatterSerieDrawable($ID ,$Drawable=TRUE)
+    { if (isset($this->Data["ScatterSeries"][ID]) ) { $this->Data["ScatterSeries"][ID]["isDrawable"] = $Drawable; } }
+
+   /* Define if a scatter serie should be draw with ticks */
+   function setScatterSerieTicks($ID,$Width=0)
+    { if ( isset($this->Data["ScatterSeries"][$ID]) ) { $this->Data["ScatterSeries"][$ID]["Ticks"] = $Width; } }
+
+   /* Define if a scatter serie should be draw with a special weight */
+   function setScatterSerieWeight($ID,$Weight=0)
+    { if ( isset($this->Data["ScatterSeries"][$ID]) ) { $this->Data["ScatterSeries"][$ID]["Weight"] = $Weight; } }
+
+   /* Associate a color to a scatter serie */
+   function setScatterSerieColor($ID,$Format)
+    {
+     $R	    = isset($Format["R"]) ? $Format["R"] : 0;
+     $G	    = isset($Format["G"]) ? $Format["G"] : 0;
+     $B	    = isset($Format["B"]) ? $Format["B"] : 0;
+     $Alpha = isset($Format["Alpha"]) ? $Format["Alpha"] : 100;
+
+     if ( isset($this->Data["ScatterSeries"][$ID]) )
+      {
+       $this->Data["ScatterSeries"][$ID]["Color"]["R"] = $R;
+       $this->Data["ScatterSeries"][$ID]["Color"]["G"] = $G;
+       $this->Data["ScatterSeries"][$ID]["Color"]["B"] = $B;
+       $this->Data["ScatterSeries"][$ID]["Color"]["Alpha"] = $Alpha;
+      }
+    }
 
    /* Compute the series limits for an individual and global point of view */
    function limits()
@@ -287,17 +331,11 @@
 
    /* Define if a serie should be draw with ticks */
    function setSerieTicks($Serie,$Width=0)
-    {
-     if ( isset($this->Data["Series"][$Serie]) )
-      $this->Data["Series"][$Serie]["Ticks"] = $Width;
-    }
+    { if ( isset($this->Data["Series"][$Serie]) ) { $this->Data["Series"][$Serie]["Ticks"] = $Width; } }
 
-   /* Define if a serie should be draw with a special weight */
+  /* Define if a serie should be draw with a special weight */
    function setSerieWeight($Serie,$Weight=0)
-    {
-     if ( isset($this->Data["Series"][$Serie]) )
-      $this->Data["Series"][$Serie]["Weight"] = $Weight;
-    }
+    { if ( isset($this->Data["Series"][$Serie]) ) { $this->Data["Series"][$Serie]["Weight"] = $Weight; } }
 
    /* Set the color of one serie */
    function setPalette($Serie,$Format=NULL)
@@ -356,6 +394,28 @@
       }
     }
 
+   /* Initialise a given scatter serie */
+   function initScatterSerie($ID)
+    {
+     if ( isset($this->Data["ScatterSeries"][$ID]) ) { return(0); }
+
+     $this->Data["ScatterSeries"][$ID]["Description"]	= "Scatter ".$ID;
+     $this->Data["ScatterSeries"][$ID]["isDrawable"]	= TRUE;
+     $this->Data["ScatterSeries"][$ID]["Picture"]	= NULL;
+     $this->Data["ScatterSeries"][$ID]["Ticks"]		= 0;
+     $this->Data["ScatterSeries"][$ID]["Weight"]	= 0;
+
+     if ( isset($this->Palette[$ID]) )
+      $this->Data["ScatterSeries"][$ID]["Color"] = $this->Palette[$ID];
+     else
+      {
+       $this->Data["ScatterSeries"][$ID]["Color"]["R"] = rand(0,255);
+       $this->Data["ScatterSeries"][$ID]["Color"]["G"] = rand(0,255);
+       $this->Data["ScatterSeries"][$ID]["Color"]["B"] = rand(0,255);
+       $this->Data["ScatterSeries"][$ID]["Color"]["Alpha"] = 100;
+      }
+    }
+
    /* Initialise a given serie */
    function initialise($Serie)
     {
@@ -379,7 +439,6 @@
        $this->Data["Series"][$Serie]["Color"]["B"] = rand(0,255);
        $this->Data["Series"][$Serie]["Color"]["Alpha"] = 100;
       }
-     $this->Data["Series"][$Serie]["Color"]["Alpha"] = 100;
     }
      
    function normalize($NormalizationFactor=100,$UnitChange=NULL,$Round=1)
@@ -413,19 +472,21 @@
           $Factor = $Factor + abs($Value);
         }
 
-       if ( $Factor == 0 ) { $Factor = 1; }
-       $Factor = $NormalizationFactor / $Factor;
-
-       foreach ($SelectedSeries as $Key => $SerieName )
+       if ( $Factor != 0 )
         {
-         $Value = $this->Data["Series"][$SerieName]["Data"][$i];
+         $Factor = $NormalizationFactor / $Factor;
 
-         if ( $Value != VOID && $Factor != $NormalizationFactor )
-          $this->Data["Series"][$SerieName]["Data"][$i] = round(abs($Value)*$Factor,$Round);
-         elseif ( $Value == VOID  )
-          $this->Data["Series"][$SerieName]["Data"][$i] = VOID;
-         elseif ( $Factor == $NormalizationFactor )
-          $this->Data["Series"][$SerieName]["Data"][$i] = $NormalizationFactor;
+         foreach ($SelectedSeries as $Key => $SerieName )
+          {
+           $Value = $this->Data["Series"][$SerieName]["Data"][$i];
+
+           if ( $Value != VOID && $Factor != $NormalizationFactor )
+            $this->Data["Series"][$SerieName]["Data"][$i] = round(abs($Value)*$Factor,$Round);
+           elseif ( $Value == VOID || $Value == 0 )
+            $this->Data["Series"][$SerieName]["Data"][$i] = VOID;
+           elseif ( $Factor == $NormalizationFactor )
+            $this->Data["Series"][$SerieName]["Data"][$i] = $NormalizationFactor;
+          }
         }
       }
 

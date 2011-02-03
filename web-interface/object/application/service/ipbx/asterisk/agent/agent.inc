@@ -100,6 +100,12 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 
 		return($this->_info);
 	}
+	
+	function get_by_number($num)
+	{
+		if (($rs = $this->_agentfeatures->get_by_number($num)) === false)
+			return(false);
+	}
 
 	function get_nb($arr=null,$disable=null)
 	{

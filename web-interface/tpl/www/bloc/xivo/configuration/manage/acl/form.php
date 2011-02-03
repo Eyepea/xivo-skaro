@@ -94,6 +94,30 @@ $tree = $this->get_var('tree');
 		endforeach;
 	endif;
 
+	$ref = &$tree['statistics'];
+
+	if(dwho_issa('child',$ref) === true && empty($ref['child']) === false):
+		foreach($ref['child'] as $v):
+			echo	'<tr><th>',
+				$form->checkbox(array('desc'		=> array('format'	=> '%{formfield}$s%{description}$s',
+										 'description'	=> $this->bbf('acl',$v['id'])),
+						      'name'		=> 'tree[]',
+						      'label'		=> 'lb-'.$v['id'],
+						      'id'		=> $v['id'],
+						      'paragraph'	=> false,
+						      'value'		=> $v['path'],
+						      'checked'		=> $v['access']),
+						'onclick="xivo_form_mk_acl(this);"'),
+				'</th></tr>';
+
+			if(isset($v['child']) === true):
+				$this->file_include('bloc/xivo/configuration/manage/acl/tree',
+						    array('tree'	=> $v['child'],
+							  'parent'	=> null));
+			endif;
+		endforeach;
+	endif;
+
 	echo	'</table>',
 
 		$form->submit(array('name'	=> 'submit',

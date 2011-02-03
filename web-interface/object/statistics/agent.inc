@@ -65,7 +65,7 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 	private function parse_log_db($key_data,$key)
 	{		
 		$this->init_result($key);
-					
+		
 		$val = $this->eval_count_data($key_data,'CONNECT');
 		$this->update_result(array($key,'connect'),$val);
 				
@@ -116,7 +116,7 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 		$this->update_result(array($key,'logintime'),$logintime);
 		
 		$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
-		$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field);
+		$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field,array('ISNOT', array('data1', '')));
 		$this->update_result(array($key,'logintime'),$logintime);
 		
 		return($this->_result);

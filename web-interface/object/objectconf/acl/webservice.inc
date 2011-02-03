@@ -34,6 +34,7 @@ $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 $array['tree']['xivo']['configuration']['network']['mail'] = true;
 $array['tree']['xivo']['configuration']['network']['dhcp'] = true;
 $array['tree']['xivo']['configuration']['network']['ha'] = true;
+
 $array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
@@ -88,6 +89,6 @@ $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 $array['tree']['statistics'] = array();
 $array['tree']['statistics']['call_center'] = array();
-$array['tree']['statistics']['call_center']['genercache'] = true;
+$array['tree']['statistics']['call_center']['queue'] = true;
 
 ?>

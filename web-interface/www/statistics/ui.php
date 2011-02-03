@@ -18,23 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_ERR = &dwho_gct::get('dwho_tracerror');
-$_ERR->set_param('report_type',
-$_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
+define('XIVO_TPL_AREA','ui');
 
-dwho::load_class('dwho_http');
-$http_response = dwho_http::factory('response');
+require_once('xivo.php');
 
-if(isset($access_category,$access_subcategory) === false)
+$ipbx = &$_SRE->get('ipbx');
+
+$action_path = $_LOC->get_action_path('statistics/ui/',3);
+
+if($action_path === false)
 {
-	$http_response->set_status_line(400);
+	dwho::load_class('dwho_http');
+	$http_response = dwho_http::factory('response');
+	$http_response->set_status_line(404);
 	$http_response->send(true);
 }
 
-if(xivo_user::chk_acl($access_category,$access_subcategory,'service/statistics') === false)
-{
-	$http_response->set_status_line(403);
-	$http_response->send(true);
-}
+die(include($action_path));
 
 ?>

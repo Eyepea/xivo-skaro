@@ -61,6 +61,20 @@ class xivo_service_asterisk_agentfeatures_sql extends xivo_service_asterisk_abst
 		return($r);
 	}
 	
+	function get_by_number($num)
+	{
+		$this->_dso->new_select($this->_table,'*');
+
+		$this->_dso->where(array('number' => (string) $num));
+		
+		$r = $this->_dso->select_single();
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+	
 	function get_all_assoc()
 	{
 		$this->_dso->new_select($this->_table,'*');

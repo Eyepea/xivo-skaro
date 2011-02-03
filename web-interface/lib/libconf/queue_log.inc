@@ -144,7 +144,17 @@ $array	= array(
 	/*
 	 * 
 	 */
-	'FULL'		=> array()
+	'FULL'		=> array(),
+
+	/*
+	 * 
+	 */
+	'REROUTEGUIDE'	=> array(),
+
+	/*
+	 * 
+	 */
+	'REROUTENUMBER'	=> array(),
 
 );
 				

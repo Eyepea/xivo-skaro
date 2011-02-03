@@ -18,20 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_ERR = &dwho_gct::get('dwho_tracerror');
-$_ERR->set_param('report_type',
-$_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
-
-dwho::load_class('dwho_http');
-$http_response = dwho_http::factory('response');
-
-if(isset($access_category,$access_subcategory) === false)
-{
-	$http_response->set_status_line(400);
-	$http_response->send(true);
-}
-
-if(xivo_user::chk_acl($access_category,$access_subcategory,'service/statistics') === false)
+if(isset($_SERVER['REMOTE_ADDR']) === false || ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1' && $_SERVER['REMOTE_ADDR'] !== '::1'))
 {
 	$http_response->set_status_line(403);
 	$http_response->send(true);

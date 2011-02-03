@@ -22,6 +22,7 @@ $url = &$this->get_module('url');
 $hascachetype = $this->get_var('hascachetype');
 $basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
+$axetype = $this->get_var('axetype');
 
 ?>
 
@@ -42,12 +43,14 @@ $table1 = $this->get_var('table1');
 		echo $table1->infos_html();
 		echo $table1->render_html(false);
 		/*
+		if ($axetype !== 'type'):
 ?>
 		<p>&nbsp;</p>
  		<p class="stats-graph-img">
  			<?=$table1->get_graph('stats1')?>
   		</p>
 <?php
+		endif;
 		*/
 	endif;
 ?>

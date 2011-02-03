@@ -55,8 +55,8 @@ function dwho_constant($name,$default=null)
 	return($default);
 }
 
-function dwho_second_to($sec, $round=null) {
-
+function dwho_second_to($sec, $round=null) 
+{
 	$sec = floatval($sec);
 
 	$arr = array('s' => pow(10, 0), # second
@@ -74,9 +74,14 @@ function dwho_second_to($sec, $round=null) {
 	if (is_null($round) === false 
 	&& is_numeric($round) === true)
 		$sec = round($sec, $round);
-
 	return($sec.$arr_keys[$c]);
 
+}
+
+function dwho_byte_to($size)
+{
+	$unit = array('b','kb','mb','gb','tb','pb');
+	return(round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i]);
 }
 
 function dwho_get_memory($value,$name=true)

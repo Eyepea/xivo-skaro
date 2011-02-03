@@ -31,6 +31,78 @@ class xivo_statistics_abstract
 		$this->_xs = &$_XS;
 		$this->_xs->set_type($this->_type);
 	}
+		
+	public function set_method($method)
+	{ 
+		$this->_xs->set_method($method);
+	}
+	
+	public function set_data_custom($key,$data)
+	{
+		$this->_data_custom[$key] = $data;
+	}
+	
+	public function get_list_by_type()
+	{
+		return($this->_xs->get_list_by_type($this->_type));
+	}
+	
+	public function get_queue_list()
+	{			
+		return($this->_xs->get_queue_list());
+	}
+	
+	public function get_agent_list()
+	{			
+		return($this->_xs->get_agent_list());
+	}
+	
+	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)
+	{
+		return($this->_xs->db_eval_data($type,$value,$event,$field,$addwhere));
+	}
+	
+	public function eval_count_data($value,$event,$addwhere=null)
+	{
+		return($this->db_eval_data('count',$value,$event,null,$addwhere));
+	}
+	
+	public function eval_sum_data($value,$event,$field,$addwhere=null)
+	{
+		return($this->db_eval_data('sum',$value,$event,$field,$addwhere));
+	}
+
+	public function eval_field_queue_log($event,$type)
+	{			
+		return($this->_xs->eval_field_queue_log($event,$type));
+	}
+
+	public function eval_data_queue_log($queue_log_entry,$event,$type)
+	{			
+		return($this->_xs->eval_data_queue_log($queue_log_entry,$event,$type));
+	}
+	
+	protected function init_result($key)
+	{
+		$res = &$this->_result;
+		
+		if (is_array($key) === true
+		&& isset($key['value']) === true)
+			$key = $key['value'];
+			
+		if (isset($res[$key]) === false)
+		{
+			$data_process = &$res[$key];
+			$data_process = array();
+			
+			foreach ($this->_field as $k => $field)
+			{
+				$data_process[$k] = array();
+				$data_process[$k]['type'] = $field['type'];
+				$data_process[$k]['result'] = 0;
+			}
+		}
+	}
 
 	public function get_data()
 	{
@@ -49,18 +121,15 @@ class xivo_statistics_abstract
 		|| ($data_listmonth = $this->_xs->get_listmonth_for_interval($dbeg,$dend)) === false)
 			return(false);		
 		
-		$data = $this->get_list_by_type();					
-				
-		if (is_array($data) === true
-		&& count($data) === 1
-		&& isset($data[0]) === true
-		&& isset($data[0]['key']) === true
-		&& is_array($data[0]['key']) === true)					
-			$keyfile = $data[0]['key'][0];
-		else
-			$keyfile = $data[0]['key'];
-		
+		$data = $this->get_list_by_type();
+
+		if (empty($data) === true)
+			return(false);
+			
+		$data = array_shift($data);				
+		$keyfile = $data['key'][0];		
 		$key_field = 'key';
+		
 		switch ($axetype)
 		{
 			case 'day':
@@ -70,8 +139,6 @@ class xivo_statistics_abstract
 				$year = date('Y',$date);
 				$month = date('m',$date);
 				$day = date('d',$date);
-				
-				$keyfile = $data[0]['key'];
 				
 				while($key_data)
 				{
@@ -92,11 +159,7 @@ class xivo_statistics_abstract
 				{
 					$key_full_data = array_shift($key_data);
 					$k = $key_full_data[$key_field];
-					
-					if(is_array($k) === true
-					&& isset($k[0]) === true)
-						$k = $k[0];
-						
+											
 					$this->init_result($k);
 					$listmonth = $data_listmonth;
 					while($listmonth)
@@ -182,24 +245,13 @@ class xivo_statistics_abstract
 			default:
 				$key_data = $this->get_list_by_type();
 				$key_field = 'key';
-		
-				$data = $this->get_list_by_type();
 				
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
-					$k = $key_full_data[$key_field];
-					
-					if(is_array($k) === true
-					&& isset($k[0]) === true)
-						$k = $k[0];
-					
-					$keyfile = $k;
-					if (count($data) === 1
-					&& isset($data[0]['key']) === true)
-						$keyfile = $data[0]['key'];
+					$keyfile = $key_full_data[$key_field][0];
 						
-					$this->init_result($k);
+					$this->init_result($keyfile);
 					$listmonth = $data_listmonth;
 					while($listmonth)
 					{
@@ -220,7 +272,7 @@ class xivo_statistics_abstract
 								continue;
 							
 							// update result for day data
-							$this->eval_update_result($month_data[$day],$k);
+							$this->eval_update_result($month_data[$day],$keyfile);
 						}
 					}
 				}
@@ -249,126 +301,8 @@ class xivo_statistics_abstract
 			}
 		}
 	}
-		
-	public function set_method($method)
-	{ 
-		$this->_xs->set_method($method);
-	}
 	
-	public function set_data_custom($key,$data)
-	{
-		$this->_data_custom[$key] = $data;
-	}
-	
-	public function get_list_by_type()
-	{
-		return($this->_xs->get_list_by_type($this->_type));
-	}
-	
-	public function get_queue_list()
-	{			
-		return($this->_xs->get_queue_list());
-	}
-	
-	public function get_agent_list()
-	{			
-		return($this->_xs->get_agent_list());
-	}
-	
-	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)
-	{
-		return($this->_xs->db_eval_data($type,$value,$event,$field,$addwhere));
-	}
-	
-	public function eval_count_data($value,$event,$addwhere=null)
-	{
-		return($this->db_eval_data('count',$value,$event,null,$addwhere));
-	}
-	
-	public function eval_sum_data($value,$event,$field,$addwhere=null)
-	{
-		return($this->db_eval_data('sum',$value,$event,$field,$addwhere));
-	}
-
-	public function eval_field_queue_log($event,$type)
-	{			
-		return($this->_xs->eval_field_queue_log($event,$type));
-	}
-
-	public function eval_data_queue_log($queue_log_entry,$event,$type)
-	{			
-		return($this->_xs->eval_data_queue_log($queue_log_entry,$event,$type));
-	}
-	
-	protected function init_result($key)
-	{
-		$res = &$this->_result;
-		
-		if (is_array($key) === true
-		&& isset($key['value']) === true)
-			$key = $key['value'];
-			
-		if (isset($res[$key]) === false)
-		{
-			$data_process = &$res[$key];
-			$data_process = array();
-			
-			foreach ($this->_field as $k => $field)
-			{
-				$data_process[$k] = array();
-				$data_process[$k]['type'] = $field['type'];
-				$data_process[$k]['result'] = 0;
-			}
-		}
-	}
-
-	public function eval_during_time($key,$eventprocess,$eventstart,$eventend,$time)
-	{			
-		if (isset($this->_counter[$key]) === false)
-			$this->_counter[$key] = array();
-			
-		if (isset($this->_counter[$key][$eventstart]) === false)
-		{
-			$this->_counter[$key][$eventstart] = array();
-			$this->_counter[$key][$eventstart]['start'] = 0;
-			$this->_counter[$key][$eventstart]['token'] = 0;
-			$this->_counter[$key][$eventstart]['total'] = 0;
-		}
-					
-		$counter = &$this->_counter[$key][$eventstart];
-		$timearr = explode('.',$time);
-		
-		if (preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',$timearr[0]) !== 1)
-			return(false);
-			
-		$timeprocess = (int) dwho_change_date_format($timearr[0],'Y-m-d H:i:s','U');
-		
-		$rs = 0;
-		switch ($eventprocess)
-		{
-			case $eventstart:
-				if ($counter['token'] === 1
-				&& $counter['start'] !== 0)
-					$rs = ($timeprocess - $counter['start']);	
-				$counter['token'] = 1;
-				$counter['start'] = $timeprocess;
-				break;
-			case $eventend:
-				if ($counter['token'] === 0)
-					continue;
-				$rs = ($timeprocess - $counter['start']);					
-				$counter['token'] = 0;
-				$counter['start'] = 0;
-				break;
-			default:
-		}
-		
-		$counter['total'] += $rs;
-		
-		return($rs);
-	}
-	
-	public function update_result($var,$str,$operator='+')
+	protected function update_result($var,$str,$operator='+')
 	{
 		if (($res = call_user_func_array(array($this,'eval_result_var'), $var)) === null
 		|| isset($res['result']) === false)

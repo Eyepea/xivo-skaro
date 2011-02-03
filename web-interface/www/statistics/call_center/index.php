@@ -37,7 +37,7 @@ $dhtml->set_css('/css/statistics/statistics.css');
 $dhtml->set_js('/js/xivo_calendar.js');
 $dhtml->add_js('/struct/js/date.js.php');
 
-$action_path = $_LOC->get_action_path('statistics/call_center',0);
+$action_path = $_LOC->get_action_path('statistics/call_center',4);
 
 if($action_path === false)
 	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));

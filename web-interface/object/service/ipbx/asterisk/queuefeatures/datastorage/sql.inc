@@ -25,6 +25,20 @@ class xivo_service_asterisk_queuefeatures_sql extends xivo_service_asterisk_abst
 	var $_unique	= 'name';
 	var $_disable	= null;
 	
+	function get_by_name($name)
+	{
+		$this->_dso->new_select($this->_table,'*');
+
+		$this->_dso->where(array('name' => (string) $name));
+		
+		$r = $this->_dso->select_single();
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+	
 	function get_all_wherein($id,$where)
 	{
 		$this->_dso->new_select($this->_table,'*');

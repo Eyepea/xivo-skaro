@@ -18,20 +18,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_ERR = &dwho_gct::get('dwho_tracerror');
-$_ERR->set_param('report_type',
-$_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
-
-dwho::load_class('dwho_http');
-$http_response = dwho_http::factory('response');
-
 if(isset($access_category,$access_subcategory) === false)
 {
-	$http_response->set_status_line(400);
+	$http_response->set_status_line(403);
 	$http_response->send(true);
 }
 
-if(xivo_user::chk_acl($access_category,$access_subcategory,'service/statistics') === false)
+xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
+$_AWS = new xivo_accesswebservice();
+
+$http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
+
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
+
+if($http_access === null)
+{
+	$http_response->authent_basic('Access Restricted');
+	$http_response->set_status_line(401);
+	$http_response->send(true);
+}
+else if(empty($http_access) === true)
 {
 	$http_response->set_status_line(403);
 	$http_response->send(true);

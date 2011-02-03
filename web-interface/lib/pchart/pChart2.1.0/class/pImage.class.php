@@ -2,9 +2,9 @@
  /*
      pDraw - pChart core class
 
-     Version     : 2.0.10
+     Version     : 2.1.0
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 04/01/11
+     Last Update : 26/01/11
 
      This file can be distributed under the license you can find at :
 
@@ -29,6 +29,7 @@
    var $Antialias         = TRUE;			// Turn antialias on or off
    var $AntialiasQuality  = 0;				// Quality of the antialiasing implementation (0-1)
    var $Mask              = "";				// Already drawn pixels mask (Filled circle implementation)
+   var $TransparentBackground = FALSE;			// Just to know if we need to flush the alpha channels when rendering
 
    /* Graph area settings */
    var $GraphAreaX1       = NULL;			// Graph area X origin
@@ -61,18 +62,28 @@
    var $DataSet           = NULL;			// Attached dataset
 
    /* Class constructor */
-   function pImage($XSize,$YSize,$DataSet = NULL)
+   function pImage($XSize,$YSize,$DataSet=NULL,$TransparentBackground=FALSE)
     {
+     $this->TransparentBackground = $TransparentBackground;
+
      if ( $DataSet != NULL ) { $this->DataSet = $DataSet; }
 
      $this->XSize   = $XSize;
      $this->YSize   = $YSize;
      $this->Picture = imagecreatetruecolor($XSize,$YSize);
 
-     imagealphablending($this->Picture,TRUE);
-
-     $C_White = $this->AllocateColor($this->Picture,255,255,255);
-     imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C_White);
+     if ( $this->TransparentBackground )
+      {
+       imagealphablending($this->Picture,FALSE);
+       imagefilledrectangle($this->Picture, 0,0,$XSize, $YSize, imagecolorallocatealpha($this->Picture, 255, 255, 255, 127));
+       imagealphablending($this->Picture,TRUE);
+       imagesavealpha($this->Picture,true); 
+      }
+     else
+      {
+       $C_White = $this->AllocateColor($this->Picture,255,255,255);
+       imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C_White);
+      }
     }
 
    /* Enable / Disable and set shadow properties */
@@ -99,27 +110,32 @@
     {
      if ( $X2 < $X1 || $X1 == $X2 || $Y2 < $Y1 || $Y1 == $Y2 ) { return(-1); }
 
-     $this->GraphAreaX1 = $X1;
-     $this->GraphAreaY1 = $Y1;
-     $this->GraphAreaX2 = $X2;
-     $this->GraphAreaY2 = $Y2;
+     $this->GraphAreaX1 = $X1; $this->DataSet->Data["GraphArea"]["X1"] = $X1;
+     $this->GraphAreaY1 = $Y1; $this->DataSet->Data["GraphArea"]["Y1"] = $Y1;
+     $this->GraphAreaX2 = $X2; $this->DataSet->Data["GraphArea"]["X2"] = $X2;
+     $this->GraphAreaY2 = $Y2; $this->DataSet->Data["GraphArea"]["Y2"] = $Y2;
     }
 
    /* Return the width of the picture */
    function getWidth()
-    { return($this->YSize); }
+    { return($this->XSize); }
 
    /* Return the heigth of the picture */
    function getHeight()
-    { return($this->XSize); }
+    { return($this->YSize); }
 
    /* Render the picture to a file */
    function render($FileName)
-    { imagepng($this->Picture,$FileName); }
+    {
+     if ( $this->TransparentBackground ) { imagealphablending($this->Picture,false); imagesavealpha($this->Picture,true); }
+     imagepng($this->Picture,$FileName);
+    }
 
    /* Render the picture to a web browser stream */
    function stroke()
     {
+     if ( $this->TransparentBackground ) { imagealphablending($this->Picture,false); imagesavealpha($this->Picture,true); }
+
      header('Content-type: image/png');
      imagepng($this->Picture);
     }

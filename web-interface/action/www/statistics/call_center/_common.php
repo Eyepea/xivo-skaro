@@ -20,7 +20,10 @@
 
 $_I18N->load_file('tpl/www/bloc/statistics/statistics');
 
+$act = isset($_QR['act']) === true ? $_QR['act'] : '';
+
 $bench_start = microtime(true);
+$base_memory = memory_get_usage();
 
 $gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
 $basedir = '/img/graphs/pchart/';
@@ -33,7 +36,6 @@ if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
 $_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
 
 $_XS->global_init($_QR);
-$_XS->load_component();
 
 $_TPL->set_var('basedir',$basedir);
 $_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));

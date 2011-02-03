@@ -87,6 +87,12 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 			$this->update_result(array($key,'qos'),$qos);
 		}
 		
+		$closed = $this->eval_count_data($key_data,'CLOSED');
+		$this->update_result(array($key,'deterred_on_close'),$closed);
+				
+		$full = $this->eval_count_data($key_data,'FULL');
+		$this->update_result(array($key,'deterred_on_saturation'),$full);
+		
 		$abandon = $this->eval_count_data($key_data,'ABANDON');
 		$this->update_result(array($key,'abandoned'),$abandon);
 		
@@ -95,10 +101,13 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 		$exitwithtimeout = $this->eval_count_data($key_data,'EXITWITHTIMEOUT');
 		$this->update_result(array($key,'rerouted_on_hungup'),$exitwithtimeout);
 		
-		$this->update_result(array($key,'rerouted_on_guide'),0);
+		$rerouteguide = $this->eval_count_data($key_data,'REROUTEGUIDE');
+		$this->update_result(array($key,'rerouted_on_guide'),$rerouteguide);
 		
+		$reroutenumber = $this->eval_count_data($key_data,'REROUTENUMBER');
+		$this->update_result(array($key,'rerouted_on_number'),$reroutenumber);
 		$transfer = $this->eval_count_data($key_data,'TRANSFER');
-		$this->update_result(array($key,'rerouted_on_number'),0);
+		$this->update_result(array($key,'rerouted_on_number'),$transfer);
 		
 		return($this->_result);		
 	}	

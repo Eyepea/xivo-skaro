@@ -226,7 +226,8 @@ $array['graphs/munin/other']        = 'graphs/munin/index.php/other';
 
 // statistiques
 $array['statistics']								= 'statistics/index.php';
-$array['statistics/call_center/index']				= 'statistics/call_center/index.php/index';
+$array['statistics/call_center']					= 'statistics/call_center/index.php';
+$array['statistics/call_center/index']				= 'statistics/call_center/index.php';
 $array['statistics/call_center/stats1']				= 'statistics/call_center/index.php/stats1';
 $array['statistics/call_center/stats2']				= 'statistics/call_center/index.php/stats2';
 $array['statistics/call_center/stats3']				= 'statistics/call_center/index.php/stats3';
@@ -234,6 +235,9 @@ $array['statistics/call_center/stats4']				= 'statistics/call_center/index.php/s
 $array['statistics/call_center/configuration']		= 'statistics/call_center/index.php/configuration/';
 $array['statistics/call_center/cache']				= 'statistics/call_center/index.php/cache/';
 
-$array['statistics/call_center/ui'] 				= 'statistics/call_center/ui.php/genercache';
+$array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
+
+$array['statistics/json/private/call_center/queue'] 		= 'statistics/json.php/private/call_center/queue/';
+$array['statistics/json/restricted/call_center/queue'] 		= 'statistics/json.php/restricted/call_center/queue/';
 
 ?>

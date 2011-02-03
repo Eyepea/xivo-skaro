@@ -18,23 +18,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_ERR = &dwho_gct::get('dwho_tracerror');
-$_ERR->set_param('report_type',
-$_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
+$url = &$this->get_module('url');
 
-dwho::load_class('dwho_http');
-$http_response = dwho_http::factory('response');
+$result = $this->get_var('result');
 
-if(isset($access_category,$access_subcategory) === false)
-{
-	$http_response->set_status_line(400);
-	$http_response->send(true);
-}
+if($result === false)
+	die();
 
-if(xivo_user::chk_acl($access_category,$access_subcategory,'service/statistics') === false)
-{
-	$http_response->set_status_line(403);
-	$http_response->send(true);
-}
+#die(print nl2br($result));
+
+header('Pragma: no-cache');
+header('Cache-Control: private, must-revalidate');
+header('Last-Modified: '.
+	date('D, d M Y H:i:s',mktime()).' '.
+	dwho_i18n::strftime_l('%Z',null));
+header('Content-Disposition: attachment; filename=xivo_stats-'.
+	$this->get_var('name').'-'.
+	dwho_i18n::strftime_l('%Y-%m-%d-%H:%M:%S',null).'.csv');
+header('Content-Type: text/csv; charset=UTF-8');
+
+ob_start();
+
+if($result === null)
+	echo $this->bbf('no_stats-result');
+else 
+	echo $result;
+
+header('Content-Length: '.ob_get_length());
+ob_end_flush();
+die();
 
 ?>

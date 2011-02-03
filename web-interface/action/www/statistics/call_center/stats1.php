@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dirname(__FILE__).'/common.php');
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
@@ -104,7 +104,6 @@ $tpl_statistics->add_col('qos',
 					'percent');
 
 $tpl_statistics->gener_table();
-#$tpl_statistics->gener_graph('t1','stats1');
 $table1 = $tpl_statistics;
 
 $_TPL->set_var('table1',$table1);
@@ -113,8 +112,16 @@ $_TPL->set_var('objectkey',$_XS->get_objectkey());
 $_TPL->set_var('hascachetype',$_XS->has_cache_type());
 $_TPL->set_var('showdashboard',true);
 
-$bench_end = microtime(true);
-$_TPL->set_var('bench',($bench_end - $bench_start));
+if($act === 'exportcsv')
+{
+	$_TPL->set_var('result',$tpl_statistics->render_csv());
+	$_TPL->set_var('name','queue');
+	$_TPL->display('/bloc/statistics/call_center/exportcsv');
+	die();
+}
+
+$_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
+$_TPL->set_var('bench',(microtime(true) - $bench_start));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

@@ -127,6 +127,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		return($this->_info);
 	}
+	
+	function get_by_name($name)
+	{
+		if (($rs = $this->_queuefeatures->get_by_name($name)) === false)
+			return(false);
+	}
 
 	function get_nb($arr=null,$disable=null)
 	{

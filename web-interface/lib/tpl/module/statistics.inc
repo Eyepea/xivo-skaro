@@ -625,6 +625,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$return .= '<tfoot>'; 
 		$return .= '<tr> ';
 		$return .= '<td class="txt-left">Total</td>';
+		
 		$i = 0;			
 		foreach ($this->_data_foot as $colname => $colvalue)
 		{
@@ -636,127 +637,105 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			else
 				$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';
 		}
-		$return .= '</tr> ';
-		$return .= '</tfoot>';
-		
+		$return .= '</tr>';
+		$return .= '</tfoot>';		
 		$return .= '</table>';
 		$return .= '</form>';
 		
+		$get = $url->_query->raw;
+		$get = array_merge($get,array('act' => 'exportcsv'));		
+		
+		$href = $url->href($this->_baseurl,$get);
+								
+		$return .= '<p class="it-exportcsv">';
+		$return .= '<input type="button" name="exportcsv" value="'.$this->bbf('tbl-lnk-expotcsv').'" onclick="window.location.href=\''.$href.'\'" />';
+		#$return .= $url->href_html($this->bbf('tbl-lnk-expotcsv'),$this->_baseurl,$get);
+		$return .= '</p>';
+
 		return( $return );
-	}
-	
-	public function gener_graph($type,$name)
-	{
-		require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'pchart.inc');
-		
-		$dir = PCHART_PATH_IMG.$this->_name;
-		
-		if (dwho_file::is_d($dir) === false
-		&& mkdir($dir,0775) === false)
-			die('ERR: set rwx mode to '.$dir);
-		
-		switch($type)
-		{
-			case 't1':
-				$this->gener_graph_t1($name);
-				break;
-			default:
-				$this->gener_graph_t1($name);
-		}
 	}
 	
 	public function get_graph($name)
 	{
-		return( '<img src="'.$this->_basedir.$this->_name.DIRECTORY_SEPARATOR.$name.'.png" alt="" />' );
+		require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'pchart.inc'));
+		
+		$name = $name.'-'.$this->_xs->get_axetype();
+		$src = dwho_file::joinpath($this->_basedir,$this->_name,$name);
+		return( '<img src="'.$src.'.png" alt="" />' );
 	}
 	
-	private function gener_graph_t1($name)
+	public function init_pChart()
+	{
+		require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'pchart.inc'));
+		$pChart = new pChart;
+		var_dump($pChart);
+	}
+	
+	public function render_csv($rowname=true)
 	{		
-		$pfonts = PCHART_PATH_ROOT.'fonts'.DIRECTORY_SEPARATOR;
-		$plib = PCHART_PATH_ROOT.'class'.DIRECTORY_SEPARATOR;
-		dwho_load_lib_pchart($plib);
+		$url = &$this->_tpl->get_module('url');
 		
-		$MyData = new pData();
+		$return = '';
 		
-		$nbDataTable = count($this->_data_table);
+		$coltitle = array_shift($this->_data_table);
+		$coltitle = array_keys($coltitle);
 		
-		$abcisse_label = array();
-		foreach ($this->_data_table as $row => $cols)
-			array_push($abcisse_label,$row);
-			
-		asort($abcisse_label);
-		$MyData->AddPoints($abcisse_label,$this->_name);
-		$MyData->setAbscissa($this->_name);
+		if ($rowname === true)
+			$return .= '"'.str_replace('"','""','').'";';
 		
-		$lsdata = array();
-		foreach ($this->_data_table as $row => $cols)
+		while ($coltitle)
 		{
-			$colsk = array_keys($cols);
-			$colsv = array_values($cols);
-			for ($i=0;$i<count($cols);$i++)
-			{			
-				$colk = &$colsk[$i];
-				$colv = &$colsv[$i];		
-						
-				if($colv['format'] !== 'int')
+			$fieldname = array_shift($coltitle);
+			if (in_array($fieldname,$this->_ignore_col) === true)
 					continue;
+			# <acronym title="Période 3">P3</acronym>
+			$fieldname = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$this->bbf('col_'.$fieldname));
+			$return .= '"'.str_replace('"','""',$fieldname).'";';			
+		}
+		
+		$return .= "\n";
+		
+		$coltitle = $this->_data_table;		
+		$coltitlekey = array_keys($coltitle);
+		
+		while ($coltitle)
+		{	
+			$listcols = array_shift($coltitle);
+			$titlecolskey = array_shift($coltitlekey);	
+			$listcolskey = array_keys($listcols);
+			
+			if ($rowname === true)
+				$return .= '"'.str_replace('"','""',$listcols['identity']).'";';
+			
+			while ($listcols)
+			{
+				$cols = array_shift($listcols);
+				$colskey = array_shift($listcolskey);
+					
+				if (in_array($colskey,$this->_ignore_col) === true)
+						continue;
 				
-				if (isset($lsdata[$colk]) === false)
-					$lsdata[$colk] = array();
-				
-				if (empty($colv) === true)
-					array_push($lsdata[$colk],0);
-				else
-				{
-					if (($val = $this->eval_result_data($colv)) === null
-					|| is_numeric($val) === false)
-						array_push($lsdata[$colk],0);
-					else
-						array_push($lsdata[$colk],$val);
-				}
+				$return .= '"'.str_replace('"','""',$this->eval_result_data($cols)).'";';
 			}
+			$return .= "\n";
 		}
+		/*
+		 * total
+		 * 
 		
-		foreach ($lsdata as $k => $v)
+		if ($rowname === true)
+			$return .= '"'.str_replace('"','""','total: ').'";';
+		
+		foreach ($this->_data_foot as $colname => $colvalue)
 		{
-			$label = '&nbsp;';
-			if (is_null($k) === false)
-				$label = $this->bbf('col_'.$k);
-				
-			# <acronym title="Durée moyenne de WRAPUP">DMWU</acronym>			
-			$label = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$label);
-	 		$MyData->AddPoints($v,$label);
+			if (in_array($colname,$this->_ignore_col) === true)
+				continue;
+			$return .= '"'.str_replace('"','""',$this->eval_result_data($colvalue)).'";';
 		}
-		
-		$graph_w = 750;
-		$graph_h = (int) ($nbDataTable * 200);
-		# X1,Y1 is the top left corner of the bounding box.
-		$graph_area_tl_w = (int) ($graph_w - ($graph_w - 80));
-		$graph_area_tl_h = (int) ($graph_h - ($graph_h - 30));
-		# X2,Y2 is the borrom right corner of the bounding box.
-		$graph_area_br_w = (int) ($graph_w - 20);
-		$graph_area_br_h = (int) ($graph_h - 20);
-		
-		/* Create the pChart object */
-		$myPicture = new pImage($graph_w,$graph_h,$MyData); 
-		$myPicture->drawGradientArea(0,0,$graph_w,$graph_h,DIRECTION_VERTICAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>100)); 
-		$myPicture->drawGradientArea(0,0,$graph_w,$graph_h,DIRECTION_HORIZONTAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>20)); 
-		$myPicture->setFontProperties(array("FontName"=>$pfonts."verdana.ttf","FontSize"=>6)); 
-		
-		/* Draw the chart scale */
-		$myPicture->setGraphArea($graph_area_tl_w,$graph_area_tl_h,$graph_area_br_w,$graph_area_br_h);
-		#$myPicture->setGraphArea(100,30,680,180);
-		$myPicture->drawScale(array("CycleBackground"=>TRUE,"DrawSubTicks"=>TRUE,"GridR"=>0,"GridG"=>0,"GridB"=>0,"GridAlpha"=>10,"Pos"=>SCALE_POS_TOPBOTTOM));		
-		$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-		
-		/* Draw the chart */
-		$myPicture->drawBarChart(array("DisplayPos"=>LABEL_POS_INSIDE,"DisplayValues"=>TRUE,"Rounded"=>TRUE,"Surrounding"=>30));
-		
-		/* Write the legend */
-		$myPicture->drawLegend(15,5,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
-
-		$myPicture->Render(PCHART_PATH_IMG.$this->_name.DIRECTORY_SEPARATOR.$name.'.png');
-	}	
+		$return .= "\n";
+		*/
+		return( $return );
+	}
 	
 	public function reset_all()
 	{

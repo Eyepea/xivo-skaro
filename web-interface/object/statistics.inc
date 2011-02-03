@@ -130,6 +130,8 @@ class xivo_statistics
 		$infocal['dyear'] 	= date('Y',$dbeg);
 		
 		$this->_date_process = $infocal;
+		$this->_statsconfsess['_date_process'] = $infocal;
+		return(true);
 	}
 	
 	private function init_conf($conf)
@@ -160,9 +162,7 @@ class xivo_statistics
 			}
 		}
 		return(true);
-	}
-	
-	
+	}	
 	
 	public function set_idconf($idconf,$reloadconf=false)
 	{	
@@ -228,17 +228,17 @@ class xivo_statistics
 		$this->push_debug("global_init()",$arr);
 		
 		if (isset($arr['confid']) === true)
-			$this->set_idconf($arr['confid'],true);	
+			$this->set_idconf($arr['confid'],true);
+		
+		$this->load_component();			
+			
+		$this->_objectkey = 0;
+		$this->set_axetype('type');
 		
 		if (isset($arr['key']) === true
 		&& isset($arr['axetype']) === true
 		&& $arr['axetype'] !== 'type')
 			$this->_objectkey = $arr['key'];
-		else
-		{
-			$this->_objectkey = 0;
-			$this->set_axetype('type');
-		}
 		
 		if (isset($arr['axetype']) === true)
 			$this->set_axetype($arr['axetype']);
@@ -346,10 +346,12 @@ class xivo_statistics
 		$this->push_debug("set_datecal()",$arr);
 		
 		if(($conf = $this->get_conf()) === false)
-			return(false);			
-		
+			return(false);
+			
 		$this->init_cal($conf);
 		
+		$infocal = $this->_statsconfsess['_date_process'];
+	
 		$axtetype = $this->get_axetype();
 		switch ($axtetype)
 		{
@@ -518,9 +520,11 @@ class xivo_statistics
 	}
 	
 	public function get_lastday_for_month($year,$month)
-	{
-		$lastday = mktime(23, 59, 59, $month + 1, 0, $year);
-		return($lastday);
+	{		
+		if (preg_match('/^(\d{4})-(\d{2})$/',"$year-$month") === 1)
+			return(mktime(23, 59, 59, $month+1, 0, $year));
+			
+		return(false);
 	}
 	
 	public function get_listday_for_month($year,$month)
@@ -572,7 +576,7 @@ class xivo_statistics
 		$listday = array();
 		while ($day_process < ((int) $dend))
 		{
-			$day_process = strtotime('+1 day',$day_process);			
+			$day_process = strtotime('+1 day',$day_process);	
 			$dayname = strtolower(date('l',$day_process));
 			$daynumber = date('d',$day_process);
 			$month = date('m',$day_process);
@@ -683,7 +687,7 @@ class xivo_statistics
 					}
 				}
 				elseif(($id = ((int) $this->_objectkey)) !== 0)	
-				{	
+				{
 					if (($appagent = &$this->_ipbx->get_application('agent')) === false
 					|| ($agent = $appagent->get($id)) === false)
 						break;
@@ -706,30 +710,29 @@ class xivo_statistics
 				$ls_queuename = array();
 				if (((int) $this->_objectkey) === 0
 				&& isset($this->_conf['queue']) === true)
-				{				
+				{
 					asort($this->_conf['queue']);
 					$queue = array_values($this->_conf['queue']);	
 					$nb_queue = count($this->_conf['queue']);			
 					for($i=0;$i<$nb_queue;$i++)
 					{
 						$tmp = array();
-						$tmp['identity'] = $queue[$i]['name'];
-						$tmp['name'] = $queue[$i]['name'];
-						$tmp['key'] = $queue[$i]['name'];
+						$tmp['identity'] = array($queue[$i]['name']);
+						$tmp['name'] = array($queue[$i]['name']);
+						$tmp['key'] = array($queue[$i]['name']);
 						$tmp['id'] = (int) $queue[$i]['id'];
 						array_push($ls_queuename,$tmp);
 					}
 				}
 				elseif(($id = ((int) $this->_objectkey)) !== 0)	
-				{	
+				{					
 					if (($appqueue = &$this->_ipbx->get_application('queue')) === false
 					|| ($queue = $appqueue->get($id)) === false)
-						break;
-					
+						break;					
 					$tmp = array();
-					$tmp['identity'] = $queue['queuefeatures']['name'];
-					$tmp['name'] = $queue['queuefeatures']['name'];
-					$tmp['key'] = $queue['queuefeatures']['name'];
+					$tmp['identity'] = array($queue['queuefeatures']['name']);
+					$tmp['name'] = array($queue['queuefeatures']['name']);
+					$tmp['key'] = array($queue['queuefeatures']['name']);
 					$tmp['id'] = (int) $queue['queuefeatures']['id'];
 					array_push($ls_queuename,$tmp);
 				}
@@ -741,26 +744,6 @@ class xivo_statistics
 		return($data);
 	}
 	
-	private function load_queuelog()
-	{
-		$this->push_debug("load_queuelog()");
-		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
-			return(false);
-			
-		$data = $this->get_list_by_type();
-		$conf = $this->get_conf();
-		
-		if (is_null($conf) === true)
-			return(false);
-			
-		$conf['axetype'] = $this->_axetype;
-		$conf['interval'] = $this->_interval_process;
-
-		$this->_queue_log = $appqueue_log->get_queue_logs_stats($conf,$this->_type,$data);
-		
-		return(true);
-	}
-	
 	public function get_object_list()
 	{
 		$this->push_debug("get_object_list()");
@@ -769,6 +752,7 @@ class xivo_statistics
 			case 'agent':
 				return($this->get_agent_list());
 				break;
+			case 'period':
 			case 'queue':
 				return($this->get_queue_list());
 				break;
@@ -801,7 +785,7 @@ class xivo_statistics
 	
 	public function get_agent_list()
 	{			
-		$this->push_debug("get_agent_list()");		
+		$this->push_debug("get_agent_list()");
 		if (isset($this->_conf['agent']) === false
 		|| ($appagent = &$this->_ipbx->get_application('agent')) === false)
 			return(false);
@@ -844,10 +828,10 @@ class xivo_statistics
 		$this->_interval['beg'] = $dbeg;
 		$this->_interval['end'] = $dend;
 		
-		$this->generate_cache_for_type($type,$list);		
+		$rs = $this->generate_cache_for_type($type,$list);		
 		$this->update_date_genercache();
 		
-		return(true);
+		return($rs);
 	}
 	
 	private function generate_cache_for_type($type,$list)
@@ -881,7 +865,6 @@ class xivo_statistics
 			return(false);
 		$stats_queue->set_data_custom('qos',$queue_qos);
 		
-		$s = microtime(true);		
 		$dbeg = $this->_interval['beg'];
 		$dend = $this->_interval['end'];
 		
@@ -891,7 +874,7 @@ class xivo_statistics
 		while($listqueue)
 		{
 			$queue = array_shift($listqueue);			
-			$queuekey = $queue['key'];
+			$queuekey = $queue['key'][0];
 			$listmonth = $data_listmonth;
 			while($listmonth)
 			{
@@ -913,9 +896,9 @@ class xivo_statistics
 				$this->save_cache($stats_queue->_result,$queuekey,$year,$month);
 				$stats_queue->_result = array();
 			}
-		}		
-		$this->update_date_genercache();
-		print (microtime(true)-$s);
+		}
+		unset($stats_queue,$full_interval,$data_listmonth);
+		return(true);
 	}
 	
 	private function generate_cache_for_agent($listagent)
@@ -927,7 +910,6 @@ class xivo_statistics
 				
 		$stats_agent = new xivo_statistics_agent(&$this);		
 	
-		$s = microtime(true);
 		$dbeg = $this->_interval['beg'];
 		$dend = $this->_interval['end'];
 		
@@ -960,7 +942,8 @@ class xivo_statistics
 				$stats_agent->_result = array();
 			}
 		}
-		print (microtime(true)-$s);
+		unset($stats_agent,$full_interval,$data_listmonth);
+		return(true);
 	}
 	
 	private function generate_cache_for_period($listqueue)
@@ -972,7 +955,6 @@ class xivo_statistics
 		
 		$stats_period = new xivo_statistics_period(&$this);
 		
-		$s = microtime(true);		
 		$dbeg = $this->_interval['beg'];
 		$dend = $this->_interval['end'];
 		
@@ -980,8 +962,8 @@ class xivo_statistics
 		$data_listmonth = $this->get_listmonth_for_interval($dbeg,$dend);
 		while($listqueue)
 		{
-			$queue = array_shift($listqueue);	
-			$queuekey = $queue['key'];
+			$queue = array_shift($listqueue);				
+			$queuekey = $queue['key'][0];
 			$listmonth = $data_listmonth;
 			while($listmonth)
 			{
@@ -1004,7 +986,8 @@ class xivo_statistics
 				$stats_period->_result = array();
 			}
 		}
-		print (microtime(true)-$s);
+		unset($stats_period,$full_interval,$data_listmonth);
+		return(true);
 	}
 
 	public function has_cache_type($key=null,$type=null)
@@ -1027,18 +1010,17 @@ class xivo_statistics
 		return(true);
 	}
 
-	public function get_cache($key,$year,$month,$type=null)
+	public function get_cache($key,$year,$month,$type=null,$idconf=null)
 	{
 		if (is_null($type) === true)
-			$type = $this->_type;
-			
-		$basecache = DWHO_PATH_CACHE_STATS.DWHO_SEP_DIR.'cache';
+			$type = $this->_type;	
+		if (is_null($idconf) === true)
+			$idconf = $this->get_idconf();
 		
-		$file = $basecache.DWHO_SEP_DIR.
-					$this->get_idconf().DWHO_SEP_DIR.
-					$type.DWHO_SEP_DIR.
-					$key.DWHO_SEP_DIR.
-					$year.$month.'.db';
+		if (($dir = $this->build_dir_for_cache($idconf,$type,$key)) === false)
+			return(false);
+		
+		$file = $dir.DWHO_SEP_DIR.$year.$month.'.db';		
 		
 		if (dwho_file::is_r($file) === false
 		|| ($infos = dwho_file::get_info($file)) === false
@@ -1055,58 +1037,110 @@ class xivo_statistics
 		return($res);
 	}
 
-	public function get_cache_day($key,$year,$month,$day,$type=null)
+	public function get_cache_day($key,$year,$month,$day,$type=null,$idconf=null)
 	{
-		if (($arr = $this-> get_cache($key,$year,$month,$type)) === false
+		if (($arr = $this-> get_cache($key,$year,$month,$type,$idconf)) === false
 		|| isset($arr[$day]) === false)
 			return(false);
 
 		return($arr[$day]);
 	}
 	
-	private function init_path_cache($key,$type=null)
+	public function get_list_file_for_cache($idconf=null,$type=null,$key=null)
+	{
+		if (($dir = $this->build_dir_for_cache($idconf,$type,$key)) === false
+		|| ($r = dwho_file::read_d($dir,'',FILE_R_OK)) === false)
+		    return(false);
+		
+	    sort($r);
+		return($r);
+	}
+	
+	private function build_dir_for_cache($idconf=null,$type=null,$key=null,$cachedir=null)
+	{		
+		if (is_null($cachedir) === true)
+			$cachedir = DWHO_PATH_CACHE_STATS;
+			
+		$dir = dwho_file::joinpath($cachedir,'cache');
+		
+		if (is_null($idconf) === false)
+			$dir .= DWHO_SEP_DIR.$idconf;
+				
+		if (is_null($type) === false)
+			$dir .= DWHO_SEP_DIR.$type;
+			
+		if (is_null($key) === false)
+			$dir .= DWHO_SEP_DIR.$key;
+			
+		if (dwho_file::is_d_rx($dir) === false)
+			return(false);
+			
+		return($dir);
+	}
+	
+	private function init_path_cache($idconf=null,$type=null,$key=null,$cachedir=null)
 	{
 		if (is_null($type) === true)
 			$type = $this->_type;
 		
-		$idconf = $this->get_idconf();
-		$listdir = array('cache',$idconf,$type,$key);
+		if (is_null($idconf) === true)
+			$idconf = $this->get_idconf();
 		
-		$cachedir = DWHO_PATH_CACHE_STATS;
+		$listdir = array('cache',$idconf,$type);
+		
+		if(is_null($key) === false)
+			array_push($listdir,$key);
+			
+		if (is_null($cachedir) === true)
+			$cachedir = DWHO_PATH_CACHE_STATS;
+		
 		while($listdir)
 		{
 			$dir_process = array_shift($listdir);
 			$cachedir .= DWHO_SEP_DIR.$dir_process;
 			if (dwho_file::is_d_w($cachedir) === false
-			&& mkdir($cachedir,0775) === false)
-				return($this->push_error('ERR: Can\'t create dir: '.$cachedir));
+			&& mkdir($cachedir,0775,true) === false)
+				$this->push_error('ERR: Can\'t create dir: '.$cachedir);
 		}
 		
 		if (dwho_file::is_d_w($cachedir) === false)
-			return($this->push_error('ERR: Not valid cache dir: '.$cachedir));
+			$this->push_error('ERR: Not valid cache dir: '.$cachedir);
+			
+		if ($this->has_error() === true)
+			die(var_dump($this->get_error()));
 			
 		$this->_cache_path = $cachedir;
 		return(true);
 	}
 
-	private function save_cache($data,$key,$year,$month,$type=null)
-	{		
+	private function save_cache($data,$key,$year,$month,$type=null,$erase=false,$cachedir=null)
+	{
 		if (is_null($type) === true)
 			$type = $this->_type;
 			
-		$this->init_path_cache($key,$type);
+		$this->init_path_cache($this->get_idconf(),$type,$key,$cachedir);
 			
-		if (dwho_file::is_d_w($this->_cache_path) === false)
-			return($this->push_error('ERR: Can\'t create cache file in: '.$this->_cache_path));
+		$dir = $this->build_dir_for_cache($this->get_idconf(),$type,$key,$cachedir);
+			
+		if (dwho_file::is_d_w($dir) === false)
+			$this->push_error('ERR: Can\'t create cache file in: '.$dir);
 		
-		$file = $this->_cache_path.DWHO_SEP_DIR.$year.$month.'.db';
+		$file = $dir.DWHO_SEP_DIR.$year.$month.'.db';
 			
 		if (dwho_file::is_f($file) === false
 		&& touch($file) === false)
-			return($this->push_error('ERR: Can\'t create file: '.$file));
+			$this->push_error('ERR: Can\'t create file: '.$file);
+			
+		if ($this->has_error() === true)
+			die(var_dump($this->get_error()));
+		
+		if (($rs = file_put_contents($file, json_encode($data),LOCK_EX)) === false)
+			$rs = 'error';
+			
+		print("save data to $file => $rs \n");
 		
 		#return(dwho_file::put_contents($file,json_encode($data)));
-		return file_put_contents($file, json_encode($data),LOCK_EX);
+		return($rs);
 	}
 	
 	private function update_date_genercache()
@@ -1114,6 +1148,240 @@ class xivo_statistics
 		if (($appstats_conf = &$this->_xobj->get_application('stats_conf')) === false)
 			return(false);
 		$appstats_conf->update_date_genercache($this->get_idconf());
+	}
+	
+	public function update_cache($idconf,$type,$object,$erase=false,$dbeg=null,$dend=null)
+	{		
+		$keyfile = $object['key'][0];
+		$idtype = $object['id'];
+				
+		$this->_type = $type;
+		$this->_objectkey = $idtype;
+		$this->init_path_cache($idconf,$type,$keyfile);
+		$conf = $this->get_conf();
+	
+		if (($conf['dendcache']) == 0)
+		{
+			$confyear = date('Y');
+			$confmonth = date('m');
+			$indexconf = (int) ($confyear.$confmonth);
+		}
+		else 
+		{
+			$indexconf = (int) str_replace('-','',$conf['dendcache']);
+			$confyear = substr($indexconf,0,4);
+			$confmonth = substr($indexconf,4,2);
+		}
+		
+		$dirkey = $this->build_dir_for_cache($idconf,$type,$keyfile);
+		
+		if (is_null($dbeg) === true
+		&& is_null($dend) === true)
+		{
+			$dbegcache = strtotime($conf['dbegcache'].'-01');
+			$lastday = date('d',$this->get_lastday_for_month($confyear,$confmonth));
+			$dendcache = strtotime("$confyear-$confmonth-$lastday");
+		}
+		elseif (is_null($dbeg) === false
+		&& is_null($dend) === true)
+		{
+			$dbegcache = $this->all_to_unixtime($dbeg);
+			$dendcache = time();
+		}
+		elseif (is_null($dbeg) === false
+		&& is_null($dend) === false)
+		{
+			$dbegcache = $this->all_to_unixtime($dbeg);
+			$dendcache = $this->all_to_unixtime($dend);
+		}
+		else
+			return(false);
+		
+		$listconfmonth = $this->get_listmonth_for_interval($dbegcache,$dendcache);
+		
+		while($listconfmonth)
+		{
+			$confmonth = array_shift($listconfmonth);
+			$index = (int) $confmonth['key'];			
+			$filemonth = $dirkey.DWHO_SEP_DIR.$index.'.db';
+			$year = substr($index,0,4);
+			$month = substr($index,4,2);
+			$report = "-- ".$conf['name']." -- $type -- $keyfile -- $year-$month";
+			
+			$lastdayforcache = $this->get_lastday_for_cache_file($idconf,$type,$keyfile,$year,$month);
+			// get lastday for month from conf available day.
+			if (($listday = $this->get_listday_for_month($year,$month)) === false
+			|| count($listday) === 0
+			|| is_array(($dayfm = array_pop($listday))) === false)
+				continue;
+				
+			$lastdayformonth = (string) $dayfm['key'];
+			
+			$dbeg = mktime(0,0,1,$month,1,$year);
+			$dend = mktime(23,59,59,$month,$lastdayformonth,$year);
+			
+			if ($erase !== false)
+			{
+				echo "$report -- mode erase enabled >> creation required \n";
+				echo "$report >> create in progress......... \n";
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				while (!$rs)
+					usleep(1);
+				echo "$report >> creation finished \n";
+			}
+			
+			if (dwho_file::is_f_r($filemonth) === false)
+			{
+				echo "$report -- not exist >> creation required \n";
+				echo "$report >> create in progress......... \n";
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				while (!$rs)
+					usleep(1);
+			}
+			else
+			{
+				echo "$report -- already exist >> check if is up to date \n";
+				
+				if($lastdayformonth === $lastdayforcache)
+				{
+					echo "month $index is up to date \n";
+					continue;
+				}
+				echo "month $index is not up to date \n";
+				echo "$report >> update in progress......... \n";
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				while (!$rs)
+					usleep(1);
+			}
+		}
+		return(true);
+	}
+	
+	public function update_cache_graphic($idconf,$type,$object,$erase=false,$dbeg=null,$dend=null)
+	{		
+		require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'pchart.inc'));
+		
+		$pChart = new pChart;
+		var_dump($pChart);
+		
+		$keyfile = $object['key'][0];
+		$idtype = $object['id'];
+				
+		$this->_type = $type;
+		$this->_objectkey = $idtype;
+		$this->init_path_cache($idconf,$type,$keyfile,DWHO_PATH_CACHE_PCHART);
+		$dirkey = $this->build_dir_for_cache($idconf,$type,$keyfile,DWHO_PATH_CACHE_PCHART);
+		$conf = $this->get_conf();
+		
+		var_dump($dirkey);
+	
+		if (($conf['dendcache']) == 0)
+		{
+			$confyear = date('Y');
+			$confmonth = date('m');
+			$indexconf = (int) ($confyear.$confmonth);
+		}
+		else 
+		{
+			$indexconf = (int) str_replace('-','',$conf['dendcache']);
+			$confyear = substr($indexconf,0,4);
+			$confmonth = substr($indexconf,4,2);
+		}		
+		
+		if (is_null($dbeg) === true
+		&& is_null($dend) === true)
+		{
+			$dbegcache = strtotime($conf['dbegcache'].'-01');
+			$lastday = date('d',$this->get_lastday_for_month($confyear,$confmonth));
+			$dendcache = strtotime("$confyear-$confmonth-$lastday");
+		}
+		elseif (is_null($dbeg) === false
+		&& is_null($dend) === true)
+		{
+			$dbegcache = $this->all_to_unixtime($dbeg);
+			$dendcache = time();
+		}
+		elseif (is_null($dbeg) === false
+		&& is_null($dend) === false)
+		{
+			$dbegcache = $this->all_to_unixtime($dbeg);
+			$dendcache = $this->all_to_unixtime($dend);
+		}
+		else
+			return(false);
+		
+		$listconfmonth = $this->get_listmonth_for_interval($dbegcache,$dendcache);
+		
+		while($listconfmonth)
+		{
+			$confmonth = array_shift($listconfmonth);
+			$index = (int) $confmonth['key'];			
+			$filemonth = $dirkey.DWHO_SEP_DIR.$index.'.db';
+			$year = substr($index,0,4);
+			$month = substr($index,4,2);
+			$report = "-- ".$conf['name']." -- $type -- $keyfile -- $year-$month";
+			
+			var_dump($report);
+			
+			/*
+			$lastdayforcache = $this->get_lastday_for_cache_file($idconf,$type,$keyfile,$year,$month);
+			// get lastday for month from conf available day.
+			if (($listday = $this->get_listday_for_month($year,$month)) === false
+			|| count($listday) === 0
+			|| is_array(($dayfm = array_pop($listday))) === false)
+				continue;
+				
+			$lastdayformonth = (string) $dayfm['key'];
+			
+			$dbeg = mktime(0,0,1,$month,1,$year);
+			$dend = mktime(23,59,59,$month,$lastdayformonth,$year);
+			
+			if ($erase !== false)
+			{
+				echo "$report -- mode erase enabled >> creation required \n";
+				echo "$report >> create in progress......... \n";
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				while (!$rs)
+					usleep(1);
+				echo "$report >> creation finished \n";
+			}
+			
+			if (dwho_file::is_f_r($filemonth) === false)
+			{
+				echo "$report -- not exist >> creation required \n";
+				echo "$report >> create in progress......... \n";
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				while (!$rs)
+					usleep(1);
+			}
+			else
+			{
+				echo "$report -- already exist >> check if is up to date \n";
+				
+				if($lastdayformonth === $lastdayforcache)
+				{
+					echo "month $index is up to date \n";
+					continue;
+				}
+				echo "month $index is not up to date \n";
+				echo "$report >> update in progress......... \n";
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				while (!$rs)
+					usleep(1);
+			}
+			*/
+		}
+		return(true);
+	}
+	
+	private function get_lastday_for_cache_file($idconf,$type,$key,$year,$month)
+	{
+		if (($listday = $this->get_cache($key,$year,$month,$type,$idconf)) === false
+		|| is_array($listday) === false
+		|| count($listday) === 0)
+			return(false);
+			
+		return((string) array_pop(array_keys($listday)));
 	}
 	
 	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)
@@ -1197,6 +1465,72 @@ class xivo_statistics
 		return(0);		
 	}
 
+	private function eval_during_time($key,$eventprocess,$eventstart,$eventend,$time)
+	{			
+		if (isset($this->_counter[$key]) === false)
+			$this->_counter[$key] = array();
+			
+		if (isset($this->_counter[$key][$eventstart]) === false)
+		{
+			$this->_counter[$key][$eventstart] = array();
+			$this->_counter[$key][$eventstart]['start'] = 0;
+			$this->_counter[$key][$eventstart]['token'] = 0;
+			$this->_counter[$key][$eventstart]['total'] = 0;
+		}
+					
+		$counter = &$this->_counter[$key][$eventstart];
+		$timearr = explode('.',$time);
+		
+		if (preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',$timearr[0]) !== 1)
+			return(false);
+		
+		$timeprocess = $this->all_to_unixtime($timearr[0]);
+		
+		$rs = 0;
+		switch ($eventprocess)
+		{
+			case $eventstart:
+				if ($counter['token'] === 1
+				&& $counter['start'] !== 0)
+					$rs = ($timeprocess - $counter['start']);	
+				$counter['token'] = 1;
+				$counter['start'] = $timeprocess;
+				break;
+			case $eventend:
+				if ($counter['token'] === 0)
+					continue;
+				$rs = ($timeprocess - $counter['start']);					
+				$counter['token'] = 0;
+				$counter['start'] = 0;
+				break;
+			default:
+		}
+		
+		$counter['total'] += $rs;
+		
+		return($rs);
+	}
+	
+	private function load_queuelog()
+	{
+		$this->push_debug("load_queuelog()");
+		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
+			return(false);
+			
+		$data = $this->get_list_by_type();
+		$conf = $this->get_conf();
+		
+		if (is_null($conf) === true)
+			return(false);
+			
+		$conf['axetype'] = $this->_axetype;
+		$conf['interval'] = $this->_interval_process;
+
+		$this->_queue_log = $appqueue_log->get_queue_logs_stats($conf,$this->_type,$data);
+		
+		return(true);
+	}
+
 	public function push_error($error, $key=null)
 	{
 		if (is_array($error) === true)
@@ -1238,3 +1572,5 @@ class xivo_statistics
 	}
 	
 }
+
+?>

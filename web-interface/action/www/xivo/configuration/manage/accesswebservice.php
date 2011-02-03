@@ -98,7 +98,7 @@ switch($act)
 		|| ($info = $_AWS->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/accesswebservice'),$param);
 
-		$webservice_acl = $_AWS->get_acl();
+		$webservice_acl = $_AWS->get_acl();			
 
 		if(isset($_QR['fm_send']) === true)
 		{

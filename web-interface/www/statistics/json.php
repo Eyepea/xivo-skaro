@@ -18,13 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('XIVO_TPL_AREA','ui');
+define('DWHO_SESS_ENABLE',false);
+define('XIVO_TPL_AREA','json');
 
 require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
-$action_path = $_LOC->get_action_path('statistics/ui/',4);
+$action_path = $_LOC->get_action_path('statistics/web_services/',4);
 
 if($action_path === false)
 {

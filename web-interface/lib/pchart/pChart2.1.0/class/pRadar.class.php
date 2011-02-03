@@ -2,9 +2,9 @@
  /*
      pRadar - class to draw radar charts
 
-     Version     : 2.0.10
+     Version     : 2.1.0
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 04/01/11
+     Last Update : 26/01/11
 
      This file can be distributed under the license you can find at :
 
@@ -43,6 +43,9 @@
      $DrawTicks		= isset($Format["DrawTicks"]) ? $Format["DrawTicks"] : TRUE;
      $TicksLength	= isset($Format["TicksLength"]) ? $Format["TicksLength"] : 2;
      $DrawAxisValues	= isset($Format["DrawAxisValues"]) ? $Format["DrawAxisValues"] : TRUE;
+     $AxisBoxRounded	= isset($Format["AxisBoxRounded"]) ? $Format["AxisBoxRounded"] : TRUE;
+     $AxisFontName	= isset($Format["FontName"]) ? $Format["FontName"] : $this->pChartObject->FontName;
+     $AxisFontSize	= isset($Format["FontSize"]) ? $Format["FontSize"] : $this->pChartObject->FontSize;
      $DrawBackground	= isset($Format["DrawBackground"]) ? $Format["DrawBackground"] : TRUE;
      $BackgroundR	= isset($Format["BackgroundR"]) ? $Format["BackgroundR"] : 255;
      $BackgroundG	= isset($Format["BackgroundG"]) ? $Format["BackgroundG"] : 255;
@@ -74,6 +77,8 @@
      $Y1		= $Object->GraphAreaY1;
      $X2		= $Object->GraphAreaX2;
      $Y2		= $Object->GraphAreaY2;
+
+     // if ( $AxisBoxRounded ) { $DrawAxisValues = TRUE; }
 
      /* Cancel default tick length if ticks not enabled */
      if ( $DrawTicks == FALSE ) { $TicksLength = 0; }
@@ -192,7 +197,7 @@
       {
        for($j=1;$j<=$Segments;$j++)
         {
-         for($i=0;$i<=360;$i=$i+(360/$Points))
+         for($i=0;$i<360;$i=$i+(360/$Points))
           {
            $EdgeX1 = cos(deg2rad($i+$AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterX;
            $EdgeY1 = sin(deg2rad($i+$AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterY;
@@ -219,12 +224,31 @@
        else
         $Options = array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE);
 
+       if ( $AxisBoxRounded ) { $Options["BoxRounded"] = TRUE; }
+
+       $Options["FontName"] = $AxisFontName;
+       $Options["FontSize"] = $AxisFontSize;
+
        $Angle  = 360 / ($Points*2);
        for($j=1;$j<=$Segments;$j++)
         {
-         $EdgeX1 = cos(deg2rad($Angle+$AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterX;
-         $EdgeY1 = sin(deg2rad($Angle+$AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterY;
-         $Label  = $j*$SegmentHeight;
+         $Label  = $j * $SegmentHeight;
+
+         if ( $Layout == RADAR_LAYOUT_CIRCLE )
+          {
+           $EdgeX1 = cos(deg2rad($Angle+$AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterX;
+           $EdgeY1 = sin(deg2rad($Angle+$AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterY;
+          }
+         elseif ( $Layout == RADAR_LAYOUT_STAR )
+          {
+           $EdgeX1 = cos(deg2rad($AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterX;
+           $EdgeY1 = sin(deg2rad($AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterY;
+           $EdgeX2 = cos(deg2rad((360 / $Points) + $AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterX;
+           $EdgeY2 = sin(deg2rad((360 / $Points) + $AxisRotation)) * ($EdgeHeight/$Segments)*$j + $CenterY;
+
+           $EdgeX1 = ($EdgeX2 - $EdgeX1)/2 + $EdgeX1;
+           $EdgeY1 = ($EdgeY2 - $EdgeY1)/2 + $EdgeY1;
+          }
 
          $Object->drawText($EdgeX1,$EdgeY1,$Label,$Options);
         }
@@ -232,7 +256,7 @@
 
      /* Axis lines */
      $ID = 0;
-     for($i=0;$i<=360;$i=$i+(360/$Points))
+     for($i=0;$i<360;$i=$i+(360/$Points))
       {
        $EdgeX = cos(deg2rad($i+$AxisRotation)) * ($EdgeHeight+$TicksLength) + $CenterX;
        $EdgeY = sin(deg2rad($i+$AxisRotation)) * ($EdgeHeight+$TicksLength) + $CenterY;
@@ -344,6 +368,9 @@
      $DrawTicks		= isset($Format["DrawTicks"]) ? $Format["DrawTicks"] : TRUE;
      $TicksLength	= isset($Format["TicksLength"]) ? $Format["TicksLength"] : 2;
      $DrawAxisValues	= isset($Format["DrawAxisValues"]) ? $Format["DrawAxisValues"] : TRUE;
+     $AxisBoxRounded	= isset($Format["AxisBoxRounded"]) ? $Format["AxisBoxRounded"] : TRUE;
+     $AxisFontName	= isset($Format["FontName"]) ? $Format["FontName"] : $this->pChartObject->FontName;
+     $AxisFontSize	= isset($Format["FontSize"]) ? $Format["FontSize"] : $this->pChartObject->FontSize;
      $DrawBackground	= isset($Format["DrawBackground"]) ? $Format["DrawBackground"] : TRUE;
      $BackgroundR	= isset($Format["BackgroundR"]) ? $Format["BackgroundR"] : 255;
      $BackgroundG	= isset($Format["BackgroundG"]) ? $Format["BackgroundG"] : 255;
@@ -373,6 +400,8 @@
      $Y1		= $Object->GraphAreaY1;
      $X2		= $Object->GraphAreaX2;
      $Y2		= $Object->GraphAreaY2;
+
+     if ( $AxisBoxRounded ) { $DrawAxisValues = TRUE; }
 
      /* Cancel default tick length if ticks not enabled */
      if ( $DrawTicks == FALSE ) { $TicksLength = 0; }
@@ -460,6 +489,11 @@
         $Options = array("DrawBox"=>TRUE, "Align"=>TEXT_ALIGN_MIDDLEMIDDLE,"BoxR"=>$LabelsBGR,"BoxG"=>$LabelsBGG,"BoxB"=>$LabelsBGB,"BoxAlpha"=>$LabelsBGAlpha);
        else
         $Options = array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE);
+
+       if ( $AxisBoxRounded ) { $Options["BoxRounded"] = TRUE; }
+
+       $Options["FontName"] = $AxisFontName;
+       $Options["FontSize"] = $AxisFontSize;
 
        $Angle  = 360 / ($Points*2);
        for($j=1;$j<=$Segments;$j++)

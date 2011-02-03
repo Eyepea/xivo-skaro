@@ -54,6 +54,11 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
+	function get_by_number($num)
+	{
+		return($this->_dso->get_by_number($num));
+	}
+
 	function search($value,$disable=null,$order=null,$limit=null)
 	{
 		if(($list = $this->_dso->search($value,$disable,$order,$limit)) === false)

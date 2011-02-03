@@ -292,6 +292,9 @@ Provisioning
 ; acl(xivo-configuration-provisioning-general)
 Général
 
+; acl(xivo-configuration-check)
+Check
+
 ; acl(service-statistics)
 Statistiques
 
@@ -300,6 +303,12 @@ Statistiques centre d'appel
 
 ; acl(service-statistics-call_center-configuration)
 Configuration
+
+; acl(service-statistics-call_center-queue)
+File d'attente
+
+; acl(service-statistics-call_center-genercache)
+Génération manuel du cache
 
 ; acl(service-statistics-call_center-data)
 Données

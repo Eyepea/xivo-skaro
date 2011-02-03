@@ -21,23 +21,33 @@
 $access_category = 'call_center';
 $access_subcategory = 'genercache';
 
-#include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
+
+if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
+	die('Failed to load xivo_statistics object');
+
+$_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
 
 if(isset($_QR['idconf']) === true
 && isset($_QR['dbeg']) === true
 && isset($_QR['dend']) === true
 && isset($_QR['type']) === true)
+{	
+	$idtype = (isset($_QR['idtype'])) ? $_QR['idtype'] : null;	
+	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);
+}
+					
+if(isset($_QR['update']) === true)
 {
-	if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
-		die('Failed to load xivo_statistics object');
-		
-	$_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
-	
-	$idtype = null;
-	if (isset($_QR['idtype']) === true)
-		$idtype = $_QR['idtype'];
-	
-	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);	
+	if (($appstats_conf = &$_XOBJ->get_application('stats_conf')) === false
+	|| ($listconf = $appstats_conf->get_stats_conf_list(null,'name')) === false)
+		exit;
+				
+	while ($listconf)
+	{
+		$conf = array_shift($listconf);
+		$_XS->update_cache($conf);
+	}		
 }
 
 ?>

@@ -45,7 +45,7 @@ $element = $this->get_var('element');
 						   'statistics/call_center/index');?>
 			</dd>
 <?php
-	if(xivo_user::chk_acl('call_center', 'configuration', 'service/statistics') === true):
+	if(xivo_user::chk_acl_section('service/statistics/call_center/configuration') === true):
 ?>
 			<dt><?=$this->bbf('mn_left_ti_configuration_call_center');?></dt>
 			<dd id="mn-1">
@@ -60,7 +60,7 @@ $element = $this->get_var('element');
 	endif;
 ?>
 <?php
-	if(xivo_user::chk_acl('call_center', 'data', 'service/statistics') === true):
+	if(xivo_user::chk_acl_section('service/statistics/call_center/data') === true):
 ?>
 			<dt><?=$this->bbf('mn_left_ti_statistics_call_center');?></dt>
 			<dd id="mn-1">
@@ -129,11 +129,14 @@ $element = $this->get_var('element');
 	</div>
 	<div class="sb-content">
 		<div id="sr-stats" class="">
+		<div id="it-loading" class="b-nodisplay" style="position: absolute;width: 75px;height: 75px;margin-left: 50px;">
+			<img alt="loading" src="/img/site/loading.gif" width="75" height="75" />
+		</div>
 		<form action="<?=$_SERVER['PHP_SELF']?>" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
 			<div id="it-cal-conf" class="fm-paragraph">
 <?php
 $conf_hlp = null;
-if ($conf !== false) :
+if(is_null($conf) === false && $conf !== false):
 	$dbeg = $conf['dbegcache'];
 	$dend = $conf['dendcache'];
 	$dencache = ($dend != 0) ? $this->bbf('hlp_fm_conf_period_cache-with_end',array($dend)) : $this->bbf('hlp_fm_conf_period_cache-without_end'); 
@@ -148,6 +151,7 @@ endif;
 					 			'help'		=> $conf_hlp,
 							    'key'		=> 'name',
 							    'altkey'	=> 'id',
+							    'class'		=> 'fm-selected-conf',
 							    'selected'	=> $this->get_var('confid')),
 						      	$listconf);
 ?>
@@ -206,9 +210,9 @@ endif;
 <?php
 	else:
 		echo $form->hidden(array('name' => 'axetype','value' => 'type'));
-	endif;	
+	endif;
 	
-	if ($conf !== false) :
+	if(is_null($conf) === false && $conf !== false):
 ?>
 			<div id="it-cal-type" class="b-nodisplay">
 				<div class="fm-paragraph fm-multifield">
@@ -301,16 +305,16 @@ endif;
 					</div>
 				</div>
 			</div>
-					<div class="fm-desc-inline">
-						<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
-					</div>
+			<div class="fm-desc-inline">
+				<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+			</div>
 <?php
 	endif;
 ?>
 		</form>
 		</div>
 <?php
-	if($conf !== false):
+	if(is_null($conf) === false && $conf !== false):
 ?>
 		<p class="paragraph">
 			<?=$this->bbf('conf_time_range')?> <?=substr($conf['hour_start'],0,5)?> - <?=substr($conf['hour_end'],0,5)?>
@@ -334,8 +338,7 @@ endif;
 ?>
 
 <?php 
-$bench = $this->get_var('bench');
-echo dwho_second_to($bench,2);
+echo dwho_second_to($this->get_var('bench'),2), ' - ', dwho_byte_to($this->get_var('mem_info'));
 ?>
     
     </div>
@@ -345,16 +348,17 @@ echo dwho_second_to($bench,2);
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
-		
+
 <script type="text/javascript">	
 function fm_chk(){
 	dwho_eid('it-submit').disabled = true;
 	dwho_eid('it-submit').value = '<?=$this->bbf('fm-wait-submit')?>';
+	dwho_eid('it-loading').style.display = 'block';
 };
 dwho.dom.set_onload(function()
 {
 <?php
-	if(is_null($conf) == true || $conf === false):
+	if(is_null($conf) === true || $conf === false):
 ?>
 	dwho.dom.add_event('change',
 			   dwho_eid('it-toolbar-conf'),

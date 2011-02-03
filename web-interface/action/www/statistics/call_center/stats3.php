@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dirname(__FILE__).'/common.php');
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_agent',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','agent',false) === false)
 	die('Can\'t load xivo_statistics_agent object');
@@ -97,9 +97,16 @@ $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
 $_TPL->set_var('hascachetype',$_XS->has_cache_type());
 $_TPL->set_var('showdashboard',true);
+if($act === 'exportcsv')
+{
+	$_TPL->set_var('result',$tpl_statistics->render_csv());
+	$_TPL->set_var('name','agent_details');
+	$_TPL->display('/bloc/statistics/call_center/exportcsv');
+	die();
+}
 
-$bench_end = microtime(true);
-$_TPL->set_var('bench',($bench_end - $bench_start));
+$_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
+$_TPL->set_var('bench',(microtime(true) - $bench_start));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

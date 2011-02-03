@@ -12,7 +12,7 @@ Période de cache: %s %s selon la configuration.
 jusqu'à ce jour
 
 ; toolbar_fm_select_conf
-Choisisser la configuration á appliquer: 
+Choisisser la configuration à appliquer: 
 
 ; colstruct_traitment
 Appels traités
@@ -156,7 +156,7 @@ Duré moyenne
 <acronym title="Période 5">P5</acronym>
 
 ; no_conf_selected
-Veuillez choisir une configuration á appliquer.
+Veuillez choisir une configuration à appliquer.
 
 ; conf_axetype
 Axe d'analyse: 
@@ -184,6 +184,9 @@ Appliquer
 
 ; fm-wait-submit
 Traitement en cours
+
+; bt-success-submit
+Terminée avec succés
 
 ; mn_left_name_dashboard
 Tableau de bord
@@ -301,3 +304,6 @@ Dimanche %d
 
 ; no_cache_generated_for 
 Cache %s n'est pas généré
+
+; tbl-lnk-expotcsv
+Exporter CSV

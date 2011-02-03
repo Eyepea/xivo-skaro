@@ -94,6 +94,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 <?php
 	endif;
 ?>
+<!-- 
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
@@ -104,6 +105,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_preferences'));?>
 		</li>
+ -->
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>

@@ -111,15 +111,13 @@ $array['tree']['service']['monitoring']['control_system']['unmonitor'] = true;
 $array['tree']['service']['graphs'] = array();
 $array['tree']['service']['graphs']['munin'] = true;
 
+// statistics
 $array['tree']['service']['statistics'] = array();
 $array['tree']['service']['statistics']['call_center'] = array();
 $array['tree']['service']['statistics']['call_center']['configuration'] = true;
 $array['tree']['service']['statistics']['call_center']['data'] = true;
 $array['tree']['service']['statistics']['call_center']['genercache'] = true;
-
-$array['tree']['statistics'] = array();
-$array['tree']['statistics']['call_center'] = array();
-$array['tree']['statistics']['call_center']['genercache'] = true;
+$array['tree']['service']['statistics']['call_center']['queue'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

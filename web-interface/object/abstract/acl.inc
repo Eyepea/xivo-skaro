@@ -281,7 +281,6 @@ class xivo_acl_abstract
 			else if(isset($tree[$key]['child']) === true)
 				$tree = &$tree[$key]['child'];
 		}
-
 		if($r === false && isset($key,$grp) === true)
 			$r = dwho_ak($key,$grp,true) !== false;
 

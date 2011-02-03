@@ -2,9 +2,9 @@
  /*
      pCache - speed up the rendering by caching up the pictures
 
-     Version     : 2.0.10
+     Version     : 2.1.0
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 04/01/11
+     Last Update : 26/01/11
 
      This file can be distributed under the license you can find at :
 

@@ -77,7 +77,7 @@ $array['service/ipbx/asterisk/ui/pbx_settings/extension/search'] = array(
 
 
 $array['statistics/ui/call_center/genercache'] = array(
-	'path'		=> 'statistics/ui/call_center',
+	'path'		=> 'statistics/ui/call_center/genercache',
 	'define'	=> array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genercache'));
@@ -104,9 +104,6 @@ $array['xivo/configuration/web_services/private/provisioning/general'] = array(
 	'path'		=> 'xivo/configuration/web_services/provisioning/general',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-
-
-
 $array['service/ipbx/asterisk/web_services/private/ctiserver/configuration'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
 	'define'	=> array(
@@ -115,7 +112,6 @@ $array['service/ipbx/asterisk/web_services/private/queuelogger/configuration'] =
 	'path'		=> 'service/ipbx/asterisk/web_services/queuelogger/configuration',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-
 $array['service/ipbx/asterisk/web_services/private/general_settings/sip'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/sip',
 	'define'	=> array(
@@ -208,9 +204,17 @@ $array['service/ipbx/asterisk/web_services/private/control_system/restart'] = ar
 	'path'		=> 'service/ipbx/asterisk/web_services/control_system/restart',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['statistics/web_services/private/call_center/queue'] = array(
+	'path'		=> 'statistics/web_services/call_center/queue',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 
 // RESTRICTED
+$array['statistics/web_services/restricted/call_center/queue'] = array(
+	'path'		=> 'statistics/web_services/call_center/queue',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['xivo/configuration/web_services/restricted/check'] = array(
 	'path'		=> 'xivo/configuration/web_services/check',
 	'define'	=> array(

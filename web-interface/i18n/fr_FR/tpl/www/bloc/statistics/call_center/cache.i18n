@@ -49,7 +49,16 @@ Générer tous
 
 ; wait_during_traitment
 Veuillez patienter durant le traitement et ne pas rafraichir ou changer de page.
-Cela annulera le travail en cours.
+Cela annulerait le travail en cours.
+
+; bt-wait-submit
+Traitement en cours
+
+; bt-success-submit
+Terminée avec succés
+
+; cache_generation_all
+Génération complète du cache
 
 ; in_progress
 en cours.

@@ -90,7 +90,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 		
 		$this->_dso->andwhere(array('event' => $event));
 		$this->_dso->andwhere('"'.$fieldsum.'" ~ \'^[0-9]+$\'');
-			
+		
 		if (is_null($addwhere) === false)
 		{
 			$type = $addwhere[0];
@@ -101,13 +101,24 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 					$cast = '';
 					if (is_numeric($value[1]) === true
 					&& is_numeric($value[2]) === true)
+					{
 						$cast = '::int';
+						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
+					}
 					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
 					break;
+				case 'ISNOT':					
+					$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
+					break;
 				case '<':
+				case '>':
+				case '=':
 					$cast = '';
 					if (is_numeric($value[1]) === true)
+					{
 						$cast = '::int';
+						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
+					}
 					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' < '.$value[1]);
 					break;
 			}
@@ -187,15 +198,24 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 					$cast = '';
 					if (is_numeric($value[1]) === true
 					&& is_numeric($value[2]) === true)
+					{
 						$cast = '::int';
+						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
+					}
 					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
+					break;
+				case 'ISNOT':					
+					$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
 					break;
 				case '<':
 				case '>':
 				case '=':
 					$cast = '';
 					if (is_numeric($value[1]) === true)
+					{
 						$cast = '::int';
+						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
+					}
 					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' '.$type.' '.$value[1]);
 					break;
 			}
