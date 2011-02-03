@@ -19,7 +19,7 @@ setup(
               'prov.persist',
               'prov.rest',
               'prov.servers',
-              'prov.tftp'],
+              'prov.servers.tftp'],
     py_modules=['twisted.plugins.prov_plugin'],
     package_dir={'': 'src',
                  'twisted.plugins': 'resources/'},
