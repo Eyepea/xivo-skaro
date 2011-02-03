@@ -31,10 +31,10 @@ import fetchfw2.util as util
 
 logger = logging.getLogger(__name__)
 
-DEF_CFG_FILENAME = '/etc/pf-xivo/fetchfw2.conf'
+DEF_CFG_FILENAME = '/etc/pf-xivo/fetchfw.conf'
 DEF_CFG = {
-   'cache_dir': '/var/cache/pf-xivo/fetchfw2',
-   'storage_dir': '/var/lib/pf-xivo/fetchfw2',
+   'cache_dir': '/var/cache/pf-xivo/fetchfw',
+   'storage_dir': '/var/lib/pf-xivo/fetchfw',
    'auth_sections': [],
 }
 

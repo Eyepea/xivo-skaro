@@ -1,22 +1,25 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
 __version__ = "$Revision$ $Date$"
 
 from distutils.core import setup
 
-setup(name='fetchfw2',
-      version='1.0',
-      description='Library and tool for downloading and installing remote files.',
-      author='Proformatique',
-      author_email='technique@proformatique.com',
-      url='http://xivo.fr/',
-      package_dir={'': 'src'},
-      packages=['fetchfw2'],
-      data_files=[('/etc/pf-xivo', ['resources/etc/fetchfw2.conf']),
-                  ('/usr/sbin', ['scripts/xivo_fetchfw2']),
-                  ('/var/lib/pf-xivo/fetchfw2/installable',
-                        ['resources/data/files.db',
-                         'resources/data/install.db',
-                         'resources/data/packages.db'])]
-      )
+setup(
+    name='fetchfw',
+    version='1.0',
+    description='Library and tool for downloading and installing remote files.',
+    maintainer='Proformatique',
+    maintainer_email='technique@proformatique.com',
+    url='http://wiki.xivo.fr/',
+    license='GPLv3',
+    
+    packages=['fetchfw2'],
+    package_dir={'': 'src'},
+    scripts=['scripts/xivo_fetchfw'],
+    data_files=[('/etc/pf-xivo', ['resources/etc/fetchfw.conf']),
+                ('/var/lib/pf-xivo/fetchfw/installable',
+                      ['resources/data/files.db',
+                       'resources/data/install.db',
+                       'resources/data/packages.db'])]
+)
