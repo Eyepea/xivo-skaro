@@ -24,10 +24,10 @@ import ConfigParser
 import logging
 import re
 
-import fetchfw2.download as download
-import fetchfw2.package as package
-import fetchfw2.storage as storage
-import fetchfw2.util as util
+import fetchfw.download as download
+import fetchfw.package as package
+import fetchfw.storage as storage
+import fetchfw.util as util
 
 logger = logging.getLogger(__name__)
 
