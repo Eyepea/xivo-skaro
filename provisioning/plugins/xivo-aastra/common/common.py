@@ -25,12 +25,12 @@ __license__ = """
 """
 
 import os.path
-from prov2 import sip
-from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
+from prov import sip
+from prov.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov2.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
+from prov.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
     INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
-from prov2.util import norm_mac, format_mac
+from prov.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
 from xivo import tzinform

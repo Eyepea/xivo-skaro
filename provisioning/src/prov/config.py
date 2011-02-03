@@ -66,7 +66,7 @@ __license__ = """
 """
 
 import ConfigParser
-from prov2.util import norm_ip
+from prov.util import norm_ip
 from twisted.python import usage
 
 # XXX right now, bad parameter names will be silently ignored, and we might

@@ -20,7 +20,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from prov2.devices.ident import IDeviceUpdater
+from prov.devices.ident import IDeviceUpdater
 from zope.interface import Interface, implements
 
 

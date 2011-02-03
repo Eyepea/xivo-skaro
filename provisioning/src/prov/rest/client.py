@@ -34,7 +34,7 @@ import simplejson as json
 # might want to eventually consider the more robust solution...
 # XXX we might want to look at using something else than urllib2... 
 
-PROV2_MIME_TYPE = 'application/vnd.proformatique.prov2+json'
+PROV_MIME_TYPE = 'application/vnd.proformatique.prov+json'
 
 
 class RemoteServerError(Exception):
@@ -112,7 +112,7 @@ class RestClientService(object):
         """
         url = urlparse.urljoin(self._base_url, self.ENTRY_DEV)
         req_content = json.dumps({'device': dev})
-        request = Request(url, req_content, {'Accept': PROV2_MIME_TYPE, 'Content-Type': PROV2_MIME_TYPE})
+        request = Request(url, req_content, {'Accept': PROV_MIME_TYPE, 'Content-Type': PROV_MIME_TYPE})
         f = self._opener.open(request)
         with contextlib.closing(f):
             resp_content = json.load(f)
@@ -143,7 +143,7 @@ class RestClientService(object):
         
         """
         url = urlparse.urljoin(self._base_url, self.ENTRY_DEV + '/' + dev_id)
-        request = Request(url, None, {'Accept': PROV2_MIME_TYPE})
+        request = Request(url, None, {'Accept': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:
@@ -163,7 +163,7 @@ class RestClientService(object):
         """
         url = urlparse.urljoin(self._base_url, self.ENTRY_DEV + '/' + dev_id)
         req_content = json.dumps({'device': dev})
-        request = PutRequest(url, req_content, {'Content-Type': PROV2_MIME_TYPE})
+        request = PutRequest(url, req_content, {'Content-Type': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:
@@ -181,7 +181,7 @@ class RestClientService(object):
         
         """
         url = urlparse.urljoin(self._base_url, self.ENTRY_DEV)
-        request = Request(url, None, {'Accept': PROV2_MIME_TYPE})
+        request = Request(url, None, {'Accept': PROV_MIME_TYPE})
         f = self._opener.open(request)
         with contextlib.closing(f):
             content = json.load(f)
@@ -207,7 +207,7 @@ class RestClientService(object):
         """
         url = urlparse.urljoin(self._base_url, 'dev_reconfigure')
         req_content = json.dumps({'id': dev_id})
-        request = Request(url, req_content, {'Content-Type': PROV2_MIME_TYPE})
+        request = Request(url, req_content, {'Content-Type': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:
@@ -226,7 +226,7 @@ class RestClientService(object):
         """
         url = urlparse.urljoin(self._base_url, 'dev_reload')
         req_content = json.dumps({'id': dev_id})
-        request = Request(url, req_content, {'Content-Type': PROV2_MIME_TYPE})
+        request = Request(url, req_content, {'Content-Type': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:
@@ -241,7 +241,7 @@ class RestClientService(object):
     def list_cfg(self):
         """Return all the configs IDs managed by the server."""
         url = urlparse.urljoin(self._base_url, self.ENTRY_CFG)
-        request = Request(url, None, {'Accept': PROV2_MIME_TYPE})
+        request = Request(url, None, {'Accept': PROV_MIME_TYPE})
         f = self._opener.open(request)
         with contextlib.closing(f):
             content = json.load(f)
@@ -256,7 +256,7 @@ class RestClientService(object):
         
         """
         url = urlparse.urljoin(self._base_url, self.ENTRY_CFG + '/' + cfg_id + '?f=i')
-        request = Request(url, None, {'Accept': PROV2_MIME_TYPE})
+        request = Request(url, None, {'Accept': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:
@@ -275,7 +275,7 @@ class RestClientService(object):
     @_wrap_5xx
     def get_cfgc(self, cfg_id):
         url = urlparse.urljoin(self._base_url, self.ENTRY_CFG + '/' + cfg_id + '?f=c')
-        request = Request(url, None, {'Accept': PROV2_MIME_TYPE})
+        request = Request(url, None, {'Accept': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:
@@ -313,7 +313,7 @@ class RestClientService(object):
         url = urlparse.urljoin(self._base_url, self.ENTRY_CFG + '/' + cfg_id)
         config_bases = [{'id': cfg_base_id} for cfg_base_id in cfg_base_ids]
         req_content = json.dumps({'config': cfg, 'config-bases': config_bases})
-        request = PutRequest(url, req_content, {'Content-Type': PROV2_MIME_TYPE})
+        request = PutRequest(url, req_content, {'Content-Type': PROV_MIME_TYPE})
         try:
             f = self._opener.open(request)
         except HTTPError, e:

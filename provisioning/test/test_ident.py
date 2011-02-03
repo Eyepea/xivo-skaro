@@ -19,7 +19,7 @@ __license__ = """
 """
 
 import unittest
-from prov2.devices.ident import *
+from prov.devices.ident import *
 
 # XXX I forgot that unittest could't work with deferred since unittest
 #     use exceptions and exception does not reach the code which

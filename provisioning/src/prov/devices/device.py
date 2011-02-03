@@ -54,7 +54,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from prov2.persist.util import ForwardingDocumentCollection
+from prov.persist.util import ForwardingDocumentCollection
 
 
 class DeviceCollection(ForwardingDocumentCollection):

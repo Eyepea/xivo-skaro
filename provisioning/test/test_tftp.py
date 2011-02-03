@@ -19,7 +19,7 @@ __license__ = """
 """
 
 import unittest
-from prov2.servers.tftp.packet import *
+from prov.servers.tftp.packet import *
 
 RRQ_DGRAM_OPTS_1 = ('\x00\x01filename\x00mode\x00opt1\x00value1\x00',
                     (OP_RRQ, 'filename', 'mode', {'opt1': 'value1'}))

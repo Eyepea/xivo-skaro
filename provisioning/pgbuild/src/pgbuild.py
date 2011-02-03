@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-"""A tool for managing prov2 plugins. 
+"""A tool for managing prov plugins. 
 
 This tool can do the following:
 - build plugins from bplugins

@@ -170,8 +170,8 @@ __license__ = """
 """
 
 import copy
-from prov2.persist.common import ID_KEY
-from prov2.persist.util import ForwardingDocumentCollection
+from prov.persist.common import ID_KEY
+from prov.persist.util import ForwardingDocumentCollection
 
 
 def _rec_update_dict(old_vals, new_vals):

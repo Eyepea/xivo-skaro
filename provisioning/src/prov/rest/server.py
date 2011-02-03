@@ -31,15 +31,15 @@ except ImportError:
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web import http
-from prov2.devices.util import NumericIdGenerator
-from prov2.services import InvalidParameterError
-from prov2.rest.util import *
-from prov2.util import norm_mac, norm_ip
+from prov.devices.util import NumericIdGenerator
+from prov.services import InvalidParameterError
+from prov.rest.util import *
+from prov.util import norm_mac, norm_ip
 
 # TODO input checking
 
 
-PROV2_MIME_TYPE = 'application/vnd.proformatique.prov2+json'
+PROV_MIME_TYPE = 'application/vnd.proformatique.prov+json'
 _PPRINT = True
 if _PPRINT:
     import functools
@@ -53,7 +53,7 @@ def _process_request_failed(request, err_msg, response_code=http.BAD_REQUEST):
 
 
 def dev_json_repr(dev, dev_id, dev_uri):
-    """Return a application/vnd.proformatique.prov2+json representation of
+    """Return a application/vnd.proformatique.prov+json representation of
     a device.
     
     """
@@ -71,12 +71,12 @@ class DeviceResource(Resource):
         self._app = app
         self._dev_id = dev_id
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         dev = self._app.retrieve_dev(self._dev_id)
         
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return dev_json_repr(dev, self._dev_id, request.path)
 
     def render_DELETE(self, request):
@@ -92,7 +92,7 @@ class DeviceResource(Resource):
         request.finish()
         return NOT_DONE_YET
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_PUT(self, request):
         content = json.loads(request.content.getvalue())
         dev = content['device']
@@ -115,7 +115,7 @@ class DevicesResource(Resource):
         else:
             return Resource.getChild(self, path, request)
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         if request.args:
             # we do not accept multiple filter parameter right now
@@ -144,10 +144,10 @@ class DevicesResource(Resource):
                             'device': dev,
                             'links': [{'rel': 'device', 'href': request.path + '/' + dev_id}]})
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'devices': devices})
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         dev = content['device']
@@ -165,7 +165,7 @@ class DeviceSynchronizeResource(Resource):
         Resource.__init__(self)
         self._app = app
         
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         dev_id = content['id']
@@ -185,7 +185,7 @@ class ConfigResource(Resource):
         self._app = app
         self._cfg_id = cfg_id
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         if self._cfg_id not in self._app.cfg_mgr:
             return NoResource().render(request)
@@ -196,7 +196,7 @@ class ConfigResource(Resource):
                 return u"Invalid request".encode('UTF-8')
              
             request.setResponseCode(http.OK)
-            request.setHeader('Content-Type', PROV2_MIME_TYPE)
+            request.setHeader('Content-Type', PROV_MIME_TYPE)
             if request.args['f'][0] == 'i':
                 return self._ind_repr()
             else:
@@ -234,7 +234,7 @@ class ConfigResource(Resource):
             request.finish()
             return NOT_DONE_YET
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_PUT(self, request):
         # TODO check input validity
         received = json.loads(request.content.getvalue())
@@ -259,7 +259,7 @@ class ConfigsResource(Resource):
         cfg_id = path
         return ConfigResource(self._app, cfg_id)
 
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         configs = []
         for cfg_id in self._app.cfg_mgr.iterkeys():
@@ -267,7 +267,7 @@ class ConfigsResource(Resource):
                             'links': [{'rel': 'config-i', 'href': request.path + '/' + cfg_id + '?f=i'},
                                       {'rel': 'config-c', 'href': request.path + '/' + cfg_id + '?f=c'}]})
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'configs': configs})
 
 
@@ -282,10 +282,10 @@ class PopResource(Resource):
         Resource.__init__(self)
         self._pop = pop
 
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'pop.status': self._pop.status})
 
 
@@ -302,7 +302,7 @@ class PluginMgrUpdateResource(Resource):
         else:
             return Resource.getChild(self, path, request)
 
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         # right now, we can ignore the content, since it's supposed to be empty
         try:
@@ -331,12 +331,12 @@ class PluginMgrListInstallableResource(Resource):
         Resource.__init__(self)
         self._pg_mgr = pg_mgr
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         list = [{'id': e['name'], 'version': e['version']} for e in
                 self._pg_mgr.list_installable()]
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'pg_infos': list})
 
 
@@ -345,7 +345,7 @@ class PluginMgrListInstalledResource(Resource):
         Resource.__init__(self)
         self._pg_mgr = pg_mgr
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         list = []
         for e in self._pg_mgr.list_installed():
@@ -355,7 +355,7 @@ class PluginMgrListInstalledResource(Resource):
             cur = {'id': e['name'], 'version': e['version'], 'links': links}
             list.append(cur)
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'pg_infos': list})
         
 
@@ -364,12 +364,12 @@ class PluginMgrListUpgradeableResource(Resource):
         Resource.__init__(self)
         self._pg_mgr = pg_mgr
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         list = [{'id': e['name'], 'version': e['version']} for e in
                 self._pg_mgr.list_upgradeable()]
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'pg_infos': list})
 
 
@@ -379,17 +379,17 @@ class PluginMgrConfigureParamResource(Resource):
         self._cfg_service = cfg_service
         self._param = param
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         value = self._cfg_service.get(self._param)
         if value is None:
             return json.dumps({})
         else:
             return json.dumps({'value': value})
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_PUT(self, request):
         content = json.loads(request.content.getvalue())
         if 'value' in content:
@@ -421,7 +421,7 @@ class PluginMgrConfigureResource(Resource):
             res = PluginMgrConfigureParamResource(cfg_service, path)
             return res
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         cfg_service = self._pg_mgr.configure_service()
         params = {}
@@ -435,7 +435,7 @@ class PluginMgrConfigureResource(Resource):
             params[key] = p_value
         
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'config': params})
 
 
@@ -455,7 +455,7 @@ class _PluginMgrInstallUpgradeResource(Resource):
     def _do_call_app(self, pg_id):
         raise NotImplementedError('must be implemented in derived class')
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         try:
@@ -497,7 +497,7 @@ class PluginMgrUninstallRecourse(Resource):
         Resource.__init__(self)
         self._app = app
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         try:
@@ -544,10 +544,10 @@ class PluginResource(Resource):
             return self._service_res
         return Resource.getChild(self, path, request)
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         res = {"id": self._id,
                "links": [{"rel": "services",
                           "href": request.path + '/' + 'services'}]}
@@ -570,10 +570,10 @@ class PluginInstallServiceResource(Resource):
         except KeyError:
             return Resource.getChild(self, path, request)
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         links = [{"rel": "service.install." + e, "href": request.path + '/' + e} for e in self._childs]
         res = {"type": "service.install",
                "links": links}
@@ -593,7 +593,7 @@ class PluginInstallServiceInstallResource(Resource):
         else:
             return Resource.getChild(self, path, request)
         
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         try:
@@ -625,7 +625,7 @@ class PluginInstallServiceUninstallResource(Resource):
         Resource.__init__(self)
         self._srv = install_service
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         try:
@@ -647,11 +647,11 @@ class PluginInstallServiceListInstalledResource(Resource):
         Resource.__init__(self)
         self._srv = install_service
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         list = [{'id': e['id']} for e in self._srv.list_installed()]
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'pkg_infos': list})
 
 
@@ -660,7 +660,7 @@ class PluginInstallServiceListInstallableResource(Resource):
         Resource.__init__(self)
         self._srv = install_service
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         list = []
         for e in self._srv.list_installable():
@@ -671,7 +671,7 @@ class PluginInstallServiceListInstallableResource(Resource):
                 d['isize'] = e['isize']
             list.append(d)
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({'pkg_infos': list})
 
 
@@ -686,10 +686,10 @@ class PluginUnknownServiceResource(Resource):
         else:
             return Resource.getChild(self, path, request)
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         return json.dumps({"service": {"type": "service.unknown",
                                        "links": [{"rel": "service.unknown.do",
                                                   "href": self.path + '/' + 'do'}]}})
@@ -700,7 +700,7 @@ class PluginUnknownDoServiceResource(Resource):
         Resource.__init__(self)
         self._service = service
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         value = content['value']
@@ -710,7 +710,7 @@ class PluginUnknownDoServiceResource(Resource):
             return _process_request_failed(request, e, http.INTERNAL_SERVER_ERROR)
         else:
             request.setResponseCode(http.OK)
-            request.setHeader('Content-Type', PROV2_MIME_TYPE)
+            request.setHeader('Content-Type', PROV_MIME_TYPE)
             return json.dumps({'value': str(ret_value)})
 
 
@@ -737,10 +737,10 @@ class PluginServicesResource(Resource):
         except KeyError:
             return Resource.getChild(self, path, request)
     
-    @accept([PROV2_MIME_TYPE])
+    @accept([PROV_MIME_TYPE])
     def render_GET(self, request):
         request.setResponseCode(http.OK)
-        request.setHeader('Content-Type', PROV2_MIME_TYPE)
+        request.setHeader('Content-Type', PROV_MIME_TYPE)
         res = []
         for srv_name in self._childs:
             type = self.STANDARDIZED_SRVS.get(srv_name, 'service.unknown')
@@ -767,7 +767,7 @@ class DHCPInfoResource(Resource):
             dhcp_opts[code] = value
         return dhcp_opts
     
-    @content_type([PROV2_MIME_TYPE])
+    @content_type([PROV_MIME_TYPE])
     def render_POST(self, request):
         content = json.loads(request.content.getvalue())
         op = content['op'].encode('ascii')

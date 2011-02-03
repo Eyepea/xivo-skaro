@@ -22,7 +22,7 @@ __license__ = """
 #       the output of each test and compare it with the expected output...
 
 import time
-from prov2.synchro import DeferredRWLock
+from prov.synchro import DeferredRWLock
 from twisted.internet import defer
 from twisted.internet import reactor
 

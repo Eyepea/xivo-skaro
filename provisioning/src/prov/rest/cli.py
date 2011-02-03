@@ -22,7 +22,7 @@ __license__ = """
 
 import cmd
 from pprint import pprint
-from prov2.rest.client import RestClientService
+from prov.rest.client import RestClientService
 
 
 class Cli(cmd.Cmd):
@@ -30,7 +30,7 @@ class Cli(cmd.Cmd):
     # the restrictions imposed by Cmd. We would like our command to
     # be a bit more 'hierarchical', like those in asterisk.
     
-    prompt = 'prov2> '
+    prompt = 'prov> '
     
     def __init__(self, service):
         cmd.Cmd.__init__(self)

@@ -24,8 +24,8 @@ __license__ = """
 """
 
 import os.path
-from prov2.plugins import Plugin
-from prov2.servers.tftp.service import TFTPFileService
+from prov.plugins import Plugin
+from prov.servers.tftp.service import TFTPFileService
 from twisted.web.static import File
 
 

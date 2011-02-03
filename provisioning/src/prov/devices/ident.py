@@ -25,8 +25,8 @@ __license__ = """
 
 import copy
 import logging
-from prov2.plugins import BasePluginManagerObserver
-from prov2.servers.tftp.service import TFTPNullService
+from prov.plugins import BasePluginManagerObserver
+from prov.servers.tftp.service import TFTPNullService
 from twisted.internet import defer
 from twisted.web.resource import Resource, NoResource
 from zope.interface import Interface, implements
@@ -36,7 +36,7 @@ logger = logging.getLogger('ident')
 
 def _extract_tftp_ip(request):
     """Utility function that return the IP address from a TFTP request
-    object (prov2.servers.tftp).
+    object (prov.servers.tftp).
     
     """ 
     return request['address'][0].decode('ascii')
@@ -99,7 +99,7 @@ class IDeviceInfoExtractor(Interface):
         
         So far, request_type is either 'http', 'tftp' or 'dhcp'.
         - For 'http', request is a twisted.web.http.Request object.
-        - For 'tftp', request is a prov2.servers.tftp.request object.
+        - For 'tftp', request is a prov.servers.tftp.request object.
         - For 'dhcp', request is a dictionary object with keys 'mac' and
           'dhcp_opts'.
         
@@ -881,7 +881,7 @@ class HTTPRequestProcessingService(Resource):
         dev, pg_id = yield self._process_service.process(request, ip, 'http')
         
         # Here we 'inject' the device object into the request object
-        request.prov2_dev = dev
+        request.prov_dev = dev
 
         service = self.default_service        
         if pg_id in self._pg_mgr:
@@ -911,7 +911,7 @@ class TFTPRequestProcessingService(object):
     def handle_read_request(self, request, response):
         def aux((dev, pg_id)):
             # Here we 'inject' the device object into the request object
-            request['prov2_dev'] = dev
+            request['prov_dev'] = dev
             
             service = self.default_service
             if pg_id in self._pg_mgr:

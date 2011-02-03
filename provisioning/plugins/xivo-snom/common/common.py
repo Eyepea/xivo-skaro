@@ -23,12 +23,12 @@ __license__ = """
 import os.path
 import re
 from jinja2 import TemplateNotFound
-from prov2.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from prov.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT,\
     INCOMPLETE_SUPPORT
-from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
+from prov.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov2.util import norm_mac, format_mac
+from prov.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.web.resource import Resource
 from twisted.web.static import Data, File
@@ -138,7 +138,7 @@ class BaseSnomHTTPService(Resource):
         # reboot at the same time
         # we do not render the base.xxx.tpl -- these are generated per request
         if not path.startswith('base'):
-            dev = request.prov2_dev
+            dev = request.prov_dev
             if dev and 'config' in dev:
                 try:
                     tpl = self._tpl_helper.get_template(path + '.tpl')

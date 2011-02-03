@@ -40,12 +40,12 @@ import urllib2
 from fetchfw2.download import DefaultDownloader, InvalidCredentialsError,\
     DownloadError, new_handlers, new_downloaders
 from fetchfw2.storage import RemoteFileBuilder
-from prov2.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from prov.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT, \
     INCOMPLETE_SUPPORT
-from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
+from prov.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov2.util import norm_mac, format_mac
+from prov.util import norm_mac, format_mac
 from twisted.internet import defer
 from xivo import tzinform
 

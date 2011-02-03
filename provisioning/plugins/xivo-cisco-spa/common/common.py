@@ -26,12 +26,12 @@ import math
 import os.path
 import re
 from xml.sax.saxutils import escape
-from prov2 import sip
-from prov2.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from prov import sip
+from prov.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT
-from prov2.plugins import StandardPlugin, FetchfwPluginHelper,\
+from prov.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov2.util import norm_mac, format_mac
+from prov.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
 from xivo import tzinform

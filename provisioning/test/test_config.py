@@ -19,10 +19,10 @@ __license__ = """
 """
 
 import unittest
-from prov2.devices.config import ConfigManager 
-from prov2.persist.id import numeric_id_generator
-from prov2.persist.memory import new_list_collection
-from prov2.persist.common import ID_KEY
+from prov.devices.config import ConfigManager 
+from prov.persist.id import numeric_id_generator
+from prov.persist.memory import new_list_collection
+from prov.persist.common import ID_KEY
 
 
 def new_collection():

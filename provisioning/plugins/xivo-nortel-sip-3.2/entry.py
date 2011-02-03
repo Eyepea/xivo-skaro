@@ -25,7 +25,7 @@ __license__ = """
 import urllib2
 from fetchfw2.download import DownloadError, new_handlers, new_downloaders
 from fetchfw2.storage import RemoteFileBuilder
-from prov2.plugins import StandardPlugin, FetchfwPluginHelper
+from prov.plugins import StandardPlugin, FetchfwPluginHelper
 
 
 class NortelDownloader(object):

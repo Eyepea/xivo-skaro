@@ -74,7 +74,7 @@ class HTTPAsyncHookService(BaseHTTPHookService):
     value, since this value is going to be ignored. 
     
     IT CAN ONLY BE USED WITH A NON STANDARD IMPLEMENTATION OF SITE (see
-    prov2.servers.http_site.Site).
+    prov.servers.http_site.Site).
     
     """
 
@@ -106,7 +106,7 @@ class HTTPLogService(HTTPHookService):
 
 
 if __name__ == '__main__':
-    from prov2.servers.http_site import Site
+    from prov.servers.http_site import Site
     from twisted.web.resource import NoResource
     from twisted.python import log
     import sys

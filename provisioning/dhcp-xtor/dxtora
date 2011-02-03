@@ -44,7 +44,7 @@ from logging.handlers import SysLogHandler
 CONFIG_FILE      = '/etc/pf-xivo/dxtora.conf'
 PID_FILE         = '/var/run/dxtora.pid'
 UNIX_SERVER_ADDR = '/var/run/dxtora.ctl'
-PROV2_MIME_TYPE  = 'application/vnd.proformatique.prov2+json'
+PROV_MIME_TYPE  = 'application/vnd.proformatique.prov+json'
 
 logger = logging.getLogger('dxtora')
 
@@ -143,7 +143,7 @@ class ProvServerDHCPInfoSink(object):
         pass
     
     def _update_resource_uri(self):
-        headers = {'Accept': PROV2_MIME_TYPE}
+        headers = {'Accept': PROV_MIME_TYPE}
         request = urllib2.Request(self._base_uri, headers=headers)
         f = self._opener.open(request)
         try:
@@ -161,7 +161,7 @@ class ProvServerDHCPInfoSink(object):
     def _do_push(self, dhcp_info, retry_on_404=True):
         if self._resource_uri is None:
             self._update_resource_uri()
-        headers = {'Accept': '*/*', 'Content-Type': PROV2_MIME_TYPE}
+        headers = {'Accept': '*/*', 'Content-Type': PROV_MIME_TYPE}
         content = json.dumps(dhcp_info)
         request = urllib2.Request(self._base_uri, content, headers=headers)
         try:

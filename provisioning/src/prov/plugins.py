@@ -27,9 +27,9 @@ import os
 import shutil
 import tarfile
 import weakref
-from prov2 import progressop
-from prov2.servers.tftp.service import TFTPFileService
-from prov2.services import AttrConfigureServiceParam, BaseConfigureService,\
+from prov import progressop
+from prov.servers.tftp.service import TFTPFileService
+from prov.services import AttrConfigureServiceParam, BaseConfigureService,\
     IInstallService
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
@@ -214,7 +214,7 @@ class Plugin(object):
     a HTTPRequestProcessing object).
     
     XXX the request object passed to the render method of this service
-    has a 'prov2_dev' attribute set to the device object which is doing
+    has a 'prov_dev' attribute set to the device object which is doing
     this request, or None (but the attribute is always present).
     
     """
@@ -224,7 +224,7 @@ class Plugin(object):
     TFTP request or None if there's no such object.
     
     In this case, request objects are as defined in the
-    prov2.servers.tftp.service module.
+    prov.servers.tftp.service module.
     
     """
 
@@ -237,7 +237,7 @@ class Plugin(object):
     a TFTPRequestProcessing object).
     
     XXX the request object passed to the handle_read_request method of this
-    service has a 'prov2_dev' key set to the device object which is doing
+    service has a 'prov_dev' key set to the device object which is doing
     this request, or None (but the attribute is always present).
     
     """
@@ -669,7 +669,7 @@ class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
     
     PgMgr objects have a 'server' attribute which represent the base address
-    of the plugins repository (ex.: http://www.example.com/prov2/stable). It
+    of the plugins repository (ex.: http://www.example.com/prov/stable). It
     can be set to None if no server is specified.
     
     A 'plugin info' object is a mapping object with the following keys:
