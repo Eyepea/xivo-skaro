@@ -25,8 +25,8 @@ __license__ = """
 
 import copy
 import logging
-from prov.plugins import BasePluginManagerObserver
-from prov.servers.tftp.service import TFTPNullService
+from provd.plugins import BasePluginManagerObserver
+from provd.servers.tftp.service import TFTPNullService
 from twisted.internet import defer
 from twisted.web.resource import Resource, NoResource
 from zope.interface import Interface, implements
@@ -36,7 +36,7 @@ logger = logging.getLogger('ident')
 
 def _extract_tftp_ip(request):
     """Utility function that return the IP address from a TFTP request
-    object (prov.servers.tftp).
+    object (provd.servers.tftp).
     
     """ 
     return request['address'][0].decode('ascii')
@@ -99,7 +99,7 @@ class IDeviceInfoExtractor(Interface):
         
         So far, request_type is either 'http', 'tftp' or 'dhcp'.
         - For 'http', request is a twisted.web.http.Request object.
-        - For 'tftp', request is a prov.servers.tftp.request object.
+        - For 'tftp', request is a provd.servers.tftp.request object.
         - For 'dhcp', request is a dictionary object with keys 'mac' and
           'dhcp_opts'.
         

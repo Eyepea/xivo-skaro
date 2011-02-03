@@ -20,8 +20,8 @@ __license__ = """
 
 import os.path
 import shelve
-from prov.persist.id import get_id_generator_factory
-from prov.persist.util import new_backend_based_collection
+from provd.persist.id import get_id_generator_factory
+from provd.persist.util import new_backend_based_collection
 
 
 def _convert_to_backend(self, id):

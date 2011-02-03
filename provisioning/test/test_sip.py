@@ -19,7 +19,7 @@ __license__ = """
 """
 
 import unittest
-from prov.sip import Parameters, URI 
+from provd.sip import Parameters, URI 
 
 
 class TestURIParameters(unittest.TestCase):

@@ -22,7 +22,7 @@ __license__ = """
 
 import cmd
 from pprint import pprint
-from prov.rest.client import RestClientService
+from provd.rest.client import RestClientService
 
 
 class Cli(cmd.Cmd):

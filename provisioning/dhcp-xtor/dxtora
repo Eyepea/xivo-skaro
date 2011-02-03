@@ -44,7 +44,7 @@ from logging.handlers import SysLogHandler
 CONFIG_FILE      = '/etc/pf-xivo/dxtora.conf'
 PID_FILE         = '/var/run/dxtora.pid'
 UNIX_SERVER_ADDR = '/var/run/dxtora.ctl'
-PROV_MIME_TYPE  = 'application/vnd.proformatique.prov+json'
+PROV_MIME_TYPE   = 'application/vnd.proformatique.provd+json'
 
 logger = logging.getLogger('dxtora')
 

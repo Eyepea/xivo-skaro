@@ -29,17 +29,17 @@ import logging
 import logging.handlers
 import functools
 import os.path
-import prov.config
-import prov.devices.ident
-import prov.devices.pgasso
-from prov.servers.tftp.proto import TFTPProtocol
-from prov.servers.http_site import Site
-from prov.synchro import DeferredRWLock
-from prov.persist.memory import MemoryDatabaseFactory
-from prov.persist.shelve import ShelveDatabaseFactory
-from prov.persist.common import ID_KEY
-from prov.plugins import PluginManager
-from prov.rest.server import new_root_resource
+import provd.config
+import provd.devices.ident
+import provd.devices.pgasso
+from provd.servers.tftp.proto import TFTPProtocol
+from provd.servers.http_site import Site
+from provd.synchro import DeferredRWLock
+from provd.persist.memory import MemoryDatabaseFactory
+from provd.persist.shelve import ShelveDatabaseFactory
+from provd.persist.common import ID_KEY
+from provd.plugins import PluginManager
+from provd.rest.server import new_root_resource
 from twisted.application.service import IServiceMaker, Service, MultiService
 from twisted.application import internet
 from twisted.internet import defer
@@ -442,7 +442,7 @@ class ProvisioningApplication(object):
         
         """
         self._cfg_check_validity(config)
-        # XXX next line might throw an prov.persist.common.InvalidIdError. We
+        # XXX next line might throw an provd.persist.common.InvalidIdError. We
         #     may want to catch it and throw a InvalidIdError...
         id = yield self._cfg_collection.insert(config)
         defer.returnValue(id)
@@ -827,8 +827,8 @@ class ProcessService(Service):
     def _get_conffile_globals(self):
         # Pre: hasattr(self._prov_service, 'app')
         conffile_globals = {}
-        conffile_globals.update(prov.devices.ident.__dict__)
-        conffile_globals.update(prov.devices.pgasso.__dict__)
+        conffile_globals.update(provd.devices.ident.__dict__)
+        conffile_globals.update(provd.devices.pgasso.__dict__)
         conffile_globals['app'] = self._prov_service.app
         conffile_globals['dhcp_infos'] = self._dhcp_infos
         return conffile_globals
@@ -850,7 +850,7 @@ class ProcessService(Service):
     def startService(self):
         # Pre: hasattr(self._prov_service, 'app')
         Service.startService(self)
-        self.request_processing = prov.devices.ident.RequestProcessingService(self._prov_service.app)
+        self.request_processing = provd.devices.ident.RequestProcessingService(self._prov_service.app)
         config_dir = self._config['general.config_dir']
         for name in ('info_extractor', 'retriever', 'updater', 'router'):
             setattr(self.request_processing, 'dev_' + name,
@@ -868,7 +868,7 @@ class HTTPProcessService(Service):
         
         app = self._prov_service.app
         process_service = self._process_service.request_processing
-        http_process_service = prov.devices.ident.HTTPRequestProcessingService(process_service,
+        http_process_service = provd.devices.ident.HTTPRequestProcessingService(process_service,
                                                                                 app.pg_mgr) 
         site = Site(http_process_service)
         port = self._config['general.http_port']
@@ -894,7 +894,7 @@ class TFTPProcessService(Service):
         
         app = self._prov_service.app
         process_service = self._process_service.request_processing
-        tftp_process_service = prov.devices.ident.TFTPRequestProcessingService(process_service,
+        tftp_process_service = provd.devices.ident.TFTPRequestProcessingService(process_service,
                                                                                 app.pg_mgr)
         tftp_protocol = TFTPProtocol(tftp_process_service)
         port = self._config['general.tftp_port']
@@ -940,13 +940,13 @@ class _CompositeConfigSource(object):
     def pull(self):
         raw_config = {}
         
-        default = prov.config.DefaultConfigSource()
+        default = provd.config.DefaultConfigSource()
         raw_config.update(default.pull())
         
-        command_line = prov.config.CommandLineConfigSource(self._options)
+        command_line = provd.config.CommandLineConfigSource(self._options)
         raw_config.update(command_line.pull())
         
-        config_file = prov.config.ConfigFileConfigSource(raw_config['general.config_file'])
+        config_file = provd.config.ConfigFileConfigSource(raw_config['general.config_file'])
         raw_config.update(config_file.pull())
         
         return raw_config
@@ -955,13 +955,13 @@ class _CompositeConfigSource(object):
 class ProvisioningServiceMaker(object):
     implements(IServiceMaker, IPlugin)
     
-    tapname = "prov"
+    tapname = "provd"
     description = "A provisioning server."
-    options = prov.config.Options
+    options = provd.config.Options
     
     def _read_config(self, options):
         config_sources = [_CompositeConfigSource(options)]
-        return prov.config.get_config(config_sources)
+        return provd.config.get_config(config_sources)
     
     def makeService(self, options):
         config = self._read_config(options)

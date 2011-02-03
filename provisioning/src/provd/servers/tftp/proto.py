@@ -20,8 +20,8 @@ __license__ = """
 
 import logging
 from twisted.internet.protocol import DatagramProtocol
-from prov.servers.tftp.connection import RFC2347Connection, RFC1350Connection
-from prov.servers.tftp.packet import *
+from provd.servers.tftp.connection import RFC2347Connection, RFC1350Connection
+from provd.servers.tftp.packet import *
 
 logger = logging.getLogger('tftp.proto')
 

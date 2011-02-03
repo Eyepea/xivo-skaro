@@ -42,5 +42,5 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from prov.servers.tftp.proto import TFTPProtocol
-from prov.servers.tftp.service import *
+from provd.servers.tftp.proto import TFTPProtocol
+from provd.servers.tftp.service import *

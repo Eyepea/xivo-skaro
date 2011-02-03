@@ -24,7 +24,7 @@ __license__ = """
 
 from pymongo.errors import DuplicateKeyError
 from pymongo.objectid import ObjectId
-from prov.persist.common import ID_KEY, InvalidIdError
+from provd.persist.common import ID_KEY, InvalidIdError
 
 _MONGO_ID_KEY = u'_id'
 

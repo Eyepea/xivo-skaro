@@ -66,7 +66,7 @@ __license__ = """
 """
 
 import ConfigParser
-from prov.util import norm_ip
+from provd.util import norm_ip
 from twisted.python import usage
 
 # XXX right now, bad parameter names will be silently ignored, and we might
@@ -94,10 +94,10 @@ class DefaultConfigSource(object):
     """
     
     _DEFAULT_RAW_CONFIG = {
-        'general.config_file': '/etc/pf-xivo/prov/prov.conf',
-        'general.config_dir': '/etc/pf-xivo/prov',
-        'general.cache_dir': '/var/cache/pf-xivo/prov',
-        'general.plugins_dir': '/var/lib/pf-xivo/prov/plugins',
+        'general.config_file': '/etc/pf-xivo/provd/provd.conf',
+        'general.config_dir': '/etc/pf-xivo/provd',
+        'general.cache_dir': '/var/cache/pf-xivo/provd',
+        'general.plugins_dir': '/var/lib/pf-xivo/provd/plugins',
         'general.info_extractor': 'default',
         'general.retriever': 'default',
         'general.updater': 'default',
@@ -108,7 +108,7 @@ class DefaultConfigSource(object):
         'general.rest_port': '8081',
         'database.type': 'shelve',
         'database.generator': 'default',
-        'database.shelve_dir': '/var/lib/pf-xivo/prov/shelvedb',
+        'database.shelve_dir': '/var/lib/pf-xivo/provd/shelvedb',
     }
     
     def pull(self):

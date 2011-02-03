@@ -18,7 +18,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from prov.persist.common import ID_KEY, InvalidIdError
+from provd.persist.common import ID_KEY, InvalidIdError
 from twisted.internet import defer
 from zope.interface import Interface
 

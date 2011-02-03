@@ -19,10 +19,10 @@ __license__ = """
 """
 
 import unittest
-import prov.persist.memory as memory
-from prov.persist.common import ID_KEY
-from prov.persist.id import numeric_id_generator, urandom_id_generator
-from prov.persist.util import _select_value, _create_predicate_from_selector,\
+import provd.persist.memory as memory
+from provd.persist.common import ID_KEY
+from provd.persist.id import numeric_id_generator, urandom_id_generator
+from provd.persist.util import _select_value, _create_predicate_from_selector,\
     _create_value_matcher
 
 # TODO fix the test so they all work with the new async interface

@@ -27,9 +27,9 @@ import os
 import shutil
 import tarfile
 import weakref
-from prov import progressop
-from prov.servers.tftp.service import TFTPFileService
-from prov.services import AttrConfigureServiceParam, BaseConfigureService,\
+from provd import progressop
+from provd.servers.tftp.service import TFTPFileService
+from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
     IInstallService
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
@@ -37,9 +37,9 @@ from twisted.web.static import File
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
 from jinja2.loaders import FileSystemLoader
-from fetchfw2.download import new_handlers, new_downloaders
-from fetchfw2.package import PackageManager, DefaultInstaller
-from fetchfw2.storage import RemoteFileBuilder, InstallationMgrBuilder,\
+from fetchfw.download import new_handlers, new_downloaders
+from fetchfw.package import PackageManager, DefaultInstaller
+from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
     DefaultPackageStorage
 from zope.interface import Attribute, Interface, implements
 
@@ -224,7 +224,7 @@ class Plugin(object):
     TFTP request or None if there's no such object.
     
     In this case, request objects are as defined in the
-    prov.servers.tftp.service module.
+    provd.servers.tftp.service module.
     
     """
 
@@ -669,7 +669,7 @@ class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
     
     PgMgr objects have a 'server' attribute which represent the base address
-    of the plugins repository (ex.: http://www.example.com/prov/stable). It
+    of the plugins repository (ex.: http://www.example.com/provd/stable). It
     can be set to None if no server is specified.
     
     A 'plugin info' object is a mapping object with the following keys:

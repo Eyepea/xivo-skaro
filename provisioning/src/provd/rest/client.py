@@ -34,7 +34,7 @@ import simplejson as json
 # might want to eventually consider the more robust solution...
 # XXX we might want to look at using something else than urllib2... 
 
-PROV_MIME_TYPE = 'application/vnd.proformatique.prov+json'
+PROV_MIME_TYPE = 'application/vnd.proformatique.provd+json'
 
 
 class RemoteServerError(Exception):

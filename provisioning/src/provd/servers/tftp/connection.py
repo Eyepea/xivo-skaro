@@ -24,7 +24,7 @@ import struct
 import logging
 
 from twisted.internet.protocol import DatagramProtocol
-from prov.servers.tftp.packet import *
+from provd.servers.tftp.packet import *
 
 # TODO RFC1122 says we must use an adaptive timeout...
 # TODO handle more gracefully the case where we want to send a file larger

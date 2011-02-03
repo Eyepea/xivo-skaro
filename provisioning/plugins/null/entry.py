@@ -23,8 +23,8 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from prov.plugins import Plugin
-from prov.servers.tftp.service import TFTPNullService
+from provd.plugins import Plugin
+from provd.servers.tftp.service import TFTPNullService
 from twisted.web.resource import NoResource
 
 

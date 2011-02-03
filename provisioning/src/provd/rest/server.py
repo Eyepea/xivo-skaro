@@ -31,15 +31,15 @@ except ImportError:
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web import http
-from prov.devices.util import NumericIdGenerator
-from prov.services import InvalidParameterError
-from prov.rest.util import *
-from prov.util import norm_mac, norm_ip
+from provd.devices.util import NumericIdGenerator
+from provd.services import InvalidParameterError
+from provd.rest.util import *
+from provd.util import norm_mac, norm_ip
 
 # TODO input checking
 
 
-PROV_MIME_TYPE = 'application/vnd.proformatique.prov+json'
+PROV_MIME_TYPE = 'application/vnd.proformatique.provd+json'
 _PPRINT = True
 if _PPRINT:
     import functools
@@ -53,7 +53,7 @@ def _process_request_failed(request, err_msg, response_code=http.BAD_REQUEST):
 
 
 def dev_json_repr(dev, dev_id, dev_uri):
-    """Return a application/vnd.proformatique.prov+json representation of
+    """Return a application/vnd.proformatique.provd+json representation of
     a device.
     
     """

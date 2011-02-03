@@ -23,12 +23,12 @@ __license__ = """
 import os.path
 import re
 from jinja2 import TemplateNotFound
-from prov.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT,\
     INCOMPLETE_SUPPORT
-from prov.plugins import StandardPlugin, FetchfwPluginHelper,\
+from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
-from prov.util import norm_mac, format_mac
+from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.web.resource import Resource
 from twisted.web.static import Data, File

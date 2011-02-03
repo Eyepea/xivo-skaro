@@ -19,9 +19,9 @@ __license__ = """
 """
 
 import copy
-from prov.persist.common import ID_KEY
-from prov.persist.id import get_id_generator_factory
-from prov.persist.util import new_backend_based_collection
+from provd.persist.common import ID_KEY
+from provd.persist.id import get_id_generator_factory
+from provd.persist.util import new_backend_based_collection
 
 
 class DictSimpleBackend(object):
