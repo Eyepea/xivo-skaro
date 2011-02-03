@@ -5,53 +5,6 @@
 ; filename: FILENAME (opt: default=basename(URL))
 ; downloader: [auth | default] (opt: default=default)
 
-[file_polycom-bootrom42]
-url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_BootROM_4_2_2_release_sig.zip
-size: 21452104
-sha1sum: 6bb960aa48e0b9a515218b1735b4735bf4088687
-
-[file_polycom-sipapp32]
-url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_vvx_3_2_3_release_sig_split.zip
-size: 93522406
-sha1sum: 3b709a6a764753e6a99e972779c06c71e4471fec
-
-
-
-[file_siemens-fw]
-url: http://gigaset.siemens.com/chagall/2/chagall214_02.bin
-size: 1835008
-sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
-
-
-
-[file_thomson-st2022fw]
-filename: st2022_v4.69.zip
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6957
-size: 6057065
-sha1sum: 278f981d50ad0a09623db381883569d18c7b7697
-
-[file_thomson-st2030fw]
-filename: st2030_v2.72.zip
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=7233
-size: 4643993
-sha1sum: 65b5a6cf179cbe6214ff48d840405933081b2dd0
-
-[file_thomson-tb30fw]
-filename: tb30_v1.72.zip
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=7190
-size: 4745006
-sha1sum: 22bb73764c5cc8ab045114a27f3a3e4336227f15
-
-
-
-[file_zenitel-ipstationfw]
-url: https://alphasupport.zenitel.com/alphawiki/downloads/A100G80200.01_10_3_4.zip
-size: 5003951
-sha1sum: 304c2037491f9ab2c75a89ad0791460cfd08a0d4
-downloader: auth
-
-
-
 [file_digium-oct61114-128fw]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-128-1.05.01.tar.gz
 size: 165849

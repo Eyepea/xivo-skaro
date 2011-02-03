@@ -10,69 +10,6 @@
 # conflict: ?
 # provides: ?
 
-[pkg_polycom-32]
-desc: Firmware and language files for Polycom SPIP 330, 335, 450, etc
-version: 3.2.3-1
-depends: pkg_polycom-bootrom42 pkg_polycom-sipapp32
-
-[pkg_polycom-bootrom42]
-desc: Bootrom for Polycom SPIP 330, etc
-version: 4.2.2-1
-hidden: yes
-files: file_polycom-bootrom42
-install_proc: install_polycom-bootrom42
-
-[pkg_polycom-sipapp32]
-desc: SIP application and language files for Polycom SPIP 330, 335, 450, etc
-version: 3.2.3-1
-hidden: yes
-files: file_polycom-sipapp32
-install_proc: install_polycom-sipapp32
-
-
-
-[pkg_siemens-c470ip]
-desc: Firmware for Siemens C470IP
-version: 02214-1
-files: file_siemens-fw
-install_proc: install_siemens-fw c470ip
-
-[pkg_siemens-s675ip]
-desc: Firmware for Siemens S675IP
-version: 02214-1
-files: file_siemens-fw
-install_proc: install_siemens-fw s675ip
-
-
-
-[pkg_thomson-st2022]
-desc: Firmware for Thomson ST2022
-version: 4.69-1
-files: file_thomson-st2022fw
-install_proc: install_thomson-fw v2022*.zz
-
-[pkg_thomson-st2030]
-desc: Firmware for Thomson ST2030
-version: 2.72-1
-files: file_thomson-st2030fw
-install_proc: install_thomson-fw v2030*.zz
-
-[pkg_thomson-tb30]
-desc: Firmware for Thomson TB30
-version: 1.72-1
-files: file_thomson-tb30fw
-install_proc: install_thomson-fw TB30S*.zz
-
-
-
-[pkg_zenitel-ipstation]
-desc: Firmware for all Zenitel IP stations
-version: 01.10.3.4-1
-files: file_zenitel-ipstationfw
-install_proc: install_zenitel-ipstationfw
-
-
-
 [pkg_digium-oct6114-128]
 desc: Firmware for Digium VPMOCT128M/VPM450M.
 version: 1.05.01
@@ -169,4 +106,4 @@ install_proc: install_sangoma-fw
 desc: Echo canceller for all cards.
 version: 3.5.18
 files: file_sangoma-echocan
-install_proc: install-sangoma-echocan
+install_proc: install_sangoma-echocan

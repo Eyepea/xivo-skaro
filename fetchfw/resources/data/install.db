@@ -35,6 +35,6 @@ b-c: cp * $KFW_ROOT/
 [install_sangoma-fw]
 a-b: cp $FILE1 /etc/wanpipe/firmware/
 
-[install-sangoma-echocan]
+[install_sangoma-echocan]
 a-b: untar $FILE1
 b-c: cp */wan_ec/*.ima /etc/wanpipe/wan_ec/

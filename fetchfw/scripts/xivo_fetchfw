@@ -25,7 +25,7 @@ import logging
 import optparse
 import os
 import sys
-from fetchfw2 import cli, config, util
+from fetchfw import cli, config, util
 
 
 def install(pkg_manager, opt, args):
