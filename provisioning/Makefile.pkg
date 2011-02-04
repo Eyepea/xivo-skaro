@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 10066 $
+# $Date: 2011-01-30 18:12:48 +0100 (Sun, 30 Jan 2011) $
+
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
+
+DEB_PKG="pf-xivo-provisioning"
+DEB_TB_DEPS=""
+
+default:
+
