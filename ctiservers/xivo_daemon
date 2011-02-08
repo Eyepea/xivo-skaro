@@ -22,7 +22,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2010 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
 """
@@ -576,8 +576,12 @@ class manage_connection:
         evlist = full_idata.split('\r\n\r\n')
         daemon.save_for_next_packet_events[astid] = evlist.pop()
 
-        for evt in evlist:
-            evt = evt.decode('utf8')
+        for ievt in evlist:
+            try:
+                evt = ievt.decode('utf8')
+            except Exception:
+                log.exception('%s could not decode event %r' % (astid, ievt))
+                continue
             this_event = {}
             nocolon = []
             for myline in evt.split('\r\n'):
@@ -692,6 +696,9 @@ class manage_connection:
                 else:
                     log.warning('AMI %s Other : %s' % (astid, this_event))
             # }
+        nevts = len(evlist)
+        if nevts > 200:
+            log.info('%s : handled %d (> 200) events' % (astid, nevts))
 
     @staticmethod
     def handle_ami_function(daemon, astid, evfunction, this_event):
@@ -1228,7 +1235,8 @@ class xivo_daemon:
                         self.commandclass.manage_logout(userinfo, 'end_sending')
                         del self.userinfo_by_requester[sel_o]
 
-                    log.info('TCP socket %s closed(sending %s) on %s' % (self.fdlist_established[sel_o], cexc, sel_o.getpeername()))
+                    log.info('TCP socket %s closed(sending %s) on %s'
+                             % (self.fdlist_established[sel_o], cexc, sel_o.getpeername()))
 
                     if sel_o in self.fdlist_established:
                         del self.fdlist_established[sel_o]
@@ -1243,8 +1251,9 @@ class xivo_daemon:
                     # these AMI connections are used in order to manage AMI commands and events
                     if sel_i in self.amilist.fdlist():
                         try:
-                            buf = sel_i.readline()
                             astid = self.amilist.astid(sel_i)
+                            sock = self.amilist.ami[astid].sock
+                            buf = sock.recv(200000)
                             if len(buf) == 0:
                                 log.warning('%s AMI : CLOSING' % astid)
                                 self.amilist.remove(astid)

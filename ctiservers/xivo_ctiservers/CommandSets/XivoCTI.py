@@ -3,7 +3,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2010 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,6 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.2'
 XIVOVERSION_NAME = 'gallifrey'
-REQUIRED_CLIENT_VERSION = 5680
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -127,6 +126,7 @@ class XivoCTICommand(BaseCommand):
                  'ipbxcommand',
                  'callcampaign',
 
+                 'getqueuesstats',
                  # to be prefixed with call. someday
                  'originate', 'dial',
                  'transfer', 'atxfer', 'park', 'intercept',
@@ -136,20 +136,25 @@ class XivoCTICommand(BaseCommand):
                  # record/monitor, listen/spy, ...
                  'sheet']
 
-    astid_vars = ['stats_queues',
-                  'last_agents',
-                  'last_queues',
-                  'attended_targetchannels',
-                  'uniqueids',
-                  'channels',
-                  'parkedcalls',
-                  'ignore_dtmf',
-                  'queues_channels_list',
-                  'origapplication',
-                  'events_link',
-                  'localchans',
-                  'amirequests',
-                  'getvar_requests']
+    astid_vars = [
+        # astid indexed hashes
+        'stats_queues',
+        'last_agents',
+        'last_queues',
+        'attended_targetchannels', # leaks might occur there
+        'uniqueids',
+        'channels',
+        'parkedcalls',
+        'ignore_dtmf',
+        'queues_channels_list',
+        'origapplication',
+        'events_link',
+        'localchans', # leaks might occur there
+        'rename_stack',
+        # astid + actionid (AMI) indexed hashes
+        'amirequests',
+        'getvar_requests',
+        ]
 
     def __init__(self, amilist, ctiports, queued_threads_pipe):
         BaseCommand.__init__(self)
@@ -194,30 +199,14 @@ class XivoCTICommand(BaseCommand):
         self.display_hints = {}
 
         # astid indexed hashes
-        self.stats_queues = {}
-        self.last_agents = {}
-        self.last_queues = {}
-        self.attended_targetchannels = {} # leaks
-        self.uniqueids = {}
-        self.channels = {}
-        self.parkedcalls = {}
-        self.ignore_dtmf = {}
-        self.queues_channels_list = {}
-        self.origapplication = {}
-        self.events_link = {}
-        self.localchans = {} # leaks
-        self.rename_stack = {}
-        # astid + actionid (AMI) indexed hashes
-        self.amirequests = {}
-        self.getvar_requests = {}
+        for astid_var in self.astid_vars:
+            setattr(self, astid_var, {})
 
         self.logintimeout = 5
         self.save_memused = 0
 
         self.parting_astid = False
         self.parting_context = False
-
-        self.required_client_version = REQUIRED_CLIENT_VERSION
 
         # new style
         self.sheetmanager = {}
@@ -349,14 +338,16 @@ class XivoCTICommand(BaseCommand):
             xivoversion = loginparams.get('xivoversion')
             if xivoversion != XIVOVERSION_NUM:
                 return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
-            svnversion = loginparams.get('version')
+            if 'git_hash' in loginparams and 'git_date' in loginparams:
+                rcsversion = '%s-%s' % (loginparams.get('git_date'), loginparams.get('git_hash'))
+            else:
+                rcsversion = loginparams.get('version')
+
             ident = loginparams.get('ident')
             whatsmyos = ident.split('-')[0]
             if whatsmyos.lower() not in ['x11', 'win', 'mac',
                                          'web', 'android', 'ios']:
                 return 'wrong_client_os_identifier:%s' % whatsmyos
-            if (not svnversion.isdigit()) or int(svnversion) < self.required_client_version:
-                return 'version_client:%s;%d' % (svnversion, self.required_client_version)
 
             # user match
             userinfo = None
@@ -366,7 +357,7 @@ class XivoCTICommand(BaseCommand):
             if userinfo == None:
                 return 'user_not_found'
             userinfo['prelogin'] = {'cticlientos' : whatsmyos,
-                                    'version' : svnversion,
+                                    'version' : rcsversion,
                                     'sessionid' : ''.join(random.sample(__alphanums__, 10))}
 
         elif phase == xivo_commandsets.CMD_LOGIN_PASS:
@@ -660,12 +651,16 @@ class XivoCTICommand(BaseCommand):
         if self.ctilog_conn is not None and self.ctilog_cursor is not None:
             try:
                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments', 'callduration')
+                columns = ('eventdate', 'loginclient', 'company', 'status',
+                           'action', 'arguments', 'callduration')
                 self.ctilog_cursor.query("INSERT INTO ctilog (${columns}) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                    columns,
-                    (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'),
-                        what, options, callduration))
+                                         "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                                         columns,
+                                         (datetime,
+                                          uinfo.get('user'),
+                                          uinfo.get('company'),
+                                          uinfo.get('state'),
+                                          what, options, callduration))
             except Exception:
                 log.exception('(__fill_user_ctilog__)')
             self.ctilog_conn.commit()
@@ -761,8 +756,6 @@ class XivoCTICommand(BaseCommand):
             if len(vv) > 1:
                 self.display_hints[v] = { 'longname' : vv[0],
                                           'color' : vv[1] }
-        if 'required_client_version' in xivocticonf:
-            self.required_client_version = int(xivocticonf['required_client_version'])
         return
 
     def set_configs(self, configs):
@@ -772,11 +765,8 @@ class XivoCTICommand(BaseCommand):
     def set_urllist(self, astid, listname, urllist):
             if listname == 'phones':
                 # XXX
-                for astid_hash in [self.uniqueids, self.channels,
-                                   self.queues_channels_list, self.attended_targetchannels,
-                                   self.ignore_dtmf, self.parkedcalls, self.origapplication,
-                                   self.amirequests, self.getvar_requests,
-                                   self.events_link, self.localchans, self.rename_stack]:
+                for astid_var in self.astid_vars:
+                    astid_hash = getattr(self, astid_var)
                     if astid not in astid_hash:
                         astid_hash[astid] = {}
             if listname in self.weblistprops:
@@ -931,6 +921,7 @@ class XivoCTICommand(BaseCommand):
             try:
                 idx = '.'.join([pitem.get('protocol'), pitem.get('context'),
                                 pitem.get('name'), pitem.get('number')])
+                # we don't read the phone terminations passwords
                 lplist[idx] = { 'number' : pitem.get('number'),
                                 'tech' : pitem.get('protocol'),
                                 'context': pitem.get('context'),
@@ -954,6 +945,7 @@ class XivoCTICommand(BaseCommand):
             try:
                 if not titem.get('commented'):
                     tid = titem.get('id')
+                    # we don't read the trunk passwords
                     ttlist[tid] = { 'name' :   titem.get('name'),
                                     'tech' :   titem.get('protocol'),
                                     'host' :   titem.get('host'),
@@ -1289,17 +1281,18 @@ class XivoCTICommand(BaseCommand):
                 if z:
                     z = z.get(idxes.pop(0))
             if z:
-              for k, v in z.iteritems():
-                if v: # since WEBI config generates a default {'null' : ''} entry
-                    try:
-                        r = urllib.urlopen(v)
-                        t = r.read().decode('utf8')
-                        r.close()
-                    except Exception, exc: # conscious limited exception output ("No such file or directory")
-                        log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
-                        t = None
-                    if t is not None:
-                        linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
+                for k, v in z.iteritems():
+                    if v: # since WEBI config generates a default {'null' : ''} entry
+                        try:
+                            r = urllib.urlopen(v)
+                            t = r.read().decode('utf8')
+                            r.close()
+                        except Exception, exc: # conscious limited exception output ("No such file or directory")
+                            log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                            t = None
+                        if t is not None:
+                            linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>'
+                                               % (sheetkind, k, t, sheetkind))
         return linestosend
 
     def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
@@ -2188,6 +2181,15 @@ class XivoCTICommand(BaseCommand):
             self.__ami_link__(astid, event)
         return
 
+    def ami_inherit(self, astid, event):
+        log.info('%s ami_inherit : %s' % (astid, event))
+        parentchannel = event.get('Parent')
+        childchannel = event.get('Child')
+        if childchannel.startswith('Local/') and childchannel.endswith(',1'):
+            uniqueid = self.channels[astid].get(parentchannel)
+            self.uniqueids[astid][uniqueid]['transfercancel'] = childchannel
+        return
+
     def ami_masquerade(self, astid, event):
         originalstate = event.get('OriginalState')
         clonestate = event.get('CloneState')
@@ -2622,41 +2624,40 @@ class XivoCTICommand(BaseCommand):
             queues_actions_list = ['queueadd', 'queueremove', 'queuepause', 'queueunpause',
                                    'queuepause_all', 'queueunpause_all']
             for actionname, paction in presenceactions.iteritems():
-                params = paction.split('|')
+                if actionname and paction:
+                    params = paction.split('|')
+                    # queues-related actions
+                    if actionname in queues_actions_list:
+                        if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
+                            agent_number = self.weblist['agents'][astid].keeplist[agent_id].get('number')
+                            agent_channel = 'Agent/%s' % agent_number
 
-                # queues-related actions
-                if actionname in queues_actions_list:
-                    if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
-                        agent_number = self.weblist['agents'][astid].keeplist[agent_id].get('number')
-                        agent_channel = 'Agent/%s' % agent_number
-
-                        if actionname == 'queueadd' and len(params) > 1:
-                            self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%s' % agent_id)
-                        elif actionname == 'queueremove' and len(params) > 0:
-                            self.__ami_execute__(astid, actionname, params[0], agent_channel)
-                        elif actionname == 'queuepause' and len(params) > 0:
-                            self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
-                        elif actionname == 'queueunpause' and len(params) > 0:
-                            self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
-                        elif actionname == 'queuepause_all':
-                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                if qv.get('Paused') == '0':
-                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
-                        elif actionname == 'queueunpause_all':
-                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                if qv.get('Paused') == '1':
-                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
-
-                # services-related actions
-                elif actionname in services_actions_list and len(params) > 0:
-                    if params[0] == 'false':
-                        booltonum = '0'
-                    else:
-                        booltonum = '1'
-                    rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
-                                                      actionname,
-                                                      booltonum)
-                    self.__send_msg_to_cti_client__(userinfo, rep)
+                            if actionname == 'queueadd' and len(params) > 1:
+                                self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%s' % agent_id)
+                            elif actionname == 'queueremove' and len(params) > 0:
+                                self.__ami_execute__(astid, actionname, params[0], agent_channel)
+                            elif actionname == 'queuepause' and len(params) > 0:
+                                self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
+                            elif actionname == 'queueunpause' and len(params) > 0:
+                                self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
+                            elif actionname == 'queuepause_all':
+                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                    if qv.get('Paused') == '0':
+                                        self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
+                            elif actionname == 'queueunpause_all':
+                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                    if qv.get('Paused') == '1':
+                                        self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
+                    # services-related actions
+                    elif actionname in services_actions_list and len(params) > 0:
+                        if params[0] == 'false':
+                            booltonum = '0'
+                        else:
+                            booltonum = '1'
+                        rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
+                                                          actionname,
+                                                          booltonum)
+                        self.__send_msg_to_cti_client__(userinfo, rep)
         except Exception:
             log.exception('(__presence_action__) %s %s %s %s' % (astid, agent_id, capaid, status))
         return
@@ -3054,8 +3055,9 @@ class XivoCTICommand(BaseCommand):
                                'astid' : astid,
                                'agentid' : agent_id,
                                'status' : 'started' }
+                    agentfeatures = self.weblist['agents'][astid].keeplist[agent_id]
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                        self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                                     agentfeatures.get('context'))
                 del self.origapplication[astid][actionid]
 
         # Response = Success <=> Reason = '4'
@@ -3142,6 +3144,21 @@ class XivoCTICommand(BaseCommand):
             # log.info('%s ami_newexten %s : %s %s'
             # % (astid, application, uniqueid, event.get('AppData').split('|')))
             # set extension only if numeric
+
+            elif application == 'BackGround':
+                pass
+            elif application == 'WaitExten':
+                pass
+            elif application == 'Set':
+                # why "Newexten + Set" and not "UserEvent + dialplan2cti" ?
+                # - catched without need to add a dialplan line
+                # - convenient when one is sure the variable goes this way
+                # - channel and uniqueid already there
+
+                # (myvar, myval) = event.get('AppData').split('=')
+
+                pass
+
             if event.get('Extension').isdigit():
                 self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
         # TODO do not call __sheet_alert__ so often
@@ -3517,6 +3534,7 @@ class XivoCTICommand(BaseCommand):
         return
 
     def ami_agentdump(self, astid, event):
+        # occurs when the agent hangs up while an audio message is played to him
         log.info('%s ami_agentdump : %s' % (astid, event))
         return
 
@@ -4256,9 +4274,17 @@ class XivoCTICommand(BaseCommand):
                     if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
                         dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
                         context = dialplan_data.get('xivo-context', CONTEXT_UNKNOWN)
-                        self.__sheet_alert__('custom.%s' % customname, astid, context, event, dialplan_data, channel)
+                        self.__sheet_alert__('custom.%s' % customname,
+                                             astid, context, event,
+                                             dialplan_data, channel)
 
         elif eventname == 'dialplan2cti':
+            # why "UserEvent + dialplan2cti" and not "Newexten + Set" ?
+            # - more selective
+            # - variables declarations are not always done with Set (Read(), AGI(), ...)
+            # - if there is a need for extra useful data (XIVO_USERID, ...)
+            # - (future ?) multiple settings at once
+
             cti_varname = event.get('VARIABLE')
             dp_value = event.get('VALUE')
             log.info('%s AMI UserEvent %s %s %s' % (astid, uniqueid, eventname, channel))
@@ -4268,7 +4294,8 @@ class XivoCTICommand(BaseCommand):
                         dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
                         dialplan_data['dp-%s' % cti_varname] = dp_value
                     else:
-                        log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)' % (astid, eventname))
+                        log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)'
+                                    % (astid, eventname))
 
         elif eventname == 'Feature':
             log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
@@ -5048,9 +5075,7 @@ class XivoCTICommand(BaseCommand):
                     repstr = database_update(me, icommand.args)
             elif icommand.name == 'json':
                 classcomm = icommand.struct.get('class')
-                dircomm = icommand.struct.get('direction')
-
-                if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
+                if classcomm in self.commnames:
                     if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
 
@@ -5068,8 +5093,8 @@ class XivoCTICommand(BaseCommand):
                                 castid = argums[0]
                                 confno = argums[1]
                                 command = argums[2]
-                                chan = ""
-                                validuid = ""
+                                chan = ''
+                                validuid = ''
                                 for uid, info in self.weblist['meetme'][astid]. \
                                                  keeplist[confno]['uniqueids'].iteritems():
                                     if info['usernum'] == castid:
@@ -5158,7 +5183,8 @@ class XivoCTICommand(BaseCommand):
 
                     elif classcomm == 'logclienterror':
                         log.warning('shouldNotOccur from user:%s : %s : %s'
-                                    % (userid, icommand.struct.get('classmethod'), icommand.struct.get('message')))
+                                    % (userid, icommand.struct.get('classmethod'),
+                                       icommand.struct.get('message')))
 
                     elif classcomm == 'faxsend':
                         if self.capas[capaid].match_funcs(ucapa, 'fax'):
@@ -5284,23 +5310,28 @@ class XivoCTICommand(BaseCommand):
 
                     elif classcomm == 'sheet':
                         self.__handle_sheet_command__(userinfo, icommand.struct)
-                # }
-                elif classcomm == "chitchat":
-                    to_userid = icommand.struct.get('to')
-                    to_userinfo = self.ulist_ng.keeplist[to_userid]
-                    message = icommand.struct.get('text')
-                    tosend = { 'class' : 'chitchat',
-                               'from' : userid,
-                               'text' : message }
 
-                    self.__send_msg_to_cti_client__(to_userinfo, self.__cjson_encode__(tosend))
-                elif classcomm == "getqueuesstats":
-                    on = icommand.struct.get('on')
+                    elif classcomm == 'chitchat':
+                        to_userid = icommand.struct.get('to')
+                        to_userinfo = self.ulist_ng.keeplist[to_userid]
+                        message = icommand.struct.get('text')
+                        tosend = { 'class' : 'chitchat',
+                                   'from' : userid,
+                                   'text' : message }
+                        self.__send_msg_to_cti_client__(to_userinfo, self.__cjson_encode__(tosend))
 
-                    tosend = { 'class' : 'queuestats',
-                               'function': 'update',
-                               'stats': self.weblist['queues'][astid].get_queuesstats(on) }
-                    repstr = self.__cjson_encode__(tosend)
+                    elif classcomm == 'getqueuesstats':
+                        on = icommand.struct.get('on')
+                        try:
+                            qstats = self.weblist['queues'][astid].get_queuesstats(on)
+                        except Exception:
+                            # log.exception('%s getqueuesstats for %s' % (astid, on))
+                            qstats = {}
+                        tosend = { 'class' : 'queuestats',
+                                   'function' : 'update',
+                                   'stats' : qstats }
+                        repstr = self.__cjson_encode__(tosend)
+
                 else:
                     log.warning('unallowed json event %s' % icommand.struct)
 
@@ -5441,7 +5472,6 @@ class XivoCTICommand(BaseCommand):
                                                                           'agentnumber' : agentnum}
         return
 
-
     def logout_all_agents(self):
         """
         Logs out all the agents.
@@ -5502,6 +5532,7 @@ class XivoCTICommand(BaseCommand):
                     uinfo_args_list = ['astid', 'user', 'company', 'fullname', 'simultcalls',
                                        'context', 'phonenum', 'mobilenum', 'agentid',
                                        'techlist', 'mwi', 'xivo_userid']
+                    # the users' passwords are not sent
                     for kw in uinfo_args_list:
                         senduinfo[kw] = uinfo.get(kw)
                     senduinfo['statedetails'] = statedetails
@@ -5822,8 +5853,8 @@ class XivoCTICommand(BaseCommand):
                 else:
                     if kind == 'agent':
                         props['id'] = [kid]
-                        agentnum = self.weblist['agents'][astid].keeplist[kid].get('agentnum')
-                        props['channels'] = self.__find_channel_by_agentnum__(astid, agentnum)
+                        agentnumber = self.weblist['agents'][astid].keeplist[kid].get('number')
+                        props['channels'] = self.__find_channel_by_agentnum__(astid, agentnumber)
                     elif kind == 'queue':
                         props['id'] = [kid]
                         props['channels'] = self.weblist['queues'][astid].keeplist[kid]['channels'].keys()
@@ -5942,7 +5973,8 @@ class XivoCTICommand(BaseCommand):
                 if source.get('astid') == destination.get('astid'):
                     astid = source.get('astid')
                 else:
-                    log.warning('astid is not the same for source and destination : %s %s' % (args.get('source'), args.get('destination')))
+                    log.warning('astid is not the same for source and destination : %s %s'
+                                % (args.get('source'), args.get('destination')))
                     return
 
                 if actionname == 'listen':
@@ -5953,13 +5985,15 @@ class XivoCTICommand(BaseCommand):
                                                    'ChanSpy',
                                                    '%s|q' % channels[0],
                                                    'Local',
+                                                   source.get('userinfo').get('phoneid'),
                                                    source.get('userinfo').get('phonenum'),
                                                    source.get('userinfo').get('context'))
                         log.info('started listening on %s %s (id %s) aid = %s'
                                  % (astid, channels[0], args.get('destination'), aid))
                         self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
-                                                             'origapplication-data' : { 'spied-channel' : channels[0],
-                                                                                        'spied-agentid' : args.get('destination') } }
+                                                             'origapplication-data' :
+                                                             { 'spied-channel' : channels[0],
+                                                               'spied-agentid' : args.get('destination') } }
 
                 elif actionname == 'stoplisten':
                     channels = destination.get('channels')
@@ -5968,18 +6002,22 @@ class XivoCTICommand(BaseCommand):
                             if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
                                 if channels[0] == vv['origapplication-data']['spied-channel']:
                                     self.__ami_execute__(astid, 'hangup', vv['channel'])
-                                    log.info('stopped listening on %s %s (agent %s)' % (astid, channels[0], anum))
+                                    log.info('stopped listening on %s %s (agent %s)'
+                                             % (astid, channels[0], anum))
 
                 elif actionname == 'record':
                     datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                     channels = destination.get('channels')
+                    agent_id = destination.get('id')[0]
                     for channel in channels:
                         aid = self.__ami_execute__(astid,
                                                    'monitor',
                                                    channel,
-                                                   'cti-monitor-%s-%s-%s' % (destination.get('kind'), datestring, destination.get('id')))
+                                                   'cti-monitor-%s-%s-%s' % (destination.get('kind'),
+                                                                             datestring,
+                                                                             agent_id))
                         self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
-                        log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
+                        log.info('started monitor on %s %s' % (astid, channel))
                         tosend = { 'class' : 'agentrecord',
                                    'astid' : astid,
                                    'agentid' : agent_id,
@@ -5992,12 +6030,13 @@ class XivoCTICommand(BaseCommand):
 
                 elif actionname == 'stoprecord':
                     channels = destination.get('channels')
+                    agent_id = destination.get('id')[0]
                     for channel in channels:
                         self.__ami_execute__(astid,
                                              'stopmonitor',
                                              channel)
                         self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : False})
-                        log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
+                        log.info('stopped monitor on %s %s' % (astid, channel))
                         tosend = { 'class' : 'agentrecord',
                                    'astid' : astid,
                                    'agentid' : agent_id,
@@ -6050,6 +6089,17 @@ class XivoCTICommand(BaseCommand):
                                                    'hangup',
                                                    channelid.get('channel'))
 
+            elif actionname == 'transfercancel':
+                channelids = self.__mergelist__(userinfo, args.get('channelids').split(','))
+                for channelid in channelids:
+                    if channelid.get('channel'):
+                        castid = channelid.get('astid')
+                        uniqueid = self.channels[castid].get(channelid.get('channel'))
+                        hchannel = self.uniqueids[castid][uniqueid].get('transfercancel')
+                        if hchannel:
+                            ret = self.__ami_execute__(castid,
+                                                       'hangup',
+                                                       hchannel)
             else:
                 log.warning('__ipbxaction__ unknown command %s' % actionname)
 

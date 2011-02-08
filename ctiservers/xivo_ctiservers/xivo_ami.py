@@ -3,7 +3,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2010 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
@@ -69,13 +69,14 @@ class AMIClass:
 
     # \brief Connection to a socket.
     def connect(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(self.address)
-        s.settimeout(30)
-        self.fileobj = s.makefile('rw', 0)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect(self.address)
+        self.sock.settimeout(30)
+        self.fileobj = self.sock.makefile('rw', 0)
         self.fd = self.fileobj.fileno()
-        log.info('%s AMI connection properties : %s %s %s' % (self.astid, self.address, self.fileobj, self.fd))
-        s.close()
+        log.info('%s AMI connection properties : here=%s remote=%s fileobj=%s fd=%s'
+                 % (self.astid, self.sock.getsockname(), self.sock.getpeername(),
+                    self.fileobj, self.fd))
         return
 
     def setlistref(self, amilist):
@@ -98,32 +99,35 @@ class AMIClass:
                 towritefields.append('ActionId: %s' % self.actionid)
             towritefields.append('\r\n')
 
-            # if random.randint(0, 5) == 0 and loopnum == 0:
-            # ret = False
-            # else:
-            str = '\r\n'.join(towritefields)
-            if isinstance(str, unicode):
-                str = str.encode('utf8')
-            self.fileobj.write(str)
-            self.fileobj.flush()
+            rawstr = '\r\n'.join(towritefields)
+            if isinstance(rawstr, unicode):
+                ustr = rawstr.encode('utf8')
+            else:
+                ustr = rawstr
+            self.sock.sendall(ustr)
             ret = True
         except UnicodeEncodeError:
-            log.exception('(sendcommand UnicodeEncodeError (%s %s %s))' % (towritefields, self.actionid, self.fd))
+            log.exception('(sendcommand UnicodeEncodeError (%s %s %s))'
+                          % (towritefields, self.actionid, self.fd))
             ret = True
         except UnicodeDecodeError:
-            log.exception('(sendcommand UnicodeDecodeError (%s %s %s))' % (action, self.actionid, self.fd))
+            log.exception('(sendcommand UnicodeDecodeError (%s %s %s))'
+                          % (action, self.actionid, self.fd))
             ret = True
         except socket.timeout:
             t1 = time.time()
-            log.exception('(sendcommand timeout (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
+            log.exception('(sendcommand timeout (%s %s %s) timespent=%f)'
+                          % (action, self.actionid, self.fd, (t1 - t0)))
             ret = False
         except Exception:
             t1 = time.time()
-            log.exception('(sendcommand other (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
+            log.exception('(sendcommand other (%s %s %s) timespent=%f)'
+                          % (action, self.actionid, self.fd, (t1 - t0)))
             ret = False
         if ret == False:
             if loopnum == 0:
-                log.warning('second attempt for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
+                log.warning('second attempt for AMI command (%s %s %s)'
+                            % (action, self.actionid, self.fd))
                 # tries to reconnect
                 try:
                     self.fileobj.close()
@@ -139,7 +143,8 @@ class AMIClass:
                 except Exception:
                     log.exception("reconnection (%s %s %s)" % (action, self.actionid, self.fd))
             else:
-                log.warning('2 attempts have failed for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
+                log.warning('2 attempts have failed for AMI command (%s %s %s)'
+                            % (action, self.actionid, self.fd))
         if self.actionid:
             self.actionid = None
         return ret
@@ -162,6 +167,14 @@ class AMIClass:
         ret = self.sendcommand('ExtensionState',
                                [('Exten', exten),
                                 ('Context', context)])
+        return ret
+
+    def sendparkedcalls(self):
+        ret = self.sendcommand('ParkedCalls', [])
+        return ret
+
+    def sendmeetmelist(self):
+        ret = self.sendcommand('MeetMeList', [])
         return ret
 
     # \brief Logins to the AMI.
@@ -429,12 +442,12 @@ class AMIClass:
         return ret
 
     # \brief Starts monitoring a channel
-    def monitor(self, channel, filename):
+    def monitor(self, channel, filename, mixme = 'true'):
         try:
             ret = self.sendcommand('Monitor',
                                    [('Channel', channel),
                                     ('File', filename),
-                                    ('Mix', 'true')])
+                                    ('Mix', mixme)])
         except self.AMIError:
             ret = False
         except Exception:
