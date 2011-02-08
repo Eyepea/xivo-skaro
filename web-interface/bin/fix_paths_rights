@@ -1,0 +1,91 @@
+#!/bin/sh
+
+AST_USR_PATH="/usr/share/asterisk"
+AST_SPOOL_PATH="/var/spool/asterisk"
+AST_VARLIB_PATH="/var/lib/asterisk"
+
+AST_USR_MOH_PATH="${AST_USR_PATH}/moh"
+AST_VARLIB_MOH_PATH="${AST_VARLIB_PATH}/moh"
+
+XIVO_VARLIB_PATH="/var/lib/pf-xivo"
+XIVO_MOH_PATH="${XIVO_VARLIB_PATH}/moh"
+
+XIVO_WEBI_SND_PATH="${AST_USR_PATH}/sounds/web-interface"
+
+XIVO_WEBI_SND_DIRS="acd
+		    beep
+		    features
+		    goodbye
+		    playback"
+
+XIVO_WEBI_MAKE_DIRS="${AST_SPOOL_PATH}/monitor
+		     ${AST_VARLIB_MOH_PATH}/default
+		     ${AST_VARLIB_PATH}/sounds/custom
+		     ${XIVO_VARLIB_PATH}/sounds/acd
+		     ${XIVO_VARLIB_PATH}/sounds/beep
+		     ${XIVO_VARLIB_PATH}/sounds/features
+		     ${XIVO_VARLIB_PATH}/sounds/goodbye
+		     ${XIVO_VARLIB_PATH}/sounds/playback"
+
+XIVO_WEBI_FIX_PATH_RIGHTS="${AST_SPOOL_PATH}/monitor
+			   ${AST_VARLIB_MOH_PATH}
+			   ${AST_VARLIB_PATH}/sounds/custom
+			   ${XIVO_VARLIB_PATH}/sounds"
+
+echo "${XIVO_WEBI_MAKE_DIRS}"|while read XIVO_WEBI_DIR;
+do
+	mkdir -p "${XIVO_WEBI_DIR}";
+done;
+
+if [ ! -L "${AST_USR_MOH_PATH}" ];
+then
+	if [ -d "${AST_USR_MOH_PATH}" ];
+	then
+		cp -R "${AST_USR_MOH_PATH}/." "${AST_VARLIB_MOH_PATH}"
+		rm -rf "${AST_USR_MOH_PATH}"
+	fi
+
+	if [ ! -L "${AST_USR_MOH_PATH}" ];
+	then
+		ln -s "${AST_VARLIB_MOH_PATH}" "${AST_USR_MOH_PATH}"
+	fi
+
+	if [ ! -L "${XIVO_MOH_PATH}" ];
+	then
+		ln -s "${AST_VARLIB_MOH_PATH}" "${XIVO_MOH_PATH}"
+	fi
+fi
+
+if [ -d "${XIVO_WEBI_SND_PATH}" ];
+then
+	if [ -d "${XIVO_WEBI_SND_PATH}/monitor" ];
+	then
+		cp -R "${XIVO_WEBI_SND_PATH}/monitor/." "${AST_SPOOL_PATH}/monitor"
+	fi
+
+	if [ -d "${XIVO_WEBI_SND_PATH}/recordings" ];
+	then
+		cp -R "${XIVO_WEBI_SND_PATH}/recordings/." "${AST_VARLIB_PATH}/sounds/custom"
+	fi
+
+	for DIR in ${XIVO_WEBI_SND_DIRS};
+	do
+		XIVO_VARSND_PATH="${XIVO_VARLIB_PATH}/sounds/${DIR}"
+
+		mkdir -p "${XIVO_VARSND_PATH}"
+
+		if [ -d "${XIVO_WEBI_SND_PATH}/${DIR}" ];
+		then
+			cp -R "${XIVO_WEBI_SND_PATH}/${DIR}/." "${XIVO_VARSND_PATH}"
+		fi
+	done
+
+	rm -rf "${XIVO_WEBI_SND_PATH}" 
+fi
+
+echo "${XIVO_WEBI_FIX_PATH_RIGHTS}"|while read XIVO_WEBI_PATH_RIGHTS;
+do
+	chown -R asterisk:www-data "${XIVO_WEBI_PATH_RIGHTS}"
+	find "${XIVO_WEBI_PATH_RIGHTS}" -type d -exec chmod 2775 '{}' \; 
+	find "${XIVO_WEBI_PATH_RIGHTS}" -type f -exec chmod 660 '{}' \; 
+done;
