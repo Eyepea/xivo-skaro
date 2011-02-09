@@ -212,7 +212,7 @@ class ForwardingDocumentCollection(object):
         return self.__collection.update(document)
     
     def delete(self, id):
-        return self._collection.delete(id)
+        return self.__collection.delete(id)
     
     def retrieve(self, id):
         return self.__collection.retrieve(id)

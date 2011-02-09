@@ -101,7 +101,7 @@ class IDeviceInfoExtractor(Interface):
         - For 'http', request is a twisted.web.http.Request object.
         - For 'tftp', request is a provd.servers.tftp.request object.
         - For 'dhcp', request is a dictionary object with keys 'mac' and
-          'dhcp_opts'.
+          'options'.
         
         """
 
@@ -133,9 +133,9 @@ class DHCPDeviceInfoExtractor(object):
     
     def __init__(self, dhcp_infos, dhcp_xtor):
         """
-        dhcp_info_src -- a mapping object where keys are IP address and values are
-          mapping object with the 'mac' and 'dhcp_opts' keys, where the value of
-          'mac' is a MAC address (in normalized format) and the value of 'dhcp_opts'
+        dhcp_infos -- a mapping object where keys are IP address and values are
+          mapping object with the 'mac' and 'options' keys, where the value of
+          'mac' is a MAC address (in normalized format) and the value of 'options'
           is another mapping object where keys are integer representing the code of
           a DHCP option and value are the raw option value as a string
         dhcp_xtor -- a device info extractor that accept DHCP info object and a
@@ -518,7 +518,7 @@ class AddDeviceRetriever(object):
     implements(IDeviceRetriever)
     
     @staticmethod
-    def _new_device_from_dev_info(self, dev_info):
+    def _new_device_from_dev_info(dev_info):
         device = copy.deepcopy(dev_info)
         device[u'configured'] = False
         return device

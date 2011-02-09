@@ -69,7 +69,7 @@ def parse_args(args):
         dhcp_info['ip'] = args[1]
         if dhcp_info['op'] == 'commit':
             dhcp_info['mac'] = args[2]
-            dhcp_info['dhcp_opts'] = filter(None, args[3:])
+            dhcp_info['options'] = filter(None, args[3:])
         elif dhcp_info['op'] in ('expiry', 'release'):
             pass
         else:
@@ -89,8 +89,8 @@ def build_dgram(dhcp_info):
     append(dhcp_info['ip'])
     if dhcp_info['op'] == 'commit':
         append(dhcp_info['mac'])
-        for dhcp_opt in dhcp_info['dhcp_opts']:
-            append(dhcp_opt)
+        for option in dhcp_info['options']:
+            append(option)
     return s.getvalue()
 
 

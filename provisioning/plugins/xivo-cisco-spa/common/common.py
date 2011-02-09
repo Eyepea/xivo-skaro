@@ -43,8 +43,9 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
         return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
-        if 60 in request:
-            return self._extract_from_vdi(request[60])
+        options = request[u'options']
+        if 60 in options:
+            return self._extract_from_vdi(options[60])
     
     def _extract_from_vdi(self, vdi):
         # Vendor class identifier:
@@ -356,9 +357,9 @@ class BaseCiscoPlugin(StandardPlugin):
         self._tpl_helper.dump(tpl, config, dst, self._ENCODING)
     
     def deconfigure(self, device):
-        filename = self._dev_specific_filename(device)
+        path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
-            os.remove(filename)
+            os.remove(path)
         except OSError:
             # ignore -- probably an already removed file
             pass

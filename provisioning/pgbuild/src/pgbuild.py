@@ -214,8 +214,8 @@ def package_op(opts, args, src_dir, dest_dir):
     # build packages
     for plugin in plugins:
         plugin_version = _get_plugin_version(plugin)
-        package = "%s-%s%s" % (os.path.join(pkg_dir, plugin), plugin_version,
-                               PACKAGE_SUFFIX)
+        package = "%s-%s%s" % (os.path.join(pkg_dir, os.path.basename(plugin)),
+                               plugin_version, PACKAGE_SUFFIX)
         print "Packaging plugin '%s' into '%s'..." % (plugin, package)
         check_call(['tar', 'caf', package,
                     '-C', os.path.dirname(plugin) or os.curdir,

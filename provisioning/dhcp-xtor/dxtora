@@ -151,10 +151,10 @@ class ProvServerDHCPInfoSink(object):
         finally:
             f.close()
             
-        links = content[u'links']
+        links = content['links']
         for link in links:
-            if link[u'rel'] == u'dev.dhcpinfo':
-                self._resource_uri = urlparse.urljoin(self._base_uri, link[u'href'])
+            if link['rel'] == 'dev.dhcpinfo':
+                self._resource_uri = urlparse.urljoin(self._base_uri, link['href'])
         else:
             raise DHCPInfoSinkError('no link to DHCP info resource on base resource')
             
@@ -162,8 +162,8 @@ class ProvServerDHCPInfoSink(object):
         if self._resource_uri is None:
             self._update_resource_uri()
         headers = {'Accept': '*/*', 'Content-Type': PROV_MIME_TYPE}
-        content = json.dumps(dhcp_info)
-        request = urllib2.Request(self._base_uri, content, headers=headers)
+        content = json.dumps({'dhcp_info': dhcp_info})
+        request = urllib2.Request(self._resource_uri, content, headers=headers)
         try:
             f = self._opener.open(request)
             f.read()
@@ -232,22 +232,22 @@ class UnixSocketDHCPInfoSource(object):
         # TODO if we really care
         pass
     
-    def _check_dhcp_opts(self, dhcp_opts):
-        # check that dhcp_opts is a sequence of valid dhcp_opt
-        for dhcp_opt in dhcp_opts:
-            if len(dhcp_opt) < 3:
-                raise DHCPInfoSourceError("invalid 'dhcp_opt' value: too short")
+    def _check_options(self, options):
+        # check that options is a sequence of valid option
+        for option in options:
+            if len(option) < 3:
+                raise DHCPInfoSourceError("invalid 'option' value: too short")
             try:
-                num = int(dhcp_opt[:3], 10)
+                num = int(option[:3], 10)
             except ValueError:
-                raise DHCPInfoSourceError("invalid 'dhcp_opt' value: not int")
+                raise DHCPInfoSourceError("invalid 'option' value: not int")
             else:
                 if not 0 <= num <= 255:
-                    raise DHCPInfoSourceError("invalid 'dhcp_opt' value: invalid code")
+                    raise DHCPInfoSourceError("invalid 'option' value: invalid code")
     
     def _decode(self, data):
         """Takes the raw data from a request and return an dhcp_info
-        dict ('op', 'ip', 'mac' and 'dhcp_opts').
+        dict ('op', 'ip', 'mac' and 'options').
         
         """
         lines = filter(None, data.split('\n'))
@@ -262,7 +262,7 @@ class UnixSocketDHCPInfoSource(object):
             check_and_add('ip', lines[1])
             if dhcp_info['op'] == 'commit':
                 check_and_add('mac', lines[2])
-                check_and_add('dhcp_opts', lines[3:])
+                check_and_add('options', lines[3:])
         except IndexError, e:
             raise DHCPInfoSourceError(e)
         else:

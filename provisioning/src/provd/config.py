@@ -207,6 +207,7 @@ class ConfigFileConfigSource(object):
         
         raw_config = {}
         raw_config.update(self._get_config_from_section(config, 'general'))
+        raw_config.update(self._get_config_from_section(config, 'database'))
         raw_config.update(self._get_config_from_section(config, 'common_config'))
         raw_config.update(self._get_pluginconfig(config))
         return raw_config
@@ -239,10 +240,9 @@ def _ip_address_or_star(raw_value):
 
 
 _PARAMS_DEFINITION = {
+    # list only the mandatory parameters or the parameters tha need
+    # transformation
     # <config_name>: (<transform/check fonction>, <mandatory>)
-    'general.config_file':      (str, False),
-    'general.http_proxy':       (str, False),
-    'general.plugin_server':    (str, False),
     'general.cache_dir':        (str, True),
     'general.plugins_dir':      (str, True),
     'general.config_dir':       (str, True),
@@ -279,7 +279,6 @@ def _update_raw_config(raw_config):
 
 
 def _check_and_convert_parameters(raw_config):
-    config = {}
     for param_name, (fun, mandatory) in _PARAMS_DEFINITION.iteritems():
         # check if mandatory parameter is present
         if mandatory:
@@ -288,11 +287,10 @@ def _check_and_convert_parameters(raw_config):
         # convert parameter if present
         if param_name in raw_config:
             try:
-                config[param_name] = fun(raw_config[param_name])
+                raw_config[param_name] = fun(raw_config[param_name])
             except ValueError, e:
                 raise ConfigError('parameter "%s" is invalid: %s' %
                                   param_name, e)
-    return config
 
 
 def get_config(config_sources):
@@ -305,5 +303,5 @@ def get_config(config_sources):
     """ 
     raw_config = _pull_config_from_sources(config_sources)
     _update_raw_config(raw_config)
-    config = _check_and_convert_parameters(raw_config)
-    return config
+    _check_and_convert_parameters(raw_config)
+    return raw_config

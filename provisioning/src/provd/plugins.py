@@ -49,11 +49,7 @@ logger = logging.getLogger('plugins')
 # TODO support plugin package signing... this will be important for safety
 #      since plugin aren't sandboxed
 
-# 'Non-instantaneous' operation interface
-# XXX name is not really good... and in fact, since it's close to a deferred,
-#     we might want this to be a class deriving from Deferred and adding the
-#     'status' attribute (hoping it will never get used in the future) so that
-#     we could use the already existing deferred infrastructure
+# XXX should rename to IOperationInProgress and move to services.py
 class IProgressingOperation(Interface):
     
     deferred = Attribute("""A Deferred that will fire once the operation is
@@ -178,18 +174,21 @@ class Plugin(object):
     If the 'service name' is not one of the standardized service name,
     then it must provide the IUnknownService interface.
     
+    # XXX unknown service... really not sure it has anything useful to
+    #     offer... so right now, don't use it
+    
     """
     
     # Methods for TFTP/HTTP services
     
     # Contrary to TFTP and HTTP, there's no DHCP service, but only an extractor
     dhcp_dev_info_extractor = None
-    """Return an object providing the IDeviceInfoExtrace interface for
-    DHCP request or None if there's no such object.
+    """An object providing the IDeviceInfoExtractor interface for DHCP
+    requests or None if there's no such object.
     
-    Request objects are dictionaries. There's one interesting key, 'dhcp_opts',
-    which value is a dictionary which keys are integer representing the DHCP
-    code option and value the raw DHCP value found in the client request.
+    Request objects are dictionaries with the following keys:
+      options -- a dictionary where keys are integer representing the DHCP
+         code option and values are raw DHCP value found in the client request.
     
     """
     
@@ -198,8 +197,8 @@ class Plugin(object):
     #     'dev_info_extractor' for each plugin. The plugin could then use the
     #     different 'generic' device info extractor (splitter and composite)
     http_dev_info_extractor = None
-    """Return an object providing the IDeviceInfoExtractor interface for
-    HTTP requests or None if there's no such object.
+    """An object providing the IDeviceInfoExtractor interface for HTTP
+    requests or None if there's no such object.
     
     In this case, request objects are twisted.web.http.Request objects.
     
@@ -220,8 +219,8 @@ class Plugin(object):
     """
     
     tftp_dev_info_extractor = None
-    """Return an object providing the IDeviceInfoExtractor interface for
-    TFTP request or None if there's no such object.
+    """An object providing the IDeviceInfoExtractor interface for TFTP
+    request or None if there's no such object.
     
     In this case, request objects are as defined in the
     provd.servers.tftp.service module.
@@ -430,6 +429,8 @@ class TemplatePluginHelper(object):
                 return self._env.get_template(model + '.tpl')
             except TemplateNotFound:
                 logger.info('Model specific template not found.')
+        else:
+            logger.info('No model information available for device.')
         # get base template
         logger.info('Getting base template')
         return self._env.get_template('base.tpl')
@@ -584,27 +585,28 @@ class FetchfwPluginHelper(object):
         self._async_pkg_manager.uninstall((pkg_id,))
 
     def list_installable(self):
-        """Return a list of the packages that are isntallable.
+        """Return a dictionary of installable packages.
         
         See IInstallService.list_installable.
         
         """
         installable_pkgs = self._async_pkg_manager.installable_pkgs
-        res = []
-        for pkg in installable_pkgs.itervalues():
-            dsize = sum(rfile.size for rfile in pkg.remote_files)
-            res.append({'id': pkg.name, 'dsize': dsize})
-        return res
-        
+        return dict((pkg_id, {'version': pkg.version,
+                              'description': pkg.description,
+                              'dlsize': sum(rfile.size for rfile in pkg.remote_files)})
+                    for pkg_id, pkg in installable_pkgs.iteritems())
+    
     def list_installed(self):
-        """Return a list of the packages that are installed.
+        """Return a dictionary of installed packages.
         
         See IInstallService.list_installed.
         
         """
         installed_pkgs = self._async_pkg_manager.installed_pkgs
         installed_pkgs.reload()
-        return [{'id': pkg.name} for pkg in installed_pkgs.itervalues()]
+        return dict((pkg_id, {'version': pkg.version,
+                              'description': pkg.description})
+                    for pkg_id, pkg in installed_pkgs.iteritems())
     
     def services(self):
         """Return the following dictionary: {'install': self}."""
@@ -801,8 +803,8 @@ class PluginManager(object):
         Raise an Exception if there's already an install/upgrade operation
         in progress for the plugin.
         
-        Raise an Exception if there's no installable plugin with the specified
-        name.
+        Raise an Exception if there's no installable plugin with the
+        specified name.
         
         Raise an InvalidParameterError if the plugin package is not in cache
         and no 'server' param has been set.
@@ -813,9 +815,6 @@ class PluginManager(object):
             raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % name)
         
         pg_info = self._get_installable_pg_info(name)
-        if pg_info is None:
-            raise ValueError('plugin not found')
-        
         cache_filename = os.path.join(self._cache_dir, pg_info['filename'])
         if not self._is_in_cache(cache_filename):
             self._in_install.add(name)
@@ -860,11 +859,13 @@ class PluginManager(object):
         
         This does not unload the installed plugin.
         
+        Raise an Exception if there's no installed plugin with the
+        specified name.
+        
         """
         logger.info('Uninstalling plugin "%s"', name)
-        pg_info = self._get_installed_pg_info(name)
-        if pg_info is None:
-            raise ValueError('plugin not found')
+        if not self.is_installed(name):
+            raise Exception('plugin not found')
         
         shutil.rmtree(os.path.join(self._plugins_dir, name))
 
@@ -915,29 +916,35 @@ class PluginManager(object):
             return pop
     
     def _get_installable_pg_info(self, name):
-        """Return an 'installable plugin info' object from a name, or None if
-        no such plugin is found."""
-        for pg_info in self.list_installable():
-            if pg_info['name'] == name:
-                return pg_info
-        return None
+        # Return an 'installable plugin info' object from a name, or raise
+        # a KeyError if no such plugin is found
+        installable_plugins = self.list_installable()
+        return installable_plugins[name]
+    
+    @staticmethod
+    def _clean_long_header(value):
+        # used to remove \n (and \r) that are present when using line
+        # continuation with ConfigParser...
+        return value.replace('\n', ' ').replace('\r', '')
     
     def list_installable(self):
-        """Return a generator that yield information on the plugins that can
-        be installed.
+        """Return a dictionary of installable plugins, where keys are
+        plugin identifier and values are dictionary of plugin information.
         
-        Each yieled object is a dictionary with the following keys:
-          name -- the name of the plugin
-          version -- the verison of the plugin
+        The plugin information dictionary contains the following keys:
           filename -- the name of the package in which the plugin is packaged
-          description -- a short description of the plugin
+          version -- the version of the package
+          description -- the description of the package
+        The following keys are optional:
+          dsize -- the download size of the package, in bytes
+          isize -- the installed size of the package, in bytes
         
-        The generator will eventually raise an Exception if the plugin definition
-        file is invalid/corrupted. If this file is absent, no error is raised,
-        but the generator will yield no items (i.e. like an 'empty' plugin
-        definition file).
+        Raise an Exception if the plugin definition file is invalid/corrupted.
+        If this file is absent, no error is raised, and an empty dictionary
+        is returned.
         
         """
+        installable_plugins = {}
         config = ConfigParser.RawConfigParser()
         try:
             with open(self._def_pathname(), 'r') as fobj:
@@ -948,42 +955,41 @@ class PluginManager(object):
             for section in config.sections():
                 if not section.startswith('plugin_'):
                     raise ValueError('invalid plugin definition file')
-                name = section[len('plugin_'):]
+                id = section[len('plugin_'):]
                 filename = config.get(section, 'filename')
                 version = config.get(section, 'version')
-                description = config.get(section, 'description')
-                yield {'name': name, 'filename': filename, 'version': version,
-                       'description': description}
+                description = self._clean_long_header(config.get(section, 'description'))
+                installable_plugins[id] = {'filename': filename,
+                                           'version': version,
+                                           'description': description}
+        return installable_plugins
     
     def _get_installed_pg_info(self, name):
-        """Return an 'installed plugin info' object from a name, or None if
-        no such plugin is found."""
-        for pg_info in self.list_installed():
-            if pg_info['name'] == name:
-                return pg_info
-        return None
+        # Return an 'installed plugin info' object from a name, or raise
+        # a KeyError if no such plugin is found
+        installed_plugins = self.list_installed()
+        return installed_plugins[name]
     
     def is_installed(self, name):
         """Return true if the plugin <name> is currently installed, else
         false.
         
         """
-        return self._get_installed_pg_info(name) != None
+        return name in self.list_installed()
     
     def list_installed(self):
-        """Return a generator that yield information on the plugins that are
-        installed.
+        """Return a dictionary of installed plugins, where keys are plugin
+        identifier and value are dictionary of plugin information.
         
-        Each yielded object is a dictionary with the following keys:
-          name -- the name of the plugin
-          version -- the verison of the plugin
-          description -- a short description of the plugin
+        The plugin information dictionary contains the following keys:
+          version -- the version of the package
+          description -- the description of the package
         
-        The generator will eventually raise an Exception if, in the plugins
-        directory, there's a directory which has a missing or invalid plugin
-        info file.
+        Raise an Exception if, in the plugins directory, there's a directory
+        which has a missing or invalid plugin info file.
         
         """
+        installed_plugins = {}
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
             if os.path.isdir(abs_plugin_dir):
@@ -992,33 +998,10 @@ class PluginManager(object):
                 with open(info_pathname, 'r') as fobj:
                     config.readfp(fobj)
                 version = config.get('general', 'version')
-                description = config.get('general', 'description')
-                yield {'name': rel_plugin_dir, 'version': version,
-                       'description': description}
-    
-    def list_upgradeable(self):
-        """Return a generator that yield information the plugins that can be
-        upgraded.
-        
-        Each yielded object is a dictionary with the following keys:
-          name -- the name of the plugin
-          version -- the version of the plugin
-          filename -- the name of the package in which the plugin is packaged
-        
-        This method will raise an Exception in the same circumstances as the
-        generator returned by the list_installed method.
-        
-        The generator will raise an Exception in the same circumstances as the
-        list_installable method.
-        
-        """    
-        installed = dict((plugin['name'], plugin['version']) for plugin in
-                         self.list_installed())
-        # XXX the version comparison is cheap
-        upgradable = (plugin for plugin in self.list_installable() if
-                      plugin['name'] in installed and
-                      plugin['version'] > installed.get(plugin['name'], ''))
-        return upgradable
+                description = self._clean_long_header(config.get('general', 'description'))
+                installed_plugins[rel_plugin_dir] = {'version': version,
+                                                     'description': description} 
+        return installed_plugins
     
     @staticmethod
     def _add_execfile(pg_globals, plugin_dir):

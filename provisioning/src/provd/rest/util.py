@@ -18,68 +18,37 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import functools
-from twisted.web import http
+#PROV_MIME_TYPE = 'application/vnd.proformatique.provd+json'
+PROV_MIME_TYPE = 'text/plain'
 
 
-def parse_accept(value):
-    """Take the value of an Accept header and return a list of the acceptable
-    mime type.
+def uri_append_path(base, *path):
+    """Append path to base URI.
+    
+    >>> uri_append_path('http://localhost/', 'foo')
+    'http://localhost/foo
+    >>> uri_append_path('http://localhost/bar', 'foo')
+    'http://localhost/bar/foo'
+    >>> uri_append_path('http://localhost/bar', 'foo', 'bar')
+    'http://localhost/bar/foo/bar'
     
     """
-    # Take q params into account
-    tokens = [token.strip() for token in value.split(',')]
-    return [token.split(';', 1)[0] for token in tokens]
-
-
-def accept_mime_type(mime_type, request):
-    """Return true if mime_type is an acceptable mime-mime_type for the response
-    for the request.
-    
-    """
-    if request.getHeader('Accept') is None:
-        return True
+    if not path:
+        return base
     else:
-        accept = parse_accept(request.getHeader('Accept'))
-        if mime_type in accept or '*/*' in accept:
-            return True
-        elif mime_type[:mime_type.index('/')] + '/*' in accept:
-            return True
+        path_to_append = '/'.join(path)
+        if base.endswith('/'):
+            fmt = '%s%s'
         else:
-            return False
+            fmt = '%s/%s'
+        return fmt % (base, path_to_append)
 
 
-def accept(mime_types):
-    """Decorator to restrict the MIME type a Resource render method
-    can accept, i.e. check the Accept header value.
+def uri_append_query(base, query):
+    """Append query to base URI.
+    
+    >>> uri_append_query('http://localhost/', 'id=12')
+    'http://localhost/?id=12
     
     """
-    def in_accept(fun):
-        @functools.wraps(fun)
-        def aux(self, request):
-            for mime_type in mime_types:
-                if accept_mime_type(mime_type, request):
-                    return fun(self, request)
-            else:
-                request.setResponseCode(http.NOT_ACCEPTABLE)
-                request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-                return (u"You must accept one of the following MIME type '%s'."
-                        % mime_types).encode('UTF-8')
-        return aux
-    return in_accept
-
-
-def content_type(mime_type):
-    def in_content_type(fun):
-        @functools.wraps(fun)
-        def aux(self, request):
-            content_type = request.getHeader('Content-Type')
-            if not content_type or content_type not in mime_type:
-                request.setResponseCode(http.UNSUPPORTED_MEDIA_TYPE)
-                request.setHeader('Content-Tyoe', 'text/plain; charset=UTF-8')
-                return (u"Entity must be in one of these media types '%s'."
-                        % mime_type).encode('UTF-8')
-            else:
-                return fun(self,request)
-        return aux
-    return in_content_type
+    return base + '?' + query

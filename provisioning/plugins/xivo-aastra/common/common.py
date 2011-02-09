@@ -315,9 +315,9 @@ class BaseAastraPlugin(StandardPlugin):
         self._tpl_helper.dump(tpl, config, path, self._ENCODING)
     
     def deconfigure(self, device):
-        filename = self._dev_specific_filename(device)
+        path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
-            os.remove(filename)
+            os.remove(path)
         except OSError:
             # ignore -- probably an already removed file
             pass

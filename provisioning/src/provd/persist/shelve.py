@@ -1,5 +1,8 @@
 # -*- coding: UTF-8 -*-
 
+# next line is to prevent from importing our own module when doing 'import shelve'
+from __future__ import absolute_import 
+
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
@@ -24,7 +27,7 @@ from provd.persist.id import get_id_generator_factory
 from provd.persist.util import new_backend_based_collection
 
 
-def _convert_to_backend(self, id):
+def _convert_to_backend(id):
     # Pre: id is a unicode string
     return id.encode('UTF-8')
 

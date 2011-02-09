@@ -38,6 +38,8 @@ class IConfigureService(Interface):
     The keys used MUST be strings.
     
     """
+    # XXX values should be in unicode instead of raw_string
+    
     def get(key):
         """Return the value associated with a key.
         
@@ -119,23 +121,48 @@ class IInstallService(Interface):
         
         """
     
+    # XXX should probably rename list_installable, list_installed (remove list_)
     def list_installable():
-        """Return a list of the packages that are installable.
+        """Return a dictionary of installable packages, where keys are
+        package identifier and values are dictionary of package information.
         
-        Each item in the list is a dictionary with the following keys:    
-          id -- the identifier of the package
-        
-        The following keys are optional:
+        The package information dictionary can contains the following keys,
+        which are all optional:
           dsize -- the download size of the package, in bytes
           isize -- the installed size of the package, in bytes
+          version -- the version of the package
+          description -- the description of the package
         
         """
     
     def list_installed():
-        """Return a list of the packages that are installed.
+        """Return a dictionary of installed packages, where keys are package
+        identifier and value are dictionary of package information.
         
-        Each item in the list is a dictionary with the following keys:
-          id -- the identifier of the package
+        The package information dictionary can contains the following keys,
+        which are all optional:
+          version -- the version of the package
+          description -- the description of the package
+        
+        """
+    
+    def upgrade(pkg_id):
+        """Upgrade a package (optional operation).
+        
+        Interface similar to the one for the 'install' method.
+        
+        If the operation is not available, the method should not be defined.
+        
+        """
+    
+    def update():
+        """Update the list of installable package (optional operation).
+        
+        Return an object providing the IProgressOperation interface.
+        
+        Raise an Exception if there's already an update operation in progress.
+        
+        If the operation is not available, the method should not be defined.
         
         """
 
@@ -197,3 +224,19 @@ class BaseConfigureService(object):
     def description(self):
         return dict((key, p.description) for key, p in
                     self._params_map.iteritems())
+
+
+class OperationInProgressDeferred(object):
+    """Wrap an OperationInProgress around a deferred."""
+    def __init__(self, deferred):
+        self.deferred = deferred
+        self.status = 'progress'
+        self.deferred.addCallbacks(self._callback, self._errback)
+    
+    def _callback(self, v):
+        self.status = 'success'
+        return v
+    
+    def _errback(self, v):
+        self.status = 'fail'
+        return v

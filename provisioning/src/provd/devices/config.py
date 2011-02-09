@@ -263,7 +263,10 @@ class ConfigCollection(ForwardingDocumentCollection):
         # flattened_raw_config is set to a copy of base_raw_config only once
         # we know that the id is valid. This is a bit ugly, but it's the
         # simplest thing to do.
-        flattened_raw_config = None
+        # Also, flattened_raw_config is a list since we don't have a nonlocal
+        # statement like in python3, and can't rebind the name in an inner
+        # scope...
+        flattened_raw_config = [None]
         visited = set()
         @defer.inlineCallbacks
         def aux(cur_id):
@@ -272,14 +275,14 @@ class ConfigCollection(ForwardingDocumentCollection):
             visited.add(cur_id)
             config = yield self._collection.retrieve(cur_id)
             if config is not None:
-                if flattened_raw_config is None:
-                    copy.deepcopy(base_raw_config)
+                if flattened_raw_config[0] is None:
+                    flattened_raw_config[0] = copy.deepcopy(base_raw_config)
                 for base_id in config[u'parent_ids']:
                     yield aux(base_id)
-                _rec_update_dict(flattened_raw_config, config[u'raw_config'])
+                _rec_update_dict(flattened_raw_config[0], config[u'raw_config'])
         
         d = aux(id)
-        d.addCallback(lambda _: flattened_raw_config)
+        d.addCallback(lambda _: flattened_raw_config[0])
         return d
 
     @defer.inlineCallbacks
