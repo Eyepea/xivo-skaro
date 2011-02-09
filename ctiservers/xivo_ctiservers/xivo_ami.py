@@ -58,13 +58,8 @@ class AMIClass:
         self.loginname = loginname
         self.password  = password
         self.events    = events
-        self.aorgcmd = 'AOriginate'
         self.actionid = None
         self.fileobj = None
-        return
-
-    def set_aoriginate(self, aoriginatecmd):
-        self.aorgcmd = aoriginatecmd
         return
 
     # \brief Connection to a socket.
@@ -264,7 +259,10 @@ class AMIClass:
             return False
 
     # \brief Originates a call from a phone towards another.
-    def originate(self, phoneproto, phonesrcname, phonesrcnum, cidnamesrc, phonedst, cidnamedst, locext, extravars = {}, timeout = 3600):
+    def originate(self, phoneproto,
+                  phonesrcname, phonesrcnum, cidnamesrc,
+                  phonedst, cidnamedst,
+                  locext, extravars = {}, timeout = 3600):
         # originate a call btw src and dst
         # src will ring first, and dst will ring when src responds
         ph = re.sub(__dialallowed__, '', phonedst)
@@ -288,69 +286,6 @@ class AMIClass:
             for var, val in extravars.iteritems():
                 command_details.append(('Variable', '%s=%s'  % (var, val)))
             ret = self.sendcommand('Originate', command_details)
-            return ret
-        except self.AMIError:
-            return False
-        except Exception:
-            return False
-
-    # \brief Originates a call from a phone towards another.
-    def aoriginate(self, phoneproto, phonesrcname, phonesrcnum, cidnamesrc, phonedst, cidnamedst, locext, extravars = {}, timeout = 3600):
-        # originate a call btw src and dst
-        # src will ring first, and dst will ring when src responds
-        ph = re.sub(__dialallowed__, '', phonedst)
-        if len(ph) > 0 and phonedst not in __specialextensions__:
-            return False
-        try:
-            command_details = [('Channel', '%s/%s' % (phoneproto, phonesrcname)),
-                               ('Exten', phonedst),
-                               ('Context', locext),
-                               ('Priority', '1'),
-                               ('Timeout', str(timeout * 1000)),
-                               ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
-                               ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
-                               ('Async', 'true')]
-            if switch_originates:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)))
-                command_details.append(('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc))
-                command_details.append(('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrcnum))
-            else:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamesrc, phonesrcnum)))
-            for var, val in extravars.iteritems():
-                command_details.append(('Variable', '%s=%s'  % (var, val)))
-            ret = self.sendcommand(self.aorgcmd, command_details)
-            return ret
-        except self.AMIError:
-            return False
-        except Exception:
-            return False
-
-    # \brief Originates a call from a phone towards another.
-    def aoriginate_var(self, phoneproto, phonesrcname, phonesrcnum, cidnamesrc, phonedst, cidnamedst, locext, extravars, timeout):
-        # originate a call btw src and dst
-        # src will ring first, and dst will ring when src responds
-        ph = re.sub(__dialallowed__, '', phonedst)
-        if len(ph) > 0 and phonedst not in __specialextensions__:
-            return False
-        try:
-            command_details = [('Channel', '%s/%s' % (phoneproto, phonesrcname)),
-                               ('Exten', phonedst),
-                               ('Context', locext),
-                               ('Priority', '1'),
-                               ('Timeout', str(timeout * 1000)),
-                               ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
-                               ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
-                               ('Async', 'true')]
-            if switch_originates:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)))
-                command_details.append(('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc))
-                if 'XIVO_ORIGSRCNUM' not in extravars:
-                    extravars['XIVO_ORIGSRCNUM'] = phonesrcnum
-            else:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamesrc, phonesrcnum)))
-            for var, val in extravars.iteritems():
-                command_details.append(('Variable', '%s=%s'  % (var, val)))
-            ret = self.sendcommand(self.aorgcmd, command_details)
             return ret
         except self.AMIError:
             return False
@@ -604,10 +539,6 @@ class AMIList:
             conn_ami.setactionid('init_close_%s' % initphaseid)
         return
 
-    def set_aoriginate(self, astid, aoriginatecmd):
-        self.ami[astid].set_aoriginate(aoriginatecmd)
-        return
-
     def fdlist(self):
         for rk in self.rami.keys():
             if not rk._sock:
@@ -753,8 +684,6 @@ event_others['extra'] = [
     'MeetmeNoAuthed',       # (xivo) when a member was accepted or not by an admin
     'MeetmePause',          # (xivo) when a meetme room is put in pause or activated
     'Atxfer',               # (patch to fetch ?)
-    'AOriginateSuccess',    # (xivo aoriginate)
-    'AOriginateFailure',    # (xivo aoriginate)
     'ActionRequest',        # (xivo)
 
     'HangupRequest',        # (xivo) to know who 'ordered' the hangup (patch submitted to digium in #0018226)

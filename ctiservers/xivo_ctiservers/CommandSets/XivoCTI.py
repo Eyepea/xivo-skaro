@@ -72,7 +72,7 @@ from xivo.BackSQL import backsqlite
 log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.2'
-XIVOVERSION_NAME = 'gallifrey'
+XIVOVERSION_NAME = 'skaro'
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
