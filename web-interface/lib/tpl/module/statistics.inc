@@ -39,7 +39,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	private  $_full_rows	= array();
 	private  $_prepare_cols	= array();
 	private	 $_var_to_eval	= array();
-							
+	public	 $_tmp_graph_name_file = '';
+	
 	public function __construct(&$tpl)
 	{
 		$this->_tpl = &$tpl;
@@ -73,6 +74,43 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	public function set_data_custom($key,$arr)
 	{			
 		$this->_data_custom[$key] = $arr;
+	}
+	
+	public function get_data_table()
+	{
+		return($this->_data_table);
+	}
+	
+	public function get_data_foot()
+	{
+		return($this->_data_foot);
+	}
+	
+	public function get_full_rows()
+	{
+		if (empty($this->_full_rows) === false
+		&& is_array($this->_full_rows) === true)
+			return($this->_full_rows);
+		
+		return(false);
+	}
+	
+	public function get_data_rows()
+	{
+		if (empty($this->_prepare_rows) === false
+		&& is_array($this->_prepare_rows) === true)
+			return($this->_prepare_rows);
+		
+		return(false);
+	}
+	
+	public function get_data_cols()
+	{		
+		if (empty($this->_prepare_cols) === false
+		&& is_array($this->_prepare_cols) === true)
+			return($this->_prepare_cols);
+		
+		return(false);
 	}
 	
 	public function set_rows($key,$arr,$field,$createkey=false) 
@@ -130,33 +168,6 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		return(true);
 	}
 	
-	private function get_full_rows()
-	{
-		if (empty($this->_full_rows) === false
-		&& is_array($this->_full_rows) === true)
-			return($this->_full_rows);
-		
-		return(false);
-	}
-	
-	private function get_data_rows()
-	{
-		if (empty($this->_prepare_rows) === false
-		&& is_array($this->_prepare_rows) === true)
-			return($this->_prepare_rows);
-		
-		return(false);
-	}
-	
-	public function get_data_cols()
-	{		
-		if (empty($this->_prepare_cols) === false
-		&& is_array($this->_prepare_cols) === true)
-			return($this->_prepare_cols);
-		
-		return(false);
-	}
-	
 	public function init_data_table()
 	{
 		if (($data_rows = $this->get_data_rows()) === false
@@ -187,7 +198,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			elseif(isset($rowdata['key']) === true)
 				$rowkey = $rowdata['key'];
 			else 
-				die('tpl_statistics_init_data');
+				die('Can\'t find data in dwho_tpl_statistics->init_data_table()');
 				
 			$rownum = $rowdata[$this->_row_key];
 			
@@ -212,7 +223,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					$row_data_table[$label] = array();
 					
 				$row_data_foot = &$data_foot[$label];
-					
+				
 				$rs = 0;
 				switch($type) 
 				{
@@ -253,7 +264,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				}				
 				$result = $this->get_result_formated($rs,$format);
 			
-				$row_data_table[$label]['expression'] = $expression;
+				#$row_data_table[$label]['expression'] = $expression;
 				$row_data_table[$label]['format'] = $format;
 				$row_data_table[$label]['result'] = $result;
 				
@@ -263,7 +274,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					$row_data_foot['result'] = 0;
 					$row_data_foot['format'] = $format;
 				}
-				$row_data_foot['result'] += $rs;				
+				$row_data_foot['result'] += $rs;		
 			}
 		}
 		return(true);
@@ -442,7 +453,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			case 'percent':
 				if (isset($arr['total']) === true)
 					return('-');
-				$str = $result.' %';
+				$str = (intval($result)).' %';
 				break;
 			case 'time':			
 				if (isset($arr['total']) === true)
@@ -488,6 +499,17 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				case 'year':
 					break;
 				case 'type':
+						// for period
+						if (is_array($conf) === true
+						&& isset($conf['periods']) === true):
+							$return = '';
+							foreach($conf['periods'] as $period => $value):
+								$return .= $this->bbf('col_t'.$period);
+								$return .= ': '.$value['beg'].'-'.$value['end'].'s';
+								$return .= ' / ';
+							endforeach;
+							echo $return;
+						endif;
 				default:
 					$return .= '';
 			}
@@ -502,7 +524,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	{		
 		$url = &$this->_tpl->get_module('url');
 
-		$return = '<form action="#" name="fm-stats-list" method="post" accept-charset="utf-8">';
+		$return = '';
 		$return .= '<table cellspacing="0" cellpadding="0" border="0">';		
 		$return .= '<thead>';
 		$return .= '<tr class="sb-top">';
@@ -629,18 +651,18 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$i = 0;			
 		foreach ($this->_data_foot as $colname => $colvalue)
 		{
-			$i++;
 			if (in_array($colname,$this->_ignore_col) === true)
 				continue;
-			elseif ($i < ($nb_cols - 1))
+			$i++;
+			if ($i < ($nb_cols - 3))
 				$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
 			else
 				$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';
 		}
+		
 		$return .= '</tr>';
 		$return .= '</tfoot>';		
 		$return .= '</table>';
-		$return .= '</form>';
 		
 		$get = $url->_query->raw;
 		$get = array_merge($get,array('act' => 'exportcsv'));		
@@ -653,22 +675,6 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$return .= '</p>';
 
 		return( $return );
-	}
-	
-	public function get_graph($name)
-	{
-		require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'pchart.inc'));
-		
-		$name = $name.'-'.$this->_xs->get_axetype();
-		$src = dwho_file::joinpath($this->_basedir,$this->_name,$name);
-		return( '<img src="'.$src.'.png" alt="" />' );
-	}
-	
-	public function init_pChart()
-	{
-		require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'pchart.inc'));
-		$pChart = new pChart;
-		var_dump($pChart);
 	}
 	
 	public function render_csv($rowname=true)
@@ -699,9 +705,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$coltitlekey = array_keys($coltitle);
 		
 		while ($coltitle)
-		{	
+		{
 			$listcols = array_shift($coltitle);
-			$titlecolskey = array_shift($coltitlekey);	
+			$titlecolskey = array_shift($coltitlekey);
 			$listcolskey = array_keys($listcols);
 			
 			if ($rowname === true)

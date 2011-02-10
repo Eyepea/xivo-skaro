@@ -18,6 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_QRY->go($_TPL->url('graphs/munin/apache'), $param);
+$_QRY->go($_TPL->url('graphs/munin/apache'));
 
 ?>

@@ -34,6 +34,8 @@ $ipbx = &$_SRE->get('ipbx');
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_css('/css/statistics/statistics.css');
+$dhtml->set_css('js/jqplot/jquery.jqplot.css');
+$dhtml->set_js('js/jqplot/jquery.jqplot.js');
 $dhtml->set_js('/js/xivo_calendar.js');
 $dhtml->add_js('/struct/js/date.js.php');
 

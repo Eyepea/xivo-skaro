@@ -133,18 +133,11 @@ $element = $this->get_var('element');
 			<img alt="loading" src="/img/site/loading.gif" width="75" height="75" />
 		</div>
 		<form action="<?=$_SERVER['PHP_SELF']?>" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
-			<div id="it-cal-conf" class="fm-paragraph">
+			<div id="d-conf-list" class="fm-paragraph">
 <?php
 $conf_hlp = null;
-if(is_null($conf) === false && $conf !== false):
-	$dbeg = $conf['dbegcache'];
-	$dend = $conf['dendcache'];
-	$dencache = ($dend != 0) ? $this->bbf('hlp_fm_conf_period_cache-with_end',array($dend)) : $this->bbf('hlp_fm_conf_period_cache-without_end'); 
-	$conf_hlp = $this->bbf('hlp_fm_conf_period_cache',array($dbeg,$dencache));
-endif;
-
 				echo	$form->select(array('name'	=> 'confid',
-							    'id'		=> 'it-toolbar-conf',
+							    'id'		=> 'it-conf-list',
 							    'paragraph'	=> false,
 							    'browse'	=> 'conf',
 							    'empty'		=> $this->bbf('toolbar_fm_conf'),
@@ -165,7 +158,7 @@ endif;
 		{
 			if (isset($v['displayname']) === false)
 				$v['displayname'] = $v['fullname'];
-			$v['displayname'] = dwho_trunc(&$v['displayname'],18,'...',5);
+			$v['displayname'] = dwho_trunc(&$v['displayname'],25,'...',5);
 		}
 ?>
 			<div id="it-cal-object" class="fm-paragraph">
@@ -177,6 +170,7 @@ endif;
 				  				'labelid'	=> 'key',
 				    			'key'		=> 'displayname',
 					   			'altkey'	=> 'id',
+							    'class'		=> 'fm-selected-obj',
 							    'selected'	=> $this->get_var('objectkey')),
 						      	$listobject);
 ?>
@@ -191,7 +185,7 @@ endif;
 	&& is_null($this->get_var('axetype')) === false
 	&& $this->get_var('axetype') !== 'type'):
 ?>
-			<div class="fm-paragraph">	
+			<div id="d-conf-axetype" class="fm-paragraph">	
 			<?=$this->bbf('conf_axetype')?>
 			<?php
 				echo	$form->select(array('name'	=> 'axetype',
@@ -315,12 +309,20 @@ endif;
 		</div>
 <?php
 	if(is_null($conf) === false && $conf !== false):
+	$dbeg = $conf['dbegcache'];
+	$dend = $conf['dendcache'];
+	$dencache = ($dend != 0) ? $this->bbf('hlp_fm_conf_period_cache-with_end',array($dend)) : $this->bbf('hlp_fm_conf_period_cache-without_end');
 ?>
-		<p class="paragraph">
-			<?=$this->bbf('conf_time_range')?> <?=substr($conf['hour_start'],0,5)?> - <?=substr($conf['hour_end'],0,5)?>
-		</p>
-		<p class="paragraph">
-		<?=$this->bbf('conf_workweek')?>
+		<fieldset>
+			<legend><?=$this->bbf('title_conf_cache_period')?></legend>
+			<?=$this->bbf('conf_cache_period',array($dbeg,$dencache))?>
+		</fieldset>
+		<fieldset>
+			<legend><?=$this->bbf('conf_time_range')?></legend>
+			<?=substr($conf['hour_start'],0,5)?> - <?=substr($conf['hour_end'],0,5)?>
+		</fieldset>
+		<fieldset>
+			<legend><?=$this->bbf('conf_workweek')?></legend>
 		<?php
 			$workweek = $conf['workweek'];
 			
@@ -332,15 +334,14 @@ endif;
 					echo '<i class="barre">'.$day.'</i> ';
 			endforeach;
 		?>
-		</p>
+		</fieldset>
 <?php
 	endif;
 ?>
-
-<?php 
-echo dwho_second_to($this->get_var('bench'),2), ' - ', dwho_byte_to($this->get_var('mem_info'));
-?>
-    
+		<fieldset>
+			<legend><?=$this->bbf('bench_dashboard')?></legend>
+			<?=dwho_second_to($this->get_var('bench'),2), ' - ', dwho_byte_to($this->get_var('mem_info'))?>
+		</fieldset>    
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -361,7 +362,7 @@ dwho.dom.set_onload(function()
 	if(is_null($conf) === true || $conf === false):
 ?>
 	dwho.dom.add_event('change',
-			   dwho_eid('it-toolbar-conf'),
+			   dwho_eid('it-conf-list'),
 			   function(){this.form.submit();});
 <?php
 	endif;

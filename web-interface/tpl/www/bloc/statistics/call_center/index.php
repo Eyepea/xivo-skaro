@@ -35,9 +35,8 @@ $xivo_statistics = $this->get_var('xivo_statistics');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		<div class="sb-list"> 
+		<div class="sb-list">
 <?php 
-
 /*
 			<p><?=$table_total?></p>
 			<!-- 

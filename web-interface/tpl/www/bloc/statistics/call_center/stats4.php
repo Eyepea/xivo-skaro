@@ -17,23 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$url     = &$this->get_module('url');
+$url = &$this->get_module('url');
 
 $hascachetype = $this->get_var('hascachetype');
 $basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
-$conf = $this->get_var('conf');
+$axetype = $this->get_var('axetype');
+$listrow = $this->get_var('listrow');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
-if (is_array($conf) === true
-&& isset($conf['periods']) === true):
-	$return = '';
-	foreach($conf['periods'] as $period => $value):
-		$return .= $this->bbf('col_t'.$period);
-		$return .= ': '.$value['beg'].'-'.$value['end'].'s';
-		$return .= ' / ';
-	endforeach;
-	echo $return;
-endif;
 ?>
 <div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -42,25 +34,24 @@ endif;
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		<div class="sb-list"> 
 <?php
 	if ($table1->has_data() === false):
 		echo $this->bbf('no_conf_selected');
 	elseif($hascachetype === false):
 		echo $this->bbf('no_cache_generated_for',array('period'));
 	else :
-		echo $table1->render_html(false);
-		/*
 ?>
-		<p>&nbsp;</p>
- 		<p class="stats-graph-img">
- 			<?=$table1->get_graph('stats1')?>
-  		</p>
+		<div class="sb-list"> 
 <?php
-		*/
-	endif;
+		echo $table1->infos_html();
+		echo $table1->render_html(false);
 ?>
 		</div>
+<?php		
+		$xivo_jqplot->get_result('chart1');
+		$xivo_jqplot->get_result('chart2');
+	endif;
+?>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

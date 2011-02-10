@@ -1021,6 +1021,8 @@ function dwho_sec_to_time($second)
 			$s = '0'.$s;
 		$res .= $s;
 	}
+	else
+		$res .= '00';
 
 	if($sec['h'] == 0
 	&& $sec['m'] == 0

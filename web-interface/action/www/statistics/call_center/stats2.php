@@ -29,9 +29,9 @@ $stats_agent->get_data();
 $tpl_statistics->set_name('agent');
 $tpl_statistics->set_baseurl('statistics/call_center/stats2');
 
-$tpl_statistics->set_data_custom('axetype',$_XS->get_axetype());
+$tpl_statistics->set_data_custom('axetype',$axetype);
 $itl = $_XS->get_datecal();
-switch ($_XS->get_axetype())
+switch ($axetype)
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
@@ -125,8 +125,31 @@ if($act === 'exportcsv')
 	die();
 }
 
+$xivo_jqplot->init_data_full($tpl_statistics);
+
+switch ($axetype)
+{
+	case 'type':
+		$xivo_jqplot->gener_graph('prod_agent','chart1','productivity_by_agent');
+		break;
+	case 'day':
+		break;
+	case 'week':
+	case 'month':
+	case 'year':
+		$xivo_jqplot->gener_graph('agent_stacked_total_time','astt','agent_total_time_for_login');
+		#$xivo_jqplot->gener_graph('agent_stacked_average_time','asat','agent_average_time_for_login');
+		$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
+		break;
+	default:
+}		
+
+$_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
 $_TPL->set_var('bench',(microtime(true) - $bench_start));
+
+$dhtml = &$_TPL->get_module('dhtml');
+$xivo_jqplot->write_js_loaded_plugin(&$dhtml);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

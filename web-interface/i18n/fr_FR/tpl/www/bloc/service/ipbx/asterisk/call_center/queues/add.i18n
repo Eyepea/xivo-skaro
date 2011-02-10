@@ -118,6 +118,9 @@ Suffixer
 ; fm_queuefeatures_preprocess-subroutine
 Sous-routine de prétraitement:
 
+; fm_queuefeatures_stats_qos
+Qualité de service (statistiques): 
+
 ; fm_queuefeatures_timeout
 Temps de sonnerie:
 

@@ -20,20 +20,23 @@
 
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
-if(xivo::load_class('xivo_statistics_queue',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','queue',false) === false)
+if(xivo::load_class('xivo_statistics_queue',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
 
+$appqueue = &$ipbx->get_application('queue');
 $stats_queue = new xivo_statistics_queue(&$_XS);
-$stats_queue->get_data();
 
 $tpl_statistics->set_name('queue');
 $tpl_statistics->set_baseurl('statistics/call_center/stats1');
 
-$tpl_statistics->set_data_custom('axetype',$_XS->get_axetype());
+$tpl_statistics->set_data_custom('axetype',$axetype);
 $itl = $_XS->get_datecal();
-switch ($_XS->get_axetype())
+switch ($axetype)
 {
 	case 'day':
+		if (($queue_qos = $appqueue->get_qos()) === false)
+			$queue_qos = array();
+		$stats_queue->set_data_custom('qos',$queue_qos);
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
 		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
@@ -56,6 +59,7 @@ switch ($_XS->get_axetype())
 		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name',true);
 		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
+$stats_queue->get_data();
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
@@ -104,9 +108,9 @@ $tpl_statistics->add_col('qos',
 					'percent');
 
 $tpl_statistics->gener_table();
-$table1 = $tpl_statistics;
 
-$_TPL->set_var('table1',$table1);
+$_TPL->set_var('table1',$tpl_statistics);
+$_TPL->set_var('listrow',$tpl_statistics->get_data_rows());
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
 $_TPL->set_var('hascachetype',$_XS->has_cache_type());
@@ -120,8 +124,28 @@ if($act === 'exportcsv')
 	die();
 }
 
+$xivo_jqplot->init_data_full($tpl_statistics);
+
+switch ($axetype)
+{
+	case 'type':
+		break;
+	case 'day':
+	case 'week':
+	case 'month':
+	case 'year':
+		$xivo_jqplot->gener_graph('pie','chart1','total_call_repartition_by_event');
+		$xivo_jqplot->gener_graph('queue_perf','chart2','queue_performance');
+		break;
+	default:
+}
+
+$_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
 $_TPL->set_var('bench',(microtime(true) - $bench_start));
+
+$dhtml = &$_TPL->get_module('dhtml');
+$xivo_jqplot->write_js_loaded_plugin(&$dhtml);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

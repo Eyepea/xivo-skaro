@@ -205,6 +205,7 @@ if($this->get_var('fm_save') === false)
 	if($queue['list'] !== false):
 ?>
 				<div id="queuelist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
 					<div class="slt-outlist">
 						<?=$form->select(array('name'		=> 'queuelist',
 								       'label'		=> false,
@@ -264,6 +265,7 @@ if($this->get_var('fm_save') === false)
 	if($agent['list'] !== false):
 ?>
 				<div id="agentlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('agentlist',$this->bbf('ms_seek'))?>
 					<div class="slt-outlist">
 						<?=$form->select(array('name'	=> 'agentlist',
 								       'label'		=> false,

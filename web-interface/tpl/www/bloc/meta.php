@@ -37,12 +37,13 @@
 
 <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('css/xivo.css'));?>">
 <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('css/jquery/ui-lightness/jquery-ui.css'));?>">
-<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jquery.js'));?>"></script>
-<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jquery-ui.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho/dom.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho/form.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/xivo.js'));?>"></script>
+<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jquery.js'));?>"></script>
+<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jquery-ui.js'));?>"></script>
+<!--[if IE]><script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jqplot/excanvas.js'));?>"></script><![endif]-->
 
 <?php
 

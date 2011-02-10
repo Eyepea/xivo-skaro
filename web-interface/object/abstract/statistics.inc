@@ -125,30 +125,31 @@ class xivo_statistics_abstract
 
 		if (empty($data) === true)
 			return(false);
-			
-		$data = array_shift($data);				
-		$keyfile = $data['key'][0];		
+		
+		$data = array_shift($data);
+		$key_data_arr = $data['key'];
+		$keyfile = $data['key'][0];
 		$key_field = 'key';
 		
 		switch ($axetype)
 		{
 			case 'day':
-				$key_data = $this->_xs->get_listhour();			
+				$key_data = $this->_xs->get_listhour();
 				$key_field = 'key';	
 				$date = $this->_xs->all_to_unixtime($itl['dday']);
 				$year = date('Y',$date);
 				$month = date('m',$date);
 				$day = date('d',$date);
-				
+								
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
 					$key = $key_full_data[$key_field];
-					$dip = array();	
+					$dip = array();
 					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
 					$dip['end'] = mktime($key+1,0,0,$month,$day,$year);
 					$this->_xs->_interval_process = $dip;
-					$this->parse_log($keyfile,$key);
+					$this->parse_log($key_data_arr,$key);
 				}
 				break;
 			case 'week':

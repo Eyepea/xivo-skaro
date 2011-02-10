@@ -47,14 +47,14 @@ class xivo_statistics_period extends xivo_statistics_abstract
 					
 			foreach($this->_xs->_period as $k => $v)
 			{
-				if(isset($data_process['answered'][$k]) === false)
+				if(isset($data_process['connect'][$k]) === false)
 				{
-					$data_process['answered'][$k] = array();
-					$data_process['answered'][$k]['type'] = 'int';
-					$data_process['answered'][$k]['result'] = 0;
-					$data_process['abandoned'][$k] = array();
-					$data_process['abandoned'][$k]['type'] = 'int';
-					$data_process['abandoned'][$k]['result'] = 0;
+					$data_process['connect'][$k] = array();
+					$data_process['connect'][$k]['type'] = 'int';
+					$data_process['connect'][$k]['result'] = 0;
+					$data_process['abandon'][$k] = array();
+					$data_process['abandon'][$k]['type'] = 'int';
+					$data_process['abandon'][$k]['result'] = 0;
 				}
 			}
 		}
@@ -95,11 +95,11 @@ class xivo_statistics_period extends xivo_statistics_abstract
 			
 			$field = $this->eval_field_queue_log('CONNECT','holdtime');
 			$connect = $this->eval_count_data($key_data,'CONNECT',array($operator, array($field,$v['beg'],$v['end'])));
-			$this->update_result(array($key,'answered',$k),$connect);
+			$this->update_result(array($key,'connect',$k),$connect);
 		
 			$field = $this->eval_field_queue_log('ABANDON','waittime');
-			$abandon = $this->eval_count_data($key_data,'CONNECT',array($operator, array($field,$v['beg'],$v['end'])));
-			$this->update_result(array($key,'abandoned',$k),$abandon);
+			$abandon = $this->eval_count_data($key_data,'ABANDON',array($operator, array($field,$v['beg'],$v['end'])));
+			$this->update_result(array($key,'abandon',$k),$abandon);
 		}
 	}
 	
@@ -126,15 +126,15 @@ class xivo_statistics_period extends xivo_statistics_abstract
 				$data_process = &$res[$queuename];
 				$data_process = array();
 				$data_process['treaties'] = array();
-				$data_process['abandoned'] = array();
+				$data_process['abandon'] = array();
 				foreach($this->_period as $k => $v)
 				{
 					$data_process['treaties'][$k] = array();
 					$data_process['treaties'][$k]['type'] = 'int';
 					$data_process['treaties'][$k]['result'] = 0;
-					$data_process['abandoned'][$k] = array();
-					$data_process['abandoned'][$k]['type'] = 'int';
-					$data_process['abandoned'][$k]['result'] = 0;
+					$data_process['abandon'][$k] = array();
+					$data_process['abandon'][$k]['type'] = 'int';
+					$data_process['abandon'][$k]['result'] = 0;
 				}
 			}
 			
@@ -150,7 +150,7 @@ class xivo_statistics_period extends xivo_statistics_abstract
 				case 'ENTERQUEUE':
 				# ABANDON(positionorig|positionwaittime)
 				case 'ABANDON':
-					$top = 'abandoned';
+					$top = 'abandon';
 					$holdtime = $this->eval_during_time($callid,$event,'ENTERQUEUE','ABANDON',$time);
 					break;
 				default:

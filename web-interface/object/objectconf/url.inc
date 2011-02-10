@@ -236,6 +236,7 @@ $array['statistics/call_center/configuration']		= 'statistics/call_center/index.
 $array['statistics/call_center/cache']				= 'statistics/call_center/index.php/cache/';
 
 $array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
+$array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';
 
 $array['statistics/json/private/call_center/queue'] 		= 'statistics/json.php/private/call_center/queue/';
 $array['statistics/json/restricted/call_center/queue'] 		= 'statistics/json.php/restricted/call_center/queue/';

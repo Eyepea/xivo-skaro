@@ -59,7 +59,6 @@ $tpl_statistics->add_col('transfer',
 					'custom:general,total,transfer');
 
 $tpl_statistics->gener_table();
-$tpl_statistics->gener_graph('t1','stats_total');
 $table_total = $tpl_statistics->render_html(false,false);
 $tpl_statistics->reset_col();
 
@@ -81,7 +80,6 @@ $tpl_statistics->add_col('traitmenttime',
 					'custom:general,total,traitmenttime');
 
 $tpl_statistics->gener_table();
-#$tpl_statistics->gener_graph('t1','stats_time');
 $table_time = $tpl_statistics->render_html(false,false);
 $tpl_statistics->reset_col();
 
@@ -108,7 +106,6 @@ $tpl_statistics->add_col('av-traitmenttime',
 					'time');
 
 $tpl_statistics->gener_table();
-#$tpl_statistics->gener_graph('t1','stats_average');
 $table_average = $tpl_statistics->render_html(false,false);
 $tpl_statistics->reset_col();
 
@@ -135,7 +132,6 @@ $tpl_statistics->add_col('completecaller_rated',
 					'percent');
 
 $tpl_statistics->gener_table();
-#$tpl_statistics->gener_graph('t1','stats_percent');
 $table_percent = $tpl_statistics->render_html(false,false);
 $tpl_statistics->reset_col();
 

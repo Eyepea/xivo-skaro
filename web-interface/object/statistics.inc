@@ -799,14 +799,18 @@ class xivo_statistics
 		for($i=0;$i<$nb_agent;$i++)
 		{
 			if (array_key_exists($agent[$i]['id'],$this->_conf['agent']) === true)
+			{
+				// clean identity context
+				$agent[$i]['identity'] = preg_replace('/@[a-z-_]+/i','',$agent[$i]['identity']);
 				array_push($res,$agent[$i]);
+			}
 		}
 		
 		return($res);
 	}
 	
 	public function generate_cache($idconf,$dbeg,$dend,$type,$idtype=null)
-	{		
+	{
 		$this->set_idconf($idconf);
 		$this->load_conf();
 		
@@ -1098,13 +1102,14 @@ class xivo_statistics
 		{
 			$dir_process = array_shift($listdir);
 			$cachedir .= DWHO_SEP_DIR.$dir_process;
-			if (dwho_file::is_d_w($cachedir) === false
+			if (dwho_file::is_d_x($cachedir) === false
+			&& dwho_file::is_d_w($cachedir) === true
 			&& mkdir($cachedir,0775,true) === false)
 				$this->push_error('ERR: Can\'t create dir: '.$cachedir);
 		}
 		
 		if (dwho_file::is_d_w($cachedir) === false)
-			$this->push_error('ERR: Not valid cache dir: '.$cachedir);
+			$this->push_error('ERR: Not writable cache dir: '.$cachedir);
 			
 		if ($this->has_error() === true)
 			die(var_dump($this->get_error()));
@@ -1253,123 +1258,6 @@ class xivo_statistics
 				while (!$rs)
 					usleep(1);
 			}
-		}
-		return(true);
-	}
-	
-	public function update_cache_graphic($idconf,$type,$object,$erase=false,$dbeg=null,$dend=null)
-	{		
-		require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'pchart.inc'));
-		
-		$pChart = new pChart;
-		var_dump($pChart);
-		
-		$keyfile = $object['key'][0];
-		$idtype = $object['id'];
-				
-		$this->_type = $type;
-		$this->_objectkey = $idtype;
-		$this->init_path_cache($idconf,$type,$keyfile,DWHO_PATH_CACHE_PCHART);
-		$dirkey = $this->build_dir_for_cache($idconf,$type,$keyfile,DWHO_PATH_CACHE_PCHART);
-		$conf = $this->get_conf();
-		
-		var_dump($dirkey);
-	
-		if (($conf['dendcache']) == 0)
-		{
-			$confyear = date('Y');
-			$confmonth = date('m');
-			$indexconf = (int) ($confyear.$confmonth);
-		}
-		else 
-		{
-			$indexconf = (int) str_replace('-','',$conf['dendcache']);
-			$confyear = substr($indexconf,0,4);
-			$confmonth = substr($indexconf,4,2);
-		}		
-		
-		if (is_null($dbeg) === true
-		&& is_null($dend) === true)
-		{
-			$dbegcache = strtotime($conf['dbegcache'].'-01');
-			$lastday = date('d',$this->get_lastday_for_month($confyear,$confmonth));
-			$dendcache = strtotime("$confyear-$confmonth-$lastday");
-		}
-		elseif (is_null($dbeg) === false
-		&& is_null($dend) === true)
-		{
-			$dbegcache = $this->all_to_unixtime($dbeg);
-			$dendcache = time();
-		}
-		elseif (is_null($dbeg) === false
-		&& is_null($dend) === false)
-		{
-			$dbegcache = $this->all_to_unixtime($dbeg);
-			$dendcache = $this->all_to_unixtime($dend);
-		}
-		else
-			return(false);
-		
-		$listconfmonth = $this->get_listmonth_for_interval($dbegcache,$dendcache);
-		
-		while($listconfmonth)
-		{
-			$confmonth = array_shift($listconfmonth);
-			$index = (int) $confmonth['key'];			
-			$filemonth = $dirkey.DWHO_SEP_DIR.$index.'.db';
-			$year = substr($index,0,4);
-			$month = substr($index,4,2);
-			$report = "-- ".$conf['name']." -- $type -- $keyfile -- $year-$month";
-			
-			var_dump($report);
-			
-			/*
-			$lastdayforcache = $this->get_lastday_for_cache_file($idconf,$type,$keyfile,$year,$month);
-			// get lastday for month from conf available day.
-			if (($listday = $this->get_listday_for_month($year,$month)) === false
-			|| count($listday) === 0
-			|| is_array(($dayfm = array_pop($listday))) === false)
-				continue;
-				
-			$lastdayformonth = (string) $dayfm['key'];
-			
-			$dbeg = mktime(0,0,1,$month,1,$year);
-			$dend = mktime(23,59,59,$month,$lastdayformonth,$year);
-			
-			if ($erase !== false)
-			{
-				echo "$report -- mode erase enabled >> creation required \n";
-				echo "$report >> create in progress......... \n";
-				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
-				while (!$rs)
-					usleep(1);
-				echo "$report >> creation finished \n";
-			}
-			
-			if (dwho_file::is_f_r($filemonth) === false)
-			{
-				echo "$report -- not exist >> creation required \n";
-				echo "$report >> create in progress......... \n";
-				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
-				while (!$rs)
-					usleep(1);
-			}
-			else
-			{
-				echo "$report -- already exist >> check if is up to date \n";
-				
-				if($lastdayformonth === $lastdayforcache)
-				{
-					echo "month $index is up to date \n";
-					continue;
-				}
-				echo "month $index is not up to date \n";
-				echo "$report >> update in progress......... \n";
-				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
-				while (!$rs)
-					usleep(1);
-			}
-			*/
 		}
 		return(true);
 	}

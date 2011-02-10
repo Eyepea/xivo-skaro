@@ -82,6 +82,11 @@ $array['statistics/ui/call_center/genercache'] = array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genercache'));
 
+$array['statistics/ui/call_center/genergraphic'] = array(
+	'path'		=> 'statistics/ui/call_center/genergraphic',
+	'define'	=> array(
+			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
+			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genergraphic'));
 
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',

@@ -85,7 +85,7 @@ class xivo_statistics_agent extends xivo_statistics_abstract
 		$this->update_result(array($key,'ringnoanswer'),$val);
 		
 		$val = $this->eval_count_data($key_data,'ABANDON');
-		$this->update_result(array($key,'abandon'),$val);	
+		$this->update_result(array($key,'abandon'),$val);
 					
 		$field = $this->eval_field_queue_log('COMPLETEAGENT','calltime');
 		$calltime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);

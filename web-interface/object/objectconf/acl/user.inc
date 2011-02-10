@@ -117,6 +117,7 @@ $array['tree']['service']['statistics']['call_center'] = array();
 $array['tree']['service']['statistics']['call_center']['configuration'] = true;
 $array['tree']['service']['statistics']['call_center']['data'] = true;
 $array['tree']['service']['statistics']['call_center']['genercache'] = true;
+$array['tree']['service']['statistics']['call_center']['genergraphic'] = true;
 $array['tree']['service']['statistics']['call_center']['queue'] = true;
 
 $array['group'] = array();

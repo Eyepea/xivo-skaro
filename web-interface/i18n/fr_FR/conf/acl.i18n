@@ -298,6 +298,12 @@ Check
 ; acl(service-statistics)
 Statistiques
 
+; acl(statistics-call_center)
+Statistiques centre d'appel
+
+; acl(statistics-call_center-queue)
+File d'attente
+
 ; acl(service-statistics-call_center)
 Statistiques centre d'appel
 
@@ -309,6 +315,9 @@ File d'attente
 
 ; acl(service-statistics-call_center-genercache)
 Génération manuel du cache
+
+; acl(service-statistics-call_center-genergraphic)
+Génération des graphiques
 
 ; acl(service-statistics-call_center-data)
 Données

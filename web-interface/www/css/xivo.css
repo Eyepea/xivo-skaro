@@ -227,7 +227,8 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .sb-foot .span-left {background-image: url(../img/content/f-left.gif);}
 #b-content .sb-foot .span-right {background-image: url(../img/content/f-right.gif);}
 
-#b-content .b-infos .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 5px 10px;}
+#b-content .b-infos .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 5px 5px;}
+#b-content .b-infos .sb-graph {margin: auto; padding-top: 15px;}
 #b-content .b-form .sb-content {padding: 5px;}
 #b-content .b-form table {margin: auto;}
 
@@ -389,3 +390,4 @@ input.readonly {
     background-color: #F1F1F1;
     color: #7E7E7E;
 }
+

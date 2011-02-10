@@ -37,7 +37,9 @@
 #b-lmenu #dashboard .sb-top .span-center {width: 180px;background-image: url(../../img/content/t-bg.gif); background-repeat: repeat-x;}
 #b-lmenu #dashboard .sb-top .span-right {background-image: url(../../img/content/t-right.gif);}
 
-#b-lmenu #dashboard .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 5px 10px;text-align: right;}
+#b-lmenu #dashboard .sb-content {clear: both;border: 1px solid #9e9e9e;border-top-width: 0px;padding: 2px 2px;text-align: right;}
+#b-lmenu #dashboard .sb-content fieldset {border: 1px solid #055a82;border-style: dashed;font-size: 90%;}
+#b-lmenu #dashboard .sb-content fieldset legend {color: #f96101;font-weight: bold;padding: 0px 2px 2px;margin: 0px;}
 
 #b-lmenu #dashboard .sb-foot span {padding: 5px 0px 4px;height: 5px;}
 #b-lmenu #dashboard .sb-foot .span-left {background-image: url(../../img/content/f-left.gif);}
@@ -47,7 +49,7 @@
 .tab_cache_generation {margin: 10px;}
 .tab_cache_generation p {margin: 5px;}
 
-.fm-selected-conf {width: 130px}
+.fm-selected-conf, .fm-selected-obj {width: 170px}
 
 .ui-progressbar-value {background-image: url(/img/pbar-ani.gif);}
 

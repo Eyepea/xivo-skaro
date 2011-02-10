@@ -5,6 +5,9 @@ Choisir une configuration
 ; hlp_fm_conf_period_cache
 Période de cache: %s %s selon la configuration.
 
+; conf_cache_period
+%s %s
+
 ; hlp_fm_conf_period_cache-with_end
  à %s 
  
@@ -191,11 +194,17 @@ Terminée avec succés
 ; mn_left_name_dashboard
 Tableau de bord
 
+; title_conf_cache_period
+Période de cache
+
+; bench_dashboard
+Performance
+
 ; conf_time_range
-Plage horaire: 
+Plage horaire
 
 ; conf_workweek
-Jours de travail: 
+Jours de travail
 
 ; monday
 Lundi
@@ -243,7 +252,7 @@ Juillet
 Août
 
 ; september
-Séptembre
+Septembre
 
 ; october
 Octobre

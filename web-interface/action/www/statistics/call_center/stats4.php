@@ -31,7 +31,7 @@ $tpl_statistics->set_baseurl('statistics/call_center/stats4');
 
 $tpl_statistics->set_data_custom('axetype',$_XS->get_axetype());
 $itl = $_XS->get_datecal();
-switch ($_XS->get_axetype())
+switch ($axetype)
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
@@ -62,19 +62,19 @@ $tpl_statistics->set_data_custom('period',$stats_period->_result);
 $tpl_statistics->set_col_struct('connect');
 $tpl_statistics->add_col('tperiod1',
 					'direct',
-					'custom:period,[key],answered,period1');
+					'custom:period,[key],connect,period1');
 $tpl_statistics->add_col('tperiod2',
 					'direct',
-					'custom:period,[key],answered,period2');
+					'custom:period,[key],connect,period2');
 $tpl_statistics->add_col('tperiod3',
 					'direct',
-					'custom:period,[key],answered,period3');
+					'custom:period,[key],connect,period3');
 $tpl_statistics->add_col('tperiod4',
 					'direct',
-					'custom:period,[key],answered,period4');
+					'custom:period,[key],connect,period4');
 $tpl_statistics->add_col('tperiod5',
 					'direct',
-					'custom:period,[key],answered,period5');
+					'custom:period,[key],connect,period5');
 
 $tpl_statistics->set_col_struct('abandoned');
 $tpl_statistics->add_col('aperiod1',
@@ -94,10 +94,8 @@ $tpl_statistics->add_col('aperiod5',
 					'custom:period,[key],abandoned,period5');
 
 $tpl_statistics->gener_table();
-#$tpl_statistics->gener_graph('t1','stats1');
-$table1 = $tpl_statistics;
 
-$_TPL->set_var('table1',$table1);
+$_TPL->set_var('table1',$tpl_statistics);
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
 $_TPL->set_var('hascachetype',$_XS->has_cache_type());
@@ -111,8 +109,28 @@ if($act === 'exportcsv')
 	die();
 }
 
+$xivo_jqplot->init_data_full($tpl_statistics);
+
+switch ($axetype)
+{
+	case 'type':
+		$xivo_jqplot->gener_graph('period_pie_connect','chart1','total_call_connect_by_period');
+		$xivo_jqplot->gener_graph('period_pie_abandon','chart2','total_call_abandon_by_period');
+		break;
+	case 'day':
+	case 'week':
+	case 'month':
+	case 'year':
+		break;
+	default:
+}
+
+$_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
 $_TPL->set_var('bench',(microtime(true) - $bench_start));
+
+$dhtml = &$_TPL->get_module('dhtml');
+$xivo_jqplot->write_js_loaded_plugin(&$dhtml);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

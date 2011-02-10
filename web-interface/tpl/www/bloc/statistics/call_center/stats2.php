@@ -23,6 +23,9 @@ $url = &$this->get_module('url');
 $hascachetype = $this->get_var('hascachetype');
 $basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
+$axetype = $this->get_var('axetype');
+$listrow = $this->get_var('listrow');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>	
 <div class="b-infos b-form">
@@ -31,26 +34,38 @@ $table1 = $this->get_var('table1');
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-	<div class="sb-content"> 
-		<div class="sb-list"> 
+	<div class="sb-content">
 <?php
 	if ($table1->has_data() === false):
 		echo $this->bbf('no_conf_selected');
 	elseif($hascachetype === false):
 		echo $this->bbf('no_cache_generated_for',array('agent'));
 	else :
-		echo $table1->render_html(false);
-		/*
 ?>
-		<p>&nbsp;</p>
- 		<p class="stats-graph-img">
- 			<?=$table1->get_graph('stats1')?>
-  		</p>
+		<div class="sb-list"> 
 <?php
-		*/
-	endif;
+		echo $table1->infos_html();
+		echo $table1->render_html(false);
 ?>
 		</div>
+<?php
+		switch ($axetype):
+			case 'type':
+				$xivo_jqplot->get_result('chart1');
+				break;
+			case 'day':
+				break;
+			case 'week':
+			case 'month':
+			case 'year':
+				$xivo_jqplot->get_result('astt');
+				$xivo_jqplot->get_result('asat');
+				$xivo_jqplot->get_result('ap');
+				break;
+			default:
+		endswitch;
+	endif;
+?>
 	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

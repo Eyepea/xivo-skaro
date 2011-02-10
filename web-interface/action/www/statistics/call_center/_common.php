@@ -18,15 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_I18N->load_file('tpl/www/bloc/statistics/statistics');
-
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-
 $bench_start = microtime(true);
 $base_memory = memory_get_usage();
 
-$gdir = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www/img/graphs/pchart/';
-$basedir = '/img/graphs/pchart/';
+$_I18N->load_file('tpl/www/bloc/statistics/statistics');
+
+include(dwho_file::joinpath(DWHO_PATH_ROOT,'jqplot.inc'));
+
+$xivo_jqplot = new xivo_jqplot;
+
+$act = isset($_QR['act']) === true ? $_QR['act'] : '';
 
 $appstats_conf = &$_XOBJ->get_application('stats_conf');
 
@@ -37,19 +38,21 @@ $_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
 
 $_XS->global_init($_QR);
 
-$_TPL->set_var('basedir',$basedir);
+$axetype = $_XS->get_axetype();
+
 $_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));
 $_TPL->set_var('listaxetype',$_XS->get_list_axetype());
-$_TPL->set_var('axetype',$_XS->get_axetype());
+$_TPL->set_var('axetype',$axetype);
 $_TPL->set_var('infocal',$_XS->get_datecal());
 $_TPL->set_var('confid',$_XS->get_idconf());
 $_TPL->set_var('conf',$_XS->get_conf());
 
 $tpl_statistics = &$_TPL->get_module('statistics');
-$tpl_statistics->set_basedir($basedir);
 $tpl_statistics->set_xs(&$_XS);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/statistics/call_center/conf.js');
+#$dhtml->set_js('js/dwho/submenu.js');
+#$dhtml->set_js('js/delayedLoading.js');
 
 ?>

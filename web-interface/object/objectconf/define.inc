@@ -26,6 +26,7 @@ define('XIVO_SOFT_VERSION','1.2');
 define('XIVO_SOFT_CODENAME','Skaro');
 define('XIVO_SOFT_URL','xivo.fr');
 define('XIVO_CORP_LABEL','Proformatique');
+define('XIVO_PF_FR_CORP_LABEL','Proformatique');
 define('XIVO_CORP_URL','xivo.fr');
 
 define('XIVO_AV_FR_CORP_NAME'		,'Avencall');
