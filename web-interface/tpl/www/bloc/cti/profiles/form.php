@@ -76,6 +76,7 @@ endif;
 		<fieldset id="cti-profiles_services">
 			<legend><?=$this->bbf('cti-profiles-services');?></legend>
 			<div id="profiles_services" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('serviceslist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
 				echo    $form->select(array('name'  => 'serviceslist',
@@ -127,6 +128,7 @@ endif;
 		<fieldset id="cti-profiles_funcs">
 			<legend><?=$this->bbf('cti-profiles_funcs');?></legend>
 			<div id="profiles_funcs" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('funcslist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
 				echo    $form->select(array('name'  => 'funcslist',

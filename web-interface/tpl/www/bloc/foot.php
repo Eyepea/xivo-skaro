@@ -22,6 +22,76 @@ $dhtml = &$this->get_module('dhtml');
 $dhtml->load_js('foot');
 
 ?>
+<script type="text/javascript">
+	function clean_ms(input_id,select_from,select_to)
+	{
+		var box = document.getElementById(input_id);
+		var select = document.getElementById(select_from);
+		var select2 = document.getElementById(select_to);
+		var select_cache = Array();
+		
+	    this.__init = __init;
+	    this.reset = reset;
+	    this.build_cache = build_cache;
+	    this.populate = populate;
+	    
+	    function __init()
+	    {
+		    if (!box || !select || !select2)
+			    return false;
+	    	box.addEventListener("keyup", populate, false);		
+			build_cache(select,select_cache);
+	    }
+		
+		function reset() 
+		{
+			while (select.hasChildNodes())
+			{
+	            select.removeChild(select.firstChild);
+	        }
+	    }
+	    
+		function build_cache(arr,to) 
+		{
+			var nb = arr.length;
+			for (var i = 0; i < nb; i++) 
+			{
+				var option = arr.options[i];
+				to.push(new Option(option.text, option.value));
+			}
+		}		
+		
+		function populate(e)
+		{
+			update_cache();
+			reset();
+			var nb = select_cache.length;
+			for (var i = 0; i < nb; i++) 
+			{
+				var option = select_cache[i];
+				var expression = new RegExp(this.value.toLowerCase());
+				if (expression.exec(option.text.toLowerCase()))
+					select.add(option, null);
+			}
+		}
+		
+		function update_cache()
+		{
+			var nb = select2.length;
+			for (var i = 0; i < nb; i++) 
+			{
+				var option2 = select2.options[i];
+
+				var l = select_cache.length;
+				for(var c = 0; c < l; c++) {
+			        if(select_cache[c]
+			        && select_cache[c].value == option2.value)
+						select_cache.splice(c,1);
+			    }
+			}
+		}
+	}
+</script>
 		<h6 id="version-copyright">
 <?php
 		echo	XIVO_SOFT_LABEL,' - ',

@@ -127,6 +127,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 			<?=$this->bbf('fm_context_context-include');?>
 		</label>
 	</p>
+				<?=$form->input_for_ms('contextlist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'contextlist',

@@ -1204,6 +1204,7 @@ endif;
 		<label id="lb-codeclist" for="it-codeclist" onclick="dwho_eid('it-codeclist').focus();">
 			<?=$this->bbf('fm_protocol_codec-allow');?>
 		</label>
+		<?=$form->input_for_ms('codeclist',$this->bbf('ms_seek'))?>
 	</p>
 	<div class="slt-outlist">
 <?php
@@ -1352,6 +1353,7 @@ endif;
 	if($rightcall['list'] !== false):
 ?>
 	<div id="rightcalllist" class="fm-paragraph fm-multilist">
+	<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,

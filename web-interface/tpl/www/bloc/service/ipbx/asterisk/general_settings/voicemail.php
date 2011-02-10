@@ -248,6 +248,7 @@ endif;
 			<?=$this->bbf('fm_voicemail-format');?>
 		</label>
 	</p>
+				<?=$form->input_for_ms('voicemail-formatlist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 		<?=$form->select(array('name'		=> 'voicemail[formatlist]',
 				       'label'		=> false,

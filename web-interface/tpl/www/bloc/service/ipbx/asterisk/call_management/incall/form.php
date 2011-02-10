@@ -153,6 +153,7 @@ endif;
 ?>
 
 	<div id="rightcalllist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,

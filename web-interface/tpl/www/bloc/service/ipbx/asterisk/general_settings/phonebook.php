@@ -130,6 +130,7 @@ endif;
 	if($info['xivoserver']['list'] !== false):
 ?>
 		<div id="xivoserverlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('xivoserverlist',$this->bbf('ms_seek'))?>
 			<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'xivoserverlist',

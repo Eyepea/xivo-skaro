@@ -130,6 +130,7 @@ endif;
 	if($umember['list'] !== false):
 ?>
 <div id="userlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'userlist',
@@ -192,6 +193,7 @@ endif;
 	if(is_array($queues) === true && empty($queues) === false):
 ?>
 <div id="queuelist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'queuelist',

@@ -167,6 +167,7 @@ endif;
 	if($user['list'] !== false):
 ?>
 	<div id="userlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'userlist',
 					       'label'		=> false,
@@ -253,6 +254,7 @@ endif;
 	if($rightcall['list'] !== false):
 ?>
 	<div id="rightcalllist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,

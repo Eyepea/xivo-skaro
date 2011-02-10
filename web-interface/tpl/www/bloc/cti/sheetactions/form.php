@@ -64,6 +64,7 @@ endif;
         <fieldset id="cti-sheetactions_context">
             <legend><?=$this->bbf('cti-sheetactions-context');?></legend>
             <div id="sheetactions_context" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('contextlist',$this->bbf('ms_seek'))?>
                 <div class="slt-outlist">
 <?php
                 echo    $form->select(array('name'  => 'contextlist',
@@ -117,6 +118,7 @@ endif;
         <fieldset id="cti-sheetactions_capaids">
             <legend><?=$this->bbf('cti-sheetactions-capaids');?></legend>
             <div id="sheetactions_capaids" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('capaidslist',$this->bbf('ms_seek'))?>
                 <div class="slt-outlist">
 <?php
                 echo    $form->select(array('name'  => 'capaidslist',

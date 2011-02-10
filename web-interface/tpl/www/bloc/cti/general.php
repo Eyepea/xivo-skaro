@@ -261,6 +261,7 @@ if(isset($error_js[0]) === true)
 	<fieldset id="cti-xivo_servers">
 		<legend><?=$this->bbf('cti-xivo_servers');?></legend>
 		<div id="xivoserverlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('xivoserverlist',$this->bbf('ms_seek'))?>
 			<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'xivoserverlist',

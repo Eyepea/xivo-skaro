@@ -38,6 +38,7 @@ $qmember = $this->get_var('qmember');
 	if(is_array($groups) === true && empty($groups) === false):
 ?>
 <div id="grouplist" class="fm-paragraph fm-multilist">
+		<?=$form->input_for_ms('grouplist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	   $form->select(array('name'		=> 'grouplist',
@@ -152,6 +153,7 @@ $qmember = $this->get_var('qmember');
 	if(is_array($queues) === true && empty($queues) === false):
 ?>
 <div id="queuelist" class="fm-paragraph fm-multilist">
+		<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'queuelist',

@@ -190,6 +190,7 @@ if($outcalltrunk['list'] !== false):
 	<p>
 		<label id="lb-outcalltrunklist" for="it-outcalltrunklist"><?=$this->bbf('fm_outcalltrunk');?></label>
 	</p>
+				<?=$form->input_for_ms('outcalltrunklist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 		<?=$form->select(array('name'		=> 'outcalltrunklist',
 				       'label'		=> false,
@@ -264,6 +265,7 @@ endif;
 	if($rightcall['list'] !== false):
 ?>
 	<div id="rightcalllist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,

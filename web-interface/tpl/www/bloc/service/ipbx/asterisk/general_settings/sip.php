@@ -1237,6 +1237,7 @@ endif;
 		<label id="lb-codeclist" for="it-codeclist">
 			<?=$this->bbf('fm_codec-allow');?>
 		</label>
+		<?=$form->input_for_ms('codeclist',$this->bbf('ms_seek'))?>
 	</p>
 	<div class="slt-outlist">
 <?php

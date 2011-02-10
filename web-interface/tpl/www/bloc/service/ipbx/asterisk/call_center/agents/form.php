@@ -51,6 +51,7 @@ endif;
 ?>
 <div id="agentlist" class="fm-paragraph fm-multilist">
 	<p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
+				<?=$form->input_for_ms('agentlist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'agentlist',
@@ -124,6 +125,7 @@ endif;
 	if(is_array($queues) === true && empty($queues) === false):
 ?>
 <div id="queuelist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'queuelist',

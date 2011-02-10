@@ -67,6 +67,7 @@ $dhtml->write_js($js);
 		<fieldset id="cti-contexts_incalls">
 			<legend><?=$this->bbf('cti-contexts-incalls');?></legend>
 			<div id="contexts_incalls" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('rdid-incalls-in',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
 				echo    $form->select(array('name'  => 'incalls_in',
@@ -120,6 +121,7 @@ $dhtml->write_js($js);
 		<fieldset id="cti-contexts_services">
 			<legend><?=$this->bbf('cti-contexts-directories');?></legend>
 			<div id="contexts_services" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('directorieslist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
 				echo    $form->select(array('name'  => 'directorieslist',

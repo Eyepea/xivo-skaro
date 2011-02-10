@@ -312,6 +312,7 @@ endif;
 			<?=$this->bbf('fm_queue_periodic-announce');?>
 		</label>
 	</p>
+				<?=$form->input_for_ms('pannouncelist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'pannouncelist',
@@ -414,6 +415,7 @@ endif;
 	if($user['list'] !== false):
 ?>
 	<div id="userlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'userlist',
 					       'label'		=> false,
@@ -479,7 +481,7 @@ endif;
 					<?=$this->bbf('fm_agentgroup');?>
 				</label>
 			</p>
-
+				<?=$form->input_for_ms('agentgrouplist',$this->bbf('ms_seek'))?>
 			<div class="slt-outlist">
 				<?=$form->select(array('name'		=> 'agentgrouplist',
 						       'label'		=> false,
@@ -535,7 +537,7 @@ endif;
 						<?=$this->bbf('fm_agent');?>
 					</label>
 				</p>
-
+				<?=$form->input_for_ms('agentlist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 					<?=$form->select(array('name'		=> 'agentlist',
 							       'label'		=> false,

@@ -88,6 +88,7 @@ endif;
 	<p>
 		<label id="lb-exten" for="it-exten"><?=$this->bbf('fm_rightcallexten_exten');?></label>
 	</p>
+				<?=$form->input_for_ms('rightcallexten',$this->bbf('ms_seek'))?>
 	<div class="slt-list">
 		<?=$form->select(array('name'		=> 'rightcallexten[]',
 				       'label'		=> false,
@@ -141,6 +142,7 @@ endif;
 	if($rcalluser['list'] !== false):
 ?>
 	<div id="userlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'userlist',
 					       'label'		=> false,
@@ -199,6 +201,7 @@ endif;
 	if($rcallgroup['list'] !== false):
 ?>
 	<div id="grouplist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('grouplist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'grouplist',
 					       'label'		=> false,
@@ -256,6 +259,7 @@ endif;
 	if($rcallincall['list'] !== false):
 ?>
 	<div id="incalllist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('incalllist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'incalllist',
 					       'label'		=> false,
@@ -314,6 +318,7 @@ endif;
 	if($rcalloutcall['list'] !== false):
 ?>
 	<div id="outcalllist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('outcalllist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'outcalllist',
 					       'label'		=> false,

@@ -56,6 +56,7 @@ endif;
 		<fieldset id="cti-contexts_services">
 			<legend><?=$this->bbf('cti-contexts-directories');?></legend>
 			<div id="contexts_services" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('directorieslist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
 				echo    $form->select(array('name'  => 'directorieslist',

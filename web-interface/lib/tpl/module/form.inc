@@ -1377,8 +1377,22 @@ class dwho_tpl_form extends dwho_tpl_module
 		   || $this->_param['selected'] === '') === true
 		&& $this->_param['default'] !== false)
 			$this->_param['selected'] = $this->_param['default'];
+			
+		$r = '';
+					
+		if($this->_param['multiple'] === true)
+		{
+			$id = $this->_param['id'];
+			$key = $this->_param['key'];
+			$uniqid = uniqid();
+			//if (ereg('list',$id))
+			//	$r .= '<center><input type="text" id="it-'.$uniqid.'" /></center>';
+			//else
+			//	$r .= $this->bbf('input_filter_ms').' <input type="text" id="it-'.$uniqid.'" />';
+			$r .= "\n\n";
+		}
 
-		$r = '<select name="'.$this->_param['name'].'"';
+		$r .= '<select name="'.$this->_param['name'].'"';
 
 		if($this->_param['disabled'] !== false)
 			$r .= ' disabled="disabled"';
@@ -1391,7 +1405,7 @@ class dwho_tpl_form extends dwho_tpl_module
 			$r .= ' multiple="multiple"';
 
 			if($this->_param['size'] !== false)
-				$r .= ' size="'.$this->_param['size'].'"';
+				$r .= ' size="'.$this->_param['size'].'"';				
 		}
 
 		if($this->_param['class'] !== false)
@@ -1444,6 +1458,43 @@ class dwho_tpl_form extends dwho_tpl_module
 		}
 
 		$this->_render = $r.$this->_render.'</select>';
+					
+		if($this->_param['multiple'] === true)
+		{
+			if (ereg('list',$id))
+				$id2 = str_replace('list','',$id);
+			else
+				$id2 = $id.'list';
+				
+			if (ereg('list',$id))
+			{
+				$r = "
+				<script type=\"text/javascript\">
+				function load_$uniqid()
+				{
+					var cc = new clean_ms('$id-finder','$id','$id2');
+					cc.__init();
+				}
+				dwho.dom.set_onload(load_$uniqid);
+				</script>\n\n";
+				$this->_render = $this->_render.$r;
+			}
+			/*
+			else 
+			{
+				$r = "
+				<script type=\"text/javascript\">
+				function load_$uniqid()
+				{
+					var cc = new clean_ms('it-$uniqid','$id','$id2');
+					cc.__init();
+				}
+				dwho.dom.set_onload(load_$uniqid);
+				</script>\n\n";
+				$this->_render = $this->_render.$r;
+			}
+			*/
+		}
 
 		$this->_mk_help();
 		$this->_mk_error();
@@ -1453,6 +1504,18 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_mk_paragraph();
 
 		return($this->_render);
+	}
+	
+	function input_for_ms($name,$str)
+	{
+		$divid = 'it-'.$name.'-finder';
+		$r = '<center style="margin:5px;">';
+		$r .= '<input type="text" name="'.$name.'" id="'.$divid.'" value="'.$str.'">';
+		$r .= '</center>';
+		$r .= "\n\n<script type=\"text/javascript\">
+				dwho.form.set_events_text_helper('$divid');
+			</script>\n\n";		
+		return $r;
 	}
 }
 

@@ -481,6 +481,7 @@ endif;
 			<?=$this->bbf('fm_codec-allow');?>
 		</label>
 	</p>
+				<?=$form->input_for_ms('codeclist',$this->bbf('ms_seek'))?>
 	<div class="slt-outlist">
 <?php
 	echo	$form->select(array('name'	=> 'codeclist',

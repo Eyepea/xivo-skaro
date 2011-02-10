@@ -82,6 +82,7 @@ endif;
 		<fieldset id="cti-access_status">
 			<legend><?=$this->bbf('cti-access_status');?></legend>
 			<div id="xivoserverlist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('access_statuslist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
 				echo    $form->select(array('name'  => 'access_statuslist',

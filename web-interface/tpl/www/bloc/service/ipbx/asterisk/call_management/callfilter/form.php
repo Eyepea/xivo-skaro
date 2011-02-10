@@ -163,6 +163,7 @@ endif;
 	if($secretary['list'] !== false):
 ?>
 	<div id="callfiltermember-secretarylist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('callfiltermember-secretarylist',$this->bbf('ms_seek'))?>
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'callfiltermember-secretarylist',
 					       'label'		=> false,
