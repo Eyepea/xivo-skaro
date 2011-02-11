@@ -35,8 +35,7 @@ function xivo_ast_schedule_add_closed_action(name, obj)
 
 	dialevent  += 1;
 
-//  'onclick="dwho.dom.make_table_list(\'disp2\',this); return(dwho.dom.free_focus());"',
-	new dwho.http('http://192.168.1.10/service/ipbx/ui.php/call_management/schedule?act=dialaction&event=' + dialevent,
+	new dwho.http('/service/ipbx/ui.php/call_management/schedule?act=dialaction&event=' + dialevent,
 		{'callbackcomplete':	function(xhr) 
 			{ 
 				elt = dwho_eid('onclosed-time-dialaction');
