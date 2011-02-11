@@ -22,13 +22,14 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_schedule extends xivo_application_asterisk_abstract
 {
-	var $_schedule		= false;
+	var $_schedule		  = false;
 	var $_schedule_path = false;
 	var $_schedule_time = false;
-	var $_dialaction	= false;
+	var $_dialaction	  = false;
 	var $_contextmember	= false;
-	var $_sound		= array();
-	var $_contextlist	= array();
+	var $_general      	= false;
+	var $_sound	      	= array();
+	var $_contextlist	  = array();
 
 	function xivo_application_service_asterisk_schedule(&$service,&$dso,$param=null,$components=true)
 	{
@@ -56,7 +57,8 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$this->_components = true;
 
 		if(($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'schedule'))) === false
-		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'schedule'))) === false)
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'schedule'))) === false
+		|| ($this->_general = &$this->_service->get_module('general')) === false)
 			return(false);
 
 		return(true);
@@ -74,52 +76,78 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		if($this->_components === false)
 			return($this->_info);
 
-		//$this->_get_dialaction($this->_info['schedule']['id']);
-		//$this->_get_contextmember($this->_info['schedule']['id']);
-
 		list($actiontype, $action) = split(':', $this->_info['schedule']['fallback_action']);
 		if(is_null($action))
 			$action = $actiontype;
 
-		var_dump($actiontype, $action);
+		$arg2 = $this->_info['schedule']['fallback_actionargs'];
+		if(strstr($arg2, ';') !== false)
+			$arg2 = array_fill_keys(explode(';', $arg2),1);
 
 		$this->_info['dialaction'] = array('schedule_fallback' => array(
-			'action'  => 'endcall',
-			'endcall' => array(
-				'action' => 'hangup'
+			'action'  => $actiontype,
+			// /!\ need both
+			$actiontype => array(
+				'action' => $action,
+				'actionarg1' => $this->_info['schedule']['fallback_actionid'],
+				'actionarg2' => $arg2
+				),
+			$action => array(
+				'action' => $action,
+				'actionarg1' => $this->_info['schedule']['fallback_actionid'],
+				'actionarg2' => $arg2
+				)
 			)
-		));
-			/*
-			'actiontype' => '',
-			'action'     => $this->_info['schedule']['fallback_action'],
-			'actionarg1' => $this->_info['schedule']['fallback_actionid'],
-			'actionarg2' => $this->_info['schedule']['fallback_actionargs'],
-			'linked'     => true
-		));
+		);
 
-		if(($pos = strpos($this->_info['schedule']['fallback_action'], ':')) !== false)
-		{
-			$this->_info['dialaction']['schedule_fallback']['actiontype'] =
-				substr($this->_info['schedule']['fallback_action'], 0, $pos);
-			$this->_info['dialaction']['schedule_fallback']['action'] = 
-				substr($this->_info['schedule']['fallback_action'], $pos+1);
-		}
-			 */
 		$this->_get_opened($this->_info['schedule']['id']);
+		$this->_get_closed($this->_info['schedule']['id']);
 
 		return($this->_info);
 	}
 
 	function _get_opened($scheduleid)
 	{
-		$this->_info['opened'] = $this->_schedule_time->get_all_where(array('schedule_id' => $scheduleid, 'mode' =>
-			'opened'));
+		$this->_info['opened'] = $this->_schedule_time->get_all_where(array('schedule_id' => $scheduleid, 'mode' =>	'opened'));
+	}
+
+	function _get_closed($scheduleid)
+	{
+		$this->_info['closed'] = $this->_schedule_time->get_all_where(array('schedule_id' => $scheduleid, 'mode' =>	'closed'), null, false, 'id');
+
+		for($i = 0; $i < count($this->_info['closed']); $i++)
+		{
+			$rs = $this->_info['closed'][$i];
+			list($actiontype, $action) = split(':', $rs['action']);
+			if(is_null($action))
+				$action = $actiontype;
+
+		if(strstr($rs['actionargs'], ';') !== false)
+				$rs['actionargs'] = array_fill_keys(explode(';', $rs['actionargs']),1);
+
+			$this->_info['dialaction'][$i+1] = array(
+				'action'    => $actiontype,
+				// /!\ need both
+				$actiontype => array(
+					'action' => $action,
+					'actionarg1' => $rs['actionid'],
+					'actionarg2' => $rs['actionargs']
+				),
+				$action => array(
+					'action' => $action,
+					'actionarg1' => $rs['actionid'],
+					'actionarg2' => $rs['actionargs']
+				)
+			);
+		}
 	}
 
 	function get_elements()
 	{
 		$r = array();
 		$r['schedule'] = $this->_schedule->get_element();
+		$gene = $this->_general->get(1);
+		$r['timezone'] = array('default' => $gene['timezone']);
 		$r['dialaction'] = $this->_dialaction->get_element();
 
 		return($r);
@@ -156,7 +184,6 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			return(false);
 
 		$r = array();
-		var_dump($rs);
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -349,16 +376,8 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 		$this->set_schedule($arr['schedule'], $arr['dialaction']['schedule_fallback']);
 		$this->set_opened($arr['opened']);
+		$this->set_closed($arr['closed']);
 
-/*
-		if(dwho_issa('dialaction',$arr) === false
-		|| $this->set_dialaction($arr['dialaction']) === null
-		|| is_array($this->get_result_var('dialaction','inschedule')) === false
-		|| is_array($this->get_result_var('dialaction','outschedule')) === false)
-			$this->_set_error('dialaction','invalid data');
-
-		$this->set_contextmember();
- */
 		return(($this->get_errnb() < 1));
 	}
 
@@ -367,11 +386,10 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$r = true;
 		$arr['commented'] = false;
 
-		$arr['fallback_action']     =
-			(array_key_exists('actiontype',$dialaction)?$dialaction['actiontype'].':':'') .
-			$dialaction['action'];
+		$arr['fallback_action']     = $dialaction['actiontype'] . 
+			(array_key_exists('action',$dialaction)?':'.$dialaction['action']:'');
 		$arr['fallback_actionid']   = $dialaction['actionarg1'];
-		$arr['fallback_actionargs'] = $dialaction['actionarg2'];
+		$arr['fallback_actionargs'] = is_array($dialaction['actionarg2']) ? implode(';',array_keys($dialaction['actionarg2'])).';':$dialaction['actionarg2'];
 
 
 		if(($rs = $this->_schedule->chk_values($arr)) === false)
@@ -400,6 +418,26 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		return true;
 	}
 
+	function set_closed($arr)
+	{
+		foreach($arr as &$rs)
+		{
+			$rs['mode']   = 'closed';
+			$rs['action'] = $rs['dialaction']['actiontype'] . 
+				(array_key_exists('action',$rs['dialaction'])?':'.$rs['dialaction']['action']:'');
+			$rs['actionid']   = $rs['dialaction']['actionarg1'];
+			$arg2 = $rs['dialaction']['actionarg2'];
+			$rs['actionargs'] = is_array($arg2) ? implode(';',array_keys($arg2)).';':$arg2;
+
+			unset($rs['dialaction']);
+
+			$rs = $this->_schedule_time->chk_values($rs);
+		}
+
+		$this->_set_result('closed',$arr);
+		return true;
+	}
+
 	function add()
 	{
 		$r = true;
@@ -412,7 +450,8 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		|| ($scheduleid = $this->add_schedule()) === false
 		//|| $this->add_dialaction($scheduleid) === false
 		//|| $this->add_contextmember($scheduleid) === false)
-		|| $this->add_opened($scheduleid) === false)
+		|| $this->add_opened($scheduleid) === false
+		|| $this->add_closed($scheduleid) === false)
 		{
 			$r = false;
 
@@ -439,14 +478,24 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		foreach($this->get_result('opened') as $rs)
 		{
 			$rs['schedule_id'] = $scheduleid;
-			var_dump($rs);
 			$this->_schedule_time->add($rs);
 		}
 
 		return true;
 	}
 
+	function add_closed($scheduleid)
+	{
+		foreach($this->get_result('closed') as $rs)
+		{
+			$rs['schedule_id'] = $scheduleid;
+			$this->_schedule_time->add($rs);
+		}
 
+		return true;
+	}
+
+	//TODO
 	function _reverse_add($scheduleid)
 	{
 		if($this->get_errnb() > 0
@@ -507,26 +556,45 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			return(false);
 
 		$rs['commented'] = $this->_info['schedule']['commented'];
+		$this->_return['schedule'] = true;
 
-		return(($this->_return['schedule'] = $this->_schedule->edit($this->_info['schedule']['id'],$rs)));
+		if($this->_schedule->edit($this->_info['schedule']['id'], $rs) == false
+			|| $this->edit_opened($this->_info['schedule']['id']) == false
+			|| $this->edit_closed($this->_info['schedule']['id']) == false)
+		{
+			$this->_return['schedule'] = false;
+		}
+
+		return($this->_return['schedule']);
 	}
 
-	function edit_dialaction()
+	function edit_opened($scheduleid)
 	{
-		if(dwho_issa('schedule',$this->_info) === false)
-			return(false);
+		$this->_schedule_time->delete_where(array('schedule_id' => $scheduleid, 'mode' => 'opened'));
 
-		return(parent::edit_dialaction($this->_info['schedule']['id']));
+		foreach($this->get_result('opened') as $rs)
+		{
+			$rs['schedule_id'] = $scheduleid;
+			$this->_schedule_time->add($rs);
+		}
+
+		return true;
 	}
 
-	function edit_contextmember()
+	function edit_closed($scheduleid)
 	{
-		if(dwho_issa('schedule',$this->_info) === false)
-			return(false);
+		$this->_schedule_time->delete_where(array('schedule_id' => $scheduleid, 'mode' => 'closed'));
 
-		return(parent::edit_contextmember($this->_info['schedule']['id']));
+		foreach($this->get_result('closed') as $rs)
+		{
+			$rs['schedule_id'] = $scheduleid;
+			$this->_schedule_time->add($rs);
+		}
+
+		return true;
 	}
 
+	// TODO
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -561,6 +629,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		return(true);
 	}
 
+	// TODO
 	function delete()
 	{
 		$r = true;
@@ -569,17 +638,14 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$this->_return = array();
 
 		if($this->delete_schedule() === false
-		|| $this->delete_dialaction() === false
-		|| $this->delete_contextmember() === false)
+		|| $this->delete_schedule_time() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
 		}
-		else
-			$this->unlinks();
 
 		$this->_status = '';
-
 		return($r);
 	}
 
@@ -596,6 +662,20 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		return($r);
 	}
 
+	function delete_schedule_time()
+	{
+		$r = $this->_schedule_time->delete_where(array('schedule_id' => $this->_info['schedule']['id']));
+		return $r;
+	}
+
+	function delete_schedule_path()
+	{
+		$r = $this->_schedule_path->delete_where(array('schedule_id' => $this->_info['schedule']['id']));
+
+		return $r;
+	}
+
+	//TODO
 	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
@@ -623,16 +703,6 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 					break;
 			}
 		}
-
-		return(true);
-	}
-
-	function unlinks()
-	{
-		if(dwho_issa('schedule',$this->_info) === false)
-			return(false);
-
-		$this->_dialaction->unlinked('schedule',$this->_info['schedule']['id']);
 
 		return(true);
 	}
@@ -700,5 +770,4 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		return(true);
 	}
 }
-
 ?>
