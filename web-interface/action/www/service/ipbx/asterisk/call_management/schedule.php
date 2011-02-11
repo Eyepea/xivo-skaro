@@ -21,20 +21,50 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
+$appschedule = &$ipbx->get_application('schedule');
 $info = array();
 
 $param = array();
 $param['act'] = 'list';
 
+
 switch($act)
 {
-	case 'add':
-		$appschedule = &$ipbx->get_application('schedule');
+case 'add':
+	$result = $fm_save = $error = null;
 
-		$result = $fm_save = $error = null;
+	if(isset($_QR['fm_send']) === true && dwho_issa('schedule',$_QR) === true)
+	{
+			$opened = array();
+			for($i = 0; $i < count($_QR['opened']['hours'])-1; $i++)
+			{
+				$opened[] = array(
+					'hours'      => $_QR['opened']['hours'][$i],
+					'weekdays'   => $_QR['opened']['weekdays'][$i],
+					'monthdays'  => $_QR['opened']['monthdays'][$i],
+					'months'     => $_QR['opened']['months'][$i],
+				);
+			}
+			$_QR['opened'] = $opened;
 
-		if(isset($_QR['fm_send']) === true && dwho_issa('schedule',$_QR) === true)
-		{
+			$cdialaction = $_QR['dialaction'];
+			array_shift($cdialaction); // shift schedule_fallback
+
+			$closed = array();
+			for($i = 0; $i < count($_QR['closed']['hours'])-1; $i++)
+			{
+				$closed[] = array(
+					'hours'      => $_QR['closed']['hours'][$i],
+					'weekdays'   => $_QR['closed']['weekdays'][$i],
+					'monthdays'  => $_QR['closed']['monthdays'][$i],
+					'months'     => $_QR['closed']['months'][$i],
+					'dialaction' => array_shift($cdialaction)
+				);
+
+			}
+			$_QR['closed'] = $closed;
+
+			var_dump($_QR);
 			if($appschedule->set_add($_QR) === false
 			|| $appschedule->add() === false)
 			{
@@ -62,12 +92,14 @@ switch($act)
 		$_TPL->set_var('destination_list',$appschedule->get_dialaction_destination_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
 		break;
-	case 'edit':
-		$appschedule = &$ipbx->get_application('schedule');
 
+	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $appschedule->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
@@ -79,6 +111,36 @@ switch($act)
 		{
 			$return = &$result;
 
+			$opened = array();
+			for($i = 0; $i < count($_QR['opened']['hours'])-1; $i++)
+			{
+				$opened[] = array(
+					'hours'      => $_QR['opened']['hours'][$i],
+					'weekdays'   => $_QR['opened']['weekdays'][$i],
+					'monthdays'  => $_QR['opened']['monthdays'][$i],
+					'months'     => $_QR['opened']['months'][$i],
+				);
+			}
+			$_QR['opened'] = $opened;
+
+			$cdialaction = $_QR['dialaction'];
+			array_shift($cdialaction); // shift schedule_fallback
+
+			$closed = array();
+			for($i = 0; $i < count($_QR['closed']['hours'])-1; $i++)
+			{
+				$closed[] = array(
+					'hours'      => $_QR['closed']['hours'][$i],
+					'weekdays'   => $_QR['closed']['weekdays'][$i],
+					'monthdays'  => $_QR['closed']['monthdays'][$i],
+					'months'     => $_QR['closed']['months'][$i],
+					'dialaction' => array_shift($cdialaction)
+				);
+
+			}
+			$_QR['closed'] = $closed;
+
+			var_dump($_QR);
 			if($appschedule->set_edit($_QR) === false
 			|| $appschedule->edit() === false)
 			{
@@ -107,9 +169,13 @@ switch($act)
 		$_TPL->set_var('context_list',$appschedule->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
 		break;
+
 	case 'delete':
 		$param['page'] = $page;
 
@@ -122,6 +188,7 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		break;
+
 	case 'deletes':
 		$param['page'] = $page;
 
@@ -140,6 +207,7 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		break;
+
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
@@ -163,12 +231,11 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		break;
+
 	default:
 		$act = 'list';
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
-
-		$appschedule = &$ipbx->get_application('schedule');
 
 		$order = array();
 		$order['name'] = SORT_ASC;
@@ -196,6 +263,8 @@ $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/schedule');
 
+$menu = &$_TPL->get_module('menu');
+$_TPL->set_var('timezones', array_keys(dwho_i18n::get_timezone_list()));
 $_TPL->set_var('act',$act);
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/schedule/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());

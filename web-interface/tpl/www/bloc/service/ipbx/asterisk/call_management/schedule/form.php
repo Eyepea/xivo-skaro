@@ -32,6 +32,11 @@ if($this->get_var('fm_save') === false):
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
+?>
+
+
+<div id="sb-part-first" class="b-nodisplay">
+<?php
 echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			  'name'	=> 'schedule[name]',
 			  'labelid'	=> 'schedule-name',
@@ -44,12 +49,12 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
       $form->select(array('desc' => $this->bbf('fm_schedule_timezone'),
 				  'name'     => 'schedule[timezone]',
 			    'key'      => false,
-			    'default'  => $element['schedule']['timezone']['default'],
+			    'default'  => $element['timezone']['default'],
 					'selected' => $info['schedule']['timezone']),
 				$timezones);
 
 
-	// oneped hours
+	// opened hours
 	$type = 'disp';
 	$opened = $info['opened'];
 	$count = $opened?count($opened):0;
@@ -222,21 +227,45 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 	</div>
 
 
-<?php
-	// closed hours
-	$type = 'disp2';
-	$closed = array();
-	$count = $closed?count($closed):0;
-	$errdisplay = '';
-?>
 	<div class="sb-list">
-	<fieldset id="fld-closed-hours">
-		<legend><?=$this->bbf('fld-closed-hours');?></legend>
+	<fieldset id="fld-closed-hours-default-action">
+		<legend><?=$this->bbf('fld-closed-hours-default-action');?></legend>
 <?php
 		// dialactions
 		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
 			array('event'	=> 'schedule_fallback'));
 ?>
+	</fieldset>
+	</div>
+
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-schedule-description" for="it-schedule-description"><?=$this->bbf('fm_schedule_description');?></label>
+		</p>
+		<?=$form->textarea(array('paragraph'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'schedule[description]',
+					 'id'		=> 'it-schedule-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['schedule']['description']['default'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'schedule', 'description')) ),
+				   $info['schedule']['description']);?>
+	</div>
+
+</div>
+
+
+<div id="sb-part-closed-periods" class="b-nodisplay">
+<?php
+	// closed hours
+	$type = 'disp2';
+	$closed = $info['closed'];
+	$count = $closed?count($closed):0;
+	$errdisplay = '';
+?>
+	<div class="sb-list">
 
 		<table cellspacing="0" cellpadding="0" border="0">
 			<thead>
@@ -273,9 +302,9 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'label'  	=> false,
 							       'size'	   	=> 15,
 							       'key'	    => false,
-							       'value'		=> $closed[$i]['weekdays'],
+							       'value'		=> $closed[$i]['hours'],
 							       'default'	=> '',
-										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'weekdays'))));
+										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'hours'))));
 	 ?>
 				</td>
 				<td>
@@ -320,8 +349,11 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				<td>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
-			array('event'	=> "fallback[$i]"));
+			array('event'	=> $i+1));
 ?>
+					<script type="text/javascript">
+	dwho.dom.set_onload(function() { xivo_ast_schedule_add_dyn_dialaction('<?=$i+1?>'); });
+					</script>					
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -406,9 +438,6 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			</tr>
 			</tbody>
 		</table>
-  </fieldset>
 	</div>
 
-
 </div>
-
