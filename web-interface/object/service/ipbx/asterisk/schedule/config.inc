@@ -50,7 +50,7 @@ $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 256);
 $array['filter']['timezone'] = array('set' => false, 'chk' => 2);
 $array['filter']['fallback_action'] = array('set' => false, 'chk' => 2);
-$array['filter']['fallback_actionid'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
+$array['filter']['fallback_actionid'] = array('set' => false, 'chk' => 2);
 $array['filter']['fallback_actionargs'] = array('set' => false, 'chk' => 2);
 $array['filter']['description'] = array('set' => false, 'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);

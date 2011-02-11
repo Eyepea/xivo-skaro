@@ -70,7 +70,7 @@ $array['filter']['weekdays'] = array('set' => false, 'chk' => 2);
 $array['filter']['monthdays'] = array('set' => false, 'chk' => 2);
 $array['filter']['months'] = array('set' => false, 'chk' => 2);
 $array['filter']['action'] = array('set' => false, 'chk' => 2);
-$array['filter']['actionid'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
+$array['filter']['actionid'] = array('set' => false, 'chk' => 2);
 $array['filter']['actionargs'] = array('set' => false, 'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);
 
