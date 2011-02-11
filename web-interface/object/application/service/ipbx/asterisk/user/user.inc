@@ -2728,6 +2728,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function import_csv($save=true)
 	{
+		//$xivo_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini');
+		//define('XIVO_LOG_FILE', $xivo_ini['error']['file']);
+
 		$save = (bool) $save;
 
 		if(dwho::load_class('dwho::file::csv') === false

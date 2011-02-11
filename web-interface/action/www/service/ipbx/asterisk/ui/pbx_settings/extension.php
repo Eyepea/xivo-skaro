@@ -67,8 +67,6 @@ switch($act)
 		$filter  = intval($filter);
 		$lfilter = floor(log10($filter)) + 1;
 
-		//var_dump($context['contextnumbers']['user'],
-		//	$context['contextnummember']['user']);
 		$numbers = array();
 		foreach($context['contextnumbers'][$obj]as $numb)
 		{

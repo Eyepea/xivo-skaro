@@ -64,7 +64,6 @@ case 'add':
 			}
 			$_QR['closed'] = $closed;
 
-			var_dump($_QR);
 			if($appschedule->set_add($_QR) === false
 			|| $appschedule->add() === false)
 			{
@@ -140,7 +139,6 @@ case 'add':
 			}
 			$_QR['closed'] = $closed;
 
-			var_dump($_QR);
 			if($appschedule->set_edit($_QR) === false
 			|| $appschedule->edit() === false)
 			{
