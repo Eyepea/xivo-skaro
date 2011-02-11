@@ -64,24 +64,7 @@ else:
 		'</div>';
 endif;
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_outcall_externprefix'),
-				  'name'	=> 'outcall[externprefix]',
-				  'labelid'	=> 'outcall-externprefix',
-				  'size'	=> 15,
-				  'default'	=> $element['outcall']['externprefix']['default'],
-				  'value'	=> $info['outcall']['externprefix'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'externprefix')) )),
-
-		$form->select(array('desc'	=> $this->bbf('fm_outcall_stripnum'),
-				    'name'	=> 'outcall[stripnum]',
-				    'labelid'	=> 'outcall-stripnum',
-				    'key'	=> false,
-				    'default'	=> $element['outcall']['stripnum']['default'],
-				    'selected'	=> $info['outcall']['stripnum']),
-			      $element['outcall']['stripnum']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_outcall_mode'),
+		echo $form->select(array('desc'	=> $this->bbf('fm_outcall_mode'),
 				    'name'	=> 'outcall[mode]',
 				    'labelid'	=> 'outcall-mode',
 				    'key'	=> false,
@@ -117,6 +100,23 @@ endif;
 				  'value'	=> $info['outcall']['exten'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'outcall', 'exten')) )),
+
+    $form->select(array('desc'	=> $this->bbf('fm_outcall_stripnum'),
+				    'name'	=> 'outcall[stripnum]',
+				    'labelid'	=> 'outcall-stripnum',
+				    'key'	=> false,
+				    'default'	=> $element['outcall']['stripnum']['default'],
+				    'selected'	=> $info['outcall']['stripnum']),
+			      $element['outcall']['stripnum']['value']),
+
+    $form->text(array('desc'	=> $this->bbf('fm_outcall_externprefix'),
+				  'name'	=> 'outcall[externprefix]',
+				  'labelid'	=> 'outcall-externprefix',
+				  'size'	=> 15,
+				  'default'	=> $element['outcall']['externprefix']['default'],
+				  'value'	=> $info['outcall']['externprefix'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'externprefix')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_setcallerid'),
 				      'name'	=> 'outcall[setcallerid]',
