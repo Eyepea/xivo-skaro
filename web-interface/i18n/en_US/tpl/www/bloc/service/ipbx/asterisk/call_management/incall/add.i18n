@@ -175,3 +175,12 @@ Destination email :
 ; smenu_faxdetect
 Fax detection
 
+; smenu_schedule
+Schedules
+
+; fm_incall_schedule
+Schedules:
+
+; create_schedules
+Create a schedule
+
