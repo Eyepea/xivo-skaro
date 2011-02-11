@@ -36,8 +36,8 @@ $array['element']['order']['default'] = 0;
 
 $array['filter'] = array();
 $array['filter']['schedule_id'] = array('set' => false, 'chk' => 2);
-$array['filter']['path'] = array('set' => false, 'chk' => 2);
-$array['filter']['pathid'] = array('set' => false, 'chk' => 2);
-$array['filter']['order'] = array('set' => false, 'chk' => 2);
+$array['filter']['path']        = array('set' => false, 'chk' => 2);
+$array['filter']['pathid']      = array('set' => false, 'chk' => 2, 'cast' => 'uint');
+$array['filter']['order']       = array('set' => false, 'chk' => 2, 'cast' => 'uint');
 
 ?>

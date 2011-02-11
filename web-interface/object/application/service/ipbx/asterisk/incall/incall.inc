@@ -331,7 +331,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		// schedule
 		if(array_key_exists('schedule_id', $arr))
-			$this->_set_result('schedule_id', $arr['schedule_id']);
+			$this->_set_result('schedule_id', intval($arr['schedule_id']));
 
 		return(($this->get_errnb() < 1));
 	}
@@ -398,13 +398,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function add_schedule_path($incallid)
 	{
-		$schedule_id = $this->get_result('schedule_id');
-		// no schedule
-		if(is_null($schedule_id))
-			return true;
-
-		$arr = array('schedule_id' => $schedule_id, 'path' => 'incall', 'pathid' => $incallid);
-		return($this->_schedule_path->add($arr));
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'incall', 
+			$incallid);
 	}
 
 	function _reverse_add()
@@ -489,15 +486,12 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit_schedule_path()
 	{
-		$this->_schedule_path->delete_where(array('path' => 'incall', 'pathid' =>	$this->_info['incall']['id']));
+		$this->_schedule_path->delete_where(array('path' => 'incall', 'pathid' =>	intval($this->_info['incall']['id'])));
 
-		$schedule_id = $this->get_result('schedule_id');
-		// no schedule
-		if(is_null($schedule_id))
-			return true;
-
-		$arr = array('schedule_id' => $schedule_id, 'path' => 'incall', 'pathid' => $this->_info['incall']['id']);
-		return($this->_schedule_path->add($arr));
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'incall', 
+			$this->_info['incall']['id']);
 	}
 
 	function edit_dialaction()
@@ -621,9 +615,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function delete_schedule_path()
 	{
-		$this->_schedule_path->delete_where(array('path' => 'incall', 'pathid' =>	$this->_info['incall']['id']));
-
-		return true;
+		return $this->_schedule_path->delete_where(array('path' => 'incall', 'pathid' =>	$this->_info['incall']['id']));
 	}
 
 	function _reverse_delete()

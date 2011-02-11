@@ -22,10 +22,10 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_schedule_path extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'schedule_path';
-	var $_filter	= false;
-	var $_origin	= false;
+	var $_dso	      = null;
+	var $_name	    = 'schedule_path';
+	var $_filter	  = false;
+	var $_origin	  = false;
 	var $_identity	= false;
 
 	function xivo_service_asterisk_schedule_path(&$sre,&$dso)
@@ -40,6 +40,22 @@ class xivo_service_asterisk_schedule_path extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+	}
+
+	function schedule_add($schedule_id, $path, $pathid)
+	{
+		// no schedule
+		if(is_null($schedule_id) || $schedule_id <= 0)
+			return true;
+
+		$arr = array(
+			'schedule_id' => $schedule_id, 
+			'path'        => $path, 
+			'pathid'      => intval($pathid), 
+			'order'       => 0
+		);
+
+		return(parent::add($arr));
 	}
 
 }

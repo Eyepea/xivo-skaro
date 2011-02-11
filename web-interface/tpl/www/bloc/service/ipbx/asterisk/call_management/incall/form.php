@@ -210,15 +210,23 @@ endif;
 
 <div id="sb-part-schedule" class="b-nodisplay">
 <?php
+	if($schedules === false):
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_schedules'),
+					'service/ipbx/call_management/schedule',
+					'act=add'),
+			'</div>';
+	else:
 		echo $form->select(array('desc'	=> $this->bbf('fm_incall_schedule'),
 				    'name'	    => 'schedule_id',
 				    'labelid'	  => 'schedule_id',
 						'key'	      => 'name',
 						'altkey'    => 'id',
 						'empty'     => true,
-				    'default'  	=> $element['schedule_id']['default'],
+				    //'default'  	=> $element['schedule_id']['default'],
 				    'selected'	=> $this->get_var('schedule_id')),
-			      $schedules);
+					$schedules);
+	endif;
 ?>
 </div>
 

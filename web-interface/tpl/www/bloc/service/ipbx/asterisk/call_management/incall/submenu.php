@@ -43,9 +43,9 @@
 		</li>
 		<li id="dwsm-tab-3"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-rightcalls',1);"
-		    onmouseout="dwho_submenu.blur(this,1);"
-		    onmouseover="dwho_submenu.focus(this,1);">
+		    onclick="dwho_submenu.select(this,'sb-part-rightcalls');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#rightcalls"><?=$this->bbf('smenu_rightcalls');?></a></span>
 			</div>

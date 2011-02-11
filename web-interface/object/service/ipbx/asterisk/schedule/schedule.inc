@@ -45,7 +45,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		$data['commented'] = (bool) $data['commented'];
+		//$data['commented'] = (bool) $data['commented'];
 		return($data);
 	}
 

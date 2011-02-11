@@ -193,6 +193,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 			$schedule = array();
 			$schedule['name'] = $ref['name'];
+			/*
 			$schedule['context'] = $ref['context'];
 			$schedule['timebeg'] = $ref['timebeg'];
 			$schedule['timeend'] = $ref['timeend'];
@@ -204,15 +205,16 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			$schedule['monthend'] = $ref['monthend'];
 			$schedule['publicholiday'] = $ref['publicholiday'];
 			$schedule['commented'] = $ref['commented'];
-
+			*/
 			$ref = array_merge($ref,$this->_schedule->_prepare($schedule));
 
-			$ref['destination'] = $ref['action'];
+		//	$ref['destination'] = $ref['action'];
 			$ref['commented'] = (bool) $ref['commented'];
-			$ref['linked'] = (bool) $ref['linked'];
+			//$ref['linked'] = (bool) $ref['linked'];
 
 			$arr = array();
 
+			/*
 			switch($ref['action'])
 			{
 				case 'endcall:hangup':
@@ -273,7 +275,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 					break;
 				default:
 					$ref['destidentity'] = '-';
-			}
+			}*/
 		}
 
 		if(empty($r) === true)
