@@ -29,7 +29,7 @@ from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
 from xivo_sysconf import helpers, jsoncore
 
-from pf_lib import ocf
+from xivo import ocf
 
 
 class Ha(jsoncore.JsonCore):
