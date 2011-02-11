@@ -39,3 +39,24 @@ Dans la plage horaire
 
 ; fld-dialaction-outschedule
 Hors de la plage horaire
+
+; fm_schedule_timezone
+Fuseau horaire : 
+
+; fld-opened-hours
+Périodes ouvrées
+
+; fld-closed-hours
+Périodes non-ouvrées
+
+; fld-closed-hours-default-action
+Périodes non-ouvrées / Action par défaut
+
+; fm_schedule_description
+Description : 
+
+; smenu_general
+Général
+
+; smenu_closed_periods
+Périodes non-ouvrées
