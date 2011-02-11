@@ -43,7 +43,8 @@ class xivo extends dwho
 
 		$this->_init_cfg();
 
-		$this->_set_error();
+		$this->_set_report();	
+		$this->_set_error();		
 		$this->_set_query();
 		$this->_set_language();
 		$this->_set_session();
@@ -82,7 +83,12 @@ class xivo extends dwho
 		if(($location_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'location.ini')) !== false)
 			$this->_cfg_ini_location($location_ini);
 		else
-			die('ERR: Missing location init file');
+			die('ERR: Missing location init file');		
+		
+		if(($report_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'report.ini')) !== false)
+			$this->_cfg_ini_report($report_ini);
+		else
+			die('ERR: Missing report init file');
 
 		if(($template_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'template.ini')) !== false)
 			$this->_cfg_ini_template($template_ini);

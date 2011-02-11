@@ -386,8 +386,14 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 .dwho-form-help {position: absolute; padding: 5px;border: 1px solid #c0c0c0;background-color: #ffec5a;}
 .dwho-form-error {position: absolute; padding: 5px;border: 1px solid #c0c0c0;background-color: #ffcbcb;}
 
-input.readonly {
-    background-color: #F1F1F1;
-    color: #7E7E7E;
-}
+input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
 
+.xivo-error {border: 1px solid red;background: #ed6a6a;}
+.xivo-warning {border: 1px solid yellow;background: #FF9;}
+.xivo-info {border: 1px solid green;background: #CFC;}
+.xivo-notice {border: 1px solid blue;background: #69f;}
+.xivo-debug {border: 1px solid black;background: #ccc;}
+.xivo-warning, .xivo-error, .xivo-info, .xivo-notice, .xivo-debug {padding: 5px;margin: 4px;line-height: 1em;}
+.xivo-messages ul {}
+.xivo-messages ul li {margin: 3px;}
+.xivo-messages ul ul li {margin-left: 10px;}

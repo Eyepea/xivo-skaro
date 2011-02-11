@@ -62,6 +62,11 @@ class dwho
 		$this->_cfg_infos_extension();
 	}
 
+	function _set_report()
+	{
+		dwho::load_class('dwho_report');
+	}
+
 	function _set_error()
 	{
 		dwho::load_class('dwho_tracerror');
@@ -81,7 +86,7 @@ class dwho
 		dwho::load_class('dwho_session');
 		dwho_gct::set(new dwho_session());
 	}
-
+	
 	function _set_i18n()
 	{
 		dwho::load_class('dwho_i18n');
@@ -277,6 +282,25 @@ class dwho
 
 		$this->_conf['dwho']['ini']['datastorage']['type'] = DWHO_DSO_TYPE;
 		$this->_conf['dwho']['ini']['datastorage']['param'] = $dso;
+	}
+	
+	function _cfg_ini_report($report)
+	{
+		if(is_array($report) === false || empty($report) === true)
+			die('ERR: Invalid report configuration');
+		else if(dwho_issa('general',$report) === false)
+			die('ERR: Missing general section for report configuration');
+			
+		$listreport = array('error','warning','info','notice','debug');
+		
+		while($listreport)
+		{
+			$rp = array_shift($listreport);
+			if(isset($report['general'][$rp]) === false)
+				die('ERR: Missing '.$rp.' option in general for report configuration');
+			else		
+				define('REPORT_'.strtoupper($rp),(bool) $report['general'][$rp]);
+		}
 	}
 
 	function _cfg_ini_location($location)

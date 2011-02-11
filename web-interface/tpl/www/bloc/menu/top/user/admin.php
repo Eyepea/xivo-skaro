@@ -94,7 +94,6 @@ $this->file_include('bloc/menu/top/user/loginbox');
 <?php
 	endif;
 ?>
-<!-- 
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
@@ -105,7 +104,6 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_preferences'));?>
 		</li>
- -->
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
@@ -134,4 +132,9 @@ $this->file_include('bloc/menu/top/user/loginbox');
 	$menu->mk_toolbar();
 ?>
 </div>
+<?php if (dwho_report::has('error') === true) : echo dwho_report::get_message('error'); endif; ?>
+<?php if (dwho_report::has('warning') === true) : echo dwho_report::get_message('warning'); endif; ?>
+<?php if (dwho_report::has('info') === true) : echo dwho_report::get_message('info'); endif; ?>
+<?php if (dwho_report::has('notice') === true) : echo dwho_report::get_message('notice'); endif; ?>
+<?php if (dwho_report::has('debug') === true) : echo dwho_report::get_message('debug'); endif; ?>
 </div>
