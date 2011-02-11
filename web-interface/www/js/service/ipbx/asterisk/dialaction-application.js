@@ -304,6 +304,7 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 		case 'directory':
 		case 'faxtomail':
 		case 'voicemailmain':
+		case 'password':
 			if((applicationarg1 = dwho_eid(actionarg1_id)) === false)
 				return(false);
 
@@ -446,4 +447,5 @@ var xivo_ast_defapplication = {
 	'macro|directory':		{displayname: 'Directory'},
 	'macro|faxtomail':		{displayname: 'FaxToMail'},
 	'macro|voicemailmain':		{displayname: 'VoiceMailMain'},
+	'macro|password':		{displayname: 'Password'},
 	'macro|playsound':		{displayname: 'PlaySound'}};

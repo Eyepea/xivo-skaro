@@ -181,6 +181,12 @@ Consultation de la messagerie vocale
 ; fm_dialaction_application-voicemailmain-actionarg1
 Contexte :
 
+; fm_dialaction_application-action-opt(password)
+Demander un mot de passe
+
+; fm_dialaction_application-password-actionarg1
+Mot de passe :
+
 ; dialaction_no-user
 Aucun utilisateur trouvé
 

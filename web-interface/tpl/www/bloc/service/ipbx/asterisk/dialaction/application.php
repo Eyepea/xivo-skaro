@@ -75,7 +75,12 @@ echo	'<div id="fd-dialaction-',$event,'-application-actiontype" class="b-nodispl
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-application-voicemailmain-actionarg1',
 			  'size'	=> 15,
-			  'value'	=> $this->get_var('dialaction',$event,'voicemailmain','actionarg1')));
+			  'value'	=> $this->get_var('dialaction',$event,'voicemailmain','actionarg1'))),
+	$form->text(array('desc'	=> $this->bbf('fm_dialaction_application-password-actionarg1'),
+			  'name'	=> 'dialaction['.$event.'][actionarg1]',
+			  'labelid'	=> 'dialaction-'.$event.'-application-password-actionarg1',
+			  'size'	=> 15,
+			  'value'	=> $this->get_var('dialaction',$event,'password','actionarg1')));
 
 	if($event === 'voicemenuflow'):
 		echo	$form->button(array('name'	=> 'add-defapplication-application',

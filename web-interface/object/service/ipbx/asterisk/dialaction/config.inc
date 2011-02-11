@@ -66,6 +66,7 @@ $array['element']['action']['value'] = array('none',
 					     'application:directory',
 					     'application:faxtomail',
 					     'application:voicemailmain',
+					     'application:password',
 					     'sound',
 					     'custom');
 $array['element']['action']['default'] = 'none';
@@ -101,7 +102,7 @@ $array['element']['endcall']['default'] = 'hangup';
 $array['element']['endcall']['unset'] = true;
 
 $array['element']['application'] = array();
-$array['element']['application']['value'] = array('callbackdisa','disa','directory','faxtomail','voicemailmain');
+$array['element']['application']['value'] = array('callbackdisa','disa','directory','faxtomail','voicemailmain','password');
 $array['element']['application']['default'] = 'callbackdisa';
 $array['element']['application']['unset'] = true;
 
@@ -138,6 +139,7 @@ $array['filter']['action'] = array('key' => array('none',
 						  'application:directory',
 						  'application:faxtomail',
 						  'application:voicemailmain',
+						  'application:password',
 						  'sound',
 						  'custom'));
 $array['filter']['actionarg1'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');

@@ -54,7 +54,8 @@ var xivo_dialaction_actiontype = {
 					 'disa-actionarg2',
 					 'directory-actionarg1',
 					 'faxtomail-actionarg1',
-					 'voicemailmain-actionarg1'],
+					 'voicemailmain-actionarg1',
+					 'password-actionarg1'],
 			'custom':	['actiontype','actionarg1'],
 			'sound':	['actiontype',
 					 'actionarg1',
@@ -77,35 +78,49 @@ xivo_dialaction_actionarg['application']['callbackdisa'] = [{display: true, name
 							    {display: false, name: 'disa-actionarg2'},
 							    {display: false, name: 'directory-actionarg1'},
 							    {display: false, name: 'faxtomail-actionarg1'},
-							    {display: false, name: 'voicemailmain-actionarg1'}];
+							    {display: false, name: 'voicemailmain-actionarg1'},
+							    {display: false, name: 'password-actionarg1'}];
 xivo_dialaction_actionarg['application']['disa'] = [{display: false, name: 'callbackdisa-actionarg1'},
 						    {display: false, name: 'callbackdisa-actionarg2'},
 						    {display: true, name: 'disa-actionarg1'},
 						    {display: true, name: 'disa-actionarg2'},
 						    {display: false, name: 'directory-actionarg1'},
 						    {display: false, name: 'faxtomail-actionarg1'},
-						    {display: false, name: 'voicemailmain-actionarg1'}];
+						    {display: false, name: 'voicemailmain-actionarg1'},
+						    {display: false, name: 'password-actionarg1'}];
 xivo_dialaction_actionarg['application']['directory'] = [{display: false, name: 'callbackdisa-actionarg1'},
 							 {display: false, name: 'callbackdisa-actionarg2'},
 							 {display: false, name: 'disa-actionarg1'},
 							 {display: false, name: 'disa-actionarg2'},
 							 {display: true, name: 'directory-actionarg1'},
 							 {display: false, name: 'faxtomail-actionarg1'},
-							 {display: false, name: 'voicemailmain-actionarg1'}];
+					     {display: false, name: 'voicemailmain-actionarg1'},
+					     {display: false, name: 'password-actionarg1'}];
 xivo_dialaction_actionarg['application']['faxtomail'] = [{display: false, name: 'callbackdisa-actionarg1'},
 							 {display: false, name: 'callbackdisa-actionarg2'},
 							 {display: false, name: 'disa-actionarg1'},
 							 {display: false, name: 'disa-actionarg2'},
 							 {display: false, name: 'directory-actionarg1'},
 							 {display: true, name: 'faxtomail-actionarg1'},
-							 {display: false, name: 'voicemailmain-actionarg1'}];
+ 					     {display: false, name: 'voicemailmain-actionarg1'},
+					     {display: false, name: 'password-actionarg1'}];
 xivo_dialaction_actionarg['application']['voicemailmain'] = [{display: false, name: 'callbackdisa-actionarg1'},
 							     {display: false, name: 'callbackdisa-actionarg2'},
 							     {display: false, name: 'disa-actionarg1'},
 							     {display: false, name: 'disa-actionarg2'},
 							     {display: false, name: 'directory-actionarg1'},
 							     {display: false, name: 'faxtomail-actionarg1'},
-							     {display: true, name: 'voicemailmain-actionarg1'}];
+							     {display: true, name: 'voicemailmain-actionarg1'},
+							     {display: false, name: 'password-actionarg1'}];
+xivo_dialaction_actionarg['application']['password'] = [{display: false, name: 'callbackdisa-actionarg1'},
+							     {display: false, name: 'callbackdisa-actionarg2'},
+							     {display: false, name: 'disa-actionarg1'},
+							     {display: false, name: 'disa-actionarg2'},
+							     {display: false, name: 'directory-actionarg1'},
+							     {display: false, name: 'faxtomail-actionarg1'},
+							     {display: false, name: 'voicemailmain-actionarg1'},
+							     {display: true, name: 'password-actionarg1'}];
+
 
 function xivo_ast_build_dialaction_array(dialevent)
 {

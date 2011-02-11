@@ -553,6 +553,7 @@ CREATE TYPE "dialaction_action" AS ENUM ('none',
                'application:directory',
                'application:faxtomail',
                'application:voicemailmain',
+               'application:password',
                'sound',
                'custom');
 
@@ -1297,7 +1298,7 @@ CREATE INDEX "schedule_path_path" ON "schedule_path"("path","pathid");
 
 
 DROP TABLE IF EXISTS "schedule_time";
-DROP TYPE  IF EXITS  "schedule_time_mode";
+DROP TYPE  IF EXISTS  "schedule_time_mode";
 
 CREATE TYPE "schedule_time_mode" AS ENUM ('opened','closed');
 CREATE TABLE "schedule_time" (
