@@ -22,7 +22,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_schedule_path_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_unique	= array('schedule_id','path','pathid');
+	var $_unique	= array(array('schedule_id','path','pathid'));
 }
 
 ?>
