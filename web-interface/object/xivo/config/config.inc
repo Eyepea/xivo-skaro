@@ -82,6 +82,9 @@ $array['module']['stats_conf_queue']['datastorage'] = true;
 $array['module']['stats_conf_agent'] = array();
 $array['module']['stats_conf_agent']['datastorage'] = true;
 
+$array['module']['stats_conf_user'] = array();
+$array['module']['stats_conf_user']['datastorage'] = true;
+
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 

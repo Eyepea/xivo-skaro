@@ -60,6 +60,20 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 		return(parent::get_nb($arr,$disable));
 	}
+	
+	function get_all_wherein($id,$where)
+	{
+		$this->_dso->new_select($this->_table,'*');
+
+		$this->_dso->wherein('id',$where);
+
+		$r = $this->_dso->select_all('',true,false,'id');
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
 
 	function search($value,$disable=null,$order=null,$limit=null,$number=false)
 	{

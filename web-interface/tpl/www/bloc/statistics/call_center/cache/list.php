@@ -42,7 +42,6 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 	</h3>
 	<div class="sb-content">
 		<div class="sb-list">		
-		
 		<p>
 			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache',array($dbeg,$dencache));?></label>
 		</p>				
@@ -104,17 +103,21 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			$name = $ref['name'][0];
 			$identity = $ref['identity'][0];
 			
+			if (isset($ref['type']) === true)
+				$key = $ref['type'].'-'.$ref['number'];
+			
 			$basecache = DWHO_PATH_CACHE_STATS.DWHO_SEP_DIR.'cache';
 			$dir = $basecache.DWHO_SEP_DIR.
 					$idconf.DWHO_SEP_DIR.
 					$type.DWHO_SEP_DIR.
 					$key;
 			
-			if (($r = dwho_file::read_d($dir,'file',FILE_R_OK)) === false):
+			if (($r = dwho_file::read_d($dir,'file',FILE_R_OK)) === false
+			|| empty($r) === true):
 			    $infoscache = $this->bbf('cache_noexist');
 			else:
-			    sort($r);				
-			    $nbfile = count($r);			    
+			    sort($r);
+			    $nbfile = count($r);		    
 			    $filefisrt = $r[0];
 			    $filelast = $r[$nbfile-1];			    
 			    $infoscache = $this->bbf('cache_exist-nbfile',array($nbfile));

@@ -119,7 +119,13 @@ class xivo_jqplot
 				break;
 			case 'agent_perf':
 				$this->gener_graph_agent_perf($box,$title);
-				break;				
+				break;
+			case 'period_pie_connect':
+				$this->gener_graph_period_pie_connect($box,$title);
+				break;
+			case 'period_pie_abandon':
+				$this->gener_graph_period_pie_abandon($box,$title);
+				break;
 			default:
 		}
 	}
@@ -133,19 +139,17 @@ class xivo_jqplot
 		$data = $this->_data_foot;
 		$pie = '[';
 		$datakey = array_keys($data);
-		$i=0;
 		while ($data)
 		{
 			$colname = array_shift($datakey);
 			$colvalue = array_shift($data); 
 			if (in_array($colname,$listfield) === false)
 				continue;
-			$row = dwho_i18n::babelfish('col_'.$colname);
+			$row = $this->bbf('col_'.$colname);
 			$fieldname = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$row);
 			$pie .= '[\''.$fieldname.'\','.$colvalue['result'].']';
-			if ($i <= (count($data)+1))
+			if (count($data) > 0)
 				$pie .= ', ';
-			$i++;
 		}
 		$pie .= ']';
 		
@@ -168,7 +172,7 @@ class xivo_jqplot
 		            shadow: false
 		        },
 			    legend: {show:true},
-			    title: '".dwho_i18n::babelfish($title)."',
+			    title: '".$this->bbf($title)."',
 			    seriesDefaults: 
 			    {
 			    	renderer: $.jqplot.PieRenderer, 
@@ -256,7 +260,7 @@ class xivo_jqplot
 					xoffset: 630 , 
 					yoffset: 0
 				},		
-			    title: '".dwho_i18n::babelfish($title)."',			        
+			    title: '".$this->bbf($title)."',			        
 			    axes: 
 			    {
 			        xaxis: 
@@ -361,14 +365,14 @@ class xivo_jqplot
 			    	location: 'se',
 			    	xoffset: 670
 				},
-			    title:'".dwho_i18n::babelfish($title)."',
+			    title:'".$this->bbf($title)."',
 			    seriesDefaults:{
 			        renderer:$.jqplot.BarRenderer, 
 			        rendererOptions:{barPadding: 1, barMargin: 5}
 			    },
 			    series:
 			    [
-			        {label:'".dwho_i18n::babelfish('col_productivity')."'}
+			        {label:'".$this->bbf('col_productivity')."'}
 			    ],
 			    axes:
 			    {
@@ -423,17 +427,20 @@ class xivo_jqplot
 			$login_time = $colvalue['login']['result'];
 			
 			$available_time_pct = 0;
-			if (($available_time = $colvalue['available']['result']) !== 0)
+			if (($available_time = $colvalue['available']['result']) !== 0
+			&& $login_time !== 0)
 				$available_time_pct = ($available_time / $login_time * 100);
 			array_push($listavailable,$available_time_pct);
 			
 			$pause_time_pct = 0;
-			if (($pause_time = $colvalue['pause']['result']) !== 0)
+			if (($pause_time = $colvalue['pause']['result']) !== 0
+			&& $login_time !== 0)
 				$pause_time_pct = ($pause_time / $login_time * 100);
 			array_push($listpause,$pause_time_pct);
 			
 			$traitment_time_pct = 0;
-			if (($traitment_time = $colvalue['traitment']['result']) !== 0)
+			if (($traitment_time = $colvalue['traitment']['result']) !== 0
+			&& $login_time !== 0)
 				$traitment_time_pct = ($traitment_time / $login_time * 100);
 			array_push($listtraitment,$traitment_time_pct);
 		}
@@ -471,7 +478,7 @@ class xivo_jqplot
 					location: 'ne', 
 					xoffset: 670
 				},
-				title:'".dwho_i18n::babelfish($title)."',
+				title:'".$this->bbf($title)."',
 			    stackSeries: true, 
 			    seriesDefaults: 
 			    {
@@ -483,15 +490,15 @@ class xivo_jqplot
 			    series:
 			    [
 			        {
-			        	label:'".dwho_i18n::babelfish('col_available')."',
+			        	label:'".$this->bbf('col_available')."',
 			        	pointLabels:{ypadding: -15}
 					},
 			        {
-			        	label:'".dwho_i18n::babelfish('col_pause')."',
+			        	label:'".$this->bbf('col_pause')."',
 			        	pointLabels:{ypadding: 0}
 					},
 			        {
-			        	label:'".dwho_i18n::babelfish('col_traitment')."',
+			        	label:'".$this->bbf('col_traitment')."',
 			        	pointLabels:{ypadding: -15}
 					}
 			    ],
@@ -589,7 +596,7 @@ class xivo_jqplot
 					location:'ne', 
 					xoffset:650
 				},
-				title:'".dwho_i18n::babelfish($title)."',
+				title:'".$this->bbf($title)."',
 			    stackSeries: true, 
 			    seriesDefaults: {
 			        renderer: $.jqplot.BarRenderer,
@@ -598,9 +605,9 @@ class xivo_jqplot
 			    },
 			    series:
 			    [
-			        {label:'".dwho_i18n::babelfish('col_available')."'},
-			        {label:'".dwho_i18n::babelfish('col_pause')."'},
-			        {label:'".dwho_i18n::babelfish('col_traitment')."'}
+			        {label:'".$this->bbf('col_available')."'},
+			        {label:'".$this->bbf('col_pause')."'},
+			        {label:'".$this->bbf('col_traitment')."'}
 			    ],
 			    axes: 
 			    {
@@ -689,7 +696,7 @@ class xivo_jqplot
 					location: 'ne', 
 					xoffset: 630
 				},
-			    title: '".dwho_i18n::babelfish($title)."',	
+			    title: '".$this->bbf($title)."',	
 			    seriesDefaults:
 			    {
 			        rendererOptions:
@@ -702,23 +709,23 @@ class xivo_jqplot
 			    series:
 			    [
 			        {
-				        label: '".dwho_i18n::babelfish('col_connect')."',
+				        label: '".$this->bbf('col_connect')."',
 				        renderer: $.jqplot.BarRenderer,
 						highlighter:{show: false}
 					}, 
 			        {
-			        	label: '".dwho_i18n::babelfish('col_transfer')."',
+			        	label: '".$this->bbf('col_transfer')."',
 				        renderer: $.jqplot.BarRenderer,
 						highlighter:{show: false}
 					}, 
 			        {
-			        	label: '".dwho_i18n::babelfish('col_ringnoanswer')."',
+			        	label: '".$this->bbf('col_ringnoanswer')."',
 				        renderer: $.jqplot.BarRenderer,
 						highlighter:{show: false},
 			            markerOptions:{show: false}          
 					}, 
 			        { 
-			        	label: '".dwho_i18n::babelfish('col_productivity')."',
+			        	label: '".$this->bbf('col_productivity')."',
 			        	xaxis: 'xaxis', 
 			        	yaxis: 'y2axis',
 			        	renderer: $.CategoryAxisRenderer, 
@@ -761,6 +768,132 @@ class xivo_jqplot
 		$this->add_result($box, ob_get_contents());
 
 		ob_end_clean();	
+	}
+	
+	private function gener_graph_period_pie_abandon($box,$title)
+	{
+		$this->load_plugin('pieRenderer');
+		
+		$data = $this->_data_foot;
+		$pie = '[';
+		$datakey = array_keys($data);
+		while ($data)
+		{
+			$colname = array_shift($datakey);
+			$colvalue = array_shift($data);
+			if (ereg('aperiod',$colname) === false)
+				continue;
+			$row = $this->bbf('col_'.$colname);
+			$fieldname = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$row);
+			$pie .= '[\''.$fieldname.'\','.$colvalue['result'].']';
+			if (count($data) > 0)
+				$pie .= ', ';
+		}
+		$pie .= ']';
+		
+		ob_start();
+		
+		echo '<div class="jqPlot" id="'.$box.'" style="height:240px; width:340px;margin-left: 350px"></div>';
+		echo "\n\n";
+		
+		echo "<script type=\"text/javascript\">
+			$.jqplot.config.enablePlugins = true;
+			line1 = $pie;
+			plot1 = $.jqplot('$box', [line1], 
+			{
+				grid:{
+		            drawGridlines:true,
+		            background: '#ffffff',
+		            borderWidth: 0,
+		            shadow: false
+		        },
+			    legend: {show:true},
+			    title: '".$this->bbf($title)."',
+			    seriesDefaults: 
+			    {
+			    	renderer: $.jqplot.PieRenderer, 
+			    	trendline:{show:true},
+			    	rendererOptions: 
+			    	{
+			    		padding: 8, 
+			    		showDataLabels: true,
+			    		sliceMargin: 2, 
+			    		startAngle: -90,
+						dataLabelPositionFactor: 0.9,
+						dataLabelNudge: 0,
+						dataLabelThreshold: 1
+					}					
+				},
+	   			cursor:{show: false}
+			});
+		</script> \n\n";
+		
+		$this->add_result($box, ob_get_contents());
+
+		ob_end_clean();
+	}
+	
+	private function gener_graph_period_pie_connect($box,$title)
+	{
+		$this->load_plugin('pieRenderer');
+		
+		$data = $this->_data_foot;
+		$pie = '[';
+		$datakey = array_keys($data);
+		while ($data)
+		{
+			$colname = array_shift($datakey);
+			$colvalue = array_shift($data);
+			if (ereg('tperiod',$colname) === false)
+				continue;
+			$row = $this->bbf('col_'.$colname);
+			$fieldname = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$row);
+			$pie .= '[\''.$fieldname.'\','.$colvalue['result'].']';
+			if (count($data) > 0)
+				$pie .= ', ';
+		}
+		$pie .= ']';
+		
+		ob_start();
+		
+		echo '<div class="jqPlot" id="'.$box.'" style="height:240px; width:340px;margin-left: 0px;float:left;"></div>';
+		echo "\n\n";
+		
+		echo "<script type=\"text/javascript\">
+			$.jqplot.config.enablePlugins = true;
+			line1 = $pie;
+			plot1 = $.jqplot('$box', [line1], 
+			{
+				grid:{
+		            drawGridlines:true,
+		            background: '#ffffff',
+		            borderWidth: 0,
+		            shadow: false
+		        },
+			    legend: {show:true},
+			    title: '".$this->bbf($title)."',
+			    seriesDefaults: 
+			    {
+			    	renderer: $.jqplot.PieRenderer, 
+			    	trendline:{show:true},
+			    	rendererOptions: 
+			    	{
+			    		padding: 8, 
+			    		showDataLabels: true,
+			    		sliceMargin: 2, 
+			    		startAngle: -90,
+						dataLabelPositionFactor: 0.9,
+						dataLabelNudge: 0,
+						dataLabelThreshold: 1
+					}					
+				},
+	   			cursor:{show: false}
+			});
+		</script> \n\n";
+		
+		$this->add_result($box, ob_get_contents());
+
+		ob_end_clean();
 	}
 	
 	private function build_js_list($list,$type,$intval=false)
@@ -821,155 +954,9 @@ class xivo_jqplot
 		return($return);
 	}
 	
-	
-	
-	
-	
-	
-	private function build_data_pie()
+	private function bbf($str,$args=array())
 	{
-				
-		if (is_array($data_table) === false
-		|| empty($data_table) === true)
-			return(false);
-		
-		$this->_data_table = $data_table;
-		
-		$abcisse_label = array();
-		$abcisse_data = array();
-		foreach ($this->_data_table as $row => $cols)
-		{
-			if (is_array($cols) === false
-			|| $cols['format'] !== 'int')
-				continue;
-			$row = dwho_i18n::babelfish('col_'.$row);
-			$fieldname = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$row);
-			array_push($abcisse_label,$fieldname);
-			array_push($abcisse_data,$cols['result']);
-		}
-		
-		/* Create and populate the pData object */ 
-		$myData = new pData();
-		$myData->addPoints($abcisse_data,"ScoreA");   
-		$myData->setSerieDescription("ScoreA","Application A"); 
-
-		/* Define the absissa serie */ 
-		$myData->addPoints($abcisse_label,"Labels"); 
-		$myData->setAbscissa("Labels");
-		
-		return($myData);
-	}
-	
-	private function build_data_t1($data_table)
-	{		
-		$myData = new pData();
-		
-		$this->_data_table = $data_table;
-		
-		$uniqid = uniqid();
-		
-		$abcisse_label = array();
-		foreach ($this->_data_table as $row => $cols)
-			array_push($abcisse_label,$row);
-			
-		asort($abcisse_label);
-		$myData->AddPoints($abcisse_label,$uniqid);
-		$myData->setAbscissa($uniqid);
-		
-		$lsdata = array();
-		foreach ($this->_data_table as $row => $cols)
-		{
-			$colsk = array_keys($cols);
-			$colsv = array_values($cols);
-			for ($i=0;$i<count($cols);$i++)
-			{			
-				$colk = &$colsk[$i];
-				$colv = &$colsv[$i];
-						
-				if($colv['format'] !== 'int')
-					continue;
-				
-				if (isset($lsdata[$colk]) === false)
-					$lsdata[$colk] = array();
-				
-				if (empty($colv) === true)
-					array_push($lsdata[$colk],0);
-				else
-				{
-					if (($val = $this->eval_result_data($colv)) === null
-					|| is_numeric($val) === false)
-						array_push($lsdata[$colk],0);
-					else
-						array_push($lsdata[$colk],$val);
-				}
-			}
-		}
-		
-		foreach ($lsdata as $k => $v)
-		{
-			$label = '&nbsp;';
-			if (is_null($k) === false)
-				$label = $this->bbf('col_'.$k);
-				
-			# <acronym title="Durée moyenne de WRAPUP">DMWU</acronym>			
-			$label = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$label);
-	 		$myData->AddPoints($v,$label);
-		}
-		
-		/*		
-		$coltitle = $this->_data_table;		
-		$coltitlekey = array_keys($coltitle);		
-		while ($coltitle)
-		{	
-			$titlecolskey = array_shift($coltitlekey);
-			$listcols = array_shift($coltitle);
-			$listcolskey = array_keys($listcols);
-		
-			var_dump($listcolskey);
-			
-			$lsdata = array();
-			while ($listcols)
-			{
-				$cols = array_shift($listcols);
-				$colskey = array_shift($listcolskey);
-						
-				if($cols['format'] !== 'int')
-					continue;
-					
-				if (in_array($colskey,$this->_ignore_col) === true)
-						continue;
-				
-				if (($val = $this->eval_result_data($cols)) === null
-				|| is_numeric($val) === false)
-					array_push($lsdata,0);
-				else
-					array_push($lsdata,$val);
-			}
-			$label = '&nbsp;';
-			# <acronym title="Durée moyenne de WRAPUP">DMWU</acronym>
-			if (is_null($titlecolskey) === false)
-				$label = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$this->bbf('col_'.$titlecolskey));
-				
-	 		$myData->AddPoints($lsdata,$label);
-		}
-			
-		var_dump($lsdata);
-		
-		*/
-		return($myData);
-	}
-	
-	private function write_graph($type,$data,$name)
-	{
-	}
-	
-	private function write_picture_t1($data)
-	{		
-		$name = $name.'-'.$this->_xs->get_axetype();
-		
-		var_dump($filepath);
-		
-		return;
+		return addslashes(dwho_i18n::babelfish($str,$args));
 	}
 }
 

@@ -191,15 +191,15 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			else 
 				$rowidentity = 'null_data';
 				
-			if(isset($rowdata['id']) === true)
+			if(isset($rowdata['key']) === true)
+				$rowkey = $rowdata['key'];
+			elseif(isset($rowdata['id']) === true)
 				$rowkey = $rowdata['id'];
 			elseif(isset($rowdata['name']) === true)
 				$rowkey = $rowdata['name'];
-			elseif(isset($rowdata['key']) === true)
-				$rowkey = $rowdata['key'];
 			else 
 				die('Can\'t find data in dwho_tpl_statistics->init_data_table()');
-				
+							
 			$rownum = $rowdata[$this->_row_key];
 			
 			if (isset($data_table[$rownum]) === false)
@@ -288,7 +288,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		if (is_array($val2) === true
 		&& isset($val2['result']) === true)
 			$val2 = $val2['result'];
-			
+		
 		switch($operator)
 		{
 			case '/':
@@ -306,7 +306,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$rs = ($val1 * $val2);
 				break;
 			case '-':
-				$rs = ($val1 - $val2);
+				if ($val1 === 0
+				|| empty($val1) === true
+				|| empty($val2) === true)
+					$rs = 0;
+				else
+					$rs = ($val1 - $val2);
 				break;
 			default:
 				$rs = 0;

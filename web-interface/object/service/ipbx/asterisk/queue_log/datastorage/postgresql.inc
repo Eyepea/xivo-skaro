@@ -260,7 +260,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	{
 		if (is_null($conf) === true)
 			return(false);
-			
+		
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table);

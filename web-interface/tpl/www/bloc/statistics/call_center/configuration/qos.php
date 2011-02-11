@@ -53,7 +53,7 @@ elseif($fm_save === false)
 	if(($list = $this->get_var('ls_queue')) === false 
 	|| ($nb = count($list)) === 0):
 ?>
-				<?=$this->bbf('no_displays');?>
+				<?=$this->bbf('no_queue');?>
 <?php
 	else:
 		for($i = 0;$i < $nb;$i++):

@@ -96,5 +96,9 @@ $array['stats_conf_agent'] = array();
 $array['stats_conf_agent']['table'] = 'stats_conf_agent';
 $array['stats_conf_agent']['primary'] = array('stats_conf_id' => '');
 
+$array['stats_conf_user'] = array();
+$array['stats_conf_user']['table'] = 'stats_conf_user';
+$array['stats_conf_user']['primary'] = array('stats_conf_id' => '');
+
 
 ?>

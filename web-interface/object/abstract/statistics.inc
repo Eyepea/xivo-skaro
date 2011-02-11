@@ -129,7 +129,10 @@ class xivo_statistics_abstract
 		$data = array_shift($data);
 		$key_data_arr = $data['key'];
 		$keyfile = $data['key'][0];
-		$key_field = 'key';
+		$key_field = 'key';		
+					
+		if (isset($data['type']) === true)
+			$keyfile = $data['type'].'-'.$data['number'];	
 		
 		switch ($axetype)
 		{
@@ -205,7 +208,7 @@ class xivo_statistics_abstract
 				break;
 			case 'year':
 				$key_field = 'key';
-				$key_data = $this->_xs->get_listmonth();
+				$key_data = $this->_xs->get_listmonth();	
 				
 				while($key_data)
 				{
@@ -251,6 +254,9 @@ class xivo_statistics_abstract
 				{
 					$key_full_data = array_shift($key_data);
 					$keyfile = $key_full_data[$key_field][0];
+					
+					if (isset($key_full_data['type']) === true)
+						$keyfile = $key_full_data['type'].'-'.$key_full_data['number'];
 						
 					$this->init_result($keyfile);
 					$listmonth = $data_listmonth;

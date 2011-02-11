@@ -47,9 +47,13 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		echo $table1->render_html(false);
 ?>
 		</div>
+		<div class="sb-graph">
 <?php		
 		$xivo_jqplot->get_result('chart1');
 		$xivo_jqplot->get_result('chart2');
+?>
+		</div>
+<?php
 	endif;
 ?>
     </div>

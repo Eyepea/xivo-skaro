@@ -169,7 +169,7 @@ $conf_hlp = null;
 							    'browse'	=> 'key',
 				  				'labelid'	=> 'key',
 				    			'key'		=> 'displayname',
-					   			'altkey'	=> 'id',
+					   			'altkey'	=> 'key',
 							    'class'		=> 'fm-selected-obj',
 							    'selected'	=> $this->get_var('objectkey')),
 						      	$listobject);

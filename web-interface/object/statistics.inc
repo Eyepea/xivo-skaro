@@ -628,7 +628,7 @@ class xivo_statistics
 		$this->push_debug("get_listmonth()");		
 		$rs = array();
 		for ($i=0;$i<=11;$i++)
-		{				
+		{
 			$tmp = array();
 			$tmp['identity'] = dwho_i18n::babelfish($this->_listmonth[$i]);
 			$tmp['name'] = $this->_listmonth[$i];
@@ -662,17 +662,21 @@ class xivo_statistics
 		{
 			case 'agent':
 				$ls_agent = array();
-				if (((int) $this->_objectkey) === 0)
+				
+				if (empty($this->_conf['agent']) === true
+				&& empty($this->_conf['user']) === true)
+					return($data);
+				
+				if (empty($this->_objectkey) === true
+				&& empty($this->_conf['agent']) === false)
 				{
 					asort($this->_conf['agent']);
-					$agent = array_values($this->_conf['agent']);
-					$nb_agent = count($this->_conf['agent']);
-					for($i=0;$i<$nb_agent;$i++)
+					$agent = array_values($this->_conf['agent']);						
+					$nb = count($agent);		
+					for($i=0;$i<$nb;$i++)
 					{
-						$number = (string) $agent[$i]['number'];
-						if (isset($ls_agent[$i]) === false)
-							$ls_agent[$i] = array();
-						
+						$ref = &$agent[$i];
+						$number = (string) $ref['number'];						
 						$tmp = array();
 						array_push($tmp,$number);
 						array_push($tmp,'agent/'.$number);
@@ -681,26 +685,95 @@ class xivo_statistics
 						$key['identity'] = $tmp;
 						$key['name'] = $tmp;
 						$key['key'] = $tmp;
-						$key['id'] = (int) $agent[$i]['id'];
+						$key['id'] = (int) $ref['id'];
+						$key['type'] = 'agent';
 						$key['number'] = (int) $number;
-						$ls_agent[$i] = $key;
+						array_push($ls_agent, $key);
 					}
 				}
-				elseif(($id = ((int) $this->_objectkey)) !== 0)	
+
+				if (empty($this->_objectkey) === true
+				&& empty($this->_conf['user']) === false)
 				{
-					if (($appagent = &$this->_ipbx->get_application('agent')) === false
-					|| ($agent = $appagent->get($id)) === false)
-						break;
-					$tmp = array();
-					array_push($tmp,$agent['agentfeatures']['number']);
-					array_push($tmp,'agent/'.$agent['agentfeatures']['number']);
-					array_push($tmp,'Agent/'.$agent['agentfeatures']['number']);
+					asort($this->_conf['user']);
+					$user = array_values($this->_conf['user']);
+					$nb = count($user);
+					for($i=0;$i<$nb;$i++)
+					{
+						$ref = &$user[$i];
+						$number = (string) $ref['name'];						
+						$tmp = array();
+						array_push($tmp,'sip/'.$number);
+						array_push($tmp,'SIP/'.$number);
+						$key = array();
+						$key['identity'] = $tmp;
+						$key['name'] = $tmp;
+						$key['key'] = $tmp;
+						$key['id'] = (int) $ref['id'];
+						$key['type'] = 'user';
+						$key['number'] = (int) $number;
+						array_push($ls_agent, $key);
+					}
+				}
+				
+				if (empty($this->_objectkey) === false)
+				{					
+					$infos = split('-',$this->_objectkey);
+					if (count($infos) !== 2)
+						return($data);
+						
+					$type = $infos[0];
+					$num = $infos[1];
+					
+					switch ($type)
+					{
+						case 'user':
+							if (empty($this->_conf['user']) === false)
+							{
+								asort($this->_conf['user']);
+								$user = array_values($this->_conf['user']);
+								$nb = count($user);
+								for($i=0;$i<$nb;$i++)
+								{
+									$ref = &$user[$i];
+									if($num === $ref['name'])
+										$agent = $ref;
+								}
+							}
+							$tmp = array();
+							array_push($tmp,'sip/'.$agent['name']);
+							array_push($tmp,'SIP/'.$agent['name']);
+							$num = $agent['name'];
+							break;
+						case 'agent':
+							if (empty($this->_conf['agent']) === false)
+							{
+								asort($this->_conf['agent']);
+								$agent = array_values($this->_conf['agent']);
+								$nb = count($agent);
+								for($i=0;$i<$nb;$i++)
+								{
+									$ref = &$agent[$i];
+									if($num === $ref['number'])
+										$agent = $ref;
+								}
+							}
+							$tmp = array();
+							array_push($tmp,$agent['number']);
+							array_push($tmp,'agent/'.$agent['number']);
+							array_push($tmp,'Agent/'.$agent['number']);
+							$num = $agent['number'];
+							break;
+						default:
+							return($data);
+					}
 					$key = array();
 					$key['identity'] = $tmp;
 					$key['name'] = $tmp;
 					$key['key'] = $tmp;
-					$key['id'] = (int) $agent['agentfeatures']['id'];
-					$key['number'] = (int) $agent['agentfeatures']['number'];
+					$key['id'] = (int) $agent['id'];
+					$key['type'] = $type;
+					$key['number'] = (int) $num;
 					array_push($ls_agent,$key);
 				}
 				$data = $ls_agent;
@@ -708,33 +781,33 @@ class xivo_statistics
 			case 'period':
 			case 'queue':
 				$ls_queuename = array();
-				if (((int) $this->_objectkey) === 0
-				&& isset($this->_conf['queue']) === true)
+				if (empty($this->_conf['queue']) === false)
 				{
 					asort($this->_conf['queue']);
 					$queue = array_values($this->_conf['queue']);	
-					$nb_queue = count($this->_conf['queue']);			
+					$nb_queue = count($this->_conf['queue']);	
 					for($i=0;$i<$nb_queue;$i++)
-					{
-						$tmp = array();
-						$tmp['identity'] = array($queue[$i]['name']);
-						$tmp['name'] = array($queue[$i]['name']);
-						$tmp['key'] = array($queue[$i]['name']);
-						$tmp['id'] = (int) $queue[$i]['id'];
-						array_push($ls_queuename,$tmp);
+					{						
+						$ref = &$queue[$i];	
+						if (empty($this->_objectkey) === true)
+						{
+							$tmp = array();
+							$tmp['identity'] = array($ref['name']);
+							$tmp['name'] = array($ref['name']);
+							$tmp['key'] = array($ref['name']);
+							$tmp['id'] = (int) $ref['id'];
+							array_push($ls_queuename,$tmp);
+						}
+						elseif($this->_objectkey === $ref['name'])
+						{
+							$tmp = array();
+							$tmp['identity'] = array($ref['name']);
+							$tmp['name'] = array($ref['name']);
+							$tmp['key'] = array($ref['name']);
+							$tmp['id'] = (int) $ref['id'];
+							array_push($ls_queuename,$tmp);							
+						}
 					}
-				}
-				elseif(($id = ((int) $this->_objectkey)) !== 0)	
-				{					
-					if (($appqueue = &$this->_ipbx->get_application('queue')) === false
-					|| ($queue = $appqueue->get($id)) === false)
-						break;					
-					$tmp = array();
-					$tmp['identity'] = array($queue['queuefeatures']['name']);
-					$tmp['name'] = array($queue['queuefeatures']['name']);
-					$tmp['key'] = array($queue['queuefeatures']['name']);
-					$tmp['id'] = (int) $queue['queuefeatures']['id'];
-					array_push($ls_queuename,$tmp);
 				}
 				$data = $ls_queuename;
 				break;
@@ -763,9 +836,12 @@ class xivo_statistics
 	
 	public function get_queue_list()
 	{			
-		$this->push_debug("get_queue_list()");		
-		if (isset($this->_conf['queue']) === false
-		|| ($appqueue = &$this->_ipbx->get_application('queue')) === false)
+		$this->push_debug("get_queue_list()");
+		
+		if (isset($this->_conf['queue']) === false)
+			return(false);
+		/*
+		if ($appqueue = &$this->_ipbx->get_application('queue')) === false)
 			return(false);
 		
 		$list_queue = $appqueue->get_queues_list(null,'name');
@@ -779,6 +855,9 @@ class xivo_statistics
 			if (array_key_exists($queue[$i]['id'],$this->_conf['queue']) === true)
 				array_push($res,$queue[$i]);
 		}
+		*/
+		asort($this->_conf['queue']);
+		$res = array_values($this->_conf['queue']);
 		
 		return($res);
 	}
@@ -786,8 +865,11 @@ class xivo_statistics
 	public function get_agent_list()
 	{			
 		$this->push_debug("get_agent_list()");
-		if (isset($this->_conf['agent']) === false
-		|| ($appagent = &$this->_ipbx->get_application('agent')) === false)
+		if (isset($this->_conf['agent']) === false)
+			return(false);
+		/*
+		if ($appagent = &$this->_ipbx->get_ap
+var_dump($listobject);plication('agent')) === false)
 			return(false);
 		
 		$list_agent = $appagent->get_agentfeatures(null,'name');
@@ -805,8 +887,39 @@ class xivo_statistics
 				array_push($res,$agent[$i]);
 			}
 		}
+		*/
+					
+		asort($this->_conf['agent']);
+		$agent = array_values($this->_conf['agent']);
+	
+		$nb = count($agent);
+		for($i=0;$i<$nb;$i++)
+		{
+			$ref = &$agent[$i];
+			// clean identity context
+			$ref['identity'] = preg_replace('/@[a-z-_]+/i','',$ref['identity']);
+			$ref['key'] = 'agent-'.$ref['number'];
+		}
 		
-		return($res);
+		$user = array();
+		if (empty($this->_conf['user']) === false)
+		{
+			asort($this->_conf['user']);
+			$user = array_values($this->_conf['user']);
+	
+			$nb = count($user);
+			for($i=0;$i<$nb;$i++)
+			{
+				$ref = &$user[$i];
+				// clean identity context
+				$ref['identity'] = preg_replace('/@[a-z-_]+/i','',$ref['identity']);
+				$ref['key'] = 'user-'.$ref['name'];
+			}
+		}
+				
+		$list = array_merge($agent,$user);
+		
+		return($list);
 	}
 	
 	public function generate_cache($idconf,$dbeg,$dend,$type,$idtype=null)
@@ -825,7 +938,7 @@ class xivo_statistics
 			$this->_objectkey = $idtype;
 		
 		if(($list = $this->get_list_by_type($type)) === false)
-			return(false);
+			return(false);				
 		
 		#$this->_interval = $this->build_full_date_interval($dbeg,$dend);
 		$this->_interval = array();
@@ -906,7 +1019,7 @@ class xivo_statistics
 	}
 	
 	private function generate_cache_for_agent($listagent)
-	{		
+	{
 		if(xivo::load_class('xivo_statistics_agent',
 			XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics',
 			'agent',false) === false)
@@ -919,11 +1032,12 @@ class xivo_statistics
 		
 		$full_interval = $this->build_full_date_interval($dbeg,$dend);
 		$data_listmonth = $this->get_listmonth_for_interval($dbeg,$dend);
+		var_dump($listagent);
 		while($listagent)
 		{
 			$agent = array_shift($listagent);
-			$agent_number = $agent['number'];
 			$agent_key = $agent['key'];
+			$keyfile = $agent['type'].'-'.$agent['number'];
 			$listmonth = $data_listmonth;
 			while($listmonth)
 			{
@@ -942,7 +1056,7 @@ class xivo_statistics
 					$this->_interval_process = $full_interval[$year.$month.$day];
 					$stats_agent->parse_log($agent_key,$day);
 				}
-				$this->save_cache($stats_agent->_result,$agent_number,$year,$month);
+				$this->save_cache($stats_agent->_result,$keyfile,$year,$month);				
 				$stats_agent->_result = array();
 			}
 		}
@@ -1103,7 +1217,7 @@ class xivo_statistics
 			$dir_process = array_shift($listdir);
 			$cachedir .= DWHO_SEP_DIR.$dir_process;
 			if (dwho_file::is_d_x($cachedir) === false
-			&& dwho_file::is_d_w($cachedir) === true
+			#&& dwho_file::is_d_w($cachedir) === true
 			&& mkdir($cachedir,0775,true) === false)
 				$this->push_error('ERR: Can\'t create dir: '.$cachedir);
 		}
@@ -1139,12 +1253,12 @@ class xivo_statistics
 		if ($this->has_error() === true)
 			die(var_dump($this->get_error()));
 		
-		if (($rs = file_put_contents($file, json_encode($data),LOCK_EX)) === false)
+		#if (($rs = file_put_contents($file, json_encode($data),LOCK_EX)) === false)
+		if (($rs = dwho_file::put_contents($file,json_encode($data))) === false)
 			$rs = 'error';
 			
 		print("save data to $file => $rs \n");
 		
-		#return(dwho_file::put_contents($file,json_encode($data)));
 		return($rs);
 	}
 	
@@ -1159,7 +1273,13 @@ class xivo_statistics
 	{		
 		$keyfile = $object['key'][0];
 		$idtype = $object['id'];
-				
+		
+		if (isset($object['type']) === true)
+		{
+			$keyfile = $object['type'].'-'.$object['number'];
+			$idtype = $keyfile;
+		}
+			
 		$this->_type = $type;
 		$this->_objectkey = $idtype;
 		$this->init_path_cache($idconf,$type,$keyfile);

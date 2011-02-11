@@ -51,6 +51,12 @@ switch($act)
 		$appagent = &$ipbx->get_application('agent');
 		$agent['list'] = $appagent->get_agentfeatures(null,'name',null,true);
 
+		$user = array();
+		$user['slt'] = array();
+		
+		$appuser = &$ipbx->get_application('user');
+		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
+		
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('stats_conf',$_QR) === true
 		&& dwho_issa('workhour_start',$_QR) === true
@@ -94,6 +100,19 @@ switch($act)
 				uasort($agent['slt'],array(&$agentsort,'str_usort'));
 			}
 		}
+
+		if($user['list'] !== false && dwho_ak('user',$return) === true)
+		{
+			$user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'id');
+
+			if($user['slt'] !== false)
+			{
+				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
+
+				$usersort = new dwho_sort(array('key' => 'name'));
+				uasort($user['slt'],array(&$usersort,'str_usort'));
+			}
+		}
 		
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -101,6 +120,7 @@ switch($act)
 		$_TPL->set_var('element',$appstats_conf->get_elements());
 		$_TPL->set_var('queue',$queue);
 		$_TPL->set_var('agent',$agent);
+		$_TPL->set_var('user',$user);
 		break;
 	case 'edit':
 		
@@ -121,6 +141,12 @@ switch($act)
 		
 		$appagent = &$ipbx->get_application('agent');
 		$agent['list'] = $appagent->get_agentfeatures(null,'name',null,true);
+
+		$user = array();
+		$user['slt'] = array();
+		
+		$appuser = &$ipbx->get_application('user');
+		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
 		
 		$info_hour_start = explode(':',$info['stats_conf']['hour_start']);
 		$workhour_start = array();
@@ -177,6 +203,19 @@ switch($act)
 				uasort($agent['slt'],array(&$agentsort,'str_usort'));
 			}
 		}
+
+		if($user['list'] !== false && dwho_ak('user',$return) === true)
+		{
+			$user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'id');
+
+			if($user['slt'] !== false)
+			{
+				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
+
+				$usersort = new dwho_sort(array('key' => 'name'));
+				uasort($user['slt'],array(&$usersort,'str_usort'));
+			}
+		}
 		
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);
@@ -187,7 +226,7 @@ switch($act)
 		$_TPL->set_var('workhour_end',$workhour_end);
 		$_TPL->set_var('queue',$queue);
 		$_TPL->set_var('agent',$agent);
-		
+		$_TPL->set_var('user',$user);		
 		break;
 	case 'delete':
 		$param['page'] = $page;

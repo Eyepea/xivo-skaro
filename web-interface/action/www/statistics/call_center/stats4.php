@@ -76,22 +76,22 @@ $tpl_statistics->add_col('tperiod5',
 					'direct',
 					'custom:period,[key],connect,period5');
 
-$tpl_statistics->set_col_struct('abandoned');
+$tpl_statistics->set_col_struct('abandon');
 $tpl_statistics->add_col('aperiod1',
 					'direct',
-					'custom:period,[key],abandoned,period1');
+					'custom:period,[key],abandon,period1');
 $tpl_statistics->add_col('aperiod2',
 					'direct',
-					'custom:period,[key],abandoned,period2');
+					'custom:period,[key],abandon,period2');
 $tpl_statistics->add_col('aperiod3',
 					'direct',
-					'custom:period,[key],abandoned,period3');
+					'custom:period,[key],abandon,period3');
 $tpl_statistics->add_col('aperiod4',
 					'direct',
-					'custom:period,[key],abandoned,period4');
+					'custom:period,[key],abandon,period4');
 $tpl_statistics->add_col('aperiod5',
 					'direct',
-					'custom:period,[key],abandoned,period5');
+					'custom:period,[key],abandon,period5');
 
 $tpl_statistics->gener_table();
 
