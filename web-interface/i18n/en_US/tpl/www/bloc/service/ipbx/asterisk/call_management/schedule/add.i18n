@@ -177,3 +177,36 @@ In bounds
 
 ; fld-dialaction-outschedule
 Out of bounds
+
+; fld-dialaction-inschedule
+In schedule
+
+; fld-dialaction-outschedule
+Out of schedule
+
+; fm_schedule_timezone
+Timezone:
+
+; fld-opened-hours
+Opened hours
+
+; fld-closed-hours
+Closed hours
+
+; fld-closed-hours-default-action
+Out of schedule / Default action
+
+; fm_schedule_description
+Description:
+
+; smenu_general
+General
+
+; smenu_closed_periods
+Closed hours
+
+; no_disp
+No opened hours found
+
+; no_disp2
+No closed hours found

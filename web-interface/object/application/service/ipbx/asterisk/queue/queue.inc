@@ -32,6 +32,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_contextmember	= false;
 	var $_callerid		= false;
 	var $_queuemember	= null;
+	var $_schedule_path = false;
 	var $_musiconhold	= array();
 	var $_announce		= array();
 	var $_contextlist	= array();
@@ -76,6 +77,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'queue'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
 		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'queue'))) === false
+		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false
 		|| ($this->_callerid = $this->get_abstract('callerid',array('type' => 'queue'))) === false)
 			return(false);
 
@@ -124,6 +126,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(dwho_ak('callerid',$nocomponents,true) === false)
 			$this->_get_callerid($this->_info['queuefeatures']['id']);
+
+		// SCHEDULE
+		$schedule = $this->_schedule_path->get_where(array('path' => 'queue', 'pathid'	=> $this->_info['queuefeatures']['id']));
+		if($schedule !== false)
+			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
 	}
@@ -387,6 +394,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(dwho_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
+
+		// schedule
+		if(array_key_exists('schedule_id', $arr))
+			$this->_set_result('schedule_id', intval($arr['schedule_id']));
 
 		return(($this->get_errnb() < 1));
 	}
@@ -681,7 +692,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->add_dialaction($queuefeaturesid) === false
 		|| $this->add_contextnummember($queuefeaturesid) === false
 		|| $this->add_contextmember($queuename) === false
-		|| $this->add_callerid($queuefeaturesid) === false)
+		|| $this->add_callerid($queuefeaturesid) === false
+		|| $this->add_schedule_path($queuefeaturesid) === false)
 		{
 			$r = false;
 			if($queuefeaturesid !== null)
@@ -767,6 +779,14 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_return[$type] = false;
 
 		return(true);
+	}
+
+	function add_schedule_path($queuefeaturesid)
+	{
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'queue',
+			$queuefeaturesid);
 	}
 
 	function _reverse_add()
@@ -872,7 +892,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->edit_dialaction() === false
 		|| $this->edit_contextnummember() === false
 		|| $this->edit_contextmember($queuename) === false
-		|| $this->edit_callerid() === false)
+		|| $this->edit_callerid() === false
+		|| $this->edit_schedule_path() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -1014,6 +1035,16 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return(parent::edit_callerid($this->_info['queuefeatures']['id']));
 	}
 
+	function edit_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'queue', 'pathid' =>	intval($this->_info['queuefeatures']['id'])));
+
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'queue',
+			$this->_info['queuefeatures']['id']);
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -1100,7 +1131,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->delete_dialaction() === false
 		|| $this->delete_contextnummember() === false
 		|| $this->delete_contextmember($this->_info['queuefeatures']['name']) === false
-		|| $this->delete_callerid() === false)
+		|| $this->delete_callerid() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -1185,6 +1217,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_return[$type] = $r;
 
 		return($r);
+	}
+
+	function delete_schedule_path()
+	{
+		return $this->_schedule_path->delete_where(array('path' => 'queue', 'pathid' =>	$this->_info['queuefeatures']['id']));
 	}
 
 	function _reverse_delete()

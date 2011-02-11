@@ -99,7 +99,7 @@ endif;
 				  'default'	=> $element['outcall']['exten']['default'],
 				  'value'	=> $info['outcall']['exten'],
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'exten')) )),
+							$this->get_var('error', 'outcall', 'exten')) )),
 
     $form->select(array('desc'	=> $this->bbf('fm_outcall_stripnum'),
 				    'name'	=> 'outcall[stripnum]',

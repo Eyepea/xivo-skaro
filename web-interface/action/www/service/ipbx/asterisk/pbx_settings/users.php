@@ -27,6 +27,8 @@ $search  = strval($prefs->get('search', ''));
 $context = strval($prefs->get('context', ''));
 $sort    = $prefs->flipflop('sort', 'fullname');
 
+$appschedule = &$ipbx->get_application('schedule');
+
 $param = array();
 $param['act'] = 'list';
 
@@ -174,6 +176,7 @@ switch($act)
 
 $_TPL->set_var('act',$act);
 $_TPL->set_var('contexts',$contexts);
+$_TPL->set_var('schedules',$appschedule->get_schedules_list());
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

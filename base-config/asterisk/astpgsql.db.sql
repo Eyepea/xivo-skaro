@@ -1284,11 +1284,11 @@ CREATE INDEX "schedule__idx__commented" ON "schedule"("commented");
 DROP TABLE IF EXISTS "schedule_path";
 DROP TYPE  IF EXISTS "schedule_path_type";
 
-CREATE TYPE "schedule_path_type" AS ENUM ('default','incall','outcall','voicemenu');
+CREATE TYPE "schedule_path_type" AS ENUM ('user','group','queue','incall','outcall','voicemenu');
 CREATE TABLE "schedule_path" (
  "schedule_id"   INTEGER NOT NULL,
 
- "path"          schedule_path_type NOT NULL DEFAULT 'default', 
+ "path"          schedule_path_type NOT NULL,
  "pathid"        INTEGER DEFAULT NULL, 
  "order"         INTEGER NOT NULL,
  PRIMARY KEY("schedule_id","path","pathid")

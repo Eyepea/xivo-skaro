@@ -296,6 +296,7 @@ $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
 $_TPL->set_var('sccp_addons',$sccp_addons);
 $_TPL->set_var('order_list', $order_list);
 $_TPL->set_var('softkeys_list', $softkeys_list);
+$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');

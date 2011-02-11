@@ -33,8 +33,18 @@
 			<li id="dwsm-tab-4" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-rightcall');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
 				<div class="tab"><span class="span-center"><a href="#rightcall"><?=$this->bbf('smenu_rightcalls');?></a></span></div><span class="span-right">&nbsp;</span>
 			</li>
-			<li id="dwsm-tab-5" class="dwsm-blur-last" onclick="dwho_submenu.select(this,'sb-part-last',1);" onmouseout="dwho_submenu.blur(this,1);" onmouseover="dwho_submenu.focus(this,1);">
+			<li id="dwsm-tab-5" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-dialaction');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
 				<div class="tab"><span class="span-center"><a href="#last"><?=$this->bbf('smenu_dialaction');?></a></span></div><span class="span-right">&nbsp;</span>
+			</li>
+			<li id="dwsm-tab-6"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-schedule',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
+				<div class="tab">
+					<span class="span-center"><a href="#schedule"><?=$this->bbf('smenu_schedule');?></a></span>
+				</div>
+				<span class="span-right">&nbsp;</span>
 			</li>
 		</ul>
 	</div>

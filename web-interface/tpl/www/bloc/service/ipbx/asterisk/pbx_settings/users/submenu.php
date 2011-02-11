@@ -84,9 +84,9 @@
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-5"
-		    class="dwsm-blur-last"		    
-		    onmouseout="dwho_submenu.blur(this,1);"
-		    onmouseover="dwho_submenu.focus(this,1);">
+		    class="dwsm-blur"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(th,1);">
 			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-advanced',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#advanced">
@@ -105,6 +105,16 @@
 						<?=$this->bbf('smenu_t38');?></a></li>
 				</ul>
 			</div>
+		</li>
+		<li id="dwsm-tab-6"
+	    class="dwsm-blur-last"
+	    onclick="dwho_submenu.select(this,'sb-part-schedule',1);"
+	    onmouseout="dwho_submenu.blur(this,1);"
+	    onmouseover="dwho_submenu.focus(this,1);">
+			<div class="tab">
+				<span class="span-center"><a href="#schedule"><?=$this->bbf('smenu_schedule');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>

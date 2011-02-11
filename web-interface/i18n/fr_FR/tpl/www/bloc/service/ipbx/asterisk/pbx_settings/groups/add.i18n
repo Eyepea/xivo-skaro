@@ -121,6 +121,14 @@ Ajouter un ou plusieurs droits d'appels ->
 ; create_rightcall
 Créer un droit d'appel
 
+; smenu_schedule
+Horaires
+
+; fm_group_schedule
+Horaires :
+
+; create_schedules
+Créer un horaire
 
 
 

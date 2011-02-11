@@ -1312,4 +1312,12 @@ Always
 ; fm_protocol_maxauthreq
 Maximum authentication attempts:
 
+; smenu_schedule
+Schedules
+
+; fm_user_schedule
+Schedules:
+
+; create_schedules
+Create a schedule
 

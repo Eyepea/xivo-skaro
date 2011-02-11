@@ -596,3 +596,11 @@ Config asterisk: weight
 Config asterisk: wrapuptime
 
 
+; smenu_schedule
+Horaires
+
+; fm_queue_schedule
+Horaires :
+
+; create_schedules
+Créer un horaire

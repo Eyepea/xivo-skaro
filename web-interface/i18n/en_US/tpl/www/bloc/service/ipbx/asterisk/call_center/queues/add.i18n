@@ -34,17 +34,17 @@ Add one or more users ->
 ; bt_outuser
 <- Remove one or more users
 
-; create_agent-group
-Create an agent group
+; create_agent-queue
+Create an agent queue
 
-; fm_agentgroup
+; fm_agentqueue
 Groups:
 
-; bt_inagentgroup
-Add one or more agent groups
+; bt_inagentqueue
+Add one or more agent queues
 
-; bt_outagentgroup
-<- Remove one or more agent groups
+; bt_outagentqueue
+<- Remove one or more agent queues
 
 ; create_agent
 Create an agent
@@ -668,3 +668,11 @@ Config asterisk: weight
 Config asterisk: wrapuptime
 
 
+; smenu_schedule
+Schedules
+
+; fm_queue_schedule
+Schedules:
+
+; create_schedules
+Create a schedule

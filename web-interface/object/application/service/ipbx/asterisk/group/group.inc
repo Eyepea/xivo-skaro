@@ -32,6 +32,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	var $_contextnummember	= false;
 	var $_callerid		= false;
 	var $_queuemember	= null;
+	var $_schedule_path = false;
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
 
@@ -62,6 +63,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| ($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'group'))) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'group'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'group'))) === false
+		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false
 		|| ($this->_callerid = $this->get_abstract('callerid',array('type' => 'group'))) === false)
 			return(false);
 
@@ -104,6 +106,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if(dwho_ak('callerid',$nocomponents,true) === false)
 			$this->_get_callerid($this->_info['groupfeatures']['id']);
+
+		// SCHEDULE
+		$schedule = $this->_schedule_path->get_where(array('path' => 'group', 'pathid'	=> $this->_info['groupfeatures']['id']));
+		if($schedule !== false)
+			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
 	}
@@ -301,6 +308,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(dwho_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
 
+		// schedule
+		if(array_key_exists('schedule_id', $arr))
+			$this->_set_result('schedule_id', intval($arr['schedule_id']));
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -486,7 +497,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->add_rightcall($groupfeaturesid) === false
 		|| $this->add_dialaction($groupfeaturesid) === false
 		|| $this->add_contextnummember($groupfeaturesid) === false
-		|| $this->add_callerid($groupfeaturesid) === false)
+		|| $this->add_callerid($groupfeaturesid) === false
+		|| $this->add_schedule_path($groupfeaturesid) === false)
 		{
 			if($groupfeaturesid !== null)
 				$this->_reverse_add();
@@ -595,6 +607,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return(true);
 	}
 
+	function add_schedule_path($groupfeaturesid)
+	{
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'group',
+			$groupfeaturesid);
+	}
+
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -694,7 +714,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->edit_rightcall() === false
 		|| $this->edit_dialaction() === false
 		|| $this->edit_contextnummember() === false
-		|| $this->edit_callerid() === false)
+		|| $this->edit_callerid() === false
+		|| $this->edit_schedule_path() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -877,6 +898,16 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return(true);
 	}
 
+	function edit_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'group', 'pathid' =>	intval($this->_info['groupfeatures']['id'])));
+
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'group',
+			$this->_info['groupfeatures']['id']);
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -959,7 +990,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->delete_rightcall() === false
 		|| $this->delete_dialaction() === false
 		|| $this->delete_contextnummember() === false
-		|| $this->delete_callerid() === false)
+		|| $this->delete_callerid() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -1026,6 +1058,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		return($this->edit_user_callgroup($groupfeaturesid));
 	}
+
+	function delete_schedule_path()
+	{
+		return $this->_schedule_path->delete_where(array('path' => 'group', 'pathid' =>	$this->_info['groupfeatures']['id']));
+	}
+
 
 	function _reverse_delete()
 	{

@@ -30,6 +30,7 @@ $pannounce = $this->get_var('pannounce');
 $moh_list = $this->get_var('moh_list');
 $announce_list = $this->get_var('announce_list');
 $context_list = $this->get_var('context_list');
+$schedules    = $this->get_var('schedules');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -721,7 +722,7 @@ endif;
 	</fieldset>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-advanced" class="b-nodisplay">
 <?php
 
 if($context_list !== false):
@@ -955,5 +956,26 @@ endif;
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'defaultrule')) ));
 
+?>
+</div>
+
+<div id="sb-part-schedule" class="b-nodisplay">
+<?php
+	if($schedules === false):
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_schedules'),
+					'service/ipbx/call_management/schedule',
+					'act=add'),
+			'</div>';
+	else:
+		echo $form->select(array('desc'	=> $this->bbf('fm_queue_schedule'),
+				    'name'	    => 'schedule_id',
+				    'labelid'	  => 'schedule_id',
+						'key'	      => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				    'selected'	=> $this->get_var('schedule_id')),
+			      $schedules);
+	endif;
 ?>
 </div>

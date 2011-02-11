@@ -27,6 +27,7 @@ $user = $this->get_var('user');
 $rightcall = $this->get_var('rightcall');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
+$schedules    = $this->get_var('schedules');
 
 if(dwho_has_len($user['list']) === true):
 	$user_suggest = $this->get_var('user','fullname');
@@ -310,7 +311,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-dialaction" class="b-nodisplay">
 	<fieldset id="fld-dialaction-noanswer">
 		<legend><?=$this->bbf('fld-dialaction-noanswer');?></legend>
 <?php
@@ -342,4 +343,25 @@ endif;
 				    array('event'	=> 'chanunavail'));
 ?>
 	</fieldset>
+</div>
+
+<div id="sb-part-schedule" class="b-nodisplay">
+<?php
+	if($schedules === false):
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_schedules'),
+					'service/ipbx/call_management/schedule',
+					'act=add'),
+			'</div>';
+	else:
+		echo $form->select(array('desc'	=> $this->bbf('fm_group_schedule'),
+				    'name'	    => 'schedule_id',
+				    'labelid'	  => 'schedule_id',
+						'key'	      => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				    'selected'	=> $this->get_var('schedule_id')),
+			      $schedules);
+	endif;
+?>
 </div>

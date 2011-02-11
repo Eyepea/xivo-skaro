@@ -142,3 +142,11 @@ Allow called on to record the call :
 ; fm_groupfeatures_write-calling
 Allo caller to record the call :
 
+; smenu_schedule
+Schedules
+
+; fm_group_schedule
+Schedules:
+
+; create_schedules
+Create a schedule

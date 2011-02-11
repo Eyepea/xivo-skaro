@@ -47,6 +47,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_param		= array('internal'	=> false);
 	var $_destination	= null;
 	var $_queueskills   = null;
+	var $_schedule_path = false;
 #	var $_sccp   = null;
 
 	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array(),$components=true)
@@ -60,6 +61,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
 		|| ($this->_queueskills = &$this->_service->get_module('userqueueskill')) === false
+		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false
 #		|| ($this->_sccp = &$this->_service->get_application('sccp')) === false
 		|| $this->load_init($param) === false)
 			return(false);
@@ -188,6 +190,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		// queueskills
 		$skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
 		$this->_info['queueskills'] = $skills === false?array():$skills;
+
+		// schedule
+		$schedule = $this->_schedule_path->get_where(array('path' => 'user', 'pathid'	=> $this->_info['userfeatures']['id']));
+
+		if($schedule !== false)
+			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		$this->_get_ipbx_infos();
 
@@ -981,6 +989,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		else
 			$r = true;
 
+		// schedule
+		if(array_key_exists('schedule_id', $arr))
+			$this->_set_result('schedule_id', intval($arr['schedule_id']));
+
 		return($r);
 	}
 
@@ -1429,7 +1441,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->add_voicemail($userfeaturesid) === false
 		|| $this->add_phonefunckey($userfeaturesid) === false
 		|| $this->add_phone($userfeaturesid) === false
-		|| $this->add_queueskills($userfeaturesid) === false)
+		|| $this->add_queueskills($userfeaturesid) === false
+		|| $this->add_schedule_path($userfeaturesid) === false)
 		{
 			$r = false;
 
@@ -1664,6 +1677,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return $ret;
 	}
 
+	function add_schedule_path($userfeaturesid)
+	{
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'user',
+			$userfeaturesid);
+	}
+
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -1804,7 +1825,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->edit_dialaction() === false
 		|| $this->edit_contextnummember() === false
 		|| $this->edit_voicemail() === false
-		|| $this->edit_phonefunckey() === false)
+		|| $this->edit_phonefunckey() === false
+		|| $this->edit_schedule_path() === false)
 		{
 			$this->_reverse_edit($protocolret);
 			$this->_status = '';
@@ -2096,6 +2118,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_return['autoprov']);
 	}
 
+	function edit_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'user', 'pathid' =>	intval($this->_info['userfeatures']['id'])));
+
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'user',
+			$this->_info['userfeatures']['id']);
+	}
+
 	function _reverse_edit($protocolid=0)
 	{
 		if($this->get_errnb() > 0
@@ -2196,7 +2228,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->delete_phonefunckey() === false
 		|| $this->delete_phone() === false
 		|| $this->delete_callfiltermember() === false
-		|| $this->delete_queueskill() === false)
+		|| $this->delete_queueskill() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -2333,6 +2366,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		$appqueue = &$this->_service->get_application('queue');
 		return $appqueue->userskills_delete($this->_info['userfeatures']['id']);
+	}
+
+	function delete_schedule_path()
+	{
+		return $this->_schedule_path->delete_where(array('path' => 'user', 'pathid' =>	$this->_info['user']['id']));
 	}
 
 	function _reverse_delete()

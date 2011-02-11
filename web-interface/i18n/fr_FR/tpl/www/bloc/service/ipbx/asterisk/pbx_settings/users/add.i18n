@@ -1366,5 +1366,10 @@ Oui
 ; fm_protocol-videosupport-opt(always)
 Toujours
 
+; smenu_schedule
+Horaires
+
+; fm_user_schedule
+Horaires :
 
 

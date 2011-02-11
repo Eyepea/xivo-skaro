@@ -31,6 +31,7 @@ $agent_list = $this->get_var('agent_list');
 $context_list = $this->get_var('context_list');
 $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
+$schedules    = $this->get_var('schedules');
 
 
 if(empty($info['userfeatures']['voicemailid']) === true):
@@ -1914,3 +1915,23 @@ endif;
 	</div>
 </div>
 
+<div id="sb-part-schedule" class="b-nodisplay">
+<?php
+	if($schedules === false):
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_schedules'),
+					'service/ipbx/call_management/schedule',
+					'act=add'),
+			'</div>';
+	else:
+		echo $form->select(array('desc'	=> $this->bbf('fm_user_schedule'),
+				    'name'	    => 'schedule_id',
+				    'labelid'	  => 'schedule_id',
+						'key'	      => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				    'selected'	=> $this->get_var('schedule_id')),
+			      $schedules);
+	endif;
+?>
+</div>

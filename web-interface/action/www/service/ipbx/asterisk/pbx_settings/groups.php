@@ -27,6 +27,8 @@ $search  = strval($prefs->get('search', ''));
 $context = strval($prefs->get('context', ''));
 $sort    = $prefs->flipflop('sort', 'name');
 
+$appschedule = &$ipbx->get_application('schedule');
+
 $param = array();
 $param['act'] = 'list';
 
@@ -122,6 +124,7 @@ switch($act)
 		$_TPL->set_var('destination_list',$appgroup->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appgroup->get_musiconhold());
 		$_TPL->set_var('context_list',$appgroup->get_context_list());
+		$_TPL->set_var('schedule_id', $result['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');
@@ -229,6 +232,7 @@ switch($act)
 		$_TPL->set_var('destination_list',$appgroup->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appgroup->get_musiconhold());
 		$_TPL->set_var('context_list',$appgroup->get_context_list());
+		$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');
@@ -328,6 +332,7 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('schedules',$appschedule->get_schedules_list());
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
