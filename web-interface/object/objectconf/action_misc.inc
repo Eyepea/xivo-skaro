@@ -88,6 +88,14 @@ $array['statistics/ui/call_center/genergraphic'] = array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genergraphic'));
 
+$array['service/ipbx/asterisk/ui/call_management/schedule'] = array(
+	'path'          => 'service/ipbx/asterisk/ui/call_management/schedule',
+	'define'        => array(
+	    'XIVO_LOC_UI_ACL_CATEGORY'      => 'call_management',
+	    'XIVO_LOC_UI_ACL_SUBCATEGORY'   => 'schedule',
+			'XIVO_LOC_UI_ACTION'                    => 'dialaction'));
+
+
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
 	'define'	=> array(
