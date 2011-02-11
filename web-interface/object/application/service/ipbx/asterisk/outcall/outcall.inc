@@ -29,6 +29,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	var $_extensions	= false;
 	var $_rightcall		= false;
 	var $_contextmember	= false;
+	var $_schedule_path = false;
 	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_outcall(&$service,&$dso,$param=null,$components=true)
@@ -42,6 +43,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if(($this->_outcall = &$this->_service->get_module('outcall')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'outcall'))) === false
+		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
 		else if((bool) $components === true)
@@ -85,6 +87,10 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['outcall']['id']);
+
+		$schedule = $this->_schedule_path->get_where(array('path' => 'outcall', 'pathid'	=> $this->_info['outcall']['id']));
+		if($schedule !== false)	
+			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
 	}
@@ -231,6 +237,10 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		$this->set_contextmember();
 
+		// schedule
+		if(array_key_exists('schedule_id', $arr))
+			$this->_set_result('schedule_id', intval($arr['schedule_id']));
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -342,7 +352,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| $this->add_outcallmacro($outcallid) === false
 		|| $this->add_outcalltrunk($outcallid) === false
 		|| $this->add_rightcall($outcallid) === false
-		|| $this->add_contextmember($outcallid) === false)
+		|| $this->add_contextmember($outcallid) === false
+		|| $this->add_schedule_path($outcallid) === false)
 		{
 			$r = false;
 			if($outcallid !== null)
@@ -405,6 +416,15 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return(true);
 	}
 
+	function add_schedule_path($outcallid)
+	{
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'outcall', 
+			$outcallid);
+	}
+
+
 	function _reverse_add($outcallid)
 	{
 		if($this->get_errnb() > 0
@@ -458,7 +478,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| $this->edit_outcallmacro() === false
 		|| $this->edit_outcalltrunk() === false
 		|| $this->edit_rightcall() === false
-		|| $this->edit_contextmember() === false)
+		|| $this->edit_contextmember() === false
+		|| $this->edit_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -514,6 +535,16 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['outcall']['id']));
+	}
+
+	function edit_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'outcall', 'pathid' =>	intval($this->_info['outcall']['id'])));
+
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'outcall', 
+			$this->_info['outcall']['id']);
 	}
 
 	function _reverse_edit()
@@ -579,7 +610,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| $this->delete_macro('outcallmacro') === false
 		|| $this->delete_outcalltrunk() === false
 		|| $this->delete_rightcall() === false
-		|| $this->delete_contextmember() === false)
+		|| $this->delete_contextmember() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -616,6 +648,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			$this->_return['outcalltrunk'] = $r;
 
 		return($r);
+	}
+
+	function delete_schedule_path()
+	{
+		return $this->_schedule_path->delete_where(array('path' => 'outcall', 'pathid' =>	$this->_info['outcall']['id']));
 	}
 
 	function _reverse_delete()

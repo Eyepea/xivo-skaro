@@ -108,3 +108,12 @@ Créer un droit d'appel
 
 ; fm_outcall_description
 Description :
+
+; smenu_schedule
+Horaires
+
+; fm_outcall_schedule
+Horaires : 
+
+; create_schedules
+Créer un horaire

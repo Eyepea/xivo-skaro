@@ -26,7 +26,8 @@ $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
 
 $outcalltrunk = $this->get_var('outcalltrunk');
-$rightcall = $this->get_var('rightcall');
+$rightcall    = $this->get_var('rightcall');
+$schedules    = $this->get_var('schedules');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -260,7 +261,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-rightcalls" class="b-nodisplay">
 <?php
 	if($rightcall['list'] !== false):
 ?>
@@ -318,6 +319,29 @@ endif;
 					'service/ipbx/call_management/rightcall',
 					'act=add'),
 			'</div>';
+	endif;
+?>
+</div>
+
+
+<div id="sb-part-schedule" class="b-nodisplay">
+<?php
+	if($schedules === false):
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_schedules'),
+					'service/ipbx/call_management/schedule',
+					'act=add'),
+			'</div>';
+	else:
+		echo $form->select(array('desc'	=> $this->bbf('fm_outcall_schedule'),
+				    'name'	    => 'schedule_id',
+				    'labelid'	  => 'schedule_id',
+						'key'	      => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				   // 'default'  	=> $element['schedule_id']['default'],
+				    'selected'	=> $this->get_var('schedule_id')),
+			      $schedules);
 	endif;
 ?>
 </div>

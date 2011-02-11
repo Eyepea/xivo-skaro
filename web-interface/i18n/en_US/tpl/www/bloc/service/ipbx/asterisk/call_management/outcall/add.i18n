@@ -138,3 +138,13 @@ Unlimited
 
 ; fm_outcall_description
 Description :
+
+; smenu_schedule
+Schedules
+
+; fm_outcall_schedule
+Schedules:
+
+; create_schedules
+Create a schedule
+
