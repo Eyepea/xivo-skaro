@@ -6,7 +6,7 @@ Copyright (C) 2007-2010  Proformatique
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007-2010  Proformatique
+    Copyright (C) 2007-2011  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,7 +49,10 @@ import re
 import socket
 import select
 import errno
-import cjson
+try:
+    import json
+except ImportError:
+    import simplejson as json
 import cgi
 import traceback
 import sys
@@ -100,6 +103,20 @@ class HttpReqError(Exception):
             req_handler.send_error_msgtxt(self.code, self.text)
         else:
             req_handler.send_error(self.code)
+
+
+def _encode_if(value, encoding='iso-8859-1'):
+    # transform value returned by json.loads to something similar to what
+    # cjson.decode would have returned
+    if isinstance(value, unicode):
+        return value.encode(encoding)
+    elif isinstance(value, list):
+        return [_encode_if(v, encoding) for v in value]
+    elif isinstance(value, dict):
+        return dict((_encode_if(k, encoding), _encode_if(v, encoding)) for
+                    (k, v) in value.iteritems())
+    else:
+        return value
 
 
 class HttpReqHandler(BaseHTTPRequestHandler):
@@ -269,7 +286,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
             urlparams = {}
 
         res = _cmd_r[cmd].handler({}, urlparams)
-        return cjson.encode(res)
+        return json.dumps(res)
     
     def json_from_post(self, cmd, urlparams=None):
         """
@@ -295,15 +312,15 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         
         json_params = self.rfile.read(clen)
         try:
-            params = cjson.decode(json_params)
-        except cjson.DecodeError, e:
+            params = _encode_if(json.loads(json_params))
+        except ValueError, e:
             raise HttpReqError(415, text=str(e))
 
         if not isinstance(urlparams, dict):
             urlparams = {}
 
         res = _cmd_rw[cmd].handler(params, urlparams)
-        return cjson.encode(res)
+        return json.dumps(res)
     
     def common_req(self, execute, send_body=True):
         "Common code for GET and POST requests"
