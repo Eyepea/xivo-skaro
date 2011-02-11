@@ -25,7 +25,7 @@ $array['categoryevent']['callfilter'] = array('noanswer');
 $array['categoryevent']['group'] = array('noanswer','congestion','busy','chanunavail');
 $array['categoryevent']['incall'] = array('answer');
 $array['categoryevent']['queue'] = array('noanswer','congestion','busy','chanunavail');
-$array['categoryevent']['schedule'] = array('inschedule','outschedule');
+//$array['categoryevent']['schedule'] = array('inschedule','outschedule');
 $array['categoryevent']['user'] = array('noanswer','congestion','busy','chanunavail');
 
 
@@ -86,7 +86,7 @@ $array['element']['actiontype']['value'] = array('none',
 						 'queue',
 						 'meetme',
 						 'voicemail',
-						 'schedule',
+						 //'schedule',
 						 'voicemenu',
 						 'extension',
 						 'application',
@@ -130,7 +130,7 @@ $array['filter']['action'] = array('key' => array('none',
 						  'queue',
 						  'meetme',
 						  'voicemail',
-						  'schedule',
+						  //'schedule',
 						  'voicemenu',
 						  'extension',
 						  'application:callbackdisa',

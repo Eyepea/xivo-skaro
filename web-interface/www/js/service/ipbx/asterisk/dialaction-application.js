@@ -220,6 +220,7 @@ function xivo_ast_defapplication_get_voicemail_identity(dialevent,id)
 	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-voicemail-actionarg1',id,true));
 }
 
+/*
 function xivo_ast_defapplication_schedule(dialevent,targetid)
 {
 	if((schedule = dwho_eid('it-dialaction-'+dialevent+'-schedule-actionarg1')) === false
@@ -232,7 +233,7 @@ function xivo_ast_defapplication_schedule(dialevent,targetid)
 
 	return(xivo_ast_set_defapplication('macro|schedule',targetid,optargs,valargs));
 }
-
+*/
 function xivo_ast_defapplication_get_schedule_identity(dialevent,id)
 {
 	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-schedule-actionarg1',id,true));
