@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form = &$this->get_module('form');
-$event = $this->get_var('event');
+$form    = &$this->get_module('form');
+$event   = $this->get_var('event');
 
 if($event === 'voicemenuevent'):
 	echo	'<div id="fd-dialaction-',$event,'-none-actiontype" class="b-nodisplay">',

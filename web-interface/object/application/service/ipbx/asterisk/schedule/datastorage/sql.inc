@@ -32,6 +32,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 				'voicemail'		=> '',
 				'voicemenu'		=> '');
 
+	/*
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_dso->new_select($this->_table['schedule']);
@@ -169,7 +170,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_ab
 
 		return($r);
 	}
-
+	 */
 	function search($value,$disable=null,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;

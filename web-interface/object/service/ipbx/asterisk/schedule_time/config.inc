@@ -25,27 +25,53 @@ $array['element'] = array();
 $array['element']['schedule_id'] = array();
 $array['element']['schedule_id']['default'] = '';
 
+$array['element']['mode'] = array();
+$array['element']['mode']['value'] = array('opened','closed');
+$array['element']['mode']['default'] = '';
+
 $array['element']['hours'] = array();
 $array['element']['hours']['default'] = '';
+$array['element']['hours']['null'] = true;
 
-$array['element']['workdays'] = array();
-$array['element']['workdays']['default'] = '';
+$array['element']['weekdays'] = array();
+$array['element']['weekdays']['default'] = '';
+$array['element']['weekdays']['null'] = true;
 
 $array['element']['monthdays'] = array();
 $array['element']['monthdays']['default'] = '';
+$array['element']['monthdays']['null'] = true;
 
 $array['element']['months'] = array();
 $array['element']['months']['default'] = '';
+$array['element']['months']['null'] = true;
+
+$array['element']['action'] = array();
+$array['element']['action']['default'] = '';
+$array['element']['action']['null'] = true;
+
+$array['element']['actionid'] = array();
+$array['element']['actionid']['default'] = '';
+$array['element']['actionid']['null'] = true;
+
+$array['element']['actionargs'] = array();
+$array['element']['actionargs']['default'] = '';
+$array['element']['actionargs']['null'] = true;
 
 $array['element']['commented'] = array();
-$array['element']['commented']['default'] = '';
+$array['element']['commented']['value'] = array(0,1);
+$array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['schedule_id'] = array('set' => false, 'chk' => 2);
+$array['filter']['mode'] = array('set' => false, 'chk' => 2, 'key' => array('opened','closed'));
 $array['filter']['hours'] = array('set' => false, 'chk' => 2);
-$array['filter']['workdays'] = array('set' => false, 'chk' => 2);
-$array['filter']['monthays'] = array('set' => false, 'chk' => 2);
+$array['filter']['weekdays'] = array('set' => false, 'chk' => 2);
+$array['filter']['monthdays'] = array('set' => false, 'chk' => 2);
 $array['filter']['months'] = array('set' => false, 'chk' => 2);
-$array['filter']['commented'] = array('set' => false, 'chk' => 2);
+$array['filter']['action'] = array('set' => false, 'chk' => 2);
+$array['filter']['actionid'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
+$array['filter']['actionargs'] = array('set' => false, 'chk' => 2);
+$array['filter']['commented'] = array('bool' => true);
 
 ?>

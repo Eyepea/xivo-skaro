@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form = &$this->get_module('form');
-$dhtml = &$this->get_module('dhtml');
+$form    = &$this->get_module('form');
+$dhtml   = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
-$event = $this->get_var('event');
+$event   = $this->get_var('event');
 
 echo	'<div id="fd-dialaction-',$event,'-endcall-actiontype" class="b-nodisplay">',
 	$form->select(array('desc'	=> $this->bbf('fm_dialaction_endcall-action'),

@@ -21,10 +21,11 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$info = $this->get_var('info');
-$element = $this->get_var('element');
-$list = $this->get_var('list');
+$info         = $this->get_var('info');
+$element      = $this->get_var('element');
+$list         = $this->get_var('list');
 $context_list = $this->get_var('context_list');
+$timezones    = $this->get_var('timezones');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -38,187 +39,376 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			  'default'	=> $element['schedule']['name']['default'],
 			  'value'	=> $info['schedule']['name'],
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'schedule', 'name')) ));
+			  		$this->get_var('error', 'schedule', 'name')) )),
 
-if($context_list !== false):
-	echo	$form->select(array('desc'	=> $this->bbf('fm_schedule_context'),
-				    'name'	=> 'schedule[context]',
-				    'labelid'	=> 'schedule-context',
-				    'key'	=> 'identity',
-				    'altkey'	=> 'name',
-				    'default'	=> $element['schedule']['context']['default'],
-				    'selected'	=> $info['schedule']['context']),
-			      $context_list);
-else:
-	echo	'<div id="fd-schedule-context" class="txt-center">',
-		$url->href_htmln($this->bbf('create_context'),
-				'service/ipbx/system_management/context',
-				'act=add'),
-		'</div>';
-endif;
+      $form->select(array('desc' => $this->bbf('fm_schedule_timezone'),
+				  'name'     => 'schedule[timezone]',
+			    'key'      => false,
+			    'default'  => $element['schedule']['timezone']['default'],
+					'selected' => $info['schedule']['timezone']),
+				$timezones);
 
-echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
-			      'name'	=> 'schedule[publicholiday]',
-			      'labelid'	=> 'publicholiday',
-			      'checked'	=> $info['schedule']['publicholiday'],
-			      'default'	=> $element['schedule']['publicholiday']['default']));
+
+	// oneped hours
+	$type = 'disp';
+	$opened = $info['opened'];
+	$count = $opened?count($opened):0;
+	$errdisplay = '';
 ?>
-<div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0" class="fm-paragraph">
-	<thead>
-	<tr class="sb-top">
-		<th class="th-left"><?=$this->bbf('col_schedule-time');?></th>
-		<th class="th-center"><?=$this->bbf('col_schedule-begin');?></th>
-		<th class="th-right"><?=$this->bbf('col_schedule-end');?></th>
-	</tr>
-	</thead>
-	<tbody>
-	<tr>
-		<td class="txt-left"><?=$this->bbf('schedule_hour');?></td>
-		<td>
+	<div class="sb-list">
+	<fieldset id="fld-opened-hours">
+		<legend><?=$this->bbf('fld-opened-hours');?></legend>
+
+		<table cellspacing="0" cellpadding="0" border="0">
+			<thead>
+			<tr class="sb-top">
+
+				<th class="th-left"><?=$this->bbf('fm_col_hours');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_weekdays');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_monthdays');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_months');?></th>
+				<th class="th-right th-rule">
+					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+									  $this->bbf('col_add'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+							   $this->bbf('col_add'));?>
+				</th>
+			</tr>
+			</thead>
+			<tbody id="disp">
+		<?php
+		if($count > 0):
+			for($i = 0;$i < $count;$i++):
+
+		?>
+			<tr class="fm-paragraph<?=$errdisplay?>">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'opened[hours][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'value'		=> $opened[$i]['hours'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'hours'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'opened[weekdays][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'value'		=> $opened[$i]['weekdays'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'weekdays'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'opened[monthdays][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'value'		=> $opened[$i]['monthdays'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'monthdays'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'opened[months][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'	=> $opened[$i]['months'],
+							       'default'	=> '',
+			               'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'months'))));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+
+		<?php
+			endfor;
+		endif;
+		?>
+			</tbody>
+			<tfoot>
+			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
+				<td colspan="5" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+			</tr>
+			</tfoot>
+		</table>
+		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+			<tbody id="ex-<?=$type?>">
+			<tr class="fm-paragraph">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'opened[hours][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'opened[weekdays][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'opened[monthdays][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'opened[months][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+  </fieldset>
+	</div>
+
+
 <?php
-			echo	$form->select(array('paragraph'	=> false,
-						    'name'	=> 'schedule[timebeg][hour]',
-						    'labelid'	=> 'schedule-timehourbeg',
-						    'empty'	=> true,
-						    'key'	=> false,
-						    'valuef'	=> '%02u',
-						    'optionf'	=> '%02u',
-						    'default'	=> $element['schedule']['timehourbeg']['default'],
-						    'selected'	=> $info['schedule']['timehourbeg']),
-					      $element['schedule']['timehourbeg']['value']),
-
-				$form->select(array('paragraph'	=> false,
-						    'name'	=> 'schedule[timebeg][min]',
-						    'labelid'	=> 'schedule-timeminbeg',
-						    'empty'	=> true,
-						    'key'	=> false,
-						    'valuef'	=> '%02u',
-						    'optionf'	=> '%02u',
-						    'default'	=> $element['schedule']['timeminbeg']['default'],
-						    'selected'	=> $info['schedule']['timeminbeg']),
-					      $element['schedule']['timeminbeg']['value']);
+	// closed hours
+	$type = 'disp2';
+	$closed = array();
+	$count = $closed?count($closed):0;
+	$errdisplay = '';
 ?>
-		</td>
-		<td class="td-right">
+	<div class="sb-list">
+	<fieldset id="fld-closed-hours">
+		<legend><?=$this->bbf('fld-closed-hours');?></legend>
 <?php
-			echo	$form->select(array('paragraph'	=> false,
-						    'name'	=> 'schedule[timeend][hour]',
-						    'labelid'	=> 'schedule-timehourend',
-						    'empty'	=> true,
-						    'key'	=> false,
-						    'valuef'	=> '%02u',
-						    'optionf'	=> '%02u',
-						    'default'	=> $element['schedule']['timehourend']['default'],
-						    'selected'	=> $info['schedule']['timehourend']),
-					      $element['schedule']['timehourend']['value']),
-
-				$form->select(array('paragraph'	=> false,
-						    'name'	=> 'schedule[timeend][min]',
-						    'labelid'	=> 'schedule-timeminend',
-						    'empty'	=> true,
-						    'key'	=> false,
-						    'valuef'	=> '%02u',
-						    'optionf'	=> '%02u',
-						    'default'	=> $element['schedule']['timeminend']['default'],
-						    'selected'	=> $info['schedule']['timeminend']),
-					      $element['schedule']['timeminend']['value']);
+		// dialactions
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+			array('event'	=> 'schedule_fallback'));
 ?>
-		</td>
-	</tr>
-	<tr>
-		<td class="txt-left"><?=$this->bbf('schedule_dayname');?></td>
-		<td>
-			<?=$form->select(array('paragraph'	=> false,
-					       'name'		=> 'schedule[daynamebeg]',
-					       'labelid'	=> 'schedule-daynamebeg',
-					       'empty'		=> true,
-					       'key'		=> false,
-					       'bbf'		=> 'date_Day',
-					       'bbfopt'		=> array('argmode' => 'paramvalue'),
-					       'default'	=> $element['schedule']['daynamebeg']['default'],
-					       'selected'	=> $info['schedule']['daynamebeg']),
-					 $element['schedule']['daynamebeg']['value']);?>
-		</td>
-		<td class="td-right">
-			<?=$form->select(array('paragraph'	=> false,
-					       'name'		=> 'schedule[daynameend]',
-					       'labelid'	=> 'schedule-daynameend',
-					       'empty'		=> true,
-					       'key'		=> false,
-					       'bbf'		=> 'date_Day',
-					       'bbfopt'		=> array('argmode' => 'paramvalue'),
-					       'default'	=> $element['schedule']['daynameend']['default'],
-					       'selected'	=> $info['schedule']['daynameend']),
-					 $element['schedule']['daynameend']['value']);?>
-		</td>
-	</tr>
-	<tr>
-		<td class="txt-left"><?=$this->bbf('schedule_daynum');?></td>
-		<td>
-			<?=$form->select(array('paragraph'	=> false,
-					       'name'		=> 'schedule[daynumbeg]',
-					       'labelid'	=> 'schedule-daynumbeg',
-					       'empty'		=> true,
-					       'key'		=> false,
-					       'default'	=> $element['schedule']['daynumbeg']['default'],
-					       'selected'	=> $info['schedule']['daynumbeg']),
-					 $element['schedule']['daynumbeg']['value']);?>
-		</td>
-		<td class="td-right">
-			<?=$form->select(array('paragraph'	=> false,
-					       'name'		=> 'schedule[daynumend]',
-					       'labelid'	=> 'schedule-daynumend',
-					       'empty'		=> true,
-					       'key'		=> false,
-					       'default'	=> $element['schedule']['daynumend']['default'],
-					       'selected'	=> $info['schedule']['daynumend']),
-					 $element['schedule']['daynumend']['value']);?>
-		</td>
-	</tr>
-	<tr>
-		<td class="txt-left"><?=$this->bbf('schedule_month');?></td>
-		<td>
-			<?=$form->select(array('paragraph'	=> false,
-					       'name'		=> 'schedule[monthbeg]',
-					       'labelid'	=> 'schedule-monthbeg',
-					       'empty'		=> true,
-					       'key'		=> false,
-					       'bbf'		=> 'date_Month',
-					       'bbfopt'		=> array('argmode' => 'paramvalue'),
-					       'default'	=> $element['schedule']['monthbeg']['default'],
-					       'selected'	=> $info['schedule']['monthbeg']),
-					 $element['schedule']['monthbeg']['value']);?>
-		</td>
-		<td class="td-right">
-			<?=$form->select(array('paragraph'	=> false,
-					       'name'		=> 'schedule[monthend]',
-					       'labelid'	=> 'schedule-monthend',
-					       'empty'		=> true,
-					       'key'		=> false,
-					       'bbf'		=> 'date_Month',
-					       'bbfopt'		=> array('argmode' => 'paramvalue'),
-					       'default'	=> $element['schedule']['monthend']['default'],
-					       'selected'	=> $info['schedule']['monthend']),
-					 $element['schedule']['monthend']['value']);?>
-		</td>
-	</tr>
-	</tbody>
-</table>
+
+		<table cellspacing="0" cellpadding="0" border="0">
+			<thead>
+			<tr class="sb-top">
+
+				<th class="th-left"><?=$this->bbf('fm_col_hours');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_weekdays');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_monthdays');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_months');?></th>
+				<th class="th-center"><?=$this->bbf('fm_col_action');?></th>
+				<th class="th-right th-rule">
+					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+									  $this->bbf('col_add'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="xivo_ast_schedule_add_closed_action(\'disp2\',this); return(dwho.dom.free_focus());"',
+							   $this->bbf('col_add'));?>
+				</th>
+			</tr>
+			</thead>
+			<tbody id="disp2">
+		<?php
+		if($count > 0):
+			for($i = 0;$i < $count;$i++):
+
+		?>
+			<tr class="fm-paragraph<?=$errdisplay?>">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'closed[hours][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'value'		=> $closed[$i]['weekdays'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'weekdays'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'closed[weekdays][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'value'		=> $closed[$i]['weekdays'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'weekdays'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'closed[monthdays][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'value'		=> $closed[$i]['monthdays'],
+							       'default'	=> '',
+										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'monthdays'))));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'closed[months][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'value'	=> $closed[$i]['months'],
+							       'default'	=> '',
+			               'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'months'))));
+	 ?>
+				</td>
+				<td>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+			array('event'	=> "fallback[$i]"));
+?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+
+		<?php
+			endfor;
+		endif;
+		?>
+			</tbody>
+			<tfoot>
+			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
+				<td colspan="6" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+			</tr>
+			</tfoot>
+		</table>
+		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+			<tbody id="ex-<?=$type?>">
+			<tr class="fm-paragraph">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'	  	=> 'closed[hours][]',
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 15,
+							       'key'	    => false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'closed[weekdays][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'closed[monthdays][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+							       'name'		=> 'closed[months][]',
+							       'id'		  => false,
+							       'label'	=> false,
+							       'size'		=> 15,
+							       'key'		=> false,
+							       'default'	=> ''));
+	 ?>
+				</td>
+				<td id="onclosed-time-dialaction">
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+  </fieldset>
+	</div>
+
+
 </div>
 
-<fieldset id="fld-dialaction-inschedule">
-	<legend><?=$this->bbf('fld-dialaction-inschedule');?></legend>
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
-			    array('event'	=> 'inschedule'));
-?>
-</fieldset>
-
-<fieldset id="fld-dialaction-outchedule">
-	<legend><?=$this->bbf('fld-dialaction-outschedule');?></legend>
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
-			    array('event'	=> 'outschedule'));
-?>
-</fieldset>

@@ -23,7 +23,8 @@ var xivo_elt_dialaction = {
 			'busy':		{},
 			'chanunavail':	{},
 			'inschedule':	{},
-			'outschedule':	{}};
+			'outschedule':	{},
+			'schedule_fallback':	{}};
 
 var xivo_fm_dialaction = dwho_clone(xivo_elt_dialaction);
 

@@ -54,12 +54,7 @@ $page = $url->pager($pager['pages'],
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_time');?></th>
-		<th class="th-center"><?=$this->bbf('col_dayname');?></th>
-		<th class="th-center"><?=$this->bbf('col_daynum');?></th>
-		<th class="th-center"><?=$this->bbf('col_month');?></th>
 		<th class="th-center"><?=$this->bbf('col_destination');?></th>
-		<th class="th-center"><?=$this->bbf('col_publicholiday');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -81,58 +76,10 @@ $page = $url->pager($pager['pages'],
 				$icon = 'enable';
 			endif;
 
-			if($ref['timebeg'] === '*'):
-				$ref['time'] = '-';
-			elseif((string) $ref['timeend'] === ''):
-				$ref['time'] = $this->bbf('schedule_time',
-							  array($ref['timehourbeg'],$ref['timeminbeg']));
-			else:
-				$timebeg = $this->bbf('schedule_time',
-						      array($ref['timehourbeg'],$ref['timeminbeg']));
 
-				$timeend = $this->bbf('schedule_time',
-						      array($ref['timehourend'],$ref['timeminend']));
+			//$destination = $this->bbf('schedule_destination-'.$ref['destination']);
 
-				$ref['time'] = $this->bbf('schedule_rangetime',array($timebeg,$timeend));
-			endif;
-
-			if($ref['daynamebeg'] === '*'):
-				$ref['dayname'] = '-';
-			elseif((string) $ref['daynameend'] === ''):
-				$ref['dayname'] = $this->bbf('date_Day',$ref['daynamebeg']);
-			else:
-				$daynamebeg = $this->bbf('date_Day',$ref['daynamebeg']);
-				$daynameend = $this->bbf('date_Day',$ref['daynameend']);
-
-				$ref['dayname'] = $this->bbf('schedule_rangedayname',
-							     array($daynamebeg,$daynameend));
-			endif;
-
-			if($ref['daynumbeg'] === '*'):
-				$ref['daynum'] = '-';
-			elseif((string) $ref['daynumend'] === ''):
-				$ref['daynum'] = $ref['daynumbeg'];
-			else:
-				$ref['daynum'] = $this->bbf('schedule_rangedaynum',
-							    array($ref['daynumbeg'],$ref['daynumend']));
-			endif;
-
-			if($ref['monthbeg'] === '*'):
-				$ref['month'] = '-';
-			elseif((string) $ref['monthend'] === ''):
-				$ref['month'] = $this->bbf('date_Month',$ref['monthbeg']);
-			else:
-				$monthbeg = $this->bbf('date_Month',$ref['monthbeg']);
-				$monthend = $this->bbf('date_Month',$ref['monthend']);
-
-				$ref['month'] = $this->bbf('schedule_rangemonth',
-							   array($monthbeg,$monthend));
-			endif;
-
-			$ref['publicholiday'] = intval((bool) $ref['publicholiday']);
-
-			$destination = $this->bbf('schedule_destination-'.$ref['destination']);
-
+			/*
 			if($ref['linked'] === false):
 				$icon = 'unavailable';
 				$destination = '-';
@@ -142,7 +89,8 @@ $page = $url->pager($pager['pages'],
 				$destination = $this->bbf('schedule_destination-application-'.$ref['destidentity']);
 			else:
 				$destination = $ref['destidentity'];
-			endif;
+endif;
+			 */
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -163,14 +111,9 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$ref['time']?></td>
-		<td><?=$ref['dayname']?></td>
-		<td><?=$ref['daynum']?></td>
-		<td><?=$ref['month']?></td>
-		<td title="<?=dwho_alttitle($destination);?>">
-			<?=dwho_htmlen(dwho_trunc($destination,15,'...',false));?>
+		<td title="<!--?=dwho_alttitle($destination);?-->">
+			<!--?=dwho_htmlen(dwho_trunc($destination,15,'...',false));?-->
 		</td>
-		<td><?=$this->bbf('schedule_publicholiday-'.$ref['publicholiday']);?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
@@ -199,7 +142,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="8"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

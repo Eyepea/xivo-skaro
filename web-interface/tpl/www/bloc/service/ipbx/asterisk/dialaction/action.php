@@ -21,8 +21,9 @@
 $form = &$this->get_module('form');
 
 $element = $this->get_var('element');
-$event = $this->get_var('event');
-$action = $this->get_var('dialaction',$event,'action');
+$event   = $this->get_var('event');
+$action  = $this->get_var('dialaction',$event,'action');
+$da_id   = $this->get_var_default('da_id', 'default');
 
 if($this->get_var('dialaction_from') === 'incall' && $event === 'answer'):
 	$onchange = 'xivo_ast_incall_chg_dialaction_answer(this);';
