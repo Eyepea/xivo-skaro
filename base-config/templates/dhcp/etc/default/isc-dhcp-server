@@ -1,6 +1,6 @@
 # Defaults for dhcp initscript
 # sourced by /etc/init.d/dhcp
-# installed at /etc/default/dhcp3-server by the maintainer scripts
+# installed at /etc/default/isc-dhcp-server by the maintainer scripts
 
 #
 # This is a POSIX shell fragment

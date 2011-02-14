@@ -1,33 +1,32 @@
 #!/bin/sh
 #
-# $Id: dhcp3-server.init.d,v 1.4 2003/07/13 19:12:41 mdz Exp $
 #
 
-# Modified by Proformatique <technique@proformatique.com> (2010-04-22):
+# Modified by Proformatique <technique@proformatique.com> (2011-02-14):
 #   - added RUN_DAEMON variable defaulting to "no" to select
 #     if we should start the daemon
 #   - don't run test_config if RUN_DAEMON is not "yes"
 
 ### BEGIN INIT INFO
-# Provides:          dhcp3-server
+# Provides:          isc-dhcp-server
 # Required-Start:    $remote_fs $network $syslog
 # Required-Stop:     $remote_fs $network $syslog
-# Should-Start:      $local_fs slapd
+# Should-Start:      $local_fs slapd $named
 # Should-Stop:       $local_fs slapd
 # Default-Start:     2 3 4 5
-# Default-Stop:      1
+# Default-Stop:      0 1 6
 # Short-Description: DHCP server
 # Description:       Dynamic Host Configuration Protocol Server
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-test -f /usr/sbin/dhcpd3 || exit 0
+test -f /usr/sbin/dhcpd || exit 0
 
 # It is not safe to start if we don't have a default configuration...
-if [ ! -f /etc/default/dhcp3-server ]; then
-	echo "/etc/default/dhcp3-server does not exist! - Aborting..."
-	echo "Run 'dpkg-reconfigure dhcp3-server' to fix the problem."
+if [ ! -f /etc/default/isc-dhcp-server ]; then
+	echo "/etc/default/isc-dhcp-server does not exist! - Aborting..."
+	echo "Run 'dpkg-reconfigure isc-dhcp-server' to fix the problem."
 	exit 0
 fi
 
@@ -37,19 +36,19 @@ RUN_DAEMON="no"
 
 # Read init script configuration (so far only interfaces the daemon
 # should listen on.)
-. /etc/default/dhcp3-server
+[ -f /etc/default/isc-dhcp-server ] && . /etc/default/isc-dhcp-server
 
-NAME=dhcpd3
-DESC="DHCP server"
+NAME=dhcpd
+DESC="ISC DHCP server"
 DHCPDPID=/var/run/dhcpd.pid
 DEFAULTSFILE=/etc/default/$NAME
 
 test_config()
 {
-	if ! /usr/sbin/dhcpd3 -t -q > /dev/null 2>&1; then
+	if ! /usr/sbin/dhcpd -t -q > /dev/null 2>&1; then
 		echo "dhcpd self-test failed. Please fix the config file."
 		echo "The error was: "
-		/usr/sbin/dhcpd3 -t
+		/usr/sbin/dhcpd -t
 		exit 1
 	fi
 }
@@ -57,17 +56,17 @@ test_config()
 # single arg is -v for messages, -q for none
 check_status()
 {
-    if [ ! -r "$DHCPDPID" ]; then
-	test "$1" != -v || echo "$NAME is not running."
-	return 3
-    fi
-    if read pid < "$DHCPDPID" && ps -p "$pid" > /dev/null 2>&1; then
-	test "$1" != -v || echo "$NAME is running."
-	return 0
-    else
-	test "$1" != -v || echo "$NAME is not running but $DHCPDPID exists."
-	return 1
-    fi
+	if [ ! -r "$DHCPDPID" ]; then
+		test "$1" != -v || echo "$NAME is not running."
+		return 3
+	fi
+		if read pid < "$DHCPDPID" && ps -p "$pid" > /dev/null 2>&1; then
+		test "$1" != -v || echo "$NAME is running."
+		return 0
+	else
+		test "$1" != -v || echo "$NAME is not running but $DHCPDPID exists."
+		return 1
+	fi
 }
 
 case "$1" in
@@ -80,7 +79,7 @@ case "$1" in
 		test_config
 		log_daemon_msg "Starting $DESC" "$NAME"
 		start-stop-daemon --start --quiet --pidfile $DHCPDPID \
-			--exec /usr/sbin/dhcpd3 -- -q $INTERFACES
+			--exec /usr/sbin/dhcpd -- -q $INTERFACES
 		sleep 2
 
 		if check_status -q; then

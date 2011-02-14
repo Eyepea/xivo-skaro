@@ -20,7 +20,6 @@ elif [ -z "${XIVO_NET4_IP}" -o -z "${XIVO_NET4_NETMASK}" -o -z "${XIVO_NET4_BROA
   exit 1
 fi
 
-
 if [ -z "${XIVO_VOIP_VLAN_ID}" -o "${XIVO_VOIP_VLAN_ID}" = "0" ]; then
   XIVO_HAS_VOIP_VLAN_10=0
   XIVO_HAS_VOIP_VLAN_yn="no"
@@ -52,7 +51,7 @@ if [ "${XIVO_DHCP_ACTIVE}" = "1" ]; then
 fi
 
 if [ -n "${XIVO_DHCP_POOL}" ]; then
-  _XIVO_DHCP_SUBNET="\# Include of the subnet declaration (XIVO_DHCP_POOL is not void in common.conf)\ninclude \"/etc/dhcp3/dhcpd_subnet.conf\";"
+  _XIVO_DHCP_SUBNET="\# Include of the subnet declaration (XIVO_DHCP_POOL is not void in common.conf)\ninclude \"/etc/dhcp/dhcpd_subnet.conf\";"
 else
   _XIVO_DHCP_SUBNET="\# Subnet declaration not specified because XIVO_DHCP_POOL is void in common.conf\n\# Use dhcpd_extra.conf for custom configuration"
 fi
@@ -71,3 +70,6 @@ else
   _XIVO_SMTP_MYDOMAIN=${XIVO_DOMAIN}
 fi
 
+if [ -z "${XIVO_PROVD_NET4_IP}" ]; then
+  XIVO_PROVD_NET4_IP="${XIVO_NET4_IP}"
+fi
