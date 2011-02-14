@@ -21,7 +21,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path
+import os
 import shelve
 from provd.persist.id import get_id_generator_factory
 from provd.persist.util import new_backend_based_collection
@@ -72,6 +72,11 @@ class ShelveDatabase(object):
         self._shelve_dir = shelve_dir
         self._generator_factory = generator_factory
         self._collections = {}
+        self._create_shelve_dir()
+    
+    def _create_shelve_dir(self):
+        if not os.path.isdir(self._shelve_dir):
+            os.makedirs(self._shelve_dir)
     
     def close(self):
         for collection in self._collections.itervalues():
