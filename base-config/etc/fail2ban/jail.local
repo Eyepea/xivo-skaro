@@ -1,0 +1,8 @@
+[asterisk-iptables]
+
+enabled  = true
+filter   = asterisk
+action   = iptables-allports[name=ASTERISK, protocol=all]
+logpath  = /var/log/asterisk/auth-asterisk.log
+maxretry = 5
+bantime = 600
