@@ -56,9 +56,6 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
        'asterisk_res_sqlite_config_filename':   "res_sqlite.conf",
        'asterisk_config_path':                  os.path.join(os.path.sep, 'etc', 'asterisk'),
        'asterisk_tpl_directory':                'asterisk',
-       'provisioning_config_filename':          "provisioning.conf",
-       'provisioning_tpl_directory':            os.path.join('provisioning', 'etc', 'pf-xivo'),
-       'provisioning_config_path':              None,
        'webinterface_xivo_config_filename':     "xivo.ini",
        'webinterface_ipbx_config_filename':     "ipbx.ini",
        'webinterface_cti_config_filename':      "cti.ini",
@@ -555,12 +552,6 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
                           {'db':
                                 {'db_uri':  args['ipbx']}})
 
-        merge_config_file(Wdc['provisioning_config_tpl_file'],
-                          Wdc['provisioning_config_custom_tpl_file'],
-                          Wdc['provisioning_config_file'],
-                          {'general':
-                                {'database_uri':    args['ipbx']}})
-
         merge_config_file(Wdc['webinterface_xivo_tpl_file'],
                           Wdc['webinterface_xivo_custom_tpl_file'],
                           Wdc['webinterface_xivo_file'],
@@ -605,13 +596,10 @@ def safe_init(options):
     if Wdc['agid_config_path'] is None:
         Wdc['agid_config_path'] = Wdc['xivo_config_path']
 
-    if Wdc['provisioning_config_path'] is None:
-        Wdc['provisioning_config_path'] = Wdc['xivo_config_path']
-
     if Wdc['webinterface_config_path'] is None:
         Wdc['webinterface_config_path'] = os.path.join(Wdc['xivo_config_path'], "web-interface")
 
-    for x in ('agid', 'provisioning'):
+    for x in ('agid',):
         Wdc["%s_config_file" % x] = os.path.join(Wdc["%s_config_path" % x],
                                                  Wdc["%s_config_filename" % x])
 
