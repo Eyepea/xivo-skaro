@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<settings>
-  <phone-settings>
-    <setting_server perm="R">http://#XIVO_NET4_IP#:8667/Snom/snom360.htm</setting_server>
-    <firmware_status perm="R">http://#XIVO_NET4_IP#:8667/Snom/snom360-firmware.xml</firmware_status>
-  </phone-settings>
-</settings>
