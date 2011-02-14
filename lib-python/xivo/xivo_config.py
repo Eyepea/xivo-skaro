@@ -67,8 +67,7 @@ NETWORK_CONFIG_FILE = "network.yaml"
 
 #                                   path used by system:
 INTERFACES_FILE = "interfaces"      # /etc/network/
-DHCPD_CONF_FILE = "dhcpd.conf"      # /etc/dhcp3/
-DHCP3_SERVER_FILE = "dhcp3-server"  # /etc/default/
+DHCPD_CONF_FILE = "dhcpd.conf"      # /etc/dhcp/
 IFPLUGD_FILE = "ifplugd"            # /etc/default/
 
 

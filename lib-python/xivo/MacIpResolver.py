@@ -28,7 +28,7 @@ from xivo.network import is_ipv4_address_valid, normalize_ipv4_address, \
                          is_mac_address_valid, normalize_mac_address
 
 
-DHCPD_LEASES_FILENAME = "/var/lib/dhcp3/dhcpd.leases"
+DHCPD_LEASES_FILENAME = "/var/lib/dhcp/dhcpd.leases"
 
 
 def match_remain_and_strip_semicolon(s, start):
