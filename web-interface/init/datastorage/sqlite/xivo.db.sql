@@ -374,7 +374,7 @@ CREATE TABLE stats_conf (
  disable tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
-);i
+);
 
 CREATE INDEX stats_conf__idx__id ON stats_conf(id);
 CREATE INDEX stats_conf__idx__disable ON stats_conf(disable);
