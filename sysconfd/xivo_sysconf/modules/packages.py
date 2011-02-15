@@ -56,10 +56,8 @@ PACKAGES_LIST   = {'asterisk':
                                  'ipbxengine':
                                                 {'asterisk':
                                                                 {'depends':  ['pf-asterisk-res-sqlite2']}}},
-                   'xivo':      {'depends':     ['pf-xivo'],
-                                 'recommends':  ['pf-stats-munin',
-                                                 'pf-asternic-stats',
-                                                 'pf-monitoring-monit']}}
+		   'postgresql':{'depends':     ['postgresql', 'php5-pgsql']},
+                   'xivo':      {'depends':     ['pf-xivo']}}
 
 PACKAGES_DEPENDENCY_LEVELS   = ('depends',
                                 'recommends',
@@ -183,6 +181,24 @@ class Packages:
 
         return self._dependencies_list()
 
+    def dependencies_postgresql(self, args, options):
+        """
+        GET /dependencies_postgresql
+        
+        Just returns postgresql dependencies and their status
+        """
+
+        self.reqpkg     = 'postgresql'
+        self.opts       = {}
+
+        self.args       = args
+        self.options    = options
+
+        self._get_dependency_level()
+        self._get_ipbxengine()
+
+        return self._dependencies_list()
+
     def dependencies_mysql(self, args, options):
         """
         GET /dependencies_mysql
@@ -242,5 +258,6 @@ packages = Packages()
 http_json_server.register(packages.aptcache_update, CMD_R)
 http_json_server.register(packages.dependencies_asterisk, CMD_R)
 http_json_server.register(packages.dependencies_mysql, CMD_R)
+http_json_server.register(packages.dependencies_postgresql, CMD_R)
 http_json_server.register(packages.dependencies_sqlite, CMD_R)
 http_json_server.register(packages.dependencies_xivo, CMD_R)
