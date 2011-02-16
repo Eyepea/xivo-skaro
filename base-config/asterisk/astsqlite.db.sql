@@ -1040,7 +1040,6 @@ CREATE TABLE queuefeatures (
  announceoverride varchar(128) NOT NULL DEFAULT '',
  timeout smallint unsigned NOT NULL DEFAULT 0,
  preprocess_subroutine varchar(39),
- stats_qos smallint(4) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 

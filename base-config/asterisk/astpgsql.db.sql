@@ -1206,7 +1206,6 @@ CREATE TABLE "queuefeatures" (
  "announceoverride" varchar(128) NOT NULL DEFAULT '',
  "timeout" INTEGER NOT NULL DEFAULT 0,
  "preprocess_subroutine" varchar(39),
- "stats_qos" smallint NOT NULL DEFAULT 0,
  PRIMARY KEY("id")
 );
 
