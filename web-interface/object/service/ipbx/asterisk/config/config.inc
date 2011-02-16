@@ -89,6 +89,9 @@ $array['module']['cdr'] = array();
 $array['module']['cdr']['datastorage'] = array();
 $array['module']['cdr']['datastorage']['custom'] = true;
 
+$array['module']['cel'] = array();
+$array['module']['cel']['datastorage'] = true;
+
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 

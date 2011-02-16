@@ -52,6 +52,10 @@ $array['cdr'] = array();
 $array['cdr']['table'] = 'cdr';
 $array['cdr']['primary'] = array('id' => '');
 
+$array['cel'] = array();
+$array['cel']['table'] = 'cel';
+$array['cel']['primary'] = array('id' => '');
+
 $array['context'] = array();
 $array['context']['table'] = 'context';
 $array['context']['primary'] = array('name' => '');
