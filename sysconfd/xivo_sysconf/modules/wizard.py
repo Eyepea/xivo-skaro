@@ -66,22 +66,7 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
 WIZARD_ASTERISK_EXTCONFIG_RE    = re.compile(r'^([^,]*)(?:,(".*"|[^,]*)(?:,(.*))?)?$').match
 
 WIZARD_IPBX_ENGINES         = {'asterisk':
-                                {'extconfig':   {'sipusers':            'usersip',
-                                                 'sippeers':            'usersip',
-                                                 'iaxusers':            'useriax',
-                                                 'iaxpeers':            'useriax',
-                                                 'voicemail':           'voicemail',
-                                                 'queues':              'queue',
-                                                 'queue_members':       'queuemember',
-                                                 'extensions':          'extensions',
-                                                 'sip.conf':            'staticsip',
-                                                 'iax.conf':            'staticiax',
-                                                 'voicemail.conf':      'staticvoicemail',
-                                                 'meetme.conf':         'staticmeetme',
-                                                 'musiconhold.conf':    'musiconhold',
-                                                 'features.conf':       'features',
-                                                 'queues.conf':         'staticqueue',
-                                                 'agents.conf':         'staticagent'},
+                                {'extconfig':   {'queue_log': 'queue_log'},
                                 'database':
                                     {'mysql':
                                         {'params':  {'charset':    'utf8'},
@@ -439,11 +424,14 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                           Wdc['asterisk_cdr_postgresql_custom_tpl_file'],
                           Wdc['asterisk_cdr_postgresql_file'],
                           {'global':
-                                asterisk_mysql_config(dburi[1],
+                                asterisk_postgresql_config(dburi[1],
                                                       dbname,
                                                       dbparams,
                                                       dbinfo['cdr'])},
                           ipbxengine='asterisk')
+
+	# change db type for asterisk compatibility
+	dbtype = 'pgsql'
 
 		# SQLITE
     elif dburi[0] == 'sqlite':
@@ -453,6 +441,9 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                           {'general':
                                 {'dbfile':   dburi[2]}},
                           ipbxengine='asterisk')
+
+    if dbtype is None:
+	dbtype = dburi[0]
 
     if 'modules' in dbinfo:
         asterisk_modules_config(Wdc['asterisk_modules_tpl_file'],
@@ -465,7 +456,7 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                            Wdc['asterisk_extconfig_custom_tpl_file'],
                            Wdc['asterisk_extconfig_file'],
                            WIZARD_IPBX_ENGINES['asterisk']['extconfig'],
-                           dburi[0],
+                           dbtype,
                            dbname)
 
 def set_db_backends(args, options): # pylint: disable-msg=W0613
