@@ -18,11 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once('xivo.php');
+xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
-if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
+class xivo_object_stats_conf_group_sql extends xivo_object_abstract_sql
+{
+	var $_unique	= '';
 
-$_QRY->go($_TPL->url('statistics/call_center/index'));
+	function delete_where($where,$disable=null,$id=null) {
+
+		return($this->_dso->delete_where($where,$disable,$id));
+
+	}
+
+	public function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		return(parent::add($arr,false));
+	}
+}
 
 ?>

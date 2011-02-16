@@ -74,9 +74,7 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 		$sum = $this->eval_sum_data($key_data,'CONNECT',$field);
 		$this->update_result(array($key,'total_time_waiting'),$sum);
 		
-		$keyobject = $key_data;
-		if (is_array($key_data) === true)
-			$keyobject = ($key_data[0]);
+		$keyobject = $key_data[0];
 		
 		if (isset($this->_data_custom['qos']) === true
 		&& isset($this->_data_custom['qos'][$keyobject]) === true

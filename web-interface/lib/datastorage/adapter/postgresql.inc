@@ -196,15 +196,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		
 		if(($this->_result = @pg_query($this->_link, $this->_query)) === false 
 		&& (bool) $this->_debug === true)
-		{
-			//var_dump(debug_backtrace());
-			dwho_report::push('error',array(pg_last_error($this->_link),$this->_param['db'].' => '.$query));
-			/*
-			print($this->_param['db']." => $query<br>");
-			var_dump(pg_last_error($this->_link));
 			$this->halt();
-			*/
-		}
 
 		return($this->_result);
 	}
@@ -231,8 +223,8 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 	function error()
 	{
-		if(is_resource($this->_result) === true)
-			return(pg_result_error($this->_result));
+		if(is_resource($this->_link) === true)
+			return(pg_last_error($this->_link));
 
 		return('');
 	}

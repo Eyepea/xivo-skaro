@@ -91,5 +91,23 @@ Dimanche:
 ; agent
 Agents
 
+; create_agent
+Créer un agent
+
 ; user
 Utilisateurs
+
+; create_user
+Créer un utilisateur
+
+; queue
+Files d'attente
+
+; create_queue
+Créer une file d'attente
+
+; group
+Groupes
+
+; create_group
+Créer un groupe

@@ -67,11 +67,11 @@ elseif($fm_save === false)
 				  'value'	=> $ref['stats_qos']));
 
 		endfor;
-	endif;
 	
 		echo	$form->submit(array('name'	=> 'submit',
 					    'id'	=> 'it-submit',
 					    'value'	=> $this->bbf('fm_bt-save')));
+	endif;
 ?>
 		</form>
 	</div>

@@ -135,13 +135,11 @@ $element = $this->get_var('element');
 		<form action="<?=$_SERVER['PHP_SELF']?>" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
 			<div id="d-conf-list" class="fm-paragraph">
 <?php
-$conf_hlp = null;
 				echo	$form->select(array('name'	=> 'confid',
 							    'id'		=> 'it-conf-list',
 							    'paragraph'	=> false,
 							    'browse'	=> 'conf',
 							    'empty'		=> $this->bbf('toolbar_fm_conf'),
-					 			'help'		=> $conf_hlp,
 							    'key'		=> 'name',
 							    'altkey'	=> 'id',
 							    'class'		=> 'fm-selected-conf',
@@ -155,11 +153,7 @@ $conf_hlp = null;
 	&& $this->get_var('axetype') !== 'type'):	
 		$listobject = $this->get_var('listobject');
 		foreach ($listobject as $k => &$v)
-		{
-			if (isset($v['displayname']) === false)
-				$v['displayname'] = $v['fullname'];
-			$v['displayname'] = dwho_trunc(&$v['displayname'],25,'...',5);
-		}
+			$v['identity'] = dwho_trunc(&$v['identity'],25,'...',5);
 ?>
 			<div id="it-cal-object" class="fm-paragraph">
 <?php
@@ -168,8 +162,8 @@ $conf_hlp = null;
 							    'paragraph'	=> false,
 							    'browse'	=> 'key',
 				  				'labelid'	=> 'key',
-				    			'key'		=> 'displayname',
-					   			'altkey'	=> 'key',
+				    			'key'		=> 'identity',
+					   			'altkey'	=> 'keyfile',
 							    'class'		=> 'fm-selected-obj',
 							    'selected'	=> $this->get_var('objectkey')),
 						      	$listobject);

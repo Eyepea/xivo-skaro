@@ -387,12 +387,26 @@ CREATE TABLE stats_conf_agent (
 );
 CREATE UNIQUE INDEX stats_conf_agent_index ON stats_conf_agent(stats_conf_id,agentfeatures_id);
 
+DROP TABLE stats_conf_user;
+CREATE TABLE stats_conf_user (
+    stats_conf_id int(10) NOT NULL,
+    userfeatures_id int(10) NOT NULL
+);
+CREATE UNIQUE INDEX stats_conf_user_index ON stats_conf_user(stats_conf_id,userfeatures_id);
+
 DROP TABLE stats_conf_queue;
 CREATE TABLE stats_conf_queue (
     stats_conf_id integer NOT NULL,
     queuefeatures_id integer NOT NULL
 );
 CREATE UNIQUE INDEX stats_conf_queue_index ON stats_conf_queue(stats_conf_id,queuefeatures_id);
+
+DROP TABLE stats_conf_group;
+CREATE TABLE stats_conf_group (
+    stats_conf_id integer NOT NULL,
+    groupfeatures_id integer NOT NULL
+);
+CREATE UNIQUE INDEX stats_conf_group_index ON stats_conf_group(stats_conf_id,groupfeatures_id);
 
 
 -- provisioning

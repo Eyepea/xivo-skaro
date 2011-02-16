@@ -72,6 +72,7 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 				<div id="resprogressbar-all" style="height:100%;"></div>
 			</div>
 			<p><div id="rescacheinfos-all"></div></p>
+			<p><div id="reshttprequest-all"></div></p>
 		</fieldset>
 		<div id="it-cache-success-all" class="tab_cache_generation b-nodisplay">
 			<h1><?=$this->bbf('cache_generation_success');?></h1>
@@ -99,18 +100,15 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			$mod = ($i % 2) + 1;
 				
 			$id = $ref['id'];
-			$key = $ref['key'][0];
-			$name = $ref['name'][0];
-			$identity = $ref['identity'][0];
-			
-			if (isset($ref['type']) === true)
-				$key = $ref['type'].'-'.$ref['number'];
+			$keyfile = $ref['keyfile'];
+			$name = $ref['name'];
+			$identity = $ref['identity'];
 			
 			$basecache = DWHO_PATH_CACHE_STATS.DWHO_SEP_DIR.'cache';
 			$dir = $basecache.DWHO_SEP_DIR.
 					$idconf.DWHO_SEP_DIR.
 					$type.DWHO_SEP_DIR.
-					$key;
+					$keyfile;
 			
 			if (($r = dwho_file::read_d($dir,'file',FILE_R_OK)) === false
 			|| empty($r) === true):
@@ -130,36 +128,37 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			<td class="td-center">&nbsp;<?=$infoscache?></td>
 			<td class="td-right">
 				<form action="#" method="post" accept-charset="utf-8" 
-					onsubmit="init_cache('<?=$id?>');make_gener_cache('<?=$id?>');return(false);">
+					onsubmit="init_cache('<?=$keyfile?>');make_gener_cache('<?=$keyfile?>');return(false);">
 					<!-- 		
-					<input type="submit" name="genercache" id="bt-gcache-<?=$id?>" value="<?=$this->bbf('bt-cache_generation',array($identity))?>" />
+					<input type="submit" name="genercache" id="bt-gcache-<?=$keyfile?>" value="<?=$this->bbf('bt-cache_generation',array($identity))?>" />
 					 -->
-					<div id="gcache-<?=$id?>">					
-						<input type="image" src="/img/site/button/restart.gif" title="<?=$this->bbf('bt-cache_generation',array($identity))?>" id="bt-gcache-<?=$id?>" />
+					<div id="gcache-<?=$keyfile?>">					
+						<input type="image" src="/img/site/button/restart.gif" title="<?=$this->bbf('bt-cache_generation',array($identity))?>" id="bt-gcache-<?=$keyfile?>" />
 					</div>
 				</form>
 			</td>
 		</tr>
-		<tr id="cache-infos-<?=$id?>" class="sb-content l-infos-<?=$mod?>on2 b-nodisplay cache-infos">
+		<tr id="cache-infos-<?=$keyfile?>" class="sb-content l-infos-<?=$mod?>on2 b-nodisplay cache-infos">
 			<td colspan="3" class="td-single">
 			<dl>
-				<div id="it-cache-generation-<?=$id?>" class="tab_cache_generation b-nodisplay">
+				<div id="it-cache-generation-<?=$keyfile?>" class="tab_cache_generation b-nodisplay">
 					<h1><?=$this->bbf('wait_during_traitment');?></h1>
-					<p><h1 id="restitle-<?=$id?>"></h1></p>
+					<p><h1 id="restitle-<?=$keyfile?>"></h1></p>
 					<div id="progressbarWrapper" style="height:10px; " class="ui-widget-default">
-						<div id="resprogressbar-<?=$id?>" style="height:100%;"></div>
+						<div id="resprogressbar-<?=$keyfile?>" style="height:100%;"></div>
 					</div>
-					<p><div id="rescacheinfos-<?=$id?>"></div></p>
+					<p><div id="rescacheinfos-<?=$keyfile?>"></div></p>
+					<p><div id="reshttprequest-<?=$keyfile?>"></div></p>
 				</div>
-				<div id="it-cache-success-<?=$id?>" class="tab_cache_generation b-nodisplay">
+				<div id="it-cache-success-<?=$keyfile?>" class="tab_cache_generation b-nodisplay">
 					<h1><?=$this->bbf('cache_generation_success');?></h1>
-					<p><div id="ressuccess-<?=$id?>"></div></p>
+					<p><div id="ressuccess-<?=$keyfile?>"></div></p>
 				</div>
 			</dl>
 			</td>
 		</tr>
 <?php 
-		endfor; 
+		endfor;
 ?>
 		</tbody>
 		<tfoot>
@@ -180,7 +179,9 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		</tfoot>
 		</table>
 		</div>
-<?php endif; ?>
+<?php 
+	endif; 
+?>
 		</div>
 	</div>
 	<div class="sb-foot xspan">
@@ -210,7 +211,6 @@ if (($type = $this->get_var('type')) !== null
 		$lastday = mktime(23, 59, 59, date('m',$month['time']) + 1, 0, date('Y',$month['time']));
 		array_push($js_listmonth_lastday,$lastday);
 	}
-
 ?>
 var listmonthtimestamp = new Array('<?=implode('\',\'',$js_listmonth_timestamp)?>');
 var listmonthfirstday = new Array('<?=implode('\',\'',$js_listmonth_firstday)?>');
@@ -241,15 +241,26 @@ function xivo_gener_cache(idconf,dbeg,dend,type,idtype)
 	var idt=idtype;
 	if (idtype == 'all') {idt = null;}
 	new dwho.http('/statistics/ui.php/call_center/genercache/',
-				{'callbackcomplete': function() { make_gener_cache(idtype); },
-				'method': 'post',
-				'cache': false},
-				{'idconf': idconf,'dbeg': dbeg,'dend': dend,'type': type,'idtype': idt},
-				true);	
+				{
+					'callbackcomplete': function(httpRequest) 
+						{
+							make_gener_cache(idtype,httpRequest);
+						},
+					'method': 'get',
+					'cache': false
+				},
+				{
+					'idconf': idconf,
+					'dbeg': dbeg,
+					'dend': dend,
+					'type': type,
+					'idtype': idt
+				},
+				true);
 	this.counter++;
 }
 
-function make_gener_cache(idtype)
+function make_gener_cache(idtype,httpRequest)
 {	
 	var pct = ( (this.counter / this.total) * 100);
 	
@@ -282,12 +293,16 @@ function make_gener_cache(idtype)
 	
 	if (idtype == 'all')
 	{
+		if (httpRequest)
+			dwho_eid('reshttprequest-all').innerHTML = nl2br(httpRequest.responseText); 
 		dwho_eid('rescacheinfos-all').innerHTML = infos;
 		//dwho_eid('restitle-all').innerHTML = '<?=$this->bbf('object_processing')?> ' + objectProcessing;
 		$(function() {$("#resprogressbar-all").progressbar({value: pct});});
 	}
 	else
 	{
+		if (httpRequest)
+			dwho_eid('reshttprequest-'+idtype).innerHTML = nl2br(httpRequest.responseText); 
 	    dwho_eid('cache-infos-'+idtype).style.display = 'table-row';								   
 		dwho_eid('gcache-'+idtype).innerHTML = '<?=$this->bbf('bt-wait-submit')?>'					   
 		//dwho_eid('bt-gcache-'+idtype).disabled = true;
@@ -298,7 +313,7 @@ function make_gener_cache(idtype)
 	}
 
 	xivo_gener_cache('<?=$idconf?>',listmonthfirstday[i],listmonthlastday[i],'<?=$type?>',idtype);
-	
+
 	this.start2 = (new Date).getTime();
 }
 
@@ -311,6 +326,11 @@ function average(arr)
    return (sum/items)
 }
 
+function nl2br (str) 
+{
+	return str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1 <br> $2');
+}
+
 function gener_on_success(idtype)
 {
 	if (idtype == 'all')
@@ -319,11 +339,12 @@ function gener_on_success(idtype)
 		for ($i=0;$i<$nb;$i++):
 			$ref = $list[$i];
 			$id = $ref['id'];
+			$keyfile = $ref['keyfile'];
 ?>
 		var res = '<img  src="/img/site/button/ok.gif" alt="<?=$this->bbf('bt-success-submit')?>" />';
-		dwho_eid('gcache-'+<?=$id?>).innerHTML = res;// + ' <?=$this->bbf('bt-success-submit')?>';
-		//dwho_eid('bt-gcache-'+<?=$id?>).disabled = true;
-		//dwho_eid('bt-gcache-'+<?=$id?>).value = '<?=$this->bbf('bt-success-submit')?>';
+		dwho_eid('gcache-<?=$keyfile?>').innerHTML = res;// + ' <?=$this->bbf('bt-success-submit')?>';
+		//dwho_eid('bt-gcache-<?=$keyfile?>').disabled = true;
+		//dwho_eid('bt-gcache-<?=$keyfile?>').value = '<?=$this->bbf('bt-success-submit')?>';
 <?php 
 		endfor;
 ?>

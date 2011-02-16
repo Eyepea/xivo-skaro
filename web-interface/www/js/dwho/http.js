@@ -36,15 +36,15 @@ dwho.http = function(url,options,data,send)
 	this._content_type	= 'application/x-www-form-urlencoded';
 	this._options		= {'type':	null,
 				   'method':	'get',
-				   'async':	true,
+				   'async':		true,
 				   'username':	null,
 				   'password':	null,
-				   'cache':	true,
+				   'cache':		true,
 				   'timeout':	0,
 				   'charset':	'utf-8',
 				   'scriptid':	null,
 				   'callbackcomplete':	null,
-				   'callbackerror':	null,
+				   'callbackerror':		null,
 				   'callbacksuccess':	null};
 	this._accepts_type	= {
 		'xml':		['application/xml','text/xml'],

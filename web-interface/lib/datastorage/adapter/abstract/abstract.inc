@@ -83,10 +83,13 @@ class dwho_datastorage_adapter_abstract
 		if($str !== '')
 			$str .= ' - ';
 
-		if($this->_debug === true && empty($this->_query) === false)
-			$str .= 'Query: '.$this->_query.' - ';
+		#if($this->_debug === true && empty($this->_query) === false)
+		#	var_dump(debug_backtrace());
+			
+		$str .= 'DB: '.$this->_param['db'].' => Query: '.$this->_query.' - ';
 
-		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_ERROR);
+		#trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_ERROR);
+		dwho_report::push('error',array($str,'Error: '.$this->_error.' - Errno: '.$this->_errno));	
 	}
 
 	function is_open()

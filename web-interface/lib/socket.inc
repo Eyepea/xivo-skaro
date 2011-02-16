@@ -261,8 +261,9 @@ class dwho_socket
 
 		if(($this->_error = $this->error()) === '')
 			$this->_error = 'unknown';
-
-		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_WARNING);
+			
+		dwho_report::push('error',array($str.' - Error: '.$this->_error.' - Errno: '.$this->_errno));
+		#trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_WARNING);
 	}
 
 	function create()
@@ -284,14 +285,14 @@ class dwho_socket
 		if(is_resource($this->_link) === false)
 			$r = false;
 		if($this->_param['domain'] === AF_UNIX)
-			$r = socket_connect($this->_link,$this->_param['address']);
+			$r = @socket_connect($this->_link,$this->_param['address']);
 		else if($this->_param['address'] !== '' && $this->_param['port'] !== 0)
-			$r = socket_connect($this->_link,$this->_param['address'],$this->_param['port']);
+			$r = @socket_connect($this->_link,$this->_param['address'],$this->_param['port']);
 		else
 			$r = false;
-
+				
 		if($r === false)
-			$this->halt();
+			$this->halt($this->_param['address'].':'.$this->_param['port']);
 
 		return($r);
 	}
@@ -330,7 +331,7 @@ class dwho_socket
 			$length = strlen($data);
 
 		if(is_resource($this->_link) === true)
-			$r = socket_write($this->_link,$data,$length);
+			$r = @socket_write($this->_link,$data,$length);
 
 		return($r);
 	}
@@ -427,7 +428,7 @@ class dwho_socket
 			$how = 2;
 
 		if(is_resource($this->_link) === true)
-			$r = socket_shutdown($this->_link,$how);
+			$r = @socket_shutdown($this->_link,$how);
 
 		$this->_link = null;
 

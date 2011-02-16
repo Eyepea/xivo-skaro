@@ -20,7 +20,7 @@
 
 class xivo_statistics
 {
-		
+
 	private	$_xobj		 		= null;	
 	private	$_ipbx		 		= null;	
 	private	$_cache_path 		= '';
@@ -37,7 +37,11 @@ class xivo_statistics
 	public 	$_error				= array();
 	public 	$_queue_log_conf	= array();
 	public 	$_queue_log 		= array();
-	public 	$_conf		 		= array();
+	public 	$_conf		 		= array('stats_conf' => array(),
+										'queue'		=> array(),
+										'group'		=> array(),
+										'agent'		=> array(),
+										'user'		=> array());
 	public 	$_statsconfsess		= array();
 	public 	$_period	 		= array('period1'	=> array(
 											'exp'	=> '',
@@ -137,8 +141,8 @@ class xivo_statistics
 	private function init_conf($conf)
 	{		
 		$this->push_debug("init_conf()");
-		$this->_conf = $conf;
-		
+		$this->_conf = $conf;	
+		$this->_conf['stats_conf'] = $conf['stats_conf'];		
 		$stats_conf = $conf['stats_conf'];
 		
 		$this->init_cal($stats_conf);
@@ -189,10 +193,20 @@ class xivo_statistics
 		return($idconf);
 	}
 	
+	public function get_full_conf()
+	{			
+		if (($stats_conf = $this->get_conf()) === false)
+			return(false);
+			
+		$conf = $this->_conf;
+		$conf['stats_conf'] = $stats_conf;
+		return($conf);
+	}
+	
 	public function get_conf()
 	{	
 		$this->push_debug("get_conf()");		
-		if (isset($this->_conf['stats_conf']) === false)
+		if (empty($this->_conf['stats_conf']) === true)
 			return(false);
 		
 		$statsconf = $this->_conf['stats_conf'];
@@ -654,162 +668,264 @@ class xivo_statistics
 		return(null);
 	}
 	
+	private function normalize_agent($arr,$type)
+	{
+		if (is_array($arr) === false
+		|| isset($arr['id']) === false
+		|| isset($arr['fullname']) === false
+		|| isset($arr['identity']) === false
+		|| isset($arr['number']) === false
+		|| isset($arr['context']) === false
+		|| isset($arr['commented']) === false)
+			return(false);
+			
+		if (((bool) $arr['commented']) === true)
+			return(false);
+						
+		$rs = array();
+		$rs['id'] = (int) $arr['id'];
+		$rs['fullname'] = $arr['fullname'];
+		// clean identity context
+		$rs['identity'] =  preg_replace('/@[a-z-_]+/i','',$arr['identity']);
+		$rs['number'] = $arr['number'];
+		$rs['context'] = $arr['context'];
+		
+		switch ($type)
+		{
+			case 'user':
+				if (isset($arr['protocol']) === false)
+					return(false);
+				$rs['key'] = $arr['protocol'].'/'.$arr['name'];
+				$rs['keyfile'] = 'user-'.$arr['id'];
+				$tmp = array();
+				array_push($tmp, $arr['protocol'].'/'.$arr['name']);
+				array_push($tmp, strtoupper($arr['protocol']).'/'.$arr['name']);
+				$rs['keydata'] = $tmp;
+				$rs['type'] = 'user';
+				break;
+			case 'agent':
+				$rs['key'] = 'agent/'.$arr['number'];	
+				$rs['keyfile'] = 'agent-'.$arr['id'];		
+				$tmp = array();
+				array_push($tmp, $arr['number']);
+				array_push($tmp,'agent/'.$arr['number']);
+				array_push($tmp,'Agent/'.$arr['number']);
+				$rs['keydata'] = $tmp;
+				$rs['type'] = 'agent';	
+				break;
+			default:
+				return(false);
+		}
+		return($rs);
+	}
+	
+	private function normalize_queue($arr,$type)
+	{
+		if (is_array($arr) === false
+		|| isset($arr['id']) === false
+		|| isset($arr['name']) === false
+		|| isset($arr['number']) === false
+		|| isset($arr['context']) === false)
+			return(false);
+			
+		$rs = array();
+		$rs['id'] = (int) $arr['id'];
+		$rs['name'] = $arr['name'];
+		$rs['identity'] =  $arr['name'].' ('.$arr['number'].')';
+		$rs['number'] = $arr['number'];
+		$rs['context'] = $arr['context'];
+		$rs['keydata'] = array($arr['name']);
+	
+		switch ($type)
+		{
+			case 'queue':
+				$rs['key'] = 'queue/'.$arr['name'];
+				$rs['keyfile'] = 'queue-'.$arr['id'];
+				$rs['type'] = 'queue';	
+				break;
+			case 'group':
+				$rs['key'] = 'group/'.$arr['number'];	
+				$rs['keyfile'] = 'group-'.$arr['id'];
+				$rs['type'] = 'group';
+				break;
+			default:
+				return(false);
+		}
+		return($rs);
+	}
+	
 	public function get_list_by_type($type)
 	{
-		$this->push_debug("get_list_by_type()");			
+		$this->push_debug("get_list_by_type()",array($type));			
 		$data = array();
 		switch ($type)
 		{
 			case 'agent':
-				$ls_agent = array();
-				
-				if (empty($this->_conf['agent']) === true
-				&& empty($this->_conf['user']) === true)
-					return($data);
+				$ls_agent = array();				
+				if ($this->_conf['agent'] === false
+				&& $this->_conf['user'] === false)
+					return(false);
 				
 				if (empty($this->_objectkey) === true
-				&& empty($this->_conf['agent']) === false)
+				|| $this->_objectkey === 0)
 				{
-					asort($this->_conf['agent']);
-					$agent = array_values($this->_conf['agent']);						
-					$nb = count($agent);		
-					for($i=0;$i<$nb;$i++)
+					if($this->_conf['agent'] !== false)
 					{
-						$ref = &$agent[$i];
-						$number = (string) $ref['number'];						
-						$tmp = array();
-						array_push($tmp,$number);
-						array_push($tmp,'agent/'.$number);
-						array_push($tmp,'Agent/'.$number);
-						$key = array();
-						$key['identity'] = $tmp;
-						$key['name'] = $tmp;
-						$key['key'] = $tmp;
-						$key['id'] = (int) $ref['id'];
-						$key['type'] = 'agent';
-						$key['number'] = (int) $number;
-						array_push($ls_agent, $key);
+						asort($this->_conf['agent']);
+						$agent = array_values($this->_conf['agent']);						
+						$nb = count($agent);		
+						for($i=0;$i<$nb;$i++)
+						{
+							$ref = &$agent[$i];
+							if (($rs = $this->normalize_agent($ref,'agent')) === false)
+								continue;
+							array_push($ls_agent, $rs);
+						}
+					}
+	
+					if ($this->_conf['user'] !== false)
+					{
+						asort($this->_conf['user']);
+						$user = array_values($this->_conf['user']);
+						$nb = count($user);
+						for($i=0;$i<$nb;$i++)
+						{
+							$ref = &$user[$i];
+							if (($rs = $this->normalize_agent($ref,'user')) === false)
+								continue;
+							array_push($ls_agent, $rs);
+						}
 					}
 				}
-
-				if (empty($this->_objectkey) === true
-				&& empty($this->_conf['user']) === false)
-				{
-					asort($this->_conf['user']);
-					$user = array_values($this->_conf['user']);
-					$nb = count($user);
-					for($i=0;$i<$nb;$i++)
-					{
-						$ref = &$user[$i];
-						$number = (string) $ref['name'];						
-						$tmp = array();
-						array_push($tmp,'sip/'.$number);
-						array_push($tmp,'SIP/'.$number);
-						$key = array();
-						$key['identity'] = $tmp;
-						$key['name'] = $tmp;
-						$key['key'] = $tmp;
-						$key['id'] = (int) $ref['id'];
-						$key['type'] = 'user';
-						$key['number'] = (int) $number;
-						array_push($ls_agent, $key);
-					}
-				}
-				
-				if (empty($this->_objectkey) === false)
-				{					
-					$infos = split('-',$this->_objectkey);
-					if (count($infos) !== 2)
-						return($data);
-						
-					$type = $infos[0];
-					$num = $infos[1];
+				elseif (empty($this->_objectkey) === false
+				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
+				{						
+					$key = $out[1];
+					$id = $out[2];
 					
-					switch ($type)
+					switch ($key)
 					{
 						case 'user':
-							if (empty($this->_conf['user']) === false)
+							if ($this->_conf['user'] !== false)
 							{
-								asort($this->_conf['user']);
-								$user = array_values($this->_conf['user']);
-								$nb = count($user);
-								for($i=0;$i<$nb;$i++)
+								$listuser = $this->_conf['user'];
+								while ($listuser)
 								{
-									$ref = &$user[$i];
-									if($num === $ref['name'])
-										$agent = $ref;
+									$user = array_shift($listuser);
+									if ($id === $user['id']
+									&& ($rs = $this->normalize_agent($user,$key)) !== false)
+									{
+										array_push($ls_agent, $rs);
+										break;
+									}
 								}
 							}
-							$tmp = array();
-							array_push($tmp,'sip/'.$agent['name']);
-							array_push($tmp,'SIP/'.$agent['name']);
-							$num = $agent['name'];
 							break;
 						case 'agent':
 							if (empty($this->_conf['agent']) === false)
 							{
-								asort($this->_conf['agent']);
-								$agent = array_values($this->_conf['agent']);
-								$nb = count($agent);
-								for($i=0;$i<$nb;$i++)
+								$listagent = $this->_conf['agent'];
+								while ($listagent)
 								{
-									$ref = &$agent[$i];
-									if($num === $ref['number'])
-										$agent = $ref;
+									$agent = array_shift($listagent);
+									if ($id === $agent['id']
+									&& ($rs = $this->normalize_agent($agent,$key)) !== false)
+									{
+										array_push($ls_agent, $rs);
+										break;
+									}
 								}
 							}
-							$tmp = array();
-							array_push($tmp,$agent['number']);
-							array_push($tmp,'agent/'.$agent['number']);
-							array_push($tmp,'Agent/'.$agent['number']);
-							$num = $agent['number'];
 							break;
 						default:
 							return($data);
 					}
-					$key = array();
-					$key['identity'] = $tmp;
-					$key['name'] = $tmp;
-					$key['key'] = $tmp;
-					$key['id'] = (int) $agent['id'];
-					$key['type'] = $type;
-					$key['number'] = (int) $num;
-					array_push($ls_agent,$key);
 				}
 				$data = $ls_agent;
 				break;
 			case 'period':
 			case 'queue':
-				$ls_queuename = array();
-				if (empty($this->_conf['queue']) === false)
+				$ls_queue = array();		
+				if ($this->_conf['queue'] === false
+				&& $this->_conf['group'] === false)
+					return(false);
+				
+				if (empty($this->_objectkey) === true
+				|| $this->_objectkey === 0)
 				{
-					asort($this->_conf['queue']);
-					$queue = array_values($this->_conf['queue']);	
-					$nb_queue = count($this->_conf['queue']);	
-					for($i=0;$i<$nb_queue;$i++)
-					{						
-						$ref = &$queue[$i];	
-						if (empty($this->_objectkey) === true)
+					if($this->_conf['queue'] !== false)
+					{
+						asort($this->_conf['queue']);
+						$queue = array_values($this->_conf['queue']);						
+						$nb = count($queue);		
+						for($i=0;$i<$nb;$i++)
 						{
-							$tmp = array();
-							$tmp['identity'] = array($ref['name']);
-							$tmp['name'] = array($ref['name']);
-							$tmp['key'] = array($ref['name']);
-							$tmp['id'] = (int) $ref['id'];
-							array_push($ls_queuename,$tmp);
+							$ref = &$queue[$i];
+							if (($rs = $this->normalize_queue($ref,'queue')) === false)
+								continue;
+							array_push($ls_queue, $rs);
 						}
-						elseif($this->_objectkey === $ref['name'])
+					}
+					
+					if($this->_conf['group'] !== false)
+					{
+						asort($this->_conf['group']);
+						$group = array_values($this->_conf['group']);						
+						$nb = count($group);		
+						for($i=0;$i<$nb;$i++)
 						{
-							$tmp = array();
-							$tmp['identity'] = array($ref['name']);
-							$tmp['name'] = array($ref['name']);
-							$tmp['key'] = array($ref['name']);
-							$tmp['id'] = (int) $ref['id'];
-							array_push($ls_queuename,$tmp);							
+							$ref = &$group[$i];
+							if (($rs = $this->normalize_queue($ref,'group')) === false)
+								continue;
+							array_push($ls_queue, $rs);
 						}
 					}
 				}
-				$data = $ls_queuename;
+				elseif (empty($this->_objectkey) === false
+				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
+				{						
+					$key = $out[1];
+					$id = $out[2];
+					
+					switch ($key)
+					{
+						case 'queue':
+							if ($this->_conf['queue'] !== false)
+							{
+								$listqueue = $this->_conf['queue'];
+								while ($listqueue)
+								{
+									$queue = array_shift($listqueue);
+									if ($id === $queue['id']
+									&& ($rs = $this->normalize_queue($queue,$key)) !== false)
+									{
+										array_push($ls_queue, $rs);
+										break;
+									}
+								}
+							}
+							break;
+						case 'group';
+							if ($this->_conf['group'] !== false)
+							{
+								$listgroup = $this->_conf['group'];
+								while ($listgroup)
+								{
+									$group = array_shift($listgroup);
+									if ($id === $group['id']
+									&& ($rs = $this->normalize_queue($group,$key)) !== false)
+									{
+										array_push($ls_queue, $rs);
+										break;
+									}
+								}
+							}
+							break;
+						default:
+							return($data);
+					}					
+				}
+				$data = $ls_queue;
 				break;
 			default:
 				return(false);
@@ -820,105 +936,41 @@ class xivo_statistics
 	public function get_object_list()
 	{
 		$this->push_debug("get_object_list()");
+		$objrestore = $this->_objectkey;
+		$this->_objectkey = 0;
 		switch ($this->_type)
 		{
 			case 'agent':
-				return($this->get_agent_list());
+				$rs = ($this->get_agent_list());
 				break;
 			case 'period':
 			case 'queue':
-				return($this->get_queue_list());
+				$rs = ($this->get_queue_list());
 				break;
 			default:
-				return(false);
+				$rs = (false);
 		}
+		$this->_objectkey = $objrestore;
+		return($rs);
 	}
 	
 	public function get_queue_list()
 	{			
-		$this->push_debug("get_queue_list()");
-		
-		if (isset($this->_conf['queue']) === false)
+		$this->push_debug("get_queue_list()");		
+		if (($list = $this->get_list_by_type('queue')) === false)
 			return(false);
-		/*
-		if ($appqueue = &$this->_ipbx->get_application('queue')) === false)
-			return(false);
-		
-		$list_queue = $appqueue->get_queues_list(null,'name');
-		
-		$queue = array_values($list_queue);
-		$nb_queue = count($queue);
-				
-		$res = array();
-		for($i=0;$i<$nb_queue;$i++)
-		{
-			if (array_key_exists($queue[$i]['id'],$this->_conf['queue']) === true)
-				array_push($res,$queue[$i]);
-		}
-		*/
-		asort($this->_conf['queue']);
-		$res = array_values($this->_conf['queue']);
-		
-		return($res);
+			
+		asort($list);			
+		return($list);
 	}
 	
 	public function get_agent_list()
 	{			
-		$this->push_debug("get_agent_list()");
-		if (isset($this->_conf['agent']) === false)
+		$this->push_debug("get_agent_list()");		
+		if (($list = $this->get_list_by_type('agent')) === false)
 			return(false);
-		/*
-		if ($appagent = &$this->_ipbx->get_ap
-var_dump($listobject);plication('agent')) === false)
-			return(false);
-		
-		$list_agent = $appagent->get_agentfeatures(null,'name');
-		
-		$agent = array_values($list_agent);
-		$nb_agent = count($agent);
-				
-		$res = array();
-		for($i=0;$i<$nb_agent;$i++)
-		{
-			if (array_key_exists($agent[$i]['id'],$this->_conf['agent']) === true)
-			{
-				// clean identity context
-				$agent[$i]['identity'] = preg_replace('/@[a-z-_]+/i','',$agent[$i]['identity']);
-				array_push($res,$agent[$i]);
-			}
-		}
-		*/
-					
-		asort($this->_conf['agent']);
-		$agent = array_values($this->_conf['agent']);
-	
-		$nb = count($agent);
-		for($i=0;$i<$nb;$i++)
-		{
-			$ref = &$agent[$i];
-			// clean identity context
-			$ref['identity'] = preg_replace('/@[a-z-_]+/i','',$ref['identity']);
-			$ref['key'] = 'agent-'.$ref['number'];
-		}
-		
-		$user = array();
-		if (empty($this->_conf['user']) === false)
-		{
-			asort($this->_conf['user']);
-			$user = array_values($this->_conf['user']);
-	
-			$nb = count($user);
-			for($i=0;$i<$nb;$i++)
-			{
-				$ref = &$user[$i];
-				// clean identity context
-				$ref['identity'] = preg_replace('/@[a-z-_]+/i','',$ref['identity']);
-				$ref['key'] = 'user-'.$ref['name'];
-			}
-		}
-				
-		$list = array_merge($agent,$user);
-		
+			
+		asort($list);			
 		return($list);
 	}
 	
@@ -932,13 +984,17 @@ var_dump($listobject);plication('agent')) === false)
 			&& strlen($dbeg) === 10) === false
 		|| (is_numeric($dend) === true
 			&& strlen($dend) === 10) === false)
-			return(false);
+				dwho_report::push('error','ERR: Invalid data for gener_cache()');
 			
 		if(is_null($idtype) === false)
 			$this->_objectkey = $idtype;
 		
-		if(($list = $this->get_list_by_type($type)) === false)
-			return(false);				
+		if(($list = $this->get_list_by_type($type)) === false
+		|| empty($list) === true)
+			dwho_report::push('error','ERR: Invalid list for gener_cache()');			
+			
+		if (dwho_report::has('error') === true)
+			die(dwho_report::get_message('error'));
 		
 		#$this->_interval = $this->build_full_date_interval($dbeg,$dend);
 		$this->_interval = array();
@@ -956,9 +1012,11 @@ var_dump($listobject);plication('agent')) === false)
 		switch ($type)
 		{
 			case 'agent':
+			case 'user':
 				return($this->generate_cache_for_agent($list));
 				break;
 			case 'queue':
+			case 'group':
 				return($this->generate_cache_for_queue($list));
 				break;
 			case 'period':
@@ -990,8 +1048,9 @@ var_dump($listobject);plication('agent')) === false)
 		
 		while($listqueue)
 		{
-			$queue = array_shift($listqueue);			
-			$queuekey = $queue['key'][0];
+			$queue = array_shift($listqueue);
+			$keyfile = $queue['keyfile'];
+			$keydata = $queue['keydata'];
 			$listmonth = $data_listmonth;
 			while($listmonth)
 			{
@@ -1008,9 +1067,9 @@ var_dump($listobject);plication('agent')) === false)
 					if (isset($full_interval[$year.$month.$day]) === false)
 						continue;
 					$this->_interval_process = $full_interval[$year.$month.$day];
-					$stats_queue->parse_log($queuekey,$day);
+					$stats_queue->parse_log($keydata,$day);
 				}
-				$this->save_cache($stats_queue->_result,$queuekey,$year,$month);
+				$this->save_cache($stats_queue->_result,$keyfile,$year,$month);
 				$stats_queue->_result = array();
 			}
 		}
@@ -1032,12 +1091,12 @@ var_dump($listobject);plication('agent')) === false)
 		
 		$full_interval = $this->build_full_date_interval($dbeg,$dend);
 		$data_listmonth = $this->get_listmonth_for_interval($dbeg,$dend);
-		var_dump($listagent);
+		
 		while($listagent)
 		{
 			$agent = array_shift($listagent);
-			$agent_key = $agent['key'];
-			$keyfile = $agent['type'].'-'.$agent['number'];
+			$keyfile = $agent['keyfile'];
+			$keydata = $agent['keydata'];
 			$listmonth = $data_listmonth;
 			while($listmonth)
 			{
@@ -1054,7 +1113,7 @@ var_dump($listobject);plication('agent')) === false)
 					if (isset($full_interval[$year.$month.$day]) === false)
 						continue;
 					$this->_interval_process = $full_interval[$year.$month.$day];
-					$stats_agent->parse_log($agent_key,$day);
+					$stats_agent->parse_log($keydata,$day);
 				}
 				$this->save_cache($stats_agent->_result,$keyfile,$year,$month);				
 				$stats_agent->_result = array();
@@ -1078,10 +1137,12 @@ var_dump($listobject);plication('agent')) === false)
 		
 		$full_interval = $this->build_full_date_interval($dbeg,$dend);
 		$data_listmonth = $this->get_listmonth_for_interval($dbeg,$dend);
+		
 		while($listqueue)
 		{
 			$queue = array_shift($listqueue);				
-			$queuekey = $queue['key'][0];
+			$keyfile = $queue['keyfile'];
+			$keydata = $queue['keydata'];
 			$listmonth = $data_listmonth;
 			while($listmonth)
 			{
@@ -1098,9 +1159,9 @@ var_dump($listobject);plication('agent')) === false)
 					if (isset($full_interval[$year.$month.$day]) === false)
 						continue;
 					$this->_interval_process = $full_interval[$year.$month.$day];
-					$stats_period->parse_log($queuekey,$day);
+					$stats_period->parse_log($keydata,$day);
 				}
-				$this->save_cache($stats_period->_result,$queuekey,$year,$month,'period');
+				$this->save_cache($stats_period->_result,$keyfile,$year,$month,'period');
 				$stats_period->_result = array();
 			}
 		}
@@ -1217,16 +1278,15 @@ var_dump($listobject);plication('agent')) === false)
 			$dir_process = array_shift($listdir);
 			$cachedir .= DWHO_SEP_DIR.$dir_process;
 			if (dwho_file::is_d_x($cachedir) === false
-			#&& dwho_file::is_d_w($cachedir) === true
 			&& mkdir($cachedir,0775,true) === false)
-				$this->push_error('ERR: Can\'t create dir: '.$cachedir);
+				dwho_report::push('error','ERR: Can\'t create dir: '.$cachedir);
 		}
 		
 		if (dwho_file::is_d_w($cachedir) === false)
-			$this->push_error('ERR: Not writable cache dir: '.$cachedir);
+			dwho_report::push('error','ERR: Not writable cache dir: '.$cachedir);			
 			
-		if ($this->has_error() === true)
-			die(var_dump($this->get_error()));
+		if (dwho_report::has('error') === true)
+			die(dwho_report::get_message('error'));
 			
 		$this->_cache_path = $cachedir;
 		return(true);
@@ -1242,22 +1302,22 @@ var_dump($listobject);plication('agent')) === false)
 		$dir = $this->build_dir_for_cache($this->get_idconf(),$type,$key,$cachedir);
 			
 		if (dwho_file::is_d_w($dir) === false)
-			$this->push_error('ERR: Can\'t create cache file in: '.$dir);
+			dwho_report::push('error','ERR: Not writable cache dir: '.$dir);
 		
 		$file = $dir.DWHO_SEP_DIR.$year.$month.'.db';
 			
 		if (dwho_file::is_f($file) === false
 		&& touch($file) === false)
-			$this->push_error('ERR: Can\'t create file: '.$file);
+			dwho_report::push('error','ERR: Can\'t create file: '.$file);
 			
-		if ($this->has_error() === true)
-			die(var_dump($this->get_error()));
+		if (dwho_report::has('error') === true)
+			die(dwho_report::get_message('error'));
 		
 		#if (($rs = file_put_contents($file, json_encode($data),LOCK_EX)) === false)
 		if (($rs = dwho_file::put_contents($file,json_encode($data))) === false)
 			$rs = 'error';
 			
-		print("save data to $file => $rs \n");
+		echo "save data to $file => ",dwho_byte_to($rs)," write. \n";
 		
 		return($rs);
 	}
@@ -1271,17 +1331,11 @@ var_dump($listobject);plication('agent')) === false)
 	
 	public function update_cache($idconf,$type,$object,$erase=false,$dbeg=null,$dend=null)
 	{		
-		$keyfile = $object['key'][0];
-		$idtype = $object['id'];
+		$keyfile = $object['keyfile'];
+		$objectkey = $object['keyfile'];
 		
-		if (isset($object['type']) === true)
-		{
-			$keyfile = $object['type'].'-'.$object['number'];
-			$idtype = $keyfile;
-		}
-			
 		$this->_type = $type;
-		$this->_objectkey = $idtype;
+		$this->_objectkey = $objectkey;
 		$this->init_path_cache($idconf,$type,$keyfile);
 		$conf = $this->get_conf();
 	
@@ -1347,7 +1401,7 @@ var_dump($listobject);plication('agent')) === false)
 			
 			if ($erase !== false)
 			{
-				echo "$report -- mode erase enabled >> creation required \n";
+				echo "$report -- mode erase enabled >> creation required... \n";
 				echo "$report >> create in progress......... \n";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
 				while (!$rs)
@@ -1357,7 +1411,7 @@ var_dump($listobject);plication('agent')) === false)
 			
 			if (dwho_file::is_f_r($filemonth) === false)
 			{
-				echo "$report -- not exist >> creation required \n";
+				echo "$report -- not exist >> creation required... \n";
 				echo "$report >> create in progress......... \n";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
 				while (!$rs)
@@ -1365,14 +1419,14 @@ var_dump($listobject);plication('agent')) === false)
 			}
 			else
 			{
-				echo "$report -- already exist >> check if is up to date \n";
+				echo "$report -- already exist >> check if is up to date... \n";
 				
 				if($lastdayformonth === $lastdayforcache)
 				{
-					echo "month $index is up to date \n";
+					echo "month $index is up to date. \n";
 					continue;
 				}
-				echo "month $index is not up to date \n";
+				echo "month $index is not up to date. \n";
 				echo "$report >> update in progress......... \n";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
 				while (!$rs)
@@ -1536,33 +1590,6 @@ var_dump($listobject);plication('agent')) === false)
 
 		$this->_queue_log = $appqueue_log->get_queue_logs_stats($conf,$this->_type,$data);
 		
-		return(true);
-	}
-
-	public function push_error($error, $key=null)
-	{
-		if (is_array($error) === true)
-			$this->_error = array_merge($this->_error, $error);
-		elseif (is_null($key) === false
-		&& is_scalar($error) === true)
-			$this->_error[$key] = $error;
-		elseif(is_null($key) === true
-		&& is_scalar($error) === true)
-			array_push($this->_error, $error);
-		
-		return(false);
-	}
-
-	public function get_error()
-	{
-		return($this->_error);
-	}
-
-	public function has_error() 
-	{
-		if (empty($this->_error) === true)
-			return(false);
-
 		return(true);
 	}
 	

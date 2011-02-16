@@ -40,6 +40,9 @@ $_XS->global_init($_QR);
 
 $axetype = $_XS->get_axetype();
 
+#dump($_XS->get_full_conf());
+$_XS->get_list_by_type('agent');
+
 $_TPL->set_var('listconf',$appstats_conf->get_stats_conf_list(null,'name'));
 $_TPL->set_var('listaxetype',$_XS->get_list_axetype());
 $_TPL->set_var('axetype',$axetype);

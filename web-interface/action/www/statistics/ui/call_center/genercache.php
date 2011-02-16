@@ -35,6 +35,7 @@ if(isset($_QR['idconf']) === true
 {	
 	$idtype = (isset($_QR['idtype'])) ? $_QR['idtype'] : null;	
 	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);
+	return;
 }
 					
 if(isset($_QR['update']) === true)
@@ -47,7 +48,7 @@ if(isset($_QR['update']) === true)
 	{
 		$conf = array_shift($listconf);
 		$_XS->update_cache($conf);
-	}		
+	}
 }
 
 ?>

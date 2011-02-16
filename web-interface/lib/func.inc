@@ -877,6 +877,18 @@ function dwho_print_r($a,$n='')
 	print '<pre>'; print_r($a); print '</pre>';
 }
 
+function dwho_dump($var, $title=null) 
+{
+	echo '<pre style="border:1px dotted gray; padding:5px; text-align:left;">';
+	if (is_null($title) === false)
+		echo '<h4>', htmlspecialchars($title), '</h4>';
+
+	ob_start();
+	var_dump($var);
+	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
+	echo '</pre>';
+}
+
 function dwho_var_dump($a,$n='')
 {
 	if(dwho_empty($n) === false)

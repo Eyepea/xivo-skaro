@@ -79,6 +79,9 @@ $array['module']['stats_conf']['datastorage'] = true;
 $array['module']['stats_conf_queue'] = array();
 $array['module']['stats_conf_queue']['datastorage'] = true;
 
+$array['module']['stats_conf_group'] = array();
+$array['module']['stats_conf_group']['datastorage'] = true;
+
 $array['module']['stats_conf_agent'] = array();
 $array['module']['stats_conf_agent']['datastorage'] = true;
 

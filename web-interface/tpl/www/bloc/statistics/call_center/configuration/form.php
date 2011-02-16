@@ -24,6 +24,7 @@ $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
 $queue = $this->get_var('queue');
+$group = $this->get_var('group');
 $agent = $this->get_var('agent');
 $user = $this->get_var('user');
 $info = $this->get_var('info');
@@ -202,8 +203,12 @@ if($this->get_var('fm_save') === false)
 			</div>
 			
 			<div id="sb-part-queue" class="b-nodisplay">
+			
+			<fieldset>
+			<legend><?=$this->bbf('queue')?></legend>
 <?php
-	if($queue['list'] !== false):
+	if(isset($queue['list']) === true
+	&& $queue['list'] !== false):
 ?>
 				<div id="queuelist" class="fm-paragraph fm-multilist">
 				<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
@@ -258,7 +263,67 @@ if($this->get_var('fm_save') === false)
 			'</div>';
 	endif;
 ?>
-				
+			</fieldset>
+			<fieldset>
+			<legend><?=$this->bbf('group')?></legend>
+<?php
+	if(isset($group['list']) === true
+	&& $group['list'] !== false):
+?>
+				<div id="grouplist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('grouplist',$this->bbf('ms_seek'))?>
+					<div class="slt-outlist">
+						<?=$form->select(array('name'		=> 'grouplist',
+								       'label'		=> false,
+								       'id'		=> 'it-grouplist',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false,
+								       'key'		=> 'name',
+								       'altkey'		=> 'id'),
+										$group['list']);?>
+					</div>
+			
+					<div class="inout-list">
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-grouplist','it-group');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_ingroup');?>">
+							<?=$url->img_html('img/site/button/arrow-left.gif',
+									  $this->bbf('bt_ingroup'),
+									  'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-group','it-grouplist');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_outgroup');?>">
+							<?=$url->img_html('img/site/button/arrow-right.gif',
+									  $this->bbf('bt_outgroup'),
+									  'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
+					</div>
+			
+					<div class="slt-inlist">
+						<?=$form->select(array('name'		=> 'group[]',
+								       'label'		=> false,
+								       'id'		=> 'it-group',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false,
+								       'key'		=> 'name',
+								       'altkey'		=> 'id'),
+									   $group['slt']);?>
+					</div>
+				</div>
+				<div class="clearboth"></div>
+<?php
+	else:
+		echo	'<div class="txt-center">',
+			$url->href_htmln($this->bbf('create_group'),
+					'service/ipbx/pbx_settings/groups',
+					'act=add'),
+			'</div>';
+	endif;
+?>
+			</fieldset>
 			</div>
 			<div id="sb-part-last" class="b-nodisplay">
 			
@@ -320,7 +385,7 @@ if($this->get_var('fm_save') === false)
 			'</div>';
 	endif;
 ?>
-</fieldset>
+			</fieldset>
 			<fieldset>
 			<legend><?=$this->bbf('user')?></legend>
 <?php

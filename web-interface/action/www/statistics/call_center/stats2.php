@@ -53,7 +53,7 @@ switch ($axetype)
 		break;
 	case 'type':
 	default:
-		$tpl_statistics->set_rows('agent',$stats_agent->get_agent_list(),'key');
+		$tpl_statistics->set_rows('agent',$stats_agent->get_agent_list(),'keyfile',true);
 		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
 

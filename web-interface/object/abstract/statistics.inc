@@ -127,18 +127,13 @@ class xivo_statistics_abstract
 			return(false);
 		
 		$data = array_shift($data);
-		$key_data_arr = $data['key'];
-		$keyfile = $data['key'][0];
-		$key_field = 'key';		
-					
-		if (isset($data['type']) === true)
-			$keyfile = $data['type'].'-'.$data['number'];	
+		$key_data_arr = $data['keydata'];
+		$keyfile = $data['keyfile'];
 		
 		switch ($axetype)
 		{
 			case 'day':
 				$key_data = $this->_xs->get_listhour();
-				$key_field = 'key';	
 				$date = $this->_xs->all_to_unixtime($itl['dday']);
 				$year = date('Y',$date);
 				$month = date('m',$date);
@@ -147,7 +142,7 @@ class xivo_statistics_abstract
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
-					$key = $key_full_data[$key_field];
+					$key = $key_full_data['key'];
 					$dip = array();
 					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
 					$dip['end'] = mktime($key+1,0,0,$month,$day,$year);
@@ -157,19 +152,18 @@ class xivo_statistics_abstract
 				break;
 			case 'week':
 				$key_data = $this->_xs->get_listday_for_interval($dbeg,$dend);
-				$key_field = 'dayname';
 				
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
-					$k = $key_full_data[$key_field];
+					$dayname = $key_full_data['dayname'];
 											
-					$this->init_result($k);
+					$this->init_result($dayname);
 					$listmonth = $data_listmonth;
 					while($listmonth)
 					{
-						$key = array_shift($listmonth);
-						$key = $key['key'];
+						$monthprocess = array_shift($listmonth);
+						$key = $monthprocess['key'];
 						$year = substr($key,0,4);
 						$month = substr($key,4,2);
 						
@@ -181,16 +175,16 @@ class xivo_statistics_abstract
 						while($listdaynum)
 						{
 							$day = array_shift($listdaynum);
-							
+
 							$index = (int) ($year.$month.$day);
 							if ($index !== $key_full_data['key'])
-								continue;					
-						
+								continue;
+							
 							if (isset($full_list_day[$year.$month.$day]) === false)
 								continue;
 							
 							// update result for day data
-							$this->eval_update_result($month_data[$day],$k);
+							$this->eval_update_result($month_data[$day],$dayname);
 						}
 					}
 				}
@@ -207,15 +201,14 @@ class xivo_statistics_abstract
 				$this->_result = ($month_data);
 				break;
 			case 'year':
-				$key_field = 'key';
-				$key_data = $this->_xs->get_listmonth();	
+				$key_data = $this->_xs->get_listmonth();
 				
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
-					$k = $key_full_data[$key_field];
+					$monthnum = $key_full_data['key'];
 						
-					$this->init_result($k);
+					$this->init_result($monthnum);
 					$listmonth = $data_listmonth;
 					while($listmonth)
 					{
@@ -224,7 +217,7 @@ class xivo_statistics_abstract
 						$year = substr($key,0,4);
 						$month = substr($key,4,2);
 						
-						if (((int) $month) != ((int) $k))
+						if (((int) $month) != ((int) $monthnum))
 							continue;
 						
 						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
@@ -234,13 +227,12 @@ class xivo_statistics_abstract
 						$listdaynum = array_keys($month_data);
 						while($listdaynum)
 						{
-							$day = array_shift($listdaynum);
-						
+							$day = array_shift($listdaynum);						
 							if (isset($full_list_day[$year.$month.$day]) === false)
 								continue;
 							
 							// update result for day data
-							$this->eval_update_result($month_data[$day],$k);
+							$this->eval_update_result($month_data[$day],$monthnum);
 						}
 					}
 				}
@@ -248,15 +240,11 @@ class xivo_statistics_abstract
 			case 'type':
 			default:
 				$key_data = $this->get_list_by_type();
-				$key_field = 'key';
 				
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
-					$keyfile = $key_full_data[$key_field][0];
-					
-					if (isset($key_full_data['type']) === true)
-						$keyfile = $key_full_data['type'].'-'.$key_full_data['number'];
+					$keyfile = $key_full_data['keyfile'];
 						
 					$this->init_result($keyfile);
 					$listmonth = $data_listmonth;

@@ -92,6 +92,10 @@ $array['stats_conf_queue'] = array();
 $array['stats_conf_queue']['table'] = 'stats_conf_queue';
 $array['stats_conf_queue']['primary'] = array('stats_conf_id' => '');
 
+$array['stats_conf_group'] = array();
+$array['stats_conf_group']['table'] = 'stats_conf_group';
+$array['stats_conf_group']['primary'] = array('stats_conf_id' => '');
+
 $array['stats_conf_agent'] = array();
 $array['stats_conf_agent']['table'] = 'stats_conf_agent';
 $array['stats_conf_agent']['primary'] = array('stats_conf_id' => '');

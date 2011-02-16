@@ -46,56 +46,6 @@ $stats_conf = $_XS->get_conf();
 
 switch($act)
 {
-	/*
-	case 'enables':
-	case 'disables':
-		$param['page'] = $page;
-
-		if(($values = dwho_issa_val('stats_conf',$_QR)) === false)
-			$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
-
-		$nb = count($values);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($appstats_conf->get($values[$i]) === false)
-				continue;
-			else if($act === 'disables')
-				$appstats_conf->disable();
-			else
-				$appstats_conf->enable();
-		}
-
-		$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
-		break;
-	*/
-	case 'test':
-		$act = 'test';
-		if(xivo::load_class('xivo_statistics_period',
-			XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics',
-			'period',false) === false)
-			die('Can\'t load xivo_statistics_period object');
-		
-		$stats_period = new xivo_statistics_period(&$_XS);
-			
-		if (($appqueue_log = &$ipbx->get_application('queue_log')) === false
-		|| ($interval = $appqueue_log->get_min_and_max_time()) === false)
-			break;
-		
-		$dbeg = strtotime($interval['min']);
-		$dend = strtotime($interval['max']);
-		#$dbeg = mktime(0,0,0,date('m',$dend)-1,1,date('Y',$dend));
-		$dbeg = mktime(0,0,0,date('m',$dend),1,date('Y',$dend));
-		$_XS->generate_cache($idconf,$dbeg,$dend,'period');
-		/*
-		$full_interval = array();
-		$full_interval['beg'] = $dbeg;
-		$full_interval['end'] = $dend;
-		$_XS->_interval_process = $full_interval;
-		$stats_period->parse_log('queue8001',4);
-		var_dump($stats_period->_result[4]);
-		*/
-		break;
 	case 'list':
 	default:
 		$act = 'list';		

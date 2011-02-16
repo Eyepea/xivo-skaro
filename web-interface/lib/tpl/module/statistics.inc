@@ -28,7 +28,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	private  $_name			= '';
 	private  $_col_struct	= '';
 	private  $_row_key		= '';
-	private  $_ignore_col	= array('identity','key');
+	private  $_ignore_col	= array('rowdata');
 	private  $_struct		= array();
 	private  $_data			= array();
 	private  $_data_custom	= array();
@@ -179,36 +179,16 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$data_foot = &$this->_data_foot;
 
 		while($full_rows)
-		{
+		{			
 			$rowdata = array_shift($full_rows);
-		
-			if (isset($rowdata['identity']) === true)
-				$rowidentity = $rowdata['identity'];
-			elseif (isset($rowdata['fullname']) === true)
-				$rowidentity = $rowdata['fullname'];
-			elseif(isset($rowdata['name']) === true)
-				$rowidentity = $rowdata['name'];
-			else 
-				$rowidentity = 'null_data';
-				
-			if(isset($rowdata['key']) === true)
-				$rowkey = $rowdata['key'];
-			elseif(isset($rowdata['id']) === true)
-				$rowkey = $rowdata['id'];
-			elseif(isset($rowdata['name']) === true)
-				$rowkey = $rowdata['name'];
-			else 
-				die('Can\'t find data in dwho_tpl_statistics->init_data_table()');
-							
+			
 			$rownum = $rowdata[$this->_row_key];
 			
 			if (isset($data_table[$rownum]) === false)
 				$data_table[$rownum] = array();
 					
 			$row_data_table = &$data_table[$rownum];
-					
-			$row_data_table['identity'] = $rowidentity;
-			$row_data_table['key'] = $rowkey;
+			$row_data_table['rowdata'] = $rowdata;			
 					
 			$nb_col_value = count($data_cols);
 			for($u=0;$u<$nb_col_value;$u++)
@@ -370,9 +350,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				array_push($tmp,$key);
 		}
 		
-		$var = call_user_func_array(array($this,'eval_var'), $tmp);
-		
-		return($var);
+		return(call_user_func_array(array($this,'eval_var'), $tmp));
 	}
 	
 	private function eval_var() 
@@ -594,8 +572,11 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$c=0;
 		foreach ($this->_data_table as $row => $cols)
 		{
+			$coldata = $cols['rowdata'];
+			$identity = $coldata['identity'];
+			
 			$return .= '<tbody id="disp">';
-			$return .= '<tr class="fm-paragraph l-infos-'.(($c % 2) + 1).'on2" title="'.dwho_alttitle($cols['identity']).'">';
+			$return .= '<tr class="fm-paragraph l-infos-'.(($c % 2) + 1).'on2" title="'.dwho_alttitle($identity).'">';
 			$nbcolsup = 0;
 			if ($chkbox === true)
 			{
@@ -605,13 +586,22 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			if ($rowname === true)
 			{
 				$bbf = array();
-				$identity = $cols['identity'];
-				if (is_array($cols['identity']) === true)
+				$return .= '<td class="txt-left">'; 
+				switch ($coldata['type'])
 				{
-					$identity = $cols['identity'][0];
-					$bbf = $cols['identity'][1];
+					case 'user':						
+						$return .= '<img src="/img/site/personal-trans.png" alt="" width="16" height="16" />';
+						break;
+					case 'agent': 
+						$return .= '<img src="/img/site/agent-trans.png" alt="" width="16" height="16" />'; 
+						break;
+					case 'queue':
+						break;
+					case 'group':
+						break;
+					default:
 				}
-				$return .= '<td class="txt-left">';
+				$return .= '&nbsp;'; 
 				if ($this->_data_custom['axetype'] === 'type')
 				{
 					$date_process = $this->_data_custom['date_process'];
@@ -619,7 +609,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 											$this->_baseurl,
 											array(	'axetype' => 'day',
 													'confid' => $this->_xs->get_idconf(),
-													'key' => $cols['key'],
+													'key' => $coldata['keyfile'],
 													'dday' => $date_process['dbeg']));
 				}
 				else 

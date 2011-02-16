@@ -56,7 +56,7 @@ switch ($axetype)
 		break;
 	case 'type':
 	default:
-		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'name',true);
+		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'keyfile',true);
 		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
 $stats_queue->get_data();

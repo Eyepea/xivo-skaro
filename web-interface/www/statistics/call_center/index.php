@@ -23,7 +23,7 @@ require_once('xivo.php');
 $go = array_key_exists('go', $_GET)?$_GET['go']:null;
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
+	$_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
 	
 $location = str_replace('/index.php','',$_LOC->get_current_location());
 

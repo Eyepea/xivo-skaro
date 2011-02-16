@@ -151,7 +151,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 		$r = $this->_dso->select_singlecolumn();
 		
 		#print ($this->_dso->get_select().'<br>');
-		#var_dump(dwho_second_to((microtime(true) - $s),2));
+		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
 		if(isset($r[0]) === false)
 			$r = false;
@@ -171,14 +171,24 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 		{
 			case 'agent':
 				if (is_array($value) === true)
-					$this->_dso->wherein('agent',$value);
+				{
+					if (count($value) === 1)
+						$this->_dso->where(array('agent' => $value[0]));
+					else
+						$this->_dso->wherein('agent',$value);
+				}
 				else
 					$this->_dso->where(array('agent' => $value));
 				break;
 			case 'queue':
 			case 'period':
 				if (is_array($value) === true)
-					$this->_dso->wherein('queuename',$value);
+				{
+					if (count($value) === 1)
+						$this->_dso->where(array('queuename' => $value[0]));
+					else
+						$this->_dso->wherein('queuename',$value);
+				}
 				else
 					$this->_dso->where(array('queuename' => $value));
 				break;
@@ -251,7 +261,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 			$this->_cnt = 0;
 		
 		#print ($this->_dso->get_select().'<br>');
-		#var_dump(dwho_second_to((microtime(true) - $s),2));
+		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
 		return($this->_cnt);
 	}
