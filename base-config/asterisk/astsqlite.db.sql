@@ -185,6 +185,33 @@ CREATE INDEX cdr__idx__accountcode ON cdr(accountcode);
 CREATE INDEX cdr__idx__userfield ON cdr(userfield);
 
 
+DROP TABLE IF EXISTS cel;
+CREATE TABLE cel (
+ id integer unsigned,
+ eventtype varchar (30) NOT NULL,
+ eventtime char(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
+ userdeftype varchar(255) NOT NULL,
+ cid_name varchar (80) NOT NULL,
+ cid_num varchar (80) NOT NULL,
+ cid_ani varchar (80) NOT NULL,
+ cid_rdnis varchar (80) NOT NULL,
+ cid_dnid varchar (80) NOT NULL,
+ exten varchar (80) NOT NULL,
+ context varchar (80) NOT NULL,
+ channame varchar (80) NOT NULL,
+ appname varchar (80) NOT NULL,
+ appdata varchar (80) NOT NULL,
+ amaflags integer (10) NOT NULL,
+ accountcode varchar (20) NOT NULL,
+ peeraccount varchar (20) NOT NULL,
+ uniqueid varchar (150) NOT NULL,
+ linkedid varchar (150) NOT NULL,
+ userfield varchar (255) NOT NULL,
+ peer varchar (80) NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
 DROP TABLE context;
 CREATE TABLE context (
  name varchar(39) NOT NULL,
