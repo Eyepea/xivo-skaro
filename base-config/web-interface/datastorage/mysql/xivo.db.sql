@@ -1,1 +1,0 @@
-../../../../web-interface/init/datastorage/mysql/xivo.db.sql

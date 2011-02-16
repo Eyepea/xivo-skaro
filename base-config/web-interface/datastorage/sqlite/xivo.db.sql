@@ -1,1 +1,0 @@
-../../../../web-interface/init/datastorage/sqlite/xivo.db.sql
