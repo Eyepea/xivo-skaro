@@ -27,6 +27,7 @@ import os.path
 import re
 from xml.sax.saxutils import escape
 from provd import sip
+from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT
 from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
@@ -277,8 +278,7 @@ class BaseCiscoPlugin(StandardPlugin):
         return "\n".join(fk_config_lines)
     
     def _get_xx_fkeys(self, config, model):
-        if 'funckey' in config:
-            return self._format_function_keys(config['funckey'], model)
+        return self._format_function_keys(config['funckeys'], model)
     
     def _format_dst_change(self, dst_change):
         _day = dst_change['day']
@@ -344,17 +344,25 @@ class BaseCiscoPlugin(StandardPlugin):
         fmted_mac = format_mac(dev['mac'], separator='')
         return fmted_mac + '.xml'
     
-    def configure(self, dev, config):
+    @classmethod
+    def _check_config(cls, raw_config):
+        if u'http_port' not in raw_config:
+            raise RawConfigError('only support configuration via HTTP')
+        if raw_config[u'protocol'] != u'SIP':
+            raise RawConfigError('protocol must be SIP')
+    
+    def configure(self, dev, raw_config):
+        self._check_config(raw_config)
         filename = self._dev_specific_filename(dev)
         tpl = self._tpl_helper.get_dev_template(filename, dev)
         
-        config['XX_fkeys'] = self._get_xx_fkeys(config, dev.get('model'))
-        config['XX_timezone'] = self._get_xx_timezone(config)
-        config['XX_proxies'] = self._get_xx_proxies(config)
-        config['XX_language'] = self._get_xx_language(config)
+        raw_config['XX_fkeys'] = self._get_xx_fkeys(raw_config, dev.get('model'))
+        raw_config['XX_timezone'] = self._get_xx_timezone(raw_config)
+        raw_config['XX_proxies'] = self._get_xx_proxies(raw_config)
+        raw_config['XX_language'] = self._get_xx_language(raw_config)
         
         dst = os.path.join(self._tftpboot_dir, filename)
-        self._tpl_helper.dump(tpl, config, dst, self._ENCODING)
+        self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
     
     def deconfigure(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))

@@ -26,6 +26,7 @@ __license__ = """
 
 import os.path
 from provd import sip
+from provd.devices.config import RawConfigError
 from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
@@ -124,22 +125,22 @@ class BaseAastraPlugin(StandardPlugin):
     _XX_DICT = {
         'en': {
             'voicemail':  'Voicemail',
-            'fwdunc': 'Unconditional forward',
+            'fwd_unconditional': 'Unconditional forward',
             'dnd': 'D.N.D',
             'local_directory': 'Directory',
             'callers': 'Callers',
             'services': 'Services',
-            'pickup': 'Call pickup',
+            'pickup_call': 'Call pickup',
             'remote_directory': 'Directory',
         },
         'fr': {
             'voicemail':  'Messagerie',
-            'fwdunc': 'Renvoi inconditionnel',
+            'fwd_unconditional': 'Renvoi inconditionnel',
             'dnd': 'N.P.D',
             'local_directory': 'Repertoire',
             'callers': 'Appels',
             'services': 'Services',
-            'pickup': 'Interception',
+            'pickup_call': 'Interception',
             'remote_directory': 'Annuaire',
         },
     }
@@ -276,10 +277,7 @@ class BaseAastraPlugin(StandardPlugin):
         return '\n'.join(lines)
     
     def _get_xx_fkeys(self, config, model):
-        if 'funckey' in config:
-            return self._format_function_keys(config['funckey'], model)
-        else:
-            return ''
+        return self._format_function_keys(config['funckeys'], model)
     
     def _get_xx_timezone(self, config):
         # TODO handle the case where timezone is not present or is not a known
@@ -303,16 +301,24 @@ class BaseAastraPlugin(StandardPlugin):
         fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
         return fmted_mac + '.cfg'
     
-    def configure(self, dev, config):
+    @classmethod
+    def _check_config(cls, raw_config):
+        if u'http_port' not in raw_config:
+            raise RawConfigError('only support configuration via HTTP')
+        if raw_config[u'protocol'] != u'SIP':
+            raise RawConfigError('protocol must be SIP')
+    
+    def configure(self, dev, raw_config):
+        self._check_config(raw_config)
         filename = self._dev_specific_filename(dev)
         tpl = self._tpl_helper.get_dev_template(filename, dev)
         
-        config['XX_fkeys'] = self._get_xx_fkeys(config, dev.get('model'))
-        config['XX_timezone'] = self._get_xx_timezone(config)
-        config['XX_dict'] = self._get_xx_dict(config)
+        raw_config['XX_fkeys'] = self._get_xx_fkeys(raw_config, dev.get('model'))
+        raw_config['XX_timezone'] = self._get_xx_timezone(raw_config)
+        raw_config['XX_dict'] = self._get_xx_dict(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
-        self._tpl_helper.dump(tpl, config, path, self._ENCODING)
+        self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
     def deconfigure(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))

@@ -40,6 +40,7 @@ import urllib2
 from fetchfw.download import DefaultDownloader, InvalidCredentialsError,\
     DownloadError, new_handlers, new_downloaders
 from fetchfw.storage import RemoteFileBuilder
+from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT, \
     INCOMPLETE_SUPPORT
@@ -366,18 +367,26 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
         return 'SEP' + fmted_mac + '.cfg.xml'
     
-    def configure(self, dev, config):
+    @classmethod
+    def _check_config(cls, raw_config):
+        if u'tftp_port' not in raw_config:
+            raise RawConfigError('only support configuration via TFTP')
+        if raw_config[u'protocol'] != u'SCCP':
+            raise RawConfigError('protocol must be SCCP')
+    
+    def configure(self, dev, raw_config):
+        self._check_config(raw_config)
         filename = self._dev_specific_filename(dev)
         tpl = self._tpl_helper.get_dev_template(filename, dev)
         
         # TODO check support for addons, and test what the addOnModules is
         #      really doing...
-        config['XX_addons'] = ''
-        config['XX_lang'] = self._get_xx_language(config)
-        config['XX_timezone'] = self._get_xx_timezone(config)
+        raw_config['XX_addons'] = ''
+        raw_config['XX_lang'] = self._get_xx_language(raw_config)
+        raw_config['XX_timezone'] = self._get_xx_timezone(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
-        self._tpl_helper.dump(tpl, config, path, self._ENCODING)
+        self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
     def deconfigure(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))

@@ -4,26 +4,26 @@
    <dateTemplate>D-M-YA</dateTemplate>
    <timeZone>{{ XX_timezone }}</timeZone>
    <ntps>
-{%if ntp_server %}
+{% if ntp_server -%}
     <ntp>
      <name>{{ ntp_server }}</name>
      <ntpMode>Unicast</ntpMode>
     </ntp>
-{% endif %}
+{% endif -%}
    </ntps>
   </dateTimeSetting>
   <callManagerGroup>
    <members>
-{% for prio, call_manager in sccp['call_managers'].iteritems() %}
-    <member priority="{{ prio }}">
+{% for priority, call_manager in sccp['call_managers'].iteritems() %}
+    <member priority="{{ priority }}">
      <callManager>
       <ports>
-       <ethernetPhonePort>{{ call_manager['port'] }}</ethernetPhonePort>
+       <ethernetPhonePort>{{ call_manager['port']|d('2000') }}</ethernetPhonePort>
       </ports>
       <processNodeName>{{ call_manager['ip'] }}</processNodeName>
      </callManager>
     </member>
-{% endfor %}
+{% endfor -%}
    </members>
   </callManagerGroup>
  </devicePool>
@@ -31,21 +31,21 @@
  <loadInformation>{% block loadInformation %}{% endblock %}</loadInformation>
  <addOnModules>{{ XX_addons }}</addOnModules>
 
-{% if XX_lang %}
+{% if XX_lang -%}
  <userLocale>
   <name>i18n/{{ XX_lang['name'] }}</name>
   <langCode>{{ XX_lang['lang_code'] }}</langCode>
  </userLocale>
  <networkLocale>i18n/{{ XX_lang['network_locale'] }}</networkLocale>
-{% endif %}
+{% endif -%}
 
  <idleTimeout>0</idleTimeout>
  <authenticationURL></authenticationURL>
-{% if X_xivo_phonebook_ip %}
+{% if X_xivo_phonebook_ip -%}
  <directoryURL>http://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/menu</directoryURL>
-{% else %}
+{% else -%}
  <directoryURL></directoryURL>
-{% endif %}
+{% endif -%}
  <idleURL></idleURL>
  <informationURL></informationURL>
  <messagesURL></messagesURL>
