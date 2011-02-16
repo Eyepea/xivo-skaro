@@ -32,7 +32,8 @@ except ImportError:
 from twisted.web import http
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
-from provd.persist.common import ID_KEY, InvalidIdError
+from provd.app import InvalidIdError
+from provd.persist.common import ID_KEY
 from provd.plugins import BasePluginManagerObserver
 from provd.rest.util import PROV_MIME_TYPE, uri_append_path
 from provd.rest.server.util import accept_mime_type, numeric_id_generator
@@ -600,7 +601,6 @@ class DeviceResource(Resource):
         def on_callback(_):
             deferred_respond_no_content(request)
         def on_errback(failure):
-            # XXX warning, InvalidIdError usage is badly defined
             if failure.check(InvalidIdError):
                 deferred_respond_no_resource(request)
             else:
@@ -613,7 +613,6 @@ class DeviceResource(Resource):
         def on_callback(_):
             deferred_respond_no_content(request)
         def on_errback(failure):
-            # XXX warning, InvalidIdError usage is badly defined
             if failure.check(InvalidIdError):
                 deferred_respond_no_resource(request)
             else:
@@ -709,7 +708,6 @@ class ConfigResource(Resource):
         def on_callback(_):
             deferred_respond_no_content(request)
         def on_errback(failure):
-            # XXX warning, InvalidIdError usage is badly defined
             if failure.check(InvalidIdError):
                 deferred_respond_no_resource(request)
             else:
@@ -722,7 +720,6 @@ class ConfigResource(Resource):
         def on_callback(_):
             deferred_respond_no_content(request)
         def on_errback(failure):
-            # XXX warning, InvalidIdError usage is badly defined
             if failure.check(InvalidIdError):
                 deferred_respond_no_resource(request)
             else:
