@@ -12,144 +12,273 @@ Config objects have the following standardized keys:
 
 Config collection objects are used as a storage for config objects.
 
-Below is the list of 'standardized' parameters that can be found in raw
-configuration objects at the plugin level.
+"""
 
-Note that every time you see a string or see a reference to a string, think
-about a unicode string, and not a python 'byte' string. This is true for keys
-and values. 
+"""Specification of the configuration parameters.
 
-TODO put more details about the type, valid values, optional/mandatory...
+This section specify the general form of configuration parameters and the
+meaning and usage of standardized parameters.
+  
+This specification use the words MUST, SHOULD, MAY as defined in RFC2119.
 
-An IP address is a string IPv4 address in dotted quad notation.
+Except when explicitly stated, unsupported parameters or supported parameters
+with unsupported values SHOULD be ignored. For example, if your device has
+no notion of timezone, or the plugin doesn't support configuring the timezone,
+or the timezone value is not known from the plugin, then the timezone parameter
+SHOULD be ignored and an exception SHOULD NOT be raised.
+
+Parameter names are [unicode] string that MUST match the following regex:
+[a-zA-Z_][a-zA-Z0-9_]*.
+
+An IP address is a [unicode] string representing an IPv4 address in dotted
+quad notation.
+
 A port number is an integer between 1 and 65535 inclusive.
 
-ip
-  The provisioning server IP address. Always present.
-http_port
-  The provisioning server HTTP port number. Always present.
-tftp_port
-  The provisioning server TFTP port number. Always present.
+Beside each parameter definition is a specification telling if the parameter
+must be found in the raw config passed to the plugin, and also specify what
+the plugin can expect to receive.
 
-proto
-  The protocol to use. Current valid value are 'SIP' and 'SCCP'.
-ntp_server
-  The NTP server IP address.
-admin_user
-  The administrator username. This is an unicode string.
-admin_passwd
-  The administrator password. This is an unicode string.
-timezone
-  The timezone name (from the tz/zoneinfo/Olson database).
-  - Ex.: 'Europe/Paris', 'America/Montreal'
-locale
+
+ip [mandatory]
+  The IP address or domain name of the provisioning server.
+  If the followings are true:
+  - this value represent a domain name
+  - the device does not support the use of domain names
+  then:
+  - an exception (RawConfigError) MAY be raised or the device MAY be
+    misconfigured.
+  This means that if you use domain names, you should manually check that
+  your devices support it or be prepared to see incorrect behaviour from
+  your devices.
+
+http_port [mandatory if tftp_port is not defined]
+  The provisioning server HTTP port number.
+  If the followings are true:
+  - this value is defined
+  - the device supports retrieving its configuration file via HTTP
+  then:
+  - the device MUST be configured to use HTTP to retrieve its configuration
+    files (if applicable). If it does not support the port number value, it
+    MUST raise an exception (RawConfigError).
+  If the device only support HTTP yet this value is not defined, an Exception
+  SHOULD be raised.
+
+tftp_port [mandatory if http_port is not defined]
+  The provisioning server TFTP port number.
+  If the followings are true:
+  - this value is defined
+  - the device supports retrieving its configuration file via TFTP
+  - the http_port parameter is not defined or the device does not support
+    retrieving its configuration file via HTTP
+  then:
+  - the device MUST be configured to use TFTP to retrieve its configuration
+    files (if applicable). If it does not support the port number value, it
+    MUST raise an Exception.
+  If the device only support TFTP yet this value is not defined, an Exception
+  SHOULD be raised.
+
+vlan [optional]
+  A dictionary describing the VLAN (802.1Q) configuration.
+  If this parameter is not defined, VLAN tagging MUST be disabled.
+  
+    id [mandatory]
+      The VLAN ID. An integer between 0 and 4094.
+      A value of 0 means that the frame does not belong to any VLAN; in this
+      case only a priority is specified.
+    
+    priority [optional]
+      The (802.1p) priority. A integer between 0 and 7 inclusive.
+
+ntp_server [optional]
+  The IP address or domain name of the NTP server.
+  If this parameter is not defined, NTP MUST be disabled.
+  See: ip (comment about domain name).
+
+admin_username [optional]
+  The administrator username. When applicable, the administrator account gives
+  full access to the device (either via a web interface or a physical interface
+  like a phone UI for example).
+
+admin_password [optional]
+  The administrator password.
+  See: admin_username.
+
+user_username [optional]
+  The user username. When applicable, the user account gives limited access to
+  the device.
+  See: admin_username.
+
+user_password [optional]
+  The user password.
+  See: admin_password.
+
+timezone [optional]
+  The name of the timezone from the tz/zoneinfo/Olson database.
+  Example:
+  - Europe/Paris
+  - America/Montreal
+  See: http://www.twinsun.com/tz/tz-link.htm.
+
+locale [optional]
   The locale name. This is an ISO 639-1 code followed by an ISO 3166-1 alpha-2
   code. The codes are similar to what is found in /etc/locale.gen, except that
   it doesn't use the modifier and charset part.
-  - Ex.: 'fr_FR', 'en_CA'
-simultcalls
-  The number of simultaneous calls (ex.: 5). This is a positive integer.
-subscribe_mwi
-  A boolean for if we should subscribe for message notification or not
+  Example of possible values:
+  - fr_FR
+  - en_CA
 
-vlan
-  A dictionary with the following keys
-    enabled
-      A flag indicating if VLAN is enabled
-    id
-      The VLAN ID
-    prio
-      The priority
+protocol [mandatory]
+  The signaling protocol.
+  This parameter can take one of the following value:
+  - SIP
+  - SCCP
+  If the protocol is not supported by the device, an exception
+  (RawConfigError) MAY be raised or the device MAY be misconfigured.
 
-sip
-  A dictionary with the following keys
-    dtmfmode
-      The DTMF mode
-    lines
-      A dictionary where keys are line number and value are dictionary with
+sip [mandatory if protocol == 'SIP']
+  A dictionary describing the configuration of all the SIP related stuff:
+    
+    dtmf_mode [optional]
+      The mode used to send DTMF and other events.
+      This parameter can take one of the following value:
+      - RTP-in-band
+      - RTP-out-of-band
+      - SIP-INFO
+      If this parameter is not defined and the device has some support for
+      automatically picking the DTMF mode, then the device should be
+      configured this way.
+  
+    subscribe_mwi [optional]
+      A boolean indicating if we should explicitly subscribe for message
+      notification or not.
+    
+    lines [optional|default to empty dictionary]
+      A dictionary where keys are line number and values are dictionary with
       the following keys:
     
-        proxy_ip
-          The proxy IP address
-        backup_proxy_ip
-          The backup proxy IP
-        registrar_ip
-          The registrar IP address
-        backup_registrar_ip
-          The backup registrar IP
-        outbound_proxy_ip
-          The outbound proxy IP
-        display_name
-          The display name for caller ID
-        number
-          The extension number
-        user_id
-          The user ID/username of this SIP identify.
-        auth_id
-          The auth ID used to authenticate
-        passwd
-          The password used to authenticate
-        mailbox (?)
-          The mailbox ID/number
+        proxy_ip [mandatory]
+          The IP address of the SIP proxy.
+          If the device does not support the proxy/registrar separation, the
+          value of this parameter will be used as the registrar IP.
+          # TODO eventually accept a domain name and some extra parameters
+          #      to specify if we should do DNS SRV or DNS A/AAAA lookup. 
+        
+        backup_proxy_ip [optional]
+          The IP address of the backup SIP proxy.
+        
+        registrar_ip [optional|default to value of proxy_ip]
+          The IP address of the SIP registrar.
+          See: proxy_ip.
+        
+        backup_registrar_ip [optional]
+          The IP address of the backup SIP registrar
+        
+        outbound_proxy_ip [optional]
+          The IP address of the SIP outbound proxy.
+        
+        username [mandatory]
+          The username of this SIP identity.
+        
+        auth_username [optional|default to value of username]
+          The username used for authentication (i.e. the username in the SIP
+          Authorization or Proxy-Authorization header field).
+          If the device doesn't allow the auth username to be different from
+          the username, then the username MUST be used for authentication.
+        
+        password [mandatory]
+          The password used for authentication.
+        
+        display_name [mandatory]
+          The display name (caller ID).
+        
+        number [optional]
+          The main extension number other users can dial to reach this line.
+          This parameter is for display purpose only.
+        
+        dtmf_mode [optional]
+          See: sip.dtmf_mode.
+        
+        voicemail [optional]
+          The voicemail extension number for this line.
 
-sccp
-  A dictionary with the following keys
-    call_managers
+sccp [mandatory if protocol == 'SCCP']
+  A dictionary describing the configuration of all the SCCP related stuff:
+  
+    call_managers [optional|default to empty dictionary]
       A dictionary where keys are priority number and value are dictionary
       with the following keys:
         
-        ip
-          The call manager IP address
-        port
-          The call manager port number (default: 2000)
+        ip [mandatory]
+          The IP address of the call manager.
+        
+        port [optional]
+          The port number of the call manager.
 
-exten
-  A dictionary with the following keys
-    dnd
-      The DND enable/disable extension number
-    pickup
-      The pickup extension number
-    pickup_prefix
-      The pickup prefix
-    fwdunc
-      The unconditional forward extension number
-    park
-      The park extension number
-    voicemail
-      The voicemail extension number
+exten [optional|default to empty dictionary]
+  A dictionary describing the available extension number:
+  XXX this is not device configuration per se and until we have better support
+  for references (for example, funckey referencing an extension), the value
+  of this has yet to be seen. The only use right now is in templates.
+  
+    dnd [optional]
+      The extension number to enable/disable 'do not disturb'.
+    
+    fwd_unconditional [optional]
+      The extension number prefix to unable unconditional forward.
+    
+    fwd_no_answer [optional]
+      The extension number prefix to unable forward on no-answer.
+    
+    fwd_busy [optional]
+      The extension number prefix to unable forward on busy.
+    
+    fwd_disable_all [optional]
+      The extension number prefix to disable every call forward.
+    
+    park [optional]
+      The park extension number.
+    
+    pickup_group [optional]
+      The extension number to pick up a call to a group.
+    
+    pickup_call [optional]
+      The extension number prefix to pick up a call.
+    
+    voicemail [optional]
+      The voicemail extension number.
 
-funckey
+funckeys [optional|default to empty dictionary]
   A dictionary where keys are function key number and values are dictionary:
-    exten
+  XXX this has to be reviewed (type/value vs exten/supervision ?)
+    
+    exten [mandatory]
       The extension number
-    supervision
+    
+    supervision [optional|default to false]
       A boolean indicating if we supervise this extension or not
-    label
-      The label
-    line
-      The line number
+    
+    label [optional]
+      The label.
+    
+    line [optional]
+      The line number.
 
-Non-standard parameters should begin with 'X_'. A unique second level ID 
+Non-standard parameter names must begin with 'X_'. A unique second level ID
 should be used to prevent name clashes. Here's the list of parameters in
 the 'X_xivo_' namespace:
 
-X_xivo_phonebook_ip
+X_xivo_extensions [optional]
+  A boolean indicating if we should enable all the xivo-specific stuff.
+
+X_xivo_phonebook_ip [optional]
   Remote XiVO phonebook service
-X_xivo_extensions
-  A boolean which value is true if we should enable all the xivo-specific stuff,
-  else false
-X_xivo_bg_picture
-  URI of a background picture
 
-Parameters starting with 'XX_' should not be used in configuration mapping
-objects. They are reserved as a way for plugin to push/pass plugin specific
-value to a template.
-
-Parameters should be valid python identifiers since it should be possible to
-use them directly using the standard template format.
+Parameter names starting with 'XX_' must not be used in config object. They
+must only be used as a way for a plugins to push/pass plugin specific values
+to a template.
 
 """
-from twisted.internet import defer
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -172,6 +301,17 @@ __license__ = """
 import copy
 from provd.persist.common import ID_KEY
 from provd.persist.util import ForwardingDocumentCollection
+from twisted.internet import defer
+
+
+class RawConfigError(Exception):
+    """Raised when the raw config is not valid."""
+    pass
+
+
+class RawConfigParamError(RawConfigError):
+    """Raised when a specific parameter of the raw config is not valid."""
+    pass
 
 
 def _rec_update_dict(old_vals, new_vals):

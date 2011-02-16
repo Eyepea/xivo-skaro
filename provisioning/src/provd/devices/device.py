@@ -30,7 +30,7 @@ Device objects have also the following standardized keys:
   configured -- a boolean indicating if the device has been successfully
     configured by a plugin. (boolean) (mandatory)
 
-Non-standard keys should begin with 'X_'.
+Non-standard keys MUST begin with 'X_'.
 
 Finally, device collection objects are used as a storage for device objects.
 

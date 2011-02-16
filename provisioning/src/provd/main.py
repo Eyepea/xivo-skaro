@@ -32,7 +32,7 @@ import os.path
 import provd.config
 import provd.devices.ident
 import provd.devices.pgasso
-from provd.devices.config import ConfigCollection
+from provd.devices.config import ConfigCollection, RawConfigError
 from provd.devices.device import DeviceCollection
 from provd.servers.tftp.proto import TFTPProtocol
 from provd.servers.http_site import Site
@@ -99,6 +99,69 @@ def _wlock(fun):
         d = self._rw_lock.write_lock.run(fun, self, *args, **kwargs)
         return d
     return aux
+
+
+
+def _check_validity_raw_config(raw_config):
+    # check if all the mandatory parameters are present
+    # XXX this is bit repetitive...
+    if u'http_port' not in raw_config and u'tftp_port' not in raw_config:
+        raise RawConfigError('missing one of http or tftp port')
+    for param in [u'ip', u'protocol']:
+        if param not in raw_config:
+            raise RawConfigError('missing parameter "%s"' % param)
+    if u'sip' in raw_config:
+        sip = raw_config[u'sip']
+        if u'lines' in sip:
+            for line_no, line in sip[u'lines'].iteritems():
+                for param in [u'proxy_ip', u'username', u'password', u'display_name']:
+                    if param not in line:
+                        raise RawConfigError('missing parameter "sip.lines.%s.%s"' %
+                                             (line_no, param))
+    if u'sccp' in raw_config:
+        sccp = raw_config[u'sccp']
+        if u'call_managers' in sccp:
+            for priority, call_manager in sccp[u'call_managers'].iteritems():
+                for param in [u'ip']:
+                    if param not in call_manager:
+                        raise RawConfigError('missing parameter "sccp.call_managers.%s.%s"' %
+                                             (priority, param))
+    if u'funckeys' in raw_config:
+        funckeys = raw_config[u'funckeys']
+        for funckey in funckeys.itervalues():
+            for param in [u'exten']:
+                if param not in funckey:
+                    raise RawConfigError('missing parameter "funckeys.x.%s"' %
+                                         param)
+
+
+def _set_if_absent(dict_, key, value):
+    # dict_[key] = value if key not in dict_
+    if key not in dict_:
+        dict_[key] = value
+
+
+def _set_defaults_raw_config(raw_config):
+    # modify raw_config by setting default parameter value
+    if u'sip' in raw_config:
+        sip = raw_config[u'sip']
+        if u'lines' not in sip:
+            sip[u'lines'] = {}
+        else:
+            lines = sip[u'lines']
+            for line in lines.itervalues():
+                _set_if_absent(line, u'registrar_ip', line[u'proxy_ip'])
+                _set_if_absent(line, u'auth_username', line[u'username'])
+    if u'sccp' in raw_config:
+        sccp = raw_config[u'sccp']
+        _set_if_absent(sccp, u'call_managers', {})
+    _set_if_absent(raw_config, u'exten', {})
+    if u'funckeys' not in raw_config:
+        raw_config[u'funckeys'] = {}
+    else:
+        funckeys = raw_config[u'funckeys']
+        for funckey in funckeys:
+            _set_if_absent(funckey, u'supervision', False)    
 
 
 class ProvisioningApplication(object):
@@ -195,13 +258,19 @@ class ProvisioningApplication(object):
         else:
             logger.info('Configuring device "%s" with plugin "%s"', device, plugin.name)
             try:
-                plugin.configure(device, raw_config)
-            except Exception:
-                logger.error('Error while configuring device "%s"', device, exc_info=True)
+                _check_validity_raw_config(raw_config)
+            except Exception, e:
+                logging.error('Invalid raw config: %s', e)
             else:
-                if not device[u'configured']:
-                    device[u'configured'] = True
-                    updated = True
+                _set_defaults_raw_config(raw_config)
+                try:
+                    plugin.configure(device, raw_config)
+                except Exception:
+                    logger.error('Error while configuring device "%s"', device, exc_info=True)
+                else:
+                    if not device[u'configured']:
+                        device[u'configured'] = True
+                        updated = True
         return updated
     
     @defer.inlineCallbacks
@@ -308,6 +377,8 @@ class ProvisioningApplication(object):
         Device will be automatically configured if there's enough information
         to do so.
         
+        Note that the value of 'configured' is ignored if given.
+        
         """
         self._dev_check_validity(device)
         # new device are never configured
@@ -334,6 +405,8 @@ class ProvisioningApplication(object):
         has unknown id.
         
         The device is automatically deconfigured/configured if needed.
+        
+        Note that the value of 'configured' is ignored if given.
         
         """
         self._dev_check_validity(device)

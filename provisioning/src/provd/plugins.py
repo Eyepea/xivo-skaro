@@ -305,8 +305,6 @@ class Plugin(object):
         
         This method is synchronous/blocking.
         
-        XXX exception ? return value ?
-        
         """
         pass
     
@@ -344,8 +342,6 @@ class Plugin(object):
                 configuration though)
         
         This method is synchronous/blocking.
-        
-        XXX exception ? return value ?
         
         """
         pass
