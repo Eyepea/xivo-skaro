@@ -421,15 +421,16 @@ CREATE UNIQUE INDEX `stats_conf_user_index` ON `stats_conf_user`(`stats_conf_id`
 
 DROP TABLE IF EXISTS `stats_conf_queue`;
 CREATE TABLE `stats_conf_queue` (
-    `stats_conf_id` integer NOT NULL,
-    `queuefeatures_id` integer NOT NULL
+    `stats_conf_id` int(10) NOT NULL,
+    `queuefeatures_id` int(10) NOT NULL,
+    `qos` smallint(4) NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX `stats_conf_queue_index` ON `stats_conf_queue`(`stats_conf_id`,`queuefeatures_id`);
 
 DROP TABLE IF EXISTS `stats_conf_group`;
 CREATE TABLE `stats_conf_group` (
-    `stats_conf_id` integer NOT NULL,
-    `groupfeatures_id` integer NOT NULL
+    `stats_conf_id` int(10) NOT NULL,
+    `groupfeatures_id` int(10) NOT NULL
 );
 CREATE UNIQUE INDEX `stats_conf_group_index` ON `stats_conf_group`(`stats_conf_id`,`groupfeatures_id`);
 

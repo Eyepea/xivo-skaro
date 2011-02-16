@@ -449,7 +449,8 @@ CREATE UNIQUE INDEX "stats_conf_user_index" ON "stats_conf_user" USING btree ("s
 DROP TABLE IF EXISTS "stats_conf_queue";
 CREATE TABLE "stats_conf_queue" (
     "stats_conf_id" integer NOT NULL,
-    "queuefeatures_id" integer NOT NULL
+    "queuefeatures_id" integer NOT NULL,
+    "qos" smallint NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX "stats_conf_queue_index" ON "stats_conf_queue" USING btree ("stats_conf_id","queuefeatures_id");
 
