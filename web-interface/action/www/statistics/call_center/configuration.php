@@ -39,6 +39,11 @@ switch($act)
 	case 'add':
 		$result = $fm_save = $error = null;
 
+		$incall = array();
+		$incall['slt'] = array();		
+		$appincall = &$ipbx->get_application('incall');
+		$incall['list'] = $appincall->get_incalls_list(null,'exten',null,true);
+		
 		$queue = array();
 		$queue['slt'] = array();		
 		$appqueue = &$ipbx->get_application('queue');
@@ -59,11 +64,14 @@ switch($act)
 		$appuser = &$ipbx->get_application('user');
 		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
 		
+		$workhour_start = array();
+		$workhour_end = array();
+		
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('stats_conf',$_QR) === true
 		&& dwho_issa('workhour_start',$_QR) === true
 		&& dwho_issa('workhour_end',$_QR) === true)
-		{		
+		{
 			if($appstats_conf->set_add($_QR) === false
 			|| $appstats_conf->add() === false)
 			{
@@ -72,11 +80,9 @@ switch($act)
 				$error  = $appstats_conf->get_error();
 		
 				$info_hour_start = explode(':',$result['stats_conf']['hour_start']);
-				$workhour_start = array();
 				$workhour_start['h'] = $info_hour_start[0];
 				$workhour_start['m'] = $info_hour_start[1];
 				$info_hour_end = explode(':',$result['stats_conf']['hour_end']);
-				$workhour_end = array();
 				$workhour_end['h'] = $info_hour_end[0];
 				$workhour_end['m'] = $info_hour_end[1];
 			}
@@ -85,12 +91,31 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
+		
+		if($incall['list'] !== false && dwho_ak('incall',$return) === true)
+		{
+			$incall['slt'] = dwho_array_intersect_key($return['incall'],$incall['list'],'id');
+			if($incall['slt'] !== false)
+			{
+				$incall['list'] = dwho_array_diff_key($incall['list'],$incall['slt']);
+				$incallsort = new dwho_sort(array('key' => 'name'));
+				uasort($incall['slt'],array(&$incallsort,'str_usort'));
+			}
+		}
 
+		$listqos = array();
 		if($queue['list'] !== false && dwho_ak('queue',$result) === true)
 		{
 			$queue['slt'] = dwho_array_intersect_key($result['queue'],$queue['list'],'id');
 			if($queue['slt'] !== false)
 			{
+				$listq = $result['queue'];
+				while($listq) 
+				{
+					$q = array_shift($listq);
+					$queue['slt'][$q['id']]['stats_qos'] = $q['stats_qos'];
+					$listqos[$q['id']] = $q['stats_qos'];
+				}
 				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
 				$queuesort = new dwho_sort(array('key' => 'name'));
 				uasort($queue['slt'],array(&$queuesort,'str_usort'));
@@ -136,6 +161,8 @@ switch($act)
 		$_TPL->set_var('element',$appstats_conf->get_elements());
 		$_TPL->set_var('workhour_start',$workhour_start);
 		$_TPL->set_var('workhour_end',$workhour_end);
+		$_TPL->set_var('listqos',$listqos);
+		$_TPL->set_var('incall',$incall);
 		$_TPL->set_var('queue',$queue);
 		$_TPL->set_var('group',$group);
 		$_TPL->set_var('agent',$agent);
@@ -148,6 +175,11 @@ switch($act)
 		
 		$result = $fm_save = $error = null;
 		$return = &$info;
+		
+		$incall = array();
+		$incall['slt'] = array();		
+		$appincall = &$ipbx->get_application('incall');
+		$incall['list'] = $appincall->get_incalls_list(null,'exten',null,true);
 		
 		$queue = array();
 		$queue['slt'] = array();		
@@ -168,13 +200,14 @@ switch($act)
 		$user['slt'] = array();		
 		$appuser = &$ipbx->get_application('user');
 		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
+				
+		$workhour_start = array();
+		$workhour_end = array();
 		
 		$info_hour_start = explode(':',$info['stats_conf']['hour_start']);
-		$workhour_start = array();
 		$workhour_start['h'] = $info_hour_start[0];
 		$workhour_start['m'] = $info_hour_start[1];
 		$info_hour_end = explode(':',$info['stats_conf']['hour_end']);
-		$workhour_end = array();
 		$workhour_end['h'] = $info_hour_end[0];
 		$workhour_end['m'] = $info_hour_end[1];
 		
@@ -185,7 +218,7 @@ switch($act)
 		{
 			$workhour_start = $_QR['workhour_start'];
 			$workhour_end = $_QR['workhour_end'];
-
+		
 			if($appstats_conf->set_edit($_QR) === false
 			|| $appstats_conf->edit() === false)
 			{
@@ -194,22 +227,41 @@ switch($act)
 				$error  = $appstats_conf->get_error();
 			}
 			else
-				$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
+				$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);		
 		}
 
 		dwho::load_class('dwho_sort');
+		
+		if($incall['list'] !== false && dwho_ak('incall',$return) === true)
+		{
+			$incall['slt'] = dwho_array_intersect_key($return['incall'],$incall['list'],'id');
+			if($incall['slt'] !== false)
+			{
+				$incall['list'] = dwho_array_diff_key($incall['list'],$incall['slt']);
+				$incallsort = new dwho_sort(array('key' => 'name'));
+				uasort($incall['slt'],array(&$incallsort,'str_usort'));
+			}
+		}
 
+		$listqos = array();
 		if($queue['list'] !== false && dwho_ak('queue',$return) === true)
 		{
 			$queue['slt'] = dwho_array_intersect_key($return['queue'],$queue['list'],'id');
 			if($queue['slt'] !== false)
 			{
+				$listq = $return['queue'];
+				while($listq) 
+				{
+					$q = array_shift($listq);
+					$queue['slt'][$q['id']]['stats_qos'] = $q['stats_qos'];
+					$listqos[$q['id']] = $q['stats_qos'];
+				}
 				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
 				$queuesort = new dwho_sort(array('key' => 'name'));
 				uasort($queue['slt'],array(&$queuesort,'str_usort'));
 			}
 		}
-
+		
 		if($group['list'] !== false && dwho_ak('group',$return) === true)
 		{
 			$group['slt'] = dwho_array_intersect_key($return['group'],$group['list'],'id');
@@ -247,13 +299,15 @@ switch($act)
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('id',$_QR['id']);
-		$_TPL->set_var('element',$appstats_conf->get_elements());	
+		$_TPL->set_var('element',$appstats_conf->get_elements());
 		$_TPL->set_var('workhour_start',$workhour_start);
 		$_TPL->set_var('workhour_end',$workhour_end);
+		$_TPL->set_var('listqos',$listqos);
+		$_TPL->set_var('incall',$incall);
 		$_TPL->set_var('queue',$queue);
 		$_TPL->set_var('group',$group);
 		$_TPL->set_var('agent',$agent);
-		$_TPL->set_var('user',$user);		
+		$_TPL->set_var('user',$user);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -301,30 +355,6 @@ switch($act)
 		}
 
 		$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
-		break;		
-	case 'qos':
-		$return = $error = $fm_save = null;
-		
-		if(isset($_QR['fm_send']) === true 
-		&& dwho_issa('stats_qos',$_QR) === true)
-		{
-			if($appstats_conf->set_stats_qos($_QR['stats_qos']) === false
-			|| $appstats_conf->edit_queuefeatures() === false)
-			{
-				$fm_save = false;
-				$result = $appstats_conf->get_result();
-				$error  = $appstats_conf->get_error();
-			}
-			else
-				$fm_save = true;
-		}
-		
-		$appqueue = &$ipbx->get_application('queue');
-		$list_queue = $appqueue->get_queues_list(null,'name');
-		
-		$_TPL->set_var('error',$error);
-		$_TPL->set_var('fm_save',$fm_save);
-		$_TPL->set_var('ls_queue',$list_queue);
 		break;
 	case 'list':
 	default:

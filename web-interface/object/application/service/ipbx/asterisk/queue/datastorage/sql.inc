@@ -27,22 +27,6 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 				'queue'		=> '',
 				'queuemember'	=> '');
 
-	function get_qos($key_assoc='displayname')
-	{
-		$this->_dso->new_select($this->_table['queuefeatures'],array('id','name','displayname','number','stats_qos'));
-		
-		$r = $this->_dso->select_all(null,true,false,$key_assoc);
-
-		if(($this->_cnt = $this->_dso->select_distinct_count_singlecolumn(
-							null,
-							'id',
-							$this->_table['queuefeatures'])) === false
-		|| empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_dso->new_select($this->_table['queuefeatures']);
@@ -82,7 +66,6 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		$this->_dso->add_group('announceoverride', $this->_table['queuefeatures']);
 		$this->_dso->add_group('timeout', $this->_table['queuefeatures']);
 		$this->_dso->add_group('preprocess_subroutine', $this->_table['queuefeatures']);
-		$this->_dso->add_group('stats_qos', $this->_table['queuefeatures']);
 		$this->_dso->add_group('commented', $this->_table['queue']);
 		$this->_dso->add_group('category', $this->_table['queue']);
 

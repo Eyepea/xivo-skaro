@@ -88,6 +88,9 @@ $array['module']['stats_conf_agent']['datastorage'] = true;
 $array['module']['stats_conf_user'] = array();
 $array['module']['stats_conf_user']['datastorage'] = true;
 
+$array['module']['stats_conf_incall'] = array();
+$array['module']['stats_conf_incall']['datastorage'] = true;
+
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 

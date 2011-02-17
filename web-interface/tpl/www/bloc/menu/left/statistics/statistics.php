@@ -52,10 +52,6 @@ $element = $this->get_var('element');
 				<?=$url->href_html($this->bbf('mn_left_configuration_call_center'),
 						   'statistics/call_center/configuration','act=list');?>
 			</dd>
-			<dd id="mn-2">
-				<?=$url->href_html($this->bbf('mn_left_configuration_call_center-qos'),
-						   'statistics/call_center/configuration','act=qos');?>
-			</dd>
 <?php
 	endif;
 ?>
@@ -72,12 +68,16 @@ $element = $this->get_var('element');
 						   'statistics/call_center/stats2');?>
 			</dd>
 			<dd id="mn-3">
-				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
+				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
 						   'statistics/call_center/stats3');?>
 			</dd>
 			<dd id="mn-4">
-				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
+				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
 						   'statistics/call_center/stats4');?>
+			</dd>
+			<dd id="mn-5">
+				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-5'),
+						   'statistics/call_center/stats5');?>
 			</dd>
 <?php
 	endif;

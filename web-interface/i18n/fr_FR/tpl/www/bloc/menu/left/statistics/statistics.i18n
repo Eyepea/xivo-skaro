@@ -33,7 +33,10 @@ Files d'attente
 Agents performance
 
 ; mn_left_statistics_call_center-3
-Détails par période
+Agents détails / durées
 
 ; mn_left_statistics_call_center-4
-Agents détails / durées
+Détails par période
+
+; mn_left_statistics_call_center-5
+Appel entrant

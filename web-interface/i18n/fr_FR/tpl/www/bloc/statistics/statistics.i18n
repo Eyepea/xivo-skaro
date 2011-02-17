@@ -24,19 +24,22 @@ jusqu'à ce jour
 Choisisser la configuration à appliquer: 
 
 ; colstruct_traitment
-Appel traités
+Appels traités
 
 ; colstruct_abandon
-Appel abandonnés
+Appels abandonnés
 
 ; colstruct_withdrawal
 Retrait
 
 ; colstruct_connect
-Appel traités
+Appels traités
 
 ; col_presented
 <acronym title="Présenté">Pré.</acronym>
+
+; col_connected
+<acronym title="Connécté">Con.</acronym>
 
 ; col_connect
 <acronym title="Répondu">Rép.</acronym>

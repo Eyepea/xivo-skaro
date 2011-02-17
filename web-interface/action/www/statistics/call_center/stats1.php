@@ -23,20 +23,16 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 if(xivo::load_class('xivo_statistics_queue',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
 
-$appqueue = &$ipbx->get_application('queue');
 $stats_queue = new xivo_statistics_queue(&$_XS);
+$stats_queue->get_data();
 
 $tpl_statistics->set_name('queue');
 $tpl_statistics->set_baseurl('statistics/call_center/stats1');
-
 $tpl_statistics->set_data_custom('axetype',$axetype);
 $itl = $_XS->get_datecal();
 switch ($axetype)
 {
 	case 'day':
-		if (($queue_qos = $appqueue->get_qos()) === false)
-			$queue_qos = array();
-		$stats_queue->set_data_custom('qos',$queue_qos);
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
 		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
@@ -59,7 +55,6 @@ switch ($axetype)
 		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'keyfile',true);
 		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
-$stats_queue->get_data();
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
@@ -67,12 +62,16 @@ $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('presented',
 					'direct',
 					'custom:queue,[key],presented');
+$tpl_statistics->set_col_struct('traitment');
+$tpl_statistics->add_col('connected',
+					'direct',
+					'custom:queue,[key],enterqueue');
 $tpl_statistics->add_col('connect',
 					'direct',
-					'custom:queue,[key],answered');
+					'custom:queue,[key],connect');
 $tpl_statistics->add_col('abandon',
 					'direct',
-					'custom:queue,[key],abandoned');
+					'custom:queue,[key],abandon');
 
 $tpl_statistics->set_col_struct('deterred');
 $tpl_statistics->add_col('on_close',
@@ -96,15 +95,15 @@ $tpl_statistics->add_col('on_number',
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
 					'expression',
-					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],answered}',
+					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],connect}',
 					'time');
 $tpl_statistics->add_col('home_rated',
 					'expression',
-					'{custom:queue,[key],answered}/{custom:queue,[key],presented}',
+					'{custom:queue,[key],connect}/{custom:queue,[key],enterqueue}',
 					'percent');
 $tpl_statistics->add_col('qos',
 					'expression',
-					'{custom:queue,[key],qos}/{custom:queue,[key],answered}',
+					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
 					'percent');
 
 $tpl_statistics->gener_table();

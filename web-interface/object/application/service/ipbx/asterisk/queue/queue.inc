@@ -276,15 +276,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		return($r);
 	}
-
-	function get_qos($key_assoc='name')
-	{
-		if (($r = $this->_dso->get_qos($key_assoc)) === false
-		|| empty($r) === true)
-			return(false);
-
-		return($r);
-	}
 	
 	function get_announce()
 	{

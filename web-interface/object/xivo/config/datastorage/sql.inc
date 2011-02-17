@@ -104,5 +104,9 @@ $array['stats_conf_user'] = array();
 $array['stats_conf_user']['table'] = 'stats_conf_user';
 $array['stats_conf_user']['primary'] = array('stats_conf_id' => '');
 
+$array['stats_conf_incall'] = array();
+$array['stats_conf_incall']['table'] = 'stats_conf_incall';
+$array['stats_conf_incall']['primary'] = array('stats_conf_id' => '');
+
 
 ?>

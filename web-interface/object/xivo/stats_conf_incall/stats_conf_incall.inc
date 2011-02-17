@@ -20,10 +20,10 @@
 
 xivo_object::required(array('abstract','abstract.inc'),true);
 
-class xivo_object_stats_conf_group extends xivo_object_abstract
+class xivo_object_stats_conf_incall extends xivo_object_abstract
 {
 	var $_dso			= null;
-	var $_name			= 'stats_conf_group';
+	var $_name			= 'stats_conf_incall';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
@@ -41,8 +41,7 @@ class xivo_object_stats_conf_group extends xivo_object_abstract
 	public function _prepare($data)
 	{
 		$data['stats_conf_id'] = (int) $data['stats_conf_id'];
-		$data['groupfeatures_id'] = (int) $data['groupfeatures_id'];
-		$data['qos'] = (int) $data['qos'];
+		$data['incall_id'] = (int) $data['incall_id'];
 
 		return($data);
 	}

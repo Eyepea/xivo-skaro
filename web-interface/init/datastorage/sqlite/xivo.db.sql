@@ -387,6 +387,13 @@ CREATE TABLE stats_conf_agent (
 );
 CREATE UNIQUE INDEX stats_conf_agent_index ON stats_conf_agent(stats_conf_id,agentfeatures_id);
 
+DROP TABLE stats_conf_incall;
+CREATE TABLE stats_conf_incall (
+    stats_conf_id int(10) NOT NULL,
+    incall_id int(10) NOT NULL
+);
+CREATE UNIQUE INDEX stats_conf_incall_index ON stats_conf_incall(stats_conf_id,incall_id);
+
 DROP TABLE stats_conf_user;
 CREATE TABLE stats_conf_user (
     stats_conf_id int(10) NOT NULL,

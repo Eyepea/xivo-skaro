@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'queuefeatures';
+	var $_dso		= null;
+	var $_name		= 'queuefeatures';
 	var $_filter	= false;
 	var $_origin	= false;
 	var $_identity	= false;

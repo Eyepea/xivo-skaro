@@ -405,6 +405,13 @@ CREATE INDEX `stats_conf__idx__id` ON `stats_conf`(`id`);
 CREATE INDEX `stats_conf__idx__disable` ON `stats_conf`(`disable`);
 CREATE UNIQUE INDEX `stats_conf__uidx__name` ON `stats_conf`(`name`);
 
+DROP TABLE IF EXISTS `stats_conf_incall`;
+CREATE TABLE `stats_conf_incall` (
+    `stats_conf_id` int(10) NOT NULL,
+    `incall_id` int(10) NOT NULL
+);
+CREATE UNIQUE INDEX `stats_conf_incall_index` ON `stats_conf_incall`(`stats_conf_id`,`incall_id`);
+
 DROP TABLE IF EXISTS `stats_conf_agent`;
 CREATE TABLE `stats_conf_agent` (
     `stats_conf_id` int(10) NOT NULL,

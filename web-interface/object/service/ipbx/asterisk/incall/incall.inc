@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'incall';
+	var $_dso		= null;
+	var $_name		= 'incall';
 	var $_filter	= false;
 	var $_origin	= false;
 	var $_identity	= false;
@@ -71,6 +71,17 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit($id,$arr,$disable));
+	}
+	
+	function get_all_wherein($id,$where)
+	{
+		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
+			return(false);
+
+		foreach($list as &$v)
+			$v = $this->_prepare($v);
+
+		return($list);
 	}
 }
 

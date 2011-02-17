@@ -233,6 +233,7 @@ $array['statistics/call_center/stats1']				= 'statistics/call_center/index.php/s
 $array['statistics/call_center/stats2']				= 'statistics/call_center/index.php/stats2';
 $array['statistics/call_center/stats3']				= 'statistics/call_center/index.php/stats3';
 $array['statistics/call_center/stats4']				= 'statistics/call_center/index.php/stats4';
+$array['statistics/call_center/stats5']				= 'statistics/call_center/index.php/stats5';
 $array['statistics/call_center/configuration']		= 'statistics/call_center/index.php/configuration/';
 $array['statistics/call_center/cache']				= 'statistics/call_center/index.php/cache/';
 

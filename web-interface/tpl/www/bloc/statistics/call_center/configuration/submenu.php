@@ -43,6 +43,16 @@
 			</li>
 			<li id="dwsm-tab-3"
 			    class="dwsm-blur"
+			    onclick="dwho_submenu.select(this,'sb-part-incall');"
+			    onmouseout="dwho_submenu.blur(this);"
+			    onmouseover="dwho_submenu.focus(this);">
+				<div class="tab">
+					<span class="span-center"><a href="#incall"><?=$this->bbf('smenu_incall');?></a></span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</li>
+			<li id="dwsm-tab-4"
+			    class="dwsm-blur"
 			    onclick="dwho_submenu.select(this,'sb-part-queue');"
 			    onmouseout="dwho_submenu.blur(this);"
 			    onmouseover="dwho_submenu.focus(this);">
@@ -51,7 +61,17 @@
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</li>
-			<li id="dwsm-tab-4"
+			<li id="dwsm-tab-5"
+			    class="dwsm-blur"
+			    onclick="dwho_submenu.select(this,'sb-part-qos');"
+			    onmouseout="dwho_submenu.blur(this);"
+			    onmouseover="dwho_submenu.focus(this);">
+				<div class="tab">
+					<span class="span-center"><a href="#qos"><?=$this->bbf('smenu_qos');?></a></span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</li>
+			<li id="dwsm-tab-6"
 			    class="dwsm-blur-last"
 			    onclick="dwho_submenu.select(this,'sb-part-last',1);"
 			    onmouseout="dwho_submenu.blur(this,1);"

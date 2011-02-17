@@ -1,5 +1,4 @@
 <?php
-
 #
 # XiVO Web-Interface
 # Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
@@ -18,23 +17,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
+$url = &$this->get_module('url');
 
-$array['element'] = array();
-
-$array['element']['stats_conf_id'] = array();
-$array['element']['stats_conf_id']['default'] = 0;
-
-$array['element']['queuefeatures_id'] = array();
-$array['element']['queuefeatures_id']['default'] = 0;
-
-$array['element']['qos'] = array();
-$array['element']['qos']['default'] = 0;
-
-
-$array['filter'] = array();
-$array['filter']['stats_conf_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
-$array['filter']['queuefeatures_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
-$array['filter']['qos'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
+$hascachetype = $this->get_var('hascachetype');
+$basedir = $this->get_var('basedir');
+$table1 = $this->get_var('table1');
+$axetype = $this->get_var('axetype');
+$listrow = $this->get_var('listrow');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>
+<div id="sr-users" class="b-infos b-form">
+	<h3 class="sb-top xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-right">&nbsp;</span>
+	</h3>
+	<div class="sb-content">
+
+    </div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
+</div>

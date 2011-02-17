@@ -18,49 +18,46 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_object_stats_conf_group extends xivo_object_abstract
+class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 {
-	var $_dso			= null;
-	var $_name			= 'stats_conf_group';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
+	var $_dso		= null;
+	var $_name		= 'cel';
+	var $_filter	= false;
 
-	public function __construct(&$xobj,&$dso)
+	function xivo_service_asterisk_cel(&$sre,&$dso)
 	{
-		parent::__construct(&$xobj);
+		if(is_object($sre) === false)
+			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		if(is_object($dso) === false)
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
+		$this->_sre = &$sre;
 		$this->_dso = &$dso;
+
+		$this->_load_config();
 	}
 
-	public function _prepare($data)
-	{
-		$data['stats_conf_id'] = (int) $data['stats_conf_id'];
-		$data['groupfeatures_id'] = (int) $data['groupfeatures_id'];
-		$data['qos'] = (int) $data['qos'];
-
-		return($data);
-	}
-
-	public function add($arr,$id=0)
+	function search($arr,$order=null,$limit=null)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
-		return(parent::add($arr,$id));
-	}
+		$search = array();
+		
+		$search = $arr;
+		
+		if(($result = $this->_dso->search($search,$order,$limit)) === false)
+			return(null);
 
-	public function edit($id,$arr)
-	{
-		if(is_array($arr) === false)
-			return(false);
+		$nb = count($result);
 
-		return(parent::edit($id,$arr));
+		for($i = 0;$i < $nb;$i++)
+			$ref = &$result[$i];
+
+		return($result);
 	}
 }
 

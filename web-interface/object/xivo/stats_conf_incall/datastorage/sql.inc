@@ -18,23 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
+xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
-$array['element'] = array();
+class xivo_object_stats_conf_incall_sql extends xivo_object_abstract_sql
+{
+	var $_unique	= '';
 
-$array['element']['stats_conf_id'] = array();
-$array['element']['stats_conf_id']['default'] = 0;
+	function delete_where($where,$disable=null,$id=null) {
 
-$array['element']['queuefeatures_id'] = array();
-$array['element']['queuefeatures_id']['default'] = 0;
+		return($this->_dso->delete_where($where,$disable,$id));
 
-$array['element']['qos'] = array();
-$array['element']['qos']['default'] = 0;
+	}
 
+	public function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
 
-$array['filter'] = array();
-$array['filter']['stats_conf_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
-$array['filter']['queuefeatures_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
-$array['filter']['qos'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
+		return(parent::add($arr,false));
+	}
+}
 
 ?>

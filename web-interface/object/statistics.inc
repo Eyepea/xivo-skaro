@@ -668,6 +668,41 @@ class xivo_statistics
 		return(null);
 	}
 	
+	private function normalize_incall($arr,$type)
+	{
+		if (is_array($arr) === false
+		|| isset($arr['id']) === false
+		|| isset($arr['exten']) === false
+		|| isset($arr['identity']) === false
+		|| isset($arr['context']) === false
+		|| isset($arr['commented']) === false)
+			return(false);
+		
+		if (((bool) $arr['commented']) === true)
+			return(false);
+						
+		$rs = array();
+		$rs['id'] = (int) $arr['id'];
+		// clean identity context
+		$rs['identity'] =  preg_replace('/@[a-z-_]+/i','',$arr['identity']);
+		$rs['context'] = $arr['context'];
+		
+		switch ($type)
+		{
+			case 'incall':
+				$rs['key'] = $arr['exten'];
+				$rs['keyfile'] = 'incall-'.$arr['id'];
+				$tmp = array();
+				array_push($tmp, $arr['exten']);
+				$rs['keydata'] = $tmp;
+				$rs['type'] = 'incall';
+				break;
+			default:
+				return(false);
+		}
+		return($rs);
+	}
+	
 	private function normalize_agent($arr,$type)
 	{
 		if (is_array($arr) === false
@@ -725,7 +760,8 @@ class xivo_statistics
 		|| isset($arr['id']) === false
 		|| isset($arr['name']) === false
 		|| isset($arr['number']) === false
-		|| isset($arr['context']) === false)
+		|| isset($arr['context']) === false
+		|| isset($arr['stats_qos']) === false)
 			return(false);
 			
 		$rs = array();
@@ -735,16 +771,19 @@ class xivo_statistics
 		$rs['number'] = $arr['number'];
 		$rs['context'] = $arr['context'];
 		$rs['keydata'] = array($arr['name']);
+		$rs['qos'] = $arr['stats_qos'];
 	
 		switch ($type)
 		{
 			case 'queue':
 				$rs['key'] = 'queue/'.$arr['name'];
 				$rs['keyfile'] = 'queue-'.$arr['id'];
-				$rs['type'] = 'queue';	
+				$rs['type'] = 'queue';
 				break;
 			case 'group':
-				$rs['key'] = 'group/'.$arr['number'];	
+				if (isset($arr['group_qos']) === false)
+					return(false);
+				$rs['key'] = 'group/'.$arr['number'];
 				$rs['keyfile'] = 'group-'.$arr['id'];
 				$rs['type'] = 'group';
 				break;
@@ -756,12 +795,63 @@ class xivo_statistics
 	
 	public function get_list_by_type($type)
 	{
-		$this->push_debug("get_list_by_type()",array($type));			
-		$data = array();
+		$this->push_debug("get_list_by_type()",array($type));
 		switch ($type)
 		{
+			case 'incall':
+				$ls_incall = array();		
+				if ($this->_conf['incall'] === false)
+					return(false);
+				
+				if (empty($this->_objectkey) === true
+				|| $this->_objectkey === 0)
+				{
+					if($this->_conf['incall'] !== false)
+					{
+						asort($this->_conf['incall']);
+						$incall = array_values($this->_conf['incall']);						
+						$nb = count($incall);		
+						for($i=0;$i<$nb;$i++)
+						{
+							$ref = &$incall[$i];
+							if (($rs = $this->normalize_incall($ref,'incall')) === false)
+								continue;
+							array_push($ls_incall, $rs);
+						}
+					}
+				}
+				elseif (empty($this->_objectkey) === false
+				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
+				{						
+					$key = $out[1];
+					$id = $out[2];
+					
+					switch ($key)
+					{
+						case 'incall':
+							if ($this->_conf['incall'] !== false)
+							{
+								$listincall = $this->_conf['incall'];
+								while ($listincall)
+								{
+									$incall = array_shift($listincall);
+									if ($id === $incall['id']
+									&& ($rs = $this->normalize_incall($incall,$key)) !== false)
+									{
+										array_push($ls_queue, $rs);
+										break;
+									}
+								}
+							}
+							break;
+						default:
+							return($ls_incall);
+					}					
+				}
+				return($ls_incall);
+				break;
 			case 'agent':
-				$ls_agent = array();				
+				$ls_agent = array();
 				if ($this->_conf['agent'] === false
 				&& $this->_conf['user'] === false)
 					return(false);
@@ -838,10 +928,10 @@ class xivo_statistics
 							}
 							break;
 						default:
-							return($data);
+							return($ls_agent);
 					}
 				}
-				$data = $ls_agent;
+				return($ls_agent);
 				break;
 			case 'period':
 			case 'queue':
@@ -922,15 +1012,14 @@ class xivo_statistics
 							}
 							break;
 						default:
-							return($data);
+							return($ls_queue);
 					}					
 				}
-				$data = $ls_queue;
+				return($ls_queue);
 				break;
 			default:
 				return(false);
 		}
-		return($data);
 	}
 	
 	public function get_object_list()
@@ -940,6 +1029,9 @@ class xivo_statistics
 		$this->_objectkey = 0;
 		switch ($this->_type)
 		{
+			case 'incall':
+				$rs = ($this->get_incall_list());
+				break;
 			case 'agent':
 				$rs = ($this->get_agent_list());
 				break;
@@ -952,6 +1044,16 @@ class xivo_statistics
 		}
 		$this->_objectkey = $objrestore;
 		return($rs);
+	}
+	
+	public function get_incall_list()
+	{			
+		$this->push_debug("get_incall_list()");		
+		if (($list = $this->get_list_by_type('incall')) === false)
+			return(false);
+			
+		asort($list);			
+		return($list);
 	}
 	
 	public function get_queue_list()
@@ -1035,10 +1137,6 @@ class xivo_statistics
 			die('Can\'t load xivo_statistics_queue object');
 		
 		$stats_queue = new xivo_statistics_queue(&$this);
-		if (($appqueue = &$this->_ipbx->get_application('queue')) === false
-		|| ($queue_qos = $appqueue->get_qos()) === false)
-			return(false);
-		$stats_queue->set_data_custom('qos',$queue_qos);
 		
 		$dbeg = $this->_interval['beg'];
 		$dend = $this->_interval['end'];
@@ -1403,7 +1501,7 @@ class xivo_statistics
 			{
 				echo "$report -- mode erase enabled >> creation required... \n";
 				echo "$report >> create in progress......... \n";
-				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
 				echo "$report >> creation finished \n";
@@ -1413,7 +1511,7 @@ class xivo_statistics
 			{
 				echo "$report -- not exist >> creation required... \n";
 				echo "$report >> create in progress......... \n";
-				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
 			}
@@ -1428,7 +1526,7 @@ class xivo_statistics
 				}
 				echo "month $index is not up to date. \n";
 				echo "$report >> update in progress......... \n";
-				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$idtype);
+				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
 			}

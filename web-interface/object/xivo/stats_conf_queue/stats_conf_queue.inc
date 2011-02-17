@@ -42,6 +42,7 @@ class xivo_object_stats_conf_queue extends xivo_object_abstract
 	{
 		$data['stats_conf_id'] = (int) $data['stats_conf_id'];
 		$data['queuefeatures_id'] = (int) $data['queuefeatures_id'];
+		$data['qos'] = (int) $data['qos'];
 
 		return($data);
 	}

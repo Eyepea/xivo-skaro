@@ -279,12 +279,14 @@ class xivo_jqplot
 			        yaxis: 
 			        { 
 			        	autoscale: true, 
-			        	tickOptions:{formatString: '%s%%'}
+			        	tickOptions:{formatString: '%d%%'},
+			        	min: 0
 					},
 			        y2axis:
 			        { 
 			        	autoscale: true, 
-			        	tickOptions:{formatString: '%ss.'} 
+			        	tickOptions:{formatString: '%ss.'},
+			        	min: 0
 					}
 				},			      
 			    series:
@@ -392,7 +394,8 @@ class xivo_jqplot
 			        yaxis:
 			        {
 			        	autoscale: true, 
-			        	tickOptions:{formatString: '%d%%'}
+			        	tickOptions:{formatString: '%d%%'},
+			        	min: 0
 			        }
 			    },
 			    cursor:{show: false}
@@ -756,8 +759,9 @@ class xivo_jqplot
 					},
 			        y2axis: 
 			        { 
-			        	autoscale: true, 
-			        	tickOptions:{formatString: '%s%%'}
+			        	autoscale: true,
+			        	tickOptions:{formatString: '%d%%'},
+			        	min: 0
 					}
 			    },
 			    cursor:{show: false},

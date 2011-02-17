@@ -161,7 +161,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$arr = array();
 		$arr['label'] = $label;
 		$arr['type'] = $type;
-		$arr['expression'] = $expression;
+		$arr['expression'] = trim($expression, "\x00..\x20");
 		$arr['format'] = $format;
 		$arr['order'] = $order;
 		array_push($ref, $arr);
@@ -222,12 +222,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 						}						
 						break;
 					case 'expression':
-						$ope = '#^{([\w,:/\[\]]+)}([/+*\-]{1}){([\w,:/\[\]]+)}#i';
-						$stdif = '#^if\({([\w,:]+)}([><=]{1}){([\w,:\[\]:]+)}\)=([\w]+)([/+*\-]{0,1})([a-z]*)#i';						
-						$multif = '#^if\(([\w,:><=\[\]\}\{&\|]+)\)=([\w]+)([/+*\-]{0,1})([a-z]*)#i';
+						$regex_ope = '#^{([\w,:/\[\]]+)}([/+*\-]{1}){([\w,:/\[\]]+)}#i';
+						$regex_stdif = '#^if\({([\w,:]+)}([><=]{1}){([\w,:\[\]:]+)}\)=([\w]+)([/+*\-]{0,1})([a-z]*)#i';						
+						$regex_multif = '#^if\(([\w,:><=\[\]\}\{&\|]+)\)=([\w]+)([/+*\-]{0,1})([a-z]*)#i';
 							
 						# {custom:agent,[number],calltime}/{custom:agent,[number],logintime}
-						if(preg_match($ope,$expression,$out) === 1)
+						if(preg_match($regex_ope,$expression,$out) === 1)
 						{
 							$val1 = $this->eval_expression($out[1],$rowdata);
 							if (is_array($val1) === true)
@@ -573,7 +573,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		foreach ($this->_data_table as $row => $cols)
 		{
 			$coldata = $cols['rowdata'];
-			$identity = $coldata['identity'];
+			$identity = $type = '';
+			
+			if (isset($coldata['identity']) === true)
+				$identity = $coldata['identity'];
+			if (isset($coldata['type']) === true)
+				$type = $coldata['type'];
 			
 			$return .= '<tbody id="disp">';
 			$return .= '<tr class="fm-paragraph l-infos-'.(($c % 2) + 1).'on2" title="'.dwho_alttitle($identity).'">';
@@ -587,12 +592,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			{
 				$bbf = array();
 				$return .= '<td class="txt-left">'; 
-				switch ($coldata['type'])
+				switch ($type)
 				{
-					case 'user':						
+					case 'user':
 						$return .= '<img src="/img/site/personal-trans.png" alt="" width="16" height="16" />';
 						break;
-					case 'agent': 
+					case 'agent':
 						$return .= '<img src="/img/site/agent-trans.png" alt="" width="16" height="16" />'; 
 						break;
 					case 'queue':

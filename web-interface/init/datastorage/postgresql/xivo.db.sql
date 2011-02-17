@@ -446,6 +446,13 @@ CREATE TABLE "stats_conf_user" (
 );
 CREATE UNIQUE INDEX "stats_conf_user_index" ON "stats_conf_user" USING btree ("stats_conf_id","userfeatures_id");
 
+DROP TABLE IF EXISTS "stats_conf_incall";
+CREATE TABLE "stats_conf_incall" (
+    "stats_conf_id" integer NOT NULL,
+    "incall_id" integer NOT NULL
+);
+CREATE UNIQUE INDEX "stats_conf_incall_index" ON "stats_conf_incall" USING btree ("stats_conf_incall","incall_id");
+
 DROP TABLE IF EXISTS "stats_conf_queue";
 CREATE TABLE "stats_conf_queue" (
     "stats_conf_id" integer NOT NULL,

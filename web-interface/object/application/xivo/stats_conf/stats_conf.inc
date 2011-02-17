@@ -27,10 +27,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	var $_groupfeatures		= false;
 	var $_agentfeatures		= false;
 	var $_userfeatures		= false;
+	var $_incall			= false;
 	var $_stats_conf_queue	= false;
 	var $_stats_conf_group	= false;
 	var $_stats_conf_agent	= false;
 	var $_stats_conf_user	= false;
+	var $_stats_conf_incall	= false;
 
 	public function __construct(&$xobj,&$dso,$param=null,$components=true)
 	{		
@@ -63,10 +65,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| ($this->_groupfeatures = &$_SRE->get_module('ipbx','groupfeatures')) === false
 		|| ($this->_agentfeatures = &$_SRE->get_module('ipbx','agentfeatures')) === false
 		|| ($this->_userfeatures = &$_SRE->get_module('ipbx','userfeatures')) === false
+		|| ($this->_incall = &$_SRE->get_module('ipbx','incall')) === false
 		|| ($this->_stats_conf_queue = &$this->_xobj->get_module('stats_conf_queue')) === false
 		|| ($this->_stats_conf_group = &$this->_xobj->get_module('stats_conf_group')) === false
 		|| ($this->_stats_conf_agent = &$this->_xobj->get_module('stats_conf_agent')) === false
-		|| ($this->_stats_conf_user = &$this->_xobj->get_module('stats_conf_user')) === false)
+		|| ($this->_stats_conf_user = &$this->_xobj->get_module('stats_conf_user')) === false
+		|| ($this->_stats_conf_incall = &$this->_xobj->get_module('stats_conf_incall')) === false)
 			return(false);
 
 		return(true);
@@ -82,6 +86,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		
 		$this->_info['stats_conf'] = $this->_stats_conf->_prepare($r);
 
+		$this->_get_incall();
 		$this->_get_queue();
 		$this->_get_group();
 		$this->_get_agent();
@@ -94,8 +99,32 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	{
 		return($this->_stats_conf->get_nb($arr,$disable));
 	}
+	
+	private function _get_incall()
+	{
+		$this->_info['incall'] = false;
+		$this->_origin['incall'] = false;
+		
+		$where = array();
+		$where['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
+		
+		if($this->_stats_conf_incall === false
+		|| ($rs = $this->_stats_conf_incall->get_all_where($where)) === false)
+			return(false);
+		
+		$tmp = array();
+		foreach($rs as $qid)
+			array_push($tmp,$qid['incall_id']);
+			
+		if($this->_incall === false
+		|| ($this->_info['incall'] = $this->_incall->get_all_wherein('id',$tmp)) === false
+		|| empty($this->_info['incall']) === true)
+			return(false);
 
-	public function _get_queue()
+		return($this->_info['incall']);
+	}	
+
+	private function _get_queue()
 	{
 		$this->_info['queue'] = false;
 		$this->_origin['queue'] = false;
@@ -108,13 +137,21 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			return(false);
 		
 		$tmp = array();
+		$scq = array();
 		foreach($rs as $qid)
+		{
 			array_push($tmp,$qid['queuefeatures_id']);
+			$scq[$qid['queuefeatures_id']] = $qid['qos'];
+		}
 			
 		if($this->_queuefeatures === false
 		|| ($this->_info['queue'] = $this->_queuefeatures->get_all_wherein('id',$tmp)) === false
-		|| isset($this->_info['queue'][0]) === false)
+		|| empty($this->_info['queue']) === true)
 			return(false);
+		
+		$info = &$this->_info['queue'];
+		foreach($info as &$q)
+			$q['stats_qos'] = (int) $scq[$q['id']];
 
 		return($this->_info['queue']);
 	}
@@ -132,13 +169,21 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			return(false);
 		
 		$tmp = array();
+		$scq = array();
 		foreach($rs as $qid)
+		{
 			array_push($tmp,$qid['groupfeatures_id']);
+			$scq[$qid['groupfeatures_id']] = $qid['qos'];
+		}
 			
 		if($this->_groupfeatures === false
 		|| ($this->_info['group'] = $this->_groupfeatures->get_all_wherein('id',$tmp)) === false
-		|| isset($this->_info['group'][0]) === false)
+		|| empty($this->_info['group']) === true)
 			return(false);
+		
+		$info = &$this->_info['group'];
+		foreach($info as &$q)
+			$q['stats_qos'] = (int) $scq[$q['id']];
 
 		return($this->_info['group']);
 	}
@@ -161,7 +206,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			
 		if($this->_agentfeatures === false
 		|| ($this->_info['agent'] = $this->_agentfeatures->get_all_wherein('id',$tmp)) === false
-		|| isset($this->_info['agent'][0]) === false)
+		|| empty($this->_info['agent']) === true)
 			return(false);
 
 		return($this->_info['agent']);
@@ -185,7 +230,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			
 		if($this->_userfeatures === false
 		|| ($this->_info['user'] = $this->_userfeatures->get_all_wherein('id',$tmp)) === false
-		|| isset($this->_info['user'][0]) === false)
+		|| empty($this->_info['user']) === true)
 			return(false);
 
 		return($this->_info['user']);
@@ -281,33 +326,33 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
     
     	$arr['stats_conf']['hour_start'] = $workhour_start['h'].':'.$workhour_start['m'];
     	$arr['stats_conf']['hour_end'] = $workhour_end['h'].':'.$workhour_end['m'];
+    	
+    	dwho_dump($arr);
 
 		$this->set_stats_conf($arr['stats_conf']);
+		
+		if (dwho_issa('incall',$arr) === true)
+			$this->set_incall($arr['incall']);
+			
 		if (dwho_issa('queue',$arr) === true)
+		{
 			$this->set_queue($arr['queue']);
+			$this->set_queue_qos($arr['queue_qos']);
+		}
+		
 		if (dwho_issa('group',$arr) === true)
+		{
 			$this->set_group($arr['group']);
+			$this->set_group_qos($arr['group_qos']);
+		}
+		
 		if (dwho_issa('agent',$arr) === true)
 			$this->set_agent($arr['agent']);
+			
 		if (dwho_issa('user',$arr) === true)
 			$this->set_user($arr['user']);
 
 		return(($this->get_errnb() < 1));
-	}
-
-	public function set_stats_qos($arr) 
-	{		
-		if(is_array($arr) === false)
-		{
-			$this->_set_result('stats_qos',null);
-			$this->_set_error('stats_qos','invalid data');
-			return(false);
-		}
-
-		$this->_set_result('stats_qos',$arr);
-
-		return(true);
-		
 	}
 
 	public function set_stats_conf($arr)
@@ -333,7 +378,20 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return(true);
 	}
 
-	public function set_queue($arr) 
+	private function set_incall($arr) 
+	{		
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('incall',null);
+			$this->_set_error('incall','invalid data');
+			return(false);
+		}
+		$this->_set_result('incall',$arr);
+
+		return(true);
+	}
+
+	private function set_queue($arr) 
 	{		
 		if(is_array($arr) === false)
 		{
@@ -341,13 +399,38 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			$this->_set_error('queue','invalid data');
 			return(false);
 		}
-
 		$this->_set_result('queue',$arr);
 
 		return(true);
 	}
 
-	public function set_group($arr) 
+	private function set_queue_qos($arr) 
+	{		
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('queue_qos',null);
+			$this->_set_error('queue_qos','invalid data');
+			return(false);
+		}
+		$this->_set_result('queue_qos',$arr);
+
+		return(true);
+	}
+
+	private function set_group_qos($arr) 
+	{		
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('group_qos',null);
+			$this->_set_error('group_qos','invalid data');
+			return(false);
+		}
+		$this->_set_result('group_qos',$arr);
+
+		return(true);
+	}
+
+	private function set_group($arr) 
 	{		
 		if(is_array($arr) === false)
 		{
@@ -355,13 +438,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			$this->_set_error('group','invalid data');
 			return(false);
 		}
-
 		$this->_set_result('group',$arr);
 
 		return(true);
 	}
 
-	public function set_agent($arr) 
+	private function set_agent($arr) 
 	{		
 		if(is_array($arr) === false)
 		{
@@ -369,13 +451,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			$this->_set_error('agent','invalid data');
 			return(false);
 		}
-
 		$this->_set_result('agent',$arr);
 
 		return(true);
 	}
 
-	public function set_user($arr) 
+	private function set_user($arr) 
 	{		
 		if(is_array($arr) === false)
 		{
@@ -383,7 +464,6 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			$this->_set_error('user','invalid data');
 			return(false);
 		}
-
 		$this->_set_result('user',$arr);
 
 		return(true);
@@ -406,6 +486,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->add_stats_conf() === false)
 			$r = false;
 			
+		$this->add_incall();
 		$this->add_queue();
 		$this->add_group();
 		$this->add_agent();
@@ -427,29 +508,9 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return($this->_return['stats_conf']);
 	}
 
-	public function add_queue()
+	private function add_incall()
 	{
-		if(($rs = $this->get_result('queue')) === null
-		|| $rs === false
-		|| $this->_return['stats_conf'] === false)
-			return(false);
-		
-		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
-		
-		foreach ($rs as $qid) 
-		{
-			$arr['queuefeatures_id'] = (int) $qid;
-			if (($this->_return['queue'] = $this->_stats_conf_queue->add($arr)) === false) 
-				return(false);
-		}
-
-		return($this->_return['queue']);
-	}
-
-	public function add_group()
-	{
-		if(($rs = $this->get_result('group')) === null
+		if(($rs = $this->get_result('incall')) === null
 		|| $rs === false
 		|| $this->_return['stats_conf'] === false)
 			return(false);
@@ -459,15 +520,61 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		
 		foreach ($rs as $qid) 
 		{			
+			$arr['incall_id'] = (int) $qid;
+			if (($this->_return['incall'] = $this->_stats_conf_incall->add($arr)) === false) 
+				return(dwho_report::push('error','error during create stats incall'));
+		}
+
+		return($this->_return['incall']);
+	}
+
+	private function add_queue()
+	{	
+		if(($rs = $this->get_result('queue')) === null
+		|| ($rsqos = $this->get_result('queue_qos')) === null
+		|| $rs === false
+		|| $rsqos === false
+		|| $this->_return['stats_conf'] === false)
+			return(false);		
+		
+		$arr = array();
+		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
+		
+		foreach ($rs as $qid) 
+		{
+			$arr['queuefeatures_id'] = (int) $qid;
+			$arr['qos'] = intval($rsqos[$qid]);
+			if (($this->_return['queue'] = $this->_stats_conf_queue->add($arr)) === false)
+				return(dwho_report::push('error','error during create stats queue'));
+		}
+
+		return($this->_return['queue']);
+	}
+
+	private function add_group()
+	{
+		if(($rs = $this->get_result('group')) === null
+		|| ($rsqos = $this->get_result('group_qos')) === null
+		|| $rs === false
+		|| $rsqos === false
+		|| $this->_return['stats_conf'] === false)
+			return(false);
+		
+		$arr = array();
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
+		
+		foreach ($rs as $qid) 
+		{			
 			$arr['groupfeatures_id'] = (int) $qid;
+			$arr['qos'] = intval($rsqos[$qid]);
 			if (($this->_return['group'] = $this->_stats_conf_group->add($arr)) === false) 
-				return(false);
+				return(dwho_report::push('error','error during create stats group'));
 		}
 
 		return($this->_return['group']);
 	}
 
-	public function add_agent()
+	private function add_agent()
 	{
 		if(($rs = $this->get_result('agent')) === null
 		|| $rs === false
@@ -481,13 +588,13 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{			
 			$arr['agentfeatures_id'] = (int) $qid;
 			if (($this->_return['agent'] = $this->_stats_conf_agent->add($arr)) === false)
-				return(false);
+				return(dwho_report::push('error','error during create stats agent'));
 		}
 
 		return($this->_return['agent']);
 	}
 
-	public function add_user()
+	private function add_user()
 	{
 		if(($rs = $this->get_result('user')) === null
 		|| $rs === false
@@ -501,7 +608,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{			
 			$arr['userfeatures_id'] = (int) $qid;
 			if (($this->_return['user'] = $this->_stats_conf_user->add($arr)) === false)
-				return(false);
+				return(dwho_report::push('error','error during create stats user'));
 		}
 
 		return($this->_return['user']);
@@ -521,12 +628,11 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			$this->_reverse_edit();
 		}
 			
+		$this->edit_incall();
 		$this->edit_queue();
 		$this->edit_group();
 		$this->edit_agent();
-		$this->edit_user();
-		
-		
+		$this->edit_user();		
 
 		$this->_status = '';
 
@@ -547,13 +653,38 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return($this->_return['stats_conf']);
 	}
 
-	public function edit_queue()
+	private function edit_incall()
 	{
-		if(($rs = $this->get_result('queue')) === null
+		if(($rs = $this->get_result('incall')) === null
 		|| $rs === false
 		|| $this->_return['stats_conf'] === false
 		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+			return(false);			
+		
+		$arr = array();
+		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
+			
+		$this->_stats_conf_incall->delete_where($arr);
+		
+		foreach ($rs as $qid) 
+		{
+			$arr['incall_id'] = (int) $qid;
+			if (($this->_return['incall'] = $this->_stats_conf_incall->add($arr)) === false)
+				return(dwho_report::push('error','error during edit stats incall'));
+		}
+
+		return($this->_return['incall']);
+	}
+
+	private function edit_queue()
+	{
+		if(($rs = $this->get_result('queue')) === null
+		|| ($rsqos = $this->get_result('queue_qos')) === null
+		|| $rs === false
+		|| $rsqos === false
+		|| $this->_return['stats_conf'] === false
+		|| isset($this->_info['stats_conf']['id']) === false)
+			return(false);		
 		
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
@@ -561,19 +692,22 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		$this->_stats_conf_queue->delete_where($arr);
 		
 		foreach ($rs as $qid) 
-		{			
+		{
 			$arr['queuefeatures_id'] = (int) $qid;
+			$arr['qos'] = intval($rsqos[$qid]);
 			if (($this->_return['queue'] = $this->_stats_conf_queue->add($arr)) === false)
-				break;
+				return(dwho_report::push('error','error during edit stats queue'));
 		}
 
 		return($this->_return['queue']);
 	}
 
-	public function edit_group()
+	private function edit_group()
 	{
 		if(($rs = $this->get_result('group')) === null
+		|| ($rsqos = $this->get_result('group_qos')) === null
 		|| $rs === false
+		|| $rsqos === false
 		|| $this->_return['stats_conf'] === false
 		|| isset($this->_info['stats_conf']['id']) === false)
 			return(false);
@@ -586,14 +720,15 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		foreach ($rs as $qid) 
 		{			
 			$arr['groupfeatures_id'] = (int) $qid;
+			$arr['qos'] = intval($rsqos[$qid]);
 			if (($this->_return['group'] = $this->_stats_conf_group->add($arr)) === false)
-				break;
+				return(dwho_report::push('error','error during edit stats group'));
 		}
 
 		return($this->_return['queue']);
 	}
 
-	public function edit_agent()
+	private function edit_agent()
 	{		
 		if(($rs = $this->get_result('agent')) === null
 		|| $rs === false
@@ -610,13 +745,13 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{			
 			$arr['agentfeatures_id'] = (int) $qid;
 			if (($this->_return['agent'] = $this->_stats_conf_agent->add($arr)) === false)
-				break;
+				return(dwho_report::push('error','error during edit stats agent'));
 		}
 
 		return($this->_return['agent']);
 	}
 
-	public function edit_user()
+	private function edit_user()
 	{		
 		if(($rs = $this->get_result('user')) === null
 		|| $rs === false
@@ -633,32 +768,13 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{			
 			$arr['userfeatures_id'] = (int) $qid;
 			if (($this->_return['user'] = $this->_stats_conf_user->add($arr)) === false)
-				break;
+				return(dwho_report::push('error','error during edit stats user'));
 		}
 
 		return($this->_return['user']);
 	}
-	
-	public function edit_queuefeatures()
-	{		
-		if(($rs = $this->get_result('stats_qos')) === null
-		|| $rs === false
-		|| is_array($rs) === false)
-			return(false);
-			
-		$this->_return['queuefeatures'] = true;
-			
-		foreach ($rs as $id => $stats_qos) {
-			
-			if (($this->_queuefeatures->edit($id,array('stats_qos' => $stats_qos))) === false)
-				$this->_return['queuefeatures'] = false;
-		
-		}
 
-		return($this->_return['queuefeatures']);
-	}
-
-	public function _reverse_edit()
+	private function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
@@ -716,6 +832,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
 			
+		$this->_stats_conf_incall->delete_where($arr);
 		$this->_stats_conf_queue->delete_where($arr);
 		$this->_stats_conf_group->delete_where($arr);
 		$this->_stats_conf_agent->delete_where($arr);

@@ -28,9 +28,13 @@ $array['element']['stats_conf_id']['default'] = 0;
 $array['element']['groupfeatures_id'] = array();
 $array['element']['groupfeatures_id']['default'] = 0;
 
+$array['element']['qos'] = array();
+$array['element']['qos']['default'] = 0;
+
 
 $array['filter'] = array();
 $array['filter']['stats_conf_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
 $array['filter']['groupfeatures_id'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
+$array['filter']['qos'] = array('set' => true,'regexp' => '/^[0-9]+$/','minlen' => 1,'maxlen' => 8);
 
 ?>
