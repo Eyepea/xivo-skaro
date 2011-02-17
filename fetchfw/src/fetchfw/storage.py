@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,11 +22,7 @@ import ConfigParser
 import logging
 import os
 import re
-
-import fetchfw.download as download
-import fetchfw.install as install
-import fetchfw.package as package
-import fetchfw.util as util
+from fetchfw import download, install, package, util
 
 logger = logging.getLogger(__name__)
 

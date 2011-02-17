@@ -1,11 +1,9 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -213,9 +211,16 @@ p.add_option('-u', action='store_true', dest='u', default=False)
 p.add_option('--ignore', action='store', dest='ignore')
 
 opt, args = p.parse_args()
+
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter("%(asctime)s: %(message)s"))
+logger = logging.getLogger()
+logger.addHandler(handler)
 if opt.debug:
-    logger = logging.getLogger('fetchfw2')
     logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.WARNING)
+
 operations = set(name for name in ('sync', 'query', 'remove') if getattr(opt, name))
 if not operations:
     print >>sys.stderr, "error: no operation specified"

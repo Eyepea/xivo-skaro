@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,10 +24,9 @@ import itertools
 import logging
 import os
 import shutil
-import subprocess
 import tarfile
 import tempfile
-
+import zipfile
 from fetchfw.util import FetchfwError, explode_path, wrap_exception, ends_with, remove_paths
 
 logger = logging.getLogger(__name__)
@@ -310,20 +307,11 @@ class ZipFilter(object):
     def __init__(self, pathnames):
         self._glob_helper = _GlobHelper(pathnames)
         
-    @wrap_exception(subprocess.CalledProcessError, InstallationError, logger)
+    @wrap_exception((EnvironmentError, zipfile.BadZipfile), InstallationError, logger)
     def apply(self, src_directory, dst_directory):
-        # We would normally use the 'zipfile module' but we are targeting python 2.5
-        # and the module API is quite poor in this version, so we use an external tool
-#        for pathname in self._glob_helper.iglob_in_dir(src_directory):
-#            with contextlib.closing(zipfile.ZipFile(pathname, 'r')) as zf:
-#                for name in zf.namelist():
-#                    if name.endswith('/'):
-#                        os.makedirs(os.path.join(dst_directory, name))
-#                    else:
-#                        with open(os.path.join(dst_directory, name), 'wb') as f:
-#                            f.write(zf.read())
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
-            subprocess.check_call(['unzip', '-q', pathname, '-d', dst_directory])
+            with contextlib.closing(zipfile.ZipFile(pathname, 'r')) as zf:
+                zf.extractall(dst_directory)
 
 
 class TarFilter(object):
