@@ -68,22 +68,19 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			<thead>
 			<tr class="sb-top">
 
-				<th class="th-left"><?=$this->bbf('fm_col_hours');?></th>
-				<th class="th-center"><?=$this->bbf('fm_col_weekdays');?></th>
-				<th class="th-center"><?=$this->bbf('fm_col_monthdays');?></th>
-				<th class="th-center"><?=$this->bbf('fm_col_months');?></th>
+				<th class="th-left"><?=$this->bbf('fm_col_schedule');?></th>
 				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_add'),
 									  'border="0"'),
 							   '#',
 							   null,
-							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+							   'onclick="dwho.dom.make_table_list(\'disp\',this); xivo_schedule_init_schedule(\'disp\', true); return(dwho.dom.free_focus());"',
 							   $this->bbf('col_add'));?>
 				</th>
 			</tr>
 			</thead>
-			<tbody id="disp">
+			<tbody id="disp" lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
@@ -93,7 +90,16 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'opened[hours][]',
+							       'name'	  	=> "opened-schedule-$i",
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 43,
+							       'key'	    => false,
+										 'readonly' => true,
+										 'default'	=> ''));
+
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'	  	=> "opened[hours][$i]",
 							       'id'	    	=> false,
 							       'label'  	=> false,
 							       'size'	   	=> 15,
@@ -101,12 +107,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'value'		=> $opened[$i]['hours'],
 							       'default'	=> '',
 										 'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'hours'))));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'opened[weekdays][]',
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'	  	=> "opened[weekdays][$i]",
 							       'id'	    	=> false,
 							       'label'  	=> false,
 							       'size'	   	=> 15,
@@ -114,12 +116,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'value'		=> $opened[$i]['weekdays'],
 							       'default'	=> '',
 										 'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'weekdays'))));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'opened[monthdays][]',
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'	  	=> "opened[monthdays][$i]",
 							       'id'	    	=> false,
 							       'label'  	=> false,
 							       'size'	   	=> 15,
@@ -127,12 +125,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'value'		=> $opened[$i]['monthdays'],
 							       'default'	=> '',
 										 'error'		=> $this->bbf_args('opened', $this->get_var('error', 'opened', $i, 'monthdays'))));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-							       'name'		=> 'opened[months][]',
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'		=> "opened[months][$i]",
 							       'id'		  => false,
 							       'label'	=> false,
 							       'size'		=> 15,
@@ -170,45 +164,30 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'opened[hours][]',
+							       'name'	  	=> 'opened-schedule-new',
 							       'id'	    	=> false,
 							       'label'  	=> false,
-							       'size'	   	=> 15,
+							       'size'	   	=> 43,
 							       'key'	    => false,
-							       'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
+										 'readonly' => true,
+										 'default'	=> ''));
+
+					echo $form->hidden(array('paragraph'	=> false,
+				 					   'name'	  	=> 'opened[hours][]',
+							       'id'	    	=> false,
+							       'size'	   	=> 15));
+					echo $form->hidden(array('paragraph'	=> false,
 							       'name'		=> 'opened[weekdays][]',
 							       'id'		  => false,
-							       'label'	=> false,
-							       'size'		=> 15,
-							       'key'		=> false,
-							       'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
+							       'size'		=> 15));
+					echo $form->hidden(array('paragraph'	=> false,
 							       'name'		=> 'opened[monthdays][]',
 							       'id'		  => false,
-							       'label'	=> false,
-							       'size'		=> 15,
-							       'key'		=> false,
-							       'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
+							       'size'		=> 15));
+					echo $form->hidden(array('paragraph'	=> false,
 							       'name'		=> 'opened[months][]',
 							       'id'		  => false,
-							       'label'	=> false,
-							       'size'		=> 15,
-							       'key'		=> false,
-							       'default'	=> ''));
+							       'size'		=> 15));
 	 ?>
 				</td>
 				<td class="td-right">
@@ -271,10 +250,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			<thead>
 			<tr class="sb-top">
 
-				<th class="th-left"><?=$this->bbf('fm_col_hours');?></th>
-				<th class="th-center"><?=$this->bbf('fm_col_weekdays');?></th>
-				<th class="th-center"><?=$this->bbf('fm_col_monthdays');?></th>
-				<th class="th-center"><?=$this->bbf('fm_col_months');?></th>
+				<th class="th-left"><?=$this->bbf('fm_col_schedule');?></th>
 				<th class="th-center"><?=$this->bbf('fm_col_action');?></th>
 				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
@@ -287,7 +263,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				</th>
 			</tr>
 			</thead>
-			<tbody id="disp2">
+			<tbody id="disp2" lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
@@ -297,7 +273,16 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'closed[hours][]',
+							       'name'	  	=> "closed-schedule-$i",
+							       'id'	    	=> false,
+							       'label'  	=> false,
+							       'size'	   	=> 43,
+							       'key'	    => false,
+										 'readonly' => true,
+										 'default'	=> ''));
+
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'	  	=> "closed[hours][$i]",
 							       'id'	    	=> false,
 							       'label'  	=> false,
 							       'size'	   	=> 15,
@@ -305,12 +290,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'value'		=> $closed[$i]['hours'],
 							       'default'	=> '',
 										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'hours'))));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'closed[weekdays][]',
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'	  	=> "closed[weekdays][$i]",
 							       'id'	    	=> false,
 							       'label'  	=> false,
 							       'size'	   	=> 15,
@@ -318,12 +299,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'value'		=> $closed[$i]['weekdays'],
 							       'default'	=> '',
 										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'weekdays'))));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'closed[monthdays][]',
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'	  	=> "closed[monthdays][$i]",
 							       'id'	    	=> false,
 							       'label'  	=> false,
 							       'size'	   	=> 15,
@@ -331,12 +308,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 							       'value'		=> $closed[$i]['monthdays'],
 							       'default'	=> '',
 										 'error'		=> $this->bbf_args('closed', $this->get_var('error', 'closed', $i, 'monthdays'))));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-							       'name'		=> 'closed[months][]',
+					echo $form->hidden(array('paragraph'	=> false,
+							       'name'		=> "closed[months][$i]",
 							       'id'		  => false,
 							       'label'	=> false,
 							       'size'		=> 15,
@@ -383,45 +356,30 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-							       'name'	  	=> 'closed[hours][]',
+							       'name'	  	=> 'closed-schedule-new',
 							       'id'	    	=> false,
 							       'label'  	=> false,
-							       'size'	   	=> 15,
+							       'size'	   	=> 43,
 							       'key'	    => false,
-							       'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
+										 'readonly' => true,
+										 'default'	=> ''));
+
+					echo $form->hidden(array('paragraph'	=> false,
+				 					   'name'	  	=> 'closed[hours][]',
+							       'id'	    	=> false,
+							       'size'	   	=> 15));
+					echo $form->hidden(array('paragraph'	=> false,
 							       'name'		=> 'closed[weekdays][]',
 							       'id'		  => false,
-							       'label'	=> false,
-							       'size'		=> 15,
-							       'key'		=> false,
-							       'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
+							       'size'		=> 15));
+					echo $form->hidden(array('paragraph'	=> false,
 							       'name'		=> 'closed[monthdays][]',
 							       'id'		  => false,
-							       'label'	=> false,
-							       'size'		=> 15,
-							       'key'		=> false,
-							       'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
+							       'size'		=> 15));
+					echo $form->hidden(array('paragraph'	=> false,
 							       'name'		=> 'closed[months][]',
 							       'id'		  => false,
-							       'label'	=> false,
-							       'size'		=> 15,
-							       'key'		=> false,
-							       'default'	=> ''));
+							       'size'		=> 15));
 	 ?>
 				</td>
 				<td id="onclosed-time-dialaction">

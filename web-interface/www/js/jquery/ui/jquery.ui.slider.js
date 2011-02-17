@@ -143,7 +143,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 				if ( self.options.disabled ) {
 					return;
 				}
-	
+
 				switch ( event.keyCode ) {
 					case $.ui.keyCode.HOME:
 					case $.ui.keyCode.END:

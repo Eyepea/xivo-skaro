@@ -23,7 +23,7 @@
 	<ul>
 		<li id="dwsm-tab-1"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-first');"
+		    onclick="xivo_schedule_hideall(); dwho_submenu.select(this,'sb-part-first');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
@@ -33,7 +33,7 @@
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-closed-periods',1);"
+		    onclick="xivo_schedule_hideall(); dwho_submenu.select(this,'sb-part-closed-periods',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">

@@ -16,8 +16,8 @@
  */
 
 jQuery(function($){
-	$.extend($.xivo.schedule.prototype, {
-		_i18n: {
+	$.extend($.xivo.schedule.prototype._l10n, {
+		'fr': {
 			'title'    : 'Horaires',
 
 			'all'      : 'Tous',
@@ -30,8 +30,7 @@ jQuery(function($){
 			'dAbbr': ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'],
 			'mAbbr': ['Janv.','Févr.','Mars','Avril','Mai','Juin', 'Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
 
-			'fullText': ['De ', 'à', 'Les ', 'au']
+			'fullText': ['De ', 'à', 'les ', 'au']
   	}
-		
 	});
 });

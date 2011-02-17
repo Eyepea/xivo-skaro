@@ -54,6 +54,8 @@ function xivo_ast_schedule_add_closed_action(name, obj)
 				// restore model attributes after clone
 				elt.id = 'onclosed-time-dialaction';
 				elt.innerHTML = '';
+
+				xivo_schedule_init_schedule(name, true);
 			},
       'method':		'post',
       'cache':			false
@@ -63,10 +65,38 @@ function xivo_ast_schedule_add_closed_action(name, obj)
 
 }
 
+function xivo_schedule_init_schedule(parentid, last)
+{
+	var td = $('#'+parentid + ' td.td-left');
+	if(last)
+		td = td.last();
+	td.each(function(idx, elt) {
+		var hides =  $(elt).find('input[type=hidden]');
+
+		$(elt).find('input[type=text]').show().schedule({
+			'language': $('#'+parentid).attr('lang'),
+			'inputs': {
+				'months'   : $(hides[3]),
+				'monthdays': $(hides[2]),
+				'weekdays' : $(hides[1]),
+				'hours'    : $(hides[0])
+			}
+		});
+	});
+}
+
+function xivo_schedule_hideall()
+{
+	$('.ui-datepicker').hide();
+}
+
 function xivo_ast_schedule_onload()
 {
 	xivo_ast_build_dialaction_array('schedule_fallback');
 	xivo_ast_dialaction_onload();
+
+	xivo_schedule_init_schedule('disp', false);  // opened schedules
+	xivo_schedule_init_schedule('disp2', false); // closed schedules
 }
 
 dwho.dom.set_onload(xivo_ast_schedule_onload);

@@ -19,12 +19,20 @@
 	$.widget("xivo.schedule", {
 		// default options
 		options: {
-			timeformat: "24",
+			language  : 'en',
+			timeformat: '24',
 			inputs: {
 				'months'   : null,
 				'monthdays': null,
 				'weekdays' : null,
 				'hours'    : null
+			},
+
+			defaults: {
+				'months'   : '1-12',
+				'monthdays': '1-31',
+				'weekdays' : '1-5',
+				'hours'    : '00:00-23:59'
 			}
 		},
 
@@ -39,18 +47,41 @@
 
 		// create widget
 		_create: function() {
-			this.node = this._initHtml();
+			this._i18n = this._l10n[this.options['language']];
 
-			offset = this.element.offset();
-			offset['top'] += this.element.outerHeight();
-			this.node.offset(offset);
-			this.node.show();
+			this.node = this._initHtml();
+			this.element.addClass('schedule');
+
+			//offset = this.element.offset();
+			//offset['top']  += this.element.outerHeight();
+			//this.node.offset(offset);
+			this.node.offset({top:0, left:0});
 
 			for(var i in this.options['inputs'])
-				this.onChange(i); 
+				//this.onChange(i); 
+				this._fieldInit(i);
 
 			var _this = this;
-			this.element.bind('click', function() {  _this.node.toggle(); });
+			this.element.bind('click', function() { 
+				/* we hide all pickers but ours */
+				$('.ui-datepicker').each(function(idx, elt) {
+					if(elt != _this.node[0])
+						$(elt).hide();
+				});
+
+				_this.node.toggle(); 
+				//WARNING: setting offset position ONLY works when element is visible !!!
+				if($(_this.node).is(':visible'))	{
+					offset 				  = _this.element.offset();
+					offset['top']  += _this.element.outerHeight();
+					_this.node.offset(offset);
+				}
+
+				
+			});
+
+			// on title bar
+			this.node.children().first().bind('click', function() { _this.node.hide(); });
 		},
 
 		destroy: function() {
@@ -193,11 +224,14 @@
 					hour = hour < 10?'0'+hour:hour;
 					min  = min  < 10?'0'+min:min;
 
-					$('#range-'+positions[i]).html(hour+':'+min).attr('iso-hour', hour+':'+min);
+					//$('#range-'+positions[i]).html(hour+':'+min).attr('iso-hour', hour+':'+min);
+					node.find('#range-'+positions[i]).html(hour+':'+min).attr('iso-hour', hour+':'+min);
 				}
 
 				if(e.type == 'slidechange')
 					{ widget.onChange('hours'); }
+
+				return true;
 			},
 
 			slider.bind('slide', onSlide);
@@ -246,8 +280,10 @@
 			};
 
 			// hours special callback
+			var node = this.node;
 			_clbk2 = function() {
-				return $('#range-start').attr('iso-hour') + '-' + $('#range-end').attr('iso-hour');
+				return node.find('#range-start').attr('iso-hour') + '-' + 
+							 node.find('#range-end').attr('iso-hour');
 			};
 
 			clbks = {
@@ -283,10 +319,69 @@
 				txt += ', Aucun jours de la semaine';
 			}
 			txt += ', ...';
-			this.element.html(txt);
+
+			// will depend of the type of the element
+			this.element.html(txt).attr('value', txt);
 		},
 
-		_i18n: {
+		_fieldInit: function(item) {
+			if(this.options['inputs'][item] == null) 
+				return;
+
+			var value = this.options['inputs'][item].attr('value');
+			if(value.length == 0)
+				value = this.options['defaults'][item];
+			if(value.length == 0)
+				return;
+
+			// split rules: a-b,c => [a,..,b,c,..,d]
+			//              a:b-c:d => [(a,b),(c,d)]      (hours)
+			if(item == 'hours')	{
+				value = jQuery.map(value.split('-'), function(elt) {
+					hm = elt.split(':');
+					// parseInt('09') => octal == 0
+					if(hm[0][0] == '0')
+						hm[0] = hm[0][1];
+					if(hm[1][0] == '0')
+						hm[1] = hm[1][1];
+
+					return parseInt(hm[0]) * 60 + parseInt(hm[1]);
+				});
+
+				var slider = this.node.find('#slider');
+				slider.slider('values', 0, value[0]);
+				slider.slider('values', 1, value[1]);
+			} else {
+				value = jQuery.map(value.split(','), function(elt) {
+					var minmax = elt.split('-');
+					//return [[parseInt(minmax[0]), parseInt(minmax[minmax.length-1])]];
+					if(minmax.length == 1)
+						return parseInt(minmax[0]);
+
+					var ret = [];
+					for(var i = parseInt(minmax[0]); i <= parseInt(minmax[1]); i++)
+						ret.push(i);
+					return ret;
+				});
+
+				value = value.sort(function(a,b) { return a-b; });
+
+				var elts = this.node.find('#'+item);
+				elts = item=='monthdays'?elts.find('td'):elts.children();
+
+				var i = 0;
+				elts.each(function (idx, elt) {
+					if(value[i] == idx+1)
+						{ $(elt).addClass('ui-state-highlight'); i++; }
+					else
+						{ $(elt).removeClass('ui-state-highlight'); }
+				})
+			}
+
+			this.onChange(item);
+		},
+
+		_l10n: {'en': {
 			'title'    : 'Schedule',
 			'all'      : 'All',
 			'none'     : 'None',
@@ -299,69 +394,69 @@
 			'mAbbr': ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
 			
 			'fullText': ['', 'to', '', 'to']
-		},
+		}},
 
-		_html: (<r><![CDATA[
-			<div class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" style="width: 300px; position: absolute;">
-				<div class="ui-datetimepicker-header ui-widget-header ui-helper-clearfix ui-corner-all">
-					<div id="title" class="ui-datetime-title" style="text-align: center">
-						Set your schedule
-					</div>
-				</div>
-					<div style="width: 600px" class="AnyTime-pkr">				
-
-						<div style="width: 188px; height: 237px;" class="AnyTime-date">
-							<h6 class="AnyTime-lbl AnyTime-lbl-month" style="">Months</h6>
-							<ul id='months' class="AnyTime-mons"></ul>
-
-							<h6 id="md-title" class="AnyTime-lbl AnyTime-lbl-dom">Days of Month</h6>
-							<table cellspacing="0" cellpadding="0" border="0" class="AnyTime-dom-table">
-							<tbody id="monthdays" class="AnyTime-dom-body">
-								<tr class="AnyTime-wk AnyTime-wk1"></tr>
-								<tr class="AnyTime-wk AnyTime-wk2"></tr>
-								<tr class="AnyTime-wk AnyTime-wk3"></tr>
-								<tr class="AnyTime-wk AnyTime-wk4"></tr>
-								<tr class="AnyTime-wk AnyTime-wk5"></tr>
-							</tbody>
-							</table>
-
-							<h6 class="AnyTime-lbl AnyTime-lbl-month" style="">Days of week</h6>
-							<ul id="weekdays" class="AnyTime-mons">
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon1-btn ui-state-default ui-state-highlight">Mon
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon2-btn ui-state-default ui-state-highlight">Tue
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon3-btn ui-state-default ui-state-highlight">Wed
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon4-btn ui-state-default ui-state-highlight">Thu
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon5-btn ui-state-default ui-state-highlight">Fri
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon6-btn ui-state-default">Sat
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon7-btn ui-state-default">Sun
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">
-								</li>
-								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">
-								</li>
-								<li id="weekdays-all" active="true" class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">All
-								</li>
-							</ul>
-						</div>
-
-						<div style="width: 141px; height: 241px;" class="AnyTime-time">
-							<h6 class="AnyTime-lbl AnyTime-lbl-month" style="text-align: left">Hours</h6>
-							<div id="slider" class="ui-widget ui-widget-content ui-corner-all" style="height: 190px; top: 8px; left: 7px; border: 1px solid #aaa;">
-							</div>
-
-				</div>
-			</div>
-		]]></r>).toString()
+		_html: '\
+			<div class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" style="width: 270px; position: absolute;">\
+				<div class="ui-datetimepicker-header ui-widget-header ui-helper-clearfix ui-corner-all">\
+					<div class="ui-datetime-title " style="text-align: center">\
+						<span id="title">Set your schedule</span>\
+					<span class="ui-icon ui-icon-circle-close" style="float:right"></span>\
+					</div>\
+				</div>\
+					<div style="width: 600px" class="AnyTime-pkr">\
+\
+						<div style="width: 188px; height: 237px;" class="AnyTime-date">\
+							<h6 class="AnyTime-lbl AnyTime-lbl-month" style="">Months</h6>\
+							<ul id="months" class="AnyTime-mons"></ul>\
+\
+							<h6 id="md-title" class="AnyTime-lbl AnyTime-lbl-dom">Days of Month</h6>\
+							<table cellspacing="0" cellpadding="0" border="0" class="AnyTime-dom-table">\
+							<tbody id="monthdays" class="AnyTime-dom-body">\
+								<tr class="AnyTime-wk AnyTime-wk1"></tr>\
+								<tr class="AnyTime-wk AnyTime-wk2"></tr>\
+								<tr class="AnyTime-wk AnyTime-wk3"></tr>\
+								<tr class="AnyTime-wk AnyTime-wk4"></tr>\
+								<tr class="AnyTime-wk AnyTime-wk5"></tr>\
+							</tbody>\
+							</table>\
+\
+							<h6 class="AnyTime-lbl AnyTime-lbl-month" style="">Days of week</h6>\
+							<ul id="weekdays" class="AnyTime-mons">\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon1-btn ui-state-default ui-state-highlight">Mon\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon2-btn ui-state-default ui-state-highlight">Tue\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon3-btn ui-state-default ui-state-highlight">Wed\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon4-btn ui-state-default ui-state-highlight">Thu\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon5-btn ui-state-default ui-state-highlight">Fri\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon6-btn ui-state-default">Sat\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon7-btn ui-state-default">Sun\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">\
+								</li>\
+								<li class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">\
+								</li>\
+								<li id="weekdays-all" active="true" class="AnyTime-btn AnyTime-mon-btn AnyTime-mon12-btn ui-state-default ui-state-disabled">All\
+								</li>\
+							</ul>\
+						</div>\
+\
+						<div style="width: 141px; height: 241px;" class="AnyTime-time">\
+							<h6 class="AnyTime-lbl AnyTime-lbl-month" style="text-align: left">Hours</h6>\
+							<div id="slider" class="ui-widget ui-widget-content ui-corner-all" style="height: 190px; top: 8px; left: 7px; border: 1px solid #aaa;">\
+							</div>\
+\
+				</div>\
+			</div>'
 
 	});
 })(jQuery);
