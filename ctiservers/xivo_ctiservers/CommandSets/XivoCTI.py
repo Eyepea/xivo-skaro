@@ -31,11 +31,11 @@ This is the XivoCTI class.
 import base64
 import cjson
 import csv
+import hashlib
 import logging
 import os
 import random
 import re
-import sha
 import string
 import threading
 import time
@@ -374,7 +374,7 @@ class XivoCTICommand(BaseCommand):
                 userinfo = uinfo
             hashedpassword = loginparams.get('hashedpassword')
             tohash = '%s:%s' % (userinfo['prelogin']['sessionid'], userinfo.get('password'))
-            sha1sum = sha.sha(tohash).hexdigest()
+            sha1sum = hashlib.sha(tohash).hexdigest()
             if sha1sum != hashedpassword:
                 return 'login_password'
 

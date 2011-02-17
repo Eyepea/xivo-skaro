@@ -26,7 +26,7 @@ __author__    = 'Corentin Le Gall'
 import cjson
 import csv
 import logging
-import md5
+import hashlib
 import urllib2
 
 log = logging.getLogger('urllist')
@@ -94,7 +94,7 @@ class UrlList:
             f.close()
             fulltable = ''.join(mytab)
             savemd5 = self.urlmd5
-            self.listmd5 = md5.md5(fulltable).hexdigest()
+            self.listmd5 = hashlib.md5(fulltable).hexdigest()
             if http_code == 200 and http_contenttype == ['application/json']:
                 self.jsonreply = cjson.decode(fulltable)
                 try:
