@@ -18,7 +18,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import logging
+import logging.handlers
 import os.path
 import provd.config
 import provd.devices.ident
@@ -39,96 +39,6 @@ from twisted.web.resource import Resource
 from zope.interface.declarations import implements
 
 logger = logging.getLogger('main')
-
-# configure logging...
-def _configure_root_logger():
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s:%(lineno)d - %(name)s: %(message)s"))
-    root_logger.addHandler(handler)
-
-
-_configure_root_logger()
-observer = log.PythonLoggingObserver()
-observer.start()
-
-
-# Create some config -- testing purpose only
-# a 'base' configuration
-xivo_ip = '192.168.33.4'
-base_cfg = {
-    u'id': u'base',
-    u'parent_ids': [],
-    u'raw_config': {
-        'locale': 'fr_CA',
-        'timezone': 'America/Montreal',
-        'subscribe_mwi': False,
-        'ntp_server': xivo_ip,
-        'vlan': {
-            'enabled': False,
-        },
-        'sip': {
-            'lines': {
-                1: {
-                    'proxy_ip': xivo_ip,
-                    'registrar_ip': xivo_ip,
-                },
-            }
-        },
-        'exten': {
-            'voicemail': '*98',
-            'pickup_prefix': '*8',
-            'fwdunc': '*21',
-            'dnd': '*25'
-        },
-        'funckey': {},
-    }
-}
-
-# a 'guest' configuration
-guest_cfg = {
-    u'id': u'guest',
-    u'parent_ids': [u'base'],
-    u'raw_config': {
-        'sip': {
-            'lines': {
-                1: {
-                    'display_name': 'guest',
-                    'user_id': 'guest',
-                    'auth_id': 'guest',
-                    'passwd': 'guest',
-                }
-            }
-        }
-    }
-}
-
-# a configuration for a device
-dev1_cfg = {
-    u'id': u'dev1',
-    u'parent_ids': [u'base'],
-    u'raw_config': {
-        'sip': {
-            'lines': {
-                1: {
-                    'display_name': 'ProV2',
-                    'user_id': '3900',
-                    'auth_id': '3900',
-                    'passwd': '3900',
-                },
-                2: {
-                    'proxy_ip': xivo_ip,
-                    'registrar_ip': xivo_ip,
-                    'display_name': 'V2pro',
-                    'user_id': '3901',
-                    'auth_id': '3901',
-                    'passwd': '3901',
-                }
-            }
-        }
-    }
-}
 
 
 class ProvisioningService(Service):
@@ -162,14 +72,6 @@ class ProvisioningService(Service):
         cfg_collection = ConfigCollection(self.database.collection('configs'))
         dev_collection = DeviceCollection(self.database.collection('devices'))
         self.app = ProvisioningApplication(cfg_collection, dev_collection, self._config)
-        
-        # XXX next lines are for testing purpose only
-        def add_cfg(config):
-            d = self.app.cfg_insert(config)
-            d.addErrback(lambda _: None)
-        add_cfg(base_cfg)
-        add_cfg(guest_cfg)
-        add_cfg(dev1_cfg)
     
     def stopService(self):
         Service.stopService(self)
@@ -323,11 +225,35 @@ class ProvisioningServiceMaker(object):
     description = "A provisioning server."
     options = provd.config.Options
     
+    def _configure_logging(self, options):
+        # configure logging module
+        if options['stderr']:
+            handler = logging.StreamHandler()
+            handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+        else:
+            handler = logging.handlers.SysLogHandler('/dev/log', logging.handlers.SysLogHandler.LOG_DAEMON)
+            handler.setFormatter(logging.Formatter('provd[%(process)d]: %(message)s'))
+        root_logger = logging.getLogger()
+        root_logger.addHandler(handler)
+        if options['verbose']:
+            root_logger.setLevel(logging.DEBUG)
+        else:
+            root_logger.setLevel(logging.INFO)
+        # configure twisted.log module
+        observer = log.PythonLoggingObserver()
+        observer.start()
+        # XXX next line doesn't work, it seems impossible to completely
+        # disable twisted log observers when starting an app with twistd
+        # without resorting to ugly hacks
+        #log.startLoggingWithObserver(observer.emit, False)
+    
     def _read_config(self, options):
         config_sources = [_CompositeConfigSource(options)]
         return provd.config.get_config(config_sources)
     
     def makeService(self, options):
+        self._configure_logging(options)
+        
         config = self._read_config(options)
         top_service = MultiService()
         

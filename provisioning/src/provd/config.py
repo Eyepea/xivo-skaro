@@ -116,6 +116,14 @@ class DefaultConfigSource(object):
 
 
 class Options(usage.Options):
+    # The 'stderr' and 'debug' options should probably be defined somewhere
+    # else but it's more practical to define them here. They SHOULD NOT be
+    # inserted in the config though.
+    optFlags = [
+        ('stderr', 's', 'Log to standard error instead of syslog.'),
+        ('verbose', 'v', 'Increase verbosity.'),
+    ]
+    
     optParameters = [
         ('config-file', 'f', None,
          'The configuration file'),
