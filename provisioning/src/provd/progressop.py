@@ -19,11 +19,10 @@ __license__ = """
 """
 
 import urlparse
-from twisted.internet.defer import Deferred
+from twisted.internet import defer
 from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import ClientCreator, Protocol
 from twisted.protocols.ftp import FTPClient
-from twisted.python.util import println
 from twisted.web.client import Agent, ResponseDone
 
 
@@ -45,7 +44,7 @@ class HTTPDownloadFactory(object):
             self.agent = agent
     
     def request(self, url, fobj):
-        """Return an object providing IProgressingOperation...
+        """Return an object providing IOperationInProgress...
         
         url must be an URL beginning with 'http://'.
         
@@ -56,13 +55,13 @@ class HTTPDownloadFactory(object):
 
 
 class _HTTPDownloadOperation(object):
-    #implements(IProgressingOperation)
+    #implements(IOperationInProgress)
     
     # TODO take username/password/realm into account
     
     def __init__(self, url, fobj, agent):
         self._fobj = fobj
-        self.deferred = Deferred()
+        self.deferred = defer.Deferred()
         self.status = "progress"
         
         d = agent.request('GET', url)
@@ -132,7 +131,7 @@ class FTPDownloadFactory(object):
             self.reactor = reactor
     
     def request(self, url, fobj):
-        """Return an object providing IProgressingOperation...
+        """Return an object providing IOperationInProgress...
         
         url must be an URL beginning with 'ftp://'.
         
@@ -143,7 +142,7 @@ class FTPDownloadFactory(object):
 
 
 class _FTPDownloadOperation(object):
-    #implements(IProgressingOperation)
+    #implements(IOperationInProgress)
     
     # TODO take username/password into account
     
@@ -153,7 +152,7 @@ class _FTPDownloadOperation(object):
             raise ValueError('invalid url')
         
         self._fobj = fobj
-        self.deferred = Deferred()
+        self.deferred = defer.Deferred()
         self.status = "progress"
         
         creator = ClientCreator(reactor, FTPClient)
@@ -171,6 +170,8 @@ class _FTPDownloadOperation(object):
 
 if __name__ == '__main__':
     import StringIO
+    from twisted.python.util import println
+    
     #fobj = StringIO.StringIO()
     fobj = open('/tmp/dl.bin', 'wb')
     

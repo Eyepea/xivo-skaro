@@ -100,8 +100,11 @@ class IDeviceInfoExtractor(Interface):
         So far, request_type is either 'http', 'tftp' or 'dhcp'.
         - For 'http', request is a twisted.web.http.Request object.
         - For 'tftp', request is a provd.servers.tftp.request object.
-        - For 'dhcp', request is a dictionary object with keys 'mac' and
-          'options'.
+        - For 'dhcp', request is a dictionary object with the following keys:
+          'mac' -- a MAC address in normalized format
+          'options' -- a dictionary where keys are integer representing the
+            DHCP code option and values are raw DHCP value found in the client
+            request.
         
         """
 

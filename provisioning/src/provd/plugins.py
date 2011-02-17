@@ -30,7 +30,7 @@ import weakref
 from provd import progressop
 from provd.servers.tftp.service import TFTPFileService
 from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
-    IInstallService
+    IInstallService, pop_fail, pop_succeed
 from twisted.internet import defer
 from twisted.internet.defer import Deferred
 from twisted.web.static import File
@@ -41,32 +41,13 @@ from fetchfw.download import new_handlers, new_downloaders
 from fetchfw.package import PackageManager, DefaultInstaller
 from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
     DefaultPackageStorage
-from zope.interface import Attribute, Interface, implements
+from zope.interface import implements, Interface
 
 logger = logging.getLogger('plugins')
 
 # TODO take proxy into account for downloading
 # TODO support plugin package signing... this will be important for safety
 #      since plugin aren't sandboxed
-
-# XXX should rename to IOperationInProgress and move to services.py
-class IProgressingOperation(Interface):
-    
-    deferred = Attribute("""A Deferred that will fire once the operation is
-                completed. Will either fire its callback with None if the
-                operation completed successfully, or will fire its errback
-                if the operated failed.""")
-                
-    status = Attribute("""A read-only string showing the status of the
-                operation. Can have one of these values:
-                
-                success -- if the operation completed successfully
-                fail -- if the operation failed
-                progress -- if the operation is in progress
-                progress;X/Y -- extended progress notation, where X and Y
-                  are integer and where 0 <= X and 0 <= Y and X < Y (usually).
-                
-                """)
 
 
 # XXX turn this into an Interface and make the distinction between what
@@ -161,21 +142,17 @@ class Plugin(object):
     # Methods for additional plugin services
     
     services = {}
-    """Return a dictionary where keys are 'service name' and values are
-    'service object'.
+    """Return a dictionary where keys are service name and values are
+    service object.
     
     This is used so that plugins can offer additional services in a
     standard way.
     
-    If the 'service name' is one of the standardized service name, then
-    the corresponding 'service object' must provide the 'standardized
-    service interface' associated with this name.
+    If the service name is 'configure', the associated service object must
+    provide the IConfigureService interface.
     
-    If the 'service name' is not one of the standardized service name,
-    then it must provide the IUnknownService interface.
-    
-    # XXX unknown service... really not sure it has anything useful to
-    #     offer... so right now, don't use it
+    If the service name is 'install', the associated service object must
+    provide the IInstallService interface.
     
     """
     
@@ -186,21 +163,11 @@ class Plugin(object):
     """An object providing the IDeviceInfoExtractor interface for DHCP
     requests or None if there's no such object.
     
-    Request objects are dictionaries with the following keys:
-      options -- a dictionary where keys are integer representing the DHCP
-         code option and values are raw DHCP value found in the client request.
-    
     """
     
-    # XXX now that device info extraction has been unified, with the type of
-    #     the request being passed as an argument, we could have only one
-    #     'dev_info_extractor' for each plugin. The plugin could then use the
-    #     different 'generic' device info extractor (splitter and composite)
     http_dev_info_extractor = None
     """An object providing the IDeviceInfoExtractor interface for HTTP
     requests or None if there's no such object.
-    
-    In this case, request objects are twisted.web.http.Request objects.
     
     """
     
@@ -208,13 +175,9 @@ class Plugin(object):
     """The HTTP service of this plugin, or None if the plugin doesn't offer
     an HTTP service.
     
-    In the case the plugins has no HTTP service, HTTP requests for the
-    plugin will be served by the default HTTP service (normally done in
-    a HTTPRequestProcessing object).
-    
-    XXX the request object passed to the render method of this service
-    has a 'prov_dev' attribute set to the device object which is doing
-    this request, or None (but the attribute is always present).
+    Note that the request objects passed to the render method of this service
+    have a 'prov_dev' attribute set to the device object representing the
+    device which is doing the request, or None if the device is unknown.
     
     """
     
@@ -222,22 +185,15 @@ class Plugin(object):
     """An object providing the IDeviceInfoExtractor interface for TFTP
     request or None if there's no such object.
     
-    In this case, request objects are as defined in the
-    provd.servers.tftp.service module.
-    
     """
 
     tftp_service = None
     """The TFTP service of this plugin, or None if the plugin
     doesn't offer a TFTP service.
     
-    In the case the plugins has no TFTP service, TFTP requests for the
-    plugin will be served by the default TFTP service (normally done in
-    a TFTPRequestProcessing object).
-    
-    XXX the request object passed to the handle_read_request method of this
-    service has a 'prov_dev' key set to the device object which is doing
-    this request, or None (but the attribute is always present).
+    Note that the request objects passed to the handle_read_request method of
+    this service have a 'prov_dev' key set to the device object representing
+    the device which is doing the request, or None if the device is unknown.
     
     """
     
@@ -246,7 +202,6 @@ class Plugin(object):
     the plugin doesn't have a plugin associator.
     
     """
-    
     
     # Methods for device configuration
     
@@ -463,7 +418,7 @@ class _AsyncPackageManager(PackageManager):
 
 
 class _AsyncInstaller(DefaultInstaller):
-    implements(IProgressingOperation)
+    #implements(IOperationInProgress)
     
     def __init__(self, reactor, **kwargs):
         DefaultInstaller.__init__(self, **kwargs)
@@ -609,19 +564,8 @@ class FetchfwPluginHelper(object):
         return {'install': self}
 
 
-class StaticProgressingOperation(object):
-    def __init__(self, deferred, status):
-        self.deferred = deferred
-        self.status = status
-
-def pop_succeed(result):
-    return StaticProgressingOperation(defer.succeed(result), 'success')
-
-def pop_fail(result=None):
-    return StaticProgressingOperation(defer.fail(result), 'fail')
-
 class _InstallProxyProgressingOperation(object):
-    implements(IProgressingOperation)
+    #implements(IOperationInProgress)
     
     def __init__(self, pop):
         self._pop = pop
@@ -635,7 +579,7 @@ class _InstallProxyProgressingOperation(object):
         return self._status
 
 
-class IPluginManagerObserver(object):
+class IPluginManagerObserver(Interface):
     """Interface that objects which want to be notified of plugin
     loading/unloading MUST provide.
     
@@ -666,31 +610,21 @@ class BasePluginManagerObserver(object):
 class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
     
-    PgMgr objects have a 'server' attribute which represent the base address
-    of the plugins repository (ex.: http://www.example.com/provd/stable). It
-    can be set to None if no server is specified.
-    
-    A 'plugin info' object is a mapping object with the following keys:
-      name -- the plugin name
-      version -- the plugin version (not to mistake with the version 
-                of the device the plugin supports)
-    
-    An 'installable plugin info' is a 'plugin info' object + the following keys:
-      filename -- the name of the file to download on the remote server (i.e.
-                  the name of the plugin package)
+    Plugin manager objects have a 'server' attribute which represent the base
+    address of the plugins repository (ex.: http://www.example.com/provd/stable).
+    It can be set to None if no server is specified.
     
     """
     
     # TODO proxy awareness... a shame that twisted web client proxy support
-    #      is vague, and when we'll do this, we'll probably want to take
-    #      the 'general configure service' to look up the proxy value
+    #      is vague
     
     _ENTRY_FILENAME = 'entry.py'
-    """The name of the python plugin code."""
+    # name of the python plugin code
     _DB_FILENAME = 'plugins.db'
-    """The plugin definition filename on the remote and local server."""
+    # plugin definition filename on the remote and local server.
     _INFO_FILENAME = 'plugin-info'
-    """The name of the plugin information file."""
+    # plugin information filename in each plugin directory.
     
     def __init__(self, app, plugins_dir, cache_dir):
         """
@@ -722,8 +656,8 @@ class PluginManager(object):
         logger.info('Closing plugin manager...')
         # Note: important not to use an iterator over self._plugins since
         #       this dictionary is modified in the unload method
-        for name in tuple(self._plugins):
-            self._unload_and_notify(name)
+        for id in self._plugins.keys():
+            self._unload_and_notify(id)
     
     def configure_service(self):
         """Return an object providing the IConfigureService interface.
@@ -748,20 +682,18 @@ class PluginManager(object):
                 return server + '/' + p
     
     def _is_in_cache(self, filename):
-        """Return the pathname of the cached plugin package if it exists,
-        else return None.
-        
-        """
+        # Return the pathname of the cached plugin package if it exists,
+        # else return None.
         cache_filename = os.path.join(self._cache_dir, filename)
         if os.path.isfile(cache_filename):
             return True
         return False
     
     def _download_plugin(self, filename, cache_filename):
-        """Return an object providiing IProgressOperation that will fire
-        when the download is ready."""
-        # filename is the part that needs to be concatened to the server
-        # URL, cache_filename is the (final) destination of the download
+        # Return an object providing IProgressOperation that will fire
+        # when the download is ready.
+        # filename is the part that needs to be concatened to the server URL
+        # cache_filename is the (final) destination of the download
         # XXX share quite some similtude with update()
         url = self._join_server_url(filename)
         tmp_filename = cache_filename + '.tmp'
@@ -788,7 +720,7 @@ class PluginManager(object):
             # XXX this is unsafe unless we have authenticated the tarfile
             tfile.extractall(self._plugins_dir)
     
-    def install(self, name):
+    def install(self, id):
         """Install a plugin.
         
         This does not check if the plugin is already installed and does not
@@ -800,28 +732,28 @@ class PluginManager(object):
         in progress for the plugin.
         
         Raise an Exception if there's no installable plugin with the
-        specified name.
+        specified id.
         
         Raise an InvalidParameterError if the plugin package is not in cache
         and no 'server' param has been set.
         
         """
-        logger.info('Installing plugin "%s"', name)
-        if name in self._in_install:
-            raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % name)
+        logger.info('Installing plugin "%s"', id)
+        if id in self._in_install:
+            raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % id)
         
-        pg_info = self._get_installable_pg_info(name)
+        pg_info = self._get_installable_pg_info(id)
         cache_filename = os.path.join(self._cache_dir, pg_info['filename'])
         if not self._is_in_cache(cache_filename):
-            self._in_install.add(name)
+            self._in_install.add(id)
             dl_pop = self._download_plugin(pg_info['filename'], cache_filename)
             proxy_pop = _InstallProxyProgressingOperation(dl_pop)
             def on_error(failure):
-                self._in_install.remove(name)
+                self._in_install.remove(id)
                 proxy_pop._status = 'fail'
                 proxy_pop.deferred.errback(failure)
             def on_success(_):
-                self._in_install.remove(name)
+                self._in_install.remove(id)
                 try:
                     self._extract_plugin(cache_filename)
                 except Exception, e:
@@ -840,35 +772,35 @@ class PluginManager(object):
             else:
                 return pop_succeed(None)
 
-    def upgrade(self, name):
+    def upgrade(self, id):
         """Upgrade a plugin.
         
         Right now, there's is absolutely no difference between calling this
         method and calling the install method.
         
         """
-        logger.info('Upgrading plugin "%s"', name)
-        return self.install(name)
+        logger.info('Upgrading plugin "%s"', id)
+        return self.install(id)
         
-    def uninstall(self, name):
+    def uninstall(self, id):
         """Uninstall a plugin.
         
         This does not unload the installed plugin.
         
         Raise an Exception if there's no installed plugin with the
-        specified name.
+        specified id.
         
         """
-        logger.info('Uninstalling plugin "%s"', name)
-        if not self.is_installed(name):
+        logger.info('Uninstalling plugin "%s"', id)
+        if not self.is_installed(id):
             raise Exception('plugin not found')
         
-        shutil.rmtree(os.path.join(self._plugins_dir, name))
+        shutil.rmtree(os.path.join(self._plugins_dir, id))
 
     def update(self):
         """Download a fresh copy of the plugin definition file from the server.
         
-        Return an object providing the IProgressingOperation interface.
+        Return an object providing the IOperationInProgress interface.
         
         Raise an Exception if there's already an update operation in progress.
         
@@ -911,11 +843,11 @@ class PluginManager(object):
             pop.deferred.addCallbacks(on_success, on_error)
             return pop
     
-    def _get_installable_pg_info(self, name):
-        # Return an 'installable plugin info' object from a name, or raise
+    def _get_installable_pg_info(self, id):
+        # Return an 'installable plugin info' object from a id, or raise
         # a KeyError if no such plugin is found
         installable_plugins = self.list_installable()
-        return installable_plugins[name]
+        return installable_plugins[id]
     
     @staticmethod
     def _clean_long_header(value):
@@ -960,18 +892,18 @@ class PluginManager(object):
                                            'description': description}
         return installable_plugins
     
-    def _get_installed_pg_info(self, name):
-        # Return an 'installed plugin info' object from a name, or raise
+    def _get_installed_pg_info(self, id):
+        # Return an 'installed plugin info' object from a id, or raise
         # a KeyError if no such plugin is found
         installed_plugins = self.list_installed()
-        return installed_plugins[name]
+        return installed_plugins[id]
     
-    def is_installed(self, name):
-        """Return true if the plugin <name> is currently installed, else
+    def is_installed(self, id):
+        """Return true if the plugin <id> is currently installed, else
         false.
         
         """
-        return name in self.list_installed()
+        return id in self.list_installed()
     
     def list_installed(self):
         """Return a dictionary of installed plugins, where keys are plugin
@@ -1001,7 +933,7 @@ class PluginManager(object):
     
     @staticmethod
     def _add_execfile(pg_globals, plugin_dir):
-        """Add 'execfile_' to pg_globals."""
+        # add 'execfile_' to pg_globals.
         def aux(filename, *args, **kwargs):
             if args:
                 globals = args[0]
@@ -1045,24 +977,24 @@ class PluginManager(object):
         except KeyError:
             pass
     
-    def _notify(self, pg_id, action):
+    def _notify(self, id, action):
         # action is either 'load' or 'unload'
-        logger.debug('Notifying observers: %s %s', action, pg_id)
+        logger.debug('Notifying observers: %s %s', action, id)
         for ob in self._observers.keys():
             fun = getattr(ob, 'pg_' + action)
-            fun(pg_id)
+            fun(id)
     
-    def _load_and_notify(self, name, plugin):
-        self._plugins[name] = plugin
-        self._notify(name, 'load')
+    def _load_and_notify(self, id, plugin):
+        self._plugins[id] = plugin
+        self._notify(id, 'load')
     
-    def _unload_and_notify(self, name):
-        plugin = self._plugins[name]
+    def _unload_and_notify(self, id):
+        plugin = self._plugins[id]
         plugin.close()
-        del self._plugins[name]
-        self._notify(name, 'unload')
+        del self._plugins[id]
+        self._notify(id, 'unload')
     
-    def load(self, name, gen_cfg={}, spec_cfg={}):
+    def load(self, id, gen_cfg={}, spec_cfg={}):
         """Load a plugin.
         
         Raise an Exception if the plugin is already loaded, since we offer
@@ -1070,7 +1002,7 @@ class PluginManager(object):
         time.
         
         Also raise an Exception if the plugin could not be loaded, either
-        because there's no plugin with such a name or because of an error
+        because there's no plugin with such a id or because of an error
         at plugin load time.
         
         gen_cfg -- a mapping object with general configuration parameters.
@@ -1079,10 +1011,10 @@ class PluginManager(object):
           parameters. These parameters are specific to every plugins.
         
         """
-        logger.info('Loading plugin "%s"', name)
-        if name in self._plugins:
-            raise Exception("plugin '%s' is already loaded" % name)
-        plugin_dir = os.path.join(self._plugins_dir, name)
+        logger.info('Loading plugin "%s"', id)
+        if id in self._plugins:
+            raise Exception("plugin '%s' is already loaded" % id)
+        plugin_dir = os.path.join(self._plugins_dir, id)
         plugin_globals = {}
         self._execplugin(plugin_dir, plugin_globals)
         for el in plugin_globals.itervalues():
@@ -1091,36 +1023,20 @@ class PluginManager(object):
                 hasattr(el, 'IS_PLUGIN') and
                 getattr(el, 'IS_PLUGIN')):
                     plugin = el(self._app, plugin_dir, gen_cfg, spec_cfg)
-                    plugin.name = name
-                    self._load_and_notify(name, plugin)
+                    plugin.name = id
+                    self._load_and_notify(id, plugin)
                     return
         else:
-            raise Exception("pg '%s': no plugin class found in file" % name)
+            raise Exception("pg '%s': no plugin class found in file" % id)
 
-    def unload(self, name):
+    def unload(self, id):
         """Unload a plugin.
         
         Raise an Exception if the plugin is not loaded.
         
         """
-        logger.info('Unloading plugin "%s"', name)
-        self._unload_and_notify(name)
-
-    def load_all(self, gen_cfg={}, spec_cfg_map={}):
-        """Load all the installed plugins.
-        
-        Already loaded plugin WILL NOT be reloaded.
-        
-        spec_cfg_map -- a mapping object where keys are plugin name and
-          values are plugin-specific configuration parameters. 
-        
-        """
-        # spec_cfg_map is a mapping which keys are plugin name and which values are
-        # specific configuration mapping for the plugin with this name
-        for pg_info in self.list_installed():
-            pg_name = pg_info['name']
-            if pg_name not in self._plugins:
-                self.load(pg_name, gen_cfg, spec_cfg_map.get(pg_name, {}))
+        logger.info('Unloading plugin "%s"', id)
+        self._unload_and_notify(id)
     
     # Dictionary-like methods for loaded plugin access
     

@@ -229,7 +229,7 @@ class OperationInProgressResource(Resource):
     # objects, and not on the class itself
     def __init__(self, pop, on_delete=None):
         """
-        pop -- an object providing the IProgressingOperation interface
+        pop -- an object providing the IOperationInProgress interface
         on_delete -- either None or a callable taking no argument
         """
         Resource.__init__(self)
