@@ -40,6 +40,7 @@ import urllib2
 from fetchfw.download import DefaultDownloader, InvalidCredentialsError,\
     DownloadError, new_handlers, new_downloaders
 from fetchfw.storage import RemoteFileBuilder
+from provd import tzinform
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT, \
@@ -48,7 +49,6 @@ from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer
-from xivo import tzinform
 
 
 class WeakCiscoCredentialsError(DownloadError):

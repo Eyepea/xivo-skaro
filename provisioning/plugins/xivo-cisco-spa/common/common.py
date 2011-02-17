@@ -26,7 +26,7 @@ import math
 import os.path
 import re
 from xml.sax.saxutils import escape
-from provd import sip
+from provd import sip, tzinform
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT
@@ -35,7 +35,6 @@ from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
-from xivo import tzinform
 
 
 class BaseCiscoDHCPDeviceInfoExtractor(object):

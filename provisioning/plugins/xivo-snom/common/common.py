@@ -23,6 +23,7 @@ __license__ = """
 import os.path
 import re
 from jinja2 import TemplateNotFound
+from provd import tzinform
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT,\
     INCOMPLETE_SUPPORT
@@ -32,7 +33,6 @@ from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.web.resource import Resource
 from twisted.web.static import Data, File
-from xivo import tzinform
 
 
 class BaseSnomHTTPDeviceInfoExtractor(object):

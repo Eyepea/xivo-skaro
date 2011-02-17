@@ -25,7 +25,7 @@ __license__ = """
 """
 
 import os.path
-from provd import sip
+from provd import sip, tzinform
 from provd.devices.config import RawConfigError
 from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
@@ -34,7 +34,6 @@ from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
-from xivo import tzinform
 
 
 class BaseAastraHTTPDeviceInfoExtractor(object):

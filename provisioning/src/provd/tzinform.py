@@ -1,9 +1,10 @@
 """Return the current UTC offset and DST rules of arbitrary timezones.
+
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (c) 2010  Proformatique <technique@proformatique.com>
+    Copyright (c) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -157,7 +158,7 @@ class DefaultTimezoneInfoDB(object):
             return self.default
 
 
-get_timezone_info = DefaultTimezoneInfoDB('Europe/Paris', TextTimezoneInfoDB()).get_timezone_info
+get_timezone_info = TextTimezoneInfoDB().get_timezone_info
 
 
 def week_start_on_monday(weekday):

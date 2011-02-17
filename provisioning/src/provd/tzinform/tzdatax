@@ -1,4 +1,4 @@
-# This file was automatically generated on 2010-07-22 by the tzdataexport tool
+# This file was automatically generated on 2011-02-17 by the tzdataexport tool
 Africa/Abidjan                             0    -
 Africa/Accra                               0    -
 Africa/Addis_Ababa                     10800    -
@@ -13,7 +13,7 @@ Africa/Blantyre                         7200    -
 Africa/Brazzaville                      3600    -
 Africa/Bujumbura                        7200    -
 Africa/Cairo                            7200    4/W5.6/0;9/W5.5/82800;3600
-Africa/Casablanca                          0    5/D2/0;8/D8/0;3600
+Africa/Casablanca                          0    -
 Africa/Ceuta                            3600    3/W5.1/3600;10/W5.1/3600;3600
 Africa/Conakry                             0    -
 Africa/Dakar                               0    -
@@ -165,6 +165,7 @@ America/New_York                      -18000    3/W2.1/7200;11/W1.1/7200;3600
 America/Nipigon                       -18000    3/W2.1/7200;11/W1.1/7200;3600
 America/Nome                          -32400    3/W2.1/7200;11/W1.1/7200;3600
 America/Noronha                        -7200    -
+America/North_Dakota/Beulah           -21600    3/W2.1/7200;11/W1.1/7200;3600
 America/North_Dakota/Center           -21600    3/W2.1/7200;11/W1.1/7200;3600
 America/North_Dakota/New_Salem        -21600    3/W2.1/7200;11/W1.1/7200;3600
 America/Ojinaga                       -25200    3/W2.1/7200;11/W1.1/7200;3600
@@ -186,7 +187,7 @@ America/Rio_Branco                    -14400    -
 America/Rosario                       -10800    -
 America/Santa_Isabel                  -28800    4/W1.1/7200;10/W5.1/7200;3600
 America/Santarem                      -10800    -
-America/Santiago                      -14400    10/W2.1/14400;4/D4/10800;3600
+America/Santiago                      -14400    10/W2.1/14400;3/W2.1/10800;3600
 America/Santo_Domingo                 -14400    -
 America/Sao_Paulo                     -10800    10/W3.1/0;2/W3.1/0;3600
 America/Scoresbysund                   -3600    3/W5.1/3600;10/W5.1/3600;3600
@@ -257,7 +258,7 @@ Asia/Irkutsk                           28800    3/W5.1/7200;10/W5.1/7200;3600
 Asia/Istanbul                           7200    3/W5.1/3600;10/W5.1/3600;3600
 Asia/Jakarta                           25200    -
 Asia/Jayapura                          32400    -
-Asia/Jerusalem                          7200    3/W4.6/7200;9/D12/7200;3600
+Asia/Jerusalem                          7200    4/D1/7200;10/D2/7200;3600
 Asia/Kabul                             16200    -
 Asia/Kamchatka                         39600    3/W5.1/7200;10/W5.1/7200;3600
 Asia/Karachi                           18000    -
@@ -297,7 +298,7 @@ Asia/Taipei                            28800    -
 Asia/Tashkent                          18000    -
 Asia/Tbilisi                           14400    -
 Asia/Tehran                            12600    3/D22/0;9/D22/0;3600
-Asia/Tel_Aviv                           7200    3/W4.6/7200;9/D12/7200;3600
+Asia/Tel_Aviv                           7200    4/D1/7200;10/D2/7200;3600
 Asia/Thimbu                            21600    -
 Asia/Thimphu                           21600    -
 Asia/Tokyo                             32400    -
@@ -360,8 +361,8 @@ Canada/Newfoundland                   -12600    3/W2.1/60;11/W1.1/60;3600
 Canada/Pacific                        -28800    3/W2.1/7200;11/W1.1/7200;3600
 Canada/Saskatchewan                   -21600    -
 Canada/Yukon                          -28800    3/W2.1/7200;11/W1.1/7200;3600
-Chile/Continental                     -14400    10/W2.1/14400;4/D4/10800;3600
-Chile/EasterIsland                    -21600    10/W2.1/14400;4/D4/10800;3600
+Chile/Continental                     -14400    10/W2.1/14400;3/W2.1/10800;3600
+Chile/EasterIsland                    -21600    10/W2.1/14400;3/W2.1/10800;3600
 Cuba                                  -18000    3/W2.1/0;10/W5.1/0;3600
 EET                                     7200    3/W5.1/3600;10/W5.1/3600;3600
 EST                                   -18000    -
@@ -483,7 +484,7 @@ Indian/Mauritius                       14400    -
 Indian/Mayotte                         10800    -
 Indian/Reunion                         14400    -
 Iran                                   12600    3/D22/0;9/D22/0;3600
-Israel                                  7200    3/W4.6/7200;9/D12/7200;3600
+Israel                                  7200    4/D1/7200;10/D2/7200;3600
 Jamaica                               -18000    -
 Japan                                  32400    -
 Kwajalein                              43200    -
@@ -502,11 +503,12 @@ PST8PDT                               -28800    3/W2.1/7200;11/W1.1/7200;3600
 Pacific/Apia                          -39600    -
 Pacific/Auckland                       43200    9/W5.1/7200;4/W1.1/7200;3600
 Pacific/Chatham                        45900    9/W5.1/9900;4/W1.1/9900;3600
-Pacific/Easter                        -21600    10/W2.1/14400;4/D4/10800;3600
+Pacific/Chuuk                          36000    -
+Pacific/Easter                        -21600    10/W2.1/14400;3/W2.1/10800;3600
 Pacific/Efate                          39600    -
 Pacific/Enderbury                      46800    -
 Pacific/Fakaofo                       -36000    -
-Pacific/Fiji                           43200    10/D24/7200;3/W5.1/10800;3600
+Pacific/Fiji                           43200    -
 Pacific/Funafuti                       43200    -
 Pacific/Galapagos                     -21600    -
 Pacific/Gambier                       -32400    -
@@ -527,6 +529,7 @@ Pacific/Noumea                         39600    -
 Pacific/Pago_Pago                     -39600    -
 Pacific/Palau                          32400    -
 Pacific/Pitcairn                      -28800    -
+Pacific/Pohnpei                        39600    -
 Pacific/Ponape                         39600    -
 Pacific/Port_Moresby                   36000    -
 Pacific/Rarotonga                     -36000    -
