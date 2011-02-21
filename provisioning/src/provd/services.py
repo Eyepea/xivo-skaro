@@ -20,31 +20,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from twisted.internet import defer
 from zope.interface import Attribute, Interface, implements
-
-
-class IOperationInProgress(Interface):
-    
-    deferred = Attribute(
-        """A Deferred that will fire once the operation is completed.
-        
-        Will either fire its callback with None if the operation completed
-        successfully, or will fire its errback if the operated failed.
-        
-        """)
-                
-    status = Attribute(
-        """A read-only string showing the status of the operation.
-        
-        Can be one of these values:
-          success -- if the operation completed successfully
-          fail -- if the operation failed
-          progress -- if the operation is in progress
-          progress;X/Y -- extended progress notation, where X and Y
-            are integer and where 0 <= X and 0 <= Y and X < Y (usually).
-        
-        """)
 
 
 class InvalidParameterError(Exception):
@@ -125,7 +101,7 @@ class IInstallService(Interface):
         
         The package SHOULD be reinstalled even if it seemed to be installed.
         
-        Return an object providing the IProgressOperation interface.
+        Return a tuple (deferred, operation in progress).
         
         Raise an Exception if there's already an install operation in progress
         for the package.
@@ -178,7 +154,7 @@ class IInstallService(Interface):
     def update():
         """Update the list of installable package (optional operation).
         
-        Return an object providing the IProgressOperation interface.
+        Return a tuple (deferred, operation in progress).
         
         Raise an Exception if there's already an update operation in progress.
         
@@ -237,41 +213,3 @@ class BaseConfigureService(object):
     def description(self):
         return dict((key, p.description) for key, p in
                     self._params_map.iteritems())
-
-
-class OperationInProgressDeferred(object):
-    """Wrap a deferred around an OperationInProgress."""
-    def __init__(self, deferred):
-        self.deferred = deferred
-        self.status = 'progress'
-        self.deferred.addCallbacks(self._callback, self._errback)
-    
-    def _callback(self, v):
-        self.status = 'success'
-        return v
-    
-    def _errback(self, v):
-        self.status = 'fail'
-        return v
-
-
-class _StaticOperationInProgress(object):
-    def __init__(self, deferred, status):
-        self.deferred = deferred
-        self.status = status
-
-
-def pop_succeed(result):
-    """Similar to defer.succeed but return an object providing the
-    IOperationInProgress interface.
-    
-    """
-    return _StaticOperationInProgress(defer.succeed(result), 'success')
-
-
-def pop_fail(result=None):
-    """Similar to defer.fail but return an object providing the
-    IOperationInProgress.
-    
-    """
-    return _StaticOperationInProgress(defer.fail(result), 'fail')

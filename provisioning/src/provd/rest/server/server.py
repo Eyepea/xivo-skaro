@@ -25,19 +25,17 @@ __license__ = """
 
 import binascii
 import logging
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import json
 from twisted.web import http
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
 from provd.app import InvalidIdError
+from provd.operation import format_oip, operation_in_progres_from_deferred
 from provd.persist.common import ID_KEY
 from provd.plugins import BasePluginManagerObserver
 from provd.rest.util import PROV_MIME_TYPE, uri_append_path
 from provd.rest.server.util import accept_mime_type, numeric_id_generator
-from provd.services import InvalidParameterError, OperationInProgressDeferred
+from provd.services import InvalidParameterError
 from provd.util import norm_mac, norm_ip
 
 logger = logging.getLogger('rest.server')
@@ -227,18 +225,18 @@ def ServerResource(app):
 class OperationInProgressResource(Resource):
     # Note that render_DELETE might be implemented in classes creating these
     # objects, and not on the class itself
-    def __init__(self, pop, on_delete=None):
+    def __init__(self, oip, on_delete=None):
         """
-        pop -- an object providing the IOperationInProgress interface
+        oip -- an operation in progress object
         on_delete -- either None or a callable taking no argument
         """
         Resource.__init__(self)
-        self._pop = pop
+        self._oip = oip
         self._on_delete = on_delete
 
     @json_response_entity
     def render_GET(self, request):
-        content = {u'status': self._pop.status}
+        content = {u'status': format_oip(self._oip)}
         return json.dumps(content)
     
     def render_DELETE(self, request):
@@ -316,12 +314,12 @@ def InstallServiceResource(install_srv):
     return IntermediaryResource(links)
 
 
-class _PopInstallResource(Resource):
+class _OipInstallResource(Resource):
     def __init__(self):
         Resource.__init__(self)
         self._id_gen = new_id_generator()
     
-    def _add_new_pop(self, pop, request):
+    def _add_new_oip(self, oip, request):
         # add a new child to this resource, and return the location
         # of the child
         path = self._id_gen.next()
@@ -330,14 +328,14 @@ class _PopInstallResource(Resource):
                 del self.children[path]
             except KeyError:
                 logger.warning('ID "%s" has already been removed' % path)
-        op_in_progress_res = OperationInProgressResource(pop, on_delete)
+        op_in_progress_res = OperationInProgressResource(oip, on_delete)
         self.putChild(path, op_in_progress_res)
         return uri_append_path(request.path, path)
 
 
-class InstallResource(_PopInstallResource):
+class InstallResource(_OipInstallResource):
     def __init__(self, install_srv):
-        _PopInstallResource.__init__(self)
+        _OipInstallResource.__init__(self)
         self._install_srv = install_srv
     
     @json_request_entity
@@ -348,13 +346,13 @@ class InstallResource(_PopInstallResource):
             return respond_bad_json_entity(request, 'Missing "id" key')
         else:
             try:
-                pop = self._install_srv.install(pkg_id)
+                oip = self._install_srv.install(pkg_id)[1]
             except Exception, e:
                 # XXX should handle the exception differently if it was
                 #     because there's already an install in progress
                 return respond_error(request, e)
             else:
-                location = self._add_new_pop(pop, request)
+                location = self._add_new_oip(oip, request)
                 return respond_created_no_content(request, location)
 
 
@@ -378,9 +376,9 @@ class UninstallResource(Resource):
                 return respond_no_content(request)
 
 
-class UpgradeResource(_PopInstallResource):
+class UpgradeResource(_OipInstallResource):
     def __init__(self, install_srv):
-        _PopInstallResource.__init__(self)
+        _OipInstallResource.__init__(self)
         self._install_srv = install_srv
     
     @json_request_entity
@@ -391,31 +389,31 @@ class UpgradeResource(_PopInstallResource):
             return respond_bad_json_entity(request, 'Missing "id" key')
         else:
             try:
-                pop = self._install_srv.upgrade(pkg_id)
+                oip = self._install_srv.upgrade(pkg_id)[1]
             except Exception, e:
                 # XXX should handle the exception differently if it was
                 #     because there's already an upgrade in progress
                 return respond_error(request, e)
             else:
-                location = self._add_new_pop(pop, request)
+                location = self._add_new_oip(oip, request)
                 return respond_created_no_content(request, location)
 
 
-class UpdateResource(_PopInstallResource):
+class UpdateResource(_OipInstallResource):
     def __init__(self, install_srv):
-        _PopInstallResource.__init__(self)
+        _OipInstallResource.__init__(self)
         self._install_srv = install_srv
     
     @json_request_entity
     def render_POST(self, request, content):
         try:
-            pop = self._install_srv.update()
+            oip = self._install_srv.update()[1]
         except Exception, e:
             # XXX should handle the exception differently if it was
             #     because there's already an update in progress
             return respond_error(request, e)
         else:
-            location = self._add_new_pop(pop, request)
+            location = self._add_new_oip(oip, request)
             return respond_created_no_content(request, location)
 
 
@@ -449,9 +447,9 @@ def DeviceManagerResource(app):
     return IntermediaryResource(links)
 
 
-class DeviceSynchronizeResource(_PopInstallResource):
+class DeviceSynchronizeResource(_OipInstallResource):
     def __init__(self, app):
-        _PopInstallResource.__init__(self)
+        _OipInstallResource.__init__(self)
         self._app = app
     
     @json_request_entity
@@ -461,9 +459,9 @@ class DeviceSynchronizeResource(_PopInstallResource):
         except KeyError:
             return respond_bad_json_entity(request, 'Missing "id" key')
         else:
-            d = self._app.dev_synchronize(id)
-            pop = OperationInProgressDeferred(d)
-            location = self._add_new_pop(pop, request)
+            deferred = self._app.dev_synchronize(id)
+            oip = operation_in_progres_from_deferred(deferred)
+            location = self._add_new_oip(oip, request)
             return respond_created_no_content(request, location)
 
 
@@ -828,15 +826,16 @@ class PluginsResource(Resource):
         self._pg_mgr = pg_mgr
         self._childs = dict((pg_id, PluginResource(pg)) for
                             (pg_id, pg) in self._pg_mgr.iteritems())
-        # observe plugin loading/unloading
-        obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
-                                        self._on_plugin_load_or_unload)
-        pg_mgr.attach(obs)
+        # observe plugin loading/unloading and keep a reference to the weakly
+        # referenced observer
+        self._obs = BasePluginManagerObserver(self._on_plugin_load,
+                                              self._on_plugin_unload)
+        pg_mgr.attach(self._obs)
     
     def _on_plugin_load(self, pg_id):
         self._childs[pg_id] = PluginResource(self._pg_mgr[pg_id])
     
-    def _on_plugin_load_or_unload(self, pg_id):
+    def _on_plugin_unload(self, pg_id):
         del self._childs[pg_id]
     
     def getChild(self, path, request):

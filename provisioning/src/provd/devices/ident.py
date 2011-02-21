@@ -378,10 +378,11 @@ class PluginDeviceInfoExtractor(object):
         self._pg_id = pg_id
         self._pg_mgr = pg_mgr
         self._set_pg()
-        # observe plugin loading/unloading
-        obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
-                                        self._on_plugin_load_or_unload)
-        pg_mgr.attach(obs)
+        # observe plugin loading/unloading and keep a reference to the weakly
+        # referenced observer
+        self._obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
+                                              self._on_plugin_load_or_unload)
+        pg_mgr.attach(self._obs)
     
     def _set_pg(self):
         self._pg = self._pg_mgr.get(self._pg_id)
@@ -414,10 +415,11 @@ class AllPluginsDeviceInfoExtractor(object):
         self.extractor_factory = extractor_factory
         self._pg_mgr = pg_mgr
         self._set_xtors()
-        # observe plugin loading/unloading
-        obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
-                                        self._on_plugin_load_or_unload)
-        pg_mgr.attach(obs)
+        # observe plugin loading/unloading and keep a reference to the weakly
+        # referenced observer
+        self._obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
+                                              self._on_plugin_load_or_unload)
+        pg_mgr.attach(self._obs)
     
     def _xtor_name(self, request_type):
         return '_%s_xtor' % request_type

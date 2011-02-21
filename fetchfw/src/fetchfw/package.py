@@ -148,22 +148,6 @@ class PackageManager(object):
         
         """
         return self._installed_pkgs
-        
-
-class DaemonPackageManager(PackageManager):
-    # XXX this is just an (incomplete) example of a package manager with a slightly
-    # different behaviour
-    def install(self, *args, **kwargs):
-        if self._needs_refresh():
-            self._refresh()
-        # ...
-        
-    def _needs_refresh(self):
-        return True
-    
-    def _refresh(self):
-        self._installable_pkgs.reload()
-        self._installed_pkgs.reload()
 
 
 class DefaultInstaller(object):

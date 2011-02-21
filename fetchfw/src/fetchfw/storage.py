@@ -22,6 +22,7 @@ import ConfigParser
 import logging
 import os
 import re
+from binascii import a2b_hex
 from fetchfw import download, install, package, util
 
 logger = logging.getLogger(__name__)
@@ -148,7 +149,7 @@ class RemoteFileBuilder(object):
     def build_remote_file(self, config, section, cache_dir):
         url = config.get(section, 'url')
         size = config.getint(section, 'size')
-        sha1sum = config.get(section, 'sha1sum')
+        sha1sum = a2b_hex(config.get(section, 'sha1sum'))
         if config.has_option(section, 'filename'):
             filename = config.get(section, 'filename')
         else:

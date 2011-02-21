@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from provd.operation import OIP_PROGRESS, OIP_FAIL, OIP_SUCCESS
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -700,11 +701,9 @@ class ProvisioningApplication(object):
     def pg_install(self, id):
         """Install the plugin with the given id.
         
-        Return a deferred that will fire with an object providing the
-        IProgressOperation interface once the plugin installation is started
-        (i.e. once the lock is acquired).
+        Return a tuple (deferred, operation in progress).
         
-        The deferred will fire its errback with:
+        This method raise the following exception:
           - an Exception if the plugin is already installed.
           - an Exception if there's no installable plugin with the specified
             name.
@@ -720,14 +719,26 @@ class ProvisioningApplication(object):
         if self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is already installed' % id)
         
+        def callback1(_):
+            # reset the state to in progress
+            oip.state = OIP_PROGRESS
         @_wlock_arg(self._rw_lock)
-        def on_success(_):
+        def callback2(_):
+            # The lock apply only to the deferred return by this function
+            # and not on the function itself
             # next line might raise an exception, which is ok
             self._pg_load(id)
             return self._pg_configure_all_devices(id)
-        pop = self.pg_mgr.install(id)
-        pop.deferred.addCallback(on_success)
-        return pop
+        def callback3(_):
+            oip.state = OIP_SUCCESS
+        def errback3(err):
+            oip.state = OIP_FAIL
+            return err
+        deferred, oip = self.pg_mgr.install(id)
+        deferred.addCallback(callback1)
+        deferred.addCallback(callback2)
+        deferred.addCallbacks(callback3, errback3)
+        return deferred, oip
     
     def pg_upgrade(self, id):
         """Upgrade the plugin with the given id.
@@ -742,18 +753,30 @@ class ProvisioningApplication(object):
         if not self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is not already installed' % id)
         
+        def callback1(_):
+            # reset the state to in progress
+            oip.state = OIP_PROGRESS
         @_wlock_arg(self._rw_lock)
-        def on_success(_):
+        def callback2(_):
+            # The lock apply only to the deferred return by this function
+            # and not on the function itself
             if id in self.pg_mgr:
                 # next line might raise an exception, which is ok
                 self._pg_unload(id)
             # next line might raise an exception, which is ok
             self._pg_load(id)
-            return self._pg_configure_all_devices(id)
+            yield self._pg_configure_all_devices(id)
+        def callback3(_):
+            oip.state = OIP_SUCCESS
+        def errback3(err):
+            oip.state = OIP_FAIL
+            return err
         # XXX we probably want to check that the plugin is 'really' upgradeable
-        pop = self.pg_mgr.upgrade(id)
-        pop.deferred.addCallback(on_success)
-        return pop
+        deferred, oip = self.pg_mgr.upgrade(id)
+        deferred.addCallback(callback1)
+        deferred.addCallback(callback2)
+        deferred.addCallbacks(callback3, errback3)
+        return deferred, oip
     
     @_wlock
     @defer.inlineCallbacks
@@ -769,7 +792,7 @@ class ProvisioningApplication(object):
         Affected devices are automatically deconfigured if needed.
         
         """
-        logger.info('Uninstallating plugin "%s"', id)
+        logger.info('Uninstalling plugin "%s"', id)
         if not self.pg_mgr.is_installed(id):
             raise Exception('plugin "%s" is not already installed' % id)
         

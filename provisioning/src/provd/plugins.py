@@ -27,20 +27,23 @@ import os
 import shutil
 import tarfile
 import weakref
-from provd import progressop
+from fetchfw.download import new_handlers, new_downloaders, DefaultDownloader,\
+    RemoteFile
+from fetchfw.package import DefaultInstaller, PackageManager
+from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
+    DefaultPackageStorage
+from provd.download import async_download_multiseq_with_oip,\
+    async_download_with_oip
+from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
+    OIP_FAIL
 from provd.servers.tftp.service import TFTPFileService
 from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
-    IInstallService, pop_fail, pop_succeed
-from twisted.internet import defer
-from twisted.internet.defer import Deferred
-from twisted.web.static import File
+    IInstallService
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
 from jinja2.loaders import FileSystemLoader
-from fetchfw.download import new_handlers, new_downloaders
-from fetchfw.package import PackageManager, DefaultInstaller
-from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
-    DefaultPackageStorage
+from twisted.internet import defer
+from twisted.web.static import File
 from zope.interface import implements, Interface
 
 logger = logging.getLogger('plugins')
@@ -400,65 +403,70 @@ class TemplatePluginHelper(object):
 
         
 class _AsyncPackageManager(PackageManager):
-    """Custom async package manager. The interface is a bit different from
-    the standard PackageManager, but it's ok since it's to be used only
-    internally.
+    """Custom async package manager. The interface of the install and upgrade
+    method is a bit different from the standard PackageManager.
     
     """
     
-    def install(self, pkg_id):
-        """Return a POP."""
-        from twisted.internet import reactor
-        async_installer = _AsyncInstaller(reactor)
-        reactor.callInThread(async_installer, [pkg_id], self._installable_pkgs, self._installed_pkgs)
-        return async_installer
+    def __init__(self, pkg_storage):
+        PackageManager.__init__(self, pkg_storage)
     
-    def upgrade(self, *args, **kwargs):
+    def install(self, pkg_id):
+        """Install a package and return a tuple (deferred, operation in progress)."""
+        return _async_install([pkg_id], self._installable_pkgs,
+                              self._installed_pkgs)
+    
+    def upgrade(self, pkg_id):
         raise NotImplementedError('async version not implemented because not needed')
 
 
-class _AsyncInstaller(DefaultInstaller):
-    #implements(IOperationInProgress)
-    
-    def __init__(self, reactor, **kwargs):
-        DefaultInstaller.__init__(self, **kwargs)
-        self._reactor = reactor
-        self.deferred = Deferred()
-        self.status = 'progress'
-        
-    def __call__(self, pkg_names, installable_pkgs, installed_pkgs):
-        """Note: SHOULD be called in a separate thread since its blocking."""
+def _async_install(pkg_ids, installable_pkgs, installed_pkgs):
+    # XXX DefaultInstaller doesn't play nice with async code. In fact, we
+    #     would like to review it, but there's higher priority...
+    installer = DefaultInstaller()
+    clean_pkg_names = installer._clean_pkg_names(pkg_ids, installable_pkgs, installed_pkgs)
+    to_install_pkgs = installer._get_pkgs_to_install(clean_pkg_names, installable_pkgs, installed_pkgs)
+    installer._pre_download(to_install_pkgs)
+    # download the files
+    # take extra step to make sure we won't download the same file twice
+    rfiles = []
+    rfiles_path = set()
+    for to_install_pkg in to_install_pkgs:
+        for rfile in to_install_pkg.remote_files:
+            if not rfile.exists() and rfile.path not in rfiles_path:
+                rfiles.append(rfile)
+                rfiles_path.add(rfile.path)
+    dl_deferred, dl_oip = async_download_multiseq_with_oip(rfiles)
+    dl_oip.label = 'download'
+    def dl_success(_):
+        install_oip.state = OIP_PROGRESS
         try:
-            # 1. Process package names
-            clean_pkg_names = self._clean_pkg_names(pkg_names, installable_pkgs, installed_pkgs)
-            to_install_pkgs = self._get_pkgs_to_install(clean_pkg_names, installable_pkgs, installed_pkgs)
-            # 2. Download the files
-            self._pre_download(to_install_pkgs)
-            # TODO override download so that the status is updated
-            self._download(to_install_pkgs)
+            installer._pre_install(to_install_pkgs)
+            new_pkgs = installer._install(to_install_pkgs)
+            installer._post_install(new_pkgs)
+            # step normally done in package manager -- update installed_pkgs
+            for new_pkg in new_pkgs:
+                installed_pkgs[new_pkg.name] = new_pkg
+            installed_pkgs.flush()
         except Exception, e:
-            self.status = 'fail'
-            self._reactor.callFromThread(self.deferred.errback, e)
-            raise
+            install_oip.state = OIP_FAIL
+            oip.state = OIP_FAIL
+            deferred.errback(e)
         else:
-            def second_step():
-                # this part is made to be executed in the reactor thread
-                try:
-                    # 3. Install packages
-                    self._pre_install(to_install_pkgs)
-                    new_pkgs = self._install(to_install_pkgs)
-                    self._post_install(new_pkgs)
-                    # 4. step normally done in package manager -- update installed_pkgs
-                    for new_pkg in new_pkgs:
-                        installed_pkgs[new_pkg.name] = new_pkg
-                    installed_pkgs.flush()
-                    # 5. fire callback
-                    self.status = 'success'
-                    self.deferred.callback(None)
-                except Exception, e:
-                    self.status = 'fail'
-                    self.deferred.errback(e)
-            self._reactor.callFromThread(second_step)
+            # fire callback
+            install_oip.state = OIP_SUCCESS
+            oip.state = OIP_SUCCESS
+            deferred.callback(None)
+    def dl_fail(err):
+        oip.state = OIP_FAIL
+        deferred.errback(err)
+    dl_deferred.addCallbacks(dl_success, dl_fail)
+    # create operation in progress objects
+    install_oip = OperationInProgress('install')
+    oip = OperationInProgress('install_pkg', OIP_PROGRESS,
+                              sub_oips=[dl_oip, install_oip])
+    deferred = defer.Deferred()
+    return (deferred, oip)
 
 
 class FetchfwPluginHelper(object):
@@ -505,11 +513,11 @@ class FetchfwPluginHelper(object):
         """Install a package.
         
         See IInstallService.install.
-         
+        
         """
         logger.info('Installing plugin-package "%s"', pkg_id)
         if pkg_id in self._in_install_set:
-            raise Exception("an install operation for pkg '%s' is already in progress" % pkg_id)
+            raise Exception('an install operation for pkg "%s" is already in progress' % pkg_id)
         if pkg_id not in self._async_pkg_manager.installable_pkgs:
             raise Exception('package not found')
 
@@ -519,12 +527,13 @@ class FetchfwPluginHelper(object):
         #       download to an arbitrarly name file before renaming, so we
         #       could have 2 download of the same file at the same time with
         #       I believe no consequence
-        pop = self._async_pkg_manager.install(pkg_id)
+        deferred, oip = self._async_pkg_manager.install(pkg_id)
         self._in_install_set.add(pkg_id)
-        def on_success_or_error(_):
+        def on_success_or_error(v):
             self._in_install_set.remove(pkg_id)
-        pop.deferred.addBoth(on_success_or_error)
-        return pop
+            return v
+        deferred.addBoth(on_success_or_error)
+        return deferred, oip
     
     def uninstall(self, pkg_id):
         """Uninstall a package.
@@ -564,21 +573,6 @@ class FetchfwPluginHelper(object):
         return {'install': self}
 
 
-class _InstallProxyProgressingOperation(object):
-    #implements(IOperationInProgress)
-    
-    def __init__(self, pop):
-        self._pop = pop
-        self.deferred = defer.Deferred()
-        self._status = 'progress'
-    
-    @property
-    def status(self):
-        if self._pop.status not in ('success', 'fail'):
-            return self._pop.status
-        return self._status
-
-
 class IPluginManagerObserver(Interface):
     """Interface that objects which want to be notified of plugin
     loading/unloading MUST provide.
@@ -592,6 +586,10 @@ class IPluginManagerObserver(Interface):
 
 
 class BasePluginManagerObserver(object):
+    # Warning: don't forget to store at least 1 reference to this object
+    # after attaching it to the plugin manager since observers are weakly
+    # referenced by the plugin manager, so if you do not store any reference,
+    # the observer will be automatically detached
     def __init__(self, pg_load=None, pg_unload=None):
         self._pg_load = pg_load
         self._pg_unload = pg_unload
@@ -605,8 +603,6 @@ class BasePluginManagerObserver(object):
             self._pg_unload(pg_id)
 
 
-# XXX we could use 'id' instead of 'name' since we are using 'id' at the other
-#     places
 class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
     
@@ -616,8 +612,7 @@ class PluginManager(object):
     
     """
     
-    # TODO proxy awareness... a shame that twisted web client proxy support
-    #      is vague
+    # TODO proxy support
     
     _ENTRY_FILENAME = 'entry.py'
     # name of the python plugin code
@@ -625,6 +620,10 @@ class PluginManager(object):
     # plugin definition filename on the remote and local server.
     _INFO_FILENAME = 'plugin-info'
     # plugin information filename in each plugin directory.
+    
+    _INSTALL_LABEL = 'install'
+    _DOWNLOAD_LABEL = 'download'
+    _UPDATE_LABEL = 'update'
     
     def __init__(self, app, plugins_dir, cache_dir):
         """
@@ -646,6 +645,7 @@ class PluginManager(object):
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
         self.server = None
+        self._downloader = DefaultDownloader([])
     
     def close(self):
         """Close the plugin manager.
@@ -668,7 +668,7 @@ class PluginManager(object):
         """
         return self._cfg_service
     
-    def _def_pathname(self):
+    def _db_pathname(self):
         return os.path.join(self._plugins_dir, self._DB_FILENAME)
 
     def _join_server_url(self, p):
@@ -681,40 +681,6 @@ class PluginManager(object):
             else:
                 return server + '/' + p
     
-    def _is_in_cache(self, filename):
-        # Return the pathname of the cached plugin package if it exists,
-        # else return None.
-        cache_filename = os.path.join(self._cache_dir, filename)
-        if os.path.isfile(cache_filename):
-            return True
-        return False
-    
-    def _download_plugin(self, filename, cache_filename):
-        # Return an object providing IProgressOperation that will fire
-        # when the download is ready.
-        # filename is the part that needs to be concatened to the server URL
-        # cache_filename is the (final) destination of the download
-        # XXX share quite some similtude with update()
-        url = self._join_server_url(filename)
-        tmp_filename = cache_filename + '.tmp'
-        fdst = open(tmp_filename, 'wb')
-        try:
-            pop = progressop.request(url, fdst)
-        except Exception:
-            fdst.close()
-            os.remove(tmp_filename)
-            raise ValueError("invalid 'server' value")
-        else:
-            def on_error(failure):
-                fdst.close()
-                os.remove(tmp_filename)
-                return failure
-            def on_success(_):
-                fdst.close()
-                os.rename(tmp_filename, cache_filename)
-            pop.deferred.addCallbacks(on_success, on_error)
-            return pop
-    
     def _extract_plugin(self, cache_filename):
         with contextlib.closing(tarfile.open(cache_filename)) as tfile:
             # XXX this is unsafe unless we have authenticated the tarfile
@@ -726,7 +692,7 @@ class PluginManager(object):
         This does not check if the plugin is already installed and does not
         load the newly installed plugin.
 
-        Return an object providing the IProgressOperation interface.
+        Return a tuple (deferred, operation in progress).
         
         Raise an Exception if there's already an install/upgrade operation
         in progress for the plugin.
@@ -743,34 +709,41 @@ class PluginManager(object):
             raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % id)
         
         pg_info = self._get_installable_pg_info(id)
-        cache_filename = os.path.join(self._cache_dir, pg_info['filename'])
-        if not self._is_in_cache(cache_filename):
+        filename = pg_info['filename']
+        cache_filename = os.path.join(self._cache_dir, filename)
+        if os.path.isfile(cache_filename):
+            try:
+                self._extract_plugin(cache_filename)
+            except Exception, e:
+                # XXX create fun to return this kind of tuple ? hardest part will
+                #    be to find a good name...
+                return defer.fail(e), OperationInProgress(self._INSTALL_LABEL, OIP_FAIL)
+            else:
+                return defer.succeed(None), OperationInProgress(self._INSTALL_LABEL, OIP_SUCCESS)
+        else:
+            url = self._join_server_url(filename)
+            rfile = RemoteFile(cache_filename, url, self._downloader, None)
+            dl_deferred, dl_oip = async_download_with_oip(rfile)
+            dl_oip.label = self._DOWNLOAD_LABEL
             self._in_install.add(id)
-            dl_pop = self._download_plugin(pg_info['filename'], cache_filename)
-            proxy_pop = _InstallProxyProgressingOperation(dl_pop)
-            def on_error(failure):
-                self._in_install.remove(id)
-                proxy_pop._status = 'fail'
-                proxy_pop.deferred.errback(failure)
-            def on_success(_):
+            def dl_success(_):
                 self._in_install.remove(id)
                 try:
                     self._extract_plugin(cache_filename)
                 except Exception, e:
-                    proxy_pop._status = 'fail'
-                    proxy_pop.deferred.errback(e)
+                    top_oip.state = OIP_FAIL
+                    top_deferred.errback(e)
                 else:
-                    proxy_pop._status = 'success'
-                    proxy_pop.deferred.callback(None)
-            dl_pop.deferred.addCallbacks(on_success, on_error)
-            return proxy_pop
-        else:
-            try:
-                self._extract_plugin(cache_filename)
-            except Exception, e:
-                return pop_fail(e)
-            else:
-                return pop_succeed(None)
+                    top_oip.state = OIP_SUCCESS
+                    top_deferred.callback(None)
+            def dl_fail(err):
+                self._in_install.remove(id)
+                top_oip.state = OIP_FAIL
+                top_deferred.errback(err)
+            dl_deferred.addCallbacks(dl_success, dl_fail)
+            top_deferred = defer.Deferred() 
+            top_oip = OperationInProgress(self._INSTALL_LABEL, OIP_PROGRESS, sub_oips=[dl_oip])
+            return top_deferred, top_oip
 
     def upgrade(self, id):
         """Upgrade a plugin.
@@ -800,7 +773,7 @@ class PluginManager(object):
     def update(self):
         """Download a fresh copy of the plugin definition file from the server.
         
-        Return an object providing the IOperationInProgress interface.
+        Return a tuple (deferred, operation in progress)..
         
         Raise an Exception if there's already an update operation in progress.
         
@@ -817,31 +790,19 @@ class PluginManager(object):
         """
         logger.info('Updating the plugin definition file')
         if self._in_update:
-            raise Exception("an update operation is already in progress")
+            raise Exception('an update operation is already in progress')
 
         url = self._join_server_url(self._DB_FILENAME)
-        def_pathname = self._def_pathname()
-        tmp_pathname = def_pathname + '.tmp'
-        fdst = open(tmp_pathname, 'wb')
-        try:
-            pop = progressop.request(url, fdst)
-        except Exception:
-            fdst.close()
-            os.remove(tmp_pathname)
-            raise ValueError("invalid 'server' value")
-        else:
-            self._in_update = True
-            def on_error(failure):
-                self._in_update = False
-                fdst.close()
-                os.remove(tmp_pathname)
-                return failure
-            def on_success(_):
-                self._in_update = False
-                fdst.close()
-                os.rename(tmp_pathname, def_pathname)
-            pop.deferred.addCallbacks(on_success, on_error)
-            return pop
+        db_pathname = self._db_pathname()
+        rfile = RemoteFile(db_pathname, url, self._downloader, None)
+        dl_deferred, dl_oip = async_download_with_oip(rfile)
+        dl_oip.label = self._UPDATE_LABEL
+        self._in_update = True
+        def dl_end(v):
+            self._in_update = False
+            return v
+        dl_deferred.addBoth(dl_end)
+        return dl_deferred, dl_oip
     
     def _get_installable_pg_info(self, id):
         # Return an 'installable plugin info' object from a id, or raise
@@ -875,7 +836,7 @@ class PluginManager(object):
         installable_plugins = {}
         config = ConfigParser.RawConfigParser()
         try:
-            with open(self._def_pathname(), 'r') as fobj:
+            with open(self._db_pathname(), 'r') as fobj:
                 config.readfp(fobj)
         except IOError:
             pass
@@ -965,24 +926,30 @@ class PluginManager(object):
         not to be immediatly garbage collected.
         
         """
-        logger.debug('Attaching observer "%s" to plugin manager', id(observer))
-        if observer not in self._observers:
+        logger.debug('Attaching observer "%s" to plugin manager', observer)
+        if observer in self._observers:
+            logger.debug('Observer "%s" already attached', observer)
+        else:
             self._observers[observer] = None
     
     def detach(self, observer):
         """Detach an IPluginManagerObserver object to this plugin manager."""
-        logger.debug('Detaching observer "%s" to plugin manager', id(observer))
+        logger.debug('Detaching observer "%s" to plugin manager', observer)
         try:
             del self._observers[observer]
         except KeyError:
-            pass
+            logger.debug('Observer "%s" was not attached', observer)
     
     def _notify(self, id, action):
         # action is either 'load' or 'unload'
         logger.debug('Notifying observers: %s %s', action, id)
-        for ob in self._observers.keys():
-            fun = getattr(ob, 'pg_' + action)
-            fun(id)
+        for observer in self._observers.keys():
+            try:
+                logger.debug('Notifying observer "%s"', observer)
+                fun = getattr(observer, 'pg_' + action)
+                fun(id)
+            except Exception:
+                logger.exception('Error while notifying observer "%s"', observer)
     
     def _load_and_notify(self, id, plugin):
         self._plugins[id] = plugin
