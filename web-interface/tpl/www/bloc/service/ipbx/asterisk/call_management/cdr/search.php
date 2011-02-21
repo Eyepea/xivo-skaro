@@ -159,22 +159,6 @@ endif;
 				  'default'	=> dwho_i18n::strftime_l('%Y-%m-%d',null),
 				  'value'	=> $info['dbeg']));
 ?>
-<a href="#"
-   onclick="dwho_eid('cal-dend').style.display = 'none';
-	    xivo_calendar_display('cal-dbeg','it-dbeg');"
-   onmouseover="xivo_calendar_body();"
-   onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');"
-   title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/arrow-down.gif',
-								 $this->bbf('bt_showcalendar'),
-								 'id="bt-showcalbeg"
-								  border="0"
-								  style="vertical-align: bottom;padding-left: 2px;"');?>
-</a>
-	</div>
-	<div id="cal-dbeg"
-	     class="b-nodisplay"
-	     onmouseover="xivo_calendar_body();"
-	     onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');">
 	</div>
 	<div class="fm-multifield">
 <?php
@@ -184,24 +168,39 @@ endif;
 				  'labelid'	=> 'dend',
 				  'value'	=> $info['dend']));
 ?>
-<a href="#"
-   onclick="dwho_eid('cal-dbeg').style.display = 'none';
-	    xivo_calendar_display('cal-dend','it-dend');"
-   onmouseover="xivo_calendar_body();"
-   onmouseout="xivo_calendar_body('cal-dend','it-dend');"
-   title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/arrow-down.gif',
-								 $this->bbf('bt_showcalendar'),
-								 'id="bt-showcalend"
-								  border="0"
-								  style="vertical-align: bottom;padding-left: 2px;"');?>
-</a>
-	</div>
-	<div id="cal-dend"
-	     class="b-nodisplay"
-	     onmouseover="xivo_calendar_body();"
-	     onmouseout="xivo_calendar_body('cal-dend','it-dend');">
 	</div>
 </div>
+
+<script type="text/javascript">
+
+$.datepicker.setDefaults({
+	currentText: 'Now',
+	changeYear: true,
+	firstDay: 1,
+	selectOtherMonths: true,
+	dayNamesMin: xivo_date_day_min,
+	ayNamesShort: xivo_date_day_short,
+	dayNames: xivo_date_day,
+	monthNames: xivo_date_month,
+	monthNamesShort: xivo_date_month_short,
+	nextText: xivo_date_next,
+	prevText: xivo_date_prev,
+	showAnim: 'fold',
+	showMonthAfterYear: true,
+	showWeek: true,
+	weekHeader: 'W'
+});
+
+$("#it-dbeg").datepicker({
+	dateFormat: 'yy-mm-dd',
+	altFormat: 'yy-mm-dd',
+});
+
+$("#it-dend").datepicker({
+	dateFormat: 'yy-mm-dd',
+	altFormat: 'yy-mm-dd',
+});
+</script>
 
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_channel'),

@@ -20,6 +20,9 @@
 
 ?>
 
+var xivo_date_prev = '<?=$this->escape($this->bbf('fm_bt-previous'));?>';
+var xivo_date_next = '<?=$this->escape($this->bbf('fm_bt-next'));?>';
+
 var xivo_date_month = [
 	'<?=$this->escape($this->bbf('date_month','january'));?>',
 	'<?=$this->escape($this->bbf('date_month','february'));?>',
@@ -34,6 +37,20 @@ var xivo_date_month = [
 	'<?=$this->escape($this->bbf('date_month','november'));?>',
 	'<?=$this->escape($this->bbf('date_month','december'));?>'];
 
+var xivo_date_month_short = [
+	'<?=substr($this->escape($this->bbf('date_month','january')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','february')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','march')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','april')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','may')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','jun')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','july')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','august')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','september')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','october')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','november')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_month','december')),0,3);?>'];
+
 var xivo_date_day = [
 	'<?=$this->escape($this->bbf('date_day','sunday'));?>',
 	'<?=$this->escape($this->bbf('date_day','monday'));?>',
@@ -42,3 +59,22 @@ var xivo_date_day = [
 	'<?=$this->escape($this->bbf('date_day','thursday'));?>',
 	'<?=$this->escape($this->bbf('date_day','friday'));?>',
 	'<?=$this->escape($this->bbf('date_day','saturday'));?>'];
+
+var xivo_date_day_min = [
+	'<?=substr($this->escape($this->bbf('date_day','sunday')),0,2);?>',
+	'<?=substr($this->escape($this->bbf('date_day','monday')),0,2);?>',
+	'<?=substr($this->escape($this->bbf('date_day','tuesday')),0,2);?>',
+	'<?=substr($this->escape($this->bbf('date_day','wesnesday')),0,2);?>',
+	'<?=substr($this->escape($this->bbf('date_day','thursday')),0,2);?>',
+	'<?=substr($this->escape($this->bbf('date_day','friday')),0,2);?>',
+	'<?=substr($this->escape($this->bbf('date_day','saturday')),0,2);?>'];
+
+var xivo_date_day_short = [
+	'<?=substr($this->escape($this->bbf('date_day','sunday')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_day','monday')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_day','tuesday')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_day','wesnesday')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_day','thursday')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_day','friday')),0,3);?>',
+	'<?=substr($this->escape($this->bbf('date_day','saturday')),0,3);?>'];
+	

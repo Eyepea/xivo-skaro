@@ -206,31 +206,11 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-type"><?=$this->bbf('fm_dbeg')?></label>
-						<input type="text" name="dbeg" id="it-dbeg-type" value="<?=$infocal['dbeg']?>" size="8"
-							onclick="dwho_eid('cal-dend-type').style.display = 'none';
-								xivo_calendar_display('cal-dbeg-type','it-dbeg-type');"
-							onmouseover="xivo_calendar_body();"
-							onmouseout="xivo_calendar_body('cal-dbeg-type','it-dbeg-type');"
-						 />
-					</div>
-					<div id="cal-dbeg-type"
-					     class="b-nodisplay"
-					     onmouseover="xivo_calendar_body();"
-					     onmouseout="xivo_calendar_body('cal-dbeg-type','it-dbeg-type');">
+						<input type="text" name="dbeg" id="it-dbeg-type" value="<?=$infocal['dbeg']?>" size="8" />
 					</div>
 					<div class="fm-desc-inline">
 						<label id="lb-dend" for="it-dend-type"><?=$this->bbf('fm_dend')?></label>
-						<input type="text" name="dend" id="it-dend-type" value="<?=$infocal['dend']?>" size="8"
-						   onclick="dwho_eid('cal-dbeg-type').style.display = 'none';
-							    xivo_calendar_display('cal-dend-type','it-dend-type');"
-						   onmouseover="xivo_calendar_body();"
-						   onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');"
-						 />
-					</div>
-					<div id="cal-dend-type"
-					     class="b-nodisplay"
-					     onmouseover="xivo_calendar_body();"
-					     onmouseout="xivo_calendar_body('cal-dend-type','it-dend-type');">
+						<input type="text" name="dend" id="it-dend-type" value="<?=$infocal['dend']?>" size="8" />
 					</div>
 				</div>
 			</div>
@@ -238,16 +218,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-day"><?=$this->bbf('fm_dday')?></label>
-						<input type="text" name="dday" id="it-dbeg-day" value="<?=$infocal['dday']?>" size="8"
-							onclick="xivo_calendar_display('cal-dbeg-day','it-dbeg-day');"
-							onmouseover="xivo_calendar_body();"
-							onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');"
-						 />
-					</div>
-					<div id="cal-dbeg-day"
-					     class="b-nodisplay"
-					     onmouseover="xivo_calendar_body();"
-					     onmouseout="xivo_calendar_body('cal-dbeg-day','it-dbeg-day');">
+						<input type="text" name="dday" id="it-dbeg-day" value="<?=$infocal['dday']?>" size="8" />
 					</div>
 				</div>
 			</div>
@@ -255,16 +226,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-week"><?=$this->bbf('fm_dweek')?></label>
-						<input type="text" name="dweek" id="it-dbeg-week" value="<?=$infocal['dweek']?>" size="8"
-							onclick="xivo_calendar_display('cal-dbeg-week','it-dbeg-week');"
-							onmouseover="xivo_calendar_body();"
-							onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');"
-						 />
-					</div>
-					<div id="cal-dbeg-week"
-					     class="b-nodisplay"
-					     onmouseover="xivo_calendar_body();"
-					     onmouseout="xivo_calendar_body('cal-dbeg-week','it-dbeg-week');">
+						<input type="text" name="dweek" id="it-dbeg-week" value="<?=$infocal['dweek']?>" size="8" />
 					</div>
 				</div>
 			</div>
@@ -272,16 +234,7 @@ $element = $this->get_var('element');
 				<div class="fm-paragraph fm-multifield">
 					<div class="fm-desc-inline">
 						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
-						<input type="text" name="dmonth" id="it-dbeg-month" value="<?=$infocal['dmonth']?>" size="8"
-							onclick="xivo_calendar_display('cal-dbeg-month','it-dbeg-month');"
-							onmouseover="xivo_calendar_body();"
-							onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');"
-						 />
-					</div>
-					<div id="cal-dbeg-month"
-					     class="b-nodisplay"
-					     onmouseover="xivo_calendar_body();"
-					     onmouseout="xivo_calendar_body('cal-dbeg-month','it-dbeg-month');">
+						<input type="text" name="dmonth" id="it-dbeg-month" value="<?=$infocal['dmonth']?>" size="8" />
 					</div>
 				</div>
 			</div>
@@ -296,6 +249,48 @@ $element = $this->get_var('element');
 			<div class="fm-desc-inline">
 				<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 			</div>
+<script type="text/javascript">
+
+$.datepicker.setDefaults({
+	currentText: 'Now',
+	changeYear: true,
+	firstDay: 1,
+	selectOtherMonths: true,
+	dayNamesMin: xivo_date_day_min,
+	ayNamesShort: xivo_date_day_short,
+	dayNames: xivo_date_day,
+	monthNames: xivo_date_month,
+	monthNamesShort: xivo_date_month_short,
+	nextText: xivo_date_next,
+	prevText: xivo_date_prev,
+	showAnim: 'fold',
+	showMonthAfterYear: true,
+	showWeek: true,
+	weekHeader: 'W'
+});
+
+$("#it-dbeg-type").datepicker({
+	dateFormat: 'yy-mm-dd',
+	altFormat: 'yy-mm-dd',
+});
+$("#it-dend-type").datepicker({
+	dateFormat: 'yy-mm-dd',
+	altFormat: 'yy-mm-dd',
+});
+$("#it-dbeg-day").datepicker({
+	dateFormat: 'yy-mm-dd',
+	altFormat: 'yy-mm-dd',
+});
+$("#it-dbeg-week").datepicker({
+	dateFormat: 'yy-mm-dd',
+	altFormat: 'yy-mm-dd',
+});
+$("#it-dbeg-month").datepicker({
+	dateFormat: 'yy-mm',
+	altFormat: 'yy-mm',
+});
+
+</script>
 <?php
 	endif;
 ?>
