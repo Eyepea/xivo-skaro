@@ -1,5 +1,5 @@
 {% if X_xivo_extensions -%}
-{% if exten['voicemail] -%}
+{% if exten['voicemail'] -%}
 topsoftkey1 type: speeddial
 topsoftkey1 value: {{ exten['voicemail'] }}
 topsoftkey1 label: "{{ XX_dict['voicemail'] }}"

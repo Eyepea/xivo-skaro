@@ -1,5 +1,5 @@
 {% if X_xivo_extensions -%}
-{% if exten['voicemail] -%}
+{% if exten['voicemail'] -%}
 prgkey1 type: speeddial
 prgkey1 value: {{ exten['voicemail'] }}
 {% endif -%}
