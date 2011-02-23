@@ -11,4 +11,3 @@ DEB_PKG="pf-xivo-base-config"
 DEB_TB_DEPS=""
 
 default:
-
