@@ -22,4 +22,3 @@ setup(
 	data_files=[('/etc/pf-xivo', ['etc/confgen.conf', 'etc/confgend.conf']),
                 ('/etc/pf-xivo/confgend/asterisk', ['etc/asterisk/contexts.conf'])],
 )
-
