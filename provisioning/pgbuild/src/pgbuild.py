@@ -1,12 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-"""A tool for managing prov plugins. 
-
-This tool can do the following:
-- build plugins from bplugins
-- package plugins
-- generate defs.db file from plugin packages or plugins
+"""A tool for managing provd plugins. 
 
 """
 
@@ -33,6 +28,7 @@ import glob
 import os
 import shutil
 import tarfile
+import traceback
 from optparse import OptionParser
 from subprocess import check_call, Popen, PIPE
 from sys import exit, stderr
@@ -162,11 +158,15 @@ def build_op(opts, args, src_dir, dest_dir):
         bplugin = bplugins_obj[bplugin_path]
         for target_id in targets:
             path = os.path.join(pgdir, bplugin.targets[target_id]['pg_id'])
-            if opts.force and os.path.exists(path):
-                shutil.rmtree(path, True)
+            if os.path.exists(path):
+                shutil.rmtree(path, False)
             print "  - Building target '%s' in directory '%s'..." % \
                   (target_id, path)
-            bplugin.build(target_id, pgdir)
+            try:
+                bplugin.build(target_id, pgdir)
+            except Exception:
+                print >>stderr, "error while building target '%s':" % target_id 
+                traceback.print_exc(None, stderr)
 
 
 def _is_plugin(path):
@@ -333,12 +333,6 @@ def main():
                       help='source directory')
     parser.add_option('-d', '--destination', dest='destination',
                       help='destination directory')
-    # Note: -f is only useful for the 'build' operation, other operation will
-    #       overwrite destination files anyway
-    parser.add_option('-f', action='store_true', dest='force',
-                      help='overwrite file/dir if they exist')
-    # XXX verbose not used
-    parser.add_option('-v', action='store_true', dest='verbose')
     
     opts, args = parser.parse_args()
     nb_op = count(getattr(opts, name) for name in ('build', 'package', 'create_db'))
