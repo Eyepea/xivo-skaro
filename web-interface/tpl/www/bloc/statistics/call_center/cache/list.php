@@ -43,12 +43,18 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 	<div class="sb-content">
 		<div class="sb-list">		
 		<p>
+<?php 
+	if (is_null($dbeg) === false):
+?>
 			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache',array($dbeg,$dencache));?></label>
-		</p>				
-				
-		<form action="" method="get" accept-charset="utf-8">
-			<?=$form->hidden(array('name' => 'act','value'	=> $act))?>
-			<?=$form->hidden(array('name' => 'idconf','value'	=> $idconf))?>
+<?php 
+	endif; 
+?>
+		</p>
+		
+		<form action="#" method="get" accept-charset="utf-8">
+			<?=$form->hidden(array('name' => 'act','value' => $act))?>
+			<?=$form->hidden(array('name' => 'idconf','value' => $idconf))?>
 			<?php
 				echo	$form->select(array('desc' => $this->bbf('conf_axetype'),
 								'name'		=> 'type',
@@ -80,9 +86,13 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		</div>
 		
 <?php 
-	if (($type = $this->get_var('type')) !== null
-	&& ($list = $this->get_var('list'.$type)) !== null
-	&& ($nb = count($list)) !== 0):
+	if (($type = $this->get_var('type')) === null):
+		echo null;
+	elseif(($list = $this->get_var('list'.$type)) === null
+	|| $list === false
+	|| ($nb = count($list)) === 0):
+		echo $this->bbf('no_type_in_conf-opt',array($this->bbf('fm_type-opt',array($type))));
+	else:
 ?>
 		<div id="t-list-obj">
 		<table cellspacing="0" cellpadding="0" border="0">
@@ -94,14 +104,13 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		</tr>
 		</thead>
 		<tbody id="disp">
-<?php 
+<?php
 		for ($i=0;$i<$nb;$i++):
 			$ref = $list[$i];
 			$mod = ($i % 2) + 1;
 				
 			$id = $ref['id'];
 			$keyfile = $ref['keyfile'];
-			$name = $ref['name'];
 			$identity = $ref['identity'];
 			
 			$basecache = DWHO_PATH_CACHE_STATS.DWHO_SEP_DIR.'cache';
@@ -336,6 +345,7 @@ function gener_on_success(idtype)
 	if (idtype == 'all')
 	{
 <?php 
+		$nb = count($list);
 		for ($i=0;$i<$nb;$i++):
 			$ref = $list[$i];
 			$id = $ref['id'];
@@ -367,7 +377,6 @@ function gener_on_success(idtype)
 	    dwho_eid('cache-infos-'+idtype).style.display = 'none';	
 	}
 }
-
 <?php 
 endif;
 ?>

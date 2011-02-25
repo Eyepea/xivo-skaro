@@ -214,13 +214,6 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
-		if(xivo_user::chk_acl('call_management','cdr') === true):
-			echo	'<dd id="mn-call-management--cdr">',
-				$url->href_html($this->bbf('mn_left_callmanagement-cdr'),
-						'service/ipbx/call_management/cdr'),
-				'</dd>';
-		endif;
-
 		echo	'</dl>';
 	endif;
 

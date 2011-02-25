@@ -423,7 +423,7 @@ class dwho_tpl
 
 		if(dwho_file::is_f_r($this->get_path().DWHO_SEP_DIR.'append'.$ext) !== false)
 			include($this->get_path().DWHO_SEP_DIR.'append'.$ext);
-
+			
 		ob_end_flush();
 	}
 

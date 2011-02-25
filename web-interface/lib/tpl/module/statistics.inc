@@ -86,6 +86,14 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		return($this->_data_foot);
 	}
 	
+	public function get_data_custom($key)
+	{
+		if (isset($this->_data_custom[$key]) ===  true)
+			return($this->_data_custom[$key]);
+			
+		return(null);		
+	}
+	
 	public function get_full_rows()
 	{
 		if (empty($this->_full_rows) === false
@@ -150,7 +158,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		array_push($this->_struct,$arr);		
 	}
 	
-	public function add_col($label,$type,$expression,$format='int',$order=null) 
+	public function add_col($label,$type,$expression,$format='int',$ttotal='total') 
 	{			
 		$nbstruct = count($this->_struct);		
 		$refstruct = &$this->_struct[$nbstruct-1];
@@ -163,7 +171,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$arr['type'] = $type;
 		$arr['expression'] = trim($expression, "\x00..\x20");
 		$arr['format'] = $format;
-		$arr['order'] = $order;
+		$arr['ttotal'] = $ttotal;
 		array_push($ref, $arr);
 		return(true);
 	}
@@ -177,6 +185,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				
 		$data_table = &$this->_data_table;
 		$data_foot = &$this->_data_foot;
+		
+		$nb_row_total = count($full_rows);
+		$nb_row_with_value = 0;
 
 		while($full_rows)
 		{			
@@ -198,13 +209,35 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$type = $col['type'];
 				$expression = $col['expression'];
 				$format = $col['format'];
+				$ttotal = $col['ttotal'];
 				
 				if (isset($row_data_table[$label]) === false)
 					$row_data_table[$label] = array();
 					
+				$row_data = &$row_data_table[$label];
+					
+				if (isset($row_data['result']) === false)
+				{
+					$row_data['expression'] = $expression;
+					$row_data['format'] = $format;
+					$row_data['result'] = 0;
+					$row_data['operation'] = null;
+				}
+					
 				$row_data_foot = &$data_foot[$label];
 				
+				if (isset($row_data_foot['total']) === false)
+				{
+					$row_data_foot['total'] = true;
+					$row_data_foot['result'] = 0;
+					$row_data_foot['format'] = $format;
+					$row_data_foot['ttotal'] = $ttotal;
+					$row_data_foot['counter'] = 0;
+					$row_data_foot['operation'] = null;
+				}
+				
 				$rs = 0;
+				$op = null;
 				switch($type) 
 				{
 					case 'direct':						
@@ -219,6 +252,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 								
 							$format = $val['type'];		
 							$rs = $val['result'];
+							$op = $rs;
 						}						
 						break;
 					case 'expression':
@@ -237,24 +271,35 @@ class dwho_tpl_statistics extends dwho_tpl_module
 							if (is_array($val2) === true)
 								$val2 = $val2['result'];
 								
-							$rs = $this->eval_calculator($val1,$val2,$out[2]);
+							$res = $this->eval_calculator($val1,$val2,$out[2]);
+							$rs = $res['rs'];
+							$op = $res['op'];
 						}
 						break;
 					default:
-				}				
+				}
+				
 				$result = $this->get_result_formated($rs,$format);
 			
-				#$row_data_table[$label]['expression'] = $expression;
-				$row_data_table[$label]['format'] = $format;
-				$row_data_table[$label]['result'] = $result;
+				$row_data['result'] = $result;
+				$row_data['operation'] = $op.' '.$row_data['operation'];
 				
-				if (isset($row_data_foot['result']) === false)
+				if ($rs === 0)
+					continue;
+				
+				switch ($ttotal)
 				{
-					$row_data_foot['total'] = true;
-					$row_data_foot['result'] = 0;
-					$row_data_foot['format'] = $format;
+					case 'average':
+						$nb_row_with_value++;
+						$row_data_foot['counter'] += $rs;
+						$row_data_foot['result'] = $row_data_foot['counter']/$nb_row_with_value;
+						$row_data_foot['operation'] = $row_data_foot['counter'].'/'.$nb_row_with_value;
+						break;
+					case 'total':
+					default:
+						$row_data_foot['result'] += $rs;
+						$row_data_foot['operation'] = $rs .'+'. $row_data_foot['operation'];
 				}
-				$row_data_foot['result'] += $rs;		
 			}
 		}
 		return(true);
@@ -271,19 +316,22 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 		switch($operator)
 		{
-			case '/':
+			case '/':			
 				if ($val2 === 0
 				|| empty($val1) === true
 				|| empty($val2) === true)
 					$rs = 0;
 				else
 					$rs = ($val1 / $val2);
+				$op = "($val1 / $val2)";
 				break;
 			case '+':
 				$rs = ($val1 + $val2);
+				$op = "($val1 + $val2)";
 				break;
 			case '*':
 				$rs = ($val1 * $val2);
+				$op = "($val1 * $val2)";
 				break;
 			case '-':
 				if ($val1 === 0
@@ -292,11 +340,18 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					$rs = 0;
 				else
 					$rs = ($val1 - $val2);
+				$op = "($val1 - $val2)";
 				break;
 			default:
 				$rs = 0;
+				$op = null;
 		}
-		return($rs);
+		
+		$res = array();
+		$res['rs'] = $rs;
+		$res['op'] = $op;
+		
+		return($res);
 	}
 	
 	public function get_val_expression($expression,$customevalvar=null,$format=null)
@@ -425,6 +480,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 		$result	= $arr['result'];
 		
+		$str = '-';
 		switch ($arr['format'])
 		{
 			case 'int':
@@ -434,18 +490,15 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$str = (float) $result;
 				break;
 			case 'percent':
-				if (isset($arr['total']) === true)
-					return('-');
-				$str = (intval($result)).' %';
+				if (isset($arr['total']) === false)
+					$str = (intval($result)).' %';
 				break;
-			case 'time':			
-				if (isset($arr['total']) === true)
-					return('-');
+			case 'time':
 				$str = dwho_sec_to_time($result);
 				break;
 			default:
 				$str = 'null_data';
-		}		
+		}
 		return($str);
 	}
 	
@@ -503,14 +556,53 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		return( $return );
 	}
 	
+	public function get_error()
+	{
+		if (isset($this->_data_custom['listtype']) === false)
+			return($this->bbf('no_conf_selected'));
+		
+		$listtype = $this->_data_custom['listtype'];
+			
+		if ($this->has_data() === false
+		&& $listtype !== false)
+			return($this->bbf('no_conf_selected'));
+		elseif($listtype === false)
+			return($this->bbf('no_type_in_conf'));
+		elseif (is_object($this->_xs) === true
+		&& $this->_xs->has_cache_type() === false)
+			return($this->bbf('no_cache_generate'));
+		else
+			return(false);
+			
+		return(false);
+	}
+	
 	public function render_html($chkbox=true,$rowname=true)
 	{		
 		$url = &$this->_tpl->get_module('url');
+		$axetype = $this->_data_custom['axetype'];
+		
+		if (is_object($this->_xs) === true)
+		{
+			$idconf = $this->_xs->get_idconf();
+			$infocal = $this->_xs->get_datecal();
+			$objectkey = $this->_xs->get_objectkey();
+			$qry = array();
+		}
+		else
+		{
+			$idconf = null;
+			$objectkey = null;
+			$infocal = dwho_date::get_infocal();
+			$_QRY = &dwho_gct::get('dwho_query');
+			$qry = $_QRY->request_meth_raw();
+		}
 
 		$return = '';
 		$return .= '<table cellspacing="0" cellpadding="0" border="0">';		
 		$return .= '<thead>';
 		$return .= '<tr class="sb-top">';
+		
 		if ($chkbox === true)
 			$return .= '<th class="th-left">&nbsp;</th>';
 		if ($rowname === true)
@@ -518,7 +610,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 		$nbstruct = count($this->_struct);
 		for($i=0;$i<$nbstruct;$i++)
-		{		
+		{	
 			$refstruct = &$this->_struct[$i];
 			
 			$label = '&nbsp;';
@@ -530,6 +622,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			else
 				$return .= '<th class="th-right" colspan="'.(count($refstruct['content'])).'">'.$label.'</th>';
 		}
+		
 		$return .= '</tr>';
 		$return .= '</thead>';
 		
@@ -551,8 +644,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			{
 				$return .= '<th class="th-center">&nbsp;</th>';	
 				$nbcolsup++;
-			}	
-			$nb_cols = count($cols) + $nbcolsup;
+			}
+			$nb_cols = (int) (count($cols) + $nbcolsup);
 			$c=0;
 			foreach ($cols as $colname => $colvalue)
 			{
@@ -565,11 +658,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					$return .= '<th class="th-right">'.$this->bbf('col_'.$colname).'</th>';
 			}
 			$return .= '</tr>';
-			$return .= '</thead>';			
+			$return .= '</thead>';
 			$y++;
 		}
 		
 		$c=0;
+		$week_process = '';
 		foreach ($this->_data_table as $row => $cols)
 		{
 			$coldata = $cols['rowdata'];
@@ -579,6 +673,27 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$identity = $coldata['identity'];
 			if (isset($coldata['type']) === true)
 				$type = $coldata['type'];
+				
+			if ($axetype === 'month')
+			{				
+				$day_num = $coldata['day'];
+				$day_time = strtotime($infocal['dmonth'].'-'.$day_num);
+				$week_num = date('W',$day_time);
+				if ($week_num !== $week_process)
+				{
+					$week_process = $week_num;
+					$return .= '<tr class="sb-top">';
+					$return .= '<th class="th-right" colspan="'.$nb_cols.'">';
+					$return .= $url->href_html($this->bbf('week',array($week_num)),
+											$this->_baseurl,array_merge($qry,
+											array(	'axetype' => 'week',
+													'confid' => $idconf,
+													'key' => $objectkey,
+													'dweek' => date('Y-m-d',$day_time))));
+					$return .= '</th>';
+					$return .= '</tr>';
+				}
+			}
 			
 			$return .= '<tbody id="disp">';
 			$return .= '<tr class="fm-paragraph l-infos-'.(($c % 2) + 1).'on2" title="'.dwho_alttitle($identity).'">';
@@ -606,19 +721,54 @@ class dwho_tpl_statistics extends dwho_tpl_module
 						break;
 					default:
 				}
-				$return .= '&nbsp;'; 
-				if ($this->_data_custom['axetype'] === 'type')
+				$return .= '&nbsp;';
+				
+				switch ($axetype)
 				{
-					$date_process = $this->_data_custom['date_process'];
-					$return .= $url->href_html($this->bbf($identity,$bbf),
-											$this->_baseurl,
-											array(	'axetype' => 'day',
-													'confid' => $this->_xs->get_idconf(),
-													'key' => $coldata['keyfile'],
-													'dday' => $date_process['dbeg']));
+					case 'week':
+						$time = strtotime($infocal['dweek']);
+						$date = dwho_date::get_day_from_week_by_name_day(date('Y',$time),date('W',$time),$coldata['key']);
+						$return .= $url->href_html($this->bbf($coldata['name'].'-opt',array(date('d',strtotime($date)))),
+												$this->_baseurl,array_merge($qry,
+												array(	'axetype' => 'day',
+														'confid' => $idconf,
+														'key' => $objectkey,
+														'dday' => $date)));
+						break;
+					case 'month':
+						$day_num = $coldata['day'];
+						$day_time = strtotime($infocal['dmonth'].'-'.$day_num);
+						$week_num = date('W',$day_time);
+						$return .= $url->href_html($this->bbf($identity,$bbf),
+												$this->_baseurl,array_merge($qry,
+												array(	'axetype' => 'day',
+														'confid' => $idconf,
+														'key' => $objectkey,
+														'dday' => date('Y-m-d',$day_time))));
+						break;
+					case 'year':
+						$month_num = $coldata['key'];
+						$month_time = strtotime($infocal['dyear'].'-'.$month_num);
+						$return .= $url->href_html($this->bbf($identity,$bbf),
+												$this->_baseurl,array_merge($qry,
+												array(	'axetype' => 'month',
+														'confid' => $idconf,
+														'key' => $objectkey,
+														'dmonth' => date('Y-m',$month_time))));
+						break;
+					case 'type':
+						$return .= $url->href_html($this->bbf($identity,$bbf),
+												$this->_baseurl,array_merge($qry,
+												array(	'axetype' => 'day',
+														'confid' => $idconf,
+														'key' => $objectkey,
+														'dday' => $infocal['dbeg'])));
+						break;
+					case 'day':
+					default:
+						$return .= $this->bbf($identity,$bbf);
 				}
-				else 
-					$return .= $this->bbf($identity,$bbf);
+					
 				$return .= '</td>';
 				$nbcolsup++;
 			}
@@ -646,7 +796,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 		$return .= '<tfoot>'; 
 		$return .= '<tr> ';
-		$return .= '<td class="txt-left">Total</td>';
+		$return .= '<td class="txt-left">'.$this->bbf('total').'</td>';
 		
 		$i = 0;			
 		foreach ($this->_data_foot as $colname => $colvalue)
@@ -711,7 +861,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			$listcolskey = array_keys($listcols);
 			
 			if ($rowname === true)
-				$return .= '"'.str_replace('"','""',$listcols['identity']).'";';
+				$return .= '"'.str_replace('"','""',$listcols['rowdata']['identity']).'";';
 			
 			while ($listcols)
 			{

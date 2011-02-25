@@ -25,6 +25,7 @@ $dhtml = &$this->get_module('dhtml');
 $conf = $this->get_var('conf');
 $listconf = $this->get_var('listconf');
 $listaxetype = $this->get_var('listaxetype');
+$axetype = $this->get_var('axetype');
 $infocal = $this->get_var('infocal');
 $element = $this->get_var('element');
 
@@ -47,8 +48,7 @@ $element = $this->get_var('element');
 <?php
 	if(xivo_user::chk_acl_section('service/statistics/call_center/configuration') === true):
 ?>
-			<dt><?=$this->bbf('mn_left_ti_configuration_call_center');?></dt>
-			<dd id="mn-1">
+			<dd id="mn-2">
 				<?=$url->href_html($this->bbf('mn_left_configuration_call_center'),
 						   'statistics/call_center/configuration','act=list');?>
 			</dd>
@@ -57,27 +57,47 @@ $element = $this->get_var('element');
 ?>
 <?php
 	if(xivo_user::chk_acl_section('service/statistics/call_center/data') === true):
+	
+		$pi = $_SERVER['PATH_INFO'];	
+		$params = array();
+		if (is_null($axetype) === false)
+			$params['axetype'] = $axetype;
+		if (is_null($conf) === false)
+			$params['confid'] = $conf['id'];
+		if (is_null($infocal) === false)
+		{
+			$params['dbeg'] = $infocal['dbeg'];
+			$params['dend'] = $infocal['dend'];
+			if (isset($infocal['dday']) === true)
+				$params['dday'] = $infocal['dday'];
+			if (isset($infocal['dweek']) === true)
+				$params['dweek'] = $infocal['dweek'];
+			if (isset($infocal['dmonth']) === true)
+				$params['dmonth'] = $infocal['dmonth'];
+			if (isset($infocal['dyear']) === true)
+				$params['dyear'] = $infocal['dyear'];
+		}
 ?>
 			<dt><?=$this->bbf('mn_left_ti_statistics_call_center');?></dt>
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-1'),
-						   'statistics/call_center/stats1');?>
+						   'statistics/call_center/stats1',(($pi == '/stats1') ? null : $params));?>
 			</dd>
 			<dd id="mn-2">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-2'),
-						   'statistics/call_center/stats2');?>
+						   'statistics/call_center/stats2',(($pi == '/stats2') ? null : $params));?>
 			</dd>
 			<dd id="mn-3">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
-						   'statistics/call_center/stats3');?>
+						   'statistics/call_center/stats3',(($pi == '/stats3') ? null : $params));?>
 			</dd>
 			<dd id="mn-4">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
-						   'statistics/call_center/stats4');?>
+						   'statistics/call_center/stats4',(($pi == '/stats4') ? null : $params));?>
 			</dd>
 			<dd id="mn-5">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-5'),
-						   'statistics/call_center/stats5');?>
+						   'statistics/call_center/stats5',(($pi == '/stats5') ? null : $params));?>
 			</dd>
 <?php
 	endif;
@@ -106,6 +126,16 @@ $element = $this->get_var('element');
 				<?=$url->href_html($this->bbf('mn_left_home_cdr'),
 						   'statistics/cdr/index');?>
 			</dd>
+			<!-- 
+			<dd id="mn-2">
+				<?=$url->href_html($this->bbf('mn_left_search_cdr'),
+						   'statistics/cdr/search');?>
+			</dd>
+			 -->
+			<dd id="mn-3">
+				<?=$url->href_html($this->bbf('mn_left_advanced_search_cdr'),
+						   'statistics/cdr/advanced_search');?>
+			</dd>
 		</dl>
 	</dd>
 	<dd class="b-nosize">
@@ -119,7 +149,252 @@ $element = $this->get_var('element');
 </dl>
 
 <?php
-	if(is_null($this->get_var('showdashboard')) === false):
+	if(xivo_user::chk_acl_section('service/statistics/cdr') === true):
+
+		if($this->get_var('showdashboard_cdr') === true):
+?>
+<div id="dashboard">
+	<div class="sb-top xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center"><?=$this->bbf('mn_left_name_dashboard');?></span>
+		<span class="span-right">&nbsp;</span>
+	</div>
+	<div class="sb-content">
+		<div id="sr-stats" class="">
+		<div id="it-loading" class="b-nodisplay" style="position: absolute;width: 75px;height: 75px;margin-left: 50px;">
+			<img alt="loading" src="/img/site/loading.gif" width="75" height="75" />
+		</div>
+		<form action="/statistics/cdr/index.php/search" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
+			<div id="d-conf-list" class="fm-paragraph">
+			<?=$this->bbf('cdr_axetype')?>
+				<?php
+					echo	$form->select(array('name'	=> 'axetype',
+								    'id'		=> 'it-axetype-list',
+								    'paragraph'	=> false,
+								    'browse'	=> 'axetype',
+					  				'labelid'	=> 'axetype',
+								    'empty'		=> $this->bbf('fm_stats_cdr_default'),
+					    			'key'		=> false,
+								    'bbf'		=> 'fm_stats_cdr_by-opt',
+								    'bbfopt'	=> array('argmode'	=> $listaxetype),
+								    'selected'	=> $this->get_var('axetype')),
+							      	$listaxetype);
+				?>
+			</div>
+<?php
+	if($this->get_var('axetype') !== ''):
+	
+		$listop = $this->get_var('listop');
+		$cdrinfo = $this->get_var('cdrinfo');
+		$listchannel = $this->get_var('listchannel');
+	
+?>
+			<div id="it-cal-period" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg"><?=$this->bbf('fm_dbeg')?></label>
+						<input type="text" name="dbeg" id="it-dbeg" value="<?=$infocal['dbeg']?>" size="8" />
+					</div>
+					<div class="fm-desc-inline">
+						<label id="lb-dend" for="it-dend"><?=$this->bbf('fm_dend')?></label>
+						<input type="text" name="dend" id="it-dend" value="<?=$infocal['dend']?>" size="8" />
+					</div>
+				</div>
+			</div>
+			<div id="it-cal-day" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-day"><?=$this->bbf('fm_dday')?></label>
+						<input type="text" name="dday" id="it-dday" value="<?=$infocal['dday']?>" size="8" />
+					</div>
+				</div>
+			</div>
+			<div id="it-cal-week" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-week"><?=$this->bbf('fm_dweek')?></label>
+						<input type="text" name="dweek" id="it-dweek" value="<?=$infocal['dweek']?>" size="8" />
+					</div>
+				</div>
+			</div>
+			<div id="it-cal-month" class="b-nodisplay">
+				<div class="fm-paragraph fm-multifield">
+					<div class="fm-desc-inline">
+						<label id="lb-dbeg" for="it-dbeg-month"><?=$this->bbf('fm_dmonth')?></label>
+						<input type="text" name="dmonth" id="it-dmonth" value="<?=$infocal['dmonth']?>" size="8" />
+					</div>
+				</div>
+			</div>
+			<fieldset>
+				<legend><?=$this->bbf('legend_src')?></legend>
+				<div class="fm-paragraph fm-multifield">
+				<?php
+					echo	$form->text(array('paragraph'	=> false,
+								  'name'	=> 'src',
+								  'labelid'	=> 'src',
+								  'style'	=> 'float:left;',
+								  'size'	=> 12,
+								  'default'	=> '',
+								  'value'	=> $cdrinfo['src'])),
+				
+						$form->select(array('paragraph'	=> false,
+								    'name'		=> 'srcformat',
+								    'labelid'	=> 'srcformat',
+								    'class'		=> 's-format',
+								    'key'		=> false,
+								    'bbf'		=> 'fm_search-format',
+								    'bbfopt'	=> array('argmode' => 'paramvalue'),
+								    'default'	=> 'exact',
+								    'selected'	=> $cdrinfo['srcformat']),
+							      $listop);
+				?>
+				</div>
+			</fieldset>
+			
+			<fieldset>
+				<legend><?=$this->bbf('legend_dst')?></legend>
+				<div class="fm-paragraph fm-multifield">
+				<?php
+					echo	$form->text(array('paragraph'	=> false,
+								  'name'	=> 'dst',
+								  'labelid'	=> 'dst',
+								  'size'	=> 12,
+								  'default'	=> '',
+								  'value'	=> $cdrinfo['dst'])),
+				
+						$form->select(array('paragraph'	=> false,
+								    'name'		=> 'dstformat',
+								    'labelid'	=> 'dstformat',
+								    'class'		=> 's-format',
+								    'key'		=> false,
+								    'bbf'		=> 'fm_search-format',
+								    'bbfopt'	=> array('argmode' => 'paramvalue'),
+								    'default'	=> 'exact',
+								    'selected'	=> $cdrinfo['dstformat']),
+							      $listop);
+				?>
+				</div>
+			</fieldset>
+			
+			<fieldset>
+				<legend><?=$this->bbf('legend_channel')?></legend>
+				<div class="fm-paragraph fm-multifield">
+				<?php
+					echo	$form->select(array('name'		=> 'channel',
+								'paragraph'	=> false,
+							    'labelid'	=> 'channel',
+							    'empty'		=> true,
+							    'bbf'		=> 'fm_channel-opt',
+							    'bbfopt'	=> array('argmode' => 'paramvalue'),
+							    'default'	=> '',
+							    'selected'	=> $cdrinfo['channel']),
+						      $listchannel);
+				?>
+				</div>
+				</fieldset>
+			<div class="fm-desc-inline">
+				<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
+			</div>
+			<script type="text/javascript">			
+				$.datepicker.setDefaults({
+					currentText: 'Now',
+					changeYear: true,
+					firstDay: 1,
+					selectOtherMonths: true,
+					dayNamesMin: xivo_date_day_min,
+					ayNamesShort: xivo_date_day_short,
+					dayNames: xivo_date_day,
+					monthNames: xivo_date_month,
+					monthNamesShort: xivo_date_month_short,
+					nextText: xivo_date_next,
+					prevText: xivo_date_prev,
+					showAnim: 'fold',
+					showMonthAfterYear: true,
+					showWeek: true,
+					weekHeader: 'W'
+				});
+				
+				$("#it-dbeg").datepicker({
+					dateFormat: 'yy-mm-dd',
+					altFormat: 'yy-mm-dd',
+				});
+				$("#it-dend").datepicker({
+					dateFormat: 'yy-mm-dd',
+					altFormat: 'yy-mm-dd',
+				});
+				$("#it-dday").datepicker({
+					dateFormat: 'yy-mm-dd',
+					altFormat: 'yy-mm-dd',
+				});
+				$("#it-dweek").datepicker({
+					dateFormat: 'yy-mm-dd',
+					altFormat: 'yy-mm-dd',
+				});
+				$("#it-dmonth").datepicker({
+					dateFormat: 'yy-mm',
+					altFormat: 'yy-mm',
+				});			
+			</script>
+<?php
+	endif;
+?>
+		<fieldset>
+			<legend><?=$this->bbf('bench_dashboard')?></legend>
+			<?=dwho_second_to($this->get_var('bench'),2), ' - ', dwho_byte_to($this->get_var('mem_info'))?>
+		</fieldset>    
+		</form>
+		</div>
+    </div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
+</div>
+<script type="text/javascript">	
+dwho.dom.set_onload(function() {
+	var lsaxetype = new Array('<?=implode('\', \'',$listaxetype)?>');
+	dwho.dom.add_event('change',
+			   dwho_eid('it-axetype-list'),
+			   function(){
+		   			var form = this.form;
+		   			for(var i=0;i<form.elements.length;i++)
+			   		{
+		   				var formElement = form.elements[i];
+		   				var name = formElement.name;
+		   				var value = formElement.value;
+		   				if (name == 'axetype'
+			   			&& dwho_eid('it-cal-'+value) != false)
+		   				{
+		   					for(var u=0;u<lsaxetype.length;u++)
+		   					{
+			   					var divtohide = dwho_eid('it-cal-'+lsaxetype[u]);
+			   					if (divtohide)
+			   						divtohide.style.display = 'none';
+		   					}
+		   					var divtoshow = dwho_eid('it-cal-'+value);
+		   						divtoshow.style.display = 'block';
+		   				}
+			   		}
+				});
+
+	for(var u=0;u<lsaxetype.length;u++)
+	{
+		var divtoshow = dwho_eid('it-cal-'+lsaxetype[u]);
+		if (lsaxetype[u] == '<?=$this->get_var('axetype')?>'
+		&& divtoshow)
+			divtoshow.style.display = 'block';
+	}
+});
+</script>
+<?php
+		endif;
+
+	endif;
+?>
+
+<?php
+if($this->get_var('showdashboard_call_center') === true):
 ?>
 <div id="dashboard">
 	<div class="sb-top xspan">
@@ -148,10 +423,12 @@ $element = $this->get_var('element');
 ?>
 			</div>
 <?php
-	if(is_null($this->get_var('listobject')) === false
+	if(is_null($conf) === false && $conf !== false
+	&& is_null($this->get_var('listobject')) === false
+	&& ($listobject = $this->get_var('listobject')) !== false
 	&& is_null($this->get_var('axetype')) === false
-	&& $this->get_var('axetype') !== 'type'):	
-		$listobject = $this->get_var('listobject');
+	&& $this->get_var('axetype') !== 'type'):
+		
 		foreach ($listobject as $k => &$v)
 			$v['identity'] = dwho_trunc(&$v['identity'],25,'...',5);
 ?>
@@ -175,7 +452,8 @@ $element = $this->get_var('element');
 	endif;
 ?>
 <?php	
-	if(is_null($this->get_var('listobject')) === false
+	if(is_null($conf) === false && $conf !== false
+	&& is_null($this->get_var('listobject')) === false
 	&& is_null($this->get_var('axetype')) === false
 	&& $this->get_var('axetype') !== 'type'):
 ?>
@@ -266,7 +544,20 @@ $.datepicker.setDefaults({
 	showAnim: 'fold',
 	showMonthAfterYear: true,
 	showWeek: true,
-	weekHeader: 'W'
+	weekHeader: 'W',
+	minDate: '<?=$conf['dbegcache']?>-01',
+<?php 
+	if(($dend = $conf['dendcache']) != 0) :
+		$dend = dwho_date::all_to_unixtime($dend);
+		$year = date('Y',$dend);
+		$month = date('m',$dend);
+		// Init last day for the month
+		$dend = dwho_date::get_lastday_for_month($year,$month);
+?>
+	maxDate: '<?=date('Y-m-d',$dend)?>'
+<?php
+	endif;
+?>
 });
 
 $("#it-dbeg-type").datepicker({
@@ -313,8 +604,7 @@ $("#it-dbeg-month").datepicker({
 		<fieldset>
 			<legend><?=$this->bbf('conf_workweek')?></legend>
 		<?php
-			$workweek = $conf['workweek'];
-			
+			$workweek = $conf['workweek'];			
 			foreach ($workweek as $day => $val) :
 				$day = strtoupper(substr($this->bbf($day),0,3));
 				if ($val === true)
@@ -340,11 +630,6 @@ $("#it-dbeg-month").datepicker({
 </div>
 
 <script type="text/javascript">	
-function fm_chk(){
-	dwho_eid('it-submit').disabled = true;
-	dwho_eid('it-submit').value = '<?=$this->bbf('fm-wait-submit')?>';
-	dwho_eid('it-loading').style.display = 'block';
-};
 dwho.dom.set_onload(function()
 {
 <?php
@@ -400,5 +685,12 @@ dwho.dom.set_onload(function()
 });
 </script>
 <?php
-	endif;
+endif;
 ?>
+<script type="text/javascript">	
+function fm_chk(){
+	dwho_eid('it-submit').disabled = true;
+	dwho_eid('it-submit').value = '<?=$this->bbf('fm-wait-submit')?>';
+	dwho_eid('it-loading').style.display = 'block';
+};
+</script>

@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'filter.inc'));
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
@@ -38,6 +39,67 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+	}
+	
+	function search_grid($arr,$order=null,$limit=null)
+	{		
+		if(is_array($arr) === false)
+			return(false);
+	
+		$search = array();
+		
+		$arr['nd'] = (int) $arr['nd'];
+		$arr['rows'] = (int) $arr['rows'];
+		$arr['page'] = (int) $arr['page'];
+		$arr['_search'] = (bool) $arr['_search'];
+
+		if(dwho_has_len($arr,'dbeg') === true)
+		{
+			$date = array('dbeg' => null,'dend' => null);
+
+			if(dwho_has_len($arr,'dend') === true
+			&& ($date = dwho_filter::chk_between_date($arr['dbeg'],$arr['dend'])) === false)
+				return(false);
+			else if(($date['dbeg'] = dwho_filter::chk_date($arr['dbeg'])) === false)
+				return(false);
+
+			if($date['dbeg']['dateint'] > strftime($date['dbeg']['format']))
+				return(false);
+			else
+				$search['dbeg'] = $date['dbeg']['date'];
+
+			if($date['dend'] !== null && $date['dend']['dateint'] > strftime($date['dend']['format']))
+				return(false);
+			else
+				$search['dend'] = $date['dend']['date'];
+		}
+			
+		if (isset($arr['_search']) === true
+		&& $arr['_search'] === true
+		&& isset($arr['filters']) === true)
+		{
+			$filters = json_decode(urldecode($arr['filters']),true);
+			$groupOp = $filters['groupOp'];
+			$rules = $filters['rules'];
+			
+			for($i=0;$i<count($rules);$i++)
+			{
+				$ref = $rules[$i];
+				$search[$ref['field']] = $ref['data'];
+			}
+		}
+
+		if(($result = $this->_dso->search_grid($search,$order,$limit)) === false)
+			return(null);
+
+		$nb = count($result);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$result[$i];
+		}
+
+		return($result);
 	}
 
 	function search($arr,$order=null,$limit=null)
@@ -61,10 +123,10 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 				return(false);
 			else
 				$search['dbeg'] = $date['dbeg']['date'];
-
-			if($date['dend'] !== null && $date['dend']['dateint'] > strftime($date['dend']['format']))
-				return(false);
-			else
+			
+			//if($date['dend'] !== null && $date['dend']['dateint'] > strftime($date['dend']['format']))
+			//	return(false);
+			//else
 				$search['dend'] = $date['dend']['date'];
 		}
 
@@ -114,7 +176,7 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 			}
 			$search['dubeg'] = $dubeg;
 		}
-
+		
 		if(($result = $this->_dso->search($search,$order,$limit)) === false)
 			return(null);
 

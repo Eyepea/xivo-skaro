@@ -22,9 +22,8 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 
 class xivo_statistics_queue extends xivo_statistics_abstract
 {
-	
-	public		$_type	= 'queue';
-	public		$_field	= array('presented'				=> array('type' => 'int'),
+
+	protected	$_field	= array('presented'				=> array('type' => 'int'),
 								'enterqueue'			=> array('type' => 'int'),
 								'connect'				=> array('type' => 'int'),
 								'abandon'				=> array('type' => 'int'),
@@ -41,9 +40,12 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->set_method('DB');
+		$this->_method = 'DB';
+		$this->_table = 'queue_log';
+		$this->_type = 'queue';
+		$this->_xs->set_type($this->_type);
 	}
-		
+	
 	public function parse_log($key_data,$key)
 	{
 		if ($this->_xs->get_conf() === false)

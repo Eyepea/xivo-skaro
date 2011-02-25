@@ -19,9 +19,9 @@
 
 $url     = &$this->get_module('url');
 
-$hascachetype = $this->get_var('hascachetype');
-$basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
+$axetype = $this->get_var('axetype');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>
 <div id="sr-users" class="b-infos b-form">
@@ -31,22 +31,30 @@ $table1 = $this->get_var('table1');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
+		<div class="sb-list">
+<?php
+	if (($msg = $table1->get_error()) !== false):
+		echo $msg;
+	else :
+?>
 		<div class="sb-list"> 
 <?php
-	if ($table1->has_data() === false):
-		echo $this->bbf('no_conf_selected');
-	elseif($hascachetype === false):
-		echo $this->bbf('no_cache_generated_for',array('agent'));
-	else :
+		echo $table1->infos_html();
 		echo $table1->render_html(false);
-		/*
 ?>
-		<p>&nbsp;</p>
- 		<p class="stats-graph-img">
- 			<?=$table1->get_graph('stats1')?>
-  		</p>
+		</div>
 <?php
-		*/
+		switch ($axetype):
+			case 'type':
+				break;
+			case 'day':
+				break;
+			case 'week':
+			case 'month':
+			case 'year':
+				break;
+			default:
+		endswitch;
 	endif;
 ?>
 		</div>

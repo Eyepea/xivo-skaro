@@ -354,6 +354,7 @@ CREATE TABLE stats_conf (
  name varchar(64) NOT NULL DEFAULT '',
  hour_start time NOT NULL,
  hour_end time NOT NULL,
+ default_delta varchar(16) NOT NULL DEFAULT 0,
  monday tinyint(1) NOT NULL DEFAULT 0,
  tuesday tinyint(1) NOT NULL DEFAULT 0,
  wednesday tinyint(1) NOT NULL DEFAULT 0,

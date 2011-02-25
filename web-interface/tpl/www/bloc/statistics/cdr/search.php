@@ -19,33 +19,38 @@
 #
 
 $url = &$this->get_module('url');
-
 $result = $this->get_var('result');
-
-if($result === false)
-	die();
-
-#die(print nl2br($result));
-
-header('Pragma: no-cache');
-header('Cache-Control: private, must-revalidate');
-header('Last-Modified: '.
-	date('D, d M Y H:i:s',mktime()).' '.
-	dwho_i18n::strftime_l('%Z',null));
-header('Content-Disposition: attachment; filename=xivo_stats-'.
-	$this->get_var('name').'-'.
-	dwho_i18n::strftime_l('%Y-%m-%d-%H:%M:%S',null).'.csv');
-header('Content-Type: text/csv; charset=UTF-8');
-
-ob_start();
-
-if($result === null)
-	echo $this->bbf('no_stats-result');
-else 
-	echo $result;
-
-header('Content-Length: '.ob_get_length());
-ob_end_flush();
-die();
+$basedir = $this->get_var('basedir');
+$table1 = $this->get_var('table1');
+$axetype = $this->get_var('axetype');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>
+<div class="b-infos b-form">
+	<h3 class="sb-top xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-right">&nbsp;</span>
+	</h3>
+	<div class="sb-content">
+<?php
+	if ($table1->has_data() === false):
+		echo $this->bbf('no_conf_selected');
+	else :
+?>
+		<div class="sb-list"> 
+<?php
+		echo $table1->render_html(false);
+?>
+		</div>
+<?php		
+		$xivo_jqplot->get_result('chart1');
+	endif;
+?>
+    </div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
+</div>

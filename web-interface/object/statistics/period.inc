@@ -22,14 +22,16 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 
 class xivo_statistics_period extends xivo_statistics_abstract
 {
-	
-	public		$_type		= 'period';
+
 	public		$_field		= array();
 	
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
 		$this->_method = 'DB';
+		$this->_table = 'queue_log';
+		$this->_type = 'period';
+		$this->_xs->set_type($this->_type);
 	}
 	
 	protected function init_result($key)

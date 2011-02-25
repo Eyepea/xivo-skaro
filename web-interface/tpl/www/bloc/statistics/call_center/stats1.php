@@ -19,11 +19,7 @@
 
 $url = &$this->get_module('url');
 
-$hascachetype = $this->get_var('hascachetype');
-$basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
-$axetype = $this->get_var('axetype');
-$listrow = $this->get_var('listrow');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>
@@ -34,12 +30,10 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-	<div class="sb-content"> 
+	<div class="sb-content">
 <?php
-	if ($table1->has_data() === false):
-		echo $this->bbf('no_conf_selected');
-	elseif($hascachetype === false):
-		echo $this->bbf('no_cache_generated_for',array('queue'));
+	if (($msg = $table1->get_error()) !== false):
+		echo $msg;
 	else :
 ?>
 		<div class="sb-list"> 

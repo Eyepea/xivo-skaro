@@ -9,16 +9,16 @@ Résumé
 Global
 
 ; mn_left_name_call_center
-Statistiques Centre d'appel
+Centre d'appels
+
+; mn_left_name_cdr
+Journaux d'appels
 
 ; mn_left_home_call_center
 Accueil
 
-; mn_left_ti_configuration_call_center
-Configuration
-
 ; mn_left_configuration_call_center
-Général
+Configuration
 
 ; mn_left_configuration_call_center-qos
 Qualité de service
@@ -39,4 +39,13 @@ Agents détails / durées
 Détails par période
 
 ; mn_left_statistics_call_center-5
-Appel entrant
+Appels entrants
+
+; mn_left_home_cdr
+Accueil
+
+; mn_left_search_cdr
+Recherche 
+
+; mn_left_advanced_search_cdr
+Recherche avancées

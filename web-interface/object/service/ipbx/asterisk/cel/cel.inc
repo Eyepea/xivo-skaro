@@ -22,11 +22,11 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'cel';
-	var $_filter	= false;
+	protected $_dso		= null;
+	protected $_name	= 'cel';
+	protected $_filter	= false;
 
-	function xivo_service_asterisk_cel(&$sre,&$dso)
+	public function __construct(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -39,8 +39,18 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+	
+	public function sum_stats($type,$value,$event,$field,$interval=null,$addwhere=null)
+	{
+		return($this->_dso->stats_sum_by_type($type,$value,$event,$field,$interval,$addwhere));
+	}
 
-	function search($arr,$order=null,$limit=null)
+	public function count_stats($type,$value,$event,$interval=null,$addwhere=null)
+	{
+		return($this->_dso->stats_count_by_type($type,$value,$event,$interval,$addwhere));
+	}
+
+	public function search($arr,$order=null,$limit=null)
 	{
 		if(is_array($arr) === false)
 			return(false);

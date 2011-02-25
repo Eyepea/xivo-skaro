@@ -14,8 +14,17 @@ Date de fin:
 ; fm_type-default
 
 
-; fm_type-opt
-%s
+; fm_type-opt(queue)
+File d'attente
+
+; fm_type-opt(agent)
+Agent
+
+; fm_type-opt(period)
+Période
+
+; fm_type-opt(incall)
+Appel entrant
 
 ; fm_description_cache
 Période de cache: %s %s selon la configuration.
@@ -34,6 +43,9 @@ Nom
 
 ; col_cache_status
 Statut
+
+; no_type_in_conf-opt
+Aucun %s dans la configuration 
 
 ; cache_noexist
 Cache non existant

@@ -45,6 +45,9 @@ $array['element']['dbegcache']['default'] = date('Y-m',$dbegcachedefault);
 $array['element']['dendcache'] = array();
 $array['element']['dendcache']['default'] = 0;
 
+$array['element']['default_delta'] = array();
+$array['element']['default_delta']['default'] = 0;
+
 $array['element']['workhour']['h'] = array();
 $array['element']['workhour']['h']['value'] = array('00','01','02','03','04','05','06',
 					      '07','08','09',10,11,12,13,14,15,16,17,18,19,20,21,22,23);
@@ -105,6 +108,7 @@ $array['filter']['dbegcache'] = array('set' => true,'regexp' => '/^([0-9]{4})-([
 $array['filter']['dendcache'] = array('set' => true,'regexp' => '/^(([0-9]{4})-([0-9]{2}))|0$/');
 $array['filter']['hour_start'] = array('set' => true,'regexp' => '/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])?$/');
 $array['filter']['hour_end'] = array('set' => true,'regexp' => '/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])?$/');
+$array['filter']['default_delta'] = array('set' => true,'regexp' => '/^(-([0-9]{1,3}) ([day|week|month])s?)|0$/');
 $array['filter']['monday'] = array('bool' => true);
 $array['filter']['tuesday'] = array('bool' => true);
 $array['filter']['wednesday'] = array('bool' => true);

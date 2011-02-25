@@ -18,13 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(xivo::load_class('xivo_statistics_general',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','general',false) === false)
 	die('Can\'t load xivo_statistics_general object');
 
 $stats_general = new xivo_statistics_general(&$_XS);
 $stats_general->parse_log();
+
+$tpl_statistics->set_data_custom('axetype',$axetype);
+$tpl_statistics->set_data_custom('listtype',$stats_general->get_list_by_type());
 
 $tpl_statistics->set_name('general');
 

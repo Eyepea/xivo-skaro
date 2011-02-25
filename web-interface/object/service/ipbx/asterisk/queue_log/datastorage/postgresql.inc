@@ -92,56 +92,18 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 		$this->_dso->andwhere('"'.$fieldsum.'" ~ \'^[0-9]+$\'');
 		
 		if (is_null($addwhere) === false)
-		{
-			$type = $addwhere[0];
-			$value = $addwhere[1];		
-			switch ($type)
-			{
-				case 'BETWEEN':
-					$cast = '';
-					if (is_numeric($value[1]) === true
-					&& is_numeric($value[2]) === true)
-					{
-						$cast = '::int';
-						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
-					}
-					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
-					break;
-				case 'ISNOT':					
-					$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
-					break;
-				case '<':
-				case '>':
-				case '=':
-					$cast = '';
-					if (is_numeric($value[1]) === true)
-					{
-						$cast = '::int';
-						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
-					}
-					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' < '.$value[1]);
-					break;
-			}
-		}
+			$this->search_add_where($addwhere);
 	
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
 			&& isset($interval['end']) === true)
-			{
-				#$this->_dso->where('"'.$this->_table.'"."time"::timestamp BETWEEN \''.$interval['beg'].'\'::timestamp AND \''.$interval['end'].'\'::timestamp');
 				$this->_dso->wherebetween('time',$interval['beg'],$interval['end'],$this->_table);
-				#$this->_dso->wheredatetime('time',$interval['dbeg'],$interval['dend'],$this->_table,'datetime');
-			}
 			elseif (($nbinterval = count($interval)) > 2)
 			{
 				$this->_dso->aggregate_where(false,'AND');
 				foreach ($interval as $itl)
-				{
-					#$this->_dso->orwhere('"'.$this->_table.'"."time"::timestamp BETWEEN \''.$itl['beg'].'\'::timestamp AND \''.$itl['end'].'\'::timestamp');
 					$this->_dso->orwherebetween('time',$itl['beg'],$itl['end'],$this->_table);
-					#$this->_dso->orwheredatetime('time',$itl['beg'],$itl['end'],$this->_table,'datetime');
-				}
 				$this->_dso->aggregate_where(false,'AND');
 			}
 			else 
@@ -199,37 +161,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 		$this->_dso->andwhere(array('event' => $event));
 		
 		if (is_null($addwhere) === false)
-		{
-			$type = $addwhere[0];
-			$value = $addwhere[1];		
-			switch ($type)
-			{
-				case 'BETWEEN':
-					$cast = '';
-					if (is_numeric($value[1]) === true
-					&& is_numeric($value[2]) === true)
-					{
-						$cast = '::int';
-						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
-					}
-					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
-					break;
-				case 'ISNOT':					
-					$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
-					break;
-				case '<':
-				case '>':
-				case '=':
-					$cast = '';
-					if (is_numeric($value[1]) === true)
-					{
-						$cast = '::int';
-						$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
-					}
-					$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' '.$type.' '.$value[1]);
-					break;
-			}
-		}
+			$this->search_add_where($addwhere);
 		
 		if (is_null($interval) === false)
 		{
@@ -265,41 +197,41 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 
 		return($this->_cnt);
 	}
-
-	public function stats($conf,$type,$data)
+	
+	private function search_add_where($addwhere)
 	{
-		if (is_null($conf) === true)
+		if(is_array($addwhere) === false)
 			return(false);
-		
-		$this->_cnt = 0;
-
-		$this->_dso->new_select($this->_table);
-		
+			
+		$type = $addwhere[0];
+		$value = $addwhere[1];		
 		switch ($type)
 		{
-			case 'agent':		
-				if (is_array($data) === true)
-					$this->_dso->wherein('agent',$data);
-				else
-					$this->_dso->where(array('agent' => $data));
+			case 'BETWEEN':
+				$cast = '';
+				if (is_numeric($value[1]) === true
+				&& is_numeric($value[2]) === true)
+				{
+					$cast = '::int';
+					$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
+				}
+				$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
 				break;
-			case 'queue':
-				if (is_array($data) === true)
-					$this->_dso->wherein('queuename',$data);
-				else
-					$this->_dso->where(array('queuename' => $data));
+			case 'ISNOT':					
+				$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
 				break;
-			default:
-				return(false);
+			case '<':
+			case '>':
+			case '=':
+				$cast = '';
+				if (is_numeric($value[1]) === true)
+				{
+					$cast = '::int';
+					$this->_dso->andwhere('"'.$value[0].'" ~ \'^[0-9]+$\'');
+				}
+				$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' '.$type.' '.$value[1]);
+				break;
 		}
-
-		$r = $this->_dso->select_all();
-
-		if(($this->_cnt = $this->_dso->select_count()) === false
-		|| isset($r[0]) === false)
-			$r = false;
-
-		return($r);
 	}
 }
 

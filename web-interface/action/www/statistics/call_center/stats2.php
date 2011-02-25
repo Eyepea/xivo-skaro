@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(xivo::load_class('xivo_statistics_agent',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','agent',false) === false)
 	die('Can\'t load xivo_statistics_agent object');
@@ -28,8 +28,8 @@ $stats_agent->get_data();
 
 $tpl_statistics->set_name('agent');
 $tpl_statistics->set_baseurl('statistics/call_center/stats2');
-
 $tpl_statistics->set_data_custom('axetype',$axetype);
+$tpl_statistics->set_data_custom('listtype',$stats_agent->get_list_by_type());
 $itl = $_XS->get_datecal();
 switch ($axetype)
 {
@@ -114,14 +114,14 @@ $table1 = $tpl_statistics;
 $_TPL->set_var('table1',$table1);
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
-$_TPL->set_var('hascachetype',$_XS->has_cache_type());
-$_TPL->set_var('showdashboard',true);
+$_TPL->set_var('showdashboard_call_center',true);
 
 if($act === 'exportcsv')
 {
 	$_TPL->set_var('result',$tpl_statistics->render_csv());
-	$_TPL->set_var('name','agent_performance');
-	$_TPL->display('/bloc/statistics/call_center/exportcsv');
+	$_TPL->set_var('name','agent');
+	$_TPL->set_var('date',$itl);
+	$_TPL->display('/bloc/statistics/exportcsv');
 	die();
 }
 

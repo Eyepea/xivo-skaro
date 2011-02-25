@@ -21,6 +21,9 @@
 class xivo_statistics_abstract
 {
 	
+	protected 	$_method	 		= 'DB';
+	protected 	$_table		 		= '';
+	protected 	$_type		 		= '';
 	public	 	$_xs		 		= null;
 	public 		$_data_custom 		= array();
 	public 		$_counter	 		= array();
@@ -29,9 +32,8 @@ class xivo_statistics_abstract
 	public function __construct(&$_XS)
 	{
 		$this->_xs = &$_XS;
-		$this->_xs->set_type($this->_type);
 	}
-		
+	
 	public function set_method($method)
 	{ 
 		$this->_xs->set_method($method);
@@ -57,19 +59,32 @@ class xivo_statistics_abstract
 		return($this->_xs->get_agent_list());
 	}
 	
-	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)
+	public function get_incall_list()
 	{
-		return($this->_xs->db_eval_data($type,$value,$event,$field,$addwhere));
+		return($this->_xs->get_incall_list());
 	}
 	
 	public function eval_count_data($value,$event,$addwhere=null)
 	{
-		return($this->db_eval_data('count',$value,$event,null,$addwhere));
+		return($this->get_data_queue_log('count',$value,$event,null,$addwhere));
 	}
 	
 	public function eval_sum_data($value,$event,$field,$addwhere=null)
 	{
-		return($this->db_eval_data('sum',$value,$event,$field,$addwhere));
+		return($this->get_data_queue_log('sum',$value,$event,$field,$addwhere));
+	}
+	
+	private function get_data_queue_log($type,$value,$event,$field=null,$addwhere=null)
+	{
+		switch ($this->_table)
+		{
+			case 'cel':
+				return($this->_xs->get_data_cel($type,$value,$event,$field,$addwhere));
+				break;
+			case 'queue_log':
+			default:
+				return($this->_xs->get_data_queue_log($type,$value,$event,$field,$addwhere));
+		}
 	}
 
 	public function eval_field_queue_log($event,$type)
@@ -79,7 +94,7 @@ class xivo_statistics_abstract
 
 	public function eval_data_queue_log($queue_log_entry,$event,$type)
 	{			
-		return($this->_xs->eval_data_queue_log($queue_log_entry,$event,$type));
+		return($this->_xs->eval_pos_data_queue_log_conf($queue_log_entry,$event,$type));
 	}
 	
 	protected function init_result($key)
@@ -253,7 +268,7 @@ class xivo_statistics_abstract
 						$key = array_shift($listmonth);
 						$key = $key['key'];
 						$year = substr($key,0,4);
-						$month = substr($key,4,2);
+						$month = substr($key,4,2);						
 						
 						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
 						|| is_null($month_data) === true)
@@ -272,6 +287,7 @@ class xivo_statistics_abstract
 					}
 				}
 		}
+		return($this->_result);
 	}
 	
 	private function eval_update_result($data_to_eval,$key)

@@ -88,6 +88,12 @@ $array['statistics/ui/call_center/genergraphic'] = array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genergraphic'));
 
+$array['statistics/ui/cdr/search'] = array(
+	'path'		=> 'statistics/ui/cdr/search',
+	'define'	=> array(
+			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'cdr',
+			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'search'));
+
 $array['service/ipbx/asterisk/ui/call_management/schedule'] = array(
 	'path'          => 'service/ipbx/asterisk/ui/call_management/schedule',
 	'define'        => array(

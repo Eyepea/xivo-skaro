@@ -321,3 +321,12 @@ Génération des graphiques
 
 ; acl(service-statistics-call_center-data)
 Données
+
+; acl(service-statistics-cdr)
+Statistiques Journaux d'appels
+
+; acl(service-statistics-cdr-search)
+Recherche
+
+; acl(service-statistics-cdr-advanced_search)
+Recherche avancées

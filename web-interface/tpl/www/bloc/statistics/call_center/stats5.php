@@ -19,7 +19,6 @@
 
 $url = &$this->get_module('url');
 
-$hascachetype = $this->get_var('hascachetype');
 $basedir = $this->get_var('basedir');
 $table1 = $this->get_var('table1');
 $axetype = $this->get_var('axetype');
@@ -34,7 +33,21 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-
+<?php
+	if (($msg = $table1->get_error()) !== false):
+		echo $msg;
+	else :
+?>
+		<div class="sb-list"> 
+<?php
+		echo $table1->infos_html();
+		echo $table1->render_html(false);
+?>
+		</div>
+<?php		
+		$xivo_jqplot->get_result('chart1');
+	endif;
+?>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

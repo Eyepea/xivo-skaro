@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(xivo::load_class('xivo_statistics_queue',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
@@ -29,23 +29,21 @@ $stats_queue->get_data();
 $tpl_statistics->set_name('queue');
 $tpl_statistics->set_baseurl('statistics/call_center/stats1');
 $tpl_statistics->set_data_custom('axetype',$axetype);
+$tpl_statistics->set_data_custom('listtype',$stats_queue->get_list_by_type());
 $itl = $_XS->get_datecal();
 switch ($axetype)
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
-		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
 	case 'week':
 		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
-		#$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
 		break;
 	case 'month':
 		$date = $_XS->all_to_unixtime($itl['dmonth']);
 		$year = date('Y',$date);
 		$month = date('m',$date);
 		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month($year,$month),'key');
-		$tpl_statistics->set_data_custom('month_process',$_XS->get_datecal());
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',$_XS->get_listmonth(),'key');
@@ -53,7 +51,6 @@ switch ($axetype)
 	case 'type':
 	default:
 		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'keyfile',true);
-		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
 }
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
@@ -62,10 +59,11 @@ $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('presented',
 					'direct',
 					'custom:queue,[key],presented');
-$tpl_statistics->set_col_struct('traitment');
 $tpl_statistics->add_col('connected',
 					'direct',
 					'custom:queue,[key],enterqueue');
+
+#$tpl_statistics->set_col_struct('traitment');
 $tpl_statistics->add_col('connect',
 					'direct',
 					'custom:queue,[key],connect');
@@ -112,14 +110,14 @@ $_TPL->set_var('table1',$tpl_statistics);
 $_TPL->set_var('listrow',$tpl_statistics->get_data_rows());
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
-$_TPL->set_var('hascachetype',$_XS->has_cache_type());
-$_TPL->set_var('showdashboard',true);
+$_TPL->set_var('showdashboard_call_center',true);
 
 if($act === 'exportcsv')
 {
 	$_TPL->set_var('result',$tpl_statistics->render_csv());
 	$_TPL->set_var('name','queue');
-	$_TPL->display('/bloc/statistics/call_center/exportcsv');
+	$_TPL->set_var('date',$itl);
+	$_TPL->display('/bloc/statistics/exportcsv');
 	die();
 }
 

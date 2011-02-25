@@ -23,6 +23,7 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_general extends xivo_statistics_abstract
 {
 
+	public		$_table		= 'queue_log';
 	public		$_type		= '';
 	public		$_field	= array('logintime'			=> array('type' => 'time'),
 								'holdtime'			=> array('type' => 'time'),

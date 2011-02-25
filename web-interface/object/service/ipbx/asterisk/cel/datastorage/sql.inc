@@ -54,6 +54,29 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 	{
 		if(is_array($arr) === false)
 			return(false);
+/*
+	["id"] => string(1) "1"
+    ["eventtype"] => string(10) "CHAN_START"
+    ["eventtime"] => string(26) "2011-02-16 15:29:46.573929"
+    ["userdeftype"] => string(0) ""
+    ["cid_name"] => string(11) "celine dion"
+    ["cid_num"] => string(4) "8001"
+    ["cid_ani"] => string(0) ""
+    ["cid_rdnis"] => string(0) ""
+    ["cid_dnid"] => string(0) ""
+    ["exten"] => string(4) "8000"
+    ["context"] => string(7) "default"
+    ["channame"] => string(17) "SIP/8001-00000000"
+    ["appname"] => string(0) ""
+    ["appdata"] => string(0) ""
+    ["amaflags"] => string(1) "3"
+    ["accountcode"] => string(0) ""
+    ["peeraccount"] => string(0) ""
+    ["uniqueid"] => string(12) "1297888186.0"
+    ["linkedid"] => string(12) "1297888186.0"
+    ["userfield"] => string(0) ""
+    ["peer"] => string(0) ""
+*/
 		
 		if(isset($arr['dbeg']) === true)
 		{
@@ -83,11 +106,20 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 				$this->_dso->andwherebegin('channel',$arr['channel']);
 		}
 
+		if(isset($arr['eventtype']) === true)
+			$this->_dso->andwhere(array('eventtype' => $arr['eventtype']));
+		
 		if(isset($arr['exten']) === true)
 			$this->_dso->andwhere(array('exten' => $arr['exten']));
 
-		if(isset($arr['amaflags']) === true)
-			$this->_dso->andwhereexact('amaflags',$arr['amaflags']);
+		if(isset($arr['context']) === true)
+			$this->_dso->andwhere(array('context' => $arr['context']));
+
+		if(isset($arr['uniqueid']) === true)
+			$this->_dso->andwhere(array('uniqueid' => $arr['uniqueid']));
+
+		if(isset($arr['linkedid']) === true)
+			$this->_dso->andwhere(array('linkedid' => $arr['linkedid']));
 
 		if(isset($arr['dcontext']) === true)
 			$this->_dso->andwhereexact('dcontext',$arr['dcontext']);

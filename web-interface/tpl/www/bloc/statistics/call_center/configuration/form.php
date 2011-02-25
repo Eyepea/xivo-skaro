@@ -48,6 +48,15 @@ if($this->get_var('fm_save') === false)
 				  'default'	=> $element['stats_conf']['name']['default'],
 				  'value'	=> $info['stats_conf']['name'],
 				  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','name')) ));
+	
+	echo	$form->text(array('desc'	=> $this->bbf('fm_default_delta'),
+				  'name'	=> 'stats_conf[default_delta]',
+				  'labelid'	=> 'name',
+				  'size'	=> 12,
+				  'help'	=> $this->bbf('hlp_fm_default_delta'),
+				  'default'	=> $element['stats_conf']['default_delta']['default'],
+				  'value'	=> $info['stats_conf']['default_delta'],
+				  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','default_delta')) ));
 ?>
 			<fieldset id="stats_conf_cache_period">
 				<legend><?=$this->bbf('cache_during_period');?></legend>

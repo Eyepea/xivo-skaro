@@ -119,6 +119,9 @@ $array['tree']['service']['statistics']['call_center']['data'] = true;
 $array['tree']['service']['statistics']['call_center']['genercache'] = true;
 $array['tree']['service']['statistics']['call_center']['genergraphic'] = true;
 $array['tree']['service']['statistics']['call_center']['queue'] = true;
+$array['tree']['service']['statistics']['cdr'] = array();
+$array['tree']['service']['statistics']['cdr']['search'] = true;
+$array['tree']['service']['statistics']['cdr']['advanced_search'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

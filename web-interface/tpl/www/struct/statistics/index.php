@@ -19,8 +19,8 @@
 #
 
 ?>
-<div id="r-home">
-	<div class="b-rubric">
+<div id="r-ipbx">
+	<div id="s-asterisk" class="b-rubric">
 <?php $this->mk_bloc('main'); ?>
 	</div>
 </div>

@@ -24,7 +24,7 @@ jusqu'à ce jour
 Choisisser la configuration à appliquer: 
 
 ; colstruct_traitment
-Appels traités
+Traités
 
 ; colstruct_abandon
 Appels abandonnés
@@ -34,6 +34,12 @@ Retrait
 
 ; colstruct_connect
 Appels traités
+
+; col_nb
+<acronym title="Nombre">Nb.</acronym>
+
+; col_average_call_duration
+<acronym title="Moyenne Temps d'Appels">MTA</acronym>
 
 ; col_presented
 <acronym title="Présenté">Pré.</acronym>
@@ -272,6 +278,24 @@ Novembre
 ; december
 Décembre
 
+; cdr_axetype
+Axe d'analyse: 
+
+; fm_stats_cdr_default
+
+
+; fm_stats_cdr_by-opt(period)
+Période
+
+; fm_stats_cdr_by-opt(day)
+Jour
+
+; fm_stats_cdr_by-opt(week)
+Semaine
+
+; fm_stats_cdr_by-opt(month)
+Mois
+
 ; fm_axetype-default
 Axe d'analyse
 
@@ -320,8 +344,14 @@ Samedi %d
 ; sunday-opt
 Dimanche %d
 
+; week
+Semaine %d
+
 ; no_cache_generated_for 
 Cache %s n'est pas généré
+
+; no_type_in_conf 
+Aucune entrées dans la configuration
 
 ; tbl-lnk-expotcsv
 Exporter CSV
@@ -330,7 +360,7 @@ Exporter CSV
 Repartition des appels par événement
 
 ; queue_performance
-Performance file d'attente
+Performance files d'attentes
 
 ; productivity_by_agent
 Productivité par agent

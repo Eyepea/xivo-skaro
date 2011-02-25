@@ -326,8 +326,6 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
     
     	$arr['stats_conf']['hour_start'] = $workhour_start['h'].':'.$workhour_start['m'];
     	$arr['stats_conf']['hour_end'] = $workhour_end['h'].':'.$workhour_end['m'];
-    	
-    	dwho_dump($arr);
 
 		$this->set_stats_conf($arr['stats_conf']);
 		

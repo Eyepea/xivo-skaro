@@ -12,7 +12,7 @@ Semaine de travail
 Appels entrant
 
 ; smenu_queue
-Fil d'attente
+Files d'attente
 
 ; smenu_qos
 Qualité de service
@@ -24,6 +24,16 @@ Agents
 
 ; fm_name
 Nom: 
+
+; fm_default_delta
+Interval:  
+
+; hlp_fm_default_delta
+Permet de definir l'interval de temps par defaut  pour la vue par type.<br>
+e.g. [ -1 day ] veut dire qu'on prend la date du jour -1 pour un delta de 1 jour.<br>
+e.g. [ -3 days ] [ -1 weeks ] [ -1 month ]<br>
+Valeur disponible: - [0-999] [day|weeks|month] s <br>
+Laisser 0 pour le jour en cours.
 
 ; fm_description_cache
 Les dates pour le cache doivent être sous la forme AAAA-MM.
@@ -71,7 +81,7 @@ Période 5:
 eg. 0-20 (pour une périodes de 0 à 20 secondes)
 
 ; fm_description
-Déscription: 
+Description: 
 
 ; fm_workweek_monday
 Lundi: 
@@ -125,4 +135,4 @@ Configuration de la qualité de service pour les files d'attente
 %s: 
 
 ; no_queue
-Aucune file d'attente
+Aucune files d'attente

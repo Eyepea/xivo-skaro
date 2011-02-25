@@ -126,6 +126,9 @@ class xivo_jqplot
 			case 'period_pie_abandon':
 				$this->gener_graph_period_pie_abandon($box,$title);
 				break;
+			case 'cdr':
+				$this->gener_graph_cdr($box,$title);
+				break;
 			default:
 		}
 	}
@@ -134,7 +137,7 @@ class xivo_jqplot
 	{
 		$this->load_plugin('pieRenderer');
 		
-		$listfield = array('connect','abandon','on_close','on_saturation','on_hungup','on_guide','on_number');
+		$listfield = array('presented','connected','connect','abandon','on_close','on_saturation','on_hungup','on_guide','on_number');
 		
 		$data = $this->_data_foot;
 		$pie = '[';
@@ -285,7 +288,7 @@ class xivo_jqplot
 			        y2axis:
 			        { 
 			        	autoscale: true, 
-			        	tickOptions:{formatString: '%ss.'},
+			        	tickOptions:{formatString: '%ds.'},
 			        	min: 0
 					}
 				},			      
@@ -523,7 +526,7 @@ class xivo_jqplot
 			        yaxis:{
 				        autoscale: true,                 
 				        ticks:[0, 100], 
-               			tickOptions:{formatString: '%d\%'}		        
+               			tickOptions:{formatString: '%d%%'}		        
 					}
 			    },
 			    cursor:{show: false},
@@ -899,6 +902,124 @@ class xivo_jqplot
 
 		ob_end_clean();
 	}
+		
+	private function gener_graph_cdr($box,$title)
+	{
+		$this->load_plugin('barRenderer');
+		$this->load_plugin('categoryAxisRenderer');
+		$this->load_plugin('logAxisRenderer');
+		$this->load_plugin('canvasAxisTickRenderer');
+		$this->load_plugin('canvasTextRenderer');
+		$this->load_plugin('pointLabels');
+		$this->load_plugin('highlighter');
+		$this->load_plugin('cursor');
+		
+		$data_table = $this->_data_table;
+		$listrow = $this->_data_row;
+		$listrow = array_shift($listrow);
+			
+		# array for ticks label
+		$list_ticks = array();
+		foreach ($listrow as $row)
+			array_push($list_ticks,$row['identity']);
+		
+		$listacd = $listnb = $listduration = array();
+		foreach ($data_table as $colname => $colvalue)
+		{
+			array_push($listnb,$colvalue['nb']['result']);
+			array_push($listduration,$colvalue['duration']['result']);
+			array_push($listacd,$colvalue['average_call_duration']['result']);
+		}
+		
+		$axex = $this->build_js_list($listnb,'valuewithindex',true);
+		$axey1 = $this->build_js_list($listduration,'value',true);
+		$axey2 = $this->build_js_list($listacd,'value',true);
+		
+		ob_start();
+		
+		echo '<div class="sb-graph">
+			<div class="jqPlot" id="'.$box.'" style="height:290px; width:640px;margin-left: 100px;"></div>				
+		</div>';
+		echo "\n\n";
+		
+		echo "<script type=\"text/javascript\">
+			$.jqplot.config.enablePlugins = true;
+			line1 = $axex;
+			line2 = $axey1;
+			line3 = $axey2;			
+
+			$.jqplot('$box', [line1, line2, line3], 
+			{
+				grid:
+				{
+		            drawGridlines: true,
+		            background: '#ffffff',
+		            borderWidth: 0,
+		            shadow: false
+		        },
+				legend: 
+				{
+					show: true, 
+					location: 'ne', 
+					xoffset: 630 , 
+					yoffset: 0
+				},		
+			    title: '".$this->bbf($title)."',	        
+			    axes: 
+			    {
+			        xaxis: 
+			        { 
+			        	renderer: $.jqplot.CategoryAxisRenderer, 
+			        	ticks: ['".implode('\', \'',$list_ticks)."'],
+						tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+						tickOptions: 
+						{
+			                formatString: '%s', 
+			                fontSize: '10pt', 
+			                fontFamily: 'Arial', 
+			                angle: -30
+			            },
+					},
+			        yaxis: 
+			        { 
+			        	autoscale: true, 
+			        	tickOptions:{formatString: '%ds'},
+			        	min: 0
+					},
+			        y2axis:
+			        { 
+			        	autoscale: true, 
+			        	tickOptions:{formatString: '%ds.'},
+			        	min: 0
+					}
+				},			      
+			    series:
+			    [
+			        {	
+			        	label: 'Nombre', 
+			        	renderer: $.jqplot.BarRenderer,
+			        	rendererOptions:{barMargin: 5},
+			        	xaxis: 'xaxis', 
+			        	yaxis: 'y2axis'
+					},
+			        {
+			        	label: 'Duree',
+	        			highlighter:{show: false},
+			        	pointLabels:{show: false}
+					}, 
+			        {
+			        	label: 'MTA', 
+			        	pointLabels:{show: false}
+					}
+			    ],
+	   			cursor:{show: false}
+			});
+			</script>\n\n";
+		
+		$this->add_result($box, ob_get_contents());
+
+		ob_end_clean();
+	}
 	
 	private function build_js_list($list,$type,$intval=false)
 	{		
@@ -912,6 +1033,7 @@ class xivo_jqplot
 				{
 					$value = &$listvalue[$i];
 					$value = ($intval !== false) ? intval($value) : $value;
+					#$value = ($value == 0) ? 'null' : $value;
 					$return .= '['.($i+1).','.$value.']';
 					$return .= ($i < ($nb-1)) ? ', ' : '';
 				}
@@ -946,6 +1068,7 @@ class xivo_jqplot
 				{
 					$value = &$list[$i];
 					$value = ($intval !== false) ? intval($value) : $value;
+					#$value = ($value == 0) ? 'null' : $value;
 					$return .= $value;
 					$return .= ($i < ($nb-1)) ? ', ' : '';
 				}

@@ -31,7 +31,8 @@ class xivo_statistics
 	private	$_listday			= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 	private	$_listmonth			= array('january','february','march','april','may','june','july','august','september','october','november','december');
 	private	$_listaxetype		= array('type','day','week','month','year');
-	private	$_listtype			= array('queue','agent','period');
+	private	$_listtype			= array('queue','agent','period','incall');
+	private	$_listconftype		= array('queue','group','agent','user','incall');
 	private	$_listmethod		= array('DB','PHP');
 	public 	$_debug				= array();
 	public 	$_error				= array();
@@ -41,7 +42,8 @@ class xivo_statistics
 										'queue'		=> array(),
 										'group'		=> array(),
 										'agent'		=> array(),
-										'user'		=> array());
+										'user'		=> array(),
+										'incall'	=> array());
 	public 	$_statsconfsess		= array();
 	public 	$_period	 		= array('period1'	=> array(
 											'exp'	=> '',
@@ -123,7 +125,21 @@ class xivo_statistics
 	{			
 		$dbeg = $this->all_to_unixtime($conf['dbegcache']);
 		$dend = $this->all_to_unixtime($conf['dendcache']);
-		$dbeg = strtotime('-1 month', $dend);
+		
+		$year = date('Y',$dend);
+		$month = date('m',$dend);
+		// Init last day for the month
+		$dend = $this->get_lastday_for_month($year,$month);
+		
+		if (isset($conf['default_delta']) === true)
+		{
+			if ($conf['default_delta'] == 0)
+				$dbeg = date($dend);
+			else
+				$dbeg = strtotime($conf['default_delta'], $dend);
+		}
+		else // initialize dbeg at -1 day by default
+			$dbeg = strtotime('-1 day', $dend);
 		
 		$infocal = array();
 		$infocal['dbeg'] 	= date('Y-m-d',$dbeg);
@@ -225,9 +241,10 @@ class xivo_statistics
 		$loadconf['name'] = $statsconf['name'];
 		$loadconf['hour_start'] = $statsconf['hour_start'];
 		$loadconf['hour_end'] = $statsconf['hour_end'];
-		$loadconf['dcreate'] = $statsconf['dcreate'];
-		$loadconf['dupdate'] = $statsconf['dupdate'];
-		$loadconf['dgenercache'] = $statsconf['dgenercache'];
+		$loadconf['default_delta'] = $statsconf['default_delta'];
+		$loadconf['dcreate'] =  $statsconf['dcreate'];
+		$loadconf['dupdate'] =  $statsconf['dupdate'];
+		$loadconf['dgenercache'] =  $statsconf['dgenercache'];
 		$loadconf['dbegcache'] = $statsconf['dbegcache'];
 		$loadconf['dendcache'] = $statsconf['dendcache'];		
 		$loadconf['workweek'] = $workweek;
@@ -504,7 +521,7 @@ class xivo_statistics
 			$tmp['key'] = $i;
 				
 			array_push($rs,$tmp);
-		}		
+		}
 		return($rs);
 	}
 	
@@ -524,7 +541,7 @@ class xivo_statistics
 				continue;
 				
 			$tmp = array();
-			$tmp['identity'] =  dwho_i18n::babelfish($dayname);
+			$tmp['identity'] = dwho_i18n::babelfish($dayname);
 			$tmp['name'] = $dayname;
 			$tmp['key'] = $dayname;
 			
@@ -629,6 +646,7 @@ class xivo_statistics
 			$year = date('Y',$month_process);
 			
 			$tmp = array();
+			$tmp['identity'] = dwho_i18n::babelfish($this->_listmonth[intval($month)-1]);
 			$tmp['key'] = (int) ($year.$month);
 			$tmp['time'] = (int) $month_process;					
 			array_push($listmonth,$tmp);
@@ -767,7 +785,6 @@ class xivo_statistics
 		$rs = array();
 		$rs['id'] = (int) $arr['id'];
 		$rs['name'] = $arr['name'];
-		$rs['identity'] =  $arr['name'].' ('.$arr['number'].')';
 		$rs['number'] = $arr['number'];
 		$rs['context'] = $arr['context'];
 		$rs['keydata'] = array($arr['name']);
@@ -776,11 +793,13 @@ class xivo_statistics
 		switch ($type)
 		{
 			case 'queue':
+				$rs['identity'] =  $arr['displayname'];
 				$rs['key'] = 'queue/'.$arr['name'];
 				$rs['keyfile'] = 'queue-'.$arr['id'];
 				$rs['type'] = 'queue';
 				break;
 			case 'group':
+				$rs['identity'] =  $arr['displayname'];
 				if (isset($arr['group_qos']) === false)
 					return(false);
 				$rs['key'] = 'group/'.$arr['number'];
@@ -799,7 +818,7 @@ class xivo_statistics
 		switch ($type)
 		{
 			case 'incall':
-				$ls_incall = array();		
+				$ls_incall = array();
 				if ($this->_conf['incall'] === false)
 					return(false);
 				
@@ -838,7 +857,7 @@ class xivo_statistics
 									if ($id === $incall['id']
 									&& ($rs = $this->normalize_incall($incall,$key)) !== false)
 									{
-										array_push($ls_queue, $rs);
+										array_push($ls_incall, $rs);
 										break;
 									}
 								}
@@ -1022,6 +1041,22 @@ class xivo_statistics
 		}
 	}
 	
+	public function has_type()
+	{
+		$rs = array();
+		$nb = count($this->_listconftype);
+		for($i=0;$i<$nb;$i++)
+		{
+			$ref = &$this->_listconftype[$i];
+			$rs[$ref] = true;
+			if (isset($this->_conf[$ref]) === false
+			|| $this->_conf[$ref] === false)
+				$rs[$ref] = false;
+		}
+		
+		return($rs);
+	}
+	
 	public function get_object_list()
 	{
 		$this->push_debug("get_object_list()");
@@ -1093,17 +1128,21 @@ class xivo_statistics
 		
 		if(($list = $this->get_list_by_type($type)) === false
 		|| empty($list) === true)
-			dwho_report::push('error','ERR: Invalid list for gener_cache()');			
+			dwho_report::push('error','ERR: Invalid list for gener_cache()');	
 			
 		if (dwho_report::has('error') === true)
 			die(dwho_report::get_message('error'));
 		
-		#$this->_interval = $this->build_full_date_interval($dbeg,$dend);
 		$this->_interval = array();
 		$this->_interval['beg'] = $dbeg;
 		$this->_interval['end'] = $dend;
 		
-		$rs = $this->generate_cache_for_type($type,$list);		
+		if (($rs = $this->generate_cache_for_type($type,$list)) === false)
+			dwho_report::push('error','ERR: Invalid type for gener_cache()');			
+			
+		if (dwho_report::has('error') === true)
+			die(dwho_report::get_message('error'));
+		
 		$this->update_date_genercache();
 		
 		return($rs);
@@ -1124,9 +1163,58 @@ class xivo_statistics
 			case 'period':
 				return($this->generate_cache_for_period($list));
 				break;
+			case 'incall':
+				return($this->generate_cache_for_incall($list));
+				break;
 			default:
 				return(false);
 		}
+	}
+	
+	private function generate_cache_for_incall($listincall)
+	{		
+		if(xivo::load_class('xivo_statistics_incall',
+			XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics',
+			'incall',false) === false)
+			die('Can\'t load xivo_statistics_incall object');
+		
+		$stats_incall = new xivo_statistics_incall(&$this);
+		
+		$dbeg = $this->_interval['beg'];
+		$dend = $this->_interval['end'];
+		
+		$full_interval = $this->build_full_date_interval($dbeg,$dend);
+		$data_listmonth = $this->get_listmonth_for_interval($dbeg,$dend);
+		
+		while($listincall)
+		{
+			$incall = array_shift($listincall);
+			$keyfile = $incall['keyfile'];
+			$keydata = $incall['keydata'];
+			$listmonth = $data_listmonth;
+			while($listmonth)
+			{
+				$key = array_shift($listmonth);
+				$key = $key['key'];
+				$year = substr($key,0,4);
+				$month = substr($key,4,2);
+				$listday = $this->get_listday_for_month($year,$month);
+				while($listday)
+				{
+					$day = array_shift($listday);
+					if (strlen(($day = $day['key'])) === 1)
+						$day = '0'.$day;
+					if (isset($full_interval[$year.$month.$day]) === false)
+						continue;
+					$this->_interval_process = $full_interval[$year.$month.$day];
+					$stats_incall->parse_log($keydata,$day);
+				}
+				$this->save_cache($stats_incall->_result,$keyfile,$year,$month);
+				$stats_incall->_result = array();
+			}
+		}
+		unset($stats_incall,$full_interval,$data_listmonth);
+		return(true);
 	}
 	
 	private function generate_cache_for_queue($listqueue)
@@ -1289,10 +1377,13 @@ class xivo_statistics
 
 	public function get_cache($key,$year,$month,$type=null,$idconf=null)
 	{
-		if (is_null($type) === true)
-			$type = $this->_type;	
-		if (is_null($idconf) === true)
-			$idconf = $this->get_idconf();
+		if (is_null($type) === true
+		&& ($type = $this->_type) === '')
+			return(false);
+		
+		if (is_null($idconf) === true
+		&& ($idconf = $this->get_idconf()) === false)
+			return(false);
 		
 		if (($dir = $this->build_dir_for_cache($idconf,$type,$key)) === false)
 			return(false);
@@ -1544,9 +1635,44 @@ class xivo_statistics
 		return((string) array_pop(array_keys($listday)));
 	}
 	
-	public function db_eval_data($type,$value,$event,$field=null,$addwhere=null)
+	public function get_data_cel($type,$value,$event,$field=null,$addwhere=null)
 	{
-		$this->push_debug("db_eval_data()",array($type,$value,$event,$field,$addwhere));
+		$this->push_debug("get_data_cel()",array($type,$value,$event,$field,$addwhere));
+		
+		if(($_SRE = &dwho_gct::get('xivo_service')) === false
+		|| ($cel = &$_SRE->get_module('ipbx','cel')) === false)
+			return(false);
+		
+		$interval = $this->_interval_process;
+		
+		if ((isset($interval['beg']) === false
+			|| empty($interval['beg']) === true
+			|| strlen($interval['beg']) !== 10)
+		|| (isset($interval['end']) === false
+			|| empty($interval['end']) === true
+			|| strlen($interval['end']) !== 10))
+			return(false);
+				
+		$datetime = array();
+		$datetime['beg'] = date('Y-m-d H:i:s',$interval['beg']);
+		$datetime['end'] = date('Y-m-d H:i:s',$interval['end']);
+		
+		switch ($type)
+		{
+			case 'count':
+				return($cel->count_stats($this->_type,$value,$event,$datetime,$addwhere));
+				break;
+			case 'sum':
+				return($cel->sum_stats($this->_type,$value,$event,$field,$datetime,$addwhere));
+				break;
+			default:
+				return(false);
+		}
+	}
+	
+	public function get_data_queue_log($type,$value,$event,$field=null,$addwhere=null)
+	{
+		$this->push_debug("get_data_queue_log()",array($type,$value,$event,$field,$addwhere));
 		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
 			return(false);
 		
@@ -1560,17 +1686,17 @@ class xivo_statistics
 			|| strlen($interval['end']) !== 10))
 			return(false);
 				
-		$timestamp = array();
-		$timestamp['beg'] = date('Y-m-d H:i:s',$interval['beg']);
-		$timestamp['end'] = date('Y-m-d H:i:s',$interval['end']);
-			
+		$datetime = array();
+		$datetime['beg'] = date('Y-m-d H:i:s',$interval['beg']);
+		$datetime['end'] = date('Y-m-d H:i:s',$interval['end']);
+		
 		switch ($type)
 		{
 			case 'count':
-				return($appqueue_log->count_queue_logs_stats($this->_type,$value,$event,$timestamp,$addwhere));
+				return($appqueue_log->count_queue_logs_stats($this->_type,$value,$event,$datetime,$addwhere));
 				break;
 			case 'sum':
-				return($appqueue_log->sum_queue_logs_stats($this->_type,$value,$event,$field,$timestamp,$addwhere));
+				return($appqueue_log->sum_queue_logs_stats($this->_type,$value,$event,$field,$datetime,$addwhere));
 				break;
 			default:
 				return(false);
@@ -1595,20 +1721,21 @@ class xivo_statistics
 		return('data'.$pos);
 	}
 
-	public function eval_data_queue_log($queue_log_entry,$event,$type)
+	public function eval_pos_data_queue_log_conf($queue_log_entry,$event,$type)
 	{			
-		$this->push_debug("eval_data_queue_log()",array($queue_log_entry,$event,$type));
-		$conf = $this->_queue_log_conf;
+		$this->push_debug("eval_field_queue_log_conf()",array($queue_log_entry,$event,$type));
+		if (($queue_log_conf = $this->_queue_log_conf) === false)
+			return(false);
 		
-		if (isset($conf[$event]) === false
-		|| in_array($type,$conf[$event]) === false)
+		if (isset($queue_log_conf[$event]) === false
+		|| in_array($type,$queue_log_conf[$event]) === false)
 			return(0);
-			
+		
 		$pos = 0;
-		$nb = count($conf[$event]);
+		$nb = count($queue_log_conf[$event]);
 		for ($i=0;$i<$nb;$i++)
-			if ($conf[$event][$i] === $type)
-				$pos = $i+1;	
+			if ($queue_log_conf[$event][$i] === $type)
+				$pos = $i+1;
 			
 		if (isset($queue_log['data']) === true
 		&& dwho_empty($queue_log['data']) === false)
@@ -1622,7 +1749,7 @@ class xivo_statistics
 			return($queue_log_entry['data'.$pos]);
 		}
 			
-		return(0);		
+		return(0);
 	}
 
 	private function eval_during_time($key,$eventprocess,$eventstart,$eventend,$time)
@@ -1671,27 +1798,7 @@ class xivo_statistics
 		return($rs);
 	}
 	
-	private function load_queuelog()
-	{
-		$this->push_debug("load_queuelog()");
-		if (($appqueue_log = &$this->_ipbx->get_application('queue_log')) === false)
-			return(false);
-			
-		$data = $this->get_list_by_type();
-		$conf = $this->get_conf();
-		
-		if (is_null($conf) === true)
-			return(false);
-			
-		$conf['axetype'] = $this->_axetype;
-		$conf['interval'] = $this->_interval_process;
-
-		$this->_queue_log = $appqueue_log->get_queue_logs_stats($conf,$this->_type,$data);
-		
-		return(true);
-	}
-	
-	public function push_debug($key,$var=null)
+	protected function push_debug($key,$var=null)
 	{
 		if (isset($this->_debug[$key]) === true)
 			$this->_debug[$key.'{'.uniqid().'}'] = $var;

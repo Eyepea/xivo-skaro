@@ -40,14 +40,6 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 	
-	function stats($conf,$type,$data,$order=null,$limit=null)
-	{
-		if(($result = $this->_dso->stats($conf,$type,$data,$order,$limit)) === false)
-			return(false);
-
-		return($result);
-	}
-	
 	function get_min_and_max_time()
 	{
 		if(($min = $this->_dso->get_min_time()) === false

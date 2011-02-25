@@ -22,26 +22,28 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 
 class xivo_statistics_agent extends xivo_statistics_abstract
 {
-	
-	public		$_type		= 'agent';
-	public		$_field	= array('logintime'			=> array('type' => 'time'),
-								'holdtime'			=> array('type' => 'time'),
-								'calltime'			=> array('type' => 'time'),
-								'ringtime'			=> array('type' => 'time'),
-								'pausetime'			=> array('type' => 'time'),
-								'traitmenttime'		=> array('type' => 'time'),
-								'connect'			=> array('type' => 'int'),
-								'completeagent'		=> array('type' => 'int'),
-								'completecaller'	=> array('type' => 'int'),
-								'ringnoanswer'		=> array('type' => 'int'),
-								'transfer'			=> array('type' => 'int'),
-								'abandon'			=> array('type' => 'int')
-						);
+
+	protected		$_field		= array('logintime'			=> array('type' => 'time'),
+									'holdtime'			=> array('type' => 'time'),
+									'calltime'			=> array('type' => 'time'),
+									'ringtime'			=> array('type' => 'time'),
+									'pausetime'			=> array('type' => 'time'),
+									'traitmenttime'		=> array('type' => 'time'),
+									'connect'			=> array('type' => 'int'),
+									'completeagent'		=> array('type' => 'int'),
+									'completecaller'	=> array('type' => 'int'),
+									'ringnoanswer'		=> array('type' => 'int'),
+									'transfer'			=> array('type' => 'int'),
+									'abandon'			=> array('type' => 'int')
+							);
 		
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
 		$this->_method = 'DB';
+		$this->_table = 'queue_log';
+		$this->_type = 'agent';
+		$this->_xs->set_type($this->_type);
 	}
 		
 	public function parse_log($key_data,$key)

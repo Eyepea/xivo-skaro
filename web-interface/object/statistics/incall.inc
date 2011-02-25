@@ -23,20 +23,27 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_incall extends xivo_statistics_abstract
 {
 	
-	public		$_type	= 'incall';
-	public		$_field	= array();
+	public		$_field	= array('chanstart'	=> array('type' => 'int'),);
 	private		$_cel	= false;
 		
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->_method = 'DB';		
+		$this->_method = 'DB';
+		$this->_table = 'cel';
+		$this->_type = 'incall';
+		$this->_xs->set_type($this->_type);
 		
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
 		|| ($this->_cel = &$_SRE->get_module('ipbx','cel')) === false)
 			die('Can\'t load cell object');
 	}
-		
+	
+	public function cel()
+	{
+		return $this->_cel;
+	}
+	
 	public function parse_log($key_data,$key)
 	{
 		if ($this->_xs->get_conf() === false)
@@ -57,9 +64,9 @@ class xivo_statistics_incall extends xivo_statistics_abstract
 	{		
 		$this->init_result($key);
 		
-		$val = $this->eval_count_data($key_data,'CONNECT');
-		$this->update_result(array($key,'connect'),$val);
-				
+		$val = $this->eval_count_data($key_data,'CHAN_START');
+		$this->update_result(array($key,'chanstart'),$val);
+	/*
 		$field = $this->eval_field_queue_log('CONNECT','holdtime');
 		$holdtime = $this->eval_sum_data($key_data,'CONNECT',$field);
 		$this->update_result(array($key,'holdtime'),$holdtime);
@@ -109,7 +116,7 @@ class xivo_statistics_incall extends xivo_statistics_abstract
 		$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
 		$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field,array('ISNOT', array('data1', '')));
 		$this->update_result(array($key,'logintime'),$logintime);
-		
+	*/
 		return($this->_result);
 	}
 

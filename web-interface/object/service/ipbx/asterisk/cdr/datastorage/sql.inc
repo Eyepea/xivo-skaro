@@ -114,6 +114,73 @@ class xivo_service_asterisk_cdr_sql extends xivo_service_asterisk_abstract_sql
 
 		return(true);
 	}
+	
+	function search_grid($arr,$order=null,$limit=null)
+	{
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_table);
+
+		if($this->_search_grid_where($arr) === false)
+			return(false);
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+	
+	function _search_grid_where($arr)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['dbeg']) === true)
+		{
+			$dbeg = $arr['dbeg'];
+			$len = strlen($dbeg);
+
+			if($len === 4)
+				$format = '%Y';
+			else if($len === 7)
+				$format = '%Y-%m';
+			else
+				$format = '%Y-%m-%d';
+
+			if(isset($arr['dend']) === true)
+				$dend = $arr['dend'];
+			else
+				$dend = '';
+
+			$this->_dso->wheredate('calldate',$dbeg,$dend,null,$format);
+		}
+/*
+        { op: "eq", text: "is equal to" },
+        { op: "ne", text: "is not equal to" },
+        { op: "lt", text: "is less than" },
+        { op: "le", text: "is less or equal to" },
+        { op: "gt", text: "is greater than" },
+        { op: "ge", text: "is greater or equal to" },
+        { op: "in", text: "is in" },
+        { op: "ni", text: "is not in" },
+        { op: "bw", text: "begins with" },
+        { op: "bn", text: "does not begin with" },
+        { op: "ew", text: "ends with" },
+        { op: "en", text: "does not end with" },
+        { op: "cn", text: "contains" },
+        { op: "nc", text: "does not contain" }
+*/
+
+		return(true);
+	}
 }
 
 ?>

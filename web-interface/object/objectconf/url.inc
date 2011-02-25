@@ -115,7 +115,6 @@ $array['service/ipbx/call_management/rightcall'] = 'service/ipbx/index.php/call_
 $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call_management/callfilter/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
-$array['service/ipbx/call_management/cdr'] = 'service/ipbx/index.php/call_management/cdr/';
 $array['service/ipbx/trunk_management/sip'] = 'service/ipbx/index.php/trunk_management/sip/';
 $array['service/ipbx/trunk_management/iax'] = 'service/ipbx/index.php/trunk_management/iax/';
 $array['service/ipbx/trunk_management/custom'] = 'service/ipbx/index.php/trunk_management/custom/';
@@ -236,6 +235,11 @@ $array['statistics/call_center/stats4']				= 'statistics/call_center/index.php/s
 $array['statistics/call_center/stats5']				= 'statistics/call_center/index.php/stats5';
 $array['statistics/call_center/configuration']		= 'statistics/call_center/index.php/configuration/';
 $array['statistics/call_center/cache']				= 'statistics/call_center/index.php/cache/';
+
+$array['statistics/cdr'] 						= 'statistics/cdr/index.php';
+$array['statistics/cdr/index'] 					= 'statistics/cdr/index.php';
+$array['statistics/cdr/search'] 				= 'statistics/cdr/index.php/search';
+$array['statistics/cdr/advanced_search'] 		= 'statistics/cdr/index.php/advanced_search';
 
 $array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
 $array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';
