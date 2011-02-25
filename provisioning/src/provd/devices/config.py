@@ -314,25 +314,46 @@ class RawConfigParamError(RawConfigError):
     pass
 
 
-def _rec_update_dict(old_vals, new_vals):
-    for k, v in new_vals.iteritems():
+def _rec_update_dict(base_dict, overlay_dict):
+    # update a base dictionary from another dictionary
+    for k, v in overlay_dict.iteritems():
         if isinstance(v, dict):
-            old_v = old_vals.get(k)
+            old_v = base_dict.get(k)
             if isinstance(old_v, dict):
                 _rec_update_dict(old_v, v)
             else:
-                old_vals[k] = copy.deepcopy(v)
-                ## This also works if we don't want to use deepcopy:
-                #old_vals[k] = {}
-                #_rec_update_dict(old_vals[k], v)
+                base_dict[k] = {}
+                _rec_update_dict(base_dict[k], v)
         else:
-            old_vals[k] = v
+            base_dict[k] = v
+
+
+def _check_config_validity(config):
+    # raise a value error if config is blatantly incorrect
+    if u'parent_ids' not in config:
+        raise ValueError('missing "parent_ids" field in config')
+    elif not isinstance(config[u'parent_ids'], list):
+        raise ValueError('"parent_ids" field must be a list; is %s' %
+                         type(config[u'parent_ids']))
+    if u'raw_config' not in config:
+        raise ValueError('missing "raw_config" field in config')
+    elif not isinstance(config[u'raw_config'], dict):
+        raise ValueError('"raw_config" field must be a dict; is %s' %
+                         type(config[u'raw_config']))
 
 
 class ConfigCollection(ForwardingDocumentCollection):
     def __init__(self, collection):
         ForwardingDocumentCollection.__init__(self, collection)
         self._collection = collection
+    
+    def insert(self, config):
+        _check_config_validity(config)
+        return self._collection.insert(config)
+    
+    def update(self, config):
+        _check_config_validity(config)
+        return self._collection.update(config)
     
     def get_ancestors(self, id):
         """Return a deferred that will fire with the set of ancestors of the

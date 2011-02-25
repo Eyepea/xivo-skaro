@@ -438,6 +438,13 @@ def _async_install(pkg_ids, installable_pkgs, installed_pkgs):
                 rfiles_path.add(rfile.path)
     dl_deferred, dl_oip = async_download_multiseq_with_oip(rfiles)
     dl_oip.label = 'download'
+    # create operation in progress objects
+    # Note: important to create it these objects else the callback might
+    # fire and the name not set
+    install_oip = OperationInProgress('install')
+    oip = OperationInProgress('install_pkg', OIP_PROGRESS,
+                              sub_oips=[dl_oip, install_oip])
+    deferred = defer.Deferred()
     def dl_success(_):
         install_oip.state = OIP_PROGRESS
         try:
@@ -461,11 +468,6 @@ def _async_install(pkg_ids, installable_pkgs, installed_pkgs):
         oip.state = OIP_FAIL
         deferred.errback(err)
     dl_deferred.addCallbacks(dl_success, dl_fail)
-    # create operation in progress objects
-    install_oip = OperationInProgress('install')
-    oip = OperationInProgress('install_pkg', OIP_PROGRESS,
-                              sub_oips=[dl_oip, install_oip])
-    deferred = defer.Deferred()
     return (deferred, oip)
 
 

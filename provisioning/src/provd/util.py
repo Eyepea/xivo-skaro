@@ -129,7 +129,7 @@ def norm_mac(mac_string):
 
 
 def format_mac(mac_string, separator=':', uppercase=False):
-    """Return a frelly formatted representation of a MAC address string."""
+    """Return a freely formatted representation of a MAC address string."""
     return from_mac(to_mac(mac_string), separator, uppercase)
 
 
