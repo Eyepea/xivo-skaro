@@ -90,7 +90,7 @@ def request_config(webconfig_uri):
         try:
             req = urllib2.Request(url = webconfig_uri)
             config_file = cjson.decode(urllib2.urlopen(req).read())
-            anysql_uri = config_file.get('db_uri')
+            anysql_uri = config_file.get('db_uri').replace('\/', '/')
             if not anysql_uri:
                 log.warning('despite webconfig availability at %s, its db_uri field looks empty'
                             % (webconfig_uri))
