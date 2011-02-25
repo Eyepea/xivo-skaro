@@ -211,11 +211,23 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 			return(false);
 		}
 
+		// get presences
+		$pres = array();
+		if(($apppresence = &$this->_service->get_application('ctipresences')) !== false)
+		{
+			foreach($apppresence->get_presences_list() as $p)
+				$pres[$p['ctipresences']['id']] = $p['ctipresences']['name'];
+		}
+
 		$r = $info = array();
 		for($i = 0;$i < $nb;$i++)
 		{
+			$rs[$i]['presence_name'] = $pres[$rs[$i]['presence_id']];
+			$rs[$i]['identity'] = $this->_ctistatus->mk_identity($rs[$i]);
+
 			$info['ctistatus'] = $rs[$i];
 			$r[$info['ctistatus']['id']] = $info;
+
 		}
 
 		if(empty($r) === true)

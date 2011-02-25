@@ -541,6 +541,8 @@ CREATE TABLE "ctistatus" (
  PRIMARY KEY("id")
 );
 
+CREATE UNIQUE INDEX "ctistatus_presence_name" ON "ctistatus" (presence_id,name);
+
 INSERT INTO "ctistatus" VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
@@ -551,6 +553,7 @@ SELECT setval('ctistatus_id_seq', 6);
 
 DROP TABLE IF EXISTS "dialaction";
 DROP TABLE IF EXISTS "schedule"; -- USE dialaction_action
+DROP TABLE IF EXISTS "schedule_time"; -- USE dialaction_action
 DROP TYPE IF EXISTS "dialaction_event";
 DROP TYPE IF EXISTS "dialaction_category";
 DROP TYPE IF EXISTS "dialaction_action";
@@ -561,7 +564,11 @@ CREATE TYPE "dialaction_event" AS ENUM ('answer',
               'busy',
               'chanunavail',
               'inschedule',
-              'outschedule');
+              'outschedule',
+							'qctipresence',
+							'qnonctipresence',
+							'qwaittime',
+							'qwaitratio');
 CREATE TYPE "dialaction_category" AS ENUM ('callfilter','group','incall','queue','schedule','user');
 CREATE TYPE "dialaction_action" AS ENUM ('none',
                'endcall:busy',
@@ -1206,6 +1213,12 @@ CREATE TABLE "queuefeatures" (
  "announceoverride" varchar(128) NOT NULL DEFAULT '',
  "timeout" INTEGER NOT NULL DEFAULT 0,
  "preprocess_subroutine" varchar(39),
+
+ -- DIVERSIONS
+ "ctipresence"    VARCHAR(1024) DEFAULT NULL,
+ "nonctipresence" VARCHAR(1024) DEFAULT NULL,
+ "waittime"       INTEGER       DEFAULT NULL,
+ "waitratio"      FLOAT         DEFAULT NULL
  PRIMARY KEY("id")
 );
 

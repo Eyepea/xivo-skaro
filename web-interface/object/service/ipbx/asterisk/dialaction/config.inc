@@ -24,7 +24,8 @@ $array['categoryevent'] = array();
 $array['categoryevent']['callfilter'] = array('noanswer');
 $array['categoryevent']['group'] = array('noanswer','congestion','busy','chanunavail');
 $array['categoryevent']['incall'] = array('answer');
-$array['categoryevent']['queue'] = array('noanswer','congestion','busy','chanunavail');
+$array['categoryevent']['queue'] = array('noanswer','congestion','busy','chanunavail',
+		'qctipresence','qnonctipresence','qwaittime','qwaitratio');
 //$array['categoryevent']['schedule'] = array('inschedule','outschedule');
 $array['categoryevent']['user'] = array('noanswer','congestion','busy','chanunavail');
 
@@ -38,7 +39,11 @@ $array['element']['event']['value'] = array('answer',
 					    'busy',
 					    'chanunavail',
 					    'inschedule',
-					    'outschedule');
+							'outschedule',
+						  'qctipresence',
+						  'qnonctipresence',
+						  'qwaittime',
+						  'qwaitratio');
 $array['element']['event']['default'] = '';
 
 $array['element']['category'] = array();
@@ -119,7 +124,11 @@ $array['filter']['event'] = array('key' => array('answer',
 						 'busy',
 						 'chanunavail',
 						 'inschedule',
-						 'outschedule'));
+						 'outschedule',
+					   'qctipresence',
+					   'qnonctipresence',
+					   'qwaittime',
+					   'qwaitratio'));
 $array['filter']['category'] = array('key' => array('callfilter','group','incall','queue','schedule','user'));
 $array['filter']['categoryval'] = array('maxlen' => 128,'cast' => 'sgraph');
 $array['filter']['action'] = array('key' => array('none',

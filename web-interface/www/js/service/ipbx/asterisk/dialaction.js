@@ -24,6 +24,10 @@ var xivo_elt_dialaction = {
 			'chanunavail':	{},
 			'inschedule':	{},
 			'outschedule':	{},
+			'qctipresence':	{},
+			'qnonctipresence':	{},
+			'qwaittime':	{},
+			'qwaitratio':	{},
 			'schedule_fallback':	{}};
 
 var xivo_fm_dialaction = dwho_clone(xivo_elt_dialaction);

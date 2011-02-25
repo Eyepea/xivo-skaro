@@ -676,3 +676,24 @@ Schedules:
 
 ; create_schedules
 Create a schedule
+
+; smenu_diversion
+Diversions
+
+; fld-diversion-ctipresence
+On CTI status presence
+
+; fld-diversion-nonctipresence
+On CTI status 
+
+; fld-diversion-waittime
+On estimated wait time overrun
+
+;  fm_queuefeatures_waittime
+Threshold (estimated wait time):
+
+; fld-diversion-waitratio
+On waiting calls / available agents ratio overrun
+
+; fm_queuefeatures_waitratio
+Threshold (percent ratio):

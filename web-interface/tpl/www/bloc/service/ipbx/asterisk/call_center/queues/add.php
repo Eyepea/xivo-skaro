@@ -35,7 +35,10 @@ $form = &$this->get_module('form');
 		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue-periodic-announce');
 										dwho.form.select('it-user');
 										dwho.form.select('it-agentgroup');
-										dwho.form.select('it-agent');">
+										dwho.form.select('it-agent');
+										dwho.form.select('it-rightcall');
+										dwho.form.select('it-ctipresence');
+										dwho.form.select('it-nonctipresence');">
 <?php
 		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 					    'value'	=> DWHO_SESS_ID)),

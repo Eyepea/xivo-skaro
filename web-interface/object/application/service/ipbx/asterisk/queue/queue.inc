@@ -42,6 +42,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_skillrule 	= false;
 	var $_userskill 	= false;
 	var $_agentskill 	= false;
+	var $_ctipresences = false;
 
 	var $_errors		= array();
 
@@ -78,6 +79,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
 		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'queue'))) === false
 		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false
+		|| ($this->_ctipresences  = &$this->_service->get_module('ctipresences')) === false
 		|| ($this->_callerid = $this->get_abstract('callerid',array('type' => 'queue'))) === false)
 			return(false);
 
@@ -407,7 +409,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_set_error('queuefeatures',$this->_queuefeatures->get_filter_error());
 			return(false);
 		}
-
 		$this->_set_result('queuefeatures',$rs);
 
 		return(true);

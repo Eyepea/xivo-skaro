@@ -604,3 +604,24 @@ Horaires :
 
 ; create_schedules
 Créer un horaire
+
+; smenu_diversion
+Diversions
+
+; fld-diversion-ctipresence
+Sur présence d'un ou plusieurs status CTI
+
+; fld-diversion-nonctipresence
+Sur absence d'un ou plusieurs status CTI
+
+; fld-diversion-waittime
+Sur dépassement du temps d'attente estimé
+
+;  fm_queuefeatures_waittime
+Seuil (temps d'attente estimé) : 
+
+; fld-diversion-waitratio
+Sur dépassement d'un ratio appels en attente / agents disponibles
+
+; fm_queuefeatures_waitratio
+Seuil (pourcentage: ratio appels en attente / agents disponibles) : 

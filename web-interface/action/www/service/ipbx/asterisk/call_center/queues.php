@@ -27,7 +27,12 @@ $search  = strval($prefs->get('search', ''));
 $context = strval($prefs->get('context', ''));
 $sort    = $prefs->flipflop('sort', 'name');
 
-$appschedule = &$ipbx->get_application('schedule');
+$appschedule  = &$ipbx->get_application('schedule');
+$appstatus = &$ipbx->get_application('ctistatus');
+$ctistatus = array();
+foreach($appstatus->get_status_list() as $itm)
+{ $ctistatus[$itm['ctistatus']['id']] = $itm['ctistatus']; }
+
 
 $param = array();
 $param['act'] = 'list';
@@ -77,6 +82,9 @@ switch($act)
 		&& dwho_issa('queuefeatures',$_QR) === true
 		&& dwho_issa('queue',$_QR) === true)
 		{
+			$_QR['queuefeatures']['ctipresence']    = implode(',', $_QR['ctipresence']);
+			$_QR['queuefeatures']['nonctipresence'] = implode(',', $_QR['nonctipresence']);
+
 			if($appqueue->set_add($_QR) === false
 			|| $appqueue->add() === false)
 			{
@@ -192,6 +200,8 @@ switch($act)
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
 		$_TPL->set_var('context_list',$appqueue->get_context_list());
 		$_TPL->set_var('schedule_id', $result['schedule_id']);
+		$_TPL->set_var('ctipresence', $ctistatus);
+		$_TPL->set_var('nonctipresence', $ctistatus);
 		break;
 	case 'edit':
 		$appqueue = &$ipbx->get_application('queue');
@@ -232,13 +242,16 @@ switch($act)
 								  'number'	=> SORT_ASC,
 								  'context'	=> SORT_ASC),
 							    null,
-							    true);
+									true);
+
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('queuefeatures',$_QR) === true
 		&& dwho_issa('queue',$_QR) === true)
 		{
 			$return = &$result;
+			$_QR['queuefeatures']['ctipresence']    = implode(',', $_QR['ctipresence']);
+			$_QR['queuefeatures']['nonctipresence'] = implode(',', $_QR['nonctipresence']);
 
 			if($appqueue->set_edit($_QR) === false
 			|| $appqueue->edit() === false)
@@ -331,6 +344,31 @@ switch($act)
 				$return['callerid'] = null;
 		}
 
+		// CTI presences
+		$freepres = $ctistatus; //do a copy
+		$pres = array();
+		if(strlen($return['queuefeatures']['ctipresence']) > 0)
+		{
+			foreach(split(',',$return['queuefeatures']['ctipresence']) as $pid)
+			{
+				$pres[] = $freepres[$pid];
+				unset($freepres[$pid]);
+			}
+		}
+		$return['queuefeatures']['ctipresence'] = $pres;
+
+		$nonfreepres = $ctistatus; //do a copy
+		$pres = array();
+		if(strlen($return['queuefeatures']['nonctipresence']) > 0)
+		{
+			foreach(split(',',$return['queuefeatures']['nonctipresence']) as $pid)
+			{
+				$pres[] = $nonfreepres[$pid];
+				unset($nonfreepres[$pid]);
+			}
+		}
+		$return['queuefeatures']['nonctipresence'] = $pres;
+
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
@@ -356,6 +394,8 @@ switch($act)
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
 		$_TPL->set_var('context_list',$appqueue->get_context_list());
 		$_TPL->set_var('schedule_id', $return['schedule_id']);
+		$_TPL->set_var('ctipresence', $freepres);
+		$_TPL->set_var('nonctipresence', $nonfreepres);
 		break;
 	case 'delete':
 		$param['page'] = $page;

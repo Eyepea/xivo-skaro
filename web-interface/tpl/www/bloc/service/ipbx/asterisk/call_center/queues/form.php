@@ -970,3 +970,64 @@ endif;
 	endif;
 ?>
 </div>
+<div id="sb-part-diversion" class="b-nodisplay">
+	<fieldset id="fld-diversion-ctipresence">
+		<legend><?=$this->bbf('fld-diversion-ctipresence');?></legend>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/call_center/queues/ctipresence',
+			array('type'	=> 'ctipresence'));
+		echo '<br/>';
+
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'qctipresence'));
+?>
+	</fieldset>
+	<fieldset id="fld-diversion-nonctipresence">
+		<legend><?=$this->bbf('fld-diversion-nonctipresence');?></legend>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/call_center/queues/ctipresence',
+			array('type'	=> 'nonctipresence'));
+		echo '<br/>';
+
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'qnonctipresence'));
+?>
+	</fieldset>
+	<fieldset id="fld-diversion-waittime">
+		<legend><?=$this->bbf('fld-diversion-waittime');?></legend>
+<?php
+	echo	$form->select(array('desc'	=> $this->bbf('fm_queuefeatures_waittime'),
+				    'name'	=> 'queuefeatures[waittime]',
+				    'labelid' => 'queuefeatures-waittime',
+						'key'	=> false,
+						'empty' => true,
+				    'bbf'	=> 'fm_queuefeatures_timeout-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
+				    'default'	=> $element['queuefeatures']['waittime']['default'],
+				    'selected'	=> $info['queuefeatures']['waittime']),
+				$element['queuefeatures']['waittime']['value']);
+
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'qwaittime'));
+?>
+	</fieldset>
+	<fieldset id="fld-diversion-waitratio">
+		<legend><?=$this->bbf('fld-diversion-waitratio');?></legend>
+<?php
+	echo	$form->select(array('desc'	=> $this->bbf('fm_queuefeatures_waitratio'),
+				    'name'	=> 'queuefeatures[waitratio]',
+				    'labelid' => 'queuefeatures-waitratio',
+				    'key'	=> false,
+						'empty' => true,
+				    'default'	=> $element['queuefeatures']['waitratio']['default'],
+				    'selected'	=> $info['queuefeatures']['waitratio']),
+					$element['queuefeatures']['waitratio']['value']);
+
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'qwaitratio'));
+?>
+	</fieldset>
+</div>

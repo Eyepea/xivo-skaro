@@ -68,6 +68,10 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		$this->_dso->add_group('preprocess_subroutine', $this->_table['queuefeatures']);
 		$this->_dso->add_group('commented', $this->_table['queue']);
 		$this->_dso->add_group('category', $this->_table['queue']);
+		$this->_dso->add_group('ctipresence', $this->_table['queuefeatures']);
+		$this->_dso->add_group('nonctipresence', $this->_table['queuefeatures']);
+		$this->_dso->add_group('waittime', $this->_table['queuefeatures']);
+		$this->_dso->add_group('waitratio', $this->_table['queuefeatures']);
 
 
 		if(dwho_has_len($value) === true)

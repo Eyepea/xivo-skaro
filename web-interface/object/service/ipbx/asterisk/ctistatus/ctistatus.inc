@@ -41,6 +41,11 @@ class xivo_service_asterisk_ctistatus extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function mk_identity($arr)
+	{
+		return $arr['display_name'].' ('.$arr['presence_name'].')';
+	}
 }
 
 ?>
