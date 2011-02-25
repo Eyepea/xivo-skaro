@@ -57,6 +57,10 @@ class ProvisioningClient(object):
     def plugin_manager(self):
         pg_mgr_res = self._server_res.pg_mgr_res()
         return PluginManager(pg_mgr_res)
+    
+    def test_connectivity(self):
+        # raise an exception if there seems to be connectivity issues
+        self._server_res.test_connectivity()
 
 
 class ConfigManager(object):

@@ -4,4 +4,4 @@ if [ -z "$PYTHON" ]; then
     PYTHON=python
 fi
 
-"$PYTHON" -i -m provd.rest.pycli.pycli "$@"
+"$PYTHON" -m provd.rest.pycli.pycli "$@"

@@ -41,10 +41,7 @@ __license__ = """
 import urllib
 import urllib2
 import urlparse
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import json
 from provd.rest.client.util import once_per_instance, DeleteRequest,\
     PutRequest, No2xxErrorHTTPErrorProcessor
 from provd.rest.util import PROV_MIME_TYPE, uri_append_path, uri_append_query
@@ -294,17 +291,19 @@ class UpdateResource(object):
 
 class ServerResource(object):
     def __init__(self, server_uri, broker):
-        self._create_sub_resources(server_uri, broker)
+        self._broker = broker
+        self._server_uri = server_uri
+        self._create_sub_resources()
     
-    def _create_sub_resources(self, server_uri, broker):
-        dev_mgr_uri = uri_append_path(server_uri, 'dev_mgr')
-        self._dev_mgr = DeviceManagerResource(dev_mgr_uri, broker)
+    def _create_sub_resources(self):
+        dev_mgr_uri = uri_append_path(self._server_uri, 'dev_mgr')
+        self._dev_mgr = DeviceManagerResource(dev_mgr_uri, self._broker)
         
-        cfg_mgr_uri = uri_append_path(server_uri, 'cfg_mgr')
-        self._cfg_mgr = ConfigManagerResource(cfg_mgr_uri, broker)
+        cfg_mgr_uri = uri_append_path(self._server_uri, 'cfg_mgr')
+        self._cfg_mgr = ConfigManagerResource(cfg_mgr_uri, self._broker)
 
-        pg_mgr_uri = uri_append_path(server_uri, 'pg_mgr')
-        self._pg_mgr = PluginManagerResource(pg_mgr_uri, broker)
+        pg_mgr_uri = uri_append_path(self._server_uri, 'pg_mgr')
+        self._pg_mgr = PluginManagerResource(pg_mgr_uri, self._broker)
     
     def dev_mgr_res(self):
         return self._dev_mgr
@@ -314,6 +313,11 @@ class ServerResource(object):
     
     def pg_mgr_res(self):
         return self._pg_mgr
+    
+    def test_connectivity(self):
+        # raise an exception if there seems to be connectivity issues
+        request = new_get_request(self._server_uri)
+        self._broker.ignore_content(request)
 
 
 class DeviceManagerResource(object):
@@ -621,8 +625,8 @@ def new_server_resource(server_uri, credentials=None):
         user, passwd = credentials
         pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
         pwd_manager.add_password(None, server_uri, user, passwd)
-        handlers.append[urllib2.HTTPDigestAuthHandler(pwd_manager)]
-        handlers.append[urllib2.HTTPBasicAuthHandler(pwd_manager)]
+        handlers.append(urllib2.HTTPDigestAuthHandler(pwd_manager))
+        handlers.append(urllib2.HTTPBasicAuthHandler(pwd_manager))
     opener = urllib2.build_opener(*handlers)
     broker = RequestBroker(opener)
     return ServerResource(server_uri, broker)
