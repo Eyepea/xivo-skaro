@@ -31,11 +31,11 @@ This is the XivoCTI class.
 import base64
 import cjson
 import csv
-import hashlib
 import logging
 import os
 import random
 import re
+import hashlib
 import string
 import threading
 import time
@@ -72,7 +72,7 @@ from xivo.BackSQL import backsqlite
 log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.2'
-XIVOVERSION_NAME = 'skaro'
+XIVOVERSION_NAME = 'gallifrey'
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -374,7 +374,7 @@ class XivoCTICommand(BaseCommand):
                 userinfo = uinfo
             hashedpassword = loginparams.get('hashedpassword')
             tohash = '%s:%s' % (userinfo['prelogin']['sessionid'], userinfo.get('password'))
-            sha1sum = hashlib.sha(tohash).hexdigest()
+            sha1sum = hashlib.sha1(tohash).hexdigest()
             if sha1sum != hashedpassword:
                 return 'login_password'
 
@@ -5384,7 +5384,7 @@ class XivoCTICommand(BaseCommand):
                               % (requester_id, termin))
 
         if len(reply) > 0:
-            # sha1sum = sha.sha(''.join(reply)).hexdigest()
+            # sha1sum = hashlib.sha1(''.join(reply)).hexdigest()
             tosend = { 'class' : 'history',
                        'payload' : reply }
             return self.__cjson_encode__(tosend)
@@ -6685,4 +6685,4 @@ class XivoCTICommand(BaseCommand):
 ##    def ami_voicemailuserentrycomplete(self, astid, event): return
 ##    def ami_waiteventcomplete(self, astid, event): return
 
-xivo_commandsets.CommandClasses['xivoctiold'] = XivoCTICommand
+xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand

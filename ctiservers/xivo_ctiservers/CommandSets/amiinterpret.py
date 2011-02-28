@@ -371,4 +371,4 @@ class XivoCTICommand_asterisk_1_8(BaseCommand):
     def amiresponse_follows(self, astid, event, nocolon):
         return
 
-xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand_asterisk_1_8
+xivo_commandsets.CommandClasses['xivoctidummy'] = XivoCTICommand_asterisk_1_8
