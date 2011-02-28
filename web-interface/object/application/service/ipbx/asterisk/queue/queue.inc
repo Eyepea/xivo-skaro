@@ -340,7 +340,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| dwho_issa('queuefeatures',$arr) === false
 		|| dwho_issa('queue',$arr) === false)
 			return(false);
-			
+
 		if($action !== 'edit')
 		{
 			$name = strtolower($arr['queuefeatures']['displayname']);
@@ -350,7 +350,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		}
 		else 
 			$arr['queue']['name'] = $arr['queuefeatures']['name'];
-		
+
+		$name = $arr['queue']['name'];
 		$this->set_queuefeatures($arr['queuefeatures']);
 
 		$number = (string) $arr['queuefeatures']['number'];

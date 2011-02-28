@@ -214,7 +214,7 @@ $array['element']['setqueueentryvar']['set'] = true;
 
 $array['element']['setqueuevar'] = array();
 $array['element']['setqueuevar']['value'] = array(0,1);
-$array['element']['setqueuevar']['default'] = 0;
+$array['element']['setqueuevar']['default'] = 1;
 $array['element']['setqueuevar']['set'] = true;
 
 $array['element']['membermacro'] = array();

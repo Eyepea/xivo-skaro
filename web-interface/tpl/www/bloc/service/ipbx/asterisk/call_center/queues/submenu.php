@@ -36,7 +36,7 @@
 			<li id="dwsm-tab-5" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-dialaction');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
 				<div class="tab"><span class="span-center"><a href="#dialaction"><?=$this->bbf('smenu_dialaction');?></a></span></div><span class="span-right">&nbsp;</span>
 			</li>
-			<li id="dwsm-tab-6" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-advanced/');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
+			<li id="dwsm-tab-6" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-advanced');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
 				<div class="tab"><span class="span-center"><a href="#advanced"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
 			</li>
 			<li id="dwsm-tab-7"
