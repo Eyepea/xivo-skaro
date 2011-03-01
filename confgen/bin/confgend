@@ -33,7 +33,7 @@ class Confgen(Protocol):
 		try:
 			content = getattr(self.factory.frontends[frontend], callback)()
 		except Exception, e:
-			content = None
+			print e; content = None
 
 		if content is None:
 			# get cache content
