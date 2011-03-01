@@ -81,6 +81,10 @@ $array['element']['preprocess_subroutine'] = array();
 $array['element']['preprocess_subroutine']['default'] = '';
 $array['element']['preprocess_subroutine']['null'] = true;
 
+$array['element']['announce_holdtime'] = array();
+$array['element']['announce_holdtime']['value'] = array(0,1);
+$array['element']['announce_holdtime']['default'] = 0;
+
 $array['element']['ctipresence'] = array();
 $array['element']['ctipresence']['default'] = '';
 $array['element']['ctipresence']['null'] = true;
@@ -159,6 +163,7 @@ $array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','ma
 $array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['timeout'] = array('key' => array(0,30,60,90,120,180,240,300,360,420,480,540,600,900,1200,1500,1800));
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['announce_holdtime'] = array('bool' => true);
 
 $array['filter']['ctipresence'] = array('set' => false,'chk' => 2);
 $array['filter']['nonctipresence'] = array('set' => false,'chk' => 2);

@@ -298,6 +298,9 @@ Disabled
 ; fm_queue_announce-holdtime
 Announce hold time:
 
+; fm_queuefeatures_announce_holdtime
+Announce hold time before entering queue:
+
 ; fm_queue_announce-holdtime-opt(no)
 No
 

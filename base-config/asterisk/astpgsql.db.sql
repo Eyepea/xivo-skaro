@@ -1213,6 +1213,7 @@ CREATE TABLE "queuefeatures" (
  "announceoverride" varchar(128) NOT NULL DEFAULT '',
  "timeout" INTEGER NOT NULL DEFAULT 0,
  "preprocess_subroutine" varchar(39),
+ "announce_holdtime" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
 
  -- DIVERSIONS
  "ctipresence"    VARCHAR(1024) DEFAULT NULL,
