@@ -185,7 +185,7 @@ CREATE INDEX cdr__idx__accountcode ON cdr(accountcode);
 CREATE INDEX cdr__idx__userfield ON cdr(userfield);
 
 
-DROP TABLE IF EXISTS cel;
+DROP TABLE cel;
 CREATE TABLE cel (
  id integer unsigned,
  eventtype varchar (30) NOT NULL,
