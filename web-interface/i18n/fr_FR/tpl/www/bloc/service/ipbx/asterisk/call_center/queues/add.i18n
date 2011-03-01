@@ -624,4 +624,7 @@ Seuil (temps d'attente estimé) :
 Sur dépassement d'un ratio appels en attente / agents disponibles
 
 ; fm_queuefeatures_waitratio
-Seuil (pourcentage: ratio appels en attente / agents disponibles) : 
+Ratio appels en attente / agents disponibles : 
+
+; hlp_fm_queuefeatures_waitratio
+Saisissez un pourcentage (par ex. 100 pour 100%)

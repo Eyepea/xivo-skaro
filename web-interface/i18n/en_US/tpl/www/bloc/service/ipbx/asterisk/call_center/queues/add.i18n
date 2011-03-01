@@ -697,3 +697,6 @@ On waiting calls / available agents ratio overrun
 
 ; fm_queuefeatures_waitratio
 Threshold (percent ratio):
+
+; hlp_fm_queuefeatures_waitratio
+In percent (i.e 100 for 100%)

@@ -1017,14 +1017,16 @@ endif;
 	<fieldset id="fld-diversion-waitratio">
 		<legend><?=$this->bbf('fld-diversion-waitratio');?></legend>
 <?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_queuefeatures_waitratio'),
-				    'name'	=> 'queuefeatures[waitratio]',
-				    'labelid' => 'queuefeatures-waitratio',
-				    'key'	=> false,
-						'empty' => true,
-				    'default'	=> $element['queuefeatures']['waitratio']['default'],
-				    'selected'	=> $info['queuefeatures']['waitratio']),
-					$element['queuefeatures']['waitratio']['value']);
+  echo $form->text(array('desc'  => $this->bbf('fm_queuefeatures_waitratio'),
+            'name'     => 'queuefeatures[waitratio]',
+            'labelid'  => 'queuefeatures-waitratio',
+            'size'     => 15,
+            'help'     => $this->bbf('hlp_fm_queuefeatures_waitratio'),
+            'required' => false,
+            'value'    => $info['queuefeatures']['waitratio'],
+            'default'  => $element['queuefeatures']['waitratio']['default'],
+            'error'    => $this->bbf_args('error',
+        $this->get_var('error', 'waitratio')) ));
 
 		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
 				    array('event'	=> 'qwaitratio'));
