@@ -30,7 +30,8 @@ from provd.servers.tftp.proto import TFTPProtocol
 from provd.servers.http_site import Site
 from provd.persist.memory import MemoryDatabaseFactory
 from provd.persist.shelve import ShelveDatabaseFactory
-from provd.rest.server.server import new_server_resource
+from provd.rest.server.server import new_server_resource,\
+    new_restricted_server_resource
 from twisted.application.service import IServiceMaker, Service, MultiService
 from twisted.application import internet
 from twisted.plugin import IPlugin
@@ -38,7 +39,7 @@ from twisted.python import log
 from twisted.web.resource import Resource
 from zope.interface.declarations import implements
 
-logger = logging.getLogger('main')
+logger = logging.getLogger(__name__)
 
 
 class ProvisioningService(Service):
@@ -55,7 +56,7 @@ class ProvisioningService(Service):
         db_config = {}
         for k, v in self._config.iteritems():
             pre, sep, post = k.partition('.')
-            if pre == 'database' and sep and post not in ('type', 'generator'):
+            if pre == 'database' and sep and post not in ['type', 'generator']:
                 db_config[post] = v
         return db_config
     
@@ -63,26 +64,39 @@ class ProvisioningService(Service):
         db_type = self._config['database.type']
         db_generator = self._config['database.generator']
         db_specific_config = self._extract_database_specific_config()
+        logger.info('Using %s database with %s generator and config %s',
+                    db_type, db_generator, db_specific_config)
         db_factory = self._DB_FACTORIES[db_type]
         return db_factory.new_database(db_type, db_generator, **db_specific_config)
     
+    def _close_database(self):
+        logger.info('Closing database...')
+        try:
+            self._database.close()
+        except Exception:
+            logger.error('Error while closing database', exc_info=True)
+        logger.info('Database closed')
+    
     def startService(self):
         Service.startService(self)
-        self.database = self._create_database()
-        cfg_collection = ConfigCollection(self.database.collection('configs'))
-        dev_collection = DeviceCollection(self.database.collection('devices'))
-        self.app = ProvisioningApplication(cfg_collection, dev_collection, self._config)
+        self._database = self._create_database()
+        try:
+            cfg_collection = ConfigCollection(self._database.collection('configs'))
+            dev_collection = DeviceCollection(self._database.collection('devices'))
+            self.app = ProvisioningApplication(cfg_collection, dev_collection, self._config)
+        except Exception:
+            try:
+                raise
+            finally:
+                self._close_database()
     
     def stopService(self):
         Service.stopService(self)
         try:
-            self.database.close()
-        except Exception:
-            logger.error('error while closing database', exc_info=True)
-        try:
             self.app.close()
         except Exception:
-            logger.error('error while closing application', exc_info=True)
+            logger.error('Error while closing application', exc_info=True)
+        self._close_database()
 
 
 class ProcessService(Service):
@@ -98,9 +112,9 @@ class ProcessService(Service):
         conffile_globals['app'] = self._prov_service.app
         return conffile_globals
     
-    def _create_processor(self, config_dir, name, config_name):
+    def _create_processor(self, request_config_dir, name, config_name):
         # name is the name of the processor, for example 'info_extractor'
-        filename = os.path.join(config_dir, name + '.py.conf.' + config_name)
+        filename = os.path.join(request_config_dir, name + '.py.conf.' + config_name)
         conffile_globals = self._get_conffile_globals()
         try:
             execfile(filename, conffile_globals)
@@ -116,10 +130,10 @@ class ProcessService(Service):
         # Pre: hasattr(self._prov_service, 'app')
         Service.startService(self)
         self.request_processing = provd.devices.ident.RequestProcessingService(self._prov_service.app)
-        config_dir = self._config['general.config_dir']
+        request_config_dir = self._config['general.request_config_dir']
         for name in ('info_extractor', 'retriever', 'updater', 'router'):
             setattr(self.request_processing, 'dev_' + name,
-                    self._create_processor(config_dir, name, self._config['general.' + name]))
+                    self._create_processor(request_config_dir, name, self._config['general.' + name]))
 
 
 class HTTPProcessService(Service):
@@ -140,6 +154,7 @@ class HTTPProcessService(Service):
         interface = self._config['general.ip']
         if interface == '*':
             interface = ''
+        logger.info('Binding HTTP provisioning service to "%s:%s"', interface, port)
         self._tcp_server = internet.TCPServer(port, site, interface=interface)
         self._tcp_server.startService()
 
@@ -166,6 +181,7 @@ class TFTPProcessService(Service):
         interface = self._config['general.ip']
         if interface == '*':
             interface = ''
+        logger.info('Binding TFTP provisioning service to "%s:%s"', interface, port)
         self._udp_server = internet.UDPServer(port, tftp_protocol, interface=interface)
         self._udp_server.startService()
     
@@ -182,15 +198,23 @@ class RemoteConfigurationService(Service):
     def startService(self):
         Service.startService(self)
         app = self._prov_service.app
-        server_resource = new_server_resource(app)
+        if self._config['general.rest_is_public']:
+            server_resource = new_server_resource(app)
+            logger.warning('No authentication is required for REST API')
+        else:
+            credentials = (self._config['general.rest_username'],
+                           self._config['general.rest_password'])
+            server_resource = new_restricted_server_resource(app, credentials)
+            logger.info('Authentication is required for REST API')
         root_resource = Resource()
         root_resource.putChild('provd', server_resource)
         rest_site = Site(root_resource)
         
         port = self._config['general.rest_port']
-        interface = self._config['general.ip']
+        interface = self._config['general.rest_ip']
         if interface == '*':
             interface = ''
+        logger.info('Binding HTTP REST API service to "%s:%s"', interface, port)
         self._tcp_server = internet.TCPServer(port, rest_site, interface=interface)
         self._tcp_server.startService()
     
@@ -226,7 +250,7 @@ class ProvisioningServiceMaker(object):
     options = provd.config.Options
     
     def _configure_logging(self, options):
-        # configure logging module
+        # configure standard logging module
         if options['stderr']:
             handler = logging.StreamHandler()
             handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
@@ -248,6 +272,7 @@ class ProvisioningServiceMaker(object):
         #log.startLoggingWithObserver(observer.emit, False)
     
     def _read_config(self, options):
+        logger.info('Reading application configuration')
         config_sources = [_CompositeConfigSource(options)]
         return provd.config.get_config(config_sources)
     

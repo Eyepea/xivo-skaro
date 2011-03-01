@@ -37,7 +37,7 @@ from os import urandom
 from twisted.internet.defer import Deferred
 from twisted.internet.protocol import DatagramProtocol 
 
-logger = logging.getLogger('sip')
+logger = logging.getLogger(__name__)
 
 
 class HeaderFieldError(Exception):

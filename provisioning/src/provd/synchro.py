@@ -22,8 +22,11 @@ __license__ = """
 
 # TODO add support for cancel
 
+import logging
 from collections import deque
 from twisted.internet import defer
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidLockUsage(Exception):
@@ -80,12 +83,14 @@ class DeferredRWLock(object):
                                                self._release_write_lock)
     
     def _acquire_read_lock(self):
+        logger.debug('Waiting for read lock acquisition of RWLock %s', self)
         d = defer.Deferred()
         self._read_waiting.append(d)
         self._reschedule()
         return d
     
     def _acquire_write_lock(self):
+        logger.debug('Waiting for write lock acquisition of RWLock %s', self)
         d = defer.Deferred()
         self._write_waiting.append(d)
         self._reschedule()
@@ -94,12 +99,14 @@ class DeferredRWLock(object):
     def _unlock_all_readers(self):
         assert self._read_waiting
         while self._read_waiting:
+            logger.debug('Acquiring read lock %d of RWLock %s', self._reading, self)
             self._reading += 1
             d = self._read_waiting.popleft()
             d.callback(self)
     
     def _unlock_one_writer(self):
         assert self._write_waiting
+        logger.debug('Acquiring write lock %d of RWLock %s', self._writing, self)
         self._writing += 1
         d = self._write_waiting.popleft()
         d.callback(self)
@@ -145,11 +152,13 @@ class DeferredRWLock(object):
     def _release_read_lock(self):
         if not self._reading:
             raise InvalidLockUsage('read lock released while no one was reading')
+        logger.debug('Releasing read lock %d of RWLock %s', self._reading - 1, self)
         self._reading -= 1
         self._reschedule()
     
     def _release_write_lock(self):
         if not self._writing:
             raise InvalidLockUsage('write lock released while no one was writing')
+        logger.debug('Releasing write lock %d of RWLock %s', self._writing - 1, self)
         self._writing -= 1
         self._reschedule()

@@ -26,22 +26,25 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from twisted.web.resource import IResource, Resource
 from twisted.internet import defer
+from twisted.web import http
+from twisted.web import resource
+from twisted.web import static
 
 
-IHTTPService = IResource
+IHTTPService = resource.IResource
 """An HTTP service is exactly the same thing as an IResource.""" 
 
 
-class BaseHTTPHookService(Resource):
+class BaseHTTPHookService(resource.Resource):
     """Base class for HTTPHookService. Not made to be instantiated directly."""
     
     def __init__(self, service):
-        Resource.__init__(self)
+        resource.Resource.__init__(self)
         self._service = service
 
     def _next_service(self, path, request):
+        # should be called in getChild method
         resrc = self._service
         if resrc.isLeaf:
             request.postpath.insert(0, request.prepath.pop())
@@ -88,6 +91,7 @@ class HTTPAsyncHookService(BaseHTTPHookService):
     def getChild(self, path, request):
         d = self._pre_handle(path, request)
         d.addCallback(lambda _: self._next_service(path, request))
+        return d
 
 
 class HTTPLogService(HTTPHookService):
@@ -105,9 +109,18 @@ class HTTPLogService(HTTPHookService):
         self._logger(str(path) + ' ---- ' + str(request))
 
 
+class HTTPNoListingFileService(static.File):
+    """Similar to twisted.web.static.File except that instead of listing the
+    content of directories, it returns a 403 Forbidden.
+    
+    """
+    def directoryListing(self):
+        return resource.ErrorPage(http.FORBIDDEN, 'Forbidden',
+                                  'Directory listing not permitted.')
+
+
 if __name__ == '__main__':
     from provd.servers.http_site import Site
-    from twisted.web.resource import NoResource
     from twisted.python import log
     import sys
     log.startLogging(sys.stderr)
@@ -116,8 +129,9 @@ if __name__ == '__main__':
         def aff(msg):
             print >>sys.stderr, prefix, msg
         return aff
-    hook = HTTPLogService(metaaff('1:'), HTTPLogService(metaaff('2:'), NoResource('Not found')))
-    site = Site(hook)
+    hook = HTTPLogService(metaaff('1:'), HTTPLogService(metaaff('2:'), resource.NoResource('Not found')))
+    res = HTTPNoListingFileService('/home/etienne', 'application/octet-stream')
+    site = Site(res)
     
     from twisted.internet import reactor
     reactor.listenTCP(8080, site)

@@ -40,6 +40,10 @@ must be found in the raw config passed to the plugin, and also specify what
 the plugin can expect to receive.
 
 
+_comment [optional]
+  Used as a standard way to add a human-readable comment in the raw config.
+  This value MUST be ignored by plugins.
+
 ip [mandatory]
   The IP address or domain name of the provisioning server.
   If the followings are true:
@@ -267,9 +271,6 @@ funckeys [optional|default to empty dictionary]
 Non-standard parameter names must begin with 'X_'. A unique second level ID
 should be used to prevent name clashes. Here's the list of parameters in
 the 'X_xivo_' namespace:
-
-X_xivo_extensions [optional]
-  A boolean indicating if we should enable all the xivo-specific stuff.
 
 X_xivo_phonebook_ip [optional]
   Remote XiVO phonebook service

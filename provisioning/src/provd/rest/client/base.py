@@ -11,8 +11,6 @@ to characters available in ASCII).
 
 """
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
@@ -626,7 +624,6 @@ def new_server_resource(server_uri, credentials=None):
         pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
         pwd_manager.add_password(None, server_uri, user, passwd)
         handlers.append(urllib2.HTTPDigestAuthHandler(pwd_manager))
-        handlers.append(urllib2.HTTPBasicAuthHandler(pwd_manager))
     opener = urllib2.build_opener(*handlers)
     broker = RequestBroker(opener)
     return ServerResource(server_uri, broker)

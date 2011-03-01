@@ -29,7 +29,7 @@ class DictSimpleBackend(object):
         self._dict = {}
     
     def close(self):
-        pass
+        self._dict = {}
     
     def __getitem__(self, id):
         return copy.deepcopy(self._dict[id])
@@ -54,7 +54,7 @@ class ListSimpleBackend(object):
         self._list = []
     
     def close(self):
-        pass
+        self._list = []
     
     def _find(self, id):
         for i, document in enumerate(self._list):
@@ -109,11 +109,9 @@ class MemoryDatabase(object):
         return self._collection_factory(generator)
     
     def collection(self, id):
-        try:
-            return self._collections[id]
-        except KeyError:
+        if id not in self._collections:
             self._collections[id] = self._new_collection(id)
-            return self._collections[id]
+        return self._collections[id]
 
 
 class MemoryDatabaseFactory(object):

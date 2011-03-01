@@ -308,8 +308,7 @@ class Configs(object):
     def __getitem__(self, name):
         return Config(name, self._cfg_mgr)
     
-    def _remove_all(self):
-        # 'hidden' method
+    def remove_all(self):
         for id in self._cfg_mgr.find({}):
             self._cfg_mgr.remove(id)
 
@@ -410,8 +409,7 @@ class Devices(object):
     def __getitem__(self, name):
         return Device(name, self._dev_mgr)
 
-    def _remove_all(self):
-        # 'hidden' method
+    def remove_all(self):
         for id in self._dev_mgr.find({}):
             self._dev_mgr.remove(id)
 

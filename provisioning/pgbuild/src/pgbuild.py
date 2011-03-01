@@ -25,12 +25,14 @@ __license__ = """
 
 import ConfigParser
 import glob
+import hashlib
 import os
 import shutil
 import tarfile
 import traceback
+from itertools import izip_longest
 from optparse import OptionParser
-from subprocess import check_call, Popen, PIPE
+from subprocess import check_call
 from sys import exit, stderr
 
 BUILD_FILENAME = 'build.py'
@@ -268,13 +270,46 @@ def _get_package_description_and_version(package, package_name):
         tar_package.close()
 
 
+def _get_package_dsize(package):
+    return os.path.getsize(package)
+
+
+def _get_package_sha1sum(package):
+    hash = hashlib.sha1()
+    with open(package, 'rb') as fobj:
+        hash.update(fobj.read())
+    return hash.hexdigest()
+
+
 def _get_package_info(package):
     result = {}
     result['filename'] = _get_package_filename(package)
     result['name'] = _get_package_name(package)
     result['description'], result['version'] = \
         _get_package_description_and_version(package, result['name'])
+    result['dsize'] = _get_package_dsize(package)
+    result['sha1sum'] = _get_package_sha1sum(package)
     return result
+
+
+def _version_cmp(version1, version2):
+    """Compare the version version1 to version version2 and return:
+    - negative if version1<version2
+    - zero if version1==version2
+    - positive if version1>version2.
+    
+    """
+    start1, _, last1 = version1.rpartition('-')
+    start2, _, last2 = version2.rpartition('-')
+    for i1, i2 in izip_longest(start1.split('.'), start2.split('.'), fillvalue='0'):
+        res_cmp = cmp(i1, i2)
+        if res_cmp != 0:
+            return res_cmp
+    if not last1 and last2 or not last1.startswith('dev') and last2.startswith('dev'):
+        return 1
+    elif last1 and not last2 or last1.startswith('dev') and not last2.startswith('dev'):
+        return -1
+    return cmp(last1, last2)
 
 
 def create_db_op(opts, args, src_dir, dest_dir):
@@ -287,22 +322,35 @@ def create_db_op(opts, args, src_dir, dest_dir):
     else:
         packages = _list_packages(pkg_dir)
     
+    # get package infos, and only for the most recent packages
+    package_infos = {}
+    for package in packages:
+        package_info = _get_package_info(package)
+        name = package_info['name']
+        if name in package_infos:
+            cur_version = package_info['version']
+            last_version = package_infos[name][1]['version']
+            print >>stderr, "warning: found package %s in version %s and %s" % \
+                  (name, cur_version, last_version)
+            if _version_cmp(cur_version, last_version) > 0:
+                package_infos[name] = (package, package_info)
+        else:
+            package_infos[name] = (package, package_info)
+    
     # create db file
     fobj = open(db_file, 'w')
     try:
         print "Creating DB file '%s'..." % db_file
         fobj.write("# This file has been automatically generated\n")
-        for package in packages:
+        for package, package_info in package_infos.itervalues():
             print "  Adding package '%s' to db file..." % package
-            package_info = _get_package_info(package)
             fobj.write('\n')
             fobj.write('[plugin_%s]\n' % package_info['name'])
-            fobj.write('description: %s\n' % package_info['description'])
-            fobj.write('filename: %s\n' % package_info['filename'])
-            fobj.write('version: %s\n' % package_info['version'])
+            for key in ['filename', 'version', 'description', 'dsize', 'sha1sum']:
+                fobj.write('%s: %s\n' % (key, package_info[key]))
     finally:
         fobj.close()
-    
+
 
 def _get_directory(opt_value):
     # Return current dir if opt_value is none, else check if opt_value is

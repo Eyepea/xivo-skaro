@@ -23,22 +23,8 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path
-from provd.plugins import Plugin
-from provd.servers.tftp.service import TFTPFileService
-from twisted.web.static import File
+from provd.plugins import StandardPlugin
 
 
-# XXX note that right now, this class is the same as the StandardPlugin class,
-#     so we should either modify the StandardPlugin class, or make this class
-#     inherit from it
-class ZeroPlugin(Plugin):
+class ZeroPlugin(StandardPlugin):
     IS_PLUGIN = True
-    
-    def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
-        Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        doc_root = os.path.join(self._plugin_dir, 'var', 'tftpboot')
-        self.tftp_service = TFTPFileService(doc_root)
-        # TODO this permits directory listing, which might or might not be
-        #      desirable
-        self.http_service = File(doc_root)

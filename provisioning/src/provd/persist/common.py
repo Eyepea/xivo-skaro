@@ -33,7 +33,7 @@ __license__ = """
 
 # TODO document the syntax/semantic of selector
 
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
 
 ID_KEY = u'id'
 
@@ -43,8 +43,16 @@ class InvalidIdError(Exception):
 
 
 class IDocumentCollection(Interface):
-    def close(self):
-        """Close the collection."""
+    """A collection of documents."""
+    
+    closed = Attribute("""True if the collection is closed, else False.""")
+    
+    def close():
+        """Close the collection. This method may be called more than once, and
+        if it doesn't raise an exception on the first time, it should not
+        raise an exception the next times it is called.
+        
+        """
     
     def insert(document):
         """Store a new document in the collection and return a deferred that
@@ -76,7 +84,7 @@ class IDocumentCollection(Interface):
         fire with None once the document with the given id has been
         successfully deleted.
         
-        The deferred will fire its errback with an InvalidIdError if there'S
+        The deferred will fire its errback with an InvalidIdError if there's
         no document with the given ID.
         
         """

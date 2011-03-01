@@ -23,12 +23,16 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# TODO input checking
+#      ...and in particular, type value checking (i.e. check for TypeError..)
+#      ,,,and put some check (device, config, etc) in application object, so
+#         stuff doesn't break too much
+# TODO we sometimes return 400 error when it's not a client error but a server error;
+#      that said raised exceptions sometimes does not permit to differentiate... 
+
 import binascii
 import logging
 import json
-from twisted.web import http
-from twisted.web.resource import Resource
-from twisted.web.server import NOT_DONE_YET
 from provd.app import InvalidIdError
 from provd.operation import format_oip, operation_in_progres_from_deferred
 from provd.persist.common import ID_KEY
@@ -37,8 +41,14 @@ from provd.rest.util import PROV_MIME_TYPE, uri_append_path
 from provd.rest.server.util import accept_mime_type, numeric_id_generator
 from provd.services import InvalidParameterError
 from provd.util import norm_mac, norm_ip
+from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
+from twisted.cred.portal import Portal
+from twisted.web import http
+from twisted.web.guard import DigestCredentialFactory, HTTPAuthSessionWrapper
+from twisted.web.resource import Resource, IResource
+from twisted.web.server import NOT_DONE_YET
 
-logger = logging.getLogger('rest.server')
+logger = logging.getLogger(__name__)
 
 REL_INSTALL_SRV     = u'srv.install'
 REL_INSTALL         = u'srv.install.install'
@@ -49,11 +59,7 @@ REL_UPGRADE         = u'srv.install.upgrade'
 REL_UPDATE          = u'srv.install.update'
 REL_CONFIGURE_SRV   = u'srv.configure'
 REL_CONFIGURE_PARAM = u'srv.configure.param'
-
-# TODO input checking
-#      ...and in particular, type value checking (i.e. check for TypeError..)
-#      ,,,and put some check (device, config, etc) in application object, so
-#         stuff doesn't break too much
+REALM_NAME = 'provd server'
 
 
 _PPRINT = True
@@ -170,12 +176,31 @@ def json_request_entity(fun):
 
 
 def selector_from_request(request):
-        args = request.args
-        selector = {}
-        for select_key, values in args.iteritems():
-            # keep the last value from the list
-            selector[select_key] = values[-1]
-        return selector 
+    # create a selector from a request query string
+    args = request.args
+    selector = {}
+    for select_key, values in args.iteritems():
+        # keep the last value from the list
+        selector[select_key] = values[-1]
+    return selector
+
+
+def _return_value(value):
+    # Return a function that when called will return the value passed in
+    # arguments. This can be useful when working with deferred.
+    def aux(*args, **kwargs):
+        return value
+    return aux
+
+
+_return_none = _return_value(None)
+
+def _ignore_deferred_error(deferred):
+    # Ignore any error raise by the deferred by placing an errback that
+    # will return None. This is useful if you don't care about the deferred
+    # yet you don't want to see an error message in the log when the deferred
+    # will be garbage collected.
+    deferred.addErrback(_return_none)
 
 
 class IntermediaryResource(Resource):
@@ -188,7 +213,7 @@ class IntermediaryResource(Resource):
         For example:
         links = [(u'foo', 'foo_sub_uri', server.Data('text/plain', 'foo'),
                  (u'bar', 'bar_sub_uri', server.Data('text/plain', 'bar')]
-         _IntermediaryResource(links)
+        IntermediaryResource(links)
          
         The difference between this resource and a plain Resource is that a
         GET request will yield something.
@@ -346,12 +371,13 @@ class InstallResource(_OipInstallResource):
             return respond_bad_json_entity(request, 'Missing "id" key')
         else:
             try:
-                oip = self._install_srv.install(pkg_id)[1]
+                deferred, oip = self._install_srv.install(pkg_id)
             except Exception, e:
                 # XXX should handle the exception differently if it was
                 #     because there's already an install in progress
                 return respond_error(request, e)
             else:
+                _ignore_deferred_error(deferred)
                 location = self._add_new_oip(oip, request)
                 return respond_created_no_content(request, location)
 
@@ -389,12 +415,13 @@ class UpgradeResource(_OipInstallResource):
             return respond_bad_json_entity(request, 'Missing "id" key')
         else:
             try:
-                oip = self._install_srv.upgrade(pkg_id)[1]
+                deferred, oip = self._install_srv.upgrade(pkg_id)
             except Exception, e:
                 # XXX should handle the exception differently if it was
                 #     because there's already an upgrade in progress
                 return respond_error(request, e)
             else:
+                _ignore_deferred_error(deferred)
                 location = self._add_new_oip(oip, request)
                 return respond_created_no_content(request, location)
 
@@ -407,12 +434,13 @@ class UpdateResource(_OipInstallResource):
     @json_request_entity
     def render_POST(self, request, content):
         try:
-            oip = self._install_srv.update()[1]
+            deferred, oip = self._install_srv.update()
         except Exception, e:
             # XXX should handle the exception differently if it was
             #     because there's already an update in progress
             return respond_error(request, e)
         else:
+            _ignore_deferred_error(deferred)
             location = self._add_new_oip(oip, request)
             return respond_created_no_content(request, location)
 
@@ -426,9 +454,13 @@ class _ListInstallxxxxResource(Resource):
     @json_response_entity
     def render_GET(self, request):
         fun = getattr(self._install_srv, self._method_name)
-        pkgs = fun()
-        content = {u'pkgs': pkgs}
-        return json.dumps(content)
+        try:
+            pkgs = fun()
+        except Exception, e:
+            return respond_error(request, e, http.INTERNAL_SERVER_ERROR)
+        else:
+            content = {u'pkgs': pkgs}
+            return json.dumps(content)
 
 
 def InstalledResource(install_srv):
@@ -811,12 +843,12 @@ class PluginManagerUninstallResource(Resource):
         except KeyError:
             return respond_bad_json_entity(request, 'Missing "id" key')
         else:
-            def on_callback(_):
+            def callback(_):
                 deferred_respond_no_content(request)
-            def on_errback(failure):
+            def errback(failure):
                 deferred_respond_error(request, failure.value)
             d = self._app.pg_uninstall(pkg_id)
-            d.addCallbacks(on_callback, on_errback)
+            d.addCallbacks(callback, errback)
             return NOT_DONE_YET
 
 
@@ -867,4 +899,35 @@ def PluginResource(plugin):
 
 
 def new_server_resource(app):
+    """Create and return a new server resource."""
     return ServerResource(app)
+
+
+class _SimpleRealm(object):
+    # implements(IRealm)
+    
+    def __init__(self, resource):
+        self._resource = resource
+    
+    def requestAvatar(self, avatarID, mind, *interfaces):
+        if IResource in interfaces:
+            return IResource, self._resource, lambda: None
+        else:
+            raise NotImplementedError()
+
+
+def new_restricted_server_resource(app, credentials, realm_name=REALM_NAME):
+    """Create and return a new server resource that will be accessible only
+    if the given credentials are present in the HTTP requests.
+    
+    credentials is a (username, password) tuple.
+    
+    """
+    server_resource = ServerResource(app)
+    pwd_checker = InMemoryUsernamePasswordDatabaseDontUse()
+    pwd_checker.addUser(*credentials)
+    realm = _SimpleRealm(server_resource)
+    portal = Portal(realm, [pwd_checker])
+    credentialFactory = DigestCredentialFactory('MD5', realm_name)
+    wrapper = HTTPAuthSessionWrapper(portal, [credentialFactory])
+    return wrapper

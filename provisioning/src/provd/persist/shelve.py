@@ -21,10 +21,13 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 import os
 import shelve
 from provd.persist.id import get_id_generator_factory
 from provd.persist.util import new_backend_based_collection
+
+logger = logging.getLogger(__name__)
 
 
 def _convert_to_backend(id):
@@ -40,7 +43,11 @@ class ShelveSimpleBackend(object):
         self._shelve = shelve.open(filename)
     
     def close(self):
-        self._shelve.close()
+        try:
+            self._shelve.close()
+        except Exception, e:
+            logger.error('Error while closing shelve: %s', e)
+            raise
     
     def __getitem__(self, id):
         real_id = _convert_to_backend(id)
@@ -80,10 +87,7 @@ class ShelveDatabase(object):
     
     def close(self):
         for collection in self._collections.itervalues():
-            try:
-                collection.close()
-            except Exception:
-                pass
+            collection.close()
         self._collections = {}
     
     def _new_collection(self, id):
@@ -96,11 +100,9 @@ class ShelveDatabase(object):
             raise ValueError(e)
     
     def collection(self, id):
-        try:
-            return self._collections[id]
-        except KeyError:
+        if id not in self._collections or self._collections[id].closed: 
             self._collections[id] = self._new_collection(id)
-            return self._collections[id]
+        return self._collections[id]
 
 
 class ShelveDatabaseFactory(object):

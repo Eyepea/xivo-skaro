@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
@@ -20,6 +18,10 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# TODO take proxy into account for downloading
+# TODO support plugin package signing... this will be important for safety
+#      since plugin aren't sandboxed
+
 import ConfigParser
 import contextlib
 import logging
@@ -27,8 +29,9 @@ import os
 import shutil
 import tarfile
 import weakref
+from binascii import a2b_hex
 from fetchfw.download import new_handlers, new_downloaders, DefaultDownloader,\
-    RemoteFile
+    RemoteFile, SHA1Hook
 from fetchfw.package import DefaultInstaller, PackageManager
 from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
     DefaultPackageStorage
@@ -36,21 +39,17 @@ from provd.download import async_download_multiseq_with_oip,\
     async_download_with_oip
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
+from provd.servers.http import HTTPNoListingFileService
 from provd.servers.tftp.service import TFTPFileService
 from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
-    IInstallService
+    IInstallService, InvalidParameterError
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
 from jinja2.loaders import FileSystemLoader
 from twisted.internet import defer
-from twisted.web.static import File
 from zope.interface import implements, Interface
 
-logger = logging.getLogger('plugins')
-
-# TODO take proxy into account for downloading
-# TODO support plugin package signing... this will be important for safety
-#      since plugin aren't sandboxed
+logger = logging.getLogger(__name__)
 
 
 # XXX turn this into an Interface and make the distinction between what
@@ -83,8 +82,8 @@ class Plugin(object):
     targeted version of your plugin.
     
     Attributes:
-    name -- the name of the plugin. This attribute is set after the plugin
-            instantiation time by the plugin manager
+    id -- the ID of the plugin. This attribute is set after the plugin
+          instantiation time by the plugin manager
     _pluging_dir -- the base directory in which the plugin is
     _gen_cfg -- a read-only general configuration mapping object
     _spec_cfg -- a read-only plugin-specific configuration mapping object
@@ -107,7 +106,7 @@ class Plugin(object):
     directory.
     
     """
-    name = None
+    id = None
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         """Create a new plugin instance.
@@ -123,6 +122,9 @@ class Plugin(object):
         plugin_dir -- the root directory where the plugin lies
         gen_cfg -- a dictionary with generic configuration key-values
         spec_cfg --  a dictionary with plugin-specific configuration key-values
+        
+        XXX the plugin MUST NOT modify either gen_cfg or spec_cfg, or it MUST
+        make a deepcopy before.
         
         """
         self._app = app
@@ -347,9 +349,7 @@ class StandardPlugin(Plugin):
         Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         self._tftpboot_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
         self.tftp_service = TFTPFileService(self._tftpboot_dir)
-        # TODO this permits directory listing, which might or might not
-        #      be desirable
-        self.http_service = File(self._tftpboot_dir)  
+        self.http_service = HTTPNoListingFileService(self._tftpboot_dir)  
     
 
 class TemplatePluginHelper(object):
@@ -517,9 +517,9 @@ class FetchfwPluginHelper(object):
         See IInstallService.install.
         
         """
-        logger.info('Installing plugin-package "%s"', pkg_id)
+        logger.info('Installing plugin-package %s', pkg_id)
         if pkg_id in self._in_install_set:
-            raise Exception('an install operation for pkg "%s" is already in progress' % pkg_id)
+            raise Exception('an install operation for pkg %s is already in progress' % pkg_id)
         if pkg_id not in self._async_pkg_manager.installable_pkgs:
             raise Exception('package not found')
 
@@ -543,7 +543,7 @@ class FetchfwPluginHelper(object):
         See IInstallService.uninstall.
         
         """
-        logger.info('Uninstalling plugin-package "%s"', pkg_id)
+        logger.info('Uninstalling plugin-package %s', pkg_id)
         self._async_pkg_manager.uninstall((pkg_id,))
 
     def list_installable(self):
@@ -555,7 +555,7 @@ class FetchfwPluginHelper(object):
         installable_pkgs = self._async_pkg_manager.installable_pkgs
         return dict((pkg_id, {'version': pkg.version,
                               'description': pkg.description,
-                              'dlsize': sum(rfile.size for rfile in pkg.remote_files)})
+                              'dsize': sum(rfile.size for rfile in pkg.remote_files)})
                     for pkg_id, pkg in installable_pkgs.iteritems())
     
     def list_installed(self):
@@ -591,7 +591,7 @@ class BasePluginManagerObserver(object):
     # Warning: don't forget to store at least 1 reference to this object
     # after attaching it to the plugin manager since observers are weakly
     # referenced by the plugin manager, so if you do not store any reference,
-    # the observer will be automatically detached
+    # the observer will be automatically garbage collected
     def __init__(self, pg_load=None, pg_unload=None):
         self._pg_load = pg_load
         self._pg_unload = pg_unload
@@ -629,11 +629,9 @@ class PluginManager(object):
     
     def __init__(self, app, plugins_dir, cache_dir):
         """
-        app -- an application object
+        app -- a provisioning application object
         plugins_dir -- the directory where plugins are installed
-        cache_dir -- a directory where plugin-package are downloaded, or None
-          if no cache is to be used
-        
+        cache_dir -- a directory where plugin-package are downloaded
         """
         self._app = app
         self._plugins_dir = plugins_dir
@@ -656,10 +654,11 @@ class PluginManager(object):
         
         """
         logger.info('Closing plugin manager...')
-        # Note: important not to use an iterator over self._plugins since
-        #       this dictionary is modified in the unload method
+        # important not to use an iterator over self._plugins since it is
+        # modified in the unload method
         for id in self._plugins.keys():
             self._unload_and_notify(id)
+        logger.info('Plugin manager closed')
     
     def configure_service(self):
         """Return an object providing the IConfigureService interface.
@@ -676,7 +675,8 @@ class PluginManager(object):
     def _join_server_url(self, p):
         server = self.server
         if server is None:
-            raise ValueError("'server' has no value set")
+            logger.warning('Plugin manager server attribute is not set')
+            raise InvalidParameterError("'server' has no value set")
         else:
             if server.endswith('/'):
                 return server + p
@@ -706,29 +706,37 @@ class PluginManager(object):
         and no 'server' param has been set.
         
         """
-        logger.info('Installing plugin "%s"', id)
+        logger.info('Installing plugin %s', id)
         if id in self._in_install:
-            raise Exception("an install/upgrade operation for plugin '%s' is already in progress" % id)
+            logger.warning('Install operation already in progress for plugin %s', id)
+            raise Exception('an install/upgrade operation for plugin %s is already in progress' % id)
         
-        pg_info = self._get_installable_pg_info(id)
+        try:
+            pg_info = self._get_installable_pg_info(id)
+        except KeyError:
+            logger.error('Can\'t install plugin %s: not found', id)
+            raise
         filename = pg_info['filename']
         cache_filename = os.path.join(self._cache_dir, filename)
         if os.path.isfile(cache_filename):
             try:
                 self._extract_plugin(cache_filename)
             except Exception, e:
-                # XXX create fun to return this kind of tuple ? hardest part will
-                #    be to find a good name...
-                return defer.fail(e), OperationInProgress(self._INSTALL_LABEL, OIP_FAIL)
+                top_deferred = defer.fail(e)
+                top_oip = OperationInProgress(self._INSTALL_LABEL, OIP_FAIL)
             else:
-                return defer.succeed(None), OperationInProgress(self._INSTALL_LABEL, OIP_SUCCESS)
+                top_deferred = defer.succeed(None)
+                top_oip = OperationInProgress(self._INSTALL_LABEL, OIP_SUCCESS)
         else:
             url = self._join_server_url(filename)
-            rfile = RemoteFile(cache_filename, url, self._downloader, None)
-            dl_deferred, dl_oip = async_download_with_oip(rfile)
+            rfile = RemoteFile(cache_filename, url, self._downloader, pg_info['dsize'])
+            sha1hook = SHA1Hook(a2b_hex(pg_info['sha1sum']))
+            dl_deferred, dl_oip = async_download_with_oip(rfile, [sha1hook])
             dl_oip.label = self._DOWNLOAD_LABEL
             self._in_install.add(id)
-            def dl_success(_):
+            top_deferred = defer.Deferred()
+            top_oip = OperationInProgress(self._INSTALL_LABEL, OIP_PROGRESS, sub_oips=[dl_oip])
+            def dl_callback(_):
                 self._in_install.remove(id)
                 try:
                     self._extract_plugin(cache_filename)
@@ -738,14 +746,20 @@ class PluginManager(object):
                 else:
                     top_oip.state = OIP_SUCCESS
                     top_deferred.callback(None)
-            def dl_fail(err):
+            def dl_errback(err):
                 self._in_install.remove(id)
                 top_oip.state = OIP_FAIL
                 top_deferred.errback(err)
-            dl_deferred.addCallbacks(dl_success, dl_fail)
-            top_deferred = defer.Deferred() 
-            top_oip = OperationInProgress(self._INSTALL_LABEL, OIP_PROGRESS, sub_oips=[dl_oip])
-            return top_deferred, top_oip
+            # do not move this line up (see dl_callback def)
+            dl_deferred.addCallbacks(dl_callback, dl_errback)
+        def top_callback(res):
+            logger.info('Plugin %s installed', id)
+            return res
+        def top_errback(err):
+            logger.error('Error while installating plugin %s: %s', id, err.value)
+            return err
+        top_deferred.addCallbacks(top_callback, top_errback)
+        return top_deferred, top_oip
 
     def upgrade(self, id):
         """Upgrade a plugin.
@@ -754,7 +768,7 @@ class PluginManager(object):
         method and calling the install method.
         
         """
-        logger.info('Upgrading plugin "%s"', id)
+        logger.info('Upgrading plugin %s', id)
         return self.install(id)
         
     def uninstall(self, id):
@@ -766,8 +780,9 @@ class PluginManager(object):
         specified id.
         
         """
-        logger.info('Uninstalling plugin "%s"', id)
+        logger.info('Uninstalling plugin %s', id)
         if not self.is_installed(id):
+            logger.error('Can\'t uninstall plugin %s: not installed', id)
             raise Exception('plugin not found')
         
         shutil.rmtree(os.path.join(self._plugins_dir, id))
@@ -790,8 +805,9 @@ class PluginManager(object):
           changed
         
         """
-        logger.info('Updating the plugin definition file')
+        logger.info('Updating plugin definition file')
         if self._in_update:
+            logger.warning('Update operation already in progress')
             raise Exception('an update operation is already in progress')
 
         url = self._join_server_url(self._DB_FILENAME)
@@ -800,9 +816,16 @@ class PluginManager(object):
         dl_deferred, dl_oip = async_download_with_oip(rfile)
         dl_oip.label = self._UPDATE_LABEL
         self._in_update = True
+        def callback(res):
+            logger.info('Plugin definition file updated')
+            return res
+        def errback(err):
+            logger.error('Error while updating plugin definition file: %s', err.value)
+            return err
         def dl_end(v):
             self._in_update = False
             return v
+        dl_deferred.addCallbacks(callback, errback)
         dl_deferred.addBoth(dl_end)
         return dl_deferred, dl_oip
     
@@ -826,9 +849,8 @@ class PluginManager(object):
           filename -- the name of the package in which the plugin is packaged
           version -- the version of the package
           description -- the description of the package
-        The following keys are optional:
           dsize -- the download size of the package, in bytes
-          isize -- the installed size of the package, in bytes
+          sha1sum -- an hex representation of the sha1sum of the package
         
         Raise an Exception if the plugin definition file is invalid/corrupted.
         If this file is absent, no error is raised, and an empty dictionary
@@ -844,15 +866,20 @@ class PluginManager(object):
             pass
         else:
             for section in config.sections():
-                if not section.startswith('plugin_'):
-                    raise ValueError('invalid plugin definition file')
-                id = section[len('plugin_'):]
-                filename = config.get(section, 'filename')
-                version = config.get(section, 'version')
-                description = self._clean_long_header(config.get(section, 'description'))
-                installable_plugins[id] = {'filename': filename,
-                                           'version': version,
-                                           'description': description}
+                if section.startswith('plugin_'):
+                    id = section[len('plugin_'):]
+                    filename = config.get(section, 'filename')
+                    version = config.get(section, 'version')
+                    description = self._clean_long_header(config.get(section, 'description'))
+                    dsize = config.get(section, 'dsize')
+                    sha1sum = config.get(section, 'sha1sum')
+                    installable_plugins[id] = {'filename': filename,
+                                               'version': version,
+                                               'description': description,
+                                               'dsize': dsize,
+                                               'sha1sum': sha1sum}
+                else:
+                    logger.warning('Unknown section name %s in plugin definition file', section)
         return installable_plugins
     
     def _get_installed_pg_info(self, id):
@@ -918,6 +945,7 @@ class PluginManager(object):
     def _execplugin(self, plugin_dir, pg_globals):
         entry_file = os.path.join(plugin_dir, self._ENTRY_FILENAME)
         self._add_execfile(pg_globals, plugin_dir)
+        logger.info('Executing plugin entry file "%s"', entry_file)
         execfile(entry_file, pg_globals)
     
     def attach(self, observer):
@@ -928,40 +956,53 @@ class PluginManager(object):
         not to be immediatly garbage collected.
         
         """
-        logger.debug('Attaching observer "%s" to plugin manager', observer)
+        logger.info('Attaching plugin manager observer %s', observer)
         if observer in self._observers:
-            logger.debug('Observer "%s" already attached', observer)
+            logger.info('Observer %s was already attached', observer)
         else:
             self._observers[observer] = None
     
     def detach(self, observer):
         """Detach an IPluginManagerObserver object to this plugin manager."""
-        logger.debug('Detaching observer "%s" to plugin manager', observer)
+        logger.info('Detaching plugin manager observer %s', observer)
         try:
             del self._observers[observer]
         except KeyError:
-            logger.debug('Observer "%s" was not attached', observer)
+            logger.info('Observer %s was not attached', observer)
     
     def _notify(self, id, action):
         # action is either 'load' or 'unload'
-        logger.debug('Notifying observers: %s %s', action, id)
+        logger.info('Notifying observers: %s %s', action, id)
         for observer in self._observers.keys():
             try:
-                logger.debug('Notifying observer "%s"', observer)
+                logger.info('Notifying observer %s', observer)
                 fun = getattr(observer, 'pg_' + action)
                 fun(id)
             except Exception:
-                logger.exception('Error while notifying observer "%s"', observer)
+                logger.error('Error while notifying observer %s', observer, exc_info=True)
     
     def _load_and_notify(self, id, plugin):
         self._plugins[id] = plugin
         self._notify(id, 'load')
     
     def _unload_and_notify(self, id):
+        # next line will raise a KeyError if the plugin is not loaded, which
+        # is what we want and it must be done before notifying the observers
         plugin = self._plugins[id]
-        plugin.close()
-        del self._plugins[id]
         self._notify(id, 'unload')
+        logger.info('Closing plugin %s', id)
+        try:
+            plugin.close()
+        except Exception:
+            logger.error('Error while closing plugin %s', id, exc_info=True)
+        finally:
+            del self._plugins[id]
+    
+    @staticmethod
+    def _is_plugin_class(obj):
+        # return true if obj is a plugin class with IS_PLUGIN true
+        return isinstance(obj, type) and issubclass(obj, Plugin) and \
+               hasattr(obj, 'IS_PLUGIN') and getattr(obj, 'IS_PLUGIN')
     
     def load(self, id, gen_cfg={}, spec_cfg={}):
         """Load a plugin.
@@ -980,23 +1021,21 @@ class PluginManager(object):
           parameters. These parameters are specific to every plugins.
         
         """
-        logger.info('Loading plugin "%s"', id)
+        logger.info('Loading plugin %s', id)
         if id in self._plugins:
-            raise Exception("plugin '%s' is already loaded" % id)
+            raise Exception('plugin %s is already loaded' % id)
         plugin_dir = os.path.join(self._plugins_dir, id)
         plugin_globals = {}
         self._execplugin(plugin_dir, plugin_globals)
-        for el in plugin_globals.itervalues():
-            if (isinstance(el, type) and 
-                issubclass(el, Plugin) and
-                hasattr(el, 'IS_PLUGIN') and
-                getattr(el, 'IS_PLUGIN')):
-                    plugin = el(self._app, plugin_dir, gen_cfg, spec_cfg)
-                    plugin.name = id
-                    self._load_and_notify(id, plugin)
-                    return
+        for obj in plugin_globals.itervalues():
+            if self._is_plugin_class(obj):
+                break
         else:
-            raise Exception("pg '%s': no plugin class found in file" % id)
+            raise Exception('plugin %s has no plugin class' % id)
+        logger.debug('Creating plugin instance from class %s', obj)
+        plugin = obj(self._app, plugin_dir, gen_cfg, spec_cfg)
+        plugin.id = id
+        self._load_and_notify(id, plugin)
 
     def unload(self, id):
         """Unload a plugin.
@@ -1004,7 +1043,7 @@ class PluginManager(object):
         Raise an Exception if the plugin is not loaded.
         
         """
-        logger.info('Unloading plugin "%s"', id)
+        logger.info('Unloading plugin %s', id)
         self._unload_and_notify(id)
     
     # Dictionary-like methods for loaded plugin access

@@ -42,9 +42,10 @@ class MongoDocumentCollection(object):
         """
         self._collection = collection
         self._generator = generator or _object_id_generator()
+        self.closed = False
     
     def close(self):
-        pass
+        self.closed = True
     
     if ID_KEY != _MONGO_ID_KEY:
         def _swap_ids(self, document):

@@ -1,4 +1,3 @@
-{% if X_xivo_extensions -%}
 {% if exten['voicemail'] -%}
 prgkey1 type: speeddial
 prgkey1 value: {{ exten['voicemail'] }}
@@ -24,7 +23,6 @@ prgkey6 type: services
 softkey3 type: speeddial
 softkey3 label: "{{ XX_dict['pickup_call'] }}"
 softkey3 value: {{ exten['pickup_call'] }}
-{% endif -%}
 {% endif -%}
 
 {% if X_xivo_phonebook_ip -%}

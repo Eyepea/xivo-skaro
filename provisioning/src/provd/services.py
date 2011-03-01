@@ -20,7 +20,10 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from zope.interface import Attribute, Interface, implements
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidParameterError(Exception):
@@ -178,8 +181,8 @@ class IConfigureServiceParam(Interface):
 class AttrConfigureServiceParam(object):
     implements(IConfigureServiceParam)
     
-    def __init__(self, object, name, description=None):
-        self._obj = object
+    def __init__(self, obj, name, description=None):
+        self._obj = obj
         self._name = name
         self.description = description
     
@@ -187,6 +190,7 @@ class AttrConfigureServiceParam(object):
         return getattr(self._obj, self._name)
     
     def set(self, value):
+        logger.info('Setting %s attribute of %s to %s', self._name, self._obj, value)
         setattr(self._obj, self._name, value)
 
 

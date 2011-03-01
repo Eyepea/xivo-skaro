@@ -137,9 +137,11 @@ class SimpleBackendDocumentCollection(object):
     def __init__(self, backend, generator):
         self._backend = backend
         self._generator = generator
+        self.closed = False
     
     def close(self):
         self._backend.close()
+        self.closed = True
     
     def _generate_new_id(self):
         while True:

@@ -11,8 +11,6 @@ password -- the password to use to download files on cisco.com website
 
 """
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>

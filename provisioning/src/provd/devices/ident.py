@@ -31,7 +31,7 @@ from twisted.internet import defer
 from twisted.web.resource import Resource, NoResource
 from zope.interface import Interface, implements
 
-logger = logging.getLogger('ident')
+logger = logging.getLogger(__name__)
 
 
 def _extract_tftp_ip(request):

@@ -1,4 +1,3 @@
-{% if X_xivo_extensions -%}
 {% if exten['voicemail'] -%}
 prgkey1 type: speeddial
 prgkey1 value: {{ exten['voicemail'] }}
@@ -19,7 +18,6 @@ prgkey4 type: directory
 prgkey5 type: callers
 
 prgkey6 type: services
-{% endif -%}
 
 {% if X_xivo_phonebook_ip -%}
 prgkey7 type: xml

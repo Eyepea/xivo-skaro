@@ -7,34 +7,31 @@ with well defined values.
 
 The following parameters are defined:
     general.config_file
+    general.base_raw_config_file
+        File containing a JSON document representing the base raw config.
+    general.base_raw_config
+        A dictionary holding the base raw config.
+    general.request_config_dir 
+        Directory where request processing configuration files can be found
+    general.cache_dir
+    general.plugins_dir
     general.http_proxy
         HTTP proxy for plugin downloads, etc
     general.plugin_server
         URL of the plugin server (where plugins are downloaded)
-    general.config_dir 
-        Directory where request processing configuration files can be found
-        # XXX should rename to something else
-    general.cache_dir
-    general.plugins_dir
     general.info_extractor
     general.retriever
     general.updater
     general.router
     general.ip
-        The IP address to listen on, or '*' to listen on every address.
+        The IP address to bind to, or '*' to bind on all local IP.
     general.http_port
     general.tftp_port
     general.rest_port
-    common_config.ip
-        The IP address the phone use to contact the provisioning server.
-        Normally the same as general.ip when general.ip is not *.
-    common_config.http_port
-        The HTTP port the phone use to contact the provisioning server.
-        Normally the same as general.http_port.
-    common_config.tftp_port
-        The TFTP port the phone use to contact the provisioning server.
-        Normally the same as general.tftp_port.
-    common_config.*
+    general.rest_ip
+    general.rest_username
+    general.rest_password
+    general.rest_is_public
     database.type
         The type of the 'database' used for storing devices and configs.
     database.generator
@@ -44,6 +41,8 @@ The following parameters are defined:
     database.mongo_uri
         For 'mongo' database, the URI of the database.
     plugin_config.*.*
+        where the first * is a plugin ID and the second * is a parameter
+        name for the plugin with the given ID
 
 """
 
@@ -65,13 +64,20 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# XXX right now, bad parameter names will be silently ignored, and we might
+#     want to raise an exception when we see a parameter that is invalid
+# XXX better parameter documentation...
+# XXX there's is some naming confusion between application configuration
+#     and device configuration, since both used the word 'config' and
+#     raw config yet it means different thing
+
 import ConfigParser
+import logging
+import json
 from provd.util import norm_ip
 from twisted.python import usage
 
-# XXX right now, bad parameter names will be silently ignored, and we might
-#     want to raise an exception when we see a parameter that is invalid
-# XXX better documentation...
+logger = logging.getLogger(__name__)
 
 
 class ConfigError(Exception):
@@ -93,26 +99,31 @@ class DefaultConfigSource(object):
     
     """
     
-    _DEFAULT_RAW_CONFIG = {
-        'general.config_file': '/etc/pf-xivo/provd/provd.conf',
-        'general.config_dir': '/etc/pf-xivo/provd',
-        'general.cache_dir': '/var/cache/pf-xivo/provd',
-        'general.plugins_dir': '/var/lib/pf-xivo/provd/plugins',
-        'general.info_extractor': 'default',
-        'general.retriever': 'default',
-        'general.updater': 'default',
-        'general.router': 'default',
-        'general.ip': '*',
-        'general.http_port': '8667',
-        'general.tftp_port': '69',
-        'general.rest_port': '8666',
-        'database.type': 'shelve',
-        'database.generator': 'default',
-        'database.shelve_dir': '/var/lib/pf-xivo/provd/shelvedb',
-    }
+    _DEFAULT_RAW_PARAMETERS = [
+        # (parameter name, parameter value)
+        ('general.config_file', '/etc/pf-xivo/provd/provd.conf'),
+        ('general.base_raw_config_file', '/etc/pf-xivo/provd/base_raw_config.json'),
+        ('general.request_config_dir', '/etc/pf-xivo/provd'),
+        ('general.cache_dir', '/var/cache/pf-xivo/provd'),
+        ('general.plugins_dir', '/var/lib/pf-xivo/provd/plugins'),
+        ('general.info_extractor', 'default'),
+        ('general.retriever', 'default'),
+        ('general.updater', 'default'),
+        ('general.router', 'default'),
+        ('general.ip', '*'),
+        ('general.http_port', '8667'),
+        ('general.tftp_port', '69'),
+        ('general.rest_port', '8666'),
+        ('general.rest_username', 'admin'),
+        ('general.rest_password', 'admin'),
+        ('general.rest_is_public', 'False'),
+        ('database.type', 'shelve'),
+        ('database.generator', 'default'),
+        ('database.shelve_dir', '/var/lib/pf-xivo/provd/shelvedb'),
+    ]
     
     def pull(self):
-        return dict(self._DEFAULT_RAW_CONFIG)
+        return dict(self._DEFAULT_RAW_PARAMETERS)
 
 
 class Options(usage.Options):
@@ -146,21 +157,22 @@ class CommandLineConfigSource(object):
     
     """
     
-    _PARAMS_MAP = {
-        'config-file': 'general.config_file',
-        'config-dir': 'general.config_dir',
-        'ip': 'general.ip',
-        'http-port': 'general.http_port',
-        'tftp-port': 'general.tftp_port',
-        'rest-port': 'general.rest_port',
-    }
+    _OPTION_TO_PARAM_LIST = [
+        # (<option name, param name>)
+        ('config-file', 'general.config_file'),
+        ('config-dir', 'general.request_config_dir'),
+        ('ip', 'general.ip'),
+        ('http-port', 'general.http_port'),
+        ('tftp-port', 'general.tftp_port'),
+        ('rest-port', 'general.rest_port'),
+    ]
     
     def __init__(self, options):
         self.options = options
     
     def pull(self):
         raw_config = {}
-        for option_name, param_name in self._PARAMS_MAP.iteritems():
+        for option_name, param_name in self._OPTION_TO_PARAM_LIST:
             if self.options[option_name] is not None:
                 raw_config[param_name] = self.options[option_name]
         return raw_config
@@ -172,7 +184,8 @@ class ConfigFileConfigSource(object):
     
     """
     
-    _PLUGIN_CONFIG_PREFIX = 'pluginconfig_'
+    _BASE_SECTIONS = ['general', 'database']
+    _PLUGIN_SECTION_PREFIX = 'pluginconfig_'
     
     def __init__(self, filename):
         self.filename = filename
@@ -188,10 +201,10 @@ class ConfigFileConfigSource(object):
     
     def _get_pluginconfig_from_section(self, config, section):
         # Pre: config.has_section(section)
-        # Pre: section.startswith(self._PLUGIN_CONFIG_PREFIX)
+        # Pre: section.startswith(self._PLUGIN_SECTION_PREFIX)
         # Note: config is a [Raw]ConfigParser object
         raw_config = {}
-        base_name = 'plugin_config.' + section[len(self._PLUGIN_CONFIG_PREFIX):]
+        base_name = 'plugin_config.' + section[len(self._PLUGIN_SECTION_PREFIX):]
         for name, value in config.items(section):
             raw_config_name = base_name + '.' + name
             raw_config[raw_config_name] = value
@@ -201,7 +214,7 @@ class ConfigFileConfigSource(object):
         # Note: config is a [Raw]ConfigParser object
         raw_config = {}
         for section in config.sections():
-            if section.startswith(self._PLUGIN_CONFIG_PREFIX):
+            if section.startswith(self._PLUGIN_SECTION_PREFIX):
                 raw_config.update(self._get_pluginconfig_from_section(config, section))
         return raw_config
     
@@ -214,9 +227,8 @@ class ConfigFileConfigSource(object):
             fobj.close()
         
         raw_config = {}
-        raw_config.update(self._get_config_from_section(config, 'general'))
-        raw_config.update(self._get_config_from_section(config, 'database'))
-        raw_config.update(self._get_config_from_section(config, 'common_config'))
+        for section in self._BASE_SECTIONS:
+            raw_config.update(self._get_config_from_section(config, section))
         raw_config.update(self._get_pluginconfig(config))
         return raw_config
     
@@ -225,6 +237,31 @@ class ConfigFileConfigSource(object):
             return self._do_pull()
         except Exception, e:
             raise ConfigSourceError(e)
+
+
+def _pull_config_from_sources(config_sources):
+    raw_config = {}
+    for config_source in config_sources:
+        current_raw_config = config_source.pull()
+        raw_config.update(current_raw_config)
+    return raw_config
+
+
+_RAW_CONFIG_UPDATE_LIST = [
+    # <param name to set if absent>, <source param name to use if present>
+    ('general.rest_ip', 'general.ip'),
+]
+
+def _pre_update_raw_config(raw_config):
+    # Update raw config before transformation/check
+    for param_name, source_param_name in _RAW_CONFIG_UPDATE_LIST:
+        if param_name not in raw_config:
+            if source_param_name in raw_config:
+                raw_config[param_name] = raw_config[source_param_name]
+            else:
+                logger.info('Could not set config parameter "%s" because '
+                            'source parameter "%s" is absent' %
+                            (param_name, source_param_name))
 
 
 def _port_number(raw_value):
@@ -247,58 +284,103 @@ def _ip_address_or_star(raw_value):
         return _ip_address(raw_value)
 
 
-_PARAMS_DEFINITION = {
-    # list only the mandatory parameters or the parameters tha need
+_BOOL_TRUE = ['True', 'true']
+_BOOL_FALSE = ['False', 'false']
+
+def _bool(raw_value):
+    # Return a boolean (type boolean) from a boolean string representation
+    if raw_value in _BOOL_TRUE:
+        return True
+    elif raw_value in _BOOL_FALSE:
+        return False
+    else:
+        raise ValueError('invalid boolean raw value "%s"' % raw_value)
+
+
+def _load_json_file(raw_value):
+    # Return a dictionary representing the JSON document contained in the
+    # file pointed by raw value. The file must be encoded in UTF-8.
+    fobj = open(raw_value)
+    try:
+        return json.load(fobj)
+    finally:
+        fobj.close()
+
+
+_PARAMS_DEFINITION = [
+    # list only the mandatory parameters or the parameters that need
     # transformation
-    # <config_name>: (<transform/check fonction>, <mandatory>)
-    'general.cache_dir':        (str, True),
-    'general.plugins_dir':      (str, True),
-    'general.config_dir':       (str, True),
-    'general.info_extractor':   (str, True),
-    'general.retriever':        (str, True),
-    'general.updater':          (str, True),
-    'general.router':           (str, True),
-    'general.ip':               (_ip_address_or_star, True),
-    'general.http_port':        (_port_number, True),
-    'general.tftp_port':        (_port_number, True),
-    'general.rest_port':        (_port_number, True),
-    'common_config.ip':         (_ip_address, True),
-    'common_config.http_port':  (_port_number, True),
-    'common_config.tftp_port':  (_port_number, True),
-    'database.type':            (str, True),
-    'database.generator':       (str, True),
-}
-
-
-def _pull_config_from_sources(config_sources):
-    raw_config = {}
-    for config_source in config_sources:
-        current_raw_config = config_source.pull()
-        raw_config.update(current_raw_config)
-    return raw_config
-
-
-def _update_raw_config(raw_config):
-    def _copy_if(src, dst):
-        if src in raw_config and dst not in raw_config:
-            raw_config[dst] = raw_config[src]
-    for suffix in ('ip', 'http_port', 'tftp_port'):
-        _copy_if('general.' + suffix, 'common_config.' + suffix)
-
+    # (<param name>: (<transform/check function>, <is mandatory?>))
+    ('general.base_raw_config_file', (str, True)),
+    ('general.request_config_dir', (str, True)),
+    ('general.cache_dir', (str, True)),
+    ('general.plugins_dir', (str, True)),
+    ('general.info_extractor', (str, True)),
+    ('general.retriever', (str, True)),
+    ('general.updater', (str, True)),
+    ('general.router', (str, True)),
+    ('general.ip', (_ip_address_or_star, True)),
+    ('general.http_port', (_port_number, True)),
+    ('general.tftp_port', (_port_number, True)),
+    ('general.rest_port', (_port_number, True)),
+    ('general.rest_ip', (_ip_address_or_star, True)),
+    ('general.rest_username', (str, True)),
+    ('general.rest_password', (str, True)),
+    ('general.rest_is_public', (_bool, True)),
+    ('database.type', (str, True)),
+    ('database.generator', (str, True)),
+]
 
 def _check_and_convert_parameters(raw_config):
-    for param_name, (fun, mandatory) in _PARAMS_DEFINITION.iteritems():
+    for param_name, (fun, mandatory) in _PARAMS_DEFINITION:
         # check if mandatory parameter is present
         if mandatory:
             if param_name not in raw_config:
+                logger.warning('Mandatory parameter "%s" is missing', param_name)
                 raise ConfigError('parameter "%s" is missing' % param_name)
         # convert parameter if present
         if param_name in raw_config:
             try:
                 raw_config[param_name] = fun(raw_config[param_name])
-            except ValueError, e:
+            except Exception, e:
+                logger.warning('Error while transforming/checking parameter "%s"',
+                               param_name, exc_info=True)
                 raise ConfigError('parameter "%s" is invalid: %s' %
                                   param_name, e)
+    # load base_raw_config_file JSON document
+    # XXX maybe we should put this in a separate method since it's more or less
+    #     a check and not really a convert...
+    raw_config['general.base_raw_config'] = _load_json_file(raw_config['general.base_raw_config_file'])
+
+
+_BASE_RAW_CONFIG_UPDATE_LIST = [
+    # (<dev raw config param name, app raw config param name>, <include if predicate>)
+    (u'ip', 'general.ip', lambda x: x != '*'),
+    (u'http_port', 'general.http_port', None),
+    (u'tftp_port', 'general.tftp_port', None),
+]
+
+def _update_general_base_raw_config(app_raw_config):
+    # warning: raw_config in the function name means device raw config and
+    # the app_raw_config argument means application configuration.
+    base_raw_config = app_raw_config['general.base_raw_config']
+    for key, source_param_name, include_fun in _BASE_RAW_CONFIG_UPDATE_LIST:
+        if key not in base_raw_config:
+            # currently, we only refer to always specified config parameters,
+            # so next line will never raise a KeyError
+            source_param_value = app_raw_config[source_param_name]
+            if include_fun is None or include_fun(source_param_value):
+                base_raw_config[key] = source_param_value
+            else:
+                logger.info('Not including parameter "%s" in base raw config '
+                            'because parameter value "%s" is not acceptable for '
+                            'raw config parameter "%s"' %
+                            (source_param_name, source_param_value, key))
+
+
+def _post_update_raw_config(raw_config):
+    # Update raw config after transformation/check
+    _update_general_base_raw_config(raw_config)
 
 
 def get_config(config_sources):
@@ -308,8 +390,9 @@ def get_config(config_sources):
     config_source is a sequence/iterable of objects with a pull method taking
     no arguments and returning a dictionary of raw parameter values.
     
-    """ 
+    """
     raw_config = _pull_config_from_sources(config_sources)
-    _update_raw_config(raw_config)
+    _pre_update_raw_config(raw_config)
     _check_and_convert_parameters(raw_config)
+    _post_update_raw_config(raw_config)
     return raw_config

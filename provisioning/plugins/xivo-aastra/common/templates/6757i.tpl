@@ -1,4 +1,3 @@
-{% if X_xivo_extensions -%}
 {% if exten['voicemail'] -%}
 topsoftkey1 type: speeddial
 topsoftkey1 value: {{ exten['voicemail'] }}
@@ -30,7 +29,6 @@ topsoftkey6 label: "{{ XX_dict['services'] }}"
 topsoftkey7 type: speeddial
 topsoftkey7 value: {{ exten['pickup_call'] }}
 topsoftkey7 label: "{{ XX_dict['pickup_call'] }}"
-{% endif -%}
 {% endif -%}
 
 {% if X_xivo_phonebook_ip -%}

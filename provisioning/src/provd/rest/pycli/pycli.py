@@ -25,10 +25,12 @@ __license__ = """
 # TODO help for object/class/method should be closer than the code who defines
 #      such object, with help of decorator or something alike, and/or refactor
 #      the help definition to have less redundancy
-# XXX value of completer has yet to be seen, and woulbe more useful with
+# XXX value of completer has yet to be seen, and would be more useful with
 #      restrained auto-completion by doing static evaluation of python
 #      expression...
 # XXX our custom display hook doesn't always give nice result
+# TODO lookup default value (like default port or default username) in config.py
+#      instead of duplicating them here ?
 
 import __builtin__
 import code
@@ -44,7 +46,7 @@ from pprint import pprint
 from provd.rest.pycli import pyclient
 
 DEFAULT_HOST = 'localhost'
-DEFAULT_PORT = 8668
+DEFAULT_PORT = 8666
 DEFAULT_USER = 'admin'
 DEFAULT_HISTFILE = os.path.expanduser('~/.provd_pycli_history')
 DEFAULT_HISTFILESIZE = 500 

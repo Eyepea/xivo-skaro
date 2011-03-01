@@ -20,28 +20,29 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import struct
-import logging
-
-from twisted.internet.protocol import DatagramProtocol
-from provd.servers.tftp.packet import *
-
 # TODO RFC1122 says we must use an adaptive timeout...
 # TODO handle more gracefully the case where we want to send a file larger
 #      than what the protocol permits
 # TODO more logging statement
 
-logger = logging.getLogger('tftp.connection')
+import struct
+import logging
+from twisted.internet.protocol import DatagramProtocol
+from provd.servers.tftp.packet import *
+
+logger = logging.getLogger(__name__)
 
 
 class _NoMoreDatagramError(Exception):
     """Raised when there is no more datagram to send."""
+
 
 _UINT16_STRUCT = struct.Struct('!H')
 
 def _pack_from_uint16(n):
     # '_pack_from_uint16 = _UINT16_STRUCT.pack' is equivalent but less readable
     return _UINT16_STRUCT.pack(n)
+
 
 def _unpack_to_uint16(string):
     return _UINT16_STRUCT.unpack(string)[0]

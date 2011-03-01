@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import with_statement
-
 # Depends on the following external programs:
 #  -rsync
 #  -sed
