@@ -86,8 +86,8 @@
 		<li id="dwsm-tab-5"
 		    class="dwsm-blur"
 		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(th,1);">
-			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-advanced',1);">
+		    onmouseover="dwho_submenu.focus(this);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-advanced');">
 				<div class="tab">
 					<span class="span-center"><a href="#advanced">
 						<?=$this->bbf('smenu_advanced');?></a>
