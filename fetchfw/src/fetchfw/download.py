@@ -54,13 +54,13 @@ class DefaultDownloader(object):
         try:
             return self._do_download(url)
         except urllib2.HTTPError, e:
-            logger.warning("http error while downloading '%s': %s", self._get_url(url), e)
+            logger.warning("HTTPError while downloading '%s': %s", self._get_url(url), e)
             if e.code == 401:
                 raise InvalidCredentialsError("unauthorized access to '%s'" % self._get_url(url))
             else:
                 raise DownloadError(e)
         except urllib2.URLError, e:
-            logger.warning("url error while downloading '%s': %s", self._get_url(url), e)
+            logger.warning("URLError while downloading '%s': %s", self._get_url(url), e)
             raise DownloadError(e)
         
     @staticmethod
@@ -193,7 +193,7 @@ class RemoteFile(object):
                     logger.debug('closing temp file')
                     outfile.close()
                 try:
-                    logger.debug('renaming temp file to file')
+                    logger.debug('renaming temp file')
                     os.rename(pathname_tmp, self.path)
                 except OSError, e:
                     logger.error("error while renaming '%s' to '%s': %s", pathname_tmp, self.path, e)
