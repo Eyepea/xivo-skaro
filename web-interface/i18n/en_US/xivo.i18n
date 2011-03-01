@@ -21,3 +21,6 @@ Monitoring
 
 ; xivo_service_monitoring_engine_label(monit)
 Monit
+
+; ms_seek
+Search
