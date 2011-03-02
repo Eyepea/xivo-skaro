@@ -173,6 +173,69 @@ Duré moyenne
 ; col_aperiod5
 <acronym title="Période 5">P5</acronym>
 
+; colstruct_nb
+Nombre
+
+; col_nb_intern
+Interne
+
+; col_nb_in	
+Entrant
+
+; col_nb_out
+Sortant
+
+; col_nb_total	
+Total
+
+; colstruct_max_concurrent_calls
+Appels Simultanés
+
+; col_max_concurrent_calls_intern	
+Interne
+
+; col_max_concurrent_calls_in	
+Entrant
+
+; col_max_concurrent_calls_out	
+Sortant
+
+; col_max_concurrent_calls_total
+Total
+
+; colstruct_duration
+Durée
+
+; col_duration_intern
+Interne
+
+; col_duration_in
+Entrant
+
+; col_duration_out
+Sortant
+
+; col_duration_total
+Total
+
+; colstruct_average_call_duration
+<acronym title="Moyenne Temps d'Appels">MTA</acronym>
+
+; col_average_call_duration_intern
+Interne
+
+; col_average_call_duration_in
+Entrant
+
+; col_average_call_duration_out
+Sortant
+
+; col_average_call_duration_total
+Total
+
+; trunk_intern
+Appel Interne
+
 ; no_conf_selected
 Veuillez choisir une configuration à appliquer.
 

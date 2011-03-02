@@ -19,6 +19,10 @@
 #
 
 $url     = &$this->get_module('url');
+$basedir = $this->get_var('basedir');
+$table1 = $this->get_var('table1');
+$axetype = $this->get_var('axetype');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>
 <div class="b-infos b-form">
@@ -28,7 +32,20 @@ $url     = &$this->get_module('url');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		HOME CDR
+<?php
+	if ($table1->has_data() === false):
+		echo $this->bbf('no_conf_selected');
+	else :
+?>
+		<div class="sb-list"> 
+<?php
+		echo $table1->render_html(false);
+?>
+		</div>
+<?php		
+		$xivo_jqplot->get_result('chart1');
+	endif;
+?>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

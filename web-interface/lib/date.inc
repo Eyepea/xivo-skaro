@@ -26,6 +26,7 @@ abstract class dwho_date
 											'unixtime'	=> '/^(\d{10})$/',
 											'date'		=> '/^(\d{4})-(\d{2})-(\d{2})$/',
 											'time'		=> '/^(\d{2}):(\d{2}):(\d{2})$/',
+											'datetime_with_microseconds'	=> '/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).(\d{5,6})$/',
 											'strtotime'	=> '/^[+-]?[0-9]+ (((sec|second|min|minute|hour|day|fortnight|forthnight|month|year)s?)|weeks|daytext)$/');	
 	static private	$_listday		= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 	static private	$_listmonth		= array('january','february','march','april','may','june','july','august','september','october','november','december');
@@ -155,6 +156,8 @@ abstract class dwho_date
 	{
 		$rs = time();	
 		if (preg_match(self::$_regex['datetime'],$str) === 1)
+			$rs = (int) strtotime($str);
+		elseif (preg_match(self::$_regex['datetime_with_microseconds'],$str) === 1)
 			$rs = (int) strtotime($str);
 		elseif (preg_match(self::$_regex['unixtime'],$str) === 1)
 			$rs = (int) $str;

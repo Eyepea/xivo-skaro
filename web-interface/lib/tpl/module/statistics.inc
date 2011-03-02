@@ -832,8 +832,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$url = &$this->_tpl->get_module('url');
 		
 		$return = '';
+		$data_table = $this->_data_table;
 		
-		$coltitle = array_shift($this->_data_table);
+		$coltitle = array_shift($data_table);
 		$coltitle = array_keys($coltitle);
 		
 		if ($rowname === true)
@@ -843,7 +844,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		{
 			$fieldname = array_shift($coltitle);
 			if (in_array($fieldname,$this->_ignore_col) === true)
-					continue;
+				continue;
 			# <acronym title="Période 3">P3</acronym>
 			$fieldname = preg_replace('/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i','',$this->bbf('col_'.$fieldname));
 			$return .= '"'.str_replace('"','""',$fieldname).'";';			
@@ -851,7 +852,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		
 		$return .= "\n";
 		
-		$coltitle = $this->_data_table;		
+		$data_table = $this->_data_table;
+		$coltitle = $data_table;
 		$coltitlekey = array_keys($coltitle);
 		
 		while ($coltitle)
@@ -869,7 +871,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$colskey = array_shift($listcolskey);
 					
 				if (in_array($colskey,$this->_ignore_col) === true)
-						continue;
+					continue;
 				
 				$return .= '"'.str_replace('"','""',$this->eval_result_data($cols)).'";';
 			}

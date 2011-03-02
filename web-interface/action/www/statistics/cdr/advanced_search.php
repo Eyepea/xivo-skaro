@@ -102,7 +102,7 @@ $menu->set_toolbar('toolbar/statistics/cdr');
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
-$dhtml->set_js('js/statictics/cdr/cdr.js');
+$dhtml->set_js('js/statistics/cdr/cdr.js');
 $dhtml->add_js('/struct/js/date.js.php');
 
 $_TPL->set_bloc('main',"statistics/cdr/advanced_search");

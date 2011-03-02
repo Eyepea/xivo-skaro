@@ -23,11 +23,107 @@ $base_memory = memory_get_usage();
 
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
-$xivo_jqplot = new xivo_jqplot;
+if(xivo::load_class('xivo_statistics_cel',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','cel',false) === false)
+	die('Can\'t load xivo_statistics_cel object');
+	
+$stats_cel = new xivo_statistics_cel();
+$result = $stats_cel->parse_data('trunk');
+$listkey = $stats_cel->get_trunk_list();
 
-$cdr = &$ipbx->get_module('cdr');
-$element = $cdr->get_element();
+$tpl_statistics = &$_TPL->get_module('statistics');
+$tpl_statistics->set_name('cel');
+$tpl_statistics->set_baseurl('statistics/cdr/index');
+$tpl_statistics->set_data_custom('axetype',$axetype);
+$tpl_statistics->set_rows('row',$listkey,'key');
 
+$tpl_statistics->set_data_custom('cel',$result);
+/*
+var_dump($result);
+var_dump($listkey);
+*/
+$tpl_statistics->set_col_struct('nb');
+$tpl_statistics->add_col('nb_intern',
+					'direct',
+					'custom:cel,[key],nb_intern');
+$tpl_statistics->add_col('nb_in',
+					'direct',
+					'custom:cel,[key],nb_in');
+$tpl_statistics->add_col('nb_out',
+					'direct',
+					'custom:cel,[key],nb_out');
+$tpl_statistics->add_col('nb_total',
+					'direct',
+					'custom:cel,[key],nb_total');
+
+$tpl_statistics->set_col_struct('duration');
+$tpl_statistics->add_col('duration_intern',
+					'direct',
+					'custom:cel,[key],duration_intern',
+					'time');
+$tpl_statistics->add_col('duration_in',
+					'direct',
+					'custom:cel,[key],duration_in',
+					'time');
+$tpl_statistics->add_col('duration_out',
+					'direct',
+					'custom:cel,[key],duration_out',
+					'time');
+$tpl_statistics->add_col('duration_total',
+					'direct',
+					'custom:cel,[key],duration_total',
+					'time');
+
+$tpl_statistics->set_col_struct('average_call_duration');
+$tpl_statistics->add_col('average_call_duration_intern',
+					'expression',
+					'{custom:cel,[key],duration_intern}/{custom:cel,[key],nb_intern}',
+					'time',
+					'average');
+$tpl_statistics->add_col('average_call_duration_in',
+					'expression',
+					'{custom:cel,[key],duration_in}/{custom:cel,[key],nb_in}',
+					'time',
+					'average');
+$tpl_statistics->add_col('average_call_duration_out',
+					'expression',
+					'{custom:cel,[key],duration_out}/{custom:cel,[key],nb_out}',
+					'time',
+					'average');
+$tpl_statistics->add_col('average_call_duration_total',
+					'expression',
+					'{custom:cel,[key],duration_total}/{custom:cel,[key],nb_total}',
+					'time',
+					'average');
+
+$tpl_statistics->set_col_struct('max_concurrent_calls');
+$tpl_statistics->add_col('max_concurrent_calls_intern',
+					'direct',
+					'custom:cel,[key],max_concurrent_calls_intern');
+$tpl_statistics->add_col('max_concurrent_calls_in',
+					'direct',
+					'custom:cel,[key],max_concurrent_calls_in');
+$tpl_statistics->add_col('max_concurrent_calls_out',
+					'direct',
+					'custom:cel,[key],max_concurrent_calls_out');
+$tpl_statistics->add_col('max_concurrent_calls_total',
+					'direct',
+					'custom:cel,[key],max_concurrent_calls_total');
+
+$tpl_statistics->gener_table();
+
+if($act === 'exportcsv')
+{
+	$_TPL->set_var('result',$tpl_statistics->render_csv());
+	$_TPL->set_var('name','calls_summary_by_trunk');
+	$arr = array();
+	$arr['dbeg'] = date('Y-m-d').' 00:00:01';
+	$arr['dend'] = date('Y-m-d H:i:s');
+	$_TPL->set_var('date',$arr);
+	$_TPL->display('/bloc/statistics/exportcsv');
+	die();
+}
+
+$_TPL->set_var('table1',$tpl_statistics);
 $_TPL->set_var('showdashboard_cdr',true);
 $_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));

@@ -29,14 +29,12 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table);
-
+		
 		if($this->_search_where($arr) === false)
 			return(false);
 
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
-		
-		dwho_dump($this->_dso->get_select());
 
 		$r = $this->_dso->select_all();
 
@@ -87,23 +85,26 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 				$format = '%Y';
 			else if($len === 7)
 				$format = '%Y-%m';
-			else
+			else if($len === 10)
 				$format = '%Y-%m-%d';
+			else
+				$format = '%Y-%m-%d %H:%i:%s';
 
 			if(isset($arr['dend']) === true)
 				$dend = $arr['dend'];
 			else
 				$dend = '';
 
-			$this->_dso->wheredate('calldate',$dbeg,$dend,null,$format);
-		}
+			$this->_dso->wheredate('eventtime',$dbeg,$dend,null,$format);
+			#$this->_dso->wherebetween('eventtime',$arr['beg'],$arr['end']);
+		}		
 
-		if(isset($arr['channel']) === true)
+		if(isset($arr['channame']) === true)
 		{
-			if(is_array($arr['channel']) === true)
-				$this->_dso->andwherenotbegin('channel',$arr['channel']);
+			if(is_array($arr['channame']) === true)
+				$this->_dso->andwherenotbegin('channame',$arr['channame']);
 			else
-				$this->_dso->andwherebegin('channel',$arr['channel']);
+				$this->_dso->andwherebegin('channame',$arr['channame']);
 		}
 
 		if(isset($arr['eventtype']) === true)

@@ -22,7 +22,8 @@ class xivo_statistics_cdr
 {
 	
 	public		$_field		= array('duration'	=> array('type' => 'time'),
-									'nb'		=> array('type' => 'int'),);
+									'nb'		=> array('type' => 'int'),
+									'max_concurrent_calls'	=> array('type' => 'int'));
 	private		$_result	= false;
 	private		$_cdr		= false;
 		
@@ -115,6 +116,7 @@ class xivo_statistics_cdr
 			
 			$this->update_result(array($key,'duration'),$duration);			
 			$this->update_result(array($key,'nb'),1);
+			#max_concurrent_calls
 		}
 		
 		return($this->_result);
