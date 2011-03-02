@@ -37,6 +37,7 @@ from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
     DefaultPackageStorage
 from provd.download import async_download_multiseq_with_oip,\
     async_download_with_oip
+from provd.loaders import ProvdFileSystemLoader
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
 from provd.servers.http import HTTPNoListingFileService
@@ -361,7 +362,7 @@ class TemplatePluginHelper(object):
     def __init__(self, plugin_dir):
         custom_dir = os.path.join(plugin_dir, self.CUSTOM_TPL_DIR)
         default_dir = os.path.join(plugin_dir, self.DEFAULT_TPL_DIR)
-        loader = FileSystemLoader([custom_dir, default_dir])
+        loader = ProvdFileSystemLoader([custom_dir, default_dir])
         self._env = Environment(loader=loader)
     
     def get_dev_template(self, filename, dev):
