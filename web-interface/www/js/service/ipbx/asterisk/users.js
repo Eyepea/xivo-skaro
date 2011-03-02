@@ -22,8 +22,8 @@ var xivo_ast_users_elt = {'links': {'link': []}};
 var xivo_ast_fm_users = {};
 
 var xivo_ast_users_elt_default = {
-	'protocol-name': {it: true},
-	'protocol-secret': {it: true},
+//	'protocol-name': {it: true},
+//	'protocol-secret': {it: true},
 	'protocol-interface': {it: false, fd: false},
 	'protocol-protocol': {it: true},
 	'protocol-context': {it: true},

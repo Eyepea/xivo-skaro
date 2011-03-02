@@ -75,6 +75,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_conf['import']['file']['size'] = $size;
 
+		// init random generator
+		mt_srand(time()+mt_rand());
+
 		return(true);
 	}
 
@@ -2784,15 +2787,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function gen_password()
+	function gen_password($len, $lower=false)
 	{
 		$pwd = '';
-		for($i = 0; $i < 6; $i++)
+		for($i = 0; $i < $len; $i++)
 		{
 			$r = mt_rand(0, 35);
 			$pwd .= $r < 10?$r:chr($r-10+65);
 		}
-		
+
+		if($lower)
+			$pwd = strtolower($pwd);
+
 		return $pwd;
 	}
 

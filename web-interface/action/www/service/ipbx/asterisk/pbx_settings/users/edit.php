@@ -270,6 +270,19 @@ $softkeys_list = array(
 
 $element['queueskills'] =  $appqueue->skills_gettree();
 
+// AUTOGEN name/secret
+$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+$ro      = !($config['user']['readonly-idpwd'] == 'false');
+
+$element['protocol']['name']   = array(
+	'readonly' => $ro,
+	'class'    => 'it-'.($ro?'disabled':'enabled')
+);
+$element['protocol']['secret']   = array(
+	'readonly' => $ro,
+	'class'    => 'it-'.($ro?'disabled':'enabled')
+);
+
 $_TPL->set_var('id',$info['userfeatures']['id']);
 $_TPL->set_var('info',$return);
 $_TPL->set_var('error',$error);

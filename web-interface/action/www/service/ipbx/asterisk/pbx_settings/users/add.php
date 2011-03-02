@@ -260,7 +260,22 @@ $appqueue = &$ipbx->get_application('queue');
 $element['queueskills'] =  $appqueue->skills_gettree();
 $_TPL->set_var('queueskills', $queueskills);
 
-$element['protocol']['secret'] = array('default' => $appuser->gen_password());
+
+// AUTOGEN name/secret
+$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+$ro      = !($config['user']['readonly-idpwd'] == 'false');
+
+$element['protocol']['name']   = array(
+	'default'  => $appuser->gen_password(6,true),
+	'readonly' => $ro,
+	'class'    => 'it-'.($ro?'disabled':'enabled')
+);
+$element['protocol']['secret']   = array(
+	'default'  => $appuser->gen_password(6),
+	'readonly' => $ro,
+	'class'    => 'it-'.($ro?'disabled':'enabled')
+);
+
 
 $_TPL->set_var('info',$result);
 $_TPL->set_var('error',$error);
