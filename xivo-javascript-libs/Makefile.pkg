@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 10246 $
+# $Date: 2011-02-23 16:22:42 +0100 (Wed, 23 Feb 2011) $
+
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
+
+DEB_PKG="pf-xivo-javascript-libs"
+DEB_TB_DEPS=""
+
+default:
