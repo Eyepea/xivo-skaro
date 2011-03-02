@@ -95,7 +95,7 @@ def _check_raw_config_validity(raw_config):
     # XXX this is bit repetitive...
     if u'http_port' not in raw_config and u'tftp_port' not in raw_config:
         raise RawConfigError('missing one of http or tftp port')
-    for param in [u'ip', u'protocol']:
+    for param in [u'ip']:
         if param not in raw_config:
             raise RawConfigError('missing parameter "%s"' % param)
     if u'sip' in raw_config:
