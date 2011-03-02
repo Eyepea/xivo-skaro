@@ -304,8 +304,8 @@ class BaseAastraPlugin(StandardPlugin):
     def _check_config(cls, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if raw_config[u'protocol'] != u'SIP':
-            raise RawConfigError('protocol must be SIP')
+        if u'sip' not in raw_config:
+            raise RawConfigError('must have a sip parameter')
     
     def configure(self, dev, raw_config):
         self._check_config(raw_config)

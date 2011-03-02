@@ -369,8 +369,8 @@ class BaseCiscoSccpPlugin(StandardPlugin):
     def _check_config(cls, raw_config):
         if u'tftp_port' not in raw_config:
             raise RawConfigError('only support configuration via TFTP')
-        if raw_config[u'protocol'] != u'SCCP':
-            raise RawConfigError('protocol must be SCCP')
+        if u'sccp' not in raw_config:
+            raise RawConfigError('must have a sccp parameter')
     
     def configure(self, dev, raw_config):
         self._check_config(raw_config)

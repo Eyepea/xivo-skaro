@@ -132,13 +132,15 @@ locale [optional]
   - fr_FR
   - en_CA
 
-protocol [mandatory]
+protocol [optional]
   The signaling protocol.
   This parameter can take one of the following value:
   - SIP
   - SCCP
   If the protocol is not supported by the device, an exception
   (RawConfigError) MAY be raised or the device MAY be misconfigured.
+  This is mostly useful for multi-protocol device/plugin, which should
+  not happens often.
 
 sip [mandatory if protocol == 'SIP']
   A dictionary describing the configuration of all the SIP related stuff:
