@@ -82,15 +82,47 @@ switch($act)
 		&& dwho_issa('queuefeatures',$_QR) === true
 		&& dwho_issa('queue',$_QR) === true)
 		{
-			$_QR['queuefeatures']['ctipresence']    = implode(',', $_QR['ctipresence']);
-			$_QR['queuefeatures']['nonctipresence'] = implode(',', $_QR['nonctipresence']);
+			$err = false;
+			$errval = array(
+				'ctipresence' => array(),
+				'nonctipresence' => array()
+			);
+
+			$cti = array();
+			for($i = 0; $i < count($_QR['ctipresence-name'])-1; $i++)
+			{
+				$errval['ctipresence'][$i] = array();
+
+				if(strlen($_QR['ctipresence-name'][$i]) == 0)
+					{ $err = true; $errval['ctipresence'][$i]['name'] = 'empty'; }
+				if(!is_numeric($_QR['ctipresence-weight'][$i]))
+					{ $err = true; $errval['ctipresence'][$i]['weight'] = 'cast'; }
+				
+				$cti[] = $_QR['ctipresence-name'][$i].':'.$_QR['ctipresence-weight'][$i];
+			}
+			$_QR['queuefeatures']['ctipresence']    = implode(',',$cti);
+
+			$cti = array();
+			for($i = 0; $i < count($_QR['nonctipresence-name'])-1; $i++)
+			{
+				$errval['nonctipresence'][$i] = array();
+
+				if(strlen($_QR['nonctipresence-name'][$i]) == 0)
+					{ $err = true; $errval['nonctipresence'][$i]['name'] = 'empty'; }
+				if(!is_numeric($_QR['nonctipresence-weight'][$i]))
+					{ $err = true; $errval['nonctipresence'][$i]['weight'] = 'cast'; }
+				
+				$cti[] = $_QR['nonctipresence-name'][$i].':'.$_QR['nonctipresence-weight'][$i];
+			}
+			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
 
 			if($appqueue->set_add($_QR) === false
+			|| $err === true
 			|| $appqueue->add() === false)
 			{
 				$fm_save = false;
 				$result = $appqueue->get_result();
-				$error = $appqueue->get_error();
+				$error = array_merge($appqueue->get_error(), $errval);
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
@@ -176,6 +208,31 @@ switch($act)
 				$result['callerid'] = null;
 		}
 
+		// CTI presences
+		$pres = array();
+		if(strlen($_QR['queuefeatures']['ctipresence']) > 0)
+		{
+			foreach(split(',',$_QR['queuefeatures']['ctipresence']) as $ctitem)
+			{
+				list($pid, $num) = explode(':',$ctitem);
+				$pres[] = array($ctistatus[$pid], $num);
+			}
+		}
+		$result['queuefeatures']['ctipresence'] = $pres;
+
+		$pres = array();
+		if(strlen($_QR['queuefeatures']['nonctipresence']) > 0)
+		{
+			foreach(split(',',$_QR['queuefeatures']['nonctipresence']) as $ctitem)
+			{
+				list($pid, $num) = explode(':',$ctitem);
+				$pres[] = array($ctistatus[$pid], $num);
+			}
+		}
+		$result['queuefeatures']['nonctipresence'] = $pres;
+		var_dump($_QR['queuefeatures']);
+		var_dump($result['queuefeatures']);
+
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
@@ -244,21 +301,53 @@ switch($act)
 							    null,
 									true);
 
-
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('queuefeatures',$_QR) === true
 		&& dwho_issa('queue',$_QR) === true)
 		{
 			$return = &$result;
-			$_QR['queuefeatures']['ctipresence']    = implode(',', $_QR['ctipresence']);
-			$_QR['queuefeatures']['nonctipresence'] = implode(',', $_QR['nonctipresence']);
+			$err = false;
+			$errval = array(
+				'ctipresence' => array(),
+				'nonctipresence' => array()
+			);
+
+			$cti = array();
+			for($i = 0; $i < count($_QR['ctipresence-name'])-1; $i++)
+			{
+				$errval['ctipresence'][$i] = array();
+
+				if(strlen($_QR['ctipresence-name'][$i]) == 0)
+					{ $err = true; $errval['ctipresence'][$i]['name'] = 'empty'; }
+				if(!is_numeric($_QR['ctipresence-weight'][$i]))
+					{ $err = true; $errval['ctipresence'][$i]['weight'] = 'cast'; }
+				
+				$cti[] = $_QR['ctipresence-name'][$i].':'.$_QR['ctipresence-weight'][$i];
+			}
+			$_QR['queuefeatures']['ctipresence']    = implode(',',$cti);
+
+			$cti = array();
+			for($i = 0; $i < count($_QR['nonctipresence-name'])-1; $i++)
+			{
+				$errval['nonctipresence'][$i] = array();
+
+				if(strlen($_QR['nonctipresence-name'][$i]) == 0)
+					{ $err = true; $errval['nonctipresence'][$i]['name'] = 'empty'; }
+				if(!is_numeric($_QR['nonctipresence-weight'][$i]))
+					{ $err = true; $errval['nonctipresence'][$i]['weight'] = 'cast'; }
+				
+				$cti[] = $_QR['nonctipresence-name'][$i].':'.$_QR['nonctipresence-weight'][$i];
+			}
+			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
 
 			if($appqueue->set_edit($_QR) === false
+			|| $err === true
 			|| $appqueue->edit() === false)
 			{
 				$fm_save = false;
 				$result = $appqueue->get_result();
-				$error = $appqueue->get_error();
+				$error = array_merge($appqueue->get_error(), $errval);
+				var_dump($error);
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
@@ -345,26 +434,24 @@ switch($act)
 		}
 
 		// CTI presences
-		$freepres = $ctistatus; //do a copy
 		$pres = array();
 		if(strlen($return['queuefeatures']['ctipresence']) > 0)
 		{
-			foreach(split(',',$return['queuefeatures']['ctipresence']) as $pid)
+			foreach(split(',',$return['queuefeatures']['ctipresence']) as $ctitem)
 			{
-				$pres[] = $freepres[$pid];
-				unset($freepres[$pid]);
+				list($pid, $num) = explode(':',$ctitem);
+				$pres[] = array($ctistatus[$pid], $num);
 			}
 		}
 		$return['queuefeatures']['ctipresence'] = $pres;
 
-		$nonfreepres = $ctistatus; //do a copy
 		$pres = array();
 		if(strlen($return['queuefeatures']['nonctipresence']) > 0)
 		{
-			foreach(split(',',$return['queuefeatures']['nonctipresence']) as $pid)
+			foreach(split(',',$return['queuefeatures']['nonctipresence']) as $ctitem)
 			{
-				$pres[] = $nonfreepres[$pid];
-				unset($nonfreepres[$pid]);
+				list($pid, $num) = explode(':',$ctitem);
+				$pres[] = array($ctistatus[$pid], $num);
 			}
 		}
 		$return['queuefeatures']['nonctipresence'] = $pres;
@@ -394,8 +481,8 @@ switch($act)
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
 		$_TPL->set_var('context_list',$appqueue->get_context_list());
 		$_TPL->set_var('schedule_id', $return['schedule_id']);
-		$_TPL->set_var('ctipresence', $freepres);
-		$_TPL->set_var('nonctipresence', $nonfreepres);
+		$_TPL->set_var('ctipresence', $ctistatus);
+		$_TPL->set_var('nonctipresence', $ctistatus);
 		break;
 	case 'delete':
 		$param['page'] = $page;

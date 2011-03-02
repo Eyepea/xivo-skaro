@@ -631,3 +631,22 @@ Ratio appels en attente / agents disponibles :
 
 ; hlp_fm_queuefeatures_waitratio
 Saisissez un pourcentage (par ex. 100 pour 100%)
+
+; ctipresence_col1
+Status
+
+; ctipresence_col2
+Nombre d'agents >= à
+
+
+; nonctipresence_col1
+Status
+
+; nonctipresence_col2
+Nombre d'agents <= à
+
+; no_ctipresence-disp
+Aucune règle
+
+; no_nonctipresence-disp
+Aucune règle
