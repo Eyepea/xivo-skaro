@@ -24,6 +24,8 @@ require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'xivo.inc');
 
 $_XIVO = &dwho_gct::set_get(new xivo());
 
+dwho_report::decode();
+
 $_CF = &dwho_gat::get('_CF');
 $_QR = &dwho_gat::get('_QR');
 $_URL = &dwho_gat::load_get('url',XIVO_PATH_OBJECTCONF);

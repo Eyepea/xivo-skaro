@@ -42,7 +42,10 @@ class dwho_report
 			return(false);
 		
 		if (is_array($msg) === true)
-			$self = array_merge($self, $msg);
+		{
+			$self =  array_merge($self,$msg);
+			$self = array_unique($self);
+		}
 		elseif (is_null($key) === false
 		&& is_scalar($msg) === true)
 			$self[$key] = $msg;
@@ -89,7 +92,7 @@ class dwho_report
 			
 		$return = '';
 		$return .= '<div class="xivo-'.$type.' xivo-messages">';
-		$return .= '<p><ul>';
+		$return .= '<ul>';
 		foreach($self as $k => $v)
 		{
 			if (is_array($v) === true)
@@ -102,10 +105,57 @@ class dwho_report
 			else
 			$return .= '<li>&nbsp; '.$v.'</li>';
 		}	
-		$return .= '</ul></p>';
+		$return .= '</ul>';
 		$return .= '</div>';
 		
 		return($return);
+	}
+
+	public static function encode() 
+	{
+		$listtype = get_class_vars('dwho_report');
+		$listtype = array_keys($listtype);
+		
+		$rs = array();
+		for ($i=0;$i<count($listtype);$i++)
+		{
+			$type = $listtype[$i];
+			if (self::has($type) === false)
+				continue;
+			$rs[$type] = self::get($type);
+		}
+		$rs = serialize($rs);
+		#$rs = base64_encode($rs);	
+		$rs = urlencode($rs);
+		return($rs);
+	}
+
+	public static function decode() 
+	{
+		if (isset($_SERVER['QUERY_STRING']) === false
+		|| empty($_SERVER['QUERY_STRING']) === true)
+			return(null);
+		
+		parse_str($_SERVER['QUERY_STRING'],$out);
+
+		if (array_key_exists('_report',$out) === false)
+			return(null);
+			
+		$_report = $out['_report'];
+		
+		$str = urldecode($_report);
+		#$str = base64_decode($str);
+		$arr = unserialize($str);
+		
+		$listtype = get_class_vars('dwho_report');
+		
+		foreach($arr as $type => $value)
+		{
+			if (isset($listtype[$type]) === false)
+				continue;
+			
+			self::push($type,$value);
+		}
 	}
 }
 

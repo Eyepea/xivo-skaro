@@ -101,6 +101,9 @@ class dwho_query
 	function go($location='',$query='')
 	{
 		$location = (string) $location;
+		
+		if (($_report = dwho_report::encode()) !== null)
+			$query = array_merge($query,array('_report' => dwho_report::encode()));
 
 		if($query === true)
 		{
