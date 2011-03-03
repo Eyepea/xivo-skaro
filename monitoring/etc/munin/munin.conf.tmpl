@@ -1,0 +1,16 @@
+
+# The next three variables specifies where the location of the RRD
+# databases, the HTML output, and the logs, severally.  They all
+# must be writable by the user running munin-cron.
+dbdir	/var/lib/munin
+htmldir	/var/www/munin
+logdir	/var/log/munin
+rundir  /var/run/munin
+
+# Where to look for the HTML templates
+tmpldir	/etc/munin/templates
+
+[#PRODUCT#.localdomain]
+    address 127.0.0.1
+    use_node_name yes
+

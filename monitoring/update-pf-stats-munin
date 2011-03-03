@@ -1,0 +1,212 @@
+#!/bin/sh
+
+MUNIN_PLUGINS=/usr/share/munin/plugins
+MUNIN_PLUGINS_CONF=/etc/munin/plugins
+CONFIG_3WARE="/etc/munin/plugin-conf.d/pf-stats_3ware.generated"
+
+is_installed()
+{
+  PKG=$1
+  dpkg -l ${PKG} >/dev/null 2>/dev/null;
+}
+
+activate_plugin()
+{
+  PL=$1
+  NAME=$2
+
+  if [ ! -e ${MUNIN_PLUGINS_CONF}/${PL}${NAME} ]; then
+    ln -s ${MUNIN_PLUGINS}/${PL} ${MUNIN_PLUGINS_CONF}/${PL}${NAME}
+  fi
+}
+
+deactivate_plugin()
+{
+  PL=$1
+  rm -f ${MUNIN_PLUGINS_CONF}/${PL}
+}
+
+activate_if_installed()
+{
+  PKG=$1
+  shift
+  PL_LIST=$*
+
+  if is_installed ${PKG}; then
+    ACT=activate_plugin
+  else
+    ACT=deactivate_plugin
+  fi
+
+  for ZPL in ${PL_LIST}; do
+    ${ACT} ${ZPL}
+  done
+}
+
+run_plugin()
+{
+  PL=$1
+  shift
+  PARAMS=$*
+
+  if [ -e ${MUNIN_PLUGINS}/${PL} ]; then
+    ${MUNIN_PLUGINS}/${PL} ${PARAMS}
+  fi
+}
+
+
+# autodetect useful plugins
+CFILE=$(mktemp)
+munin-node-configure --shell 2>/dev/null >${CFILE}
+CFILE_N=$(wc -l ${CFILE} | cut -d\  -f1)
+if [ "${CFILE_N}" != "0" ]; then
+  sh < ${CFILE}
+fi
+rm -f ${CFILE}
+
+# commun sys stats
+activate_plugin uptime
+activate_plugin df
+activate_plugin hddtemp_smartctl
+
+# detected net stats
+deactivate_plugin vlan_*
+VLANS=$(run_plugin vlan_ suggest)
+if [ -n "${VLANS}" ]; then
+  for V in ${VLANS}; do
+    activate_plugin vlan_ ${V}
+  done
+fi
+
+# detected sensors stats
+# (lm-sensors MUST be configured manually)
+deactivate_plugin sensors_*
+HAS_SENSORS=$(${MUNIN_PLUGINS}/sensors_ autoconf)
+if [ "${HAS_SENSORS}" = "yes" ]; then
+  AVAIL_SENSORS=$(${MUNIN_PLUGINS}/sensors_ suggest)
+  for S in ${AVAIL_SENSORS}; do
+    activate_plugin sensors_ ${S}
+  done
+fi
+
+# HDDtemp & SMART with 3ware support
+check_drive()
+{
+  local CONTROLLER_NUMBER=$1
+  local DISK_NUMBER=$2
+
+  if [ -z "${DEVICE_NAME_3WARE}" ]; then
+    return 1
+  fi
+  smartctl -i -d 3ware,${DISK_NUMBER} /dev/${DEVICE_NAME_3WARE}${CONTROLLER_NUMBER} >/dev/null 2>/dev/null
+}
+#
+gen_conf_name()
+{
+  echo "${DEVICE_NAME_3WARE}${2}-${3}"
+}
+#
+gen_conf_drive_name()
+{
+  echo "${1}_${3}"
+}
+#
+gen_conf_part()
+{
+  NAME=$(gen_conf_name ${1} ${2} ${3})
+  (
+  echo
+  echo "[smart_${NAME}]"
+  echo "user root"
+  echo "group disk"
+  echo "env.smartargs -A -H -l error -d 3ware,${3}"
+  ) >>${CONFIG_3WARE}
+}
+#
+rm -f ${CONFIG_3WARE}
+deactivate_plugin smart_*
+deactivate_plugin hddtemp_smartctl
+# find device name (twe for older cards, mostly 6/7/8xxx series, and twa for newer ones)
+# Limitation: assume there is only one type (old/new) of cards installed at the same time
+DEVICE_NAME_3WARE=$(cat /proc/devices | grep -E '(twa|twe)' | cut -d\  -f2)
+#
+HDDTEMP_DRIVES=
+#
+if [ -e /dev/hda ]; then
+  for DRIVE in /dev/hd[a-z]; do
+    DRIVE_NAME=$(basename ${DRIVE})
+
+    activate_plugin smart_ ${DRIVE_NAME}
+    HDDTEMP_DRIVES="${HDDTEMP_DRIVES} ${DRIVE_NAME}"
+  done
+fi
+#
+if [ -e /dev/sda ]; then
+  for DRIVE in /dev/sd[a-z]; do
+    DRIVE_NAME=$(basename ${DRIVE})
+
+    IS_3WARE=$(smartctl -a ${DRIVE} 2>/dev/null | grep -E "Device: (3ware|AMCC)")
+    if [ -n "${IS_3WARE}" ]; then
+      LDRIVE_N=$(smartctl -a ${DRIVE} 2>/dev/null | grep "Logical Disk" | sed -r 's/^.*Logical Disk ([0-9]+) .*$/\1/')
+      # Limitation: if it is an old card, there is no easy way to get the logical drive number, assuming 0
+      LDRIVE_N=${LDRIVE_N:-0}
+      # Limitation: assume first drive is at port 0
+      PDRIVE_N=0
+      while true; do
+        if check_drive ${LDRIVE_N} ${PDRIVE_N}; then
+          gen_conf_part ${DRIVE_NAME} ${LDRIVE_N} ${PDRIVE_N}
+          CONF_NAME=$(gen_conf_name ${DRIVE_NAME} ${LDRIVE_N} ${PDRIVE_N})
+          CONF_DRIVE_NAME=$(gen_conf_drive_name ${DRIVE_NAME} ${LDRIVE_N} ${PDRIVE_N})
+          activate_plugin smart_ ${CONF_NAME}
+
+          HDDTEMP_DRIVES="${HDDTEMP_DRIVES} ${CONF_DRIVE_NAME}"
+          HDDTEMP_CONFIG="${HDDTEMP_CONFIG}env.dev_${CONF_DRIVE_NAME} ${DEVICE_NAME_3WARE}${LDRIVE_N}\n"
+          HDDTEMP_CONFIG="${HDDTEMP_CONFIG}env.type_${CONF_DRIVE_NAME} 3ware,${PDRIVE_N}\n"
+        else
+          break
+        fi
+        # Limitation: assume next drive is at next port (an empty port is taken as the end of the physical drive list)
+        PDRIVE_N=$((${PDRIVE_N} + 1))
+      done
+    else
+      activate_plugin smart_ ${DRIVE_NAME}
+      HDDTEMP_DRIVES="${HDDTEMP_DRIVES} ${DRIVE_NAME}"
+    fi
+  done
+fi
+#
+if [ -n "${HDDTEMP_DRIVES}" ]; then
+  (
+  echo
+  echo "[hddtemp_smartctl]"
+  echo "env.drives ${HDDTEMP_DRIVES}"
+  echo -e "${HDDTEMP_CONFIG}"
+  ) >>${CONFIG_3WARE}
+  activate_plugin hddtemp_smartctl
+fi
+
+# known services
+activate_if_installed dhcp3-server dhcpd3
+activate_if_installed asterisk asterisk_channels asterisk_channelstypes asterisk_codecs asterisk_iaxchannels asterisk_iaxlag asterisk_iaxpeers asterisk_meetme asterisk_meetmeusers asterisk_sipchannels asterisk_sippeers asterisk_voicemail
+activate_if_installed postfix postfix_mailqueue postfix_mailvolume postfix_mailstats
+activate_if_installed apache2 apache_accesses apache_processes apache_volume
+activate_if_installed ntp ntp_offset ntp_states
+
+
+# Server templates
+rm -rf /etc/munin/templates.bak
+cp -a /etc/munin/templates /etc/munin/templates.bak
+cp -a /etc/munin/templates_pf/* /etc/munin/templates/
+if [ -e /usr/share/pf-common/PRODUCT ]; then
+  PRODUCT=$(cat /usr/share/pf-common/PRODUCT)
+else
+  PRODUCT="Server"
+fi
+sed -i "s/#PRODUCT#/${PRODUCT}/g" /etc/munin/templates/*.tmpl /etc/munin/munin.conf /etc/munin/munin-node.conf
+sed "s/#PRODUCT#/${PRODUCT}/g" /etc/munin/munin.conf.tmpl >/etc/munin/munin.conf
+sed "s/#PRODUCT#/${PRODUCT}/g" /etc/munin/munin-node.conf.tmpl >/etc/munin/munin-node.conf
+
+
+# restart service to take changes into account
+invoke-rc.d munin-node restart >/dev/null
+
