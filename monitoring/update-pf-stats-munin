@@ -189,7 +189,6 @@ fi
 activate_if_installed dhcp3-server dhcpd3
 activate_if_installed asterisk asterisk_channels asterisk_channelstypes asterisk_codecs asterisk_iaxchannels asterisk_iaxlag asterisk_iaxpeers asterisk_meetme asterisk_meetmeusers asterisk_sipchannels asterisk_sippeers asterisk_voicemail
 activate_if_installed postfix postfix_mailqueue postfix_mailvolume postfix_mailstats
-activate_if_installed apache2 apache_accesses apache_processes apache_volume
 activate_if_installed ntp ntp_offset ntp_states
 
 
