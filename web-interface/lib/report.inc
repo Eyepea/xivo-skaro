@@ -27,7 +27,7 @@ dwho_report::push('notice',array('notice',array('notice1','notice2')));
 dwho_report::push('debug','debug');
 */
 
-class dwho_report
+abstract class dwho_report
 {	
 	private static $error		= array();
 	private static $info		= array();
@@ -42,18 +42,21 @@ class dwho_report
 			return(false);
 		
 		if (is_array($msg) === true)
-		{
-			$self =  array_merge($self,$msg);
-			$self = array_unique($self);
-		}
+			$self = array_merge($self,$msg);
 		elseif (is_null($key) === false
 		&& is_scalar($msg) === true)
-			$self[$key] = $msg;
+		{
+			if (isset($self[$key]) === false)
+				$self[$key] = array();
+			array_push($self[$key], $msg);
+		}
 		elseif(is_null($key) === true
 		&& is_scalar($msg) === true)
 			array_push($self, $msg);
 		else
 			return(false);
+			
+		$self = array_unique($self);
 
 		return(true);
 	}
@@ -95,20 +98,56 @@ class dwho_report
 		$return .= '<ul>';
 		foreach($self as $k => $v)
 		{
-			if (is_array($v) === true)
+			if (is_string($k) === true
+			&& is_array($v) === true)
 			{
-				$return .= '<ul>';
+				$id = trim($k);
+				$data = array();
+				$data['type'] = $type;
+				$data['bloc'] = $id;
+				$query =  http_build_query($data, '', '&amp;');
+				
+				$return .= '<a href="#" id="a-'.$id.'" class="xm_toggle">';
+				$return .= '<span id="s-'.$id.'" class="ui-icon ui-icon-triangle-1-e"></span>';
+				$return .= $k.' </a><div class="clearboth"></div>';
+				$return .= '<ul id="'.$id.'" class="b-nodisplay" style="border:1px dotted red;">';
+				$return .= '<a href="/exportreport.php?'.$query.'" class="bt_export">'.dwho_i18n::babelfish('report_export').'</a>';
 				foreach($v as $k2 => $v2)
-					$return .= '<li>&nbsp; '.$v2.'</li>';
+					$return .= '<li>'.$v2.'</li>';
 				$return .= '</ul>';
+				
+				$return .= "
+				<script type='text/javascript'>	
+				$('#a-$id').click(function() {
+					if ($('#$id').css('display') == 'none'){
+						$('#s-$id').toggleClass('ui-icon-triangle-1-e');
+						$('#s-$id').toggleClass('ui-icon-triangle-1-s');
+						$('#$id').show('slow');
+					}else {
+						$('#s-$id').toggleClass('ui-icon-triangle-1-e');
+						$('#s-$id').toggleClass('ui-icon-triangle-1-s');
+						$('#$id').hide('slow');
+					}
+					return false;
+				});
+				</script>";				
 			}
 			else
-			$return .= '<li>&nbsp; '.$v.'</li>';
+				$return .= '<li>&nbsp; '.$v.'</li>';
 		}	
 		$return .= '</ul>';
 		$return .= '</div>';
 		
 		return($return);
+	}
+
+	public static function get_bloc($type,$bloc) 
+	{
+		if (($self = &self::get($type)) === false
+		|| isset($self[$bloc]) === false)
+			return(false);
+			
+		return($self[$bloc]);		
 	}
 
 	public static function encode() 

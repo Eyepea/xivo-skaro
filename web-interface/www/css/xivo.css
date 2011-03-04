@@ -232,7 +232,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .b-form .sb-content {padding: 5px;}
 #b-content .b-form table {margin: auto;}
 
-#b-content .b-list .b-page , #b-content .sb-list .b-page {text-align: right; padding: 2px 10px 5px 0px;}
+#b-content .b-list .b-page, #b-content .sb-list .b-page {text-align: right; padding: 2px 10px 5px 0px;}
 #b-content .b-list .b-total, #b-content .sb-list .b-total {text-align: left; padding: 2px 0px 5px 10px;}
 #b-content .b-list table {width: 760px;}
 #b-content .b-list th.col-action {width: 50px;}
@@ -272,7 +272,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 * html #b-content .b-list .sb-top .th-right {width: 0px;}
 * html #b-content .b-list .sb-foot .td-right {width: 0px;}
 
-#b-content .sb-list table {width: 750px;}
+#b-content .sb-list table {width: 100%;}
 #b-content .b-form .sb-list table {margin-top: 10px;}
 #b-content .sb-list th {padding: 1px 0px;}
 #b-content fieldset {width: 715px;max-width: 715px;margin: 0px auto 20px;}
@@ -394,6 +394,10 @@ input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
 .xivo-notice {border: 1px solid blue;background: #69f;}
 .xivo-debug {border: 1px solid black;background: #ccc;}
 .xivo-warning, .xivo-error, .xivo-info, .xivo-notice, .xivo-debug {padding: 5px;margin: 4px;line-height: 1em;}
+.xivo-messages img {border: 0;}
+.xivo-messages .xm_toggle {display: block;font: bold 11px/16px Arial, Helvetica, sans-serif;}
+.xivo-messages .xm_toggle span {float: left;}
+.xivo-messages .bt_export {float: right;display: block;font: bold 11px/16px Arial, Helvetica, sans-serif;}
 .xivo-messages ul {}
 .xivo-messages ul li {margin: 3px;}
 .xivo-messages ul ul li {margin-left: 10px;}
