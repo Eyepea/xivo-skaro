@@ -2480,6 +2480,29 @@ CREATE INDEX queue_log__idx_data1 ON queue_log USING btree ("data1");
 CREATE INDEX queue_log__idx_data2 ON queue_log USING btree ("data2");
 
 
+DROP TABLE IF EXISTS "pickup";
+CREATE TABLE "pickup" (
+ "id"          SERIAL,
+ "name"        VARCHAR(128) UNIQUE NOT NULL,
+ "commented"   INTEGER NOT NULL DEFAULT 0,
+ "description" TEXT NOT NULL DEFAULT '',
+ PRIMARY KEY("id")
+);
+
+DROP TABLE IF EXISTS "pickupmember";
+DROP TYPE  IF EXISTS "pickup_category";
+DROP TYPE  IF EXISTS "pickup_membertype";
+
+CREATE TYPE "pickup_category" AS ENUM ('member','pickup');
+CREATE TYPE "pickup_membertype" AS ENUM ('group','queue','user');
+CREATE TABLE "pickupmember" (
+ "pickupid"    INTEGER NOT NULL,
+ "category"    pickup_category NOT NULL,
+ "membertype"  pickup_membertype NOT NULL,
+ "memberid"    INTEGER NOT NULL,
+ PRIMARY KEY("pickupid","category","membertype","memberid")
+);
+
 -- grant all rights to xivo.* for xivo user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
