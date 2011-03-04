@@ -134,6 +134,12 @@ Duré moyenne
 ; col_total
 <acronym title="Total">Total</acronym>
 
+; col_duration
+Durée
+
+; col_max_concurrent_calls
+Appels Simultanés
+
 ; col_totalwithdrawal
 <acronym title="Total des retraits">Total</acronym>
 
@@ -235,6 +241,24 @@ Total
 
 ; trunk_intern
 Appel Interne
+
+; top10_call_nb_intern
+TOP10 (Nb. Appel Interne)
+
+; top10_call_nb_in
+TOP10 (Nb. Appel Entrant)
+
+; top10_call_nb_out
+TOP10 (Nb. Appel Sortant)
+
+; top10_call_duration_intern
+TOP10 (Durée Appel Interne)
+
+; top10_call_duration_in
+TOP10 (Durée Appel Entrant)
+
+; top10_call_duration_out
+TOP10 (Durée Appel Sortant)
 
 ; no_conf_selected
 Veuillez choisir une configuration à appliquer.

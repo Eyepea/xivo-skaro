@@ -32,42 +32,58 @@ class xivo_statistics_cel
 									'max_concurrent_calls_in'		=> array('type' => 'int'),
 									'max_concurrent_calls_out'		=> array('type' => 'int'),
 									'max_concurrent_calls_intern'	=> array('type' => 'int'),
-									'max_concurrent_calls_total'	=> array('type' => 'int'),
-									'top10_call_duration'	=> array('type' => 'top10'));
+									'max_concurrent_calls_total'	=> array('type' => 'int'));
 	private		$_result	= false;
+	public		$_fieldtop10	= array('call_duration_intern'	=> array('type' => 'time','mode' => 'max'),
+										'call_duration_in'		=> array('type' => 'time','mode' => 'max'),
+										'call_duration_out'		=> array('type' => 'time','mode' => 'max'),
+										'call_nb_intern'		=> array('type' => 'int','mode' => 'sum'),
+										'call_nb_in'			=> array('type' => 'int','mode' => 'sum'),
+										'call_nb_out'			=> array('type' => 'int','mode' => 'sum'));
+	private		$_top10		= false;
 	private		$_cel		= false;
 	private		$_trunk		= false;
 	private		$_trunklist	= false;
+	private		$_ipbx		= false;
 	
 	public function __construct()
 	{
 		$this->_type = 'cel';
 		
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
-		|| ($ipbx = &$_SRE->get('ipbx')) === false
+		|| ($this->_ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_cel = &$_SRE->get_module('ipbx','cel')) === false
-		|| ($this->_trunk = &$ipbx->get_application('trunk')) === false)
+		|| ($this->_trunk = &$this->_ipbx->get_application('trunk')) === false)
 			die('Can\'t load cel object');
 	}
 	
-	public function get_trunk_list()
+	public function get_trunk_list($withintern=false)
 	{
 		if (($apptrunk = $this->_trunk) === false)
 			return(false);
-			
-		if ($this->_trunklist !== false)
-			return($this->_trunklist);
 		
-		$list = $apptrunk->get_trunks_list();	
 		$rs = array();
 		
-		$tmp = array();
-		$tmp['identity'] = dwho_i18n::babelfish('trunk_intern');
-		$tmp['key'] = 'intern';
-		$tmp['name'] = 'intern';
-		$rs['intern'] = $tmp;
+		switch($withintern)
+		{
+			case false:
+				break;
+			default:
+			case true:
+				$tmp = array();
+				$tmp['identity'] = dwho_i18n::babelfish('trunk_intern');
+				$tmp['key'] = 'intern';
+				$tmp['name'] = 'intern';
+				$rs['intern'] = $tmp;			
+				$this->_init_result('intern');
+				if ($withintern === 'only')
+				{
+					$this->_trunklist = $rs;
+					return($rs);
+				}
+		}
 		
-		$this->_init_result('intern');
+		$list = $apptrunk->get_trunks_list();	
 		
 		$nb = count($list);	
 		for($i=0;$i<$nb;$i++)
@@ -121,6 +137,94 @@ class xivo_statistics_cel
 		}
 	}
 	
+	public function get_top10($name)
+	{
+		if (isset($this->_top10[$name]) === false
+		|| ($ipbx = &$this->_ipbx) === false)
+			return(null);
+			
+		$appuser = &$ipbx->get_application('user');
+			
+		$data = $this->_top10[$name];
+		
+		dwho::load_class('dwho_sort');
+		
+		$result = array();
+		switch($data['mode'])
+		{
+			case 'max':
+				$tmp = array();
+				foreach($data['result'] as $k => $listval)
+				{
+					for($i=0;$i<count($listval);$i++)
+					{
+						$ref = $listval[$i];
+						$arr = array('key' => $k, 'val' => $ref);
+						array_push($tmp,$arr);
+					}
+				}
+				$sort = new dwho_sort(array('key' => 'val'));
+				uasort($tmp,array(&$sort,'num_usort'));
+				$tmp = array_values($tmp);
+				krsort($tmp);
+				$result = array_values($tmp);
+				break;
+			case 'sum':
+				$tmp = array();
+				foreach($data['result'] as $k => $listval)
+				{
+					$sum = array_sum($listval);
+					$arr = array('key' => $k, 'val' => $sum);
+					array_push($tmp,$arr);
+				}
+				$sort = new dwho_sort(array('key' => 'val'));
+				uasort($tmp,array(&$sort,'num_usort'));
+				$tmp = array_values($tmp);
+				krsort($tmp);
+				$result = array_values($tmp);	
+				break;
+			default:
+		}
+		
+		if (empty($result) === false)
+		{		
+			$result = array_chunk($result, 10, true);
+			$result = array_shift($result);
+		
+			for($i=0;$i<count($result);$i++)
+			{
+				$ref = &$result[$i];
+				$key = $ref['key'];
+				$cid_key = base64_decode($key);
+				$exl = explode('**',$cid_key);
+				if ($exl[0] === 'intern')
+					$ref['key'] = $exl[1];
+				else
+					$ref['key'] = $exl[1].' | '.$exl[0];
+				$result[$i] = $ref;
+			}
+		}
+
+		$rs = array();
+		$rs['type'] = $data['type'];
+		$rs['result'] = $result;
+			
+		return($rs);
+	}
+	
+	private function _init_top10()
+	{
+		$res = &$this->_top10;
+			
+		foreach ($this->_fieldtop10 as $k => $field)
+		{
+			$res[$k] = array();
+			$res[$k]['mode'] = $field['mode'];
+			$res[$k]['type'] = $field['type'];
+			$res[$k]['result'] = array();
+		}
+	}
+	
 	private function _init_result($key)
 	{
 		$res = &$this->_result;
@@ -142,7 +246,9 @@ class xivo_statistics_cel
 	public function parse_data($axetype)
 	{		
 		$data = $this->_build_data($axetype);
-		$trunklist = $this->get_trunk_list();
+		$trunklist = $this->get_trunk_list(true);
+		$this->_init_top10();
+		$top10_call_duration = &$this->_fieldtop['top10_call_duration'];
 		$data1 = $data;
 		while($data1)
 		{
@@ -182,23 +288,31 @@ class xivo_statistics_cel
 			$duration = (isset($datacall['duration'])) ? $datacall['duration'] : 0;
 			$this->update_result(array($key,'duration_total'),$duration);
 			
+			$cid_key = base64_encode($key.'**'.$datacall['cid_name'].' ('.$datacall['cid_num'].')');
+			
 			if (isset($trunklist[$datacall['trunk']]) === false
 			&& isset($trunklist[$nextdatacall['trunk']]) === false)
 			{
 				$this->update_result(array('intern','nb_intern'),1);
 				$this->update_result(array('intern','duration_intern'),$duration);
+				$this->update_top10('call_duration_intern',array($cid_key => $duration));
+				$this->update_top10('call_nb_intern',array($cid_key => 1),'+');
 			}
 			elseif (isset($trunklist[$datacall['trunk']]) === false
 			&& isset($trunklist[$nextdatacall['trunk']]) === true)
 			{
 				$this->update_result(array($key,'nb_out'),1);
 				$this->update_result(array($key,'duration_out'),$duration);
+				$this->update_top10('call_duration_out',array($cid_key => $duration));
+				$this->update_top10('call_nb_out',array($cid_key => 1),'+');
 			}
 			elseif (isset($trunklist[$datacall['trunk']]) === true
 			&& isset($trunklist[$nextdatacall['trunk']]) === false)
 			{
 				$this->update_result(array($key,'nb_in'),1);
 				$this->update_result(array($key,'duration_in'),$duration);
+				$this->update_top10('call_duration_in',array($cid_key => $duration));
+				$this->update_top10('call_nb_in',array($cid_key => 1),'+');
 			}
 			
 			$data2 = $data;
@@ -315,6 +429,8 @@ class xivo_statistics_cel
 							$ref['from'] = $call['cid_num'];
 							$ref['to'] = empty($call['cid_dnid']) ? $call['exten'] : $call['cid_dnid'];	
 							$ref['context'] = $call['context'];
+							$ref['cid_name'] = $call['cid_name'];
+							$ref['cid_num'] = $call['cid_num'];
 							
 							$itl['start'] = $eventtime;
 							$itl['trunkname'] = $trunkname;
@@ -378,6 +494,23 @@ class xivo_statistics_cel
 				
 		$this->set_result_var($result,$var);
 		
+		return(true);
+	}
+	
+	protected function update_top10($var,$arr)
+	{
+		if (isset($this->_top10[$var]) === false)
+			return(false);
+		 		
+		$result = &$this->_top10[$var]['result'];
+		
+		$trunk = array_shift(array_keys($arr));
+		$val = array_shift($arr);
+		
+		if (isset($result[$trunk]) === false)
+			$result[$trunk] = array();
+			
+		array_push($result[$trunk], $val);
 		return(true);
 	}
 	

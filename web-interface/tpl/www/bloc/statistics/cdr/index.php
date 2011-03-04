@@ -20,7 +20,14 @@
 
 $url     = &$this->get_module('url');
 $basedir = $this->get_var('basedir');
-$table1 = $this->get_var('table1');
+$table_trunk = $this->get_var('table_trunk');
+$table_intern = $this->get_var('table_intern');
+$top10_call_duration_intern = $this->get_var('top10_call_duration_intern');
+$top10_call_duration_in = $this->get_var('top10_call_duration_in');
+$top10_call_duration_out = $this->get_var('top10_call_duration_out');
+$top10_call_nb_intern = $this->get_var('top10_call_nb_intern');
+$top10_call_nb_in = $this->get_var('top10_call_nb_in');
+$top10_call_nb_out = $this->get_var('top10_call_nb_out');
 $axetype = $this->get_var('axetype');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
 
@@ -32,19 +39,43 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-<?php
-	if ($table1->has_data() === false):
-		echo $this->bbf('no_conf_selected');
-	else :
-?>
 		<div class="sb-list"> 
-<?php
-		echo $table1->render_html(false);
-?>
+		
+			<?=$table_trunk?>
+			
+			<div style="width:370px; float:right;"> 
+			
+			</div>
+			<div style="width:370px; float:left;"> 
+				<?=$table_intern?>
+			</div>
+			<div style="clear:both;"></div>
+			
+			<div style="width:240px; float:right;"> 
+				<?=$top10_call_nb_out?>
+			</div>
+			<div style="width:240px; float:right; margin-right:15px;"> 
+				<?=$top10_call_nb_in?>
+			</div>
+			<div style="width:240px; float:left;"> 
+				<?=$top10_call_nb_intern?>
+			</div>
+			<div style="clear:both;"></div>
+			
+			<div style="width:240px; float:right;"> 
+				<?=$top10_call_duration_out?>
+			</div>
+			<div style="width:240px; float:right; margin-right:15px;"> 
+				<?=$top10_call_duration_in?>
+			</div>
+			<div style="width:240px; float:left;"> 
+				<?=$top10_call_duration_intern?>
+			</div>
+			<div style="clear:both;"></div>
+			
 		</div>
-<?php		
+<?php
 		$xivo_jqplot->get_result('chart1');
-	endif;
 ?>
     </div>
 	<div class="sb-foot xspan">

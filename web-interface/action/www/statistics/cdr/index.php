@@ -28,23 +28,19 @@ if(xivo::load_class('xivo_statistics_cel',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statist
 	
 $stats_cel = new xivo_statistics_cel();
 $result = $stats_cel->parse_data('trunk');
-$listkey = $stats_cel->get_trunk_list();
+$listkey = $stats_cel->get_trunk_list(false);
 
 $tpl_statistics = &$_TPL->get_module('statistics');
-$tpl_statistics->set_name('cel');
 $tpl_statistics->set_baseurl('statistics/cdr/index');
-$tpl_statistics->set_data_custom('axetype',$axetype);
+
+
+$tpl_statistics->set_name('cel');
+$tpl_statistics->set_data_custom('axetype','trunk');
 $tpl_statistics->set_rows('row',$listkey,'key');
 
 $tpl_statistics->set_data_custom('cel',$result);
-/*
-var_dump($result);
-var_dump($listkey);
-*/
+
 $tpl_statistics->set_col_struct('nb');
-$tpl_statistics->add_col('nb_intern',
-					'direct',
-					'custom:cel,[key],nb_intern');
 $tpl_statistics->add_col('nb_in',
 					'direct',
 					'custom:cel,[key],nb_in');
@@ -56,10 +52,6 @@ $tpl_statistics->add_col('nb_total',
 					'custom:cel,[key],nb_total');
 
 $tpl_statistics->set_col_struct('duration');
-$tpl_statistics->add_col('duration_intern',
-					'direct',
-					'custom:cel,[key],duration_intern',
-					'time');
 $tpl_statistics->add_col('duration_in',
 					'direct',
 					'custom:cel,[key],duration_in',
@@ -74,11 +66,6 @@ $tpl_statistics->add_col('duration_total',
 					'time');
 
 $tpl_statistics->set_col_struct('average_call_duration');
-$tpl_statistics->add_col('average_call_duration_intern',
-					'expression',
-					'{custom:cel,[key],duration_intern}/{custom:cel,[key],nb_intern}',
-					'time',
-					'average');
 $tpl_statistics->add_col('average_call_duration_in',
 					'expression',
 					'{custom:cel,[key],duration_in}/{custom:cel,[key],nb_in}',
@@ -96,9 +83,6 @@ $tpl_statistics->add_col('average_call_duration_total',
 					'average');
 
 $tpl_statistics->set_col_struct('max_concurrent_calls');
-$tpl_statistics->add_col('max_concurrent_calls_intern',
-					'direct',
-					'custom:cel,[key],max_concurrent_calls_intern');
 $tpl_statistics->add_col('max_concurrent_calls_in',
 					'direct',
 					'custom:cel,[key],max_concurrent_calls_in');
@@ -110,6 +94,87 @@ $tpl_statistics->add_col('max_concurrent_calls_total',
 					'custom:cel,[key],max_concurrent_calls_total');
 
 $tpl_statistics->gener_table();
+$table_trunk = $tpl_statistics->render_html(false);
+$tpl_statistics->reset_all();
+
+$listkey = $stats_cel->get_trunk_list('only');
+$tpl_statistics->set_name('cel');
+$tpl_statistics->set_data_custom('axetype','trunk');
+$tpl_statistics->set_rows('row',$listkey,'key');
+
+$tpl_statistics->set_data_custom('cel',$result);
+
+$tpl_statistics->set_col_struct(null);
+$tpl_statistics->add_col('nb',
+					'direct',
+					'custom:cel,[key],nb_intern');
+$tpl_statistics->add_col('duration',
+					'direct',
+					'custom:cel,[key],duration_intern',
+					'time');
+$tpl_statistics->add_col('average_call_duration',
+					'expression',
+					'{custom:cel,[key],duration_intern}/{custom:cel,[key],nb_intern}',
+					'time',
+					'average');
+$tpl_statistics->add_col('max_concurrent_calls',
+					'direct',
+					'custom:cel,[key],max_concurrent_calls_intern');
+
+$tpl_statistics->gener_table();
+$table_intern = $tpl_statistics->render_html(false,true,false,false);
+$tpl_statistics->reset_all();
+
+$tpl_statistics->set_name('top10_call_duration_intern');
+$data = $stats_cel->get_top10('call_duration_intern');
+$top10_call_duration_intern = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
+
+/*
+ * 
+ */
+$tpl_statistics->set_name('top10_call_duration_in');
+$data = $stats_cel->get_top10('call_duration_in');
+/*
+$tpl_statistics->set_data_custom('axetype','trunk');
+$tpl_statistics->set_rows('row',$listkey,'key');
+
+$data = $stats_cel->get_top10('call_duration_in');
+$tpl_statistics->set_data_custom('cdi',$data);
+
+$tpl_statistics->add_col('duration',
+					'direct',
+					'custom:cel,[key],duration_intern',
+					'time');
+
+$tpl_statistics->gener_top10();
+$table_intern = $tpl_statistics->render_html(false,true,false,false);
+*/
+$top10_call_duration_in = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
+
+/*
+ * 
+ */
+$tpl_statistics->set_name('top10_call_duration_out');
+$data = $stats_cel->get_top10('call_duration_out');
+$top10_call_duration_out = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
+
+$tpl_statistics->set_name('top10_call_nb_intern');
+$data = $stats_cel->get_top10('call_nb_intern');
+$top10_call_nb_intern = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
+
+$tpl_statistics->set_name('top10_call_nb_in');
+$data = $stats_cel->get_top10('call_nb_in');
+$top10_call_nb_in = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
+
+$tpl_statistics->set_name('top10_call_nb_out');
+$data = $stats_cel->get_top10('call_nb_out');
+$top10_call_nb_out = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
 
 if($act === 'exportcsv')
 {
@@ -123,7 +188,14 @@ if($act === 'exportcsv')
 	die();
 }
 
-$_TPL->set_var('table1',$tpl_statistics);
+$_TPL->set_var('top10_call_duration_intern',$top10_call_duration_intern);
+$_TPL->set_var('top10_call_duration_in',$top10_call_duration_in);
+$_TPL->set_var('top10_call_duration_out',$top10_call_duration_out);
+$_TPL->set_var('top10_call_nb_intern',$top10_call_nb_intern);
+$_TPL->set_var('top10_call_nb_in',$top10_call_nb_in);
+$_TPL->set_var('top10_call_nb_out',$top10_call_nb_out);
+$_TPL->set_var('table_trunk',$table_trunk);
+$_TPL->set_var('table_intern',$table_intern);
 $_TPL->set_var('showdashboard_cdr',true);
 $_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));

@@ -39,7 +39,6 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	private  $_full_rows	= array();
 	private  $_prepare_cols	= array();
 	private	 $_var_to_eval	= array();
-	public	 $_tmp_graph_name_file = '';
 	
 	public function __construct(&$tpl)
 	{
@@ -577,7 +576,59 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		return(false);
 	}
 	
-	public function render_html($chkbox=true,$rowname=true)
+	public function render_top10($data)
+	{			
+		if (isset($data['type']) === false
+		|| isset($data['result']) === false
+		|| is_array($data['result']) === false)
+			return(null);
+		
+		$result = $data['result'];
+		$format = $data['type'];
+
+		$return = '';
+		$return .= '<table>';
+		
+		$return .= '<thead>';
+		$return .= '<tr class="sb-top">';
+		$return .= '<th class="th-single" colspan="3">'.$this->bbf($this->_name).'</th>';
+		$return .= '</tr>';
+		$return .= '</thead>';
+		
+		$total = 0;
+		for($i=0;$i<count($result);$i++)
+		{
+			$ref = &$result[$i];
+			$key = $ref['key'];
+			$val = $ref['val'];
+			
+			$return .= '<tbody id="disp">';
+			$return .= '<tr class="fm-paragraph l-infos-'.(($i % 2) + 1).'on2" title="'.dwho_alttitle($key).'">';
+			$return .= '<td class="td-left">'.($i+1).'</td>';
+			$return .= '<td class="td-center">'.$key.'</td>';
+			$return .= '<td class="td-right">'; 
+			$eval = array('format' => $format,'result' => $val);
+			$return .= $this->eval_result_data($eval);
+			$return .= '</td>';
+			$return .= '</tr>';
+			$return .= '</tbody>';
+			$total += $val;
+		}
+		
+		$return .= '<tfoot>'; 
+		$return .= '<tr> ';
+		$return .= '<td class="td-left" colspan="2">&nbsp;'.$this->bbf('total').'</td>';
+		$eval = array('format' => $format,'result' => $total);
+		$return .= '<td class="td-right">'.$this->eval_result_data($eval).'</td>';		
+		$return .= '</tr>';
+		$return .= '</tfoot>';
+			
+		$return .= '</table>';
+		
+		return($return);
+	}
+	
+	public function render_html($chkbox=true,$rowname=true,$total=true,$colstruct=true)
 	{		
 		$url = &$this->_tpl->get_module('url');
 		$axetype = $this->_data_custom['axetype'];
@@ -599,32 +650,36 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		}
 
 		$return = '';
-		$return .= '<table cellspacing="0" cellpadding="0" border="0">';		
-		$return .= '<thead>';
-		$return .= '<tr class="sb-top">';
+		$return .= '<table>';
 		
-		if ($chkbox === true)
-			$return .= '<th class="th-left">&nbsp;</th>';
-		if ($rowname === true)
-			$return .= '<th class="th-center">&nbsp;</th>';
-		
-		$nbstruct = count($this->_struct);
-		for($i=0;$i<$nbstruct;$i++)
-		{	
-			$refstruct = &$this->_struct[$i];
+		if ($colstruct === true)
+		{
+			$return .= '<thead>';
+			$return .= '<tr class="sb-top">';
 			
-			$label = '&nbsp;';
-			if (is_null($refstruct['label']) === false)
-				$label = $this->bbf('colstruct_'.$refstruct['label']);
+			if ($chkbox === true)
+				$return .= '<th class="th-left">&nbsp;</th>';
+			if ($rowname === true)
+				$return .= '<th class="th-center">&nbsp;</th>';
+			
+			$nbstruct = count($this->_struct);
+			for($i=0;$i<$nbstruct;$i++)
+			{	
+				$refstruct = &$this->_struct[$i];
 				
-			if ($i < count($this->_struct)-1)
-				$return .= '<th class="th-center" colspan="'.(count($refstruct['content'])).'">'.$label.'</th>';
-			else
-				$return .= '<th class="th-right" colspan="'.(count($refstruct['content'])).'">'.$label.'</th>';
+				$label = '&nbsp;';
+				if (is_null($refstruct['label']) === false)
+					$label = $this->bbf('colstruct_'.$refstruct['label']);
+					
+				if ($i < count($this->_struct)-1)
+					$return .= '<th class="th-center" colspan="'.(count($refstruct['content'])).'">'.$label.'</th>';
+				else
+					$return .= '<th class="th-right" colspan="'.(count($refstruct['content'])).'">'.$label.'</th>';
+			}
+			
+			$return .= '</tr>';
+			$return .= '</thead>';
 		}
-		
-		$return .= '</tr>';
-		$return .= '</thead>';
 		
 		$y=0;
 		foreach ($this->_data_table as $row => $cols)
@@ -772,6 +827,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				$return .= '</td>';
 				$nbcolsup++;
 			}
+			
 			$nb_cols = count($cols) + $nbcolsup;
 			$i=0;			
 			foreach ($cols as $colname => $colvalue)
@@ -794,36 +850,40 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			$c++;
 		}
 		
-		$return .= '<tfoot>'; 
-		$return .= '<tr> ';
-		$return .= '<td class="txt-left">'.$this->bbf('total').'</td>';
-		
-		$i = 0;			
-		foreach ($this->_data_foot as $colname => $colvalue)
-		{
-			if (in_array($colname,$this->_ignore_col) === true)
-				continue;
-			$i++;
-			if ($i < ($nb_cols - 3))
-				$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
-			else
-				$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';
+		if ($total === true)
+		{		
+			$return .= '<tfoot>'; 
+			$return .= '<tr> ';
+			$return .= '<td class="txt-left">'.$this->bbf('total').'</td>';
+			
+			$i = 0;			
+			foreach ($this->_data_foot as $colname => $colvalue)
+			{
+				if (in_array($colname,$this->_ignore_col) === true)
+					continue;
+				$i++;
+				if ($i < ($nb_cols - 3))
+					$return .= '<td class="td-center">'.$this->eval_result_data($colvalue).'</td>';
+				else
+					$return .= '<td class="td-right">'.$this->eval_result_data($colvalue).'</td>';
+			}
+			
+			$return .= '</tr>';
+			$return .= '</tfoot>';
 		}
-		
-		$return .= '</tr>';
-		$return .= '</tfoot>';		
+			
 		$return .= '</table>';
 		
 		$get = $url->_query->raw;
 		$get = array_merge($get,array('act' => 'exportcsv'));		
 		
 		$href = $url->href($this->_baseurl,$get);
-								
+/*				
 		$return .= '<p class="it-exportcsv">';
 		$return .= '<input type="button" name="exportcsv" value="'.$this->bbf('tbl-lnk-expotcsv').'" onclick="window.location.href=\''.$href.'\'" />';
 		#$return .= $url->href_html($this->bbf('tbl-lnk-expotcsv'),$this->_baseurl,$get);
 		$return .= '</p>';
-
+*/
 		return( $return );
 	}
 	
@@ -903,6 +963,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$this->_data			= array();
 		$this->_data_custom		= array();
 		$this->_data_table		= array();
+		$this->_data_foot		= array();
 		$this->_result			= array();
 		$this->_prepare_rows	= array();
 		$this->_prepare_cols	= array();

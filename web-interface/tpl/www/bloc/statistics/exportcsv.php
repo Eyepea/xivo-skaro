@@ -34,8 +34,6 @@ if($result === false
 $dbeg = $date['dbeg'];
 $dend = $date['dend'];
 
-#die(print nl2br($result));
-
 header('Pragma: no-cache');
 header('Cache-Control: private, must-revalidate');
 header('Last-Modified: '.
