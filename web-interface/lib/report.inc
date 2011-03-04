@@ -75,8 +75,8 @@ abstract class dwho_report
 
 	public static function get($type) 
 	{
-		if (isset(self::${$type}) === true
-		&& ($self = &self::${$type}) === false)
+		if (isset(self::${$type}) === false
+		|| (($self = &self::${$type})) === false)
 			return(false);
 			
 		return($self);
@@ -164,23 +164,18 @@ abstract class dwho_report
 			$rs[$type] = self::get($type);
 		}
 		$rs = serialize($rs);
-		#$rs = base64_encode($rs);	
+		#$rs = base64_encode($rs);
 		$rs = urlencode($rs);
 		return($rs);
 	}
 
 	public static function decode() 
 	{
-		if (isset($_SERVER['QUERY_STRING']) === false
-		|| empty($_SERVER['QUERY_STRING']) === true)
-			return(null);
-		
-		parse_str($_SERVER['QUERY_STRING'],$out);
-
-		if (array_key_exists('_report',$out) === false)
+		if (isset($_SESSION['_report']) === false
+		|| empty($_SESSION['_report']) === true)
 			return(null);
 			
-		$_report = $out['_report'];
+		$_report = $_SESSION['_report'];
 		
 		$str = urldecode($_report);
 		#$str = base64_decode($str);
@@ -195,6 +190,8 @@ abstract class dwho_report
 			
 			self::push($type,$value);
 		}
+		
+		$_SESSION['_report'] = array();
 	}
 }
 
