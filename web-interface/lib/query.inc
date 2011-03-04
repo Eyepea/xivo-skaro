@@ -102,8 +102,6 @@ class dwho_query
 	{
 		$location = (string) $location;
 		
-		dwho_report::push('warning',array('attention il pleut !'));
-		
 		if (($_report = dwho_report::encode()) !== null)
 			$_SESSION['_report'] = dwho_report::encode();
 
