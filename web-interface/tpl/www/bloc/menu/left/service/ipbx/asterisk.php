@@ -198,6 +198,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('call_management','pickup') === true):
+			echo	'<dd id="mn-call-management--pickup">',
+				$url->href_html($this->bbf('mn_left_callmanagement-pickup'),
+						'service/ipbx/call_management/pickup',
+						'act=list'),
+				'</dd>';
+		endif;
 		if(xivo_user::chk_acl('call_management','schedule') === true):
 			echo	'<dd id="mn-call-management--schedule">',
 				$url->href_html($this->bbf('mn_left_callmanagement-schedule'),

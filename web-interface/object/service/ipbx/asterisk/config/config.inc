@@ -302,6 +302,12 @@ $array['module']['schedule_path']['datastorage'] = true;
 $array['module']['schedule_time'] = array();
 $array['module']['schedule_time']['datastorage'] = true;
 
+$array['module']['pickup'] = array();
+$array['module']['pickup']['datastorage'] = true;
+
+$array['module']['pickupmember'] = array();
+$array['module']['pickupmember']['datastorage'] = true;
+
 
 
 

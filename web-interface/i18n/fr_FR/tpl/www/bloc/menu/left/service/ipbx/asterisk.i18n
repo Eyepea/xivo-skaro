@@ -70,6 +70,9 @@ Droits d'appels
 ; mn_left_callmanagement-callfilter
 Filtrages d'appels
 
+; mn_left_callmanagement-pickup
+Interceptions d'appels
+
 ; mn_left_callmanagement-schedule
 Horaires
 

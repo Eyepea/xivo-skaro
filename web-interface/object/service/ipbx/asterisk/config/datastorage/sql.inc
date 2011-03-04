@@ -356,5 +356,13 @@ $array['schedule_time'] = array();
 $array['schedule_time']['table'] = 'schedule_time';
 $array['schedule_time']['primary'] = array('id' => '');
 
+$array['pickup'] = array();
+$array['pickup']['table'] = 'pickup';
+$array['pickup']['primary'] = array('id' => '');
+
+$array['pickupmember'] = array();
+$array['pickupmember']['table'] = 'pickupmember';
+$array['pickupmember']['primary'] = array('pickupid' => '', 'category' => '', 'membertype' => '', 'member' => '');
+
 
 ?>

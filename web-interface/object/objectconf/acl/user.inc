@@ -54,6 +54,7 @@ $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 $array['tree']['service']['ipbx']['call_management']['outcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['rightcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['callfilter'] = true;
+$array['tree']['service']['ipbx']['call_management']['pickup'] = true;
 $array['tree']['service']['ipbx']['call_management']['schedule'] = true;
 $array['tree']['service']['ipbx']['call_management']['voicemenu'] = true;
 $array['tree']['service']['ipbx']['call_management']['cdr'] = true;

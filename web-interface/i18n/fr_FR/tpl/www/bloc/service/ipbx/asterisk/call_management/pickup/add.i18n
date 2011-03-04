@@ -1,0 +1,45 @@
+; title_content_name
+Groupes d'interceptions > Ajouter
+
+; smenu_general
+Général
+
+; smenu_members
+Membres sources
+
+; smenu_interceptors
+Membres intercepteurs
+
+; fm_pickup_name
+Nom : 
+
+; fm_pickup_description
+Description : 
+
+; fld-members-groups
+Groupes
+
+; fld-members-queues
+Files d'attentes
+
+; fld-members-users
+Utilisateurs
+
+; create_groups
+Créer un groupe
+
+; create_queues
+Créer une file d'attente
+
+; create_users
+Créer un utilisateur
+
+; fld-interceptors-groups
+Groupes
+
+; fld-interceptors-queues
+Files d'attentes
+
+; fld-interceptors-users
+Utilisateurs
+

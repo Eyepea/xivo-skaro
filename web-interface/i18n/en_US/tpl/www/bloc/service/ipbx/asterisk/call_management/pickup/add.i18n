@@ -1,0 +1,45 @@
+; title_content_name
+Pickup groups > Add
+
+; smenu_general
+General
+
+; smenu_members
+Source members
+
+; smenu_interceptors
+Pickup members
+
+; fm_pickup_name
+Name:
+
+; fm_pickup_description
+Description:
+
+; fld-members-groups
+Groups
+
+; fld-members-queues
+Queues
+
+; fld-members-users
+Users
+
+; create_groups
+Create group
+
+; create_queues
+Create queue
+
+; create_users
+Create user
+
+; fld-interceptors-groups
+Groups
+
+; fld-interceptors-queues
+Queues
+
+; fld-interceptors-users
+Users
+

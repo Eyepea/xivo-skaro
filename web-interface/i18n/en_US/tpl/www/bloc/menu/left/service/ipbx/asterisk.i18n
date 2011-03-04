@@ -76,6 +76,9 @@ Call permissions
 ; mn_left_callmanagement-callfilter
 Call filters
 
+; mn_left_callmanagement-pickup
+Call pickups
+
 ; mn_left_callmanagement-schedule
 Schedules
 
