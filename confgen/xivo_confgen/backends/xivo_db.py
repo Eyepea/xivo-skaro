@@ -261,6 +261,31 @@ class ProgfunckeysHintsHandler(SpecializedHandler):
 		return self.execute(q).fetchall()
 
 
+class PickupsHandler(SpecializedHandler):
+	def all(self, usertype, *args, **kwargs):
+		if usertype not in ('sip','iax','sccp'):
+			raise TypeError
+
+		(_p, _pm, _uf, _u) = [getattr(self.db, o)._table.c for o in
+				('pickup','pickupmember','userfeatures','user'+usertype)]
+		print _p
+		conds = [
+				_p.commented   == 0,
+				_p.id          == _pm.pickupid,
+				_pm.membertype == 'user',
+				_pm.memberid   == _uf.id,
+				_uf.protocol   == usertype,
+				_uf.protocolid == _u.id
+		]
+
+		q = select(
+				[_u.name, _pm.category, _p.id],
+				and_(*conds)
+		).order_by(_u.name, _pm.category)
+
+		return self.execute(q).fetchall()
+
+
 class QObject(object):
 	_translation = {
 		'sip'           : ('staticsip',),
@@ -302,6 +327,8 @@ class QObject(object):
 		'phonefunckeys' : PhonefunckeysHandler,
 		'bsfilterhints' : BSFilterHintsHandler,
 		'progfunckeys'  : ProgfunckeysHintsHandler,
+
+		'pickups'       : PickupsHandler,
 	}
 
 	def __init__(self, db, name):

@@ -78,6 +78,11 @@ class AsteriskFrontend(Frontend):
 
 
 		# section::users
+		pickups = {}
+		for p in self.backend.pickups.all(usertype='sip'):
+			user = pickups.setdefault(p[0], {})
+			user.setdefault(p[1], []).append(str(p[2]))
+
 		for user in self.backend.sipusers.all(commented=False):
 			print >>o, "\n[%s]" % user['name']
 
@@ -99,6 +104,13 @@ class AsteriskFrontend(Frontend):
 				if k == 'subscribemwi' and v is not None:
 					v = 'no' if v == '0' else 'yes'
 					print >>o, "subscribemwi = " + str(v)
+
+			if user['name'] in pickups:
+				p = pickups[user['name']]
+				if 'member' in p:
+					print >>o, "callgroup = " + ','.join(frozenset(p['member']))
+				if 'pickup' in p:
+					print >>o, "pickupgroup = " + ','.join(frozenset(p['pickup']))
 
 
 		return o.getvalue()
