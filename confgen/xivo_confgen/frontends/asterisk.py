@@ -665,7 +665,36 @@ class AsteriskFrontend(Frontend):
 			# -- end per-context --
 
 		# XiVO features
+		context   = 'xivo-features'
 		cfeatures = []
+		tmpl      = []
+
+		print >>o, "\n[xivo-features]"
+		for option in conf.iter_options(context):
+			if option.get_name() == 'objtpl':
+				tmpl.append(option.get_value()); continue
+
+			print >>o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
+			print >>o
+
+		for exten in self.backend.extensions.all(context='xivo-features',	commented=0):
+			app     = exten['app']
+			appdata = list(exten['appdata'].replace('|',',').split(','))
+			if app == 'Macro':
+				app     = 'Gosub'
+				appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
+				
+			exten['action'] = "%s(%s)" % (app, ','.join(appdata))
+
+			for line in tmpl:
+				prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
+
+				def varset(m):
+					return str(exten.get(m.group(1).lower(), ''))
+				line = re.sub('%%([^%]+)%%', varset, line)
+				print >>o, prefix, line
+			print >>o
+
 		if not xfeatures['vmusermsg'].get('commented', 1):
 			vmusermsgexten = xfeatures['vmusermsg']['exten']
 
@@ -683,7 +712,6 @@ class AsteriskFrontend(Frontend):
 					% (xivo_helpers.clean_extension(xfeatures[fwdtype]['exten']), x))
 
 		if cfeatures:
-			print >>o, "\n[xivo-features]"
 			print >>o, "exten = " + "\nexten = ".join(cfeatures)
 
 		
