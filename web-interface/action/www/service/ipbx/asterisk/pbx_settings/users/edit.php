@@ -272,7 +272,9 @@ $element['queueskills'] =  $appqueue->skills_gettree();
 
 // AUTOGEN name/secret
 $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
-$ro      = !($config['user']['readonly-idpwd'] == 'false');
+$ro = true;
+if (isset($config['user']) === true)
+	$ro = !($config['user']['readonly-idpwd'] == 'false');
 
 $element['protocol']['name']   = array(
 	'readonly' => $ro,
@@ -309,7 +311,8 @@ $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
 $_TPL->set_var('sccp_addons',$sccp_addons);
 $_TPL->set_var('order_list', $order_list);
 $_TPL->set_var('softkeys_list', $softkeys_list);
-$_TPL->set_var('schedule_id', $return['schedule_id']);
+if (isset($return['schedule_id']) === true)
+	$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');

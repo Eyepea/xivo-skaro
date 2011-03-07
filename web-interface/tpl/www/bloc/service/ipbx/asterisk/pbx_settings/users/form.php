@@ -1174,7 +1174,6 @@ endif;
             'help'     => $this->bbf('hlp_fm_protocol-disallowed_methods'),
             'required' => false,
             'value'    => $info['protocol']['disallowed_methods'],
-            'default'  => $element['protocol']['disallowed_methods']['default'],
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'disallowed_methods')) )),
 
@@ -1886,7 +1885,6 @@ endif;
             'help'     => $this->bbf('hlp_fm_protocol-unsolicited_mailbox'),
             'required' => false,
             'value'    => $info['protocol']['unsolicited_mailbox'],
-            'default'  => $element['protocol']['unsolicited_mailbox']['default'],
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'unsolicited_mailbox')) )),
 
@@ -1898,7 +1896,7 @@ endif;
             'bbf'       => 'fm_bool-opt',
             'bbfopt'    => array('argmode' => 'paramvalue'),
             'help'      => $this->bbf('hlp_fm_protocol-immediate'),
-            'selected'  => $info['protocol']['immediate'],
+            'selected'  => isset($info['protocol']['immediate']) ? $info['protocol']['immediate'] : null,
             'default'   => $element['protocol']['iax']['immediate']['default']),
          $element['protocol']['iax']['immediate']['value']);
 

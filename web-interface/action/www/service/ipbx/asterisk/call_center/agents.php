@@ -175,6 +175,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$error = $appagentgroup->get_error();
+				var_dump($error);
 				$result = $appagentgroup->get_result();
 			}
 			else
@@ -334,7 +335,7 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('agentfeatures',$_QR) === true
-		//&& dwho_issa('agentoptions',$_QR) === true
+		&& dwho_issa('agentoptions',$_QR) === true
 		&& dwho_issa('queueskill-skill',$_QR)  === true
 		&& dwho_issa('queueskill-weight',$_QR) === true)
 		{
@@ -469,8 +470,8 @@ switch($act)
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('agentfeatures',$_QR) === true)
-		//&& dwho_issa('agentoptions',$_QR) === true)
+		&& dwho_issa('agentfeatures',$_QR) === true
+		&& dwho_issa('agentoptions',$_QR) === true)
 		{
 			$return = &$result;
 			$queueskills = array();

@@ -441,7 +441,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$module = (bool) $module;
 
 		if(isset($protocols[0]) === false)
-			$protocols = $this->_conf['protocol'];
+			$protocols = $this->_conf['protocol'];			
 
 		if(empty($protocols) === true)
 			return(false);

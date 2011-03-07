@@ -102,6 +102,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 
 			if(($rs = $this->_get_agent($aid)) === false)
 			{
+				var_dump($aid);
 				$this->_set_error('wrong agent');
 				continue;
 			}
@@ -125,7 +126,13 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 	function _get_agent($id,$disable=null)
 	{
 		$info = array();
-
+		
+		$agf = $this->_agentfeatures->get($id,$disable);
+		var_dump($agf);
+		$ag = $this->_agent->get_agent($agf['agentid']);
+		var_dump($ag);
+		var_dump($this->_agentoptions->get_agentoptions($ag['var_metric']-1));
+				
 		if(($info['agentfeatures'] = $this->_agentfeatures->get($id,$disable)) === false
 		|| ($info['agent'] = $this->_agent->get_agent(
 							$info['agentfeatures']['agentid'])) === false
