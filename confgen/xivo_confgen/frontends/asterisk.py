@@ -702,8 +702,8 @@ class AsteriskFrontend(Frontend):
 					"1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % len(vmusermsgexten),
 					"n,Gosub(xivo-pickup,0,1)",
 					"n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT},${XIVO_VMMAIN_OPTIONS})",
-					"n,Hangup()"):
-				cfeatures.append("_%s,%s" % (vmusermsgexten, line))
+					"n,Hangup()\n"):
+				cfeatures.append("_%s%s,%s" % (vmusermsgexten, 'X' * len(vmusermsgexten), line))
 
 		for x in ('busy', 'rna', 'unc'):
 			fwdtype = "fwd%s" % x
