@@ -9,11 +9,24 @@ usage()
 	echo "Usage: $0 <version>"
 }
 
+check_kernel_source() {
+    # check if kernel-source are availables in /usr/src
+    KERNEL_SOURCE=linux-source-$(uname -r | grep -Eo '2.6.[0-9]{1,2}')
+    KERNEL_SRC_PATH="/usr/src/$KERNEL_SOURCE"
+    if [ ! -d  $KERNEL_SRC_PATH ]; then
+        echo "install $KERNEL_SOURCE"
+        exit 2
+    fi
+}
+
 UPVERSION=$1
+
 if [ -z "${UPVERSION}" ]; then
 	usage
 	exit 1
 fi
+
+check_kernel_source
 
 if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
 	FILENAME="${PKG_NAME}_${UPVERSION}+dfsg.orig.tar.gz"
@@ -21,7 +34,9 @@ else
 	FILENAME="${PKG_NAME}_${UPVERSION}.orig.tar.gz"
 fi
 
-mkdir -p ${DEST_PATH}
+if [ ! -d $DEST_PATH ]; then
+    mkdir -p $DEST_PATH
+fi
 
 if [ -e "${DEST_PATH}/${FILENAME}" ]; then
 	echo "A tarball already exist for this version ; remove it if you want to regenerate."
@@ -40,17 +55,20 @@ if [ $? != 0 ]; then
 fi
 
 if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
-	echo "Repacking as DFSG-free..."
-	DIR="${DEST_PATH}/${PKG_NAME}-${UPVERSION}.tmp"
-	rm -rf ${DIR}
-	mkdir -p ${DIR}
+	echo "Repacking as DFSG-free, add oslec sources"
+	TEMP_DIR="${DEST_PATH}/${PKG_NAME}-${UPVERSION}.tmp"
+	rm -rf $TEMP_DIR
+	mkdir -p $TEMP_DIR
 	(
-		cd ${DIR}
+		cd $TEMP_DIR
 		tar xfz ../${UPFILENAME}
 		if [ -e "${SRC_DIR_PREFIX}${UPVERSION}" ]; then
 			(
 			cd ${SRC_DIR_PREFIX}${UPVERSION}
 			rm -rf ${DFSG_EXCLUDE_PATTERNS}
+            # get oslec source
+            mkdir -p drivers/staging
+            cp -a $KERNEL_SRC_PATH/$OSLEC_SRC_PATH drivers/staging/
 			)
 			tar cfz ../${FILENAME} ${SRC_DIR_PREFIX}${UPVERSION}
 		else
@@ -58,7 +76,7 @@ if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
 			exit 2
 		fi
 	)
-	rm -rf ${DIR}
+	rm -rf $TEMP_DIR
 	rm -f ${DEST_PATH}/${UPFILENAME}
 else
 	if [ "${UPFILENAME}" != "${FILENAME}" ]; then
