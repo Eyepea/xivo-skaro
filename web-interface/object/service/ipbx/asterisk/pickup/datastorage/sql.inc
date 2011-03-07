@@ -22,8 +22,26 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_pickup_sql extends xivo_service_asterisk_abstract_sql
 {
+	var $_autoincrement	= false;
 	var $_unique	= 'name';
 	#var $_disable	= null;
+	
+	function get_empty()
+	{
+		$this->_dso->new_select($this->_table,array('id'));
+		$this->_dso->new_order(array('id' => SORT_ASC));
+
+		$cur = 0;
+		foreach($this->_dso->select_all() as $row)
+		{
+			if(intval($row['id']) > $cur)
+				break;
+
+			$cur++;
+		}
+
+		return($cur < 64?$cur:false);
+	}
 	
 }
 

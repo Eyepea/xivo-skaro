@@ -2482,7 +2482,8 @@ CREATE INDEX queue_log__idx_data2 ON queue_log USING btree ("data2");
 
 DROP TABLE IF EXISTS "pickup";
 CREATE TABLE "pickup" (
- "id"          SERIAL,
+ -- id is not an autoincrement number, because pickups are between 0 and 63 only
+ "id"          INTEGER NOT NULL,
  "name"        VARCHAR(128) UNIQUE NOT NULL,
  "commented"   INTEGER NOT NULL DEFAULT 0,
  "description" TEXT NOT NULL DEFAULT '',
