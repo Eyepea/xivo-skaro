@@ -1510,7 +1510,7 @@ class dwho_tpl_form extends dwho_tpl_module
 	{
 		$divid = 'it-'.$name.'-finder';
 		$r = '<center style="margin:5px;">';
-		$r .= '<input type="text" name="'.$name.'" id="'.$divid.'" value="'.$str.'">';
+		$r .= '<input type="text" name="'.$name.'" id="'.$divid.'" value="'.$str.'" />';
 		$r .= '</center>';
 		$r .= "\n\n<script type=\"text/javascript\">
 				dwho.form.set_events_text_helper('$divid');

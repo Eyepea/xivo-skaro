@@ -163,25 +163,18 @@ abstract class dwho_report
 				continue;
 			$rs[$type] = self::get($type);
 		}
-		$rs = serialize($rs);
-		#$rs = base64_encode($rs);
-		$rs = urlencode($rs);
 		return($rs);
 	}
 
 	public static function decode() 
 	{
 		if (isset($_SESSION['_report']) === false
+		|| is_array($_SESSION['_report']) === false
 		|| empty($_SESSION['_report']) === true)
 			return(null);
-			
-		$_report = $_SESSION['_report'];
-		
-		$str = urldecode($_report);
-		#$str = base64_decode($str);
-		$arr = unserialize($str);
 		
 		$listtype = get_class_vars('dwho_report');
+		$arr = $_SESSION['_report'];
 		
 		foreach($arr as $type => $value)
 		{

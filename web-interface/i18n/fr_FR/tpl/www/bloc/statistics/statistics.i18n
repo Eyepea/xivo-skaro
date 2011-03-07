@@ -138,7 +138,7 @@ Duré moyenne
 Durée
 
 ; col_max_concurrent_calls
-Appels Simultanés
+Pic d'appels
 
 ; col_totalwithdrawal
 <acronym title="Total des retraits">Total</acronym>
@@ -195,7 +195,7 @@ Sortant
 Total
 
 ; colstruct_max_concurrent_calls
-Appels Simultanés
+Pic d'appels
 
 ; col_max_concurrent_calls_intern	
 Interne

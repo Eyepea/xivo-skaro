@@ -39,40 +39,40 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		<div class="sb-list"> 
-		
+		<div class="sb-list">
+
 			<?=$table_trunk?>
-			
-			<div style="width:370px; float:right;"> 
-			
+
+			<div style="width:370px; float:right;">
+
 			</div>
-			<div style="width:370px; float:left;"> 
+			<div style="width:370px; float:left;">
 				<?=$table_intern?>
 			</div>
 			<div style="clear:both;"></div>
-			
-			<div style="width:240px; float:right;"> 
+
+			<div style="width:240px; float:right;">
 				<?=$top10_call_nb_out?>
 			</div>
-			<div style="width:240px; float:right; margin-right:15px;"> 
+			<div style="width:240px; float:right; margin-right:15px;">
 				<?=$top10_call_nb_in?>
 			</div>
-			<div style="width:240px; float:left;"> 
+			<div style="width:240px; float:left;">
 				<?=$top10_call_nb_intern?>
 			</div>
 			<div style="clear:both;"></div>
-			
-			<div style="width:240px; float:right;"> 
+
+			<div style="width:240px; float:right;">
 				<?=$top10_call_duration_out?>
 			</div>
-			<div style="width:240px; float:right; margin-right:15px;"> 
+			<div style="width:240px; float:right; margin-right:15px;">
 				<?=$top10_call_duration_in?>
 			</div>
-			<div style="width:240px; float:left;"> 
+			<div style="width:240px; float:left;">
 				<?=$top10_call_duration_intern?>
 			</div>
 			<div style="clear:both;"></div>
-			
+
 		</div>
 <?php
 		$xivo_jqplot->get_result('chart1');
