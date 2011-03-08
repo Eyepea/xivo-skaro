@@ -238,12 +238,15 @@ class xivo_application_service_asterisk_pickup extends xivo_application_asterisk
 
 		if(($id = $this->_pickup->_dso->get_empty()) === false)
 		{
-			dwho_report::push('error', 'max pickup groups');
+			dwho_report::push('error', 'max_pickup_groups');
 			return(false);
 		}
 		$rs['id'] = $id;
 
-		return(($this->_return['pickup'] = $this->_pickup->add($rs)));
+		if($this->_pickup->add($rs) === false)
+			return false;
+
+		return(($this->_return['pickup'] = $id));
 	}
 
 	function add_pickup_members($pickupid)
