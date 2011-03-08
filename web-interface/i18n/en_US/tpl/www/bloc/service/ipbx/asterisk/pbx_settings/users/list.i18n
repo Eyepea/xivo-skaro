@@ -30,3 +30,16 @@ No user found
 
 ; opt_delete_confirm
 Are you sure you want to delete this user?
+
+; toolbar_adv_menu_autoprov
+Provisioning
+
+; autoprov_reboot_phones
+Reboot phones
+
+; autoprov_cancel
+Cancel
+
+; autoprov_validate
+OK
+

@@ -815,7 +815,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($arr['protocol']['protocol'] == 'sccp')
 		{
 			$arr['protocol']['number']     = $arr['userfeatures']['number'];
-			$arr['protocol']['musicclass'] = $arr['userfeatures']['musiconhold'];
+			if(array_key_exists('musiconhold',$arr['userfeatures']))
+				$arr['protocol']['musicclass'] = $arr['userfeatures']['musiconhold'];
 		}
 
 		$this->set_protocol($arr['protocol'],$protocolname);
@@ -2643,6 +2644,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$r['total']['error'] = 0;
 		$r['total']['count'] = $nb;
 
+		$tpl = $GLOBALS['_TPL'];
+		$tpl->load_i18n_file('tpl/www/bloc/service/ipbx/asterisk/pbx_settings/users/import.i18n', 'global');
+
 		for($i = 0,$row = 1;$i < $nb;$i++,$row++)
 		{
 			if(($arr = $this->_prepare_import($data[$i])) === false
@@ -2652,6 +2656,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['error']++;
 
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				
+				$err = array();
+				foreach($this->get_error() as $k => $v)
+					$err[] = $tpl->bbf("error(".$k."__".$v.")");
+				$msg = sprintf('%s #%03d:&nbsp;&nbsp&nbsp&nbsp  %s', $tpl->bbf('line'), $i+1, 
+					implode(', ', $err));
+				dwho_report::push('error', $msg, $tpl->bbf('import_fail'));
 				continue;
 			}
 			else if(dwho_issa('incall',$arr) === false
@@ -2663,6 +2674,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$r['total']['error']++;
 
 					dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+					dwho_report::push('error', $this->get_error());
 				}
 				else
 				{
@@ -2705,6 +2717,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['error']++;
 				
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				dwho_report::push('error', $this->get_error());
 				continue;
 			}
 
@@ -2717,6 +2730,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['error']++;
 
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				dwho_report::push('error', $this->get_error());
 			}
 			else
 			{
@@ -2731,9 +2745,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function import_csv($save=true)
 	{
-		//$xivo_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini');
-		//define('XIVO_LOG_FILE', $xivo_ini['error']['file']);
-
 		$save = (bool) $save;
 
 		if(dwho::load_class('dwho::file::csv') === false
