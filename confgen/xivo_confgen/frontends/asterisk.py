@@ -107,10 +107,13 @@ class AsteriskFrontend(Frontend):
 
 			if user['name'] in pickups:
 				p = pickups[user['name']]
+				#WARNING: 
+				# pickupgroup: trappable calls  (xivo members)
+				# callgroup  : can pickup calls (xivo pickups)
 				if 'member' in p:
-					print >>o, "callgroup = " + ','.join(frozenset(p['member']))
+					print >>o, "pickupgroup = " + ','.join(frozenset(p['member']))
 				if 'pickup' in p:
-					print >>o, "pickupgroup = " + ','.join(frozenset(p['pickup']))
+					print >>o, "callgroup = " + ','.join(frozenset(p['pickup']))
 
 
 		return o.getvalue()
