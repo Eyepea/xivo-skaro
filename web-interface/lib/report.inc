@@ -105,6 +105,9 @@ abstract class dwho_report
 		&& self::has($type) === false)
 			return(false);
 
+		$_I18N = &dwho_gct::get('dwho_i18n');
+		$_I18N->load_file('report/common');
+
 		$return = '';
 		$return .= '<div class="xivo-'.$type.' xivo-messages">';
 		$return .= '<ul>';
