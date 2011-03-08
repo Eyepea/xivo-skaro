@@ -262,6 +262,9 @@ class cursor(object):
     def __get_description(self):
         return self.__dbapi2_cursor.description
 
+    def __get_lastrowid(self):
+        return self.__dbapi2_cursor.lastrowid
+
     def __get_rowcount(self):
         return self.__dbapi2_cursor.rowcount
 
@@ -279,6 +282,7 @@ class cursor(object):
         return cast_(fieldname, type)
 
     description = property(__get_description, None, None, "As in DBAPI2.0")
+    lastrowid   = property(__get_lastrowid, None, None, "As in DBAPI2.0")
     rowcount    = property(__get_rowcount, None, None, "As in DBAPI2.0")
     arraysize   = property(__get_arraysize, __set_arraysize, None, "As in DBAPI2.0")
     
