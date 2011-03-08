@@ -1,0 +1,100 @@
+[pkg_IP301-sipapp]
+desc: SIP application for Polycom IP301
+version: 3.1.6.0017
+files: file_sipapp_split
+install_proc: install_sipapp 2345-11300-010.sip-316.ld
+
+[pkg_IP301-bootrom]
+desc: BootROM for Polycom IP301
+version: 4.1.4.0122
+files: file_bootrom
+install_proc: install_bootrom 2345-11300-010.bootrom.ld
+
+[pkg_IP501-sipapp]
+desc: SIP application for Polycom IP501
+version: 3.1.6.0017
+files: file_sipapp_split
+install_proc: install_sipapp_2x 2345-11500-030.sip-316.ld 2345-11500-040.sip-316.ld 
+
+[pkg_IP501-bootrom]
+desc: BootROM for Polycom IP501
+version: 4.1.4.0122
+files: file_bootrom
+install_proc: install_bootrom_2x 2345-11500-030.bootrom.ld 2345-11500-040.bootrom.ld
+
+[pkg_IP600-sipapp]
+desc: SIP application for Polycom IP600
+version: 3.1.6.0017
+files: file_sipapp_split
+install_proc: install_sipapp 2345-11600-001.sip-316.ld
+
+[pkg_IP600-bootrom]
+desc: BootROM for Polycom IP600
+version: 4.1.4.0122
+files: file_bootrom
+install_proc: install_bootrom 2345-11600-001.bootrom.ld
+
+[pkg_IP601-sipapp]
+desc: SIP application for Polycom IP601
+version: 3.1.6.0017
+files: file_sipapp_split
+install_proc: install_sipapp 2345-11605-001.sip-316.ld
+
+[pkg_IP601-bootrom]
+desc: BootROM for Polycom IP601
+version: 4.1.4.0122
+files: file_bootrom
+install_proc: install_bootrom 2345-11605-001.bootrom.ld
+
+[pkg_IP4000-sipapp]
+desc: SIP application for Polycom IP4000
+version: 3.1.6.0017
+files: file_sipapp_split
+install_proc: install_sipapp 2201-06642-001.sip-316.ld
+
+[pkg_IP4000-bootrom]
+desc: BootROM for Polycom IP4000
+version: 4.1.4.0122
+files: file_bootrom
+install_proc: install_bootrom 2201-06642-001.bootrom.ld
+
+[pkg_lang]
+desc: Language files for Polycom
+version: 3.1.6.0017
+files: file_sipapp_split
+install_proc: install_lang
+
+
+[install_sipapp]
+a-b: unzip $FILE1
+b-c: cp $ARG1 $DOC_ROOT/
+
+[install_sipapp_2x]
+a-b: unzip $FILE1
+b-c: cp $ARG1 $DOC_ROOT/
+b-d: cp $ARG2 $DOC_ROOT/
+
+[install_bootrom]
+a-b: unzip $FILE1
+b-c: cp $ARG1 $DOC_ROOT/
+
+[install_bootrom_2x]
+a-b: unzip $FILE1
+b-c: cp $ARG1 $DOC_ROOT/
+b-d: cp $ARG2 $DOC_ROOT/
+
+[install_lang]
+a-b: unzip $FILE1
+b-c: cp SoundPointIPLocalization/ $DOC_ROOT/
+
+
+
+[file_sipapp_split]
+url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_3_1_6_legacy_release_sig_split.zip
+size: 15006377
+sha1sum: 42626304e83dfc5ce2d26559b9f28266f99da559
+
+[file_bootrom]
+url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_vvx_BootROM_4_1_4_release_sig.zip
+size: 31470670
+sha1sum: 7677f6cda04effc39b0cf47d0a3e3b8ff0ab0edd
