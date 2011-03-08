@@ -44,24 +44,31 @@ abstract class dwho_report
 		if (is_null($key) === true)
 		{
 			if(is_array($msg) === true)
-				$self = array_merge($self,$msg);
-			elseif(is_scalar($msg) === true)
+				$msg = array_shift($msg);
+
+			if(is_scalar($msg) === true
+			&& in_array($msg,$self) === false)
 				array_push($self, $msg);
+			else
+				return(false);
 		}
 		elseif (is_null($key) === false)
 		{
+			$key = base64_encode($key);
 			if (isset($self[$key]) === false)
 				$self[$key] = array();
 
 			if(is_array($msg) === true)
-				$self[$key] = array_merge($self[$key],$msg);
-			elseif(is_scalar($msg) === true)
+				$msg = array_shift($msg);
+
+			if(is_scalar($msg) === true
+			&& in_array($msg,$self[$key]) === false)
 				array_push($self[$key], $msg);
+			else
+				return(false);
 		}
 		else
 			return(false);
-
-		$self = array_unique($self);
 
 		return(true);
 	}
@@ -106,15 +113,16 @@ abstract class dwho_report
 			if (is_string($k) === true
 			&& is_array($v) === true)
 			{
-				$id = trim($k);
+				$key = base64_decode($k);
+				$id = uniqid();
 				$data = array();
 				$data['type'] = $type;
-				$data['bloc'] = $id;
+				$data['bloc'] = $k;
 				$query =  http_build_query($data, '', '&amp;');
 
 				$return .= '<a href="#" id="a-'.$id.'" class="xm_toggle">';
 				$return .= '<span id="s-'.$id.'" class="ui-icon ui-icon-triangle-1-e"></span>';
-				$return .= dwho_i18n::babelfish($k).' </a><div class="clearboth"></div>';
+				$return .= dwho_i18n::babelfish($key).' </a><div class="clearboth"></div>';
 				$return .= '<ul id="'.$id.'" class="b-nodisplay" style="border:1px dotted red;">';
 				$return .= '<a href="/exportreport.php?'.$query.'" class="bt_export">'.dwho_i18n::babelfish('report_export').'</a>';
 				foreach($v as $submessage)

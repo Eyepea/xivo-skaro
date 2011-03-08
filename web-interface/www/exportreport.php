@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# 
+#
 
 require_once('xivo.php');
 
@@ -26,16 +26,18 @@ $type = isset($_QR['type']) === false ? '' : $_QR['type'];
 if(($result = dwho_report::get_bloc($type,$bloc)) === false)
 	die;
 
+$title = str_replace(' ','_',html_entity_decode(base64_decode($bloc)));
+
 header('Pragma: no-cache');
 header('Cache-Control: private, must-revalidate');
 header('Last-Modified: '.date('D, d M Y H:i:s',mktime()).' '.dwho_i18n::strftime_l('%Z',null));
-header('Content-Disposition: attachment; filename=xivo_report_'.$type.'-'.$bloc.'.txt');
+header('Content-Disposition: attachment; filename=xivo_report_'.$type.'-'.$title.'.txt');
 header('Content-Type: text/txt; charset=UTF-8');
 
 ob_start();
 
 while($result)
-	echo array_shift($result),"\n";
+	echo html_entity_decode(array_shift($result),ENT_QUOTES),"\n";
 
 header('Content-Length: '.ob_get_length());
 ob_end_flush();
