@@ -8,9 +8,9 @@ common_globals = {}
 execfile_('common.py', common_globals)
 
 
-MODELS = ['7906G', '7911G', '7931G', '7941G', '7942G', '7945G', '7961G',
-          '7962G', '7965G', '7970G', '7971G', '7975G']
-VERSION = '9.0.3/SCCP'
+MODELS = [u'7906G', u'7911G', u'7931G', u'7941G', u'7942G', u'7945G', u'7961G',
+          u'7962G', u'7965G', u'7970G', u'7971G', u'7975G']
+VERSION = u'9.0.3/SCCP'
 MODEL_VERSION = dict((m, VERSION) for m in MODELS)
 
 

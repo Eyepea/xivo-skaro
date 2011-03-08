@@ -77,56 +77,56 @@ b-c: cp * $DOC_ROOT/i18n/
 
 
 [file_6730i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6730i_FC-001319-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6730i_FC-001319-01-REV00_3_2_0_70_02_2011.zip
 size: 1890512
 sha1sum: ddf00ebaba092ad3b77ef46a4a77841abf6f507f
 
 [file_6731i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6731i_FC-001318-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6731i_FC-001318-01-REV00_3_2_0_70_02_2011.zip
 size: 1896567
 sha1sum: 7412321ec081c160127061f3b67ea5628f49f5a1
 
 [file_6739i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip
 size: 4364467
 sha1sum: ebcebf569d69be92cebcfe4dad3a0be2bcd8d2ff
 
 [file_6753i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6753i_FC-001321-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6753i_FC-001321-01-REV00_3_2_0_70_02_2011.zip
 size: 2630551
 sha1sum: 139900bd5d97d20f7ba310733c66a55a31a38dd5
 
 [file_6755i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6755i_FC-001322-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6755i_FC-001322-01-REV00_3_2_0_70_02_2011.zip
 size: 2660522
 sha1sum: 5f5214db3e6f42f12297a1b2414dac7ec3749415
 
 [file_6757i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6757i_FC-001323-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6757i_FC-001323-01-REV00_3_2_0_70_02_2011.zip
 size: 2660201
 sha1sum: 1a832ac6fb5c9fb1690b218cbf70649a11f7cb41
 
 [file_6757iCT-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/6757iCT_FC-001324-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-569F0D3E-BDD25A5B/en-ca/6757iCT_FC-001324-01-REV00_3_2_0_70_02_2011.zip
 size: 2635818
 sha1sum: 0e61ed3d6522da8fbe84586257df798bf415d029
 
 [file_9143i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/9143i_FC-001325-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-A6C2D05D-7EAF97CA/en-ca/9143i_FC-001325-01-REV00_3_2_0_70_02_2011.zip
 size: 2579726
 sha1sum: ed4b4a18424c488625abbadcd6534357a058b118
 
 [file_9480i-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/9480i_FC-001326-01-REV00_3_2_0_70_02_2011.zip 
+url: http://www.aastra.ca/cps/rde/xbcr/SID-97076BDB-F25CF355/en-ca/9480i_FC-001326-01-REV00_3_2_0_70_02_2011.zip 
 size: 2603218
 sha1sum: d95aa55c42038d665bcbb2f1727088f5fe627d18
 
 [file_9480iCT-fw]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/9480iCT_FC-001327-01-REV00_3_2_0_70_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-94D8B181-20D6BE51/en-ca/9480iCT_FC-001327-01-REV00_3_2_0_70_02_2011.zip
 size: 2578943
 sha1sum: 2b9ec3f9e312c6e0fa8549040eb031f90f474e2f
 
 [file_lang]
-url: http://www.aastratelecom.com/cps/rde/xbcr/SID-0F3CA4F2-2C73F1AD/en-ca/LangPacks_PA-001006-07_REV00_lp_3_2_0_02_2011.zip
+url: http://www.aastra.ca/cps/rde/xbcr/SID-94D8B181-20D6BE51/en-ca/LangPacks_PA-001006-07_REV00_lp_3_2_0_02_2011.zip
 size: 211751
 sha1sum: 02d3954b601f66a5b844c3be072023221114570f

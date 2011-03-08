@@ -14,12 +14,12 @@ tagging enabled: 0
 {% endif -%}
 
 {# NTP settings -#}
-{% if ntp_server %}
+{% if ntp_server -%}
 time server disabled: 0
 time server1: {{ ntp_server }}
-{% else %}
+{% else -%}
 time server disabled: 1
-{% endif %}
+{% endif -%}
 
 {% if admin_password -%}
 admin password: {{ admin_password }}
@@ -72,14 +72,6 @@ sip dtmf method: 1
 sip explicit mwi subscription: {{ sip['subscribe_mwi']|int }}
 {% endif -%}
 
-{% if exten['voicemail'] -%}
-sip vmail: {{ exten['voicemail'] }}
-{% endif -%}
-
-{% if exten['pickup_call'] -%}
-directed call pickup prefix: {{ exten['pickup_call'] }}
-{% endif -%}
-
 {# SIP per-line settings -#}
 {% for line_no, line in sip['lines'].iteritems() %}
 sip line{{ line_no }} proxy ip: {{ line['proxy_ip'] }}
@@ -99,5 +91,13 @@ sip line{{ line_no }} screen name: {{ line['display_name'] }}
 sip line{{ line_no }} screen name 2: {{ line['number'] }}
 {% endif -%}
 {% endfor -%}
+
+{% if exten['voicemail'] -%}
+sip vmail: {{ exten['voicemail'] }}
+{% endif -%}
+
+{% if exten['pickup_call'] -%}
+directed call pickup prefix: {{ exten['pickup_call'] }}
+{% endif -%}
 
 {{ XX_fkeys }}

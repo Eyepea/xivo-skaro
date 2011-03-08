@@ -4,46 +4,47 @@
 ; XXX and it's probably a bad idea to have pkg definitions shared by more
 ;     then one plugin, even for language files, we'll have to rethink of
 ;     that
-[pkg_cisco-7914]
+
+[pkg_7914]
 desc: Firmware for Cisco Expansion Module 7914G (SCCP)
 version: 5.0.4
-files: file_cisco-7914fw
+files: file_7914fw
 install_proc: install_cisco-7900fw
 
-[pkg_cisco-7915]
+[pkg_7915]
 desc: Firmware for Cisco Expansion Module 7915G (SCCP)
 version: 1.0.4
-files: file_cisco-7915fw
+files: file_7915fw
 install_proc: install_cisco-7900fw
 
-[pkg_cisco-7916]
+[pkg_7916]
 desc: Firmware for Cisco Expansion Module 7916G (SCCP)
 version: 1.0.4
-files: file_cisco-7916fw
+files: file_7916fw
 install_proc: install_cisco-7900fw
 
-[pkg_cisco-networklocale]
+[pkg_networklocale]
 desc: Network locale for Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_cisco-networklocale
+files: file_networklocale
 install_proc: install_cisco-networklocale
 
-[pkg_cisco-userlocale_de_DE]
+[pkg_userlocale_de_DE]
 desc: de_DE user locale for Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_cisco-userlocale_de_DE
+files: file_userlocale_de_DE
 install_proc: install_cisco-userlocale
 
-[pkg_cisco-userlocale_es_ES]
+[pkg_userlocale_es_ES]
 desc: es_ES user locale for Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_cisco-userlocale_es_ES
+files: file_userlocale_es_ES
 install_proc: install_cisco-userlocale
 
-[pkg_cisco-userlocale_fr_FR]
+[pkg_userlocale_fr_FR]
 desc: fr_FR user locale for Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_cisco-userlocale_fr_FR
+files: file_userlocale_fr_FR
 install_proc: install_cisco-userlocale
 
 
@@ -66,43 +67,43 @@ d-e: cp usr/local/cm/tftp/* $DOC_ROOT/i18n/
 
 
 
-[file_cisco-7914fw]
+[file_7914fw]
 url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp.5-0-4.zip
 size: 26206
 sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 downloader: x-cisco
 
-[file_cisco-7915fw]
+[file_7915fw]
 url: http://download-sj.cisco.com/swc/esd/03/282159701/contract/cmterm-7915.1-0-4.zip
 size: 64899
 sha1sum: 3897cb03c3cd76e031375b52a2275aa5d82a1674
 downloader: x-cisco
 
-[file_cisco-7916fw]
+[file_7916fw]
 url: http://download-sj.cisco.com/swc/esd/03/282159702/contract/cmterm-7916.1-0-4.zip
 size: 76859
 sha1sum: 4643db66e2c8b1800eee1ca110297b01c481bbcc
 downloader: x-cisco
 
-[file_cisco-networklocale]
+[file_networklocale]
 url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-combined_network-9.0.2.1000-1.cop.sgn
 size: 9351296
 sha1sum: f08e688de664d7e6d4fb19377cc057e5fc251d1d
 downloader: x-cisco
 
-[file_cisco-userlocale_de_DE]
+[file_userlocale_de_DE]
 url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-de_DE-9.0.2.1000-1.cop.sgn
 size: 3561211
 sha1sum: b5fb97239f7f3414557d7bc10606d66c2123ddff
 downloader: x-cisco
 
-[file_cisco-userlocale_es_ES]
+[file_userlocale_es_ES]
 url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-es_ES-9.0.2.1000-1.cop.sgn
 size: 4306710
 sha1sum: 20a7a6e89a91c4df7119557423f533d207a1ee87
 downloader: x-cisco
 
-[file_cisco-userlocale_fr_FR]
+[file_userlocale_fr_FR]
 url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-fr_FR-9.0.2.1000-1.cop.sgn
 size: 4397839
 sha1sum: 326407685f6950e6d4b06c692a2243a218aaf62e

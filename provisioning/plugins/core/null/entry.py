@@ -28,10 +28,10 @@ from provd.servers.tftp.service import TFTPNullService
 from twisted.web.resource import NoResource
 
 
-MSG = 'Null plugin always reject requests'
+_MSG = 'Null plugin always reject requests'
 
 class NullPlugin(Plugin):
     IS_PLUGIN = True
     
-    http_service = NoResource(MSG)
-    tftp_service = TFTPNullService(errmsg=MSG) 
+    http_service = NoResource(_MSG)
+    tftp_service = TFTPNullService(errmsg=_MSG) 

@@ -6,7 +6,7 @@ common_globals = {}
 execfile_('common.py', common_globals)
 
 
-MODEL_VERSION = {'PAP2T': '5.1.6'}
+MODEL_VERSION = {u'PAP2T': u'5.1.6'}
 
 
 class CiscoPlugin(common_globals['BaseCiscoPlugin']):

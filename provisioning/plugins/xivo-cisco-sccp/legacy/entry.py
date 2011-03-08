@@ -8,12 +8,12 @@ common_globals = {}
 execfile_('common.py', common_globals)
 
 
-MODEL_VERSION = {'7902G': '8.0.2/SCCP',
-                 '7905G': '8.0.3/SCCP',
-                 '7910G': '5.0.7/SCCP',
-                 '7912G': '8.0.4/SCCP',
-                 '7940G': '8.1.2/SCCP',
-                 '7960G': '8.1.2/SCCP'}
+MODEL_VERSION = {u'7902G': u'8.0.2/SCCP',
+                 u'7905G': u'8.0.3/SCCP',
+                 u'7910G': u'5.0.7/SCCP',
+                 u'7912G': u'8.0.4/SCCP',
+                 u'7940G': u'8.1.2/SCCP',
+                 u'7960G': u'8.1.2/SCCP'}
 
 
 class CiscoSccpPlugin(common_globals['BaseCiscoSccpPlugin']):

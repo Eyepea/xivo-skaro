@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 
-"""Common plugin code shared by the the various xivo-aastra plugins.
+"""Common code shared by the the various xivo-aastra plugins.
 
-Support the 6730i, 6731i, 6739i, 6751i, 6753i, 6755i, 6757i.
+Support the 6730i, 6731i, 6739i, 6751i, 6753i, 6755i, 6757i, 9143i and 9180i.
 
 """
 
@@ -24,6 +24,10 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# XXX does the CT models identify themselves differently ? i.e. does the
+#     57i CT identify itself as 57i or something like 57iCT ?
+# TODO add function key support for 9143i and 9180i
+
 import os.path
 from provd import sip, tzinform
 from provd.devices.config import RawConfigError
@@ -31,6 +35,7 @@ from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
     INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
+from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
@@ -42,13 +47,15 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         return defer.succeed(self._do_extract(request))
     
     _UA_MODELS_MAP = {
-        'Aastra6730i': '6730i',     # not tested
-        'Aastra6731i': '6731i',
-        'Aastra6739i': '6739i',
-        'Aastra51i': '6751i',       # not tested
-        'Aastra53i': '6753i',       # not tested
-        'Aastra55i': '6755i',
-        'Aastra57i': '6757i',
+        'Aastra6730i': u'6730i',     # not tested
+        'Aastra6731i': u'6731i',
+        'Aastra6739i': u'6739i',
+        'Aastra51i': u'6751i',       # not tested
+        'Aastra53i': u'6753i',       # not tested
+        'Aastra55i': u'6755i',
+        'Aastra57i': u'6757i',
+        'Aastra9143i': u'9143i',     # not tested
+        'Aastra9180i': u'9180i',     # not tested
     }
     
     def _do_extract(self, request):
@@ -57,8 +64,9 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
             dev_info = {}
             self._extract_from_ua(ua, dev_info)
             if dev_info:
-                dev_info['vendor'] = 'Aastra'
+                dev_info[u'vendor'] = u'Aastra'
                 return dev_info
+        return None
     
     def _extract_from_ua(self, ua, dev_info):
         # HTTP User-Agent:
@@ -69,32 +77,35 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
         tokens = ua.split()
         if len(tokens) == 3:
-            model_raw, mac_raw, version_raw = tokens
-            model = self._parse_model(model_raw)
+            raw_model, raw_mac, raw_version = tokens
+            model = self._parse_model(raw_model)
             if model:
-                dev_info['model'] = model
-            mac = self._parse_mac(mac_raw)
+                dev_info[u'model'] = model
+            mac = self._parse_mac(raw_mac)
             if mac:
-                dev_info['mac'] = mac
-            version = self._parse_version(version_raw)
+                dev_info[u'mac'] = mac
+            version = self._parse_version(raw_version)
             if version:
-                dev_info['version'] = version
+                dev_info[u'version'] = version
+        return None
     
-    def _parse_model(self, model_raw):
-        return self._UA_MODELS_MAP.get(model_raw)
+    def _parse_model(self, raw_model):
+        return self._UA_MODELS_MAP.get(raw_model)
     
-    def _parse_mac(self, mac_raw):
-        if mac_raw.startswith('MAC:'):
+    def _parse_mac(self, raw_mac):
+        if raw_mac.startswith('MAC:'):
             # looks like a valid MAC token..
             try:
-                return norm_mac(mac_raw[len('MAC:'):])
+                return norm_mac(raw_mac[len('MAC:'):].decode('ascii'))
             except ValueError:
                 pass
+        return None
     
-    def _parse_version(self, version_raw):
-        if version_raw.startswith('V:') and version_raw.endswith('-SIP'):
+    def _parse_version(self, raw_version):
+        if raw_version.startswith('V:') and raw_version.endswith('-SIP'):
             # looks like a valid version token...
-            return version_raw[len('V:'):-len('-SIP')]
+            return raw_version[len('V:'):-len('-SIP')].decode('ascii')
+        return None
 
 
 class BaseAastraPgAssociator(BasePgAssociator):
@@ -105,7 +116,7 @@ class BaseAastraPgAssociator(BasePgAssociator):
         self._compat_models = compat_models
     
     def _do_associate(self, vendor, model, version):
-        if vendor == 'Aastra':
+        if vendor == u'Aastra':
             if model in self._models:
                 if version == self._version:
                     return FULL_SUPPORT
@@ -117,54 +128,48 @@ class BaseAastraPgAssociator(BasePgAssociator):
 
 
 class BaseAastraPlugin(StandardPlugin):
+    # Note that no TFTP support is included since Aastra phones are capable of
+    # protocol selection via DHCP options.
+    # XXX actually, we didn't find which encoding Aastra were using
     _ENCODING = 'UTF-8'
-    # XXX actually, we didn't find which encoding to use
-    
-    _XX_DICT_DEF = 'en'
+    _XX_DICT_DEF = u'en'
     _XX_DICT = {
-        'en': {
-            'voicemail':  'Voicemail',
-            'fwd_unconditional': 'Unconditional forward',
-            'dnd': 'D.N.D',
-            'local_directory': 'Directory',
-            'callers': 'Callers',
-            'services': 'Services',
-            'pickup_call': 'Call pickup',
-            'remote_directory': 'Directory',
+        u'en': {
+            u'voicemail':  u'Voicemail',
+            u'fwd_unconditional': u'Unconditional forward',
+            u'dnd': u'D.N.D',
+            u'local_directory': u'Directory',
+            u'callers': u'Callers',
+            u'services': u'Services',
+            u'pickup_call': u'Call pickup',
+            u'remote_directory': u'Directory',
         },
-        'fr': {
-            'voicemail':  'Messagerie',
-            'fwd_unconditional': 'Renvoi inconditionnel',
-            'dnd': 'N.P.D',
-            'local_directory': 'Repertoire',
-            'callers': 'Appels',
-            'services': 'Services',
-            'pickup_call': 'Interception',
-            'remote_directory': 'Annuaire',
+        u'fr': {
+            u'voicemail':  u'Messagerie',
+            u'fwd_unconditional': u'Renvoi inconditionnel',
+            u'dnd': u'N.P.D',
+            u'local_directory': u'Repertoire',
+            u'callers': u'Appels',
+            u'services': u'Services',
+            u'pickup_call': u'Interception',
+            u'remote_directory': u'Annuaire',
         },
     }
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
-        self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
-        self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        self.services = self._fetchfw_helper.services() 
         
+        self._tpl_helper = TemplatePluginHelper(plugin_dir)
+        
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
+        fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
+        
+        self.services = fetchfw_helper.services()
+        self.http_service = HTTPNoListingFileService(self._tftpboot_dir)
+    
     http_dev_info_extractor = BaseAastraHTTPDeviceInfoExtractor()
     
-    tftp_dev_info_extractor = None
-    # This is not necessary since Aastra are capable of protocol
-    # selection inside DHCP option 66 (TFTP server name).
-    # That said, there is the rare case where one provisioning
-    # server were replaced by this one, and the new one has the
-    # same IP address than the old one and the phones were
-    # configured to do TFTP and the admin guys are too lazy to
-    # configure there DHCP server to change the value of option 66.
-    # In this case, this might be useful.
-    
-    @classmethod
-    def _format_expmod(cls, keynum):
+    def _format_expmod(self, keynum):
         # XXX you get a weird behavior if you have more than 1 M670i expansion module.
         # For example, if you have a 6757i and you want to set the first key of the
         # second module, you'll have to pick, in the xivo web interface, the key number
@@ -175,146 +180,147 @@ class BaseAastraPlugin(StandardPlugin):
         # used, but this leave a weird behavior for multi-expansion setup when smaller
         # expansion module are used....
         if keynum <= 180:
-            return "expmod%d key%d" % ((keynum - 1) // 60 + 1, (keynum - 1) % 60 + 1)
+            return u'expmod%d key%d' % ((keynum - 1) // 60 + 1, (keynum - 1) % 60 + 1)
         return None
     
-    @classmethod
-    def _get_keytype_from_model_and_keynum(cls, model, keynum):
-        if model in ("6730i", "6731i"):
+    def _get_keytype_from_model_and_keynum(self, model, keynum):
+        if model in [u'6730i', u'6731i']:
             if keynum <= 8:
-                return "prgkey%d" % keynum
-        elif model in ("6739i"):
+                return u'prgkey%d' % keynum
+        elif model == '6739i':
             if keynum <= 55:
-                return "softkey%d" % keynum
+                return u'softkey%d' % keynum
             else:
-                return cls._format_expmod(keynum - 55)
-        elif model in ("6753i"):
+                return self._format_expmod(keynum - 55)
+        elif model == u'6753i':
             if keynum <= 6:
-                return "prgkey%d" % keynum
+                return u'prgkey%d' % keynum
             else:
-                return cls._format_expmod(keynum - 6)
-        elif model in ("6755i"):
+                return self._format_expmod(keynum - 6)
+        elif model == u'6755i':
             if keynum <= 6:
-                return "prgkey%d" % keynum
+                return u'prgkey%d' % keynum
             else:
                 keynum -= 6
-                if keynum <= 6:
-                    return "softkey%d" % keynum
+                if keynum <= 20:
+                    return u'softkey%d' % keynum
                 else:
-                    return cls._format_expmod(keynum - 6)
-        elif model in ("6757i"):
+                    return self._format_expmod(keynum - 20)
+        elif model == u'6757i':
             # The 57i has 6 'top keys' and 6 'bottom keys'. 10 functions are programmable for
             # the top keys and 20 are for the bottom keys.
             if keynum <= 10:
-                return "topsoftkey%d" % keynum
+                return u'topsoftkey%d' % keynum
             else:
                 keynum -= 10
                 if keynum <= 20:
-                    return "softkey%d" % keynum
+                    return u'softkey%d' % keynum
                 else:
-                    return cls._format_expmod(keynum - 20)
+                    return self._format_expmod(keynum - 20)
         return None
     
-    @classmethod
-    def _format_function_keys(cls, funckey, model):
+    def _format_function_keys(self, funckeys, model):
         if model is None:
-            return ''
-        sorted_keys = funckey.keys()
+            return u''
+        sorted_keys = funckeys.keys()
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            keytype = cls._get_keytype_from_model_and_keynum(model, int(key))
+            keytype = self._get_keytype_from_model_and_keynum(model, int(key))
             if keytype is not None:
-                value = funckey[key]
-                exten = value['exten']
-                if value.get('supervision'):
-                    xtype = "blf"
+                value = funckeys[key]
+                exten = value[u'exten']
+                if value.get(u'supervision'):
+                    xtype = u'blf'
                 else:
-                    xtype = "speeddial"
-                if 'label' in value and value['label'] is not None:
-                    label = value['label']
+                    xtype = u'speeddial'
+                if u'label' in value and value[u'label'] is not None:
+                    label = value[u'label']
                 else:
                     label = exten
-                fk_config_lines.append("%s type: %s" % (keytype, xtype))
-                fk_config_lines.append("%s label: %s" % (keytype, label))
-                fk_config_lines.append("%s value: %s" % (keytype, exten))
-                fk_config_lines.append("%s line: 1" % (keytype,))
-        return "\n".join(fk_config_lines)
+                line = value.get(u'line', 1)
+                fk_config_lines.append(u'%s type: %s' % (keytype, xtype))
+                fk_config_lines.append(u'%s label: %s' % (keytype, label))
+                fk_config_lines.append(u'%s value: %s' % (keytype, exten))
+                fk_config_lines.append(u'%s line: %s' % (keytype, line))
+        return u'\n'.join(fk_config_lines)
     
-    @classmethod
-    def _format_dst_change(cls, suffix, dst_change):
+    def _format_dst_change(self, suffix, dst_change):
         lines = []
-        lines.append('dst %s month: %d' % (suffix, dst_change['month']))
-        lines.append('dst %s hour: %d' % (suffix, min(dst_change['time'].as_hours, 23)))
+        lines.append(u'dst %s month: %d' % (suffix, dst_change['month']))
+        lines.append(u'dst %s hour: %d' % (suffix, min(dst_change['time'].as_hours, 23)))
         if dst_change['day'].startswith('D'):
-            lines.append('dst %s day: %s' % (suffix, dst_change['day'][1:]))
+            lines.append(u'dst %s day: %s' % (suffix, dst_change['day'][1:]))
         else:
             week, weekday = dst_change['day'][1:].split('.')
             if week == '5':
-                lines.append('dst %s week: -1' % suffix)
+                lines.append(u'dst %s week: -1' % suffix)
             else:
-                lines.append('dst %s week: %s' % (suffix, week))
-            lines.append('dst %s day: %s' % (suffix, weekday))
+                lines.append(u'dst %s week: %s' % (suffix, week))
+            lines.append(u'dst %s day: %s' % (suffix, weekday))
         return lines
     
-    @classmethod
-    def _format_tz_inform(cls, inform):
+    def _format_tz_info(self, tzinfo):
         lines = []
-        lines.append('time zone name: Custom')
-        lines.append('time zone minutes: %d' % -(inform['utcoffset'].as_minutes))
-        if inform['dst'] is None:
-            lines.append('dst config: 0')
+        lines.append(u'time zone name: Custom')
+        lines.append(u'time zone minutes: %d' % -(tzinfo['utcoffset'].as_minutes))
+        if tzinfo['dst'] is None:
+            lines.append(u'dst config: 0')
         else:
-            lines.append('dst config: 3')
-            lines.append('dst minutes: %d' % (min(inform['dst']['save'].as_minutes, 60)))
-            if inform['dst']['start']['day'].startswith('D'):
-                lines.append('dst [start|end] relative date: 0')
+            lines.append(u'dst config: 3')
+            lines.append(u'dst minutes: %d' % (min(tzinfo['dst']['save'].as_minutes, 60)))
+            if tzinfo['dst']['start']['day'].startswith('D'):
+                lines.append(u'dst [start|end] relative date: 0')
             else:
-                lines.append('dst [start|end] relative date: 1')
-            lines.extend(cls._format_dst_change('start', inform['dst']['start']))
-            lines.extend(cls._format_dst_change('end', inform['dst']['end']))
-        return '\n'.join(lines)
+                lines.append(u'dst [start|end] relative date: 1')
+            lines.extend(self._format_dst_change('start', tzinfo['dst']['start']))
+            lines.extend(self._format_dst_change('end', tzinfo['dst']['end']))
+        return u'\n'.join(lines)
     
-    def _get_xx_fkeys(self, config, model):
-        return self._format_function_keys(config['funckeys'], model)
+    def _get_xx_fkeys(self, raw_config, model):
+        return self._format_function_keys(raw_config[u'funckeys'], model)
     
-    def _get_xx_timezone(self, config):
-        # TODO handle the case where timezone is not present or is not a known
-        #      timezone value
-        return self._format_tz_inform(tzinform.get_timezone_info(config.get('timezone')))
+    def _get_xx_timezone(self, raw_config):
+        try:
+            tzinfo = tzinform.get_timezone_info(raw_config.get(u'timezone'))
+        except tzinform.TimezoneNotFoundError:
+            return None
+        else:
+            return self._format_tzinfo(tzinfo)
     
-    def _get_xx_dict(self, config):
+    def _get_xx_dict(self, raw_config):
         xx_dict = self._XX_DICT[self._XX_DICT_DEF]
-        if 'locale' in config:
-            locale = config['locale']
+        if u'locale' in raw_config:
+            locale = raw_config[u'locale']
             lang = locale.split('_', 1)[0]
             if lang in self._XX_DICT:
                 xx_dict = self._XX_DICT[lang]
         return xx_dict
     
-    def _dev_specific_filename(self, dev):
-        """Return the filename of the device specific configuration file of
-        device dev.
-        
-        """
-        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
+    def _dev_specific_filename(self, device):
+        # Return the device specific filename (not pathname) of device
+        fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + '.cfg'
     
-    @classmethod
-    def _check_config(cls, raw_config):
+    def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
         if u'sip' not in raw_config:
             raise RawConfigError('must have a sip parameter')
     
-    def configure(self, dev, raw_config):
+    def _check_device(self, device):
+        if u'mac' not in device:
+            raise Exception('MAC address needed for device configuration')
+    
+    def configure(self, device, raw_config):
         self._check_config(raw_config)
-        filename = self._dev_specific_filename(dev)
-        tpl = self._tpl_helper.get_dev_template(filename, dev)
+        self._check_device(device)
+        filename = self._dev_specific_filename(device)
+        tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        raw_config['XX_fkeys'] = self._get_xx_fkeys(raw_config, dev.get('model'))
-        raw_config['XX_timezone'] = self._get_xx_timezone(raw_config)
-        raw_config['XX_dict'] = self._get_xx_dict(raw_config)
+        raw_config[u'XX_fkeys'] = self._get_xx_fkeys(raw_config, device.get(u'model'))
+        raw_config[u'XX_timezone'] = self._get_xx_timezone(raw_config)
+        raw_config[u'XX_dict'] = self._get_xx_dict(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
@@ -331,16 +337,15 @@ class BaseAastraPlugin(StandardPlugin):
         try:
             ip = device[u'ip']
         except KeyError:
-            return defer.fail(Exception('no IP address'))
+            return defer.fail(Exception('IP address needed for device synchronization'))
         else:
-            def on_notify_success(status_code):
+            def callback(status_code):
                 if status_code == 200:
                     return None
                 else:
                     e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
                     return failure.Failure(e)
-            
             uri = sip.URI('sip', ip, port=5060)
             d = sip.send_notify(uri, 'check-sync')
-            d.addCallback(on_notify_success)
+            d.addCallback(callback)
             return d

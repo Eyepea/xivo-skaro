@@ -1,7 +1,7 @@
-[pkg_cisco-spa2102]
+[pkg_spa2102-fw]
 desc: Firmware files for Cisco SPA2102
 version: 5.2.10
-files: file_cisco-spa2102fw
+files: file_spa2102fw
 install_proc: install_cisco-zipfw
 
 
@@ -12,7 +12,7 @@ b-c: cp *.bin $DOC_ROOT/firmware/
 
 
 
-[file_cisco-spa2102fw]
+[file_spa2102fw]
 url: http://download-sj.cisco.com/swc/esd/03/282414111/anon/SPA2102_Firmware.zip
 size: 3424733
 sha1sum: e735d328e29d5a5ce17f381350a6c623c3b70436

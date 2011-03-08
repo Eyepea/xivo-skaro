@@ -1,7 +1,7 @@
-[pkg_cisco-spa8800]
+[pkg_spa8800-fw]
 desc: Firmware files for Cisco SPA8800
 version: 6.1.7
-files: file_cisco-spa8800fw
+files: file_spa8800fw
 install_proc: install_cisco-zipfw
 
 
@@ -12,7 +12,7 @@ b-c: cp *.bin $DOC_ROOT/firmware/
 
 
 
-[file_cisco-spa8800fw]
+[file_spa8800fw]
 url: http://download-sj.cisco.com/swc/esd/04/282675423/anon/SPA8800_Rel_617.zip
 size: 4047731
 sha1sum: d738a87754eaf2825fe06d95d2a75a1bdccd5271

@@ -21,15 +21,14 @@ common_globals = {}
 execfile_('common.py', common_globals)
 
 
-PSN = ['301', '303', '501G', '502G', '504G', '508G', '509G', '525G']
-MODELS = ['SPA' + psn for psn in PSN]
-MODEL_VERSION = dict((model, '7.4.7') for model in MODELS)
+PSN = [u'301', u'303', u'501G', u'502G', u'504G', u'508G', u'509G', u'525G']
+MODELS = [u'SPA' + psn for psn in PSN]
+MODEL_VERSION = dict((model, u'7.4.7') for model in MODELS)
 
 
 class CiscoPlugin(common_globals['BaseCiscoPlugin']):
     IS_PLUGIN = True
     # similar to spa508G.cfg (G is uppercase)
-    _COMMON_FILENAMES = ['spa' + psn + '.cfg' for psn in PSN]
+    _COMMON_FILENAMES = ['spa' + psn.encode('ascii') + '.cfg' for psn in PSN]
     
     pg_associator = common_globals['BaseCiscoPgAssociator'](MODEL_VERSION)
-    
