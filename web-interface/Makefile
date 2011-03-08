@@ -8,6 +8,6 @@ install:
 #	install -d
 
 test:
-	find . \( -name "*.php" -o -name "*.inc" \) -exec php -l '{}' \;
+	find . \( -name "*.php" -o -name "*.inc" \) -exec php -l '{}' \; > /dev/null
 
 .PHONY: install test
