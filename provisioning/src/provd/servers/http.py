@@ -114,9 +114,19 @@ class HTTPNoListingFileService(static.File):
     content of directories, it returns a 403 Forbidden.
     
     """
+    _FORBIDDEN_RESOURCE = resource.ErrorPage(http.FORBIDDEN, 'Forbidden',
+                                             'Directory listing not permitted.')
+    _NOT_ALLOWED_RESOURCE = resource.ErrorPage(http.NOT_ALLOWED, 'Method Not Allowed',
+                                               'Method not allowed.')
+    
     def directoryListing(self):
-        return resource.ErrorPage(http.FORBIDDEN, 'Forbidden',
-                                  'Directory listing not permitted.')
+        return self._FORBIDDEN_RESOURCE
+    
+    def getChild(self, path, request):
+        if request.method != 'GET':
+            return self._NOT_ALLOWED_RESOURCE
+        else:
+            return static.File.getChild(self, path, request)
 
 
 if __name__ == '__main__':

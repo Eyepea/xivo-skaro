@@ -20,8 +20,11 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from provd.devices.ident import IDeviceUpdater
 from zope.interface import Interface, implements
+
+logger = logging.getLogger(__name__)
 
 
 NO_SUPPORT = 0
@@ -129,6 +132,7 @@ class PluginAssociatorDeviceUpdater(object):
         self._solver = conflict_solver
     
     def update(self, dev, dev_info, request, request_type):
+        logger.debug('In %s', self.__class__.__name__)
         if self.force_update or u'plugin' not in dev:
             pg_id = self._do_update(dev_info)
             if pg_id:

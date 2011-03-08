@@ -57,22 +57,3 @@ class DeleteRequest(urllib2.Request):
 class PutRequest(urllib2.Request):
     def get_method(self):
         return "PUT"
-
-
-class No2xxErrorHTTPErrorProcessor(urllib2.HTTPErrorProcessor):
-    """Process HTTP error responses.
-    
-    Modified version of urllib2.HTTPErrorProcessor so that when the server
-    return a 200 code, an HTTPError is not raised.
-    
-    """
-    def http_response(self, request, response):
-        code, msg, hdrs = response.code, response.msg, response.info()
-
-        if not 200 <= code < 300:
-            response = self.parent.error(
-                'http', request, response, code, msg, hdrs)
-
-        return response
-
-    https_response = http_response

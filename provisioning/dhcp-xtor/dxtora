@@ -27,10 +27,7 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import json
 import ConfigParser
 import logging
 import optparse
@@ -132,9 +129,8 @@ class ProvServerDHCPInfoSink(object):
         if username and password:
             pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
             pwd_manager.add_password(None, base_uri, username, password)
-            basic_handler = urllib2.HTTPBasicAuthHandler(pwd_manager)
             digest_handler = urllib2.HTTPDigestAuthHandler(pwd_manager)
-            handlers.extend((basic_handler, digest_handler))
+            handlers.append(digest_handler)
         self._opener = urllib2.build_opener(*handlers)
         self._base_uri = base_uri
         self._resource_uri = None
@@ -170,9 +166,7 @@ class ProvServerDHCPInfoSink(object):
             f.close()
         except urllib2.HTTPError, e:
             code = e.code
-            if 200 <= code <= 299:
-                pass
-            elif code == 404 and retry_on_404:
+            if code == 404 and retry_on_404:
                 self._update_resource_uri()
                 self._do_push(dhcp_info, False)
             else:
@@ -342,7 +336,8 @@ def _read_config_default():
                  'retries': 0,
                  'foreground': False},
             'prov_server':
-                {}}
+                {'username': 'admin',
+                 'password': 'admin'}}
 
 
 def _read_config_from_file(filename):

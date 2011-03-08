@@ -41,7 +41,7 @@ import urllib2
 import urlparse
 import json
 from provd.rest.client.util import once_per_instance, DeleteRequest,\
-    PutRequest, No2xxErrorHTTPErrorProcessor
+    PutRequest
 from provd.rest.util import PROV_MIME_TYPE, uri_append_path, uri_append_query
 
 GET_HEADERS  = {'Accept': PROV_MIME_TYPE}
@@ -618,7 +618,7 @@ class PluginResource(object):
 
 
 def new_server_resource(server_uri, credentials=None):
-    handlers = [No2xxErrorHTTPErrorProcessor]
+    handlers = []
     if credentials:
         user, passwd = credentials
         pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()

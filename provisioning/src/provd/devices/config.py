@@ -206,7 +206,7 @@ sip [mandatory if protocol == 'SIP']
           See: sip.dtmf_mode.
         
         voicemail [optional]
-          The voicemail extension number for this line.
+          The extension number to retrieve voicemail for this line.
 
 sccp [mandatory if protocol == 'SCCP']
   A dictionary describing the configuration of all the SCCP related stuff:
@@ -252,7 +252,7 @@ exten [optional|default to empty dictionary]
       The extension number prefix to pick up a call.
     
     voicemail [optional]
-      The voicemail extension number.
+      The extension number to retrieve voicemail.
 
 funckeys [optional|default to empty dictionary]
   A dictionary where keys are function key number and values are dictionary:

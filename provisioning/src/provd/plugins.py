@@ -40,22 +40,16 @@ from provd.download import async_download_multiseq_with_oip,\
 from provd.loaders import ProvdFileSystemLoader
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
-from provd.servers.http import HTTPNoListingFileService
-from provd.servers.tftp.service import TFTPFileService
 from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
     IInstallService, InvalidParameterError
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
-from jinja2.loaders import FileSystemLoader
 from twisted.internet import defer
 from zope.interface import implements, Interface
 
 logger = logging.getLogger(__name__)
 
 
-# XXX turn this into an Interface and make the distinction between what
-#     should be accessible as attributes and what should be accesible as
-#     methods
 class Plugin(object):
     """Base class and entry point of every plugin.
     
@@ -85,9 +79,6 @@ class Plugin(object):
     Attributes:
     id -- the ID of the plugin. This attribute is set after the plugin
           instantiation time by the plugin manager
-    _pluging_dir -- the base directory in which the plugin is
-    _gen_cfg -- a read-only general configuration mapping object
-    _spec_cfg -- a read-only plugin-specific configuration mapping object
     services
     http_dev_info_extractor
     http_service
@@ -128,10 +119,7 @@ class Plugin(object):
         make a deepcopy before.
         
         """
-        self._app = app
-        self._plugin_dir = plugin_dir
-        self._gen_cfg = gen_cfg
-        self._spec_cfg = spec_cfg
+        pass
     
     def close(self):
         """Close the plugin.
@@ -343,15 +331,15 @@ class StandardPlugin(Plugin):
     """Plugin that helps with having a standardized plugin layout and
     which helps with repeating tasks, etc etc, this is a bad description.
     
+    Instances of this class have the following attributes:
+      _tftpboot_dir -- the directory where configuration file should be stored
     """
-    TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
+    _TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        self._tftpboot_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
-        self.tftp_service = TFTPFileService(self._tftpboot_dir)
-        self.http_service = HTTPNoListingFileService(self._tftpboot_dir)  
-    
+        self._tftpboot_dir = os.path.join(plugin_dir, self._TFTPBOOT_DIR)
+
 
 class TemplatePluginHelper(object):
     DEFAULT_TPL_DIR = 'templates'
@@ -370,6 +358,8 @@ class TemplatePluginHelper(object):
         file.
         
         """
+        # XXX not sure device that device specific template should have the
+        #     form 'filename' + '.tpl'...
         # get device-specific template
         logger.info('Getting device specific template')
         try:
@@ -946,7 +936,7 @@ class PluginManager(object):
     def _execplugin(self, plugin_dir, pg_globals):
         entry_file = os.path.join(plugin_dir, self._ENTRY_FILENAME)
         self._add_execfile(pg_globals, plugin_dir)
-        logger.info('Executing plugin entry file "%s"', entry_file)
+        logger.debug('Executing plugin entry file "%s"', entry_file)
         execfile(entry_file, pg_globals)
     
     def attach(self, observer):
@@ -957,7 +947,7 @@ class PluginManager(object):
         not to be immediatly garbage collected.
         
         """
-        logger.info('Attaching plugin manager observer %s', observer)
+        logger.debug('Attaching plugin manager observer %s', observer)
         if observer in self._observers:
             logger.info('Observer %s was already attached', observer)
         else:
@@ -965,7 +955,7 @@ class PluginManager(object):
     
     def detach(self, observer):
         """Detach an IPluginManagerObserver object to this plugin manager."""
-        logger.info('Detaching plugin manager observer %s', observer)
+        logger.debug('Detaching plugin manager observer %s', observer)
         try:
             del self._observers[observer]
         except KeyError:
@@ -973,7 +963,7 @@ class PluginManager(object):
     
     def _notify(self, id, action):
         # action is either 'load' or 'unload'
-        logger.info('Notifying observers: %s %s', action, id)
+        logger.debug('Notifying observers: %s %s', action, id)
         for observer in self._observers.keys():
             try:
                 logger.info('Notifying observer %s', observer)
