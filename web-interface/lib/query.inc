@@ -101,9 +101,8 @@ class dwho_query
 	function go($location='',$query='')
 	{
 		$location = (string) $location;
-		
-		if (($_report = dwho_report::encode()) !== null)
-			$_SESSION['_report'] = dwho_report::encode();
+
+		$_SESSION['_report'] = dwho_report::encode();
 
 		if($query === true)
 		{

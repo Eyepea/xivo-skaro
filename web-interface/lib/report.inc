@@ -44,54 +44,31 @@ abstract class dwho_report
 		if (is_null($key) === true)
 		{
 			if(is_array($msg) === true)
-				$msg = array_shift($msg);
-
-			if(is_scalar($msg) === true
+			{
+				while($msg)
+					self::push($type,array_shift($msg));
+			}
+			elseif(is_scalar($msg) === true
 			&& in_array($msg,$self) === false)
 				array_push($self, $msg);
-			else
-				return(false);
 		}
 		elseif (is_null($key) === false)
 		{
-			$key = base64_encode($key);
-			if (isset($self[$key]) === false)
-				$self[$key] = array();
+			$keyencode = base64_encode($key);
+			if (isset($self[$keyencode]) === false)
+				$self[$keyencode] = array();
 
 			if(is_array($msg) === true)
-				$msg = array_shift($msg);
-
-			if(is_scalar($msg) === true
-			&& in_array($msg,$self[$key]) === false)
-				array_push($self[$key], $msg);
-			else
-				return(false);
+			{
+				while($msg)
+					self::push($type,array_shift($msg),$key);
+			}
+			elseif(is_scalar($msg) === true
+			&& in_array($msg,$self[$keyencode]) === false)
+				array_push($self[$keyencode], $msg);
 		}
-		else
-			return(false);
 
 		return(true);
-	}
-
-	public static function has($type)
-	{
-		if (isset(self::${$type}) === true
-		&& ($self = &self::${$type}) === false)
-			return(false);
-
-		if (empty($self) === true)
-			return(false);
-
-		return(true);
-	}
-
-	public static function get($type)
-	{
-		if (isset(self::${$type}) === false
-		|| (($self = &self::${$type})) === false)
-			return(false);
-
-		return($self);
 	}
 
 	public static function get_message($type)
@@ -101,12 +78,14 @@ abstract class dwho_report
 			return(false);
 
 		if (isset(self::${$type}) === true
-		&& ($self = &self::${$type}) === false
+		&& ($self = self::${$type}) === false
 		&& self::has($type) === false)
 			return(false);
 
 		$_I18N = &dwho_gct::get('dwho_i18n');
 		$_I18N->load_file('report/common');
+
+		krsort($self);
 
 		$return = '';
 		$return .= '<div class="xivo-'.$type.' xivo-messages">';
@@ -118,10 +97,10 @@ abstract class dwho_report
 			{
 				$key = base64_decode($k);
 				$id = uniqid();
-				$data = array();
-				$data['type'] = $type;
-				$data['bloc'] = $k;
-				$query =  http_build_query($data, '', '&amp;');
+				$query = array();
+				$query['type'] = $type;
+				$query['bloc'] = $k;
+				$query =  http_build_query($query, '', '&amp;');
 
 				$return .= '<a href="#" id="a-'.$id.'" class="xm_toggle">';
 				$return .= '<span id="s-'.$id.'" class="ui-icon ui-icon-triangle-1-e"></span>';
@@ -157,11 +136,39 @@ abstract class dwho_report
 		return($return);
 	}
 
+	public static function has($type)
+	{
+		if (isset(self::${$type}) === true
+		&& ($self = &self::${$type}) === false)
+			return(false);
+
+		if (empty($self) === true)
+			return(false);
+
+		return(true);
+	}
+
+	public static function get($type)
+	{
+		if (isset(self::${$type}) === false
+		|| ($self = &self::${$type}) === false)
+			return(false);
+
+		return($self);
+	}
+
 	public static function get_bloc($type,$bloc)
 	{
 		if (($self = &self::get($type)) === false
 		|| isset($self[$bloc]) === false)
+		{
+			$_sess = $_SESSION['_report_bloc_export'];
+			if (isset($_sess[$type]) === true
+			&& isset($_sess[$type][$bloc]) === true)
+				return($_sess[$type][$bloc]);
+
 			return(false);
+		}
 
 		return($self[$bloc]);
 	}
@@ -192,12 +199,26 @@ abstract class dwho_report
 		$listtype = get_class_vars('dwho_report');
 		$arr = $_SESSION['_report'];
 
+		$_SESSION['_report_bloc_export'] = array();
+
 		foreach($arr as $type => $value)
 		{
 			if (isset($listtype[$type]) === false)
 				continue;
 
-			self::push($type,$value);
+			foreach($value as $k => $v)
+			{
+				if (is_string($k) === true
+				&& is_array($v) === true)
+				{
+					$_SESSION['_report_bloc_export'][$type][$k] = $v;
+					$key = base64_decode($k);
+					foreach($v as $submessage)
+						self::push($type,$submessage,$key);
+				}
+				else
+					self::push($type,$v);
+			}
 		}
 
 		$_SESSION['_report'] = array();

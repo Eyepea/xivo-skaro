@@ -32,7 +32,7 @@ header('Pragma: no-cache');
 header('Cache-Control: private, must-revalidate');
 header('Last-Modified: '.date('D, d M Y H:i:s',mktime()).' '.dwho_i18n::strftime_l('%Z',null));
 header('Content-Disposition: attachment; filename=xivo_report_'.$type.'-'.$title.'.txt');
-header('Content-Type: text/txt; charset=UTF-8');
+header('Content-Type: text/plain; charset=UTF-8');
 
 ob_start();
 
