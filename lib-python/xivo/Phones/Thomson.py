@@ -2,6 +2,10 @@
 
 Thomson 2022S and 2030S are supported.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2007-2010  Proformatique
 
 """
@@ -29,7 +33,6 @@ import time
 import logging
 import telnetlib
 
-from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -92,84 +95,6 @@ class TimeoutingTelnet(telnetlib.Telnet):
             raise TelnetExpectationFailed, "Expected string '%s' has not been received before termination of the telnet session with peer %s" % (expected, str(self.__my_cnx))
 
 
-_ZONE_LIST = [
-    'Pacific/Kwajalein',    # Eniwetok, Kwajalein
-    'Pacific/Midway',       # Midway Island, Samoa
-    'US/Hawaii',            # Hawaii
-    'US/Alaska',            # Alaska
-    'US/Pacific',           # Pacific Time(US & Canada); Tijuana
-    'US/Arizona',           # Arizona
-    'US/Mountain',          # Mountain Time(US & Canada)
-    'US/Central',           # Central Time(US & Canada)
-    'America/Tegucigalpa',  # Mexico City, Tegucigalpa (!)
-    'Canada/Saskatchewan',  # Central America, Mexico City,Saskatchewan (!)
-    'America/Bogota',       # Bogota, Lima, Quito
-    'US/Eastern',           # Eastern Time(US & Canada)
-    'US/East-Indiana',      # Indiana(East)
-    'Canada/Atlantic',      # Atlantic Time (Canada)
-    'America/La_Paz',       # Caracas, La Paz
-    'Canada/Newfoundland',  # Newfoundland
-    'America/Sao_Paulo',    # Brasilia
-    'America/Argentina/Buenos_Aires',   # Buenos Aires, Georgetown
-    'Atlantic/South_Georgia',           # Mid-Atlantic
-    'Atlantic/Azores',      # Azores, Cape Verde Is
-    'Africa/Casablanca',    # Casablanca, Monrovia    (!)
-    'Europe/London',        # Greenwich Mean Time: Dublin, Edinburgh, Lisbon, London
-    'Europe/Paris',         # Amsterdam, Copenhagen, Madrid, Paris, Vilnius
-    'Europe/Belgrade',      # Central Europe Time(Belgrade, Sarajevo, Skopje, Sofija, Zagreb) (?)
-    'Europe/Bratislava',    # Bratislava, Budapest, Ljubljana, Prague, Warsaw
-    'Europe/Brussels',      # Brussels, Berlin, Bern, Rome, Stockholm, Vienna
-    'Europe/Athens',        # Athens, Istanbul, Minsk
-    'Europe/Bucharest',     # Bucharest
-    'Africa/Cairo',         # Cairo
-    'Africa/Harare',        # Harare, Pretoria
-    'Europe/Helsinki',      # Helsinki, Riga, Tallinn
-    'Israel',               # Israel
-    'Asia/Baghdad',         # Baghdad, Kuwait, Riyadh
-    'Europe/Moscow',        # Moscow, St. Petersburg, Volgograd
-    'Africa/Nairobi',       # Nairobi
-    'Asia/Tehran',          # Tehran
-    'Asia/Muscat',          # Abu Dhabi, Muscat
-    'Asia/Baku',            # Baku, Tbilisi (!)
-    'Asia/Kabul',           # Kabul
-    'Asia/Yekaterinburg',   # Ekaterinburg
-    'Asia/Karachi',         # Islamabad, Karachi, Tashkent
-    'Asia/Calcutta',        # Bombay, Calcutta, Madras, New Delhi
-    'Asia/Kathmandu',       # Kathmandu
-    'Asia/Almaty',          # Almaty, Dhaka
-    'Asia/Colombo',         # Colombo
-    'Asia/Rangoon',         # Rangoon
-    'Asia/Bangkok',         # Bangkok, Hanoi, Jakarta
-    'Asia/Hong_Kong',       # Beijin, Chongqing, Hong Kong, Urumqi
-    'Australia/Perth',      # Perth
-    'Asia/Urumqi',          # Urumqi,Taipei, Kuala Lumpur, Sinapore
-    'Asia/Tokyo',           # Osaka, Sappora, Tokyo
-    'Asia/Seoul',           # Seoul
-    'Asia/Yakutsk',         # Yakutsk
-    'Australia/Adelaide',   # Adelaide
-    'Australia/Darwin',     # Darwin
-    'Australia/Brisbane',   # Brisbane
-    'Australia/Canberra',   # Canberra, Melbourne, Sydney
-    'Pacific/Guam',         # Guam, Port Moresby
-    'Australia/Hobart',     # Hobart
-    'Asia/Vladivostok',     # Vladivostok
-    'Asia/Magadan',         # Magadan, Solomon Is., New Caledonia
-    'Pacific/Auckland',     # Auckland, Wellington
-    'Pacific/Fiji',         # Fiji, Kamchatka, Marshall Is. (!)
-    'Pacific/Tongatapu',    # Nuku'alofa
-]
-
-def _gen_tz_map():
-    result = {}
-    for i, tz_name in enumerate(_ZONE_LIST):
-        inform = tzinform.get_timezone_info(tz_name)
-        inner_dict = result.setdefault(inform['utcoffset'].as_minutes, {})
-        if not inform['dst']:
-            inner_dict[None] = i
-        else:
-            inner_dict[inform['dst']['as_string']] = i
-    return result
-
 # NOTES:
 # ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
 #                               -> /tftpboot/Thomson/ST2030S_common_v1.53.txt
@@ -199,8 +124,6 @@ class Thomson(PhoneVendorMixin):
         'fr_FR': ('1', 'FR'),
         'fr_CA': ('1', 'US'),
     }
-    
-    THOMSON_TZ_MAP = _gen_tz_map()
     
     @classmethod
     def setup(cls, config):
@@ -299,12 +222,6 @@ class Thomson(PhoneVendorMixin):
         language = self.THOMSON_LOCALES[locale][0]
         country = self.THOMSON_LOCALES[locale][1]
         
-        if 'timezone' in provinfo:
-            timezone = provinfo['timezone']
-        else:
-            timezone = self.DEFAULT_TIMEZONE
-        zonenum = str(self.__tz_name_to_num(timezone))
-
 # THOMSON BUG #1
 # provinfo['number'] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
@@ -318,7 +235,6 @@ class Thomson(PhoneVendorMixin):
                       'function_keys':      function_keys_config_lines,
                       'language':           language,
                       'country':            country,
-                      'zonenum':            zonenum,
                     },
                     format_extension=clean_extension),
                 txt_filename,
@@ -335,33 +251,6 @@ class Thomson(PhoneVendorMixin):
             except Exception: # XXX: OsError?
                 pass
             os.symlink(self.THOMSON_COMMON_INF + phonetype + model, inf_filename)
-
-    @classmethod
-    def __tz_name_to_num(cls, timezone):
-        inform = tzinform.get_timezone_info(timezone)
-        utcoffset_m = inform['utcoffset'].as_minutes
-        if utcoffset_m not in cls.THOMSON_TZ_MAP:
-            # No UTC offset matching. Let's try finding one relatively close...
-            for supp_offset in (30, -30, 60, -60):
-                if utcoffset_m + supp_offset in cls.THOMSON_TZ_MAP:
-                    utcoffset_m += supp_offset
-                    break
-            else:
-                return 22
-            
-        dst_map = cls.THOMSON_TZ_MAP[utcoffset_m]
-        if inform['dst']:
-            dst_key = inform['dst']['as_string']
-        else:
-            dst_key = None
-        if dst_key not in dst_map:
-            # No DST rules matching. Fallback on all-standard time or random
-            # DST rule in last resort...
-            if None in dst_map:
-                dst_key = None
-            else:
-                dst_key = dst_map.keys[0]
-        return dst_map[dst_key]
     
     # Daemon entry points for configuration generation and issuing commands
 

@@ -2,6 +2,10 @@
 
 Aastra 6730i, 6731i, 6751i, 6753i, 6755i and 6757i are supported.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2008-2010  Proformatique
 
 """
@@ -28,7 +32,6 @@ import os
 import logging
 import subprocess
 
-from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -290,11 +293,6 @@ class Aastra(PhoneVendorMixin):
             i18n_dir = 'i18n-2'
         language = self.AASTRA_LOCALES[locale] % i18n_dir
         
-        if 'timezone' in provinfo:
-            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
-        else:
-            timezone = ''
-            
         if self.PROXY_BACKUP:
             lines = []
             lines.append('sip line1 backup proxy ip: %s' % self.PROXY_BACKUP)
@@ -314,7 +312,6 @@ class Aastra(PhoneVendorMixin):
             'exten_pickup_prefix':    exten_pickup_prefix,
             'function_keys':          function_keys_config_lines,
             'language':               language,
-            'timezone':               timezone,
             'backup_proxy':           backup_proxy,
             'backup_registrar':       backup_registrar,
         }

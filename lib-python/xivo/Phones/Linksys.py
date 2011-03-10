@@ -3,6 +3,10 @@
 Linksys SPA901, SPA921, SPA922, SPA941, SPA942, SPA962, SPA2102, SPA3102 and
 PAP2T are supported.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2007-2010  Proformatique
 
 """
@@ -32,7 +36,6 @@ import math
 
 from xml.sax.saxutils import escape
 
-from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -186,11 +189,6 @@ class Linksys(PhoneVendorMixin):
             locale = self.DEFAULT_LOCALE
         language = self.LINKSYS_LOCALES[locale]
         
-        if 'timezone' in provinfo:
-            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
-        else:
-            timezone = ''
-
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
@@ -199,7 +197,6 @@ class Linksys(PhoneVendorMixin):
                       'exten_pickup_prefix':    exten_pickup_prefix,
                       'function_keys':          function_keys_config_lines,
                       'language':               language,
-                      'timezone':               timezone,
                     },
                     self.xml_escape,
                     clean_extension),
@@ -210,40 +207,6 @@ class Linksys(PhoneVendorMixin):
             return ''.join(txt)
         else:
             self._write_cfg(tmp_filename, cfg_filename, txt)
-        
-    @classmethod
-    def __format_tz_inform(cls, inform):
-        lines = []
-        lines.append('<Time_Zone ua="rw">GMT%+03d:%02d</Time_Zone>' % tuple(inform['utcoffset'].as_hms[:2]))
-        if inform['dst'] is None:
-            lines.append('<Daylight_Saving_Time_Enable ua="rw">no</Daylight_Saving_Time_Enable>')
-        else:
-            lines.append('<Daylight_Saving_Time_Enable ua="rw">yes</Daylight_Saving_Time_Enable>')
-            h, m, s = inform['dst']['save'].as_hms
-            lines.append('<Daylight_Saving_Time_Rule ua="rw">start=%s;end=%s;save=%d:%d:%s</Daylight_Saving_Time_Rule>' %
-                         (cls.__format_dst_change(inform['dst']['start']),
-                          cls.__format_dst_change(inform['dst']['end']),
-                          h, m, s,
-                          ))
-        return '\n'.join(lines)
-    
-    @classmethod
-    def __format_dst_change(cls, dst_change):
-        _day = dst_change['day']
-        if _day.startswith('D'):
-            day = _day[1:]
-            weekday = '0'
-        else:
-            week, weekday = _day[1:].split('.')
-            weekday = tzinform.week_start_on_monday(int(weekday))
-            if week == '5':
-                day = '-1'
-            else:
-                day = (int(week) - 1) * 7 + 1
-        
-        h, m, s = dst_change['time'].as_hms
-        return ('%s/%s/%s/%s:%s:%s' %
-                (dst_change['month'], day, weekday, h, m, s))
 
     @classmethod
     def __format_function_keys(cls, funckey, model):

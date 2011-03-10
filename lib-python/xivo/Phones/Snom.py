@@ -2,6 +2,10 @@
 
 Snom 300 320 and 360 are supported.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2007-2010  Proformatique
 
 """
@@ -28,7 +32,6 @@ import os
 import logging
 import subprocess
 
-from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -180,11 +183,6 @@ class Snom(PhoneVendorMixin):
                                                  self.SNOM_LOCALES[locale][0],
                                                  self.SNOM_LOCALES[locale][1])
 
-        if 'timezone' in provinfo:
-            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
-        else:
-            timezone = ''
-        
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
@@ -193,7 +191,6 @@ class Snom(PhoneVendorMixin):
                       'http_pass':          self.SNOM_COMMON_HTTP_PASS,
                       'function_keys':      function_keys_config_lines,
                       'language':           language,
-                      'timezone':           timezone,
                     },
                     format_extension=clean_extension),
                 xml_filename,
@@ -215,31 +212,6 @@ class Snom(PhoneVendorMixin):
 """ % (self.ASTERISK_IPV4, model, macaddr))
             redirect_file.close()
             self._write_cfg(tmp_filename, xml_filename, txt)
-        
-    @classmethod
-    def __format_tz_inform(cls, inform):
-        lines = []
-        lines.append('<timezone perm="R"></timezone>')
-        lines.append('<utc_offset perm="R">%+d</utc_offset>' % inform['utcoffset'].as_seconds)
-        if inform['dst'] is None:
-            lines.append('<dst perm="R"></dst>')
-        else:
-            lines.append('<dst perm="R">%d %s %s</dst>' % 
-                         (inform['dst']['save'].as_seconds,
-                          cls.__format_dst_change(inform['dst']['start']),
-                          cls.__format_dst_change(inform['dst']['end'])))
-        return '\n'.join(lines)
-
-    @classmethod
-    def __format_dst_change(cls, dst_change):
-        fmted_time = '%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)
-        day = dst_change['day']
-        if day.startswith('D'):
-            return '%02d.%02d %s' % (int(day[1:]), dst_change['month'], fmted_time)
-        else:
-            week, weekday = map(int, day[1:].split('.'))
-            weekday = tzinform.week_start_on_monday(weekday)
-            return '%02d.%02d.%02d %s' % (dst_change['month'], week, weekday, fmted_time)
     
     # Introspection entry points
 

@@ -2,6 +2,10 @@
 
 Swissvoice IP10S is supported.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2007-2010  Proformatique
 
 """

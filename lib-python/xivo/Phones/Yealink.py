@@ -2,6 +2,10 @@
 
 Yealink T20P, T22P, T26P and T28P are supported.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2010  Proformatique
 
 """
@@ -31,7 +35,6 @@ import md5
 from itertools import chain
 from time import time
 
-from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -190,11 +193,6 @@ class Yealink(PhoneVendorMixin):
         language = self.__format_language(self.YEALINK_LOCALES[locale][0])
         country = "Country = %s" % self.YEALINK_LOCALES[locale][0]
         
-        if 'timezone' in provinfo:
-            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
-        else:
-            timezone = ''
-
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
@@ -204,7 +202,6 @@ class Yealink(PhoneVendorMixin):
                       'function_keys':  function_keys_config_lines,
                       'language':       language,
                       'country':        country,
-                      'timezone':       timezone,
                     },
                     clean_extension),
                 cfg_filename,
@@ -218,32 +215,6 @@ class Yealink(PhoneVendorMixin):
     @classmethod
     def __format_language(cls, lang):
         return "WebLanguage = %s\nActiveWebLanguage = %s" % (lang, lang)
-        
-    @classmethod
-    def __format_tz_inform(cls, inform):
-        lines = []
-        lines.append('TimeZone = %+d' % min(max(inform['utcoffset'].as_hours, -11), 12))
-        if inform['dst'] is None:
-            lines.append('SummerTime = 0')
-        else:
-            lines.append('SummerTime = 2')
-            if inform['dst']['start']['day'].startswith('D'):
-                lines.append('DSTTimeType = 0')
-            else:
-                lines.append('DSTTimeType = 1')
-            lines.append('StartTime = %s' % cls.__format_dst_change(inform['dst']['start']))
-            lines.append('EndTime = %s' % cls.__format_dst_change(inform['dst']['end']))
-            lines.append('OffsetTime = %s' % inform['dst']['save'].as_minutes)
-        return '\n'.join(lines)
-
-    @classmethod
-    def __format_dst_change(cls, dst_change):
-        if dst_change['day'].startswith('D'):
-            return '%02d/%02d/%02d' % (dst_change['month'], dst_change['day'][1:], dst_change['time'].as_hour)
-        else:
-            week, weekday = map(int, dst_change['day'][1:].split('.'))
-            weekday = tzinform.week_start_on_monday(weekday)
-            return '%d/%d/%d/%d' % (dst_change['month'], week, weekday, dst_change['time'].as_hours)
 
     @classmethod
     def __format_function_key(cls, num_key, exten_pickup_prefix, key_value=None):

@@ -3,6 +3,10 @@
 Nortel IP Phones 1220 and 1230 are supported. Note that these phones have been
 rebranded as Avaya 1220 and 1230 IP Deskphones.
 
+WARNING: do not use this module to generate configuration file. This module
+has been deprecated and is only here for compatibility with some other modules
+that still depends on some specific part.
+
 Copyright (C) 2010  Proformatique
 
 """
@@ -33,7 +37,6 @@ import time
 import threading
 
 from xivo import pexpect
-from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -205,18 +208,11 @@ class Nortel(PhoneVendorMixin):
         else:
             backup_proxy = ''
         
-        if 'timezone' in provinfo:
-            inform = tzinform.get_timezone_info(provinfo['timezone'])
-            timezone = "TIMEZONE_OFFSET %d" % inform['utcoffset'].as_seconds
-        else:
-            timezone = ''
-        
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
                     { 'backup_proxy':           backup_proxy,
-                      'timezone':               timezone,
                     },
                     format_extension=clean_extension),
                 cfg_filename,
