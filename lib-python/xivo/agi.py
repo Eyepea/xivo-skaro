@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """
 To use this library please see the example :
 

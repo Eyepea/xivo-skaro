@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Snom phones for XIVO Configuration
 
 Snom 300 320 and 360 are supported.

@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Supplementary synchronization primitives not provided by 'threading'
 
 Copyright (C) 2007-2010  Proformatique

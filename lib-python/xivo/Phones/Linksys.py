@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Linksys phones for XIVO Configuration
 
 Linksys SPA901, SPA921, SPA922, SPA941, SPA942, SPA962, SPA2102, SPA3102 and

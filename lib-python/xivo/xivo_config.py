@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Common routines and objects for autoprovisioning services in XIVO
 
 Copyright (C) 2007-2010  Proformatique

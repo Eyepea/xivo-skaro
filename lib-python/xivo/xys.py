@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """XIVO YAML Schema - v0.01
 
 Copyright (C) 2008-2010  Proformatique

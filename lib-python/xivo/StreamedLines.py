@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf8 -*-
 """Generator that buffers raw bytes from multiple pipes/sockets and yield lines
 
 Copyright (C) 2008-2010  Proformatique

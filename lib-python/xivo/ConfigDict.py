@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support routines to load content of configuration sections to a dictionary
 
 Copyright (C) 2007-2010  Proformatique

@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Thomson phones for XIVO Configuration
 
 Thomson 2022S and 2030S are supported.

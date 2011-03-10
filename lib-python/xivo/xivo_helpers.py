@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Helper functions for XIVO
 
 Copyright (C) 2008-2010  Proformatique

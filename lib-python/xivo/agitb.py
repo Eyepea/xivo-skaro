@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """More comprehensive traceback formatting for AGI in Python.
 
 To enable this module, do:

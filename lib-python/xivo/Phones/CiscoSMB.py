@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for CiscoSMB SPA50XG phones for XIVO Configuration
 
 CiscoSMB SPA501G, SPA502G, SPA504G, SPA508G, SPA509G and SPA525G are supported.

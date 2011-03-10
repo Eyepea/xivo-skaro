@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Threaded HTTP Server
 
 Copyright (C) 2007-2010  Proformatique

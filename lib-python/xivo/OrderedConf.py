@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Ordered Configuration Parser useful when the order of options counts.
 
 Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;

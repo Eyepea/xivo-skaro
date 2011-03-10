@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """JSON tree operators
 
 Copyright (C) 2008-2010  Proformatique

@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Interworking with udev
 
 Copyright (C) 2008-2010  Proformatique

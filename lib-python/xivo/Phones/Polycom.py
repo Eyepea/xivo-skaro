@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Polycom phones for XIVO Configuration
 
 Polycom SoundPoint IP 430 SIP and SoundPoint IP 650 SIP are supported.

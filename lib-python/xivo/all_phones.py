@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Load all XIVO phone modules
 
 """

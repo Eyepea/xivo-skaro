@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Siemens phones for XIVO Configuration
 
 Siemens Gigaset C470IP and S675IP are supported.

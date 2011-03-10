@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Mac Address <-> IPv4 Resolver using the dhcpd.leases file.
 
 Copyright (C) 2008-2010  Proformatique

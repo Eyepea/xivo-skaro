@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 __version__ = "$Revision: 7 $ $Date: 2009-04-21 11:24:43 +0200 (Tue, 21 Apr 2009) $"
 __license__ = """
     Copyright (C) 2009  Proformatique <technique@proformatique.com>

@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Supplementary functions useful to play with URI - very very close to RFC 3986
 
 Copyright (C) 2007-2010  Proformatique

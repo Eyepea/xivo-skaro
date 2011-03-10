@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """A simple class to convert XML data into Python dictionary.
 
 Copyright (C) 2010  Proformatique

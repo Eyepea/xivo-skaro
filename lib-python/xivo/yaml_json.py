@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """YAML <-> JSON interoperability
 
 Copyright (C) 2008-2010  Proformatique

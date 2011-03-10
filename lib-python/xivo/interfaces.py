@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """/etc/network/interfaces parser
 
 Copyright (C) 2008-2010  Proformatique

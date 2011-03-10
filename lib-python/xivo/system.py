@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """System functions
 
 Copyright (C) 2008-2010  Proformatique

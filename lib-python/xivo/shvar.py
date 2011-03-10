@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Read / Write variables defined in bash format
 
 Copyright (C) 2008-2010  Proformatique

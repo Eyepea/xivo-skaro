@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """XiVO phones provisioning util functions
 
 Copyright (C) 2010  Proformatique

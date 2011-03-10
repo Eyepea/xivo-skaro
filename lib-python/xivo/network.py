@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Network related routines for XIVO
 
 Copyright (C) 2007-2010  Proformatique

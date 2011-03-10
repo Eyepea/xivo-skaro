@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Yealink phones for XIVO Configuration
 
 Yealink T20P, T22P, T26P and T28P are supported.

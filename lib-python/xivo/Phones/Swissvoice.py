@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Swissvoice phones for XIVO Configuration
 
 Swissvoice IP10S is supported.

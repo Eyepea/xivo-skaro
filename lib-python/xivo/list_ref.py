@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """A list on which we can take references on elements in a position independant way
 
 Copyright (C) 2008-2010  Proformatique

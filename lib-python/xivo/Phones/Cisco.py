@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Linksys phones for XIVO Configuration
 
 Cisco 79X1 are supported.

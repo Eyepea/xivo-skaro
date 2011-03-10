@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Nortel phones for XIVO Configuration
 
 Nortel IP Phones 1220 and 1230 are supported. Note that these phones have been

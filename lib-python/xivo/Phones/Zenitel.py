@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Support for Zenitel stations/phones for XIVO Configuration
 
 All IP stations are supported.

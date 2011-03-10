@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 # This module magically adds namedtuple (that will be standard Python 2.6) to
 # the collections module when it's imported.
 #

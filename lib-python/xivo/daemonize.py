@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Transforms a process into a daemon from hell
 
 Copyright (C) 2007-2010  Proformatique

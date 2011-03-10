@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Backend support for MySQL for anysql
 
 Copyright (C) 2007-2010  Proformatique

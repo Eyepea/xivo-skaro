@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Backend support for PostgreSQL for anysql
 
 Copyright (C) 2010  Proformatique

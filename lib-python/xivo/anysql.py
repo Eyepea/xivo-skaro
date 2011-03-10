@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """DBAPI Helper using URI to create talk to various DB
 
 Copyright (C) 2007-2010  Proformatique
