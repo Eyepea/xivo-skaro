@@ -64,11 +64,12 @@ def iterable(mode):
 		def list_wrapper(*args, **kwargs):
 			ret = f(*args, **kwargs)
 			if isinstance(ret, list) and len(ret) > 0:
-				ret[0].__class__.__getitem__ = lambda self, key: self.__dict__[key]
-				ret[0].__class__.__setitem__ = mapped_set
-				ret[0].__class__.iteritems   = mapped_iteritems
-				ret[0].__class__.iterkeys    = mapped_iterkeys
-				ret[0].__class__.get         = lambda self, key, dft: self.__dict__[key] if key in self.__dict__ else dft
+				ret[0].__class__.__getitem__  = lambda self, key: self.__dict__[key]
+				ret[0].__class__.__setitem__  = mapped_set
+				ret[0].__class__.__contains__ = lambda self, key: self.__dict__.__contains__(key)
+				ret[0].__class__.iteritems    = mapped_iteritems
+				ret[0].__class__.iterkeys     = mapped_iterkeys
+				ret[0].__class__.get          = lambda self, key, dft: self.__dict__[key] if key in self.__dict__ else dft
 
 			return ret
 
