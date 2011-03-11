@@ -3,6 +3,6 @@
 def xtor_factory(xtors):
     return CollaboratingDeviceInfoExtractor(VotingUpdater, xtors)
 
+std_xtor = StandardDeviceInfoExtractor()
 all_pg_xtor = AllPluginsDeviceInfoExtractor(xtor_factory, app.pg_mgr)
-dhcp_xtor = DHCPDeviceInfoExtractor(app.dhcp_infos, all_pg_xtor)
-info_extractor = CollaboratingDeviceInfoExtractor(VotingUpdater, [all_pg_xtor, dhcp_xtor])
+info_extractor = CollaboratingDeviceInfoExtractor(VotingUpdater, [std_xtor, all_pg_xtor])

@@ -28,11 +28,14 @@ __license__ = """
 #      ,,,and put some check (device, config, etc) in application object, so
 #         stuff doesn't break too much
 # TODO we sometimes return 400 error when it's not a client error but a server error;
-#      that said raised exceptions sometimes does not permit to differentiate... 
+#      that said raised exceptions sometimes does not permit to differentiate...
+# XXX passing a 'dhcp_request_processing_service' around doesn't look really
+#     good and we might want to create an additional indirection level so that
+#     it's a bit cleaner
 
-import binascii
 import logging
 import json
+from binascii import a2b_hex
 from provd.app import InvalidIdError
 from provd.operation import format_oip, operation_in_progres_from_deferred
 from provd.persist.common import ID_KEY
@@ -240,8 +243,8 @@ class IntermediaryResource(Resource):
         return json.dumps(content)
 
 
-def ServerResource(app):
-    links = [(u'dev', 'dev_mgr', DeviceManagerResource(app)),
+def ServerResource(app, dhcp_request_processing_service):
+    links = [(u'dev', 'dev_mgr', DeviceManagerResource(app, dhcp_request_processing_service)),
              (u'cfg', 'cfg_mgr', ConfigManagerResource(app)),
              (u'pg',  'pg_mgr',  PluginManagerResource(app))]
     return IntermediaryResource(links)
@@ -471,10 +474,10 @@ def InstallableResource(install_srv):
     return _ListInstallxxxxResource(install_srv, 'list_installable')
 
 
-def DeviceManagerResource(app):
+def DeviceManagerResource(app, dhcp_request_processing_service):
     links = [(u'dev.synchronize', 'synchronize', DeviceSynchronizeResource(app)),
              (u'dev.reconfigure', 'reconfigure', DeviceReconfigureResource(app)),
-             (u'dev.dhcpinfo', 'dhcpinfo', DeviceDHCPInfoResource(app.dhcp_infos)),
+             (u'dev.dhcpinfo', 'dhcpinfo', DeviceDHCPInfoResource(dhcp_request_processing_service)),
              (u'dev.devices', 'devices', DevicesResource(app))]
     return IntermediaryResource(links)
 
@@ -520,43 +523,40 @@ class DeviceReconfigureResource(Resource):
 
 class DeviceDHCPInfoResource(Resource):
     """Resource for pushing DHCP information into the provisioning server."""
-    def __init__(self, dhcp_infos):
-        """
-        dhcp_infos is a dictionary object that will change as the server
-          receive information
-        
-        """
+    def __init__(self, dhcp_request_processing_service):
         Resource.__init__(self)
-        self._dhcp_infos = dhcp_infos
+        self._dhcp_req_processing_srv = dhcp_request_processing_service
     
     def _transform_options(self, raw_options):
         options = {}
         for raw_option in raw_options:
             code = int(raw_option[:3], 10)
-            value = binascii.unhexlify(raw_option[3:])
+            value = a2b_hex(raw_option[3:])
             options[code] = value
         return options
     
     @json_request_entity
     def render_POST(self, request, content):
         try:
-            # XXX checks should probably deplaced somewhere else, like in dhcp_infos (?)
-            raw_dhcp_info = content[u'dhcp_info'] 
+            raw_dhcp_info = content[u'dhcp_info']
             op = raw_dhcp_info[u'op']
             ip = norm_ip(raw_dhcp_info[u'ip'])
             if op == u'commit':
                 mac = norm_mac(raw_dhcp_info[u'mac'])
                 options = self._transform_options(raw_dhcp_info[u'options'])
-                self._dhcp_infos[ip] = {u'mac': mac, u'options': options}
+        except (KeyError, TypeError, ValueError), e:
+            return respond_error(request, e)
+        else:
+            if op == u'commit':
+                request = {u'ip': ip, u'mac': mac, u'options': options}
+                self._dhcp_req_processing_srv.handle_dhcp_request(request)
                 return respond_no_content(request)
-            elif op in (u'expiry', u'release'):
-                if ip in self._dhcp_infos:
-                    del self._dhcp_infos[ip]
+            elif op == u'expiry' or op == u'release':
+                # we are keeping this only for compatibility -- release and
+                # expiry event doesn't interest us anymore
                 return respond_no_content(request)
             else:
                 return respond_error(request, 'invalid operation value')
-        except (KeyError, TypeError, ValueError), e:
-            return respond_error(request, e)
 
 
 class DevicesResource(Resource):
@@ -898,9 +898,9 @@ def PluginResource(plugin):
     return IntermediaryResource(links)
 
 
-def new_server_resource(app):
+def new_server_resource(app, dhcp_request_processing_service):
     """Create and return a new server resource."""
-    return ServerResource(app)
+    return ServerResource(app, dhcp_request_processing_service)
 
 
 class _SimpleRealm(object):
@@ -916,14 +916,15 @@ class _SimpleRealm(object):
             raise NotImplementedError()
 
 
-def new_restricted_server_resource(app, credentials, realm_name=REALM_NAME):
+def new_restricted_server_resource(app, dhcp_request_processing_service,
+                                   credentials, realm_name=REALM_NAME):
     """Create and return a new server resource that will be accessible only
     if the given credentials are present in the HTTP requests.
     
     credentials is a (username, password) tuple.
     
     """
-    server_resource = ServerResource(app)
+    server_resource = ServerResource(app, dhcp_request_processing_service)
     pwd_checker = InMemoryUsernamePasswordDatabaseDontUse()
     pwd_checker.addUser(*credentials)
     realm = _SimpleRealm(server_resource)

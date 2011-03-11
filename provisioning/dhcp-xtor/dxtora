@@ -248,7 +248,6 @@ class UnixSocketDHCPInfoSource(object):
         dhcp_info = {}
         def check_and_add(key, value):
             check_fun = getattr(self, '_check_' + key)
-            # next line raise an UpdateRawDataError if value is invalid
             check_fun(value)
             dhcp_info[key] = value
         try:

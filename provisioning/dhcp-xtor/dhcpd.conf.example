@@ -11,16 +11,4 @@ subnet 192.168.34.0 netmask 255.255.255.0 {
                 pick-first-value(concat("060", binary-to-ascii(16, 8, "", option vendor-class-identifier)), "")
                );
     }
-    on release {
-        execute("dxtorc",
-                "release",
-                binary-to-ascii(10, 8, ".", leased-address)
-               );
-    }
-    on expiry {
-        execute("dxtorc",
-                "expiry",
-                binary-to-ascii(10, 8, ".", leased-address)
-               );
-    }
 }

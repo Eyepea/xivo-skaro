@@ -18,6 +18,10 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# XXX the names are confusing, sometimes they refer to stuff here sometimes
+#     they refer to similarly named stuff in ident.py. The name process_service
+#     is certainly the most confusing of them. We should really try to fix this
+
 import logging.handlers
 import os.path
 import provd.config
@@ -43,6 +47,8 @@ logger = logging.getLogger(__name__)
 
 
 class ProvisioningService(Service):
+    # has an 'app' attribute after starting
+    
     _DB_FACTORIES = {
         'list': MemoryDatabaseFactory(),
         'dict': MemoryDatabaseFactory(),
@@ -78,7 +84,6 @@ class ProvisioningService(Service):
         logger.info('Database closed')
     
     def startService(self):
-        Service.startService(self)
         self._database = self._create_database()
         try:
             cfg_collection = ConfigCollection(self._database.collection('configs'))
@@ -89,6 +94,8 @@ class ProvisioningService(Service):
                 raise
             finally:
                 self._close_database()
+        else:
+            Service.startService(self)
     
     def stopService(self):
         Service.stopService(self)
@@ -128,12 +135,12 @@ class ProcessService(Service):
     
     def startService(self):
         # Pre: hasattr(self._prov_service, 'app')
-        Service.startService(self)
         self.request_processing = provd.devices.ident.RequestProcessingService(self._prov_service.app)
         request_config_dir = self._config['general.request_config_dir']
-        for name in ('info_extractor', 'retriever', 'updater', 'router'):
+        for name in ['info_extractor', 'retriever', 'updater', 'router']:
             setattr(self.request_processing, 'dev_' + name,
                     self._create_processor(request_config_dir, name, self._config['general.' + name]))
+        Service.startService(self)
 
 
 class HTTPProcessService(Service):
@@ -143,8 +150,6 @@ class HTTPProcessService(Service):
         self._config = config
     
     def startService(self):
-        Service.startService(self)
-        
         app = self._prov_service.app
         process_service = self._process_service.request_processing
         http_process_service = provd.devices.ident.HTTPRequestProcessingService(process_service,
@@ -157,6 +162,7 @@ class HTTPProcessService(Service):
         logger.info('Binding HTTP provisioning service to "%s:%s"', interface, port)
         self._tcp_server = internet.TCPServer(port, site, interface=interface)
         self._tcp_server.startService()
+        Service.startService(self)
 
     def stopService(self):
         Service.stopService(self)
@@ -170,8 +176,6 @@ class TFTPProcessService(Service):
         self._config = config
     
     def startService(self):
-        Service.startService(self)
-        
         app = self._prov_service.app
         process_service = self._process_service.request_processing
         tftp_process_service = provd.devices.ident.TFTPRequestProcessingService(process_service,
@@ -184,27 +188,40 @@ class TFTPProcessService(Service):
         logger.info('Binding TFTP provisioning service to "%s:%s"', interface, port)
         self._udp_server = internet.UDPServer(port, tftp_protocol, interface=interface)
         self._udp_server.startService()
+        Service.startService(self)
     
     def stopService(self):
         Service.stopService(self)
         return self._udp_server.stopService()
 
 
+class DHCPProcessService(Service):
+    # has a 'dhcp_request_processing_service' attribute once started
+    def __init__(self, process_service):
+        self._process_service = process_service
+    
+    def startService(self):
+        process_service = self._process_service.request_processing
+        self.dhcp_request_processing_service = provd.devices.ident.DHCPRequestProcessingService(process_service)
+        Service.startService(self)
+
+
 class RemoteConfigurationService(Service):
-    def __init__(self, prov_service, config):
+    def __init__(self, prov_service, dhcp_process_service, config):
         self._prov_service = prov_service
+        self._dhcp_process_service = dhcp_process_service
         self._config = config
     
     def startService(self):
-        Service.startService(self)
         app = self._prov_service.app
+        dhcp_request_processing_service = self._dhcp_process_service.dhcp_request_processing_service
         if self._config['general.rest_is_public']:
-            server_resource = new_server_resource(app)
+            server_resource = new_server_resource(app, dhcp_request_processing_service)
             logger.warning('No authentication is required for REST API')
         else:
             credentials = (self._config['general.rest_username'],
                            self._config['general.rest_password'])
-            server_resource = new_restricted_server_resource(app, credentials)
+            server_resource = new_restricted_server_resource(app, dhcp_request_processing_service, credentials)
             logger.info('Authentication is required for REST API')
         root_resource = Resource()
         root_resource.putChild('provd', server_resource)
@@ -217,6 +234,7 @@ class RemoteConfigurationService(Service):
         logger.info('Binding HTTP REST API service to "%s:%s"', interface, port)
         self._tcp_server = internet.TCPServer(port, rest_site, interface=interface)
         self._tcp_server.startService()
+        Service.startService(self)
     
     def stopService(self):
         Service.stopService(self)
@@ -245,8 +263,8 @@ class _CompositeConfigSource(object):
 class ProvisioningServiceMaker(object):
     implements(IServiceMaker, IPlugin)
     
-    tapname = "provd"
-    description = "A provisioning server."
+    tapname = 'provd'
+    description = 'A provisioning server.'
     options = provd.config.Options
     
     def _configure_logging(self, options):
@@ -294,7 +312,10 @@ class ProvisioningServiceMaker(object):
         tftp_process_service = TFTPProcessService(prov_service, process_service, config)
         tftp_process_service.setServiceParent(top_service)
         
-        remote_config_service = RemoteConfigurationService(prov_service, config)
+        dhcp_process_service = DHCPProcessService(process_service)
+        dhcp_process_service.setServiceParent(top_service)
+        
+        remote_config_service = RemoteConfigurationService(prov_service, dhcp_process_service, config)
         remote_config_service.setServiceParent(top_service)
 
         return top_service
