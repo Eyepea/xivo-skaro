@@ -197,46 +197,6 @@ CREATE INDEX "netiface__idx__disable" ON "netiface"("disable");
 CREATE UNIQUE INDEX "netiface__uidx__ifname" ON "netiface"("ifname");
 
 
-DROP TABLE IF EXISTS "operator";
-CREATE TABLE "operator" (
- "id" SERIAL,
- "name" varchar(64) NOT NULL,
- "default_price" double precision,
- "default_price_is" varchar(16) DEFAULT 'minute'::character varying NOT NULL,
- "currency" varchar(16) NOT NULL,
- "disable" integer DEFAULT 0 NOT NULL,
- "description" text NOT NULL,
- PRIMARY KEY("id")
-);
-
-CREATE UNIQUE INDEX "operator__uidx__name" ON "operator"("name");
-CREATE INDEX "operator__idx__disable" ON "operator"("disable");
-
-
-DROP TABLE IF EXISTS "operator_destination";
-CREATE TABLE "operator_destination" (
- "id" SERIAL,
- "operator_id" integer NOT NULL,
- "name" character varying(64) NOT NULL,
- "exten" character varying(40) NOT NULL,
- "price" double precision,
- "price_is" character varying(16) DEFAULT 'minute'::character varying NOT NULL,
- "disable" integer DEFAULT 0 NOT NULL,
- PRIMARY KEY("id")
-);
-
-CREATE UNIQUE INDEX "operator_destination__uidx__name" ON "operator_destination"("name");
-CREATE INDEX "operator_destination__idx__disable" ON "operator_destination"("disable");
-
-
-DROP TABLE IF EXISTS "operator_trunk";
-CREATE TABLE "operator_trunk" (
- "operator_id" integer NOT NULL,
- "trunk_id" integer NOT NULL,
- PRIMARY KEY("operator_id","trunk_id")
-);
-
-
 DROP TABLE IF EXISTS "resolvconf";
 CREATE TABLE "resolvconf" (
  "id" SERIAL,
