@@ -466,6 +466,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			case 'time':
 				return($str);
 				break;
+			case 'string':
 			default:
 				return($str);
 		}
@@ -495,8 +496,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			case 'time':
 				$str = dwho_sec_to_time($result);
 				break;
+			case 'string':
 			default:
-				$str = 'null_data';
+				$str = $result;
 		}
 		return($str);
 	}
@@ -619,7 +621,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			{
 				$divinfos .= 'date: '.strftime('%D %T',$datacall['start']).'<br>';
 				$divinfos .= 'duration: '.dwho_sec_to_time($datacall['duration']).'<br>';
-				$divinfos .= $datacall['from'].' call '.$datacall['to'].' via '.$datacall['trunk']."<br>";
+				$divinfos .= $datacall['identityfrom'].' call '.$datacall['to'].' via '.$datacall['trunk']."<br>";
+				if (isset($datacall['price']) === true)
+					$divinfos .= ' callprice: '.$datacall['price']."<br>";
 				$link = '<a href="#" onclick="show_infos_'.$uid.'()">'.$identity.'</a>';
 			}
 			else

@@ -33,17 +33,19 @@ class xivo_statistics_cel
 									'max_concurrent_calls_out'		=> array('type' => 'int'),
 									'max_concurrent_calls_intern'	=> array('type' => 'int'),
 									'max_concurrent_calls_total'	=> array('type' => 'int'));
-	private		$_result	= false;
 	public		$_fieldtop10	= array('call_duration_intern'	=> array('type' => 'time','mode' => 'max'),
 										'call_duration_in'		=> array('type' => 'time','mode' => 'max'),
 										'call_duration_out'		=> array('type' => 'time','mode' => 'max'),
 										'call_nb_intern'		=> array('type' => 'int','mode' => 'sum'),
 										'call_nb_in'			=> array('type' => 'int','mode' => 'sum'),
-										'call_nb_out'			=> array('type' => 'int','mode' => 'sum'));
+										'call_nb_out'			=> array('type' => 'int','mode' => 'sum'),
+										'call_price'			=> array('type' => 'string','mode' => 'max'));
+	private		$_result	= false;
 	private		$_top10		= false;
 	private		$_cel		= false;
 	private		$_trunk		= false;
 	private		$_trunklist	= false;
+	private		$_operatorlist	= false;
 	private		$_ipbx		= false;
 
 	public function __construct()
@@ -53,8 +55,63 @@ class xivo_statistics_cel
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
 		|| ($this->_ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_cel = &$_SRE->get_module('ipbx','cel')) === false
-		|| ($this->_trunk = &$this->_ipbx->get_application('trunk')) === false)
-			die('Can\'t load cel object');
+		|| ($this->_trunk = &$this->_ipbx->get_application('trunk')) === false
+		|| ($this->_operator = &$this->_ipbx->get_application('operator')) === false)
+			die('Can\'t load object for xivo_statistics_cel');
+
+		$this->get_operator_list();
+	}
+
+	private function _build_trunkname_from_identity($identity)
+	{
+		if (preg_match('/([\w]+) \(([\w]+)\)/i',$identity,$out) === 0
+		|| empty($out) === true
+		|| isset($out[1]) === false
+		|| isset($out[2]) === false)
+			return(false);
+
+		return(($out[2].'/'.$out[1]));
+	}
+
+	public function get_operator_list()
+	{
+		if (($appoperator = $this->_operator) === false
+		|| ($list = $appoperator->get_operator_list(false)) === false)
+			return(false);
+
+		$rs = array();
+
+		$nb = count($list);
+		for($i=0;$i<$nb;$i++)
+		{
+			$ref = &$list[$i];
+			$listdestination = $ref['destination'];
+			$listtrunk = $ref['trunk'];
+
+			$nbt = count($listdestination);
+			for($d=0;$d<$nbt;$d++)
+			{
+				$refd = &$listdestination[$d];
+				$refd['operator'] = $ref;
+			}
+
+			$nbt = count($listtrunk);
+			for($u=0;$u<$nbt;$u++)
+			{
+				$reft = &$listtrunk[$u];
+				$protocol = $reft['protocol'];
+				if (($trunkname = $this->_build_trunkname_from_identity($protocol['identity'])) === false)
+					continue;
+
+				if (isset($rs[$trunkname]) === false)
+					$rs[$trunkname] = array();
+
+				$rs[$trunkname] = array_merge($rs[$trunkname], $listdestination);
+			}
+		}
+
+		$this->_operatorlist = $rs;
+		return($rs);
 	}
 
 	public function get_trunk_list($withintern=false)
@@ -77,23 +134,18 @@ class xivo_statistics_cel
 				$rs['intern'] = $tmp;
 				$this->_init_result('intern');
 				if ($withintern === 'only')
-				{
-					$this->_trunklist = $rs;
-					return($rs);
-				}
+					return($this->_trunklist = $rs);
 		}
 
-		$list = $apptrunk->get_trunks_list();
+		if (($list = $apptrunk->get_trunks_list(false)) === false)
+			return(false);
 
 		$nb = count($list);
 		for($i=0;$i<$nb;$i++)
 		{
 			$ref = &$list[$i];
-			preg_match('/\(([\w]+)\)/i',$ref['identity'],$out);
-			if (empty($out) === true
-			|| isset($out[1]) === false)
+			if (($trunkname = $this->_build_trunkname_from_identity($ref['identity'])) === false)
 				continue;
-			$trunkname = $out[1].'/'.$ref['name'];
 			$tmp = array();
 			$tmp['identity'] = $ref['identity'];
 			$tmp['key'] = $trunkname;
@@ -106,11 +158,14 @@ class xivo_statistics_cel
 		return($rs);
 	}
 
-	public function get_list_call()
+	public function get_list_call($arr=null)
 	{
-		$arr = array();
-		$arr['dbeg'] = date('Y-m-d').' 00:00:01';
-		$arr['dend'] = date('Y-m-d').' 23:59:59';
+		if (is_null($arr) === true)
+		{
+			$arr = array();
+			$arr['dbeg'] = date('Y-m-d').'';
+			#$arr['dend'] = date('Y-m-d').'';
+		}
 
 		if ($this->_trunk === false
 		|| ($list = $this->_cel->search($arr)) === false)
@@ -246,17 +301,17 @@ class xivo_statistics_cel
 		switch ($axetype)
 		{
 			case 'period':
-				$key = (int) date('Ymd',$eventtime);
+				$key = (int) date('Ymd',$callfrom['start']);
 				break;
 			case 'day':
-				$hour = (string) strftime('%H',$eventtime);
-				$key = (int) date('H',$eventtime);
+				$hour = (string) strftime('%H',$callfrom['start']);
+				$key = (int) date('H',$callfrom['start']);
 				break;
 			case 'week':
-				$key = strtolower(date('l',$eventtime));
+				$key = strtolower(date('l',$callfrom['start']));
 				break;
 			case 'month':
-				$key = date('d',$eventtime);
+				$key = date('d',$callfrom['start']);
 				break;
 			case 'trunk':
 			default:
@@ -268,6 +323,54 @@ class xivo_statistics_cel
 					$key = $callto['trunk'];
 		}
 		return($key);
+	}
+
+	private function _eval_price($datacall,$destination)
+	{
+		$call_price = 0;
+		$nb = count($destination);
+		for($i=0;$i<$nb;$i++)
+		{
+			$ref = &$destination[$i];
+			$operator = $ref['operator'];
+			$exten = $ref['exten'];
+			$pattern = preg_replace_callback(
+		        '|[X]+|',
+		        create_function(
+		            '$matches',
+		            'return "[0-9]{".strlen($matches[0])."}";'
+		        ),
+		        $exten
+		    );
+			if (preg_match('/'.$pattern.'/',$datacall['to'],$out) === 1)
+			{
+				switch($ref['price_is'])
+				{
+					case 'second':
+						$duration = $datacall['duration'];
+						break;
+					case 'minute':
+					default:
+						$duration = ($datacall['duration'] / 60);
+				}
+				$call_price = round($duration * $ref['price'],2);
+			}
+			else
+			{
+				switch($operator['default_price_is'])
+				{
+					case 'second':
+						$duration = $datacall['duration'];
+						break;
+					case 'minute':
+					default:
+						$duration = ($datacall['duration'] / 60);
+				}
+				$call_price = (float) round($duration * $operator['default_price'],2);
+			}
+			$call_price .= ' '.$operator['currency'];
+		}
+		return($call_price);
 	}
 
 	private function _analyse_call_bridged($axetype,$callfrom,$callto)
@@ -287,13 +390,23 @@ class xivo_statistics_cel
 		$datacall['start'] = $callfrom['start'];
 		$datacall['end'] = $callfrom['end'];
 		$datacall['from'] = $callfrom['from'];
+		$datacall['identityfrom'] = $callfrom['cid_name'].' ('.$callfrom['cid_num'].')';
 		$datacall['to'] = $callfrom['to'];
+		$datacall['identityto'] = $callto['cid_name'].' ('.$callto['cid_num'].')';
 		$datacall['trunk'] = $key;
 		$datacall['duration'] = $callfrom['duration'];
 		$datacall['answer'] = $callfrom['answer'];
 		$datacall['identity'] = $callfrom['cid_name'].' ('.$callfrom['cid_num'].')';
 
 		$data['datacall'] = $datacall;
+
+		if ($type_call === 'out'
+		&& isset($this->_operatorlist[$key]) === true)
+		{
+			$data['val'] = $this->_eval_price($datacall,$this->_operatorlist[$key]);
+			$data['datacall']['price'] = $data['val'];
+			$this->update_top10('call_price',$data);
+		}
 
 		$this->update_result(array($key,'nb_'.$type_call),1);
 		$this->update_result(array($key,'duration_'.$type_call),$duration);
@@ -306,11 +419,10 @@ class xivo_statistics_cel
 		return(array($type_call,$key));
 	}
 
-	public function parse_data($axetype)
+	public function parse_data($axetype,$search=null)
 	{
-		$data = $this->_build_data($axetype);
+		$data = $this->_build_data($search);
 		$this->_init_top10();
-		$top10_call_duration = &$this->_fieldtop['top10_call_duration'];
 		$data1 = $data;
 		while($data1)
 		{
@@ -352,10 +464,10 @@ class xivo_statistics_cel
 		return($this->_result);
 	}
 
-	private function _build_data($axetype)
+	private function _build_data($search=null)
 	{
 		$rs = array();
-		$listcall = $this->get_list_call();
+		$listcall = $this->get_list_call($search);
 		while ($listcall)
 		{
 			$ticketcall = array_shift($listcall);
@@ -392,26 +504,6 @@ class xivo_statistics_cel
 					$tmp[$uniqueid] = array();
 
 				$cc = &$tmp[$uniqueid];
-
-				switch ($axetype)
-				{
-					case 'period':
-						$key = (int) date('Ymd',$eventtime);
-						break;
-					case 'day':
-						$hour = (string) strftime('%H',$eventtime);
-						$key = (int) date('H',$eventtime);
-						break;
-					case 'week':
-						$key = strtolower(date('l',$eventtime));
-						break;
-					case 'month':
-						$key = date('d',$eventtime);
-						break;
-					case 'trunk':
-					default:
-						$key = $trunkname;
-				}
 
 				switch ($eventtype)
 				{

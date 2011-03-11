@@ -20,23 +20,15 @@
 
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
+if(xivo::load_class('xivo_statistics_cel',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'cel',false) === false)
+	die('Can\'t load xivo_statistics_cel object');
+
+$stats_cel = new xivo_statistics_cel();
+
+$cel = &$ipbx->get_module('cel');
+
 $info = null;
 $result = false;
-
-if(empty($search['dbeg']) === false
-&& empty($search['dend']) === false)
-{
-	if(($info = $cdr->chk_values($search,false)) === false)
-		$info = $cdr->get_filter_result();
-	else
-	{
-		if(($result = $cdr->search($info,'calldate')) !== false && $result !== null)
-			$total = $cdr->get_cnt();
-
-		if($result === false)
-			$info = null;
-	}
-}
 
 switch ($axetype)
 {
@@ -58,28 +50,28 @@ switch ($axetype)
 	default:
 }
 
-$stats_cdr->init_result_by_list($listkey);
-$result = $stats_cdr->parse_data($result,$axetype);
-
 $tpl_statistics = &$_TPL->get_module('statistics');
-$tpl_statistics->set_name('cdr');
-$tpl_statistics->set_baseurl('statistics/cdr/search');
-$tpl_statistics->set_data_custom('axetype',$axetype);
+
+$tpl_statistics->set_name('cel');
+$tpl_statistics->set_data_custom('axetype','trunk');
 $tpl_statistics->set_rows('row',$listkey,'key');
 
-$tpl_statistics->set_data_custom('cdr',$result);
+$stats_cel->init_result_by_list($listkey);
+$result = $stats_cel->parse_data($axetype,$search);
+
+$tpl_statistics->set_data_custom('cel',$result);
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('nb',
 					'direct',
-					'custom:cdr,[key],nb');
+					'custom:cel,[key],nb_total');
 $tpl_statistics->add_col('duration',
 					'direct',
-					'custom:cdr,[key],duration',
+					'custom:cel,[key],duration_total',
 					'time');
 $tpl_statistics->add_col('average_call_duration',
 					'expression',
-					'{custom:cdr,[key],duration}/{custom:cdr,[key],nb}',
+					'{custom:cel,[key],duration_total}/{custom:cel,[key],nb_total}',
 					'time',
 					'average');
 
@@ -104,13 +96,12 @@ switch ($axetype)
 	case 'week':
 	case 'month':
 	case 'year':
-		$xivo_jqplot->gener_graph('cdr','chart1','cdr_performance');
+		$xivo_jqplot->gener_graph('cel','chart1','cel_performance');
 		break;
 	default:
 }
 
 $_TPL->set_var('table1',$tpl_statistics);
-$_TPL->set_var('element',$element);
 $_TPL->set_var('info',$info);
 $_TPL->set_var('result',$result);
 $_TPL->set_var('showdashboard_cdr',true);
@@ -119,7 +110,7 @@ $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
 $_TPL->set_var('bench',(microtime(true) - $bench_start));
 
 $dhtml = &$_TPL->get_module('dhtml');
-$xivo_jqplot->write_js_loaded_plugin(&$dhtml); 
+$xivo_jqplot->write_js_loaded_plugin(&$dhtml);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

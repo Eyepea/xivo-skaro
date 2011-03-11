@@ -377,7 +377,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$q = sprintf("%s %s load",
 			$protocols[$this->_info['userfeatures']['protocol']],
 			$this->_info['protocol']['name']
-		);                                                                             
+		);
 
 		$infos = $this->_service->discuss($q, true);
 		if(!is_array($infos))
@@ -862,7 +862,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$musiconhold = (string) $this->get_result_var('userfeatures','musiconhold');
 
 		$numhaslen = dwho_has_len($number);
-		
+
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 		  $this->_set_result_var('userfeatures','voicemailtype',null);
 
@@ -944,7 +944,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			$callerid = (string) $this->get_result_var('protocol','callerid');
-			$callerid = $this->_service->mk_callerid($callerid, $number, $protocolname); 
+			$callerid = $this->_service->mk_callerid($callerid, $number, $protocolname);
 			$this->_set_result_var('protocol','callerid',$callerid);
 
 			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
@@ -2656,11 +2656,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['error']++;
 
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
-				
+
 				$err = array();
 				foreach($this->get_error() as $k => $v)
 					$err[] = $tpl->bbf("error(".$k."__".$v.")");
-				$msg = sprintf('%s #%03d:&nbsp;&nbsp&nbsp&nbsp  %s', $tpl->bbf('line'), $i+1, 
+				$msg = sprintf('%s #%03d:&nbsp;&nbsp&nbsp&nbsp  %s', $tpl->bbf('line'), $i+1,
 					implode(', ', $err));
 				dwho_report::push('error', $msg, $tpl->bbf('import_fail'));
 				continue;
@@ -2715,7 +2715,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
-				
+
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 				dwho_report::push('error', $this->get_error());
 				continue;

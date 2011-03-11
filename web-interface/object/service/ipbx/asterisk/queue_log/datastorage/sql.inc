@@ -23,6 +23,32 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract_sql
 {
 
+	public function get_min_time()
+	{
+		$field = array((object) ('MIN(time)'));
+		$this->_dso->new_select($this->_table,$field);
+
+		$r = $this->_dso->select_singlecolumn();
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r[0]);
+	}
+
+	public function get_max_time()
+	{
+		$field = array((object) ('MAX(time)'));
+		$this->_dso->new_select($this->_table,$field);
+
+		$r = $this->_dso->select_singlecolumn();
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r[0]);
+	}
+
 	public function search($arr,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;
@@ -54,13 +80,13 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 
 		return(true);
 	}
-	
+
 	public function stats_sum_by_type($type,$value,$event,$fieldsum,$interval=null,$addwhere=null)
-	{			
+	{
 		$this->_cnt = 0;
-		
+
 		$this->_dso->new_select($this->_table,array($fieldsum));
-	
+
 		switch ($type)
 		{
 			case 'agent':
@@ -78,12 +104,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('event' => $event));
-		
+
 		if (is_null($addwhere) === false)
 			$this->_dso->andwhere($addwhere);
-	
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['dbeg']) === true
@@ -92,14 +118,14 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 				$this->_dso->wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
 			}
 			elseif (($nbinterval = count($interval)) > 2)
-			{				
-				$this->_dso->aggregate_where(false,'AND');		
+			{
+				$this->_dso->aggregate_where(false,'AND');
 				foreach ($interval as $itl)
 					$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
 				$this->_dso->aggregate_where(false,'AND');
 			}
 		}
-		
+
 		$r = $this->_dso->select_singlecolumn();
 
 		if(isset($r[0]) === false)
@@ -107,13 +133,13 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 
 		return((int) $r[0]);
 	}
-	
+
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
-	{			
+	{
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table,array('event'));
-			
+
 		switch ($type)
 		{
 			case 'agent':
@@ -131,12 +157,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('event' => $event));
-		
+
 		if (is_null($addwhere) === false)
 			$this->_dso->andwhere($addwhere);
-		
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['dbeg']) === true
@@ -145,8 +171,8 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 				$this->_dso->wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
 			}
 			elseif (($nbinterval = count($interval)) > 2)
-			{				
-				$this->_dso->aggregate_where(false,'AND');				
+			{
+				$this->_dso->aggregate_where(false,'AND');
 				foreach ($interval as $itl)
 					$this->_dso->orwherebetween('time',$itl['dbeg'],$itl['dend'],$this->_table);
 				$this->_dso->aggregate_where(false,'AND');
@@ -163,14 +189,14 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 	{
 		if (is_null($conf) === true)
 			return(false);
-			
+
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table);
-		
+
 		switch ($type)
 		{
-			case 'agent':		
+			case 'agent':
 				if (is_array($data) === true)
 					$this->_dso->wherein('agent',$data);
 				else
@@ -185,12 +211,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			default:
 				return(false);
 		}
-		
+
 		$interval = $conf['interval'];
-			
+
 		if (empty($interval['dbeg']) === false)
 			$this->_dso-> wherebetween('time',$interval['dbeg'],$interval['dend'],$this->_table);
-		
+
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
 

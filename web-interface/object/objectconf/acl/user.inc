@@ -64,6 +64,9 @@ $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
 $array['tree']['service']['ipbx']['trunk_management']['iax'] = true;
 $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 
+$array['tree']['service']['ipbx']['cost_center'] = array();
+$array['tree']['service']['ipbx']['cost_center']['operator'] = true;
+
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['sounds'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['musiconhold'] = true;

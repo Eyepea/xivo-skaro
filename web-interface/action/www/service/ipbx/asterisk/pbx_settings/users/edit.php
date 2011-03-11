@@ -70,7 +70,7 @@ if(isset($_QR['fm_send']) === true
 {
 	$return = &$result;
 	$queueskills = array();
-		
+
 	// skipping the last one (empty entry)
 	$count = count($_QR['queueskill-skill']) - 1;
 	for($i = 0; $i < $count; $i++)
@@ -105,7 +105,7 @@ if(isset($_QR['fm_send']) === true
 		}
 		$res = usort(&$idxs, "pos_sort");
 */
-		
+
 		foreach($idxs as $idx)
 			$cursoftkey[] = $values[$idx];
 

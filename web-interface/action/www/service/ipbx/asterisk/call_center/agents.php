@@ -175,7 +175,6 @@ switch($act)
 			{
 				$fm_save = false;
 				$error = $appagentgroup->get_error();
-				var_dump($error);
 				$result = $appagentgroup->get_result();
 			}
 			else

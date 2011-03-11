@@ -260,6 +260,9 @@ TOP10 (Durée Appel Entrant)
 ; top10_call_duration_out
 TOP10 (Durée Appel Sortant)
 
+; top10_call_price
+TOP10 (Coût des Appels)
+
 ; no_conf_selected
 Veuillez choisir une configuration à appliquer.
 
@@ -463,3 +466,6 @@ Total des appels traités
 
 ; total_call_abandon_by_period
 Total des appels abandonés
+
+; cel_performance
+Perfomance des appels

@@ -28,6 +28,7 @@ $top10_call_duration_out = $this->get_var('top10_call_duration_out');
 $top10_call_nb_intern = $this->get_var('top10_call_nb_intern');
 $top10_call_nb_in = $this->get_var('top10_call_nb_in');
 $top10_call_nb_out = $this->get_var('top10_call_nb_out');
+$top10_call_price = $this->get_var('top10_call_price');
 $axetype = $this->get_var('axetype');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
 
@@ -40,38 +41,55 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 	</h3>
 	<div class="sb-content">
 		<div class="sb-list">
+			<h4><?=$this->bbf('title_cel_calls_by_trunk');?></h4>
 
-			<?=$table_trunk?>
+				<?=$table_trunk?>
 
-			<div style="width:370px; float:right;">
+				<div style="width:370px; float:right;">
+					&nbsp;
+				</div>
+				<div style="width:370px; float:left;">
+					<?=$table_intern?>
+				</div>
+				<div style="clear:both;"></div>
 
-			</div>
-			<div style="width:370px; float:left;">
-				<?=$table_intern?>
-			</div>
-			<div style="clear:both;"></div>
+			<hr><hr><hr>
+			<h4><?=$this->bbf('title_cel_top10_calls');?></h4>
 
-			<div style="width:240px; float:right;">
-				<?=$top10_call_nb_out?>
-			</div>
-			<div style="width:240px; float:right; margin-right:15px;">
-				<?=$top10_call_nb_in?>
-			</div>
-			<div style="width:240px; float:left;">
-				<?=$top10_call_nb_intern?>
-			</div>
-			<div style="clear:both;"></div>
+				<div style="width:240px; float:right;">
+					<?=$top10_call_nb_out?>
+				</div>
+				<div style="width:240px; float:right; margin-right:15px;">
+					<?=$top10_call_nb_in?>
+				</div>
+				<div style="width:240px; float:left;">
+					<?=$top10_call_nb_intern?>
+				</div>
+				<div style="clear:both;"></div>
 
-			<div style="width:240px; float:right;">
-				<?=$top10_call_duration_out?>
-			</div>
-			<div style="width:240px; float:right; margin-right:15px;">
-				<?=$top10_call_duration_in?>
-			</div>
-			<div style="width:240px; float:left;">
-				<?=$top10_call_duration_intern?>
-			</div>
-			<div style="clear:both;"></div>
+
+				<div style="width:240px; float:right;">
+					<?=$top10_call_duration_out?>
+				</div>
+				<div style="width:240px; float:right; margin-right:15px;">
+					<?=$top10_call_duration_in?>
+				</div>
+				<div style="width:240px; float:left;">
+					<?=$top10_call_duration_intern?>
+				</div>
+				<div style="clear:both;"></div>
+
+
+				<div style="width:240px; float:right;">
+					&nbsp;
+				</div>
+				<div style="width:240px; float:right; margin-right:15px;">
+					&nbsp;
+				</div>
+				<div style="width:240px; float:left;">
+					<?=$top10_call_price?>
+				</div>
+				<div style="clear:both;"></div>
 
 		</div>
 <?php

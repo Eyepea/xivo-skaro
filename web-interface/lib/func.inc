@@ -26,8 +26,8 @@ function dwho_logw($str,$login,$act)
 
 	if (empty($login) === true)
 		$login = 'unknow';
-	
-	if (XIVO_LOG_TYPE === 'json') 
+
+	if (XIVO_LOG_TYPE === 'json')
 		$type = 'web_services';
 	elseif (XIVO_LOG_TYPE === 'www')
 		$type = 'www';
@@ -55,7 +55,7 @@ function dwho_constant($name,$default=null)
 	return($default);
 }
 
-function dwho_second_to($sec, $round=null) 
+function dwho_second_to($sec, $round=null)
 {
 	$sec = floatval($sec);
 
@@ -71,7 +71,7 @@ function dwho_second_to($sec, $round=null)
 	for($c = 0;$sec <= 1 && $c < 5;$c++)
 		$sec *= 1000;
 
-	if (is_null($round) === false 
+	if (is_null($round) === false
 	&& is_numeric($round) === true)
 		$sec = round($sec, $round);
 	return($sec.$arr_keys[$c]);
@@ -877,7 +877,7 @@ function dwho_print_r($a,$n='')
 	print '<pre>'; print_r($a); print '</pre>';
 }
 
-function dwho_dump($var, $title=null) 
+function dwho_dump($var, $title=null)
 {
 	echo '<pre style="border:1px dotted gray; padding:5px; text-align:left;">';
 	if (is_null($title) === false)
@@ -986,9 +986,9 @@ function dwho_last_key(&$a,$sort=SORT_NUMERIC)
 	return(end($ak));
 }
 
-function dwho_his_to_second($his) 
+function dwho_his_to_second($his)
 {
-	$arr = split('[:/]',$his);	
+	$arr = split('[:/]',$his);
 	$time = 0;
 	$time += ($arr[0] * 3600);
 	$time += ($arr[1] * 60);
@@ -997,14 +997,14 @@ function dwho_his_to_second($his)
 	return($time);
 }
 
-function dwho_sec_to_time($second) 
+function dwho_sec_to_time($second)
 {
-	
+
 	$second = (int) $second;
 	$sec = dwho_calc_duration('','',$second);
 
 	$res = '';
-		
+
 	if($sec['d'] != 0
 	|| $sec['h'] != 0)
 	{
@@ -1015,7 +1015,7 @@ function dwho_sec_to_time($second)
 	}
 	else
 		$res .= '00:';
-		
+
 	if($sec['m'] != 0)
 	{
 		$m = ($sec['m']);
@@ -1025,7 +1025,7 @@ function dwho_sec_to_time($second)
 	}
 	else
 		$res .= '00:';
-		
+
 	if($sec['s'] != 0)
 	{
 		$s = round($sec['s'],0);
@@ -1045,7 +1045,7 @@ function dwho_sec_to_time($second)
 }
 
 function dwho_sec_to_human($sec,$d=true,$h=true,$m=true,$s=false) {
-	
+
 	$sec = (int) $sec;
 	$sec = dwho_calc_duration('','',$sec);
 
@@ -1058,15 +1058,15 @@ function dwho_sec_to_human($sec,$d=true,$h=true,$m=true,$s=false) {
 	{
 		$sec['h'] = $sec['d']*24;
 	}
-		
+
 	if($h === true
 	&& $sec['h'] != 0)
 		$res .= $sec['h'].'h ';
-		
+
 	if($m === true
 	&& $sec['m'] != 0)
 		$res .= $sec['m'].'m ';
-		
+
 	if($s === true
 	&& $sec['s'] != 0)
 		$res .= round($sec['s'],0).'s';

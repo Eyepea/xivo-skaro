@@ -254,6 +254,20 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
+	if(xivo_user::chk_acl('cost_center') === true):
+		echo	'<dl><dt>',$this->bbf('mn_left_ti_cost_center'),'</dt>';
+
+		if(xivo_user::chk_acl('cost_center','operator') === true):
+			echo	'<dd id="mn-cost_center--operator">',
+				$url->href_html($this->bbf('mn_left_cost_center-operator'),
+						'service/ipbx/cost_center/operator',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		echo	'</dl>';
+	endif;
+
 	if(xivo_user::chk_acl('pbx_services') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxservices'),'</dt>';
 

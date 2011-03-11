@@ -116,6 +116,7 @@ $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call
 $array['service/ipbx/call_management/pickup'] = 'service/ipbx/index.php/call_management/pickup/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
+$array['service/ipbx/cost_center/operator'] = 'service/ipbx/index.php/cost_center/operator/';
 $array['service/ipbx/trunk_management/sip'] = 'service/ipbx/index.php/trunk_management/sip/';
 $array['service/ipbx/trunk_management/iax'] = 'service/ipbx/index.php/trunk_management/iax/';
 $array['service/ipbx/trunk_management/custom'] = 'service/ipbx/index.php/trunk_management/custom/';

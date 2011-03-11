@@ -308,9 +308,14 @@ $array['module']['pickup']['datastorage'] = true;
 $array['module']['pickupmember'] = array();
 $array['module']['pickupmember']['datastorage'] = true;
 
+$array['module']['operator'] = array();
+$array['module']['operator']['datastorage'] = true;
 
+$array['module']['operator_destination'] = array();
+$array['module']['operator_destination']['datastorage'] = true;
 
-
+$array['module']['operator_trunk'] = array();
+$array['module']['operator_trunk']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');

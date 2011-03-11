@@ -501,7 +501,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 	}
 
 	function _insertupdate($proc,$table,&$data,$set=false,$condwhere='',$valwhere='',$usewhere=false,$useorder=false,$uselimit=false)
-	{		
+	{
 		$proc = strtolower($proc);
 		$table = trim($table);
 		$set = (bool) $set;
@@ -601,7 +601,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		{
 			if(dwho_has_len($key) === false)
 				continue;
-			
+
 			else if($set === true)
 			{
 				if($where === true && $val === null && $this->escape($val) === 'NULL')

@@ -103,6 +103,24 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return(($this->_contextlist = $context->get_all($disable,true,$order,$limit,$assoc)));
 	}
 
+	function get_trunk_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		if(isset($this->_trunklist) === false)
+			return(false);
+		else if(empty($this->_trunklist) === false)
+			return($this->_trunklist);
+		else if(($apptrunk = &$this->_service->get_application('trunk')) === false)
+			return(false);
+
+		if($order === null)
+		{
+			$order = array();
+			$order['name'] = SORT_ASC;
+		}
+
+		return(($this->_trunklist = $apptrunk->get_trunks_list(null,$disable,$order,$limit,$assoc)));
+	}
+
 	function get_musiconhold()
 	{
 		if(isset($this->_musiconhold) === false)

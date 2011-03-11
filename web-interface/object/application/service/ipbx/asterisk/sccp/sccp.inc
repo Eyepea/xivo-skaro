@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	var $_sccpbutton   = false;
 	var $_filter_error  = null;
 	var $_filter_result  = null;
-	
+
 	function xivo_application_service_asterisk_sccp(&$service,&$dso,$param=array(),$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
@@ -73,15 +73,17 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 			$res['device']['transfer'] = $map[$arr['allowtransfer']];
 			$res['line']['transfer']   = $map[$arr['allowtransfer']];
 		}
-		
-		if(is_array($res['device']['addons']))
+
+		if(isset($res['device']['addons']) === true
+		&& is_array($res['device']['addons']))
 			$res['device']['addons'] = implode(',', $res['device']['addons']);
 
 		/* softkeys
 			we receive softkeys as arrays (one per softkey)
 			we must transform it to a unique string (values separated by commas)
 		*/
-		if(is_array($arr['softkeys']))
+		if(isset($arr['softkeys']) === true
+		&& is_array($arr['softkeys']))
 		{
 			foreach($arr['softkeys'] as $name => $values)
 				$res['device']["softkey_$name"] = implode(',', $values);
@@ -97,7 +99,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$chkuser = $this->_usersccp->chk_values($values['device']);
 		$chkline = $this->_sccpline->chk_values($values['line']);
-		
+
 		if($chkuser === false
 		|| $chkline === false)
 		{
@@ -126,7 +128,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	{
 		return $this->_filter_result;
 	}
-	
+
 	function add($arr)
 	{
 		$values = $this->_explode_input_array($arr);
@@ -140,7 +142,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		if(($devid  = $this->_usersccp->add($device)) === false)
 		{	$this->_sccpline->delete($lineid);	return false; }
-	
+
 		return $devid;
 	}
 
@@ -188,7 +190,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$map = array('off' => 0, 'on' => 1, '' => '');
 		$arr['allowtransfer'] = $map[$arr['transfer']];
-		
+
 		$arr['callerid']      = $arr['cid_name'];
 		$arr['number']        = $arr['cid_num'];
 		$arr['secret']        = $arr['pin'];

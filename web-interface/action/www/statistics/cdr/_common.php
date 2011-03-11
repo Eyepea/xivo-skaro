@@ -26,15 +26,7 @@ $_I18N->load_file('tpl/www/bloc/statistics/statistics');
 require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'date.inc'));
 require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'jqplot.inc'));
 
-if(xivo::load_class('xivo_statistics_cdr',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'cdr',false) === false)
-	die('Can\'t load xivo_statistics_cdr object');
-
-$stats_cdr = new xivo_statistics_cdr();
-
 $xivo_jqplot = new xivo_jqplot;
-
-$cdr = &$ipbx->get_module('cdr');
-$element = $cdr->get_element();
 
 $listaxetype = array('period','day','week','month');
 $listop = array('exact','begin','contain','end');

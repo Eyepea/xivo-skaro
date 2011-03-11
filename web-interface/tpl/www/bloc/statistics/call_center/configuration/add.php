@@ -29,7 +29,12 @@ $form 		= &$this->get_module('form');
 	</h3>
 <?php $this->file_include('bloc/statistics/call_center/configuration/submenu'); ?>
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue'); dwho.form.select('it-agent');">
+		<form action="#" method="post" accept-charset="utf-8"
+			onsubmit="dwho.form.select('it-incall');
+				dwho.form.select('it-queue');
+				dwho.form.select('it-group');
+				dwho.form.select('it-agent');
+				dwho.form.select('it-user');">
 			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 			<?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 			<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
@@ -37,7 +42,7 @@ $form 		= &$this->get_module('form');
 			<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 		</form>
 	</div>
-	
+
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center">&nbsp;</span>

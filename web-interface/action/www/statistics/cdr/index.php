@@ -25,7 +25,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_cel',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','cel',false) === false)
 	die('Can\'t load xivo_statistics_cel object');
-	
+
 $stats_cel = new xivo_statistics_cel();
 $result = $stats_cel->parse_data('trunk');
 $listkey = $stats_cel->get_trunk_list(false);
@@ -131,7 +131,7 @@ $top10_call_duration_intern = $tpl_statistics->render_top10($data);
 $tpl_statistics->reset_all();
 
 /*
- * 
+ *
  */
 $tpl_statistics->set_name('top10_call_duration_in');
 $data = $stats_cel->get_top10('call_duration_in');
@@ -154,7 +154,7 @@ $top10_call_duration_in = $tpl_statistics->render_top10($data);
 $tpl_statistics->reset_all();
 
 /*
- * 
+ *
  */
 $tpl_statistics->set_name('top10_call_duration_out');
 $data = $stats_cel->get_top10('call_duration_out');
@@ -176,6 +176,11 @@ $data = $stats_cel->get_top10('call_nb_out');
 $top10_call_nb_out = $tpl_statistics->render_top10($data);
 $tpl_statistics->reset_all();
 
+$tpl_statistics->set_name('top10_call_price');
+$data = $stats_cel->get_top10('call_price');
+$top10_call_price = $tpl_statistics->render_top10($data);
+$tpl_statistics->reset_all();
+
 if($act === 'exportcsv')
 {
 	$_TPL->set_var('result',$tpl_statistics->render_csv());
@@ -194,6 +199,7 @@ $_TPL->set_var('top10_call_duration_out',$top10_call_duration_out);
 $_TPL->set_var('top10_call_nb_intern',$top10_call_nb_intern);
 $_TPL->set_var('top10_call_nb_in',$top10_call_nb_in);
 $_TPL->set_var('top10_call_nb_out',$top10_call_nb_out);
+$_TPL->set_var('top10_call_price',$top10_call_price);
 $_TPL->set_var('table_trunk',$table_trunk);
 $_TPL->set_var('table_intern',$table_intern);
 $_TPL->set_var('showdashboard_cdr',true);

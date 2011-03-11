@@ -27,10 +27,15 @@ $form = &$this->get_module('form');
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-<?php $this->file_include('bloc/statistics/call_center/configuration/submenu'); ?>	
+<?php $this->file_include('bloc/statistics/call_center/configuration/submenu'); ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue'); dwho.form.select('it-agent');">
+		<form action="#" method="post" accept-charset="utf-8"
+			onsubmit="dwho.form.select('it-incall');
+				dwho.form.select('it-queue');
+				dwho.form.select('it-group');
+				dwho.form.select('it-agent');
+				dwho.form.select('it-user');">
 			<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 			<?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 			<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>

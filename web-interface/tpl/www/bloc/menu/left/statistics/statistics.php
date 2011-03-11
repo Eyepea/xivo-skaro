@@ -57,8 +57,8 @@ $element = $this->get_var('element');
 ?>
 <?php
 	if(xivo_user::chk_acl_section('service/statistics/call_center/data') === true):
-	
-		$pi = $_SERVER['PATH_INFO'];	
+
+		$pi = $_SERVER['PATH_INFO'];
 		$params = array();
 		if (is_null($axetype) === false)
 			$params['axetype'] = $axetype;
@@ -126,7 +126,7 @@ $element = $this->get_var('element');
 				<?=$url->href_html($this->bbf('mn_left_home_cdr'),
 						   'statistics/cdr/index');?>
 			</dd>
-			<!-- 
+			<!--
 			<dd id="mn-2">
 				<?=$url->href_html($this->bbf('mn_left_search_cdr'),
 						   'statistics/cdr/search');?>
@@ -183,11 +183,11 @@ $element = $this->get_var('element');
 			</div>
 <?php
 	if($this->get_var('axetype') !== ''):
-	
+
 		$listop = $this->get_var('listop');
 		$cdrinfo = $this->get_var('cdrinfo');
 		$listchannel = $this->get_var('listchannel');
-	
+
 ?>
 			<div id="it-cal-period" class="b-nodisplay">
 				<div class="fm-paragraph fm-multifield">
@@ -225,7 +225,7 @@ $element = $this->get_var('element');
 					</div>
 				</div>
 			</div>
-			<fieldset>
+			<fieldset style="padding: 1px;">
 				<legend><?=$this->bbf('legend_src')?></legend>
 				<div class="fm-paragraph fm-multifield">
 				<?php
@@ -236,7 +236,7 @@ $element = $this->get_var('element');
 								  'size'	=> 12,
 								  'default'	=> '',
 								  'value'	=> $cdrinfo['src'])),
-				
+
 						$form->select(array('paragraph'	=> false,
 								    'name'		=> 'srcformat',
 								    'labelid'	=> 'srcformat',
@@ -250,8 +250,8 @@ $element = $this->get_var('element');
 				?>
 				</div>
 			</fieldset>
-			
-			<fieldset>
+
+			<fieldset style="padding: 1px;">
 				<legend><?=$this->bbf('legend_dst')?></legend>
 				<div class="fm-paragraph fm-multifield">
 				<?php
@@ -261,7 +261,7 @@ $element = $this->get_var('element');
 								  'size'	=> 12,
 								  'default'	=> '',
 								  'value'	=> $cdrinfo['dst'])),
-				
+
 						$form->select(array('paragraph'	=> false,
 								    'name'		=> 'dstformat',
 								    'labelid'	=> 'dstformat',
@@ -275,8 +275,8 @@ $element = $this->get_var('element');
 				?>
 				</div>
 			</fieldset>
-			
-			<fieldset>
+
+			<fieldset style="padding: 1px;">
 				<legend><?=$this->bbf('legend_channel')?></legend>
 				<div class="fm-paragraph fm-multifield">
 				<?php
@@ -295,7 +295,7 @@ $element = $this->get_var('element');
 			<div class="fm-desc-inline">
 				<input type="submit" id="it-submit" value="<?=$this->bbf('fm_bt-cal')?>" />
 			</div>
-			<script type="text/javascript">			
+			<script type="text/javascript">
 				$.datepicker.setDefaults({
 					currentText: 'Now',
 					changeYear: true,
@@ -313,7 +313,7 @@ $element = $this->get_var('element');
 					showWeek: true,
 					weekHeader: 'W'
 				});
-				
+
 				$("#it-dbeg").datepicker({
 					dateFormat: 'yy-mm-dd',
 					altFormat: 'yy-mm-dd',
@@ -333,15 +333,15 @@ $element = $this->get_var('element');
 				$("#it-dmonth").datepicker({
 					dateFormat: 'yy-mm',
 					altFormat: 'yy-mm',
-				});			
+				});
 			</script>
 <?php
 	endif;
 ?>
-		<fieldset>
+		<fieldset style="padding: 1px;">
 			<legend><?=$this->bbf('bench_dashboard')?></legend>
 			<?=dwho_second_to($this->get_var('bench'),2), ' - ', dwho_byte_to($this->get_var('mem_info'))?>
-		</fieldset>    
+		</fieldset>
 		</form>
 		</div>
     </div>
@@ -351,7 +351,7 @@ $element = $this->get_var('element');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
-<script type="text/javascript">	
+<script type="text/javascript">
 dwho.dom.set_onload(function() {
 	var lsaxetype = new Array('<?=implode('\', \'',$listaxetype)?>');
 	dwho.dom.add_event('change',
@@ -428,7 +428,7 @@ if($this->get_var('showdashboard_call_center') === true):
 	&& ($listobject = $this->get_var('listobject')) !== false
 	&& is_null($this->get_var('axetype')) === false
 	&& $this->get_var('axetype') !== 'type'):
-		
+
 		foreach ($listobject as $k => &$v)
 			$v['identity'] = dwho_trunc(&$v['identity'],25,'...',5);
 ?>
@@ -451,13 +451,13 @@ if($this->get_var('showdashboard_call_center') === true):
 		echo $form->hidden(array('name' => 'key','value' => $value));
 	endif;
 ?>
-<?php	
+<?php
 	if(is_null($conf) === false && $conf !== false
 	&& is_null($this->get_var('listobject')) === false
 	&& is_null($this->get_var('axetype')) === false
 	&& $this->get_var('axetype') !== 'type'):
 ?>
-			<div id="d-conf-axetype" class="fm-paragraph">	
+			<div id="d-conf-axetype" class="fm-paragraph">
 			<?=$this->bbf('conf_axetype')?>
 			<?php
 				echo	$form->select(array('name'	=> 'axetype',
@@ -477,7 +477,7 @@ if($this->get_var('showdashboard_call_center') === true):
 	else:
 		echo $form->hidden(array('name' => 'axetype','value' => 'type'));
 	endif;
-	
+
 	if(is_null($conf) === false && $conf !== false):
 ?>
 			<div id="it-cal-type" class="b-nodisplay">
@@ -546,7 +546,7 @@ $.datepicker.setDefaults({
 	showWeek: true,
 	weekHeader: 'W',
 	minDate: '<?=$conf['dbegcache']?>-01',
-<?php 
+<?php
 	if(($dend = $conf['dendcache']) != 0) :
 		$dend = dwho_date::all_to_unixtime($dend);
 		$year = date('Y',$dend);
@@ -604,7 +604,7 @@ $("#it-dbeg-month").datepicker({
 		<fieldset>
 			<legend><?=$this->bbf('conf_workweek')?></legend>
 		<?php
-			$workweek = $conf['workweek'];			
+			$workweek = $conf['workweek'];
 			foreach ($workweek as $day => $val) :
 				$day = strtoupper(substr($this->bbf($day),0,3));
 				if ($val === true)
@@ -617,10 +617,10 @@ $("#it-dbeg-month").datepicker({
 <?php
 	endif;
 ?>
-		<fieldset>
+		<fieldset style="padding: 1px;">
 			<legend><?=$this->bbf('bench_dashboard')?></legend>
 			<?=dwho_second_to($this->get_var('bench'),2), ' - ', dwho_byte_to($this->get_var('mem_info'))?>
-		</fieldset>    
+		</fieldset>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -629,7 +629,7 @@ $("#it-dbeg-month").datepicker({
 	</div>
 </div>
 
-<script type="text/javascript">	
+<script type="text/javascript">
 dwho.dom.set_onload(function()
 {
 <?php
@@ -640,7 +640,7 @@ dwho.dom.set_onload(function()
 			   function(){this.form.submit();});
 <?php
 	endif;
-?>	
+?>
 	var lsaxetype = new Array('<?=implode('\', \'',$listaxetype)?>');
 	dwho.dom.add_event('change',
 			   dwho_eid('it-conf-axetype'),
@@ -687,7 +687,7 @@ dwho.dom.set_onload(function()
 <?php
 endif;
 ?>
-<script type="text/javascript">	
+<script type="text/javascript">
 function fm_chk(){
 	dwho_eid('it-submit').disabled = true;
 	dwho_eid('it-submit').value = '<?=$this->bbf('fm-wait-submit')?>';

@@ -22,9 +22,9 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'service','abstract.inc'));
 
 class xivo_service_asterisk extends xivo_service_abstract
 {
-	var $_ini		= array();
-	var $_type		= 'ipbx';
-	var $_name		= 'asterisk';
+	var $_ini			= array();
+	var $_type			= 'ipbx';
+	var $_name			= 'asterisk';
 	var $_identity		= array();
 	var $_realstatic	= array();
 	var $_apprealstatic	= array();
@@ -394,7 +394,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if($name == 'sccp')
 		{
 			$r = &$this->get_application($name);
-		} 
+		}
 		else if(($module = $this->get_protocol_module_name($name)) !== false)
 		{ $r = &$this->get_module($module); }
 
@@ -434,14 +434,14 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		return(array($list));
 	}
-	
+
 	function get_protocol_element($protocols=array(),$module=false)
 	{
 		$protocols = (array) $protocols;
 		$module = (bool) $module;
 
 		if(isset($protocols[0]) === false)
-			$protocols = $this->_conf['protocol'];			
+			$protocols = $this->_conf['protocol'];
 
 		if(empty($protocols) === true)
 			return(false);

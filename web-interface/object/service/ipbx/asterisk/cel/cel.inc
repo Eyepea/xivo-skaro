@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'filter.inc'));
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
@@ -39,7 +40,7 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
-	
+
 	public function sum_stats($type,$value,$event,$field,$interval=null,$addwhere=null)
 	{
 		return($this->_dso->stats_sum_by_type($type,$value,$event,$field,$interval,$addwhere));
@@ -56,9 +57,46 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 			return(false);
 
 		$search = array();
-		
-		$search = $arr;
-		
+
+		if(dwho_has_len($arr,'dbeg') === true)
+		{
+			$date = array('dbeg' => null,'dend' => null);
+
+			if(dwho_has_len($arr,'dend') === true
+			&& ($date = dwho_filter::chk_between_date($arr['dbeg'],$arr['dend'])) === false)
+				return(false);
+			else if(($date['dbeg'] = dwho_filter::chk_date($arr['dbeg'])) === false)
+				return(false);
+
+			if($date['dbeg']['dateint'] > strftime($date['dbeg']['format']))
+				return(false);
+			else
+				$search['dbeg'] = $date['dbeg']['date'];
+
+			//if($date['dend'] !== null && $date['dend']['dateint'] > strftime($date['dend']['format']))
+			//	return(false);
+			//else
+				$search['dend'] = $date['dend']['date'];
+		}
+
+		if(dwho_has_len($arr,'channel') === true)
+			$search['channel'] = $arr['channel'];
+
+		if(dwho_has_len($arr,'disposition') === true)
+			$search['disposition'] = $arr['disposition'];
+
+		if(dwho_has_len($arr,'amaflags') === true)
+			$search['amaflags'] = $arr['amaflags'];
+
+		if(dwho_has_len($arr,'dcontext') === true)
+			$search['dcontext'] = $arr['dcontext'];
+
+		if(dwho_has_len($arr,'src') === true && isset($arr['srcformat']) === true)
+			$search['src'] = array('pattern' => $arr['src'],'type' => $arr['srcformat']);
+
+		if(dwho_has_len($arr,'dst') === true && isset($arr['dstformat']) === true)
+			$search['dst'] = array('pattern' => $arr['dst'],'type' => $arr['dstformat']);
+
 		if(($result = $this->_dso->search($search,$order,$limit)) === false)
 			return(null);
 

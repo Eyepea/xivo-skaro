@@ -48,7 +48,7 @@ if($this->get_var('fm_save') === false)
 				  'default'	=> $element['stats_conf']['name']['default'],
 				  'value'	=> $info['stats_conf']['name'],
 				  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','name')) ));
-	
+
 	echo	$form->text(array('desc'	=> $this->bbf('fm_default_delta'),
 				  'name'	=> 'stats_conf[default_delta]',
 				  'labelid'	=> 'name',
@@ -62,7 +62,7 @@ if($this->get_var('fm_save') === false)
 				<legend><?=$this->bbf('cache_during_period');?></legend>
 						<p>
 							<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache');?></label>
-						</p>				
+						</p>
 	<?php
 		echo	$form->text(array('desc'	=> $this->bbf('fm_dbegcache'),
 					  'name'	=> 'stats_conf[dbegcache]',
@@ -71,7 +71,7 @@ if($this->get_var('fm_save') === false)
 					  'default'	=> $element['stats_conf']['dbegcache']['default'],
 					  'value'	=> $info['stats_conf']['dbegcache'],
 					  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','dbegcache')) ));
-				      	
+
 		echo	$form->text(array('desc'	=> $this->bbf('fm_dendcache'),
 					  'name'	=> 'stats_conf[dendcache]',
 					  'labelid'	=> 'name',
@@ -117,7 +117,7 @@ if($this->get_var('fm_save') === false)
 							<?=$this->bbf('fm_hour_end')?>
 						<td>
 						<td>
-<?php	
+<?php
 	echo	$form->select(array('name'		=> 'workhour_end[h]',
 				    'labelid'	=> 'workhour_end',
 				    'key'		=> false,
@@ -143,9 +143,9 @@ if($this->get_var('fm_save') === false)
 			</fieldset>
 			<fieldset id="stats_conf_period">
 				<legend><?=$this->bbf('stats_conf_period');?></legend>
-<?php	
+<?php
 	for($i=1;$i<6;$i++):
-	
+
 	echo	$form->text(array('desc'	=> $this->bbf('fm_period'.$i),
 					  'name'	=> 'stats_conf[period'.$i.']',
 					  'labelid'	=> 'period'.$i,
@@ -155,7 +155,7 @@ if($this->get_var('fm_save') === false)
 					  'default'	=> $element['stats_conf']['period'.$i]['default'],
 					  'value'	=> $info['stats_conf']['period'.$i],
 				 	  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','period'.$i)) ));
-	
+
 	endfor;
 ?>
 			</fieldset>
@@ -173,46 +173,46 @@ if($this->get_var('fm_save') === false)
 						   $info['stats_conf']['description']);?>
 			</div>
 			</div>
-			
+
 			<div id="sb-part-workweek" class="b-nodisplay">
-<?php	
+<?php
 	echo	$form->checkbox(array('desc' => $this->bbf('fm_workweek_monday'),
 				  'name'	=> 'stats_conf[monday]',
 				  'labelid'	=> 'monday',
 				  'checked'	=> $info['stats_conf']['monday'])),
-	
+
 	$form->checkbox(array('desc' => $this->bbf('fm_workweek_tuesday'),
 				  'name'	=> 'stats_conf[tuesday]',
 				  'labelid'	=> 'tuesday',
 				  'checked'	=> $info['stats_conf']['tuesday'])),
-	
+
 	$form->checkbox(array('desc' => $this->bbf('fm_workweek_wednesday'),
 				  'name'	=> 'stats_conf[wednesday]',
 				  'labelid'	=> 'wednesday',
 				  'checked'	=> $info['stats_conf']['wednesday'])),
-	
+
 	$form->checkbox(array('desc' => $this->bbf('fm_workweek_thursday'),
 				  'name'	=> 'stats_conf[thursday]',
 				  'labelid'	=> 'thursday',
 				  'checked'	=> $info['stats_conf']['thursday'])),
-	
+
 	$form->checkbox(array('desc' => $this->bbf('fm_workweek_friday'),
 				  'name'	=> 'stats_conf[friday]',
 				  'labelid'	=> 'friday',
 				  'checked'	=> $info['stats_conf']['friday'])),
-	
+
 	$form->checkbox(array('desc' => $this->bbf('fm_workweek_saturday'),
 				  'name'	=> 'stats_conf[saturday]',
 				  'labelid'	=> 'saturday',
 				  'checked'	=> $info['stats_conf']['saturday'])),
-	
+
 	$form->checkbox(array('desc' => $this->bbf('fm_workweek_sunday'),
 				  'name'	=> 'stats_conf[sunday]',
 				  'labelid'	=> 'sunday',
-				  'checked'	=> $info['stats_conf']['sunday']));				   
+				  'checked'	=> $info['stats_conf']['sunday']));
 ?>
 			</div>
-			
+
 			<div id="sb-part-incall" class="b-nodisplay">
 <?php
 	if(isset($incall['list']) === true
@@ -221,9 +221,9 @@ if($this->get_var('fm_save') === false)
 				<div id="incalllist" class="fm-paragraph fm-multilist">
 				<?=$form->input_for_ms('incalllist',$this->bbf('ms_seek'))?>
 					<div class="slt-outlist">
-						<?=$form->select(array('name'		=> 'incalllist',
+						<?=$form->select(array('name'	=> 'incalllist',
 								       'label'		=> false,
-								       'id'		=> 'it-incalllist',
+								       'id'			=> 'it-incalllist',
 								       'multiple'	=> true,
 								       'size'		=> 5,
 								       'paragraph'	=> false,
@@ -231,7 +231,7 @@ if($this->get_var('fm_save') === false)
 								       'altkey'		=> 'id'),
 										$incall['list']);?>
 					</div>
-			
+
 					<div class="inout-list">
 						<a href="#"
 						   onclick="dwho.form.move_selected('it-incalllist','it-incall');
@@ -250,11 +250,11 @@ if($this->get_var('fm_save') === false)
 									  $this->bbf('bt_outincall'),
 									  'class="bt-outlist" id="bt-outincall" border="0"');?></a>
 					</div>
-			
+
 					<div class="slt-inlist">
-						<?=$form->select(array('name'		=> 'incall[]',
+						<?=$form->select(array('name'	=> 'incall[]',
 								       'label'		=> false,
-								       'id'		=> 'it-incall',
+								       'id'			=> 'it-incall',
 								       'multiple'	=> true,
 								       'size'		=> 5,
 								       'paragraph'	=> false,
@@ -274,9 +274,9 @@ if($this->get_var('fm_save') === false)
 	endif;
 ?>
 			</div>
-			
+
 			<div id="sb-part-queue" class="b-nodisplay">
-			
+
 			<fieldset>
 			<legend><?=$this->bbf('queue')?></legend>
 <?php
@@ -286,9 +286,9 @@ if($this->get_var('fm_save') === false)
 				<div id="queuelist" class="fm-paragraph fm-multilist">
 				<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
 					<div class="slt-outlist">
-						<?=$form->select(array('name'		=> 'queuelist',
+						<?=$form->select(array('name'	=> 'queuelist',
 								       'label'		=> false,
-								       'id'		=> 'it-queuelist',
+								       'id'			=> 'it-queuelist',
 								       'multiple'	=> true,
 								       'size'		=> 5,
 								       'paragraph'	=> false,
@@ -296,7 +296,7 @@ if($this->get_var('fm_save') === false)
 								       'altkey'		=> 'id'),
 										$queue['list']);?>
 					</div>
-			
+
 					<div class="inout-list">
 						<a href="#"
 						   onclick="dwho.form.move_selected('it-queuelist','it-queue');
@@ -315,11 +315,11 @@ if($this->get_var('fm_save') === false)
 									  $this->bbf('bt_outqueue'),
 									  'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 					</div>
-			
+
 					<div class="slt-inlist">
-						<?=$form->select(array('name'		=> 'queue[]',
+						<?=$form->select(array('name'	=> 'queue[]',
 								       'label'		=> false,
-								       'id'		=> 'it-queue',
+								       'id'			=> 'it-queue',
 								       'multiple'	=> true,
 								       'size'		=> 5,
 								       'paragraph'	=> false,
@@ -348,9 +348,9 @@ if($this->get_var('fm_save') === false)
 				<div id="grouplist" class="fm-paragraph fm-multilist">
 				<?=$form->input_for_ms('grouplist',$this->bbf('ms_seek'))?>
 					<div class="slt-outlist">
-						<?=$form->select(array('name'		=> 'grouplist',
+						<?=$form->select(array('name'	=> 'grouplist',
 								       'label'		=> false,
-								       'id'		=> 'it-grouplist',
+								       'id'			=> 'it-grouplist',
 								       'multiple'	=> true,
 								       'size'		=> 5,
 								       'paragraph'	=> false,
@@ -358,7 +358,7 @@ if($this->get_var('fm_save') === false)
 								       'altkey'		=> 'id'),
 										$group['list']);?>
 					</div>
-			
+
 					<div class="inout-list">
 						<a href="#"
 						   onclick="dwho.form.move_selected('it-grouplist','it-group');
@@ -377,11 +377,11 @@ if($this->get_var('fm_save') === false)
 									  $this->bbf('bt_outgroup'),
 									  'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 					</div>
-			
+
 					<div class="slt-inlist">
-						<?=$form->select(array('name'		=> 'group[]',
+						<?=$form->select(array('name'	=> 'group[]',
 								       'label'		=> false,
-								       'id'		=> 'it-group',
+								       'id'			=> 'it-group',
 								       'multiple'	=> true,
 								       'size'		=> 5,
 								       'paragraph'	=> false,
@@ -402,23 +402,23 @@ if($this->get_var('fm_save') === false)
 ?>
 			</fieldset>
 			</div>
-			
+
 			<div id="sb-part-qos" class="b-nodisplay">
 				<p>
 					<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_stats_queue_qos');?></label>
 				</p>
 				<div id="it-listqueueqos"></div>
 				<div id="it-listgroupqos"></div>
-				<script type="text/javascript">				
+				<script type="text/javascript">
 					var listqos = new Object();
 <?php
 					if (is_null($listqos) === false
 					&& empty($listqos) === false)
 						foreach($listqos as $k => $v)
 							echo "listqos[$k] = $v;\n";
-							
-							
-?>	
+
+
+?>
 					var translation = new Object();
 					translation['queue'] = '<?=addslashes($this->bbf('queue'))?>';
 					translation['group'] = '<?=addslashes($this->bbf('group'))?>';
@@ -452,9 +452,9 @@ if($this->get_var('fm_save') === false)
 					dwho.dom.set_onload(populateqos('it-group','group'));
 				</script>
 			</div>
-			
+
 			<div id="sb-part-last" class="b-nodisplay">
-			
+
 			<fieldset>
 			<legend><?=$this->bbf('agent')?></legend>
 <?php
@@ -473,7 +473,7 @@ if($this->get_var('fm_save') === false)
 								       'altkey'		=> 'id'),
 										$agent['list']);?>
 					</div>
-			
+
 					<div class="inout-list">
 						<a href="#"
 						   onclick="dwho.form.move_selected('it-agentlist','it-agent');
@@ -490,7 +490,7 @@ if($this->get_var('fm_save') === false)
 									  $this->bbf('bt_outagent'),
 									  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 					</div>
-			
+
 					<div class="slt-inlist">
 						<?=$form->select(array('name'	=> 'agent[]',
 								       'label'		=> false,
@@ -522,7 +522,7 @@ if($this->get_var('fm_save') === false)
 				<div id="queuelist" class="fm-paragraph fm-multilist">
 				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
 					<div class="slt-outlist">
-						<?=$form->select(array('name'		=> 'userlist',
+						<?=$form->select(array('name'	=> 'userlist',
 								       'label'		=> false,
 								       'id'			=> 'it-userlist',
 								       'multiple'	=> true,
@@ -532,7 +532,7 @@ if($this->get_var('fm_save') === false)
 								       'altkey'		=> 'id'),
 										$user['list']);?>
 					</div>
-			
+
 					<div class="inout-list">
 						<a href="#"
 						   onclick="dwho.form.move_selected('it-userlist','it-user');
@@ -549,7 +549,7 @@ if($this->get_var('fm_save') === false)
 									  $this->bbf('bt_outuser'),
 									  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 					</div>
-			
+
 					<div class="slt-inlist">
 						<?=$form->select(array('name'	=> 'user[]',
 								       'label'		=> false,
