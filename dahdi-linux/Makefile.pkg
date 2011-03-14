@@ -7,11 +7,11 @@
 include $(NONO_MK)/autobuild.mk
 include $(NONO_MK)/autobuild-classic.mk
 
-DEB_PKG = "dahdi-linux"
+DEB_PKG = "dahdi-linux-source"
 TARBALL_DIR := $(shell mktemp -d)
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
-TARBALL_NAME = "dahdi-linux_$(SRCVER)+dfsg.orig.tar.gz"
+TARBALL_NAME = "dahdi-linux-source_$(SRCVER)+dfsg.orig.tar.gz"
 UPSTREAM_VER = $(SRCVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
