@@ -1,5 +1,5 @@
 Nicolas HICHER (atarakt) <nhicher@proformatique.com>
-add oslec source to dahdi-linux
+add oslec source to dahdi-linux.
 Index: dahdi-linux-2.4.1-0/drivers/dahdi/Kbuild
 ===================================================================
 --- dahdi-linux-2.4.1-0.orig/drivers/dahdi/Kbuild	2011-03-07 12:07:23.736065633 +0100
