@@ -70,6 +70,7 @@ if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
             mkdir -p drivers/staging
             cp -a $KERNEL_SRC_PATH/$OSLEC_SRC_PATH drivers/staging/
 			)
+            # TODO change name
 			tar cfz ../${FILENAME} ${SRC_DIR_PREFIX}${UPVERSION}
 		else
 			echo "Source tarball layout changed. Check by yourself in '${DEST_PATH}/${PKG_NAME}-${UPVERSION}.tmp/'."
