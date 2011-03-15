@@ -54,6 +54,7 @@ class WeakCiscoCredentialsError(DownloadError):
 
 class CiscoDownloader(DefaultDownloader):
     _C14N_LOGIN_URL = 'http://www.cisco.com/cgi-bin/login'
+    _POST_LOGIN_URL = 'https://fedps.cisco.com/idp/startSSO.ping?PartnerSpId=https://fedam.cisco.com&IdpAdapterId=fedsmidpCCO&TargetResource=http%3A//www.cisco.com/cgi-bin/login%3Freferer%3Dhttp%3A//www.cisco.com/'
     
     def __init__(self, handlers):
         DefaultDownloader.__init__(self, handlers)
@@ -95,7 +96,14 @@ class CiscoDownloader(DefaultDownloader):
                         raise InvalidCredentialsError('authentification failed on Cisco website')
             else:
                 logger.debug('No sign of authentication failure - assuming success')
-                pass
+        # Do GET request that sets more cookies and stuff. This is not done
+        # automatically because:
+        # - we don't support javascript
+        # - we don't understand the HTML <meta http⁻equiv"refresh"> tag neither
+        # This is extremely flimsy, but since we have no control on how cisco
+        # handle the whole login process, this is as good as it can get.
+        with contextlib.closing(self._opener.open(self._POST_LOGIN_URL)) as f:
+            f.read()
         self._is_authenticated = True
         
     def _get_form_url(self):
