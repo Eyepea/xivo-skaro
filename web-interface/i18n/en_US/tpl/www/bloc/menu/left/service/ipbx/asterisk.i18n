@@ -34,6 +34,9 @@ Agents
 ; mn_left_callcenter-queues
 Queues
 
+; mn_left_callcenter-queues-penalties
+Queues penalties
+
 ; mn_left_callcenter-queueskills
 Skills
 
