@@ -717,5 +717,27 @@ class AsteriskFrontend(Frontend):
 		if cfeatures:
 			print >>o, "exten = " + "\nexten = ".join(cfeatures)
 
-		
 		return o.getvalue()
+
+	
+	def queuerules_conf(self):
+		o = StringIO()
+
+		rule = None
+		for m in self.backend.queuepenalties.all():
+			if m['name'] != rule:
+				rule = m['name']; print >>o, "\n[%s]" % rule
+
+			print >>o, "penaltychange => %d," % m['seconds'],
+			if m['maxp_sign'] is not None and m['maxp_value'] is not None:
+				sign = '' if m['maxp_sign'] == '=' else m['maxp_sign']
+				print >>o, "%s%d" % (sign,m['maxp_value']),
+
+			if m['minp_sign'] is not None and m['minp_value'] is not None:
+				sign = '' if m['minp_sign'] == '=' else m['minp_sign']
+				print >>o, ",%s%d" % (sign,m['minp_value']),
+
+			print >>o
+
+		return o.getvalue()
+

@@ -286,6 +286,19 @@ class PickupsHandler(SpecializedHandler):
 
 		return self.execute(q).fetchall()
 
+class QueuePenaltiesHandler(SpecializedHandler):
+	def all(self, **kwargs):
+		(_p, _pc) = [getattr(self.db, o)._table.c for o in ('queuepenalty','queuepenaltychange')]
+
+		q = select(
+				[_p.name, _pc.seconds, _pc.maxp_sign, _pc.maxp_value, _pc.minp_sign, _pc.minp_value],
+				and_(
+					_p.commented == 0,
+					_p.id        == _pc.queuepenalty_id
+				)
+		).order_by(_p.name)
+
+		return self.execute(q).fetchall()
 
 class QObject(object):
 	_translation = {
@@ -330,6 +343,7 @@ class QObject(object):
 		'progfunckeys'  : ProgfunckeysHintsHandler,
 
 		'pickups'       : PickupsHandler,
+		'queuepenalties': QueuePenaltiesHandler,
 	}
 
 	def __init__(self, db, name):
