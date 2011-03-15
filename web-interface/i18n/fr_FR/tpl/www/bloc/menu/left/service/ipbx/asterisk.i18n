@@ -33,3 +33,138 @@ Files d'attente
 
 ; mn_left_callcenter-queues-penalties
 Pénalitées (files d'attente)
+
+; mn_left_callcenter-agents
+Agents
+
+; mn_left_callcenter-queueskills
+Compétences
+
+; mn_left_callcenter-queueskillrules
+Règles
+
+; mn_left_ti_pbxsettings
+Paramètres IPBX
+
+; mn_left_pbxsettings-users
+Utilisateurs
+
+; mn_left_pbxsettings-groups
+Groupes
+
+; mn_left_pbxsettings-meetme
+Chambres de conférence
+
+; mn_left_pbxsettings-voicemail
+Messageries vocales
+
+; mn_left_ti_callmanagement
+Gestion des appels
+
+; mn_left_callmanagement-incall
+Appels entrants
+
+; mn_left_callmanagement-outcall
+Appels sortants
+
+; mn_left_callmanagement-rightcall
+Droits d'appels
+
+; mn_left_callmanagement-callfilter
+Filtrages d'appels
+
+; mn_left_callmanagement-pickup
+Interceptions d'appels
+
+; mn_left_callmanagement-schedule
+Horaires
+
+; mn_left_callmanagement-voicemenu
+Menus vocaux
+
+; mn_left_callmanagement-cdr
+Journaux d'appels
+
+; mn_left_ti_trunkmanagement
+Gestion des interconnexions
+
+; mn_left_trunkmanagement-sip
+Protocole SIP
+
+; mn_left_trunkmanagement-iax
+Protocole IAX
+
+; mn_left_trunkmanagement-custom
+Personnalisée
+
+; mn_left_ti_cost_center
+Centre de coût
+
+; mn_left_cost_center-operator
+Opérateurs
+
+; mn_left_cost_center-servicesgroup
+Groupe de services
+
+; mn_left_ti_pbxservices
+Services IPBX
+
+; mn_left_pbx_services-sounds
+Fichiers son
+
+; mn_left_pbx_services-musiconhold
+Musiques d'attente
+
+; mn_left_pbx_services-extenfeatures
+Extensions
+
+; mn_left_pbx_services-handynumbers
+Numéros utiles
+
+; mn_left_pbx_services-phonebook
+Carnet d'adresses
+
+; mn_left_ti_systemmanagement
+Configuration IPBX
+
+; mn_left_systemmanagement-backupfiles
+Fichiers de sauvegarde
+
+; mn_left_systemmanagement-configfiles
+Fichiers de configuration
+
+; mn_left_systemmanagement-context
+Contextes
+
+; mn_left_systemmanagement-ldapfilter
+Filtres LDAP
+
+; mn_left_ti_controlsystem
+Système de contrôle
+
+; mn_left_controlsystem-logfiles
+Journaux d'événements
+
+; mn_left_controlsystem-ipbxreload(unknown)
+Recharger
+
+; mn_left_controlsystem-ipbxreload
+Recharger %s
+
+; controlsystem_ipbxreload_confirm(unknown)
+Etes-vous certain de vouloir recharger ?
+
+; controlsystem_ipbxreload_confirm
+Etes-vous certain de vouloir recharger %s ?
+
+; mn_left_controlsystem-ipbxrestart(unknown)
+Redémarrer
+
+; mn_left_controlsystem-ipbxrestart
+Redémarrer %s
+
+; controlsystem_ipbxrestart_confirm(unknown)
+Etes-vous certain de vouloir redémarrer ?
+
+; controlsystem_ipbxrestart_confirm
+Etes-vous certain de vouloir redémarrer %s ?
