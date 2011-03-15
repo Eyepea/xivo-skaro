@@ -130,6 +130,7 @@ $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/s
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
 $array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
 $array['service/ipbx/call_center/queues'] = 'service/ipbx/index.php/call_center/queues/';
+$array['service/ipbx/call_center/queuepenalty'] = 'service/ipbx/index.php/call_center/queuepenalty/';
 $array['service/ipbx/call_center/agents'] = 'service/ipbx/index.php/call_center/agents/';
 $array['service/ipbx/call_center/queueskills'] = 'service/ipbx/index.php/call_center/queueskills/';
 $array['service/ipbx/call_center/queueskillrules'] = 'service/ipbx/index.php/call_center/queueskillrules/';
@@ -186,9 +187,11 @@ $array['service/ipbx/ui/call_management/schedule'] = 'service/ipbx/ui.php/call_m
 // call center
 $array['service/ipbx/json/restricted/call_center/agents'] = 'service/ipbx/json.php/restricted/call_center/agents/';
 $array['service/ipbx/json/restricted/call_center/queues'] = 'service/ipbx/json.php/restricted/call_center/queues/';
+$array['service/ipbx/json/restricted/call_center/queuepenalty'] = 'service/ipbx/json.php/restricted/call_center/queuepenalty/';
 
 $array['service/ipbx/json/private/call_center/agents'] = 'service/ipbx/json.php/private/call_center/agents/';
 $array['service/ipbx/json/private/call_center/queues'] = 'service/ipbx/json.php/private/call_center/queues/';
+$array['service/ipbx/json/private/call_center/queuepenalty'] = 'service/ipbx/json.php/private/call_center/queuepenalty/';
 
 $array['service/ipbx/ui/call_center/agents'] = 'service/ipbx/ui.php/call_center/agents/';
 $array['service/ipbx/ui/call_center/queues'] = 'service/ipbx/ui.php/call_center/queues/';

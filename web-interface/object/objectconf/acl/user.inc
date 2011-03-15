@@ -37,6 +37,7 @@ $array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['agents'] = true;
 $array['tree']['service']['ipbx']['call_center']['queues'] = true;
+$array['tree']['service']['ipbx']['call_center']['queuepenalty'] = true;
 $array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
 $array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
 

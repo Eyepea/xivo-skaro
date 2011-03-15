@@ -206,6 +206,12 @@ $array['module']['queuefeatures']['datastorage'] = true;
 $array['module']['queuemember'] = array();
 $array['module']['queuemember']['datastorage'] = true;
 
+$array['module']['queuepenalty'] = array();
+$array['module']['queuepenalty']['datastorage'] = true;
+
+$array['module']['queuepenaltychange'] = array();
+$array['module']['queuepenaltychange']['datastorage'] = true;
+
 $array['module']['queueskill'] = array();
 $array['module']['queueskill']['datastorage'] = true;
 

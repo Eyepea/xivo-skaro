@@ -1296,6 +1296,31 @@ CREATE INDEX "queuemember__idx__category" ON "queuemember"("category");
 CREATE UNIQUE INDEX "queuemember__uidx__queue_name_channel_usertype_userid_category" ON "queuemember"("queue_name","channel","usertype","userid","category");
 
 
+DROP TABLE IF EXISTS "queuepenalty";
+CREATE TABLE "queuepenalty" (
+ "id"          SERIAL,
+ "name"        VARCHAR(255) NOT NULL UNIQUE,
+ "commented"   INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "description" TEXT NOT NULL,
+ PRIMARY KEY("id")
+);
+
+
+DROP TABLE IF EXISTS "queuepenaltychange";
+DROP TYPE  IF EXISTS "queuepenaltychange_sign";
+
+CREATE TYPE  "queuepenaltychange_sign" AS ENUM ('=','+','-');
+CREATE TABLE "queuepenaltychange" (
+ "queuepenalty_id" INTEGER NOT NULL,
+ "seconds"     INTEGER NOT NULL DEFAULT 0,
+ "maxp_sign"   queuepenalty_sign DEFAULT NULL,
+ "maxp_value"  INTEGER DEFAULT NULL,
+ "minp_sign"   queuepenalty_sign DEFAULT NULL,
+ "minp_value"  INTEGER DEFAULT NULL,
+ PRIMARY KEY("queuepenalty_id", "seconds")
+);
+
+
 DROP TABLE IF EXISTS "rightcall";
 CREATE TABLE "rightcall" (
  "id" SERIAL,

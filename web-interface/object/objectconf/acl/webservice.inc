@@ -64,6 +64,7 @@ $array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['agents'] = true;
 $array['tree']['service']['ipbx']['call_center']['queues'] = true;
+$array['tree']['service']['ipbx']['call_center']['queuepenalties'] = true;
 $array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
 $array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
 

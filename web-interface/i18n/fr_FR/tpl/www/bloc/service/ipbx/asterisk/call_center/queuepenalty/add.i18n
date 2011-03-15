@@ -1,0 +1,26 @@
+; title_content_name
+Pénalitée > Ajouter
+
+; smenu_general
+Général
+
+; smenu_penalties
+Règles
+
+; fm_queuepenalty_name
+Nom : 
+
+; fm_queuepenalty_description
+Description : 
+
+; queuepenalty_col1
+Secondes (depuis de début de l'appel)
+
+; queuepenalty_col2
+QUEUE_MAX_PENALTY
+
+; queuepenalty_col3
+QUEUE_MIN_PENALTY
+
+; no_disp
+Aucune règles

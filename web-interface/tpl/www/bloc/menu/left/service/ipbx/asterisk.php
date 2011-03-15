@@ -105,6 +105,14 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('call_center','queuepenalty') === true):
+			echo	'<dd id="mn-call-center--queues-penalties">',
+				$url->href_html($this->bbf('mn_left_callcenter-queues-penalties'),
+						'service/ipbx/call_center/queuepenalty',
+						'act=list'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('call_center','queueskills') === true):
 			echo	'<dd id="mn-call-center--queueskills">',
 				$url->href_html($this->bbf('mn_left_callcenter-queueskills'),

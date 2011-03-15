@@ -1,0 +1,26 @@
+; title_content_name
+Queue penalty > Add
+
+; smenu_general
+General
+
+; smenu_penalties
+Rules
+
+; fm_queuepenalty_name
+Name:
+
+; fm_queuepenalty_description
+Description:
+
+; queuepenalty_col1
+Seconds (from call start)
+
+; queuepenalty_col2
+QUEUE_MAX_PENALTY
+
+; queuepenalty_col3
+QUEUE_MIN_PENALTY
+
+; no_disp
+No rules
