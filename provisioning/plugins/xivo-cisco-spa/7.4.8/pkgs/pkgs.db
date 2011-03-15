@@ -1,12 +1,16 @@
+; Latest french dictionary are for firmware 7.4.6 while we are targeting
+; 7.4.8. Also, it's not possible to create a custom dictionary for this
+; firmware yet since the english dictionary is not even available. 
+
 [pkg_spa50x-30x-fw]
 desc: Firmware files for Cisco SPA50XG and SPA30XG
-version: 7.4.7
+version: 7.4.8
 files: file_spa50x-30xfw
 install_proc: install_cisco-spa500fw
 
 [pkg_spa525G-fw]
 desc: Firmware files for Cisco SPA525G
-version: 7.4.7
+version: 7.4.8
 files: file_spa525fw
 install_proc: install_cisco-spa500fw
 
@@ -20,7 +24,7 @@ install_proc: install_cisco-spa50x-30xlang
 desc: Language files for Cisco SPA525
 version: 7.4.6
 files: file_spa525lang
-install_proc: install_cisco-spa525lang
+install_proc: install_cisco-spa525lang _v746.xml
 
 
 
@@ -45,14 +49,14 @@ b-f: cp */spa525_fr_v746.xml $DOC_ROOT/i18n/spa525_fr.xml
 
 
 [file_spa50x-30xfw]
-url: http://download-sj.cisco.com/swc/esd/04/282724524/anon/spa50x-30x-7-4-7.zip
-size: 11873085
-sha1sum: 9cc56f7cc344868d71f6025d22b771d6d2732f6d
+url: http://download.cisco.com/swc/esd/04/282724524/anon/spa50x-30x-7-4-8.zip
+size: 11970690
+sha1sum: 9c070ba6d0d031bf74afa3829f4d073d455c04b6
 
 [file_spa525fw]
-url: http://download-sj.cisco.com/swc/esd/04/282414147/anon/spa525g-7-4-7.zip
-size: 10083336
-sha1sum: f731c081bcb119774f03c9e04ffba0ac086bf593
+url: http://download.cisco.com/swc/esd/04/282414147/anon/spa525g-7-4-8.zip
+size: 10078621
+sha1sum: 47d9f36e8375af17806f94a88cc9a580671978b7
 
 [file_spa50x-30xlang]
 url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-8-71741/spa50x_30x_v746.zip

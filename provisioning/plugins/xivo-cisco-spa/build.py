@@ -16,6 +16,15 @@ def build_7_4_7(path):
                 '7.4.7/', path])
 
 
+@target('7.4.8', 'xivo-cisco-spa-7.4.8')
+def build_7_4_8(path):
+    check_call(['rsync', '-rlp', '--exclude', '.*',
+                'common/', path])
+    
+    check_call(['rsync', '-rlp', '--exclude', '.*',
+                '7.4.8/', path])
+
+
 @target('legacy', 'xivo-cisco-spa-legacy')
 def build_legacy(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
