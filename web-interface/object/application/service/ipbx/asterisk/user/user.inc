@@ -2660,7 +2660,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$err = array();
 				foreach($this->get_error() as $k => $v)
 					$err[] = $tpl->bbf("error(".$k."__".$v.")");
-				$msg = sprintf('%s #%03d:&nbsp;&nbsp&nbsp&nbsp  %s', $tpl->bbf('line'), $i+1,
+				$msg = sprintf('%s #%03d:&nbsp;&nbsp;&nbsp;&nbsp; %s', $tpl->bbf('line'), $i+1, 
 					implode(', ', $err));
 				dwho_report::push('error', $msg, $tpl->bbf('import_fail'));
 				continue;
