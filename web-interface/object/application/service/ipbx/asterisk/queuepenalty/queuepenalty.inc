@@ -278,8 +278,8 @@ class xivo_application_service_asterisk_queuepenalty extends xivo_application_as
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| ($queuepenaltyid = $this->edit_queuepenalty()) === false
-		|| $this->edit_queuepenalty_changes($queuepenaltyid) === false)
+		|| $this->edit_queuepenalty() === false
+		|| $this->edit_queuepenalty_changes() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -304,8 +304,10 @@ class xivo_application_service_asterisk_queuepenalty extends xivo_application_as
 	}
 
 
-	function edit_queuepenalty_changes($queuepenaltyid)
+	function edit_queuepenalty_changes()
 	{
+		$queuepenaltyid = $this->_info['queuepenalty']['id'];
+
 		$this->_queuepenaltychange->delete_where(array('queuepenalty_id' => $queuepenaltyid));
 		foreach($this->get_result('changes') as $rs)
 		{
