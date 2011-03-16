@@ -113,10 +113,9 @@ class Plugin(object):
         app -- the application object
         plugin_dir -- the root directory where the plugin lies
         gen_cfg -- a dictionary with generic configuration key-values
+            XXX should specify better
         spec_cfg --  a dictionary with plugin-specific configuration key-values
-        
-        XXX the plugin MUST NOT modify either gen_cfg or spec_cfg, or it MUST
-        make a deepcopy before.
+            XXX should specify better
         
         """
         pass
@@ -456,6 +455,7 @@ def _async_install(pkg_ids, installable_pkgs, installed_pkgs):
             oip.state = OIP_SUCCESS
             deferred.callback(None)
     def dl_fail(err):
+        install_oip.state = OIP_FAIL
         oip.state = OIP_FAIL
         deferred.errback(err)
     dl_deferred.addCallbacks(dl_success, dl_fail)
@@ -480,10 +480,9 @@ class FetchfwPluginHelper(object):
     """Base directory where the files are extracted."""
     
     @classmethod
-    def new_rfile_builder(cls, http_proxy=None, ftp_proxy=None):
-        handlers = new_handlers(http_proxy, ftp_proxy)
-        dlers = new_downloaders(handlers)
-        return RemoteFileBuilder(dlers)
+    def new_rfile_builder(cls, proxies=None):
+        downloaders = new_downloaders(new_handlers(proxies))
+        return RemoteFileBuilder(downloaders)
     
     def __init__(self, plugin_dir, rfile_builder=None, installation_mgr_builder=None):
         self._plugin_dir = plugin_dir
@@ -605,8 +604,6 @@ class PluginManager(object):
     
     """
     
-    # TODO proxy support
-    
     _ENTRY_FILENAME = 'entry.py'
     # name of the python plugin code
     _DB_FILENAME = 'plugins.db'
@@ -618,7 +615,7 @@ class PluginManager(object):
     _DOWNLOAD_LABEL = 'download'
     _UPDATE_LABEL = 'update'
     
-    def __init__(self, app, plugins_dir, cache_dir):
+    def __init__(self, app, plugins_dir, cache_dir, proxies):
         """
         app -- a provisioning application object
         plugins_dir -- the directory where plugins are installed
@@ -636,7 +633,7 @@ class PluginManager(object):
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
         self.server = None
-        self._downloader = DefaultDownloader([])
+        self._downloader = DefaultDownloader(new_handlers(proxies))
     
     def close(self):
         """Close the plugin manager.

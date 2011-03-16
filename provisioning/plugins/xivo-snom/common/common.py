@@ -163,7 +163,7 @@ class BaseSnomPlugin(StandardPlugin):
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
         self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         self.services = self._fetchfw_helper.services()

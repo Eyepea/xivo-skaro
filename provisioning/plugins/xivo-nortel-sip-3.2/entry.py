@@ -64,7 +64,7 @@ class NortelPlugin(StandardPlugin):
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         
-        handlers = new_handlers(gen_cfg.get('http_proxy'))
+        handlers = new_handlers(gen_cfg.get('proxies'))
         dlers = new_downloaders(handlers)
         nortel_dler = NortelDownloader(handlers)
         dlers['x-nortel'] = nortel_dler

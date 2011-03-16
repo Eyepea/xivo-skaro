@@ -8,15 +8,15 @@ with well defined values.
 The following parameters are defined:
     general.config_file
     general.base_raw_config_file
-        File containing a JSON document representing the base raw config.
+        The file containing a JSON document representing the base raw config.
     general.base_raw_config
-        A dictionary holding the base raw config.
+        The dictionary holding the base raw config.
     general.request_config_dir 
-        Directory where request processing configuration files can be found
+        The directory where request processing configuration files can be found
     general.cache_dir
+        The directory where downloaded plugins are cached.
     general.plugins_dir
-    general.http_proxy
-        HTTP proxy for plugin downloads, etc
+        The directory where plugins live.
     general.plugin_server
         URL of the plugin server (where plugins are downloaded)
     general.info_extractor
@@ -43,6 +43,14 @@ The following parameters are defined:
     plugin_config.*.*
         where the first * is a plugin ID and the second * is a parameter
         name for the plugin with the given ID
+    proxy.http
+        The proxy for HTTP requests.
+    proxy.ftp
+        The proxy for FTP requests.
+    proxy.https
+        The proxy for HTTPS requests.
+    proxy.*
+        The proxy for * protocol requests.
 
 """
 
@@ -184,7 +192,7 @@ class ConfigFileConfigSource(object):
     
     """
     
-    _BASE_SECTIONS = ['general', 'database']
+    _BASE_SECTIONS = ['general', 'database', 'proxy']
     _PLUGIN_SECTION_PREFIX = 'pluginconfig_'
     
     def __init__(self, filename):

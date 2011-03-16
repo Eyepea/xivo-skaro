@@ -260,6 +260,7 @@ class DownloadHook(object):
         This method MUST NOT raise an exception.
         
         """
+        pass
 
 
 class SHA1Hook(DownloadHook):
@@ -334,14 +335,14 @@ def new_downloaders(handlers=[]):
     return {'auth': auth, 'default': default}
 
 
-def new_handlers(http_proxy=None, ftp_proxy=None):
-    """Return a list of handlers to be used by downloaders."""
-    supp_handlers = []
-    proxies = {}
-    if http_proxy:
-        proxies['http'] = http_proxy
-    if ftp_proxy:
-        proxies['ftp'] = ftp_proxy
+def new_handlers(proxies=None):
+    """Return a list of additional handlers to be used by downloaders.
+    
+    proxies -- a dictionary mapping protocol names to URLs of proxies, or
+      None
+    
+    """
     if proxies:
-        supp_handlers.append(urllib2.ProxyHandler(proxies))
-    return supp_handlers
+        return [urllib2.ProxyHandler(proxies)]
+    else:
+        return []

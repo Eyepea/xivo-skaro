@@ -344,7 +344,7 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        handlers = new_handlers(gen_cfg.get('http_proxy'))
+        handlers = new_handlers(gen_cfg.get('proxies'))
         dlers = new_downloaders(handlers)
         cisco_dler = CiscoDownloader(handlers)
         dlers['x-cisco'] = cisco_dler

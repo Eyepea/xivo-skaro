@@ -496,6 +496,7 @@ class DeviceSynchronizeResource(_OipInstallResource):
         else:
             deferred = self._app.dev_synchronize(id)
             oip = operation_in_progres_from_deferred(deferred)
+            _ignore_deferred_error(deferred)
             location = self._add_new_oip(oip, request)
             return respond_created_no_content(request, location)
 

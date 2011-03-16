@@ -148,7 +148,7 @@ def _set_defaults_raw_config(raw_config):
         raw_config[u'funckeys'] = {}
     else:
         funckeys = raw_config[u'funckeys']
-        for funckey in funckeys:
+        for funckey in funckeys.itervalues():
             _set_if_absent(funckey, u'supervision', False)    
 
 
@@ -183,15 +183,18 @@ class ProvisioningApplication(object):
     def __init__(self, cfg_collection, dev_collection, config):
         self._cfg_collection = cfg_collection
         self._dev_collection = dev_collection
+        self._splitted_config = _split_config(config)
+        if 'proxy' not in self._splitted_config:
+            self._splitted_config['proxy'] = {}
         self.pg_mgr = PluginManager(self,
                                     config['general.plugins_dir'],
-                                    config['general.cache_dir'])
+                                    config['general.cache_dir'],
+                                    self._splitted_config['proxy'])
         if 'general.plugin_server' in config:
             self.pg_mgr.server = config['general.plugin_server']
         self._base_raw_config = config['general.base_raw_config']
         logger.info('Using base raw config %s', self._base_raw_config)
         _check_common_raw_config_validity(self._base_raw_config)
-        self._splitted_config = _split_config(config)
         self._rw_lock = DeferredRWLock()
         self._pg_load_all(True)
     
@@ -493,7 +496,9 @@ class ProvisioningApplication(object):
         valid device ID.
         
         The deferred will fire its errback with an exception if the device
-        can't be configured since it has not been configured yet.
+        can't be synchronized, either because it has not been configured yet,
+        does not support synchronization or if the operation just seem to
+        have failed.
         
         """
         logger.info('Synchronizing device %s', id)
@@ -682,8 +687,9 @@ class ProvisioningApplication(object):
         
     def _pg_load(self, id):
         # Raise an exception if plugin loading or common configuration fail
-        gen_cfg = self._splitted_config['general']
-        spec_cfg = self._splitted_config.get('plugin_config', {}).get(id, {})
+        gen_cfg = dict(self._splitted_config['general'])
+        gen_cfg['proxies'] = dict(self._splitted_config['proxy'])
+        spec_cfg = dict(self._splitted_config.get('plugin_config', {}).get(id, {}))
         try:
             self.pg_mgr.load(id, gen_cfg, spec_cfg)
         except Exception:

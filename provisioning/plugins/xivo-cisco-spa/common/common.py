@@ -218,7 +218,7 @@ class BaseCiscoPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         self.services = fetchfw_helper.services()
         
@@ -321,13 +321,10 @@ class BaseCiscoPlugin(StandardPlugin):
         h, m, s = dst_change['time'].as_hms
         return u'%s/%s/%s/%s:%s:%s' % (dst_change['month'], day, weekday, h, m, s)
     
-    def _format_tz_info(self, tzinfo):
+    def _format_tzinfo(self, tzinfo):
         lines = []
         hours, minutes = tzinfo['utcoffset'].as_hms[:2]
         lines.append(u'<Time_Zone>GMT%+03d:%02d</Time_Zone>' % (hours, minutes))
-        # We need to substract 1 from the computed hour (bug in the SPA firmware?)
-        # In fact, this might be caused by a DHCP Time Offset option
-        lines.append(u'<Time_Offset__HH_mm_>%d/%d</Time_Offset__HH_mm_>' % (hours - 1, minutes))
         if tzinfo['dst'] is None:
             lines.append(u'<Daylight_Saving_Time_Enable>no</Daylight_Saving_Time_Enable>')
         else:
@@ -409,8 +406,8 @@ class BaseCiscoPlugin(StandardPlugin):
                     e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
                     return failure.Failure(e)
             for sip_line in raw_config[u'sip'][u'lines'].itervalues():
-                username = sip_line[u'user_id']
-                password = sip_line[u'passwd']
+                username = sip_line[u'username']
+                password = sip_line[u'password']
                 break
             else:
                 e = Exception('Need at least one configured line to resynchronize')

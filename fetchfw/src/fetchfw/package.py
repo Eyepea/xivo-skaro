@@ -241,8 +241,9 @@ class DefaultInstaller(object):
                 installed_pkgs.append(to_install_pkg.install())
         except InstallationError:
             logger.exception("error during installation of package '%s'", to_install_pkg.name)
-            # TODO error handling - what should we do with package that
+            # FIXME error handling - what should we do with package that
             # have just been installed ?
+            raise
         return installed_pkgs
     
     def _post_install(self, new_pkgs):

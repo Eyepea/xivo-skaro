@@ -161,7 +161,7 @@ class BaseAastraPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('http_proxy'))
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         
         self.services = fetchfw_helper.services()
@@ -260,7 +260,7 @@ class BaseAastraPlugin(StandardPlugin):
             lines.append(u'dst %s day: %s' % (suffix, weekday))
         return lines
     
-    def _format_tz_info(self, tzinfo):
+    def _format_tzinfo(self, tzinfo):
         lines = []
         lines.append(u'time zone name: Custom')
         lines.append(u'time zone minutes: %d' % -(tzinfo['utcoffset'].as_minutes))
