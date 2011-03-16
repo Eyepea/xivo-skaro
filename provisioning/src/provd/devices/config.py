@@ -9,6 +9,11 @@ Config objects have the following standardized keys:
   id -- the IDs of this config object (unicode) (mandatory)
   parent_ids -- the IDs of parent config object (list of unicode) (mandatory)
   raw_config -- the configuration parameters of this config (dict) (mandatory)
+  role -- the role of the config (unicode) (optional).
+    Right now, only the 'default' role has been standardized. A config with
+    such a role means that this config should be used for devices which have
+    no config associated. There should be zero or one config with such a role
+    in a collection.
 
 Config collection objects are used as a storage for config objects.
 

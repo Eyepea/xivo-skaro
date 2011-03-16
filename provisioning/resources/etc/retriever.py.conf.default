@@ -1,7 +1,7 @@
 # Default configuration for the device retriever
 
-mac_retriever = MacDeviceRetriever()
-sn_retriever = SerialNumberDeviceRetriever()
-ip_retriever = IpDeviceRetriever()
-add_retriever = AddDeviceRetriever()
+mac_retriever = MacDeviceRetriever(app)
+sn_retriever = SerialNumberDeviceRetriever(app)
+ip_retriever = IpDeviceRetriever(app)
+add_retriever = AddDeviceRetriever(app)
 retriever = FirstCompositeDeviceRetriever([mac_retriever, sn_retriever, ip_retriever, add_retriever])

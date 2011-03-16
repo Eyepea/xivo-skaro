@@ -22,6 +22,7 @@ __license__ = """
 
 import logging
 from provd.devices.ident import IDeviceUpdater
+from twisted.internet import defer
 from zope.interface import Interface, implements
 
 logger = logging.getLogger(__name__)
@@ -137,7 +138,7 @@ class PluginAssociatorDeviceUpdater(object):
             pg_id = self._do_update(dev_info)
             if pg_id:
                 dev[u'plugin'] = pg_id
-        return False
+        return defer.succeed(False)
     
     def _do_update(self, dev_info):
         pg_scores = self._get_scores(dev_info)

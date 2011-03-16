@@ -56,7 +56,7 @@ class IDeviceInfoExtractor(Interface):
     """
     
     def extract(request, request_type):
-        """Return a Deferred that will callback with either an non empty
+        """Return a deferred that will fire with either an non empty
         device info object or an object that evaluates to false in a boolean
         context if no information could be extracted.
         
@@ -414,9 +414,9 @@ class IDeviceRetriever(Interface):
     
     """
     
-    def retrieve(dev_info, app):
-        """Return a deferred that will fire with either a device object from
-        a device info object or None if it can't find such object.
+    def retrieve(dev_info):
+        """Return a deferred that will fire with either a device object
+        or None if it can't find such object.
         
         """
 
@@ -425,7 +425,7 @@ class NullDeviceRetriever(object):
     """Device retriever who never retrieves anything."""
     implements(IDeviceRetriever)
     
-    def retrieve(self, dev_info, app):
+    def retrieve(self, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         return defer.succeed(None)
 
@@ -439,38 +439,39 @@ class SearchDeviceRetriever(object):
     
     implements(IDeviceRetriever)
     
-    def __init__(self, key):
+    def __init__(self, app, key):
+        self._app = app
         self._key = key
     
-    def retrieve(self, dev_info, app):
+    def retrieve(self, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         if self._key in dev_info:
-            return app.dev_find_one({self._key: dev_info[self._key]})
+            return self._app.dev_find_one({self._key: dev_info[self._key]})
         return defer.succeed(None)
 
 
-def IpDeviceRetriever():
+def IpDeviceRetriever(app):
     """Retrieve device object by looking up in a device manager for an
     object which IP is the same as the device info object.
     
     """
-    return SearchDeviceRetriever(u'ip')
+    return SearchDeviceRetriever(app, u'ip')
 
 
-def MacDeviceRetriever():
+def MacDeviceRetriever(app):
     """Retrieve device object by looking up in a device manager for an
     object which MAC is the same as the device info object.
     
     """
-    return SearchDeviceRetriever(u'mac')
+    return SearchDeviceRetriever(app, u'mac')
 
 
-def SerialNumberDeviceRetriever():
+def SerialNumberDeviceRetriever(app):
     """Retrieve device object by looking up in a device manager for an
     object which serial number is the same as the device info object.
     
     """
-    return SearchDeviceRetriever(u'sn')
+    return SearchDeviceRetriever(app, u'sn')
 
 
 class AddDeviceRetriever(object):
@@ -485,10 +486,13 @@ class AddDeviceRetriever(object):
     
     implements(IDeviceRetriever)
     
-    def retrieve(self, dev_info, app):
+    def __init__(self, app):
+        self._app = app
+    
+    def retrieve(self, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         device = copy.deepcopy(dev_info)
-        d = app.dev_insert(device)
+        d = self._app.dev_insert(device)
         d.addCallbacks(lambda _: device, lambda _: None)
         return d
 
@@ -505,11 +509,11 @@ class FirstCompositeDeviceRetriever(object):
         self.retrievers = [] if retrievers is None else retrievers
     
     @defer.inlineCallbacks
-    def retrieve(self, dev_info, app):
+    def retrieve(self, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         retrievers = self.retrievers[:]
         for retriever in retrievers:
-            device = yield retriever.retrieve(dev_info, app)
+            device = yield retriever.retrieve(dev_info)
             if device is not None:
                 defer.returnValue(device)
         defer.returnValue(None)
@@ -528,8 +532,9 @@ class IDeviceUpdater(Interface):
     """
     
     def update(device, dev_info, request, request_type):
-        """Update a device object with a device info object and return true
-        if the device should be forced to be reconfigured, else false.
+        """Update a device object, returning a deferred that will fire once
+        the device object has been updated, with either true if the device
+        should be forced to be reconfigured, else false.
         
         Forcing device reconfiguration is only useful if you are using some
         non standard keys. Device reconfiguration is normally automatically
@@ -548,7 +553,7 @@ class NullDeviceUpdater(object):
     
     def update(self, device, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        return False
+        return defer.succeed(False)
 
 
 class StaticDeviceUpdater(object):
@@ -571,9 +576,9 @@ class StaticDeviceUpdater(object):
     
     def update(self, device, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        if self.force_update or self._key not in device:
+        if self._force_update or self._key not in device:
             device[self._key] = self._value
-        return False
+        return defer.succeed(False)
 
 
 class DynamicDeviceUpdater(object):
@@ -599,8 +604,8 @@ class DynamicDeviceUpdater(object):
         if self._key in dev_info:
             if self._force_update or self._key not in device:
                 device[self._key] = dev_info[self._key]
-        return False
-    
+        return defer.succeed(False)
+
 
 class AddInfoDeviceUpdater(object):
     """Device updater that add any missing information to the device from
@@ -618,7 +623,7 @@ class AddInfoDeviceUpdater(object):
         for key in dev_info:
             if key not in device:
                 device[key] = dev_info[key]
-        return False
+        return defer.succeed(False)
 
 
 class ReplaceDeviceUpdater(object):
@@ -634,7 +639,7 @@ class ReplaceDeviceUpdater(object):
         logger.debug('In %s', self.__class__.__name__)
         device.clear()
         device.update(copy.deepcopy(dev_info))
-        return False
+        return defer.succeed(False)
 
 
 def IpDeviceUpdater():
@@ -660,7 +665,34 @@ class VersionDeviceUpdater(object):
             else:
                 if self.delete_on_no_version and u'version' in device:
                     del device[u'version']
-        return False
+        return defer.succeed(False)
+
+
+class DefaultConfigDeviceUpdater(object):
+    """Device updater that set a default config to the device if this device
+    has no config.
+    
+    The way it works is that when a device with no config is found, a search
+    for a config with type 'default' is done and the first config found is
+    associated with the device.
+    
+    """
+    # XXX don't know if it's really better than our original idea of using
+    #     a StaticDeviceUpdater for setting a default config. It's probable
+    #     that I don't have enough information to take the wisest choice
+    #     right now.
+    def __init__(self, app):
+        self._app = app
+    
+    @defer.inlineCallbacks
+    def update(self, device, dev_info, request, request_type):
+        if u'config' not in device:
+            cfg_id = yield self._app.cfg_find_one({u'role': u'default'})
+            if cfg_id is None:
+                logger.warning('No config with the default role found')
+            else:
+                device[u'config'] = cfg_id
+        defer.returnValue(False)
 
 
 class CompositeDeviceUpdater(object):
@@ -669,12 +701,14 @@ class CompositeDeviceUpdater(object):
     def __init__(self, updaters=None):
         self.updaters = [] if updaters is None else updaters
     
+    @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        updated = False
+        force_reconfigure = False
         for updater in self.updaters:
-            updated = updater.update(device, dev_info, request, request_type) or updated
-        return updated
+            d = updater.update(device, dev_info, request, request_type)
+            force_reconfigure = (yield d) or force_reconfigure
+        defer.returnValue(force_reconfigure)
 
 
 class IDeviceRouter(Interface):
@@ -774,7 +808,6 @@ class RequestProcessingService(object):
         
         """
         req_id = self._new_request_id()
-        logger.info('<%s> Processing %s request', req_id, request_type)
         
         # 1. Get a device info object
         logger.info('<%s> Extracting device info', req_id)
@@ -787,7 +820,7 @@ class RequestProcessingService(object):
         
         # 2. Get a device object
         logger.info('<%s> Retrieving device', req_id)
-        device = yield self.dev_retriever.retrieve(dev_info, self._app)
+        device = yield self.dev_retriever.retrieve(dev_info)
         if device is None:
             logger.warn('<%s> No device retrieved', req_id)
         else:
@@ -857,6 +890,7 @@ class HTTPRequestProcessingService(Resource):
     
     @defer.inlineCallbacks
     def getChild(self, path, request):
+        logger.info('Processing HTTP request: %s', request.path)
         try:
             device, pg_id = yield self._process_service.process(request, 'http')
         except Exception:
@@ -896,6 +930,7 @@ class TFTPRequestProcessingService(object):
         self.service_factory = _null_service_factory
     
     def handle_read_request(self, request, response):
+        logger.info('Processing TFTP request: %s', request['packet']['filename'])
         def callback((device, pg_id)):
             # Here we 'inject' the device object into the request object
             request['prov_dev'] = device
@@ -942,6 +977,7 @@ class DHCPRequestProcessingService(Resource):
             representing the option code, and values are byte string
             representing the raw value of the option
         """
+        logger.info('Processing DHCP request: %s', request[u'ip'])
         def errback(failure):
             logger.error('Error while processing DHCP request: %s', failure)
         d = self._process_service.process(request, 'dhcp')
