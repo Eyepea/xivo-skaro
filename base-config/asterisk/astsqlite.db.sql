@@ -841,12 +841,12 @@ INSERT INTO musiconhold VALUES (3,0,0,0,'musiconhold.conf','default','random','n
 INSERT INTO musiconhold VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 
 
-DROP TABLE IF EXISTS operator;
+DROP TABLE operator;
 CREATE TABLE operator (
  id SERIAL,
  name varchar(64) NOT NULL,
- default_price double precision,
- default_price_is varchar(16) DEFAULT 'minute'::character varying NOT NULL,
+ default_price FLOAT,
+ default_price_is varchar(16) DEFAULT minute NOT NULL,
  currency varchar(16) NOT NULL,
  disable integer DEFAULT 0 NOT NULL,
  description text NOT NULL,
@@ -857,7 +857,7 @@ CREATE UNIQUE INDEX operator__uidx__name ON operator(name);
 CREATE INDEX operator__idx__disable ON operator(disable);
 
 
-DROP TABLE IF EXISTS operator_destination;
+DROP TABLE operator_destination;
 CREATE TABLE operator_destination (
  id SERIAL,
  operator_id integer NOT NULL,
@@ -873,7 +873,7 @@ CREATE UNIQUE INDEX operator_destination__uidx__name ON operator_destination(nam
 CREATE INDEX operator_destination__idx__disable ON operator_destination(disable);
 
 
-DROP TABLE IF EXISTS operator_trunk;
+DROP TABLE operator_trunk;
 CREATE TABLE operator_trunk (
  operator_id integer NOT NULL,
  trunk_id integer NOT NULL,
@@ -1196,6 +1196,31 @@ CREATE INDEX serverfeatures__idx__type ON serverfeatures(type);
 CREATE INDEX serverfeatures__idx__commented ON serverfeatures(commented);
 CREATE UNIQUE INDEX serverfeatures__uidx__serverid_feature_type ON serverfeatures(serverid,feature,type);
 
+
+
+DROP TABLE servicesgroup;
+CREATE TABLE servicesgroup (
+ id integer unsigned,
+ name varchar(64) NOT NULL,
+ accountcode varchar(20),
+ disable tinyint(1) NOT NULL DEFAULT 0,
+ description text,
+ PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX servicesgroup__uidx__name ON servicesgroup(name);
+CREATE UNIQUE INDEX servicesgroup__uidx__accountcode ON servicesgroup(accountcode);
+CREATE INDEX servicesgroup__idx__disable ON servicesgroup(disable);
+
+
+DROP TABLE IF EXISTS servicesgroup_user;
+CREATE TABLE servicesgroup_user (
+ servicesgroup_id integer unsigned NOT NULL,
+ userfeatures_id integer unsigned NOT NULL,
+ PRIMARY KEY(servicesgroup_id,userfeatures_id)
+);
+
+CREATE UNIQUE INDEX servicesgroup_user__uidx__servicesgroupid_userfeaturesid ON servicesgroup_user(servicesgroup_id,userfeatures_id);
 
 DROP TABLE staticagent;
 CREATE TABLE staticagent (
