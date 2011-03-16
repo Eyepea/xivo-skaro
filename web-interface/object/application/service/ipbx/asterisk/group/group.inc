@@ -1082,7 +1082,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			{
 				case 'groupfeatures':
 					if(dwho_issa('groupfeatures',$this->_origin) === true)
-						$this->_groupfeatures->recover($this->_origin['groupfeatures']['id']);
+						$this->_groupfeatures->add_origin($this->_origin['groupfeatures']);
 					break;
 				case 'queue':
 					if(isset($this->_origin['queue']) === true
