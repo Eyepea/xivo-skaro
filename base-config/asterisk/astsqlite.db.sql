@@ -861,10 +861,10 @@ DROP TABLE operator_destination;
 CREATE TABLE operator_destination (
  id SERIAL,
  operator_id integer NOT NULL,
- name character varying(64) NOT NULL,
- exten character varying(40) NOT NULL,
- price double precision,
- price_is character varying(16) DEFAULT 'minute'::character varying NOT NULL,
+ name varchar(64) NOT NULL,
+ exten varchar(40) NOT NULL,
+ price FLOAT,
+ price_is varchar(16) DEFAULT minute NOT NULL,
  disable integer DEFAULT 0 NOT NULL,
  PRIMARY KEY(id)
 );
@@ -1213,7 +1213,7 @@ CREATE UNIQUE INDEX servicesgroup__uidx__accountcode ON servicesgroup(accountcod
 CREATE INDEX servicesgroup__idx__disable ON servicesgroup(disable);
 
 
-DROP TABLE IF EXISTS servicesgroup_user;
+DROP TABLE servicesgroup_user;
 CREATE TABLE servicesgroup_user (
  servicesgroup_id integer unsigned NOT NULL,
  userfeatures_id integer unsigned NOT NULL,
