@@ -219,6 +219,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .sb-top {text-align: center;}
 #b-content .sb-top span {padding: 3px 0px;height: 15px;}
 #b-content .sb-top .span-center {width: 740px;background-image: url(../img/content/t-bg.gif); background-repeat: repeat-x;}
+#b-content .sb-top .span-center font {font-size: xx-small; margin-left: 5px;}
 #b-content .sb-top .span-left {background-image: url(../img/content/t-left.gif);}
 #b-content .sb-top .span-right {background-image: url(../img/content/t-right.gif);}
 

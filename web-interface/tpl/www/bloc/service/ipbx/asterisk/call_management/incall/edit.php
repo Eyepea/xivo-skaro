@@ -19,12 +19,13 @@
 #
 
 $form = &$this->get_module('form');
+$info = array('incall'=>$this->get_var('incall'));
 
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?> <font><?=$info['incall']['identity']?></font></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 
