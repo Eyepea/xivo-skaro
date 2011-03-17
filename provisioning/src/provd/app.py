@@ -186,6 +186,7 @@ class ProvisioningApplication(object):
         self._splitted_config = _split_config(config)
         if 'proxy' not in self._splitted_config:
             self._splitted_config['proxy'] = {}
+        logger.info('Using proxies %s' % self._splitted_config['proxy'])
         self.pg_mgr = PluginManager(self,
                                     config['general.plugins_dir'],
                                     config['general.cache_dir'],
@@ -244,13 +245,13 @@ class ProvisioningApplication(object):
         updated = False
         configured = False
         if plugin == None or raw_config == None:
-            logging.info('Not configuring device %s', device)
+            logger.info('Not configuring device %s', device)
         else:
             logger.info('Configuring device %s with plugin %s', device, plugin.id)
             try:
                 _check_raw_config_validity(raw_config)
             except Exception, e:
-                logging.error('Invalid raw config: %s', e)
+                logger.error('Invalid raw config: %s', e)
             else:
                 _set_defaults_raw_config(raw_config)
                 try:
@@ -292,13 +293,13 @@ class ProvisioningApplication(object):
         # Return true if device has been updated, else false
         updated = False
         if plugin is None:
-            logging.info('Not deconfiguring device %s', device)
+            logger.info('Not deconfiguring device %s', device)
         else:
             logger.info('Deconfiguring device %s with plugin %s', device, plugin.id)
             try:
                 plugin.deconfigure(device)
             except Exception:
-                logging.error('Error while deconfiguring device %s', device, exc_info=True)
+                logger.error('Error while deconfiguring device %s', device, exc_info=True)
             else:
                 if device[u'configured']:
                     device[u'configured'] = False
@@ -328,7 +329,7 @@ class ProvisioningApplication(object):
         # Return a deferred that will fire with None once the device
         # synchronization is completed, or 
         if None in (plugin, raw_config):
-            logging.info('Not synchronizing device %s because one of plugin or raw_config is None',
+            logger.info('Not synchronizing device %s because one of plugin or raw_config is None',
                          device)
             return defer.fail(Exception('Missing information to synchronize device %s' % device))
         else:
@@ -377,18 +378,22 @@ class ProvisioningApplication(object):
           as the one which has been inserted.
         
         """
-        logging.info('Inserting new device')
-        # new device are never configured
-        device[u'configured'] = False
+        logger.info('Inserting new device')
         try:
-            id = yield self._dev_collection.insert(device)
-        except PersistInvalidIdError, e:
-            raise InvalidIdError(e)
-        else:
-            updated = (yield self._dev_configure_if_possible(device))[0]
-            if updated:
-                yield self._dev_collection.update(device)
-            defer.returnValue(id)
+            # new device are never configured
+            device[u'configured'] = False
+            try:
+                id = yield self._dev_collection.insert(device)
+            except PersistInvalidIdError, e:
+                raise InvalidIdError(e)
+            else:
+                updated = (yield self._dev_configure_if_possible(device))[0]
+                if updated:
+                    yield self._dev_collection.update(device)
+                defer.returnValue(id)
+        except Exception:
+            logger.error('Error while inserting device', exc_info=True)
+            raise
     
     @_wlock
     @defer.inlineCallbacks
@@ -408,23 +413,27 @@ class ProvisioningApplication(object):
         Note that the value of 'configured' is ignored if given.
         
         """
-        logging.info('Updating device')
+        logger.info('Updating device')
         try:
-            id = device[ID_KEY]
-        except KeyError:
-            raise ValueError('no id key for device %s' % device)
-        else:
-            old_device = yield self._dev_get_or_raise(id)
-            # configured value must be the same
-            device[u'configured'] = old_device[u'configured']
-            if old_device == device:
-                logger.info('device has not changed, ignoring update')
+            try:
+                id = device[ID_KEY]
+            except KeyError:
+                raise InvalidIdError('no id key for device %s' % device)
             else:
-                if self._dev_needs_deconfiguration(old_device, device):
-                    self._dev_deconfigure_if_possible(old_device)
-                if self._dev_needs_configuration(old_device, device):
-                    yield self._dev_configure_if_possible(device)
-                yield self._dev_collection.update(device)
+                old_device = yield self._dev_get_or_raise(id)
+                # configured value must be the same
+                device[u'configured'] = old_device[u'configured']
+                if old_device == device:
+                    logger.info('device has not changed, ignoring update')
+                else:
+                    if self._dev_needs_deconfiguration(old_device, device):
+                        self._dev_deconfigure_if_possible(old_device)
+                    if self._dev_needs_configuration(old_device, device):
+                        yield self._dev_configure_if_possible(device)
+                    yield self._dev_collection.update(device)
+        except Exception:
+            logger.error('Error while updating device', exc_info=True)
+            raise
     
     @_wlock
     @defer.inlineCallbacks
@@ -440,15 +449,19 @@ class ProvisioningApplication(object):
         The device is automatically deconfigured if needed.
         
         """
-        logging.info('Deleting device %s', id)
-        device = yield self._dev_get_or_raise(id)
+        logger.info('Deleting device %s', id)
         try:
-            yield self._dev_collection.delete(id)
-        except PersistInvalidIdError, e:
-            raise InvalidIdError(e)
-        else:
-            if device[u'configured']:
-                self._dev_deconfigure_if_possible(device)
+            device = yield self._dev_get_or_raise(id)
+            try:
+                yield self._dev_collection.delete(id)
+            except PersistInvalidIdError, e:
+                raise InvalidIdError(e)
+            else:
+                if device[u'configured']:
+                    self._dev_deconfigure_if_possible(device)
+        except Exception:
+            logger.error('Error while deleting device', exc_info=True)
+            raise
     
     def dev_retrieve(self, id):
         """Return a deferred that fire with the device with the given ID, or
@@ -478,11 +491,15 @@ class ProvisioningApplication(object):
         
         """
         logger.info('Reconfiguring device %s', id)
-        device = yield self._dev_get_or_raise(id)
-        updated, reconfigured = yield self._dev_configure_if_possible(device)
-        if updated:
-            yield self._dev_collection.update(device)
-        defer.returnValue(reconfigured)
+        try:
+            device = yield self._dev_get_or_raise(id)
+            updated, reconfigured = yield self._dev_configure_if_possible(device)
+            if updated:
+                yield self._dev_collection.update(device)
+            defer.returnValue(reconfigured)
+        except Exception:
+            logger.error('Error while reconfiguring device', exc_info=True)
+            raise
     
     @_rlock
     @defer.inlineCallbacks
@@ -502,11 +519,15 @@ class ProvisioningApplication(object):
         
         """
         logger.info('Synchronizing device %s', id)
-        device = yield self._dev_get_or_raise(id)
-        if not device[u'configured']:
-            raise Exception('can\'t synchronize not configured device %s' % device)
-        else:
-            yield self._dev_synchronize_if_possible(device)
+        try:
+            device = yield self._dev_get_or_raise(id)
+            if not device[u'configured']:
+                raise Exception('can\'t synchronize not configured device %s' % device)
+            else:
+                yield self._dev_synchronize_if_possible(device)
+        except Exception:
+            logger.error('Error while synchronizing device', exc_info=True)
+            raise
     
     # config methods
     
@@ -536,21 +557,35 @@ class ProvisioningApplication(object):
         successfully inserted.
         
         """
-        logging.info('Inserting new config')
+        logger.info('Inserting config')
         try:
-            id = yield self._cfg_collection.insert(config)
-        except PersistInvalidIdError, e:
-            raise InvalidIdError(e)
-        else:
-            # configure each device that depend on the newly inserted config
-            devices = yield self._dev_collection.find({u'config': id})
-            if devices:
-                raw_config = yield self._cfg_collection.get_raw_config(id, self._base_raw_config)
-                for device in devices:
+            try:
+                id = yield self._cfg_collection.insert(config)
+            except PersistInvalidIdError, e:
+                raise InvalidIdError(e)
+            else:
+                # configure each device that depend on the newly inserted config
+                # 1. get the set of affected configs
+                affected_cfg_ids = yield self._cfg_collection.get_descendants(id)
+                affected_cfg_ids.add(id)
+                # 2. get the raw_config of every affected config
+                raw_configs = {}
+                for affected_cfg_id in affected_cfg_ids:
+                    raw_configs[affected_cfg_id] = yield self._cfg_collection.get_raw_config(
+                                                             affected_cfg_id, self._base_raw_config)
+                # 3. reconfigure/deconfigure each affected devices
+                affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
+                for device in affected_devices:
                     plugin = self._dev_get_plugin(device)
+                    raw_config = raw_configs[device[u'config']]
+                    # reconfigure
                     if self._dev_configure(device, plugin, raw_config)[0]:
                         yield self._dev_collection.update(device)
-            defer.returnValue(id)
+                # 4. return the device id
+                defer.returnValue(id)
+        except Exception:
+            logger.error('Error while inserting config', exc_info=True)
+            raise
     
     @_wlock
     @defer.inlineCallbacks
@@ -568,33 +603,36 @@ class ProvisioningApplication(object):
         Note that device might be reconfigured.
         
         """
-        logging.info('Updating config')
+        logger.info('Updating config')
         try:
-            id = config[ID_KEY]
-        except KeyError:
-            raise ValueError('no id key for config %s' % config)
-        else:
-            old_config = yield self._cfg_get_or_raise(id)
-            if old_config == config:
-                logger.info('config has not changed, ignoring update')
+            try:
+                id = config[ID_KEY]
+            except KeyError:
+                raise InvalidIdError('no id key for config %s' % config)
             else:
-                yield self._cfg_collection.update(config)
-                # 1. get the set of affected configs
-                affected_cfg_ids = yield self._cfg_collection.get_descendants(id)
-                affected_cfg_ids.add(id)
-                # 2. get the raw_config of every affected config
-                raw_configs = {}
-                for affected_cfg_id in affected_cfg_ids:
-                    raw_configs[affected_cfg_id] = yield self._cfg_collection.get_raw_config(
-                                                             affected_cfg_id, self._base_raw_config)
-                # 3. reconfigure each device having a direct dependency on
-                #    one of the affected cfg id
-                affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
-                for device in affected_devices:
-                    plugin = self._dev_get_plugin(device)
-                    raw_config = raw_configs[device[u'config']]
-                    if self._dev_configure(device, plugin, raw_config)[0]:
-                        yield self._dev_collection.update(device)
+                old_config = yield self._cfg_get_or_raise(id)
+                if old_config == config:
+                    logger.info('config has not changed, ignoring update')
+                else:
+                    yield self._cfg_collection.update(config)
+                    affected_cfg_ids = yield self._cfg_collection.get_descendants(id)
+                    affected_cfg_ids.add(id)
+                    # 2. get the raw_config of every affected config
+                    raw_configs = {}
+                    for affected_cfg_id in affected_cfg_ids:
+                        raw_configs[affected_cfg_id] = yield self._cfg_collection.get_raw_config(
+                                                                 affected_cfg_id, self._base_raw_config)
+                    # 3. reconfigure each device having a direct dependency on
+                    #    one of the affected cfg id
+                    affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
+                    for device in affected_devices:
+                        plugin = self._dev_get_plugin(device)
+                        raw_config = raw_configs[device[u'config']]
+                        if self._dev_configure(device, plugin, raw_config)[0]:
+                            yield self._dev_collection.update(device)
+        except Exception:
+            logger.error('Error while updating config', exc_info=True)
+            raise
     
     @_wlock
     @defer.inlineCallbacks
@@ -612,35 +650,39 @@ class ProvisioningApplication(object):
         automatically reconfigured if needed.
         
         """
-        logging.info('Deleting config %s', id)
+        logger.info('Deleting config %s', id)
         try:
-            yield self._cfg_collection.delete(id)
-        except PersistInvalidIdError, e:
-            raise InvalidIdError(e)
-        else:
-            # 1. get the set of affected configs
-            affected_cfg_ids = yield self._cfg_collection.get_descendants(id)
-            affected_cfg_ids.add(id)
-            # 2. get the raw_config of every affected config
-            raw_configs = {}
-            for affected_cfg_id in affected_cfg_ids:
-                raw_configs[affected_cfg_id] = yield self._cfg_collection.get_raw_config(
-                                                         affected_cfg_id, self._base_raw_config)
-            # 3. reconfigure/deconfigure each affected devices
-            affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
-            for device in affected_devices:
-                plugin = self._dev_get_plugin(device)
-                raw_config = raw_configs[device[u'config']]
-                if device[u'config'] == id:
-                    # deconfigure
-                    assert raw_config is None
-                    if self._dev_deconfigure(device, plugin):
-                        yield self._dev_collection.update(device)
-                else:
-                    # reconfigure
-                    assert raw_config is not None
-                    if self._dev_configure(device, plugin, raw_config)[0]:
-                        yield self._dev_collection.update(device)
+            try:
+                yield self._cfg_collection.delete(id)
+            except PersistInvalidIdError, e:
+                raise InvalidIdError(e)
+            else:
+                # 1. get the set of affected configs
+                affected_cfg_ids = yield self._cfg_collection.get_descendants(id)
+                affected_cfg_ids.add(id)
+                # 2. get the raw_config of every affected config
+                raw_configs = {}
+                for affected_cfg_id in affected_cfg_ids:
+                    raw_configs[affected_cfg_id] = yield self._cfg_collection.get_raw_config(
+                                                             affected_cfg_id, self._base_raw_config)
+                # 3. reconfigure/deconfigure each affected devices
+                affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
+                for device in affected_devices:
+                    plugin = self._dev_get_plugin(device)
+                    raw_config = raw_configs[device[u'config']]
+                    if device[u'config'] == id:
+                        # deconfigure
+                        assert raw_config is None
+                        if self._dev_deconfigure(device, plugin):
+                            yield self._dev_collection.update(device)
+                    else:
+                        # reconfigure
+                        assert raw_config is not None
+                        if self._dev_configure(device, plugin, raw_config)[0]:
+                            yield self._dev_collection.update(device)
+        except Exception:
+            logger.error('Error while deleting config', exc_info=True)
+            raise
     
     def cfg_retrieve(self, id):
         """Return a deferred that fire with the config with the given ID, or

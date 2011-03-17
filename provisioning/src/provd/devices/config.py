@@ -306,10 +306,14 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import copy
+import logging
+from copy import deepcopy
+from functools import wraps
 from provd.persist.common import ID_KEY
 from provd.persist.util import ForwardingDocumentCollection
 from twisted.internet import defer
+
+logger = logging.getLogger(__name__)
 
 
 class RawConfigError(Exception):
@@ -350,78 +354,154 @@ def _check_config_validity(config):
                          type(config[u'raw_config']))
 
 
+def _needs_childs_and_parents_indexes(fun):
+    # Method wrapped by this decorator will return a deferred.
+    # Note: to be used only with method on a ConfigCollection.
+    @wraps(fun)
+    def aux(self, *args, **kwargs):
+        if self._has_childs_and_parents_indexes():
+            return defer.maybeDeferred(fun, self, *args, **kwargs)
+        else:
+            def callback(_):
+                assert self._has_childs_and_parents_indexes()
+                return fun(self, *args, **kwargs)
+            deferred = self._build_childs_and_parents_indexes()
+            deferred.addCallback(callback)
+            return deferred
+    return aux
+
+
 class ConfigCollection(ForwardingDocumentCollection):
     def __init__(self, collection):
         ForwardingDocumentCollection.__init__(self, collection)
         self._collection = collection
     
+    @defer.inlineCallbacks
+    def _build_childs_and_parents_indexes(self):
+        # Build childs and parents index from scratch.
+        # Parents index is not strictly needed but simplify some stuff
+        # XXX it's possible to have this method executed twice, for example
+        #     if during the time to yield another methods call this method,
+        #     etc, we should use a lock, twisted is such a pain sometimes,
+        #     but then it's only about efficiency (doing the same job twice
+        #     is less efficient than only once...)
+        logger.debug('Building childs and parents indexes')
+        childs_idx = {}
+        parents_idx = {}
+        configs = yield self._collection.find({})
+        for config in configs:
+            id = config[ID_KEY]
+            parent_ids = config[u'parent_ids']
+            # update childs_idx
+            for parent_id in parent_ids:
+                if parent_id in childs_idx:
+                    childs_idx[parent_id].append(id)
+                else:
+                    childs_idx[parent_id] = [id]
+            # update parents_idx
+            parents_idx[id] = list(parent_ids)
+        self._childs_idx = childs_idx
+        self._parents_idx = parents_idx
+    
+    def _has_childs_and_parents_indexes(self):
+        return hasattr(self, '_childs_idx') and hasattr(self, '_parents_idx')
+    
+    @_needs_childs_and_parents_indexes
     def insert(self, config):
         _check_config_validity(config)
-        return self._collection.insert(config)
+        def callback(id):
+            parent_ids = config[u'parent_ids']
+            # update childs idx
+            for parent_id in parent_ids:
+                if parent_id in self._childs_idx:
+                    self._childs_idx[parent_id].append(id)
+                else:
+                    self._childs_idx[parent_id] = [id]
+            # update parents idx
+            self._parents_idx[id] = list(parent_ids)
+            return id
+        deferred = self._collection.insert(config)
+        deferred.addCallback(callback)
+        return deferred
     
+    @_needs_childs_and_parents_indexes
     def update(self, config):
         _check_config_validity(config)
-        return self._collection.update(config)
+        def callback(_):
+            id = config[ID_KEY]
+            new_parent_ids = config[u'parent_ids']
+            old_parent_ids = self._parents_idx[id]
+            if new_parent_ids != old_parent_ids:
+                # update childs idx
+                for parent_id in old_parent_ids:
+                    childs = self._childs_idx[parent_id]
+                    childs.remove(id)
+                    if not childs:
+                        del self._childs_idx[parent_id]
+                for parent_id in new_parent_ids:
+                    if parent_id in self._childs_idx:
+                        self._childs_idx[parent_id].append(id)
+                    else:
+                        self._childs_idx[parent_id] = [id]
+                # update parents idx
+                self._parents_idx[id] = list(new_parent_ids)
+        deferred = self._collection.update(config)
+        deferred.addCallback(callback)
+        return deferred
     
+    @_needs_childs_and_parents_indexes
+    def delete(self, id):
+        def callback(_):
+            # update childs idx
+            old_parent_ids = self._parents_idx[id]
+            for parent_id in old_parent_ids:
+                childs = self._childs_idx[parent_id]
+                childs.remove(id)
+                if not childs:
+                    del self._childs_idx[parent_id]
+            # update parents idx
+            del self._parents_idx[id]
+        deferred = self._collection.delete(id)
+        deferred.addCallback(callback)
+        return deferred
+    
+    @_needs_childs_and_parents_indexes
     def get_ancestors(self, id):
         """Return a deferred that will fire with the set of ancestors of the
         config with the given ID, i.e. the set of config ID that the given
-        config depends on, directly or indirectly, or fire with None if id
-        is an unknown id.
+        config depends on, directly or indirectly, or fire with an empty set
+        if id is unknown.
         
         """
         visited = set()
-        @defer.inlineCallbacks
         def aux(cur_id):
-            if cur_id in visited:
-                return
-            visited.add(cur_id)
-            config = yield self._collection.retrieve(cur_id)
-            if config is not None:
-                for parent_id in config[u'parent_ids']:
-                    yield aux(parent_id)
-    
-        def on_success(_):
-            visited.remove(id)
-            # visited will now be empty if id is unknown
-            return visited or None
-        d = aux(id)
-        d.addCallback(on_success)
-        return d
-    
-    def has_descendants(self, id):
-        """Return a deferred that will fire with true if the config with the
-        given ID has any descendants, else will fire with false.
+            if cur_id in self._parents_idx:
+                for parent_id in self._parents_idx[cur_id]:
+                    if parent_id not in visited:
+                        visited.add(parent_id)
+                        aux(parent_id)
         
-        """
-        return self.get_descendants(id, maxdepth=1)
+        aux(id)
+        return visited
     
-    def get_descendants(self, id, maxdepth=-1):
+    @_needs_childs_and_parents_indexes
+    def get_descendants(self, id):
         """Return a deferred that will fire with the set of descendants of the
         config with the given ID, i.e. the set of config ID that depends on
-        this config, directly or indirectly. 
+        this config, directly or indirectly, or fire with an empty set if id
+        is unknown.
         
         """
         visited = set()
-        @defer.inlineCallbacks
-        def aux(cur_id, maxdepth):
-            if cur_id in visited:
-                return
-            visited.add(cur_id)
-            if maxdepth == 0:
-                return
-            maxdepth -= 1
-            configs = yield self._collection.find({u'parent_ids': cur_id}) 
-            for config in configs:
-                assert cur_id in config[u'parent_ids']
-                yield aux(config[ID_KEY], maxdepth)
+        def aux(cur_id):
+            if cur_id in self._childs_idx:
+                for child_id in self._childs_idx[cur_id]:
+                    if child_id not in visited:
+                        visited.add(child_id)
+                        aux(child_id)
         
-        def on_success(_):
-            visited.remove(id)
-            return visited
-        d = aux(id, maxdepth)
-        d.addCallback(on_success)
-        return d
+        aux(id)
+        return visited
     
     def get_raw_config(self, id, base_raw_config={}):
         """Return a deferred that will fire with a raw config with every
@@ -436,35 +516,19 @@ class ConfigCollection(ForwardingDocumentCollection):
         # statement like in python3, and can't rebind the name in an inner
         # scope...
         flattened_raw_config = [None]
-        visited = set()
+        visited = set([id])
         @defer.inlineCallbacks
         def aux(cur_id):
-            if cur_id in visited:
-                return
-            visited.add(cur_id)
             config = yield self._collection.retrieve(cur_id)
             if config is not None:
                 if flattened_raw_config[0] is None:
-                    flattened_raw_config[0] = copy.deepcopy(base_raw_config)
-                for base_id in config[u'parent_ids']:
-                    yield aux(base_id)
+                    flattened_raw_config[0] = deepcopy(base_raw_config)
+                for parent_id in config[u'parent_ids']:
+                    if parent_id not in visited:
+                        visited.add(parent_id)
+                        yield aux(parent_id)
                 _rec_update_dict(flattened_raw_config[0], config[u'raw_config'])
         
         d = aux(id)
         d.addCallback(lambda _: flattened_raw_config[0])
         return d
-
-    @defer.inlineCallbacks
-    def delete_references(self, id):
-        """Delete all the references to the config with the given ID, i.e.
-        for each config with has the given config has a parent, remove the
-        given config from its 'parent_ids' key.
-        
-        Return a deferred that will fire with None once the operation has
-        been completed.
-        
-        """
-        configs = yield self._collection.find({u'parent_ids': id})
-        for config in configs:
-            config[u'parent_ids'].remove(id)
-            yield self._collection.update(config)
