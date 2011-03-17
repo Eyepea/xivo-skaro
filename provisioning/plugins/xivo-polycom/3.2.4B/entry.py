@@ -36,12 +36,4 @@ VERSION = u'3.2.4.0267'
 class PolycomPlugin(common_globals['BasePolycomPlugin']):
     IS_PLUGIN = True
     
-    _XX_LANGUAGE_MAP = {
-        u'de_DE': u'Deutsch (de-de)',
-        u'en_US': u'English (en-us)',
-        u'es_ES': u'Español (es-es)',
-        u'fr_FR': u'Français (fr-fr)',
-        u'fr_CA': u'Français (fr-fr)',
-    }
-    
     pg_associator = common_globals['BasePolycomPgAssociator'](MODELS, VERSION)

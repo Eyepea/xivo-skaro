@@ -53,9 +53,9 @@ reg.{{ line_no }}.server.2.expires="3600"
 {% endif -%}
 reg.{{ line_no }}.displayName="{{ line['display_name']|e }}"
 reg.{{ line_no }}.label="{{ line['username']|e }}"
-reg.{{ line_no }}.address="{{ line['username'] }}"
-reg.{{ line_no }}.auth.userId="{{ line['auth_username'] }}"
-reg.{{ line_no }}.auth.password="{{ line['password'] }}"
+reg.{{ line_no }}.address="{{ line['username']|e }}"
+reg.{{ line_no }}.auth.userId="{{ line['auth_username']|e }}"
+reg.{{ line_no }}.auth.password="{{ line['password']|e }}"
 {% if sip['subscribe_mwi'] -%}
 msg.mwi.{{ line_no }}.subscribe="{{ line['number'] }}"
 {% else -%}

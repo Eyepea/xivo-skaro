@@ -127,8 +127,12 @@ class BasePolycomPlugin(StandardPlugin):
         u'SPIP650': 47,
         u'SPIP670': 47,
     }
-    # _XX_LANGUAGE_MAP attribute should be redefined in derived class
     _XX_LANGUAGE_MAP = {
+        u'de_DE': u'German_Germany',
+        u'en_US': u'English_United_States',
+        u'es_ES': u'Spanish_Spain',
+        u'fr_FR': u'French_France',
+        u'fr_CA': u'French_France',
     }
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
