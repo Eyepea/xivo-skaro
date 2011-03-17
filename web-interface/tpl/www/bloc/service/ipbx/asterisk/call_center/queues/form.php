@@ -21,16 +21,17 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$element = $this->get_var('element');
-$info = $this->get_var('info');
-$user = $this->get_var('user');
-$agentgroup = $this->get_var('agentgroup');
-$agent = $this->get_var('agent');
-$pannounce = $this->get_var('pannounce');
-$moh_list = $this->get_var('moh_list');
-$announce_list = $this->get_var('announce_list');
-$context_list = $this->get_var('context_list');
-$schedules    = $this->get_var('schedules');
+$element         = $this->get_var('element');
+$info            = $this->get_var('info');
+$user            = $this->get_var('user');
+$agentgroup      = $this->get_var('agentgroup');
+$agent           = $this->get_var('agent');
+$pannounce       = $this->get_var('pannounce');
+$moh_list        = $this->get_var('moh_list');
+$announce_list   = $this->get_var('announce_list');
+$context_list    = $this->get_var('context_list');
+$schedules       = $this->get_var('schedules');
+$defaultrules    = $this->get_var('defaultrules');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -942,16 +943,15 @@ endif;
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'membermacro')) )),
 
-    $form->text(array('desc'  => $this->bbf('fm_queue_defaultrule'),
-            'name'     => 'queue[defaultrule]',
-            'labelid'  => 'queue-defaultrule',
-            'size'     => 15,
+		$form->select(array('desc'	=> $this->bbf('fm_queue_defaultrule'),
+				    'name'	    => 'queue[defaultrule]',
+				    'labelid'	  => 'queue-defaultrule',
+						'key'	      => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
             'help'     => $this->bbf('hlp_fm_queue_defaultrule'),
-            'required' => false,
-            'value'    => $info['queue']['defaultrule'],
-            'default'  => $element['queue']['defaultrule']['default'],
-            'error'    => $this->bbf_args('error',
-        $this->get_var('error', 'defaultrule')) ));
+				    'selected'	=> $info['queue']['defaultrule']),
+			$defaultrules);
 
 ?>
 </div>

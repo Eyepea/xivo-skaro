@@ -327,6 +327,7 @@ class QObject(object):
 		'voicemails'    : ('voicemail',),
 		'queues'        : ('queue',),
 		'queuemembers'  : ('queuemember',),
+		'queuepenalty'  : ('queuepenalty',),
 
 		'userqueueskills': UserQueueskillsHandler,
 		'agentqueueskills': AgentQueueskillsHandler,

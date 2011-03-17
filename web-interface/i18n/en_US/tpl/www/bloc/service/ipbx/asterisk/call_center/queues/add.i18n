@@ -500,10 +500,8 @@ Announce position in the queue:
 ; fm_queue_announce-position-limit
 Max number of waiting calls to play position announce:
 
-
 ; fm_queue_defaultrule
-Default rule:
-
+Penalties applied:
 
 ; hlp_fm_queue_timeoutpriority
 Config asterisk: timeoutpriority

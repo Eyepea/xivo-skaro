@@ -372,6 +372,9 @@ class AsteriskFrontend(Frontend):
 	def queues_conf(self):
 		o = StringIO()
 
+
+		penalties = dict([(itm['id'], itm['name']) for itm in	self.backend.queuepenalty.all(commented=False)])
+
 		print >>o, '\n[general]'
 		for item in self.backend.queue.all(commented=False, category='general'):
 			print >>o, "%s = %s" % (item['var_name'], item['var_val'])
@@ -384,6 +387,11 @@ class AsteriskFrontend(Frontend):
 				if k in ('name','category','commented') or v is None or \
 						(isinstance(v, (str,unicode)) and len(v) == 0):
 					continue
+
+				if k == 'defaultrule':
+					if not int(v) in penalties:
+						continue
+					v = penalties[int(v)]
 
 				print >>o, k,'=',v
 

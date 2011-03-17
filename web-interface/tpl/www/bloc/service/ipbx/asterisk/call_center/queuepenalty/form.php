@@ -100,7 +100,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_queuepenalty_name'),
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left">
-	<?php
+<?php
 					echo $form->text(array('paragraph'	=> false,
 								   'name'	   => "queuepenalty_seconds[$i]",
 								   'id'      => false,
@@ -108,6 +108,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_queuepenalty_name'),
 								   'size'	   => 3,
 								   'key'	   => false,
 									 'default' => '',
+									 'error'	=> $this->bbf_args('error',$this->get_var('error','queuepenaltychange',$i,'seconds')),
 								   'value'   => $penalties[$i]['seconds']));
 	?>
 					</td>
@@ -131,6 +132,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_queuepenalty_name'),
 								   'size'	   => 3,
 								   'key'	   => false,
 									 'default' => '',
+									 'error'	=> $this->bbf_args('error',$this->get_var('error','queuepenaltychange',$i,'maxp_value')),
 								   'value'   => $penalties[$i]['maxp_value']));
 	 ?>
 				</td>
@@ -154,8 +156,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_queuepenalty_name'),
 								   'size'	   => 3,
 								   'key'	   => false,
 									 'default' => '',
+									 'error'	=> $this->bbf_args('error',$this->get_var('error','queuepenaltychange',$i,'minp_value')),
 								   'value'   => $penalties[$i]['minp_value']));
-							//'error'      	=> $this->bbf_args('error_generic', $this->get_var('error',$type,$i,'name'))
 	 ?>
 				</td>
 				<td class="td-right">

@@ -44,7 +44,7 @@ $array['element']['minp_sign']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['queuepenalty_id'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
-$array['filter']['seconds'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
+$array['filter']['seconds'] = array('set' => false, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['maxp_value'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
 $array['filter']['minp_value'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
 $array['filter']['maxp_sign'] = array('set' => false, 'chk' => 2, 'key' => array('+','-','='));

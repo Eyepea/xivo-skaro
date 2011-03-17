@@ -88,7 +88,7 @@ class xivo_application_service_asterisk_queuepenalty extends xivo_application_as
 				break;
 			case 'list':
 			default:
-				$rs = $this->_queuepenalty->get_all();
+				$rs = $this->_dso->get_all($search,$disable,$order,$limit);
 		}
 
 		$this->_cnt = $this->_dso->get_cnt();
@@ -175,7 +175,6 @@ class xivo_application_service_asterisk_queuepenalty extends xivo_application_as
 		}
 
 		$this->_set_result('queuepenalty',$rs);
-
 		return($r);
 	}
 
@@ -183,16 +182,19 @@ class xivo_application_service_asterisk_queuepenalty extends xivo_application_as
 	{
 		$errs    = array();
 		$changes = array();
-		foreach($arr as $rs)
+		for($i = 0; $i < count($arr); $i++)
 		{
-			if(($rs = $this->_queuepenaltychange->chk_values($rs)) === false)
-				$errs[] = $this->_queuepenaltychange->get_filter_error();
+			if(($rs = $this->_queuepenaltychange->chk_values($arr[$i])) === false)
+				$errs[$i] = $this->_queuepenaltychange->get_filter_error();
 
 			$changes[] = $rs;
 		}
 
 		$this->_set_result('changes',$changes);
-		return true;
+
+		if(count($errs) > 0)
+			$this->_set_error('queuepenaltychange', $errs);
+		return (count($errs) == 0);
 	}
 
 	function add()

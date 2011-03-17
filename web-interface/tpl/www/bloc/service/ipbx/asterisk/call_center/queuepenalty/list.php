@@ -97,7 +97,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td>0</td>
+		<td><?= $ref['number'] ?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

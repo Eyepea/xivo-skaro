@@ -33,6 +33,7 @@ $ctistatus = array();
 foreach($appstatus->get_status_list() as $itm)
 { $ctistatus[$itm['ctistatus']['id']] = $itm['ctistatus']; }
 
+$apppenalty  = &$ipbx->get_application('queuepenalty');
 
 $param = array();
 $param['act'] = 'list';
@@ -572,6 +573,7 @@ switch($act)
 
 $_TPL->set_var('act',$act);
 $_TPL->set_var('schedules',$appschedule->get_schedules_list());
+$_TPL->set_var('defaultrules',$apppenalty->get_queuepenalty_list());
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

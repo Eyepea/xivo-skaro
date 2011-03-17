@@ -97,8 +97,8 @@ switch($act)
 
 			// on update error
 			$error = $appqpenalties->get_error();
-			$info  = $_QR['queuepenalty'];
-			$info['id'] = $_QR['id'];
+			$info  = $_QR;
+			$info['queuepenalty']['id'] = $_QR['id'];
 		}
 
 		$_TPL->set_var('id'      , $info['queuepenalty']['id']);

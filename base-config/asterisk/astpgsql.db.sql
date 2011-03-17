@@ -1225,7 +1225,7 @@ CREATE TABLE "queue" (
  "random-periodic-announce" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "announce-position" varchar(1024) NOT NULL DEFAULT 'yes',
  "announce-position-limit" integer NOT NULL DEFAULT 5,
- "defaultrule" varchar(1024),
+ "defaultrule" varchar(1024) DEFAULT NULL,
  PRIMARY KEY("name")
 );
 
