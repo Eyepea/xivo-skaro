@@ -37,4 +37,4 @@ pf_profor-banner
 
 # digium patches
 dig_27789_chansip_nullpeer.patch
-#pf_skill_queues
+pf_skill_queues
