@@ -91,19 +91,12 @@ case 'add':
 		$_TPL->set_var('destination_list',$appschedule->get_dialaction_destination_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('css/jquery/current/jquery-ui.css');
-		$dhtml->set_css('css/jquery/anytime.css');
-		$dhtml->set_css('css/jquery/jquery.xivo.schedule.css');
+		$dhtml->set_css('extra-libs/jquery-ui/css/smoothness/jquery-ui.css', true);
+		$dhtml->set_css('extra-libs/xivo.schedule/xivo.schedule.css'       , true);
 
-		$dhtml->set_js('js/jquery.js');
-		$dhtml->set_js('js/jquery-ui.js');
-		$dhtml->set_js('js/jquery/ui/jquery.ui.core.js');
-		$dhtml->set_js('js/jquery/ui/jquery.ui.widget.js');
-		$dhtml->set_js('js/jquery/ui/jquery.ui.mouse.js');
-		$dhtml->set_js('js/jquery/ui/jquery.ui.slider.js');
-		$dhtml->set_js('js/jquery/jquery.mousewheel.js');
-		$dhtml->set_js('js/jquery/jquery.xivo.schedule.js');
-		$dhtml->set_js('js/jquery/jquery.xivo.schedule-fr.js');
+		$dhtml->set_js('extra-libs/mousewheel/jquery.mousewheel.js'  , true);
+		$dhtml->set_js('extra-libs/xivo.schedule/xivo.schedule.js'   , true);
+		$dhtml->set_js('extra-libs/xivo.schedule/xivo.schedule-fr.js', true);
 
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');

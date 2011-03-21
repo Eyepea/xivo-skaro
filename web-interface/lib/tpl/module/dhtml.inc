@@ -182,7 +182,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 		return(true);
 	}
 
-	function set_css($a)
+	function set_css($a, $extra=false)
 	{
 		$a = (array) $a;
 
@@ -196,12 +196,12 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 
 			$path = DWHO_LOCATION_SCRIPT.DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
-			if(dwho_file::is_f_r($path) !== false)
+			if(dwho_file::is_f_r($path) !== false || $extra)
 				$this->_css[] = $a[$i];
 		}
 	}
 
-	function set_js($a)
+	function set_js($a, $extra=false)
 	{
 		$a = (array) $a;
 
@@ -215,7 +215,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 
 			$path = DWHO_LOCATION_SCRIPT.DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
-			if(dwho_file::is_f_r($path) !== false)
+			if(dwho_file::is_f_r($path) !== false || $extra)
 				$this->_js[] = $a[$i];
 		}
 	}
