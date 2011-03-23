@@ -37,6 +37,9 @@ class AsteriskFrontend(Frontend):
 		## section::general
 		print >>o, '[general]'
 		for item in self.backend.sip.all(commented=False):
+			if item['var_val'] is None:
+				continue
+
 			if item['var_name'] in ('register', 'mwi'):
 				print >>o, item['var_name'], "=>", item['var_val']
 
@@ -125,6 +128,9 @@ class AsteriskFrontend(Frontend):
 		## section::general
 		print >>o, '[general]'
 		for item in self.backend.iax.all(commented=False):
+			if item['var_val'] is None:
+				continue
+
 			if item['var_name'] == 'register':
 				print >>o, item['var_name'], "=>", item['var_val']
 
@@ -464,6 +470,15 @@ class AsteriskFrontend(Frontend):
 		for f in self.backend.features.all(commented=False, category='general'):
 			print >>o, "%s = %s" % (f['var_name'], f['var_val'])
 
+		# parkinglots
+		for f in self.backend.parkinglot.all(commented=False):
+			print >>o, "\n[%s]" % f['name']
+			print >>o, "context => %s" % f['context']
+			print >>o, "parkext => %s" % f['extension']
+			print >>o, "parkpos => %d-%d" % (f['pos_start'], f['pos_end'])
+			if f['next'] == 1:
+				print >>o, "findslot => next"
+				
 		print >>o, '\n[featuremap]'
 		for f in self.backend.features.all(commented=False, category='featuremap'):
 			print >>o, "%s = %s" % (f['var_name'], f['var_val'])

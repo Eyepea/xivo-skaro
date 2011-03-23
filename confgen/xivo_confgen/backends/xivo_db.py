@@ -77,7 +77,7 @@ def iterable(mode):
 			ret = f(*args, **kwargs)
 			if isinstance(ret, list) and len(ret) > 0:
 				def find(d, k):
-					print d.keys, k, k in d, unicode(k) in d
+					#print d.keys, k, k in d, unicode(k) in d
 					return None
 				ret[0].__class__.__getitem__ = lambda self, key: find(self.__dict__, key)
 
@@ -269,7 +269,6 @@ class PickupsHandler(SpecializedHandler):
 
 		(_p, _pm, _uf, _u) = [getattr(self.db, o)._table.c for o in
 				('pickup','pickupmember','userfeatures','user'+usertype)]
-		print _p
 		conds = [
 				_p.commented   == 0,
 				_p.id          == _pm.pickupid,
@@ -345,6 +344,7 @@ class QObject(object):
 
 		'pickups'       : PickupsHandler,
 		'queuepenalties': QueuePenaltiesHandler,
+		'parkinglot'    : ('parkinglot',),
 	}
 
 	def __init__(self, db, name):
