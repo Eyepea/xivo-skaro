@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$sip = &$ipbx->get_apprealstatic('sip');
-$appomwi = $sip->get_module('outboundmwi');
+$appark = $ipbx->get_module('parkinglot');
+$contexts = $ipbx->get_module('context');
 
 $act 		  = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page 		= isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
@@ -34,7 +34,6 @@ if($search !== '')
 else if($context !== '')
 	$param['context'] = $context;
 
-$contexts = false;
 $error    = false;
 
 switch($act)
@@ -43,15 +42,15 @@ switch($act)
 		$fm_save = true;
 
 		if(isset($_QR['fm_send']) 	 === true 
-		&& dwho_issa('outboundmwi', $_QR) === true)
+		&& dwho_issa('parkinglot', $_QR) === true)
 		{	
 			// save item
-			if($appomwi->set_outboundmwi($_QR['outboundmwi']) === true
-			&& $appomwi->add_outboundmwi() === true)
-				$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'), $param);
-			
-			$error = $appomwi->get_error();
-			$_TPL->set_var('info'    , $_QR['outboundmwi']);
+			if(($arr = $appark->chk_values($_QR['parkinglot'])) !== false
+			&& $appark->add($arr) !== false)
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'), $param);
+
+			$error = $appark->get_filter_error();
+			$_TPL->set_var('info', $_QR['parkinglot']);
 			$fm_save = false;
 		}
 
@@ -61,23 +60,22 @@ switch($act)
 	case 'edit':
 		$fm_save  = true;
 
-		// id not set or skillcat[id] not found => redirect to list view
-		if(isset($_QR['id']) === false || ($info = $appomwi->get($_QR['id'])) === false)
-		{ $_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'), $param); }
-		
+		if(isset($_QR['id']) === false || ($info = $appark->get($_QR['id'])) === false)
+		{ $_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'), $param); }
+
 		$act = 'edit';
 		if(isset($_QR['fm_send']) 		=== true
-		&& dwho_issa('outboundmwi', $_QR) 	=== true)
+		&& dwho_issa('parkinglot', $_QR) 	=== true)
 		{
-			if($appomwi->set_outboundmwi($_QR['outboundmwi']) === true
-			&& $appomwi->edit_outboundmwi($_QR['id']) === true)
-				$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'), $param);
+			if(($arr = $appark->chk_values($_QR['parkinglot'])) !== false
+			&& $appark->edit($_QR['id'], $arr) !== false)
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'), $param);
 
 			$fm_save = false;
 
 			// on update error
-			$error = $appomwi->get_error();
-			$info  = $_QR['outboundmwi'];
+			$error = $appark->get_filter_error();
+			$info  = $_QR['parkinglot'];
 			$info['id'] = $_QR['id'];
 		}
 
@@ -88,43 +86,43 @@ switch($act)
 
 	case 'delete':
 		if(isset($_QR['id']))
-			$appomwi->delete_outboundmwi('delete', $_QR['id']);
+			$appark->delete($_QR['id']);
 
-		$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'),$param);
 		break;
 
 	case 'deletes':
 		// delete multiple items
 		$param['page'] = $page;
 
-		if(($values = dwho_issa_val('outboundmwis',$_QR)) === false)
-			$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'),$param);
+		if(($values = dwho_issa_val('parkinglots',$_QR)) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'),$param);
 
 		$nb = count($values);
 		for($i = 0; $i < $nb; $i++)
-			$appomwi->delete_outboundmwi('delete', $values[$i]);
+			$appark->delete($values[$i]);
 
-		$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'), $param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'), $param);
 		break;
 
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = dwho_issa_val('outboundmwis',$_QR)) === false)
-			$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'),$param);
+		if(($values = dwho_issa_val('parkinglots',$_QR)) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			if($act === 'disables')
-				$appomwi->disable($values[$i]);
+				$appark->disable($values[$i]);
 			else
-				$appomwi->enable($values[$i]);
+				$appark->enable($values[$i]);
 		}
 
-		$_QRY->go($_TPL->url('service/ipbx/general_settings/outboundmwi'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'),$param);
 		break;
 
 	case 'list':
@@ -140,13 +138,14 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list  = $appomwi->get_all($order,$limit);
-		$total = $appomwi->get_cnt();
+		//TODO: order, filter
+		$list  = $appark->get_all(null,true,$order,$limit);
+		$total = $appark->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('service/ipbx/general/outboundmwi'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/general/parkinglot'),$param);
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
@@ -155,15 +154,16 @@ switch($act)
 }
 
 $_TPL->set_var('act'      , $act);
-$_TPL->set_var('contexts' , $contexts);
-$_TPL->set_var('error'    , $error);
+$_TPL->set_var('contexts' , $contexts->get_all());
+$_TPL->set_var('error'    , array('parkinglot' => $error));
+$_TPL->set_var('element'  , array('parkinglot' => $appark->get_element()));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
-$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/general_settings/outboundmwi');
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_services/parkinglot');
 
-$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/outboundmwi/'.$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/parkinglot/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
 $_TPL->display('index');
 

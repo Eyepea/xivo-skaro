@@ -72,6 +72,7 @@ $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['sounds'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['musiconhold'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
+$array['tree']['service']['ipbx']['pbx_services']['parkinglot'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['handynumbers'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 

@@ -1,0 +1,23 @@
+; title_content_name
+Parking > Add
+
+; fm_parkinglot_name
+Name:
+
+; fm_parkinglot_context
+Context:
+
+; fm_parkinglot_extension
+Extension:
+
+; fm_parkinglot_pos_start
+Positions (interval):
+
+; fm_parkinglot_next
+Use next available free position:
+
+; hlp_fm_next
+If not checked, use first available free position, from start
+
+; fm_parkinglot_description
+Description : 

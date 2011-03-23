@@ -1,0 +1,23 @@
+; title_content_name
+Parking > Ajouter
+
+; fm_parkinglot_name
+Nom : 
+
+; fm_parkinglot_context
+Contexte : 
+
+; fm_parkinglot_extension
+Extension : 
+
+; fm_parkinglot_pos_start
+Positions (intervalle) : 
+
+; fm_parkinglot_next
+Utiliser la position libre suivante : 
+
+; hlp_fm_next
+Si décoché, utilise la 1ère position libre (depuis le début)
+
+; fm_parkinglot_description
+Description : 

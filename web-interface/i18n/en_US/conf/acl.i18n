@@ -106,6 +106,9 @@ On Hold Music
 ; acl(service-ipbx-pbx_services-extenfeatures)
 Extensions
 
+; acl(service-ipbx-pbx_services-parkinglot)
+Parking
+
 ; acl(service-ipbx-pbx_services-handynumbers)
 Handy numbers
 

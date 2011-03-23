@@ -384,4 +384,8 @@ $array['operator_trunk'] = array();
 $array['operator_trunk']['table'] = 'operator_trunk';
 $array['operator_trunk']['primary'] = array('operator_id' => '','trunk_id' => '');
 
+$array['parkinglot'] = array();
+$array['parkinglot']['table'] = 'parkinglot';
+$array['parkinglot']['primary'] = array('id' => '');
+
 ?>

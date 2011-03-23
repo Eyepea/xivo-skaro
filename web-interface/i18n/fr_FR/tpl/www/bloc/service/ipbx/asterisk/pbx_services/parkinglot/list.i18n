@@ -1,0 +1,20 @@
+; col_name
+Nom
+
+; col_context
+Contexte
+
+; col_extension
+Extension
+
+; col_positions
+Positions
+
+; no_parkinglot
+Aucun Parking
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce parking ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer ce ou ces parking(s) ?

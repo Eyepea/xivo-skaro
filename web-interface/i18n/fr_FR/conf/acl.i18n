@@ -190,6 +190,9 @@ Musiques d'attente
 ; acl(service-ipbx-pbx_services-extenfeatures)
 Extensions
 
+; acl(service-ipbx-pbx_services-parkinglot)
+Parkings
+
 ; acl(service-ipbx-pbx_services-handynumbers)
 Numéros utiles
 
