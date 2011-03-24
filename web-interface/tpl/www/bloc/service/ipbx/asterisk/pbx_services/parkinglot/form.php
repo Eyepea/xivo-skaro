@@ -114,5 +114,4 @@ endif;
 						   $this->get_var('error', 'parkinglot', 'description')) ),
 				   $info['description']);?>
 	</div>
-</div>
 
