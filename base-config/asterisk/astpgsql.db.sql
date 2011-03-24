@@ -781,6 +781,23 @@ INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf',
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','disconnect','*0');
 
 
+DROP TABLE IF EXISTS "parkinglot";
+CREATE TABLE "parkinglot" (
+ "id"          SERIAL,
+ "name"        VARCHAR(255) NOT NULL,
+ "context"     VARCHAR(39) NOT NULL,       -- SHOULD BE A REF TO CONTEXT TABLE IN 2.0
+ "extension"   VARCHAR(40) NOT NULL,
+ "pos_start"   INTEGER NOT NULL,
+ "pos_end"     INTEGER NOT NULL,
+ "next"        INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ "commented"   INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "description" TEXT NOT NULL,
+ PRIMARY KEY("id")
+);
+
+CREATE UNIQUE INDEX "parkinglot__idx__name" ON "parkinglot"("name");
+
+
 DROP TABLE IF EXISTS "groupfeatures";
 CREATE TABLE "groupfeatures" (
  "id" SERIAL,
@@ -2099,6 +2116,7 @@ CREATE TABLE "useriax" (
  "ipaddr" varchar(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
  "immediate" INTEGER DEFAULT NULL, -- BOOLEAN
+ "parkinglot" INTEGER DEFAULT NULL,
  "protocol" varchar(15) NOT NULL DEFAULT 'iax' CHECK (protocol = 'iax'), -- ENUM
  "category" useriax_category NOT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -2189,8 +2207,6 @@ CREATE TABLE "usersip" (
  "deny" varchar(31), -- user / peer --
  "permit" varchar(31), -- user / peer --
  "defaultip" varchar(255), -- peer --
- "callgroup" varchar(180), -- user / peer --
- "pickupgroup" varchar(180), -- user / peer --
  "setvar" varchar(100) NOT NULL DEFAULT '', -- user / peer --
  "host" varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
  "port" INTEGER, -- peer --
@@ -2203,6 +2219,7 @@ CREATE TABLE "usersip" (
  "regseconds" INTEGER NOT NULL DEFAULT 0,
  "regserver" varchar(20),
  "lastms" varchar(15) NOT NULL DEFAULT '',
+ "parkinglot" INTEGER DEFAULT NULL,
  "protocol" varchar(15) NOT NULL DEFAULT 'sip' CHECK (protocol = 'sip'), -- ENUM
  "category" useriax_category NOT NULL,
  "outboundproxy" varchar(1024),
