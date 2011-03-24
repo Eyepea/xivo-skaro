@@ -11,7 +11,7 @@ Context:
 Extension:
 
 ; fm_parkinglot_pos_start
-Positions (interval):
+Positions :
 
 ; fm_parkinglot_next
 Use next available free position:
