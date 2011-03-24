@@ -72,6 +72,7 @@ xivo_ast_user_protocol_elt['sip'] = {
 	'protocol-disallowed_methods': {it: true, fd: true},
 	'protocol-maxforwards': {it: true, fd: true},
 	'protocol-textsupport': {it: true, fd: true},
+	'protocol-parkinglot': {it: true, fd: true},
 
 	'autoprov-modact': {it: true},
 	'autoprov-vendormodel': {it: true},

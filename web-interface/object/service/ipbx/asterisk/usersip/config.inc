@@ -415,6 +415,10 @@ $array['element']['videosupport']['value'] = array('no','yes','always');
 $array['element']['videosupport']['default'] = '';
 $array['element']['videosupport']['null'] = true;
 
+$array['element']['parkinglot'] = array();
+$array['element']['parkinglot']['default'] = '';
+$array['element']['parkinglot']['null'] = true;
+
 
 
 dwho::load_class('dwho_network');
@@ -543,5 +547,6 @@ $array['filter']['disallowed_methods'] = array('set' => false,'chk' => 2,'maxlen
 $array['filter']['maxforwards'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,255,1));
 $array['filter']['textsupport'] = array('set' => false, 'chk' => 2, 'bool' => true);
 $array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','always'));
+$array['filter']['parkinglot'] = array('set' => false,'chk' => 2,'cast' => uint);
 
 ?>

@@ -25,6 +25,7 @@ $element      = $this->get_var('element');
 $calllimits   = $this->get_var('calllimits');
 $moh_list     = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
+$parking_list = $this->get_var('parking_list');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml = &$this->get_module('dhtml');
@@ -665,16 +666,17 @@ endif;
               'checked' => $this->get_var('info','allowfwdownload','var_val'),
               'default' => $element['allowfwdownload']['default'])),
 
-    $form->text(array('desc'  => $this->bbf('fm_parkinglot'),
-            'name'     => 'parkinglot',
-            'labelid'  => 'parkinglot',
-            'size'     => 25,
-            'help'     => $this->bbf('hlp_fm_parkinglot'),
-            'required' => false,
-            'value'    => $this->get_var('info','parkinglot','var_val'),
-            'default'  => $element['parkinglot']['default'],
-            'error'    => $this->bbf_args('error',
-        $this->get_var('error', 'parkinglot')) )),
+		$form->select(array('desc'	=> $this->bbf('fm_parkinglot'),
+				    'name'		=> 'parkinglot',
+				    'labelid'	=> 'parkinglot',
+						'help'		=> $this->bbf('hlp_fm_parkinglot'),
+						'required'	=> false,
+						'key'       => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				    'selected'	=> $this->get_var('info','parkinglot','var_val'),
+				    'default'	=> $element['parkinglot']['default']),
+					$parking_list),
 
     $form->checkbox(array('desc'  => $this->bbf('fm_shrinkcallerid'),
               'name'    => 'shrinkcallerid',

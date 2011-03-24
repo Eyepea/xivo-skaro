@@ -276,6 +276,7 @@ $element['protocol']['secret']   = array(
 	'class'    => 'it-'.($ro?'disabled':'enabled')
 );
 
+$modpark = &$ipbx->get_module('parkinglot');
 
 $_TPL->set_var('info',$result);
 $_TPL->set_var('error',$error);
@@ -301,6 +302,7 @@ $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
 $_TPL->set_var('sccp_addons',$sccp_addons);
 $_TPL->set_var('order_list', $order_list);
 $_TPL->set_var('softkeys_list', $softkeys_list);
+$_TPL->set_var('parking_list', $modpark->get_all());
 
 
 $dhtml = &$_TPL->get_module('dhtml');

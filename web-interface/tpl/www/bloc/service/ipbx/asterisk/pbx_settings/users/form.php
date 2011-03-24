@@ -32,6 +32,7 @@ $context_list = $this->get_var('context_list');
 $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
 $schedules    = $this->get_var('schedules');
+$parking_list = $this->get_var('parking_list');
 
 
 if(empty($info['userfeatures']['voicemailid']) === true):
@@ -1780,7 +1781,19 @@ endif;
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['iax']['amaflags']['default'],
 				    'selected'	=> $amaflags),
-			      $element['protocol']['iax']['amaflags']['value']),
+				  $element['protocol']['iax']['amaflags']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_parkinglot'),
+				    'name'		=> 'protocol[parkinglot]',
+				    'labelid'	=> 'procotol-parkinglot',
+						'help'		=> $this->bbf('hlp_fm_parkinglot'),
+						'required'	=> false,
+						'key'       => 'name',
+						'altkey'    => 'id',
+						'empty'     => true,
+				    'selected'	=> $this->get_var('info','protocol','parkinglot')),
+						//'default'	=> $element['protocol']['parkinglot']['default']),
+					$parking_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_amaflags'),
 				    'name'	=> 'protocol[amaflags]',

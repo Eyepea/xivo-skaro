@@ -28,6 +28,7 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'protocol-permit': {it: false},
 	'protocol-deny': {it: false},
 	'protocol-accountcode': {it: false},
+	'protocol-parkinglot': {it: false},
 
 	'userfeatures-enableclient': {it: false},
 	'userfeatures-loginclient': {it: false},

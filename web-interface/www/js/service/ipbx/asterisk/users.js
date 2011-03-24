@@ -128,6 +128,7 @@ var xivo_ast_users_elt_default = {
 	'protocol-maxforwards': {it: false, fd: false},
 	'protocol-textsupport': {it: false, fd: false},
 	'protocol-immediate': {it: false, fd: false},
+	'protocol-parkinglot': {it: false, fd: false},
 	
 	'userfeatures-firstname': {it: true},
 	'userfeatures-lastname': {it: true},

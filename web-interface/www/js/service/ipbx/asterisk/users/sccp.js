@@ -28,6 +28,7 @@ xivo_ast_user_protocol_elt['sccp'] = {
 	'protocol-t38pt-rtp': {it: false},
 	'protocol-t38pt-tcp': {it: false},
 	'protocol-t38pt-usertpsource': {it: false},
+	'protocol-parkinglot': {it: false},
 	'protocol-allowtransfer': {it: true, fd: true},
 	'protocol-park': {it: true, fd: true},
 	'protocol-cfwdall': {it: true, fd: true},

@@ -256,6 +256,10 @@ $array['element']['immediate']['value'] = array(1, 0);
 $array['element']['immediate']['default'] = '';
 $array['element']['immediate']['null']    = true;
 
+$array['element']['parkinglot'] = array();
+$array['element']['parkinglot']['default'] = '';
+$array['element']['parkinglot']['null'] = true;
+
 
 
 dwho::load_class('dwho_network');
@@ -368,6 +372,7 @@ $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 $array['filter']['requirecalltoken'] = array('set' => false,'chk' => 2,'key' => array('no','yes'));
 $array['filter']['immediate'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['parkinglot'] = array('set' => false,'chk' => 2,'cast' => uint);
 
 
 ?>
