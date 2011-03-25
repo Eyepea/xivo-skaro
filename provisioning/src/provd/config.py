@@ -82,6 +82,7 @@ __license__ = """
 import ConfigParser
 import logging
 import json
+import socket
 from provd.util import norm_ip
 from twisted.python import usage
 
@@ -362,28 +363,33 @@ def _check_and_convert_parameters(raw_config):
 
 
 _BASE_RAW_CONFIG_UPDATE_LIST = [
-    # (<dev raw config param name, app raw config param name>, <include if predicate>)
-    (u'ip', 'general.ip', lambda x: x != '*'),
-    (u'http_port', 'general.http_port', None),
-    (u'tftp_port', 'general.tftp_port', None),
+    # (<dev raw config param name, app raw config param name>
+    (u'http_port', 'general.http_port'),
+    (u'tftp_port', 'general.tftp_port'),
 ]
+
+def _get_ip_fallback():
+    # This function might return an IP address of a loopback interface, but we
+    # don't care since it's not possible to determine implicitly which IP address
+    # we should use anyway.
+    return socket.gethostbyname(socket.gethostname())
+
 
 def _update_general_base_raw_config(app_raw_config):
     # warning: raw_config in the function name means device raw config and
     # the app_raw_config argument means application configuration.
     base_raw_config = app_raw_config['general.base_raw_config']
-    for key, source_param_name, include_fun in _BASE_RAW_CONFIG_UPDATE_LIST:
+    for key, source_param_name in _BASE_RAW_CONFIG_UPDATE_LIST:
         if key not in base_raw_config:
             # currently, we only refer to always specified config parameters,
             # so next line will never raise a KeyError
-            source_param_value = app_raw_config[source_param_name]
-            if include_fun is None or include_fun(source_param_value):
-                base_raw_config[key] = source_param_value
-            else:
-                logger.info('Not including parameter "%s" in base raw config '
-                            'because parameter value "%s" is not acceptable for '
-                            'raw config parameter "%s"' %
-                            (source_param_name, source_param_value, key))
+            base_raw_config[key] = app_raw_config[source_param_name]
+    if u'ip' not in base_raw_config:
+        ip = app_raw_config['general.ip']
+        if ip == '*':
+            ip = _get_ip_fallback()
+            logger.warning('Using "%s" for base raw config ip parameter', ip)
+        base_raw_config[u'ip'] = ip
 
 
 def _post_update_raw_config(raw_config):
