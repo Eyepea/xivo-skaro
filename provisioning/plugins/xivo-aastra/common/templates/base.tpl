@@ -1,6 +1,23 @@
 http server: {{ ip }}
 http port: {{ http_port }}
 
+{# Syslog settings -#}
+{% if syslog -%}
+log server ip: {{ syslog['ip'] }}
+log server port: {{ syslog['port'] }}
+log module linemgr: {{ XX_syslog_level }}
+log module user interface: {{ XX_syslog_level }}
+log module sip: {{ XX_syslog_level }}
+log module ept: {{ XX_syslog_level }}
+log module ind: {{ XX_syslog_level }}
+log module kbd: {{ XX_syslog_level }}
+log module net: {{ XX_syslog_level }}
+log module provis: {{ XX_syslog_level }}
+log module rtpt: {{ XX_syslog_level }}
+log module snd: {{ XX_syslog_level }}
+log module stun: {{ XX_syslog_level }}
+{% endif -%}
+
 {# VLAN settings -#}
 {% if vlan -%}
 tagging enabled: 1
@@ -14,9 +31,9 @@ tagging enabled: 0
 {% endif -%}
 
 {# NTP settings -#}
-{% if ntp_server -%}
+{% if ntp_server_ip -%}
 time server disabled: 0
-time server1: {{ ntp_server }}
+time server1: {{ ntp_server_ip }}
 {% else -%}
 time server disabled: 1
 {% endif -%}
@@ -72,15 +89,36 @@ sip dtmf method: 1
 sip explicit mwi subscription: {{ sip['subscribe_mwi']|int }}
 {% endif -%}
 
+sip transport protocol: {{ XX_sip_transport }}
+
+sip srtp mode: {{ XX_sip_srtp_mode }}
+
+{% if XX_servers_root_and_intermediate_certificates -%}
+sips trusted certificates: {{ XX_servers_root_and_intermediate_certificates }}
+{% endif -%}
+
+{% if XX_local_root_and_intermediate_certificates -%}
+sips root and intermediate certificates: {{ XX_local_root_and_intermediate_certificates }}
+{% endif -%}
+
+{% if XX_local_certificate -%}
+sips local certificate: {{ XX_local_certificate }}
+{% endif -%}
+
+{% if XX_local_key %}
+{# XXX this file should not be accessible to everyone... -#}
+sips private key: {{ XX_local_key }}
+{% endif -%}
+
 {# SIP per-line settings -#}
 {% for line_no, line in sip['lines'].iteritems() %}
-sip line{{ line_no }} proxy ip: {{ line['proxy_ip'] }}
-sip line{{ line_no }} registrar ip: {{ line['registrar_ip'] }}
-{% if line['backup_proxy_ip'] -%}
-sip line{{ line_no }} backup proxy ip: {{ line['backup_proxy_ip'] }}
+sip line{{ line_no }} proxy ip: {{ line['proxy_ip'] or sip['proxy_ip'] }}
+sip line{{ line_no }} registrar ip: {{ line['registrar_ip'] or sip['registrar_ip'] }}
+{% if line['backup_proxy_ip'] or sip['backup_proxy_ip'] -%}
+sip line{{ line_no }} backup proxy ip: {{ line['backup_proxy_ip'] or sip['backup_proxy_ip'] }}
 {% endif -%}
-{% if line['backup_registrar_ip'] -%}
-sip line{{ line_no }} backup registrar ip: {{ line['backup_registrar_ip'] }}
+{% if line['backup_registrar_ip'] or sip['backup_registrar_ip'] -%}
+sip line{{ line_no }} backup registrar ip: {{ line['backup_registrar_ip'] or sip['backup_registrar_ip'] }}
 {% endif -%}
 sip line{{ line_no }} user name: {{ line['username'] }}
 sip line{{ line_no }} auth name: {{ line['auth_username'] }}

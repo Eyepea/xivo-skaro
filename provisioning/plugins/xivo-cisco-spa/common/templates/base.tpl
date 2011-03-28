@@ -11,13 +11,17 @@
 {% if user_password is defined -%}
 <User_Password>{{ user_password|e }}</User_Password>
 {% endif -%}
-<Primary_NTP_Server>{{ ntp_server }}</Primary_NTP_Server>
+<Primary_NTP_Server>{{ ntp_server_ip }}</Primary_NTP_Server>
 
+{# Syslog settings -#}
+{% if syslog -%}
+<Syslog_Server>syslog['ip']:syslog['port']</Syslog_Server>
+{% endif -%}
+
+{# VLAN settings -#}
 {% if vlan -%}
 <Enable_VLAN>Yes</Enable_VLAN>
 <VLAN_ID>{{ vlan['id'] }}</VLAN_ID>
-{% else -%}
-<Enable_VLAN>No</Enable_VLAN>
 {% endif -%}
 
 {% block upgrade_rule -%}
@@ -59,14 +63,14 @@
 {% endif -%}
 {% endfor -%}
 
-<!-- Function keys definition SHOULD go before the line key definition
-     if we want to line key def to override the func key def (is it what we want ?) -->
+<!-- Function keys definition SHOULD go before the line key definition if we
+     want to line key def to override the func key def (is it what we want ?) -->
 {{ XX_fkeys }}
 
 {% for line_no, line in sip['lines'].iteritems() %}
 <Extension_{{ line_no }}_>{{ line_no }}</Extension_{{ line_no }}_>
 <Short_Name_{{ line_no }}_>$USER</Short_Name_{{ line_no }}_>
-<Extended_Function_{{ line_no }}_></Extended_Function_{{ line_no }}_>    
+<Extended_Function_{{ line_no }}_></Extended_Function_{{ line_no }}_>
 {% endfor -%}
 
 </flat-profile>

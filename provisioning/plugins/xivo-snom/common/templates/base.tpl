@@ -8,7 +8,7 @@
     {% endif %}
     
     <admin_mode_password perm="R">{{ admin_passwd|d('65535')|e }}</admin_mode_password>
-    <ntp_server perm="R">{{ ntp_server }}</ntp_server>
+    <ntp_server perm="R">{{ ntp_server_ip }}</ntp_server>
     
     {% for line_no, line in sip['lines'].iteritems() %}
     <user_idle_text idx="{{ line_no }}" perm="R">{{ line['display_name']|e }}</user_idle_text>

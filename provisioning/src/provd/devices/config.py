@@ -99,10 +99,29 @@ vlan [optional]
     priority [optional]
       The (802.1p) priority. A integer between 0 and 7 inclusive.
 
-ntp_server [optional]
+ntp_server_ip [optional]
   The IP address or domain name of the NTP server.
   If this parameter is not defined, NTP MUST be disabled.
   See: ip (comment about domain name).
+
+syslog [optional]
+  A dictionary describing the syslog settings of the device.
+  If this parameter is not defined, syslog MUST be disabled.
+  
+    ip [mandatory]
+      The IP address of a syslog server.
+    
+    port [optional|default to 514]
+      The port of the syslog server.
+    
+    level [optional|default to 'warning']
+      The debug level to enable on the device.
+      This parameter can take one of the following value:
+      - critical
+      - error
+      - warning
+      - info
+      - debug
 
 admin_username [optional]
   The administrator username. When applicable, the administrator account gives
@@ -144,11 +163,45 @@ protocol [optional]
   - SCCP
   If the protocol is not supported by the device, an exception
   (RawConfigError) MAY be raised or the device MAY be misconfigured.
-  This is mostly useful for multi-protocol device/plugin, which should
-  not happens often.
+  This parameter is mostly useful for multi-protocol device/plugin.
 
 sip [mandatory if protocol == 'SIP']
   A dictionary describing the configuration of all the SIP related stuff:
+    
+    proxy_ip [mandatory if proxy_ip is not defined on a per line basis]
+      The IP address of the SIP proxy.
+      If the device does not support a SIP proxy on a per line basis and this
+      this parameter is not defined, an exception SHOULD be raised.
+      If the device does not support the proxy/registrar separation, the
+      value of this parameter will be used as the registrar IP.
+    
+    proxy_port [optional]
+      The port of the SIP proxy.
+    
+    backup_proxy_ip [optional]
+      The IP address of the backup SIP proxy.
+    
+    backup_proxy_port [optional]
+      The port of the backup SIP proxy.
+    
+    registrar_ip [optional|default to value of proxy_ip]
+      The IP address of the SIP registrar.
+      See: proxy_ip.
+    
+    registrar_port [optional]
+      The port of the SIP registrar.
+    
+    backup_registrar_ip [optional]
+      The IP address of the backup SIP registrar
+    
+    backup_registrar_port [optional]
+      The port of the backup SIP registrar.
+    
+    outbound_proxy_ip [optional]
+      The IP address of the SIP outbound proxy.
+    
+    outbound_proxy_port [optional]
+      The port of the SIP outbound proxy.
     
     dtmf_mode [optional]
       The mode used to send DTMF and other events.
@@ -159,7 +212,40 @@ sip [mandatory if protocol == 'SIP']
       If this parameter is not defined and the device has some support for
       automatically picking the DTMF mode, then the device should be
       configured this way.
-  
+    
+    srtp_mode [optional|default to 'disabled']
+      The RTP/SRTP mode.
+      This parameter can take one of the following values:
+      - disabled
+      - preferred
+      - required
+    
+    transport [optional|default to 'udp']
+      The transport type for SIP messages.
+      This parameter can take one of the following values:
+      - udp
+      - tcp
+      - tls
+    
+    servers_root_and_intermediate_certificates [optional]
+      The list of certificates that particpated in the signing of the
+      servers certificates, i.e. of the server the device will connect to,
+      in PEM format. The list must be ordered by certificate signing, i.e.
+      the root certificate must be the first in the list.
+    
+    local_root_and_intermediate_certificates [optional]
+      The list of certificates that participated in the signing of the
+      local certificate, in PEM format. The list must be ordered by
+      certificate signing, i.e. the root certificate must be the first in
+      the list.
+    
+    local_certificate [optional]
+      The local certificate, in PEM format.
+    
+    local_key [optional]
+      The private key which is related to the public key in the local
+      certificate, in PEM format.
+    
     subscribe_mwi [optional]
       A boolean indicating if we should explicitly subscribe for message
       notification or not.
@@ -168,25 +254,35 @@ sip [mandatory if protocol == 'SIP']
       A dictionary where keys are line number and values are dictionary with
       the following keys:
     
-        proxy_ip [mandatory]
-          The IP address of the SIP proxy.
-          If the device does not support the proxy/registrar separation, the
-          value of this parameter will be used as the registrar IP.
-          # TODO eventually accept a domain name and some extra parameters
-          #      to specify if we should do DNS SRV or DNS A/AAAA lookup. 
+        proxy_ip [mandatory if proxy_ip is not defined globally]
+          See sip.proxy_ip.
+        
+        proxy_port [optional]
+          See sip.proxy_port.
         
         backup_proxy_ip [optional]
-          The IP address of the backup SIP proxy.
+          See sip.backup_proxy_ip.
+        
+        backup_proxy_port [optional]
+          See sip.backup_proxy_port.
         
         registrar_ip [optional|default to value of proxy_ip]
-          The IP address of the SIP registrar.
-          See: proxy_ip.
+          See sip.registrar_ip.
+        
+        registrar_port [optional]
+          See sip.registrar_port.
         
         backup_registrar_ip [optional]
-          The IP address of the backup SIP registrar
+          See sip.backup_registrar_ip.
+        
+        backup_registrar_port [optional]
+          See sip.backup_registrar_port.
         
         outbound_proxy_ip [optional]
-          The IP address of the SIP outbound proxy.
+          See sip.outbound_proxy_ip.
+        
+        outbound_proxy_port [optional]
+          See sip.outbound_proxy_port.
         
         username [mandatory]
           The username of this SIP identity.

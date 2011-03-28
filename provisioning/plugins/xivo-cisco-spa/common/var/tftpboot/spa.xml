@@ -20,6 +20,10 @@ usefulness/applicability.
 
 <SPCP_Auto-detect>No</SPCP_Auto-detect>
 
+<Syslog_Server></Syslog_Server>
+
+<Enable_VLAN>No</Enable_VLAN>
+
 <Provision_Enable>Yes</Provision_Enable>
 <Resync_On_Reset>Yes</Resync_On_Reset>
 <Resync_Periodic>0</Resync_Periodic>

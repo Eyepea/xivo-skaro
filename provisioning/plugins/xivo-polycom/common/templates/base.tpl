@@ -6,6 +6,8 @@
 <config
 
 device.set="1"
+
+{# VLAN settings -#}
 device.net.vlanId.set="1"
 {% if vlan -%}
 device.net.vlanId="{{ vlan['id'] }}"
@@ -13,9 +15,47 @@ device.net.vlanId="{{ vlan['id'] }}"
 device.net.vlanId=""
 {% endif -%}
 
-{% if ntp_server -%}
+{# Syslog settings -#}
+device.syslog.serverName.set="1"
+device.syslog.transport.set="1"
+device.syslog.renderLevel.set="1"
+{% if syslog -%}
+device.syslog.serverName="{{ syslog['ip'] }}"
+device.syslog.transport="1"
+device.syslog.renderLevel="{{ XX_syslog_level }}"
+{% else -%}
+device.syslog.serverName=""
+device.syslog.transport="0"
+device.syslog.renderLevel="1"
+{% endif -%}
+
+device.sec.SSL.certList.set="1"
+{% if XX_custom_cert -%}
+device.sec.SSL.certList="custom"
+device.sec.SSL.customCert.set="1"
+device.sec.SSL.customCert="{{ XX_custom_cert }}"
+{% else -%}
+device.sec.SSL.certList="default"
+{% endif -%}
+
+{% if sip['srtp_mode'] == 'disabled' -%}
+sec.srtp.enable="0"
+sec.srtp.offer="0"
+sec.srtp.require="0"
+{% elif sip['srtp_mode'] == 'preferred' -%}
+sec.srtp.enable="1"
+sec.srtp.offer="1"
+sec.srtp.require="0"
+{% elif sip['srtp_mode'] == 'required' -%}
+sec.srtp.enable="1"
+sec.srtp.offer="1"
+sec.srtp.require="1"
+{% endif -%}
+
+{# NTP settings -#}
+{% if ntp_server_ip -%}
 tcpIpApp.sntp.address.overrideDHCP="1"
-tcpIpApp.sntp.address="{{ ntp_server }}"
+tcpIpApp.sntp.address="{{ ntp_server_ip }}"
 {% else -%}
 tcpIpApp.sntp.address.overrideDHCP="0"
 tcpIpApp.sntp.address=""
@@ -40,15 +80,15 @@ voIpProt.SIP.dtmfViaSignaling.rfc2976="1"
 
 {% for line_no, line in sip['lines'].iteritems() %}
 reg.{{ line_no }}.server.1.address="{{ line['proxy_ip'] }}"
-reg.{{ line_no }}.server.1.port="5060"
-reg.{{ line_no }}.server.1.transport="UDPonly"
+reg.{{ line_no }}.server.1.port=""
+reg.{{ line_no }}.server.1.transport="{{ XX_sip_transport }}"
 reg.{{ line_no }}.server.1.expires="3600"
 reg.{{ line_no }}.server.1.register="1"
 reg.{{ line_no }}.server.1.retryMaxCount="2"
 {% if line['backup_proxy_ip'] -%}
 reg.{{ line_no }}.server.2.address="{{ line['backup_proxy_ip'] }}"
-reg.{{ line_no }}.server.2.port="5060"
-reg.{{ line_no }}.server.2.transport="UDPonly"
+reg.{{ line_no }}.server.2.port=""
+reg.{{ line_no }}.server.2.transport="{{ XX_sip_transport }}"
 reg.{{ line_no }}.server.2.expires="3600"
 {% endif -%}
 reg.{{ line_no }}.displayName="{{ line['display_name']|e }}"

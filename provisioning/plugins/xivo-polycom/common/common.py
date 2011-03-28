@@ -134,6 +134,20 @@ class BasePolycomPlugin(StandardPlugin):
         u'fr_FR': u'French_France',
         u'fr_CA': u'French_France',
     }
+    _XX_SYSLOG_LEVEL = {
+        u'critical': 5,
+        u'error': 4,
+        u'warning': 3,
+        u'info': 2,
+        u'debug': 1
+    }
+    _XX_SYSLOG_LEVEL_DEF = 1
+    _XX_SIP_TRANSPORT = {
+        u'udp': u'UDPOnly',
+        u'tcp': u'TCPOnly',
+        u'tls': u'TLS'
+    }
+    _XX_SIP_TRANSPORT_DEF = u'UDPOnly'
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
@@ -179,7 +193,7 @@ class BasePolycomPlugin(StandardPlugin):
             lines.extend(self._format_dst_change('stop', tzinfo['dst']['end']))
         return u'\n'.join(lines)
     
-    def _get_xx_timezone(self, raw_config):
+    def _gen_xx_timezone(self, raw_config):
         try:
             tzinfo = tzinform.get_timezone_info(raw_config.get(u'timezone'))
         except tzinform.TimezoneNotFoundError:
@@ -187,7 +201,7 @@ class BasePolycomPlugin(StandardPlugin):
         else:
             return self._format_tzinfo(tzinfo)
     
-    def _get_xx_language(self, raw_config):
+    def _gen_xx_language(self, raw_config):
         return self._XX_LANGUAGE_MAP.get(raw_config.get(u'locale'), u'')
     
     def _format_function_keys(self, funckeys, model):
@@ -204,8 +218,33 @@ class BasePolycomPlugin(StandardPlugin):
                 lines.append(u'attendant.resourceList.%s.label="%s"' % (key_no, key[u'label']))
         return u'\n'.join(lines)
     
-    def _get_xx_fkeys(self, raw_config, model):
+    def _gen_xx_fkeys(self, raw_config, model):
         return self._format_function_keys(raw_config[u'funckeys'], model)
+    
+    def _gen_xx_syslog_level(self, raw_config):
+        if u'syslog' in raw_config:
+            return self._XX_SYSLOG_LEVEL.get(raw_config[u'level'], self._XX_SYSLOG_LEVEL_DEF)
+        else:
+            return None
+    
+    def _gen_xx_sip_transport(self, raw_config):
+        return self._XX_SIP_TRANSPORT.get(raw_config[u'sip'][u'transport'],
+                                          self._XX_SIP_TRANSPORT_DEF)
+    
+    def _strip_pem_cert(self, pem_cert):
+        # Remove the header/footer of a pem certificate and return only the
+        # base64 encoded part of the certificate.
+        return pem_cert.replace('\n', '')[len('-----BEGIN CERTIFICATE-----'):
+                                          -len('-----END CERTIFICATE-----')]
+    
+    def _gen_xx_custom_cert(self, raw_config):
+        if u'servers_root_and_intermediate_certificates' in raw_config[u'sip']:
+            # Note that there's must be 1 and only 1 certificate in pem_cert,
+            # i.e. list of certificates isn't accepted, but is not checked...
+            pem_cert = raw_config[u'sip'][u'servers_root_and_intermediate_certificates']
+            return self._strip_pem_cert(pem_cert)
+        else:
+            return None
     
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
@@ -228,9 +267,12 @@ class BasePolycomPlugin(StandardPlugin):
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        raw_config[u'XX_timezone'] = self._get_xx_timezone(raw_config)
-        raw_config[u'XX_language'] = self._get_xx_language(raw_config)
-        raw_config[u'XX_fkeys'] = self._get_xx_fkeys(raw_config, device.get(u'model'))
+        raw_config[u'XX_timezone'] = self._gen_xx_timezone(raw_config)
+        raw_config[u'XX_language'] = self._gen_xx_language(raw_config)
+        raw_config[u'XX_fkeys'] = self._gen_xx_fkeys(raw_config, device.get(u'model'))
+        raw_config[u'XX_syslog_level'] = self._gen_xx_syslog_level(raw_config)
+        raw_config[u'XX_sip_transport'] = self._gen_xx_sip_transport(raw_config)
+        raw_config[u'XX_custom_cert'] = self._gen_xx_custom_cert(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)

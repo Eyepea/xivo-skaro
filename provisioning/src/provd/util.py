@@ -80,6 +80,9 @@ def to_mac(mac_string):
     - 001A2B3C4D5E
     - 00:A:2B:C:d:5e
     
+    >>> to_mac(u'ff:ff:ff:ff:ff:ff')
+    '\\xff\\xff\\xff\\xff\\xff\\xff'
+    
     """
     m = _MAC_ADDR.match(mac_string)
     if not m:
@@ -89,15 +92,18 @@ def to_mac(mac_string):
         # no separator - length must be equal to 12 in this case
         if len(mac_string) != 12:
             raise ValueError('invalid MAC string')
-        return u''.join(unichr(int(mac_string[i:i+2], 16)) for i in xrange(0, 12, 2))
+        return ''.join(chr(int(mac_string[i:i+2], 16)) for i in xrange(0, 12, 2))
     else:
         tokens = mac_string.split(sep)
-        return u''.join(unichr(int(token, 16)) for token in tokens)
+        return ''.join(chr(int(token, 16)) for token in tokens)
 
 
 def from_mac(packed_mac, separator=u':', uppercase=False):
     """Takes a 6-bytes string representation of a MAC address and return the
     human readable representation.
+    
+    >>> from_mac('\\xff\\xff\\xff\\xff\\xff\\xff', u':', False)
+    u'ff:ff:ff:ff:ff:ff'
     
     """
     if len(packed_mac) != 6:
@@ -128,7 +134,7 @@ def norm_mac(mac_string):
     return from_mac(to_mac(mac_string))
 
 
-def format_mac(mac_string, separator=':', uppercase=False):
+def format_mac(mac_string, separator=u':', uppercase=False):
     """Return a freely formatted representation of a MAC address string."""
     return from_mac(to_mac(mac_string), separator, uppercase)
 

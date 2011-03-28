@@ -298,6 +298,7 @@ class BaseCiscoPlugin(StandardPlugin):
             elif key > 12:
                 continue
 
+            fk_config_lines.append(u'<Extension_%d_>Disabled</Extension_%d_>' % (key, key))
             fk_config_lines.append(u'<Short_Name_%d_>%s</Short_Name_%d_>' % (key, label, key))
             fk_config_lines.append(u'<Extended_Function_%d_>%s</Extended_Function_%d_>' % (key, func, key))
         return u'\n'.join(fk_config_lines)

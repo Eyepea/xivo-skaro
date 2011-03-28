@@ -4,9 +4,9 @@
    <dateTemplate>D-M-YA</dateTemplate>
    <timeZone>{{ XX_timezone }}</timeZone>
    <ntps>
-{% if ntp_server -%}
+{% if ntp_server_ip -%}
     <ntp>
-     <name>{{ ntp_server }}</name>
+     <name>{{ ntp_server_ip }}</name>
      <ntpMode>Unicast</ntpMode>
     </ntp>
 {% endif -%}

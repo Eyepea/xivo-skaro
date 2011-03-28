@@ -93,16 +93,16 @@ def _check_common_raw_config_validity(raw_config):
 def _check_raw_config_validity(raw_config):
     # check if all the mandatory parameters are present
     # XXX this is bit repetitive...
-    if u'http_port' not in raw_config and u'tftp_port' not in raw_config:
-        raise RawConfigError('missing one of http or tftp port')
-    for param in [u'ip']:
-        if param not in raw_config:
-            raise RawConfigError('missing parameter "%s"' % param)
+    _check_common_raw_config_validity(raw_config)
     if u'sip' in raw_config:
         sip = raw_config[u'sip']
         if u'lines' in sip:
             for line_no, line in sip[u'lines'].iteritems():
-                for param in [u'proxy_ip', u'username', u'password', u'display_name']:
+                for param in [u'proxy_ip']:
+                    if param not in line and param not in sip:
+                        raise RawConfigError('missing parameter "sip.lines.%s.%s"' %
+                                             (line_no, param))
+                for param in [u'username', u'password', u'display_name']:
                     if param not in line:
                         raise RawConfigError('missing parameter "sip.lines.%s.%s"' %
                                              (line_no, param))
@@ -131,14 +131,24 @@ def _set_if_absent(dict_, key, value):
 
 def _set_defaults_raw_config(raw_config):
     # modify raw_config by setting default parameter value
+    # XXX it's getting a bit repetitive, i.e. might be time to refactor...
+    if u'syslog' in raw_config:
+        syslog = raw_config[u'syslog']
+        _set_if_absent(syslog, u'port', 514)
+        _set_if_absent(syslog, u'level', u'warning')
     if u'sip' in raw_config:
         sip = raw_config[u'sip']
+        if u'proxy_ip' in sip:
+            _set_if_absent(sip, u'registrar_ip', sip[u'proxy_ip'])
+        _set_if_absent(sip, u'srtp_mode', u'disabled')
+        _set_if_absent(sip, u'transport', u'udp')
         if u'lines' not in sip:
             sip[u'lines'] = {}
         else:
             lines = sip[u'lines']
             for line in lines.itervalues():
-                _set_if_absent(line, u'registrar_ip', line[u'proxy_ip'])
+                if u'proxy_ip' in line:
+                    _set_if_absent(line, u'registrar_ip', line[u'proxy_ip'])
                 _set_if_absent(line, u'auth_username', line[u'username'])
     if u'sccp' in raw_config:
         sccp = raw_config[u'sccp']

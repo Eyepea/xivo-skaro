@@ -155,6 +155,30 @@ class BaseAastraPlugin(StandardPlugin):
             u'remote_directory': u'Annuaire',
         },
     }
+    _XX_SYSLOG_LEVEL = {
+        u'critical': 1,
+        u'error': 3,
+        u'warning': 7,
+        u'info': 39,
+        u'debug': 65535
+    }
+    _XX_SYSLOG_LEVEL_DEF = 1
+    _XX_SIP_TRANSPORT = {
+        u'udp': 1,
+        u'tcp': 2,
+        u'tls': 4
+    }
+    _XX_SIP_TRANSPORT_DEF = 1
+    _XX_SIP_SRTP_MODE = {
+        u'disabled': 0,
+        u'preferred': 1,
+        u'required': 2
+    }
+    _XX_SIP_SRTP_MODE_DEF = 0
+    _XX_SERVERS_ROOT_CERT_SUFFIX = '-ca_servers.crt'
+    _XX_LOCAL_ROOT_CERT_SUFFIX = '-ca_local.crt'
+    _XX_LOCAL_CERT_SUFFIX = '-local.crt'
+    _XX_LOCAL_KEY_SUFFIX = '-local.key'
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
@@ -277,18 +301,18 @@ class BaseAastraPlugin(StandardPlugin):
             lines.extend(self._format_dst_change('end', tzinfo['dst']['end']))
         return u'\n'.join(lines)
     
-    def _get_xx_fkeys(self, raw_config, model):
+    def _gen_xx_fkeys(self, raw_config, model):
         return self._format_function_keys(raw_config[u'funckeys'], model)
     
-    def _get_xx_timezone(self, raw_config):
+    def _gen_xx_timezone(self, raw_config):
         try:
             tzinfo = tzinform.get_timezone_info(raw_config.get(u'timezone'))
         except tzinform.TimezoneNotFoundError:
-            return None
+            return ''
         else:
             return self._format_tzinfo(tzinfo)
     
-    def _get_xx_dict(self, raw_config):
+    def _gen_xx_dict(self, raw_config):
         xx_dict = self._XX_DICT[self._XX_DICT_DEF]
         if u'locale' in raw_config:
             locale = raw_config[u'locale']
@@ -297,7 +321,54 @@ class BaseAastraPlugin(StandardPlugin):
                 xx_dict = self._XX_DICT[lang]
         return xx_dict
     
-    def _dev_specific_filename(self, device):
+    def _gen_xx_syslog_level(self, raw_config):
+        if u'syslog' in raw_config:
+            return self._XX_SYSLOG_LEVEL.get(raw_config[u'level'],
+                                             self._XX_SYSLOG_LEVEL_DEF)
+        else:
+            return None
+    
+    def _gen_xx_sip_transport(self, raw_config):
+        return self._XX_SIP_TRANSPORT.get(raw_config[u'sip'][u'transport'],
+                                          self._XX_SIP_TRANSPORT_DEF)
+    
+    def _gen_xx_sip_srtp_mode(self, raw_config):
+        return self._XX_SIP_SRTP_MODE.get(raw_config[u'sip'][u'srtp_mode'],
+                                          self._XX_SIP_SRTP_MODE_DEF)
+    
+    def _device_cert_or_key_filename(self, device, suffix):
+        # Return the cert or key file filename for a device 
+        fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
+        return fmted_mac + suffix
+    
+    def _gen_cert_or_key_file(self, raw_config, device, param, suffix):
+        if param in raw_config[u'sip']:
+            filename = self._device_cert_or_key_filename(device, suffix)
+            pathname = os.path.join(self._tftpboot_dir, filename)
+            with open(pathname, 'w') as f:
+                f.write(raw_config[u'sip'][param])
+            # return the path, from the point of view of the device
+            return filename
+        else:
+            return None
+    
+    def _gen_xx_servers_root_and_intermediate_certificates(self, raw_config, device):
+        return self._gen_cert_or_key_file(raw_config, device, u'servers_root_and_intermediate_certificates',
+                                          self._XX_SERVERS_ROOT_CERT_SUFFIX)
+    
+    def _gen_xx_local_root_and_intermediate_certificates(self, raw_config, device):
+        return self._gen_cert_or_key_file(raw_config, device, u'local_root_and_intermediate_certificates',
+                                          self._XX_LOCAL_ROOT_CERT_SUFFIX)
+    
+    def _gen_xx_local_certificate(self, raw_config, device):
+        return self._gen_cert_or_key_file(raw_config, device, u'local_certificate',
+                                          self._XX_LOCAL_CERT_SUFFIX)
+    
+    def _gen_xx_local_key(self, raw_config, device):
+        return self._gen_cert_or_key_file(raw_config, device, u'local_key',
+                                          self._XX_LOCAL_KEY_SUFFIX)
+
+    def _device_config_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + '.cfg'
@@ -315,23 +386,44 @@ class BaseAastraPlugin(StandardPlugin):
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
-        filename = self._dev_specific_filename(device)
+        filename = self._device_config_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        raw_config[u'XX_fkeys'] = self._get_xx_fkeys(raw_config, device.get(u'model'))
-        raw_config[u'XX_timezone'] = self._get_xx_timezone(raw_config)
-        raw_config[u'XX_dict'] = self._get_xx_dict(raw_config)
+        raw_config[u'XX_fkeys'] = self._gen_xx_fkeys(raw_config, device.get(u'model'))
+        raw_config[u'XX_timezone'] = self._gen_xx_timezone(raw_config)
+        raw_config[u'XX_dict'] = self._gen_xx_dict(raw_config)
+        raw_config[u'XX_syslog_level'] = self._gen_xx_syslog_level(raw_config)
+        raw_config[u'XX_sip_transport'] = self._gen_xx_sip_transport(raw_config)
+        raw_config[u'XX_sip_srtp_mode'] = self._gen_xx_sip_srtp_mode(raw_config)
+        raw_config[u'XX_servers_root_and_intermediate_certificates'] = \
+            self._gen_xx_servers_root_and_intermediate_certificates(raw_config, device)
+        raw_config[u'XX_local_root_and_intermediate_certificates'] = \
+            self._gen_xx_local_root_and_intermediate_certificates(raw_config, device)
+        raw_config[u'XX_local_certificate'] = \
+            self._gen_xx_local_certificate(raw_config, device)
+        raw_config[u'XX_local_key'] = self._gen_xx_local_key(raw_config, device)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
     def deconfigure(self, device):
-        path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
+        # remove device configuration file
+        path = os.path.join(self._tftpboot_dir, self._device_config_filename(device))
         try:
             os.remove(path)
         except OSError:
-            # ignore -- probably an already removed file
+            # ignore
             pass
+        # remove device certificates and key files
+        for suffix in [self._XX_SERVERS_ROOT_CERT_SUFFIX, self._XX_LOCAL_ROOT_CERT_SUFFIX,
+                       self._XX_LOCAL_CERT_SUFFIX, self._XX_LOCAL_KEY_SUFFIX]:
+            path = os.path.join(self._tftpboot_dir,
+                                self._device_cert_or_key_filename(device, suffix))
+            try:
+                os.remove(path)
+            except OSError:
+                # ignore
+                pass
     
     def synchronize(self, device, raw_config):
         try:
