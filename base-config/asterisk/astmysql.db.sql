@@ -51,13 +51,13 @@ CREATE TABLE `agentfeatures` (
  `language` varchar(20) NOT NULL,
  `silent` tinyint(1) NOT NULL DEFAULT 0,
  -- features
- "autologoff" INTEGER DEFAULT NULL,
- "ackcall"    enum('no','yes','always') NOT NULL DEFAULT 'no',
- "acceptdtmf" VARCHAR(1) NOT NULL DEFAULT '#',
- "enddtmf"    VARCHAR(1) NOT NULL DEFAULT '*',
- "wrapuptime" INTEGER DEFAULT NULL,
- "musiconhold" VARCHAR(80) DEFAULT NULL,
- "group"      VARCHAR(255) DEFAULT NULL,
+ `autologoff` int(10) unsigned DEFAULT NULL,
+ `ackcall`    enum('no','yes','always') NOT NULL DEFAULT 'no',
+ `acceptdtmf` VARCHAR(1) NOT NULL DEFAULT '#',
+ `enddtmf`    VARCHAR(1) NOT NULL DEFAULT '*',
+ `wrapuptime` int(10) unsigned DEFAULT NULL,
+ `musiconhold` VARCHAR(80) DEFAULT NULL,
+ `group`      VARCHAR(255) DEFAULT NULL,
 
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
@@ -219,12 +219,14 @@ DROP TABLE IF EXISTS `context`;
 CREATE TABLE `context` (
  `name` varchar(39) NOT NULL,
  `displayname` varchar(128) NOT NULL DEFAULT '',
+ `contexttype` varchar(40) NOT NULL DEFAULT 'intern',
  `entity` varchar(64),
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE INDEX `context__idx__contexttype` ON `context`(`contexttype`);
 CREATE INDEX `context__idx__displayname` ON `context`(`displayname`);
 CREATE INDEX `context__idx__entity` ON `context`(`entity`);
 CREATE INDEX `context__idx__commented` ON `context`(`commented`);
@@ -283,6 +285,28 @@ CREATE INDEX `contextnummember__idx__context_type` ON `contextnummember`(`contex
 CREATE INDEX `contextnummember__idx__number` ON `contextnummember`(`number`);
 
 
+DROP TABLE IF EXISTS `contexttype`;
+CREATE TABLE `contexttype` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(40) NOT NULL,
+ `displayname` varchar(40) NOT NULL,
+ `commented` tinyint(1) unsigned,
+ `deletable` tinyint(1) unsigned,
+ `description` text,
+ PRIMARY KEY(`id`)
+);
+
+CREATE INDEX `contexttype__idx__commented` ON `contexttype`(`commented`);
+CREATE INDEX `contexttype__idx__deletable` ON `contexttype`(`deletable`);
+CREATE UNIQUE INDEX `contexttype__uidx__name` ON `contexttype`(`name`);
+
+INSERT INTO `contexttype` VALUES(1, 'intern', 'Interne', 0, 0, '');
+INSERT INTO `contexttype` VALUES(2, 'from-extern', 'Entrant', 0, 0, '');
+INSERT INTO `contexttype` VALUES(3, 'to-extern', 'Sortant', 0, 0, '');
+INSERT INTO `contexttype` VALUES(4, 'services', 'Services', 0, 0, '');
+INSERT INTO `contexttype` VALUES(5, 'others', 'Autres', 0, 0, '');
+
+
 DROP TABLE IF EXISTS `cticontexts`;
 CREATE TABLE `cticontexts` (
  `id` int(10) unsigned auto_increment,
@@ -311,7 +335,7 @@ CREATE TABLE `ctidirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectories` VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
+INSERT INTO `ctidirectories` VALUES(1,'xivodir', 'phonebook', '', '[`phonebook.firstname`,`phonebook.lastname`,`phonebook.displayname`,`phonebook.society`,`phonebooknumber.office.number`]','[`phonebooknumber.office.number`,`phonebooknumber.mobile.number`]','[`{db-fullname}`]','Répertoire XiVO Externe',1);
 INSERT INTO `ctidirectories` VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
 
 DROP TABLE IF EXISTS `ctidirectoryfields`;
@@ -341,7 +365,7 @@ CREATE TABLE `ctidisplays` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidisplays` VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}',1,'Affichage par défaut');
+INSERT INTO `ctidisplays` VALUES(4,'Display','{`10`: [ `Numéro`,`phone`,``,`{db-phone}` ],`20`: [ `Nom`,``,``,`{db-fullname}` ],`30`: [ `Entreprise`,``,`Inconnue`,`{db-company}` ],`40`: [ `E-mail`,``,``,`{db-mail} ({xivo-directory})` ]}',1,'Affichage par défaut');
 
 
 DROP TABLE IF EXISTS `ctimain`;
@@ -372,7 +396,7 @@ INSERT INTO `ctimain` VALUES(1, 'xivocti', '0.0.0.0', 5002, '0.0.0.0', 5003, '12
 DROP TABLE IF EXISTS `ctiphonehints`;
 CREATE TABLE `ctiphonehints` (
  `id` int(10) unsigned auto_increment,
- `number` integer,
+ `number` int(10) unsigned,
  `name` varchar(255),
  `color` varchar(128),
  PRIMARY KEY(`id`)
@@ -406,7 +430,7 @@ CREATE TABLE `ctiprofiles` (
  `id` int(10) unsigned auto_increment,
  `xlets` text,
  `funcs` varchar(255),
- `maxgui` integer,
+ `maxgui` int(10) unsigned,
  `appliname` varchar(255),
  `name` varchar(40) unique,
  `presence` varchar(255),
@@ -416,13 +440,13 @@ CREATE TABLE `ctiprofiles` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctiprofiles` VALUES(9,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(10,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(11,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(12,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(13,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(14,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ],[ "calls", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "messages", "dock", "fcms", "N/A" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(9,'[[ `queues`, `dock`, `fms`, `N/A` ],[ `queuedetails`, `dock`, `fms`, `N/A` ],[ `queueentrydetails`, `dock`, `fcms`, `N/A` ],[ `agents`, `dock`, `fcms`, `N/A` ],[ `agentdetails`, `dock`, `fcms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `conference`, `dock`, `fcm`, `N/A` ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(10,'[[ `queues`, `dock`, `ms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `customerinfo`, `dock`, `cms`, `N/A` ],[ `agentdetails`, `dock`, `cms`, `N/A` ]]','presence',-1,'Agent','agent','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(11,'[[ `tabber`, `grid`, `fcms`, `1` ],[ `dial`, `grid`, `fcms`, `2` ],[ `search`, `tab`, `fcms`, `0` ],[ `customerinfo`, `tab`, `fcms`, `4` ],[ `identity`, `grid`, `fcms`, `0` ],[ `fax`, `tab`, `fcms`, `N/A` ],[ `history`, `tab`, `fcms`, `N/A` ],[ `directory`, `tab`, `fcms`, `N/A` ],[ `features`, `tab`, `fcms`, `N/A` ],[ `mylocaldir`, `tab`, `fcms`, `N/A` ],[ `conference`, `tab`, `fcms`, `N/A` ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(12,'[[ `tabber`, `grid`, `fcms`, `1` ],[ `dial`, `grid`, `fcms`, `2` ],[ `search`, `tab`, `fcms`, `0` ],[ `customerinfo`, `tab`, `fcms`, `4` ],[ `identity`, `grid`, `fcms`, `0` ],[ `fax`, `tab`, `fcms`, `N/A` ],[ `history`, `tab`, `fcms`, `N/A` ],[ `directory`, `tab`, `fcms`, `N/A` ],[ `features`, `tab`, `fcms`, `N/A` ],[ `mylocaldir`, `tab`, `fcms`, `N/A` ],[ `conference`, `tab`, `fcms`, `N/A` ],[ `outlook`, `tab`, `fcms`, `N/A` ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(13,'[[ `datetime`, `dock`, `fm`, `N/A` ]]','',-1,'Horloge','clock','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(14,'[[ `dial`, `dock`, `fm`, `N/A` ],[ `operator`, `dock`, `fcm`, `N/A` ],[ `datetime`, `dock`, `fcm`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `calls`, `dock`, `fcm`, `N/A` ],[ `parking`, `dock`, `fcm`, `N/A` ],[ `calls`, `dock`, `fcm`, `N/A` ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(15,'[[ `parking`, `dock`, `fcms`, `N/A` ],[ `search`, `dock`, `fcms`, `N/A` ],[ `calls`, `dock`, `fcms`, `N/A` ],[ `switchboard`, `dock`, `fcms`, `N/A` ],[ `customerinfo`, `dock`, `fcms`, `N/A` ],[ `datetime`, `dock`, `fcms`, `N/A` ],[ `dial`, `dock`, `fcms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `messages`, `dock`, `fcms`, `N/A` ],[ `operator`, `dock`, `fcms`, `N/A` ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
 
 
 DROP TABLE IF EXISTS `ctireversedirectories`;
@@ -436,7 +460,7 @@ CREATE TABLE `ctireversedirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctireversedirectories` VALUES(1,'*', '*', '["xivodir"]','Répertoires XiVO',1);
+INSERT INTO `ctireversedirectories` VALUES(1,'*', '*', '[`xivodir`]','Répertoires XiVO',1);
 
 
 DROP TABLE IF EXISTS `ctisheetactions`;
@@ -456,9 +480,9 @@ CREATE TABLE `ctisheetactions` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctisheetactions` VALUES(6,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ "","title","","Appel {xivo-direction}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{"10": [ "","urlauto","","http://www.google.fr/search?q={xivo-calleridnum}" ]}',0,1);
-INSERT INTO `ctisheetactions` VALUES(7,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
-INSERT INTO `ctisheetactions` VALUES(8,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} (Custom)" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1);
+INSERT INTO `ctisheetactions` VALUES(6,'dial','sheet_action_dial','[`default`]','dest','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} de {xivo-calleridnum}` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ],`40`: [ `Numéro appelé`,`phone`,`Inconnu`,`{xivo-calledidnum}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction}` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','','{`10`: [ ``,`urlauto`,``,`http://www.google.fr/search?q={xivo-calleridnum}` ]}',0,1);
+INSERT INTO `ctisheetactions` VALUES(7,'queue','sheet_action_queue','[`default`]','dest','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} de la File {xivo-queuename}` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction} de la File {xivo-queuename}` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
+INSERT INTO `ctisheetactions` VALUES(8,'custom1','sheet_action_custom1','[`default`]','all','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} (Custom)` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction} (Custom)` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','','{}',0,1);
 
 
 DROP TABLE IF EXISTS `ctisheetevents`;
@@ -477,7 +501,7 @@ CREATE TABLE `ctisheetevents` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctisheetevents` VALUES(1,'','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO `ctisheetevents` VALUES(1,'','','','','','','dial','','','{`custom-example1`: `custom1`}');
 
 
 DROP TABLE IF EXISTS `ctistatus`;
@@ -499,6 +523,27 @@ INSERT INTO `ctistatus` VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)'
 INSERT INTO `ctistatus` VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
 INSERT INTO `ctistatus` VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
 
+
+DROP TABLE IF EXISTS `devicefeatures`;
+CREATE TABLE `devicefeatures` (
+ `id` int(10) unsigned auto_increment,
+ `macaddr` character(17) NOT NULL,
+ `vendor` varchar(16) NOT NULL,
+ `model` varchar(16) NOT NULL,
+ `proto` varchar(50) NOT NULL,
+ `sn` varchar(128),
+ `ip` varchar(39),
+ `version` varchar(128),
+ `isinalan` int(10) unsigned,
+ `provid` int(10) unsigned,
+ `pluginid` int(10) unsigned,
+ `configid` int(10) unsigned,
+ `internal` int(10) unsigned,
+ `configured` int(10) unsigned,
+ `commented` int(10) unsigned,
+ `description` text,
+ PRIMARY KEY(`id`)
+);
 
 DROP TABLE IF EXISTS `dialaction`;
 CREATE TABLE `dialaction` (
@@ -582,7 +627,7 @@ INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundo
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*48378',1,'Macro','guestprov','guestprov');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*48378',1,'Macro','autoprovprov','autoprovprov');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
@@ -657,7 +702,7 @@ INSERT INTO `extenumbers` VALUES (NULL,'*20','934aca632679075488681be0e9904cf910
 INSERT INTO `extenumbers` VALUES (NULL,'_*51.','fd3d50358d246ab2fbc32e14056e2f559d054792','','extenfeatures','groupaddmember');
 INSERT INTO `extenumbers` VALUES (NULL,'_*52.','069a278d266d0cf2aa7abf42a732fc5ad109a3e6','','extenfeatures','groupremovemember');
 INSERT INTO `extenumbers` VALUES (NULL,'_*50.','53f7e7fa7fbbabb1245ed8dedba78da442a8659f','','extenfeatures','grouptogglemember');
-INSERT INTO `extenumbers` VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','guestprov');
+INSERT INTO `extenumbers` VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','autoprovprov');
 INSERT INTO `extenumbers` VALUES (NULL,'*27','663b9615ba92c21f80acac52d60b28a8d1fb1c58','','extenfeatures','incallfilter');
 INSERT INTO `extenumbers` VALUES (NULL,'_*735.','32e9b3597f8b9cd2661f0c3d3025168baafca7e6','','extenfeatures','phoneprogfunckey');
 INSERT INTO `extenumbers` VALUES (NULL,'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');
@@ -769,6 +814,35 @@ CREATE INDEX `incall__idx__commented` ON `incall`(`commented`);
 CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
 
 
+DROP TABLE IF EXISTS `linefeatures`;
+CREATE TABLE `linefeatures` (
+ `id` int(10) unsigned auto_increment,
+ `protocol` varchar(50) NOT NULL,
+ `protocolid` int(10) unsigned NOT NULL,
+ `iduserfeatures` int(10) unsigned DEFAULT 0,
+ `name` varchar(20) NOT NULL,
+ `number` varchar(40),
+ `context` varchar(39) NOT NULL,
+ `provisioningid` int(10) unsigned NOT NULL,
+ `rules_type` varchar(16),
+ `rules_time` varchar(8),
+ `rules_order` int(10) unsigned DEFAULT 0,
+ `rules_group` int(10) unsigned DEFAULT 0,
+ `internal` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` int(10) unsigned NOT NULL DEFAULT 0,
+ `description` text,
+ PRIMARY KEY(`id`)
+);
+
+CREATE INDEX `linefeatures__idx__iduserfeatures` ON `linefeatures`(`iduserfeatures`);
+CREATE INDEX `linefeatures__idx__number` ON `linefeatures`(`number`);
+CREATE INDEX `linefeatures__idx__context` ON `linefeatures`(`context`);
+CREATE INDEX `linefeatures__idx__commented` ON `linefeatures`(`commented`);
+CREATE INDEX `linefeatures__idx__internal` ON `linefeatures`(`internal`);
+CREATE UNIQUE INDEX `linefeatures__uidx__provisioningid` ON `linefeatures`(`provisioningid`);
+CREATE UNIQUE INDEX `linefeatures__uidx__name` ON `linefeatures`(`name`);
+CREATE UNIQUE INDEX `linefeatures__uidx__protocol_protocolid` ON `linefeatures`(`protocol`,`protocolid`);
+
 DROP TABLE IF EXISTS `ldapfilter`;
 CREATE TABLE `ldapfilter` (
  `id` int(10) unsigned auto_increment,
@@ -852,8 +926,8 @@ CREATE UNIQUE INDEX `meetmefeatures__uidx__meetmeid` ON `meetmefeatures`(`meetme
 CREATE UNIQUE INDEX `meetmefeatures__uidx__name` ON `meetmefeatures`(`name`);
 
 
-DROP TABLE IF EXISTS `meetmeguest`;
-CREATE TABLE `meetmeguest` (
+DROP TABLE IF EXISTS `meetmeautoprov`;
+CREATE TABLE `meetmeautoprov` (
  `id` int(10) unsigned auto_increment,
  `meetmefeaturesid` int(10) unsigned NOT NULL,
  `fullname` varchar(255) NOT NULL,
@@ -862,9 +936,9 @@ CREATE TABLE `meetmeguest` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `meetmeguest__idx__meetmefeaturesid` ON `meetmeguest`(`meetmefeaturesid`);
-CREATE INDEX `meetmeguest__idx__fullname` ON `meetmeguest`(`fullname`);
-CREATE INDEX `meetmeguest__idx__email` ON `meetmeguest`(`email`);
+CREATE INDEX `meetmeautoprov__idx__meetmefeaturesid` ON `meetmeautoprov`(`meetmefeaturesid`);
+CREATE INDEX `meetmeautoprov__idx__fullname` ON `meetmeautoprov`(`fullname`);
+CREATE INDEX `meetmeautoprov__idx__email` ON `meetmeautoprov`(`email`);
 
 
 DROP TABLE IF EXISTS `musiconhold`;
@@ -891,12 +965,12 @@ INSERT INTO `musiconhold` VALUES (4,0,0,0,'musiconhold.conf','default','director
 
 DROP TABLE IF EXISTS `operator`;
 CREATE TABLE `operator` (
- `id` SERIAL,
+ `id` int(10) unsigned auto_increment,
  `name` varchar(64) NOT NULL,
- `default_price` double precision,
- `default_price_is` varchar(16) DEFAULT 'minute'::character varying NOT NULL,
+ `default_price` double,
+ `default_price_is` varchar(16) DEFAULT 'minute' NOT NULL,
  `currency` varchar(16) NOT NULL,
- `disable` integer DEFAULT 0 NOT NULL,
+ `disable` int(10) unsigned,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -907,13 +981,13 @@ CREATE INDEX `operator__idx__disable` ON `operator`(`disable`);
 
 DROP TABLE IF EXISTS `operator_destination`;
 CREATE TABLE `operator_destination` (
- `id` SERIAL,
- `operator_id` integer NOT NULL,
- `name` character varying(64) NOT NULL,
- `exten` character varying(40) NOT NULL,
- `price` double precision,
- `price_is` character varying(16) DEFAULT 'minute'::character varying NOT NULL,
- `disable` integer DEFAULT 0 NOT NULL,
+ `id` int(10) unsigned auto_increment,
+ `operator_id` int(10) unsigned NOT NULL,
+ `name` varchar(64) NOT NULL,
+ `exten` varchar(40) NOT NULL,
+ `price` double,
+ `price_is` varchar(16) DEFAULT 'minute' NOT NULL,
+ `disable` int(10) unsigned,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -923,8 +997,8 @@ CREATE INDEX `operator_destination__idx__disable` ON `operator_destination`(`dis
 
 DROP TABLE IF EXISTS `operator_trunk`;
 CREATE TABLE `operator_trunk` (
- `operator_id` integer NOT NULL,
- `trunk_id` integer NOT NULL,
+ `operator_id` int(10) unsigned NOT NULL,
+ `trunk_id` int(10) unsigned NOT NULL,
  PRIMARY KEY(`operator_id`,`trunk_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -963,20 +1037,6 @@ CREATE TABLE `outcalltrunk` (
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `outcalltrunk__idx__priority` ON `outcalltrunk`(`priority`);
-
-
-DROP TABLE IF EXISTS `phone`;
-CREATE TABLE `phone` (
- `macaddr` char(17) NOT NULL,
- `vendor` varchar(16) NOT NULL,
- `model` varchar(16) NOT NULL,
- `proto` varchar(50) NOT NULL,
- `iduserfeatures` int(10) unsigned NOT NULL,
- `isinalan` tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(`macaddr`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
-CREATE INDEX `phone__idx__proto_iduserfeatures` ON `phone`(`proto`,`iduserfeatures`);
 
 
 DROP TABLE IF EXISTS `phonebook`;
@@ -1110,10 +1170,10 @@ CREATE TABLE `queue` (
  `setqueueentryvar` tinyint(1) NOT NULL DEFAULT 0,
  `setqueuevar` tinyint(1) NOT NULL DEFAULT 0,
  `membermacro` varchar(1024),
- `min-announce-frequency` integer unsigned NOT NULL DEFAULT 60,
+ `min-announce-frequency` int(10) unsigned unsigned NOT NULL DEFAULT 60,
  `random-periodic-announce` tinyint(1) NOT NULL DEFAULT 0,
  `announce-position` varchar(1024) NOT NULL DEFAULT 'yes',
- `announce-position-limit` integer unsigned NOT NULL DEFAULT 5,
+ `announce-position-limit` int(10) unsigned unsigned NOT NULL DEFAULT 5,
  `defaultrule` varchar(1024),
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -1279,6 +1339,31 @@ CREATE INDEX `serverfeatures__idx__feature` ON `serverfeatures`(`feature`);
 CREATE INDEX `serverfeatures__idx__type` ON `serverfeatures`(`type`);
 CREATE INDEX `serverfeatures__idx__commented` ON `serverfeatures`(`commented`);
 CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_feature_type` ON `serverfeatures`(`serverid`,`feature`,`type`);
+
+
+DROP TABLE IF EXISTS `servicesgroup`;
+CREATE TABLE `servicesgroup` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(64) NOT NULL,
+ `accountcode` varchar(20),
+ `disable` tinyint(1) NOT NULL DEFAULT 0,
+ `description` text,
+ PRIMARY KEY(`id`)
+);
+
+CREATE UNIQUE INDEX `servicesgroup__uidx__name` ON `servicesgroup`(`name`);
+CREATE UNIQUE INDEX `servicesgroup__uidx__accountcode` ON `servicesgroup`(`accountcode`);
+CREATE INDEX `servicesgroup__idx__disable` ON `servicesgroup`(`disable`);
+
+
+DROP TABLE IF EXISTS `servicesgroup_user`;
+CREATE TABLE `servicesgroup_user` (
+ `servicesgroup_id` int(10) unsigned NOT NULL,
+ `userfeatures_id` int(10) unsigned NOT NULL,
+ PRIMARY KEY(`servicesgroup_id`,`userfeatures_id`)
+);
+
+CREATE UNIQUE INDEX `servicesgroup_user__uidx__servicesgroupid_userfeaturesid` ON `servicesgroup_user`(`servicesgroup_id`,`userfeatures_id`);
 
 
 DROP TABLE IF EXISTS `staticagent`;
@@ -1451,7 +1536,7 @@ CREATE INDEX `staticsip__idx__var_name` ON `staticsip`(`var_name`);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','bindport',5060);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','videosupport','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowguest','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowautoprov','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowsubscribe','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowoverlap','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','promiscredir','no');
@@ -1784,17 +1869,13 @@ CREATE UNIQUE INDEX `usercustom__uidx__interface_intfsuffix_category` ON `usercu
 DROP TABLE IF EXISTS `userfeatures`;
 CREATE TABLE `userfeatures` (
  `id` int(10) unsigned auto_increment,
- `protocol` varchar(50) NOT NULL,
- `protocolid` int(10) unsigned NOT NULL,
  `firstname` varchar(128) NOT NULL DEFAULT '',
  `lastname` varchar(128) NOT NULL DEFAULT '',
- `name` varchar(128) NOT NULL,
- `number` varchar(40) NOT NULL,
- `context` varchar(39),
  `voicemailtype` enum('asterisk', 'exchange'),
  `voicemailid` int(10) unsigned,
  `agentid` int(10) unsigned,
- `provisioningid` mediumint(8) unsigned,
+ `entityid` int(10) unsigned,
+ `callerid` varchar(160),
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 30,
  `simultcalls` tinyint(2) unsigned NOT NULL DEFAULT 5,
  `enableclient` tinyint(1) NOT NULL DEFAULT 1,
@@ -1819,8 +1900,16 @@ CREATE TABLE `userfeatures` (
  `mobilephonenumber` varchar(128) NOT NULL DEFAULT '',
  `bsfilter` enum('no','boss','secretary') NOT NULL DEFAULT 'no',
  `preprocess_subroutine` varchar(39),
- `internal` tinyint(1) NOT NULL DEFAULT 0,
  `timezone` varchar(128),
+ `language` varchar(20),
+ `ringintern` varchar(64),
+ `ringextern` varchar(64),
+ `ringgroup` varchar(64),
+ `ringforward` varchar(64),
+ `rightcallcode` varchar(16),
+ `alarmclock` varchar(5) DEFAULT '00:00' NOT NULL,
+ `pitch` varchar(16),
+ `pitchdirection` varchar(16),
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
@@ -1828,20 +1917,11 @@ CREATE TABLE `userfeatures` (
 
 CREATE INDEX `userfeatures__idx__firstname` ON `userfeatures`(`firstname`);
 CREATE INDEX `userfeatures__idx__lastname` ON `userfeatures`(`lastname`);
-CREATE INDEX `userfeatures__idx__number` ON `userfeatures`(`number`);
-CREATE INDEX `userfeatures__idx__context` ON `userfeatures`(`context`);
 CREATE INDEX `userfeatures__idx__voicemailid` ON `userfeatures`(`voicemailid`);
 CREATE INDEX `userfeatures__idx__agentid` ON `userfeatures`(`agentid`);
-CREATE INDEX `userfeatures__idx__provisioningid` ON `userfeatures`(`provisioningid`);
 CREATE INDEX `userfeatures__idx__loginclient` ON `userfeatures`(`loginclient`);
 CREATE INDEX `userfeatures__idx__musiconhold` ON `userfeatures`(`musiconhold`);
-CREATE INDEX `userfeatures__idx__internal` ON `userfeatures`(`internal`);
 CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
-CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
-CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
-
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,NULL,148378,
-                                   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,NULL,0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
@@ -1990,6 +2070,7 @@ CREATE TABLE `usersip` (
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
  `regserver` varchar(20),
  `lastms` varchar(15) NOT NULL DEFAULT '',
+ `parkinglot` int(10) DEFAULT NULL,
  `protocol` enum('sip') NOT NULL DEFAULT 'sip',
  `category` enum('user','trunk') NOT NULL,
  `outboundproxy` varchar(1024),
@@ -1999,24 +2080,24 @@ CREATE TABLE `usersip` (
  `remotesecret` varchar(255) DEFAULT NULL,
  `directmedia` enum('yes', 'no', 'nonat', 'update', 'update,nonat') DEFAULT NULL,
  `callcounter` tinyint(1) DEFAULT NULL,
- `busylevel` integer unsigned DEFAULT NULL,
+ `busylevel` int(10) unsigned unsigned DEFAULT NULL,
  `ignoresdpversion` tinyint(1) DEFAULT NULL,
  `session-timers` enum('originate', 'accept', 'refuse') DEFAULT NULL,
- `session-expires` integer unsigned DEFAULT NULL,
- `session-minse` integer unsigned DEFAULT NULL,
+ `session-expires` int(10) unsigned unsigned DEFAULT NULL,
+ `session-minse` int(10) unsigned unsigned DEFAULT NULL,
  `session-refresher` enum('uac', 'uas') DEFAULT NULL,
  `callbackextension` varchar(255) DEFAULT NULL,
  `registertrying` tinyint(1) DEFAULT NULL,
- `timert1` integer unsigned DEFAULT NULL,
- `timerb` integer unsigned DEFAULT NULL,
- `qualifyfreq` integer unsigned DEFAULT NULL,
+ `timert1` int(10) unsigned unsigned DEFAULT NULL,
+ `timerb` int(10) unsigned unsigned DEFAULT NULL,
+ `qualifyfreq` int(10) unsigned unsigned DEFAULT NULL,
  `contactpermit` varchar(1024) DEFAULT NULL,
  `contactdeny` varchar(1024) DEFAULT NULL,
  `unsolicited_mailbox` varchar(1024) DEFAULT NULL,
  `use_q850_reason` tinyint(1) DEFAULT NULL,
  `encryption` tinyint(1) DEFAULT NULL,
  `snom_aoc_enabled` tinyint(1) DEFAULT NULL,
- `maxforwards` integer unsigned DEFAULT NULL,
+ `maxforwards` int(10) unsigned unsigned DEFAULT NULL,
  `disallowed_methods` varchar(1024) DEFAULT NULL,
  `textsupport` tinyint(1) DEFAULT NULL,
 
@@ -2032,15 +2113,6 @@ CREATE INDEX `usersip__idx__host_port` ON `usersip`(`host`,`port`);
 CREATE INDEX `usersip__idx__ipaddr_port` ON `usersip`(`ipaddr`,`port`);
 CREATE INDEX `usersip__idx__lastms` ON `usersip`(`lastms`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
-
-INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
-                              NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-                              'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',
-                              NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);
 
 
 DROP TABLE IF EXISTS `voicemail`;
@@ -2082,10 +2154,10 @@ CREATE TABLE `voicemail` (
  `tempgreetwarn` tinyint(1) DEFAULT NULL,
  `messagewrap` tinyint(1) DEFAULT NULL,
  `moveheard` tinyint(1) DEFAULT NULL,
- `minsecs` integer unsigned DEFAULT NULL,
- `maxsecs` integer unsigned DEFAULT NULL,
+ `minsecs` int(10) unsigned unsigned DEFAULT NULL,
+ `maxsecs` int(10) unsigned unsigned DEFAULT NULL,
  `nextaftercmd` tinyint(1) DEFAULT NULL,
- `backupdeleted` integer unsigned DEFAULT NULL,
+ `backupdeleted` int(10) unsigned unsigned DEFAULT NULL,
  `volgain` float DEFAULT NULL,
  `passwordlocation` enum('spooldir', 'voicemail') DEFAULT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,

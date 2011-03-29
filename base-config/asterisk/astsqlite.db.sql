@@ -40,20 +40,19 @@ CREATE TABLE agentfeatures (
  numgroup tinyint unsigned NOT NULL,
  firstname varchar(128) NOT NULL DEFAULT '',
  lastname varchar(128) NOT NULL DEFAULT '',
- number varchar(40) NOT NULL,
+ 'number' varchar(40) NOT NULL,
  passwd varchar(128) NOT NULL,
  context varchar(39) NOT NULL,
  language varchar(20) NOT NULL,
  silent tinyint(1) NOT NULL DEFAULT 0,
  -- features
- "autologoff" INTEGER DEFAULT NULL,
- "ackcall"    VARCHAR(6) NOT NULL DEFAULT 'no',
- "acceptdtmf" VARCHAR(1) NOT NULL DEFAULT '#',
- "enddtmf"    VARCHAR(1) NOT NULL DEFAULT '*',
- "wrapuptime" INTEGER DEFAULT NULL,
- "musiconhold" VARCHAR(80) DEFAULT NULL,
- "group"      VARCHAR(255) DEFAULT NULL,
-
+ autologoff INTEGER DEFAULT NULL,
+ ackcall    VARCHAR(6) NOT NULL DEFAULT 'no',
+ acceptdtmf VARCHAR(1) NOT NULL DEFAULT '#',
+ enddtmf    VARCHAR(1) NOT NULL DEFAULT '*',
+ wrapuptime INTEGER DEFAULT NULL,
+ musiconhold VARCHAR(80) DEFAULT NULL,
+ 'group'      VARCHAR(255) DEFAULT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
@@ -216,6 +215,7 @@ DROP TABLE context;
 CREATE TABLE context (
  name varchar(39) NOT NULL,
  displayname varchar(128) NOT NULL DEFAULT '',
+ contexttype varchar(40) NOT NULL DEFAULT 'intern',
  entity varchar(64),
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
@@ -223,6 +223,7 @@ CREATE TABLE context (
 );
 
 CREATE INDEX context__idx__displayname ON context(displayname);
+CREATE INDEX context__idx__contexttype ON context(contexttype);
 CREATE INDEX context__idx__entity ON context(entity);
 CREATE INDEX context__idx__commented ON context(commented);
 
@@ -280,6 +281,28 @@ CREATE TABLE contextnumbers (
 CREATE INDEX contextnumbers__idx__context_type ON contextnumbers(context,type);
 
 
+DROP TABLE contexttype;
+CREATE TABLE contexttype (
+ id integer unsigned,
+ name varchar(40) NOT NULL,
+ displayname varchar(40) NOT NULL,
+ commented integer,
+ deletable integer,
+ description text,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX contexttype__idx__commented ON contexttype(commented);
+CREATE INDEX contexttype__idx__deletable ON contexttype(deletable);
+CREATE UNIQUE INDEX contexttype__uidx__name ON contexttype(name);
+
+INSERT INTO contexttype VALUES(1, 'intern', 'Interne', 0, 0, '');
+INSERT INTO contexttype VALUES(2, 'from-extern', 'Entrant', 0, 0, '');
+INSERT INTO contexttype VALUES(3, 'to-extern', 'Sortant', 0, 0, '');
+INSERT INTO contexttype VALUES(4, 'services', 'Services', 0, 0, '');
+INSERT INTO contexttype VALUES(5, 'others', 'Autres', 0, 0, '');
+
+
 DROP TABLE cticontexts;
 CREATE TABLE cticontexts (
  id integer unsigned,
@@ -314,8 +337,8 @@ CREATE TABLE ctidirectories (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctidirectories VALUES(1,'xivodir','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["phonebook.firstname"]','["phonebook.lastname"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
-INSERT INTO ctidirectories VALUES(2,'internal','internal','','','','','["{internal-fullname}"]','','','','','','Répertoire XiVO Interne',1);
+INSERT INTO ctidirectories VALUES(1,'xivodir','phonebook','','[phonebook.firstname,phonebook.lastname,phonebook.displayname,phonebook.society,phonebooknumber.office.number]','[phonebooknumber.office.number,phonebooknumber.mobile.number]','[phonebooknumber.office.number]','[phonebook.fullname]','[phonebook.society]','[phonebook.email]','[phonebook.firstname]','[phonebook.lastname]','[{db-fullname}]','Répertoire XiVO Externe',1);
+INSERT INTO ctidirectories VALUES(2,'internal','internal','','','','','[{internal-fullname}]','','','','','','Répertoire XiVO Interne',1);
 
 
 DROP TABLE ctidisplays;
@@ -328,7 +351,7 @@ CREATE TABLE ctidisplays (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctidisplays VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}',1,'Affichage par défaut');
+INSERT INTO ctidisplays VALUES(4,'Display','{10: [ Numéro,phone,,{db-phone} ],20: [ Nom,,,{db-fullname} ],30: [ Entreprise,,Inconnue,{db-company} ],40: [ E-mail,,,{db-mail} ({xivo-directory}) ]}',1,'Affichage par défaut');
 
 
 DROP TABLE ctimain;
@@ -403,13 +426,13 @@ CREATE TABLE ctiprofiles (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctiprofiles VALUES(9,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
-INSERT INTO ctiprofiles VALUES(10,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','','',1);
-INSERT INTO ctiprofiles VALUES(11,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
-INSERT INTO ctiprofiles VALUES(12,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
-INSERT INTO ctiprofiles VALUES(13,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','','',1);
-INSERT INTO ctiprofiles VALUES(14,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ],[ "calls", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
-INSERT INTO ctiprofiles VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "messages", "dock", "fcms", "N/A" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(9,'[[ queues, dock, fms, N/A ],[ queuedetails, dock, fms, N/A ],[ queueentrydetails, dock, fcms, N/A ],[ agents, dock, fcms, N/A ],[ agentdetails, dock, fcms, N/A ],[ identity, grid, fcms, 0 ],[ conference, dock, fcm, N/A ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(10,'[[ queues, dock, ms, N/A ],[ identity, grid, fcms, 0 ],[ customerinfo, dock, cms, N/A ],[ agentdetails, dock, cms, N/A ]]','presence',-1,'Agent','agent','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(11,'[[ tabber, grid, fcms, 1 ],[ dial, grid, fcms, 2 ],[ search, tab, fcms, 0 ],[ customerinfo, tab, fcms, 4 ],[ identity, grid, fcms, 0 ],[ fax, tab, fcms, N/A ],[ history, tab, fcms, N/A ],[ directory, tab, fcms, N/A ],[ features, tab, fcms, N/A ],[ mylocaldir, tab, fcms, N/A ],[ conference, tab, fcms, N/A ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(12,'[[ tabber, grid, fcms, 1 ],[ dial, grid, fcms, 2 ],[ search, tab, fcms, 0 ],[ customerinfo, tab, fcms, 4 ],[ identity, grid, fcms, 0 ],[ fax, tab, fcms, N/A ],[ history, tab, fcms, N/A ],[ directory, tab, fcms, N/A ],[ features, tab, fcms, N/A ],[ mylocaldir, tab, fcms, N/A ],[ conference, tab, fcms, N/A ],[ outlook, tab, fcms, N/A ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(13,'[[ datetime, dock, fm, N/A ]]','',-1,'Horloge','clock','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(14,'[[ dial, dock, fm, N/A ],[ operator, dock, fcm, N/A ],[ datetime, dock, fcm, N/A ],[ identity, grid, fcms, 0 ],[ calls, dock, fcm, N/A ],[ parking, dock, fcm, N/A ],[ calls, dock, fcm, N/A ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
+INSERT INTO ctiprofiles VALUES(15,'[[ parking, dock, fcms, N/A ],[ search, dock, fcms, N/A ],[ calls, dock, fcms, N/A ],[ switchboard, dock, fcms, N/A ],[ customerinfo, dock, fcms, N/A ],[ datetime, dock, fcms, N/A ],[ dial, dock, fcms, N/A ],[ identity, grid, fcms, 0 ],[ messages, dock, fcms, N/A ],[ operator, dock, fcms, N/A ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
 
 
 DROP TABLE ctireversedirectories;
@@ -423,7 +446,7 @@ CREATE TABLE ctireversedirectories (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctireversedirectories VALUES(1,'*', '*', '["xivodir"]','Répertoires XiVO',1);
+INSERT INTO ctireversedirectories VALUES(1,'*', '*', '[xivodir]','Répertoires XiVO',1);
 
 
 DROP TABLE ctisheetactions;
@@ -443,9 +466,9 @@ CREATE TABLE ctisheetactions (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctisheetactions VALUES(6,'dial','','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ "","title","","Appel {xivo-direction}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{"10": [ "","urlauto","","http://www.google.fr/search?q={xivo-calleridnum}" ]}',0,1);
-INSERT INTO ctisheetactions VALUES(7,'queue','','["default"]','dest','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
-INSERT INTO ctisheetactions VALUES(8,'custom1','','["default"]','all','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} (Custom)" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1);
+INSERT INTO ctisheetactions VALUES(6,'dial','','[default]','dest','[agentsup,agent,client]','{10: [ ,text,Inconnu,Appel {xivo-direction} de {xivo-calleridnum} ],20: [ Numéro entrant,phone,Inconnu,{xivo-calleridnum} ],30: [ Nom,text,Inconnu,{db-fullname} ],40: [ Numéro appelé,phone,Inconnu,{xivo-calledidnum} ]}','{10: [ ,title,,Appel {xivo-direction} ],20: [ ,body,Inconnu,appel de {xivo-calleridnum} pour {xivo-calledidnum} ],30: [ ,body,Inconnu,{db-fullname} (selon {xivo-directory}) ],40: [ ,body,,le {xivo-date}, il est {xivo-time} ]}','','{10: [ ,urlauto,,http://www.google.fr/search?q={xivo-calleridnum} ]}',0,1);
+INSERT INTO ctisheetactions VALUES(7,'queue','','[default]','dest','[agentsup,agent,client]','{10: [ ,text,Inconnu,Appel {xivo-direction} de la File {xivo-queuename} ],20: [ Numéro entrant,phone,Inconnu,{xivo-calleridnum} ],30: [ Nom,text,Inconnu,{db-fullname} ]}','{10: [ ,title,,Appel {xivo-direction} de la File {xivo-queuename} ],20: [ ,body,Inconnu,appel de {xivo-calleridnum} pour {xivo-calledidnum} ],30: [ ,body,Inconnu,{db-fullname} (selon {xivo-directory}) ],40: [ ,body,,le {xivo-date}, il est {xivo-time} ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
+INSERT INTO ctisheetactions VALUES(8,'custom1','','[default]','all','[agentsup,agent,client]','{10: [ ,text,Inconnu,Appel {xivo-direction} (Custom) ],20: [ Numéro entrant,phone,Inconnu,{xivo-calleridnum} ],30: [ Nom,text,Inconnu,{db-fullname} ]}','{10: [ ,title,,Appel {xivo-direction} (Custom) ],20: [ ,body,Inconnu,appel de {xivo-calleridnum} pour {xivo-calledidnum} ],30: [ ,body,Inconnu,{db-fullname} (selon {xivo-directory}) ],40: [ ,body,,le {xivo-date}, il est {xivo-time} ]}','','{}',0,1);
 
 
 DROP TABLE ctisheetevents;
@@ -464,7 +487,7 @@ CREATE TABLE ctisheetevents (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctisheetevents VALUES(1,'','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO ctisheetevents VALUES(1,'','','','','','','dial','','','{custom-example1: custom1}');
 
 
 DROP TABLE ctistatus;
@@ -486,6 +509,27 @@ INSERT INTO ctistatus VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','
 INSERT INTO ctistatus VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
 INSERT INTO ctistatus VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
 
+
+DROP TABLE devicefeatures;
+CREATE TABLE devicefeatures (
+ id integer unsigned,
+ macaddr varchar(17) NOT NULL,
+ vendor varchar(16) NOT NULL,
+ model varchar(16) NOT NULL,
+ proto varchar(50) NOT NULL,
+ sn varchar(128),
+ ip varchar(39),
+ version varchar(128),
+ isinalan integer DEFAULT 0 NOT NULL,
+ provid integer DEFAULT 0 NOT NULL,
+ pluginid integer DEFAULT 0 NOT NULL,
+ configid integer DEFAULT 0 NOT NULL,
+ internal integer DEFAULT 0 NOT NULL,
+ configured integer DEFAULT 0 NOT NULL,
+ commented integer DEFAULT 0 NOT NULL,
+ description text,
+ PRIMARY KEY(id)
+);
 
 DROP TABLE dialaction;
 CREATE TABLE dialaction (
@@ -545,7 +589,7 @@ INSERT INTO extensions VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundoal
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*48378',1,'Macro','guestprov','guestprov');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*48378',1,'Macro','autoprovprov','autoprovprov');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
@@ -610,7 +654,7 @@ INSERT INTO extenumbers VALUES (NULL,'*20','934aca632679075488681be0e9904cf9102f
 INSERT INTO extenumbers VALUES (NULL,'_*51.','fd3d50358d246ab2fbc32e14056e2f559d054792','','extenfeatures','groupaddmember');
 INSERT INTO extenumbers VALUES (NULL,'_*52.','069a278d266d0cf2aa7abf42a732fc5ad109a3e6','','extenfeatures','groupremovemember');
 INSERT INTO extenumbers VALUES (NULL,'_*50.','53f7e7fa7fbbabb1245ed8dedba78da442a8659f','','extenfeatures','grouptogglemember');
-INSERT INTO extenumbers VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','guestprov');
+INSERT INTO extenumbers VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','autoprovprov');
 INSERT INTO extenumbers VALUES (NULL,'*27','663b9615ba92c21f80acac52d60b28a8d1fb1c58','','extenfeatures','incallfilter');
 INSERT INTO extenumbers VALUES (NULL,'_*735.','32e9b3597f8b9cd2661f0c3d3025168baafca7e6','','extenfeatures','phoneprogfunckey');
 INSERT INTO extenumbers VALUES (NULL,'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');
@@ -722,6 +766,35 @@ CREATE INDEX incall__idx__commented ON incall(commented);
 CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
 
 
+DROP TABLE linefeatures;
+CREATE TABLE linefeatures (
+ id integer unsigned,
+ protocol varchar(50) NOT NULL,
+ protocolid integer unsigned NOT NULL,
+ iduserfeatures integer unsigned DEFAULT 0,
+ name varchar(20) NOT NULL,
+ number varchar(40),
+ context varchar(39) NOT NULL,
+ provisioningid char(6) NOT NULL,
+ rules_type varchar(16),
+ rules_time varchar(8),
+ rules_order tinyint(3) DEFAULT 0,
+ rules_group tinyint(3) DEFAULT 0,
+ internal tinyint(1) NOT NULL DEFAULT 0,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ description text,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX linefeatures__idx__iduserfeatures ON linefeatures(iduserfeatures);
+CREATE INDEX linefeatures__idx__number ON linefeatures(number);
+CREATE INDEX linefeatures__idx__context ON linefeatures(context);
+CREATE INDEX linefeatures__idx__commented ON linefeatures(commented);
+CREATE INDEX linefeatures__idx__internal ON linefeatures(internal);
+CREATE UNIQUE INDEX linefeatures__uidx__provisioningid ON linefeatures(provisioningid);
+CREATE UNIQUE INDEX linefeatures__uidx__name ON linefeatures(name);
+CREATE UNIQUE INDEX linefeatures__uidx__protocol_protocolid ON linefeatures(protocol,protocolid);
+
 DROP TABLE ldapfilter;
 CREATE TABLE ldapfilter (
  id integer unsigned,
@@ -804,8 +877,8 @@ CREATE UNIQUE INDEX meetmefeatures__uidx__meetmeid ON meetmefeatures(meetmeid);
 CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
 
 
-DROP TABLE meetmeguest;
-CREATE TABLE meetmeguest (
+DROP TABLE meetmeautoprov;
+CREATE TABLE meetmeautoprov (
  id integer unsigned,
  meetmefeaturesid integer unsigned NOT NULL,
  fullname varchar(255) NOT NULL,
@@ -814,9 +887,9 @@ CREATE TABLE meetmeguest (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX meetmeguest__idx__meetmefeaturesid ON meetmeguest(meetmefeaturesid);
-CREATE INDEX meetmeguest__idx__fullname ON meetmeguest(fullname);
-CREATE INDEX meetmeguest__idx__email ON meetmeguest(email);
+CREATE INDEX meetmeautoprov__idx__meetmefeaturesid ON meetmeautoprov(meetmefeaturesid);
+CREATE INDEX meetmeautoprov__idx__fullname ON meetmeautoprov(fullname);
+CREATE INDEX meetmeautoprov__idx__email ON meetmeautoprov(email);
 
 
 DROP TABLE musiconhold;
@@ -917,20 +990,6 @@ CREATE TABLE outcalltrunk (
 CREATE INDEX outcalltrunk__idx__priority ON outcalltrunk(priority);
 
 
-DROP TABLE phone;
-CREATE TABLE phone (
- macaddr char(17) NOT NULL,
- vendor varchar(16) NOT NULL,
- model varchar(16) NOT NULL,
- proto varchar(50) NOT NULL,
- iduserfeatures integer unsigned NOT NULL,
- isinalan tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(macaddr)
-);
-
-CREATE INDEX phone__idx__proto_iduserfeatures ON phone(proto,iduserfeatures);
-
-
 DROP TABLE phonebook;
 CREATE TABLE phonebook (
  id integer unsigned,
@@ -1020,22 +1079,22 @@ CREATE TABLE queue (
  announce varchar(128),
  context varchar(39),
  timeout tinyint unsigned DEFAULT 0,
- "monitor-type" varchar(10),
- "monitor-format" varchar(128),
- "queue-youarenext" varchar(128),
- "queue-thereare" varchar(128),
- "queue-callswaiting" varchar(128),
- "queue-holdtime" varchar(128),
- "queue-minutes" varchar(128),
- "queue-seconds" varchar(128),
- "queue-lessthan" varchar(128),
- "queue-thankyou" varchar(128),
- "queue-reporthold" varchar(128),
- "periodic-announce" text,
- "announce-frequency" integer unsigned,
- "periodic-announce-frequency" integer unsigned,
- "announce-round-seconds" tinyint unsigned,
- "announce-holdtime" varchar(4),
+ 'monitor-type' varchar(10),
+ 'monitor-format' varchar(128),
+ 'queue-youarenext' varchar(128),
+ 'queue-thereare' varchar(128),
+ 'queue-callswaiting' varchar(128),
+ 'queue-holdtime' varchar(128),
+ 'queue-minutes' varchar(128),
+ 'queue-seconds' varchar(128),
+ 'queue-lessthan' varchar(128),
+ 'queue-thankyou' varchar(128),
+ 'queue-reporthold' varchar(128),
+ 'periodic-announce' text,
+ 'announce-frequency' integer unsigned,
+ 'periodic-announce-frequency' integer unsigned,
+ 'announce-round-seconds' tinyint unsigned,
+ 'announce-holdtime' varchar(4),
  retry tinyint unsigned,
  wrapuptime tinyint unsigned,
  maxlen integer unsigned,
@@ -1093,7 +1152,7 @@ CREATE TABLE queuemember (
  queue_name varchar(128) NOT NULL,
  interface varchar(128) NOT NULL,
  penalty tinyint unsigned NOT NULL DEFAULT 0,
- "call-limit" tinyint unsigned NOT NULL DEFAULT 0,
+ 'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
  paused tinyint unsigned,
  commented tinyint(1) NOT NULL DEFAULT 0,
  usertype varchar(5) NOT NULL,
@@ -1375,7 +1434,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','bindport',5060);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','videosupport','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowguest','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowautoprov','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowsubscribe','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowoverlap','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','promiscredir','no');
@@ -1628,16 +1687,12 @@ CREATE UNIQUE INDEX usercustom__uidx__interface_intfsuffix_category ON usercusto
 DROP TABLE userfeatures;
 CREATE TABLE userfeatures (
  id integer unsigned,
- protocol varchar(50) NOT NULL,
- protocolid integer unsigned NOT NULL,
  firstname varchar(128) NOT NULL DEFAULT '',
  lastname varchar(128) NOT NULL DEFAULT '',
- name varchar(128) NOT NULL,
- number varchar(40) NOT NULL,
- context varchar(39),
  voicemailid integer unsigned,
  agentid integer unsigned,
- provisioningid mediumint unsigned,
+ entityid integer unsigned,
+ callerid varchar(160),
  ringseconds tinyint unsigned NOT NULL DEFAULT 30,
  simultcalls tinyint unsigned NOT NULL DEFAULT 5,
  enableclient tinyint(1) NOT NULL DEFAULT 1,
@@ -1662,8 +1717,16 @@ CREATE TABLE userfeatures (
  mobilephonenumber varchar(128) NOT NULL DEFAULT '',
  bsfilter varchar(9) NOT NULL DEFAULT 'no',
  preprocess_subroutine varchar(39),
- internal tinyint(1) NOT NULL DEFAULT 0,
  timezone varchar(128),
+ language varchar(20),
+ ringintern varchar(64),
+ ringextern varchar(64),
+ ringgroup varchar(64),
+ ringforward varchar(64),
+ rightcallcode varchar(16),
+ alarmclock varchar(5) DEFAULT '00:00' NOT NULL,
+ pitch varchar(16),
+ pitchdirection varchar(16),
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
@@ -1671,21 +1734,11 @@ CREATE TABLE userfeatures (
 
 CREATE INDEX userfeatures__idx__firstname ON userfeatures(firstname);
 CREATE INDEX userfeatures__idx__lastname ON userfeatures(lastname);
-CREATE INDEX userfeatures__idx__number ON userfeatures(number);
-CREATE INDEX userfeatures__idx__context ON userfeatures(context);
 CREATE INDEX userfeatures__idx__voicemailid ON userfeatures(voicemailid);
 CREATE INDEX userfeatures__idx__agentid ON userfeatures(agentid);
-CREATE INDEX userfeatures__idx__provisioningid ON userfeatures(provisioningid);
 CREATE INDEX userfeatures__idx__loginclient ON userfeatures(loginclient);
 CREATE INDEX userfeatures__idx__musiconhold ON userfeatures(musiconhold);
-CREATE INDEX userfeatures__idx__internal ON userfeatures(internal);
 CREATE INDEX userfeatures__idx__commented ON userfeatures(commented);
-CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,name);
-CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
-
-INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
-                                 30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,NULL,0,'');
-
 
 DROP TABLE useriax;
 CREATE TABLE useriax (
@@ -1772,7 +1825,7 @@ CREATE TABLE usersip (
  mailbox varchar(80),
  subscribemwi tinyint(1) NOT NULL DEFAULT 1,
  buggymwi tinyint(1),
- "call-limit" tinyint unsigned NOT NULL DEFAULT 0,
+ 'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
  callerid varchar(160),
  fullname varchar(80),
  cid_number varchar(80),
@@ -1822,6 +1875,7 @@ CREATE TABLE usersip (
  regseconds integer unsigned NOT NULL DEFAULT 0,
  regserver varchar(20),
  lastms varchar(15) NOT NULL DEFAULT '',
+ parkinglot int(10) DEFAULT NULL,
  protocol char(3) NOT NULL DEFAULT 'sip',
  category varchar(5) NOT NULL,
  outboundproxy varchar(1024),
@@ -1837,14 +1891,6 @@ CREATE INDEX usersip__idx__host_port ON usersip(host,port);
 CREATE INDEX usersip__idx__ipaddr_port ON usersip(ipaddr,port);
 CREATE INDEX usersip__idx__lastms ON usersip(lastms);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
-
-INSERT INTO usersip VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
-                            NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
-                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-                            'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',NULL,0);
-
 
 DROP TABLE voicemail;
 CREATE TABLE voicemail (
