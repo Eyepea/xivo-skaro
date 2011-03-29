@@ -26,6 +26,7 @@ import ConfigParser
 import contextlib
 import logging
 import os
+import re
 import shutil
 import tarfile
 import weakref
@@ -825,9 +826,24 @@ class PluginManager(object):
     
     @staticmethod
     def _clean_long_header(value):
-        # used to remove \n (and \r) that are present when using line
-        # continuation with ConfigParser...
-        return value.replace('\n', ' ').replace('\r', '')
+        # used to remove \n that are present when using line continuation
+        # with ConfigParser...
+        return value.replace('\n', ' ')
+    
+    _RAW_TARGET_REGEX = re.compile(r'^\s*([^,]+?)\s*,\s*([^,]+?)\s*,\s*(.+?)\s*$')
+    
+    def _parse_raw_targets(self, raw_targets):
+        # Return a list of (vendor, model, version) tuple from a string
+        # in format "xxx, xxx, xxx [ | ...] "
+        def aux():
+            tokens = raw_targets.split('|')
+            for token in tokens:
+                m = self._RAW_TARGET_REGEX.match(token)
+                if not m:
+                    raise ValueError('target token "%s" doesn\'t match regex' % token)
+                else:
+                    yield m.groups()
+        return list(aux())
     
     def list_installable(self):
         """Return a dictionary of installable plugins, where keys are
@@ -839,6 +855,8 @@ class PluginManager(object):
           description -- the description of the package
           dsize -- the download size of the package, in bytes
           sha1sum -- an hex representation of the sha1sum of the package
+          targets -- a list of (vendor, model, version) tuple representing
+            devices that the plugin target
         
         Raise an Exception if the plugin definition file is invalid/corrupted.
         If this file is absent, no error is raised, and an empty dictionary
@@ -861,11 +879,13 @@ class PluginManager(object):
                     description = self._clean_long_header(config.get(section, 'description'))
                     dsize = config.get(section, 'dsize')
                     sha1sum = config.get(section, 'sha1sum')
+                    targets = self._parse_raw_targets(config.get(section, 'targets'))
                     installable_plugins[id] = {'filename': filename,
                                                'version': version,
                                                'description': description,
                                                'dsize': dsize,
-                                               'sha1sum': sha1sum}
+                                               'sha1sum': sha1sum,
+                                               'targets': targets}
                 else:
                     logger.warning('Unknown section name %s in plugin definition file', section)
         return installable_plugins

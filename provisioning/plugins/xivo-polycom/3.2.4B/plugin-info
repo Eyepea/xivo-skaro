@@ -3,3 +3,18 @@ version: 0.1.6
 description: Plugin for Polycom IP320, IP321, IP330, IP331, IP335, IP430,
              IP450, IP550, IP560, IP650, IP670, IP5000, IP6000, IP7000 and
              VVX1500 in version 3.2.4.0267.
+targets: Polycom, SPIP320, 3.2.4.0267 |
+         Polycom, SPIP321, 3.2.4.0267 |
+         Polycom, SPIP330, 3.2.4.0267 |
+         Polycom, SPIP331, 3.2.4.0267 |
+         Polycom, SPIP335, 3.2.4.0267 |
+         Polycom, SPIP430, 3.2.4.0267 |
+         Polycom, SPIP450, 3.2.4.0267 |
+         Polycom, SPIP550, 3.2.4.0267 |
+         Polycom, SPIP560, 3.2.4.0267 |
+         Polycom, SPIP650, 3.2.4.0267 |
+         Polycom, SPIP670, 3.2.4.0267 |
+         Polycom, SSIP5000, 3.2.4.0267 |
+         Polycom, SSIP6000, 3.2.4.0267 |
+         Polycom, SSIP7000, 3.2.4.0267 |
+         Polycom, VVX1500, 3.2.4.0244

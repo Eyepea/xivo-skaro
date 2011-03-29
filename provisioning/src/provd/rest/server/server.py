@@ -460,6 +460,7 @@ class _ListInstallxxxxResource(Resource):
         try:
             pkgs = fun()
         except Exception, e:
+            logger.error('Error while listinging install packages', exc_info=True)
             return respond_error(request, e, http.INTERNAL_SERVER_ERROR)
         else:
             content = {u'pkgs': pkgs}

@@ -2,3 +2,11 @@
 version: 0.1.1
 description: Plugin for Aastra 6730i, 6731i, 6751i, 6753i, 6755i and 6757i in
              version 2.6.0.2010.
+targets: Aastra, 6730i, 2.6.0.2010 |
+         Aastra, 6731i, 2.6.0.2010 |
+         Aastra, 6751i, 2.6.0.2010 |
+         Aastra, 6753i, 2.6.0.2010 |
+         Aastra, 6755i, 2.6.0.2010 |
+         Aastra, 6757i, 2.6.0.2010 |
+         Aastra, 9143i, 2.6.0.2010 |
+         Aastra, 9480i, 2.6.0.2010

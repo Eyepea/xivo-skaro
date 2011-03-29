@@ -7,17 +7,17 @@
 ;; description -- the description of the plugin
 ;; filename -- the filename of the plugin file to download
 ;; version -- the plugin version
+;; dsize -- the download size
+;; sha1sum -- the sha1sum of the download
+;; targets -- list of targeted devices in format <vendor>, <model>, <version> [ | ... ]
 
-;; Here's 2 examples:
-
-[plugin_null]
-description: Plugin that offers no configuration service and rejects TFTP/HTTP
-             requests.
-filename: null-1.0.tar.bz2
-version: 1.0
+;; Here's 1 examples:
 
 [plugin_xivo-aastra-2.6.0.2010]
 description: Plugin for Aastra 6730i, 6731i, 6751i, 6753i, 6755i and 6757i in
              version 2.6.0.2010.
 filename: xivo-aastra-2.6.0.2010-0.1.tar.bz2
 version: 0.1
+targets: Aastra, 6730i, 2.6.0.2010 | Aastra, 6731i, 2.6.0.2010
+dsize: 30229
+sha1sum: 1767d493dfa5a58cb5408ff3ea510ca69a57d36a

@@ -1,3 +1,4 @@
 [general]
 version: 0.1
-description: Plugin for Cisco PAP2T in version 5.1.6.
+description: Plugin for Cisco SPA8800 in version 6.1.7.
+targets: Cisco, SPA8000, 6.1.7

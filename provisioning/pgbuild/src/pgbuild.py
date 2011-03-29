@@ -245,8 +245,9 @@ def _get_package_name(package):
         tar_package.close()
 
 
-def _get_package_description_and_version(package, package_name):
-    # Return a tuple (version, description)
+def _get_package_plugin_info(package, package_name):
+    # Return a dictionary representing the standardized content of the
+    # plugin-info file
     tar_package = tarfile.open(package)
     try:
         plugin_info_name = os.path.join(package_name, INFO_FILENAME)
@@ -258,9 +259,10 @@ def _get_package_description_and_version(package, package_name):
         try:
             config = ConfigParser.RawConfigParser()
             config.readfp(fobj, plugin_info_name)
-            description = config.get('general', 'description')
-            version = config.get('general', 'version')
-            return description.replace('\n', ' '), version 
+            result = {}
+            for option in ['description', 'version', 'targets']:
+                result[option] = config.get('general', option).replace('\n', ' ')
+            return result
         except ConfigParser.Error:
             print >>stderr, "error: package '%s' has invalid plugin-info file" % package
             exit(1)
@@ -285,8 +287,7 @@ def _get_package_info(package):
     result = {}
     result['filename'] = _get_package_filename(package)
     result['name'] = _get_package_name(package)
-    result['description'], result['version'] = \
-        _get_package_description_and_version(package, result['name'])
+    result.update(_get_package_plugin_info(package, result['name']))
     result['dsize'] = _get_package_dsize(package)
     result['sha1sum'] = _get_package_sha1sum(package)
     return result
@@ -346,7 +347,7 @@ def create_db_op(opts, args, src_dir, dest_dir):
             print "  Adding package '%s' to db file..." % package
             fobj.write('\n')
             fobj.write('[plugin_%s]\n' % package_info['name'])
-            for key in ['filename', 'version', 'description', 'dsize', 'sha1sum']:
+            for key in ['filename', 'version', 'description', 'targets', 'dsize', 'sha1sum']:
                 fobj.write('%s: %s\n' % (key, package_info[key]))
     finally:
         fobj.close()

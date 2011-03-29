@@ -2,3 +2,9 @@
 version: 0.1
 description: Plugin for Cisco 7902G, 7905G, 7910G, 7912G, 7940G and 7960G in
              different versions of the SCCP software.
+targets: Cisco, 7902G, 8.0.2/SCCP |
+         Cisco, 7905G, 8.0.3/SCCP |
+         Cisco, 7910G, 5.0.7/SCCP |
+         Cisco, 7912G, 8.0.4/SCCP |
+         Cisco, 7940G, 8.1.2/SCCP |
+         Cisco, 7960G, 8.1.2/SCCP

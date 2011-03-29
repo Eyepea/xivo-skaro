@@ -43,8 +43,8 @@ def build_pap2t_5_1_6(path):
                 'pap2t-5.1.6/', path])
 
 
-@target('spa2102-5.2.10', 'xivo-cisco-spa2102-5.2.10')
-def build_spa2102_5_2_10(path):
+@target('spa2102-5.2.12', 'xivo-cisco-spa2102-5.2.12')
+def build_spa2102_5_2_12(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 'common/', path])
     

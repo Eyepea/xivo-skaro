@@ -1,3 +1,4 @@
 [general]
 version: 0.1.1
 description: Plugin for Aastra 6739i in version 3.0.1.2031.
+targets: Aastra, 6739i, 3.0.1.2031

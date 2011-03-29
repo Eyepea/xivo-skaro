@@ -2,3 +2,10 @@
 version: 0.1
 description: Plugin for Snom 300, 320, 360, 370, 820, 821 and 870 in version
              8.4.18.
+targets: Snom, 300, 8.4.18 |
+         Snom, 320, 8.4.18 |
+         Snom, 360, 8.4.18 |
+         Snom, 370, 8.4.18 |
+         Snom, 820, 8.4.18 |
+         Snom, 821, 8.4.18 |
+         Snom, 870, 8.4.18
