@@ -132,9 +132,24 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
-
 	if(xivo_user::chk_acl('pbx_settings') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxsettings'),'</dt>';
+
+		if(xivo_user::chk_acl('pbx_settings','devices') === true):
+			echo	'<dd id="mn-pbx-settings--devices">',
+				$url->href_html($this->bbf('mn_left_pbxsettings-devices'),
+						'service/ipbx/pbx_settings/devices',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('pbx_settings','lines') === true):
+			echo	'<dd id="mn-pbx-settings--lines">',
+				$url->href_html($this->bbf('mn_left_pbxsettings-lines'),
+						'service/ipbx/pbx_settings/lines',
+						'act=list'),
+				'</dd>';
+		endif;
 
 		if(xivo_user::chk_acl('pbx_settings','users') === true):
 			echo	'<dd id="mn-pbx-settings--users">',
@@ -281,6 +296,14 @@ $dhtml = &$this->get_module('dhtml');
 			echo	'<dd id="mn-cost_center--operator">',
 				$url->href_html($this->bbf('mn_left_cost_center-operator'),
 						'service/ipbx/cost_center/operator',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('cost_center','servicesgroup') === true):
+			echo	'<dd id="mn-cost_center--servicesgroup">',
+				$url->href_html($this->bbf('mn_left_cost_center-servicesgroup'),
+						'service/ipbx/cost_center/servicesgroup',
 						'act=list'),
 				'</dd>';
 		endif;

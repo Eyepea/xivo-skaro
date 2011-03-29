@@ -77,6 +77,10 @@ switch($step)
 		$dbbackend = dwho_array_intersect_key(array_flip($element['backend']['value']),
 						      dwho_gat::get('datastorage'));
 
+		dwho_var_dump($info);
+		dwho_var_dump($element);
+		dwho_var_dump($dbbackend);
+
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('dbbackend',$dbbackend);

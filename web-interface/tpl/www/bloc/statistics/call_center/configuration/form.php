@@ -87,9 +87,7 @@ if($this->get_var('fm_save') === false)
 				<div class="b-form">
 					<table>
 					<tr>
-						<td align="right">
-							<?=$this->bbf('fm_hour_start')?>
-						<td>
+						<td align="right"><?=$this->bbf('fm_hour_start')?></td>
 						<td>
 <?php
 	echo	$form->select(array('name'		=> 'workhour_start[h]',
@@ -113,9 +111,7 @@ if($this->get_var('fm_save') === false)
 						</td>
 					</tr>
 					<tr>
-						<td align="right">
-							<?=$this->bbf('fm_hour_end')?>
-						<td>
+						<td align="right"><?=$this->bbf('fm_hour_end')?></td>
 						<td>
 <?php
 	echo	$form->select(array('name'		=> 'workhour_end[h]',

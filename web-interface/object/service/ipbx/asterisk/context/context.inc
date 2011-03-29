@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'context';
+	var $_dso			= null;
+	var $_name			= 'context';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
@@ -73,7 +73,28 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 		return(parent::edit($id,$arr));
 	}
 
-	function search($value,$disable=null,$order=null,$limit=null)
+	function get_all($disable=null,$order=null,$limit=null,$assoc=false,$type=null)
+	{
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if (is_null($type) === false)
+		{
+			$arr = array('contexttype' => $type);
+			$list = $this->_dso->get_all_where($arr,$disable,$order,$limit);
+		}
+		else
+			$list = $this->_dso->get_all($disable,$order,$limit);
+
+		if(isset($list[0]) === false)
+			return(false);
+		else if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		return($this->_mk_list_assoc_prepare($list,$assoc,true));
+	}
+
+	function search($value,$disable=null,$order=null,$limit=null,$type=null)
 	{
 		if(($list = $this->_dso->search($value,$disable,$order,$limit)) === false)
 			return(false);
@@ -91,7 +112,7 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all_except($name=null,$order=null,$limit=null,$assoc=false)
+	function get_all_except($name=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
 		if(dwho_has_len($name) === false)
 			return($this->get_all(null,true,$order,$limit,$assoc));

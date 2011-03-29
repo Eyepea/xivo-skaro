@@ -45,6 +45,7 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 	{
 		$data['initialized'] = true;
 		$data['commented'] = (bool) $data['commented'];
+		$data['identity'] = strtoupper($data['protocol']).'/'.$data['name'];
 
 		return($data);
 	}

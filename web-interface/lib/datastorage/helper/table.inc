@@ -302,7 +302,10 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 						$i++;
 					}
 					else if($i > 0)
+					{
+						dwho_report::push('debug', 'Field '.$key2.' already exist on table '.$this->_table.' File: '.__FILE__.' Line: '.__LINE__);
 						return(false);
+					}
 				}
 
 				if($i === 0)

@@ -4,6 +4,9 @@ Utilisateurs > Ajouter
 ; smenu_general
 Général
 
+; smenu_lines
+Lignes
+
 ; smenu_voicemail
 Messagerie vocale
 
@@ -19,8 +22,8 @@ Signalisation
 ; smenu_groups
 Groupes
 
-; smenu_autoprov
-Approvisionnement
+; smenu_funckeys
+Touches
 
 ; smenu_advanced
 Avancé
@@ -28,26 +31,23 @@ Avancé
 ; smenu_rightcalls
 Droits d'appels
 
-; smenu_t38
-T38
-
 ; fm_userfeatures_firstname
 Prénom :
 
 ; fm_userfeatures_lastname
 Nom :
 
-; fm_protocol_name
-Identifiant :
+; fm_userfeatures_entity
+Entité :
 
-; fm_protocol_secret
-Mot de passe :
+; hlp_fm_userfeatures_entity
+Vous ne pouvez pas changer lorsque des lignes sont associées à l'utilisateur.
 
 ; fm_userfeatures_number
 Numéro de téléphone :
 
-; fm_protocol_interface
-Interface :
+; fm_userfeatures_language 
+Langue :
 
 ; fm_userfeatures_ringseconds
 Temps de sonnerie :
@@ -58,50 +58,68 @@ Illimité
 ; fm_userfeatures_ringseconds-opt
 %s secondes
 
+; fm_userfeatures_timezone
+Fuseau horaire : 
+
+; fm_userfeatures_callerid
+Nom d'appel :
+
 ; fm_userfeatures_simultcalls
 Nombre d'appels simultanés :
 
-; fm_protocol_protocol
-Protocole :
+; fm_userfeatures_ringintern
+Sonnerie d'un appel interne :
 
-; fm_protocol_protocol-opt(sip)
-SIP
+; fm_userfeatures_ringextern
+Sonnerie d'un appel externe :
 
-; fm_protocol_protocol-opt(iax)
-IAX
+; fm_userfeatures_ringgroup
+Sonnerie de groupe :
 
-; fm_protocol_protocol-opt(sccp)
-SCCP
+; fm_userfeatures_ringforward
+Sonnerie d'un transfert :
 
-; fm_protocol_protocol-opt(custom)
-Personnalisé
+; fm_userfeatures_rightcallcode
+Code droits d'appel :
 
-; fm_protocol_context
-Contexte :
+; fm_userfeatures_alarmclock
+Heure de réveil :
+
+; fm_userfeatures_pitch 
+Déformation de la voix :
+
+; fm_userfeatures_pitchdirection-opt(rx)
+Réception
+
+; fm_userfeatures_pitchdirection-opt(tx)
+Transmission
+
+; fm_userfeatures_pitchdirection-opt(both)
+Dans les 2 sens
+
+; fm_userfeatures_pitch-opt(highest)
+Très très aigu
+
+; fm_userfeatures_pitch-opt(higher)
+Très aigu
+
+; fm_userfeatures_pitch-opt(high)
+Aigu
+
+; fm_userfeatures_pitch-opt(low)
+Grave
+
+; fm_userfeatures_pitch-opt(lower)
+Très grave
+
+; fm_userfeatures_pitch-opt(lowest)
+Très très grave
 
 ; create_context
 Créer un contexte
 
 ; fm_userfeatures_musiconhold
 Musique d'attente :
-
-; fm_protocol_language
-Langue :
-
-; fm_protocol_nat
-NAT :
-
-; fm_protocol_nat-opt(no)
-Non
-
-; fm_protocol_nat-opt(yes)
-Oui
-
-; fm_protocol_nat-opt(never)
-Jamais
-
-; fm_protocol_nat-opt(route)
-Route
 
 ; fm_userfeatures_voicemailtype
 Messagerie vocale :
@@ -150,12 +168,6 @@ Joindre le fichier audio :
 
 ; fm_voicemail_deletevoicemail
 Supprimer message après notification :
-
-; fm_protocol_subscribemwi
-Vérifier la présence de nouveaux messages :
-
-; fm_protocol_buggymwi
-Vérification, non conforme à la RFC, de nouveaux messages :
 
 ; fld-client
 XIVO Client
@@ -238,168 +250,6 @@ Renvoi inconditionnel :
 ; fm_userfeatures_destunc
 Destination :
 
-; fm_protocol_progressinband
-Evénement RING dans la bande :
-
-; fm_protocol_progressinband-opt(no)
-Non
-
-; fm_protocol_progressinband-opt(yes)
-Oui
-
-; fm_protocol_progressinband-opt(never)
-Jamais
-
-; fm_protocol_dtmfmode
-DTMF :
-
-; fm_protocol_dtmfmode-opt(rfc2833)
-RFC 2833
-
-; fm_protocol_dtmfmode-opt(inband)
-InBand
-
-; fm_protocol_dtmfmode-opt(outofband)
-Outofband
-
-; fm_protocol_dtmfmode-opt(info)
-INFO
-
-; fm_protocol_dtmfmode-opt(auto)
-Auto
-
-; fm_protocol_rfc2833compensate
-Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
-
-; fm_protocol_qualify
-Supervision de la latence :
-
-; fm_protocol_qualify-opt(no)
-Non
-
-; fm_protocol_qualify-opt(yes)
-Oui
-
-; fm_protocol_qualify-opt
-%s millisecondes
-
-; fm_protocol_qualifysmoothing
-Calcul de la durée moyenne de la latence :
-
-; fm_protocol_qualifyfreqok
-Fréquence de vérification quand tout fonctionne :
-
-; fm_protocol_qualifyfreqnotok
-Fréquence de vérification quand il y a un problème :
-
-; fm_protocol_qualifyfreq-opt-milliseconds
-%s millisecondes
-
-; fm_protocol_qualifyfreq-opt-second
-1 seconde
-
-; fm_protocol_qualifyfreq-opt-seconds
-%s secondes
-
-; fm_protocol_qualifyfreq-opt-minute
-1 minute
-
-; fm_protocol_qualifyfreq-opt-minute-seconds
-%s min. %s sec.
-
-; fm_protocol_qualifyfreq-opt-minutes
-%s minutes
-
-; fm_protocol_qualifyfreq-opt-minutes-seconds
-%s min. %s sec.
-
-; fm_protocol_rtptimeout
-Délai d'attente pour le RTP :
-
-; fm_protocol_rtptimeout-opt(0)
-Désactivé
-
-; fm_protocol_rtptimeout-opt
-%s secondes
-
-; fm_protocol_rtpholdtimeout
-Délai du RTP sur attente :
-
-; fm_protocol_rtpholdtimeout-opt(0)
-Désactivé
-
-; fm_protocol_rtpholdtimeout-opt
-%s secondes
-
-; fm_protocol_rtpkeepalive
-Présence du RTP :
-
-; fm_protocol_rtpkeepalive-opt(0)
-Désactivée
-
-; fm_protocol_rtpkeepalive-opt
-%s secondes
-
-; fm_protocol_allowtransfer
-Autoriser les transferts :
-
-; fm_protocol_autoframing
-Frame automatique :
-
-; fm_protocol_videosupport
-Support vidéo :
-
-; fm_protocol_maxcallbitrate
-Bit rate maximal pour les appels vidéo :
-
-; fm_protocol_g726nonstandard
-Activer le support du G.726 non standard :
-
-; fm_protocol_jitterbuffer
-Activer le Jitter Buffer :
-
-; fm_protocol_forcejitterbuffer
-Forcer le Jitter Buffer :
-
-; fm_protocol_codecpriority
-Priorité des codecs :
-
-; fm_protocol_codecpriority-opt(disabled)
-Désactivée
-
-; fm_protocol_codecpriority-opt(host)
-Hôte
-
-; fm_protocol_codecpriority-opt(caller)
-Appelant
-
-; fm_protocol_codecpriority-opt(reqonly)
-Seulement par requête
-
-; fm_codec-custom
-Personnaliser les codecs :
-
-; fm_protocol_codec-disallow
-Codecs désactivés :
-
-; fm_protocol_codec-disallow-opt(all)
-Tous
-
-; fm_protocol_codec-allow
-Codecs activés :
-
-; bt_upcodec
-Monter un ou plusieurs codecs
-
-; bt_downcodec
-Descendre un ou plusieurs codecs
-
-; bt_incodec
-Ajouter un ou plusieurs codecs ->
-
-; bt_outcodec
-<- Enlever un ou plusieurs codecs
-
 ; fld-callgroup
 Groupes
 
@@ -444,21 +294,6 @@ Ajouter une ou plusieurs files d'attente ->
 
 ; bt_outqueue
 <- Enlever une ou plusieurs files d'attente
-
-; fm_autoprov_modact
-Mode :
-
-; fm_autoprov_modact-opt(guest)
-Initialiser
-
-; fm_autoprov_modact-opt(prov)
-Approvisionner
-
-; fm_autoprov_vendormodel
-Modèle :
-
-; fm_autoprov_macaddr
-Adresse MAC :
 
 ; col_phonefunckey-fknum
 Touche
@@ -628,9 +463,6 @@ Activée
 ; phonefunckey_no-user
 Aucun utilisateur trouvé
 
-; fm_protocol_callerid
-Nom d'appel :
-
 ; fm_userfeatures_outcallerid
 Nom d'appel sortant :
 
@@ -643,107 +475,8 @@ Anonyme
 ; fm_userfeatures_outcallerid-opt(custom)
 Personnaliser
 
-; fm_protocol_sendani
-Envoyer la présentation du nom et numéro d'appel :
-
 ; fm_userfeatures_preprocess-subroutine
 Sous-routine de prétraitement :
-
-; fm_protocol_insecure
-Insécurité :
-
-; fm_protocol_insecure-opt(no)
-Non
-
-; fm_protocol_insecure-opt(port)
-Port
-
-; fm_protocol_insecure-opt(invite)
-Invite
-
-; fm_protocol_insecure-opt(all)
-Tout
-
-; fm_protocol_host-type
-Type d'adressage IP :
-
-; fm_protocol_host-type-opt(dynamic)
-Dynamique
-
-; fm_protocol_host-type-opt(static)
-Statique
-
-; fm_protocol_mask
-Masque réseau :
-
-; fm_protocol_permit
-Adresse IP ou masque sous-réseau autorisés :
-
-; fm_protocol_deny
-Adresse IP ou masque sous-réseau refusés :
-
-; fm_protocol_trustrpid
-Faire confiance au Remote-Party-ID :
-
-; fm_protocol_sendrpid
-Envoyer le Remote-Party-ID :
-
-; fm_protocol_allowsubscribe
-Activer le support des souscriptions :
-
-; fm_protocol_allowoverlap
-Activer le chevauchement :
-
-; fm_protocol_promiscredir
-Support des redirections 302 :
-
-; fm_protocol_usereqphone
-Ajouter ";user=phone" dans l'URI :
-
-; fm_protocol_canreinvite
-Invite :
-
-; fm_protocol_canreinvite-opt(no)
-Non
-
-; fm_protocol_canreinvite-opt(yes)
-Oui
-
-; fm_protocol_canreinvite-opt(update)
-Mise à jour
-
-; fm_protocol_canreinvite-opt(nonat)
-Sans NAT
-
-; fm_protocol_canreinvite-opt(update-nonat)
-Mise à jour sans NAT
-
-; fm_protocol_fromuser
-Réécriture du champ From-User :
-
-; fm_protocol_fromdomain
-Réécriture du champ From-Domain :
-
-; fm_protocol_maxauthreq
-Maximum AUTHREQs autorisées :
-
-; fm_protocol_maxauthreq-opt(0)
-Désactivé
-
-; fm_protocol_maxauthreq-opt
-%s
-
-; fm_protocol_adsi
-Activer le support de l'ADSI :
-
-; fm_protocol_amaflags
-Drapeau de facturation :
-
-; fm_protocol_accountcode
-Numéro d'acompte :
-
-; fm_protocol_useclientcode
-Code client :
 
 ; fm_userfeatures_description
 Description :
@@ -756,18 +489,6 @@ Ajouter un ou plusieurs droits d'appels ->
 
 ; create_rightcall
 Créer un droit d'appel
-
-; fm_protocol_t38pt-udptl
-Activer le T38 (UDPTL) :
-
-; fm_protocol_t38pt-rtp
-Activer le T38 (RTP) :
-
-; fm_protocol_t38pt-tcp
-Activer le T38 (TCP) :
-
-; fm_protocol_t38pt-usertpsource
-Utiliser l'adresse IP source comme destination pour le T38 :
 
 ; smenu_queueskills
 Compétences
@@ -796,95 +517,8 @@ Le poids saisi n'est pas un nombre entier
 ; error_fm_queueskill_weight(unbound)
 Le poids doit être un nombre entier compris entre 0 et 100
 
-; column_addon
-Modules d'extension
-
-; smenu_sccp
-Paramètres SCCP
-
 ; addon_description
 Ajoutez ici les modules d'extension connectés au téléphone, dans l'ordre de gauche à droite.
-
-; fm_protocol_adhocnumber
-Numéro adhoc: 
-
-; fm_protocol_video_cos
-COS vidéo: 
-
-; fm_protocol_video_tos
-TOS vidéo: 
-
-; fm_protocol_audio_cos
-COS audio: 
-
-; fm_protocol_audio_tos
-TOS audio: 
-
-; fm_protocol_secondary_dialtone_tone
-tonalité d'appel secondaire: 
-
-; fm_protocol_secondary_dialtone_digits
-Nombre de chiffres de la tonalité secondaire: 
-
-; fm_protocol_trustphoneip
-Faire confiance à l'IP du téléphone: 
-
-; fm_protocol_imageversion
-Version du firmware: 
-
-; fm_protocol_tzoffset
-Décalage par rapport au fuseau horaire: 
-
-; fm_protocol_incominglimit
-Limitation des appels entrants: 
-
-; fm_protocol_silencesuppression
-Suppression des silences: 
-
-; fm_protocol_echocancel
-Suppression de l'echo: 
-
-; fm_protocol_mwioncall
-MWI sur appel entrant: 
-
-; fm_protocol_mwilamp
-style MWI: 
-
-; fm_protocol_privacy
-Notification de la présence téléphonique: 
-
-; fm_protocol_private
-touche «notification de présence»: 
-
-; fm_protocol_earlyrtp
-RTP en avance: 
-
-; fm_protocol_directrtp
-RTP direct: 
-
-; fm_protocol_dnd
-Touche NPD: 
-
-; fm_protocol_pickupmodeanswer
-Décrocher l'appel avant interception: 
-
-; fm_protocol_pickupcontext
-Contexte d'interception directe: 
-
-; fm_protocol_pickupexten
-Interception directe: 
-
-; fm_protocol_cfwdnoanswer
-Transfert d'appel sur non réponse: 
-
-; fm_protocol_cfwdbusy
-Transfert d'appel sur occupation: 
-
-; fm_protocol_cfwdall
-Transfert d'appel inconditionnel: 
-
-; fm_protocol_park
-Parking des appels: 
 
 ; fm_earlyrtp(none)
 Aucun
@@ -913,9 +547,6 @@ Flash
 ; fm_mwilamp(blink)
 Clignotant (blink)
 
-; fm_protocol_keepalive
-Vérification de présence: 
-
 ; fm_privacy(on)
 Activée
 
@@ -928,12 +559,10 @@ Désactivée
 ; no_disp2
 Aucun module d'extension
 
-
 ; hlp_fm_park
 Autorise le parcage des appels
 
 ; hlp_fm_cfwdall
-
 Activate callforward key
 
 ; hlp_fm_cfwdbusy
@@ -1137,41 +766,47 @@ Intrusion dans la conversation (ligne partagée, crée une conférence)
 
 ; softkey_backjoin
 
+; smenu_schedule
+Horaires
 
-; fm_protocol_requirecalltoken
-Validation des jetons d'appel :
+; fm_user_schedule
+Horaires :
 
-; fm_protocol_requirecalltoken-opt(no)
-Désactivée
+; fm_userfeatures_servicesgroup
+Groupde services : 
 
-; fm_protocol_requirecalltoken-opt(yes)
-Activée
+; col_line-protocol
+Protocole
 
-; fm_userfeatures_timezone
-Fuseau horaire : 
+; col_line-context
+Contexte
 
-;;; asterisk 1.8 fields
+; col_line-number
+Numéro
 
-; fm_protocol-transport
-Protocoles réseau : 
+; col_line-rules_type
+Type
 
-; hlp_fm_protocol-transport
-Config asterisk: transport
+; col_line-rules_order
+Ordre
 
-; fm_protocol-remotesecret
-Mot de passe distant : 
+; col_line-rules_time
+Temps
 
-; hlp_fm_protocol-remotesecret
-Config asterisk: remotesecret
+; col_line-rules_group
+Groupe
 
-; fm_protocol-directmedia
-Rediriger le flux RTP de pair à pair : 
+; no_lines-line
+Aucune ligne enregistrée
 
-; hlp_fm_protocol-directmedia
-Config asterisk: directmedia
+; fm_type-opt(simul)
+Simultané
 
-; fm_protocol-directmedia-opt(no)
-Non
+; no_lines_free 
+Aucune ligne éxistante de libre
+
+; fm_lines_free
+Lignes disponible :
 
 ; fm_protocol-directmedia-opt(yes)
 Oui
@@ -1377,3 +1012,4 @@ Parking :
 
 ; hlp_fm_parkinglot
 Asterisk: parkinglot
+>>>>>>> .r10443

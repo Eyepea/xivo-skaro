@@ -109,6 +109,9 @@ $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';
 $array['service/ipbx/pbx_settings/meetme'] = 'service/ipbx/index.php/pbx_settings/meetme/';
 $array['service/ipbx/pbx_settings/voicemail'] = 'service/ipbx/index.php/pbx_settings/voicemail/';
+$array['service/ipbx/pbx_settings/devices'] = 'service/ipbx/index.php/pbx_settings/devices/';
+$array['service/ipbx/pbx_settings/lines'] = 'service/ipbx/index.php/pbx_settings/lines/';
+
 $array['service/ipbx/call_management/incall'] = 'service/ipbx/index.php/call_management/incall/';
 $array['service/ipbx/call_management/outcall'] = 'service/ipbx/index.php/call_management/outcall/';
 $array['service/ipbx/call_management/rightcall'] = 'service/ipbx/index.php/call_management/rightcall/';
@@ -116,7 +119,9 @@ $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call
 $array['service/ipbx/call_management/pickup'] = 'service/ipbx/index.php/call_management/pickup/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
+
 $array['service/ipbx/cost_center/operator'] = 'service/ipbx/index.php/cost_center/operator/';
+$array['service/ipbx/cost_center/servicesgroup'] = 'service/ipbx/index.php/cost_center/servicesgroup/';
 
 
 $array['service/ipbx/dundi/general'] = 'service/ipbx/index.php/dundi/general';
@@ -125,24 +130,29 @@ $array['service/ipbx/dundi/general'] = 'service/ipbx/index.php/dundi/general';
 $array['service/ipbx/trunk_management/sip'] = 'service/ipbx/index.php/trunk_management/sip/';
 $array['service/ipbx/trunk_management/iax'] = 'service/ipbx/index.php/trunk_management/iax/';
 $array['service/ipbx/trunk_management/custom'] = 'service/ipbx/index.php/trunk_management/custom/';
+
 $array['service/ipbx/pbx_services/sounds'] = 'service/ipbx/index.php/pbx_services/sounds/';
 $array['service/ipbx/pbx_services/musiconhold'] = 'service/ipbx/index.php/pbx_services/musiconhold/';
 $array['service/ipbx/pbx_services/extenfeatures'] = 'service/ipbx/index.php/pbx_services/extenfeatures/';
 $array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
 $array['service/ipbx/pbx_services/handynumbers'] = 'service/ipbx/index.php/pbx_services/handynumbers/';
 $array['service/ipbx/pbx_services/phonebook'] = 'service/ipbx/index.php/pbx_services/phonebook/';
+
 $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/system_management/backupfiles/';
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
 $array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
+
 $array['service/ipbx/call_center/queues'] = 'service/ipbx/index.php/call_center/queues/';
 $array['service/ipbx/call_center/queuepenalty'] = 'service/ipbx/index.php/call_center/queuepenalty/';
 $array['service/ipbx/call_center/agents'] = 'service/ipbx/index.php/call_center/agents/';
 $array['service/ipbx/call_center/queueskills'] = 'service/ipbx/index.php/call_center/queueskills/';
 $array['service/ipbx/call_center/queueskillrules'] = 'service/ipbx/index.php/call_center/queueskillrules/';
+
 $array['service/ipbx/control_system/logfiles'] = 'service/ipbx/index.php/control_system/logfiles/';
 $array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_system/reload/';
 $array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_system/restart/';
+
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
 $array['service/ipbx/web_services/phonebook/menu'] = 'service/ipbx/web_services.php/phonebook/menu/';
 

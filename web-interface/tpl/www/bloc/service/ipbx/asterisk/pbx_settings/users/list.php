@@ -32,10 +32,6 @@ if(($search = (string) $this->get_var('search')) !== ''):
 	$param['search'] = $search;
 endif;
 
-if(($context = $this->get_var('context')) !== ''):
-	$param['context'] = $context;
-endif;
-
 $page = $url->pager($pager['pages'],
 		    $pager['page'],
 		    $pager['prev'],
@@ -51,25 +47,12 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 <form action="#" name="fm-users-list" method="post" accept-charset="utf-8">
-<?php
-	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
-				    'value'	=> DWHO_SESS_ID)),
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>
+<?=$form->hidden(array('name' => 'act','value' => $act))?>
+<?=$form->hidden(array('name' => 'reboot','value' => ''))?>
+<?=$form->hidden(array('name' => 'page','value' => $pager['page']))?>
+<?=$form->hidden(array('name' => 'search','value' => ''))?>
 
-		$form->hidden(array('name'	=> 'act',
-				    'value'	=> $act)),
-
-		$form->hidden(array('name'	=> 'reboot',
-				    'value'	=> '')),
-
-		$form->hidden(array('name'	=> 'page',
-				    'value'	=> $pager['page'])),
-
-		$form->hidden(array('name'	=> 'search',
-				    'value'	=> '')),
-
-		$form->hidden(array('name'	=> 'context',
-				    'value'	=> ''));
-?>
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -86,46 +69,7 @@ $page = $url->pager($pager['pages'],
 					$this->bbf('col_sort_fullname'));
 ?>
 		</th>
-		<th class="th-center">
-			<span class="title <?= $sort[1]=='protocol'?'underline':''?>">
-				<?=$this->bbf('col_protocol');?>
-			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_protocol'), 'border="0"'),
-					'service/ipbx/pbx_settings/users',
-					array('act'	=> 'list', 'sort' => 'protocol'),
-					null,
-					$this->bbf('col_sort_protocol'));
-?>
-		</th>
-		<th class="th-center">
-			<span class="title, <?= $sort[1]=='name'?'underline':''?>">
-				<?=$this->bbf('col_name');?>
-			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_name'), 'border="0"'),
-					'service/ipbx/pbx_settings/users',
-					array('act'	=> 'list', 'sort' => 'name'),
-					null,
-					$this->bbf('col_sort_name'));
-?>
-		</th>
-		<th class="th-center">
-			<span class="title <?= $sort[1]=='number'?'underline':''?>">
-				<?=$this->bbf('col_phone');?>
-			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_phone'), 'border="0"'),
-					'service/ipbx/pbx_settings/users',
-					array('act'	=> 'list', 'sort' => 'number'),
-					null,
-					$this->bbf('col_sort_phone'));
-?>
-		</th>
-		<th class="th-center"><?=$this->bbf('col_provisioning');?></th>
+		<th class="th-center xspan"><?=$this->bbf('col_nb_line');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -133,7 +77,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_user');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_user');?></td>
 	</tr>
 <?php
 	else:
@@ -143,8 +87,6 @@ $page = $url->pager($pager['pages'],
 
 			if($ref['commented'] === true):
 				$icon = 'disable';
-			elseif($ref['initialized'] === false):
-				$icon = 'unavailable';
 			else:
 				$icon = 'enable';
 			endif;
@@ -168,10 +110,9 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$this->bbf('user_protocol-'.$ref['protocol']);?></td>
-		<td><?=(dwho_has_len($ref['name']) === true ? $ref['name'] : '-')?></td>
-		<td><?=(dwho_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
-		<td><?=(dwho_has_len($ref['provisioningid']) === true ? $ref['provisioningid'] : '-')?></td>
+		<td class="txt-left">
+			<?=($ref['nb_line']);?>
+		</td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
@@ -201,7 +142,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="6"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

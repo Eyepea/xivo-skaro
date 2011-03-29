@@ -23,7 +23,7 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_extenumbers_abstract extends xivo_application_service_asterisk_abstract
 {
 	var $_extenumbers	= false;
-	var $_param		= array('type'	=> '');
+	var $_param			= array('type'	=> '');
 
 	function xivo_application_service_asterisk_extenumbers_abstract(&$service,$param=array())
 	{

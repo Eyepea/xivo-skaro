@@ -877,10 +877,10 @@ function dwho_print_r($a,$n='')
 	print '<pre>'; print_r($a); print '</pre>';
 }
 
-function dwho_dump($var, $title=null)
+function dwho_var_dump_html($var,$title='')
 {
 	echo '<pre style="border:1px dotted gray; padding:5px; text-align:left;">';
-	if (is_null($title) === false)
+	if (dwho_empty($title) === false)
 		echo '<h4>', htmlspecialchars($title), '</h4>';
 
 	ob_start();
@@ -889,11 +889,23 @@ function dwho_dump($var, $title=null)
 	echo '</pre>';
 }
 
-function dwho_var_dump($a,$n='')
+function dwho_var_dump($var,$title='')
 {
-	if(dwho_empty($n) === false)
-		print '<b>'.$n.'</b> : ';
-	print '<pre>'; var_dump($a); print '</pre>';
+	echo '<pre style="border:1px dotted gray; padding:5px; text-align:left; background:#ddd;">';
+	if(dwho_empty($title) === false)
+		print '<h4 style="border-bottom:1px solid black; background:#ccc;">'.$title.'</h4>';
+	ob_start();
+	var_dump($var);
+	echo preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean());
+	echo '</pre>';
+}
+
+function dwho_hr($msg='')
+{
+	echo '<pre style="border:1px solid black; padding:2px; background:black;">';
+	if(dwho_empty($msg) === false)
+		print '<h4 style="color:white; font:bold; text-align:center;">'.(string) $msg.'</h4>';
+	echo '</pre>';
 }
 
 function dwho_sprint_r(&$a,$t=false)

@@ -92,7 +92,7 @@ class xivo_user
 	}
 
 	function is_valid()
-	{       
+	{
 		if(isset($_SESSION['_USR'],$_SESSION['_USR']->_valid) === true
 		&& $_SESSION['_USR']->_valid === true)
 			return(true);
@@ -201,7 +201,7 @@ class xivo_user
 		$tree = $_SESSION['_ACL']['tree'];
 		$user = $_SESSION['_ACL']['user'];
 		$user_section = &$_SESSION['_ACL']['user_section'];
-		
+
 		if(is_array($user_section) === false)
 			$user_section = array();
 		else if(isset($user_section[$section]) === true)

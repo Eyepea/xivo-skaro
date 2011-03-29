@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'agentfeatures';
+	var $_dso			= null;
+	var $_name			= 'agentfeatures';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
@@ -76,7 +76,7 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 		return($r);
 	}
-	
+
 	function get_all_assoc()
 	{
 		if(($list = $this->_dso->get_all_assoc()) === false)
@@ -90,7 +90,7 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 		return($list);
 	}
-	
+
 	function get_all_wherein($id,$where)
 	{
 		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)

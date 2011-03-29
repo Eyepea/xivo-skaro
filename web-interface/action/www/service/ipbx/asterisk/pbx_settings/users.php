@@ -24,7 +24,6 @@ $prefs = new dwho_prefs('users');
 $act     = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
-$context = strval($prefs->get('context', ''));
 $sort    = $prefs->flipflop('sort', 'fullname');
 
 $appschedule = &$ipbx->get_application('schedule');
@@ -34,17 +33,31 @@ $param['act'] = 'list';
 
 if($search !== '')
 	$param['search'] = $search;
-else if($context !== '')
-	$param['context'] = $context;
 
-$contexts = false;
+$appentity = &$_XOBJ->get_application('entity');
+$entity_list = $appentity->get_entities_list(null,array('name' => SORT_ASC),null,false,'intern');
+
+$nb = count($entity_list);
+for($i = 0;$i < $nb;$i++)
+{
+	$ref = &$entity_list[$i];
+	if($ref['nb_context'] === 0)
+		unset($entity_list[$i]);
+	else
+		$ref = $ref['entity'];
+}
+
+$_TPL->set_var('entity_list',$entity_list);
 
 switch($act)
 {
 	case 'add':
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
-		$contexts = $appuser->get_all_context();
+		$appline = &$ipbx->get_application('line');
+
+		$orderline = array('name' => SORT_ASC);
+		$_TPL->set_var('lines_free',$appline->get_lines_list(null,null,$orderline,null,false,null,true));
 
 		include(dirname(__FILE__).'/users/'.$act.'.php');
 		break;
@@ -59,8 +72,6 @@ switch($act)
 		$appuser->delete();
 		$appqueue = &$ipbx->get_application('queue');
 		$appqueue->userskills_delete($_QR['id']);
-
-		$ipbx->discuss('xivo[userlist,update]');
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
@@ -82,8 +93,6 @@ switch($act)
 
 			$appqueue->userskills_delete($values[$i]);
 		}
-
-		$ipbx->discuss('xivo[userlist,update]');
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
@@ -108,28 +117,19 @@ switch($act)
 				$appuser->enable();
 		}
 
-		$ipbx->discuss('xivo[userlist,update]');
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'import':
 		$appuser = &$ipbx->get_application('user');
-		$contexts = $appuser->get_all_context();
 
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appuser->import_csv();
-			$ipbx->discuss('xivo[userlist,update]');
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		}
 
 		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 		break;
-
-	case 'autoprov':
-		$appuser = &$ipbx->get_application('user');
-		$appuser->mass_provisioning($_QR['users'], $_QR['reboot']=='true');
-
 	case 'list':
 	default:
 		$act = 'list';
@@ -137,7 +137,6 @@ switch($act)
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appuser = &$ipbx->get_application('user');
-		$contexts = $appuser->get_all_context();
 
 		$order = array();
 		if($sort[1] == 'fullname')
@@ -153,11 +152,9 @@ switch($act)
 		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$list = $appuser->get_users_search($search,$context,null,null,$order,$limit);
-		else if($context !== '')
-			$list = $appuser->get_users_context($context,null,null,$order,$limit);
+			$list = $appuser->get_users_search($search,null,$order,$limit);
 		else
-			$list = $appuser->get_users_list(null,null,$order,$limit);
+			$list = $appuser->get_users_list(null,$order,$limit);
 
 		$total = $appuser->get_cnt();
 
@@ -170,12 +167,10 @@ switch($act)
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
-		$_TPL->set_var('context',$context);
 		$_TPL->set_var('sort',$sort);
 }
 
 $_TPL->set_var('act',$act);
-$_TPL->set_var('contexts',$contexts);
 $_TPL->set_var('schedules',$appschedule->get_schedules_list());
 
 $menu = &$_TPL->get_module('menu');

@@ -28,6 +28,9 @@ Nom affiché :
 ; fm_context_entity
 Entité :
 
+; fm_contexttype
+Type de contexte :
+
 ; fm_context_context-include
 Inclure des contextes :
 

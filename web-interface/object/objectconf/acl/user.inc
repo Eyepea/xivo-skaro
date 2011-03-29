@@ -48,6 +48,8 @@ $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 // required to query /ui/ url
 $array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['devices'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['lines'] = true;
 
 
 $array['tree']['service']['ipbx']['call_management'] = array();
@@ -67,6 +69,7 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 
 $array['tree']['service']['ipbx']['cost_center'] = array();
 $array['tree']['service']['ipbx']['cost_center']['operator'] = true;
+$array['tree']['service']['ipbx']['cost_center']['servicesgroup'] = true;
 
 $array['tree']['service']['ipbx']['dundi'] = array();
 $array['tree']['service']['ipbx']['dundi']['general'] = true;
@@ -131,6 +134,12 @@ $array['tree']['service']['statistics']['call_center']['queue'] = true;
 $array['tree']['service']['statistics']['cdr'] = array();
 $array['tree']['service']['statistics']['cdr']['search'] = true;
 $array['tree']['service']['statistics']['cdr']['advanced_search'] = true;
+
+
+$array['tree']['xivo'] = array();
+$array['tree']['xivo']['configuration'] = array();
+$array['tree']['xivo']['configuration']['manage'] = array();
+$array['tree']['xivo']['configuration']['manage']['entity'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

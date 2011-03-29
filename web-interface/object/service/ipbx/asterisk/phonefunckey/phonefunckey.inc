@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'phonefunckey';
+	var $_dso			= null;
+	var $_name			= 'phonefunckey';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
@@ -214,7 +214,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function is_valid($type='',$typeval='',$typeright='',$typevalright='',$id=null,$disable=null,$context=null)
+	function is_valid($type='',$typeval='',$typeright='',$typevalright='',$id=null,$disable=null)
 	{
 		switch($type)
 		{
@@ -259,15 +259,15 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				   && $typeval !== 'agentstaticlogtoggle') === true)
 					return(false);
 
-				return($this->chk_dest_agent($typevalright,null,null,$disable,false,true,$context));
+				return($this->chk_dest_agent($typevalright,null,null,$disable,false,true));
 			case 'user':
-				return($this->chk_dest_user($typevalright,null,$id,$disable,false,true,$context));
+				return($this->chk_dest_user($typevalright,null,$id,$disable,false,true));
 			case 'group':
-				return($this->chk_dest_group($typevalright,null,null,$disable,false,true,$context));
+				return($this->chk_dest_group($typevalright,null,null,$disable,false,true));
 			case 'queue':
-				return($this->chk_dest_queue($typevalright,null,null,$disable,false,true,$context));
+				return($this->chk_dest_queue($typevalright,null,null,$disable,false,true));
 			case 'meetme':
-				return($this->chk_dest_meetme($typevalright,null,null,$disable,false,true,$context));
+				return($this->chk_dest_meetme($typevalright,null,null,$disable,false,true));
 		}
 
 		return(false);

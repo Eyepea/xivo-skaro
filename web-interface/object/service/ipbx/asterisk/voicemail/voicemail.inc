@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'voicemail';
+	var $_dso			= null;
+	var $_name			= 'voicemail';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
@@ -81,9 +81,7 @@ class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 			for($i = 0;$i < $nb;$i++)
 			{
 				$ref = &$list[$i];
-
 				$key = $ref['mailbox'].'@'.$ref['context'];
-
 				$r[$key] = $this->_prepare($list[$i]);
 			}
 		}
@@ -92,9 +90,7 @@ class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 			for($i = 0;$i < $nb;$i++)
 			{
 				$ref = &$list[$i];
-
 				$key = $ref['mailbox'].'@'.$ref['context'];
-
 				$r[$key] = $list[$i];
 			}
 		}

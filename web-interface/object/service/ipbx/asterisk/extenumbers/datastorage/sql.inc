@@ -31,6 +31,9 @@ class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstra
 
 		$context = (string) $context;
 
+		if (isset($arr['typeval']) === true)
+			$arr['typeval'] = (string) $arr['typeval'];
+
 		$this->_dso->new_select($this->_table,array('type','typeval'));
 		$this->_dso->where($arr);
 
@@ -54,13 +57,13 @@ class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstra
 		$where = array();
 
 		if(dwho_has_len($context) === true)
-			$where['context'] = $context;
+			$where['context'] = (string) $context;
 
 		if(dwho_has_len($type) === true)
-			$where['type'] = $type;
+			$where['type'] = (string) $type;
 
 		if(dwho_has_len($typeval) === true)
-			$where['typeval'] = $typeval;
+			$where['typeval'] = (string) $typeval;
 
 		if(empty($where) === false)
 			$this->_dso->andwhere($where);

@@ -20,7 +20,7 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
-class xivo_application_abstract extends xivo_libconfig_abstract
+abstract class xivo_application_abstract extends xivo_libconfig_abstract
 {
 	var $_abstract		= array();
 	var $_cnt		= 0;

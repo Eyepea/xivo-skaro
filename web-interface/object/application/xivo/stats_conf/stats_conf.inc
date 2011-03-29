@@ -398,7 +398,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			}
 			else
 			{
-				$rs['id'] = $ref;
+				$rs['id'] = (int) $ref;
 				array_push($reslist,$rs);
 			}
 		}
@@ -435,7 +435,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			}
 			else
 			{
-				$rs['id'] = $ref;
+				$rs['id'] = (int) $ref;
 				array_push($reslist,$rs);
 			}
 		}
@@ -498,7 +498,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			}
 			else
 			{
-				$rs['id'] = $ref;
+				$rs['id'] = (int) $ref;
 				array_push($reslist,$rs);
 			}
 		}
@@ -535,7 +535,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			}
 			else
 			{
-				$rs['id'] = $ref;
+				$rs['id'] = (int) $ref;
 				array_push($reslist,$rs);
 			}
 		}
@@ -572,7 +572,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 			}
 			else
 			{
-				$rs['id'] = $ref;
+				$rs['id'] = (int) $ref;
 				array_push($reslist,$rs);
 			}
 		}
@@ -601,14 +601,13 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		}
 
 		if($this->get_errnb() > 0
-		|| $this->add_stats_conf() === false)
+		|| $this->add_stats_conf() === false
+		|| $this->add_incall() === false
+		|| $this->add_queue() === false
+		|| $this->add_group() === false
+		|| $this->add_agent() === false
+		|| $this->add_user() === false)
 			$r = false;
-
-		$this->add_incall();
-		$this->add_queue();
-		$this->add_group();
-		$this->add_agent();
-		$this->add_user();
 
 		$this->_status = '';
 
@@ -617,8 +616,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 	public function add_stats_conf()
 	{
-		if(($rs = $this->get_result('stats_conf')) === null
-		|| $rs === false)
+		if(($rs = $this->get_result('stats_conf')) === null	|| $rs === false)
 			return(false);
 
 		$this->_return['stats_conf'] = $this->_stats_conf->add($rs);
@@ -628,19 +626,22 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 	private function add_incall()
 	{
-		if(($rs = $this->get_result('incall')) === null
-		|| $rs === false
-		|| $this->_return['stats_conf'] === false)
+		if(($rs = $this->get_result('incall')) === null	|| $rs === false)
 			return(false);
+
+		$this->_return['incall'] = array();
 
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 
 		foreach ($rs as $qid)
 		{
-			$arr['incall_id'] = (int) $qid;
-			if (($this->_return['incall'] = $this->_stats_conf_incall->add($arr)) === false)
-				return(dwho_report::push('error','error during create stats incall'));
+			$arr['incall_id'] = (int) $qid['id'];
+			if (($this->_return['incall'][] = $this->_stats_conf_incall->add($arr)) === false)
+			{
+				dwho_report::push('error','error during create stats incall');
+				return(false);
+			}
 		}
 
 		return($this->_return['incall']);
@@ -655,15 +656,20 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->_return['stats_conf'] === false)
 			return(false);
 
+		$this->_return['queue'] = array();
+
 		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 
 		foreach ($rs as $qid)
 		{
-			$arr['queuefeatures_id'] = (int) $qid;
-			$arr['qos'] = intval($rsqos[$qid]);
-			if (($this->_return['queue'] = $this->_stats_conf_queue->add($arr)) === false)
-				return(dwho_report::push('error','error during create stats queue'));
+			$arr['queuefeatures_id'] = (int) $qid['id'];
+			$arr['qos'] = intval($rsqos[$qid['id']]);
+			if (($this->_return['queue'][] = $this->_stats_conf_queue->add($arr)) === false)
+			{
+				dwho_report::push('error','error during create stats queue');
+				return(false);
+			}
 		}
 
 		return($this->_return['queue']);
@@ -678,15 +684,20 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->_return['stats_conf'] === false)
 			return(false);
 
+		$this->_return['group'] = array();
+
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 
 		foreach ($rs as $qid)
 		{
-			$arr['groupfeatures_id'] = (int) $qid;
+			$arr['groupfeatures_id'] = (int) $qid['id'];
 			$arr['qos'] = intval($rsqos[$qid]);
-			if (($this->_return['group'] = $this->_stats_conf_group->add($arr)) === false)
-				return(dwho_report::push('error','error during create stats group'));
+			if (($this->_return['group'][] = $this->_stats_conf_group->add($arr)) === false)
+			{
+				dwho_report::push('error','error during create stats group');
+				return(false);
+			}
 		}
 
 		return($this->_return['group']);
@@ -699,14 +710,19 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->_return['stats_conf'] === false)
 			return(false);
 
+		$this->_return['agent'] = array();
+
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 
 		foreach ($rs as $qid)
 		{
-			$arr['agentfeatures_id'] = (int) $qid;
-			if (($this->_return['agent'] = $this->_stats_conf_agent->add($arr)) === false)
-				return(dwho_report::push('error','error during create stats agent'));
+			$arr['agentfeatures_id'] = (int) $qid['id'];
+			if (($this->_return['agent'][] = $this->_stats_conf_agent->add($arr)) === false)
+			{
+				dwho_report::push('error','error during create stats agent');
+				return(false);
+			}
 		}
 
 		return($this->_return['agent']);
@@ -719,14 +735,19 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->_return['stats_conf'] === false)
 			return(false);
 
+		$this->_return['user'] = array();
+
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 
 		foreach ($rs as $qid)
 		{
-			$arr['userfeatures_id'] = (int) $qid;
-			if (($this->_return['user'] = $this->_stats_conf_user->add($arr)) === false)
-				return(dwho_report::push('error','error during create stats user'));
+			$arr['userfeatures_id'] = (int) $qid['id'];
+			if (($this->_return['user'][] = $this->_stats_conf_user->add($arr)) === false)
+			{
+				dwho_report::push('error','error during create stats user');
+				return(false);
+			}
 		}
 
 		return($this->_return['user']);
@@ -740,17 +761,16 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->edit_stats_conf() === false)
+		|| $this->edit_stats_conf() === false
+		|| $this->edit_incall() === false
+		|| $this->edit_queue() === false
+		|| $this->edit_group() === false
+		|| $this->_edit_agent() === false
+		|| $this->edit_user() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
 		}
-
-		$this->edit_incall();
-		$this->edit_queue();
-		$this->edit_group();
-		$this->edit_agent();
-		$this->edit_user();
 
 		$this->_status = '';
 
@@ -764,132 +784,92 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $rs === false)
 			return(false);
 
-		$rs['disable'] = $this->_info['stats_conf']['disable'];
+		if (($return = $this->_stats_conf->edit($this->_info['stats_conf']['id'],$rs)) === false)
+			return(false);
 
-		$this->_return['stats_conf'] = $this->_stats_conf->edit($this->_info['stats_conf']['id'],$rs);
+		$this->_return['stats_conf'] = (int) $this->_info['stats_conf']['id'];
 
-		return($this->_return['stats_conf']);
+		return($return);
 	}
 
 	private function edit_incall()
 	{
-		if(($rs = $this->get_result('incall')) === null
-		|| $rs === false
-		|| $this->_return['stats_conf'] === false
-		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+		if ($this->_status === 'edit'
+		&& $this->_info['incall'] === false
+		&& $this->get_result('incall') === null)
+			return(true);
+		elseif($this->_info['incall'] === false)
+			return($this->add_incall());
 
 		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
-
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 		$this->_stats_conf_incall->delete_where($arr);
 
-		foreach ($rs as $qid)
-		{
-			$arr['incall_id'] = (int) $qid;
-			if (($this->_return['incall'] = $this->_stats_conf_incall->add($arr)) === false)
-				return(dwho_report::push('error','error during edit stats incall'));
-		}
-
-		return($this->_return['incall']);
+		return($this->add_incall());
 	}
 
 	private function edit_queue()
 	{
-		if(($rs = $this->get_result('queue')) === null
-		|| ($rsqos = $this->get_result('queue_qos')) === null
-		|| $rs === false
-		|| $rsqos === false
-		|| $this->_return['stats_conf'] === false
-		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+		if ($this->_status === 'edit'
+		&& $this->_info['queue'] === false
+		&& $this->get_result('queue') === null)
+			return(true);
+		elseif($this->_info['queue'] === false)
+			return($this->add_queue());
 
 		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
-
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 		$this->_stats_conf_queue->delete_where($arr);
 
-		foreach ($rs as $qid)
-		{
-			$arr['queuefeatures_id'] = (int) $qid;
-			$arr['qos'] = intval($rsqos[$qid]);
-			if (($this->_return['queue'] = $this->_stats_conf_queue->add($arr)) === false)
-				return(dwho_report::push('error','error during edit stats queue'));
-		}
-
-		return($this->_return['queue']);
+		return($this->add_queue());
 	}
 
 	private function edit_group()
 	{
-		if(($rs = $this->get_result('group')) === null
-		|| ($rsqos = $this->get_result('group_qos')) === null
-		|| $rs === false
-		|| $rsqos === false
-		|| $this->_return['stats_conf'] === false
-		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+		if ($this->_status === 'edit'
+		&& $this->_info['group'] === false
+		&& $this->get_result('group') === null)
+			return(true);
+		elseif($this->_info['group'] === false)
+			return($this->add_group());
 
 		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
-
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 		$this->_stats_conf_group->delete_where($arr);
 
-		foreach ($rs as $qid)
-		{
-			$arr['groupfeatures_id'] = (int) $qid;
-			$arr['qos'] = intval($rsqos[$qid]);
-			if (($this->_return['group'] = $this->_stats_conf_group->add($arr)) === false)
-				return(dwho_report::push('error','error during edit stats group'));
-		}
-
-		return($this->_return['queue']);
+		return($this->add_group());
 	}
 
-	private function edit_agent()
+	private function _edit_agent()
 	{
-		if(($rs = $this->get_result('agent')) === null
-		|| $rs === false
-		|| $this->_return['stats_conf'] === false
-		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+		if ($this->_status === 'edit'
+		&& $this->_info['agent'] === false
+		&& $this->get_result('agent') === null)
+			return(true);
+		elseif($this->_info['agent'] === false)
+			return($this->add_agent());
 
 		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
-
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 		$this->_stats_conf_agent->delete_where($arr);
 
-		foreach ($rs as $qid)
-		{
-			$arr['agentfeatures_id'] = (int) $qid;
-			if (($this->_return['agent'] = $this->_stats_conf_agent->add($arr)) === false)
-				return(dwho_report::push('error','error during edit stats agent'));
-		}
-
-		return($this->_return['agent']);
+		return($this->add_agent());
 	}
 
 	private function edit_user()
 	{
-		if(($rs = $this->get_result('user')) === null
-		|| $rs === false
-		|| $this->_return['stats_conf'] === false
-		|| isset($this->_info['stats_conf']['id']) === false)
-			return(false);
+		if ($this->_status === 'edit'
+		&& $this->_info['user'] === false
+		&& $this->get_result('user') === null)
+			return(true);
+		elseif($this->_info['user'] === false)
+			return($this->add_user());
 
 		$arr = array();
-		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
-
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
 		$this->_stats_conf_user->delete_where($arr);
 
-		foreach ($rs as $qid)
-		{
-			$arr['userfeatures_id'] = (int) $qid;
-			if (($this->_return['user'] = $this->_stats_conf_user->add($arr)) === false)
-				return(dwho_report::push('error','error during edit stats user'));
-		}
-
-		return($this->_return['user']);
+		return($this->add_user());
 	}
 
 	private function _reverse_edit()
@@ -899,6 +879,8 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
+
+		return;
 
 		foreach($this->_return as $key => $val)
 		{

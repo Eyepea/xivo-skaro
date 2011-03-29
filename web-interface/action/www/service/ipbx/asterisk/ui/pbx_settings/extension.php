@@ -37,26 +37,50 @@ if(defined('XIVO_LOC_UI_ACTION') === true)
 else
 	$act = $_QRY->get('act');
 
+/*
+ *
+ *
+$_QRY->get('context')
+eg. default, intern ......
+
+$_QRY->get('obj')
+eg. user, group ...
+
+$_QRY->get('startnum')
+eg. 80, 422 ...
+
+$_QRY->get('except')
+eg.
+
+ *
+ *
+ */
+
 switch($act)
 {
 	case 'search':
 	default:
 		$act = 'search';
 		$appcontext = &$ipbx->get_application('context');
-		if(($context    = $appcontext->get($_QRY->get('context'))) === false)
+		$context = $_QRY->get('context');
+		if(($context    = $appcontext->get($context)) === false)
 		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
-		}		
+		}
 
 		$obj = $_QRY->get('obj');
 		if(is_null($obj) || !array_key_exists($obj, $context['contextnumbers']))
 		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
-		}		
+		}
 
-		$filter  = $_QRY->get('startnum');
+		if (is_null($_QRY->get('startnum')) === false)
+			$filter  = $_QRY->get('startnum');
+		elseif(is_null($_QRY->get('q')) === false)
+			$filter  = $_QRY->get('q');
+
 		if(strlen($filter) > 0 && !is_numeric($filter))
 		{
 			$_TPL->set_var('list', array());
@@ -91,15 +115,25 @@ switch($act)
 
 		foreach($context['contextnummember'][$obj] as $user)
 		{
-			if(strlen($user['number']) > 0 && 
+			if(strlen($user['number']) > 0 &&
 				($idx = array_search($user['number'], $numbers)) !== false)
 				unset($numbers[array_search($user['number'], $numbers)]);
 		}
 
-		// just to respect suggest.js data format
-		$list = array();
-		foreach(array_values($numbers) as $num)
-			$list[] = array('id' => $num, 'identity' => strval($num), 'info' => '');
+		switch ($_QRY->get('format'))
+		{
+			case 'jquery':
+				$list = '';
+				foreach(array_values($numbers) as $num)
+					$list .=  $num."\n";
+				break;
+			case null:
+			default:
+				$list = array();
+				// just to respect suggest.js data format
+				foreach(array_values($numbers) as $num)
+					$list[] = array('id' => $num, 'identity' => strval($num), 'info' => '');
+		}
 
 		$_TPL->set_var('list', $list);
 		$_TPL->set_var('except',$_QRY->get('except'));

@@ -20,38 +20,7 @@
 
 $array = array();
 
-$array['provisioning_id'] = array();
-
-$array['provisioning_id']['sip'] = array();
-$array['provisioning_id']['sip']['prefix'] = 1;
-$array['provisioning_id']['sip']['range'] = 100000;
-
-$array['provisioning_id']['iax'] = array();
-$array['provisioning_id']['iax']['prefix'] = 2;
-$array['provisioning_id']['iax']['range'] = 100000;
-
-$array['provisioning_id']['sccp'] = array();
-$array['provisioning_id']['sccp']['prefix'] = 3;
-$array['provisioning_id']['sccp']['range']  = 100000;
-
 $array['element'] = array();
-
-$array['element']['name'] = array();
-$array['element']['name']['default'] = '';
-
-$array['element']['protocol'] = array();
-$array['element']['protocol']['value'] = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
-					       XIVO_SRE_IPBX_AST_PROTO_IAX,
-					       XIVO_SRE_IPBX_AST_PROTO_SCCP,
-					       XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
-$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
-
-$array['element']['protocolid'] = array();
-$array['element']['protocolid']['default'] = 0;
-
-$array['element']['provisioningid'] = array();
-$array['element']['provisioningid']['default'] = 0;
-$array['element']['provisioningid']['null'] = true;
 
 $array['element']['firstname'] = array();
 $array['element']['firstname']['default'] = '';
@@ -59,11 +28,15 @@ $array['element']['firstname']['default'] = '';
 $array['element']['lastname'] = array();
 $array['element']['lastname']['default'] = '';
 
-$array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['pitch'] = array();
+$array['element']['pitch']['value'] = array('highest','higher','high','low','lower','lowest');
+$array['element']['pitch']['default'] = '';
+$array['element']['pitch']['null'] = true;
 
-$array['element']['number'] = array();
-$array['element']['number']['default'] = '';
+$array['element']['pitchdirection'] = array();
+$array['element']['pitchdirection']['value'] = array('rx','tx','both');
+$array['element']['pitchdirection']['default'] = '';
+$array['element']['pitchdirection']['null'] = true;
 
 $array['element']['voicemailtype'] = array();
 $array['element']['voicemailtype']['value'] = array('asterisk','exchange');
@@ -73,6 +46,13 @@ $array['element']['voicemailtype']['null'] = true;
 $array['element']['voicemailid'] = array();
 $array['element']['voicemailid']['default'] = 0;
 $array['element']['voicemailid']['null'] = true;
+
+$array['element']['entityid'] = array();
+$array['element']['entityid']['default'] = 0;
+
+$array['element']['callerid'] = array();
+$array['element']['callerid']['default'] = '';
+$array['element']['callerid']['null'] = true;
 
 $array['element']['agentid'] = array();
 $array['element']['agentid']['default'] = 0;
@@ -194,10 +174,10 @@ $array['element']['preprocess_subroutine'] = array();
 $array['element']['preprocess_subroutine']['default'] = '';
 $array['element']['preprocess_subroutine']['null'] = true;
 
-$array['element']['internal'] = array();
-$array['element']['internal']['value'] = array(0,1);
-$array['element']['internal']['default'] = 0;
-$array['element']['internal']['forcedef'] = true;
+$array['element']['language'] = array();
+$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['default'] = '';
+$array['element']['language']['null'] = true;
 
 $array['element']['timezone'] = array();
 $array['element']['timezone']['default'] = '';
@@ -205,22 +185,47 @@ $array['element']['timezone']['default'] = '';
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
+$array['element']['ringintern'] = array();
+$array['element']['ringintern']['default'] = '';
+
+$array['element']['ringextern'] = array();
+$array['element']['ringextern']['default'] = '';
+
+$array['element']['ringgroup'] = array();
+$array['element']['ringgroup']['default'] = '';
+
+$array['element']['ringforward'] = array();
+$array['element']['ringforward']['default'] = '';
+
+$array['element']['rightcallcode'] = array();
+$array['element']['rightcallcode']['default'] = '';
+
+$array['element']['alarmclock_hour'] = array();
+$arrhour = array();
+for ($i=0;$i<=23;$i++)
+	array_push($arrhour,strlen($i)===1?"0$i":$i);
+$array['element']['alarmclock_hour']['value'] = $arrhour;
+$array['element']['alarmclock_hour']['default'] = '';
+
+$array['element']['alarmclock_minute'] = array();
+$arrminute = array();
+for ($i=1;$i<=60;$i++)
+	array_push($arrminute,strlen($i)===1?"0$i":$i);
+$array['element']['alarmclock_minute']['value'] = $arrminute;
+$array['element']['alarmclock_minute']['default'] = '';
+
+
 $array['filter'] = array();
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
-						    XIVO_SRE_IPBX_AST_PROTO_IAX,
-						    XIVO_SRE_IPBX_AST_PROTO_SCCP,
-						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
-$array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackarg' => array(array(
-							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
-							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['voicemailtype'] = array('set' => false,'chk' => 2,'key' => array('asterisk','exchange'));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
+$array['filter']['entityid'] = array('cast' => 'ulongint');
+$array['filter']['callerid'] = array('set'	=> false,
+				     'chk'	=> 2,
+				     'maxlen'	=> 80,
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
+				     'notag'	=> false);
 $array['filter']['agentid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
@@ -266,8 +271,17 @@ $array['filter']['preprocess_subroutine'] = array('set' => false,
 						  'callbackarg' => array(array(
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
-$array['filter']['internal'] = array('set' => false,'chk' => 0);
+$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
 $array['filter']['timezone'] = array('set' => false,'chk' => 2);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
+$array['filter']['ringintern'] = array('set' => false,'chk' => 2,'maxlen' => 64);
+$array['filter']['ringextern'] = array('set' => false,'chk' => 2,'maxlen' => 64);
+$array['filter']['ringgroup'] = array('set' => false,'chk' => 2,'maxlen' => 64);
+$array['filter']['ringforward'] = array('set' => false,'chk' => 2,'maxlen' => 64);
+$array['filter']['rightcallcode'] = array('set'	=> false,'chk' => 2,'regexp' => '/^[0-9]+$/','maxlen' => 15);
+$array['filter']['alarmclock_hour'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9]{2}$/');
+$array['filter']['alarmclock_minute'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9]{2}$/');
+$array['filter']['pitch'] = array('set' => false,'chk' => 2,'key' => array('highest', 'higher', 'high', 'low', 'lower','lowest'));
+$array['filter']['pitchdirection'] = array('set' => false,'chk' => 2,'key' => array('rx', 'tx', 'both'));
 
 ?>

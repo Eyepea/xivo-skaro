@@ -22,13 +22,9 @@ if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 $return = &$info;
+$return['schedule_id'] = false;
 
 $result = $fm_save = $error = null;
-
-if(isset($info['protocol']['allow']) === true)
-	$allow = $info['protocol']['allow'];
-else
-	$allow = array();
 
 $gmember = $qmember = $rightcall = array();
 $gmember['list'] = $qmember['list'] = false;
@@ -64,9 +60,7 @@ $sccp_addons = array('7914', '7915', '7916');
 
 
 if(isset($_QR['fm_send']) === true
-&& dwho_issa('protocol',$_QR) === true
-&& dwho_issa('userfeatures',$_QR) === true
-&& isset($_QR['protocol']['protocol']) === true)
+&& dwho_issa('userfeatures',$_QR) === true)
 {
 	$return = &$result;
 	$queueskills = array();
@@ -83,37 +77,7 @@ if(isset($_QR['fm_send']) === true
 	}
 	$skillerr = $appqueue->userskills_setedit($queueskills);
 
-	// sccp addons
-	if(count($_QR['sccp_addons']) > 0)
-		unset($_QR['sccp_addons'][count($_QR['sccp_addons'])-1]);
-	$_QR['protocol']['addons'] = $_QR['sccp_addons'];
-
-	$softkeys = array();
-	foreach($_QR['softkeys_order'] as $name => $positions)
-	{
-		$values     = $_QR['softkeys_key'][$name];
-		$cursoftkey = array();
-
-#		// sort values
-		unset($positions[count($positions)-1]);
-		$idxs = array_keys($positions);
-
-/*
-		function pos_sort($x, $y) {
-				global $positions;
-				return $positions[$x] - $positions[$y];
-		}
-		$res = usort(&$idxs, "pos_sort");
-*/
-
-		foreach($idxs as $idx)
-			$cursoftkey[] = $values[$idx];
-
-		$softkeys[$name] = $cursoftkey;
-	}
-	$_QR['protocol']['softkeys'] = $softkeys;
-
-	if($appuser->set_edit($_QR,$_QR['protocol']['protocol']) === false
+	if($appuser->set_edit($_QR) === false
 	|| $skillerr === false
 	|| $appuser->edit() === false)
 	{
@@ -124,10 +88,6 @@ if(isset($_QR['fm_send']) === true
 
 		$error = $appuser->get_error();
 		$error['queueskills'] = $appqueue->userskills_get_error();
-
-		if(dwho_issa('protocol',$result) === true
-		&& isset($result['protocol']['allow']) === true)
-			$allow = $result['protocol']['allow'];
 
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 		$_TPL->set_var('queueskills', $queueskills);
@@ -200,38 +160,13 @@ if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
 
 $element = $appuser->get_elements();
 
-if(dwho_issa('allow',$element['protocol']['sip']) === true
-&& dwho_issa('value',$element['protocol']['sip']['allow']) === true
-&& empty($allow) === false)
-{
-	if(is_array($allow) === false)
-		$allow = explode(',',$allow);
-
-	$element['protocol']['sip']['allow']['value'] = array_diff($element['protocol']['sip']['allow']['value'],$allow);
-}
-
-if(dwho_issa('allow',$element['protocol']['iax']) === true
-&& dwho_issa('value',$element['protocol']['iax']['allow']) === true
-&& empty($allow) === false)
-{
-	if(is_array($allow) === false)
-		$allow = explode(',',$allow);
-
-	$element['protocol']['iax']['allow']['value'] = array_diff($element['protocol']['iax']['allow']['value'],$allow);
-}
-
 if(empty($return) === false)
 {
-	$return['protocol']['allow'] = $allow;
-
 	if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
 		$return['dialaction'] = null;
 
 	if(dwho_issa('voicemail',$return) === false || empty($return['voicemail']) === true)
 		$return['voicemail'] = null;
-
-	if(dwho_issa('autoprov',$return) === false || empty($return['autoprov']) === true)
-		$return['autoprov'] = null;
 }
 else
 	$return = null;
@@ -267,27 +202,11 @@ $softkeys_list = array(
 	'backjoin'      => $_TPL->bbf('softkey_backjoin'),
 );
 
-
 $element['queueskills'] =  $appqueue->skills_gettree();
-
-// AUTOGEN name/secret
-$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
-$ro = true;
-if (isset($config['user']) === true)
-	$ro = !($config['user']['readonly-idpwd'] == 'false');
-
-$element['protocol']['name']   = array(
-	'readonly' => $ro,
-	'class'    => 'it-'.($ro?'disabled':'enabled')
-);
-$element['protocol']['secret']   = array(
-	'readonly' => $ro,
-	'class'    => 'it-'.($ro?'disabled':'enabled')
-);
 
 $modpark = &$ipbx->get_module('parkinglot');
 
-$_TPL->set_var('id',$info['userfeatures']['id']);
+$_TPL->set_var('id',$_QR['id']);
 $_TPL->set_var('info',$return);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('fm_save',$fm_save);
@@ -304,18 +223,14 @@ $_TPL->set_var('agent_list',$appuser->get_agent_list());
 $_TPL->set_var('destination_list',$appuser->get_destination_list());
 $_TPL->set_var('moh_list',$appuser->get_musiconhold());
 $_TPL->set_var('tz_list',$appuser->get_timezones());
-$_TPL->set_var('context_list',$appuser->get_context_list());
-$_TPL->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_TPL->set_var('bsfilter_list',$appuser->get_bsfilter_list());
 $_TPL->set_var('fkidentity_list',$appuser->get_phonefunckey_identity());
 $_TPL->set_var('fktype_list',$appuser->get_phonefunckey_type());
 $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
-$_TPL->set_var('sccp_addons',$sccp_addons);
 $_TPL->set_var('order_list', $order_list);
 $_TPL->set_var('softkeys_list', $softkeys_list);
 $_TPL->set_var('parking_list', $modpark->get_all());
-if (isset($return['schedule_id']) === true)
-	$_TPL->set_var('schedule_id', $return['schedule_id']);
+$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');
@@ -324,10 +239,7 @@ $dhtml->set_js('js/dwho/suggest.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sccp.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/lines.js');
 $dhtml->set_js('js/dwho/submenu.js');
 $dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');
 

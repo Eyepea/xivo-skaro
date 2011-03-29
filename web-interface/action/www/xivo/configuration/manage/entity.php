@@ -26,6 +26,8 @@ $param['act'] = 'list';
 
 $result = $fm_save = $error = null;
 
+$ipbx = &$_SRE->get('ipbx');
+
 switch($act)
 {
 	case 'add':

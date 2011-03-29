@@ -1377,9 +1377,9 @@ class dwho_tpl_form extends dwho_tpl_module
 		   || $this->_param['selected'] === '') === true
 		&& $this->_param['default'] !== false)
 			$this->_param['selected'] = $this->_param['default'];
-			
+
 		$r = '';
-					
+
 		if($this->_param['multiple'] === true)
 		{
 			$id = $this->_param['id'];
@@ -1405,7 +1405,7 @@ class dwho_tpl_form extends dwho_tpl_module
 			$r .= ' multiple="multiple"';
 
 			if($this->_param['size'] !== false)
-				$r .= ' size="'.$this->_param['size'].'"';				
+				$r .= ' size="'.$this->_param['size'].'"';
 		}
 
 		if($this->_param['class'] !== false)
@@ -1458,14 +1458,14 @@ class dwho_tpl_form extends dwho_tpl_module
 		}
 
 		$this->_render = $r.$this->_render.'</select>';
-					
+
 		if($this->_param['multiple'] === true)
 		{
 			if (ereg('list',$id))
 				$id2 = str_replace('list','',$id);
 			else
 				$id2 = $id.'list';
-				
+
 			if (ereg('list',$id))
 			{
 				$r = "
@@ -1480,7 +1480,7 @@ class dwho_tpl_form extends dwho_tpl_module
 				$this->_render = $this->_render.$r;
 			}
 			/*
-			else 
+			else
 			{
 				$r = "
 				<script type=\"text/javascript\">
@@ -1505,7 +1505,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		return($this->_render);
 	}
-	
+
 	function input_for_ms($name,$str)
 	{
 		$divid = 'it-'.$name.'-finder';
@@ -1514,7 +1514,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$r .= '</center>';
 		$r .= "\n\n<script type=\"text/javascript\">
 				dwho.form.set_events_text_helper('$divid');
-			</script>\n\n";		
+			</script>\n\n";
 		return $r;
 	}
 }

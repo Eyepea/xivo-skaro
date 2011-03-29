@@ -162,15 +162,14 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 			$connstring .= " sslmode=require";
 
 		if((bool) $this->_param['persist'] === false)
-			$this->_link = pg_connect($connstring);
+			$this->_link = @pg_connect($connstring);
 		else
-			$this->_link = pg_pconnect($connstring);
+			$this->_link = @pg_pconnect($connstring);
 
-		//var_dump("postgresql::open= $connstring", $this->_link);
-		/*
 		if($this->_link === false)
-			$this->halt('Can\'t connect to MySQL server');
-		else if($this->_param['charset'] !== '')
+			$this->halt('Can\'t connect to PostgreSQL server');
+		/*
+		if($this->_param['charset'] !== '')
 			$this->query('SET NAMES \''.$this->_param['charset'].'\'');
 		*/
 		return($this->_link);
@@ -178,7 +177,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 	function select_db()
 	{
-		/* NOTE: postgresql cannot switch database. We must open a nuew connexion to do 
+		/* NOTE: postgresql cannot switch database. We must open a nuew connexion to do
 		 * so
 		 */
 		return $this->open();
@@ -193,8 +192,8 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		$this->select_db();
 
 		$this->_debug = true;
-		
-		if(($this->_result = @pg_query($this->_link, $this->_query)) === false 
+
+		if(($this->_result = @pg_query($this->_link, $this->_query)) === false
 		&& (bool) $this->_debug === true)
 			$this->halt();
 
@@ -259,6 +258,9 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
 	function escape_string($str)
 	{
+		if(is_resource($this->_link) === false)
+			return($str);
+
 		return(pg_escape_string($this->_link, $str));
 	}
 
@@ -382,7 +384,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 		$time = strtolower($time);
 		$format = (string) $format;
 		$table = trim($table);
-		
+
 		$field = $column;
 
 		if(($type !== 'unix' && $type !== 'date' && $type !== 'datetime') === true
@@ -433,7 +435,7 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 				$field .= '::int';
 				break;
 		}
-		
+
 		return $field;
 	}
 }

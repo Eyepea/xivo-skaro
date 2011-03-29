@@ -20,6 +20,10 @@
 
 $array = array();
 
+$array['xivo/configuration/ui/manage/entity/get'] = array(
+	'path'		=> 'xivo/configuration/ui/manage/get',
+	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'get'));
+
 $array['service/ipbx/asterisk/ui/pbx_settings/users/agents/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/call_center/agents',
 	'define'	=> array(
@@ -275,7 +279,7 @@ $array['xivo/configuration/web_services/restricted/support/monitoring'] = array(
 	'path'		=> 'xivo/configuration/web_services/support/monitoring',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-			
+
 $array['xivo/configuration/web_services/restricted/provisioning/general'] = array(
 	'path'		=> 'xivo/configuration/web_services/provisioning/general',
 	'define'	=> array(

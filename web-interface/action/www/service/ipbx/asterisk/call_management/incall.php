@@ -69,11 +69,9 @@ switch($act)
 		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
 		{
 			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
-
 			if($rightcall['slt'] !== false)
 			{
 				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
 				dwho::load_class('dwho_sort');
 				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
@@ -98,7 +96,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
-		$_TPL->set_var('context_list',$appincall->get_context_list());
+		$_TPL->set_var('context_list',$appincall->get_context_list(null,null,null,false,'from-extern'));
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
@@ -112,6 +110,7 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
+		$return['schedule_id'] = false;
 		$rightcall['slt'] = $rightcall = array();
 
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -168,7 +167,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
-		$_TPL->set_var('context_list',$appincall->get_context_list());
+		$_TPL->set_var('context_list',$appincall->get_context_list(null,null,null,false,'from-extern'));
 		$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');

@@ -25,7 +25,6 @@ $dhtml = &$this->get_module('dhtml');
 $act = $this->get_var('act');
 
 $search = (string) $this->get_var('search');
-$context = (string) $this->get_var('context');
 
 $toolbar_js = array();
 $toolbar_js[] = 'var xivo_toolbar_fm_search = \''.$dhtml->escape($search).'\';';
@@ -34,8 +33,6 @@ $toolbar_js[] = 'var xivo_toolbar_form_list = \'users[]\';';
 $toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
 $dhtml->write_js($toolbar_js);
-
-$context_js = $dhtml->escape($context);
 
 ?>
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
@@ -61,15 +58,7 @@ $context_js = $dhtml->escape($context);
 					   'id'		=> 'it-toolbar-subsearch',
 					   'src'	=> $url->img('img/menu/top/toolbar/bt-search.gif'),
 					   'paragraph'	=> false,
-					   'alt'	=> $this->bbf('toolbar_fm_search'))),
-
-			$form->select(array('name'	=> 'context',
-					    'id'	=> 'it-toolbar-context',
-					    'paragraph'	=> false,
-					    'empty'	=> $this->bbf('toolbar_fm_context'),
-					    'selected'	=> $context),
-				      $this->get_var('contexts'),
-				      'style="margin-left: 20px;"');
+					   'alt'	=> $this->bbf('toolbar_fm_search')));
 ?>
 	</div>
 </form>
@@ -88,8 +77,8 @@ $context_js = $dhtml->escape($context);
 				       'service/ipbx/pbx_settings/users',
 				       'act=import');?></li>
 	</ul>
-</div><?php
-
+</div>
+<?php
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
@@ -103,9 +92,6 @@ if($act === 'list'):
 		</li>
 		<li>
 			<a href="#" id="toolbar-advanced-menu-disable"><?=$this->bbf('toolbar_adv_menu_disable');?></a>
-		</li>
-		<li>
-			<a href="#" id="toolbar-advanced-menu-autoprov"><?=$this->bbf('toolbar_adv_menu_autoprov');?></a>
 		</li>
 		<li>
 			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
@@ -143,83 +129,10 @@ dwho.dom.set_onload(function()
 					dwho.fm[xivo_toolbar_form_name].submit();
 				}
 				 });
-
-	dwho.dom.add_event('click', dwho_eid('toolbar-advanced-menu-autoprov'),
-		function(e) {
-			document.getElementById('autoprov_reboot').checked = false;
-
-			dialog = document.getElementById('autoprov_dialog');
-			dialog.style.visibility= 'visible';
-		});
 });
-
-
-function autoprov_cancel()
-{
-	dialog = document.getElementById('autoprov_dialog');
-	dialog.style.visibility= 'hidden';
-
-	return false;
-}
-
-function autoprov_validate()
-{
-	dialog = document.getElementById('autoprov_dialog');
-	dialog.style.visibility= 'hidden';
-
-	dwho.fm[xivo_toolbar_form_name]['act'].value = 'autoprov';
-	dwho.fm[xivo_toolbar_form_name]['reboot'].value = document.getElementById('autoprov_reboot').checked;
-	dwho.fm[xivo_toolbar_form_name].submit();
-
-	return false;
-}
 </script>
-
-<div id="autoprov_dialog" class="dialog">
-	<table>
-		<tbody>
-			<tr class="sb-top">
-				<th class="th-left"><span>&nbsp;</span></th>
-				<th class="th-center"><span>&nbsp;</span></th>
-				<th class="th-right"><span>&nbsp;</span></th>	
-			</tr>
-			<tr class="l-infos-2on2">
-				<th class="content-left"><span>&nbsp;</span></th>
-				<th class="content">
-					<form action="#">
-						<input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/>
-						<input type="submit" value="<?=$this->bbf('autoprov_cancel');?>" onclick="return autoprov_cancel();";/>
-						<input type="submit" value="<?=$this->bbf('autoprov_validate');?>" onclick="return autoprov_validate();" />
-					</form>
-				</th>
-				<th class="content-right"></th>
-			</tr>
-			<tr class="sb-bottom">
-				<th class="th-left"><span>&nbsp;</span></th>
-				<th class="th-center"><span>&nbsp;</span></th>
-				<th class="th-right"><span>&nbsp;</span></th>	
-			</tr>
-		</tbody>
-	</table>
-</div>
-
 <?php
 
 endif;
 
 ?>
-<script type="text/javascript">
-dwho.dom.set_onload(function()
-{
-	dwho.dom.add_event('change',
-			   dwho_eid('it-toolbar-context'),
-			   function(e)
-			   {
-				if(xivo_toolbar_fm_search === ''
-				&& dwho_has_len(dwho.form.text_helper['it-toolbar-search']) === false)
-					this.form['search'].value = '';
-
-				this.form.submit();
-			   });
-});
-</script>

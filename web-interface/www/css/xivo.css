@@ -300,6 +300,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 
 #b-content .sb-smenu {clear: both;text-align: left;height: 17px;color: #999;border: 1px solid #9e9e9e;border-top-width: 0px;border-bottom-width: 0px;padding-bottom: 5px;}
 #b-content .sb-smenu li {cursor: pointer;}
+#b-content .sb-smenu a {outline: none;}
 #b-content .sb-smenu li, #b-content .sb-smenu .dwsm-blur {float: left;background-repeat: repeat-x;background-position: left top;}
 #b-content .sb-smenu li .tab {float: left;background-repeat: repeat-x;background-position: left top;}
 
@@ -307,7 +308,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .sb-smenu li .span-center {padding: 1px 6px 0px 12px;width: auto;}
 #b-content .sb-smenu li .span-right {height: 17px;}
 #b-content .sb-smenu .dwsm-blur .tab, #b-content .sb-smenu .dwsm-blur-last .tab, #b-content .sb-smenu .dwsm-blur-before .tab {background-image: url(../img/content/menu/bt-bg-2.gif); color: #999;}
-#b-content .sb-smenu .dwsm-blur .tab a, #b-content .sb-smenu .dwsm-blur-last .tab a, #b-content .sb-smenu .dwsm-blur-before .tab a, #b-content .sb-smenu .dwsm-select-before .tab a {color: #666;}
+#b-content .sb-smenu .dwsm-blur .tab a, #b-content .sb-smenu .dwsm-blur-last .tab a, #b-content .sb-smenu .dwsm-blur-before .tab a, #b-content .sb-smenu .dwsm-select-before .tab a {color: #666;outline: none;}
 #b-content .sb-smenu .dwsm-blur .span-right {background-image: url(../img/content/menu/bt-r-2.gif);}
 #b-content .sb-smenu .dwsm-blur-last .span-right {background-image: url(../img/content/menu/bt-r-2-last.gif);}
 
@@ -389,16 +390,20 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 
 input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
 
-.xivo-error {border: 1px solid red;background: #ed6a6a;}
-.xivo-warning {border: 1px solid yellow;background: #FF9;}
-.xivo-info {border: 1px solid green;background: #CFC;}
-.xivo-notice {border: 1px solid blue;background: #69f;}
-.xivo-debug {border: 1px solid black;background: #ccc;}
-.xivo-warning, .xivo-error, .xivo-info, .xivo-notice, .xivo-debug {padding: 5px;margin: 4px;line-height: 1em;}
+.xivo-messages {margin: 0;padding: 0;border: 1px solid;}
+.xivo-messages ul {margin: 0;padding: 0;}
+.xivo-messages ul li {margin: 3px;}
+.xivo-messages ul ul li {margin-left: 10px;}
 .xivo-messages img {border: 0;}
 .xivo-messages .xm_toggle {display: block;font: bold 11px/16px Arial, Helvetica, sans-serif;}
 .xivo-messages .xm_toggle span {float: left;}
 .xivo-messages .bt_export {float: right;display: block;font: bold 11px/16px Arial, Helvetica, sans-serif;}
-.xivo-messages ul {}
-.xivo-messages ul li {margin: 3px;}
-.xivo-messages ul ul li {margin-left: 10px;}
+.xivo-error {border-color: red;background: #ed6a6a;}
+.xivo-warning {border-color: yellow;background: #FF9;}
+.xivo-info {border-color: green;background: #CFC;}
+.xivo-notice {border-color: blue;background: #69f;}
+.xivo-debug {border-color: black;background: #ccc;}
+.xivo-warning, .xivo-error, .xivo-info, .xivo-notice, .xivo-debug {padding: 3px;margin: 4px;line-height: 1em;}
+
+.logo_proto	{height: 28px;outline: none;padding: 0 .85em;margin: auto;display: inline;float: left;}
+.logo_proto	a {display: block;text-decoration: none;direction: ltr;text-shadow: #eee 0 -1px 0;font: bold 12px/28px Arial, Helvetica, sans-serif;letter-spacing: 1px;}

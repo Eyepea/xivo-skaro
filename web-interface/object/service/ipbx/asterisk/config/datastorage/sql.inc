@@ -384,9 +384,29 @@ $array['operator_trunk'] = array();
 $array['operator_trunk']['table'] = 'operator_trunk';
 $array['operator_trunk']['primary'] = array('operator_id' => '','trunk_id' => '');
 
+$array['servicesgroup'] = array();
+$array['servicesgroup']['table'] = 'servicesgroup';
+$array['servicesgroup']['primary'] = array('id' => '');
+
+$array['servicesgroup_user'] = array();
+$array['servicesgroup_user']['table'] = 'servicesgroup_user';
+$array['servicesgroup_user']['primary'] = array('servicesgroup_id' => '','userfeatures_id' => '');
+
+$array['devicefeatures'] = array();
+$array['devicefeatures']['table'] = 'devicefeatures';
+$array['devicefeatures']['primary'] = array('id' => '');
+
+$array['linefeatures'] = array();
+$array['linefeatures']['table'] = 'linefeatures';
+$array['linefeatures']['primary'] = array('id' => '');
+
 $array['parkinglot'] = array();
 $array['parkinglot']['table'] = 'parkinglot';
 $array['parkinglot']['primary'] = array('id' => '');
+
+$array['contexttype'] = array();
+$array['contexttype']['table'] = 'contexttype';
+$array['contexttype']['primary'] = array('id' => '');
 
 $array['dundi'] = array();
 $array['dundi']['table'] = 'dundi';

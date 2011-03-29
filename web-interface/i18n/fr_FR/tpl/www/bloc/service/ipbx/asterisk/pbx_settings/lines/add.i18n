@@ -1,0 +1,794 @@
+; title_content_name
+Ligne > Ajouter
+
+; smenu_general
+Général
+
+; smenu_dialaction
+Non réponse
+
+; smenu_services
+Services
+
+; smenu_signalling
+Signalisation
+
+; smenu_advanced
+Avancé
+
+; smenu_t38
+T38
+
+; fm_protocol_name
+Identifiant :
+
+; fm_protocol_secret
+Mot de passe :
+
+; fm_linefeatures_number
+Numéro de téléphone :
+
+; fm_protocol_interface
+Interface :
+
+; fm_protocol_protocol
+Protocole :
+
+; fm_protocol_protocol-opt(sip)
+SIP
+
+; fm_protocol_protocol-opt(iax)
+IAX
+
+; fm_protocol_protocol-opt(sccp)
+SCCP
+
+; fm_protocol_protocol-opt(custom)
+Personnalisé
+
+; fm_protocol_context
+Contexte :
+
+; create_context
+Créer un contexte
+
+; fm_protocol_language
+Langue :
+
+; fm_protocol_nat
+NAT :
+
+; fm_protocol_nat-opt(no)
+Non
+
+; fm_protocol_nat-opt(yes)
+Oui
+
+; fm_protocol_nat-opt(never)
+Jamais
+
+; fm_protocol_nat-opt(route)
+Route
+
+; fm_protocol_subscribemwi
+Vérifier la présence de nouveaux messages :
+
+; fm_protocol_buggymwi
+Vérification, non conforme à la RFC, de nouveaux messages :
+
+; fm_protocol_progressinband
+Evénement RING dans la bande :
+
+; fm_protocol_progressinband-opt(no)
+Non
+
+; fm_protocol_progressinband-opt(yes)
+Oui
+
+; fm_protocol_progressinband-opt(never)
+Jamais
+
+; fm_protocol_dtmfmode
+DTMF :
+
+; fm_protocol_dtmfmode-opt(rfc2833)
+RFC 2833
+
+; fm_protocol_dtmfmode-opt(inband)
+InBand
+
+; fm_protocol_dtmfmode-opt(outofband)
+Outofband
+
+; fm_protocol_dtmfmode-opt(info)
+INFO
+
+; fm_protocol_dtmfmode-opt(auto)
+Auto
+
+; fm_protocol_rfc2833compensate
+Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
+
+; fm_protocol_qualify
+Supervision de la latence :
+
+; fm_protocol_qualify-opt(no)
+Non
+
+; fm_protocol_qualify-opt(yes)
+Oui
+
+; fm_protocol_qualify-opt
+%s millisecondes
+
+; fm_protocol_qualifysmoothing
+Calcul de la durée moyenne de la latence :
+
+; fm_protocol_qualifyfreqok
+Fréquence de vérification quand tout fonctionne :
+
+; fm_protocol_qualifyfreqnotok
+Fréquence de vérification quand il y a un problème :
+
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s millisecondes
+
+; fm_protocol_qualifyfreq-opt-second
+1 seconde
+
+; fm_protocol_qualifyfreq-opt-seconds
+%s secondes
+
+; fm_protocol_qualifyfreq-opt-minute
+1 minute
+
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
+
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_protocol_rtptimeout
+Délai d'attente pour le RTP :
+
+; fm_protocol_rtptimeout-opt(0)
+Désactivé
+
+; fm_protocol_rtptimeout-opt
+%s secondes
+
+; fm_protocol_rtpholdtimeout
+Délai du RTP sur attente :
+
+; fm_protocol_rtpholdtimeout-opt(0)
+Désactivé
+
+; fm_protocol_rtpholdtimeout-opt
+%s secondes
+
+; fm_protocol_rtpkeepalive
+Présence du RTP :
+
+; fm_protocol_rtpkeepalive-opt(0)
+Désactivée
+
+; fm_protocol_rtpkeepalive-opt
+%s secondes
+
+; fm_protocol_allowtransfer
+Autoriser les transferts :
+
+; fm_protocol_autoframing
+Frame automatique :
+
+; fm_protocol_videosupport
+Support vidéo :
+
+; fm_protocol_maxcallbitrate
+Bit rate maximal pour les appels vidéo :
+
+; fm_protocol_g726nonstandard
+Activer le support du G.726 non standard :
+
+; fm_protocol_jitterbuffer
+Activer le Jitter Buffer :
+
+; fm_protocol_forcejitterbuffer
+Forcer le Jitter Buffer :
+
+; fm_protocol_codecpriority
+Priorité des codecs :
+
+; fm_protocol_codecpriority-opt(disabled)
+Désactivée
+
+; fm_protocol_codecpriority-opt(host)
+Hôte
+
+; fm_protocol_codecpriority-opt(caller)
+Appelant
+
+; fm_protocol_codecpriority-opt(reqonly)
+Seulement par requête
+
+; fm_codec-custom
+Personnaliser les codecs :
+
+; fm_protocol_codec-disallow
+Codecs désactivés :
+
+; fm_protocol_codec-disallow-opt(all)
+Tous
+
+; fm_protocol_codec-allow
+Codecs activés :
+
+; bt_upcodec
+Monter un ou plusieurs codecs
+
+; bt_downcodec
+Descendre un ou plusieurs codecs
+
+; bt_incodec
+Ajouter un ou plusieurs codecs ->
+
+; bt_outcodec
+<- Enlever un ou plusieurs codecs
+
+; fld-callgroup
+Groupes
+
+; bt_ingroup
+Ajouter un ou plusieurs groupes ->
+
+; bt_outgroup
+<- Enlever un ou plusieurs groupes
+
+; fm_protocol_callerid
+Nom d'appel :
+
+; fm_protocol_sendani
+Envoyer la présentation du nom et numéro d'appel :
+
+; fm_protocol_insecure
+Insécurité :
+
+; fm_protocol_insecure-opt(no)
+Non
+
+; fm_protocol_insecure-opt(port)
+Port
+
+; fm_protocol_insecure-opt(invite)
+Invite
+
+; fm_protocol_insecure-opt(all)
+Tout
+
+; fm_protocol_host-type
+Type d'adressage IP :
+
+; fm_protocol_host-type-opt(dynamic)
+Dynamique
+
+; fm_protocol_host-type-opt(static)
+Statique
+
+; fm_protocol_mask
+Masque réseau :
+
+; fm_protocol_permit
+Adresse IP ou masque sous-réseau autorisés :
+
+; fm_protocol_deny
+Adresse IP ou masque sous-réseau refusés :
+
+; fm_protocol_trustrpid
+Faire confiance au Remote-Party-ID :
+
+; fm_protocol_sendrpid
+Envoyer le Remote-Party-ID :
+
+; fm_protocol_allowsubscribe
+Activer le support des souscriptions :
+
+; fm_protocol_allowoverlap
+Activer le chevauchement :
+
+; fm_protocol_promiscredir
+Support des redirections 302 :
+
+; fm_protocol_usereqphone
+Ajouter ";user=phone" dans l'URI :
+
+; fm_protocol_canreinvite
+Invite :
+
+; fm_protocol_canreinvite-opt(no)
+Non
+
+; fm_protocol_canreinvite-opt(yes)
+Oui
+
+; fm_protocol_canreinvite-opt(update)
+Mise à jour
+
+; fm_protocol_canreinvite-opt(nonat)
+Sans NAT
+
+; fm_protocol_canreinvite-opt(update-nonat)
+Mise à jour sans NAT
+
+; fm_protocol_fromuser
+Réécriture du champ From-User :
+
+; fm_protocol_fromdomain
+Réécriture du champ From-Domain :
+
+; fm_protocol_maxauthreq
+Maximum AUTHREQs autorisées :
+
+; fm_protocol_maxauthreq-opt(0)
+Désactivé
+
+; fm_protocol_maxauthreq-opt
+%s
+
+; fm_protocol_adsi
+Activer le support de l'ADSI :
+
+; fm_protocol_amaflags
+Drapeau de facturation :
+
+; fm_protocol_accountcode
+Numéro d'acompte :
+
+; fm_protocol_useclientcode
+Code client :
+
+; fm_protocol_adhocnumber
+Numéro adhoc: 
+
+; fm_protocol_video_cos
+COS vidéo: 
+
+; fm_protocol_video_tos
+TOS vidéo: 
+
+; fm_protocol_audio_cos
+COS audio: 
+
+; fm_protocol_audio_tos
+TOS audio: 
+
+; fm_protocol_secondary_dialtone_tone
+tonalité d'appel secondaire: 
+
+; fm_protocol_secondary_dialtone_digits
+Nombre de chiffres de la tonalité secondaire: 
+
+; fm_protocol_trustphoneip
+Faire confiance à l'IP du téléphone: 
+
+; fm_protocol_imageversion
+Version du firmware: 
+
+; fm_protocol_tzoffset
+Décalage par rapport au fuseau horaire: 
+
+; fm_protocol_incominglimit
+Limitation des appels entrants: 
+
+; fm_protocol_silencesuppression
+Suppression des silences: 
+
+; fm_protocol_echocancel
+Suppression de l'echo: 
+
+; fm_protocol_mwioncall
+MWI sur appel entrant: 
+
+; fm_protocol_mwilamp
+style MWI: 
+
+; fm_protocol_privacy
+Notification de la présence téléphonique: 
+
+; fm_protocol_private
+touche «notification de présence»: 
+
+; fm_protocol_earlyrtp
+RTP en avance: 
+
+; fm_protocol_directrtp
+RTP direct: 
+
+; fm_protocol_dnd
+Touche NPD: 
+
+; fm_protocol_pickupmodeanswer
+Décrocher l'appel avant interception: 
+
+; fm_protocol_pickupcontext
+Contexte d'interception directe: 
+
+; fm_protocol_pickupexten
+Interception directe: 
+
+; fm_protocol_cfwdnoanswer
+Transfert d'appel sur non réponse: 
+
+; fm_protocol_cfwdbusy
+Transfert d'appel sur occupation: 
+
+; fm_protocol_cfwdall
+Transfert d'appel inconditionnel: 
+
+; fm_protocol_park
+Parking des appels: 
+
+; fm_earlyrtp(none)
+Aucun
+
+; fm_earlyrtp(offhook)
+Décroché
+
+; fm_earlyrtp(dial)
+Appel
+
+; fm_earlyrtp(ringout)
+Sonnerie
+
+; fm_mwilamp(on)
+Allumé
+
+; fm_mwilamp(off)
+Éteint
+
+; fm_mwilamp(wink)
+Clignotant (wink)
+
+; fm_mwilamp(flash)
+Flash
+
+; fm_mwilamp(blink)
+Clignotant (blink)
+
+; fm_protocol_keepalive
+Vérification de présence: 
+
+; fm_privacy(on)
+Activée
+
+; fm_privacy(off)
+Dépend du statut de la touche
+
+; fm_privacy(full)
+Désactivée
+
+; no_disp2
+Aucun module d'extension
+
+
+; hlp_fm_park
+Autorise le parcage des appels
+
+; hlp_fm_cfwdall
+
+Activate callforward key
+
+; hlp_fm_cfwdbusy
+
+; hlp_fm_cfwdnoanswer
+
+; hlp_fm_pickupexten
+Autorise la fonction Pickup à intercepter une extension
+
+; hlp_fm_pickupcontext
+Contexte dans lequel la fonction Pickup recherchera les extensions. Ignoré si non défini
+
+; hlp_fm_pickupmodeanswer
+en mode *Asterisk*, l'appel est décroché avant l'interception.<br/>En mode *Call manager*, le téléphone intercepté continue à sonner
+
+; hlp_fm_dnd
+Active la touche NPD sur le téléphone (activé = rejet == émission du signal occupé, silence == aucun signal)
+
+; hlp_fm_directrtp
+Autorise le téléphone à ouvrir une session RTP directe (désactivé par défaut)
+
+; hlp_fm_earlyrtp
+Si activé, le flux audio est ouvert dans les états *progress* et *connected*. Désactivé par défaut
+
+; hlp_fm_private
+Active la touche de fonction *privée*
+
+; hlp_fm_privacy
+
+; hlp_fm_mwilamp
+Style de la loupiote MWI
+
+; hlp_fm_mwioncall
+Active MWI pour une appel
+
+; hlp_fm_echocancel
+Active la suppression d'echo
+
+; hlp_fm_silencesuppression
+Active la suppression des silences
+
+; hlp_fm_incominglimit
+Si déja en ligne, les appels suivants sont mis en attente
+
+; hlp_fm_keepalive
+mettre la valeur *0* pour désactiver la vérification de présence
+
+; hlp_fm_tzoffset
+
+; hlp_fm_imageversion
+Utile pour mettre à jours les vieux firmware (ceux qui ne téléchargent pas le fichier xml depuis le serveur tftp)
+
+; hlp_fm_trustphoneip
+Utile pour les téléphones derrière un NAT (où l'adresse IP du téléphone est différente de l'adresse de connexion)
+
+; hlp_fm_dialtone_digits
+Chiffre de la tonalité secondaire (9 max)
+
+; hlp_fm_dialtone_tone
+tonalité de sortie
+
+; hlp_fm_audio_tos
+Valeur «Type of Service» des paquets audio/RTP (par défaut 0xb8, soit 184).<br/>
+Les valeurs possibles sont 0x??, lowdelay, throughput, reliability, mincost (sur solaris uniquement), none
+
+; hlp_fm_audio_cos
+Valeur «Class of Service» des paquets audio/RTP (par défaut 6)
+
+; hlp_fm_video_tos
+Valeur «Type of Service» des paquets vidéo/RTP (par défaut 0x88, soit 136)
+
+; hlp_fm_video_cos
+Valeur «Class of Service» des paquets vidéo/RTP (par défaut 5)
+
+; hlp_fm_sccp_amaflags
+Drapeau de facturation enregistré dans la table CDR
+
+; hlp_fm_adhocnumber
+Numéro Adhoc ou «Private-line automatic ringdown» (PLAR). Les lignes Adhoc/PLAR sont statiques et ne nécéssite pas la saisie d'un numéro de la part de l'utilisateur:<br/>
+<ul>
+<li>Le numéro adhoc est automatiquement composé dès que le téléphone est décroché ou que l'utilisateur appuie sur le bouton «nouvelle appel»</li>
+<li>Par contre, l'utilisateur pourra toujours composer un numéro après avoir sélectionné une ligne</li>
+</ul>
+
+; fm_pickupmodeanswer-opt(on)
+Asterisk
+
+; fm_pickupmodeanswer-opt(off)
+Callmanager
+
+; fm_protocol_requirecalltoken
+Validation des jetons d'appel :
+
+; fm_protocol_requirecalltoken-opt(no)
+Désactivée
+
+; fm_protocol_requirecalltoken-opt(yes)
+Activée
+
+;;; asterisk 1.8 fields
+
+; fm_protocol-transport
+Protocoles réseau : 
+
+; hlp_fm_protocol-transport
+Config asterisk: transport
+
+; fm_protocol-remotesecret
+Mot de passe distant : 
+
+; hlp_fm_protocol-remotesecret
+Config asterisk: remotesecret
+
+; fm_protocol-directmedia
+Rediriger le flux RTP de pair à pair : 
+
+; hlp_fm_protocol-directmedia
+Config asterisk: directmedia
+
+; fm_protocol-directmedia-opt(no)
+Non
+
+; fm_protocol-directmedia-opt(yes)
+Oui
+
+; fm_protocol-directmedia-opt(nonat)
+Pas sur le NAT
+
+; fm_protocol-directmedia-opt(update)
+Oui, via UPDATE
+
+; fm_protocol-directmedia-opt(update,nonat)
+Oui, via UPDATE + pas sur le NAT
+
+; fm_protocol-callcounter
+Compter les appels : 
+
+; hlp_fm_protocol-callcounter
+Config asterisk: callcounter
+
+; fm_protocol-busylevel
+Envoyer le signal OCCUPÉ au dessus du nombre d'appels : 
+
+; hlp_fm_protocol-busylevel
+Config asterisk: busylevel
+
+; fm_protocol-ignoresdpversion
+Ignorer le numéro de version des paquets SDP : 
+
+; hlp_fm_protocol-ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_protocol-session-timers
+Activer session-timer : 
+
+; hlp_fm_protocol-session-timers
+Config asterisk: session-timers
+
+; fm_protocol-session-timers-opt(originate)
+Toujours
+
+; fm_protocol-session-timers-opt(accept)
+Sur demande uniquement
+
+; fm_protocol-session-timers-opt(refuse)
+Non
+
+; fm_protocol-session-expires
+Interval maximal de rafraîchissement de la session : 
+
+; hlp_fm_protocol-session-expires
+Config asterisk: session-expires
+
+; fm_protocol-session-minse
+Interval minimal de rafraîchissement de la session : 
+
+; hlp_fm_protocol-session-minse
+Config asterisk: session-minse
+
+; fm_protocol-session-refresher
+Session mise à jour par le : 
+
+; hlp_fm_protocol-session-refresher
+Config asterisk: session-refresher
+
+; fm_protocol-session-refresher-opt(uas)
+Serveur
+
+; fm_protocol-session-refresher-opt(uac)
+Client
+
+; fm_protocol-callbackextension
+Extension où aboutissent les appels entrants : 
+
+; hlp_fm_protocol-callbackextension
+Config asterisk: callbackextension
+
+; fm_protocol-registertrying
+Envoyer un «100 Trying» lors de l'enregistrement : 
+
+; hlp_fm_protocol-registertrying
+Config asterisk: registertrying
+
+; fm_protocol-timert1
+Délai T1 : 
+
+; hlp_fm_protocol-timert1
+Config asterisk: timert1
+
+; fm_protocol-timerb
+Délai de configuration : 
+
+; hlp_fm_protocol-timerb
+Config asterisk: timerb
+
+; fm_protocol-qualifyfreq
+Fréquence de supervision : 
+
+; hlp_fm_protocol-qualifyfreq
+Config asterisk: qualifyfreq
+
+; fm_protocol-contactpermit
+Adresses de contact autorisées : 
+
+; hlp_fm_protocol-contactpermit
+Config asterisk: contactpermit
+
+; fm_protocol-contactdeny
+Adresses de contact interdites : 
+
+; hlp_fm_protocol-contactdeny
+Config asterisk: contactdeny
+
+
+; fm_register-transport
+Transport : 
+
+; hlp_fm_register-transport
+
+; fm_register-expiry
+Délai d'expiration : 
+
+; hlp_fm_register-expiry
+Config asterisk: expiry
+
+; fm_register-callbackextension
+Utiliser l'extension de l'interconnexion : 
+
+; fm_protocol-immediate
+Décrocher immédiatement : 
+
+; hlp_fm_protocol-immediate
+Config asterisk: immediate
+
+
+; fm_protocol-unsolicited_mailbox
+Boîte vocale non solicitée : 
+
+; hlp_fm_protocol-unsolicited_mailbox
+Config asterisk: unsolicited_mailbox
+
+; fm_protocol-use_q850_reason
+Utiliser l'en-tête «Reason» : 
+
+; hlp_fm_protocol-use_q850_reason
+Config asterisk: use_q850_reason
+
+; fm_protocol-encryption
+Chiffrage des communications : 
+
+; hlp_fm_protocol-encryption
+Config asterisk: encryption
+
+; fm_protocol-forceencryption
+Chiffrage des communications (forcé): 
+
+; hlp_fm_protocol-forceencryption
+Config asterisk: forceencryption
+
+; fm_protocol-snom_aoc_enabled
+Envoyer AOC-D/AOC-E aux terminaux Snom : 
+
+; hlp_fm_protocol-snom_aoc_enabled
+Config asterisk: snom_aoc_enabled
+
+; fm_protocol-disallowed_methods
+Interdire les méthodes SIP suivantes : 
+
+; hlp_fm_protocol-disallowed_methods
+Config asterisk: disallowed_methods
+
+; fm_protocol-maxforwards
+Nombre de relais maximum : 
+
+; hlp_fm_protocol-maxforwards
+Config asterisk: maxforwards
+
+; fm_protocol-textsupport
+Support Texte : 
+
+; hlp_fm_protocol-textsupport
+Config asterisk: textsupport
+
+; hlp_fm_protocol-videosupport
+Config asterisk: videosupport
+
+; fm_protocol-videosupport-opt(no)
+Non
+
+; fm_protocol-videosupport-opt(yes)
+Oui
+
+; fm_protocol-videosupport-opt(always)
+Toujours

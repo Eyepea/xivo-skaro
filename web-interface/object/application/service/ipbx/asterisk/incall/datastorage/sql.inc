@@ -23,15 +23,16 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','data
 class xivo_application_service_asterisk_incall_sql extends xivo_application_abstract_datastorage_sql
 {
 	var $_table	= array(
-				'incall'		=> '',
+				'incall'			=> '',
 				'dialaction'		=> '',
 				'userfeatures'		=> '',
+				'linefeatures'		=> '',
 				'groupfeatures'		=> '',
 				'queuefeatures'		=> '',
 				'meetmefeatures'	=> '',
-				'voicemail'		=> '',
-				'schedule'		=> '',
-				'voicemenu'		=> '');
+				'voicemail'			=> '',
+				'schedule'			=> '',
+				'voicemenu'			=> '');
 
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
@@ -46,6 +47,16 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['userfeatures'].'.id',
 				      null,
 				      array('userfirstname'	=> 'firstname',
+					    'userlastname'	=> 'lastname'));
+
+		$this->_dso->joinwhere($this->_table['userfeatures'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'user');
+/*
+		$this->_dso->leftjoin($this->_table['userfeatures'],
+				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['userfeatures'].'.id',
+				      null,
+				      array('userfirstname'	=> 'firstname',
 					    'userlastname'	=> 'lastname',
 					    'usernumber'	=> 'number',
 					    'usercontext'	=> 'context',
@@ -54,6 +65,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 		$this->_dso->joinwhere($this->_table['userfeatures'],
 				       $this->_table['dialaction'].'.action = %s',
 				       'user');
+*/
 
 		$this->_dso->leftjoin($this->_table['groupfeatures'],
 				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['groupfeatures'].'.id',
@@ -102,7 +114,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 				       $this->_table['dialaction'].'.action = %s',
 				       'voicemail');
 
-		
+
 		/* DEACTIVATED FOR NEW SCHEDULE MODE
 		$this->_dso->leftjoin($this->_table['schedule'],
 				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['schedule'].'.id',

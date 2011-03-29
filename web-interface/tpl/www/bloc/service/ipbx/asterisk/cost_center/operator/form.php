@@ -23,7 +23,6 @@ $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
-$user = $this->get_var('user');
 $trunk = $this->get_var('trunk');
 
 $dhtml = &$this->get_module('dhtml');

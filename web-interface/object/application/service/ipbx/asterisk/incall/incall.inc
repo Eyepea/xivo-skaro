@@ -93,7 +93,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$this->_get_callerid($this->_info['incall']['id']);
 
 		$schedule = $this->_schedule_path->get_where(array('path' => 'incall', 'pathid'	=> $this->_info['incall']['id']));
-		if($schedule !== false)	
+		if($schedule !== false)
 			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
@@ -199,9 +199,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 				case 'user':
 					$arr['firstname'] = $ref['userfirstname'];
 					$arr['lastname'] = $ref['userlastname'];
-					$arr['number'] = $ref['usernumber'];
-					$arr['context'] = $ref['usercontext'];
-					$arr['name'] = $ref['username'];
+					#$arr['number'] = $ref['usernumber'];
+					#$arr['context'] = $ref['usercontext'];
+					#$arr['name'] = $ref['username'];
 					$ref['destidentity'] = $this->_service->identity('userfeatures',$arr);
 					break;
 				case 'group':
@@ -400,7 +400,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		return $this->_schedule_path->schedule_add(
 			$this->get_result('schedule_id'),
-			'incall', 
+			'incall',
 			$incallid);
 	}
 
@@ -490,7 +490,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		return $this->_schedule_path->schedule_add(
 			$this->get_result('schedule_id'),
-			'incall', 
+			'incall',
 			$this->_info['incall']['id']);
 	}
 

@@ -20,7 +20,7 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract.inc'));
 
-class xivo_application_service_abstract extends xivo_application_abstract
+abstract class xivo_application_service_abstract extends xivo_application_abstract
 {
 	function _load_abstract_class($abstract)
 	{

@@ -701,6 +701,8 @@ class dwho_filter
 		if(isset($arr['eol']) === true)
 			$value = dwho_eol($value);
 
+		$isint = is_int($value);
+
 		if(isset($arr['notag']) === false)
 			$value = dwho_notag($value);
 		else if(isset($arr['notagscript']) === true)

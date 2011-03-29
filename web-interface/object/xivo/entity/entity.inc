@@ -22,8 +22,8 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 
 class xivo_object_entity extends xivo_object_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'entity';
+	var $_dso			= null;
+	var $_name			= 'entity';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;

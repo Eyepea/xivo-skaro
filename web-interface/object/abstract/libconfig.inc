@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_libconfig_abstract
+abstract class xivo_libconfig_abstract
 {
 	function _load_config($dir)
 	{

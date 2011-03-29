@@ -20,7 +20,7 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','service','abstract.inc'));
 
-class xivo_application_asterisk_abstract extends xivo_application_service_abstract
+abstract class xivo_application_asterisk_abstract extends xivo_application_service_abstract
 {
 	var $_service		= null;
 	var $_service_type	= 'ipbx';
@@ -84,7 +84,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function get_context_list($disable=null,$order=null,$limit=null,$assoc=false)
+	function get_context_list($disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
 		if(isset($this->_contextlist) === false)
 			return(false);
@@ -100,7 +100,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 			$order['name'] = SORT_ASC;
 		}
 
-		return(($this->_contextlist = $context->get_all($disable,true,$order,$limit,$assoc)));
+		return(($this->_contextlist = $context->get_all($disable,$order,$limit,$assoc,$type)));
 	}
 
 	function get_trunk_list($disable=null,$order=null,$limit=null,$assoc=false)
@@ -140,6 +140,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$this->_info['extenumbers'] = false;
 		$this->_origin['extenumbers'] = false;
 
+		$typeval = (string) $typeval;
+
 		if(($this->_info['extenumbers'] = $this->_extenumbers->get($typeval)) !== false)
 			$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
 
@@ -150,6 +152,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	{
 		$this->_info['rightcall'] = false;
 		$this->_origin['rightcall'] = false;
+
+		$typeval = (string) $typeval;
 
 		if(($this->_info['rightcall'] = $this->_rightcall->get($typeval)) !== false)
 			$this->_origin['rightcall'] = $this->_rightcall->get_origin();
@@ -173,6 +177,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$this->_info['contextnummember'] = false;
 		$this->_origin['contextnummember'] = false;
 
+		$typeval = (string) $typeval;
+
 		if(($this->_info['contextnummember'] = $this->_contextnummember->get($typeval)) !== false)
 			$this->_origin['contextnummember'] = $this->_contextnummember->get_origin();
 
@@ -184,6 +190,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$this->_info['contextmember'] = false;
 		$this->_origin['contextmember'] = false;
 
+		$typeval = (string) $typeval;
+
 		if(($this->_info['contextmember'] = $this->_contextmember->get($typeval,$varname)) !== false)
 			$this->_origin['contextmember'] = $this->_contextmember->get_origin();
 
@@ -194,6 +202,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	{
 		$this->_info['callerid'] = false;
 		$this->_origin['callerid'] = false;
+
+		$typeval = (string) $typeval;
 
 		if(($this->_info['callerid'] = $this->_callerid->get($typeval)) !== false)
 			$this->_origin['callerid'] = $this->_callerid->get_origin();
@@ -295,7 +305,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function add_extenumbers($typeval)
 	{
-		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
+		if(($rs = $this->_extenumbers->add((string) $typeval)) === null || $rs === false)
 			return($rs);
 
 		return(($this->_return['extenumbers'] = $this->_extenumbers->get_return()));
@@ -311,7 +321,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function add_rightcall($typeval)
 	{
-		$r = $this->_rightcall->add($typeval);
+		$r = $this->_rightcall->add((string) $typeval);
 
 		$this->_return['rightcall'] = $this->_rightcall->get_return();
 
@@ -329,7 +339,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function add_contextnummember($typeval)
 	{
-		$r = $this->_contextnummember->add($typeval);
+		$r = $this->_contextnummember->add((string) $typeval);
 
 		$this->_return['contextnummember'] = $this->_contextnummember->get_return();
 
@@ -338,7 +348,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function add_contextmember($typeval='')
 	{
-		$r = $this->_contextmember->add($typeval);
+		$r = $this->_contextmember->add((string) $typeval);
 
 		$this->_return['contextmember'] = $this->_contextmember->get_return();
 
@@ -347,7 +357,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function add_callerid($typeval)
 	{
-		$r = $this->_callerid->add($typeval);
+		$r = $this->_callerid->add((string) $typeval);
 
 		$this->_return['callerid'] = $this->_callerid->get_return();
 
@@ -536,9 +546,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$order = array();
 		$order['firstname'] = SORT_ASC;
 		$order['lastname'] = SORT_ASC;
-		$order['number'] = SORT_ASC;
-		$order['context'] = SORT_ASC;
-		$order['name'] = SORT_ASC;
+		//$order['number'] = SORT_ASC;
 
 		if(($userfeatures = &$this->_service->get_module('userfeatures')) !== false
 		&& ($r = $userfeatures->get_all_except($id,$number,$order)) !== false)

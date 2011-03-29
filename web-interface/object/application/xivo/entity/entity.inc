@@ -53,7 +53,7 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$type=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -65,7 +65,7 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_info['deletable'] = $this->_get_context() === false;
+		$this->_info['deletable'] = $this->_get_context($type) === false;
 
 		return($this->_info);
 	}
@@ -75,13 +75,17 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 		return($this->_entity->get_nb($arr,$disable));
 	}
 
-	function _get_context()
+	function _get_context($type=null)
 	{
 		$this->_info['context'] = false;
 		$this->_origin['context'] = false;
 
-		if(($this->_info['context'] = $this->_context->get_all_where(
-								array('entity' => $this->_info['entity']['name']))) === false)
+		$where = array();
+		$where['entity'] = $this->_info['entity']['name'];
+		if (is_null($type) === false)
+			$where['contexttype'] = $type;
+
+		if(($this->_info['context'] = $this->_context->get_all_where($where)) === false)
 			return(false);
 
 		$this->_origin['context'] = $this->_context->get_origin_list();
@@ -97,17 +101,17 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 		return($r);
 	}
 
-	function get_entities_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	function get_entities_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
-		return($this->_get_entities('search',$search,$disable,$order,$limit,$assoc));
+		return($this->_get_entities('search',$search,$disable,$order,$limit,$assoc,$type));
 	}
 
-	function get_entities_list($disable=null,$order=null,$limit=null,$assoc=false)
+	function get_entities_list($disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
-		return($this->_get_entities('list',null,$disable,$order,$limit,$assoc));
+		return($this->_get_entities('list',null,$disable,$order,$limit,$assoc,$type));
 	}
 
-	function _get_entities($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	function _get_entities($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
 		$search = strval($search);
 
@@ -125,8 +129,6 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 				break;
 			case 'list':
 			default:
-				$action = 'list';
-
 				$rs = $this->_entity->get_all($disable,true,$order,$limit);
 				$this->_cnt = $this->_entity->get_cnt();
 		}
@@ -144,6 +146,16 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 			$ref['entity']['disable'] = (bool) $ref['entity']['disable'];
 			$ref['entity']['identity'] = $this->_xobj->identity('entity',$ref['entity']);
 			$ref['nb_context'] = dwho_ulongint($this->_context->get_nb(array('entity' => $rs[$i]['name'])));
+
+			if (is_null($type) === false)
+			{
+				$where = array();
+				$where['entity'] = $rs[$i]['name'];
+				if (is_null($type) === false)
+					$where['contexttype'] = $type;
+
+				$ref['context'] = $this->_context->get_all_where($where);
+			}
 		}
 
 		if(empty($r) === true)

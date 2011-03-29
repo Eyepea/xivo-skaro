@@ -46,6 +46,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		if(dwho_has_len($data,'exten') === true)
 			$data['exten'] = $this->_sre->display_extension($data['exten']);
 
+		$data['typeval'] = (string) $data['typeval'];
+
 		return($data);
 	}
 
@@ -59,6 +61,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 		$arr['extenhash'] = sha1($exten);
 		$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
+		$arr['typeval'] = (string) $arr['typeval'];
 
 		return(parent::add($arr,$id));
 	}
@@ -68,6 +71,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
+		$arr['typeval'] = (string) $arr['typeval'];
 		unset($arr['extenhash']);
 
 		if(dwho_has_len($arr,'exten') === true)
@@ -113,6 +117,9 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 			return(false);
 
 		$extenhash = sha1($extenchk);
+
+		$type = (string) $type;
+		$typeval = (string) $typeval;
 
 		if(($list = $this->_dso->search($exten,$extenhash,$context,$type,$typeval)) === false)
 			return(false);

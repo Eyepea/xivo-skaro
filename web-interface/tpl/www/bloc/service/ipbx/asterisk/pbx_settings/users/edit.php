@@ -25,7 +25,7 @@ $info    = $this->get_var('info');
 <div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?> <font><?=$info['userfeatures']['identity']?></font></span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?>&nbsp;&nbsp;<font size="-2"><?php //$info['userfeatures']['identity'] ?></font></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 <?php

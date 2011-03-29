@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'usersip';
+	var $_dso		= null;
+	var $_name		= 'usersip';
 	var $_filter	= false;
 	var $_origin	= false;
 
@@ -47,6 +47,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		$data['commented'] = (bool) $data['commented'];
 		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 		$data['pickupgroup'] = empty($data['pickupgroup']) === false ? explode(',',$data['pickupgroup']) : '';
+		$data['identity'] = strtoupper($data['protocol']).'/'.$data['name'];
 
 		if(($pos = strrpos($data['mailbox'],'@')) !== false)
 		{
@@ -81,6 +82,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 
 		$arr['type'] = 'friend';
 		$arr['username'] = null;
+		$arr['md5secret'] = md5($arr['secret']);
 		$arr['fullname'] = null;
 		$arr['cid_number'] = null;
 		$arr['mohinterpret'] = null;

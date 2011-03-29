@@ -32,7 +32,7 @@ Centre de contacts
 Files d'attente
 
 ; mn_left_callcenter-queues-penalties
-Pénalitées (files d'attente)
+Pénalitées
 
 ; mn_left_callcenter-agents
 Agents
@@ -45,6 +45,12 @@ Règles
 
 ; mn_left_ti_pbxsettings
 Paramètres IPBX
+
+;mn_left_pbxsettings-devices
+Terminaisons
+
+;mn_left_pbxsettings-lines
+Lignes
 
 ; mn_left_pbxsettings-users
 Utilisateurs

@@ -334,17 +334,11 @@ class xivo_application_service_asterisk_operator extends xivo_application_asteri
 			return(false);
 		}
 
+		array_pop($reslist);
+
 		for($i = 0;$i < count($reslist);$i++)
 		{
 			$ref = &$reslist[$i];
-			if ($ref['name'] === ''
-			&& $ref['exten'] === ''
-			&& $ref['price'] === ''
-			&& $ref['price_is'] === 'minute')
-			{
-				unset($reslist[$i]);
-				continue;
-			}
 			if($this->_operator_destination->chk_values($ref) === false)
 			{
 				$errnb++;

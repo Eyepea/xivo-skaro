@@ -24,10 +24,6 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 {
 	var $_table	= array(
 				'userfeatures'		=> '',
-				'usersip'		=> '',
-				'useriax'		=> '',
-				'usersccp'	=> '',
-				'usercustom'		=> '',
 				'callfilter'		=> '',
 				'callfiltermember'	=> '',
 				'phonefunckey'		=> '',
@@ -42,74 +38,16 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			$arr = array();
 
 		$this->_dso->new_select($this->_table['userfeatures']);
-		$this->_dso->leftjoin($this->_table['usersip'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersip'].'.id');
-		$this->_dso->leftjoin($this->_table['useriax'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['useriax'].'.id');
-		$this->_dso->leftjoin($this->_table['usersccp'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersccp'].'.id');
-		$this->_dso->leftjoin($this->_table['usercustom'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usercustom'].'.id');
-
-		$this->_dso->where($this->_table['usersip'].'.id IS NOT NULL');
-		$this->_dso->orwhere($this->_table['useriax'].'.id IS NOT NULL');
-		$this->_dso->orwhere($this->_table['usersccp'].'.id IS NOT NULL');
-		$this->_dso->orwhere($this->_table['usercustom'].'.id IS NOT NULL');
-
-		$this->_dso->aggregate_where();
-
-		$sip = $iax = $sccp = $custom = array();
-		$sip['category'] = $iax['category'] = $custom['category'] = 'user';
-
-		$arr['internal'] = 0;
 
 		if($disable !== null)
-		{
-			$disable = intval((bool) $disable);
-			$arr['commented'] = $disable;
-			$sip['commented'] = $disable;
-			$iax['commented'] = $disable;
-			$sccp['commented'] = $disable;
-			$custom['commented'] = $disable;
-		}
+			$arr['commented'] = intval((bool) $disable);
 
-		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
-		$this->_dso->joinwhere($this->_table['usersip']   ,$sip);
-		$this->_dso->joinwhere($this->_table['useriax']   ,$iax);
-		$this->_dso->joinwhere($this->_table['usersccp'],$sccp);
-		$this->_dso->joinwhere($this->_table['usercustom'],$custom);
-
-		$this->_dso->andjoinwhere($this->_table['usersip'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['usersip'].'.protocol');
-
-		$this->_dso->andjoinwhere($this->_table['useriax'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['useriax'].'.protocol');
-
-		$this->_dso->andjoinwhere($this->_table['usersccp'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['usersccp'].'.protocol');
-
-		$this->_dso->andjoinwhere($this->_table['usercustom'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['usercustom'].'.protocol');
-
-		if($initialized !== null)
-		{
-			if((bool) $initialized === false)
-				$this->_dso->andjoinwhere($this->_table['usersip'],
-							  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
-			else
-				$this->_dso->andjoinwherenot($this->_table['usersip'],
-							  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
-		}
+		$this->_dso->where($arr,$this->_table['userfeatures']);
 
 		return(dwho_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
 	}
 
-	/**
-	 *
-	 * options:
-	 *		- internal: if true, also return internal accounts (*guest* account indeed)
-	*/
-	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null,$internal=false)
+	function get_all($disable=null,$initialized=null,$order=null,$limit=null,$value=null,$mode=null)
 	{
 		$this->_cnt = 0;
 
@@ -120,140 +58,27 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 
 		$this->_dso->new_select($this->_table['userfeatures']);
 
-		if(is_array($protocols) === false)
-			$use_sip = $use_iax = $use_sccp = $use_custom = true;
-		else
-		{
-			$use_sip  = in_array(XIVO_SRE_IPBX_AST_PROTO_SIP ,$protocols);
-			$use_iax  = in_array(XIVO_SRE_IPBX_AST_PROTO_IAX ,$protocols);
-			$use_sccp = in_array(XIVO_SRE_IPBX_AST_PROTO_SCCP,$protocols);
-			$use_custom = in_array(XIVO_SRE_IPBX_AST_PROTO_CUSTOM,$protocols);
-			$this->_dso->wherein('protocol',$protocols,$this->_table['userfeatures']);
-		}
-
-		if($use_sip === false && $use_iax === false && $use_sccp === false && $use_custom === false)
-			return(false);
-
-		if(!$internal)
-			$arr['internal'] = 0;
-
-		$sip = $iax = $custom = $sccp = array();
-		$sip['category'] = $iax['category'] = $custom['category'] = 'user';
-
 		if($disable !== null)
-		{
-			$disable = intval((bool) $disable);
-			$arr['commented'] = $disable;
-			$sip['commented'] = $disable;
-			$iax['commented'] = $disable;
-			$sccp['commented']   = $disable;
-			$custom['commented'] = $disable;
-		}
+			$arr['commented'] = intval((bool) $disable);
 
 		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
 
-		if($mode === 'number')
-			$this->_dso->andwherenot('COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
-
-		if($use_sip === true)
-		{
-			$this->_dso->leftjoin($this->_table['usersip'],
-					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersip'].'.id',
-					      null,
-					      '*');
-
-			$this->_dso->joinwhere($this->_table['usersip'],$sip);
-
-			$this->_dso->andjoinwhere($this->_table['usersip'],
-						  $this->_table['userfeatures'].'.protocol = '.$this->_table['usersip'].'.protocol');
-
-			if($initialized !== null)
-			{
-				if((bool) $initialized === false)
-					$this->_dso->andjoinwhere($this->_table['usersip'],
-								  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
-				else
-					$this->_dso->andjoinwherenot($this->_table['usersip'],
-								  'COALESCE('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
-			}
-		}
-
-		if($use_iax === true)
-		{
-			$this->_dso->leftjoin($this->_table['useriax'],
-					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['useriax'].'.id',
-					      null,
-					      '*');
-
-			$this->_dso->joinwhere($this->_table['useriax'],$iax);
-
-			$this->_dso->andjoinwhere($this->_table['useriax'],
-						  $this->_table['userfeatures'].'.protocol = '.$this->_table['useriax'].'.protocol');
-		}
-
-		if($use_sccp === true)
-		{
-			$this->_dso->leftjoin($this->_table['usersccp'],
-					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersccp'].'.id',
-					      null,
-					      '*');
-
-			$this->_dso->joinwhere($this->_table['usersccp'],$sccp);
-
-			$this->_dso->andjoinwhere($this->_table['usersccp'],
-						  $this->_table['userfeatures'].'.protocol = '.$this->_table['usersccp'].'.protocol');
-		}
-		
-		if($use_custom === true)
-		{
-			$this->_dso->leftjoin($this->_table['usercustom'],
-					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usercustom'].'.id',
-					      null,
-					      'interface');
-
-			$this->_dso->joinwhere($this->_table['usercustom'],$custom);
-
-			$this->_dso->andjoinwhere($this->_table['usercustom'],
-						  $this->_table['userfeatures'].'.protocol = '.$this->_table['usercustom'].'.protocol');
-		}
+		//if($mode === 'number')
+		//	$this->_dso->andwherenot('COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
 
 		$this->_dso->aggregate_where();
-
-		if(($has_context = dwho_has_len($context)) === true)
-			$this->_dso->where($this->_table['userfeatures'].'.context = %s',$context);
 
 		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);
 
 			if(($concat = $this->_dso->concat(array((object) ($this->_table['userfeatures'].'.firstname'),
 								' ',
 								(object) ($this->_table['userfeatures'].'.lastname')))) !== false)
 				$this->_dso->orwherecontain((object) $concat,$value,true);
-
-			if($mode === null && $has_context === false && $context !== false)
-				$this->_dso->orwherecontain('context',$value,true,$this->_table['userfeatures']);
 		}
-
-		$this->_dso->aggregate_where();
-
-		if($use_sip === true)
-			$this->_dso->orwhere($this->_table['usersip'].'.id IS NOT NULL');
-
-		if($use_iax === true)
-			$this->_dso->orwhere($this->_table['useriax'].'.id IS NOT NULL');
-
-		if($use_sccp === true)
-			$this->_dso->orwhere($this->_table['usersccp'].'.id IS NOT NULL');
-
-		if($use_custom === true)
-			$this->_dso->orwhere($this->_table['usercustom'].'.id IS NOT NULL');
-
-		$this->_dso->aggregate_where(false,'AND');
 
 		$this->_dso->new_order($order,null,$this->_table['userfeatures']);
 		$this->_dso->limit($limit);
@@ -270,17 +95,17 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		return($r);
 	}
 
-	function search($value,$context,$protocols,$disable=null,$initialized=null,$order=null,$limit=null,$mode=null)
+	function search($value,$disable=null,$initialized=null,$order=null,$limit=null,$mode=null)
 	{
 		$this->_cnt = 0;
 
 		if(dwho_has_len($value) === false && $mode === null)
 			return(false);
 
-		return($this->get_all($protocols,$disable,$initialized,$order,$limit,$value,$context,$mode));
+		return($this->get_all($disable,$initialized,$order,$limit,$value,$mode));
 	}
 
-	function get_bsfilter($id,$context,$bsfilter)
+	function get_bsfilter($id,$bsfilter)
 	{
 		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
@@ -293,8 +118,6 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				       $this->_table['userfeatures'].'.id = '. $this->_dso->cast($this->_table['callfiltermember'].'.typeval', 'int'),
 				       null,
 				       'callfilterid');
-
-		$this->_dso->where(array('id' => intval($id),'internal' => 0),$this->_table['userfeatures']);
 
 		$this->_dso->joinwhere($this->_table['callfiltermember'],array('type' => 'user','bstype' => $bsfilter));
 		$this->_dso->andjoinwhere($this->_table['callfiltermember'],
@@ -314,11 +137,10 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				       null,
 				       '*');
 
-		$this->_dso->joinwhere($this->_table['userfeatures'],array('context' => $context,'internal' => 0));
 		$this->_dso->andjoinwhere($this->_table['userfeatures'],
 					  $this->_table['callfiltermember'].'.bstype = '.$this->_table['userfeatures'].'.bsfilter');
-		$this->_dso->andjoinwherenot($this->_table['userfeatures'],
-					     'COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
+		//$this->_dso->andjoinwherenot($this->_table['userfeatures'],
+		//			     'COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
 
 		$this->_dso->innerjoin($this->_table['callfilter'],
 				       $this->_table['callfiltermember'].'.callfilterid = '.$this->_table['callfilter'].'.id',
@@ -338,7 +160,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		return($r);
 	}
 
-	function chk_bsfilter($id,$context,$bsfilter,$user2id)
+	function chk_bsfilter($id,$bsfilter,$user2id)
 	{
 		if(($id = dwho_ulongint($id)) === 0
 		|| ($user2id = dwho_ulongint($user2id)) === 0)
@@ -356,8 +178,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->innerjoin(array('user1' => $this->_table['userfeatures']),
 				       $this->_dso->cast('cfilterm1.typeval','int').' = user1.id');
 		$this->_dso->joinwhere('user1','cfilterm1.bstype = user1.bsfilter');
-		$this->_dso->andjoinwhere('user1',array('id' => $id,'internal' => 0));
-		$this->_dso->andjoinwherenot('user1','COALESCE(user1.number,\'\') = \'\'');
+		$this->_dso->andjoinwhere('user1',array('id' => $id));
+		//$this->_dso->andjoinwherenot('user1','COALESCE(user1.number,\'\') = \'\'');
 
 		$this->_dso->innerjoin(array('cfilterm2' => $this->_table['callfiltermember']),
 				       $this->_table['callfilter'].'.id = cfilterm2.callfilterid',
@@ -369,10 +191,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		$this->_dso->innerjoin(array('user2' => $this->_table['userfeatures']),
 				       $this->_dso->cast('cfilterm2.typeval','int').' = user2.id');
 		$this->_dso->joinwhere('user2','cfilterm2.bstype = user2.bsfilter');
-		$this->_dso->andjoinwhere('user2',array('id'		=> $user2id,
-							'context'	=> $context,
-							'internal'	=> 0));
-		$this->_dso->andjoinwherenot('user2','COALESCE(user2.number,\'\') = \'\'');
+		//$this->_dso->andjoinwherenot('user2','COALESCE(user2.number,\'\') = \'\'');
 
 		return($this->_dso->select_one());
 	}

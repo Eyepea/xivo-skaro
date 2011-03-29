@@ -38,7 +38,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 			<span class="span-right">&nbsp;</span>
 			<div class="stab">
 				<ul>
-					<?php 
+					<?php
 					if(xivo_user::chk_acl_section('service/ipbx') === true):
 					?>
 					<li>
@@ -46,10 +46,10 @@ $this->file_include('bloc/menu/top/user/loginbox');
 								   'service/ipbx');?>
 					</li>
 					<?php
-					endif; 
+					endif;
 					?>
-					<?php 
-					if(xivo_user::chk_acl_section('service/cti') === true): 
+					<?php
+					if(xivo_user::chk_acl_section('service/cti') === true):
 						// get 1st authorized subsection
 						foreach($_SESSION['_ACL']['user']['service']['cti'] as $sect => $subsecs)
 						{
@@ -62,13 +62,13 @@ $this->file_include('bloc/menu/top/user/loginbox');
 						<?=$url->href_html($this->bbf('mn_sub_top_services_cti'),
 								   'cti/'.$subsec);?>
 					</li>
-					<?php 
+					<?php
 								break 2;
 								}
 							}
 						}
-					
-					endif; 
+
+					endif;
 					?>
 			   		<?php if(xivo_user::chk_acl_section('service/monitoring') === true): ?>
 					<li>
@@ -132,9 +132,9 @@ $this->file_include('bloc/menu/top/user/loginbox');
 	$menu->mk_toolbar();
 ?>
 </div>
+</div>
 <?php if (dwho_report::has('error') === true) : echo dwho_report::get_message('error'); endif; ?>
 <?php if (dwho_report::has('warning') === true) : echo dwho_report::get_message('warning'); endif; ?>
 <?php if (dwho_report::has('info') === true) : echo dwho_report::get_message('info'); endif; ?>
 <?php if (dwho_report::has('notice') === true) : echo dwho_report::get_message('notice'); endif; ?>
 <?php if (dwho_report::has('debug') === true) : echo dwho_report::get_message('debug'); endif; ?>
-</div>

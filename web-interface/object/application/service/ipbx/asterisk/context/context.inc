@@ -22,16 +22,18 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_context extends xivo_application_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_context		= false;
+	var $_dso				= null;
+	var $_context			= false;
 	var $_contextnumbers	= false;
 	var $_contextnummember	= false;
-	var $_contextmember	= false;
+	var $_contextmember		= false;
 	var $_contextinclude	= false;
-	var $_entity		= null;
-	var $_modules		= array();
+	var $_contexttype 		= false;
+	var $_entity			= null;
+	var $_modules			= array();
+	var $_param				= array('type' => '');
 
-	function xivo_application_service_asterisk_context(&$service,&$dso,$param=null)
+	function xivo_application_service_asterisk_context(&$service,&$dso,$param=array(),$components=false)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -44,15 +46,42 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
 		|| ($this->_contextnummember = &$this->_service->get_module('contextnummember')) === false
 		|| ($this->_contextmember = &$this->_service->get_module('contextmember')) === false
-		|| ($this->_contextinclude = &$this->_service->get_module('contextinclude')) === false)
+		|| ($this->_contextinclude = &$this->_service->get_module('contextinclude')) === false
+		|| ($this->_contexttype = &$this->_service->get_module('contexttype')) === false
+		|| $this->load_init($param) === false)
+			return(false);
+		else if((bool) $components === true)
+			$this->load_components();
 			return(false);
 
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function load_init($param=array())
+	{
+		$this->_reset_info();
+		$this->_reset_params();
+		$this->_reset();
+
+		if(is_array($param) === true
+		&& isset($param['type']) === true)
+			$this->_param['type'] = $param['type'];
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		return(true);
+	}
+
+	function get($id,$disable=null,$type=null)
 	{
 		$this->_info = $this->_origin = array();
+
+		$this->_context->set_dso_param('type',$type);
 
 		if(($this->_info['context'] = $this->_context->get($id,$disable)) === false)
 			return(false);
@@ -61,6 +90,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$this->_get_contextnumbers();
 		$this->_get_contextinclude();
+		$this->_get_contexttype();
 
 		$this->_info['deletablenumber'] = $this->_get_contextnummember() === false;
 		$this->_info['deletablemember'] = $this->_get_contextmember() === false;
@@ -129,6 +159,20 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return($this->_info['contextinclude']);
 	}
 
+	function _get_contexttype()
+	{
+		$this->_info['contexttype'] = false;
+		$this->_origin['contexttype'] = false;
+
+		if(($this->_info['contexttype'] = $this->_contexttype->get_where(
+									array('name' => $this->_info['context']['contexttype']))) === false)
+			return(false);
+
+		$this->_origin['contexttype'] = $this->_contexttype->get_origin();
+
+		return($this->_info['contexttype']);
+	}
+
 	function get_elements()
 	{
 		$r = array();
@@ -138,33 +182,35 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return($r);
 	}
 
-	function get_contexts_except($name=null,$order=null,$limit=null,$assoc=false)
+	function get_contexts_except($name=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
-		return($this->_context->get_all_except($name,$order,$limit,$assoc));
+		return($this->_context->get_all_except($name,$order,$limit,$assoc,$type));
 	}
 
-	function get_contexts_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	function get_contexts_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
-		return($this->_get_contexts('search',$search,$disable,$order,$limit,$assoc));
+		return($this->_get_contexts('search',$search,$disable,$order,$limit,$assoc,$type));
 	}
 
-	function get_contexts_list($disable=null,$order=null,$limit=null,$assoc=false)
+	function get_contexts_list($disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
-		return($this->_get_contexts('list',null,$disable,$order,$limit,$assoc));
+		return($this->_get_contexts('list',null,$disable,$order,$limit,$assoc,$type));
 	}
 
-	function _get_contexts($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	function _get_contexts($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
 		$search = strval($search);
+
+		$this->_context->set_dso_param('type',$type);
 
 		switch($action)
 		{
 			case 'search':
-				$rs = $this->_context->search($search,$disable,$order,$limit);
+				$rs = $this->_context->search($search,$disable,$order,$limit,$type);
 				break;
 			case 'list':
 			default:
-				$rs = $this->_context->get_all($disable,true,$order,$limit);
+				$rs = $this->_context->get_all($disable,$order,$limit,$assoc,$type);
 		}
 
 		$this->_cnt = $this->_context->get_cnt();
@@ -192,6 +238,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			|| ($info['contextnumbers'] = $this->_contextnumbers->get_all_where(
 								array('context' => $info['context']['name']))) === false)
 				$info['contextnumbers'] = false;
+
+			$info['contexttype'] = $this->_contexttype->get_where(array('name' => $info['context']['contexttype']));
 
 			if($this->_contextnummember->exists(array('context' => $info['context']['name'])) === true
 			|| $this->_contextmember->exists(array('context' => $info['context']['name'])) === true)

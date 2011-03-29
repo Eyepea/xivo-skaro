@@ -64,6 +64,7 @@ switch($act)
 		$appuser = &$ipbx->get_application('user');
 		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
 
+		$listqos = array();
 		$workhour_start = array();
 		$workhour_end = array();
 
@@ -85,6 +86,7 @@ switch($act)
 				$info_hour_end = explode(':',$result['stats_conf']['hour_end']);
 				$workhour_end['h'] = $info_hour_end[0];
 				$workhour_end['m'] = $info_hour_end[1];
+				$listqos = $result['queue_qos'];
 			}
 			else
 				$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
@@ -103,7 +105,6 @@ switch($act)
 			}
 		}
 
-		$listqos = array();
 		if($queue['list'] !== false && dwho_ak('queue',$result) === true)
 		{
 			$queue['slt'] = dwho_array_intersect_key($result['queue'],$queue['list'],'id');
@@ -194,6 +195,7 @@ switch($act)
 		$appuser = &$ipbx->get_application('user');
 		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
 
+		$listqos = array();
 		$workhour_start = array();
 		$workhour_end = array();
 
@@ -236,18 +238,22 @@ switch($act)
 			}
 		}
 
-		$listqos = array();
 		if($queue['list'] !== false && dwho_ak('queue',$return) === true)
 		{
 			$queue['slt'] = dwho_array_intersect_key($return['queue'],$queue['list'],'id');
 			if($queue['slt'] !== false)
 			{
-				$listq = $return['queue'];
-				while($listq)
+				if (isset($return['queue_qos']) === true)
+					$listqos = $return['queue_qos'];
+				else
 				{
-					$q = array_shift($listq);
-					$queue['slt'][$q['id']]['stats_qos'] = $q['stats_qos'];
-					$listqos[$q['id']] = $q['stats_qos'];
+					$listq = $return['queue'];
+					while($listq)
+					{
+						$q = array_shift($listq);
+						$queue['slt'][$q['id']]['stats_qos'] = $q['stats_qos'];
+						$listqos[$q['id']] = $q['stats_qos'];
+					}
 				}
 				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
 				$queuesort = new dwho_sort(array('key' => 'name'));

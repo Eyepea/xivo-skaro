@@ -26,6 +26,8 @@ $info = array();
 $param = array();
 $param['act'] = 'list';
 
+$modcontexttype = &$ipbx->get_module('contexttype');
+
 switch($act)
 {
 	case 'add':
@@ -107,6 +109,7 @@ switch($act)
 		$_TPL->set_var('element',$appcontext->get_elements());
 		$_TPL->set_var('contextinc',$contextinc);
 		$_TPL->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
+		$_TPL->set_var('list_contexttype',$modcontexttype->get_all(null,array('name' => SORT_ASC)));
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
@@ -201,6 +204,7 @@ switch($act)
 		$_TPL->set_var('element',$appcontext->get_elements());
 		$_TPL->set_var('contextinc',$contextinc);
 		$_TPL->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
+		$_TPL->set_var('list_contexttype',$modcontexttype->get_all(null,array('name' => SORT_ASC)));
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');

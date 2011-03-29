@@ -1,0 +1,53 @@
+; col_identity
+Identité
+
+; col_protocol
+Protocole
+
+; col_name
+Identifiant
+
+; col_phone
+N° Téléphone
+
+; col_provisioning
+Approvisionnement
+
+; col_context
+Contexte
+
+; col_user
+Utilisateur
+
+; line_protocol-sip
+SIP
+
+; line_protocol-iax
+IAX
+
+; line_protocol-sccp
+SCCP
+
+; line_protocol-custom
+Personnalisé
+
+; no_line
+Aucun utilisateur trouvé
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette ligne ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces lignes ?
+
+; toolbar_menu_add_sip
+Ajouter une ligne SIP
+
+; toolbar_menu_add_iax
+Ajouter une ligne IAX
+
+; toolbar_menu_add_sccp
+Ajouter une ligne SCCP
+
+; toolbar_menu_add_custom
+Ajouter une ligne personnalisé

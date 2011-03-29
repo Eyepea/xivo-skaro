@@ -323,8 +323,23 @@ $array['module']['operator_destination']['datastorage'] = true;
 $array['module']['operator_trunk'] = array();
 $array['module']['operator_trunk']['datastorage'] = true;
 
+$array['module']['servicesgroup'] = array();
+$array['module']['servicesgroup']['datastorage'] = true;
+
+$array['module']['servicesgroup_user'] = array();
+$array['module']['servicesgroup_user']['datastorage'] = true;
+
+$array['module']['devicefeatures'] = array();
+$array['module']['devicefeatures']['datastorage'] = true;
+
+$array['module']['linefeatures'] = array();
+$array['module']['linefeatures']['datastorage'] = true;
+
 $array['module']['parkinglot'] = array();
 $array['module']['parkinglot']['datastorage'] = true;
+
+$array['module']['contexttype'] = array();
+$array['module']['contexttype']['datastorage'] = true;
 
 $array['module']['dundi'] = array();
 $array['module']['dundi']['datastorage'] = true;

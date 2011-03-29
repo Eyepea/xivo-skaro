@@ -7,6 +7,9 @@ Nom affiché
 ; col_entity
 Entité
 
+; col_contexttype
+Type de contexte
+
 ; no_context
 Aucun contexte trouvé
 

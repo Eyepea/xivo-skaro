@@ -55,6 +55,7 @@ $page = $url->pager($pager['pages'],
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_displayname');?></th>
+		<th class="th-center"><?=$this->bbf('col_contexttype');?></th>
 		<th class="th-center"><?=$this->bbf('col_entity');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -63,7 +64,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="6" class="td-single"><?=$this->bbf('no_context');?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_context');?></td>
 	</tr>
 <?php
 	else:
@@ -105,6 +106,9 @@ $page = $url->pager($pager['pages'],
 		<td title="<?=dwho_alttitle($ref['context']['displayname']);?>">
 			<?=dwho_htmlen(dwho_trunc($ref['context']['displayname'],30,'...',false));?>
 		</td>
+		<td title="<?=dwho_alttitle($ref['contexttype']['displayname']);?>">
+			<?=dwho_htmlen(dwho_trunc($ref['contexttype']['displayname'],30,'...',false));?>
+		</td>
 		<td><?=$entity?></td>
 		<td class="td-right" colspan="2">
 <?php
@@ -137,7 +141,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

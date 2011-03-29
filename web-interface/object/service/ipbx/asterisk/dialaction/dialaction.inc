@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'dialaction';
+	var $_dso			= null;
+	var $_name			= 'dialaction';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;

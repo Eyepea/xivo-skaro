@@ -22,8 +22,8 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'userfeatures';
+	var $_dso		= null;
+	var $_name		= 'userfeatures';
 	var $_filter	= false;
 	var $_origin	= false;
 	var $_identity	= false;
@@ -47,6 +47,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	{
 		$this->_identity->_prepare_identity($data);
 
+		$data['id'] = (int) $data['id'];
+		$data['entityid'] = (int) $data['entityid'];
 		$data['enableclient'] = (bool) $data['enableclient'];
 		$data['enablehint'] = (bool) $data['enablehint'];
 		$data['enablevoicemail'] = (bool) $data['enablevoicemail'];
@@ -58,7 +60,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$data['enablerna'] = (bool) $data['enablerna'];
 		$data['enablebusy'] = (bool) $data['enablebusy'];
 		$data['enableunc'] = (bool) $data['enableunc'];
-		$data['internal'] = (bool) $data['internal'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
@@ -72,8 +73,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if($orig === false)
 			$this->_origin = null;
 
-		if(($r = parent::get($id,$disable)) === false
-		|| $this->_sre->chk_protocol($r['protocol']) === false)
+		if(($r = parent::get($id,$disable)) === false)
 		{
 			$this->_origin = $origin;
 			return(false);
@@ -103,34 +103,13 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function _mk_provisioning_id($protocol)
+	function loginclient_exists($loginclient,$id=null)
 	{
-		if($this->_chk_exists_cfg('provisioning_id',$protocol) === false)
-			return(null);
-
-		$ref = &$this->_conf['provisioning_id'][$protocol];
-
-		$min = $ref['prefix'] * $ref['range'];
-		$max = $min + $ref['range'];
-		$len = strlen($max)-strlen($ref['prefix']);
-
-		$r = $ref['prefix'].substr(crc32(uniqid(rand(),true)),1,$len);
-
-		if($r > $min && $r < $max && $this->get_primary(array('provisioningid' => $r)) === false)
-			return($r);
-
-		return($this->_mk_provisioning_id($protocol));
-	}
-
-	function loginclient_exists($loginclient,$context,$id=null)
-	{
-		if(dwho_has_len($loginclient) === false
-		|| dwho_has_len($context) === false)
+		if(dwho_has_len($loginclient) === false)
 			return(null);
 
 		$arr = array();
 		$arr['loginclient'] = strtolower($loginclient);
-		$arr['context'] = $context;
 
 		if(($primary = $this->get_primary($arr)) === false
 		|| (empty($id) === false
@@ -142,10 +121,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function add($arr,$id=0)
 	{
-		if(is_array($arr) === false
-		|| isset($arr['protocol']) === false
-		|| ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
-		|| $this->_sre->chk_protocol($arr['protocol']) === false)
+		if(is_array($arr) === false)
 			return(false);
 		else if(isset($arr['name']) === true)
 		{
@@ -160,10 +136,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if(isset($arr['loginclient'],$arr['context']) === true)
+		if(isset($arr['loginclient']) === true)
 		{
 			if($this->loginclient_exists($arr['loginclient'],
-						     $arr['context'],
 						     $id) === true)
 				return(false);
 
@@ -190,32 +165,21 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if(isset($arr['loginclient'],$arr['context']) === true)
+		if(isset($arr['loginclient']) === true)
 		{
 			if($this->loginclient_exists($arr['loginclient'],
-						     $arr['context'],
 						     $id) === true)
 				return(false);
 
 			$arr['loginclient'] = strtolower($arr['loginclient']);
 		}
 
-		if(isset($arr['protocol']) === true)
-		{
-			if((bool) $provisioning === true
-			&& ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false)
-				return(false);
-
-			if($this->_sre->chk_protocol($arr['protocol']) === false)
-				return(false);
-		}
-
 		return(parent::edit($id,$arr,$disable));
 	}
 
-	function search($value,$disable=null,$order=null,$limit=null,$number=false)
+	function search($value,$disable=null,$order=null,$limit=null)
 	{
-		if(($list = $this->_dso->search($value,$disable,$order,$limit,$number)) === false)
+		if(($list = $this->_dso->search($value,$disable,$order,$limit)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -230,7 +194,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		return($r);
 	}
-	
+
 	function get_all_wherein($id,$where)
 	{
 		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
@@ -250,6 +214,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function search_number($value,$disable=null,$order=null,$limit=null)
 	{
+		// missing die ??????
+		//die('search_number '.__FILE__.' '.__LINE__);
 		return($this->search($value,$disable,$order,$limit,true));
 	}
 
@@ -268,28 +234,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			$this->_origin_list = $list;
 
 		return($this->_mk_list_assoc_prepare($list,false,true));
-	}
-
-	function get_all_context($disable=null)
-	{
-		if(($list = $this->_dso->get_all_context($disable)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info = $list[$i];
-
-			$r[$info['context']] = $info['context'];
-		}
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
 	}
 }
 

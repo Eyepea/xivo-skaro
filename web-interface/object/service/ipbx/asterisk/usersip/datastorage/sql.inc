@@ -22,9 +22,9 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_usersip_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_forcecolumn	= array('type'		=> 'friend',
-					'protocol'	=> XIVO_SRE_IPBX_AST_PROTO_SIP,
-					'category'	=> 'user');
+	var $_forcecolumn	= array('type'	=> 'friend',
+							'protocol'	=> XIVO_SRE_IPBX_AST_PROTO_SIP,
+							'category'	=> 'user');
 	var $_unique		= 'name';
 
 	function get_nb($arr=null,$disable=null,$initialized=null)

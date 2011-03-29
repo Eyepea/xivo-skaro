@@ -243,8 +243,9 @@ endif;
 				'onclick="dwho.dom.make_table_list(\'phonefunckey\',this,1);
 					  return(dwho.dom.free_focus());"',
 				$this->bbf('opt_phonefunckey-delete'));
+
+	echo	'</td>';
 ?>
-		</td>
 	</tr>
 	</tbody>
 </table>

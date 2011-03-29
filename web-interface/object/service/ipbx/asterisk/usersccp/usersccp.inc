@@ -40,6 +40,13 @@ class xivo_service_asterisk_usersccp extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function _prepare($data)
+	{
+		$data['identity'] = strtoupper($data['protocol']).'/'.$data['name'];
+
+		return($data);
+	}
 }
 
 ?>
