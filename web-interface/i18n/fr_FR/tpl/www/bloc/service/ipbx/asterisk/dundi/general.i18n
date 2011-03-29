@@ -1,0 +1,81 @@
+
+; smenu_general
+Général
+
+; smenu_advanced
+Avancé
+
+; fm_dundi-department
+Service : 
+
+; fm_dundi-organization
+Société : 
+
+; fm_dundi-locality
+Ville : 
+
+; fm_dundi-stateprov
+Région : 
+
+; fm_dundi-country
+Pays : 
+
+; fm_dundi-email
+E-mail : 
+
+; fm_dundi-phone
+Téléphone : 
+
+; fm_dundi-binaddr
+Adresse en écoute : 
+
+; hlp_fm_dundi-bindaddr
+Config asterisk: binaddr
+
+; fm_dundi-port
+Port : 
+
+; hlp_fm_dundi-port
+Config asterisk: port
+
+; fm_dundi-tos
+TOS : 
+
+; hlp_fm_dundi-tos
+Config asterisk: tos
+
+; fm_dundi-entityid
+Identifiant dundi : 
+
+; hlp_fm_dundi-entityid
+Config asterisk: entityid
+
+; fm_dundi-cachetime
+Durée de mise en cache : 
+
+; hlp_fm_dundi-cachetime
+Config asterisk: cachetime
+
+; fm_dundi-ttl
+TTL : 
+
+; hlp_fm_dundi-ttl
+Config asterisk: ttl
+
+; fm_dundi-autokill
+Destruction automatique des requêtes non acquitées : 
+
+; hlp_fm_dundi-autokill
+Config asterisk: autokill
+
+; fm_dundi-secretpath
+Chemin de la clé 'secret' : 
+
+; hlp_fm_dundi-secretpath
+Config asterisk: secretpath
+
+; fm_dundi-storehistory
+Activer les statistiques : 
+
+; hlp_fm_dundi-storehistory
+Config asterisk: storehistory

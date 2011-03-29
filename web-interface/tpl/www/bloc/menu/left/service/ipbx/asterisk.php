@@ -262,6 +262,18 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
+	if(xivo_user::chk_acl('dundi') === true):
+		echo	'<dl><dt>',$this->bbf('mn_left_ti_dundi'),'</dt>';
+
+		if(xivo_user::chk_acl('dundi','general') === true):
+			echo	'<dd id="mn-dundi--general">',
+				$url->href_html($this->bbf('mn_left_dundi-general'),
+						'service/ipbx/dundi/general'),
+				'</dd>';
+		endif;
+
+	endif;
+
 	if(xivo_user::chk_acl('cost_center') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_cost_center'),'</dt>';
 

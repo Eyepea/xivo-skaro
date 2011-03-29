@@ -1,0 +1,81 @@
+
+; smenu_general
+General
+
+; smenu_advanced
+Advanced
+
+; fm_dundi-department
+Department:
+
+; fm_dundi-organization
+Organization:
+
+; fm_dundi-locality
+City: 
+
+; fm_dundi-stateprov
+State:
+
+; fm_dundi-country
+Country:
+
+; fm_dundi-email
+Email:
+
+; fm_dundi-phone
+Phone:
+
+; fm_dundi-binaddr
+Bind address:
+ 
+; hlp_fm_dundi-bindaddr
+Asterisk config: binaddr
+
+; fm_dundi-port
+Port : 
+
+; hlp_fm_dundi-port
+Asterisk config: port
+
+; fm_dundi-tos
+TOS : 
+
+; hlp_fm_dundi-tos
+Asterisk config: tos
+
+; fm_dundi-entityid
+DUNDi id:
+
+; hlp_fm_dundi-entityid
+Asterisk config: entityid
+
+; fm_dundi-cachetime
+Cache time:
+
+; hlp_fm_dundi-cachetime
+Asterisk config: cachetime
+
+; fm_dundi-ttl
+TTL : 
+
+; hlp_fm_dundi-ttl
+Asterisk config: ttl
+
+; fm_dundi-autokill
+Destroy non-acked requests:
+
+; hlp_fm_dundi-autokill
+Asterisk config: autokill
+
+; fm_dundi-secretpath
+'secret' key path:
+
+; hlp_fm_dundi-secretpath
+Asterisk config: secretpath
+
+; fm_dundi-storehistory
+Enable statistics:
+
+; hlp_fm_dundi-storehistory
+Asterisk config: storehistory

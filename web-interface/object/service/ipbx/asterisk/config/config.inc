@@ -326,6 +326,9 @@ $array['module']['operator_trunk']['datastorage'] = true;
 $array['module']['parkinglot'] = array();
 $array['module']['parkinglot']['datastorage'] = true;
 
+$array['module']['dundi'] = array();
+$array['module']['dundi']['datastorage'] = true;
+
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX]    = array('module' => 'useriax');

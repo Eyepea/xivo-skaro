@@ -2586,6 +2586,33 @@ CREATE TABLE "pickupmember" (
  PRIMARY KEY("pickupid","category","membertype","memberid")
 );
 
+
+DROP TABLE IF EXISTS "dundi";
+CREATE TABLE "dundi" (
+ "id"            SERIAL,
+ "department"    VARCHAR(255) DEFAULT NULL,
+ "organization"  VARCHAR(255) DEFAULT NULL,
+ "locality"      VARCHAR(255) DEFAULT NULL,
+ "stateprov"     VARCHAR(255) DEFAULT NULL,
+ "country"       VARCHAR(3)   DEFAULT NULL,
+ "email"         VARCHAR(255) DEFAULT NULL,
+ "phone"         VARCHAR(40)  DEFAULT NULL,
+
+ "bindaddr"      VARCHAR(40)  DEFAULT '0.0.0.0',
+ "port"          INTEGER      DEFAULT 4520,
+ "tos"           VARCHAR(4)   DEFAULT NULL,
+ "entityid"      VARCHAR(20)  DEFAULT NULL,
+ "cachetime"     INTEGER      DEFAULT 5,
+ "ttl"           INTEGER      DEFAULT 2,
+ "autokill"      INTEGER      NOT NULL DEFAULT 1, -- boolean
+ "secretpath"    VARCHAR(64)  DEFAULT NULL,
+ "storehistory"  INTEGER      DEFAULT 0, -- boolean
+ PRIMARY KEY("id")
+);
+
+INSERT INTO "dundi" VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0.0.0.0', 4520, NULL, NULL, 5, 2, 1, NULL, 0);
+
+
 -- grant all rights to xivo.* for xivo user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '

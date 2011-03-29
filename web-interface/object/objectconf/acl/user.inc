@@ -68,6 +68,9 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 $array['tree']['service']['ipbx']['cost_center'] = array();
 $array['tree']['service']['ipbx']['cost_center']['operator'] = true;
 
+$array['tree']['service']['ipbx']['dundi'] = array();
+$array['tree']['service']['ipbx']['dundi']['general'] = true;
+
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['sounds'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['musiconhold'] = true;

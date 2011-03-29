@@ -97,6 +97,12 @@ Protocole IAX
 ; mn_left_trunkmanagement-custom
 Personnalisée
 
+; mn_left_ti_dundi
+Dundi
+
+; mn_left_dundi-general
+Général
+
 ; mn_left_ti_cost_center
 Centre de coût
 

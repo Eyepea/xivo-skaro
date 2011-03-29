@@ -388,4 +388,8 @@ $array['parkinglot'] = array();
 $array['parkinglot']['table'] = 'parkinglot';
 $array['parkinglot']['primary'] = array('id' => '');
 
+$array['dundi'] = array();
+$array['dundi']['table'] = 'dundi';
+$array['dundi']['primary'] = array('id' => '');
+
 ?>
