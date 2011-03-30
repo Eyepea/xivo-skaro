@@ -1,0 +1,20 @@
+Nicolas HICHER (atarakt) <nhicher@proformatique.com>
+
+rename /etc/modprobe.d/dahdi /etc/modprobe.d/dahdi.conf
+
+to remove :
+
+* WARNING: All config files need .conf: /etc/modprobe.d/
+Index: dahdi-linux-2.4.1.0/build_tools/genmodconf
+===================================================================
+--- dahdi-linux-2.4.1.0.orig/build_tools/genmodconf	2011-03-30 09:45:18.000000000 +0200
++++ dahdi-linux-2.4.1.0/build_tools/genmodconf	2011-03-30 09:45:36.000000000 +0200
+@@ -32,7 +32,7 @@
+     cmdopts=\$CMDLINE_OPTS
+ fi
+ if [ -d ${1}/etc/modprobe.d ]; then
+-    target=${1}/etc/modprobe.d/dahdi
++    target=${1}/etc/modprobe.d/dahdi.conf
+ elif [ -d ${1}/etc/modules.d ]; then
+     target=${1}/etc/modules.d/dahdi
+ elif [ -f ${1}/etc/modprobe.conf ]; then
