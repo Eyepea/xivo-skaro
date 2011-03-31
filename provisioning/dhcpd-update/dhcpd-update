@@ -1,0 +1,203 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+"""Small utility to download and update the configuration files of the DHCP
+   server installed on a XiVO, so that any phone that is supported by one
+   of the xivo-* provd plugins is able to boot correctly using the DHCP server
+   installed on a XiVO.
+"""
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2011  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
+
+import contextlib
+import ConfigParser
+import optparse
+import os
+import sys
+import tarfile
+import urllib2
+import urlparse
+
+PKG_FILE = 'dhcpd.tar.bz2'
+
+
+class NoPkgFileError(Exception):
+    # Raised when the package file is not found in cache.
+    pass
+
+
+def _build_opener(proxies):
+    return urllib2.build_opener(urllib2.ProxyHandler(proxies))
+
+
+def download(url, pkg_file, proxies=None):
+    # Download the url into pkg_file.
+    # If the download failed, pkg_file will be removed.
+    opener = _build_opener(proxies)
+    with contextlib.closing(opener.open(url)) as url_fobj:
+        try:
+            with open(pkg_file, 'wb') as file_fobj:
+                file_fobj.write(url_fobj.read())
+        except Exception:
+            # Remove pkg_file and prevent stack trace garbling 
+            try:
+                raise
+            finally:
+                try:
+                    os.remove(pkg_file)
+                except Exception:
+                    pass
+
+
+def _extract_pkg_file(pkg_file, dhcpd_dir):
+    try:
+        tf = tarfile.open(pkg_file)
+    except EnvironmentError, e:
+        raise NoPkgFileError(e)
+    else:
+        with contextlib.closing(tf) as tf:
+            tf.extractall(dhcpd_dir)
+
+
+def _regenerate_subnet_file(dhcpd_dir, subnet_file):
+    file = os.path.join(dhcpd_dir, subnet_file)
+    with open(file, 'w') as fobj:
+        fobj.write('# This file has been automatically generated.\n')
+        for suffix in ['head', 'middle', 'tail']:
+            cur_file = os.path.join(dhcpd_dir, subnet_file + '.' + suffix)
+            with open(cur_file) as cur_fobj:
+                fobj.write(cur_fobj.read())
+
+
+def regenerate(pkg_file, dhcpd_dir, subnet_file):
+    # Regenerate DHCP server configuration files.
+    _extract_pkg_file(pkg_file, dhcpd_dir)
+    _regenerate_subnet_file(dhcpd_dir, subnet_file)
+
+
+def _read_config_from_default(config):
+    return {'general':
+                {'config_file': '/etc/pf-xivo/dhcpd-update.conf',
+                 'update_url': 'http://something.proformatique.com/dhcpd-update/1.2/',
+                 'cache_dir': '/var/cache/pf-xivo/dhcpd-update/',
+                 'dhcpd_dir': '/etc/dhcp/',
+                 'subnet_file': 'dhcpd_subnet.conf'},
+            }
+
+
+def _read_config_from_commandline(config):
+    parser = optparse.OptionParser()
+    parser.add_option('-d', '--download', action='store_true')
+    parser.add_option('-r', '--regenerate', action='store_true')
+    parser.add_option('-F', '--configfile', action='store')
+    
+    opts, args = parser.parse_args()
+    result = {'general': {}}
+    if opts.download:
+        result['general']['download'] = 'yes'
+    if opts.regenerate:
+        result['general']['regenerate'] = 'yes'
+    if opts.configfile:
+        result['general']['config_file'] = opts.configfile
+    return result
+
+
+def _read_config_from_file(config):
+    # read config file
+    config_file = config['general']['config_file']
+    config_parser = ConfigParser.RawConfigParser()
+    with open(config_file) as fobj:
+        config_parser.readfp(fobj)
+    # create config dictionary out of it
+    result = {}
+    for section in config_parser.sections():
+        result[section] = {}
+        for key, value in config_parser.items(section):
+            result[section][key] = value
+    return result
+
+
+def _update_config(config, new_config):
+    for key in new_config:
+        if key in config:
+            config[key].update(new_config[key])
+        else:
+            config[key] = new_config[key]
+
+
+def read_config():
+    # Read and return the configuration for this program.
+    # Config is a dictionary of dictionary, with the following keys:
+    #   general
+    #     config_file -- path to the configuration file
+    #     update_url
+    #     cache_dir
+    #     dhcpd_dir
+    #     subnet_file
+    #     download -- 'yes' if must download, else won't download
+    #     regenerate -- 'yes' if must regenerate, else won't regenerate
+    #   proxy
+    #     http -- proxy for http
+    config = {'general': {}, 'proxy': {}}
+    _update_config(config, _read_config_from_default(config))
+    cli_config = _read_config_from_commandline(config)
+    _update_config(config, cli_config)
+    _update_config(config, _read_config_from_file(config))
+    _update_config(config, cli_config)
+    return config
+
+
+def _do_download(config):
+    url = urlparse.urljoin(config['general']['update_url'], PKG_FILE)
+    pkg_file = os.path.join(config['general']['cache_dir'], PKG_FILE)
+    proxies = config['proxy']
+    download(url, pkg_file, proxies)
+
+
+def _do_regenerate(config):
+    pkg_file = os.path.join(config['general']['cache_dir'], PKG_FILE)
+    dhcpd_dir = config['general']['dhcpd_dir']
+    subnet_file = config['general']['subnet_file']
+    regenerate(pkg_file, dhcpd_dir, subnet_file)
+
+
+def main():
+    config = read_config()
+    
+    op_download = config['general'].get('download') == 'yes'
+    if op_download:
+        _do_download(config)
+    
+    op_regenerate = config['general'].get('regenerate') == 'yes'
+    if op_regenerate:
+        try:
+            _do_regenerate(config)
+        except NoPkgFileError:
+            # No package file found in cache -- retry by downloading it first
+            _do_download(config)
+            _do_regenerate(config)
+    
+    if not op_download and not op_regenerate:
+        # Error: no operation specified
+        raise SystemExit(2)
+
+
+if __name__ == '__main__':
+    main()
