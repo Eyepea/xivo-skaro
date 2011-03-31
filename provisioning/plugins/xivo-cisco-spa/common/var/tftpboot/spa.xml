@@ -23,6 +23,7 @@ usefulness/applicability.
 <Syslog_Server></Syslog_Server>
 
 <Enable_VLAN>No</Enable_VLAN>
+<Enable_PC_Port_VLAN_Tagging>No</Enable_PC_Port_VLAN_Tagging>
 
 <Provision_Enable>Yes</Provision_Enable>
 <Resync_On_Reset>Yes</Resync_On_Reset>

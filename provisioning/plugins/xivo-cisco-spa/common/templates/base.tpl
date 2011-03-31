@@ -22,6 +22,10 @@
 {% if vlan -%}
 <Enable_VLAN>Yes</Enable_VLAN>
 <VLAN_ID>{{ vlan['id'] }}</VLAN_ID>
+{% if vlan['pc_port_id'] is defined -%}
+<Enable_PC_Port_VLAN_Tagging>Yes</Enable_PC_Port_VLAN_Tagging>
+<PC_Port_VLAN_ID>{{ vlan['pc_port_id'] }}</PC_Port_VLAN_ID>
+{% endif -%}
 {% endif -%}
 
 {% block upgrade_rule -%}

@@ -98,6 +98,15 @@ vlan [optional]
     
     priority [optional]
       The (802.1p) priority. A integer between 0 and 7 inclusive.
+    
+    pc_port_id [optional]
+      The VLAN ID of the PC port. An integer between 0 and 4094.
+      This means that tagged frame with the specified VLAN ID received by
+      the device on its LAN port should be forwarded (tagged) on the PC
+      port, and vice-versa.
+      If this parameter is not defined, then untagged frame received by the
+      device on its LAN port SHOULD be forwarded untagged on the PC port, and
+      vice-versa.
 
 ntp_server_ip [optional]
   The IP address or domain name of the NTP server.

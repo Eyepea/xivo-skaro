@@ -1,7 +1,7 @@
 [general]
 version: 0.1.1
 description: Plugin for Cisco SMB SPA301, 303, 501G, 502G, 504G, 508G, 509G
-             and 525G/525G2 in version 7.4.8.
+             525G and 525G2 in version 7.4.8.
 targets: Cisco, SPA301, 7.4.8 |
          Cisco, SPA303, 7.4.8 |
          Cisco, SPA501G, 7.4.8 |
@@ -9,4 +9,5 @@ targets: Cisco, SPA301, 7.4.8 |
          Cisco, SPA504G, 7.4.8 |
          Cisco, SPA508G, 7.4.8 |
          Cisco, SPA509G, 7.4.8 |
-         Cisco, SPA525G, 7.4.8
+         Cisco, SPA525G, 7.4.8 |
+         Cisco, SPA525G2, 7.4.8

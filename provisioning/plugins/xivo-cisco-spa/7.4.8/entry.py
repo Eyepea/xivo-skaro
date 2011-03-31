@@ -21,7 +21,8 @@ common_globals = {}
 execfile_('common.py', common_globals)
 
 
-PSN = [u'301', u'303', u'501G', u'502G', u'504G', u'508G', u'509G', u'525G']
+PSN = [u'301', u'303', u'501G', u'502G', u'504G', u'508G', u'509G', u'525G',
+       u'525G2']
 MODELS = [u'SPA' + psn for psn in PSN]
 MODEL_VERSION = dict((model, u'7.4.8') for model in MODELS)
 

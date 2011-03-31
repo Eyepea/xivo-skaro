@@ -8,8 +8,8 @@ version: 7.4.8
 files: file_spa50x-30xfw
 install_proc: install_cisco-spa500fw
 
-[pkg_spa525G-fw]
-desc: Firmware files for Cisco SPA525G
+[pkg_spa525-fw]
+desc: Firmware files for Cisco SPA525G and SPA525G2
 version: 7.4.8
 files: file_spa525fw
 install_proc: install_cisco-spa500fw
@@ -21,7 +21,7 @@ files: file_spa50x-30xlang
 install_proc: install_cisco-spa50x-30xlang
 
 [pkg_spa525-lang]
-desc: Language files for Cisco SPA525
+desc: Language files for Cisco SPA525G and SPA525G2
 version: 7.4.6
 files: file_spa525lang
 install_proc: install_cisco-spa525lang _v746.xml

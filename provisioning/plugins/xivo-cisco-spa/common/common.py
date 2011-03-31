@@ -70,6 +70,7 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
         #   "Cisco SPA525g" (SPA525G unknown version, from Cisco documentation)
         #   "Cisco SPA525G" (SPA525G 7.4.4)
         #   "Cisco SPA525G" (SPA525G 7.4.7)
+        #   "Cisco SPA525G2" (SPA525G2 7.4.5)
         tokens = vdi.split()
         if len(tokens) == 2:
             raw_vendor, raw_model = tokens
@@ -290,7 +291,7 @@ class BaseCiscoPlugin(StandardPlugin):
                     key -= 12
                     fk_config_lines.append(self._format_function_keys_unit(key, func))
                     continue
-            elif model == u'SPA525G':
+            elif model == u'SPA525G' or model == u'SPA525G2':
                 if key > 5:
                     key -= 5
                     fk_config_lines.append(self._format_function_keys_unit(key, func))

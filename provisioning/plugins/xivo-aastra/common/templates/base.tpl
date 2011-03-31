@@ -25,7 +25,11 @@ vlan id: {{ vlan['id'] }}
 {% if vlan['priority'] is defined -%}
 priority non-ip: {{ vlan['priority'] }}
 {% endif -%}
+{% if vlan['pc_port_id'] is defined -%}
+vlan id port 1: {{ vlan['pc_port_pid'] }}
+{% else -%}
 vlan id port 1: 4095
+{% endif -%}
 {% else -%}
 tagging enabled: 0
 {% endif -%}
