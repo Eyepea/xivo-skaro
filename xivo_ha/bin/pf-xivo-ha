@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+import os
+import socket
+import ConfigParser
+from optparse import OptionParser
+from xivo_ha.manage_nodes import ClusterEngine
+from xivo_ha.manage_nodes import ManageServices
+from xivo_ha.manage_cluster import ClusterResourceManager
+from xivo_ha.manage_cluster import DatabaseManagement
+
+config = ConfigParser.RawConfigParser()
+config.read('/etc/pf-xivo/ha/pf-xivo-ha.conf')
+
+# from http://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
+def is_valid_ipv4_address(address):
+    '''check if ip address is valid'''
+    try:
+        addr= socket.inet_pton(socket.AF_INET, address)
+    except AttributeError: 
+        try:
+            addr= socket.inet_aton(address)
+        except socket.error:
+            return False
+        return address.count('.') == 3
+    except socket.error: # not a valid address
+        return False
+    return True
+
+
+if __name__ == '__main__':
+
+    parser = OptionParser()
+    parser.add_option("-n", "--node", dest="node", type='string', metavar="ACTION",
+            help="configure node, must be used executed on each node (init or update)")
+    parser.add_option("-c", "--cluster", dest="cluster", type='string', metavar="ACTION",
+            help="configure the cluster resource manager (init or update)")
+    (options, args) = parser.parse_args()
+
+    # check if there is only one options
+    if options.node and options.cluster:
+        parser.error("option -n and -c mutually exclusive")
+
+    # check if one option is given
+    if not options.node and not options.cluster:
+        parser.error("options -n or -c are mandatory")
+
+    # corosync data
+    network_addr = config.get("default", "network_addr")
+    multicast_addr = config.get("default", "multicast_addr")
+
+    data = ClusterEngine(network_addr, multicast_addr)
+
+    for address in network_addr, multicast_addr:
+        is_valid_ipv4_address(address)
+
+    if options.node:
+        if options.node == "init":
+            data.initialize()
+        elif options.node == "update":
+            pass
+        else:
+            parser.error("this option is not allowed")
+
+    if options.cluster:
+        if options.cluster == "init":
+            pass
+        elif options.cluster == "update":
+            pass
+        else:
+            parser.error("this option is not allowed")
