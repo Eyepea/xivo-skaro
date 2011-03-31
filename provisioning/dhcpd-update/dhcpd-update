@@ -34,6 +34,7 @@ import sys
 import tarfile
 import urllib2
 import urlparse
+import tempfile
 
 PKG_FILE = 'dhcpd.tar.bz2'
 
@@ -47,33 +48,27 @@ def _build_opener(proxies):
     return urllib2.build_opener(urllib2.ProxyHandler(proxies))
 
 
-def download(url, pkg_file, proxies=None):
-    # Download the url into pkg_file.
-    # If the download failed, pkg_file will be removed.
-    opener = _build_opener(proxies)
-    with contextlib.closing(opener.open(url)) as url_fobj:
-        try:
-            with open(pkg_file, 'wb') as file_fobj:
-                file_fobj.write(url_fobj.read())
-        except Exception:
-            # Remove pkg_file and prevent stack trace garbling 
-            try:
-                raise
-            finally:
-                try:
-                    os.remove(pkg_file)
-                except Exception:
-                    pass
-
-
-def _extract_pkg_file(pkg_file, dhcpd_dir):
+def _extract_pkg_file(fobj, dhcpd_dir):
     try:
-        tf = tarfile.open(pkg_file)
+        tf = tarfile.open(fileobj=fobj)
     except EnvironmentError, e:
         raise NoPkgFileError(e)
     else:
-        with contextlib.closing(tf) as tf:
+        with contextlib.closing(tf):
             tf.extractall(dhcpd_dir)
+
+
+def download(url, dhcpd_dir, proxies=None):
+    # Download the url and extract its content into dhcpd_dir.
+    fobj = tempfile.TemporaryFile()
+    try:
+        opener = _build_opener(proxies)
+        with contextlib.closing(opener.open(url)) as url_fobj:
+            fobj.write(url_fobj.read())
+        fobj.seek(0)
+        _extract_pkg_file(fobj, dhcpd_dir)
+    finally:
+        fobj.close()
 
 
 def _regenerate_subnet_file(dhcpd_dir, subnet_file):
@@ -86,9 +81,8 @@ def _regenerate_subnet_file(dhcpd_dir, subnet_file):
                 fobj.write(cur_fobj.read())
 
 
-def regenerate(pkg_file, dhcpd_dir, subnet_file):
+def regenerate(dhcpd_dir, subnet_file):
     # Regenerate DHCP server configuration files.
-    _extract_pkg_file(pkg_file, dhcpd_dir)
     _regenerate_subnet_file(dhcpd_dir, subnet_file)
 
 
@@ -96,7 +90,6 @@ def _read_config_from_default(config):
     return {'general':
                 {'config_file': '/etc/pf-xivo/dhcpd-update.conf',
                  'update_url': 'http://something.proformatique.com/dhcpd-update/1.2/',
-                 'cache_dir': '/var/cache/pf-xivo/dhcpd-update/',
                  'dhcpd_dir': '/etc/dhcp/',
                  'subnet_file': 'dhcpd_subnet.conf'},
             }
@@ -148,7 +141,6 @@ def read_config():
     #   general
     #     config_file -- path to the configuration file
     #     update_url
-    #     cache_dir
     #     dhcpd_dir
     #     subnet_file
     #     download -- 'yes' if must download, else won't download
@@ -166,16 +158,15 @@ def read_config():
 
 def _do_download(config):
     url = urlparse.urljoin(config['general']['update_url'], PKG_FILE)
-    pkg_file = os.path.join(config['general']['cache_dir'], PKG_FILE)
+    dhcpd_dir = config['general']['dhcpd_dir']
     proxies = config['proxy']
-    download(url, pkg_file, proxies)
+    download(url, dhcpd_dir, proxies)
 
 
 def _do_regenerate(config):
-    pkg_file = os.path.join(config['general']['cache_dir'], PKG_FILE)
     dhcpd_dir = config['general']['dhcpd_dir']
     subnet_file = config['general']['subnet_file']
-    regenerate(pkg_file, dhcpd_dir, subnet_file)
+    regenerate(dhcpd_dir, subnet_file)
 
 
 def main():
