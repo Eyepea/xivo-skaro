@@ -18,8 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
+
+$info['userfeatures']['alarmclock_hour'] = substr($info['userfeatures']['alarmclock'],0,2);
+$info['userfeatures']['alarmclock_minute'] = substr($info['userfeatures']['alarmclock'],3,4);
+
 
 $return = &$info;
 $return['schedule_id'] = false;
@@ -53,16 +58,13 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 							array('name' => SORT_ASC),
 							null,
 							true);
+
 $appqueue = &$ipbx->get_application('queue');
 $_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
-
-$sccp_addons = array('7914', '7915', '7916');
-
 
 if(isset($_QR['fm_send']) === true
 && dwho_issa('userfeatures',$_QR) === true)
 {
-	$return = &$result;
 	$queueskills = array();
 
 	// skipping the last one (empty entry)
@@ -70,9 +72,9 @@ if(isset($_QR['fm_send']) === true
 	for($i = 0; $i < $count; $i++)
 	{
 		$queueskills[] = array(
-			'userid'	=> $_QR['id'],
-			'skillid'	=> $_QR['queueskill-skill'][$i],
-			'weight'	=> $_QR['queueskill-weight'][$i],
+		'userid'=> $_QR['id'],
+		'skillid'       => $_QR['queueskill-skill'][$i],
+		'weight'=> $_QR['queueskill-weight'][$i],
 		);
 	}
 	$skillerr = $appqueue->userskills_setedit($queueskills);
@@ -85,21 +87,19 @@ if(isset($_QR['fm_send']) === true
 		$result = $appuser->get_result();
 		$result['dialaction'] = $appuser->get_dialaction_result();
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
+		$result['voicemail-option'] = $_QRY->get('voicemail-option');
+
+		$return = array_merge($return,$result);
 
 		$error = $appuser->get_error();
 		$error['queueskills'] = $appqueue->userskills_get_error();
 
-		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 		$_TPL->set_var('queueskills', $queueskills);
 	}
 	else
 	{
 		// updating skills
 		$appqueue->userskills_edit($_QR['id'], $queueskills);
-
-		$ipbx->discuss('xivo[userlist,update]');
-		// must reload app_queue
-			$ipbx->discuss('module reload app_queue.so');
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
@@ -175,30 +175,30 @@ $_TPL->load_i18n_file('tpl/www/bloc/service/ipbx/asterisk/pbx_settings/users/edi
 
 $order_list    = range(1, 20);
 $softkeys_list = array(
-	'redial'        => $_TPL->bbf('softkey_redial'),
+	'redial'=> $_TPL->bbf('softkey_redial'),
 	'newcall'       => $_TPL->bbf('softkey_newcall'),
 	'cfwdall'       => $_TPL->bbf('softkey_cfwdall'),
 	'cfwdbusy'      => $_TPL->bbf('softkey_cfwdbusy'),
 	'cfwdnoanswer'  => $_TPL->bbf('softkey_cfwdnoanswer'),
-	'pickup'        => $_TPL->bbf('softkey_pickup'),
+	'pickup'=> $_TPL->bbf('softkey_pickup'),
 	'gpickup'       => $_TPL->bbf('softkey_gpickup'),
 	'conflist'      => $_TPL->bbf('softkey_conflist'),
-	'dnd'           => $_TPL->bbf('softkey_dnd'),
-	'hold'          => $_TPL->bbf('softkey_hold'),
+	'dnd'   => $_TPL->bbf('softkey_dnd'),
+	'hold'  => $_TPL->bbf('softkey_hold'),
 	'endcall'       => $_TPL->bbf('softkey_endcall'),
-	'park'          => $_TPL->bbf('softkey_park'),
-	'select'        => $_TPL->bbf('softkey_select'),
+	'park'  => $_TPL->bbf('softkey_park'),
+	'select'=> $_TPL->bbf('softkey_select'),
 	'idivert'       => $_TPL->bbf('softkey_idivert'),
-	'resume'        => $_TPL->bbf('softkey_resume'),
+	'resume'=> $_TPL->bbf('softkey_resume'),
 	'transfer'      => $_TPL->bbf('softkey_transfer'),
 	'dirtrfr'       => $_TPL->bbf('softkey_dirtrfr'),
-	'answer'        => $_TPL->bbf('softkey_answer'),
+	'answer'=> $_TPL->bbf('softkey_answer'),
 	'transvm'       => $_TPL->bbf('softkey_transvm'),
 	'private'       => $_TPL->bbf('softkey_private'),
-	'meetme'        => $_TPL->bbf('softkey_meetme'),
-	'barge'         => $_TPL->bbf('softkey_barge'),
-	'cbarge'        => $_TPL->bbf('softkey_cbarge'),
-	'conf'          => $_TPL->bbf('softkey_conf'),
+	'meetme'=> $_TPL->bbf('softkey_meetme'),
+	'barge' => $_TPL->bbf('softkey_barge'),
+	'cbarge'=> $_TPL->bbf('softkey_cbarge'),
+	'conf'  => $_TPL->bbf('softkey_conf'),
 	'backjoin'      => $_TPL->bbf('softkey_backjoin'),
 );
 

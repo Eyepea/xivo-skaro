@@ -65,17 +65,7 @@ $element = $this->get_var('element');
 					    'altkey'	=> 'name',
 					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
 					    'selected'	=> $this->get_var('info', 'protocol', 'pickupcontext')),
-				      $context_list),
-
-		$form->text(array('desc'  => $this->bbf('fm_protocol-disallowed_methods'),
-            'name'     => 'protocol[disallowed_methods]',
-            'labelid'  => 'protocol-disallowed_methods',
-            'size'     => 35,
-            'help'     => $this->bbf('hlp_fm_protocol-disallowed_methods'),
-            'required' => false,
-            'value'    => $info['protocol']['disallowed_methods'],
-            'error'    => $this->bbf_args('error',
-        $this->get_var('error', 'disallowed_methods')) ));
+				      $context_list);
 ?>
 
 </div>
@@ -185,17 +175,7 @@ $element = $this->get_var('element');
 				  'value'	=> $this->get_var('info','protocol','adhocnumber'),
 				  'help'		=> $this->bbf('hlp_fm_adhocnumber'),
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'adhocnumber')) )),
-
-	    $form->text(array('desc'  => $this->bbf('fm_protocol-unsolicited_mailbox'),
-            'name'     => 'protocol[unsolicited_mailbox]',
-            'labelid'  => 'protocol-unsolicited_mailbox',
-            'size'     => 25,
-            'help'     => $this->bbf('hlp_fm_protocol-unsolicited_mailbox'),
-            'required' => false,
-            'value'    => $info['protocol']['unsolicited_mailbox'],
-            'error'    => $this->bbf_args('error',
-        $this->get_var('error', 'unsolicited_mailbox')) ));
+						   $this->get_var('error', 'protocol', 'adhocnumber')) ));
 
 ?>
 </div>

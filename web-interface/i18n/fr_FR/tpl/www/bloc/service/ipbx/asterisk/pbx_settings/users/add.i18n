@@ -775,6 +775,9 @@ Horaires :
 ; fm_userfeatures_servicesgroup
 Groupde services : 
 
+; col_line-name
+Peer
+
 ; col_line-protocol
 Protocole
 
@@ -798,6 +801,30 @@ Groupe
 
 ; no_lines-line
 Aucune ligne enregistrée
+
+; line_protocol-opt(sip)
+SIP
+
+; line_protocol-sip
+SIP
+
+; line_protocol-opt(iax)
+IAX
+
+; line_protocol-iax
+IAX
+
+; line_protocol-opt(sccp)
+SCCP
+
+; line_protocol-sccp
+SCCP
+
+; line_protocol-opt(custom)
+Personnalisé
+
+; line_protocol-custom
+Personnalisé
 
 ; fm_type-opt(simul)
 Simultané
@@ -1012,4 +1039,3 @@ Parking :
 
 ; hlp_fm_parkinglot
 Asterisk: parkinglot
->>>>>>> .r10443

@@ -903,6 +903,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if (isset($ref['id']) === true)
 			{
+			/*
 				if (($line = $this->_line->get($ref['id'])) === false
 				|| ($linefeatures = $line['linefeatures']) === false)
 				{
@@ -910,13 +911,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$error[$i] = 'line_not_exist';
 					continue;
 				}
-
-				$this->_line->_reset_info();
-				$this->_line->_reset();
-
 				$ref['id'] = (int) $ref['id'];
 				$ref['protocolid'] = $linefeatures['protocolid'];
 				$ref['name'] = $linefeatures['name'];
+			*/
+				$ref['id'] = (int) $ref['id'];
+				$ref['protocolid'] = 0;
 			}
 			else
 			{
@@ -1567,6 +1567,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$line = &$rs[$i];
 
 			$this->_line->_reset();
+			$this->_line->_reset_info();
 
 			if (isset($line['id']) === true)
 			{
@@ -1592,6 +1593,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['linefeatures'] = $line;
 			$arr['protocol'] = $line;
 
+			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+				$arr['protocol']['interface'] = $line['name'];
+
 			if($this->_line->$methodset($arr,$protocolname) === false
 			|| $this->_line->$method() === false)
 			{
@@ -1606,6 +1610,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$return[$i] = $line;
 		}
+
+		dwho_hr();
 
 		if ($errnb >> 0)
 		{

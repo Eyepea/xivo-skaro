@@ -90,7 +90,8 @@ $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['protocolid'] = array('cast' => 'uinteger','notag' => '');
 $array['filter']['iduserfeatures'] = array('cast' => 'uinteger','notag' => '');
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
+//$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,

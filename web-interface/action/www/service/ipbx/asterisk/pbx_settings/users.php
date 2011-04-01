@@ -57,7 +57,7 @@ switch($act)
 		$appline = &$ipbx->get_application('line');
 
 		$orderline = array('name' => SORT_ASC);
-		$_TPL->set_var('lines_free',$appline->get_lines_list(null,null,$orderline,null,false,null,true));
+		$_TPL->set_var('lines_free',$appline->get_lines_list(null,null,$orderline,null,true,null,true));
 
 		include(dirname(__FILE__).'/users/'.$act.'.php');
 		break;

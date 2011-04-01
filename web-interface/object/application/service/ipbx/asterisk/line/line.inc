@@ -326,6 +326,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
 					$custom = dwho_array_startswith_key($ref,'usercustom.',true);
 					$custom['initialized'] = true;
+					$custom['identity'] = strtoupper(XIVO_SRE_IPBX_AST_PROTO_CUSTOM).'/'.$custom['interface'];
 					$r[$linefeatures['id']] = array_merge($custom,$linefeatures);
 					break;
 				default:
@@ -689,8 +690,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(($rs = $this->_set_usermacro('add',$iduserfeatures)) !== true)
 			return($rs);
 
-		$ret = parent::add_macro('usermacro');
-		return($ret);
+		return(parent::add_macro('usermacro'));
 	}
 
 	function add_hints()

@@ -27,7 +27,8 @@ $nb = $this->get_var('count');
 $list = $this->get_var('list');
 $err = $this->get_var('error','linefeatures');
 
-if ($info['entity'] === false
+if (isset($info['entity']) === false
+||$info['entity'] === false
 || ($context_list = $info['entity']['context']) === false):
 	echo $this->bbf('no_context_for_this_entity');
 	return;
@@ -41,15 +42,21 @@ endif;
 </fieldset>
 -->
 
-<div class="fm-paragraph fm-desc-inline">
+<div id="MSG"></div>
+
+<div class="fm-paragraph fm-desc-inline" id="box-lines_free">
 	<label id="lb-lines_free" for="it-lines_free"><?=$this->bbf('fm_lines_free');?></label>
 <?php
 if (($lines_free = $this->get_var('lines_free')) === null
 || $lines_free === false):
-	echo $this->bbf('no_lines_free');
+?>
+<span id="box-no_lines_free">
+	<?=$this->bbf('no_lines_free');?>
+</span>
+<?php
 else:
 ?>
-
+<span id="box-list_lines_free">
 		<?=$form->select(array('paragraph'	=> false,
 			    'name'		=> 'list_lines_free',
 			    'id'		=> 'list_lines_free',
@@ -63,6 +70,7 @@ else:
 						null,
 						'id="lnk-add-row-line_free"',
 						$this->bbf('col_line-add'));?>
+</span>
 <?php
 endif;
 ?>
@@ -72,6 +80,7 @@ endif;
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_line-protocol');?></th>
+		<th class="th-center"><?=$this->bbf('col_line-name');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-rules_type');?></th>
@@ -101,23 +110,13 @@ if($list !== false):
 ?>
 	<tr class="fm-paragraph<?=$errdisplay?>">
 		<td class="td-left txt-center">
-<?php
-		if (isset($ref['id']) === true)
-			echo $form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));
-		/*
-		if (isset($ref['protocolid']) === true)
-			echo $form->hidden(array('name' => 'linefeatures[protocolid][]','value' => $ref['protocolid']));
-		if (isset($ref['name']) === true)
-			echo $form->hidden(array('name' => 'linefeatures[name][]','value' => $ref['name']));
-		*/
-?>
-			<?=$form->select(array('paragraph'	=> false,
-				    'name'		=> 'linefeatures[protocol][]',
-				    'id'		=> false,
-				    'label'		=> false,
-				    'key'		=> false,
-				    'default'	=> $ref['protocol']),
-			      $element['linefeatures']['protocol']['value']);?>
+			<?=$form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));?>
+			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>
+			<?=$this->bbf('line_protocol-'.$ref['protocol']);?>
+		</td>
+		<td>
+			<?=$form->hidden(array('name' => 'linefeatures[name][]','value' => $ref['name']));?>
+			<?=$ref['name']?>
 		</td>
 		<td>
 			<?=$form->select(array('paragraph'	=> false,
@@ -194,7 +193,7 @@ endif;
 	</tbody>
 	<tfoot>
 	<tr id="no-linefeatures"<?=($list !== false ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="8" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
+		<td colspan="9" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
 	</tr>
 	</tfoot>
 </table>
@@ -202,16 +201,25 @@ endif;
 <table class="b-nodisplay">
 	<tbody id="ex-linefeatures">
 	<tr class="fm-paragraph">
-		<td class="td-left txt-center">
+		<td class="td-left txt-center" id="td_ex-linefeatures-protocol">
+			<?=$form->hidden(array('name' => 'linefeatures[id][]',
+					'value' 	=> 0,
+				    'id'		=> 'linefeatures-id'));?>
 			<?=$form->select(array('paragraph'	=> false,
 				    'name'		=> 'linefeatures[protocol][]',
 				    'id'		=> 'linefeatures-protocol',
 				    'label'		=> false,
 				    'key'		=> false,
+					'bbf'		=> 'line_protocol-opt',
 				    'default'	=> $element['linefeatures']['protocol']['default']),
 			      $element['linefeatures']['protocol']['value']);?>
 		</td>
-		<td>
+		<td id="td_ex-linefeatures-name">
+			<?=$form->hidden(array('name' => 'linefeatures[name][]',
+					'value' 	=> null,
+				    'id'		=> 'linefeatures-name'));?>
+		</td>
+		<td id="td_ex-linefeatures-context">
 			<?=$form->select(array('paragraph'	=> false,
 				    'name'		=> 'linefeatures[context][]',
 				    'id'		=> 'linefeatures-context',
@@ -221,7 +229,7 @@ endif;
 				    'default'	=> $element['linefeatures']['context']['default']),
 			      null);?>
 		</td>
-		<td>
+		<td id="td_ex-linefeatures-number">
 			<?=$form->text(array('paragraph'	=> false,
 					     'name'		=> 'linefeatures[number][]',
 					     'id'		=> 'linefeatures-number',
