@@ -185,7 +185,7 @@ def merge_config_file(tplfilename, customtplfilename, newfilename, cfgdict, ipbx
 
     for sec, options in xdict.iteritems():
         if not newcfg.has_section(sec):
-            newcfg.add_section(secpbxdburistr)
+            newcfg.add_section(sec)
         for optname, optvalue in options.iteritems():
             putfunc(sec, optname, optvalue)
 
