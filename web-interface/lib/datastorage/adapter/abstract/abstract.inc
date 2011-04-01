@@ -83,8 +83,8 @@ class dwho_datastorage_adapter_abstract
 		if($str !== '')
 			$str .= ' - ';
 
-		if(is_resource($this->_link) === false)
-			die($str);
+		#if(is_resource($this->_link) === false)
+		#	die($str);
 
 		#if($this->_debug === true && empty($this->_query) === false)
 		#	var_dump(debug_backtrace());

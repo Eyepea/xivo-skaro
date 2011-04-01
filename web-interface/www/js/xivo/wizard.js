@@ -121,7 +121,6 @@ xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-qldb']['property'] = {
 
 xivo_attrib_register('fm_dbconfig_backend-sqlite',xivo_wz_fm_dbconfig_backend['sqlite']);
 
-
 xivo_wz_fm_dbconfig_backend['mysql'] = dwho_clone(xivo_wz_fm_dbconfig_backend_elt);
 xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-host']['style'] = {display: 'block'};
 xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-host']['property'] = {disabled: false};
@@ -171,6 +170,7 @@ function xivo_wizard_chg_dbconfig_backend()
 {
 	if((backend = dwho_eid('it-dbconfig-backend')) !== false)
 		xivo_chg_attrib('fm_dbconfig_backend-' + backend.value,'links',0,1);
+	xivo_wizard_chg_dbconfig_backend_create_mode();
 }
 
 function xivo_wizard_chg_ipbxbackend()
@@ -206,6 +206,17 @@ function xivo_wizard_ipbximportuser_error(sum)
 			'center');
 }
 
+function xivo_wizard_chg_dbconfig_backend_create_mode()
+{	
+	if ($('#it-dbconfig-create_auto:checked').val() !== undefined){
+		$('#sb-part_dbconfig_'+backend.value).hide('slow');
+	}
+	else
+	{
+		$('#sb-part_dbconfig_'+backend.value).show('slow');
+	}
+}
+
 function xivo_wizard_dbconfig_backend_onload()
 {
 	dwho.dom.add_event('change',
@@ -227,6 +238,12 @@ function xivo_wizard_dbconfig_backend_onload()
 	dwho.dom.add_event('change',
 			   dwho_eid('it-dbconfig-backend'),
 			   xivo_wizard_chg_dbconfig_backend);
+
+	xivo_wizard_chg_dbconfig_backend_create_mode();
+	
+	dwho.dom.add_event('click',
+			   dwho_eid('it-dbconfig-create_auto'),
+			   xivo_wizard_chg_dbconfig_backend_create_mode);	
 
 	dwho.dom.add_event('click',
 			   dwho_eid('it-previous'),

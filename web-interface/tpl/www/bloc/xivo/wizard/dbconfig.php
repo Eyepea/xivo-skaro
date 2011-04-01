@@ -22,6 +22,12 @@ $form = &$this->get_module('form');
 
 $element = $this->get_var('element');
 
+?>
+
+<div id="MSG" style="border:1px dotted gray;background: #ccc;padding:2px;"></div>
+
+<?php
+
 echo	$form->select(array('desc'	=> $this->bbf('fm_dbconfig_backend'),
 			    'name'	=> 'dbconfig[backend]',
 			    'labelid'	=> 'dbconfig-backend',
@@ -32,6 +38,15 @@ echo	$form->select(array('desc'	=> $this->bbf('fm_dbconfig_backend'),
 			    'error'	=> $this->bbf_args('error_generic',
 							   $this->get_var('dbconfig','backend'))),
 		      $this->get_var('dbbackend'));
+
+echo	$form->checkbox(array('desc'		=> $this->bbf('fm_dbconfig_create_auto'),
+			      'name'		=> 'dbconfig[create_auto]',
+			      'labelid'		=> 'dbconfig-create_auto',
+			  	  'default'		=> $element['create_auto']['default'],
+			      'checked'		=> $this->get_var('dbconfig_is_autocreate')));
+?>
+<div id="sb-part_dbconfig_sqlite">
+<?php
 
 if(($error = (string) $this->get_var('error','dbconfig','sqlite','xivo')) !== ''):
 	echo	'<div id="error-dbconfig-sqlite-xivo" class="dwho-txt-error">','
@@ -78,10 +93,13 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-ipbxdb'),
 			  'default'	=> $element['sqlite']['qldb']['default'],
 			  'value'	=> $this->get_var('info','sqlite','qldb'),
 			  'error'	=> $this->bbf_args('error_generic',
-							   $this->get_var('error','dbconfig','sqlite','qldb')))),
-
+							   $this->get_var('error','dbconfig','sqlite','qldb'))));
+?>
+</div>
+<div id="sb-part_dbconfig_mysql">
+<?php
 	// MYSQL
-	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_mysql-host'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_mysql-host'),
 			  'name'	=> 'dbconfig[mysql][host]',
 			  'labelid'	=> 'dbconfig-mysql-host',
 			  'size'	=> 20,
@@ -181,10 +199,14 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_mysql-ipbxdbname'),
 			  'default'	=> $element['mysql']['ipbxpass']['default'],
 			  'value'	=> $this->get_var('info','mysql','ipbxpass'),
 			  'error'	=> $this->bbf_args('error_generic',
-							   $this->get_var('error','dbconfig','mysql','ipbxpass')))),
+							   $this->get_var('error','dbconfig','mysql','ipbxpass'))));
+?>
+</div>
+<div id="sb-part_dbconfig_postgresql">
+<?php
 
 	// POSTGRESQL
-	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_postgresql-host'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_postgresql-host'),
 			  'name'	=> 'dbconfig[postgresql][host]',
 			  'labelid'	=> 'dbconfig-postgresql-host',
 			  'size'	=> 20,
@@ -287,3 +309,4 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_postgresql-ipbxdbname')
 							   $this->get_var('error','dbconfig','postgresql','ipbxpass'))));
 
 ?>
+</div>

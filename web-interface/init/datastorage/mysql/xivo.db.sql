@@ -372,7 +372,6 @@ CREATE TABLE `ha_peer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
---- STATS ---
 DROP TABLE IF EXISTS `stats_conf`;
 CREATE TABLE `stats_conf` (
  `id` int(10) unsigned auto_increment,

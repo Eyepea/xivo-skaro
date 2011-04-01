@@ -516,10 +516,10 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		{
 			case 'insert':
 			case 'replace':
-				$proc = strtoupper($proc).' INTO';
+				$method = strtoupper($proc).' INTO';
 				break;
 			case 'update':
-				$proc = 'UPDATE';
+				$method = 'UPDATE';
 
 				if($condwhere === '' && $usewhere === false)
 					$condwhere = 1;
@@ -557,11 +557,11 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		}
 
 		if($set === true)
-			$query = sprintf('%s %s SET %s',$proc,
+			$query = sprintf('%s %s SET %s',$method,
 						    $this->quote_identifier($table),
 						    implode(', ',$values['str']));
 		else
-			$query = sprintf('%s %s (%s) VALUES(%s)',$proc,
+			$query = sprintf('%s %s (%s) VALUES(%s)',$method,
 							     $this->quote_identifier($table),
 							     implode(',',$values['keys']),
 							     implode(',',$values['str']));

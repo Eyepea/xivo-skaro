@@ -30,13 +30,13 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
 class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_abstract
 {
-	var $_conf		= array();
+	var $_conf			= array();
 	var $_sysconfd		= false;
 	var $_filter		= false;
-	var $_uri		= false;
+	var $_uri			= false;
 	var $_http_response	= false;
 	var $_wizsess		= null;
-	var $_ipbx		= null;
+	var $_ipbx			= null;
 	var $_xivo_dso_loaded	= false;
 
 	function xivo_application_xivo_object_wizard(&$xobj,$param=null,$components=true)
@@ -656,8 +656,17 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			 $data['dbconfig'][$backend]) === false)
 			$this->_set_error('dbconfig','backend','invalid');
 
+		if (isset($data['dbconfig']['create_auto']) === true)
+		{
+			$this->_filter->set_validator(array('create_auto' => $this->_conf['filter']['dbconfig']['create_auto']));
+
+			if(($create_auto = $this->_filter->chk_value('create_auto',$data['dbconfig']['create_auto'])) === false)
+				$this->_set_error('dbconfig','create_auto','invalid');
+		}
+
 		$result = array();
 		$result['backend'] = $backend;
+		$result['create_auto'] = $create_auto;
 
 		if($this->get_errnb() > 0)
 		{
@@ -678,7 +687,42 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 		}
 
-		$ipbxdburi = $xivodburi = $qldburi = array('scheme' => $result['backend']);
+		if (((bool) $result['create_auto']) === true)
+		{
+			$base_config_path = dwho_file::joinpath('usr','share','pf-xivo-base-config');
+
+			switch($result['backend'])
+			{
+				case 'sqlite':
+						$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'astsqlite.db.sql');
+						$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.db.sqlite.sql');
+					break;
+				case 'mysql':
+						$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'astmysql.db.sql');
+						$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.db.mysql.sql');
+					break;
+				case 'postgresql':
+						$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'astpgsql.db.sql');
+						$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.db.postgresql.sql');
+					break;
+				default:
+					$this->_set_error('dbconfig','backend','invalid');
+			}
+
+			if (dwho_file::is_f_r($ipbxdbpathfile) === true)
+				$this->_set_error('dbconfig','ipbxdb','invalid file');
+
+			if (dwho_file::is_f_r($xivodbpathfile) === true)
+				$this->_set_error('dbconfig','xivodb','invalid file');
+
+			$result[$result['backend']]['xivouser'] = 'xivo';
+			$result[$result['backend']]['xivopass'] = 'proformatique';
+
+			$result[$result['backend']]['ipbxuser'] = 'asterisk';
+			$result[$result['backend']]['ipbxpass'] = 'proformatique';
+		}
+
+		$ipbxdburi = $xivodburi = array('scheme' => $result['backend']);
 
 		$ref = &$result[$result['backend']];
 
@@ -687,7 +731,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			case 'sqlite':
 				$xivodburi['path'] = $ref['xivodb'];
 				$ipbxdburi['path'] = $ref['ipbxdb'];
-				$qldburi['path'] = $ref['qldb'];
 				break;
 			case 'mysql':
 				$xivodburi['host'] = $ref['host'];
@@ -729,11 +772,20 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(($ipbxdburistr = $this->_uri->build_uri($ipbxdburi)) === false)
 			$this->_set_error('dbconfig',$backend,'ipbxdb','invalid');
 
-		if($result['backend'] == 'sqlite'
-		&& ($qldburistr = $this->_uri->build_uri($qldburi)) === false)
-			$this->_set_error('dbconfig',$backend,'qldb','invalid');
-
 		$this->_set_result('dbconfig',$result);
+
+		if (((bool) $result['create_auto']) === true)
+		{
+			$dbfile = array();
+			$dbfile['backend'] = $result['backend'];
+			$dbfile['xivoscript'] = $xivodbpathfile;
+			$dbfile['xivodb'] = $xivodburi['path'];
+			$dbfile['ipbxscript'] = $ipbxdbpathfile;
+			$dbfile['ipbxdb'] = $ipbxdburi['path'];
+
+			if(($lol = $this->_sysconfd->request_post('/exec_db_file',$dbfile)) === false)
+				$this->_set_error('dbconfig',$backend,'can\'t create db');
+		}
 
 		if($this->get_errnb() > 0)
 			return(false);
@@ -747,11 +799,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(($ipbxparamdso = dwho_datastorage::get_param_from_uri($ipbxdburistr)) === false
 		|| ($ipbxdso = @dwho_datastorage::factory($ipbxparamdso['type'],$ipbxparamdso)) === false)
 			$this->_set_error('dbconfig',$backend,'ipbxdb','invalid');
-
-		if($result['backend'] == 'sqlite'
-		&& (($qlparamdso = dwho_datastorage::get_param_from_uri($qldburistr)) === false
-		|| ($qldso = @dwho_datastorage::factory($qlparamdso['type'],$qlparamdso)) === false))
-			$this->_set_error('dbconfig',$backend,'qldb','invalid');
 
 		if($this->get_errnb() > 0)
 			return(false);
@@ -772,7 +819,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_wizsess['dbconfig']['save'] = array();
 		$this->_wizsess['dbconfig']['save']['xivo'] = $xivodburistr;
 		$this->_wizsess['dbconfig']['save']['ipbx'] = $ipbxdburistr;
-		$this->_wizsess['dbconfig']['save']['ql'] = $qldburistr;
 		$this->_wizsess['dbconfig']['result'] = $result;
 
 		$this->_wizsess['step'] = $this->get_next_step('dbconfig');
@@ -1414,10 +1460,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$dbconfig = array();
 		$dbconfig['xivo'] = $this->_wizsess['dbconfig']['save']['xivo'];
 		$dbconfig['ipbx'] = $this->_wizsess['dbconfig']['save']['ipbx'];
-		$dbconfig['ql'] = $this->_wizsess['dbconfig']['save']['ql'];
 		$dbconfig['ipbxengine'] = $this->_wizsess['ipbxengine']['engine'];
-
-		$dbconfig['ql'] = str_replace('sqlite:/','sqlite3:/', $dbconfig['ql']);
 
 		if($this->_sysconfd->request_post('/set_db_backends',$dbconfig) === false)
 		{
@@ -1551,7 +1594,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		return(true);
 	}
-	
+
 	function _commit_timezone()
 	{
 		if(($tz = $this->_sysconfd->request_get('/timezone')) === false)
@@ -1570,7 +1613,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$uri = $this->discover_finish_uri();
 		$tpl->load_i18n_file('tpl/tpl.i18n', 'global');
 		$tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
-		
+
 		$seconds = 10;
 
 ?>

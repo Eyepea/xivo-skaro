@@ -73,17 +73,17 @@ switch($step)
 		else
 			$info = $appwizard->get_result('dbconfig');
 
+		$is_autocreate = isset($_QR['dbconfig']['create_auto']) ?
+								$_QR['dbconfig']['create_auto'] : null;
+
 		$element = $appwizard->get_step_element();
 		$dbbackend = dwho_array_intersect_key(array_flip($element['backend']['value']),
 						      dwho_gat::get('datastorage'));
 
-		dwho_var_dump($info);
-		dwho_var_dump($element);
-		dwho_var_dump($dbbackend);
-
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('dbbackend',$dbbackend);
+		$_TPL->set_var('dbconfig_is_autocreate',$is_autocreate);
 		break;
 	case 'checkcomponents':
 		if(($info = $appwizard->step_checkcomponents($verify)) === false)

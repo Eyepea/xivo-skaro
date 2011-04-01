@@ -46,6 +46,12 @@ $array['ipbximportuser']['field']['incallexten'] = array('incall','exten');
 
 $array['element'] = array();
 
+$array['element']['dbconfig']['create_auto'] = array();
+$array['element']['dbconfig']['create_auto']['value'] = array(1,0);
+$array['element']['dbconfig']['create_auto']['default'] = 1;
+$array['element']['dbconfig']['create_auto']['checked'] = true;
+$array['element']['dbconfig']['create_auto']['null'] = true;
+
 $array['element']['dbconfig'] = array();
 $array['element']['dbconfig']['backend']['value'] = array('mysql','postgresql','sqlite');
 $array['element']['dbconfig']['backend']['default'] = 'sqlite';
@@ -56,9 +62,6 @@ $array['element']['dbconfig']['sqlite']['xivodb']['default'] = '/var/lib/pf-xivo
 
 $array['element']['dbconfig']['sqlite']['ipbxdb'] = array();
 $array['element']['dbconfig']['sqlite']['ipbxdb']['default'] = '/var/lib/asterisk/astsqlite';
-
-$array['element']['dbconfig']['sqlite']['qldb'] = array();
-$array['element']['dbconfig']['sqlite']['qldb']['default'] = '/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db';
 
 $array['element']['dbconfig']['mysql'] = array();
 $array['element']['dbconfig']['mysql']['host'] = array();
@@ -193,15 +196,13 @@ $array['filter'] = array();
 
 $array['filter']['dbconfig'] = array();
 $array['filter']['dbconfig']['backend'] = array('key' => array('sqlite','mysql','postgresql'));
+$array['filter']['dbconfig']['create_auto'] = array('set' => false,'chk' => 2,'bool' => true);
 
 $array['filter']['dbconfig']['sqlite'] = array();
 $array['filter']['dbconfig']['sqlite']['xivodb'] = array('minlen'	=> 4,
 							 'maxlen'	=> 255,
 							 'cast'		=> 'sgraph');
 $array['filter']['dbconfig']['sqlite']['ipbxdb'] = array('minlen'	=> 4,
-							 'maxlen'	=> 255,
-							 'cast'		=> 'sgraph');
-$array['filter']['dbconfig']['sqlite']['qldb'] = array('minlen'	=> 4,
 							 'maxlen'	=> 255,
 							 'cast'		=> 'sgraph');
 
