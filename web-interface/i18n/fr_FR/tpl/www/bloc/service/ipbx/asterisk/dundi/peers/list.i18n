@@ -1,0 +1,17 @@
+; col_macaddr
+Addresse MAC
+
+; col_model
+Type
+
+; col_host
+Adresse IP
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce pair ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer ce ou ces pair(s) ?
+
+; no_peer
+Aucun pair

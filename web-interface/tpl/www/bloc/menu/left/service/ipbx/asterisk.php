@@ -287,6 +287,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('dundi','peers') === true):
+			echo	'<dd id="mn-dundi--peers">',
+				$url->href_html($this->bbf('mn_left_dundi-peers'),
+						'service/ipbx/dundi/peers'),
+				'</dd>';
+		endif;
+
 	endif;
 
 	if(xivo_user::chk_acl('cost_center') === true):

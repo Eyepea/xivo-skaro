@@ -412,4 +412,8 @@ $array['dundi'] = array();
 $array['dundi']['table'] = 'dundi';
 $array['dundi']['primary'] = array('id' => '');
 
+$array['dundipeer'] = array();
+$array['dundipeer']['table'] = 'dundi_peer';
+$array['dundipeer']['primary'] = array('id' => '');
+
 ?>

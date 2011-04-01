@@ -1,0 +1,68 @@
+; title_content_name
+Pair > Ajouter
+
+; fm_dundipeer_macaddr
+Adresse MAC : 
+
+; fm_dundipeer_model
+Type : 
+
+; fm_dundipeer_host
+Adresse IP ou DNS : 
+
+; fm_dundipeer_inkey
+Clé (appels entrants) : 
+
+; fm_dundipeer_outkey
+Clé (appels sortants) : 
+
+; fm_dundipeer_include
+Include : 
+
+; fm_dundipeer_permit
+Permit : 
+
+; fm_dundipeer_qualify
+Supervision : 
+
+; fm_dundipeer_order
+Position : 
+
+; fm_dundipeer_description
+Description : 
+
+; fm_dundipeer_model-opt(symmetric)
+Entrant/Sortant
+
+; fm_dundipeer_model-opt(inbound)
+Entrant
+
+; fm_dundipeer_model-opt(outbound)
+Sortant
+
+; fm_dundipeer_order-opt(primary)
+Primaire
+
+; fm_dundipeer_order-opt(secondary)
+Secondaire
+
+; hlp_fm_dundipeer-model
+Config asterisk: mode
+ 
+; hlp_fm_dundipeer-inkey
+Config asterisk: inkey
+
+; hlp_fm_dundipeer-outkey
+Config asterisk: outkey
+ 
+; hlp_fm_dundipeer-include
+Config asterisk: include
+ 
+; hlp_fm_dundipeer-permit
+Config asterisk: permit
+ 
+; hlp_fm_dundipeer-qualify
+Config asterisk: qualify
+ 
+; hlp_fm_dundipeer-order
+Config asterisk: order

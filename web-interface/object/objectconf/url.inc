@@ -125,6 +125,7 @@ $array['service/ipbx/cost_center/servicesgroup'] = 'service/ipbx/index.php/cost_
 
 
 $array['service/ipbx/dundi/general'] = 'service/ipbx/index.php/dundi/general';
+$array['service/ipbx/dundi/peers'] = 'service/ipbx/index.php/dundi/peers';
 
 
 $array['service/ipbx/trunk_management/sip'] = 'service/ipbx/index.php/trunk_management/sip/';

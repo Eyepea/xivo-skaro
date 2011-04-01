@@ -807,6 +807,7 @@ CREATE INDEX "features__idx__filename" ON "features"("filename");
 CREATE INDEX "features__idx__category" ON "features"("category");
 CREATE INDEX "features__idx__var_name" ON "features"("var_name");
 
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','','');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkext','700');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkpos','701-750');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','context','parkedcalls');
@@ -838,6 +839,7 @@ INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf',
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','atxfer','*2');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automon','*3');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','disconnect','*0');
+
 
 DROP TABLE IF EXISTS "parkinglot";
 CREATE TABLE "parkinglot" (
@@ -2587,9 +2589,10 @@ DROP TABLE IF EXISTS "general";
 CREATE TABLE "general"
 (
  "id" SERIAL,
- "timezone" varchar(128),
+ "timezone"         varchar(128),
  "exchange_trunkid" INTEGER DEFAULT NULL,
- "exchange_exten" varchar(128) DEFAULT NULL,
+ "exchange_exten"   varchar(128) DEFAULT NULL,
+ "dundi"            INTEGER NOT NULL DEFAULT 0, -- boolean
  PRIMARY KEY("id")
 );
 
@@ -2673,28 +2676,45 @@ CREATE TABLE "pickupmember" (
 
 DROP TABLE IF EXISTS "dundi";
 CREATE TABLE "dundi" (
- "id" SERIAL,
- "department" VARCHAR(255) DEFAULT NULL,
+ "id"            SERIAL,
+ "department"    VARCHAR(255) DEFAULT NULL,
  "organization"  VARCHAR(255) DEFAULT NULL,
- "locality"   VARCHAR(255) DEFAULT NULL,
- "stateprov"  VARCHAR(255) DEFAULT NULL,
- "country"    VARCHAR(3)   DEFAULT NULL,
- "email" VARCHAR(255) DEFAULT NULL,
- "phone" VARCHAR(40)  DEFAULT NULL,
+ "locality"      VARCHAR(255) DEFAULT NULL,
+ "stateprov"     VARCHAR(255) DEFAULT NULL,
+ "country"       VARCHAR(3)   DEFAULT NULL,
+ "email"         VARCHAR(255) DEFAULT NULL,
+ "phone"         VARCHAR(40)  DEFAULT NULL,
 
- "bindaddr"   VARCHAR(40)  DEFAULT '0.0.0.0',
- "port"  INTEGER DEFAULT 4520,
- "tos"   VARCHAR(4)   DEFAULT NULL,
- "entityid"   VARCHAR(20)  DEFAULT NULL,
- "cachetime"  INTEGER DEFAULT 5,
- "ttl"   INTEGER DEFAULT 2,
- "autokill"   INTEGER NOT NULL DEFAULT 1, -- boolean
- "secretpath" VARCHAR(64)  DEFAULT NULL,
- "storehistory"  INTEGER DEFAULT 0, -- boolean
+ "bindaddr"      VARCHAR(40)  DEFAULT '0.0.0.0',
+ "port"          INTEGER      DEFAULT 4520,
+ "tos"           VARCHAR(4)   DEFAULT NULL,
+ "entityid"      VARCHAR(20)  DEFAULT NULL,
+ "cachetime"     INTEGER      DEFAULT 5,
+ "ttl"           INTEGER      DEFAULT 2,
+ "autokill"      VARCHAR(16)  NOT NULL DEFAULT 'yes',
+ "secretpath"    VARCHAR(64)  DEFAULT NULL,
+ "storehistory"  INTEGER      DEFAULT 0, -- boolean
  PRIMARY KEY("id")
 );
 
-INSERT INTO "dundi" VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0.0.0.0', 4520, NULL, NULL, 5, 2, 1, NULL, 0);
+INSERT INTO "dundi" VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0.0.0.0', 4520, NULL, NULL, 5, 2, 'yes', NULL, 0);
+
+DROP TABLE IF EXISTS "dundi_peer";
+CREATE TABLE "dundi_peer" (
+ "id"            SERIAL,
+ "macaddr"       VARCHAR(64)  NOT NULL,
+ "model"         VARCHAR(16)  NOT NULL,
+ "host"          VARCHAR(256) NOT NULL,
+ "inkey"         VARCHAR(64)  NOT NULL,
+ "outkey"        VARCHAR(64)  NOT NULL,
+ "include"       VARCHAR(64)  NOT NULL,
+ "permit"        VARCHAR(64)  NOT NULL,
+ "qualify"       VARCHAR(16)  NOT NULL DEFAULT 'yes',
+ "order"         VARCHAR(16)  NOT NULL,
+ "commented"     INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "description"   TEXT         NOT NULL,
+ PRIMARY KEY("id")
+);
 
 
 -- grant all rights to xivo.* for xivo user

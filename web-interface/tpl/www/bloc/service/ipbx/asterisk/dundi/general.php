@@ -44,12 +44,12 @@ endif;
 	<ul>
 		<li id="dwsm-tab-1"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-general');"
+		    onclick="dwho_submenu.select(this,'sb-part-first');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#general"><?=$this->bbf('smenu_general');?></a>
+					<a href="#first"><?=$this->bbf('smenu_first');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -80,9 +80,17 @@ endif;
 				    'value'	=> 1));
 ?>
 
-<div id="sb-part-general" class="b-nodisplay">
+<div id="sb-part-first" class="b-nodisplay">
 <?php
-    echo $form->text(array('desc'  => $this->bbf('fm_dundi-department'),
+		echo $form->checkbox(array('desc'	=> $this->bbf('fm_general_dundi'),
+				  	'name'		  => 'general[dundi]',
+						'labelid'	  => 'general-dundi',
+					  'help'	  	=> $this->bbf('hlp_fm_general-dundi'),
+					  'required'	=> false,
+			      'checked'		=> $this->get_var('info','general','dundi'),
+			      'default'		=> $element['general']['dundi']['default'])),
+
+    $form->text(array('desc'  => $this->bbf('fm_dundi-department'),
             'name' => 'dundi[department]',
             'labelid'  => 'dundi-department',
             'size'     => 10,
@@ -132,7 +140,7 @@ endif;
 						'empty' => true,
 						'size' => 15,
 				    'help'	=> $this->bbf('hlp_fm_dundi-country'),
-				    'selected'	=> $this->get_var('dundi','country','var_val'),
+				    'selected'	=> $this->get_var('info','dundi','country'),
 				    'default'	=> $element['dundi']['country']['default']),
 			      $countries),
 
@@ -163,7 +171,7 @@ endif;
 
 <div id="sb-part-advanced" class="b-nodisplay">
 <?php
-    echo $form->text(array('desc'  => $this->bbf('fm_dundi-bindaddr'),
+    echo $form->text(array('desc'  => $this->bbf('fm_dundi_bindaddr'),
             'name' => 'dundi[bindaddr]',
             'labelid'  => 'dundi-bindaddr',
             'size'     => 10,
@@ -191,7 +199,7 @@ endif;
 				    'key'	=> false,
 						'empty' => true,
 				    'help'	=> $this->bbf('hlp_fm_dundi-tos'),
-				    'selected'	=> $this->get_var('dundi','tos','var_val'),
+				    'selected'	=> $this->get_var('info','dundi','tos'),
 				    'default'	=> $element['dundi']['tos']['default']),
 			      $element['dundi']['tos']['value']),
 
@@ -228,12 +236,16 @@ endif;
             'error'    => $this->bbf_args('error',
         $this->get_var('error','dundi', 'ttl')) )),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_dundi-autokill'),
-				      'name'	=> 'dundi[autokill]',
-				      'labelid'	=> 'dundi-autokill',
-				      'help'	=> $this->bbf('hlp_fm_dundi-autokill'),
-				      'checked'	=> $this->get_var('info','dundi','autokill'),
-				      'default'	=> $element['dundi']['autokill']['default'])),
+		$form->select(array('desc'	=> $this->bbf('fm_dundi-autokill'),
+				    'name'	=> 'dundi[autokill]',
+				    'labelid'	=> 'dundi-autokill',
+				    'key'	=> false,
+						'empty' => false,
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'help'	=> $this->bbf('hlp_fm_dundi-autokill'),
+				    'selected'	=> $this->get_var('info','dundi','autokill'),
+				    'default'	=> $element['dundi']['autokill']['default']),
+			      $element['dundi']['autokill']['value']),
 
     $form->text(array('desc'  => $this->bbf('fm_dundi-secretpath'),
             'name' => 'dundi[secretpath]',
@@ -241,6 +253,7 @@ endif;
             'size'     => 10,
             'help'     => $this->bbf('hlp_fm_dundi-secretpath'),
             'required' => false,
+				      'help'	=> $this->bbf('hlp_fm_dundi-secretpath'),
             'value'    => $this->get_var('info','dundi','secretpath'),
             'default'  => $element['dundi']['secretpath']['default'],
             'error'    => $this->bbf_args('error',

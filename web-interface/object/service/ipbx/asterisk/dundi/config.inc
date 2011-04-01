@@ -79,9 +79,8 @@ $array['element']['ttl']['default'] = '';
 $array['element']['ttl']['null'] = true;
 
 $array['element']['autokill'] = array();
-$array['element']['autokill']['value'] = array(0,1);
-$array['element']['autokill']['default'] = 1;
-$array['element']['autokill']['set'] = true;
+$array['element']['autokill']['value'] = array('no','yes',500,1000,1500,2000,2500,3000,3500,4000);
+$array['element']['autokill']['default'] = 'yes';
 
 $array['element']['secretpath'] = array();
 $array['element']['secretpath']['default'] = '';
@@ -111,7 +110,7 @@ $array['filter']['tos'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7
 $array['filter']['entityid'] = array('set' => false, 'chk' => 2, 'maxlen' => 20);
 $array['filter']['cachetime'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
 $array['filter']['ttl'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
-$array['filter']['autokill'] = array('bool' => true);
+$array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['secretpath'] = array('set' => false, 'chk' => 2, 'maxlen' => 64);
 $array['filter']['storehistory'] = array('set' => false, 'chk' => 2, 'bool' => 'true');
 ?>

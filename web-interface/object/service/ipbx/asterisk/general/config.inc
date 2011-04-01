@@ -33,11 +33,17 @@ $array['element']['exchange_exten'] = array();
 $array['element']['exchange_exten']['default'] = '';
 $array['element']['exchange_exten']['null'] = true;
 
+$array['element']['dundi'] = array();
+$array['element']['dundi']['value'] = array(1, 0);
+$array['element']['dundi']['default'] = '0';
+$array['element']['dundi']['null']    = true;
+
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['timezone']         = array('set' => false, 'chk' => 2);
 $array['filter']['exchange_trunkid'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
 $array['filter']['exchange_exten']   = array('set' => false, 'chk' => 2);
+$array['filter']['dundi'] = array('bool' => true);
 
 ?>

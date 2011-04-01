@@ -18,7 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$dundi = &$ipbx->get_module('dundi');
+$dundi   = &$ipbx->get_module('dundi');
+$general = &$ipbx->get_module('general');
 
 $fm_save = null;
 $info = $error = array();
@@ -26,8 +27,6 @@ $info = $error = array();
 if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 {
 	$fm_save = true;
-	if (!array_key_exists('dundi','autokill'))
-		$_QR['dundi']['autokill'] = 0;
 
 	if($dundi->edit(1, $_QR['dundi']) === false)
 	{
@@ -41,12 +40,14 @@ if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 if (!array_key_exists('dundi', $info))
 	$info['dundi'] = $dundi->get(1);
 
+$info['general'] = $general->get(1);
+$general = array('dundi' => array('default' => 0));
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
-$_TPL->set_var('element', array('dundi' => $dundi->get_element()));
+$_TPL->set_var('element', array('dundi' => $dundi->get_element(), 'general' => $general));
 $_TPL->set_var('info',$info);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('countries',dwho_i18n::get_territory_translated_list());

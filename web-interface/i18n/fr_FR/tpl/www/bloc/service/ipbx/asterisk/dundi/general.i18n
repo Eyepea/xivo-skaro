@@ -1,5 +1,7 @@
+; title_content_name
+DUNDi - options générales
 
-; smenu_general
+; smenu_first
 Général
 
 ; smenu_advanced
@@ -26,10 +28,10 @@ E-mail :
 ; fm_dundi-phone
 Téléphone : 
 
-; fm_dundi-binaddr
+; fm_dundi_bindaddr
 Adresse en écoute : 
 
-; hlp_fm_dundi-bindaddr
+; hlp_fm_dundi_bindaddr
 Config asterisk: binaddr
 
 ; fm_dundi-port
@@ -79,3 +81,9 @@ Activer les statistiques :
 
 ; hlp_fm_dundi-storehistory
 Config asterisk: storehistory
+
+; fm_general_dundi
+Activer dundi : 
+
+; hlp_fm_general-dundi
+Active le mode actif/actif
