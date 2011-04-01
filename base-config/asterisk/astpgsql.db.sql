@@ -808,22 +808,36 @@ CREATE INDEX "features__idx__category" ON "features"("category");
 CREATE INDEX "features__idx__var_name" ON "features"("var_name");
 
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkext','700');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','context','parkedcalls');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkingtime','45');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkpos','701-750');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkfindnext','no');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','adsipark','no');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','transferdigittimeout','3');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','featuredigittimeout','500');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','context','parkedcalls');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkinghints','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkingtime','45');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','comebacktoorigin','no');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','courtesytone',NULL);
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkedplay','caller');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkedcalltransfers','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkedcallreparking','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkedcallhangup','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkedcallrecording','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkeddynamic','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','adsipark','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','findslot','next');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','parkedmusicclass','default');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','transferdigittimeout','3');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','xfersound',NULL);
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','xferfailsound',NULL);
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','pickupexten','*8');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','pickupexten','*8');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','pickupsound','');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','pickupfailsound','');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','featuredigittimeout','500');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxfernoanswertimeout','15');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferdroptcall','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferloopdelay','10');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxfercallbackretries','2');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','blindxfer','*1');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','atxfer','*2');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automon','*3');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','disconnect','*0');
-
 
 DROP TABLE IF EXISTS "parkinglot";
 CREATE TABLE "parkinglot" (
