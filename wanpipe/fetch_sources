@@ -50,7 +50,9 @@ if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
 		if [ -e "${SRC_DIR_PREFIX}${UPVERSION}" ]; then
 			(
 			cd ${SRC_DIR_PREFIX}${UPVERSION}
-			rm -rf ${DFSG_EXCLUDE_PATTERNS}
+            for pattern in ${DFSG_EXCLUDE_PATTERNS}; do
+                find . -name "$pattern" -exec rm {} \;
+            done
 			)
 			tar cfz ../${FILENAME} ${SRC_DIR_PREFIX}${UPVERSION}
 		else
