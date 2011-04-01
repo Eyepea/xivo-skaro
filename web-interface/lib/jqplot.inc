@@ -34,40 +34,12 @@ class xivo_jqplot
 		if (dwho_file::is_d_rx(DWHO_LOCATION_SCRIPT) === false)
 			die('ERR: Failed to load script dir '.DWHO_LOCATION_SCRIPT);
 
-		$jqplot_dir = dwho_file::joinpath(DWHO_LOCATION_SCRIPT,'js','jqplot');
-
-		if (dwho_file::is_d_rx($jqplot_dir) === false)
-			die('ERR: Failed to load root dir jqplot '.$jqplot_dir);
-
-		$jqplot_dir_plugins = dwho_file::joinpath($jqplot_dir,'plugins');
-
-		if (dwho_file::is_d_rx($jqplot_dir_plugins) === false)
-			die('ERR: Failed to load plugins dir jqplot '.$jqplot_dir_plugins);
-
-		$this->_plugins = $this->init_path_plugins($jqplot_dir_plugins);
-	}
-
-	private function init_path_plugins($libdir)
-	{
-	    $r = dwho_file::read_d($libdir,'file',FILE_R_OK);
-	    sort($r);
-	    $tree = array();
-	    foreach($r as $file)
-	        if(ereg('.min.js',$file))
-	            array_push($tree,dwho_file::joinpath($libdir,$file));
-	    return($tree);
+		$this->uribase = '/extra-libs/jqplot/';
 	}
 
 	private function load_plugin($name)
 	{
-		$ls_plugins = $this->_plugins;
-		while ($ls_plugins)
-		{
-			$plugin = array_shift($ls_plugins);
-			if (preg_match('/jqplot.'.$name.'/i',$plugin) === 1
-			&& isset($this->_pluginloaded[$name]) === false)
-				$this->_pluginloaded[$name] = strstr($plugin, 'js/jqplot');
-		}
+		$this->_pluginloaded[$name] = $this->uribase.'/plugins/jqplot.'.$name.'.min.js';
 		return(true);
 	}
 

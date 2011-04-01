@@ -35,8 +35,8 @@ $ipbx = &$_SRE->get('ipbx');
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_css('css/service/ipbx/'.$ipbx->get_name().'.css');
 $dhtml->set_css('/css/statistics/statistics.css');
-$dhtml->set_css('js/jqplot/jquery.jqplot.css');
-$dhtml->set_js('js/jqplot/jquery.jqplot.js');
+$dhtml->set_css('extra-libs/jqplot/jquery.jqplot.css',true);
+$dhtml->set_js('extra-libs/jqplot/jquery.jqplot.js',true);
 $dhtml->add_js('/struct/js/date.js.php');
 
 $action_path = $_LOC->get_action_path('statistics/cdr',4);
