@@ -1566,10 +1566,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$line = &$rs[$i];
 
-			$this->_line->_reset();
 			$this->_line->_reset_info();
 
-			if (isset($line['id']) === true)
+			if (isset($line['id']) === true
+			&& (int) $line['id'] !== 0)
 			{
 				$methodset = 'set_edit';
 				$method = 'edit';
@@ -1610,8 +1610,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$return[$i] = $line;
 		}
-
-		dwho_hr();
 
 		if ($errnb >> 0)
 		{

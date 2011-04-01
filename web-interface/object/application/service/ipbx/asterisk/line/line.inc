@@ -420,6 +420,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$this->set_linefeatures($action,$arr['linefeatures']);
 
+		$this->_extenumbers->_reset();
+		$this->_contextnummember->_reset();
+
 		$number = (string) $this->get_result_var('linefeatures','number');
 
 		$numhaslen = dwho_has_len($number);
@@ -819,7 +822,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$this->_status = '';
 					return(false);
 				}
-				elseif($this->_info['linefeatures']['number'] !== '')
+				else if($this->_info['linefeatures']['number'] !== '')
 				{
 					if($this->get_result('usermacro') === null
 					|| $this->get_result('extenumbers') === null)
@@ -828,7 +831,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 						$this->delete_extenumbers();
 						$this->delete_hints();
 					}
-					elseif ($this->edit_usermacro($iduserfeatures) === false
+					else if ($this->edit_usermacro($iduserfeatures) === false
 					|| $this->edit_extenumbers() === false)
 					{
 						$this->_reverse_edit($protocolret);
@@ -871,6 +874,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				$this->_status = '';
 				return(false);
 			}
+
 		}
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
