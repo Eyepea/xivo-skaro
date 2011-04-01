@@ -1,0 +1,42 @@
+Index: sangoma-wanpipe-3.5.15.2.dfsg.1/util/Makefile
+===================================================================
+--- sangoma-wanpipe-3.5.15.2.dfsg.1.orig/util/Makefile	2010-09-14 16:17:41.000000000 +0200
++++ sangoma-wanpipe-3.5.15.2.dfsg.1/util/Makefile	2010-09-14 16:18:03.000000000 +0200
+@@ -31,7 +31,6 @@
+ 
+ install:
+ 	make -C ft1 install WAN_VIRTUAL=$(WAN_VIRTUAL)
+-	make -C wancfg_legacy install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C lxdialog install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C sdladump install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wanconfig install WAN_VIRTUAL=$(WAN_VIRTUAL)
+@@ -39,10 +38,8 @@
+ 	make -C wan_plxctrl install WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C wanpipemon install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wanpipemon_legacy install WAN_VIRTUAL=$(WAN_VIRTUAL)
+-	make -C wancfg install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wan_aftup install WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C bwm install WAN_VIRTUAL=$(WAN_VIRTUAL)
+-	make -C wancfg_zaptel install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 
+ uninstall:
+ 	make -C ft1 uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
+@@ -54,10 +51,8 @@
+ 	make -C wan_plxctrl uninstall WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C wanpipemon uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wanpipemon_legacy uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
+-	make -C wancfg uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wan_aftup uninstall WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C bwm uninstall   WAN_VIRTUAL=$(WAN_VIRTUAL)
+-	make -C wancfg_zaptel uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)  
+ 
+ clean:
+ 	make -C ft1 clean WAN_VIRTUAL=$(WAN_VIRTUAL)
+@@ -68,7 +63,6 @@
+ 	make -C wan_plxctrl clean WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C wanpipemon clean WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wanpipemon_legacy clean WAN_VIRTUAL=$(WAN_VIRTUAL)
+-	make -C wancfg clean WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C wan_aftup clean WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C bwm clean  WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C misc clean  WAN_VIRTUAL=$(WAN_VIRTUAL) 

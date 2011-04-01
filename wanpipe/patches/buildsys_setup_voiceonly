@@ -1,0 +1,31 @@
+Index: sangoma-wanpipe-3.5.15.1.dfsg.1/Setup
+===================================================================
+--- sangoma-wanpipe-3.5.15.1.dfsg.1.orig/Setup	2010-09-10 22:10:58.000000000 +0200
++++ sangoma-wanpipe-3.5.15.1.dfsg.1/Setup	2010-09-10 22:11:52.000000000 +0200
+@@ -7248,6 +7248,7 @@
+ 		      
+ 		      BRI    : Sangoma BRI + Media Gateway Support
+ 		      
++	--build-voice-only: Build only voice components, without libs and devel tools
+ 
+ ENDOFTEXT
+ 
+@@ -7864,6 +7865,10 @@
+             fi
+             ;;
+ 
++
++ 		--build-voice-only)
++ 			TDM_VOICE_ONLY=YES
++ 			;;
+         --with-oslec)
+ 			echo "WARNING:"
+ 			echo "You are going to use OSLEC as software echo canceler"
+@@ -7875,6 +7880,7 @@
+ 				OSLEC="NO"
+ 			fi
+ 			;;
++
+ 		*)
+ 			echo "Invalid option $arg"
+ 			exit 1;

@@ -1,0 +1,84 @@
+Index: sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_dahdi
+===================================================================
+--- sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1.orig/util/wancfg_zaptel/wancfg_dahdi	2008-10-24 18:46:47.000000000 +0200
++++ sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_dahdi	2008-10-24 18:55:02.000000000 +0200
+@@ -7,7 +7,7 @@
+ 
+ 	if [ $ostype = "Linux" ]; then
+ 		WAN_BASE=/etc
+-		WAN_HOME=$WAN_BASE/wanpipe
++		WAN_HOME=/usr/share/wanpipe/wancfg
+ 		META_CONF=$WAN_BASE/wanpipe/wanrouter.rc
+ 	elif [ $ostype = "FreeBSD" -o $ostype = "OpenBSD" ]; then
+ 		WAN_BASE=/usr/local/etc
+@@ -46,6 +46,6 @@
+ 	exit 1
+ fi
+ 
+-cd ${WAN_HOME}/wancfg_zaptel
++cd ${WAN_HOME}
+ ./wancfg_zaptel.pl  --conf_dir=$WAN_BASE $ARGS
+ cd $home
+Index: sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_hp_tdmapi
+===================================================================
+--- sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1.orig/util/wancfg_zaptel/wancfg_hp_tdmapi	2008-10-24 18:46:47.000000000 +0200
++++ sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_hp_tdmapi	2008-10-24 18:55:27.000000000 +0200
+@@ -7,7 +7,7 @@
+ 
+ 	if [ $ostype = "Linux" ]; then
+ 		WAN_BASE=/etc
+-		WAN_HOME=$WAN_BASE/wanpipe
++		WAN_HOME=/usr/share/wanpipe/wancfg
+ 		META_CONF=$WAN_BASE/wanpipe/wanrouter.rc
+ 	elif [ $ostype = "FreeBSD" -o $ostype = "OpenBSD" ]; then
+ 		WAN_BASE=/usr/local/etc
+@@ -47,6 +47,6 @@
+ 	exit 1
+ fi
+ 
+-cd ${WAN_HOME}/wancfg_zaptel
++cd ${WAN_HOME}
+ ./wancfg_zaptel.pl --hp_tdm_api --conf_dir=$WAN_BASE $ARGS
+ cd $home
+Index: sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_smg
+===================================================================
+--- sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1.orig/util/wancfg_zaptel/wancfg_smg	2008-10-24 18:46:47.000000000 +0200
++++ sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_smg	2008-10-24 18:55:36.000000000 +0200
+@@ -7,7 +7,7 @@
+ 
+ 	if [ $ostype = "Linux" ]; then
+ 		WAN_BASE=/etc
+-		WAN_HOME=$WAN_BASE/wanpipe
++		WAN_HOME=/usr/share/wanpipe/wancfg
+ 		META_CONF=$WAN_BASE/wanpipe/wanrouter.rc
+ 	elif [ $ostype = "FreeBSD" -o $ostype = "OpenBSD" ]; then
+ 		WAN_BASE=/usr/local/etc
+@@ -46,6 +46,6 @@
+ 	exit 1
+ fi
+ 
+-cd ${WAN_HOME}/wancfg_zaptel
++cd ${WAN_HOME}
+ ./wancfg_zaptel.pl --smg --conf_dir=$WAN_BASE $ARGS
+ cd $home
+Index: sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_tdmapi
+===================================================================
+--- sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1.orig/util/wancfg_zaptel/wancfg_tdmapi	2008-10-24 18:46:47.000000000 +0200
++++ sangoma-wanpipe-3.3.14.deb.1-1+pf.etch.xivo.k.9.dev.1/util/wancfg_zaptel/wancfg_tdmapi	2008-10-24 18:55:45.000000000 +0200
+@@ -7,7 +7,7 @@
+ 
+ 	if [ $ostype = "Linux" ]; then
+ 		WAN_BASE=/etc
+-		WAN_HOME=$WAN_BASE/wanpipe
++		WAN_HOME=/usr/share/wanpipe/wancfg
+ 		META_CONF=$WAN_BASE/wanpipe/wanrouter.rc
+ 	elif [ $ostype = "FreeBSD" -o $ostype = "OpenBSD" ]; then
+ 		WAN_BASE=/usr/local/etc
+@@ -47,6 +47,6 @@
+ 	exit 1
+ fi
+ 
+-cd ${WAN_HOME}/wancfg_zaptel
++cd ${WAN_HOME}
+ ./wancfg_zaptel.pl --tdm_api --conf_dir=$WAN_BASE $ARGS
+ cd $home

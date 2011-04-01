@@ -1,0 +1,17 @@
+Index: sangoma-wanpipe-3.5.15.1.dfsg.1/api/Makefile
+===================================================================
+--- sangoma-wanpipe-3.5.15.1.dfsg.1.orig/api/Makefile	2010-09-07 21:10:25.000000000 +0200
++++ sangoma-wanpipe-3.5.15.1.dfsg.1/api/Makefile	2010-09-10 22:09:11.000000000 +0200
+@@ -15,9 +15,9 @@
+ 
+ all:	
+ 	make -C tdm_api WANINCDIR=$(WANINCDIR)
+-	make -C legacy WANINCDIR=$(WANINCDIR)
+-	make -C sample_c WANINCDIR=$(WANINCDIR)
+-	make -C sample_cpp WANINCDIR=$(WANINCDIR)
++	#make -C legacy WANINCDIR=$(WANINCDIR)
++	#make -C sample_c WANINCDIR=$(WANINCDIR)
++	#make -C sample_cpp WANINCDIR=$(WANINCDIR)
+ 
+ clean:
+ 	make -C tdm_api clean

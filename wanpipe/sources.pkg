@@ -1,0 +1,5 @@
+DEST_PATH=tarballs
+BASE_URL="ftp://ftp.sangoma.com/linux/current_wanpipe/"
+TARBALL_PREFIX="wanpipe-"
+SRC_DIR_PREFIX="wanpipe-"
+PKG_NAME="wanpipe"

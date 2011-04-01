@@ -1,0 +1,30 @@
+Index: sangoma-wanpipe-3.5.15.1.dfsg.1/Setup
+===================================================================
+--- sangoma-wanpipe-3.5.15.1.dfsg.1.orig/Setup	2010-09-10 22:12:29.000000000 +0200
++++ sangoma-wanpipe-3.5.15.1.dfsg.1/Setup	2010-09-10 22:12:41.000000000 +0200
+@@ -2293,11 +2293,14 @@
+ 	fi
+ 	cp $DRIVER_UPDATE_DIR/src/net/sdladrv.c $SOURCEDIR/wanpipe 
+ 
+-	tmp1=`make -C $SOURCEDIR SUBDIRS=$PWD wanpipe/sdladrv 2> /dev/null`
++	# Duck: ugly, at least avoid "make[1]: ..." messages in computed CFLAGS
++	tmp1=`make -C $SOURCEDIR SUBDIRS=$PWD wanpipe/sdladrv 2> /dev/null | grep -v "^make"`
+ 
+ #	echo "TMP =---$tmp---"
+ 
+-	tmp=${tmp1#*gcc}
++	# Duck: this does not match versionned gcc binaries like 'gcc-4.1'
++	#tmp=${tmp1#*gcc}
++	tmp=$(echo $tmp1 | perl -ne 's/gcc(-[\d.]+)//; print')
+ 
+ 	tmp1=$tmp;
+ 
+@@ -3467,7 +3470,7 @@
+ 	#Setup the COMPILATOIN FLAGS depending on the kernel type
+ 	if [ $KERN_VER -eq 26 ]; then
+ 		if [ "$USE_CFLAGS" = "" ]; then
+-CFLAGS="$CC -Wp,-MD,.wanpipe.o.d -nostdinc -iwithprefix include -D__LINUX__ -Dlinux -D__KERNEL__ -I$WANPIPE_INCLUDE_DIR -I$SOURCEDIR/include  -DMODULE $CFLAGS"
++			CFLAGS="-Wp,-MD,.wanpipe.o.d -nostdinc -iwithprefix include -D__LINUX__ -Dlinux -D__KERNEL__ -I$SOURCEDIR/include  -DMODULE $CFLAGS"
+ 			wan_get_kernel_flags
+ 			CFLAGS="$CFLAGS $CFLAGS_EXTRA"
+ 		fi

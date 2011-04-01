@@ -1,0 +1,19 @@
+Index: sangoma-wanpipe-3.5.15.2.dfsg.1/Setup
+===================================================================
+--- sangoma-wanpipe-3.5.15.2.dfsg.1.orig/Setup	2010-09-14 16:17:40.000000000 +0200
++++ sangoma-wanpipe-3.5.15.2.dfsg.1/Setup	2010-09-14 16:18:11.000000000 +0200
+@@ -7703,10 +7703,10 @@
+ 				echo "Error: Zaptel source directory not found: $ZAPTEL_INSTALL_DIR";
+ 				exit 1;
+ 			fi
+-			if [ ! -f "$ZAPTEL_INSTALL_DIR/Makefile" ]; then
+-				echo "Error: Invalid zaptel source found in $ZAPTEL_INSTALL_DIR";
+-				exit 1;
+-			fi
++			#if [ ! -f "$ZAPTEL_INSTALL_DIR/Makefile" ]; then
++			#	echo "Error: Invalid zaptel source found in $ZAPTEL_INSTALL_DIR";
++			#	exit 1;
++			#fi
+ 			ZAPTEL_PATH_OP="YES";
+ 			echo "Zaptel path defined as: $ZAPTEL_INSTALL_DIR"
+ 

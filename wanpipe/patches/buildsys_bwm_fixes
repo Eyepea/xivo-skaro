@@ -1,0 +1,11 @@
+Index: sangoma-wanpipe-3.5.10.dfsg.1/util/bwm/Makefile
+===================================================================
+--- sangoma-wanpipe-3.5.10.dfsg.1.orig/util/bwm/Makefile	2010-02-05 15:12:40.000000000 +0100
++++ sangoma-wanpipe-3.5.10.dfsg.1/util/bwm/Makefile	2010-02-05 15:14:52.000000000 +0100
+@@ -1,3 +1,6 @@
++CFLAGS = -Wall -O2 -D_DEBUG_=$(DEBUG) -D_GNUC_ -I. -D__LINUX__  -I/usr/include/wanpipe $(PROTOCOL_DEFINES)
++CFLAGS += $(EXTRA_FLAGS)
++
+ all: bwm.c
+ 	$(CC) $(CFLAGS) -O2 -Wall bwm.c -o wpbwm
+ 
