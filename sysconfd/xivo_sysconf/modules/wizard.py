@@ -23,7 +23,7 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os
+import os, subprocess, traceback
 import logging
 import re
 
@@ -185,7 +185,7 @@ def merge_config_file(tplfilename, customtplfilename, newfilename, cfgdict, ipbx
 
     for sec, options in xdict.iteritems():
         if not newcfg.has_section(sec):
-            newcfg.add_section(sec)
+            newcfg.add_section(secpbxdburistr)
         for optname, optvalue in options.iteritems():
             putfunc(sec, optname, optvalue)
 
@@ -488,9 +488,6 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
 
         args['xivo'] = urisup.uri_help_unsplit(xivodburi)
 
-    if 'ql' not in args:
-        args['ql'] = args['xivo']
-
     if 'ipbxengine' not in args:
         raise HttpReqError(415, "missing option 'ipbxengine'")
     elif args['ipbxengine'] not in WIZARD_IPBX_ENGINES:
@@ -568,6 +565,74 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
             asterisk_configuration(ipbxdburi, ipbxdbinfo[ipbxdburi[0]], ipbxdbparams)
     finally:
         WIZARDLOCK.release()
+
+def exec_db_file(args, options):
+    """
+    POST /exec_db_file
+    """
+    if 'backend' not in args:
+        raise HttpReqError(415, "missing option 'backend'")
+
+    if 'xivoscript' not in args:
+        raise HttpReqError(415, "missing option 'xivoscript'")
+    elif 'xivodb' not in args:
+        raise HttpReqError(415, "missing option 'xivodb'")
+    else:
+	out = ["** CREATE XIVO DB **"]
+	if args['backend'] == 'postgresql':	
+	    try:
+		subprocess.call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
+            except OSError, e:
+               traceback.print_exc()
+               raise HttpReqError(500, out)
+	
+	if args['backend'] == 'mysql':
+	    try:
+		subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
+            except OSError, e:
+               traceback.print_exc()
+               raise HttpReqError(500, out)
+
+	if args['backend'] == 'sqlite':
+            try:
+		subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
+            except OSError, e:
+               traceback.print_exc()
+               raise HttpReqError(500, out)
+
+    if 'ipbxscript' not in args:
+        raise HttpReqError(415, "missing option 'ipbxscript'")
+    elif 'ipbxdb' not in args:
+        raise HttpReqError(415, "missing option 'ipbxdb'")
+    else:
+        out = ["** CREATE IPBX DB **"]
+        if args['backend'] == 'postgresql':
+            try:
+                #cmd_exec('create XIVO DB with postgresql', ['sudo', '-u', 'postgres', 'psql', '-f', "/%s" % args['xivoscript'], 'template1'], out)
+                subprocess.call(["sudo -u postgres psql -f /%s" % args['ipbxscript']], shell=True)
+            except OSError, e:
+               traceback.print_exc()
+               raise HttpReqError(500, '\n'.join(out))
+        
+        if args['backend'] == 'mysql':
+            try:
+                #cmd_exec('create XIVO DB with mysql', ['mysql', "--defaults-file=%s" % '/etc/mysql/debian.cnf', '<', "/%s" % args['xivoscript']], out)
+                subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
+            except OSError, e:
+               traceback.print_exc()
+               raise HttpReqError(500, '\n'.join(out))
+
+        if args['backend'] == 'sqlite':
+            try:
+                #cmd_exec('create XIVO DB with sqlite', ['sqlite', args['xivodb'], '<', "/%s" % args['xivoscript']], out)
+                subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
+            except OSError, e:
+               traceback.print_exc()
+               raise HttpReqError(500, '\n'.join(out))
+
+
+
+http_json_server.register(exec_db_file, CMD_RW, name="exec_db_file")
 
 def safe_init(options):
     """Load parameters, etc"""
