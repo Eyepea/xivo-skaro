@@ -234,8 +234,6 @@ if(isset($error_js[0]) === true)
 </div>
 
 <div id="sb-part-queues" class="b-nodisplay">
-	<fieldset id="fld-queues-general">
-		<legend><?=$this->bbf('fld-queues-general');?></legend>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_persistentmembers'),
 				      'name'	=> 'generalqueues[persistentmembers]',
@@ -273,14 +271,6 @@ if(isset($error_js[0]) === true)
 				      'checked'	=> $this->get_var('generalqueues','shared_lastcall','var_val')));
 
 ?>
-	</fieldset>
-
-	<fieldset id="fld-queues-penalty">
-		<legend><?=$this->bbf('fld-queues-penalty');?></legend>
-<?php
-			$this->file_include('bloc/service/ipbx/asterisk/general_settings/advanced/queues_penalty');
-?>
-	</fieldset>
 </div>
 
 <div id="sb-part-meetme" class="b-nodisplay">
