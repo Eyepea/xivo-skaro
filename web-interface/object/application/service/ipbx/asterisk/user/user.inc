@@ -1514,7 +1514,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_linefeatures()
 	{
-		if(($rs = $this->get_result('linefeatures')) === null
+		if(($rs = $this->get_result('linefeatures')) === null)
+			return($rs);
+
+		if(dwho_issa('linefeatures',$this->_info) === false
 		|| $rs === false
 		|| $this->_line === false)
 			return(false);
@@ -1883,7 +1886,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function delete_linefeatures()
 	{
-		if(dwho_issa('linefeatures',$this->_info) === false)
+		if(($rs = $this->get_result('linefeatures')) === null)
+			return($rs);
+
+		if(dwho_issa('linefeatures',$this->_info) === false
+		|| $rs === false
+		|| $this->_line === false)
 			return(false);
 
 		$where = array('iduserfeatures' => (int) $this->_info['userfeatures']['id']);
@@ -2282,7 +2290,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['success']++;
 			}
 		}
-
 
 		return($r);
 	}

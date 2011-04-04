@@ -30,12 +30,12 @@ switch($act)
 	case 'view':
 		$appuser = &$ipbx->get_application('user');
 
-		$nocomponents = array('usermacro'		=> true,
-				      'hints'			=> true,
-				      'extenumbers'		=> true,
+		$nocomponents = array('usermacro'	=> true,
+				      'hints'				=> true,
+				      'extenumbers'			=> true,
 				      'contextnummember'	=> true);
 
-	
+
 		if(($info = $appuser->get($_QRY->get('id'),
 					  null,
 					  null, // we search in both internal and non-internal users
@@ -63,7 +63,6 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
-/*
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
 
@@ -80,7 +79,6 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
-*/
 	case 'delete':
 		$appuser = &$ipbx->get_application('user');
 
