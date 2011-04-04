@@ -437,7 +437,8 @@ class ProvisioningApplication(object):
                     logger.info('device has not changed, ignoring update')
                 else:
                     if self._dev_needs_deconfiguration(old_device, device):
-                        self._dev_deconfigure_if_possible(old_device)
+                        if self._dev_deconfigure_if_possible(old_device):
+                            device[u'configured'] = False
                     if self._dev_needs_configuration(old_device, device):
                         yield self._dev_configure_if_possible(device)
                     yield self._dev_collection.update(device)

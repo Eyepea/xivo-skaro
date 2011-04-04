@@ -43,7 +43,7 @@ from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
 
-logger = logging.getLogger('plugin-xivo-polycom')
+logger = logging.getLogger('plugin.xivo-polycom')
 
 
 class BasePolycomHTTPDeviceInfoExtractor(object):

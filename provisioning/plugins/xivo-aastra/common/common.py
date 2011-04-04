@@ -28,6 +28,8 @@ __license__ = """
 #     57i CT identify itself as 57i or something like 57iCT ?
 # TODO add function key support for 9143i and 9180i
 
+import logging
+import re
 import os.path
 from provd import sip, tzinform
 from provd.devices.config import RawConfigError
@@ -40,71 +42,54 @@ from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 from twisted.python import failure
 
+logger = logging.getLogger('plugin.xivo-aastra')
+
 
 class BaseAastraHTTPDeviceInfoExtractor(object):
+    _UA_REGEX = re.compile(r'^Aastra(\w+) MAC:([^ ]+) V:([^ ]+)-SIP$')
+    _UA_MODELS_MAP = {
+        '51i': u'6751i',       # not tested
+        '53i': u'6753i',       # not tested
+        '55i': u'6755i',
+        '57i': u'6757i',
+    }
+    
     def extract(self, request, request_type):
         assert request_type == 'http'
         return defer.succeed(self._do_extract(request))
     
-    _UA_MODELS_MAP = {
-        'Aastra6730i': u'6730i',     # not tested
-        'Aastra6731i': u'6731i',
-        'Aastra6739i': u'6739i',
-        'Aastra51i': u'6751i',       # not tested
-        'Aastra53i': u'6753i',       # not tested
-        'Aastra55i': u'6755i',
-        'Aastra57i': u'6757i',
-        'Aastra9143i': u'9143i',     # not tested
-        'Aastra9180i': u'9180i',     # not tested
-    }
-    
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
-            dev_info = {}
-            self._extract_from_ua(ua, dev_info)
-            if dev_info:
-                dev_info[u'vendor'] = u'Aastra'
-                return dev_info
+            # All information is present in the User-Agent header for
+            # Aastra
+            return self._extract_from_ua(ua)
         return None
     
-    def _extract_from_ua(self, ua, dev_info):
+    def _extract_from_ua(self, ua):
         # HTTP User-Agent:
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.2010-SIP"
+        #   "Aastra6731i MAC:00-08-5D-23-74-29 V:3.2.0.70-SIP"
         #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.0.1.2024-SIP"
         #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
-        tokens = ua.split()
-        if len(tokens) == 3:
-            raw_model, raw_mac, raw_version = tokens
-            model = self._parse_model(raw_model)
-            if model:
-                dev_info[u'model'] = model
-            mac = self._parse_mac(raw_mac)
-            if mac:
-                dev_info[u'mac'] = mac
-            version = self._parse_version(raw_version)
-            if version:
-                dev_info[u'version'] = version
-        return None
-    
-    def _parse_model(self, raw_model):
-        return self._UA_MODELS_MAP.get(raw_model)
-    
-    def _parse_mac(self, raw_mac):
-        if raw_mac.startswith('MAC:'):
-            # looks like a valid MAC token..
+        m = self._UA_REGEX.match(ua)
+        if m:
+            raw_model, raw_mac, raw_version = m.groups()
             try:
-                return norm_mac(raw_mac[len('MAC:'):].decode('ascii'))
+                mac = norm_mac(raw_mac.decode('ascii'))
             except ValueError:
-                pass
-        return None
-    
-    def _parse_version(self, raw_version):
-        if raw_version.startswith('V:') and raw_version.endswith('-SIP'):
-            # looks like a valid version token...
-            return raw_version[len('V:'):-len('-SIP')].decode('ascii')
+                logger.warning('Could not normalize MAC address "%s"' % raw_mac)
+            else:
+                if raw_model in self._UA_MODELS_MAP:
+                    model = self._UA_MODELS_MAP[raw_model]
+                else:
+                    model = raw_model.decode('ascii')
+                return {u'vendor': u'Aastra',
+                        u'model': model,
+                        u'version': raw_version.decode('ascii'),
+                        u'mac': mac}
         return None
 
 

@@ -119,7 +119,7 @@ def norm_mac(mac_string):
     """Return a lowercase, separated by colon, representation of a MAC
     address string.
     
-    Raise a ValueError if the IPv4 address is invalid.
+    Raise a ValueError if the MAC address is invalid.
     
     >>> norm_mac(u'0011223344aa')
     u'00:11:22:33:44:aa'

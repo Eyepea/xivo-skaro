@@ -1,6 +1,3 @@
-http server: {{ ip }}
-http port: {{ http_port }}
-
 {# Syslog settings -#}
 {% if syslog -%}
 log server ip: {{ syslog['ip'] }}
@@ -26,7 +23,7 @@ vlan id: {{ vlan['id'] }}
 priority non-ip: {{ vlan['priority'] }}
 {% endif -%}
 {% if vlan['pc_port_id'] is defined -%}
-vlan id port 1: {{ vlan['pc_port_pid'] }}
+vlan id port 1: {{ vlan['pc_port_id'] }}
 {% else -%}
 vlan id port 1: 4095
 {% endif -%}
