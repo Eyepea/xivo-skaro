@@ -56,6 +56,7 @@ $array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['lines'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;

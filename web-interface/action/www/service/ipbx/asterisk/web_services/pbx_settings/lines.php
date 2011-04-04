@@ -19,7 +19,7 @@
 #
 
 $access_category = 'pbx_settings';
-$access_subcategory = 'users';
+$access_subcategory = 'lines';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
@@ -28,19 +28,9 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'view':
-		$appuser = &$ipbx->get_application('user');
+		$appline = &$ipbx->get_application('line');
 
-		$nocomponents = array('usermacro'	=> true,
-				      'hints'				=> true,
-				      'extenumbers'			=> true,
-				      'contextnummember'	=> true);
-
-		if(($info = $appuser->get($_QRY->get('id'),
-					  null,
-					  null, // we search in both internal and non-internal users
-					  false,
-						$nocomponents)) === false
-		)
+		if(($info = $appline->get($_QRY->get('id'))) === false)
 		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
@@ -49,9 +39,9 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
-		$appuser = &$ipbx->get_application('user');
+		$appline = &$ipbx->get_application('line');
 
-		if($appuser->add_from_json() === true)
+		if($appline->add_from_json() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[userlist,update]');
@@ -63,11 +53,11 @@ switch($act)
 		$http_response->send(true);
 		break;
 	case 'edit':
-		$appuser = &$ipbx->get_application('user');
+		$appline = &$ipbx->get_application('line');
 
-		if($appuser->get($_QRY->get('id')) === false)
+		if($appline->get($_QRY->get('id')) === false)
 			$status = 404;
-		else if($appuser->edit_from_json() === true)
+		else if($appline->edit_from_json() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[userlist,update]');
@@ -79,11 +69,11 @@ switch($act)
 		$http_response->send(true);
 		break;
 	case 'delete':
-		$appuser = &$ipbx->get_application('user');
+		$appline = &$ipbx->get_application('line');
 
-		if($appuser->get($_QRY->get('id')) === false)
+		if($appline->get($_QRY->get('id')) === false)
 			$status = 404;
-		else if($appuser->delete() === true)
+		else if($appline->delete() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[userlist,update]');
@@ -95,9 +85,18 @@ switch($act)
 		$http_response->send(true);
 		break;
 	case 'search':
-		$appuser = &$ipbx->get_application('user',null,false);
+		$appline = &$ipbx->get_application('line',null,false);
+		
+		if (($context = $_QRY->get('context')) !== null)
+			$context = $context;
+		
+		if (($protocols = $_QRY->get('protocol')) !== null)
+			$protocols = array($protocols);
+		
+		if (($free = $_QRY->get('free')) !== null)
+			$free = ((bool) $free);
 
-		if(($list = $appuser->get_users_search($_QRY->get('search'))) === false)
+		if(($list = $appline->get_lines_search($_QRY->get('search'),$context,$protocols,null,null,null,false,null,$free)) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
@@ -109,9 +108,15 @@ switch($act)
 	default:
 		$act = 'list';
 
-		$appuser = &$ipbx->get_application('user',null,false);
+		$appline = &$ipbx->get_application('line',null,false);
+		
+		if (($protocols = $_QRY->get('protocol')) !== null)
+			$protocols = array($protocols);
+		
+		if (($free = $_QRY->get('free')) !== null)
+			$free = ((bool) $free);
 
-		if(($list = $appuser->get_users_list(null,null,null,null,false,null,true)) === false)
+		if(($list = $appline->get_lines_list($protocols,null,null,null,false,null,$free)) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);

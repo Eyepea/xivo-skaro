@@ -162,6 +162,7 @@ $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/l
 
 
 $array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
+$array['service/ipbx/json/restricted/pbx_settings/lines'] = 'service/ipbx/json.php/restricted/pbx_settings/lines/';
 $array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.php/restricted/pbx_settings/groups/';
 $array['service/ipbx/json/restricted/pbx_settings/meetme'] = 'service/ipbx/json.php/restricted/pbx_settings/meetme/';
 $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/json.php/restricted/pbx_settings/voicemail/';
