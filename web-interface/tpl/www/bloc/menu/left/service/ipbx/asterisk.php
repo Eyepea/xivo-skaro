@@ -294,6 +294,7 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		echo	'</dl>';
 	endif;
 
 	if(xivo_user::chk_acl('cost_center') === true):
