@@ -7,6 +7,9 @@ Displayname
 ; col_entity
 Entity
 
+; col_contexttype
+Context type
+
 ; no_context
 No context found
 

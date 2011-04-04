@@ -27,11 +27,16 @@ $nb = $this->get_var('count');
 $list = $this->get_var('list');
 $err = $this->get_var('error','linefeatures');
 
+$entityhascontext = '';
 if (isset($info['entity']) === false
 ||$info['entity'] === false
 || ($context_list = $info['entity']['context']) === false):
-	echo $this->bbf('no_context_for_this_entity');
-	return;
+	$entityhascontext = 'b-nodisplay';
+?>
+<div id="box-no_context">
+	<?=$this->bbf('no_context_for_this_entity');?>
+</div>
+<?php 
 endif;
 
 ?>
@@ -42,9 +47,7 @@ endif;
 </fieldset>
 -->
 
-<div id="MSG"></div>
-
-<div class="fm-paragraph fm-desc-inline" id="box-lines_free">
+<div class="fm-paragraph fm-desc-inline <?=$entityhascontext?>" id="box-lines_free">
 	<label id="lb-lines_free" for="it-lines_free"><?=$this->bbf('fm_lines_free');?></label>
 <?php
 if (($lines_free = $this->get_var('lines_free')) === null
@@ -76,7 +79,7 @@ endif;
 ?>
 </div>
 
-<table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures">
+<table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures" class="<?=$entityhascontext?>">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_line-protocol');?></th>

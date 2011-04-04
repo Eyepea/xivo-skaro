@@ -901,9 +901,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$callerid = $this->get_result_var('userfeatures','callerid');
 			$ref['callerid'] = $this->_service->mk_callerid($callerid,$number,$protocolname);
 
-			if (isset($ref['id']) === true)
+			if (isset($ref['id']) === true
+			&& (int) $ref['id'] !== 0)
 			{
-			/*
+				$this->_line->_reset_info();
 				if (($line = $this->_line->get($ref['id'])) === false
 				|| ($linefeatures = $line['linefeatures']) === false)
 				{
@@ -912,11 +913,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					continue;
 				}
 				$ref['id'] = (int) $ref['id'];
+				$ref['protocol'] = $linefeatures['protocol'];
+				$ref['context'] = $linefeatures['context'];
 				$ref['protocolid'] = $linefeatures['protocolid'];
 				$ref['name'] = $linefeatures['name'];
-			*/
+				/*
 				$ref['id'] = (int) $ref['id'];
 				$ref['protocolid'] = 0;
+				*/
 			}
 			else
 			{

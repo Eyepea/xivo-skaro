@@ -46,6 +46,12 @@ Skill Rules
 ; mn_left_ti_pbxsettings
 IPBX settings
 
+; mn_left_pbxsettings-devices
+Devices
+
+; mn_left_pbxsettings-lines
+Lines
+
 ; mn_left_pbxsettings-agents
 Agents
 
@@ -108,6 +114,18 @@ Dundi
 
 ; mn_left_dundi-general
 General
+
+; mn_left_dundi-peers
+Peers
+
+; mn_left_ti_cost_center
+Cost Center
+
+; mn_left_cost_center-operator
+Operator
+    
+; mn_left_cost_center-servicesgroup
+Services group
 
 ; mn_left_ti_pbxservices
 IPBX services

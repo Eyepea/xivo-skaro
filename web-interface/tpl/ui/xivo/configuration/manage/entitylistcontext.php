@@ -29,7 +29,7 @@ if(is_array($info) === false
 || is_array($list) === false
 || ($nb = count($list)) === 0)
 {
-	$http_response->set_status_line(500);
+	$http_response->set_status_line(204);
 	$http_response->send(true);
 }
 

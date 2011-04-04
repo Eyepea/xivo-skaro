@@ -319,6 +319,15 @@ function xivo_ast_entity_load_context()
 function xivo_http_search_context_from_entity(entityid)
 {
 	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=intern', function(data) {
+		if (data === null || data.length === 0){
+			$('#box-lines_free').hide();
+			$('#list_linefeatures').hide();
+			$('#box-no_context').show();
+			return false;
+		}
+		$('#box-no_context').hide();
+		$('#box-lines_free').show();
+		$('#list_linefeatures').show();
 	    $("#linefeatures-context").each(function(){
 			$(this).find('option').remove();
 		    for (var i = 0; i< data.length; i++)
