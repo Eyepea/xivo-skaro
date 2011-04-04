@@ -56,11 +56,6 @@ def download(url, dhcpd_dir, proxies=None):
         _extract_pkg_file(fobj, dhcpd_dir)
 
 
-def _concat_file_to_fobj(cur_file, fobj):
-    with open(cur_file) as cur_fobj:
-        fobj.write(cur_fobj.read())
-
-
 def _regenerate_subnet_file(dhcpd_dir, subnet_file, ignore_missing):
     file = os.path.join(dhcpd_dir, subnet_file)
     with open(file, 'w') as fobj:
