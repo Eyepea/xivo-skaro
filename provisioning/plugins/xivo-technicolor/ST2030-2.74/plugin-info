@@ -1,0 +1,4 @@
+[general]
+version: 0.0.1
+description: Plugin for Technicolor ST2030.
+targets: Technicolor, ST2030, 2.74

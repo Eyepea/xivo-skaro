@@ -1,0 +1,19 @@
+[pkg_ST2022-fw]
+desc: Firmware files for Technicolor ST2022
+version: 4.69.2
+files: file_ST2022-fw
+install_proc: install_technicolor-fw v2022*.zz
+
+
+
+[install_technicolor-fw]
+a-b: unzip $FILE1
+b-c: cp */Binary/$ARG1 $DOC_ROOT/binary/
+
+
+
+[file_ST2022-fw]
+filename: ST2022-fw_v4.69.2.zip
+url: http://www.technicolorbroadbandpartner.com/getfile.php?id=6957
+size: 6057065
+sha1sum: 278f981d50ad0a09623db381883569d18c7b7697

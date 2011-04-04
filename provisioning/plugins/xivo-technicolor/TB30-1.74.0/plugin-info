@@ -1,0 +1,4 @@
+[general]
+version: 0.0.4
+description: Plugin for Technicolor TB30.
+targets: Technicolor, TB30, 1.74.0

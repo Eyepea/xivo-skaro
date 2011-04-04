@@ -1,0 +1,4 @@
+[general]
+version: 0.0.1
+description: Plugin for Technicolor ST2022.
+targets: Technicolor, ST2022, 4.69.2
