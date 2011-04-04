@@ -23,9 +23,6 @@ $form = &$this->get_module('form');
 $element = $this->get_var('element');
 
 ?>
-
-<div id="MSG" style="border:1px dotted gray;background: #ccc;padding:2px;"></div>
-
 <?php
 
 echo	$form->select(array('desc'	=> $this->bbf('fm_dbconfig_backend'),

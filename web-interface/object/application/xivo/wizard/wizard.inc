@@ -784,7 +784,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$dbfile['ipbxdb'] = $ipbxdburi['path'];
 
 			if(($lol = $this->_sysconfd->request_post('/exec_db_file',$dbfile)) === false)
-				$this->_set_error('dbconfig',$backend,'can\'t create db');
+				$this->_set_error('dbconfig',$backend,'Can\'t exec DB script file');
 		}
 
 		if($this->get_errnb() > 0)
@@ -987,6 +987,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$r['context']['name'] = dwho_ak('name',$data,true);
 		$r['context']['displayname'] = dwho_ak('displayname',$data,true);
 		$r['context']['entity'] = strval($entity);
+		$r['context']['contexttype'] = dwho_ak('contexttype',$data,true);
 
 		if($type === null)
 			return($r);
@@ -1024,6 +1025,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_outcall','missing_context');
 		else
 		{
+			$data['contexttype'] = 'to-extern';
 			$outcall = $this->_prepare_context($data['context']['outcall'],null,$entity);
 
 			if(($resoutcall = (bool) $appcontext->set_add($outcall)) === false)
@@ -1039,6 +1041,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_internal','missing_context');
 		else
 		{
+			$data['contexttype'] = 'intern';
 			$internal = $this->_prepare_context($data['context']['internal'],'user',$entity);
 
 			if(isset($outcall['context']['name']) === true)
@@ -1062,6 +1065,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_incall','name','missing');
 		else
 		{
+			$data['contexttype'] = 'from-extern';
 			$incall = $this->_prepare_context($data['context']['incall'],'incall',$entity);
 
 			if(dwho_has_len($incall['contextnumbers']['incall'][0]['numberbeg']) === false

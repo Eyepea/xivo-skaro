@@ -13,6 +13,9 @@ Paramètres de connexion invalides pour la base de données IPBX
 ; error_dbconfig_ipbx(connection)
 Connexion impossible à la base de données IPBX
 
+; fm_dbconfig_create_auto
+Création des bases automatiquement :
+
 ; fm_dbconfig_sqlite-xivodb
 Fichier de données XIVO :
 

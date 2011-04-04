@@ -217,6 +217,24 @@ function xivo_wizard_chg_dbconfig_backend_create_mode()
 	}
 }
 
+function xivo_wizard_chg_entity_name()
+{
+	if(dwho_eid('it-entity-name') === false
+	|| dwho_eid('it-entity-displayname') === false)
+		return(false);
+
+	var name = '';
+	var displayname = dwho_eid('it-entity-displayname').value;
+	
+	if(dwho_is_undef(displayname) === false && displayname.length > 0)
+		name = displayname;
+	
+	name = name.replace(/[^a-z0-9_\.-]+/g,'');
+	name = name.toLowerCase();
+	
+	dwho_eid('it-entity-name').value = name;
+}
+
 function xivo_wizard_dbconfig_backend_onload()
 {
 	dwho.dom.add_event('change',
@@ -238,6 +256,12 @@ function xivo_wizard_dbconfig_backend_onload()
 	dwho.dom.add_event('change',
 			   dwho_eid('it-dbconfig-backend'),
 			   xivo_wizard_chg_dbconfig_backend);
+	
+	xivo_wizard_chg_entity_name();
+
+	dwho.dom.add_event('change',
+			   dwho_eid('it-entity-displayname'),
+			   xivo_wizard_chg_entity_name);
 
 	xivo_wizard_chg_dbconfig_backend_create_mode();
 	

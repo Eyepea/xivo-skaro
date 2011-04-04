@@ -13,6 +13,9 @@ Invalid connection parameters
 ; error_dbconfig_ipbx(connection)
 Cannot connect to the database!
 
+; fm_dbconfig_create_auto
+Auto create DB :
+
 ; fm_dbconfig_sqlite-xivodb
 XiVO database :
 

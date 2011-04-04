@@ -39,7 +39,10 @@ endif;
 	<legend><?=$this->bbf('fld-entity');?></legend>
 <?php
 
-echo	$form->text(array('desc'	=> $this->bbf('fm_entity_name'),
+echo	$form->hidden(array('name'	=> 'entity[name]',
+			  'id'	=> 'it-entity-name')),
+/*
+	$form->text(array('desc'	=> $this->bbf('fm_entity_name'),
 			  'name'	=> 'entity[name]',
 			  'labelid'	=> 'entity-name',
 			  'size'	=> 15,
@@ -49,11 +52,12 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_entity_name'),
 			  'value'	=> $this->get_var('info','entity','name'),
 			  'error'	=> $this->bbf_args('error_generic',
 							   $this->get_var('error','entity','name')))),
-
+*/
 	$form->text(array('desc'	=> $this->bbf('fm_entity_displayname'),
 			  'name'	=> 'entity[displayname]',
 			  'labelid'	=> 'entity-displayname',
 			  'size'	=> 15,
+			  'required'=> true,
 #			  'help'	=> $this->bbf('hlp_fm_entity_displayname'),
 			  'comment'	=> $this->bbf('cmt_fm_entity_displayname'),
 			  'default'	=> $element['entity']['displayname']['default'],
@@ -68,7 +72,15 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_entity_name'),
 	<legend><?=$this->bbf('fld-context-internal');?></legend>
 <?php
 
-echo	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
+echo	$form->hidden(array('name'	=> 'context[internal][name]',
+			  'id'		=> 'it-context-internal-name',
+			  'default'	=> $element['context']['internal']['name']['default'])),
+
+		$form->hidden(array('name'	=> 'context[internal][contexttype]',
+			  'id'		=> 'it-context-internal-contexttype',
+			  'value'	=> 'intern')),
+/*
+	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
 			  'name'	=> 'context[internal][name]',
 			  'labelid'	=> 'context-internal-name',
 			  'size'	=> 15,
@@ -81,11 +93,12 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
 									  'context_internal',
 									  'context',
 									  'name')))),
-
+*/
 	$form->text(array('desc'	=> $this->bbf('fm_context_internal-displayname'),
 			  'name'	=> 'context[internal][displayname]',
 			  'labelid'	=> 'context-internal-displayname',
 			  'size'	=> 15,
+			  'required'=> true,
 #			  'help'	=> $this->bbf('hlp_fm_context_internal-displayname'),
 			  'comment'	=> $this->bbf('cmt_fm_context_internal-displayname'),
 			  'default'	=> $this->bbf('fm_context_internal-displayname-default',
@@ -101,6 +114,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
 			  'name'	=> 'context[internal][numberbeg]',
 			  'labelid'	=> 'context-internal-numberbeg',
 			  'size'	=> 15,
+			  'required'=> true,
 #			  'help'	=> $this->bbf('hlp_fm_context_internal-numberbeg'),
 			  'comment'	=> $this->bbf('cmt_fm_context_internal-numberbeg'),
 			  'default'	=> $element['context']['internal']['numberbeg']['default'],
@@ -111,6 +125,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
 			  'name'	=> 'context[internal][numberend]',
 			  'labelid'	=> 'context-internal-numberend',
 			  'size'	=> 15,
+			  'required'=> true,
 #			  'help'	=> $this->bbf('hlp_fm_context_internal-numberend'),
 			  'comment'	=> $this->bbf('cmt_fm_context_internal-numberend'),
 			  'default'	=> $element['context']['internal']['numberend']['default'],
@@ -129,7 +144,15 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
 	<legend><?=$this->bbf('fld-context-incall');?></legend>
 <?php
 
-echo	$form->text(array('desc'	=> $this->bbf('fm_context_incall-name'),
+echo $form->hidden(array('name'	=> 'context[incall][name]',
+			  'id'		=> 'it-context-incall-name',
+			  'default'	=> $element['context']['incall']['name']['default'])),
+
+		$form->hidden(array('name'	=> 'context[incall][contexttype]',
+			  'id'		=> 'it-context-incall-contexttype',
+			  'value'	=> 'incall')),
+/*
+	$form->text(array('desc'	=> $this->bbf('fm_context_incall-name'),
 			  'name'	=> 'context[incall][name]',
 			  'labelid'	=> 'context-incall-name',
 			  'size'	=> 15,
@@ -142,11 +165,12 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_incall-name'),
 									  'context_incall',
 									  'context',
 									  'name')))),
-
+*/
 	$form->text(array('desc'	=> $this->bbf('fm_context_incall-displayname'),
 			  'name'	=> 'context[incall][displayname]',
 			  'labelid'	=> 'context-incall-displayname',
 			  'size'	=> 15,
+			  'required'=> true,
 #			  'help'	=> $this->bbf('hlp_fm_context_incall-displayname'),
 			  'comment'	=> $this->bbf('cmt_fm_context_incall-displayname'),
 			  'default'	=> $this->bbf('fm_context_incall-displayname-default',
@@ -200,7 +224,15 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_incall-name'),
 	<legend><?=$this->bbf('fld-context-outcall');?></legend>
 <?php
 
-echo	$form->text(array('desc'	=> $this->bbf('fm_context_outcall-name'),
+echo $form->hidden(array('name'	=> 'context[outcall][name]',
+			  'id'		=> 'it-context-outcall-name',
+			  'default'	=> $element['context']['outcall']['name']['default'])),
+
+		$form->hidden(array('name'	=> 'context[outcall][contexttype]',
+			  'id'		=> 'it-context-outcall-contexttype',
+			  'value'	=> 'outcall')),
+/*
+	$form->text(array('desc'	=> $this->bbf('fm_context_outcall-name'),
 			  'name'	=> 'context[outcall][name]',
 			  'labelid'	=> 'context-outcall-name',
 			  'size'	=> 15,
@@ -213,11 +245,12 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_context_outcall-name'),
 									  'context_outcall',
 									  'context',
 									  'name')))),
-
+*/
 	$form->text(array('desc'	=> $this->bbf('fm_context_outcall-displayname'),
 			  'name'	=> 'context[outcall][displayname]',
 			  'labelid'	=> 'context-outcall-displayname',
 			  'size'	=> 15,
+			  'required'=> true,
 #			  'help'	=> $this->bbf('hlp_fm_context_outcall-displayname'),
 			  'comment'	=> $this->bbf('cmt_fm_context_outcall-displayname'),
 			  'default'	=> $this->bbf('fm_context_outcall-displayname-default',$element['context']['outcall']['name']['default']),
