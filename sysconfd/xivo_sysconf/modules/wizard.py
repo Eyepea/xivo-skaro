@@ -551,8 +551,6 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
                           Wdc['webinterface_cti_file'],
                           {'general':
                                 {'datastorage': '"%s"' % args['xivo']},
-                           'queuelogger':
-                                {'datastorage': '"%s"' % args['ql']},
 			  })
 
         merge_config_file("%s.%s" % (Wdc['webinterface_ipbx_tpl_file'], args['ipbxengine']),
