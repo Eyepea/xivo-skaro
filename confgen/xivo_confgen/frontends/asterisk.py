@@ -754,13 +754,55 @@ class AsteriskFrontend(Frontend):
 			print >>o, "penaltychange => %d," % m['seconds'],
 			if m['maxp_sign'] is not None and m['maxp_value'] is not None:
 				sign = '' if m['maxp_sign'] == '=' else m['maxp_sign']
-				print >>o, "%s%d" % (sign,m['maxp_value']),
+				print >>o, "%w%d" % (sign,m['maxp_value']),
 
 			if m['minp_sign'] is not None and m['minp_value'] is not None:
 				sign = '' if m['minp_sign'] == '=' else m['minp_sign']
 				print >>o, ",%s%d" % (sign,m['minp_value']),
 
 			print >>o
+
+		return o.getvalue()
+
+	def dundi_conf(self):
+		o = StringIO()
+
+		print >>o, "[general]"
+		general = self.backend.dundi.get(id=1)
+		for k, v in general.iteritems():
+			if v is None or k == 'id':
+				continue
+
+			print >>o, "%s = %s" % (k, v)
+
+		trunks = dict([(t['id'], t) for t in self.backend.trunks.all()])
+
+		print >>o, "\n[mappings]"
+		for m in self.backend.dundimapping.all(commented=False):
+			#dundi_context => local_context,weight,tech,dest[,options]]
+			_t = trunks[m.trunk]
+			_m = "%s => %s,%s,%s,%s:%s@%s/%s" % \
+					(m['name'],m['context'],m['weight'], 
+					_t['protocol'].upper(), _t['username'],	_t['secret'], 
+					_t['host']  if _t['host'] != 'dynamic' else '${IPADDR}',
+					m['number'] if m['number'] is not None else '${NUMBER}',
+			)
+
+			for k in ('nounsolicited','nocomunsolicit','residential','commercial','mobile','nopartial'):
+				if m[k] == 1:
+					_m += ',' + k
+
+			print >>o, _m
+
+		# peers
+		for p in self.backend.dundipeer.all(commented=False):
+			print >>o, "\n[%s]" % p['macaddr']
+
+			for k, v in p.iteritems():
+				if k in ('id', 'macaddr','description','commented') or v is None:
+					continue
+
+				print >>o, "%s = %s" % (k,v)
 
 		return o.getvalue()
 

@@ -299,6 +299,27 @@ class QueuePenaltiesHandler(SpecializedHandler):
 
 		return self.execute(q).fetchall()
 
+class TrunksHandler(SpecializedHandler):
+	def all(self, **kwargs):
+		(_t, _s, _i) = [getattr(self.db,o)._table.c for o in ('trunkfeatures','usersip','useriax')]
+
+		q1 = select([_t.id, _t.protocol, _s.username, _s.secret, _s.host],
+			and_(
+				_t.protocol   == 'sip',
+				_t.protocolid == _s.id,
+				_s.commented  == 0,
+			)
+		)
+		q2 = select([_t.id, _t.protocol, _i.username, _i.secret, _i.host],
+			and_(
+				_t.protocol   == 'iax',
+				_t.protocolid == _i.id,
+				_i.commented  == 0,
+			)
+		)
+		return self.execute(q2.union(q1)).fetchall()
+	#return self.execute(q1).fetchall()
+
 class QObject(object):
 	_translation = {
 		'sip'           : ('staticsip',),
@@ -320,6 +341,7 @@ class QObject(object):
 		'sccplines'     : ('sccpline',),
 		'agentusers'    : AgentUsersHandler,
 
+		'trunks'        : TrunksHandler,
 		'siptrunks'     : ('usersip', {'category': 'trunk'}),
 		'iaxtrunks'     : ('useriax', {'category': 'trunk'}),
 
@@ -345,6 +367,9 @@ class QObject(object):
 		'pickups'       : PickupsHandler,
 		'queuepenalties': QueuePenaltiesHandler,
 		'parkinglot'    : ('parkinglot',),
+		'dundi'         : ('dundi',),
+		'dundimapping'  : ('dundi_mapping',),
+		'dundipeer'     : ('dundi_peer',),
 	}
 
 	def __init__(self, db, name):
@@ -377,6 +402,15 @@ class QObject(object):
 			q = q.order_by(order)
 
 		return q.all()
+
+	@iterable('single')
+	def get(self, **kwargs):
+		q = getattr(self.db, self._translation.get(self.name, (self.name,))[0])
+
+		conds = []
+		for k, v in kwargs.iteritems():
+			conds.append(getattr(q,k) == v)
+		return q.filter(and_(*conds)).first()
 
 
 class XivoDBBackend(Backend):
