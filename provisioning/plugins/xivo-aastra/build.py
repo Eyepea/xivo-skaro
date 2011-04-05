@@ -10,15 +10,14 @@ from subprocess import check_call
 # any error raised will be considered a build error
 # Pre: pg_dir is initially empty
 # Pre: current directory is the one of the bplugin
-@target('2.6.0.2010', 'xivo-aastra-2.6.0.2010')
-def build_2_6_0_2010(path):
+@target('2.6.0.2019', 'xivo-aastra-2.6.0.2019')
+def build_2_6_0_2019(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '/templates/6739i.tpl',
-                '--exclude', '/templates/9*',
                 'common/', path])
     
     check_call(['rsync', '-rlp', '--exclude', '.*',
-                '2.6.0.2010/', path])
+                '2.6.0.2019/', path])
 
 
 @target('3.0.1.2031', 'xivo-aastra-3.0.1.2031')
@@ -33,11 +32,11 @@ def build_3_0_1_2031(path):
                 '3.0.1.2031/', path])
 
 
-@target('3.2.0.70', 'xivo-aastra-3.2.0.70')
-def build_3_2_0_70(path):
+@target('3.2.0.1011', 'xivo-aastra-3.2.0.1011')
+def build_3_2_0_1011(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '/templates/6751i.tpl',
                 'common/', path])
     
     check_call(['rsync', '-rlp', '--exclude', '.*',
-                '3.2.0.70/', path])
+                '3.2.0.1011/', path])

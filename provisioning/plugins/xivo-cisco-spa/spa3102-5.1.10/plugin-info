@@ -1,4 +1,9 @@
-[general]
-version: 0.1
-description: Plugin for Cisco SPA3102 in version 5.1.10.
-targets: Cisco, SPA3102, 5.1.10
+{
+    "version": "0.1",
+    "description": "Plugin for Cisco SPA3102 in version 5.1.10.",
+    "capabilities": {
+        "Cisco, SPA3102, 5.1.10": {
+            "sip.lines": 1
+        }
+    }
+}

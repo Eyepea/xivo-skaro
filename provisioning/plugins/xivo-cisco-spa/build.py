@@ -49,7 +49,7 @@ def build_spa2102_5_2_12(path):
                 'common/', path])
     
     check_call(['rsync', '-rlp', '--exclude', '.*',
-                'spa2102-5.2.10/', path])
+                'spa2102-5.2.12/', path])
 
 
 @target('spa3102-5.1.10', 'xivo-cisco-spa3102-5.1.10')

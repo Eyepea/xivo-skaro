@@ -23,9 +23,9 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import ConfigParser
 import glob
 import hashlib
+import json
 import os
 import shutil
 import tarfile
@@ -36,8 +36,8 @@ from subprocess import check_call
 from sys import exit, stderr
 
 BUILD_FILENAME = 'build.py'
-DB_FILENAME    = 'plugins.db'
-INFO_FILENAME  = 'plugin-info'
+DB_FILENAME = 'plugins.db'
+PLUGIN_INFO_FILENAME  = 'plugin-info'
 PACKAGE_SUFFIX = '.tar.bz2'
 
 
@@ -172,7 +172,7 @@ def build_op(opts, args, src_dir, dest_dir):
 
 
 def _is_plugin(path):
-    return os.path.isfile(os.path.join(path, INFO_FILENAME))
+    return os.path.isfile(os.path.join(path, PLUGIN_INFO_FILENAME))
 
 
 def _list_plugins(directory):
@@ -185,13 +185,12 @@ def _list_plugins(directory):
 
 
 def _get_plugin_version(plugin):
-    # Pre: plugin is a directory with an INFO_FILENAME file
-    fobj = open(os.path.join(plugin, INFO_FILENAME))
+    # Pre: plugin is a directory with an PLUGIN_INFO_FILENAME file
+    fobj = open(os.path.join(plugin, PLUGIN_INFO_FILENAME))
     try:
-        config = ConfigParser.RawConfigParser()
-        config.readfp(fobj)
-        return config.get('general', 'version')
-    except ConfigParser.Error:
+        raw_plugin_info = json.load(fobj)
+        return raw_plugin_info[u'version']
+    except (ValueError, KeyError):
         print >>stderr, "error: plugin '%s' has invalid plugin info file" % plugin
         exit(1)
     finally:
@@ -250,20 +249,19 @@ def _get_package_plugin_info(package, package_name):
     # plugin-info file
     tar_package = tarfile.open(package)
     try:
-        plugin_info_name = os.path.join(package_name, INFO_FILENAME)
+        plugin_info_name = os.path.join(package_name, PLUGIN_INFO_FILENAME)
         if plugin_info_name not in tar_package.getnames():
             print >>stderr, "error: package '%s' has no file '%s'" % (package, plugin_info_name)
             exit(1)
         
         fobj = tar_package.extractfile(plugin_info_name)
         try:
-            config = ConfigParser.RawConfigParser()
-            config.readfp(fobj, plugin_info_name)
-            result = {}
-            for option in ['description', 'version', 'targets']:
-                result[option] = config.get('general', option).replace('\n', ' ')
-            return result
-        except ConfigParser.Error:
+            raw_plugin_info = json.load(fobj)
+            for key in [u'capabilities', u'description', u'version']:
+                if key not in raw_plugin_info:
+                    raise ValueError()
+            return raw_plugin_info
+        except ValueError:
             print >>stderr, "error: package '%s' has invalid plugin-info file" % package
             exit(1)
         finally:
@@ -330,25 +328,20 @@ def create_db_op(opts, args, src_dir, dest_dir):
         name = package_info['name']
         if name in package_infos:
             cur_version = package_info['version']
-            last_version = package_infos[name][1]['version']
+            last_version = package_infos[name]['version']
             print >>stderr, "warning: found package %s in version %s and %s" % \
                   (name, cur_version, last_version)
             if _version_cmp(cur_version, last_version) > 0:
-                package_infos[name] = (package, package_info)
+                package_infos[name] = package_info
         else:
-            package_infos[name] = (package, package_info)
+            print "  Adding package '%s'..." % package
+            package_infos[name] = package_info
     
     # create db file
     fobj = open(db_file, 'w')
     try:
         print "Creating DB file '%s'..." % db_file
-        fobj.write("# This file has been automatically generated\n")
-        for package, package_info in package_infos.itervalues():
-            print "  Adding package '%s' to db file..." % package
-            fobj.write('\n')
-            fobj.write('[plugin_%s]\n' % package_info['name'])
-            for key in ['filename', 'version', 'description', 'targets', 'dsize', 'sha1sum']:
-                fobj.write('%s: %s\n' % (key, package_info[key]))
+        json.dump(package_infos, fobj, indent=4, sort_keys=True)
     finally:
         fobj.close()
 

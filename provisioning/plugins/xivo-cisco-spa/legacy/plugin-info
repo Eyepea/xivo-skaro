@@ -1,10 +1,24 @@
-[general]
-version: 0.1
-description: Plugin for Cisco SPA901, 921, 922, 941, 942, 962 in different
-             versions.
-targets: Cisco, SPA901, 5.1.5 |
-         Cisco, SPA921, 5.1.8 |
-         Cisco, SPA922, 6.1.5(a) |
-         Cisco, SPA941, 5.1.8 |
-         Cisco, SPA942, 6.1.5(a) |
-         Cisco, SPA962, 6.1.5(a)
+{
+    "version": "0.1",
+    "description": "Plugin for Cisco SPA901, 921, 922, 941, 942, 962 in different versions.",
+    "capabilities": {
+        "Cisco, SPA901, 5.1.5": {
+            "sip.lines": 1
+        },
+        "Cisco, SPA921, 5.1.8": {
+            "sip.lines": 1
+        },
+        "Cisco, SPA922, 6.1.5(a)": {
+            "sip.lines": 1
+        },
+        "Cisco, SPA941, 5.1.8": {
+            "sip.lines": 4
+        },
+        "Cisco, SPA942, 6.1.5(a)": {
+            "sip.lines": 4
+        },
+        "Cisco, SPA962, 6.1.5(a)": {
+            "sip.lines": 6
+        }
+    }
+}

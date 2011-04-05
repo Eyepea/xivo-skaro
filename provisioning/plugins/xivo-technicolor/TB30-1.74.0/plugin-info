@@ -1,4 +1,9 @@
-[general]
-version: 0.0.4
-description: Plugin for Technicolor TB30.
-targets: Technicolor, TB30, 1.74.0
+{
+    "version": "0.0.4",
+    "description": "Plugin for Technicolor TB30 in version 1.74.0.",
+    "capabilities": {
+        "Technicolor, TB30, 1.74.0": {
+            "sip.lines": 4
+        }
+    }
+}

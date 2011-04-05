@@ -18,15 +18,13 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO take proxy into account for downloading
 # TODO support plugin package signing... this will be important for safety
 #      since plugin aren't sandboxed
 
-import ConfigParser
 import contextlib
+import json
 import logging
 import os
-import re
 import shutil
 import tarfile
 import weakref
@@ -609,8 +607,12 @@ class PluginManager(object):
     # name of the python plugin code
     _DB_FILENAME = 'plugins.db'
     # plugin definition filename on the remote and local server.
-    _INFO_FILENAME = 'plugin-info'
+    _PLUGIN_INFO_FILENAME = 'plugin-info'
     # plugin information filename in each plugin directory.
+    _PLUGIN_INFO_KEYS = [u'capabilities', u'description', u'version']
+    _PLUGIN_INFO_INSTALLABLE_KEYS = _PLUGIN_INFO_KEYS + \
+                                    [u'dsize', u'filename', u'sha1sum']
+    _PLUGIN_INFO_INSTALLED_KEYS = _PLUGIN_INFO_KEYS
     
     _INSTALL_LABEL = 'install'
     _DOWNLOAD_LABEL = 'download'
@@ -701,7 +703,7 @@ class PluginManager(object):
             raise Exception('an install/upgrade operation for plugin %s is already in progress' % id)
         
         try:
-            pg_info = self._get_installable_pg_info(id)
+            pg_info = self._get_installable_plugin_info(id)
         except KeyError:
             logger.error('Can\'t install plugin %s: not found', id)
             raise
@@ -818,32 +820,18 @@ class PluginManager(object):
         dl_deferred.addBoth(dl_end)
         return dl_deferred, dl_oip
     
-    def _get_installable_pg_info(self, id):
+    def _get_installable_plugin_info(self, id):
         # Return an 'installable plugin info' object from a id, or raise
         # a KeyError if no such plugin is found
         installable_plugins = self.list_installable()
         return installable_plugins[id]
     
-    @staticmethod
-    def _clean_long_header(value):
-        # used to remove \n that are present when using line continuation
-        # with ConfigParser...
-        return value.replace('\n', ' ')
-    
-    _RAW_TARGET_REGEX = re.compile(r'^\s*([^,]+?)\s*,\s*([^,]+?)\s*,\s*(.+?)\s*$')
-    
-    def _parse_raw_targets(self, raw_targets):
-        # Return a list of (vendor, model, version) tuple from a string
-        # in format "xxx, xxx, xxx [ | ...] "
-        def aux():
-            tokens = raw_targets.split('|')
-            for token in tokens:
-                m = self._RAW_TARGET_REGEX.match(token)
-                if not m:
-                    raise ValueError('target token "%s" doesn\'t match regex' % token)
-                else:
-                    yield m.groups()
-        return list(aux())
+    def _check_raw_plugin_info(self, raw_plugin_info, id, keys):
+        # Quick and incomplte check of a raw plugin info object.
+        for plugin_info_key in keys:
+            if plugin_info_key not in raw_plugin_info:
+                raise ValueError('invalid plugin info: missing %s key in %s'
+                                 % (plugin_info_key, id))
     
     def list_installable(self):
         """Return a dictionary of installable plugins, where keys are
@@ -855,46 +843,27 @@ class PluginManager(object):
           description -- the description of the package
           dsize -- the download size of the package, in bytes
           sha1sum -- an hex representation of the sha1sum of the package
-          targets -- a list of (vendor, model, version) tuple representing
-            devices that the plugin target
+          capabilities -- a dictionary where keys are string in format
+            "vendor, model, version" and values are capabilities dictionary.
         
         Raise an Exception if the plugin definition file is invalid/corrupted.
         If this file is absent, no error is raised, and an empty dictionary
         is returned.
         
+        Note that the returned dictionary contains unicode strings instead
+        of 'normal' string.
+        
         """
-        installable_plugins = {}
-        config = ConfigParser.RawConfigParser()
         try:
-            with open(self._db_pathname(), 'r') as fobj:
-                config.readfp(fobj)
+            with open(self._db_pathname()) as fobj:
+                raw_plugin_infos = json.load(fobj)
         except IOError:
-            pass
+            return {}
         else:
-            for section in config.sections():
-                if section.startswith('plugin_'):
-                    id = section[len('plugin_'):]
-                    filename = config.get(section, 'filename')
-                    version = config.get(section, 'version')
-                    description = self._clean_long_header(config.get(section, 'description'))
-                    dsize = config.get(section, 'dsize')
-                    sha1sum = config.get(section, 'sha1sum')
-                    targets = self._parse_raw_targets(config.get(section, 'targets'))
-                    installable_plugins[id] = {'filename': filename,
-                                               'version': version,
-                                               'description': description,
-                                               'dsize': dsize,
-                                               'sha1sum': sha1sum,
-                                               'targets': targets}
-                else:
-                    logger.warning('Unknown section name %s in plugin definition file', section)
-        return installable_plugins
-    
-    def _get_installed_pg_info(self, id):
-        # Return an 'installed plugin info' object from a id, or raise
-        # a KeyError if no such plugin is found
-        installed_plugins = self.list_installed()
-        return installed_plugins[id]
+            for plugin_id, raw_plugin_info in raw_plugin_infos.iteritems():
+                self._check_raw_plugin_info(raw_plugin_info, plugin_id,
+                                            self._PLUGIN_INFO_INSTALLABLE_KEYS)
+            return raw_plugin_infos
     
     def is_installed(self, id):
         """Return true if the plugin <id> is currently installed, else
@@ -910,23 +879,26 @@ class PluginManager(object):
         The plugin information dictionary contains the following keys:
           version -- the version of the package
           description -- the description of the package
+          capabilities -- a dictionary where keys are string in format
+            "vendor, model, version" and values are capabilities dictionary.
         
         Raise an Exception if, in the plugins directory, there's a directory
         which has a missing or invalid plugin info file.
+        
+        Note that the returned dictionary contains unicode strings instead
+        of 'normal' string.
         
         """
         installed_plugins = {}
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
             if os.path.isdir(abs_plugin_dir):
-                info_pathname = os.path.join(abs_plugin_dir, self._INFO_FILENAME)
-                config = ConfigParser.RawConfigParser()
-                with open(info_pathname, 'r') as fobj:
-                    config.readfp(fobj)
-                version = config.get('general', 'version')
-                description = self._clean_long_header(config.get('general', 'description'))
-                installed_plugins[rel_plugin_dir] = {'version': version,
-                                                     'description': description} 
+                plugin_info_path = os.path.join(abs_plugin_dir, self._PLUGIN_INFO_FILENAME)
+                with open(plugin_info_path) as fobj:
+                    raw_plugin_info = json.load(fobj)
+                self._check_raw_plugin_info(raw_plugin_info, rel_plugin_dir,
+                                            self._PLUGIN_INFO_INSTALLED_KEYS)
+                installed_plugins[rel_plugin_dir] = raw_plugin_info
         return installed_plugins
     
     @staticmethod

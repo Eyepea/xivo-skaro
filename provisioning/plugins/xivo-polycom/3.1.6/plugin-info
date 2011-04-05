@@ -1,9 +1,21 @@
-[general]
-version: 0.1.6
-description: Plugin for Polycom IP301, IP501, IP600, IP601 and IP4000 in
-             version 3.1.6.0017.
-targets: Polycom, SPIP301, 3.1.6.0017 |
-         Polycom, SPIP501, 3.1.6.0017 |
-         Polycom, SPIP600, 3.1.6.0017 |
-         Polycom, SPIP601, 3.1.6.0017 |
-         Polycom, SSIP4000, 3.1.6.0017
+{
+    "version": "0.1.6",
+    "description": "Plugin for Polycom IP301, IP501, IP600, IP601 and IP4000 in version 3.1.6.0017.",
+    "capabilities": {
+        "Polycom, SPIP301, 3.1.6.0017": {
+            "sip.lines": 2
+        },
+        "Polycom, SPIP501, 3.1.6.0017": {
+            "sip.lines": 3
+        },
+        "Polycom, SPIP600, 3.1.6.0017": {
+            "sip.lines": 6
+        },
+        "Polycom, SPIP601, 3.1.6.0017": {
+            "sip.lines": 6
+        },
+        "Polycom, SSIP4000, 3.1.6.0017": {
+            "sip.lines": 1
+        }
+    }
+}
