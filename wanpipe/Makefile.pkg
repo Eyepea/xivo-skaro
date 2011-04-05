@@ -25,5 +25,5 @@ default:
 #clean-tarball::
 #	@rm -rf ${TARBALL_DIR}
 #
-do-tarball::
-	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}/$(TARBALL_PKG)_$(UPSTREAM_VER).orig.tar.gz
+#do-tarball::
+#	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}/$(TARBALL_PKG)_$(UPSTREAM_VER).orig.tar.gz
