@@ -24,4 +24,4 @@ default:
 #	@rm -rf ${TARBALL_DIR}
 #
 do-tarball::
-	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}/$(DEB_PKG)_$(UPSTREAM_VER).orig.tar.gz
+	tar zcf $(DEB_DESTDIR)/$(DEB_PKG)_$(UPSTREAM_VER).orig.tar.gz -C ${TARBALL_DIR} $(DEB_TAR_COMMON_OPTIONS) $(DEB_TAR_EXTRA_OPTIONS) .
