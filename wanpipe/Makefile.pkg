@@ -25,4 +25,4 @@ default:
 #	@rm -rf ${TARBALL_DIR}
 #
 do-tarball::
-	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) $(DEB_DESTDIR)/$(DEB_PKG)_$(UPSTREAM_VER).orig.tar.gz
+	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
