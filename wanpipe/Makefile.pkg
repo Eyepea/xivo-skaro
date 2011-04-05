@@ -17,10 +17,12 @@ UPSTREAM_VER = $(SRCVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 default:
 
-prepare-tarball::
-	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
-	@cp -a $(MODULE_PATH)/patches ${TARBALL_DIR}
-
-clean-tarball::
-	@rm -rf ${TARBALL_DIR}
-
+#prepare-tarball::
+#	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
+#	@cp -a $(MODULE_PATH)/patches ${TARBALL_DIR}
+#
+#clean-tarball::
+#	@rm -rf ${TARBALL_DIR}
+#
+do-tarball::
+    cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) $(DEB_DESTDIR)/$(DEB_PKG)_$(UPSTREAM_VER).orig.tar.gz
