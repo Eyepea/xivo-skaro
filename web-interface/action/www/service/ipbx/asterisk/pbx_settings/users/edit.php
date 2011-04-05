@@ -66,7 +66,7 @@ if(isset($_QR['fm_send']) === true
 && dwho_issa('userfeatures',$_QR) === true)
 {
 	$queueskills = array();
-
+	
 	// skipping the last one (empty entry)
 	$count = count($_QR['queueskill-skill']) - 1;
 	for($i = 0; $i < $count; $i++)

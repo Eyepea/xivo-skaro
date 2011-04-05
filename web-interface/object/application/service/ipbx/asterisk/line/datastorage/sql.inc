@@ -22,14 +22,14 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','data
 
 class xivo_application_service_asterisk_line_sql extends xivo_application_abstract_datastorage_sql
 {
-	var $_table	= array(
+	public $_table	= array(
 				'linefeatures' => '',
 				'usersip'		=> '',
 				'useriax'		=> '',
 				'usersccp'		=> '',
 				'usercustom'	=> '');
 
-	function get_nb($arr=null,$disable=null,$initialized=null)
+	public function get_nb($arr=null,$disable=null,$initialized=null)
 	{
 		if(is_array($arr) === false)
 			$arr = array();
@@ -103,7 +103,7 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 	 *		- internal: if true, also return internal accounts (*guest* account indeed)
 	 *		- free: if true, also return iduserfeatures=0, null = both, false return iduserfeatures != 0
 	*/
-	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null,$internal=false,$free=null)
+	public function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null,$internal=false,$free=null)
 	{
 		$this->_cnt = 0;
 
@@ -217,8 +217,11 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 		}
 
 		$this->_dso->aggregate_where();
-
-		if(($has_context = dwho_has_len($context)) === true)
+		
+		if (is_array($context) === true
+		&& empty($context) === false)		
+			$this->_dso->wherein('context',$context,$this->_table['linefeatures']);
+		elseif(($has_context = dwho_has_len($context)) === true)
 			$this->_dso->where($this->_table['linefeatures'].'.context = %s',$context);
 
 		if(dwho_has_len($value) === true)
@@ -262,14 +265,22 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 		return($r);
 	}
 
-	function search($value,$context,$protocols,$disable=null,$initialized=null,$order=null,$limit=null,$mode=null)
+	public function search($value,$context,$protocols,$disable=null,$initialized=null,$order=null,$limit=null,$mode=null,$internal=null,$free=null)
 	{
 		$this->_cnt = 0;
 
 		if(dwho_has_len($value) === false && $mode === null)
 			return(false);
 
-		return($this->get_all($protocols,$disable,$initialized,$order,$limit,$value,$context,$mode));
+		return($this->get_all($protocols,$disable,$initialized,$order,$limit,$value,$context,$mode,$internal,$free));
+	}
+	
+	public function get_all_in_contexts($contexts,$protocols,$disable=null,$initialized=null,$order=null,$limit=null,$internal=null,$free=null)
+	{
+		if (is_array($contexts) === false)
+			return(false);
+
+		return($this->get_all($protocols,$disable,$initialized,$order,$limit,null,$contexts,$mode,$internal,$free));
 	}
 }
 

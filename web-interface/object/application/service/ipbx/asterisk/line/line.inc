@@ -55,7 +55,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function load_init($param=array())
+	public function load_init($param=array())
 	{
 		$this->_reset_info();
 		$this->_reset_params();
@@ -68,7 +68,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function load_components()
+	public function load_components()
 	{
 		$this->_components = true;
 
@@ -82,7 +82,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function _reset()
+	public  function _reset()
 	{
 		$this->_protocolname = false;
 
@@ -95,7 +95,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	 *	- true  : search ONLY in internal users
 	 *	- null  : search in BOTH internal and non-internal users
 	 */
-	function get($id,$disable=null,$internal=false,$nocomponents=null)
+	public function get($id,$disable=null,$internal=false,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -135,7 +135,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($this->_info);
 	}
 
-	function get_nb($arr=null,$disable=null,$initialized=null)
+	public function get_nb($arr=null,$disable=null,$initialized=null)
 	{
 		return($this->_dso->get_nb($arr,$disable,$initialized));
 	}
@@ -214,7 +214,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return true;
 	}
 
-	function get_elements()
+	public function get_elements()
 	{
 		$r = array();
 
@@ -224,7 +224,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function get_all_context()
+	public function get_all_context()
 	{
 		if(($r = $this->_linefeatures->get_all_context()) !== false)
 			ksort($r);
@@ -232,34 +232,37 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function get_lines_search($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	public function get_lines_search($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
 	{
 		return($this->_get_lines('search',$protocols,$disable,$search,$context,$order,$limit,$assoc,$initialized,$free,$internal));
 	}
 
-	function get_lines_search_number($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	public function get_lines_search_number($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
 	{
 		return($this->_get_lines('search_number',$protocols,$disable,$search,$context,$order,$limit,$assoc,$initialized,$free,$internal));
 	}
 
-	function get_lines_context($context,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	public function get_lines_context($context,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
 	{
 		return($this->_get_lines('context',$protocols,$disable,null,$context,$order,$limit,$assoc,$initialized,$free,$internal));
 	}
 
-	function get_lines_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	public function get_lines_contexts($contexts,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	{
+		return($this->_get_lines('contexts',$protocols,$disable,null,$contexts,$order,$limit,$assoc,$initialized,$free,$internal));
+	}
+
+	public function get_lines_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
 	{
 		return($this->_get_lines('list',$protocols,$disable,null,null,$order,$limit,$assoc,$initialized,$free,$internal));
 	}
 
-	/**
-	 *
+	/*
 	 * options:
 	 *		- internal: if true, also return internal accounts (*guest* account indeed)
-	 *		- free: if true, also return iduserfeatures=0, null = both, false return iduserfeatures != 0
-	 *
+	 *		- free: if true, also return iduserfeatures=0, null = both, false return iduserfeatures != 0	 *
 	*/
-	function _get_lines($action,$protocols=null,$disable=null,$search='',$context='',$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	private function _get_lines($action,$protocols=null,$disable=null,$search='',$context='',$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
 	{
 		$search = strval($search);
 
@@ -281,6 +284,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				break;
 			case 'context':
 				$rs = $this->_dso->get_all($protocols,$disable,$initialized,$order,$limit,null,$context,null,$internal,$free);
+				break;
+			case 'contexts':
+				$rs = $this->_dso->get_all_in_contexts($context,$protocols,$disable,$initialized,$order,$limit,$internal,$free);
 				break;
 			case 'list':
 			default:
@@ -343,12 +349,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function set_add($arr,$protocolname)
+	public function set_add($arr,$protocolname)
 	{
 		return($this->_set('add',$arr,$protocolname));
 	}
 
-	function set_edit($arr,$protocolname)
+	public function set_edit($arr,$protocolname)
 	{
 		if(empty($this->_info) === true)
 			return(false);
@@ -356,7 +362,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($this->_set('edit',$arr,$protocolname));
 	}
 
-	function _set($action,$arr,$protocolname,$chkcontext=true)
+	private function _set($action,$arr,$protocolname,$chkcontext=true)
 	{
 		$this->_reset();
 

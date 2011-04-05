@@ -68,11 +68,9 @@ $array['element']['rules_time']['default'] = '';
 
 $array['element']['rules_order'] = array();
 $array['element']['rules_order']['default'] = 0;
-$array['element']['rules_order']['forcedef'] = true;
 
 $array['element']['rules_group'] = array();
-$array['element']['rules_group']['default'] = 0;
-$array['element']['rules_group']['forcedef'] = true;
+$array['element']['rules_group']['default'] = '';
 
 $array['element']['internal'] = array();
 $array['element']['internal']['value'] = array(0,1);
@@ -88,8 +86,8 @@ $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_IAX,
 						    XIVO_SRE_IPBX_AST_PROTO_SCCP,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
-$array['filter']['protocolid'] = array('cast' => 'uinteger','notag' => '');
-$array['filter']['iduserfeatures'] = array('cast' => 'uinteger','notag' => '');
+$array['filter']['protocolid'] = array('cast' => 'uint');
+$array['filter']['iduserfeatures'] = array('cast' => 'uint');
 //$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
@@ -99,8 +97,8 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['rules_type'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['rules_time'] = array('set' => false,'chk' => 2,'maxlen' => 8,'regexp' => '/^[0-9]+$/');
-$array['filter']['rules_order'] = array('set' => false,'chk' => 2,'cast' => 'uinteger','notag' => '');
-$array['filter']['rules_group'] = array('set' => false,'chk' => 2,'cast' => 'uinteger','notag' => '');
+$array['filter']['rules_order'] = array('set' => false,'chk' => 2,'cast' => 'uint');
+$array['filter']['rules_group'] =array('set' => false,'chk' => 2,'maxlen' => 16,'regexp' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['internal'] = array('set' => false,'chk' => 0);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

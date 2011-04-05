@@ -19,6 +19,14 @@
 //get available extensions
 var url_http_search_extension = '/service/ipbx/ui.php/pbx_settings/extension/search/';
 
+// Return a helper with preserved width of cells
+var fixHelper = function(e, ui) {
+	ui.children().each(function() {
+		$(this).width($(this).width());
+	});
+	return ui;
+};
+
 function map_autocomplete_extension_to(obj,context)
 {    
     $(obj).autocomplete(url_http_search_extension, {
@@ -31,12 +39,43 @@ function map_autocomplete_extension_to(obj,context)
     });
 }
 
+function update_rules_group_val()
+{
+	var groupval = '';
+	var count = 0;
+	$('#list_linefeatures > tbody').find('tr').each(function() {				
+		if($(this).attr('id') == 'tr-rules_group') {	
+			count = 0;
+			groupval = $(this).find('#td_rules_group_name').text();	
+		}
+		count++;
+		$(this).find('#linefeatures-rules_group').val(groupval);			
+		$(this).find('#linefeatures-rules_order').val(count-1);
+	});
+}
+
 $(document).ready(function(){ 
+	/*
+	$(".up,.down").click(function(){
+        var row = $(this).parents("tr:first");
+        if ($(this).is(".up")) {
+            row.insertBefore(row.prev());
+        } else {
+            row.insertAfter(row.next());
+        }
+    });
+	*/
+
+	$("#list_linefeatures tbody").sortable({
+		helper: fixHelper,
+		cursor: 'crosshair',
+		update: update_rules_group_val
+	}).disableSelection();
 	
 	$('#lnk-add-row').click(function(){
 		
 		$('#no-linefeatures').hide('fast');
-	    row = $('#ex-linefeatures').html();        
+	    row = $('#ex-linefeatures').html();
 	    
 		$('#list_linefeatures > tbody:last').fadeIn(400, function () {
 	        $(this).append(row);
@@ -49,7 +88,42 @@ $(document).ready(function(){
 		    number = $(this).parents('tr').find('#linefeatures-number');		    
 		    map_autocomplete_extension_to(number,$(this).val());
 		});
+
+	    update_rules_group_val();
+		return false;
+	});
+
+	$('#lnk-add-row-rules_group').click(function(){
 		
+		groupval = $('#it-rules_group').val();
+		
+		if (groupval === '' || groupval === null)
+			return false;
+		
+		exist = false;
+		$('#list_linefeatures').find('#td_rules_group_name').each(function () {
+			if ($(this).text() == groupval)
+				exist = true;
+		});
+		
+		if (exist === true)
+			return false;
+		
+		groupval = groupval.replace(/[^a-z0-9_\.-]+/g,'');
+		groupval = groupval.toLowerCase();
+		
+		td_rules_group = $('#ex-rules_group').find('#td_rules_group_name');
+	    td_rules_group.text( groupval );
+		
+		row = $('#ex-rules_group').html();
+		
+	    $('#list_linefeatures > tbody:last').fadeIn(400, function () {
+	        $(this).append(row);
+	    });
+	    
+	    td_rules_group.text('');
+	    update_rules_group_val();
+	
 		return false;
 	});
 
@@ -106,6 +180,7 @@ $(document).ready(function(){
 		    number = $(this).parents('tr').find('#linefeatures-number');
 		    map_autocomplete_extension_to(number,$(this).val());
 		});
+	    update_rules_group_val();
 		
 		return false;
 	});
@@ -133,6 +208,8 @@ function lnkdroprow(obj) {
 	
     if ($('#list_lines_free option').length > 0)
     	$('#box-lines_free').show();
+
+    update_rules_group_val();
     
     return false;
 }

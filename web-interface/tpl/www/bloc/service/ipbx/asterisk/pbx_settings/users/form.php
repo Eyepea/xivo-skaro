@@ -217,113 +217,25 @@ endif;
 				  'default'	=> $element['userfeatures']['preprocess_subroutine']['default'],
 				  'value'	=> $info['userfeatures']['preprocess_subroutine'],
 				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'preprocess_subroutine')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringintern'),
-				  'name'	=> 'userfeatures[ringintern]',
-				  'labelid'	=> 'userfeatures-ringintern',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['ringintern']['default'],
-				  'value'	=> $info['userfeatures']['ringintern'],
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'ringintern')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringextern'),
-				  'name'	=> 'userfeatures[ringextern]',
-				  'labelid'	=> 'userfeatures-ringextern',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['ringextern']['default'],
-				  'value'	=> $info['userfeatures']['ringextern'],
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'ringextern')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringgroup'),
-				  'name'	=> 'userfeatures[ringgroup]',
-				  'labelid'	=> 'userfeatures-ringgroup',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['ringgroup']['default'],
-				  'value'	=> $info['userfeatures']['ringgroup'],
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'ringgroup')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringforward'),
-				  'name'	=> 'userfeatures[ringforward]',
-				  'labelid'	=> 'userfeatures-ringforward',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['ringforward']['default'],
-				  'value'	=> $info['userfeatures']['ringforward'],
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'ringforward')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_rightcallcode'),
-				  'name'	=> 'userfeatures[rightcallcode]',
-				  'labelid'	=> 'userfeatures-rightcallcode',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['rightcallcode']['default'],
-				  'value'	=> $info['userfeatures']['rightcallcode'],
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'rightcallcode')) ));
+				$this->get_var('error', 'userfeatures', 'preprocess_subroutine')) ));
 ?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-userfeatures-alarmclock" for="it-userfeatures-alarmclock"><?=$this->bbf('fm_userfeatures_alarmclock');?></label>
 <?php
-	echo $form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[alarmclock_hour]',
-				  'labelid'	=> 'userfeatures-alarmclock_hour',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'default'	=> $element['userfeatures']['alarmclock_hour']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','alarmclock_hour'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'alarmclock_hour'))),
-			      $element['userfeatures']['alarmclock_hour']['value']),
 
-		$form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[alarmclock_minute]',
-				  'labelid'	=> 'userfeatures-alarmclock_minute',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'default'	=> $element['userfeatures']['alarmclock_minute']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','alarmclock_minute'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'alarmclock_minute'))),
-			      $element['userfeatures']['alarmclock_minute']['value']);
-?>
-		</p>
-	</div>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-userfeatures-pitch" for="it-userfeatures-pitch"><?=$this->bbf('fm_userfeatures_pitch');?></label>
-<?php
-	echo $form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[pitchdirection]',
-				  'labelid'	=> 'userfeatures-pitchdirection',
-				    'empty'	=> true,
-				    'key'	=> false,
-		           'bbf'       => 'fm_userfeatures_pitchdirection-opt',
-							 'bbfopt'	   => array('argmode' => 'paramvalue'),
-				    'default'	=> $element['userfeatures']['pitchdirection']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','pitchdirection'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'pitchdirection'))),
-			      $element['userfeatures']['pitchdirection']['value']),
+	echo 	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
+				      'name'	=> 'userfeatures[enableclient]',
+				      'labelid'	=> 'userfeatures-enableclient',
+				      'default'	=> $element['userfeatures']['enableclient']['default'],
+				      'checked'	=> $info['userfeatures']['enableclient']));
 
-		$form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[pitch]',
-				  'labelid'	=> 'userfeatures-pitch',
-				    'empty'	=> true,
-				    'key'	=> false,
-		           'bbf'       => 'fm_userfeatures_pitch-opt',
-							 'bbfopt'	   => array('argmode' => 'paramvalue'),
-				    'default'	=> $element['userfeatures']['pitch']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','pitch'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'pitch'))),
-			      $element['userfeatures']['pitch']['value']);
+	if(is_array($profileclient_list) === true && empty($profileclient_list) === false):
+		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
+					    'name'	=> 'userfeatures[profileclient]',
+					    'labelid'	=> 'userfeatures-profileclient',
+					    'default'	=> $element['userfeatures']['profileclient']['default'],
+					    'selected'	=> $info['userfeatures']['profileclient']),
+				      $profileclient_list);
+	endif;
 ?>
-		</p>
-	</div>
 	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-userfeatures-description" for="it-userfeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label>
@@ -342,7 +254,6 @@ endif;
 </div>
 
 <div id="sb-part-lines" class="b-nodisplay">
-
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_entity'),
 				    'name'		=> 'userfeatures[entityid]',
@@ -369,7 +280,6 @@ endif;
 					  'list'	=> $line_list));
 ?>
 	</div>
-
 </div>
 
 <div id="sb-part-voicemail" class="b-nodisplay">
@@ -384,6 +294,12 @@ endif;
 			           'selected'  => $info['userfeatures']['voicemailtype'],
 			           'default'   => $element['userfeatures']['voicemailtype']['default']),
 			       $element['userfeatures']['voicemailtype']['value']),
+			       
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablevoicemail'),
+				      'name'	=> 'userfeatures[enablevoicemail]',
+				      'labelid'	=> 'userfeatures-enablevoicemail',
+				      'default'	=> $element['userfeatures']['enablevoicemail']['default'],
+				      'checked'	=> $info['userfeatures']['enablevoicemail'])),		
 
 		$form->hidden(array('name'	=> 'userfeatures[voicemailid]',
 				    'id'	=> 'it-userfeatures-voicemailid',
@@ -512,41 +428,112 @@ endif;
 </div>
 
 <div id="sb-part-service" class="b-nodisplay">
-	<fieldset id="fld-client">
-		<legend><?=$this->bbf('fld-client');?></legend>
-<?php
-
-	echo 	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
-				      'name'	=> 'userfeatures[enableclient]',
-				      'labelid'	=> 'userfeatures-enableclient',
-				      'default'	=> $element['userfeatures']['enableclient']['default'],
-				      'checked'	=> $info['userfeatures']['enableclient']));
-
-	if(is_array($profileclient_list) === true && empty($profileclient_list) === false):
-		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
-					    'name'	=> 'userfeatures[profileclient]',
-					    'labelid'	=> 'userfeatures-profileclient',
-					    'default'	=> $element['userfeatures']['profileclient']['default'],
-					    'selected'	=> $info['userfeatures']['profileclient']),
-				      $profileclient_list);
-	endif;
-?>
-	</fieldset>
 
 	<fieldset id="fld-services">
 		<legend><?=$this->bbf('fld-services');?></legend>
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringintern'),
+				  'name'	=> 'userfeatures[ringintern]',
+				  'labelid'	=> 'userfeatures-ringintern',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['ringintern']['default'],
+				  'value'	=> $info['userfeatures']['ringintern'],
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'ringintern')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringextern'),
+				  'name'	=> 'userfeatures[ringextern]',
+				  'labelid'	=> 'userfeatures-ringextern',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['ringextern']['default'],
+				  'value'	=> $info['userfeatures']['ringextern'],
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'ringextern')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringgroup'),
+				  'name'	=> 'userfeatures[ringgroup]',
+				  'labelid'	=> 'userfeatures-ringgroup',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['ringgroup']['default'],
+				  'value'	=> $info['userfeatures']['ringgroup'],
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'ringgroup')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringforward'),
+				  'name'	=> 'userfeatures[ringforward]',
+				  'labelid'	=> 'userfeatures-ringforward',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['ringforward']['default'],
+				  'value'	=> $info['userfeatures']['ringforward'],
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'ringforward')) ));
+?>
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-userfeatures-alarmclock" for="it-userfeatures-alarmclock"><?=$this->bbf('fm_userfeatures_alarmclock');?></label>
+<?php
+	echo $form->select(array('paragraph'	=> false,
+				  'name'	=> 'userfeatures[alarmclock_hour]',
+				  'labelid'	=> 'userfeatures-alarmclock_hour',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'default'	=> $element['userfeatures']['alarmclock_hour']['default'],
+				    'selected'	=> $this->get_var('info','userfeatures','alarmclock_hour'),
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'alarmclock_hour'))),
+			      $element['userfeatures']['alarmclock_hour']['value']),
+
+		$form->select(array('paragraph'	=> false,
+				  'name'	=> 'userfeatures[alarmclock_minute]',
+				  'labelid'	=> 'userfeatures-alarmclock_minute',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'default'	=> $element['userfeatures']['alarmclock_minute']['default'],
+				    'selected'	=> $this->get_var('info','userfeatures','alarmclock_minute'),
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'alarmclock_minute'))),
+			      $element['userfeatures']['alarmclock_minute']['value']);
+?>
+		</p>
+	</div>
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-userfeatures-pitch" for="it-userfeatures-pitch"><?=$this->bbf('fm_userfeatures_pitch');?></label>
+<?php
+	echo $form->select(array('paragraph'	=> false,
+				  'name'	=> 'userfeatures[pitchdirection]',
+				  'labelid'	=> 'userfeatures-pitchdirection',
+				    'empty'	=> true,
+				    'key'	=> false,
+		           'bbf'       => 'fm_userfeatures_pitchdirection-opt',
+							 'bbfopt'	   => array('argmode' => 'paramvalue'),
+				    'default'	=> $element['userfeatures']['pitchdirection']['default'],
+				    'selected'	=> $this->get_var('info','userfeatures','pitchdirection'),
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'pitchdirection'))),
+			      $element['userfeatures']['pitchdirection']['value']),
+
+		$form->select(array('paragraph'	=> false,
+				  'name'	=> 'userfeatures[pitch]',
+				  'labelid'	=> 'userfeatures-pitch',
+				    'empty'	=> true,
+				    'key'	=> false,
+		           'bbf'       => 'fm_userfeatures_pitch-opt',
+							 'bbfopt'	   => array('argmode' => 'paramvalue'),
+				    'default'	=> $element['userfeatures']['pitch']['default'],
+				    'selected'	=> $this->get_var('info','userfeatures','pitch'),
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'pitch'))),
+			      $element['userfeatures']['pitch']['value']);
+?>
+		</p>
+	</div>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablehint'),
 				      'name'	=> 'userfeatures[enablehint]',
 				      'labelid'	=> 'userfeatures-enablehint',
 				      'default'	=> $element['userfeatures']['enablehint']['default'],
 				      'checked'	=> $info['userfeatures']['enablehint'])),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablevoicemail'),
-				      'name'	=> 'userfeatures[enablevoicemail]',
-				      'labelid'	=> 'userfeatures-enablevoicemail',
-				      'default'	=> $element['userfeatures']['enablevoicemail']['default'],
-				      'checked'	=> $info['userfeatures']['enablevoicemail'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablexfer'),
 				      'name'	=> 'userfeatures[enablexfer]',
@@ -606,6 +593,76 @@ endif;
 					      'group'	=> 1)),
 			'</div>';
 	endif;
+?>
+	</fieldset>
+	
+	<fieldset id="fld-rightcalls">
+		<legend><?=$this->bbf('fld-rightcalls');?></legend>	
+<?php
+
+		echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_rightcallcode'),
+				  'name'	=> 'userfeatures[rightcallcode]',
+				  'labelid'	=> 'userfeatures-rightcallcode',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['rightcallcode']['default'],
+				  'value'	=> $info['userfeatures']['rightcallcode'],
+				  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'userfeatures', 'rightcallcode')) ));
+				
+				if($rightcall['list'] !== false):
+?>
+				<div id="rightcalllist" class="fm-paragraph fm-multilist">
+				<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
+					<div class="slt-outlist">
+						<?=$form->select(array('name'		=> 'rightcalllist',
+								       'label'		=> false,
+								       'id'		=> 'it-rightcalllist',
+								       'browse'		=> 'rightcall',
+								       'key'		=> 'identity',
+								       'altkey'		=> 'id',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false),
+								 $rightcall['list']);?>
+					</div>
+					<div class="inout-list">
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_inrightcall');?>">
+							<?=$url->img_html('img/site/button/arrow-left.gif',
+									  $this->bbf('bt_inrightcall'),
+									  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+						<a href="#"
+						   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
+							    return(dwho.dom.free_focus());"
+						   title="<?=$this->bbf('bt_outrightcall');?>">
+							<?=$url->img_html('img/site/button/arrow-right.gif',
+									  $this->bbf('bt_outrightcall'),
+									  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+					</div>
+					<div class="slt-inlist">
+						<?=$form->select(array('name'		=> 'rightcall[]',
+								       'label'		=> false,
+								       'id'		=> 'it-rightcall',
+								       'browse'		=> 'rightcall',
+								       'key'		=> 'identity',
+								       'altkey'		=> 'id',
+								       'multiple'	=> true,
+								       'size'		=> 5,
+								       'paragraph'	=> false),
+								 $rightcall['slt']);?>
+					</div>
+				</div>
+				<div class="clearboth"></div>
+<?php
+				else:
+					echo	'<div class="txt-center">',
+						$url->href_htmln($this->bbf('create_rightcall'),
+								'service/ipbx/call_management/rightcall',
+								'act=add'),
+						'</div>';
+				endif;
 ?>
 	</fieldset>
 
@@ -680,109 +737,6 @@ endif;
 </div>
 
 <div id="sb-part-rightcalls" class="b-nodisplay">
-<?php
-	if($rightcall['list'] !== false):
-?>
-	<div id="rightcalllist" class="fm-paragraph fm-multilist">
-	<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'rightcalllist',
-					       'label'		=> false,
-					       'id'		=> 'it-rightcalllist',
-					       'browse'		=> 'rightcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rightcall['list']);?>
-		</div>
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inrightcall');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inrightcall'),
-						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outrightcall');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outrightcall'),
-						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
-		</div>
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcall[]',
-					       'label'		=> false,
-					       'id'		=> 'it-rightcall',
-					       'browse'		=> 'rightcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rightcall['slt']);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
-<?php
-	else:
-		echo	'<div class="txt-center">',
-			$url->href_htmln($this->bbf('create_rightcall'),
-					'service/ipbx/call_management/rightcall',
-					'act=add'),
-			'</div>';
-	endif;
-?>
-</div>
-
-<div id="sb-part-advanced" class="b-nodisplay">
-<?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_outcallerid'),
-				    'name'	=> 'userfeatures[outcallerid-type]',
-				    'labelid'	=> 'userfeatures-outcallerid-type',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_userfeatures_outcallerid-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'selected'	=> ($outcallerid_custom === true ? 'custom' : $outcallerid)),
-			      $element['userfeatures']['outcallerid-type']['value']),
-
-		$form->text(array('desc'	=> '&nbsp;',
-				  'name'	=> 'userfeatures[outcallerid-custom]',
-				  'labelid'	=> 'userfeatures-outcallerid-custom',
-				  'value'	=> ($outcallerid_custom === true ? $outcallerid : ''),
-				  'size'	=> 15,
-				  'notag'	=> false,
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'userfeatures', 'outcallerid-custom')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_preprocess-subroutine'),
-				  'name'	=> 'userfeatures[preprocess_subroutine]',
-				  'labelid'	=> 'userfeatures-preprocess-subroutine',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['userfeatures']['preprocess_subroutine'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'userfeatures', 'preprocess_subroutine')) ));
-
-?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-userfeatures-description" for="it-userfeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label>
-		</p>
-		<?=$form->textarea(array('paragraph'	=> false,
-					 'label'	=> false,
-					 'name'		=> 'userfeatures[description]',
-					 'id'		=> 'it-userfeatures-description',
-					 'cols'		=> 60,
-					 'rows'		=> 5,
-					 'default'	=> $element['userfeatures']['description']['default'],
-					 'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'userfeatures', 'description')) ),
-				   $info['userfeatures']['description']);?>
-	</div>
 </div>
 
 <div id="sb-part-schedule" class="b-nodisplay">

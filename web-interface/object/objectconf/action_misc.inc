@@ -35,6 +35,14 @@ $array['service/ipbx/asterisk/ui/pbx_settings/users/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/users',
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
 
+$array['service/ipbx/asterisk/ui/pbx_settings/lines/list'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/lines',
+	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'list'));
+
+$array['service/ipbx/asterisk/ui/pbx_settings/lines/search'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/lines',
+	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
+
 $array['service/ipbx/asterisk/ui/pbx_settings/users/groups/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/groups',
 	'define'	=> array(

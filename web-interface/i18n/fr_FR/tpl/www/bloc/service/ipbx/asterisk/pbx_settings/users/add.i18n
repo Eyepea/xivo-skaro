@@ -131,7 +131,7 @@ Aucune
 Asterisk
 
 ; fm_userfeatures_voicemailtype-opt(exchange)
-Exchange
+Exchange 2010
 
 ; fm_voicemail_option
 Messagerie vocale :
@@ -173,7 +173,7 @@ Supprimer message après notification :
 XIVO Client
 
 ; fm_userfeatures_enableclient
-Activer :
+Activer XIVO Client:
 
 ; fm_userfeatures_loginclient
 Identifiant :
@@ -776,7 +776,7 @@ Horaires :
 Groupde services : 
 
 ; col_line-name
-Peer
+Canal
 
 ; col_line-protocol
 Protocole

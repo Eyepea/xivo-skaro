@@ -100,24 +100,13 @@
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-8"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-funckeys');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
-			<div class="tab">
-				<span class="span-center">
-					<a href="#funckeys"><?=$this->bbf('smenu_funckeys');?></a></span>
-			</div>
-			<span class="span-right">&nbsp;</span>
-		</li>
-		<li id="dwsm-tab-9"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-rightcalls',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-funckeys',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#rightcalls"><?=$this->bbf('smenu_rightcalls');?></a></span>
+					<a href="#funckeys"><?=$this->bbf('smenu_funckeys');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>

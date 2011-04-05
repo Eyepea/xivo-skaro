@@ -87,19 +87,6 @@ $page = $url->pager($pager['pages'],
 					$this->bbf('col_sort_protocol'));
 ?>
 		</th>
-		<th class="th-center">
-			<span class="title, <?= $sort[1]=='name'?'underline':''?>">
-				<?=$this->bbf('col_context');?>
-			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_context'), 'border="0"'),
-					'service/ipbx/pbx_settings/lines',
-					array('act'	=> 'list', 'sort' => 'context'),
-					null,
-					$this->bbf('col_sort_context'));
-?>
-		</th>
 		<th class="th-center"><?=$this->bbf('col_provisioning');?></th>
 		<th class="th-center"><?=$this->bbf('col_user');?></th>
 		<th class="th-center"><?=$this->bbf('col_phone');?></th>
@@ -146,9 +133,6 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=$this->bbf('line_protocol-'.$ref['protocol']);?></td>
-		<td class="txt-center" title="<?=dwho_alttitle($ref['context']);?>">
-			<?=dwho_htmlen(dwho_trunc($ref['context'],25,'...',false))?>
-		</td>
 		<td class="txt-center">
 			<?=empty($ref['provisioningid']) ? '-' : $ref['provisioningid']?>
 		</td>

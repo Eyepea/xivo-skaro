@@ -31,7 +31,6 @@ var xivo_ast_users_elt_default = {
 	'userfeatures-passwdclient': {it: true},
 	'userfeatures-profileclient': {it: true},
 	'userfeatures-enablehint': {it: true},
-	'userfeatures-enablevoicemail': {it: true},
 	'userfeatures-enablexfer': {it: true},
 	'userfeatures-enableautomon': {it: true},
 	'userfeatures-callrecord': {it: true},
@@ -53,7 +52,8 @@ var xivo_ast_users_elt_default = {
 	'userfeatures-voicemailid': {it: true, fd: false},
 	'userfeatures-callerid': {it: true},
 	'userfeatures-entityid': {it: true},
-	
+	'userfeatures-enablevoicemail': {it: true},
+
 	'voicemail-option': {it: true},
 	'voicemail-suggest': {it: false, fd: false},
 	'voicemail-fullname': {it: false},
@@ -320,20 +320,32 @@ function xivo_http_search_context_from_entity(entityid)
 {
 	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=intern', function(data) {
 		if (data === null || data.length === 0){
-			$('#box-lines_free').hide();
+			$('#box-lines_free').hide('slow');
 			$('#list_linefeatures').hide();
 			$('#box-no_context').show();
 			return false;
 		}
 		$('#box-no_context').hide();
 		$('#box-lines_free').show();
-		$('#list_linefeatures').show();
+		$('#list_linefeatures').show();	
 	    $("#linefeatures-context").each(function(){
 			$(this).find('option').remove();
 		    for (var i = 0; i< data.length; i++)
 		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
 	    });
 	});
+	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=intern&free=1', function(data) {
+		if (data === null || data.length === 0){
+			$('#box-lines_free').hide('slow');
+			return false;
+		}
+		$('#box-lines_free').show();
+	    $("#list_lines_free").each(function(){
+			$(this).find('option').remove();
+		    for (var i = 0; i< data.length; i++)
+		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
+	    });
+	});	
 }
 
 function xivo_ast_user_http_search_voicemail(dwsptr)
@@ -385,6 +397,8 @@ function xivo_ast_user_chg_voicemail(option)
 			|| dwho_eid('it-userfeatures-lastname') === false
 			|| dwho_eid('it-voicemail-fullname') === false)
 				break;
+		
+			$('#it-userfeatures-enablevoicemail').removeAttr('disabled');
 
 			var name = '';
 			var firstname = dwho_eid('it-userfeatures-firstname').value;
@@ -404,6 +418,8 @@ function xivo_ast_user_chg_voicemail(option)
 			break;
 		case 'exchange':
 			dwho.form.reset_field(dwho_eid('it-userfeatures-voicemailid'),false);
+		
+			$('#it-userfeatures-enablevoicemail').removeAttr('disabled');
 			
 			for(property in xivo_ast_fm_user_enablevoicemail)
 			  dwho.form.reset_field(dwho_eid(property),false);
@@ -414,6 +430,8 @@ function xivo_ast_user_chg_voicemail(option)
 		case 'none':
 		default:
 			dwho.form.reset_field(dwho_eid('it-userfeatures-voicemailid'),false);
+		
+			$('#it-userfeatures-enablevoicemail').attr('disabled','disabled');
 
 			for(property in xivo_ast_fm_user_enablevoicemail)
 				dwho.form.reset_field(dwho_eid(property),false);

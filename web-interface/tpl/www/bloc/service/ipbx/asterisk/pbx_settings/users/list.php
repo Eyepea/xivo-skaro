@@ -110,7 +110,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td class="txt-left">
+		<td class="txt-center">
 			<?=($ref['nb_line']);?>
 		</td>
 		<td class="td-right" colspan="2">
