@@ -31,7 +31,7 @@ Téléphone :
 ; fm_dundi_bindaddr
 Adresse en écoute : 
 
-; hlp_fm_dundi_bindaddr
+; hlp_fm_dundi-bindaddr
 Config asterisk: binaddr
 
 ; fm_dundi-port
@@ -71,7 +71,7 @@ Destruction automatique des requêtes non acquitées :
 Config asterisk: autokill
 
 ; fm_dundi-secretpath
-Chemin de la clé 'secret' : 
+Chemin de la clé 'secret' (astdb) : 
 
 ; hlp_fm_dundi-secretpath
 Config asterisk: secretpath
@@ -83,7 +83,28 @@ Activer les statistiques :
 Config asterisk: storehistory
 
 ; fm_general_dundi
-Activer dundi : 
+Activer le mode actif/actif : 
 
 ; hlp_fm_general-dundi
-Active le mode actif/actif
+
+; hlp_fm_dundi-department
+Config asterisk: department
+
+; hlp_fm_dundi-organization
+Config asterisk: organization
+
+; hlp_fm_dundi-locality
+Config asterisk: locality
+
+; hlp_fm_dundi-stateprov
+Config asterisk: stateprov
+
+; hlp_fm_dundi-country
+Config asterisk: country
+
+; hlp_fm_dundi-email
+Config asterisk: email
+
+; hlp_fm_dundi-phone
+Config asterisk: phone
+

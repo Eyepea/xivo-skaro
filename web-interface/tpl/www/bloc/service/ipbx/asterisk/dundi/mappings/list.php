@@ -28,9 +28,12 @@ $page = $url->pager($pager['pages'],
 		    $pager['page'],
 		    $pager['prev'],
 		    $pager['next'],
-		    'service/ipbx/dundi/peers',
+		    'service/ipbx/dundi/mappings',
 				array('act' => $act));
 
+$trunks = array();
+foreach($this->get_var('trunks') as $t)
+	$trunks[$t['id']] = $t;
 
 ?>
 <div class="b-list">
@@ -39,7 +42,7 @@ $page = $url->pager($pager['pages'],
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-peer" method="post:" accept-charset="utf-8">
+<form action="#" name="fm-mapping" method="post:" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
@@ -53,9 +56,10 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_macaddr');?></th>
-		<th class="th-center"><?=$this->bbf('col_model');?></th>
-		<th class="th-center"><?=$this->bbf('col_host');?></th>
+		<th class="th-center"><?=$this->bbf('col_name');?></th>
+		<th class="th-center"><?=$this->bbf('col_context');?></th>
+		<th class="th-center"><?=$this->bbf('col_weight');?></th>
+		<th class="th-center"><?=$this->bbf('col_trunk');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -63,7 +67,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="6" class="td-single"><?=$this->bbf('no_peer');?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_mapping');?></td>
 	</tr>
 <?php
 	else:
@@ -82,29 +86,32 @@ $page = $url->pager($pager['pages'],
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
-			<?=$form->checkbox(array('name'		=> 'peers[]',
+			<?=$form->checkbox(array('name'		=> 'mappings[]',
 						 'value'	=> $ref['id'],
 						 'label'	=> false,
-						 'id'		=> 'it-peer-'.$i,
+						 'id'		=> 'it-mapping-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
-			<label for="it-peer-<?=$i?>" id="lb-peer-<?=$i?>">
+			<label for="it-mapping-<?=$i?>" id="lb-mapping-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					$ref['macaddr'];
+					$ref['name'];
 ?>
 			</label>
 		</td>
-		<td><?=  $this->bbf('fm_dundipeer_model-opt('.$ref['model'].')') ?></td>
-		<td><?= $ref['host'] ?></td>
+		<td><?= $ref['context'] ?></td>
+		<td><?= $ref['weight'] ?></td>
+		<td><?= $trunks[$ref['trunk']]['identity'] ?>
+
+		</td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 							       $this->bbf('opt_modify'),
 							       'border="0"'),
-						'service/ipbx/dundi/peers',
+						'service/ipbx/dundi/mappings',
 						array('act'	=> 'edit',
 						      'id'	=> $ref['id']),
 						null,
@@ -112,7 +119,7 @@ $page = $url->pager($pager['pages'],
 				$url->href_html($url->img_html('img/site/button/delete.gif',
 							       $this->bbf('opt_delete'),
 							       'border="0"'),
-						'service/ipbx/dundi/peers',
+						'service/ipbx/dundi/mappings',
 						array('act'	=> 'delete',
 						      'id'	=> $ref['id'],
 						      'page'	=> $pager['page']),
@@ -127,7 +134,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

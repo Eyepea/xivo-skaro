@@ -20,11 +20,11 @@
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_dundipeer extends xivo_application_asterisk_abstract
+class xivo_application_service_asterisk_dundimapping extends xivo_application_asterisk_abstract
 {
-	var $_dundipeer		   = false;
+	var $_dundimapping		   = false;
 
-	function xivo_application_service_asterisk_dundipeer(&$service,&$dso,$param=null,$components=true)
+	function xivo_application_service_asterisk_dundimapping(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -33,7 +33,7 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 
 		$this->_dso = &$dso;
 
-		if(($this->_dundipeer = &$this->_service->get_module('dundipeer')) === false)
+		if(($this->_dundimapping = &$this->_service->get_module('dundimapping')) === false)
 			return(false);
 
 		return(true);
@@ -43,10 +43,10 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['dundipeer'] = $this->_dundipeer->get($id,$disable)) === false)
+		if(($this->_info['dundimapping'] = $this->_dundimapping->get($id,$disable)) === false)
 			return(false);
 		
-		$this->_origin['dundipeer'] = $this->_dundipeer->get_origin();
+		$this->_origin['dundimapping'] = $this->_dundimapping->get_origin();
 
 		if($this->_components === false)
 			return($this->_info);
@@ -57,22 +57,22 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 	function get_elements()
 	{
 		$r = array();
-		$r['dundipeer'] = $this->_dundipeer->get_element();
+		$r['dundimapping'] = $this->_dundimapping->get_element();
 
 		return($r);
 	}
 
-	function get_dundipeer_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	function get_dundimapping_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_dundipeer('search',$search,$disable,$order,$limit,$assoc));
+		return($this->_get_dundimapping('search',$search,$disable,$order,$limit,$assoc));
 	}
 
-	function get_dundipeer_list($disable=null,$order=null,$limit=null,$assoc=false)
+	function get_dundimapping_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_dundipeer('list',null,$disable,$order,$limit,$assoc));
+		return($this->_get_dundimapping('list',null,$disable,$order,$limit,$assoc));
 	}
 
-	function _get_dundipeer($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	function _get_dundimapping($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
 		$search = strval($search);
 
@@ -83,10 +83,10 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 				break;
 			case 'list':
 			default:
-				$rs = $this->_dundipeer->get_all($disable,true,$order,$limit);
+				$rs = $this->_dundimapping->get_all($disable,true,$order,$limit);
 		}
 
-		$this->_cnt = $this->_dundipeer->get_cnt();
+		$this->_cnt = $this->_dundimapping->get_cnt();
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
@@ -99,8 +99,8 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 
 			$ref = &$r[$rs[$i]['id']];
 
-			$dundipeer = array();
-			$ref = array_merge($ref,$this->_dundipeer->_prepare($dundipeer));
+			$dundimapping = array();
+			$ref = array_merge($ref,$this->_dundimapping->_prepare($dundimapping));
 
 			$ref['description'] = $ref['description'];
 			$ref['commented']   = (bool) $ref['commented'];
@@ -116,20 +116,6 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		return($r);
 	}
 
-	/*
-	function get_result_for_display()
-	{
-		$r = $this->get_result();
-
-		if(is_array($r) === false)
-			$r = array();
-
-		if(dwho_issa('dundipeer',$r) === false)
-			$r['dundipeer'] = array();
-
-		return($r);
-	}
-*/
 	function set_add($arr)
 	{
 		return($this->_set('add',$arr));
@@ -148,27 +134,27 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| dwho_issa('dundipeer',$arr) === false)
+		|| dwho_issa('dundimapping',$arr) === false)
 			return(false);
 
-		$this->set_dundipeer($arr['dundipeer']);
+		$this->set_dundimapping($arr['dundimapping']);
 
 		return(($this->get_errnb() < 1));
 	}
 
-	function set_dundipeer($arr)
+	function set_dundimapping($arr)
 	{
 		$r = true;
 		$arr['commented'] = false;
 
-		if(($rs = $this->_dundipeer->chk_values($arr)) === false)
+		if(($rs = $this->_dundimapping->chk_values($arr)) === false)
 		{
 			$r = false;
-			$rs = $this->_dundipeer->get_filter_result();
-			$this->_set_error('dundipeer', $this->_dundipeer->get_filter_error());
+			$rs = $this->_dundimapping->get_filter_result();
+			$this->_set_error('dundimapping', $this->_dundimapping->get_filter_error());
 		}
 
-		$this->_set_result('dundipeer',$rs);
+		$this->_set_result('dundimapping',$rs);
 		return($r);
 	}
 
@@ -178,15 +164,15 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 
 		$this->_status = 'add';
 		$this->_return = array();
-		$dundipeerid = null;
+		$dundimappingid = null;
 
 		if($this->get_errnb() > 0
-		|| ($dundipeerid = $this->add_dundipeer()) === false)
+		|| ($dundimappingid = $this->add_dundimapping()) === false)
 		{
 			$r = false;
 
-			if($dundipeerid !== null)
-				$this->_reverse_add($dundipeerid);
+			if($dundimappingid !== null)
+				$this->_reverse_add($dundimappingid);
 		}
 
 		$this->_status = '';
@@ -194,20 +180,20 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		return($r);
 	}
 
-	function add_dundipeer()
+	function add_dundimapping()
 	{
-		if(($rs = $this->get_result('dundipeer')) === null
+		if(($rs = $this->get_result('dundimapping')) === null
 		|| $rs === false)
 			return(false);
 
-		return(($this->_return['dundipeer'] = $this->_dundipeer->add($rs)));
+		return(($this->_return['dundimapping'] = $this->_dundimapping->add($rs)));
 	}
 
-	function _reverse_add($dundipeerid)
+	function _reverse_add($dundimappingid)
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($dundipeerid = dwho_ulongint($dundipeerid)) === 0
+		|| ($dundimappingid = dwho_ulongint($dundimappingid)) === 0
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
@@ -219,8 +205,8 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 
 			switch($key)
 			{
-				case 'dundipeer':
-					$this->_dundipeer->delete($dundipeerid);
+				case 'dundimapping':
+					$this->_dundimapping->delete($dundimappingid);
 					break;
 			}
 		}
@@ -236,7 +222,7 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->edit_dundipeer() === false)
+		|| $this->edit_dundimapping() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -247,17 +233,17 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		return($r);
 	}
 
-	function edit_dundipeer()
+	function edit_dundimapping()
 	{
-		if(dwho_issa('dundipeer',$this->_info) === false
-		|| ($rs = $this->get_result('dundipeer')) === null
+		if(dwho_issa('dundimapping',$this->_info) === false
+		|| ($rs = $this->get_result('dundimapping')) === null
 		|| $rs === false)
 			return(false);
 
-		$rs['commented'] = $this->_info['dundipeer']['commented'];
-		$this->_return['dundipeer'] = $this->_dundipeer->edit($this->_info['dundipeer']['id'], $rs);
+		$rs['commented'] = $this->_info['dundimapping']['commented'];
+		$this->_return['dundimapping'] = $this->_dundimapping->edit($this->_info['dundimapping']['id'], $rs);
 
-		return($this->_return['dundipeer']);
+		return($this->_return['dundimapping']);
 	}
 
 	function _reverse_edit()
@@ -275,12 +261,12 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 
 			switch($key)
 			{
-				case 'dundipeer':
-					if(isset($this->_origin['dundipeer']) === false
-					|| $this->_origin['dundipeer'] === false)
-						$this->delete_dundipeer();
+				case 'dundimapping':
+					if(isset($this->_origin['dundimapping']) === false
+					|| $this->_origin['dundimapping'] === false)
+						$this->delete_dundimapping();
 					else
-						$this->_dundipeer->edit_origin($this->_origin['dundipeer']);
+						$this->_dundimapping->edit_origin($this->_origin['dundimapping']);
 					break;
 			}
 		}
@@ -294,9 +280,9 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 
 		$this->_status = 'delete';
 		$this->_return = array();
-		$this->_info['dundipeer'] = array('id' => $id);
+		$this->_info['dundimapping'] = array('id' => $id);
 
-		if($this->delete_dundipeer() === false)
+		if($this->delete_dundimapping() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -306,15 +292,15 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		return($r);
 	}
 
-	function delete_dundipeer()
+	function delete_dundimapping()
 	{
-		if(dwho_issa('dundipeer',$this->_info) === false)
+		if(dwho_issa('dundimapping',$this->_info) === false)
 			return(false);
 
-		$r = $this->_dundipeer->delete($this->_info['dundipeer']['id']);
+		$r = $this->_dundimapping->delete($this->_info['dundimapping']['id']);
 
 		if($this->_status === 'delete')
-			$this->_return['dundipeer'] = $r;
+			$this->_return['dundimapping'] = $r;
 
 		return($r);
 	}
@@ -324,9 +310,9 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		$r = true;
 		$this->_status = 'enable';
 		$this->_return = array();
-		$this->_info['dundipeer'] = array('id' => $id);
+		$this->_info['dundimapping'] = array('id' => $id);
 
-		if($this->enable_dundipeer() === false)
+		if($this->enable_dundimapping() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -339,9 +325,9 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		$r = true;
 		$this->_status = 'disable';
 		$this->_return = array();
-		$this->_info['dundipeer'] = array('id' => $id);
+		$this->_info['dundimapping'] = array('id' => $id);
 
-		if($this->disable_dundipeer() === false)
+		if($this->disable_dundimapping() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -349,27 +335,27 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 		return($r);
 	}
 
-	function enable_dundipeer()
+	function enable_dundimapping()
 	{
-		return($this->_enable_disable_dundipeer(false));
+		return($this->_enable_disable_dundimapping(false));
 	}
 
-	function disable_dundipeer()
+	function disable_dundimapping()
 	{
-		return($this->_enable_disable_dundipeer(true));
+		return($this->_enable_disable_dundimapping(true));
 	}
 
-	function _enable_disable_dundipeer($disable=false)
+	function _enable_disable_dundimapping($disable=false)
 	{
-		if(dwho_issa('dundipeer',$this->_info) === false)
+		if(dwho_issa('dundimapping',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
-			$r = $this->_dundipeer->enable($this->_info['dundipeer']['id']);
+			$r = $this->_dundimapping->enable($this->_info['dundimapping']['id']);
 		else
-			$r = $this->_dundipeer->disable($this->_info['dundipeer']['id']);
+			$r = $this->_dundimapping->disable($this->_info['dundimapping']['id']);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['dundipeer'] = $r;
+			$this->_return['dundimapping'] = $r;
 
 		return($r);
 	}

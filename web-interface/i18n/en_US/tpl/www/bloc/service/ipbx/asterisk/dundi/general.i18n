@@ -5,6 +5,9 @@ General
 ; smenu_advanced
 Advanced
 
+; fm_general_dundi
+Enable active/active mode:
+
 ; fm_dundi-department
 Department:
 
@@ -31,6 +34,9 @@ Bind address:
  
 ; hlp_fm_dundi-bindaddr
 Asterisk config: binaddr
+
+; fm_dundi_bindaddr
+Address listening on:
 
 ; fm_dundi-port
 Port : 
@@ -69,7 +75,7 @@ Destroy non-acked requests:
 Asterisk config: autokill
 
 ; fm_dundi-secretpath
-'secret' key path:
+*secret* key path (astdb):
 
 ; hlp_fm_dundi-secretpath
 Asterisk config: secretpath
@@ -79,3 +85,25 @@ Enable statistics:
 
 ; hlp_fm_dundi-storehistory
 Asterisk config: storehistory
+
+; hlp_fm_dundi-department
+Asterisk config: department
+
+; hlp_fm_dundi-organization
+Asterisk config: organization
+
+; hlp_fm_dundi-locality
+Asterisk config: locality
+
+; hlp_fm_dundi-stateprov
+Asterisk config: stateprov
+
+; hlp_fm_dundi-country
+Asterisk config: country
+
+; hlp_fm_dundi-email
+Asterisk config: email
+
+; hlp_fm_dundi-phone
+Asterisk config: phone
+

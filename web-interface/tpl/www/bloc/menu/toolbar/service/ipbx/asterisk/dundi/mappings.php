@@ -22,8 +22,8 @@ $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
 $toolbar_js = array();
-$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-peer\';';
-$toolbar_js[] = 'var xivo_toolbar_form_list = \'peers[]\';';
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-mapping\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'mappings[]\';';
 $toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
 $dhtml->write_js($toolbar_js);
@@ -36,7 +36,7 @@ echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
 				       $this->bbf('toolbar_opt_add'),
 				       'id="toolbar-bt-add"
 					border="0"'),
-			'service/ipbx/dundi/peers',
+			'service/ipbx/dundi/mappings',
 			'act=add',
 			null,
 			$this->bbf('toolbar_opt_add'));

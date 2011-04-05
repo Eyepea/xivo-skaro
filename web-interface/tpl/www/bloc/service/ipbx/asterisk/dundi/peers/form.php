@@ -28,12 +28,6 @@ if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
-
-	$penalties    = array();
-	if (is_array($info) && array_key_exists('changes', $info))
-		$penalties = $info['changes'];
-
-	$signs        = array('+','-','=');
 ?>
 
 <div id="sb-part-first">
@@ -135,7 +129,21 @@ endif;
 					  'error'	=> $this->bbf_args('error',
 							$this->get_var('error', 'dundipeer', 'order')),
 				    'default'	=> $element['dundipeer']['order']['default']),
-			      $element['dundipeer']['order']['value']);
+			      $element['dundipeer']['order']['value']),
+
+	$form->select(array('desc'	=> $this->bbf('fm_dundipeer_precache'),
+				    'name'	=> 'dundipeer[precache]',
+				    'labelid'	=> 'dundipeer-precache',
+						'empty' => true,
+						'size' => 15,
+						'key' => false,
+				    'bbf'		=> 'fm_dundipeer_precache-opt',
+				    'help'	=> $this->bbf('hlp_fm_dundipeer-precache'),
+				    'selected'	=> $this->get_var('info','dundipeer','precache'),
+					  'error'	=> $this->bbf_args('error',
+							$this->get_var('error', 'dundipeer', 'precache')),
+				    'default'	=> $element['dundipeer']['precache']['default']),
+			      $element['dundipeer']['precache']['value']);
 
 ?>
 

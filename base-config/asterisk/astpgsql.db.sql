@@ -2699,6 +2699,30 @@ CREATE TABLE "dundi" (
 
 INSERT INTO "dundi" VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0.0.0.0', 4520, NULL, NULL, 5, 2, 'yes', NULL, 0);
 
+
+DROP TABLE IF EXISTS "dundi_mapping";
+CREATE TABLE "dundi_mapping" (
+ "id"              SERIAL,
+ "name"            VARCHAR(255) NOT NULL,
+ "context"         VARCHAR(39)  NOT NULL,
+ "weight"          VARCHAR(64)  NOT NULL DEFAULT '0',
+ "trunk"           INTEGER      DEFAULT NULL, 
+ "number"          VARCHAR(64)  DEFAULT NULL,
+
+ -- options
+ "nounsolicited"   INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "nocomunsolicit"  INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "residential"     INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "commercial"      INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "mobile"          INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "nopartial"       INTEGER      NOT NULL DEFAULT 0, -- boolean
+
+ "commented"       INTEGER      NOT NULL DEFAULT 0, -- boolean
+ "description"     TEXT         NOT NULL,
+ PRIMARY KEY("id")
+);
+
+
 DROP TABLE IF EXISTS "dundi_peer";
 CREATE TABLE "dundi_peer" (
  "id"            SERIAL,
@@ -2711,6 +2735,7 @@ CREATE TABLE "dundi_peer" (
  "permit"        VARCHAR(64)  NOT NULL,
  "qualify"       VARCHAR(16)  NOT NULL DEFAULT 'yes',
  "order"         VARCHAR(16)  NOT NULL,
+ "precache"      VARCHAR(16)  DEFAULT NULL,
  "commented"     INTEGER      NOT NULL DEFAULT 0, -- boolean
  "description"   TEXT         NOT NULL,
  PRIMARY KEY("id")

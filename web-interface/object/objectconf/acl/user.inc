@@ -74,6 +74,7 @@ $array['tree']['service']['ipbx']['cost_center']['servicesgroup'] = true;
 $array['tree']['service']['ipbx']['dundi'] = array();
 $array['tree']['service']['ipbx']['dundi']['general'] = true;
 $array['tree']['service']['ipbx']['dundi']['peers'] = true;
+$array['tree']['service']['ipbx']['dundi']['mappings'] = true;
 
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['sounds'] = true;

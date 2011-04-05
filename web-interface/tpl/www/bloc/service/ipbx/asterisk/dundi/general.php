@@ -89,6 +89,8 @@ endif;
 					  'required'	=> false,
 			      'checked'		=> $this->get_var('info','general','dundi'),
 			      'default'		=> $element['general']['dundi']['default'])),
+		
+		'<br/>',
 
     $form->text(array('desc'  => $this->bbf('fm_dundi-department'),
             'name' => 'dundi[department]',

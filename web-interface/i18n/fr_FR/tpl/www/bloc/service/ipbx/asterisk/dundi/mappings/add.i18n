@@ -1,0 +1,63 @@
+; title_content_name
+Mapping > Ajouter
+
+; smenu_general
+Général
+
+; smenu_options
+Options
+
+; fm_dundimapping_name
+Nom : 
+
+; fm_dundimapping_context
+Contexte : 
+
+; fm_dundimapping_weight
+Poids : 
+
+; fm_dundimapping_trunk
+Interconnexion : 
+
+; fm_dundimapping_number
+Numéro : 
+
+; fm_dundimapping_description
+Description : 
+
+; fm_dundimapping_nounsolicited
+Interdire les appels non-sollicités : 
+
+; fm_dundimapping_nocomunsolicit
+Interdire le démarcharge non-sollicité : 
+
+; fm_dundimapping_residential
+Numéro personnel : 
+
+; fm_dundimapping_commercial
+Numéro professionnel : 
+
+; fm_dundimapping_mobile
+Numéro de mobile : 
+
+; fm_dundimapping_nopartial
+Ne pas rechercher de correspondances partielles : 
+
+; hlp_fm_dundimapping-weight
+Saisissez une valeur numérique ou une variable globale asterisk <br/>(i.e ${MYVAR})
+
+; hlp_fm_dundimapping-number
+Saisissez un numéro ou ${NUMBER}
+
+; hlp_fm_dundimapping-nounsolicited
+
+; hlp_fm_dundimapping-nocomunsolicit
+
+; hlp_fm_dundimapping-residential
+
+; hlp_fm_dundimapping-commercial
+
+; hlp_fm_dundimapping-mobile
+
+; hlp_fm_dundimapping-nopartial
+

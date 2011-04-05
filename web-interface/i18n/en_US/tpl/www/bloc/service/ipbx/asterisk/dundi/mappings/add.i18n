@@ -1,0 +1,63 @@
+; title_content_name
+Mapping > Add
+
+; smenu_general
+General
+
+; smenu_options
+Options
+
+; fm_dundimapping_name
+Name:
+
+; fm_dundimapping_context
+Context:
+ 
+; fm_dundimapping_weight
+Weight:
+
+; fm_dundimapping_trunk
+Trunk:
+
+; fm_dundimapping_number
+Number:
+
+; fm_dundimapping_description
+Description:
+
+; fm_dundimapping_nounsolicited
+No unsolicited calls:
+
+; fm_dundimapping_nocomunsolicit
+No unsolicited commercial calls:
+
+; fm_dundimapping_residential
+Residential number:
+
+; fm_dundimapping_commercial
+Professional number: 
+
+; fm_dundimapping_mobile
+Mobile number:
+
+; fm_dundimapping_nopartial
+No partial matches:
+
+; hlp_fm_dundimapping-weight
+Enter either number or asterisk global variable <br/>(i.e ${MYVAR})
+
+; hlp_fm_dundimapping-number
+Enter euther number or ${NUMBER}
+
+; hlp_fm_dundimapping-nounsolicited
+
+; hlp_fm_dundimapping-nocomunsolicit
+
+; hlp_fm_dundimapping-residential
+
+; hlp_fm_dundimapping-commercial
+
+; hlp_fm_dundimapping-mobile
+
+; hlp_fm_dundimapping-nopartial
+

@@ -1,23 +1,20 @@
 ; title_content_name
-Pair > Ajouter
+Peer > Add
 
 ; fm_dundipeer_macaddr
-Adresse MAC : 
-
-; fm_dundipeer_precache
-Pré-cache : 
+MAC address:
 
 ; fm_dundipeer_model
-Type : 
+Type:
 
 ; fm_dundipeer_host
-Adresse IP ou DNS : 
+Host:
 
 ; fm_dundipeer_inkey
-Clé (appels entrants) : 
+Key (incoming calls): 
 
 ; fm_dundipeer_outkey
-Clé (appels sortants) : 
+Key (outgoing calls):
 
 ; fm_dundipeer_include
 Include : 
@@ -26,68 +23,73 @@ Include :
 Permit : 
 
 ; fm_dundipeer_qualify
-Supervision : 
+Monitoring:
 
 ; fm_dundipeer_order
-Position : 
-
+Order:
+ 
+; fm_dundipeer_precache
+Precache:
+ 
 ; fm_dundipeer_description
 Description : 
 
 ; fm_dundipeer_model-opt(none)
-Aucun
+None
 
 ; fm_dundipeer_model-opt(symmetric)
-Entrant/Sortant
+Symmetric
 
 ; fm_dundipeer_model-opt(inbound)
-Entrant
+Incoming
 
 ; fm_dundipeer_model-opt(outbound)
-Sortant
+Outgoing
 
 ; fm_dundipeer_order-opt(primary)
-Primaire
+Primary
 
 ; fm_dundipeer_order-opt(secondary)
-Secondaire
+Secondary
 
 ; fm_dundipeer_order-opt(tertiary)
-Tertiaire
+Tertiary
 
 ; fm_dundipeer_order-opt(quartiary)
-Quaternaire
+Quartiary
 
 ; fm_dundipeer_precache-opt(none)
-Aucun
+None
 
 ; fm_dundipeer_precache-opt(symmetric)
-Entrant/Sortant
+Symmetric
 
 ; fm_dundipeer_precache-opt(inbound)
-Entrant
+Incoming
 
 ; fm_dundipeer_precache-opt(outbound)
-Sortant
+Outgoing
 
-
+; hlp_fm_dundipeer-precache
+Asterisk config: precache
+ 
 ; hlp_fm_dundipeer-model
-Config asterisk: mode
+Asterisk config: model
  
 ; hlp_fm_dundipeer-inkey
-Config asterisk: inkey
+Asterisk config: inkey
 
 ; hlp_fm_dundipeer-outkey
-Config asterisk: outkey
+Asterisk config: outkey
  
 ; hlp_fm_dundipeer-include
-Config asterisk: include
+Asterisk config: include
  
 ; hlp_fm_dundipeer-permit
-Config asterisk: permit
+Asterisk config: permit
  
 ; hlp_fm_dundipeer-qualify
-Config asterisk: qualify
+Asterisk config: qualify
  
 ; hlp_fm_dundipeer-order
-Config asterisk: order
+Asterisk config: order

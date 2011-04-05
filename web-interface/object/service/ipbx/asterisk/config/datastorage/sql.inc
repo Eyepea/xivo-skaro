@@ -416,4 +416,7 @@ $array['dundipeer'] = array();
 $array['dundipeer']['table'] = 'dundi_peer';
 $array['dundipeer']['primary'] = array('id' => '');
 
+$array['dundimapping'] = array();
+$array['dundimapping']['table'] = 'dundi_mapping';
+$array['dundimapping']['primary'] = array('id' => '');
 ?>

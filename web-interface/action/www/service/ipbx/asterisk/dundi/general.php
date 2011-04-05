@@ -24,11 +24,16 @@ $general = &$ipbx->get_module('general');
 $fm_save = null;
 $info = $error = array();
 
+$gen = $general->get(1);
+
 if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 {
 	$fm_save = true;
 
-	if($dundi->edit(1, $_QR['dundi']) === false)
+	$gen['dundi'] = $_QR['general']['dundi'] == '1';
+
+	if($dundi->edit(1, $_QR['dundi']) === false
+	|| $general->edit(1, $gen)        === false)
 	{
 			$info['dundi']    = $_QR['dundi'];
 			$error['general'] = $dundi->get_filter_error();
@@ -40,7 +45,7 @@ if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 if (!array_key_exists('dundi', $info))
 	$info['dundi'] = $dundi->get(1);
 
-$info['general'] = $general->get(1);
+$info['general'] = $gen;
 $general = array('dundi' => array('default' => 0));
 
 $dhtml = &$_TPL->get_module('dhtml');

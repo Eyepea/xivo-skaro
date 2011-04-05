@@ -1,0 +1,20 @@
+; col_name
+Nom
+
+; col_context
+Contexte
+
+; col_weight
+Poids
+
+; col_trunk
+Interconnexion
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce mapping ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer ce ou ces mapping(s) ?
+
+; no_mapping
+Aucun mapping
