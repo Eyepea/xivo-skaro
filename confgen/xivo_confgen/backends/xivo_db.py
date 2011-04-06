@@ -86,6 +86,7 @@ def iterable(mode):
 		return locals()[mode + '_wrapper']
 	return _iterable
 
+
 class SpecializedHandler(object):
 	def __init__(self, db, name):
 		self.db   = db
@@ -97,7 +98,9 @@ class SpecializedHandler(object):
 
 class SCCPUsersHandler(SpecializedHandler):
 	def all(self, commented=None, order=None, **kwargs):
-		(_s, _u, _p) = [getattr(self.db, o)._table for o in	('usersccp','userfeatures','phone')]
+		#TODO: fix query (phone <-> line relation)
+		(_s, _u, _p) = [getattr(self.db, o)._table for o in
+				('usersccp','linefeatures','devicefeatures')]
 		q  = select(
 			[_s, _p.c.macaddr, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
 			and_(
@@ -133,14 +136,18 @@ class AgentUsersHandler(SpecializedHandler):
 
 class UserQueueskillsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
-		(_u, _f, _s) = [getattr(self.db, o)._table for o in ('userqueueskill',	'userfeatures', 'queueskill')]
+		"""
+		NOTE: we generate the same queueskills for each line of the user
+		"""
+		(_u, _f, _s,_l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
+			'userfeatures', 'queueskill','linefeatures')]
+
 		q = select(
-			[_f.c.id, _s.c.name, _u.c.weight],
-			and_(_u.c.userid == _f.c.id, _u.c.skillid == _s.c.id)
+			[_s.name, _u.weight, _l.id],
+			and_(_u.userid == _l.iduserfeatures, _u.skillid == _s.id)
 		)
 
-		conn = self.db.engine.connect()
-		return conn.execute(q).fetchall()
+		return self.execute(q).fetchall()
 
 
 class AgentQueueskillsHandler(SpecializedHandler):
@@ -151,8 +158,7 @@ class AgentQueueskillsHandler(SpecializedHandler):
 			and_(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
 		)
 
-		conn = self.db.engine.connect()
-		return conn.execute(q).fetchall()
+		return self.execute(q).fetchall()
 
 
 class ExtenumbersHandler(SpecializedHandler):
@@ -169,36 +175,41 @@ class ExtenumbersHandler(SpecializedHandler):
 
 
 class HintsHandler(SpecializedHandler):
-	@iterable('list')
 	def all(self, *args, **kwargs):
 		# get users with hint
-		(_u, _v) = [getattr(self.db, o)._table for o in ('userfeatures','voicemail')]
-		q = self.db.join(
-			self.db.userfeatures,
-			self.db.voicemail,
-			and_(_u.c.voicemailid == _v.c.uniqueid, _v.c.commented == 0),
-			isouter=True
+		(_u, _v, _l) = [getattr(self.db, o)._table for o in
+				('userfeatures','voicemail','linefeatures')]
+
+		conds = [_u.c.id == _l.c.iduserfeatures, _l.c.internal == 0, _u.c.enablehint == 1]
+		if 'context' in kwargs:
+			print kwargs['context']
+			conds.append(_l.c.context == kwargs['context'])
+
+		q = select(
+			[_u.c.id,_l.c.number,_l.c.name,_l.c.protocol,_u.c.enablevoicemail,_v.c.uniqueid],
+			and_(*conds),
+			from_obj=[
+				_u.outerjoin(_v, _u.c.voicemailid == _v.c.uniqueid)
+			],
 		)
 
-		q = q.filter_by(internal=0, enablehint=1).order_by(self.db.userfeatures.context)
-		if 'context' in kwargs:
-			q = q.filter_by(context=kwargs['context'])
-		return q.all()
+		return self.execute(q).fetchall()
 
 
 class PhonefunckeysHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
 		# get all supervised user/group/queue/meetme
-		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
+		(_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
+				('userfeatures','phonefunckey','extenumbers','linefeatures')]
 		conds = [
-			_u.c.id == _p.c.iduserfeatures, 
+			_l.c.iduserfeatures  == _p.c.iduserfeatures, 
 			_p.c.typeextenumbers == None, 
 			_p.c.typevalextenumbers == None, 
 			_p.c.typeextenumbersright.in_(('user','group','queue','meetme')), 
 			_p.c.supervision == 1,
 		]
 		if 'context' in kwargs:
-			conds.append(_u.c.context == kwargs['context'])
+			conds.append(_l.c.context == kwargs['context'])
 
 		q = select(
 			[_p.c.typeextenumbersright, _p.c.typevalextenumbersright, _e.c.exten],
@@ -215,41 +226,43 @@ class PhonefunckeysHandler(SpecializedHandler):
 class BSFilterHintsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
 		# get all supervised bsfilters
-		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
+		(_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
+				('userfeatures','phonefunckey','extenumbers','linefeatures')]
 
 		conds = [
-			_u.c.id == _p.c.iduserfeatures, 
-			_p.c.typeextenumbers == 'extenfeatures',
-			_p.c.typevalextenumbers == 'bsfilter', 
+			_l.c.iduserfeatures       == _p.c.iduserfeatures, 
+			_p.c.typeextenumbers      == 'extenfeatures',
+			_p.c.typevalextenumbers   == 'bsfilter', 
 			_p.c.typeextenumbersright == 'user',
 			_p.c.supervision == 1, 
 			cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)),
 			_p.c.typevalextenumbersright == _e.c.typeval, 
-			coalesce(_u.c.number,'') != ''
+			coalesce(_l.c.number,'') != ''
 		]
 		if 'context' in kwargs:
-			conds.append(_u.c.context == kwargs['context'])
+			conds.append(_l.c.context == kwargs['context'])
 
-		q = select([_e.c.exten, _u.c.number],	and_(*conds))
+		q = select([_e.c.exten, _l.c.number],	and_(*conds))
 
 		return self.execute(q).fetchall()
 
 
 class ProgfunckeysHintsHandler(SpecializedHandler):
 	def all(self, *args, **kwargs):
-		(_u, _p, _e) = [getattr(self.db, o)._table for o in ('userfeatures','phonefunckey','extenumbers')]
+		(_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
+				('userfeatures','phonefunckey','extenumbers','linefeatures')]
 
 		conds = [
-				_u.c.id == _p.c.iduserfeatures, 
-				_p.c.typeextenumbers != None,
-				_p.c.typevalextenumbers != None,
-				_p.c.supervision == 1, 
-				_p.c.progfunckey == 1, 
+				_l.c.iduserfeatures      == _p.c.iduserfeatures, 
+				_p.c.typeextenumbers     != None,
+				_p.c.typevalextenumbers  != None,
+				_p.c.supervision         == 1, 
+				_p.c.progfunckey         == 1, 
 				cast(_p.c.typeextenumbers,VARCHAR(255)) == cast(_e.c.type,VARCHAR(255)),
 				_p.c.typevalextenumbers == _e.c.typeval
 		]
 		if 'context' in kwargs:
-			conds.append(_u.c.context == kwargs['context'])
+			conds.append(_l.c.context == kwargs['context'])
 		
 		q = select(
 			[_p.c.iduserfeatures, _p.c.exten, _p.c.typeextenumbers,
@@ -267,15 +280,15 @@ class PickupsHandler(SpecializedHandler):
 		if usertype not in ('sip','iax','sccp'):
 			raise TypeError
 
-		(_p, _pm, _uf, _u) = [getattr(self.db, o)._table.c for o in
-				('pickup','pickupmember','userfeatures','user'+usertype)]
+		(_p, _pm, _lf, _u) = [getattr(self.db, o)._table.c for o in
+				('pickup','pickupmember','linefeatures','user'+usertype)]
 		conds = [
 				_p.commented   == 0,
 				_p.id          == _pm.pickupid,
 				_pm.membertype == 'user',
-				_pm.memberid   == _uf.id,
-				_uf.protocol   == usertype,
-				_uf.protocolid == _u.id
+				_pm.memberid   == _lf.iduserfeatures,
+				_lf.protocol   == usertype,
+				_lf.protocolid == _u.id
 		]
 
 		q = select(
