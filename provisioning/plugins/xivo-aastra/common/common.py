@@ -71,6 +71,7 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.2010-SIP"
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:3.2.0.70-SIP"
+        #   "Aastra6731i MAC:00-08-5D-23-73-01 V:3.2.0.1011-SIP"
         #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.0.1.2024-SIP"
         #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"

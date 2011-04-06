@@ -239,12 +239,8 @@ class Plugin(object):
               raw_config is a raw config object (can't be None). The plugin
                 is free to modify this object (it won't affect anything).
                 The meaning of the value in the config object are defined in
-                the config module. Note that there's no guarantee that any of
-                the value will be present. Also, to keep the phone in sync with
-                the config, if a supported key is not present in the config,
-                the plugin should configure the phone so that this key as its
-                default or null value.
-        Post: after a call to this method, if device dev does a request for
+                the config module.
+        Post: after a call to this method, if the device does a request for
                 its configuration file, its configuration will be as the
                 config object
         

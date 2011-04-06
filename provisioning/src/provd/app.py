@@ -247,111 +247,71 @@ class ProvisioningApplication(object):
         defer.returnValue((None, None))
     
     def _dev_configure(self, device, plugin, raw_config):
-        # Return a tuple, which elements are, in order:
-        #   true if the device object has been updated, else false
-        #   true if the device has been successfully configured, else false
-        # XXX if an exception occur in plugin.configure, we might want to let
-        #     the exception propagate in certain cases
-        updated = False
-        configured = False
-        if plugin == None or raw_config == None:
-            logger.info('Not configuring device %s', device)
+        # Return true if the device has been successfully configured (i.e.
+        # no exception were raised), else false.
+        logger.info('Configuring device %s with plugin %s', device[ID_KEY], plugin.id)
+        try:
+            _check_raw_config_validity(raw_config)
+        except Exception, e:
+            logger.error('Error while configuring device %s: %s', device[ID_KEY], e)
         else:
-            logger.info('Configuring device %s with plugin %s', device, plugin.id)
+            _set_defaults_raw_config(raw_config)
             try:
-                _check_raw_config_validity(raw_config)
-            except Exception, e:
-                logger.error('Invalid raw config: %s', e)
+                plugin.configure(device, raw_config)
+            except Exception:
+                logger.error('Error while configuring device %s', device[ID_KEY],
+                             exc_info=True)
             else:
-                _set_defaults_raw_config(raw_config)
-                try:
-                    plugin.configure(device, raw_config)
-                except Exception:
-                    logger.error('Error while configuring device %s', device, exc_info=True)
-                else:
-                    configured = True
-                    if not device[u'configured']:
-                        device[u'configured'] = True
-                        updated = True
-        return (updated, configured)
-    
-    @defer.inlineCallbacks
-    def _dev_configure_if_possible(self, device):
-        # Return a deferred that will fire with a tuple, which elements are,
-        # in order:
-        #   true if the device object has been updated, else false
-        #   true if the device has been successfully configured, else false
-        plugin, raw_config = yield self._dev_get_plugin_and_raw_config(device)
-        defer.returnValue(self._dev_configure(device, plugin, raw_config))
-    
-    def _dev_is_possibly_configurable(self, device):
-        # Return true if device is possibly configurable, i.e. if it has a
-        # u'plugin' and u'config' attribute
-        return u'plugin' in device and u'config' in device
-    
-    def _dev_needs_configuration(self, old_device, new_device):
-        # Return true if new_device need to be configured, else false
-        if not self._dev_is_possibly_configurable(new_device):
-            return False
-        for name in (u'plugin', u'config', u'mac', u'ip', u'vendor',
-                     u'model', u'version'):
-            if old_device.get(name) != new_device.get(name):
                 return True
         return False
     
-    def _dev_deconfigure(self, device, plugin):
-        # Return true if device has been updated, else false
-        updated = False
+    @defer.inlineCallbacks
+    def _dev_configure_if_possible(self, device):
+        # Return a deferred that fire with true if the device has been
+        # successfully configured (i.e. no exception were raised), else false.
+        plugin, raw_config = yield self._dev_get_plugin_and_raw_config(device)
         if plugin is None:
-            logger.info('Not deconfiguring device %s', device)
+            defer.returnValue(False)
         else:
-            logger.info('Deconfiguring device %s with plugin %s', device, plugin.id)
-            try:
-                plugin.deconfigure(device)
-            except Exception:
-                logger.error('Error while deconfiguring device %s', device, exc_info=True)
-            else:
-                if device[u'configured']:
-                    device[u'configured'] = False
-                    updated = True
-        return updated
+            defer.returnValue(self._dev_configure(device, plugin, raw_config))
+    
+    def _dev_deconfigure(self, device, plugin):
+        # Return true if the device has been successfully deconfigured (i.e.
+        # no exception were raised), else false.
+        logger.info('Deconfiguring device %s with plugin %s', device[ID_KEY], plugin.id)
+        try:
+            plugin.deconfigure(device)
+        except Exception:
+            logger.error('Error while deconfiguring device %s', device[ID_KEY],
+                         exc_info=True)
+        else:
+            return True
+        return False
     
     def _dev_deconfigure_if_possible(self, device):
-        # Return true if device has been updated, else false
+        # Return true if the device has been successfully configured (i.e.
+        # no exception were raised), else false.
         plugin = self._dev_get_plugin(device)
-        return self._dev_deconfigure(device, plugin)
+        if plugin is None:
+            return False
+        else:
+            return self._dev_deconfigure(device, plugin)
     
-    def _dev_is_possibly_deconfigurable(self, device):
-        # Return true if device is possibly deconfigurable, i.e. if it has
-        # a u'plugin' attribute.
-        return u'plugin' in device
-    
-    def _dev_needs_deconfiguration(self, old_device, new_device):
-        # Return true if old_device needs to be deconfigured, else false
-        if old_device[u'configured']:
-            assert u'plugin' in old_device
-            old_pg_id = old_device[u'plugin']
-            new_pg_id = new_device.get(u'plugin')
-            return old_pg_id != new_pg_id
-        return False
-
     def _dev_synchronize(self, device, plugin, raw_config):
         # Return a deferred that will fire with None once the device
-        # synchronization is completed, or 
-        if None in (plugin, raw_config):
-            logger.info('Not synchronizing device %s because one of plugin or raw_config is None',
-                         device)
-            return defer.fail(Exception('Missing information to synchronize device %s' % device))
-        else:
-            logger.info('Synchronizing device %s with plugin %s', device, plugin.id)
-            return plugin.synchronize(device, raw_config)
+        # synchronization is completed.
+        logger.info('Synchronizing device %s with plugin %s', device[ID_KEY], plugin.id)
+        return plugin.synchronize(device, raw_config)
     
     @defer.inlineCallbacks
     def _dev_synchronize_if_possible(self, device):
         # Return a deferred that will fire with None once the device
-        # synchronization is completed
+        # synchronization is completed.
         plugin, raw_config = yield self._dev_get_plugin_and_raw_config(device)
-        yield self._dev_synchronize(device, plugin, raw_config)
+        if plugin is None:
+            raise Exception('Missing information to synchronize device %s' % device[ID_KEY])
+        else:
+            yield self._dev_synchronize(device, plugin, raw_config)
     
     @defer.inlineCallbacks
     def _dev_get_or_raise(self, id):
@@ -360,6 +320,19 @@ class ProvisioningApplication(object):
             raise InvalidIdError('invalid device ID "%s"' % id)
         else:
             defer.returnValue(device)
+    
+    _SIGNIFICANT_KEYS = [u'plugin', u'config', u'mac', u'ip', u'vendor',
+                         u'model', u'version']
+    
+    def _dev_need_reconfiguration(self, old_device, new_device):
+        # Return true if the device object are different enough that we
+        # need to reconfigure the device.
+        # Note that this doesn't check if the device is deconfigurable
+        # and configurable.
+        for key in self._SIGNIFICANT_KEYS:
+            if old_device.get(key) != new_device.get(key):
+                return True
+        return False
     
     @_wlock
     @defer.inlineCallbacks
@@ -397,8 +370,9 @@ class ProvisioningApplication(object):
             except PersistInvalidIdError, e:
                 raise InvalidIdError(e)
             else:
-                updated = (yield self._dev_configure_if_possible(device))[0]
-                if updated:
+                configured = yield self._dev_configure_if_possible(device)
+                if configured:
+                    device[u'configured'] = True
                     yield self._dev_collection.update(device)
                 defer.returnValue(id)
         except Exception:
@@ -423,25 +397,29 @@ class ProvisioningApplication(object):
         Note that the value of 'configured' is ignored if given.
         
         """
-        logger.info('Updating device')
         try:
             try:
                 id = device[ID_KEY]
             except KeyError:
                 raise InvalidIdError('no id key for device %s' % device)
             else:
+                logger.info('Updating device %s', id)
                 old_device = yield self._dev_get_or_raise(id)
-                # configured value must be the same
-                device[u'configured'] = old_device[u'configured']
-                if old_device == device:
-                    logger.info('device has not changed, ignoring update')
+                if self._dev_need_reconfiguration(old_device, device):
+                    # Deconfigure old device it was configured
+                    if old_device[u'configured']:
+                        self._dev_deconfigure_if_possible(old_device)
+                    # Configure new device if possible
+                    configured = yield self._dev_configure_if_possible(device)
+                    device[u'configured'] = configured
                 else:
-                    if self._dev_needs_deconfiguration(old_device, device):
-                        if self._dev_deconfigure_if_possible(old_device):
-                            device[u'configured'] = False
-                    if self._dev_needs_configuration(old_device, device):
-                        yield self._dev_configure_if_possible(device)
+                    logger.info('Not reconfiguring device %s: not needed.')
+                # Update device collection if the device is different from
+                # the old device
+                if device != old_device:
                     yield self._dev_collection.update(device)
+                else:
+                    logger.info('Not updating device %s: not changed')
         except Exception:
             logger.error('Error while updating device', exc_info=True)
             raise
@@ -463,13 +441,12 @@ class ProvisioningApplication(object):
         logger.info('Deleting device %s', id)
         try:
             device = yield self._dev_get_or_raise(id)
-            try:
-                yield self._dev_collection.delete(id)
-            except PersistInvalidIdError, e:
-                raise InvalidIdError(e)
-            else:
-                if device[u'configured']:
-                    self._dev_deconfigure_if_possible(device)
+            # Next line should never raise an exception since we successfully
+            # retrieve the device with the same id just before and we are
+            # using the write lock
+            yield self._dev_collection.delete(id)
+            if device[u'configured']:
+                self._dev_deconfigure_if_possible(device)
         except Exception:
             logger.error('Error while deleting device', exc_info=True)
             raise
@@ -504,10 +481,13 @@ class ProvisioningApplication(object):
         logger.info('Reconfiguring device %s', id)
         try:
             device = yield self._dev_get_or_raise(id)
-            updated, reconfigured = yield self._dev_configure_if_possible(device)
-            if updated:
+            if device[u'configured']:
+                self._dev_deconfigure_if_possible(device)
+            configured = yield self._dev_configure_if_possible(device)
+            if device[u'configured'] != configured:
+                device[u'configured'] = configured
                 yield self._dev_collection.update(device)
-            defer.returnValue(reconfigured)
+            defer.returnValue(configured)
         except Exception:
             logger.error('Error while reconfiguring device', exc_info=True)
             raise
@@ -533,7 +513,7 @@ class ProvisioningApplication(object):
         try:
             device = yield self._dev_get_or_raise(id)
             if not device[u'configured']:
-                raise Exception('can\'t synchronize not configured device %s' % device)
+                raise Exception('can\'t synchronize not configured device %s' % id)
             else:
                 yield self._dev_synchronize_if_possible(device)
         except Exception:
@@ -588,10 +568,18 @@ class ProvisioningApplication(object):
                 affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
                 for device in affected_devices:
                     plugin = self._dev_get_plugin(device)
-                    raw_config = raw_configs[device[u'config']]
-                    # reconfigure
-                    if self._dev_configure(device, plugin, raw_config)[0]:
-                        yield self._dev_collection.update(device)
+                    if plugin is not None:
+                        raw_config = raw_configs[device[u'config']]
+                        assert raw_config is not None
+                        # deconfigure
+                        if device[u'configured']:
+                            self._dev_deconfigure(device, plugin)
+                        # configure
+                        configured = self._dev_configure(device, plugin, raw_config)
+                        # update device if it has changed
+                        if device[u'configured'] != configured:
+                            device[u'configured'] = configured
+                            yield self._dev_collection.update(device)
                 # 4. return the device id
                 defer.returnValue(id)
         except Exception:
@@ -638,9 +626,18 @@ class ProvisioningApplication(object):
                     affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
                     for device in affected_devices:
                         plugin = self._dev_get_plugin(device)
-                        raw_config = raw_configs[device[u'config']]
-                        if self._dev_configure(device, plugin, raw_config)[0]:
-                            yield self._dev_collection.update(device)
+                        if plugin is not None:
+                            raw_config = raw_configs[device[u'config']]
+                            assert raw_config is not None
+                            # deconfigure
+                            if device[u'configured']:
+                                self._dev_deconfigure(device, plugin)
+                            # configure
+                            configured = self._dev_configure(device, plugin, raw_config)
+                            # update device if it has changed
+                            if device[u'configured'] != configured:
+                                device[u'configured'] = configured
+                                yield self._dev_collection.update(device)
         except Exception:
             logger.error('Error while updating config', exc_info=True)
             raise
@@ -680,17 +677,24 @@ class ProvisioningApplication(object):
                 affected_devices = yield self._dev_collection.find({u'config': {u'$in': list(affected_cfg_ids)}})
                 for device in affected_devices:
                     plugin = self._dev_get_plugin(device)
-                    raw_config = raw_configs[device[u'config']]
-                    if device[u'config'] == id:
+                    if plugin is not None:
+                        raw_config = raw_configs[device[u'config']]
                         # deconfigure
-                        assert raw_config is None
-                        if self._dev_deconfigure(device, plugin):
-                            yield self._dev_collection.update(device)
-                    else:
-                        # reconfigure
-                        assert raw_config is not None
-                        if self._dev_configure(device, plugin, raw_config)[0]:
-                            yield self._dev_collection.update(device)
+                        if device[u'configured']:
+                            self._dev_deconfigure(device, plugin)
+                        # configure if device config is not the deleted config
+                        if device[u'config'] == id:
+                            assert raw_config is None
+                            # update device if it has changed
+                            if device[u'configured']:
+                                device[u'configured'] = False
+                                yield self._dev_collection.update(device)
+                        else:
+                            assert raw_config is not None
+                            configured = yield self._dev_configure(device, plugin, raw_config)
+                            # update device if it has changed
+                            if device[u'configured'] != configured:
+                                yield self._dev_collection.update(device)
         except Exception:
             logger.error('Error while deleting config', exc_info=True)
             raise
@@ -764,8 +768,13 @@ class ProvisioningApplication(object):
         logger.info('Reconfiguring all devices using plugin %s', id)
         devices = yield self._dev_collection.find({u'plugin': id})
         for device in devices:
-            updated = (yield self._dev_configure_if_possible(device))[0]
-            if updated:
+            # deconfigure
+            if device[u'configured']:
+                self._dev_deconfigure_if_possible(device)
+            # configure
+            configured = yield self._dev_configure_if_possible(device)
+            if device[u'configured'] != configured:
+                device[u'configured'] = configured
                 yield self._dev_collection.update(device)
     
     def pg_install(self, id):
