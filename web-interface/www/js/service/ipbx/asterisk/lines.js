@@ -46,7 +46,7 @@ function update_rules_group_val()
 	$('#list_linefeatures > tbody').find('tr').each(function() {				
 		if($(this).attr('id') == 'tr-rules_group') {	
 			count = 0;
-			groupval = $(this).find('#td_rules_group_name').text();	
+			groupval = $(this).find('#td_rules_group_name').text();
 		}
 		count++;
 		$(this).find('#linefeatures-rules_group').val(groupval);			
@@ -110,13 +110,11 @@ $(document).ready(function(){
 		if (exist === true)
 			return false;
 
-		icon_delete_row = $('#box_delete_row').html();
 		groupval = groupval.replace(/[^a-z0-9_\.-]+/g,'');
 		groupval = groupval.toLowerCase();
 		
 		td_rules_group = $('#ex-rules_group').find('#td_rules_group_name');
 	    td_rules_group.text(groupval);
-	    //td_rules_group.append(icon_delete_row);
 		
 		row = $('#ex-rules_group').html();
 		
@@ -198,6 +196,9 @@ function lnkdroprow(obj) {
     $(obj).parents('tr').fadeTo(400, 0, function () {
         $(this).remove();
     });
+    
+    setTimeout(update_rules_group_val, 420);
+    
 	nb_row = $('#list_linefeatures > tbody > tr').length;
 	if (nb_row == 1) {
 		$('#it-userfeatures-entityid').removeAttr('disabled');
@@ -205,8 +206,6 @@ function lnkdroprow(obj) {
 	}
 	
     it_id = $(obj).parents('tr').find('#linefeatures-id');
-
-    update_rules_group_val();
 	
 	if (it_id.val() == 0)
 		return false;

@@ -110,13 +110,15 @@ endif;
 		<th class="th-center"><?=$this->bbf('col_line-rules_group');?></th>
 */ 
 ?>
-		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+		<th class="th-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 								       $this->bbf('col_line-add'),
 								       'border="0"'),
 							'#lines',
 							null,
 							'id="lnk-add-row"',
-							$this->bbf('col_line-add'));?></th>
+							$this->bbf('col_line-add'));?>
+		</th>
 	</tr>
 	</thead>
 	<tbody id="linefeatures">
