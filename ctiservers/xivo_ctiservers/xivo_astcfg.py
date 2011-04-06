@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision: 10133 $'
-__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -58,16 +58,6 @@ class AsteriskConfig:
         else:
             self.cdr_db_conn = None
             try:
-                if userfeatures_db_uri is not None:
-                    self.userfeatures_db_conn = anysql.connect_by_uri(str(userfeatures_db_uri.replace('\/', '/')))
+                self.cdr_db_conn = anysql.connect_by_uri(str(self.cdr_db_uri.replace('\/', '/')))
             except Exception:
-                log.exception('(init userfeatures_db_conn for %s)' % astid)
-
-            if cdr_db_uri == userfeatures_db_uri:
-                self.cdr_db_conn = self.userfeatures_db_conn
-            else:
-                self.cdr_db_conn = None
-                try:
-                    self.cdr_db_conn = anysql.connect_by_uri(str(cdr_db_uri.replace('\/', '/')))
-                except Exception:
-                    log.exception('(init cdr_db_conn for %s)' % astid)
+                log.exception('(init cdr_db_conn for %s)' % astid)

@@ -1,7 +1,7 @@
 import re as _re
 import os as _os
 
-__version__ = "$Revision: 4149 $ $Date: 2008-09-21 05:58:12 +0200 (Sun, 21 Sep 2008) $"
+__version__ = "$Revision$ $Date$"
 
 def _package_path():
     return _os.path.dirname(_os.path.abspath(__file__))

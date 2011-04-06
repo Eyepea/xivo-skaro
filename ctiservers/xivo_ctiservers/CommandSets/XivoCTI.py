@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision: 10133 $'
-__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -73,7 +73,7 @@ from xivo.BackSQL import backsqlite
 log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.2'
-XIVOVERSION_NAME = 'gallifrey'
+XIVOVERSION_NAME = 'skaro'
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'

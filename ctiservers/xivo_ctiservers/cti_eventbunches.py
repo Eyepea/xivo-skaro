@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision: 8515 $'
-__date__      = '$Date: 2010-06-30 18:20:10 +0200 (Wed, 30 Jun 2010) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
