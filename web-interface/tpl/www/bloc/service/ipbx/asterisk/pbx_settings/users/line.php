@@ -46,7 +46,7 @@ endif;
 </fieldset>
 -->
 
-<p id="box-lines_free" class="fm-paragraph <?=$entityhascontext?>">
+<p id="box-lines_free" class="fm-paragraph b-nodisplay">
 	<span class="fm-desc clearboth">
 		<label id="lb-lines_free" for="it-lines_free"><?=$this->bbf('fm_lines_free');?></label>
 	</span>

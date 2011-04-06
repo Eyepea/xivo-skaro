@@ -264,7 +264,9 @@ endif;
 				    'help'		=> $this->bbf('hlp_fm_userfeatures_entity'),
 				    'key'		=> 'displayname',
 				    'altkey'	=> 'id',
-	           		'selected'  => $info['userfeatures']['entityid']),
+	           		'selected'  => $info['userfeatures']['entityid'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'entityid'))),
 			      $this->get_var('entity_list'));
 ?>
 	<div class="sb-list">

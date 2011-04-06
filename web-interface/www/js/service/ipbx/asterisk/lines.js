@@ -58,10 +58,11 @@ function xivo_http_search_context_from_entity(entityid)
 			$('#box-lines_free').hide('slow');
 			$('#list_linefeatures').hide();
 			$('#box-no_context').show();
+			update_row_infos();
 			return false;
 		}
 		$('#box-no_context').hide();
-		$('#box-lines_free').show();
+		//$('#box-lines_free').show();
 		$('#list_linefeatures').show();
 		$('#list_linefeatures').find("#linefeatures-context").each(function(){
 			$(this).find('option').remove();
@@ -73,9 +74,9 @@ function xivo_http_search_context_from_entity(entityid)
 		    for (var i = 0; i< nb; i++)
 		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
 	    });
-		update_row_infos();
 	});		
 	xivo_http_search_linefree_by_entity(entityid);
+	update_row_infos();
 }
 
 //get list line free available for a entity
@@ -84,6 +85,7 @@ function xivo_http_search_linefree_by_entity(entityid)
 	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=intern&free=1', function(data) {
 		if (data === null || data.length === 0){
 			$('#box-lines_free').hide('slow');
+			update_row_infos();
 			return false;
 		}
 		$('#box-lines_free').show();
@@ -93,6 +95,7 @@ function xivo_http_search_linefree_by_entity(entityid)
 		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
 	    });
 	});	
+	update_row_infos();
 }
 
 function lnkdroprow(obj)
@@ -120,18 +123,18 @@ function lnkdroprow(obj)
 }
 
 function update_row_infos()
-{    
-	nb_row = $('#list_linefeatures > tbody > tr').length;	
-	if (nb_row === 1) {
-		$('#it-userfeatures-entityid').removeAttr('disabled');
-		$('#it-userfeatures-entityid').removeClass('it-disabled');
-		return false;
-	}
-
+{ 
 	it_userfeatures_entityid = $('#it-userfeatures-entityid');
 	if (it_userfeatures_entityid.attr('disabled') !== undefined) {
 		it_userfeatures_entityid.attr('disabled','disabled');
 		it_userfeatures_entityid.addClass('it-disabled');
+	}
+	
+	nb_row = $('#list_linefeatures > tbody > tr').length;
+	if (nb_row == 1 || nb_row == 0) {
+		$('#it-userfeatures-entityid').removeAttr('disabled');
+		$('#it-userfeatures-entityid').removeClass('it-disabled');
+		return false;
 	}
 	
 	var groupval = '';
@@ -167,6 +170,10 @@ $(document).ready(function() {
 		xivo_http_search_context_from_entity(null);
 	else
 		xivo_http_search_context_from_entity(entityid.val());
+	
+	entityid.change(function() {
+		xivo_http_search_context_from_entity($(this).val());
+	});
 
 	$("#list_linefeatures tbody").sortable({
 		helper: fixHelper,

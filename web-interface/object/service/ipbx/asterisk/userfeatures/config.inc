@@ -216,7 +216,7 @@ $array['element']['alarmclock_minute']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
+$array['filter']['firstname'] = array('cast' => 'sgraph','maxlen' => 128);
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['voicemailtype'] = array('set' => false,'chk' => 2,'key' => array('asterisk','exchange'));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
@@ -255,7 +255,7 @@ $array['filter']['destbusy'] = array('set' => false,'chk' => 2,'regexp' => '/^\+
 $array['filter']['enableunc'] = array('bool' => true);
 $array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^\+?[0-9\*#]+$/','maxlen' => 128);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
-$array['filter']['outcallerid'] = array('set'		=> false,
+$array['filter']['outcallerid'] = array('set' => false,
 					'chk'		=> 2,
 					'maxlen'	=> 80,
 					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
