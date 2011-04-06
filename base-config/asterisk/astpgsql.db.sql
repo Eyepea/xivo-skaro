@@ -933,7 +933,7 @@ CREATE TABLE "linefeatures" (
  "rules_type" varchar(16),
  "rules_time" varchar(8),
  "rules_order" integer DEFAULT 0,
- "rules_group" integer DEFAULT 0,
+ "rules_group" varchar(16),
  "internal" integer DEFAULT 0 NOT NULL,
  "commented" integer DEFAULT 0 NOT NULL,
  "description" text,

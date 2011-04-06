@@ -779,7 +779,7 @@ CREATE TABLE linefeatures (
  rules_type varchar(16),
  rules_time varchar(8),
  rules_order tinyint(3) DEFAULT 0,
- rules_group tinyint(3) DEFAULT 0,
+ rules_group varchar(16),
  internal tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text,
