@@ -22,6 +22,7 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'file.inc'));
 
 class xivo_jqplot
 {
+	private	 $_uribase		= '';
 	private	 $_plugins		= array();
 	private	 $_pluginloaded	= array();
 	private	 $_data_table	= array();
@@ -34,19 +35,19 @@ class xivo_jqplot
 		if (dwho_file::is_d_rx(DWHO_LOCATION_SCRIPT) === false)
 			die('ERR: Failed to load script dir '.DWHO_LOCATION_SCRIPT);
 
-		$this->uribase = '/extra-libs/jqplot/';
+		$this->_uribase = '/extra-libs/jqplot';
 	}
 
 	private function load_plugin($name)
 	{
-		$this->_pluginloaded[$name] = $this->uribase.'/plugins/jqplot.'.$name.'.min.js';
+		$this->_pluginloaded[$name] = $this->_uribase.'/plugins/jqplot.'.$name.'.min.js';
 		return(true);
 	}
 
 	public function write_js_loaded_plugin($dhtml)
 	{
 		foreach($this->_pluginloaded as $plugin)
-			$dhtml->set_js($plugin);
+			$dhtml->set_js($plugin,true);
 	}
 
 	public function init_data_full($ts)
