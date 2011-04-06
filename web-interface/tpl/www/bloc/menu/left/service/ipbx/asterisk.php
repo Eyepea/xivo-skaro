@@ -54,6 +54,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('general_settings','dundi') === true):
+			echo	'<dd id="mn-general-settings--dundi">',
+				$url->href_html($this->bbf('mn_left_generalsettings-dundi'),
+						'service/ipbx/general_settings/dundi'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('general_settings','voicemail') === true):
 			echo	'<dd id="mn-general-settings--voicemail">',
 				$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),
@@ -79,13 +86,6 @@ $dhtml = &$this->get_module('dhtml');
 			echo	'<dd id="mn-general-settings--outboundmwi">',
 				$url->href_html($this->bbf('mn_left_generalsettings-outboundmwi'),
 						'service/ipbx/general_settings/outboundmwi'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('general_settings','dundi') === true):
-			echo	'<dd id="mn-general-settings--dundi">',
-				$url->href_html($this->bbf('mn_left_generalsettings-dundi'),
-						'service/ipbx/general_settings/dundi'),
 				'</dd>';
 		endif;
 
