@@ -82,6 +82,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('general_settings','dundi') === true):
+			echo	'<dd id="mn-general-settings--dundi">',
+				$url->href_html($this->bbf('mn_left_generalsettings-dundi'),
+						'service/ipbx/general_settings/dundi'),
+				'</dd>';
+		endif;
+
 		echo	'</dl>';
 	endif;
 
@@ -279,13 +286,6 @@ $dhtml = &$this->get_module('dhtml');
 
 	if(xivo_user::chk_acl('dundi') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_dundi'),'</dt>';
-
-		if(xivo_user::chk_acl('dundi','general') === true):
-			echo	'<dd id="mn-dundi--general">',
-				$url->href_html($this->bbf('mn_left_dundi-general'),
-						'service/ipbx/dundi/general'),
-				'</dd>';
-		endif;
 
 		if(xivo_user::chk_acl('dundi','mappings') === true):
 			echo	'<dd id="mn-dundi--mappings">',

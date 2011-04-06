@@ -25,6 +25,9 @@ Avancés
 ; mn_left_generalsettings-outboundmwi
 Abonnements MWI
 
+; mn_left_generalsettings-dundi
+Routage dynamique
+
 ; mn_left_ti_callcenter
 Centre de contacts
 
@@ -104,7 +107,7 @@ Protocole IAX
 Personnalisée
 
 ; mn_left_ti_dundi
-Dundi
+Routage dynamique
 
 ; mn_left_dundi-general
 Général

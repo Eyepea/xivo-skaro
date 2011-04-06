@@ -30,7 +30,7 @@ if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 {
 	$fm_save = true;
 
-	$gen['dundi'] = $_QR['general']['dundi'] == '1';
+	$gen['dundi'] = array_key_exists('general', $_QR) && ($_QR['general']['dundi'] == '1');
 
 	if($dundi->edit(1, $_QR['dundi']) === false
 	|| $general->edit(1, $gen)        === false)
@@ -61,7 +61,7 @@ $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/dundi/general');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/dundi');
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
 $_TPL->display('index');
 

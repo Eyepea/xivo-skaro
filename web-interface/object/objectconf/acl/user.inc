@@ -33,6 +33,7 @@ $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
 $array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
+$array['tree']['service']['ipbx']['general_settings']['dundi'] = true;
 
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['agents'] = true;
@@ -72,7 +73,6 @@ $array['tree']['service']['ipbx']['cost_center']['operator'] = true;
 $array['tree']['service']['ipbx']['cost_center']['servicesgroup'] = true;
 
 $array['tree']['service']['ipbx']['dundi'] = array();
-$array['tree']['service']['ipbx']['dundi']['general'] = true;
 $array['tree']['service']['ipbx']['dundi']['peers'] = true;
 $array['tree']['service']['ipbx']['dundi']['mappings'] = true;
 
