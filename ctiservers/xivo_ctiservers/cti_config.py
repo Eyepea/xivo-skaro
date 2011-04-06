@@ -57,9 +57,6 @@ class Config:
 
         response = urllib2.urlopen(uri)
         self.json_config = response.read().replace('\/', '/')
-        if True:
-            self.json_config = self.json_config.replace('localhost', '192.168.0.194')
-            self.json_config = self.json_config.replace('/private/', '/restricted/')
         self.xc_json = cjson.decode(self.json_config)
 
         for profile, profdef in self.xc_json['xivocti']['profiles'].iteritems():
@@ -72,7 +69,10 @@ class Config:
                     if xlet_attr[1] == 'grid':
                         del xlet_attr[2]
         self.translate()
-        self.setdirconfigs()
+        try:
+            self.setdirconfigs()
+        except:
+            log.exception('setdirconfigs')
         return
 
     def translate(self):
@@ -122,7 +122,11 @@ class Config:
             self.ctxlist[contextname].update(contextdef)
 
     def getconfig(self):
-        response = urllib2.urlopen('file:///home/corentin/myconf.json')
-        json_config = response.read()
-        gc = cjson.decode(json_config)
+        try:
+            response = urllib2.urlopen('file:///pathtoconf.json')
+            json_config = response.read()
+            gc = cjson.decode(json_config)
+        except Exception:
+            log.exception('getconfig')
+            gc = {}
         return gc
