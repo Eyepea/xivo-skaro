@@ -14,10 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-//get available extensions
-var url_http_search_extension = '/service/ipbx/ui.php/pbx_settings/extension/search/';
+ */;
 
 // Return a helper with preserved width of cells
 var fixHelper = function(e, ui) {
@@ -27,20 +24,116 @@ var fixHelper = function(e, ui) {
 	return ui;
 };
 
+//get available extensions
 function map_autocomplete_extension_to(obj,context)
-{    
-    $(obj).autocomplete(url_http_search_extension, {
+{
+    $(obj).autocomplete('/service/ipbx/ui.php/pbx_settings/extension/search/', {
     	width: 70, 
     	extraParams: {
-    		context: context,
-    		obj: 'user',
-    		format: 'jquery'
+    		'context': context,
+    		'obj': 'user',
+    		'format': 'jquery'
     	}
     });
 }
 
-function update_rules_group_val()
+//get available number pool
+function xivo_http_search_numpool(context,helper)
 {
+	var rs = '';
+	$.getJSON('/service/ipbx/ui.php/pbx_settings/extension/search/?context='+context+'&obj=user&getnumpool=1', function(data) {
+		if (data === null || (nb = data.length) === 0)
+			return false;
+	    for (var i = 0; i< nb; i++)
+	    	rs += data[i]['numberbeg']+'-'+data[i]['numberend']+'<br>';
+	    $(helper).html(rs);
+	});
+}
+
+//get list context available for a entity
+function xivo_http_search_context_from_entity(entityid)
+{
+	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=intern', function(data) {
+		if (data === null || (nb = data.length) === 0) {
+			$('#box-lines_free').hide('slow');
+			$('#list_linefeatures').hide();
+			$('#box-no_context').show();
+			return false;
+		}
+		$('#box-no_context').hide();
+		$('#box-lines_free').show();
+		$('#list_linefeatures').show();
+		$('#list_linefeatures').find("#linefeatures-context").each(function(){
+			$(this).find('option').remove();
+		    for (var i = 0; i< nb; i++)
+		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
+	    });
+		$('#ex-linefeatures').find("#linefeatures-context").each(function(){
+			$(this).find('option').remove();
+		    for (var i = 0; i< nb; i++)
+		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
+	    });
+		update_row_infos();
+	});		
+	xivo_http_search_linefree_by_entity(entityid);
+}
+
+//get list line free available for a entity
+function xivo_http_search_linefree_by_entity(entityid)
+{
+	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=intern&free=1', function(data) {
+		if (data === null || data.length === 0){
+			$('#box-lines_free').hide('slow');
+			return false;
+		}
+		$('#box-lines_free').show();
+	    $("#list_lines_free").each(function(){
+			$(this).find('option').remove();
+		    for (var i = 0; i< data.length; i++)
+		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
+	    });
+	});	
+}
+
+function lnkdroprow(obj)
+{	
+    $(obj).parents('tr').fadeTo(400, 0, function () {
+        $(this).remove();
+    });    
+    
+    setTimeout(update_row_infos, 420);
+	
+    it_id = $(obj).parents('tr').find('#linefeatures-id');
+	
+	if (it_id.val() == 0)
+		return false;
+    
+    td_protocol = $(obj).parents('tr').find('#td_ex-linefeatures-protocol');
+    td_name = $(obj).parents('tr').find('#td_ex-linefeatures-name');
+    
+	$('#list_lines_free').append("<option value=" + it_id.val() + ">" + td_protocol.text()+'/'+td_name.text() + "</option>");
+	
+    if ($('#list_lines_free option').length > 0)
+    	$('#box-lines_free').show();
+    
+    return false;
+}
+
+function update_row_infos()
+{    
+	nb_row = $('#list_linefeatures > tbody > tr').length;	
+	if (nb_row === 1) {
+		$('#it-userfeatures-entityid').removeAttr('disabled');
+		$('#it-userfeatures-entityid').removeClass('it-disabled');
+		return false;
+	}
+
+	it_userfeatures_entityid = $('#it-userfeatures-entityid');
+	if (it_userfeatures_entityid.attr('disabled') !== undefined) {
+		it_userfeatures_entityid.attr('disabled','disabled');
+		it_userfeatures_entityid.addClass('it-disabled');
+	}
+	
 	var groupval = '';
 	var count = 0;
 	$('#list_linefeatures > tbody').find('tr').each(function() {				
@@ -51,51 +144,49 @@ function update_rules_group_val()
 		count++;
 		$(this).find('#linefeatures-rules_group').val(groupval);			
 		$(this).find('#linefeatures-rules_order').val(count-1);
+		
+		var context = $(this).find("#linefeatures-context");
+		var context_val = $(context).val();
+		if (context_val !== null) {
+			number = $(this).find('#linefeatures-number');			
+			number.focus(function(){
+				helper = $(this).parent().find('#numberpool_helper');
+				xivo_http_search_numpool(context_val,helper);
+				helper.show('slow');
+			});
+			number.blur(function(){
+				$(this).parent().find('#numberpool_helper').hide('slow');
+			});
+			map_autocomplete_extension_to(number,context_val);
+		}
 	});
 }
 
-$(document).ready(function(){ 
-	/*
-	$(".up,.down").click(function(){
-        var row = $(this).parents("tr:first");
-        if ($(this).is(".up")) {
-            row.insertBefore(row.prev());
-        } else {
-            row.insertAfter(row.next());
-        }
-    });
-	*/
+$(document).ready(function() {
+	if((entityid = $('#it-userfeatures-entityid')) === false)
+		xivo_http_search_context_from_entity(null);
+	else
+		xivo_http_search_context_from_entity(entityid.val());
 
 	$("#list_linefeatures tbody").sortable({
 		helper: fixHelper,
 		cursor: 'crosshair',
-		update: update_rules_group_val
+		update: update_row_infos
 	}).disableSelection();
 	
-	$('#lnk-add-row').click(function(){
-		
+	$('#lnk-add-row').click(function(){		
 		$('#no-linefeatures').hide('fast');
 	    row = $('#ex-linefeatures').html();
 	    
 		$('#list_linefeatures > tbody:last').fadeIn(400, function () {
 	        $(this).append(row);
 	    });
-		
-		context = $('#list_linefeatures > tbody:last > tr').find("#linefeatures-context");
 
-		$('#it-userfeatures-entityid').attr('disabled','disabled');
-		$('#it-userfeatures-entityid').addClass('it-disabled');
-		context.change(function(){
-		    number = $(this).parents('tr').find('#linefeatures-number');		    
-		    map_autocomplete_extension_to(number,$(this).val());
-		});
-
-	    update_rules_group_val();
+	    update_row_infos();
 		return false;
 	});
 
-	$('#lnk-add-row-rules_group').click(function(){
-		
+	$('#lnk-add-row-rules_group').click(function(){		
 		groupval = $('#it-rules_group').val();
 		
 		if (groupval === '' || groupval === null)
@@ -123,13 +214,11 @@ $(document).ready(function(){
 	    });
 	    
 	    td_rules_group.text('');
-	    update_rules_group_val();
-	
+	    update_row_infos();	
 		return false;
 	});
 
-	$('#lnk-add-row-line_free').click(function(){
-		
+	$('#lnk-add-row-line_free').click(function(){		
 		$('#no-linefeatures').hide('fast');
 	    
 	    idlinefeatures = $('#list_lines_free').val();
@@ -139,9 +228,6 @@ $(document).ready(function(){
 	    $('#list_linefeatures > tbody:last').fadeIn(400, function () {
 	        $(this).append(row);
 	    });
-
-		$('#it-userfeatures-entityid').attr('disabled','disabled');
-		$('#it-userfeatures-entityid').addClass('it-disabled');
 
 	    $('#ex-linefeatures').find('#linefeatures-id').val(0);
 		
@@ -157,20 +243,20 @@ $(document).ready(function(){
 	    protoname = $('#list_lines_free option[value='+idlinefeatures+']').text();
 	    
 	    if (protoname.indexOf('/') == -1) {
-		    td_protocol.append( 'error: undefined protoco' );
-			td_name.append( 'error: undefined peer' );
+		    td_protocol.append('error: undefined protoco');
+			td_name.append('error: undefined peer');
 	    }
 	    else {
 		    str_protocol = protoname.substring(0, protoname.indexOf('/')).toLowerCase();
 		    str_name = protoname.substring(protoname.indexOf('/')+1);
 		    
-		    td_protocol.append( str_protocol.toUpperCase() );
+		    td_protocol.append(str_protocol.toUpperCase());
 			it_proto = '<input type="hidden" id="linefeatures-protocol" name="linefeatures[protocol][]" value="'+str_protocol+'" />';
-		    td_protocol.append( it_proto );
+		    td_protocol.append(it_proto);
 		    
-		    td_name.append( str_name );
+		    td_name.append(str_name);
 			it_name = '<input type="hidden" id="linefeatures-name" name="linefeatures[name][]" value="'+str_name+'" />';
-			td_name.append( it_name );
+			td_name.append(it_name);
 	    }
 	    
 	    $('#list_lines_free option[value='+idlinefeatures+']').remove();
@@ -178,45 +264,7 @@ $(document).ready(function(){
 	    if ($('#list_lines_free option').length == 0)
 	    	$('#box-lines_free').hide('slow');
 	    
-	    map_autocomplete_extension_to(it_number,it_context.val());
-		
-	    it_context.change(function(){
-		    number = $(this).parents('tr').find('#linefeatures-number');
-		    map_autocomplete_extension_to(number,$(this).val());
-		});
-	    update_rules_group_val();
-		
+	    update_row_infos();		
 		return false;
-	});
-	
+	});	
 });
-
-function lnkdroprow(obj) {
-	
-    $(obj).parents('tr').fadeTo(400, 0, function () {
-        $(this).remove();
-    });
-    
-    setTimeout(update_rules_group_val, 420);
-    
-	nb_row = $('#list_linefeatures > tbody > tr').length;
-	if (nb_row == 1) {
-		$('#it-userfeatures-entityid').removeAttr('disabled');
-		$('#it-userfeatures-entityid').removeClass('it-disabled');
-	}
-	
-    it_id = $(obj).parents('tr').find('#linefeatures-id');
-	
-	if (it_id.val() == 0)
-		return false;
-    
-    td_protocol = $(obj).parents('tr').find('#td_ex-linefeatures-protocol');
-    td_name = $(obj).parents('tr').find('#td_ex-linefeatures-name');
-    
-	$('#list_lines_free').append("<option value=" + it_id.val() + ">" + td_protocol.text()+'/'+td_name.text() + "</option>");
-	
-    if ($('#list_lines_free option').length > 0)
-    	$('#box-lines_free').show();
-    
-    return false;
-}

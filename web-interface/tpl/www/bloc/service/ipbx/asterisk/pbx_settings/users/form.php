@@ -255,6 +255,9 @@ endif;
 
 <div id="sb-part-lines" class="b-nodisplay">
 <?php
+	if($line_list !== false):
+		echo $form->hidden(array('name' => 'userfeatures[entityid]','value' => $info['userfeatures']['entityid']));
+	endif;
 	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_entity'),
 				    'name'		=> 'userfeatures[entityid]',
 				    'labelid'	=> 'userfeatures-entityid',
@@ -263,16 +266,6 @@ endif;
 				    'altkey'	=> 'id',
 	           		'selected'  => $info['userfeatures']['entityid']),
 			      $this->get_var('entity_list'));
-
-if($line_list !== false):
-		echo $form->hidden(array('name' => 'userfeatures[entityid]','value' => $info['userfeatures']['entityid']));
-?>
-<script>
-	$('#it-userfeatures-entityid').attr('disabled','disabled');
-	$('#it-userfeatures-entityid').addClass('it-disabled');
-</script>
-<?php
-endif;
 ?>
 	<div class="sb-list">
 <?php

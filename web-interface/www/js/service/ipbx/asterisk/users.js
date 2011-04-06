@@ -306,48 +306,6 @@ function xivo_ast_user_outgroup()
 	return(true);
 }
 
-function xivo_ast_entity_load_context()
-{
-	var entityid = dwho_eid('it-userfeatures-entityid').value;
-
-	xivo_http_search_context_from_entity(entityid);
-
-	return(true);
-}
-
-//get list context available for a entity
-function xivo_http_search_context_from_entity(entityid)
-{
-	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=intern', function(data) {
-		if (data === null || data.length === 0){
-			$('#box-lines_free').hide('slow');
-			$('#list_linefeatures').hide();
-			$('#box-no_context').show();
-			return false;
-		}
-		$('#box-no_context').hide();
-		$('#box-lines_free').show();
-		$('#list_linefeatures').show();	
-	    $("#linefeatures-context").each(function(){
-			$(this).find('option').remove();
-		    for (var i = 0; i< data.length; i++)
-		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
-	    });
-	});
-	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=intern&free=1', function(data) {
-		if (data === null || data.length === 0){
-			$('#box-lines_free').hide('slow');
-			return false;
-		}
-		$('#box-lines_free').show();
-	    $("#list_lines_free").each(function(){
-			$(this).find('option').remove();
-		    for (var i = 0; i< data.length; i++)
-		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
-	    });
-	});	
-}
-
 function xivo_ast_user_http_search_voicemail(dwsptr)
 {
 	new dwho.http('/service/ipbx/ui.php/pbx_settings/users/voicemail/search/?' + dwho_sess_str,
@@ -532,12 +490,6 @@ function xivo_ast_user_onload()
 		dwho.dom.add_event('change',lastname,xivo_ast_user_chg_name);
 		dwho.dom.add_event('focus',lastname,xivo_ast_user_cpy_name);
 		dwho.dom.add_event('blur',lastname,xivo_ast_user_chg_name);
-	}
-	
-	if((entityid = dwho_eid('it-userfeatures-entityid')) !== false)
-	{
-		xivo_ast_entity_load_context(entityid.value);
-		dwho.dom.add_event('change',entityid,xivo_ast_entity_load_context);
 	}
 
 	if((voicemailtype = dwho_eid('it-userfeatures-voicemailtype')) !== false)

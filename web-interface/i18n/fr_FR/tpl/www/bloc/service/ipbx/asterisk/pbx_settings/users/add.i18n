@@ -775,6 +775,27 @@ Horaires :
 ; fm_userfeatures_servicesgroup
 Groupde services : 
 
+; col_line-add
+Ajouter une ligne existante
+
+; col_rules_group-add
+Ajouter un groupe
+
+; fm_rules_group
+Ajouter un groupe : 
+
+; opt_line-delete
+Supprimer la ligne
+
+; opt_row-delete
+Supprimer la ligne
+
+; col_title_line-infos
+INFORMATIONS
+
+; col_title_line-rules
+REGLES
+
 ; col_line-name
 Canal
 
@@ -835,117 +856,6 @@ Aucune ligne éxistante de libre
 ; fm_lines_free
 Lignes disponible :
 
-; fm_protocol-directmedia-opt(yes)
-Oui
-
-; fm_protocol-directmedia-opt(nonat)
-Pas sur le NAT
-
-; fm_protocol-directmedia-opt(update)
-Oui, via UPDATE
-
-; fm_protocol-directmedia-opt(update,nonat)
-Oui, via UPDATE + pas sur le NAT
-
-; fm_protocol-callcounter
-Compter les appels : 
-
-; hlp_fm_protocol-callcounter
-Config asterisk: callcounter
-
-; fm_protocol-busylevel
-Envoyer le signal OCCUPÉ au dessus du nombre d'appels : 
-
-; hlp_fm_protocol-busylevel
-Config asterisk: busylevel
-
-; fm_protocol-ignoresdpversion
-Ignorer le numéro de version des paquets SDP : 
-
-; hlp_fm_protocol-ignoresdpversion
-Config asterisk: ignoresdpversion
-
-; fm_protocol-session-timers
-Activer session-timer : 
-
-; hlp_fm_protocol-session-timers
-Config asterisk: session-timers
-
-; fm_protocol-session-timers-opt(originate)
-Toujours
-
-; fm_protocol-session-timers-opt(accept)
-Sur demande uniquement
-
-; fm_protocol-session-timers-opt(refuse)
-Non
-
-; fm_protocol-session-expires
-Interval maximal de rafraîchissement de la session : 
-
-; hlp_fm_protocol-session-expires
-Config asterisk: session-expires
-
-; fm_protocol-session-minse
-Interval minimal de rafraîchissement de la session : 
-
-; hlp_fm_protocol-session-minse
-Config asterisk: session-minse
-
-; fm_protocol-session-refresher
-Session mise à jour par le : 
-
-; hlp_fm_protocol-session-refresher
-Config asterisk: session-refresher
-
-; fm_protocol-session-refresher-opt(uas)
-Serveur
-
-; fm_protocol-session-refresher-opt(uac)
-Client
-
-; fm_protocol-callbackextension
-Extension où aboutissent les appels entrants : 
-
-; hlp_fm_protocol-callbackextension
-Config asterisk: callbackextension
-
-; fm_protocol-registertrying
-Envoyer un «100 Trying» lors de l'enregistrement : 
-
-; hlp_fm_protocol-registertrying
-Config asterisk: registertrying
-
-; fm_protocol-timert1
-Délai T1 : 
-
-; hlp_fm_protocol-timert1
-Config asterisk: timert1
-
-; fm_protocol-timerb
-Délai de configuration : 
-
-; hlp_fm_protocol-timerb
-Config asterisk: timerb
-
-; fm_protocol-qualifyfreq
-Fréquence de supervision : 
-
-; hlp_fm_protocol-qualifyfreq
-Config asterisk: qualifyfreq
-
-; fm_protocol-contactpermit
-Adresses de contact autorisées : 
-
-; hlp_fm_protocol-contactpermit
-Config asterisk: contactpermit
-
-; fm_protocol-contactdeny
-Adresses de contact interdites : 
-
-; hlp_fm_protocol-contactdeny
-Config asterisk: contactdeny
-
 
 ; fm_register-transport
 Transport : 
@@ -960,73 +870,6 @@ Config asterisk: expiry
 
 ; fm_register-callbackextension
 Utiliser l'extension de l'interconnexion : 
-
-; fm_protocol-immediate
-Décrocher immédiatement : 
-
-; hlp_fm_protocol-immediate
-Config asterisk: immediate
-
-
-; fm_protocol-unsolicited_mailbox
-Boîte vocale non solicitée : 
-
-; hlp_fm_protocol-unsolicited_mailbox
-Config asterisk: unsolicited_mailbox
-
-; fm_protocol-use_q850_reason
-Utiliser l'en-tête «Reason» : 
-
-; hlp_fm_protocol-use_q850_reason
-Config asterisk: use_q850_reason
-
-; fm_protocol-encryption
-Chiffrage des communications : 
-
-; hlp_fm_protocol-encryption
-Config asterisk: encryption
-
-; fm_protocol-forceencryption
-Chiffrage des communications (forcé): 
-
-; hlp_fm_protocol-forceencryption
-Config asterisk: forceencryption
-
-; fm_protocol-snom_aoc_enabled
-Envoyer AOC-D/AOC-E aux terminaux Snom : 
-
-; hlp_fm_protocol-snom_aoc_enabled
-Config asterisk: snom_aoc_enabled
-
-; fm_protocol-disallowed_methods
-Interdire les méthodes SIP suivantes : 
-
-; hlp_fm_protocol-disallowed_methods
-Config asterisk: disallowed_methods
-
-; fm_protocol-maxforwards
-Nombre de relais maximum : 
-
-; hlp_fm_protocol-maxforwards
-Config asterisk: maxforwards
-
-; fm_protocol-textsupport
-Support Texte : 
-
-; hlp_fm_protocol-textsupport
-Config asterisk: textsupport
-
-; hlp_fm_protocol-videosupport
-Config asterisk: videosupport
-
-; fm_protocol-videosupport-opt(no)
-Non
-
-; fm_protocol-videosupport-opt(yes)
-Oui
-
-; fm_protocol-videosupport-opt(always)
-Toujours
 
 ; smenu_schedule
 Horaires

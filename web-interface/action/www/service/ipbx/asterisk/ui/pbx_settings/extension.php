@@ -39,7 +39,7 @@ else
 
 /*
  *
- *
+
 $_QRY->get('context')
 eg. default, intern ......
 
@@ -53,7 +53,6 @@ $_QRY->get('except')
 eg.
 
  *
- *
  */
 
 switch($act)
@@ -63,7 +62,7 @@ switch($act)
 		$act = 'search';
 		$appcontext = &$ipbx->get_application('context');
 		$context = $_QRY->get('context');
-		if(($context    = $appcontext->get($context)) === false)
+		if(($context = $appcontext->get($context)) === false)
 		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
@@ -92,12 +91,15 @@ switch($act)
 		$lfilter = floor(log10($filter)) + 1;
 
 		$numbers = array();
-		foreach($context['contextnumbers'][$obj]as $numb)
+		$list_pool_free = array();
+		foreach($context['contextnumbers'][$obj] as $numb)
 		{
 			$start = intval($numb['numberbeg']);
 			$end   = intval($numb['numberend']);
 			$lstart = floor(log10($start)) + 1;
 			$lend   = floor(log10($end)) + 1;
+			
+			array_push($list_pool_free,array('numberbeg' => $start, 'numberend' => $end));
 
 			if($lfilter > $lend)
 				continue;
@@ -111,6 +113,14 @@ switch($act)
 			$end   = min($end  , ($filter+1) * (pow(10, $lend   - $lfilter)) - 1);
 
 			$numbers = array_merge($numbers, range($start, $end));
+		}
+		
+		if ($_QRY->get('getnumpool') !== null)
+		{
+			$_TPL->set_var('list', $list_pool_free);
+			$_TPL->set_var('act',$act);
+			$_TPL->display('genericjson');
+			return;
 		}
 
 		foreach($context['contextnummember'][$obj] as $user)

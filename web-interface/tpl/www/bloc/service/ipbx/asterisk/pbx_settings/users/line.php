@@ -87,25 +87,20 @@ endif;
 								'id="lnk-add-row-rules_group"',
 								$this->bbf('col_rules_group-add'));?>
 </p>
+
+<div id="MSG"></div>
 							
 <table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures" class="<?=$entityhascontext?>">
-	<thead>
-	<tr class="sb-title">
-		<th class="th-left" colspan="4"><?=$this->bbf('col_title_line-infos');?></th>
-		<th class="th-center" colspan="2"><?=$this->bbf('col_title_line-rules');?></th>
-		<th class="th-right">&nbsp;</th>
-	</tr>
-	</thead>
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_line-protocol');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-name');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-rules_type');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-rules_time');?></th>
 <?php 
 /*
+		<th class="th-center"><?=$this->bbf('col_line-rules_type');?></th>
+		<th class="th-center"><?=$this->bbf('col_line-rules_time');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-rules_order');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-rules_group');?></th>
 */ 
@@ -153,7 +148,8 @@ if($list !== false):
 		if (empty($rulesgroup) === false):
 ?>
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="6" class="td-left" id="td_rules_group_name">
+		<td colspan="4" class="td-left" id="td_rules_group_name">
+			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 			<?=$rulesgroup?>
 		</td>
 		<td class="td-right">
@@ -172,103 +168,54 @@ if($list !== false):
 			continue;
 		for($i = 1;$i <= $nblinegroup;$i++):
 			$ref = &$list[$i];
+			$secureclass = '';
+			if($ref['encryption'] === true)
+				$secureclass = 'xivo-icon xivo-icon-secure';
 ?>
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">
 		<td class="td-left txt-center">
 			<?=$form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));?>
-			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>
-			<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-			<?php if($ref['encryption'] === true): ?>
-			<span style="position:absolute;margin-left:-10px;margin-top:2px;">
-				<?=$url->img_html('img/site/utils/nm-secure-lock.png',$this->bbf('sip_secure'),'border="0"');?>
-			</span>
-			<?php endif; ?>
-			<?=$this->bbf('line_protocol-'.$ref['protocol']);?>
-		</td>
-		<td>
-			<?=$form->hidden(array('name' => 'linefeatures[name][]','value' => $ref['name']));?>
-			<?=$ref['name']?>
-		</td>
-		<td>
-			<?=$form->select(array('paragraph'	=> false,
-				    'name'		=> 'linefeatures[context][]',
-				    'id'		=> false,
-				    'label'		=> false,
-				    'key'		=> 'displayname',
-				    'altkey'	=> 'name',
-				    'default'	=> $ref['context']),
-			      $context_list);?>
-		</td>
-		<td>
-			<?=$form->text(array('paragraph'	=> false,
-					     'name'		=> 'linefeatures[number][]',
-					     'id'		=> false,
-					     'label'	=> false,
-					     'size'		=> 5,
-					     'value'	=> $ref['number'],
-					     'default'	=> $element['linefeatures']['number']['default']));?>
-		</td>
-		<td>
-			<?=$form->select(array('paragraph'	=> false,
-				    'name'		=> 'linefeatures[rules_type][]',
-				    'id'		=> false,
-				    'label'		=> false,
-				    'key'		=> false,
-				    'empty'		=> true,
-				    'bbf'		=> 'fm_type-opt',
-				    'selected'	=> $ref['rules_type'],
-				    'default'	=> $element['linefeatures']['rules_type']['default']),
-			      $element['linefeatures']['rules_type']['value']);?>
-		</td>
-		<td>
-			<?=$form->text(array('paragraph'	=> false,
-					     'name'		=> 'linefeatures[rules_time][]',
-					     'id'		=> false,
-					     'label'	=> false,
-					     'size'		=> 5,
-					     'value'	=> $ref['rules_time'],
-					     'default'	=> $element['linefeatures']['rules_time']['default']));?>
-				 	
+			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>				 	
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
 						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_group',
-					    'value'	=> $ref['rules_group'],));?>
-				 	
+					    'value'	=> $ref['rules_group'],));?>				 	
 			<?=$form->hidden(array('name' => 'linefeatures[rules_order][]',
 						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_order',
 					    'value'	=> $ref['rules_order']));?>
-		</td>
-<?php 
-/*
-		<td>
-			<a href="#lines" class="up" title="<?=$this->bbf('bt_upline');?>">
-				<?=$url->img_html('img/site/button/arrow-up.gif',
-				$this->bbf('bt_upline'),
-				'class="bt-uplist" id="bt-upline" border="0"');?></a>
-			<a href="#lines" class="down" title="<?=$this->bbf('bt_downline');?>">
-				<?=$url->img_html('img/site/button/arrow-down.gif',
-				$this->bbf('bt_downline'),
-				'class="bt-downlist" id="bt-downline" border="0"');?></a>
-			<?$form->text(array('paragraph'	=> false,
-					     'name'		=> 'linefeatures[rules_order][]',
-					     'id'		=> false,
-					     'label'	=> false,
-					     'size'		=> 5,
-					     'value'	=> $ref['rules_order'],
-					     'default'	=> $element['linefeatures']['rules_order']['default']));?>
+			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+			<span>
+				<span class="<?=$secureclass?>">&nbsp;</span>
+				<?=$this->bbf('line_protocol-'.$ref['protocol'])?>
+			</span>
 		</td>
 		<td>
+			<?=$form->hidden(array('name' => 'linefeatures[name][]','value' => $ref['name']));?>
+			<?=$url->href_html($ref['name'],
+				'service/ipbx/pbx_settings/lines',
+				array('act' => 'edit', 'id' => $ref['id']));?>
+		</td>
+		<td>
+			<?=$form->select(array('paragraph'	=> false,
+					    'name'		=> 'linefeatures[context][]',
+					    'id'		=> 'linefeatures-context',
+					    'label'		=> false,
+					    'key'		=> 'displayname',
+					    'altkey'	=> 'name',
+					    'default'	=> $ref['context']));?>
+		</td>
+		<td>			
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'		=> 'linefeatures[rules_group][]',
-					     'id'		=> false,
+					     'name'		=> 'linefeatures[number][]',
+				   		 'id'		=> 'linefeatures-number',
 					     'label'	=> false,
 					     'size'		=> 5,
-					     'value'	=> $ref['rules_group'],
-					     'default'	=> $element['linefeatures']['rules_group']['default']));?>
+					     'value'	=> $ref['number'],
+					     'default'	=> $element['linefeatures']['number']['default']));?>
+			<div class="b-nodisplay" id="numberpool_helper" style="position: absolute;border: 1px solid gray;background: #ccc;">				
+			</div>
 		</td>
-*/
-?>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 						       $this->bbf('opt_line-delete'),
@@ -287,7 +234,7 @@ endif;
 	</tbody>
 	<tfoot>
 	<tr id="no-linefeatures"<?=($list !== false ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="7" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
 	</tr>
 	</tfoot>
 </table>
@@ -295,7 +242,8 @@ endif;
 <table class="b-nodisplay">
 	<tbody id="ex-rules_group">
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="6" class="td-left" id="td_rules_group_name">
+		<td colspan="4" class="td-left" id="td_rules_group_name">
+			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -314,6 +262,7 @@ endif;
 	<tbody id="ex-linefeatures">
 	<tr class="fm-paragraph" style="cursor: move;">
 		<td class="td-left txt-center" id="td_ex-linefeatures-protocol">
+			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 			<?=$form->hidden(array('name' => 'linefeatures[id][]',
 					'value' 	=> 0,
 				    'id'		=> 'linefeatures-id'));?>
@@ -348,56 +297,9 @@ endif;
 					     'label'	=> false,
 					     'size'		=> 5,
 					     'default'	=> $element['linefeatures']['number']['default']));?>
+			<div class="b-nodisplay" id="numberpool_helper" style="position: absolute;border: 1px solid gray;background: #ccc;">				
+			</div>
 		</td>
-		<td>
-			<?=$form->select(array('paragraph'	=> false,
-				    'name'		=> 'linefeatures[rules_type][]',
-				    'id'		=> 'linefeatures-rules_type',
-				    'label'		=> false,
-				    'key'		=> false,
-				    'empty'		=> true,
-				    'bbf'		=> 'fm_type-opt',
-				    'default'	=> $element['linefeatures']['rules_type']['default']),
-			      $element['linefeatures']['rules_type']['value']);?>
-		</td>
-		<td>
-			<?=$form->text(array('paragraph'	=> false,
-					'name'		=> 'linefeatures[rules_time][]',
-			    	'id'		=> 'linefeatures-rules_time',
-					'label'		=> false,
-					'size'		=> 5,
-				 	'default'	=> $element['linefeatures']['rules_time']['default']));?>
-				 	
-			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
-					'value' 	=> null,
-				    'id'		=> 'linefeatures-rules_group'));?>
-				 	
-			<?=$form->hidden(array('name' => 'linefeatures[rules_order][]',
-						'value' 	=> null,
-					    'id'		=> 'linefeatures-rules_order'));?>
-		</td>
-<?php 
-/*
-		<td>
-			<a href="#" class="up">Up</a>
-            <a href="#" class="down">Down</a>
-			<?$form->text(array('paragraph'	=> false,
-					 	'name'		=> 'linefeatures[rules_order][]',
-			    		'id'		=> 'linefeatures-rules_order',
-					  	'label'		=> false,
-					   	'size'		=> 5,
-					 	'default'	=> $element['linefeatures']['rules_order']['default']));?>
-		</td>
-		<td>
-			<?=$form->text(array('paragraph'	=> false,
-					 	'name'		=> 'linefeatures[rules_group][]',
-			    		'id'		=> 'linefeatures-rules_group',
-					  	'label'		=> false,
-					    'size'		=> 5,
-						'default'	=> $element['linefeatures']['rules_group']['default']));?>
-		</td>
-*/
-?>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 							       $this->bbf('opt_row-delete'),

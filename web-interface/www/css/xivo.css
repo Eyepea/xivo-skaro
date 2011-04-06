@@ -365,21 +365,6 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #r-home .monit-state-initializing {color: #1772ce;}
 #r-home .monit-state-notmonitored {color: #f96101;}
 
-.xivo-calendar {max-width: 140px;border: 1px solid #9e9e9e;text-align: center;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;background-position: left top;margin: 0px 0px 0px auto;}
-.xivo-calendar .cal-prev {text-align: right;float: left;width: 8px;padding: 0px 6px 0px 2px;}
-.xivo-calendar .cal-next {text-align: left;padding: 0px 2px;float: right;}
-.xivo-calendar .cal-month-year {display: block;min-width: 110px;max-width: 116px;float: left;font-weight: bold;padding-bottom: 1px;}
-.xivo-calendar table {background-color: #fff;border: 0px solid #7f99b1;border-top-width: 1px;}
-.xivo-calendar th, .xivo-calendar td {font-size: 8pt;padding: 2px 3px;}
-.xivo-calendar th {background-color: #fee6c1;}
-.xivo-calendar th.cal-day-5 {background-color: #fbd386;}
-.xivo-calendar th.cal-day-6 {background-color: #fbd386;}
-.xivo-calendar td {cursor: pointer;background-color: #e8eeff;}
-.xivo-calendar td.cal-prev-month, .xivo-calendar td.cal-next-month {color: #999;}
-.xivo-calendar td.cal-day-5, .xivo-calendar td.cal-day-6 {background-color: #beddfb;}
-.xivo-calendar td.cal-day-slt {background-color: #7f99b1;color: #fff;font-weight: bold;border: 1px solid #000;border-right-color: #fff;border-bottom-color: #fff;padding: 0px;}
-.xivo-calendar td.cal-day-focus {background-color: #ccc;color: #000;}
-
 .dwho-suggest {position: absolute; padding: 10px 0px 0px 1px;}
 .dwho-suggest dl {overflow: hidden;border: 1px solid #9e9e9e;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;background-position: left top;background-color: #beddfb;}
 .dwho-suggest dl dt, .dwho-suggest dl dd {color: #000; padding-left: 2px; text-align: left;white-space: nowrap;cursor: pointer;}
@@ -391,6 +376,9 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 .dwho-form-error {position: absolute; padding: 5px;border: 1px solid #c0c0c0;background-color: #ffcbcb;}
 
 input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
+
+.xivo-icon {width: 16px;height: 16px;padding-right: 8px;}
+.xivo-icon-secure {background: url(../img/site/utils/nm-secure-lock.png) 0px 0px no-repeat;}
 
 .xivo-messages {margin: 0;padding: 0;border: 1px solid;}
 .xivo-messages ul {margin: 0;padding: 0;}
