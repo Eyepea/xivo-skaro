@@ -46,9 +46,8 @@ $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 
-
 $array['filter'] = array();
-$array['filter']['operator_id'] = array('set' => false,'maxlen' => 10,'regexp' => '/^[0-9]+$/');
+$array['filter']['operator_id'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^_?\+?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['price'] = array('maxlen' => 10,'regexp' => '/^[0-9\.\,]+$/');

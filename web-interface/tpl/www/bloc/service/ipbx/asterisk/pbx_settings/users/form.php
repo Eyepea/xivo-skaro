@@ -268,7 +268,8 @@ if($line_list !== false):
 		echo $form->hidden(array('name' => 'userfeatures[entityid]','value' => $info['userfeatures']['entityid']));
 ?>
 <script>
-	dwho_eid('it-userfeatures-entityid').disabled = "disabled";
+	$('#it-userfeatures-entityid').attr('disabled','disabled');
+	$('#it-userfeatures-entityid').addClass('it-disabled');
 </script>
 <?php
 endif;

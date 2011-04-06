@@ -86,9 +86,8 @@ $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_IAX,
 						    XIVO_SRE_IPBX_AST_PROTO_SCCP,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
-$array['filter']['protocolid'] = array('cast' => 'uint');
-$array['filter']['iduserfeatures'] = array('cast' => 'uint');
-//$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['protocolid'] = array('cast' => 'ulongint');
+$array['filter']['iduserfeatures'] = array('cast' => 'ulongint');
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(
@@ -97,7 +96,7 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['rules_type'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['rules_time'] = array('set' => false,'chk' => 2,'maxlen' => 8,'regexp' => '/^[0-9]+$/');
-$array['filter']['rules_order'] = array('set' => false,'chk' => 2,'cast' => 'uint');
+$array['filter']['rules_order'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['rules_group'] =array('set' => false,'chk' => 2,'maxlen' => 16,'regexp' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['internal'] = array('set' => false,'chk' => 0);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

@@ -25,7 +25,7 @@ $array['element']['operator_id'] = array();
 $array['element']['trunk_id'] = array();
 
 $array['filter'] = array();
-$array['filter']['operator_id'] = array('maxlen' => 10,'regexp' => '/^[0-9]+$/');
-$array['filter']['trunk_id'] = array('maxlen' => 10,'regexp' => '/^[0-9]+$/');
+$array['filter']['operator_id'] = array('cast' => 'ulongint');
+$array['filter']['trunk_id'] = array('cast' => 'ulongint');
 
 ?>

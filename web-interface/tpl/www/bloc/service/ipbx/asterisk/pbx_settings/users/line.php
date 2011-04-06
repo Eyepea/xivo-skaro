@@ -134,29 +134,53 @@ if($list !== false):
 		endif;
 		
 		$rulesgroup = $ref['rules_group'];	
-		$rulesorder = (int) $ref['rules_order'];
+		if (($rulesorder = (int) $ref['rules_order']) === 0)
+			$rulesorder = 1;
 		
 		if (isset($rs[$rulesgroup]) === false)
 			$rs[$rulesgroup] = array();
 			
-		$rs[$rulesgroup][$rulesorder] = $ref;
+		if (isset($rs[$rulesgroup][$rulesorder]) === true)
+			$rs[$rulesgroup][$rulesorder+1] = $ref;
+		else
+			$rs[$rulesgroup][$rulesorder] = $ref;
 	endfor;
 
 	foreach($rs as $rulesgroup => $list):
-		
+
+		if (empty($rulesgroup) === false):
 ?>
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="7" class="td-single" id="td_rules_group_name"><?=$rulesgroup?></td>
+		<td colspan="6" class="td-left" id="td_rules_group_name">
+			<?=$rulesgroup?>
+		</td>
+		<td class="td-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+							       $this->bbf('opt_row-delete'),
+							       'border="0"'),
+							'#lines',
+							null,
+							'onclick="lnkdroprow(this);"',
+							$this->bbf('opt_row-delete'));?>
+		</td>
 	</tr>
 <?php
-		for($i = 1;$i <= count($list);$i++):
+		endif;
+		if (($nblinegroup = count($list)) === 0)
+			continue;
+		for($i = 1;$i <= $nblinegroup;$i++):
 			$ref = &$list[$i];
 ?>
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">
 		<td class="td-left txt-center">
-			<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 			<?=$form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>
+			<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+			<?php if($ref['encryption'] === true): ?>
+			<span style="position:absolute;margin-left:-10px;margin-top:2px;">
+				<?=$url->img_html('img/site/utils/nm-secure-lock.png',$this->bbf('sip_secure'),'border="0"');?>
+			</span>
+			<?php endif; ?>
 			<?=$this->bbf('line_protocol-'.$ref['protocol']);?>
 		</td>
 		<td>
@@ -269,7 +293,17 @@ endif;
 <table class="b-nodisplay">
 	<tbody id="ex-rules_group">
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="7" class="td-single" id="td_rules_group_name"></td>
+		<td colspan="6" class="td-left" id="td_rules_group_name">
+		</td>
+		<td class="td-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+							       $this->bbf('opt_row-delete'),
+							       'border="0"'),
+							'#lines',
+							null,
+							'onclick="lnkdroprow(this);"',
+							$this->bbf('opt_row-delete'));?>
+		</td>
 	</tr>
 	</tbody>
 </table>
@@ -364,12 +398,12 @@ endif;
 ?>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
-							       $this->bbf('opt_line-delete'),
+							       $this->bbf('opt_row-delete'),
 							       'border="0"'),
 							'#lines',
 							null,
 							'onclick="lnkdroprow(this);"',
-							$this->bbf('opt_line-delete'));?>
+							$this->bbf('opt_row-delete'));?>
 		</td>
 	</tr>
 	</tbody>

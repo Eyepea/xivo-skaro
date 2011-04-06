@@ -44,7 +44,6 @@ $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 
-
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['currency'] = array('maxlen' => 16);

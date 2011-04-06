@@ -284,7 +284,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .sb-list .th-left {border-right-width: 0px;}
 #b-content .sb-list .th-right, #b-content .sb-list .th-single {border-right-width: 1px;}
 #b-content .sb-list .th-rule { width: 30px; }
-#b-content .sb-list td {text-align: center;padding: 2px 0px;background-color: #eee;border: 0px solid #999;border-left-width: 1px;border-bottom-width: 1px;font-size: 8pt;}
+#b-content .sb-list td {text-align: center;padding: 2px 0px;background-color: #eee;border: 0px solid #999;border-left-width: 1px;border-bottom-width: 1px;font-size: 8pt;vertical-align: middle;}
 #b-content .sb-list .td-left {border-right-width: 0px;}
 #b-content .sb-list .td-right {border-right-width: 1px;}
 #b-content .sb-list .td-noleftright {border-right-width: 0px;border-left-width: 0px;}

@@ -82,8 +82,9 @@ $(document).ready(function(){
 	    });
 		
 		context = $('#list_linefeatures > tbody:last > tr').find("#linefeatures-context");
-		
+
 		$('#it-userfeatures-entityid').attr('disabled','disabled');
+		$('#it-userfeatures-entityid').addClass('it-disabled');
 		context.change(function(){
 		    number = $(this).parents('tr').find('#linefeatures-number');		    
 		    map_autocomplete_extension_to(number,$(this).val());
@@ -108,12 +109,14 @@ $(document).ready(function(){
 		
 		if (exist === true)
 			return false;
-		
+
+		icon_delete_row = $('#box_delete_row').html();
 		groupval = groupval.replace(/[^a-z0-9_\.-]+/g,'');
 		groupval = groupval.toLowerCase();
 		
 		td_rules_group = $('#ex-rules_group').find('#td_rules_group_name');
-	    td_rules_group.text( groupval );
+	    td_rules_group.text(groupval);
+	    //td_rules_group.append(icon_delete_row);
 		
 		row = $('#ex-rules_group').html();
 		
@@ -138,6 +141,9 @@ $(document).ready(function(){
 	    $('#list_linefeatures > tbody:last').fadeIn(400, function () {
 	        $(this).append(row);
 	    });
+
+		$('#it-userfeatures-entityid').attr('disabled','disabled');
+		$('#it-userfeatures-entityid').addClass('it-disabled');
 
 	    $('#ex-linefeatures').find('#linefeatures-id').val(0);
 		
@@ -193,10 +199,14 @@ function lnkdroprow(obj) {
         $(this).remove();
     });
 	nb_row = $('#list_linefeatures > tbody > tr').length;
-	if (nb_row == 1)
+	if (nb_row == 1) {
 		$('#it-userfeatures-entityid').removeAttr('disabled');
+		$('#it-userfeatures-entityid').removeClass('it-disabled');
+	}
 	
     it_id = $(obj).parents('tr').find('#linefeatures-id');
+
+    update_rules_group_val();
 	
 	if (it_id.val() == 0)
 		return false;
@@ -208,8 +218,6 @@ function lnkdroprow(obj) {
 	
     if ($('#list_lines_free option').length > 0)
     	$('#box-lines_free').show();
-
-    update_rules_group_val();
     
     return false;
 }

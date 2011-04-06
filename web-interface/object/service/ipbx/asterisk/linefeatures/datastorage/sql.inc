@@ -246,15 +246,43 @@ class xivo_service_asterisk_linefeatures_sql extends xivo_service_asterisk_abstr
 		return($r);
 	}
 
-	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	function get_all_where($arr,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
 		$this->_cnt = 0;
 
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
-		else if(($arr['internal'] = $this->_set_param_internal()) === null)
-			unset($arr['internal']);
 
+		$this->_dso->new_select($this->_table);
+
+		if($disable !== null && isset($this->_disable) === true)
+			$arr[$this->_disable] = intval((bool) $disable);
+
+		if(($internal = $this->_set_param_internal()) !== null)
+			$arr['internal'] = $internal;
+
+		if(empty($arr) === false)
+			$this->_dso->andwhere($arr,$this->_table);
+			
+		$this->_dso->leftjoin('usersip',
+				       $this->_table.'.protocolid = usersip.id',
+				       null,
+				       'encryption');
+		$this->_dso->joinwhere('usersip',array('protocol' => 'sip'));
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 		return(parent::get_list_where($arr,$disable,$order,$limit,true));
 	}
 }
