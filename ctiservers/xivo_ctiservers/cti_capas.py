@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -44,7 +44,6 @@ class Capabilities:
         self.conngui = 0
         self.maxgui = -1
         self.presenceid = 'none'
-        self.watchedpresenceid = 'none'
         self.guiurl = None
         self.allowed_xlets = allowed_xlets
         return
@@ -74,12 +73,6 @@ class Capabilities:
 
     def setpresenceid(self, presenceid):
         self.presenceid = presenceid
-        if self.watchedpresenceid == 'none':
-            self.watchedpresenceid = presenceid
-        return
-
-    def setwatchedpresenceid(self, watchedpresenceid):
-        self.watchedpresenceid = watchedpresenceid
         return
 
     def getguisettings(self):

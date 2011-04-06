@@ -20,8 +20,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10133 $'
+__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -46,7 +46,7 @@ __author__    = 'Corentin Le Gall'
 # 3) Main loop
 # The main loop is triggered by a select() on the file descriptors for :
 # - the AMI Event sockets (AMIsocks)
-# - the incoming TCP sockets (CTI, WEBI, INFO, (F)AGI)
+# - the incoming TCP sockets (CTI, WEBI, INFO, FAGI)
 #
 # 4) Custom-defined Plugins
 #
@@ -61,6 +61,7 @@ import os
 import pickle
 import select
 import signal
+import ssl
 import socket
 import string
 import sys
@@ -69,12 +70,24 @@ import time
 import logging
 from logging.handlers import RotatingFileHandler
 import Queue
+import urllib2
+import cjson
+
+# XIVO CTI modules
 from xivo_ctiservers.client_connection import ClientConnection
+from xivo import daemonize
+from xivo_ctiservers import cti_config
+
+from xivo_ctiservers import interface_webi
+from xivo_ctiservers import interface_info
+from xivo_ctiservers import interface_cti
+from xivo_ctiservers import interface_ami
+from xivo_ctiservers import interface_fagi
+from xivo_ctiservers import innerdata
+from xivo_ctiservers import amiinterpret
+from xivo_ctiservers import queue_logger
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
-waiting_actionid = {}
-waiting_actionid_timer = {}
-dumpami = ([], [])
 
 LOGDAEMONNAME = 'cti-server'
 try:
@@ -83,7 +96,6 @@ except:
     DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-#XIVO_CONF_FILE   = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
 XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
 XIVO_CONF_FILE         = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
@@ -92,37 +104,12 @@ GETOPT_SHORTOPTS   = 'dc:p:l:'
 GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=']
 debug_mode = False
 
-infohelptext = ['',
-                'help                     : this help',
-                '-- general purpose commands --',
-                'show_infos               : gives a few informations about the server (version, uptime)',
-                '-- informations about misc lists --',
-                'show_users               : the users list',
-                'show_phones, show_trunks : phones and trunks lists',
-                'show_queues, show_groups,',
-                'show_agents              : call-center related lists',
-                'show_incomingcalls       : did lists',
-                'show_meetme              : conference rooms',
-                'show_voicemail           : voicemails',
-                'show_phonebook           : phonebook contents',
-                '-- selective lists --',
-                'show_logged              : only the logged users',
-                'show_logged_ip           : the human-readable IPs of logged users',
-                '-- for debugging purposes --',
-                'loglevel set <level>         : changes the syslog output level',
-                'show_varsizes <astid>        : gives the number of items of some variables',
-                'show_var <astid> <varname>   : outputs the contents of one such variable',
-                'dumpami enable               : enables the line-by-line display of all AMI events',
-                'dumpami enable Dial,Hangup   : enables the line-by-line display of these 2 AMI events',
-                'dumpami disable              : disables the line-by-line display of all AMI events',
-                'dumpami disable Dial,Hangup  : enables the line-by-line display of all but these 2 AMI events',
-                'dumpami                      : shows the current settings of this line-by-line display',
-                '-- slightly advanced features --',
-                'kick <user>                  : disconnects the user <user>',
-                'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
-                'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
-                'reverse <dirname> <number>   : lookup the number in the given directory',
-                '']
+BUFSIZE_LARGE = 8192
+BUFSIZE_ANY = 512
+
+filecert = '/usr/share/doc/libssl-dev/demos/sign/cert.pem'
+filekey = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
+sslproto = ssl.PROTOCOL_TLSv1
 
 def parse_command_line():
     global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, debug_mode
@@ -160,136 +147,6 @@ class manage_connection:
     # \param msg message to process
     # \param sep separator to split the message
     # \return none
-    @staticmethod
-    def manage_cti_connections(daemon, connid, msg, sep):
-        """
-        Handles CTI connections.
-        """
-        requester = '%s:%d' % connid.getpeername()
-        if requester in daemon.commandclass.transfers_ref:
-            daemon.commandclass.transfer_addbuf(requester, msg)
-            return
-
-        multimsg = msg.split(sep)
-        for usefulmsgpart in multimsg:
-            # remove tailing \r
-            usefulmsg = usefulmsgpart.split('\r')[0]
-            if len(usefulmsg) == 0:
-                break
-            command = daemon.commandclass.parsecommand(usefulmsg)
-            if command.name in daemon.commandclass.get_list_commands():
-                try:
-                    commandtype_list = [xivo_commandsets.CMD_LOGIN_ID,
-                                        xivo_commandsets.CMD_LOGIN_PASS,
-                                        xivo_commandsets.CMD_LOGIN_CAPAS]
-                    if command.type in commandtype_list:
-                        # log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
-                        loginparams = daemon.commandclass.get_login_params(command, daemon.asterisklist[0], connid)
-                        # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
-                        uinfo = daemon.commandclass.manage_login(loginparams, command.type, daemon.userinfo_current.get(connid))
-                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
-
-                        if isinstance(uinfo, str):
-                            daemon.commandclass.loginko(loginparams, uinfo, connid)
-                            log.info('TCP socket %s closed(loginko) on %s' % (daemon.fdlist_established[connid],
-                                                                              '%s:%d' % connid.getpeername()))
-                            del daemon.fdlist_established[connid]
-                            connid.close()
-                        else:
-                            if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
-                                uinfo['login']['connection'] = connid
-                                daemon.userinfo_by_requester[connid] = uinfo
-                                if connid in daemon.userinfo_current:
-                                    del daemon.userinfo_current[connid]
-                            else:
-                                daemon.userinfo_current[connid] = uinfo
-                            daemon.commandclass.loginok(loginparams, uinfo, connid, command.type)
-                    elif command.type == xivo_commandsets.CMD_TRANSFER:
-                        log.info('TRANSFER on %s : %s' % (requester, command.struct))
-                        daemon.commandclass.transfer_addref(connid, command.struct)
-                    else:
-                        if connid in daemon.userinfo_by_requester:
-                            daemon.commandclass.manage_cticommand(daemon.userinfo_by_requester[connid], command)
-                        else:
-                            log.warning('unlogged %s is attempting a %s (TCP) : %s'
-                                        % (requester, command.name, command.args))
-                except Exception:
-                    log.exception('CTI connection when managing [%s, %s] for %s'
-                                  % (command.name, command.type, requester))
-            else:
-                connid.sendall('Unknown Command <%s>\n' % command.name)
-
-
-    ## \brief Deals with requests from the UI clients.
-    # \param connid connection identifier
-    # \return none
-    @staticmethod
-    def manage_webi_connections(daemon, connid, msg, sep):
-        """
-        Handles WEBI connections.
-        """
-        requester = '%s:%d' % connid.getpeername()
-        requester_ip = connid.getpeername()[0]
-        closemenow = True
-
-        if requester_ip not in daemon.ip_reverse_webi:
-            connid.sendall('%s:KO <NOT ALLOWED FROM %s>\n' % (XIVO_CLI_WEBI_HEADER, requester_ip))
-            return closemenow
-        astid = daemon.ip_reverse_webi[requester_ip]
-
-        multimsg = msg.split(sep)
-        for usefulmsgpart in multimsg:
-            usefulmsg = usefulmsgpart.split('\r')[0]
-            if len(usefulmsg) == 0:
-                break
-            try:
-                xivocmd_update_list = ['xivo[userlist,update]',
-                                       'xivo[meetmelist,update]',
-                                       'xivo[agentlist,update]',
-                                       'xivo[queuelist,update]',
-                                       'xivo[grouplist,update]']
-                if usefulmsg in xivocmd_update_list:
-                    if usefulmsg not in daemon.update_userlist[astid]:
-                        daemon.update_userlist[astid].append(usefulmsg)
-                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                    else:
-                        log.info('%s : WEBI re-requested %s (%s)' % (astid, usefulmsg, requester))
-                elif usefulmsg == 'xivo[daemon,reload]':
-                    daemon.askedtoquit = True
-                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                elif usefulmsg == 'xivo[ctiprofilelist,get]':
-                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                    connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                    connid.sendall('%s\n' % daemon.commandclass.getprofilelist())
-                    connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                elif astid in daemon.amilist.ami and daemon.amilist.ami[astid]:
-                    stripped_usefulmsg = usefulmsg.strip()
-                    try:
-                        if stripped_usefulmsg == 'moh reload':
-                            daemon.commandclass.pre_moh_reload()
-                        elif stripped_usefulmsg == 'reload':
-                            daemon.commandclass.pre_reload()
-                    except Exception:
-                        log.exception('(pre reloads (%s))' % stripped_usefulmsg)
-
-                    closemenow = False
-
-                    try:
-                        actionid = daemon.amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
-                        log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg, actionid, connid))
-
-                        waiting_actionid[actionid] = connid
-                        waiting_actionid_timer[actionid] = threading.Timer(5, manage_connection.callback_timer_main,
-                                                                           (daemon, ('webirequest', actionid)))
-                        waiting_actionid_timer[actionid].start()
-                    except Exception, exc:
-                        log.error('(%s) WEBI command exec <%s> : (client %s) : %s'
-                                  % (astid, stripped_usefulmsg, requester, exc))
-            except Exception, exc:
-                log.error('(%s) WEBI <%s> : (client %s) : %s'
-                          % (astid, usefulmsg.strip(), requester, exc))
-                connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, exc))
-        return closemenow
 
 
     ## \brief Deals with requests from the UI clients.
@@ -535,267 +392,38 @@ class manage_connection:
                               % (usefulmsg, requester))
 
     @staticmethod
-    def manage_tcp_connections(daemon, sel_i, msg, kind):
+    def manage_tcp_connections(sel_i, msg, kind):
         """
         Dispatches the message's handling according to the connection's kind.
         """
-        closemenow = True
-        if kind == 'CTI':
-            manage_connection.manage_cti_connections(daemon, sel_i, msg, daemon.commandclass.ctiseparator)
-        elif kind == 'WEBI':
-            closemenow = manage_connection.manage_webi_connections(daemon, sel_i, msg, '\n')
-        elif kind == 'INFO':
-            manage_connection.manage_info_connections(daemon, sel_i, msg, '\n')
-        elif kind == 'AGI':
-            agireply = daemon.commandclass.handle_agi(daemon.asterisklist[0], msg)
-            if agireply is not None:
-                sel_i.sendall(agireply)
+        closemenow = False
+        if not isinstance(kind, str): # CTI, INFO, WEBI
+            f = kind.manage_connection(msg)
+            try:
+                if f:
+                    if f.has_key('closemenow'):
+                        closemenow = f.get('closemenow')
+                    if f.has_key('message'):
+                        kind.reply(f.get('message'))
+                    elif f.has_key('warning'):
+                        kind.reply(f.get('warning'))
+            except Exception:
+                log.exception('reply %s to %s' % (f, msg))
+            # issue : when to define the recipient list ?
+            # change status
+            # find changes
+            # warn
         else:
             log.warning('unknown connection kind %s' % kind)
         return closemenow
 
 
-    """
-    Management of events that are spied on the AMI
-    """
-    ## \brief Handling of AMI events occuring in Events=on mode.
-    # \param astid the asterisk Id
-    # \param idata the data read from the AMI we want to parse
-    # \return none
-    @staticmethod
-    def handle_ami_event(daemon, astid, idata):
-        """
-        Handles the AMI events occuring on Asterisk.
-        If the Event field is there, calls the handle_ami_function() function.
-        """
-        if astid not in daemon.configs:
-            log.info('%s : no such asterisk Id' % astid)
-            return
-
-        full_idata = daemon.save_for_next_packet_events[astid] + idata
-        evlist = full_idata.split('\r\n\r\n')
-        daemon.save_for_next_packet_events[astid] = evlist.pop()
-
-        for ievt in evlist:
-            try:
-                evt = ievt.decode('utf8')
-            except Exception:
-                log.exception('%s could not decode event %r' % (astid, ievt))
-                continue
-            this_event = {}
-            nocolon = []
-            for myline in evt.split('\r\n'):
-                if myline.find('\n') < 0:
-                    if myline != '--END COMMAND--': # occurs when requesting "module reload xxx.so" for instance
-                        myfieldvalue = myline.split(': ', 1)
-                        if len(myfieldvalue) == 2:
-                            this_event[myfieldvalue[0]] = myfieldvalue[1]
-                        else:
-                            if myline.startswith('Asterisk Call Manager'):
-                                log.info('%s : %s' % (astid, myline))
-                            elif myline == 'ReportBlock:':
-                                # single line in RTCPSent events - ignoring it for the time being
-                                pass
-                            else:
-                                log.warning('%s unable to parse <%s> : %s'
-                                            % (astid, myline, evt.split('\r\n')))
-                else:
-                    nocolon.append(myline)
-
-            if len(nocolon) > 1:
-                log.warning('%s nocolon is %s' % (astid, nocolon))
-
-            evfunction = this_event.pop('Event', None)
-            # log.info('%s AMI(all)  %s  : %s' % (astid, evfunction, this_event))
-            if evfunction is not None:
-                (dumpami_allow, dumpami_disallow) = dumpami
-                if dumpami_allow:
-                    todisp = this_event
-                    efn = evfunction
-                    if dumpami_allow == ['all'] or efn in dumpami_allow:
-                        doallow = True
-                        if dumpami_disallow and efn in dumpami_disallow:
-                            doallow = False
-                        if doallow:
-                            for ik, iv in daemon.fdlist_established.iteritems():
-                                if iv == 'INFO':
-                                    ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
-                manage_connection.handle_ami_function(daemon, astid, evfunction, this_event)
-
-                if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
-                    pass
-                    # verboselog('%s %s' % (astid, this_event), True, False)
-            else: # {
-                response = this_event.get('Response')
-
-                if response is not None:
-                    if response == 'Follows' and this_event.get('Privilege') == 'Command':
-                        if 'ActionID' in this_event:
-                            actionid = this_event.get('ActionID')
-                            connreply = waiting_actionid.get(actionid)
-                            try:
-                                if connreply is not None:
-                                    connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                for noc in nocolon:
-                                    arggs = noc.split('\n')
-                                    for toremove in ['', '--END COMMAND--']:
-                                        while toremove in arggs:
-                                            arggs.remove(toremove)
-                                    if arggs:
-                                        if connreply is not None:
-                                            log.info('%s AMI Response : %s : %s' % (astid, actionid, arggs))
-                                            for argg in arggs:
-                                                connreply.sendall(argg + '\n')
-                                if connreply is not None:
-                                    connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                    log.info('TCP socket %s closed(actionid-ok) on %s' % (daemon.fdlist_established[connreply],
-                                                                                          '%s:%d' % connreply.getpeername()))
-                                    del daemon.fdlist_established[connreply]
-                                    connreply.close()
-                                    del waiting_actionid[actionid]
-                                    waiting_actionid_timer[actionid].cancel()
-                                    del waiting_actionid_timer[actionid]
-                            except Exception, e:
-                                log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
-                                print e
-                        try:
-                            daemon.commandclass.amiresponse_follows(astid, this_event, nocolon)
-                        except Exception:
-                            log.exception('%s amiresponse_follows (%s) (%s)' % (astid, this_event, nocolon))
-                    elif response == 'Success':
-                        try:
-                            daemon.commandclass.amiresponse_success(astid, this_event, nocolon)
-                        except Exception:
-                            log.exception('%s amiresponse_success (%s) (%s)' % (astid, this_event, nocolon))
-                    elif response == 'Error':
-                        if 'ActionID' in this_event:
-                            actionid = this_event.get('ActionID')
-                            connreply = waiting_actionid.get(actionid)
-                            try:
-                                if connreply is not None:
-                                    connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                    connreply.sendall('%s:KO\n' % XIVO_CLI_WEBI_HEADER)
-                                    log.info('TCP socket %s closed(actionid-ko) on %s' % (daemon.fdlist_established[connreply],
-                                                                                          '%s:%d' % connreply.getpeername()))
-                                    del daemon.fdlist_established[connreply]
-                                    connreply.close()
-                                    del waiting_actionid[actionid]
-                                    waiting_actionid_timer[actionid].cancel()
-                                    del waiting_actionid_timer[actionid]
-                            except Exception:
-                                log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
-                        try:
-                            daemon.commandclass.amiresponse_error(astid, this_event, nocolon)
-                        except Exception:
-                            log.exception('%s amiresponse_error (%s) (%s)' % (astid, this_event, nocolon))
-                    else:
-                        log.warning('AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
-
-                elif len(this_event) > 0:
-                    log.warning('AMI:XXX: <%s> : %s' % (astid, this_event))
-                else:
-                    log.warning('AMI %s Other : %s' % (astid, this_event))
-            # }
-        nevts = len(evlist)
-        if nevts > 200:
-            log.info('%s : handled %d (> 200) events' % (astid, nevts))
-
-    @staticmethod
-    def handle_ami_function(daemon, astid, evfunction, this_event):
-        """
-        Handles the AMI events related to a given function (i.e. containing the Event field).
-        It roughly only dispatches them to the relevant commandset's methods.
-        """
-        try:
-            if 'Privilege' in this_event:
-                this_event.pop('Privilege')
-            if (evfunction in xivo_ami.evfunction_to_method_name):
-                methodname = xivo_ami.evfunction_to_method_name.get(evfunction)
-                if hasattr(daemon.commandclass, methodname):
-                    getattr(daemon.commandclass, methodname)(astid, this_event)
-                else:
-                    log.warning('%s AMI ... this event (%s) is tracked but no %s method is defined : %s'
-                                % (astid, evfunction, methodname, this_event))
-            else:
-                log.warning('%s AMI ... this event (%s) is not tracked : %s'
-                            % (astid, evfunction, this_event))
-
-        except Exception:
-            log.exception('%s AMI / %s : event %s' % (astid, evfunction, this_event))
-
-
-    @staticmethod
-    def update_amisocks(astid, daemon):
-        """
-        Connects to the Asterisk's AMI (defined by astid) if not yet done.
-        Requests a Status when it (re)connects.
-        """
-        try:
-            daemon.amilist.setconfig(astid,
-                                     (daemon.configs[astid].remoteaddr,
-                                      daemon.configs[astid].ami_port),
-                                     daemon.configs[astid].ami_login,
-                                     daemon.configs[astid].ami_pass)
-            daemon.amilist.connect(astid)
-            daemon.amilist.set_aoriginate(astid, daemon.configs[astid].aoriginate)
-
-        except Exception:
-            log.exception('%s (update_amisocks) %s:%d' % (astid, daemon.configs[astid].remoteaddr, daemon.configs[astid].ami_port))
-        return
-
-
-    @staticmethod
-    def callback_timer_main(*args):
-        try:
-            thisthread = threading.currentThread()
-            daemon = args[0]
-            tname = thisthread.getName()
-            log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
-            thisthread.setName(tname + '-' + '-'.join(args[1]))
-            daemon.tqueue.put(thisthread)
-            os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
-        except Exception:
-            log.exception('callback_timer_main %s' % args)
-        return
-
-    @staticmethod
-    def checkqueue_main(daemon, buf):
-        log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, daemon.tqueue.qsize()))
-        while daemon.tqueue.qsize() > 0:
-            thisthread = daemon.tqueue.get()
-            if len(thisthread.args) > 1 and len(thisthread.args[1]) > 1:
-                action = thisthread.args[1][0]
-                if action == 'ipbxup':
-                    # check whether the AMI is already connected,
-                    # and connects if needed
-                    astid = thisthread.args[1][1]
-                    manage_connection.update_amisocks(astid, daemon)
-                elif action == 'webirequest':
-                    # checks whether the given actionid is still ongoing and closes
-                    # the related WEBI request then
-                    actionid = thisthread.args[1][1]
-                    if actionid in waiting_actionid and actionid in waiting_actionid_timer:
-                        conn_to_close = waiting_actionid[actionid]
-                        log.info('closing the WEBI connection %s for the request %s'
-                                 % (conn_to_close, actionid))
-                        del daemon.fdlist_established[conn_to_close]
-                        conn_to_close.close()
-                        del waiting_actionid[actionid]
-                        del waiting_actionid_timer[actionid]
-                    else:
-                        log.warning('the actionid %s has gone' % actionid)
-                else:
-                    log.warning('unknown action <%r>' % action)
-            else:
-                log.warning('malformed tqueue : not enough arguments in %s' % thisthread.args)
-        return
-
-
 
 class xivo_daemon:
-    # ==============================================================================
-    # Main Code starts here
-    # ==============================================================================
+    xivoversion = '1.2'
+    revision = __version__.split()[1]
+    xdname = 'XiVO CTI Server'
+
     def __init__(self):
         # print sys.getdefaultencoding()
         logging.basicConfig(level = logging.INFO)
@@ -825,12 +453,10 @@ class xivo_daemon:
         signal.signal(signal.SIGHUP, self.sighandler_reload)
 
         self.nreload = 0
-        self.contextlist = xivo_contexts.Contexts()
-        self.configs = {}
-        self.xdname = None
-        self.tqueue = Queue.Queue()
-        self.pipe_queued_threads_commandclass = None
-        self.pipe_queued_threads_main = None
+        self.myami = {}
+        self.safe = {}
+        self.timeout_queue = Queue.Queue()
+        self.pipe_queued_threads = None
 
         while True:
             try:
@@ -851,6 +477,7 @@ class xivo_daemon:
             print '--- living thread <%s>' % (t.getName())
             t._Thread__stop()
         self.askedtoquit = True
+        return
 
     ## \brief Handler for catching signals (in the main thread)
     # \param signum signal number
@@ -859,284 +486,174 @@ class xivo_daemon:
     def sighandler_reload(self, signum, frame):
         log.warning('(sighandler_reload) signal %s lineno %s (atq = %s) received : reloads' % (signum, frame.f_lineno, self.askedtoquit))
         self.askedtoquit = False
+        return
 
-    def update_readconf(self):
-        log.info('reparsing config file(s)')
+    def find_matching_ipbxid(self, ipaddress):
+        found_ipbxid = None
+        for ipbxid, ipbxconfig in self.cconf.xc_json.get('ipbxes').iteritems():
+            connparams = ipbxconfig.get('connection')
+            cfg_ip_address = connparams.get('ipaddress')
+            if ipaddress == cfg_ip_address:
+                found_ipbxid = ipbxid
+                break
+        return found_ipbxid
+
+    def checkqueue(self):
+        log.info('entering checkqueue')
+        ncount = 0
+        while self.timeout_queue.qsize() > 0:
+            ncount += 1
+            (toload,) = self.timeout_queue.get()
+            action = toload.get('action')
+            if action == 'ipbxup':
+                sockparams = toload.get('properties').get('sockparams')
+                got_ip_address = sockparams[0]
+                ipbxid = self.find_matching_ipbxid(got_ip_address)
+                if ipbxid:
+                    log.info('attempting to reconnect the AMI for %s' % ipbxid)
+                    z = self.myami[ipbxid].connect()
+                    self.fdlist_ami[z] = self.myami[ipbxid]
+                else:
+                    log.warning('did not found a matching ipbxid for the address %s'
+                                % got_ip_address)
+            elif action == 'ctilogin':
+                connc = toload.get('properties')
+                connc.close()
+                if connc in self.fdlist_established:
+                    del self.fdlist_established[connc]
+                else:
+                    log.warning('could not remove connexion : already done ...')
+        return ncount
+
+    def cb_timer(self, *args):
         try:
-            lconf = cti_config.Config(XIVO_CONF_FILE)
+            tname = threading.currentThread()
+            tname.setName('Thread-main')
+            log.info('cb_timer (timer finished at %s) %s' % (time.asctime(), args))
+            self.timeout_queue.put(args)
+            os.write(self.pipe_queued_threads[1], 'main:\n')
         except Exception:
-            log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
-            lconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
-        self.commandclass.set_cticonfig(lconf)
-
-    # loads the configuration for each asterisk
-    def load_asterisk_conf(self):   # {
-        for astid in self.asterisklist:
-            xivoconf_asterisk = self.cconf.xc_json[astid]
-            if xivoconf_asterisk:
-                urllist = {}
-                ipaddress = '127.0.0.1'
-                ipaddress_webi = '127.0.0.1'
-                ami_port = 5038
-                ami_login = 'xivouser'
-                ami_pass = 'xivouser'
-                cdr_db_uri = userfeatures_db_uri = None
-                parkingnumber = '700'
-                faxcallerid = 'faxcallerid'
-                aoriginate = 'AOriginate'
-                url_queuelog = None
-
-                for listname in self.commandclass.weblist.keys():
-                    fieldname = 'urllist_%s' % listname
-                    if fieldname in xivoconf_asterisk:
-                        urllist[listname] = xivoconf_asterisk[fieldname]
-                    else:
-                        urllist[listname] = []
-                if 'url_queuelog' in xivoconf_asterisk:
-                    url_queuelog = xivoconf_asterisk['url_queuelog']
-                if 'ipaddress' in xivoconf_asterisk:
-                    ipaddress = xivoconf_asterisk['ipaddress']
-                if 'ipaddress_webi' in xivoconf_asterisk:
-                    ipaddress_webi = xivoconf_asterisk['ipaddress_webi']
-                if 'parkingnumber' in xivoconf_asterisk:
-                    parkingnumber = int(xivoconf_asterisk['parkingnumber'])
-                if 'faxcallerid' in xivoconf_asterisk:
-                    faxcallerid = int(xivoconf_asterisk['faxcallerid'])
-                if 'ami_port' in xivoconf_asterisk:
-                    ami_port = int(xivoconf_asterisk['ami_port'])
-                if 'ami_login' in xivoconf_asterisk:
-                    ami_login = xivoconf_asterisk['ami_login']
-                if 'ami_pass' in xivoconf_asterisk:
-                    ami_pass = xivoconf_asterisk['ami_pass']
-                if 'userfeatures_db_uri' in xivoconf_asterisk:
-                    userfeatures_db_uri = xivoconf_asterisk['userfeatures_db_uri']
-                if 'cdr_db_uri' in xivoconf_asterisk:
-                    cdr_db_uri = xivoconf_asterisk['cdr_db_uri']
-                if 'aoriginate' in xivoconf_asterisk:
-                    aoriginate = xivoconf_asterisk['aoriginate']
-
-                capafeatures = []
-
-                self.configs[astid] = xivo_astcfg.AsteriskConfig(astid,
-                                                                 ipaddress,
-                                                                 ipaddress_webi,
-                                                                 ami_port,
-                                                                 ami_login,
-                                                                 ami_pass,
-                                                                 userfeatures_db_uri,
-                                                                 capafeatures,
-                                                                 cdr_db_uri,
-                                                                 parkingnumber,
-                                                                 faxcallerid,
-                                                                 aoriginate)
-
-                for ilist in self.commandclass.weblist.keys():
-                    self.commandclass.set_urllist(astid, ilist, urllist[ilist])
-
-                t1 = time.time()
-                self.commandclass.read_queuelog(astid, url_queuelog)
-                t2 = time.time()
-
-                log.info('%s spent %f seconds to read queuelog file' % (astid, t2 - t1))
-
-                if ipaddress not in self.ip_reverse_sht:
-                    self.ip_reverse_sht[ipaddress] = astid
-                else:
-                    log.warning('WARNING - IP address already exists for asterisk <%s> - can not set it for <%s>' %
-                                (self.ip_reverse_sht[ipaddress], astid))
-                if ipaddress_webi not in self.ip_reverse_webi:
-                    self.ip_reverse_webi[ipaddress_webi] = astid
-                else:
-                    log.warning('WARNING - IP address (WEBI) already exists for asterisk <%s> - can not set it for <%s>' %
-                                (self.ip_reverse_webi[ipaddress_webi], astid))
-
-                self.save_for_next_packet_events[astid] = ''
-    # }
+            log.exception('cb_timer %s' % args)
+        return
 
     def main_loop(self):    # {
         self.askedtoquit = False
 
         self.time_start = time.localtime()
-        if self.nreload == 0:
-            log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Starting' %
-                     (XIVOVERSION, os.getpid(), __revision__))
-        else:
-            log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Reloading (%d)' %
-                     (XIVOVERSION, os.getpid(), __revision__, self.nreload))
+        log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Starting (%d)'
+                 % (self.xivoversion, os.getpid(), self.revision, self.nreload))
         self.nreload += 1
 
         # global default definitions
         incoming_tcp_ports = []
         incoming_udp_ports = []
-        self.asterisklist = []
-        userlists = []
         ctilog = None
 
-        self.userinfo_by_requester = {}
-        self.userinfo_current = {}
-
-        try:
-            self.cconf = cti_config.Config(XIVO_CONF_FILE)
-        except Exception:
-            log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
-            self.cconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
-        xivoconf_general = self.cconf.xc_json['main']
-
-        # loads the general configuration
-        self.commandset = xivoconf_general['commandset']
-        for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:
-            fieldname = 'incoming_tcp_%s' % func.lower()
-            if fieldname in xivoconf_general:
-                bind_and_port = xivoconf_general[fieldname]
-                if len(bind_and_port) > 1:
-                    try:
-                        incoming_tcp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
-                    except Exception:
-                        log.exception('%s definition' % fieldname)
-        for func in ['ANNOUNCE']:
-            fieldname = 'incoming_udp_%s' % func.lower()
-            if fieldname in xivoconf_general:
-                bind_and_port = xivoconf_general[fieldname]
-                if len(bind_and_port) > 1:
-                    try:
-                        incoming_udp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
-                    except Exception:
-                        log.exception('%s definition' % fieldname)
-
-        self.extraconn = xivoconf_general.get('extraconn', '')
-        self.updates_period = int(xivoconf_general.get('updates_period', '60'))
-        ctilog = xivoconf_general.get('ctilog_db_uri')
-        socktimeout = xivoconf_general.get('sockettimeout', '2')
-        logintimeout = int(xivoconf_general.get('logintimeout', '5'))
-        self.apnoeafile = xivoconf_general.get('apnoeafile')
-        prefixfile = xivoconf_general.get('prefixfile')
-        parting_astid_context = xivoconf_general.get('parting_astid_context')
-        if 'asterisklist' in xivoconf_general:
-            self.asterisklist = xivoconf_general['asterisklist']
-        if 'userlists' in xivoconf_general:
-            userlists = xivoconf_general['userlists']
-
-        socket.setdefaulttimeout(float(socktimeout))
-
-        if not self.pipe_queued_threads_commandclass and not self.pipe_queued_threads_main:
-            self.pipe_queued_threads_commandclass = os.pipe()
-            self.pipe_queued_threads_main = os.pipe()
-
-        self.amilist = xivo_ami.AMIList()
-        if self.commandset in xivo_commandsets.CommandClasses:
-            self.commandclass = xivo_commandsets.CommandClasses[self.commandset](self.amilist,
-                                                                                 incoming_tcp_ports,
-                                                                                 self.pipe_queued_threads_commandclass)
-        else:
-            self.commandclass = xivo_commandsets.BaseCommand()
-            log.warning('# STARTING %s : no such commandset <%s>' % (xdname, self.commandset))
-
-        self.xdname = self.commandclass.xdname
-
-        log.info('# STARTING %s / svn:%s / %d' % (self.xdname, self.commandclass.version(), self.nreload))
-
-        self.update_readconf()
-        self.commandclass.set_userlist_urls(userlists)
-        self.commandclass.set_contextlist(self.contextlist)
-        self.commandclass.set_configs(self.configs)
-        self.commandclass.set_ctilog(ctilog)
-        self.commandclass.set_logintimeout(logintimeout)
-
-        if self.apnoeafile:
-            try:
-                e = open(self.apnoeafile, 'r')
-                torescue = pickle.loads(e.read())
-                e.close()
-                self.commandclass.apnoea_rescue(torescue)
-            except:
-                log.exception('read apnoea file %s' % apnoeafile)
-        if prefixfile:
-            self.commandclass.read_internatprefixes(prefixfile)
-        if parting_astid_context:
-            self.commandclass.set_partings(parting_astid_context)
-
-        for contextname, contextdef in self.cconf.xc_json['contexts'].iteritems():
-            displaysection = contextdef['display']
-            self.contextlist.setdisplay(contextname, self.cconf.xc_json['displays'][displaysection[9:]])
-            for dr in contextdef['directories']:
-                try:
-                    self.contextlist.update(contextname, dr,
-                                            self.cconf.xc_json['directories'][dr[12:]])
-                except Exception:
-                    log.exception('unable to read directory config for %s' % dr)
-
-        self.save_for_next_packet_events = {}
-        self.ip_reverse_webi = {}
-        self.ip_reverse_sht = {}
-
-        self.load_asterisk_conf()
-
-        self.outsock = self.commandclass.extrasock(self.extraconn)
-
-        self.fdlist_established = {}
-        self.fdlist_listen_cti = {}
-        self.fdlist_udp_cti = {}
         self.update_userlist = {}
         self.lastrequest_time = {}
 
-        log.info("the monitored asterisk's is/are : %s" % self.asterisklist)
+        self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
+
+        queue_logger.queue_logger.init(self.cconf.xc_json['main'].get('asterisk_queuestat_db'))
+
+        xivoconf_general = self.cconf.xc_json['main']
+
+        # loads the general configuration
+        self.updates_period = int(xivoconf_general.get('updates_period', '60'))
+        ctilog = xivoconf_general.get('ctilog_db_uri')
+        socktimeout = xivoconf_general.get('sockettimeout', '2')
+        prefixfile = xivoconf_general.get('prefixfile')
+        parting_ipbxid_context = xivoconf_general.get('parting_ipbxid_context')
+
+        socket.setdefaulttimeout(float(socktimeout))
+
+        if not self.pipe_queued_threads:
+            self.pipe_queued_threads = os.pipe()
+
+        for ipbxid, ipbxconfig in self.cconf.xc_json.get('ipbxes').iteritems():
+            # interface : safe deposit
+            self.safe[ipbxid] = innerdata.Safe(self, ipbxid, ipbxconfig.get('urllists'))
+            # interface : AMI
+            self.myami[ipbxid] = interface_ami.AMI(self, ipbxid, ipbxconfig.get('connection'))
+            self.commandclass = amiinterpret.AMI_1_8(self, ipbxid)
+
+            log.info('# STARTING %s / svn:%s / %d'
+                     % (self.xdname, self.safe[ipbxid].version(), self.nreload))
+
+            self.safe[ipbxid].set_ctilog(ctilog)
+            self.safe[ipbxid].read_internatprefixes(prefixfile)
+            self.safe[ipbxid].set_partings(parting_ipbxid_context)
+
+        self.guiconfig = self.cconf.getconfig()
+
+        # sockets management
+        self.fdlist_established = {}
+        self.fdlist_listen_cti = {}
+        self.fdlist_udp_cti = {}
+        self.fdlist_ami = {}
+
+        log.info("the monitored ipbx's is/are : %s" % self.cconf.xc_json.get('ipbxes').keys())
         log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % self.xdname)
 
-        for astid in self.configs: # {
+        for ipbxid in self.cconf.xc_json.get('ipbxes').keys():
             try:
-                self.update_userlist[astid] = []
-                self.lastrequest_time[astid] = time.time()
-                manage_connection.update_amisocks(astid, self)
+                self.update_userlist[ipbxid] = []
+                self.lastrequest_time[ipbxid] = time.time()
+                z = self.myami[ipbxid].connect()
+                self.fdlist_ami[z] = self.myami[ipbxid]
             except Exception:
-                log.exception('%s : failed while setting lists and sockets' % astid)
+                log.exception('%s : failed while connecting to the ipbx' % ipbxid)
 
             try:
-                self.commandclass.updates(astid, 'all') # all updates ...
+                self.safe[ipbxid].update_config_list_all()
             except Exception:
-                log.exception('%s : commandclass.updates()' % astid)
+                log.exception('%s : commandclass.updates()' % ipbxid)
         # }
 
-        log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % self.xdname)
-        # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
-        for portkind in incoming_tcp_ports:
-            pk = portkind.split(':')
-            port = pk[0]
-            kind = 'INFO'
-            bind = '127.0.0.1'
-            nmax = '1'
-            if len(pk) > 1:
-                kind = pk[1].strip()
-                if len(pk) > 2:
-                    bind = pk[2].strip()
-                    if len(pk) > 3:
-                        nmax = pk[3].strip()
-            UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            UIsock.bind((bind, int(port)))
-            UIsock.listen(10)
-            self.fdlist_listen_cti[UIsock] = '%s:%s' % (kind, nmax)
+        log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, FAGI, INFO)' % self.xdname)
+        # opens the listening socket for incoming (CTI, WEBI, FAGI, INFO) connections
+        for kind, bind_and_port in xivoconf_general.get('incoming_tcp_ports').iteritems():
+            try:
+                (bind, port) = bind_and_port
+                gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_STREAM, socket.SOL_TCP)
+                if not gai:
+                    continue
+                (afinet, socktype, proto, dummy, bindtuple) = gai[0]
+                UIsock = socket.socket(afinet, socktype)
+                UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                UIsock.bind(bindtuple)
+                UIsock.listen(10)
+                self.fdlist_listen_cti[UIsock] = '%s:%s' % (kind, 1)
+            except Exception:
+                log.exception('%s' % bind_and_port)
 
-        for portkind in incoming_udp_ports:
-            pk = portkind.split(':')
-            port = pk[0]
-            kind = 'INFO'
-            bind = '127.0.0.1'
-            nmax = '1'
-            if len(pk) > 1:
-                kind = pk[1].strip()
-                if len(pk) > 2:
-                    bind = pk[2].strip()
-                    if len(pk) > 3:
-                        nmax = pk[3].strip()
-            UIsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            UIsock.bind((bind, int(port)))
-            self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, nmax)
+        for kind, bind_and_port in xivoconf_general.get('incoming_udp_ports').iteritems():
+            try:
+                (bind, port) = bind_and_port
+                gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
+                if not gai:
+                    continue
+                (afinet, socktype, proto, dummy, bindtuple) = gai[0]
+                UIsock = socket.socket(afinet, socktype)
+                UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                UIsock.bind(bindtuple)
+                self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, 1)
+            except Exception:
+                log.exception('%s' % bind_and_port)
 
         # Main select() loop - Receive messages
         while not self.askedtoquit:
             self.select_step()
     # }
+
+    def loop_over_cti_queue(self, ipbxid):
+        cti_queue = self.safe[ipbxid].events_cti
+        while cti_queue.qsize() > 0:
+            it = cti_queue.get()
+            for k in self.fdlist_established.itervalues():
+                if not isinstance(k, str) and k.kind == 'CTI':
+                    k.reply(it)
+        return
 
     def select_step(self):  # {
         try:    # {
@@ -1153,18 +670,14 @@ class xivo_daemon:
                 log.warning('there are fd to delete : %s' % fdtodel)
                 for cn in fdtodel:
                     del self.fdlist_established[cn]
-                    if cn in self.userinfo_by_requester:
-                        del self.userinfo_by_requester[cn]
 
             self.fdlist_full = list()
-            self.fdlist_full.append(self.pipe_queued_threads_commandclass[0])
-            self.fdlist_full.append(self.pipe_queued_threads_main[0])
+            self.fdlist_full.append(self.pipe_queued_threads[0])
+            # put AMI fd's before FAGI ones in order to be properly synced
+            self.fdlist_full.extend(self.fdlist_ami.keys())
             self.fdlist_full.extend(self.fdlist_listen_cti.keys())
             self.fdlist_full.extend(self.fdlist_udp_cti.keys())
             self.fdlist_full.extend(self.fdlist_established.keys())
-            self.fdlist_full.extend(self.amilist.fdlist())
-            if self.outsock is not None:
-                self.fdlist_full.append(self.outsock)
             writefds = []
             for iconn, kind in self.fdlist_established.iteritems():
                 if kind == 'CTI' and iconn.need_sending():
@@ -1176,37 +689,23 @@ class xivo_daemon:
             log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
             log.warning('(select) self.askedtoquit=%s fdlist_full=%s'
                         % (self.askedtoquit, self.fdlist_full))
-            log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s'
+            log.warning('(select) current open TCP connections : (CTI, WEBI, FAGI, INFO) %s'
                         % self.fdlist_established)
             log.warning('(select) current open TCP connections : (AMI) %s'
-                        % self.amilist.fdlist())
-            log.warning('(select) current open TCP connections : (OUT) %s'
-                        % self.outsock)
-
-            if self.askedtoquit and self.apnoeafile:
-                try:
-                    tosave = self.commandclass.apnoea_tosave()
-                    e = open(self.apnoeafile, 'w')
-                    e.write(pickle.dumps(tosave))
-                    e.close()
-                except:
-                    log.exception('write apnoea file %s' % self.apnoeafile)
+                        % self.fdlist_ami.keys())
 
             for s in self.fdlist_full:
-                if s in self.fdlist_established and self.fdlist_established[s] == 'CTI':
+                if s in self.fdlist_established:
                     if self.askedtoquit:
-                        self.commandclass.reset('stop', s)
+                        self.fdlist_established[s].disconnected('stop')
                     else:
-                        self.commandclass.reset('reload', s)
-                if isinstance(s, int):
-                    # the only ones are the (read) pipes : no need to close/reopen them
-                    # os.close(s)
-                    pass
-                else:
+                        self.fdlist_established[s].disconnected('reload')
+                if not isinstance(s, int):
+                    # the only one 'int' is the (read) pipe : no need to close/reopen it
                     s.close()
 
             if self.askedtoquit:
-                self.commandclass.reset('stop')
+                # self.commandclass.reset('stop') # used to call __fill_ctilog__('daemon stop', mode)
                 time_uptime = int(time.time() - time.mktime(self.time_start))
                 log.info('# STOPPING XiVO CTI Server %s (pid %d) / svn:%s # uptime %d s (since %s)'
                          % (XIVOVERSION, os.getpid(), __revision__,
@@ -1217,7 +716,7 @@ class xivo_daemon:
                 daemonize.unlock_pidfile(PIDFILE)
                 sys.exit(5)
             else:
-                self.commandclass.reset('reload')
+                # self.commandclass.reset('reload')
                 self.askedtoquit = True
                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                     print '--- (reload) the thread <%s> remains' % t.getName()
@@ -1230,18 +729,13 @@ class xivo_daemon:
                 try:
                     sel_o.process_sending()
                 except ClientConnection.CloseException, cexc:
-                    if sel_o in self.userinfo_by_requester:
-                        userinfo = self.userinfo_by_requester.get(sel_o)
-                        self.commandclass.manage_logout(userinfo, 'end_sending')
-                        del self.userinfo_by_requester[sel_o]
-
-                    log.info('TCP socket %s closed(sending %s) on %s'
-                             % (self.fdlist_established[sel_o], cexc, sel_o.getpeername()))
-
                     if sel_o in self.fdlist_established:
+                        kind = self.fdlist_established[sel_o]
+                        log.info('TCP socket %s closed(sending %s) on %s'
+                                 % (kind, cexc, sel_o.getpeername()))
+                        kind.disconnected('end_sending')
+                        sel_o.close()
                         del self.fdlist_established[sel_o]
-
-                    self.commandclass.disconnected(sel_o)
 
             if sels_e:
                 log.warning('got some sels_e %s' % sels_e)
@@ -1249,113 +743,109 @@ class xivo_daemon:
             if sels_i:  # {
                 for sel_i in sels_i: # {
                     # these AMI connections are used in order to manage AMI commands and events
-                    if sel_i in self.amilist.fdlist():
+                    if sel_i in self.fdlist_ami.keys():
                         try:
-                            astid = self.amilist.astid(sel_i)
-                            sock = self.amilist.ami[astid].sock
-                            buf = sock.recv(200000)
+                            amiint = self.fdlist_ami[sel_i]
+                            ipbxid = amiint.ipbxid
+                            buf = sel_i.recv(200000)
                             if len(buf) == 0:
-                                log.warning('%s AMI : CLOSING' % astid)
-                                self.amilist.remove(astid)
+                                log.warning('%s AMI : CLOSING' % ipbxid)
+                                del self.fdlist_ami[sel_i]
                                 sel_i.close()
                             else:
-                                if astid is not None:
-                                    try:
-                                        manage_connection.handle_ami_event(self, astid, buf)
-                                    except Exception:
-                                        log.exception('(handle_ami_event) %s' % astid)
+                                try:
+                                    self.fdlist_ami[sel_i].handle_ami_event(buf)
+                                    self.loop_over_cti_queue(ipbxid)
+                                except Exception:
+                                    log.exception('(handle_ami_event) %s' % ipbxid)
                         except Exception:
                             log.exception('(amilist)')
-
-                    # other 'outgoing' connections
-                    elif sel_i == self.outsock: # {
-                        try:
-                            msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
-                        except Exception:
-                            log.exception('outsock')
-                            msg = ''
-
-                        if len(msg) == 0:
-                            sel_i.close()
-                            self.outsock = None
-                            log.warning('WARNING - outsock has closed the connection')
-                        else:
-                            self.commandclass.handle_outsock(self.asterisklist[0], msg)
 
                     # } the UDP messages (ANNOUNCE) are catched here
                     elif sel_i in self.fdlist_udp_cti: # {
                         [kind, nmax] = self.fdlist_udp_cti[sel_i].split(':')
                         if kind == 'ANNOUNCE':
                             [data, sockparams] = sel_i.recvfrom(32768)
-                            if sockparams[0] in self.ip_reverse_sht:
-                                astid = self.ip_reverse_sht.get(sockparams[0])
-                            else:
-                                astid = 'xivo'
-                            log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
-                            if astid in self.configs:
-                                # scheduling astid's AMI reconnection
-                                k = threading.Timer(2, manage_connection.callback_timer_main,
-                                                    (self, ('ipbxup', astid)))
-                                k.start()
+                            log.info('UDP %s <%s> %s' % (kind, data.strip(), sockparams))
+                            # scheduling AMI reconnection
+                            k = threading.Timer(1, self.cb_timer,
+                                                ({'action' : 'ipbxup',
+                                                  'properties' : { 'data' : data,
+                                                                   'sockparams' : sockparams }},))
+                            k.setName('Thread-ipbxup-%s' % data.strip())
+                            k.start()
                         else:
                             log.warning('unknown kind %s received' % kind)
 
-                    # } the new TCP connections (CTI, WEBI, (F)AGI, INFO) are catched here
+                    # } the new TCP connections (CTI, WEBI, FAGI, INFO) are catched here
                     elif sel_i in self.fdlist_listen_cti: # {
                         [kind, nmax] = self.fdlist_listen_cti[sel_i].split(':')
                         [connc, sockparams] = sel_i.accept()
-                        if kind == 'FAGI':
-                            if sockparams[0] in self.ip_reverse_sht:
-                                astid = self.ip_reverse_sht.get(sockparams[0])
-                            else:
-                                astid = 'xivo'
-                            log.info('TCP socket FAGI opened on %s:%d => %s' % (sockparams[0], sockparams[1], astid))
-                            mfr = connc.makefile('rb', -1)
-                            mfw = connc.makefile('wb', 0)
+                        ctiseparator = '\n'
+                        log.info('TCP socket %s opened on %s:%d' % (kind,
+                                                                    sockparams[0], sockparams[1]))
+
+                        if kind == 'CTI':
+                            connc = ClientConnection(connc, sockparams, ctiseparator)
+                        elif kind == 'CTIS':
                             try:
-                                fagi = fastagi.FastAGI(mfr, mfw)
-                                self.commandclass.handle_fagi(astid, fagi)
-                            except Exception:
-                                log.exception('(fastagi) %s' % astid)
-                            mfr.close()
-                            mfw.close()
-                            connc.close()
-                            log.info('TCP socket FAGI closed on %s:%d' % (sockparams[0], sockparams[1]))
+                                connstream = ssl.wrap_socket(connc,
+                                                             server_side = True,
+                                                             certfile = filecert,
+                                                             keyfile = filekey,
+                                                             ssl_version = sslproto)
+                                connc = ClientConnection(connstream, sockparams, ctiseparator)
+                            except ssl.SSLError, exc:
+                                log.exception('%s:%s:%d' % (kind, sockparams[0], sockparams[1]))
+                                connc.close()
+                                connc = None
+                        # appending the opened socket to the ones watched
+                        # connc.setblocking(0)
+                        # connc.settimeout(2)
+                        if connc:
+                            if kind == 'INFO':
+                                nc = interface_info.INFO(self)
+                            elif kind == 'WEBI':
+                                nc = interface_webi.WEBI(self)
+                            elif kind in ['CTI', 'CTIS']:
+                                nc = getattr(interface_cti, kind)(self)
+                            elif kind == 'FAGI':
+                                nc = interface_fagi.FAGI(self)
+
+                            nc.connected(connc)
+                            if kind in ['WEBI', 'FAGI', 'INFO']:
+                                ipbxid = self.find_matching_ipbxid(sockparams[0])
+                                nc.set_ipbxid(ipbxid)
+
+                            if kind in ['CTI', 'CTIS']:
+                                nc.logintimer = threading.Timer(int(self.cconf.xc_json['main'].get('logintimeout', 5)),
+                                                                self.cb_timer,
+                                                                ({'action' : 'ctilogin',
+                                                                  'properties' : connc},))
+                                nc.logintimer.start()
+                            self.fdlist_established[connc] = nc
                         else:
-                            log.info('TCP socket %s opened on %s:%d' % (kind,
-                                                                        sockparams[0], sockparams[1]))
-                            if kind == 'CTI':
-                                connc = ClientConnection(connc, sockparams, self.commandclass.ctiseparator)
-                                self.commandclass.connected(connc)
-                            # appending the opened socket to the ones watched
-                            # connc.setblocking(0)
-                            # connc.settimeout(2)
-                            self.fdlist_established[connc] = kind
+                            log.warning('connc is not defined ...')
 
                     # } incoming TCP connections (CTI, WEBI, AGI, INFO)
                     elif sel_i in self.fdlist_established: # {
                         try: # {
                             kind = self.fdlist_established[sel_i]
-                            requester = '%s:%d' % sel_i.getpeername()
+                            requester = '%s:%d' % sel_i.getpeername()[:2]
                             if isinstance(sel_i, ClientConnection):
                                 try:
                                     lines = sel_i.readlines()
                                     for line in lines:
                                         if line:
-                                            manage_connection.manage_tcp_connections(self, sel_i, line, kind)
+                                            manage_connection.manage_tcp_connections(sel_i, line, kind)
+                                            for ipbxid in self.safe.keys():
+                                                self.loop_over_cti_queue(ipbxid)
                                 except ClientConnection.CloseException, cexc:
-                                    if kind == 'CTI':
-                                        if sel_i in self.userinfo_by_requester:
-                                            userinfo = self.userinfo_by_requester.get(sel_i)
-                                            self.commandclass.manage_logout(userinfo, 'end_receiving')
-                                            del self.userinfo_by_requester[sel_i]
-                                    if sel_i in self.fdlist_established:
-                                        del self.fdlist_established[sel_i]
-                                    if requester in self.commandclass.transfers_ref:
-                                        self.commandclass.transfer_endbuf(requester)
-                                    log.info('TCP socket %s closed(A %s) on %s' % (kind, cexc, requester))
-                                    if kind == 'CTI':
-                                        self.commandclass.disconnected(sel_i)
+                                    kind.disconnected('end_receiving')
+                                    del self.fdlist_established[sel_i]
+                                    # if requester in self.commandclass.transfers_ref:
+                                    #   self.commandclass.transfer_endbuf(requester)
+                                    log.info('TCP socket %s closed(A %s) on %s' % (kind.kind, cexc, requester))
                             else: # {
                                 closemenow = False
 
@@ -1368,162 +858,104 @@ class xivo_daemon:
 
                                 if lmsg > 0:
                                     try:
-                                        closemenow = manage_connection.manage_tcp_connections(self, sel_i, msg, kind)
+                                        closemenow = manage_connection.manage_tcp_connections(sel_i, msg, kind)
+                                        for ipbxid in self.safe.keys():
+                                            self.loop_over_cti_queue(ipbxid)
                                     except Exception:
                                         log.exception('handling %s (%s)' % (requester, kind))
-
                                 else:
-                                    if kind == 'CTI':
-                                        if sel_i in self.userinfo_by_requester:
-                                            userinfo = self.userinfo_by_requester.get(sel_i)
-                                            self.commandclass.manage_logout(userinfo, 'end_receiving')
-                                            del self.userinfo_by_requester[sel_i]
+                                    closemenow = True
+                                    # XXX connc : kind.manage_logout('end_receiving')
 
-                                doclose = False
-                                if kind == 'WEBI':
-                                    doclose = closemenow
-                                elif kind not in ['CTI', 'INFO']:
-                                    doclose = True
-
-                                if lmsg == 0:
-                                    doclose = True
-
-                                if doclose:
+                                if closemenow:
+                                    kind.disconnected('by_client')
                                     sel_i.close()
-                                    if sel_i in self.fdlist_established:
-                                        del self.fdlist_established[sel_i]
-                                    if requester in self.commandclass.transfers_ref:
-                                        self.commandclass.transfer_endbuf(requester)
-                                    log.info('TCP socket %s closed(B) on %s' % (kind, requester))
-                                    if kind == 'CTI':
-                                        self.commandclass.disconnected(sel_i)
+                                    del self.fdlist_established[sel_i]
+                                    # if requester in self.commandclass.transfers_ref:
+                                    #   self.commandclass.transfer_endbuf(requester)
+                                    log.info('TCP socket %s closed(B) on %s' % (kind.kind, requester))
                             # }
                         # }
                         except Exception:
                             # socket.error : exc.args[0]
                             log.exception('[%s] %s' % (kind, sel_i))
                             try:
-                                del self.fdlist_established[sel_i]
+                                log.warning('logging off %s following unexpected socket breakup' % userinfo)
+                                kind.disconnected('exception')
                                 sel_i.close()
-                                if sel_i in self.userinfo_by_requester:
-                                    userinfo = self.userinfo_by_requester.get(sel_i)
-                                    log.warning('logging off %s following unexpected socket breakup' % userinfo)
-                                    self.commandclass.manage_logout(userinfo, 'exc')
-                                    del self.userinfo_by_requester[sel_i]
-                                else:
-                                    log.warning('could not find a match for socket %s' % sel_i)
+                                del self.fdlist_established[sel_i]
                             except Exception:
                                 log.exception('[%s] (2nd exception)' % kind)
 
                     # }
                     # local pipe fd
-                    elif self.pipe_queued_threads_commandclass[0] == sel_i: # {
+                    elif self.pipe_queued_threads[0] == sel_i: # {
                         try:
                             pipebuf = os.read(sel_i, 1024)
                             if len(pipebuf) == 0:
-                                log.warning('pipe_queued_threads_commandclass has been closed')
+                                log.warning('pipe_queued_threads has been closed')
                             else:
-                                actionqueue = self.commandclass.checkqueue(pipebuf)
-                                for actionname, actionarg in actionqueue.iteritems():
-                                    if actionname == 'disconnlist-tcp':
-                                        # disconnect when timeout after first connection
-                                        disconnlist = actionarg
-                                        if disconnlist:
-                                            log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
-                                            for connid in disconnlist:
-                                                try:
-                                                    self.commandclass.telldisconn(connid)
-                                                except Exception:
-                                                    log.exception('disconnlist-tcp')
-
-                                                log.info('TCP socket %s closed(disconnlist) on %s'
-                                                         % (self.fdlist_established[connid],
-                                                            '%s:%d' % connid.getpeername()))
-                                                del self.fdlist_established[connid]
-                                                connid.close()
-                        except Exception:
-                            log.exception('[pipe_queued_threads_commandclass]')
-
-                    # }
-                    elif self.pipe_queued_threads_main[0] == sel_i: # {
-                        try:
-                            pipebuf = os.read(sel_i, 1024)
-                            if len(pipebuf) == 0:
-                                log.warning('pipe_queued_threads_main has been closed')
-                            else:
-                                manage_connection.checkqueue_main(self, pipebuf)
-                        except Exception:
-                            log.exception('[pipe_queued_threads_main]')
-
-                    # }
-                    try:
-                        userdiscolist = self.commandclass.disconnlist
-                        if userdiscolist:
-                            log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
-                            for userinfo in userdiscolist:
-                                log.warning('checkqueue return : will disconnect %s' % userinfo)
-                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                    connid = userinfo.get('login')['connection']
-                                    if connid in self.fdlist_established:
-                                        del self.fdlist_established[connid]
+                                for pb in pipebuf.split('\n'):
+                                    if not pb:
+                                        continue
+                                    [kind, where] = pb.split(':')
+                                    if kind == 'innerdata':
+                                        nactions = self.safe[where].checkqueue()
+                                        log.info('handled %d actions for %s' % (nactions, kind))
+                                    elif kind == 'main':
+                                        nactions = self.checkqueue()
+                                        log.info('handled %d actions for %s' % (nactions, kind))
+                                    elif kind == 'ami':
+                                        nactions = self.myami[where].checkqueue()
+                                        log.info('handled %d actions for %s' % (nactions, kind))
                                     else:
-                                        log.warning('connid %s no more in fdlists' % connid)
+                                        log.warning('unknown kind %s' % kind)
+                        except Exception:
+                            log.exception('[pipe_queued_threads]')
 
-                                    self.commandclass.manage_logout(userinfo, 'pipe')
-                                    del self.userinfo_by_requester[connid]
-
-                                    if not connid.isClosed:
-                                        connid.close()
-                                else:
-                                    log.warning('WARNING - no login/connection field present in userinfo')
-                        self.commandclass.clear_disconnlist()
-                    except Exception:
-                        log.exception('userdiscolist')
-
-                    for astid in self.configs: # {
-                        if (time.time() - self.lastrequest_time[astid]) > self.updates_period or self.update_userlist[astid]:
-                            self.lastrequest_time[astid] = time.time()
+                    # }
+                    for ipbxid, safe in self.safe.iteritems():
+                        if (time.time() - self.lastrequest_time[ipbxid]) > self.updates_period or self.update_userlist[ipbxid]:
+                            self.lastrequest_time[ipbxid] = time.time()
                             log.info('[%s] %s : updates (computed timeout) %s (%s)'
-                                     % (self.xdname, astid, time.asctime(), self.update_userlist[astid]))
+                                     % (self.xdname, ipbxid, time.asctime(), self.update_userlist[ipbxid]))
                             try:
-                                if self.outsock is None:
-                                    self.outsock = self.commandclass.extrasock(self.extraconn)
-                                manage_connection.update_amisocks(astid, self)
-                                self.update_readconf()
-                                self.commandclass.regular_update()
+                                # manage_connection.update_amisocks(ipbxid, self)
+                                self.cconf.update()
+                                safe.regular_update()
                             except Exception:
-                                log.exception('%s : failed while updating lists and sockets (computed timeout)' % astid)
+                                log.exception('%s : failed while updating lists and sockets (computed timeout)'
+                                              % ipbxid)
                             try:
-                                if self.update_userlist[astid]:
-                                    while self.update_userlist[astid]:
-                                        listtorequest = self.update_userlist[astid].pop()
-                                        self.commandclass.updates(astid, listtorequest)
+                                if self.update_userlist[ipbxid]:
+                                    while self.update_userlist[ipbxid]:
+                                        tmp_ltr = self.update_userlist[ipbxid].pop()
+                                        listtorequest = tmp_ltr[5:-12] + 's'
+                                        safe.update_config_list(listtorequest)
                                 else:
-                                    self.commandclass.updates(astid, 'others') # signal-less updates ...
+                                    safe.update_config_list_all()
                             except Exception:
-                                log.exception('%s : commandclass.updates() (computed timeout)' % astid)
+                                log.exception('%s : commandclass.updates() (computed timeout)' % ipbxid)
                     # }
                 # }
             # }
             else: # { when nothing happens on the sockets, we fall here sooner or later
                 log.info('[%s] updates (select timeout) %s'
                           % (self.xdname, time.asctime()))
-                for astid in self.configs:
+                for ipbxid, safe in self.safe.iteritems():
                     try:
-                        self.commandclass.updates(astid, 'others') # signal-less updates ...
+                        safe.update_config_list_all()
                     except Exception:
-                        log.exception('%s : commandclass.updates() (select timeout)' % astid)
+                        log.exception('%s : commandclass.updates() (select timeout)' % ipbxid)
 
-                    self.lastrequest_time[astid] = time.time()
+                    self.lastrequest_time[ipbxid] = time.time()
 
                     try:
-                        if self.outsock is None:
-                            self.outsock = self.commandclass.extrasock(self.extraconn)
-                        manage_connection.update_amisocks(astid, self)
-                        self.update_readconf()
-                        self.commandclass.regular_update()
+                        # manage_connection.update_amisocks(ipbxid, self)
+                        self.cconf.update()
+                        safe.regular_update()
                     except Exception:
-                        log.exception('%s : failed while updating lists and sockets (select timeout)' % astid)
+                        log.exception('%s : failed while updating lists and sockets (select timeout)' % ipbxid)
                 # }
             # }
         # }

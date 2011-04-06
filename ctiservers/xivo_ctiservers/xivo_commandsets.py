@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -44,7 +44,6 @@ class Command:
 class BaseCommand:
 
     ctiseparator = '\n'
-    xdname = 'XIVO Base'
 
     def __init__(self):
         self.transfers_ref = {}
@@ -52,11 +51,7 @@ class BaseCommand:
         self.disconnlist = []
         return
 
-    def handle_outsock(self, astid, msg):
-        return
     def checkqueue(self, buf):
-        return
-    def clear_disconnlist(self):
         return
 
     def reset(self, mode, conn = None):
@@ -73,8 +68,6 @@ class BaseCommand:
     def set_logintimeout(self, logintimeout):
         return
     # inits / updates
-    def extrasock(self, extraconn):
-        return
     def set_cticonfig(self, cticonfig):
         return
 
@@ -89,12 +82,6 @@ class BaseCommand:
         return {}
     def connected_users(self):
         return {}
-
-    # define the structures to be saved and loaded beyond restarts
-    def apnoea_tosave(self):
-        return {}
-    def apnoea_rescue(self, torescue):
-        return
 
     def findreverse(self, dirlist, number):
         return
@@ -129,8 +116,6 @@ class BaseCommand:
     def updates(self, astid, what = None):
         return
     def read_internatprefixes(self, internatprefixfile):
-        return
-    def read_queuelog(self, astid, url_queuelog):
         return
     def getprofilelist(self):
         return []
@@ -167,9 +152,7 @@ class BaseCommand:
     def regular_update(self):
         return
 
-    # AGI events
-    def handle_agi(self, astid, msg):
-        return
+    # FAGI events
     def handle_fagi(self, astid, msg):
         return
 
@@ -204,12 +187,6 @@ class BaseCommand:
     #define AST_CONTROL_WINK                10
 
     # END of AMI events
-
-    # XIVO synchronization methods
-    def pre_reload(self):
-        return
-    def pre_moh_reload(self):
-        return
 
 CommandClasses = {}
 from xivo import daemonize as ctidaemonize

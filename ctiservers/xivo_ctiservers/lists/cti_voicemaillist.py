@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -26,20 +26,12 @@ __author__    = 'Corentin Le Gall'
 import logging
 from xivo_ctiservers.cti_anylist import AnyList
 
-log = logging.getLogger('meetmelist')
+log = logging.getLogger('voicemaillist')
 
-class MeetmeList(AnyList):
+class VoicemailList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = { 'keywords' : [ 'roomnumber',
-                                                   'roomname',
-                                                   'context',
-                                                   'pin',
-                                                   'pinadmin',
-                                                   'moderated' ],
-                                    'name' : 'meetme',
-                                    'action' : 'getmeetmelist',
-                                    'urloptions' : (1, 5, True)
-                                    }
+        self.anylist_properties = { 'name' : 'voicemail',
+                                    'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return
 
@@ -47,15 +39,9 @@ class MeetmeList(AnyList):
         ret = AnyList.update(self)
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
-            if ag['roomnumber'] not in self.reverse_index:
-                self.reverse_index[ag['roomnumber']] = idx
+            rev = '%s@%s' % (ag['mailbox'], ag['context'])
+            if rev not in self.reverse_index:
+                self.reverse_index[rev] = idx
             else:
-                log.warning('2 meetme have the same roomnumber')
+                log.warning('2 voicemails have the same mailbox@context')
         return ret
-
-    def byroomnumber(self, roomnumber):
-        meetmeref = None
-        meetme_id = self.reverse_index.get(roomnumber)
-        if meetme_id:
-            meetmeref = self.keeplist.get(meetme_id)
-        return (meetmeref, meetme_id)

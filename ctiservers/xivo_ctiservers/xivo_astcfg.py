@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10133 $'
+__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -34,50 +34,29 @@ class AsteriskConfig:
     ## \var astid
     # \brief Asterisk String ID
 
-    ## \var remoteaddr
-    # \brief Address of the Asterisk server
-
     ## \var ipaddress_webi
     # \brief IP address allowed to send CLI commands
 
-    ## \var ami_port
-    # \brief AMI port of the monitored Asterisk
-
-    ## \var ami_login
-    # \brief AMI login of the monitored Asterisk
-
-    ## \var ami_pass
-    # \brief AMI password of the monitored Asterisk
-
     ##  \brief Class initialization.
-    def __init__(
-        self,
-        astid,
-        remoteaddr = '127.0.0.1',
-        ipaddress_webi = '127.0.0.1',
-        ami_port = 5038,
-        ami_login = 'xivouser',
-        ami_pass = 'xivouser',
-        userfeatures_db_uri = None,
-        capafeatures = [],
-        cdr_db_uri = None,
-        parkingnumber = '700',
-        faxcallerid = 'faxcallerid',
-        aoriginate = 'AOriginate'
-        ):
+    def __init__(self, astid, xca):
+        self.astid = astid
 
-            self.astid = astid
-            self.remoteaddr = remoteaddr
-            self.ipaddress_webi = ipaddress_webi
-            self.ami_port = ami_port
-            self.ami_login = ami_login
-            self.ami_pass = ami_pass
-            self.capafeatures = capafeatures
-            self.parkingnumber = parkingnumber
-            self.faxcallerid = faxcallerid
-            self.aoriginate = aoriginate
+        self.userfeatures_db_uri = xca.get('userfeatures_db_uri')
+        self.cdr_db_uri = xca.get('cdr_db_uri')
 
-            self.userfeatures_db_conn = None
+        self.faxcallerid = xca.get('faxcallerid', 'faxcallerid')
+
+        self.userfeatures_db_conn = None
+        try:
+            if self.userfeatures_db_uri is not None:
+                self.userfeatures_db_conn = anysql.connect_by_uri(str(self.userfeatures_db_uri.replace('\/', '/')))
+        except Exception:
+            log.exception('(init userfeatures_db_conn for %s)' % astid)
+
+        if self.cdr_db_uri == self.userfeatures_db_uri:
+            self.cdr_db_conn = self.userfeatures_db_conn
+        else:
+            self.cdr_db_conn = None
             try:
                 if userfeatures_db_uri is not None:
                     self.userfeatures_db_conn = anysql.connect_by_uri(str(userfeatures_db_uri.replace('\/', '/')))

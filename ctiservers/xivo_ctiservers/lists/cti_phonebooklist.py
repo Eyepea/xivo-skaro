@@ -23,45 +23,14 @@ __author__    = 'Corentin Le Gall'
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class Users:
-    def __init__(self):
-        self.list = {}
-        self.commandclass = None
-        return
+import logging
+from xivo_ctiservers.cti_anylist import AnyList
 
-    def setcommandclass(self, commandclass):
-        self.commandclass = commandclass
-        return
+log = logging.getLogger('phonebook')
 
-    def adduser(self, inparams):
-        username = inparams.get('user')
-        if self.list.has_key(username):
-            # updates
-            # self.list[username]['agentnum'] = agentnum
-            pass
-        else:
-            self.list[username] = {}
-            for f in self.fields:
-                self.list[username][f] = inparams[f]
-        return
-
-    def deluser(self, username):
-        if self.list.has_key(username):
-            self.list.pop(username)
-
-    def finduser(self, username):
-        return self.list.get(username)
-
-    def listconnected(self):
-        lst = {}
-        for user, info in self.list.iteritems():
-            if 'login' in info:
-                lst[user] = info
-        return lst
-
-    def update(self):
-        self.fields = self.commandclass.userfields
-        userl = self.commandclass.getuserlist()
-        for ul, vv in userl.iteritems():
-            self.adduser(vv)
+class PhonebookList(AnyList):
+    def __init__(self, newurls = [], useless = None):
+        self.anylist_properties = { 'name' : 'phonebook',
+                                    'urloptions' : (1, 5, True)}
+        AnyList.__init__(self, newurls)
         return

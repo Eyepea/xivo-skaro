@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -30,12 +30,7 @@ log = logging.getLogger('userlist')
 
 class UserList(AnyList):
     def __init__(self, newurls = []):
-        self.anylist_properties = { 'keywords' : ['capaids', 'user', 'password', 'fullname',
-                                                  'agentid', 'voicemailid', 'simultcalls', #'mwi',
-                                                  'techlist', 'phoneid', 'phonenum', 'mobilenum',
-                                                  'context'],
-                                    'name' : 'users',
-                                    'action' : 'getuserslist',
+        self.anylist_properties = { 'name' : 'users',
                                     'urloptions' : (0, 11, True) }
         AnyList.__init__(self, newurls)
         return
@@ -51,12 +46,12 @@ class UserList(AnyList):
         if company:
             uinfo = None
             for userinfo in self.keeplist.itervalues():
-                if userinfo['user'] == userid and userinfo['company'] == company:
+                if userinfo['loginclient'] == userid and userinfo['context'] == company:
                     uinfo = userinfo
                     break
             if uinfo == None:
                 for userinfo in self.keeplist.itervalues():
-                    if userinfo['user'] == userid:
+                    if userinfo['loginclient'] == userid:
                         uinfo = userinfo
                         break
 

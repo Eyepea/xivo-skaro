@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -40,21 +40,27 @@ class AnyList:
     def update(self):
         lstadd = []
         lstdel = []
+        lstchange = {}
         oldlist = self.keeplist
         newlist = {}
         for url, urllist in self.requested_list.iteritems():
             gl = urllist.getlist(* self.anylist_properties['urloptions'])
             if gl == 2:
-                tmplist = getattr(self.commandclass, self.anylist_properties['action'])(urllist.jsonreply)
+                tmplist = getattr(self.commandclass, self.getter)(urllist.jsonreply)
                 newlist.update(tmplist)
         for a, b in newlist.iteritems():
             if a not in oldlist:
                 self.keeplist[a] = b
                 lstadd.append(a)
             else:
-                for keyw in self.anylist_properties['keywords']:
-                    if keyw in b:
-                        self.keeplist[a][keyw] = b[keyw]
+                oldfull = self.keeplist[a]
+                if b != oldfull:
+                    lstchange[a] = []
+                    for bk, bv in b.iteritems():
+                        oldval = self.keeplist[a][bk]
+                        if bv != oldval:
+                            self.keeplist[a][bk] = bv
+                            lstchange[a].append(bk)
         for a, b in oldlist.iteritems():
             if a not in newlist:
                 lstdel.append(a)
@@ -62,17 +68,22 @@ class AnyList:
             del self.keeplist[a]
         if len(lstadd) > 0:
             log.info('%d new %s from %s' % (len(lstadd),
-                self.anylist_properties['name'],
-                self.requested_list.keys()))
+                                            self.anylist_properties['name'],
+                                            self.requested_list.keys()))
         if len(lstdel) > 0:
             log.info('%d old %s from %s' % (len(lstdel),
-                self.anylist_properties['name'],
-                self.requested_list.keys()))
+                                            self.anylist_properties['name'],
+                                            self.requested_list.keys()))
         return { 'add' : lstadd,
-                 'del' : lstdel }
+                 'del' : lstdel,
+                 'change' : lstchange }
 
     def setcommandclass(self, commandclass):
         self.commandclass = commandclass
+        return
+
+    def setgetter(self, getter):
+        self.getter = getter
         return
 
     def __clean_urls__(self):

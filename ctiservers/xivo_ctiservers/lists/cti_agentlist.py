@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -31,10 +31,7 @@ log = logging.getLogger('agentlist')
 
 class AgentList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = { 'keywords' : ['firstname', 'lastname', 'number', 'password',
-                                                  'context', 'ackcall', 'wrapuptime'],
-                                    'name' : 'agents',
-                                    'action' : 'getagentslist',
+        self.anylist_properties = { 'name' : 'agents',
                                     'urloptions' : (1, 4, True) }
         AnyList.__init__(self, newurls)
         return
@@ -101,9 +98,8 @@ class AgentList(AnyList):
                     log.warning('queuememberremoved : %s not there' % queuename)
         return
 
-    def byagentnumber(self, agentnumber):
-        if agentnumber in self.reverse_index:
-            idx = self.reverse_index[agentnumber]
-            if idx in self.keeplist:
-                return self.keeplist[idx]
+    def idbyagentnumber(self, agentnumber):
+        idx = self.reverse_index.get(agentnumber)
+        if idx in self.keeplist:
+            return idx
         return

@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -27,6 +27,7 @@ import cjson
 import csv
 import logging
 import hashlib
+import time
 import urllib2
 
 log = logging.getLogger('urllist')
@@ -58,12 +59,15 @@ class UrlList:
                 elif kind in ['mysql', 'sqlite', 'ldap']:
                     log.warning('URL kind %s not supported yet' % kind)
                 elif kind in ['http', 'https']:
+                    t1 = time.time()
                     request = '%s?sum=%s' % (self.trueurl[0], self.urlmd5)
                     urequest = urllib2.Request(request)
                     opener = urllib2.build_opener(DefaultErrorHandler)
                     f = opener.open(urequest)
                     http_contenttype = f.headers.getheaders('Content-Type')
                     http_code = f.code
+                    t2 = time.time()
+                    # print 'time for %s is %f' % (request, t2 - t1)
                 else:
                     log.warning('URL kind %s not supported' % kind)
                     return -1

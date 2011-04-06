@@ -23,45 +23,31 @@ __author__    = 'Corentin Le Gall'
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class Users:
-    def __init__(self):
-        self.list = {}
-        self.commandclass = None
+import logging
+from xivo_ctiservers.cti_anylist import AnyList
+
+log = logging.getLogger('meetmelist')
+
+class MeetmeList(AnyList):
+    def __init__(self, newurls = [], useless = None):
+        self.anylist_properties = { 'name' : 'meetme',
+                                    'urloptions' : (1, 5, True)
+                                    }
+        AnyList.__init__(self, newurls)
         return
-
-    def setcommandclass(self, commandclass):
-        self.commandclass = commandclass
-        return
-
-    def adduser(self, inparams):
-        username = inparams.get('user')
-        if self.list.has_key(username):
-            # updates
-            # self.list[username]['agentnum'] = agentnum
-            pass
-        else:
-            self.list[username] = {}
-            for f in self.fields:
-                self.list[username][f] = inparams[f]
-        return
-
-    def deluser(self, username):
-        if self.list.has_key(username):
-            self.list.pop(username)
-
-    def finduser(self, username):
-        return self.list.get(username)
-
-    def listconnected(self):
-        lst = {}
-        for user, info in self.list.iteritems():
-            if 'login' in info:
-                lst[user] = info
-        return lst
 
     def update(self):
-        self.fields = self.commandclass.userfields
-        userl = self.commandclass.getuserlist()
-        for ul, vv in userl.iteritems():
-            self.adduser(vv)
+        ret = AnyList.update(self)
+        self.reverse_index = {}
+        for idx, ag in self.keeplist.iteritems():
+            if ag['number'] not in self.reverse_index:
+                self.reverse_index[ag['number']] = idx
+            else:
+                log.warning('2 meetme have the same room number')
+        return ret
+
+    def idbyroomnumber(self, roomnumber):
+        idx = self.reverse_index.get(roomnumber)
+        if idx in self.keeplist:
+            return idx
         return

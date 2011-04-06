@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 9637 $'
+__date__      = '$Date: 2010-11-23 16:57:29 +0100 (Tue, 23 Nov 2010) $'
 __copyright__ = 'Copyright (C) 2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -24,6 +24,10 @@ __author__    = 'Corentin Le Gall'
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Directory search related definitions.
+"""
+
 import logging
 import urllib
 from xivo import anysql
@@ -34,6 +38,85 @@ from xivo_ctiservers import cti_directories_csv
 
 log = logging.getLogger('directories')
 
+class Context:
+    def __init__(self):
+        self.directories = list()
+        self.display = None
+        self.didextens = dict()
+        return
+
+    def update(self, contents):
+        directories = contents.get('directories')
+        self.directories = list()
+        for direct in directories:
+            dtr = direct[12:]
+            if dtr not in self.directories:
+                self.directories.append(dtr)
+        self.display = contents.get('display')[9:]
+        self.didextens = contents.get('didextens')
+        return
+
+class Display:
+    def __init__(self):
+        self.display_header = []
+        self.outputformat = ''
+        return
+
+    def update(self, contents):
+        display_items = contents.keys()
+        display_items.sort()
+        self.outputformat = ''
+        fmt = []
+        self.display_header = []
+        for k in display_items:
+            [title, type, defaultval, format] = contents.get(k)
+            self.display_header.append(title)
+            fmt.append(format)
+        self.outputformat = ';'.join(fmt)
+        # XXX make a csv output instead
+        # XXX handle type ? handle defaultval ?
+        return
+
+class Directory:
+    def __init__(self, dirid):
+        self.dirid = dirid
+        self.uri = ''
+        self.name = '(noname)'
+
+        self.display_reverse = '{db-fullname}'
+        self.match_direct = []
+        self.match_reverse = []
+
+        self.delimiter = ';'
+        self.sqltable = 'UNDEFINED'
+        return
+
+    def update(self, xivoconf_local):
+        self.fkeys = {}
+        for field, value in xivoconf_local.iteritems():
+            if field.startswith('field_'):
+                keyword = field.split('_')[1]
+                self.fkeys['db-%s' % keyword] = value
+            elif field in 'uri':
+                self.dbkind = value.split(':')[0]
+                self.uri = value
+                if self.dbkind.find('sql') >= 0:
+                    if value.find('?table=') > 0:
+                        self.uri = value.split('?table=')[0]
+                        self.sqltable = value.split('?table=')[1]
+            elif field == 'name':
+                self.name = value
+            elif field == 'delimiter':
+                self.delimiter = value
+            elif field == 'display_reverse':
+                if value:
+                    self.display_reverse = value[0]
+            elif field == 'match_direct':
+                self.match_direct = value
+            elif field == 'match_reverse':
+                self.match_reverse = value
+        return
+
 # - '*' (wildcard) support
 # - more than 1 result
 # - message for error/empty
@@ -42,22 +125,22 @@ log = logging.getLogger('directories')
 # - better reverse vs. direct
 # - extend to 'internal'
 
-def findpattern(xivocti, dirname, searchpattern, z, reversedir):
+    def findpattern(self, searchpattern, reversedir):
         fullstatlist = []
 
         if searchpattern == '':
             return []
 
-        if z.dbkind in ['ldap', 'ldaps']:
+        if self.dbkind in ['ldap', 'ldaps']:
             ldap_filter = []
             ldap_attributes = []
-            for fname in z.match_direct:
+            for fname in self.match_direct:
                 if searchpattern == '*':
                     ldap_filter.append("(%s=*)" % fname)
                 else:
                     ldap_filter.append("(%s=*%s*)" %(fname, searchpattern))
 
-            for listvalue in z.fkeys.itervalues():
+            for listvalue in self.fkeys.itervalues():
                 for attrib in listvalue:
                     if isinstance(attrib, unicode):
                         ldap_attributes.append(attrib.encode('utf8'))
@@ -66,19 +149,19 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
 
             try:
                 results = None
-                if z.uri not in xivocti.ldapids:
+                if self.uri not in xivocti.ldapids:
                     # first connection to ldap, or after failure
-                    ldapid = xivo_ldap.xivo_ldap(z.uri)
+                    ldapid = xivo_ldap.xivo_ldap(self.uri)
                     if ldapid.ldapobj is not None:
-                        xivocti.ldapids[z.uri] = ldapid
+                        xivocti.ldapids[self.uri] = ldapid
                 else:
                     # retrieve the connection already setup, if not yet deleted
-                    ldapid = xivocti.ldapids[z.uri]
+                    ldapid = xivocti.ldapids[self.uri]
                     if ldapid.ldapobj is None:
-                        del xivocti.ldapids[z.uri]
+                        del xivocti.ldapids[self.uri]
 
-                # at this point, either we have a successful ldapid.ldapobj value, with xivocti.ldapids[z.uri] = ldapid
-                #                either ldapid.ldapobj is None, and z.uri not in xivocti.ldapids
+                # at this point, either we have a successful ldapid.ldapobj value, with xivocti.ldapids[self.uri] = ldapid
+                #                either ldapid.ldapobj is None, and self.uri not in xivocti.ldapids
 
                 if ldapid.ldapobj is not None:
                     # if the ldapid had already been defined and setup, the failure would occur here
@@ -88,12 +171,12 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
                                                  searchpattern)
                     except Exception:
                         ldapid.ldapobj = None
-                        del xivocti.ldapids[z.uri]
+                        del xivocti.ldapids[self.uri]
 
                 if results is not None:
                     for result in results:
-                        futureline = {'xivo-directory' : z.name}
-                        for keyw, dbkeys in z.fkeys.iteritems():
+                        futureline = {'xivo-directory' : self.name}
+                        for keyw, dbkeys in self.fkeys.iteritems():
                             for dbkey in dbkeys:
                                 if futureline.get(keyw, '') != '':
                                     break
@@ -105,11 +188,11 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
             except Exception:
                 log.exception('ldaprequest (directory)')
 
-        elif z.dbkind == 'phonebook':
+        elif self.dbkind == 'phonebook':
             if reversedir:
-                matchkeywords = z.match_reverse
+                matchkeywords = self.match_reverse
             else:
-                matchkeywords = z.match_direct
+                matchkeywords = self.match_direct
             for iastid in xivocti.weblist['phonebook'].keys():
                 for k, v in xivocti.weblist['phonebook'][iastid].keeplist.iteritems():
                     matchme = False
@@ -122,32 +205,32 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
                                 if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
                                     matchme = True
                     if matchme:
-                        futureline = {'xivo-directory' : z.name}
-                        for keyw, dbkeys in z.fkeys.iteritems():
+                        futureline = {'xivo-directory' : self.name}
+                        for keyw, dbkeys in self.fkeys.iteritems():
                             for dbkey in dbkeys:
                                 if dbkey in v.keys():
                                     futureline[keyw] = v[dbkey]
                         fullstatlist.append(futureline)
 
-        elif z.dbkind == 'file':
+        elif self.dbkind == 'file':
             if reversedir:
-                matchkeywords = z.match_reverse
+                matchkeywords = self.match_reverse
             else:
-                matchkeywords = z.match_direct
+                matchkeywords = self.match_direct
             fullstatlist = cti_directories_csv.lookup(searchpattern.encode('utf8'),
-                                                      z.uri,
+                                                      self.uri,
                                                       matchkeywords,
-                                                      z.fkeys,
-                                                      z.delimiter,
-                                                      z.name)
+                                                      self.fkeys,
+                                                      self.delimiter,
+                                                      self.name)
 
-        elif z.dbkind == 'http':
+        elif self.dbkind == 'http':
             if not reversedir:
-                fulluri = z.uri
+                fulluri = self.uri
                 # add an ending slash if needed
                 if fulluri[8:].find('/') == -1:
                     fulluri += '/'
-                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in z.match_direct])
+                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in self.match_direct])
                 n = 0
                 try:
                     f = urllib.urlopen(fulluri)
@@ -160,15 +243,15 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
                     for line in f:
                         if n == 0:
                             header = line
-                            headerfields = header.strip().split(z.delimiter)
+                            headerfields = header.strip().split(self.delimiter)
                         else:
                             ll = line.strip()
                             if isinstance(ll, str): # dont try to decode unicode string.
                                 ll = ll.decode(charset)
-                            t = ll.split(z.delimiter)
-                            futureline = {'xivo-directory' : z.name}
+                            t = ll.split(self.delimiter)
+                            futureline = {'xivo-directory' : self.name}
                             # XXX problem when badly set delimiter + index()
-                            for keyw, dbkeys in z.fkeys.iteritems():
+                            for keyw, dbkeys in self.fkeys.iteritems():
                                 for dbkey in dbkeys:
                                     idx = headerfields.index(dbkey)
                                     futureline[keyw] = t[idx]
@@ -178,68 +261,68 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
                 except Exception:
                     log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
                 if n == 0:
-                    log.warning('WARNING : %s is empty' % z.uri)
+                    log.warning('WARNING : %s is empty' % self.uri)
                 # we don't warn about "only one line" here since the filter has probably already been applied
             else:
-                fulluri = z.uri
+                fulluri = self.uri
                 # add an ending slash if needed
                 if fulluri[8:].find('/') == -1:
                     fulluri += '/'
-                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in z.match_reverse])
+                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in self.match_reverse])
                 f = urllib.urlopen(fulluri)
                 # TODO : use f.info() to detect charset
                 fsl = f.read().strip()
                 if fsl:
-                    fullstatlist = [ {'xivo-directory' : z.name,
+                    fullstatlist = [ {'xivo-directory' : self.name,
                                       'db-fullname' : fsl}]
                 else:
                     fullstatlist = []
 
-        elif z.dbkind in ['sqlite', 'mysql']:
+        elif self.dbkind in ['sqlite', 'mysql']:
             if searchpattern == '*':
                 whereline = ''
             else:
                 # prevent SQL injection and make use of '*' wildcard possible
                 esc_searchpattern = searchpattern.replace("'", "\\'").replace('%', '\\%').replace('*', '%')
-                wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in z.match_direct]
+                wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in self.match_direct]
                 whereline = 'WHERE ' + ' OR '.join(wl)
 
             results = []
             try:
-                conn = anysql.connect_by_uri(str(z.uri))
+                conn = anysql.connect_by_uri(str(self.uri))
                 cursor = conn.cursor()
-                sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
+                sqlrequest = 'SELECT ${columns} FROM %s %s' % (self.sqltable, whereline)
                 cursor.query(sqlrequest,
-                             tuple(z.match_direct),
+                             tuple(self.match_direct),
                              None)
                 results = cursor.fetchall()
                 conn.close()
             except Exception:
-                log.exception('sqlrequest for %s' % z.uri)
+                log.exception('sqlrequest for %s' % self.uri)
 
             for result in results:
-                futureline = {'xivo-directory' : z.name}
-                for keyw, dbkeys in z.fkeys.iteritems():
+                futureline = {'xivo-directory' : self.name}
+                for keyw, dbkeys in self.fkeys.iteritems():
                     for dbkey in dbkeys:
-                        if dbkey in z.match_direct:
-                            n = z.match_direct.index(dbkey)
+                        if dbkey in self.match_direct:
+                            n = self.match_direct.index(dbkey)
                             futureline[keyw] = result[n]
                 fullstatlist.append(futureline)
 
-        elif z.dbkind in ['internal']:
+        elif self.dbkind in ['internal']:
             pass
 
-        elif z.dbkind in ['mssql']:
+        elif self.dbkind in ['mssql']:
             pass
 
         else:
             log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                        % (z.dbkind, dirname))
+                        % (self.dbkind, self.dirid))
 
 
 
         if reversedir:
-            display_reverse = z.display_reverse
+            display_reverse = self.display_reverse
             if fullstatlist:
                 for k, v in fullstatlist[0].iteritems():
                     if isinstance(v, unicode):

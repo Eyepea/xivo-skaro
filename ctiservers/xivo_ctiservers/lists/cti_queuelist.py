@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -220,24 +220,27 @@ class QueueStats:
 
 class QueueList(AnyList):
     def __init__(self, newurls = [], misc = None):
-        self.anylist_properties = { 'keywords' : ['number', 'context', 'queuename'],
-                                    'name' : 'queues',
-                                    'action' : 'getqueueslist',
-                                    'urloptions' : (1, 5, True)
-                                    }
+        self.anylist_properties = { 'name' : 'queues',
+                                    'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
 
-        try:
-            queuestatpath = misc["conf"].xc_json['main']['asterisk_queuestat_db']
-            self.stats = QueueStats(queuestatpath.replace('\/','/'));
-        except Exception:
-            log.exception('could not access queuestats db (%s)' % queuestatpath)
-            self.stats = None
+        if misc and misc.get('conf') and misc['conf'].xc_json and misc['conf'].xc_json['main']:
+            if 'asterisk_queuestat_db':
+                queuestatpath = misc['conf'].xc_json['main']['asterisk_queuestat_db']
+                try:
+                    self.stats = QueueStats(queuestatpath.replace('\/','/'))
+                except Exception:
+                    log.exception('could not access queuestats db (%s)' % queuestatpath)
+                    self.stats = None
+            else:
+                pass
+        else:
+            pass
 
         return
 
-    queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
-                          'Xivo-QueueMember-StateTime']
+    queuelocationprops = ['Paused', 'Status', 'Membership',
+                          'Penalty', 'LastCall', 'CallsTaken', 'Xivo-QueueMember-StateTime']
     queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
                   'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-TalkingTime', 'Xivo-Rate',
                   'Calls']
@@ -246,29 +249,24 @@ class QueueList(AnyList):
         ret = AnyList.update(self)
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
-            if ag['queuename'] not in self.reverse_index:
-                self.reverse_index[ag['queuename']] = idx
+            if ag['name'] not in self.reverse_index:
+                self.reverse_index[ag['name']] = idx
             else:
                 log.warning('2 queues have the same name')
         return ret
-    
+
     def hasqueue(self, queuename):
         return self.reverse_index.has_key(queuename)
-    
+
+    def idbyqueuename(self, queuename):
+        if queuename in self.reverse_index:
+            idx = self.reverse_index[queuename]
+            if idx in self.keeplist:
+                return idx
+        return
+
     def getcontext(self, queueid):
         return self.keeplist[queueid]['context']
-    
-    def fillstats(self, queueid, statin):
-        self.keeplist[queueid]['queuestats']['Xivo-Join'] = len(statin['ENTERQUEUE'])
-        self.keeplist[queueid]['queuestats']['Xivo-Link'] = len(statin['CONNECT'])
-        self.keeplist[queueid]['queuestats']['Xivo-Lost'] = len(statin['ABANDON'])
-        nj = self.keeplist[queueid]['queuestats']['Xivo-Join']
-        nl = self.keeplist[queueid]['queuestats']['Xivo-Link']
-        if nj > 0:
-            self.keeplist[queueid]['queuestats']['Xivo-Rate'] = (nl * 100) / nj
-        else:
-            self.keeplist[queueid]['queuestats']['Xivo-Rate'] = -1
-        return
 
     def queueentry_rename(self, queueid, oldchan, newchan):
         if queueid in self.keeplist:
@@ -376,5 +374,5 @@ class QueueList(AnyList):
         payload = {}
         if self.stats:
             for queue, param in param.iteritems():
-                payload[queue] = self.stats.get_queue_stats(self.keeplist[queue]['queuename'], param)
+                payload[queue] = self.stats.get_queue_stats(self.keeplist[queue]['name'], param)
         return payload

@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -32,12 +32,8 @@ log = logging.getLogger('trunklist')
 
 class TrunkList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = {
-            'keywords' : ['tech', 'name', 'ip',
-                          'type', 'context'],
-            'name' : 'trunk',
-            'action' : 'gettrunklist',
-            'urloptions' : (1, 5, True) }
+        self.anylist_properties = { 'name' : 'trunk',
+                                    'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return
 
@@ -51,14 +47,14 @@ class TrunkList(AnyList):
             if uidsrc in self.keeplist[trunkidsrc]['comms']:
                 pass
             else:
-                infos = {'thischannel' : puidsrc.get('channel'),
-                    'peerchannel' : puidsrc.get('dial'),
-                    'status' : 'calling',
-                    'time-dial' : 0,
-                    'timestamp-dial' : time.time(),
-                    #'calleridname' : puidsrc.get('calleridname'),
-                    'calleridnum' : puidsrc.get('extension')
-                    }
+                infos = { 'thischannel' : puidsrc.get('channel'),
+                          'peerchannel' : puidsrc.get('dial'),
+                          'status' : 'calling',
+                          'time-dial' : 0,
+                          'timestamp-dial' : time.time(),
+                          #'calleridname' : puidsrc.get('calleridname'),
+                          'calleridnum' : puidsrc.get('extension')
+                          }
                 self.keeplist[trunkidsrc]['comms'][uidsrc] = infos
         if trunkiddst in self.keeplist:
             if uiddst in self.keeplist[trunkiddst]['comms']:

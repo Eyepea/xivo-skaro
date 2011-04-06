@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10133 $'
+__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -30,7 +30,7 @@ Info Interface
 import logging
 import time
 
-log = logging.getLogger('info')
+from xivo_ctiservers.interfaces import Interfaces
 
 infohelptext = ['',
                 'help                     : this help',
@@ -64,16 +64,31 @@ infohelptext = ['',
                 'reverse <dirname> <number>   : lookup the number in the given directory',
                 '']
 
-class cliConn:
-    def __init__(self, connid, sep):
+class INFO(Interfaces):
+    kind = 'INFO'
+    sep = '\n'
+    def __init__(self, ctid):
+        Interfaces.__init__(self, ctid)
         self.dumpami_enable = []
         self.dumpami_disable = []
-        self.sep = sep
-        self.connid = connid
-        self.requester = connid.getpeername()
         return
 
-    def manage_connection(self, daemon, msg):
+    def connected(self, connid):
+        Interfaces.connected(self, connid)
+        global log
+        log = logging.getLogger('interface_info(%s:%d)' % self.requester)
+        return
+
+    def disconnected(self, msg):
+        self.connid.sendall('-- disconnected message from server at %s : %s\n' % (time.asctime(), msg))
+        Interfaces.disconnected(self, msg)
+        return
+
+    def set_ipbxid(self, ipbxid):
+        self.ipbxid = ipbxid
+        self.innerdata = self.ctid.safe[self.ipbxid]
+
+    def manage_connection(self, msg):
         """
         Handles INFO connections (basic administration console,
         primarily aimed at displaying informations first).
@@ -94,17 +109,17 @@ class cliConn:
                 if usefulmsg == 'help':
                     clireply.extend(infohelptext)
                 elif usefulmsg == 'show_infos':
-                    time_uptime = int(time.time() - time.mktime(daemon.time_start))
+                    time_uptime = int(time.time() - time.mktime(self.ctid.time_start))
                     reply = 'infos=' \
                             'xivo_version=%s;' \
                             'server_version=%s;' \
                             'commandset=%s;' \
                             'commandset_version=%s;' \
                             'uptime=%d s' \
-                            % (daemon.xivoversion,
-                               daemon.revision,
-                               daemon.xdname,
-                               daemon.commandclass.version(),
+                            % (self.ctid.xivoversion,
+                               self.ctid.revision,
+                               self.ctid.xdname,
+                               self.ctid.commandclass.version(),
                                time_uptime)
                     clireply.append(reply)
                     # clireply.append('server capabilities = %s' % (','.join()))
@@ -139,7 +154,7 @@ class cliConn:
                 elif usefulmsg.startswith('devcheckevents'):
                     for k in sorted(xivo_ami.evfunction_to_method_name.keys()):
                         v = xivo_ami.evfunction_to_method_name.get(k)
-                        if not hasattr(daemon.commandclass, v):
+                        if not hasattr(self.ctid.commandclass, v):
                             clireply.append('devcheckevents : unavailable %s' % k)
 
                 elif usefulmsg.startswith('loglevel '):
@@ -168,14 +183,14 @@ class cliConn:
                         else:
                             clireply.append('unknown action <%s> for loglevel : try set or get' % action)
                 elif usefulmsg == 'show_users':
-                    for user, info in daemon.commandclass.users().iteritems():
+                    for user, info in self.ctid.commandclass.users().iteritems():
                         try:
                             clireply.append('%s %s' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
                 elif usefulmsg in show_command_list:
                     itemname = usefulmsg[5:]
-                    for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
+                    for astid, itm in self.ctid.commandclass.getdetails(itemname).iteritems():
                         try:
                             clireply.append('%s for %s' % (itemname, astid))
                             for id, idv in itm.keeplist.iteritems():
@@ -187,8 +202,8 @@ class cliConn:
                     if len(command_args) > 2:
                         astid = command_args[1]
                         varname = command_args[2]
-                        if hasattr(daemon.commandclass, varname):
-                            tvar = getattr(daemon.commandclass, varname)
+                        if hasattr(self.ctid.commandclass, varname):
+                            tvar = getattr(self.ctid.commandclass, varname)
                             if astid in tvar:
                                 clireply.append('%s on %s' % (varname, astid))
                                 for ag, agp in tvar[astid].iteritems():
@@ -199,15 +214,15 @@ class cliConn:
                             clireply.append('no such variable %s' % varname)
                     else:
                         clireply.append('first argument : astid value')
-                        clireply.append('second argument : one of %s' % daemon.commandclass.astid_vars)
+                        clireply.append('second argument : one of %s' % self.ctid.commandclass.astid_vars)
 
                 elif usefulmsg.startswith('show_varsizes '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 1:
                         astid = command_args[1]
-                        for varname in daemon.commandclass.astid_vars:
-                            if hasattr(daemon.commandclass, varname):
-                                tvar = getattr(daemon.commandclass, varname)
+                        for varname in self.ctid.commandclass.astid_vars:
+                            if hasattr(self.ctid.commandclass, varname):
+                                tvar = getattr(self.ctid.commandclass, varname)
                                 if astid in tvar:
                                     clireply.append('%s on %s: %d' % (varname, astid, len(tvar[astid])))
                                 else:
@@ -218,7 +233,7 @@ class cliConn:
                         clireply.append('argument : astid value')
 
                 elif usefulmsg == 'show_logged_ip':
-                    for user, info in daemon.commandclass.connected_users().iteritems():
+                    for user, info in self.ctid.commandclass.connected_users().iteritems():
                         if 'connection' in info['login']:
                             try:
                                 [ipaddr, ipport] = info['login']['connection'].getpeername()
@@ -228,26 +243,26 @@ class cliConn:
                             clireply.append('user %s : ip:port = %s:%s'
                                             % (user.encode('latin1'), ipaddr, ipport))
                 elif usefulmsg == 'show_logged':
-                    for user, info in daemon.commandclass.connected_users().iteritems():
+                    for user, info in self.ctid.commandclass.connected_users().iteritems():
                         try:
                             clireply.append('%s %s' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
                 elif usefulmsg == 'fdlist':
-                    for k, v in daemon.fdlist_listen_cti.iteritems():
+                    for k, v in self.ctid.fdlist_listen_cti.iteritems():
                         clireply.append('  listen TCP : %s %s' % (k, v))
-                    for k, v in daemon.fdlist_udp_cti.iteritems():
+                    for k, v in self.ctid.fdlist_udp_cti.iteritems():
                         clireply.append('  listen UDP : %s %s' % (k, v))
-                    for k, v in daemon.fdlist_established.iteritems():
+                    for k, v in self.ctid.fdlist_established.iteritems():
                         clireply.append('  conn   TCP : %s %s' % (k, v))
-                    clireply.append('  full : %s' % daemon.fdlist_full)
+                    clireply.append('  full : %s' % self.ctid.fdlist_full)
                 elif usefulmsg.startswith('reverse '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
                         dirnames = command_args[1].split(',')
                         numbers = command_args[2:]
                         for number in numbers:
-                            reverses = daemon.commandclass.findreverse(dirnames, number)
+                            reverses = self.ctid.commandclass.findreverse(dirnames, number)
                             for number, rep in reverses.iteritems():
                                 if isinstance(rep, unicode):
                                     clireply.append('%s %s' % (number, rep.encode('utf8')))
@@ -258,20 +273,23 @@ class cliConn:
                     if len(command_args) > 2:
                         ipdef = tuple([command_args[1], int(command_args[2])])
                         socktoremove = None
-                        for sockid in daemon.fdlist_established.keys():
+                        for sockid in self.ctid.fdlist_established.keys():
                             if ipdef == sockid.getpeername():
                                 socktoremove = sockid
                         if socktoremove:
                             clireply.append('disconnecting %s (%s)'
                                            % (socktoremove.getpeername(),
-                                              daemon.fdlist_established[socktoremove]))
+                                              self.ctid.fdlist_established[socktoremove]))
                             socktoremove.close()
-                            del daemon.fdlist_established[socktoremove]
+                            del self.ctid.fdlist_established[socktoremove]
                         else:
                             clireply.append('nobody disconnected')
                 elif usefulmsg == 'show_ami':
-                    for astid, ami in daemon.amilist.ami.iteritems():
+                    for astid, ami in self.ctid.amilist.ami.iteritems():
                         clireply.append('commands : %s : %s' % (astid, ami))
+                elif usefulmsg.startswith('ami inits '):
+                    g = usefulmsg[10:]
+                    self.ctid.myami[self.ipbxid].initrequest(g)
                 elif usefulmsg.startswith('ami '):
                     amicmd = usefulmsg.split()[1:]
                     if amicmd:
@@ -280,21 +298,26 @@ class cliConn:
                             astid = amicmd[0]
                             cmd = amicmd[1]
                             cmdargs = amicmd[2:]
-                            daemon.amilist.execute(astid, cmd, *cmdargs)
+                            self.ctid.amilist.execute(astid, cmd, *cmdargs)
+                elif usefulmsg.startswith('webs reload '):
+                    listname = usefulmsg[12:]
+                    self.innerdata.update_config_list(listname)
+                elif usefulmsg == 'currentstatus':
+                    clireply.extend(self.innerdata.currentstatus())
                 elif usefulmsg.startswith('kick '):
                     command_args = usefulmsg.split()
                     try:
                         if len(command_args) > 1:
                             kickuser = command_args[1]
-                            if kickuser in daemon.commandclass.connected_users():
-                                uinfo = daemon.commandclass.connected_users()[kickuser]
+                            if kickuser in self.ctid.commandclass.connected_users():
+                                uinfo = self.ctid.commandclass.connected_users()[kickuser]
                                 if 'login' in uinfo and 'connection' in uinfo.get('login'):
                                     cid = uinfo.get('login')['connection']
-                                    if cid in daemon.fdlist_established:
-                                        del daemon.fdlist_established[cid]
+                                    if cid in self.ctid.fdlist_established:
+                                        del self.ctid.fdlist_established[cid]
                                         cid.close()
-                                        daemon.commandclass.manage_logout(uinfo, 'admin')
-                                        del daemon.userinfo_by_requester[cid]
+                                        self.ctid.commandclass.manage_logout(uinfo, 'admin')
+                                        del self.ctid.userinfo_by_requester[cid]
                                         clireply.append('kicked %s' % kickuser)
                                     else:
                                         clireply.append('did not kick %s (socket id not in daemon refs)'
@@ -310,18 +333,24 @@ class cliConn:
                     except Exception:
                         log.exception('INFO %s' % usefulmsg)
                         clireply.append('(exception when trying to kick - see server log)')
-                elif usefulmsg.startswith('%s:' % daemon.commandset):
-                    daemon.commandclass.cliaction(self.connid, usefulmsg)
+                elif usefulmsg.startswith('%s:' % self.ctid.commandset):
+                    self.ctid.commandclass.cliaction(self.connid, usefulmsg)
                 else:
                     retstr = 'KO'
 
                 clireply.append('XIVO-INFO:%s' % retstr)
             except Exception:
-                log.exception('INFO connection [%s] : KO when sending to %s'
+                log.exception('INFO connection [%s] : KO when defining for %s'
                               % (usefulmsg, self.requester))
+
+        freply = { 'message' : clireply }
+        return freply
+
+    def reply(self, replylines):
         try:
-            for replyline in clireply:
+            for replyline in replylines:
                 self.connid.sendall('%s\n' % replyline)
         except Exception:
             log.exception('INFO connection [%s] : KO when sending to %s'
-                          % (msg, self.requester))
+                          % (replylines, self.requester))
+        return

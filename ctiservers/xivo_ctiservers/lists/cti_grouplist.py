@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -32,11 +32,8 @@ log = logging.getLogger('grouplist')
 
 class GroupList(AnyList):
     def __init__(self, newurls = [], virtual = False):
-        self.anylist_properties = {
-            'keywords' : ['number', 'context', 'groupname'],
-            'name' : 'groups',
-            'action' : 'getgroupslist',
-            'urloptions' : (1, 5, True) }
+        self.anylist_properties = { 'name' : 'groups',
+                                    'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return
     
@@ -50,29 +47,17 @@ class GroupList(AnyList):
         ret = AnyList.update(self)
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
-            if ag['groupname'] not in self.reverse_index:
-                self.reverse_index[ag['groupname']] = idx
+            if ag['name'] not in self.reverse_index:
+                self.reverse_index[ag['name']] = idx
             else:
                 log.warning('2 groups have the same name')
         return ret
     
     def hasqueue(self, queuename):
         return self.reverse_index.has_key(queuename)
-    
+
     def getcontext(self, queueid):
         return self.keeplist[queueid]['context']
-    
-    def fillstats(self, queueid, statin):
-        self.keeplist[queueid]['queuestats']['Xivo-Join'] = len(statin['ENTERQUEUE'])
-        self.keeplist[queueid]['queuestats']['Xivo-Link'] = len(statin['CONNECT'])
-        self.keeplist[queueid]['queuestats']['Xivo-Lost'] = len(statin['ABANDON'])
-        nj = self.keeplist[queueid]['queuestats']['Xivo-Join']
-        nl = self.keeplist[queueid]['queuestats']['Xivo-Link']
-        if nj > 0:
-            self.keeplist[queueid]['queuestats']['Xivo-Rate'] = (nl * 100) / nj
-        else:
-            self.keeplist[queueid]['queuestats']['Xivo-Rate'] = -1
-        return
 
     def queueentry_rename(self, queueid, oldchan, newchan):
         if queueid in self.keeplist:

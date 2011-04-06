@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision$ $Date$"
+__version__ = "$Revision: 8982 $ $Date: 2010-08-23 13:18:20 +0200 (Mon, 23 Aug 2010) $"
 
 from distutils.core import setup
 
@@ -11,9 +11,8 @@ setup(name='xivo_daemon',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
       packages=['xivo_ctiservers',
-		'xivo_ctiservers.CommandSets'],
+		'xivo_ctiservers.lists'],
       data_files=[
-		  ('/etc/pf-xivo/ctiservers', ['xivo_daemon.conf']),
 		  ('/usr/sbin', ['xivo_daemon']),
 		 ],
      )

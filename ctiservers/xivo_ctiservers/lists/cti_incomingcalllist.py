@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10129 $'
+__date__      = '$Date: 2011-02-08 15:59:32 +0100 (Tue, 08 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -29,25 +29,12 @@ from xivo_ctiservers.cti_anylist import AnyList
 
 log = logging.getLogger('incomingcalllist')
 
-class IncomingCallList(AnyList):
+class IncomingcallList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = {
-            'keywords' : ['exten', 'context', 'destidentity', 'action',
-                          'userfirstname', 'userlastname',
-                          'usernumber', 'username',
-                          'usercontext',
-                          'groupcontext',
-                          'queuecontext',
-                          'meetmecontext',
-                          'voicemenucontext',
-                          'voicemailcontext'],
-            'name' : 'incomingcall',
-            'action' : 'getincomingcalllist',
-            'urloptions' : (1, 5, True) }
+        self.anylist_properties = { 'name' : 'incomingcall',
+                                    'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return
-    
-    # [{"id":"2","preprocess_subroutine":null,"faxdetectenable":"0","faxdetecttimeout":"4","faxdetectemail":"","commented":false,"linked":true,"actionarg1":"3","actionarg2":"","groupname":null,"groupnumber":null,"groupcontext":null,"queuename":null,"queuenumber":null,"queuecontext":null,"meetmename":null,"meetmenumber":null,"meetmecontext":null,"voicemailfullname":null,"voicemailmailbox":null,"voicemailcontext":null,"schedulename":null,"schedulecontext":null,"voicemenuname":null,"voicemenunumber":null,"voicemenucontext":null,"destination":"user","identity":"9964 (from-extern)","destidentity":"Sylvain Boily (104@default)"}
     
     def update(self):
         ret = AnyList.update(self)

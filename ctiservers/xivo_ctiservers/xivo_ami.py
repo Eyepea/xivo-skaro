@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 10133 $'
+__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -39,7 +39,6 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 __dialallowed__ = '[0-9*#+]'
 __specialextensions__ = ['s', 'BUSY']
 
-log = logging.getLogger('xivo_ami')
 switch_originates = True
 
 ## \class AMIClass
@@ -52,15 +51,17 @@ class AMIClass:
             return self.msg
 
     # \brief Class initialization.
-    def __init__(self, astid, address, loginname, password, events):
-        self.astid     = astid
-        self.address   = address
+    def __init__(self, ipbxid, ipaddress, ipport, loginname, password, events):
+        self.ipbxid    = ipbxid
+        global log
+        log = logging.getLogger('xivo_ami(%s)' % self.ipbxid)
+        self.ipaddress = ipaddress
+        self.ipport    = ipport
         self.loginname = loginname
         self.password  = password
         self.events    = events
         self.aorgcmd = 'AOriginate'
         self.actionid = None
-        self.fileobj = None
         return
 
     def set_aoriginate(self, aoriginatecmd):
@@ -70,17 +71,11 @@ class AMIClass:
     # \brief Connection to a socket.
     def connect(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(self.address)
+        self.sock.connect((self.ipaddress, self.ipport))
         self.sock.settimeout(30)
-        self.fileobj = self.sock.makefile('rw', 0)
-        self.fd = self.fileobj.fileno()
-        log.info('%s AMI connection properties : here=%s remote=%s fileobj=%s fd=%s'
-                 % (self.astid, self.sock.getsockname(), self.sock.getpeername(),
-                    self.fileobj, self.fd))
-        return
-
-    def setlistref(self, amilist):
-        self.amilist = amilist
+        self.fd = self.sock.fileno()
+        log.info('connection properties : here=%s remote=%s fd=%s'
+                 % (self.sock.getsockname(), self.sock.getpeername(), self.fd))
         return
 
     # \brief Sending any AMI command.
@@ -130,11 +125,10 @@ class AMIClass:
                             % (action, self.actionid, self.fd))
                 # tries to reconnect
                 try:
-                    self.fileobj.close()
+                    self.sock.close()
 
                     self.connect()
                     self.login()
-                    self.amilist.updaterefs(self)
                     if self:
                         # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
                         self.sendcommand(action, args, 1)
@@ -199,7 +193,7 @@ class AMIClass:
     def hangup(self, channel, channel_peer = None):
         ret = 0
         try:
-            log.info('%s : hanging up %s as requested' % (self.astid, channel))
+            log.info('hanging up %s as requested' % (channel))
             self.sendcommand('Hangup',
                              [('Channel', channel)])
             ret += 1
@@ -210,7 +204,7 @@ class AMIClass:
 
         if channel_peer:
             try:
-                log.info('%s : hanging up %s (peer) as requested' % (self.astid, channel_peer))
+                log.info('hanging up %s (peer) as requested' % (channel_peer))
                 self.sendcommand('Hangup',
                                  [('Channel', channel_peer)])
                 ret += 2
@@ -264,7 +258,9 @@ class AMIClass:
             return False
 
     # \brief Originates a call from a phone towards another.
-    def originate(self, phoneproto, phonesrcname, phonesrcnum, cidnamesrc, phonedst, cidnamedst, locext, extravars = {}, timeout = 3600):
+    def originate(self, phoneproto, phonesrcname, phonesrcnum, cidnamesrc,
+                  phonedst, cidnamedst,
+                  locext, extravars = {}, timeout = 3600):
         # originate a call btw src and dst
         # src will ring first, and dst will ring when src responds
         ph = re.sub(__dialallowed__, '', phonedst)
@@ -276,7 +272,6 @@ class AMIClass:
                                ('Context', locext),
                                ('Priority', '1'),
                                ('Timeout', str(timeout * 1000)),
-                               ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
                                ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                ('Async', 'true')]
             if switch_originates:
@@ -287,6 +282,7 @@ class AMIClass:
                 command_details.append(('CallerID', '"%s"<%s>' % (cidnamesrc, phonesrcnum)))
             for var, val in extravars.iteritems():
                 command_details.append(('Variable', '%s=%s'  % (var, val)))
+            command_details.append(('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid ))
             ret = self.sendcommand('Originate', command_details)
             return ret
         except self.AMIError:
@@ -391,7 +387,7 @@ class AMIClass:
         except Exception:
             return False
 
-    # \brief Adds a Queue
+    # \brief Adds an Interface into a Queue
     def queueadd(self, queuename, interface, paused, skills):
         try:
             # it looks like not specifying Paused is the same as setting it to false
@@ -532,342 +528,3 @@ class AMIClass:
             return False
         except Exception:
             return False
-
-class AMIList:
-    def __init__(self):
-        self.config = {}
-        self.ami = {}
-        self.rami = {}
-        return
-
-    def setconfig(self, astid, address, loginname, password):
-        self.config[astid] = [address, loginname, password]
-        return
-
-    def connect(self, astid):
-        [address, loginname, password] = self.config[astid]
-        if astid not in self.ami:
-            self.ami[astid] = None
-        if self.ami[astid] is None:
-            log.info('%s AMI : attempting to connect' % astid)
-            amicl = AMIClass(astid, address, loginname, password, True)
-            amicl.setlistref(self)
-            amicl.connect()
-            amicl.login()
-
-            self.updaterefs(amicl)
-            amicl.sendcommand(
-                'Command',
-                [('Command', 'core show version'),
-                 ('ActionID' ,
-                  '%s-%s' % (''.join(random.sample(__alphanums__, 10)),
-                             hex(int(time.time())))
-                  )
-                 ]
-                )
-            self.request_initvalues(astid)
-        else:
-            log.info('%s AMI : already connected %s'
-                     % (astid, self.ami[astid]))
-            self.request_initvalues(astid)
-        return
-
-    def updaterefs(self, amiclass):
-        log.info('%s AMI : (re)connect/update %s %s' % (amiclass.astid, amiclass.fileobj, amiclass))
-        self.ami[amiclass.astid] = amiclass
-        self.rami.clear()
-        for astid, amiclass in self.ami.iteritems():
-            self.rami[amiclass.fileobj] = astid
-        return
-
-    def request_initvalues(self, astid):
-        if astid in self.ami:
-            conn_ami = self.ami.get(astid)
-
-            # sendparkedcalls before sendstatus : parked calls can be identified later
-            # sendmeetmelist before sendstatus : to fill the times spent for various conf rooms
-            initphaseid = ''.join(random.sample(__alphanums__, 10))
-
-            for initrequest in ['SIPpeers', 'IAXpeers',
-                                'ParkedCalls', 'MeetmeList',
-                                'Status', 'Agents',
-                                'QueueStatus', 'QueueSummary',
-                                'CoreShowChannels',
-                                'IAXregistry', 'SIPshowregistry', 'VoicemailUsersList',
-                                'ShowDialPlan',
-                                'DAHDIShowChannels']:
-                conn_ami.setactionid('init-%s-%s-%d' % (initrequest.lower(),
-                                                        initphaseid,
-                                                        int(time.time())))
-                conn_ami.sendcommand(initrequest, [])
-
-            conn_ami.setactionid('init_close_%s' % initphaseid)
-        return
-
-    def set_aoriginate(self, astid, aoriginatecmd):
-        self.ami[astid].set_aoriginate(aoriginatecmd)
-        return
-
-    def fdlist(self):
-        for rk in self.rami.keys():
-            if not rk._sock:
-                del self.rami[rk]
-        return self.rami.keys()
-
-    def remove(self, astid):
-        if astid in self.ami:
-            fd = self.ami[astid].fileobj
-            del self.ami[astid]
-            if fd in self.rami:
-                del self.rami[fd]
-            else:
-                log.warning('(remove) %s : fd %s not in self.rami' % (astid, fd))
-        else:
-            log.warning('(remove) astid %s not in self.ami' % astid)
-        return
-
-    def astid(self, sock):
-        return self.rami.get(sock)
-
-    def execute(self, astid, command, *args):
-        actionid = None
-        if astid in self.ami:
-            conn_ami = self.ami.get(astid)
-            if conn_ami is None:
-                log.warning('ami (command %s) : <%s> in list but not connected - wait for the next update ?'
-                            % (command, astid))
-            else:
-                try:
-                    actionid = ''.join(random.sample(__alphanums__, 10))
-                    conn_ami.setactionid(actionid)
-                    ret = getattr(conn_ami, command)(*args)
-                except Exception:
-                    log.exception('AMI command %s on <%s>' % (command, astid))
-        else:
-            log.warning('ami (command %s) : %s not in list - wait for the next update ?'
-                        % (command, astid))
-        return actionid
-
-
-# define the events, sorted according to their class
-# (classes are defined in include/asterisk/manager.h)
-
-event_flags = dict()
-event_others = dict()
-
-event_flags['SYSTEM'] = [ 'Alarm', 'AlarmClear', 'SpanAlarm', 'SpanAlarmClear',
-                          'Reload', 'Shutdown', 'ModuleLoadReport',
-                          'FullyBooted', # (1.8)
-                          'PeerStatus', 'DNDState', 'MobileStatus', 'Registry',
-                          'ChannelReload', 'ChannelUpdate', 'LogChannel'
-                          ]
-
-event_flags['CALL'] = [ 'MeetmeJoin',
-                        'MeetmeLeave',
-                        'MeetmeMute',
-                        'MeetmeTalking',
-                        'MeetmeTalkRequest',
-                        'MeetmeEnd',
-                        'Dial', 'Hangup', 'Pickup', 'Rename', 'Unlink',
-                        'Bridge', 'BridgeExec', 'BridgeAction',
-                        'Transfer', # only in chan_sip
-                        'Hold', # only in chan_sip and chan_iax2
-                        'Masquerade', 'OriginateResponse', 'MessageWaiting', 'MiniVoiceMail',
-                        'ParkedCallStatus', # CLG addendum
-                        'ParkedCall', 'UnParkedCall', 'ParkedCallTimeOut', 'ParkedCallGiveUp',
-                        'MonitorStart', 'MonitorStop', 'ChanSpyStart', 'ChanSpyStop',
-                        'Newchannel',
-                        'NewAccountCode', # (1.8)
-                        'NewCallerid', # was 'Newcallerid' in 1.4
-                        'NewPeerAccount',
-                        'Newstate',
-                        'CEL', 'MCID',
-                        'Join', 'Leave',
-                        'ExtensionStatus', 'MusicOnHold',
-                        'FaxSent', 'FaxReceived', 'ReceiveFAXStatus', 'SendFAXStatus', 'ReceiveFAX', 'SendFAX'
-                        ]
-
-event_flags['AGENT'] = [ 'AgentCalled', 'AgentComplete', 'AgentConnect', 'AgentDump',
-                         'Agentlogin', 'Agentlogoff',
-                         'AgentRingNoAnswer',
-                         'QueueCallerAbandon', 'QueueMemberAdded',
-                         'QueueMemberPaused', 'QueueMemberPenalty',
-                         'QueueMemberRemoved', 'QueueMemberStatus'
-                         ]
-
-event_flags['USER'] = [ 'JabberEvent', 'JabberStatus', 'UserEvent' ]
-
-event_flags['DTMF'] = [ 'DTMF' ]
-
-event_flags['REPORTING'] = [ 'JitterBufStats', 'RTCPReceived', 'RTCPSent' ]
-
-event_flags['CDR'] = [ 'Cdr' ]
-
-event_flags['DIALPLAN'] = [ 'Newexten', # in order to handle outgoing calls ?
-                            'VarSet' ]
-
-event_flags['AGI'] = [ 'AGIExec', 'AsyncAGI' ]
-
-# Call Completion events
-# https://wiki.asterisk.org/wiki/download/attachments/9076838/CCSS_architecture.pdf
-
-event_flags['CC'] = [ 'CCAvailable',
-                      'CCCallerRecalling', 'CCCallerStartMonitoring', 'CCCallerStopMonitoring',
-                      'CCFailure', 'CCMonitorFailed', 'CCOfferTimerStart',
-                      'CCRecallComplete', 'CCRequestAcknowledged', 'CCRequested' ]
-
-event_flags['AOC'] = [ 'AOC-D', 'AOC-E', 'AOC-S' ]
-
-event_flags['LOG'] = []
-event_flags['VERBOSE'] = []
-event_flags['COMMAND'] = []
-event_flags['CONFIG'] = []
-event_flags['ORIGINATE'] = []
-event_flags['HOOKRESPONSE'] = []
-
-event_others['replies'] = [
-    'PeerEntry', 'PeerlistComplete', # after SIPpeers or IAXpeers or ...
-    'ParkedCallsComplete', # after ParkedCalls
-    'MeetmeList', 'MeetmeListComplete', # after MeetMeList
-    'Status' , 'StatusComplete', # after Status
-    'Agents', 'AgentsComplete', # after Agents
-    'QueueParams', 'QueueEntry', 'QueueMember', 'QueueStatusComplete', # after QueueStatus
-    'QueueSummary', 'QueueSummaryComplete', # after QueueSummary
-    'CoreShowChannel', 'CoreShowChannelsComplete', # after CoreShowChannels
-    'RegistryEntry', 'RegistrationsComplete', # in reply to IAXregistry / SIPshowregistry seems to go elsewhere
-    'VoicemailUserEntry', 'VoicemailUserEntryComplete', # in reply to VoicemailUsersList ? XXX when empty
-    'ListDialplan', 'ShowDialPlanComplete', # in reply to ShowDialPlan
-    'DAHDIShowChannels', 'DAHDIShowChannelsComplete', # in reply to DAHDIShowChannels
-
-    'LineEntry', 'LinelistComplete', # in reply to SKINNYlines
-    'DeviceEntry', 'DevicelistComplete', # in reply to SKINNYdevices
-
-    'WaitEventComplete',
-    'Placeholder', 'DBGetResponse', 'DBGetComplete',
-    'DataGet Tree'
-    ]
-
-event_others['extra'] = [
-    'Agentcallbacklogin',   # (old events : find the way to replace them)
-    'Agentcallbacklogoff',  # (old events : find the way to replace them)
-    'MeetmeNoAuthed',       # (xivo) when a member was accepted or not by an admin
-    'MeetmePause',          # (xivo) when a meetme room is put in pause or activated
-    'Atxfer',               # (patch to fetch ?)
-    'AOriginateSuccess',    # (xivo aoriginate)
-    'AOriginateFailure',    # (xivo aoriginate)
-    'ActionRequest',        # (xivo)
-
-    'HangupRequest',        # (xivo) to know who 'ordered' the hangup (patch submitted to digium in #0018226)
-    'SoftHangupRequest',    # (xivo) to know when the hangup was requested from the CLI (patch submitted to digium in #0018226)
-]
-event_others['extra'] = []
-
-evfunction_to_method_name = dict()
-
-# define the handling method for event XyZ to be ami_xyz()
-
-for k, v in event_flags.iteritems():
-    for eventname in v:
-        # '-' to '_' for 'AOC-[DES]' events
-        methodname = 'ami_%s' % eventname.lower().replace('-', '_')
-        if eventname not in evfunction_to_method_name:
-            evfunction_to_method_name[eventname] = methodname
-        else:
-            log.warning('%s (flags) %s already there' % (k, eventname))
-
-for k, v in event_others.iteritems():
-    for eventname in v:
-        # ' ' to '_' for 'DataGet Tree' event
-        methodname = 'ami_%s' % eventname.lower().replace(' ', '_')
-        if eventname not in evfunction_to_method_name:
-            evfunction_to_method_name[eventname] = methodname
-        else:
-            log.warning('%s (others) %s already there' % (k, eventname))
-
-manager_commands = [
-    'AbsoluteTimeout',
-    'AgentLogoff', 'AGI', 'AOCMessage',
-    'Challenge', 'Command',
-    'DataGet',
-    'DBDel', 'DBDelTree', 'DBGet', 'DBPut',
-    'Events', 'ExtensionState',
-    'Getvar',
-    'JabberSend',
-    'LocalOptimizeAway',
-    'MailboxCount', 'MailboxStatus',
-    'MeetmeMute', 'MeetmeUnmute',
-    'ModuleCheck', 'ModuleLoad', 'Ping', 'PlayDTMF',
-    'QueueAdd', 'QueueLog', 'QueuePause', 'QueuePenalty', 'QueueReload',
-    'QueueRemove', 'QueueReset', 'QueueRule',
-    'MuteAudio', 'Reload',
-    'SendText', 'Setvar', 'ShowDialPlan',
-    'UserEvent',
-    'WaitEvent',
-
-    # Connection
-    'Login', 'Logoff',
-
-    # general (answer is in the Response field)
-    'CoreSettings', 'CoreStatus', 'ListCommands',
-
-    # call actions
-    'Atxfer', 'Bridge', 'Hangup', 'Originate', 'Park', 'Redirect',
-
-    # config files
-    'CreateConfig', 'GetConfigJSON', 'GetConfig', 'ListCategories', 'UpdateConfig',
-
-    # list requests (~ config)
-    'Agents', 'MeetmeList', 'VoicemailUsersList', 'QueueStatus', 'QueueSummary',
-
-    'Queues', # this one is actually a CLI command - avoid using it
-
-    # list requests (~ statuses)
-    'CoreShowChannels', 'ParkedCalls', 'Status',
-
-    # monitor actions
-    'ChangeMonitor', 'MixMonitorMute', 'Monitor',
-    'PauseMonitor', 'StopMonitor', 'UnpauseMonitor',
-
-    # protocol-related commands
-    'DAHDIDialOffhook', 'DAHDIDNDoff', 'DAHDIDNDon', 'DAHDIHangup',
-    'DAHDIRestart', 'DAHDIShowChannels', 'DAHDITransfer',
-    'IAXnetstats', 'IAXpeerlist', 'IAXpeers', 'IAXregistry',
-    'SCCPDeviceAddLine', 'SCCPDeviceRestart', 'SCCPDeviceUpdate',
-    'SCCPLineForwardUpdate', 'SCCPListDevices', 'SCCPListLines',
-    'SKINNYshowline', 'SKINNYlines', 'SKINNYshowdevice', 'SKINNYdevices',
-    'SIPnotify', 'SIPpeers', 'SIPqualifypeer', 'SIPshowpeer', 'SIPshowregistry',
-    ]
-
-# list of applications
-# - might be useful for all the "Originate an application" needs
-# - actual list would be to be retrieved from "core show applications" or an AMI equivalent
-applications = [
-    'AddQueueMember', 'ADSIProg', 'AgentLogin', 'AgentMonitorOutgoing', 'AGI', 'AMD',
-    'Answer', 'Authenticate', 'BackGround', 'BackgroundDetect', 'Bridge', 'Busy',
-    'CallCompletionCancel', 'CallCompletionRequest', 'CELGenUserEvent', 'ChangeMonitor',
-    'ChanIsAvail', 'ChannelRedirect', 'ChanSpy', 'ClearHash', 'ConfBridge', 'Congestion',
-    'ContinueWhile', 'ControlPlayback', 'DAHDIBarge', 'DAHDIRAS', 'DAHDIScan', 'DateTime',
-    'DBdel', 'DBdeltree', 'DeadAGI', 'Dial', 'Dictate', 'Directory', 'DISA', 'DumpChan',
-    'EAGI', 'Echo', 'EndWhile', 'Exec', 'ExecIf', 'ExecIfTime', 'ExitWhile', 'ExtenSpy',
-    'ExternalIVR', 'Festival', 'Flash', 'FollowMe', 'ForkCDR', 'GetCPEID', 'Gosub', 'GosubIf',
-    'Goto', 'GotoIf', 'GotoIfTime', 'Hangup', 'IAX2Provision', 'ICES', 'ImportVar', 'Incomplete',
-    'JabberJoin', 'JabberLeave', 'JabberSend', 'JabberSendGroup', 'JabberStatus',
-    'Log', 'Macro', 'MacroExclusive', 'MacroExit', 'MacroIf', 'MailboxExists',
-    'MeetMe', 'MeetMeAdmin', 'MeetMeChannelAdmin', 'MeetMeCount',
-    'Milliwatt', 'MinivmAccMess', 'MinivmDelete', 'MinivmGreet', 'MinivmMWI',
-    'MinivmNotify', 'MinivmRecord', 'MixMonitor', 'Monitor', 'Morsecode',
-    'MP3Player', 'MSet', 'MusicOnHold', 'NBScat', 'NoCDR', 'NoOp', 'Originate',
-    'Page', 'Park', 'ParkAndAnnounce', 'ParkedCall', 'PauseMonitor', 'PauseQueueMember',
-    'Pickup', 'PickupChan', 'Playback', 'PlayTones', 'PrivacyManager', 'Proceeding',
-    'Progress', 'Queue', 'QueueLog', 'RaiseException', 'Read', 'ReadExten', 'ReadFile',
-    'ReceiveFAX', 'Record', 'RemoveQueueMember', 'ResetCDR', 'RetryDial', 'Return', 'Ringing',
-    'SayAlpha', 'SayDigits', 'SayNumber', 'SayPhonetic', 'SayUnixTime', 'SendDTMF', 'SendFAX',
-    'SendImage', 'SendText', 'SendURL', 'Set', 'SetAMAFlags', 'SetCallerPres', 'SetMusicOnHold',
-    'SIPAddHeader', 'SIPDtmfMode', 'SIPRemoveHeader', 'SLAStation', 'SLATrunk', 'SMS', 'SoftHangup',
-    'StackPop', 'StartMusicOnHold', 'StopMixMonitor', 'StopMonitor', 'StopMusicOnHold',
-    'StopPlayTones', 'System', 'TestClient', 'TestServer', 'Transfer', 'TryExec', 'TrySystem',
-    'UnpauseMonitor', 'UnpauseQueueMember', 'UserEvent', 'Verbose',
-    'VMAuthenticate', 'VMSayName', 'VoiceMail', 'VoiceMailMain',
-    'Wait', 'WaitExten', 'WaitForNoise', 'WaitForRing', 'WaitForSilence', 'WaitMusicOnHold', 'WaitUntil',
-    'While', 'Zapateller'
-    ]

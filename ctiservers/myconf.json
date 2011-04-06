@@ -1,0 +1,117 @@
+{
+  "userstatus" : {
+            "propro" : {
+                "available" : {"allowed" : ["available", "backsoon", "online"],
+                               "longname" : "Dispo",
+                               "color" : "blue"},
+                "backsoon" : {"allowed" : ["available", "backsoon"],
+                              "longname" : "Bientot",
+                              "color" : "red"},
+                "online" : {"allowed" : ["available", "backsoon", "online"],
+                            "longname" : "En ligne",
+                                "color" : "yellow"}
+                }
+            },
+  "phonestatus" : {
+            "xivoh" : {
+                "0" : {"longname" : "Disponible", "color" : "#0DFF25"},
+                "1" : {"longname" : "En Ligne OU Appelle", "color" : "#FF032D"},
+                "4" : {"longname" : "Indisponible", "color" : "#FFFFFF"},
+                "8" : {"longname" : "Sonne", "color" : "#1B0AFF"},
+                "9" : {"longname" : "(En Ligne OU Appelle) ET Sonne", "color" : "#FF0526"},
+                "16" : {"longname" : "En attente", "color" : "#F7FF05"}
+                }
+  },
+  "channelstatus" : {
+            "xivoh" : {
+                "ringing" : {"longname" : "Appelé", "color" : "red"},
+                "calling" : {"longname" : "Appelant", "color" : "blue"},
+                "linked-caller" : {"longname" : "En ligne (appelant)", "color" : "green"},
+                "linked-called" : {"longname" : "En ligne (appelé)", "color" : "yellow"}
+                }
+  },
+  "agentstatus" : {
+            "xivoh" : []
+  },
+
+  "functions" : {
+            "bearz" : ["customerinfo", "presence", "switchboard"]
+  },
+
+  "regcommands" : {
+            "rrrr" : ["login_pass", "login_capas", "getlist", "ipbxcommand",
+                      "availstate", "keepalive", "history"]
+  },
+  "ipbxcommands" : {
+            "jkhjk" : ["originate", "agentlogin", "atxfer", "transfer", "dial", "park"]
+  },
+
+  "services" : {
+            "mlkm" : []
+  },
+
+  "profiles" : {
+            "profff" : {
+                "name" : "AZER",
+                "xlets" : ["switchboard-dock-fcms",
+                           "search-dock-fcms",
+                           "calls-dock-fcms",
+                           "customerinfo-dock-fcms",
+                           "features-dock-fcms",
+                           "parking-dock-fcms",
+                           "operator-dock-fcms",
+                           "dial-dock-fcms",
+                           "identity-grid-0"],
+                "regcommands" : "rrrr",
+                "ipbxcommands" : "jkhjk",
+                "services" : "mlkm",
+                "functions" : "bearz",
+
+                "userstatus" : "propro",
+                "phonestatus" : "xivoh",
+                "channelstatus" : "xivoh",
+                "agentstatus" : "xivoh"
+                },
+            "switchboard" : {
+                "name" : "SRD",
+                "xlets" : ["switchboard-dock-fcms",
+                           "search-dock-fcms",
+                           "calls-dock-fcms",
+                           "customerinfo-dock-fcms",
+                           "features-dock-fcms",
+                           "parking-dock-fcms",
+                           "operator-dock-fcms",
+                           "dial-dock-fcms",
+                           "history-dock-fcms",
+                           "directory-dock-fcms",
+                           "fax-dock-fcms",
+                           "conference-dock-fcms",
+                           "agents-dock-fcms",
+                           "agentsnext-dock-fcms",
+                           "agentdetails-dock-fcms",
+                           "queues-dock-fcms",
+                           "queuedetails-dock-fcms",
+                           "queueentrydetails-dock-fcms",
+                           "identity-grid-0"],
+                "regcommands" : "rrrr",
+                "ipbxcommands" : "jkhjk",
+                "services" : "mlkm",
+                "functions" : "bearz",
+
+                "userstatus" : "propro",
+                "phonestatus" : "xivoh",
+                "channelstatus" : "xivoh",
+                "agentstatus" : "xivoh"
+                }
+            }
+  "sheets" : {
+        "sheetdisplays" : { "bb" : "ac" },
+        "sheetoptions" : { "o1" : { "focus" : "", "zip" : "" } },
+        "sheetconditions" : { "c1" : { "context" : ["mamaop"],
+                                                     "profile" : ["oper"]
+                                                     }},
+        "sheetevents" : { "newchannel" :
+                                        [ ["bb", "c1", "o1"], ["bb2", "c2", "ff"] ]
+                                        }
+        }
+}
