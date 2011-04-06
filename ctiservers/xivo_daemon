@@ -230,7 +230,7 @@ class xivo_daemon:
         for ipbxid, ipbxconfig in self.cconf.xc_json.get('ipbxes').iteritems():
             connparams = ipbxconfig.get('connection')
             cfg_ip_address = connparams.get('ipaddress')
-            if ipaddress == cfg_ip_address:
+            if ipaddress == socket.gethostbyname(cfg_ip_address):
                 found_ipbxid = ipbxid
                 break
         return found_ipbxid
