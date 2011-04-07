@@ -27,11 +27,11 @@ __author__    = 'Corentin Le Gall'
 import logging
 from xivo_ctiservers.cti_anylist import AnyList
 
-log = logging.getLogger('incomingcalllist')
+log = logging.getLogger('incalllist')
 
-class IncomingcallList(AnyList):
+class IncallList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = { 'name' : 'incomingcall',
+        self.anylist_properties = { 'name' : 'incall',
                                     'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return

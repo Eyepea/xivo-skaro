@@ -41,7 +41,8 @@ infohelptext = ['',
                 'show_phones, show_trunks : phones and trunks lists',
                 'show_queues, show_groups,',
                 'show_agents              : call-center related lists',
-                'show_incomingcalls       : did lists',
+                'show_incalls             : did lists',
+                'show_outcalls            : out calls',
                 'show_meetme              : conference rooms',
                 'show_voicemail           : voicemails',
                 'show_phonebook           : phonebook contents',
@@ -104,7 +105,8 @@ class INFO(Interfaces):
                 retstr = 'OK'
                 show_command_list = ['show_phones', 'show_trunks',
                                      'show_queues', 'show_groups', 'show_agents',
-                                     'show_incomingcalls', 'show_phonebook',
+                                     'show_incalls', 'show_outcalls',
+                                     'show_phonebook',
                                      'show_meetme', 'show_voicemail']
                 if usefulmsg == 'help':
                     clireply.extend(infohelptext)

@@ -40,23 +40,33 @@ log = logging.getLogger('safedeposit')
 
 class Safe:
     # matches between CTI lists and WEBI-given fields
-    urlvars = { 'agents' : 'urllist_agents',
-                'queues' : 'urllist_queues',
-                'groups' : 'urllist_groups',
-                'phones' : 'urllist_phones',
-                'trunks' : 'urllist_trunks',
-                'users'  : 'urllist_phones',
-                'meetmes' : 'urllist_meetme',
-                'incomingcalls' : 'urllist_incomingcalls',
-                'voicemails' : 'urllist_voicemail',
-                'phonebooks' : 'urllist_phonebook'
-                }
+    urlvars = {
+        'phones' : 'urllist_phones',
+        'trunks' : 'urllist_trunks',
+        'users'  : 'urllist_phones',
 
-    props_config = { 'users' : ['loginclient', 'fullname',
-                                'number', 'mobilephonenumber',
-                                'firstname', 'lastname', 'context',
+        'agents' : 'urllist_agents',
+        'queues' : 'urllist_queues',
+        'groups' : 'urllist_groups',
+        'meetmes' : 'urllist_meetmes',
+        'voicemails' : 'urllist_voicemails',
+        'incalls' : 'urllist_incalls',
+        'outcalls' : 'urllist_outcalls',
+        'contexts' : 'urllist_contexts',
+
+        'phonebooks' : 'urllist_phonebook'
+        }
+
+    # defines the list of parameters that might be sent to xivo clients
+    props_config = { 'users' : ['loginclient',
+                                'number',
+                                'mobilephonenumber',
+                                'firstname', 'lastname', 'fullname',
+                                'entityid', # XXX (for entity/context relations)
+
                                 'id', # since users and phones are the same, this is a pointer to the phone id
-                                'agentid', 'voicemailid',
+                                'agentid',
+                                'voicemailid',
                                 #
                                 'simultcalls'
                                 ],
@@ -79,7 +89,9 @@ class Safe:
                      'voicemails' : ['context', 'fullname', 'mailbox', 'email'], # password
                      'meetmes' : ['context', 'number', 'name', 'admin_moderationmode',
                                   'pin_needed'], # 'pin', 'pinadmin' should not be transmitted
-                     'incomingcalls' : ['context', 'exten', 'destidentity', 'action'],
+                     'incalls' : ['context', 'exten', 'destidentity', 'action'],
+                     'outcalls' : [],
+                     'contexts' : [],
                      }
 
     props_status = { 'users' : { 'mwi' : [],
@@ -115,7 +127,9 @@ class Safe:
                                    'channels' : []
                                    },
                      'voicemails' : {},
-                     'incomingcalls' : {},
+                     'incalls' : {},
+                     'outcalls' : {},
+                     'contexts' : {},
                      }
 
     user_props_send_extra = ['mailbox', 'subscribemwi', 'pickupgroup', 'callgroup', 'callerid']

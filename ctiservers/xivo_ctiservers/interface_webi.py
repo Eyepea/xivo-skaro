@@ -47,14 +47,17 @@ AMI_REQUESTS = [
 
 UPDATE_REQUESTS = [
     'xivo[userlist,update]',
+    'xivo[devicelist,update]',
+    'xivo[linelist,update]',
     'xivo[phonelist,update]',
+
     'xivo[trunklist,update]',
     'xivo[agentlist,update]',
     'xivo[queuelist,update]',
     'xivo[grouplist,update]',
     'xivo[meetmelist,update]',
     'xivo[voicemaillist,update]',
-    'xivo[incomingcallslist,update]',
+    'xivo[incalllist,update]',
     ]
 
 class WEBI(Interfaces):

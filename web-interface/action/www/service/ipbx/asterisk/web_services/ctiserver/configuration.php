@@ -381,26 +381,31 @@ switch($act)
                                 $out['main']['userlists'][] = $json . 'pbx_settings/users' . '?astid=' . $hostname;
                                 $out['main']['ctilog_db_uri'] = $db_cti;
 				$out[$hostname] = array(
-					'ipaddress' => $list[$v]['host'],
-					'ipaddress_webi' => $list[$v]['webi'],
-					'urllist_agents' => array($json . 'call_center/agents'),
 					'urllist_phones' => array($json . 'pbx_settings/users'),
+					'urllist_agents' => array($json . 'call_center/agents'),
 					'urllist_queues' => array($json . 'call_center/queues'),
 					'urllist_groups' => array($json . 'pbx_settings/groups'),
-					'urllist_meetme' => array($json . 'pbx_settings/meetme'),
-					'urllist_voicemail' => array($json . 'pbx_settings/voicemail'),
-					'urllist_incomingcalls' => array($json . 'call_management/incall'),
+					'urllist_meetmes' => array($json . 'pbx_settings/meetme'),
+					'urllist_voicemails' => array($json . 'pbx_settings/voicemail'),
+					'urllist_incalls' => array($json . 'call_management/incall'),
+					'urllist_outcalls' => array($json . 'call_management/outcall'),
+					'urllist_contexts' => array($json . 'system_management/context'),
+
 					'urllist_trunks' => array(
 											$json . 'trunk_management/sip',
 											$json . 'trunk_management/iax'
 										),
 					'urllist_phonebook'   => array($json . 'pbx_services/phonebook'),
+
+
+					'ipaddress' => $list[$v]['host'],
 					'ami_port'            => $list[$v]['ami_port'],
 					'ami_login'           => $list[$v]['ami_login'],
 					'ami_pass'            => $list[$v]['ami_pass'],
+
+
 					'cdr_db_uri'          => $db_ast,
-					'userfeatures_db_uri' => $db_ast,
-					'url_queuelog'        => 'file:' . $app->_serverfeatures->_sre->_ini['logfiles']['path'] . '/queue_log'
+					'userfeatures_db_uri' => $db_ast
 				);
 			}
 			$out['main']['userlists'][] = "file:///etc/pf-xivo/ctiservers/guest_account.json";

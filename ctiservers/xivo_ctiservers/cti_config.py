@@ -76,6 +76,8 @@ class Config:
         return
 
     def translate(self):
+        # web-interface/action/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
+        # web-interface/tpl/www/bloc/menu/left/cti/menu.php
         if self.xc_json.has_key('ipbxes'):
             return
 
