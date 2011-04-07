@@ -41,8 +41,8 @@
 
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery/jquery.min.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery-ui/jquery-ui.min.js'));?>"></script>
-<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/autocomplete/jquery.autocomplete.js'));?>"></script>
-<link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('extra-libs/autocomplete/jquery.autocomplete.css'));?>">
+<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js'));?>"></script>
+<link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css'));?>">
 <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('extra-libs/jquery-ui/css/ui-lightness/jquery-ui.css'));?>">
 
 <?php
