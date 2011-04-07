@@ -77,7 +77,7 @@ if(isset($_QR['fm_send']) === true
 		);
 	}
 	$skillerr = $appqueue->userskills_setedit($queueskills);
-
+		
 	if($appuser->set_edit($_QR) === false
 	|| $skillerr === false
 	|| $appuser->edit() === false)

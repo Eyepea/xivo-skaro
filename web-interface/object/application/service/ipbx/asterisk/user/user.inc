@@ -1524,13 +1524,24 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(($rs = $this->get_result('linefeatures')) === null)
 			return($rs);
-
+/*
 		if(dwho_issa('linefeatures',$this->_info) === false
 		|| $rs === false
 		|| $this->_line === false)
 			return(false);
+*/
+		if($this->_line === false)
+			return(false);
 
-		$info = $this->_info['linefeatures'];
+		$res = array();		
+		if (($info = $this->_info['linefeatures']) !== false)
+		{
+			for($i = 0;$i < count($info);$i++)
+			{
+				$ref = &$info[$i];
+				$res[$ref['id']] = $ref;
+			}
+		}
 
 		$userfeatures = $this->_info['userfeatures'];
 
@@ -1539,13 +1550,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$arr = array();
 		$arr['userfeatures'] = $userfeatures;
-
-		$res = array();
-		for($i = 0;$i < count($info);$i++)
-		{
-			$ref = &$info[$i];
-			$res[$ref['id']] = $ref;
-		}
 
 		$linefeatures = array();
 		$linefeatures['list'] = $res;
@@ -1606,6 +1610,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];
+		
+		dwho_var_dump($this->_line->$methodset($arr,$protocolname));
 
 			if($this->_line->$methodset($arr,$protocolname) === false
 			|| $this->_line->$method() === false)
