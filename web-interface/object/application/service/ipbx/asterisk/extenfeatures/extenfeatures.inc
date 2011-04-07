@@ -398,6 +398,16 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		return($r);
 	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set($arr) === false
+		|| $this->save() === false)
+			return(false);
+
+		return(true);
+	}
 }
 
 ?>

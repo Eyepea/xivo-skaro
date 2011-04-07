@@ -20,6 +20,11 @@
 
 $array = array();
 
+/*
+ * UI SECTION
+ * 
+ */
+
 $array['xivo/configuration/ui/manage/entity/get'] = array(
 	'path'		=> 'xivo/configuration/ui/manage/get',
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'get'));
@@ -113,6 +118,10 @@ $array['service/ipbx/asterisk/ui/call_management/schedule'] = array(
 	    'XIVO_LOC_UI_ACL_SUBCATEGORY'   => 'schedule',
 			'XIVO_LOC_UI_ACTION'                    => 'dialaction'));
 
+/*
+ * PRIVATE SECTION
+ * 
+ */
 
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
@@ -235,6 +244,10 @@ $array['service/ipbx/asterisk/web_services/private/pbx_services/phonebook'] = ar
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/phonebook',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['service/ipbx/asterisk/web_services/private/pbx_services/extenfeatures'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/extenfeatures',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/system_management/context'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/system_management/context',
 	'define'	=> array(
@@ -252,8 +265,11 @@ $array['statistics/web_services/private/call_center/queue'] = array(
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
+/*
+ * RESTRICTED SECTION
+ * 
+ */
 
-// RESTRICTED
 $array['statistics/web_services/restricted/call_center/queue'] = array(
 	'path'		=> 'statistics/web_services/call_center/queue',
 	'define'	=> array(
@@ -328,6 +344,10 @@ $array['service/ipbx/asterisk/web_services/restricted/general_settings/phonebook
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/phonebook',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['service/ipbx/asterisk/web_services/restricted/general_settings/extenfeatures'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/extenfeatures',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/general_settings/advanced'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/advanced',
 	'define'	=> array(
@@ -398,6 +418,10 @@ $array['service/ipbx/asterisk/web_services/restricted/trunk_management/custom'] 
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/pbx_services/phonebook'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/phonebook',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['service/ipbx/asterisk/web_services/restricted/pbx_services/extenfeatures'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/extenfeatures',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/system_management/context'] = array(
