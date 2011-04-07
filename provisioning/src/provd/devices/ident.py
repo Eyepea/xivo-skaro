@@ -22,6 +22,7 @@ __license__ = """
 
 import copy
 import logging
+from provd.persist.common import ID_KEY
 from provd.plugins import BasePluginManagerObserver
 from provd.servers.tftp.packet import ERR_UNDEF
 from provd.servers.tftp.service import TFTPNullService
@@ -187,13 +188,12 @@ class LongestDeviceInfoExtractor(CompositeDeviceInfoExtractor):
     def extract(self, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
         dlist = defer.DeferredList([extractor.extract(request, request_type)
-                                    for extractor in self.extractors],
-                                    consumeErrors=True)
-        dev_infos = yield dlist
+                                    for extractor in self.extractors])
+        dlist_results = yield dlist
         dev_info, length = None, 0
-        for success, cur_dev_info in dev_infos:
-            if success and cur_dev_info and len(cur_dev_info) > length:
-                dev_info, length = cur_dev_info, len(cur_dev_info)
+        for success, result in dlist_results:
+            if success and result and len(result) > length:
+                dev_info, length = result, len(result)
         defer.returnValue(dev_info)
 
 
@@ -317,13 +317,12 @@ class CollaboratingDeviceInfoExtractor(CompositeDeviceInfoExtractor):
     def extract(self, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
         dlist = defer.DeferredList([extractor.extract(request, request_type)
-                                    for extractor in self.extractors],
-                                    consumeErrors=True)
-        dev_infos = yield dlist
+                                    for extractor in self.extractors])
+        dlist_results = yield dlist
         updater = self._updater_factory()
-        for success, dev_info in dev_infos:
-            if success and dev_info:
-                updater.update(dev_info)
+        for success, result in dlist_results:
+            if success and result:
+                updater.update(result)
         defer.returnValue(updater.dev_info)
 
 
@@ -492,6 +491,7 @@ class AddDeviceRetriever(object):
     def retrieve(self, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         device = copy.deepcopy(dev_info)
+        device[u'added'] = u'auto'
         d = self._app.dev_insert(device)
         d.addCallbacks(lambda _: device, lambda _: None)
         return d
@@ -695,6 +695,41 @@ class DefaultConfigDeviceUpdater(object):
         defer.returnValue(False)
 
 
+class RemoveDuplicateDeviceUpdater(object):
+    """Device updater that doesn't update the device but check if there's
+    a duplicate device in the device collection.
+    
+    Duplicate happens in the following situation, for example:
+    - you manually add a device to the device collection, specifying only
+      its MAC address and config 
+    - you are using an add device retriever
+    - your device make it impossible to extract its MAC address on its
+      first request (for example, it does a TFTP request with no reference
+      to its MAC address in its first request)
+    - this means a new device is created in the device collection by the
+      add device retriever the first time the device make a request to
+      the server
+    - eventually, your device make a request where its MAC address is
+      extractable, and the original device you manually created is retrieved
+      at this point, but there's now a "duplicate" device in the
+      device collection.
+    
+    """
+    
+    def __init__(self, app):
+        self._app = app
+    
+    @defer.inlineCallbacks
+    def update(self, device, dev_info, request, request_type):
+        if u'ip' not in device and u'ip' in dev_info:
+            dup_devices = yield self._app.dev_find({u'ip': dev_info[u'ip'],
+                                                    u'added': u'auto'})
+            for dup_device in dup_devices:
+                logger.info('Evicting duplicate device %s', device)
+                self._app.dev_delete(dup_device[ID_KEY])
+        defer.returnValue(False)
+
+
 class CompositeDeviceUpdater(object):
     implements(IDeviceUpdater)
     
@@ -831,8 +866,8 @@ class RequestProcessingService(object):
             logger.info('<%s> Updating device', req_id)
             # 3.1 Update the device
             orig_device = copy.deepcopy(device)
-            force_reconfigure = self.dev_updater.update(device, dev_info,
-                                                        request, request_type)
+            force_reconfigure = yield self.dev_updater.update(device, dev_info,
+                                                              request, request_type)
             
             # 3.2 Persist the modification if there was a change
             if device != orig_device:
@@ -843,8 +878,8 @@ class RequestProcessingService(object):
             #     to a device reconfiguration; if this is the case, we should
             #     not reconfigure the device (i.e. this is inefficient)
             if force_reconfigure:
-                logger.info('<%s> Reconfiguring device: %s', req_id, device)
-                self._app.reconfigure(device[u'id'])
+                logger.info('<%s> Reconfiguring device', req_id)
+                self._app.dev_reconfigure(device[ID_KEY])
         
         # 4. Return a plugin ID
         logger.info('<%s> Finding route', req_id)

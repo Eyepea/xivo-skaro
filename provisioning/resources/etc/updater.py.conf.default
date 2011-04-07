@@ -3,4 +3,5 @@
 add_info_updater = AddInfoDeviceUpdater()
 pg_updater = PluginAssociatorDeviceUpdater(app.pg_mgr, AlphabeticConflictSolver())
 default_cfg_updater = DefaultConfigDeviceUpdater(app)
-updater = CompositeDeviceUpdater([add_info_updater, pg_updater, default_cfg_updater])
+remove_updater = RemoveDuplicateDeviceUpdater(app)
+updater = CompositeDeviceUpdater([remove_updater, add_info_updater, pg_updater, default_cfg_updater])

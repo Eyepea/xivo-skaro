@@ -29,6 +29,8 @@ Device objects have also the following standardized keys:
   config -- the ID of the configuration of this device (unicode)
   configured -- a boolean indicating if the device has been successfully
     configured by a plugin. (boolean) (mandatory)
+  added -- how the device has been added to the collection (unicode). Right
+    now, only 'auto' has been defined.
 
 Non-standard keys MUST begin with 'X_'.
 
