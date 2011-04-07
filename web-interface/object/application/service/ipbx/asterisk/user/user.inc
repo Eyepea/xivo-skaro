@@ -1610,8 +1610,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];
-		
-		dwho_var_dump($this->_line->$methodset($arr,$protocolname));
 
 			if($this->_line->$methodset($arr,$protocolname) === false
 			|| $this->_line->$method() === false)
