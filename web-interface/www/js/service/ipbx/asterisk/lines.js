@@ -27,12 +27,12 @@ var fixHelper = function(e, ui) {
 //get available extensions
 function map_autocomplete_extension_to(obj,context)
 {
-    $(obj).autocomplete('/service/ipbx/ui.php/pbx_settings/extension/search/', {
+    obj.autocomplete('/service/ipbx/ui.php/pbx_settings/extension/search/', {
     	width: 70, 
     	extraParams: {
-    		'context': context,
-    		'obj': 'user',
-    		'format': 'jquery'
+    		context: context,
+    		obj: 'user',
+    		format: 'jquery'
     	}
     });
 }
@@ -45,7 +45,7 @@ function xivo_http_search_numpool(context,helper)
 		if (data === null || (nb = data.length) === 0)
 			return false;
 	    for (var i = 0; i< nb; i++)
-	    	rs += data[i]['numberbeg']+'-'+data[i]['numberend']+'<br>';
+	    	rs += data[i]['numberbeg']+' - '+data[i]['numberend']+'<br>';
 	    $(helper).html(rs);
 	});
 }
@@ -74,9 +74,9 @@ function xivo_http_search_context_from_entity(entityid)
 		    for (var i = 0; i< nb; i++)
 		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
 	    });
+		update_row_infos();
 	});		
 	xivo_http_search_linefree_by_entity(entityid);
-	update_row_infos();
 }
 
 //get list line free available for a entity
@@ -122,36 +122,54 @@ function lnkdroprow(obj)
     return false;
 }
 
-function update_row_infos()
-{ 
+function get_entityid_val()
+{
 	it_userfeatures_entityid = $('#it-userfeatures-entityid');
-	if (it_userfeatures_entityid.attr('disabled') !== undefined) {
-		it_userfeatures_entityid.attr('disabled','disabled');
-		it_userfeatures_entityid.addClass('it-disabled');
-	}
+	it_cache_entityid = $('#it-cache_entityid');	
+	 
+	if ((entityid_val = it_userfeatures_entityid.val()) === false)
+		entityid_val = it_cache_entityid.val();
+	
+	if (!entityid_val)
+		return false;
+	
+	return(entityid_val);
+}
+
+function update_row_infos()
+{
+	if ((entityid_val = get_entityid_val()) === false)
+		return(false);
 	
 	nb_row = $('#list_linefeatures > tbody > tr').length;
-	if (nb_row == 1 || nb_row == 0) {
-		$('#it-userfeatures-entityid').removeAttr('disabled');
-		$('#it-userfeatures-entityid').removeClass('it-disabled');
+	if (nb_row == 0) {
+		$('#box-entityid').text('');
+		it_userfeatures_entityid.removeAttr('disabled');
+		it_userfeatures_entityid.removeClass('it-disabled');
 		return false;
+	}
+	else {
+		$('#box-entityid').html('<input type="hidden" id="it-cache_entityid" name="userfeatures[entityid]" value="'+entityid_val+'" />');
+		it_userfeatures_entityid.attr('disabled','disabled');
+		it_userfeatures_entityid.addClass('it-disabled');
 	}
 	
 	var groupval = '';
 	var count = 0;
 	$('#list_linefeatures > tbody').find('tr').each(function() {				
-		if($(this).attr('id') == 'tr-rules_group') {	
+		if($(this).attr('id') == 'tr-rules_group') {
 			count = 0;
 			groupval = $(this).find('#td_rules_group_name').text();
 		}
 		count++;
-		$(this).find('#linefeatures-rules_group').val(groupval);			
+		$(this).find('#linefeatures-rules_group').val(groupval);		
 		$(this).find('#linefeatures-rules_order').val(count-1);
 		
-		var context = $(this).find("#linefeatures-context");
-		var context_val = $(context).val();
+		context = $(this).find("#linefeatures-context");
+		context_val = $(context).val();
+		
 		if (context_val !== null) {
-			number = $(this).find('#linefeatures-number');			
+			number = $(this).find('#linefeatures-number');
 			number.focus(function(){
 				helper = $(this).parent().find('#numberpool_helper');
 				xivo_http_search_numpool(context_val,helper);
@@ -166,12 +184,9 @@ function update_row_infos()
 }
 
 $(document).ready(function() {
-	if((entityid = $('#it-userfeatures-entityid')) === false)
-		xivo_http_search_context_from_entity(null);
-	else
-		xivo_http_search_context_from_entity(entityid.val());
+	xivo_http_search_context_from_entity(get_entityid_val());
 	
-	entityid.change(function() {
+	$('#it-userfeatures-entityid').change(function() {
 		xivo_http_search_context_from_entity($(this).val());
 	});
 

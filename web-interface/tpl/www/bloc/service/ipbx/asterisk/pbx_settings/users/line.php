@@ -27,17 +27,6 @@ $nb = $this->get_var('count');
 $list = $this->get_var('list');
 $err = $this->get_var('error','linefeatures');
 
-$entityhascontext = '';
-if (isset($info['entity']) === false
-||$info['entity'] === false
-|| ($context_list = $info['entity']['context']) === false):
-	$entityhascontext = 'b-nodisplay';
-?>
-<div id="box-no_context">
-	<?=$this->bbf('no_context_for_this_entity');?>
-</div>
-<?php 
-endif;
 ?>
 <!--
 <fieldset>
@@ -45,6 +34,7 @@ endif;
 	<?=$this->bbf('linefeatures-description');?>
 </fieldset>
 -->
+<span id="box-entityid"></span>
 
 <p id="box-lines_free" class="fm-paragraph b-nodisplay">
 	<span class="fm-desc clearboth">
@@ -87,9 +77,7 @@ endif;
 								'id="lnk-add-row-rules_group"',
 								$this->bbf('col_rules_group-add'));?>
 </p>
-
-<div id="MSG"></div>
-							
+			     
 <table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures" class="<?=$entityhascontext?>">
 	<thead>
 	<tr class="sb-top">
@@ -175,11 +163,11 @@ if($list !== false):
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">
 		<td class="td-left txt-center">
 			<?=$form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));?>
-			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>				 	
+			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>			 	
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
 						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_group',
-					    'value'	=> $ref['rules_group'],));?>				 	
+					    'value'	=> $ref['rules_group'],));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_order][]',
 						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_order',
@@ -203,7 +191,7 @@ if($list !== false):
 					    'label'		=> false,
 					    'key'		=> 'displayname',
 					    'altkey'	=> 'name',
-					    'default'	=> $ref['context']));?>
+					    'selected'	=> $ref['context']));?>
 		</td>
 		<td>			
 			<?=$form->text(array('paragraph'	=> false,
@@ -213,8 +201,7 @@ if($list !== false):
 					     'size'		=> 5,
 					     'value'	=> $ref['number'],
 					     'default'	=> $element['linefeatures']['number']['default']));?>
-			<div class="b-nodisplay" id="numberpool_helper" style="position: absolute;border: 1px solid gray;background: #ccc;">				
-			</div>
+			<div class="dialog-helper" id="numberpool_helper"></div>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -287,8 +274,7 @@ endif;
 				    'label'		=> false,
 				    'key'		=> 'displayname',
 				    'altkey'	=> 'name',
-				    'default'	=> $element['linefeatures']['context']['default']),
-			      null);?>
+				    'default'	=> $element['linefeatures']['context']['default']));?>
 		</td>
 		<td id="td_ex-linefeatures-number">
 			<?=$form->text(array('paragraph'	=> false,
@@ -297,8 +283,7 @@ endif;
 					     'label'	=> false,
 					     'size'		=> 5,
 					     'default'	=> $element['linefeatures']['number']['default']));?>
-			<div class="b-nodisplay" id="numberpool_helper" style="position: absolute;border: 1px solid gray;background: #ccc;">				
-			</div>
+			<div class="dialog-helper" id="numberpool_helper"></div>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

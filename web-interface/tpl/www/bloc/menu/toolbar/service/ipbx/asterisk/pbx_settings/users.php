@@ -77,8 +77,7 @@ $dhtml->write_js($toolbar_js);
 				       'service/ipbx/pbx_settings/users',
 				       'act=import');?></li>
 	</ul>
-</div>
-<?php
+</div><?php
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
@@ -101,7 +100,6 @@ if($act === 'list'):
 		</li>
 	</ul>
 </div>
-
 
 <script type="text/javascript">
 dwho.dom.set_onload(function()

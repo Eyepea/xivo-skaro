@@ -34,27 +34,56 @@ $param['act'] = 'list';
 if($search !== '')
 	$param['search'] = $search;
 
-$appentity = &$_XOBJ->get_application('entity');
-$entity_list = $appentity->get_entities_list(null,array('name' => SORT_ASC),null,false,'intern');
-
-$nb = count($entity_list);
-for($i = 0;$i < $nb;$i++)
-{
-	$ref = &$entity_list[$i];
-	if($ref['nb_context'] === 0)
-		unset($entity_list[$i]);
-	else
-		$ref = $ref['entity'];
-}
-
-$_TPL->set_var('entity_list',$entity_list);
-
 switch($act)
 {
 	case 'add':
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
 
+		$appcontext= &$ipbx->get_application('context');
+		$context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'intern');
+		
+		$entity_list = array();
+		$nb = count($context_list);
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$context_list[$i];
+			
+			if (($contextnumbers = $ref['contextnumbers']) === false)
+				continue;
+				
+			if (is_array($contextnumbers) === true
+			&& ($nbct = count($contextnumbers)) === 0)
+				continue;
+				
+			for($k = 0;$k < $nbct;$k++)
+			{
+				$refct = &$contextnumbers[$k];
+				
+				if ($refct['type'] !== 'user')
+					continue;
+					
+				array_push($entity_list, $ref['entity']);
+			}	
+		}
+		
+		$_TPL->set_var('entity_list',$entity_list);
+		
+		$dhtml = &$_TPL->get_module('dhtml');
+		
+		/*
+		$lsfile = dwho_file::read_d('/usr/share/javascript/jquery-ui/ui','file');
+				
+		foreach($lsfile as $jsfile)
+			$dhtml->set_js('extra-libs/jquery-ui/ui/'.$jsfile,true);			
+		*/
+				
+		$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);
+		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.core.js',true);
+		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.widget.js',true);
+		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.position.js',true);
+		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js',true);
+		
 		include(dirname(__FILE__).'/users/'.$act.'.php');
 		break;
 	case 'delete':

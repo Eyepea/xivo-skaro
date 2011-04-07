@@ -186,10 +186,10 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-tmenu #tooltips {margin-left: 103px;text-align: center;height: 32px;padding-top: 4px;font-weight: bold;}
 
 #b-tmenu #toolbar {height: 19px;text-align: right;background-image: url(../img/menu/top/toolbar/bg.gif); background-repeat: repeat-x;padding-right: 50px;}
-#b-tmenu #toolbar .sb-advanced-menu {position: absolute;width: 970px;}
 #b-tmenu #toolbar .fm-paragraph {margin: 0px;padding: 0px;width: auto;}
 #b-tmenu #toolbar .fm-paragraph input {vertical-align: top;margin-top: 1px;}
 #b-tmenu #toolbar .fm-paragraph .itb-image {margin: 0px;}
+#b-tmenu #toolbar .sb-advanced-menu {position: absolute;width: 970px;}
 #b-tmenu #toolbar-add-menu,#b-tmenu #toolbar-advanced-menu {min-width: 90px;width: auto;float: right;display: none;background-color: #beddfb;border: 1px solid #057ab1;}
 #b-tmenu #toolbar-add-menu li,#b-tmenu #toolbar-advanced-menu li {text-align: left;}
 #b-tmenu #toolbar-add-menu li a,#b-tmenu #toolbar-advanced-menu li a {display: block;padding: 1px 4px;}
@@ -379,6 +379,7 @@ input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
 
 .xivo-icon {width: 16px;height: 16px;padding-right: 8px;}
 .xivo-icon-secure {background: url(../img/site/utils/nm-secure-lock.png) 0px 0px no-repeat;}
+.dialog-helper {position: absolute;border: 1px solid gray;background: #ccc;padding: 2px;display: none;}
 
 .xivo-messages {margin: 0;padding: 0;border: 1px solid;}
 .xivo-messages ul {margin: 0;padding: 0;}

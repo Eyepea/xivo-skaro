@@ -830,6 +830,9 @@ Parking lot :
 ; fm_lines_free
 Free lines: 
 
+; fm_rules_group
+Add a new group: 
+
 ; no_context_for_this_entity
 No context for this entity
 

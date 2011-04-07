@@ -212,7 +212,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 		{
 			if(isset($a[$i]) === false)
 				continue;
-
+				
 			$path = DWHO_LOCATION_SCRIPT.DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
 			if(dwho_file::is_f_r($path) !== false || $extra)

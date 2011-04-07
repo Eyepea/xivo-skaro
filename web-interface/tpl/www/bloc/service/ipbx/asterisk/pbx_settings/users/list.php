@@ -82,7 +82,6 @@ $page = $url->pager($pager['pages'],
 <?php
 	else:
 		for($i = 0;$i < $nb;$i++):
-
 			$ref = &$list[$i];
 
 			if($ref['commented'] === true):
