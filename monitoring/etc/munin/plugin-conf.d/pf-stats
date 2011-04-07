@@ -3,8 +3,8 @@ env.configfile /etc/dhcp3/dhcpd.conf
 env.leasefile /var/lib/dhcp3/dhcpd.leases
 
 [asterisk_*]
-env.username xivouser
-env.secret xivouser
+env.username xivo_munin_user
+env.secret jeSwupAd0
 env.channels SIP IAX2 SCCP DAHDI MISDN
 
 [apache_*]
