@@ -26,14 +26,24 @@ $element = $cdr->get_element();
 
 if($act !== 'exportcsv')
 {
-	$context = &$ipbx->get_module('context');
+	$appcontext = &$ipbx->get_application('context');
 
 	$order = array();
 	$order['displayname'] = SORT_ASC;
 	$order['name'] = SORT_ASC;
 
-	if(($context_list = $context->get_all(null,true,$order)) !== false)
-		$context_list[] = array('name' => 'custom','identity' => 'custom');
+	if(($list = $appcontext->get_contexts_list(null,$order)) === false
+	|| ($nb = count($list)) === 0)
+		$context_list = array();
+		
+	#$context_list[] = array('name' => 'custom','identity' => 'custom');
+		
+	$context_list = array();
+	for($i=0;$i<$nb;$i++)
+	{
+		$ref = $list[$i];	
+		$context_list[$i] = $ref['context'];	
+	}
 
 	$_TPL->set_var('context_list',$context_list);
 }
