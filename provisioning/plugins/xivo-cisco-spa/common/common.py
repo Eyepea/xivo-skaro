@@ -136,12 +136,22 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
 
 
 class BaseCiscoTFTPDeviceInfoExtractor(object):
+    _SEPFILE_REGEX = re.compile(r'^SEP([\dA-F]{12})\.cnf\.xml$')
+    _SPAFILE_REGEX = re.compile(r'^/spa(.+?)\.cfg$')
+    
     def extract(self, request, request_type):
         assert request_type == 'tftp'
         return defer.succeed(self._do_extract(request))
     
-    _SEPFILE_REGEX = re.compile(r'^SEP([\dA-F]{12})\.cnf\.xml$'), 
-    _SPAFILE_REGEX = re.compile(r'^/spa(.+?)\.cfg$')
+    def _do_extract(self, request):
+        packet = request['packet']
+        filename = packet['filename']
+        for test_fun in [self._test_sepfile, self._test_spafile, self._test_init]:
+            dev_info = test_fun(filename)
+            if dev_info:
+                dev_info[u'vendor'] = u'Cisco'
+                return dev_info
+        return None
     
     def _test_sepfile(self, filename):
         # Test if filename is "SEPMAC.cnf.xml".
@@ -164,17 +174,6 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
         if filename == '/init.cfg':
             return {u'model': u'PAP2T'}
         return None
-    
-    _TEST_CHAIN = [_test_sepfile, _test_spafile, _test_init]
-    
-    def _do_extract(self, request):
-        packet = request['packet']
-        filename = packet['filename']
-        for test_fun in self._TEST_CHAIN:
-            dev_info = test_fun(filename)
-            if dev_info:
-                dev_info[u'vendor'] = u'Cisco'
-                return dev_info
 
 
 class BaseCiscoPgAssociator(BasePgAssociator):
@@ -183,7 +182,7 @@ class BaseCiscoPgAssociator(BasePgAssociator):
         self._model_version = model_version
     
     def _do_associate(self, vendor, model, version):
-        if vendor == 'Cisco':
+        if vendor == u'Cisco':
             if model in self._model_version:
                 if version == self._model_version[model]:
                     return FULL_SUPPORT
