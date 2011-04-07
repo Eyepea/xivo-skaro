@@ -306,6 +306,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 			$linefeatures = dwho_array_startswith_key($ref,'linefeatures.',true);
 			$linefeatures = $this->_linefeatures->_prepare($linefeatures);
+			
+			$r[$linefeatures['id']] = array();
+			
+			$userfeatures = dwho_array_startswith_key($ref,'userfeatures.',true);
+						
+			if (is_array($userfeatures) === true
+			&& isset($userfeatures['firstname'], $userfeatures['lastname']))
+				$linefeatures['useridentity'] = $userfeatures['firstname'].' '.$userfeatures['lastname'];
+			else
+				$linefeatures['useridentity'] = '-';
 
 			switch($linefeatures['protocol'])
 			{

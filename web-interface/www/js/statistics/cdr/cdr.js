@@ -29,4 +29,36 @@ function xivo_cdr_onload()
 		xivo_chg_attrib('fm_dcontext','fd-dcontext-custom',Number(dcontext.value === 'custom'));
 }
 
-dwho.dom.set_onload(xivo_cdr_onload);
+$(document).ready(function() {
+	
+	xivo_cdr_onload();
+	
+	$.datepicker.setDefaults({
+		currentText: 'Now',
+		changeYear: true,
+		firstDay: 1,
+		selectOtherMonths: true,
+		dayNamesMin: xivo_date_day_min,
+		ayNamesShort: xivo_date_day_short,
+		dayNames: xivo_date_day,
+		monthNames: xivo_date_month,
+		monthNamesShort: xivo_date_month_short,
+		nextText: xivo_date_next,
+		prevText: xivo_date_prev,
+		showAnim: 'fold',
+		showMonthAfterYear: true,
+		showWeek: true,
+		weekHeader: 'W'
+	});
+	
+	$("#it-dbeg").datepicker({
+		dateFormat: 'yy-mm-dd',
+		altFormat: 'yy-mm-dd'
+	});
+	
+	$("#it-dend").datepicker({
+		dateFormat: 'yy-mm-dd',
+		altFormat: 'yy-mm-dd'
+	});
+	
+});

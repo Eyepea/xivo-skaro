@@ -23,7 +23,8 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','data
 class xivo_application_service_asterisk_line_sql extends xivo_application_abstract_datastorage_sql
 {
 	public $_table	= array(
-				'linefeatures' => '',
+				'linefeatures' 	=> '',
+				'userfeatures' 	=> '',
 				'usersip'		=> '',
 				'useriax'		=> '',
 				'usersccp'		=> '',
@@ -215,6 +216,11 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 			$this->_dso->andjoinwhere($this->_table['usercustom'],
 						  $this->_table['linefeatures'].'.protocol = '.$this->_table['usercustom'].'.protocol');
 		}
+		
+		$this->_dso->leftjoin($this->_table['userfeatures'],
+				      $this->_table['linefeatures'].'.iduserfeatures = '.$this->_table['userfeatures'].'.id',
+				      null,
+				      array('firstname', 'lastname'));
 
 		$this->_dso->aggregate_where();
 		

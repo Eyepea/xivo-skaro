@@ -170,38 +170,6 @@ endif;
 ?>
 	</div>
 </div>
-
-<script type="text/javascript">
-
-$.datepicker.setDefaults({
-	currentText: 'Now',
-	changeYear: true,
-	firstDay: 1,
-	selectOtherMonths: true,
-	dayNamesMin: xivo_date_day_min,
-	ayNamesShort: xivo_date_day_short,
-	dayNames: xivo_date_day,
-	monthNames: xivo_date_month,
-	monthNamesShort: xivo_date_month_short,
-	nextText: xivo_date_next,
-	prevText: xivo_date_prev,
-	showAnim: 'fold',
-	showMonthAfterYear: true,
-	showWeek: true,
-	weekHeader: 'W'
-});
-
-$("#it-dbeg").datepicker({
-	dateFormat: 'yy-mm-dd',
-	altFormat: 'yy-mm-dd',
-});
-
-$("#it-dend").datepicker({
-	dateFormat: 'yy-mm-dd',
-	altFormat: 'yy-mm-dd',
-});
-</script>
-
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_channel'),
 				    'name'	=> 'channel',

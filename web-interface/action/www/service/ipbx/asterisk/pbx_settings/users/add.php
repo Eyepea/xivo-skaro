@@ -226,6 +226,8 @@ $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');
 $dhtml->set_js('js/dwho/http.js');
 $dhtml->set_js('js/dwho/suggest.js');
+$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js',true);
+$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');

@@ -102,7 +102,6 @@ $page = $url->pager($pager['pages'],
 <?php
 	else:
 		for($i = 0;$i < $nb;$i++):
-
 			$ref = &$list[$i];
 
 			if($ref['commented'] === true):
@@ -137,8 +136,8 @@ $page = $url->pager($pager['pages'],
 			<?=empty($ref['provisioningid']) ? '-' : $ref['provisioningid']?>
 		</td>
 		<td class="txt-center">
-			<?=empty($ref['callerid']) ? '-' :
-				dwho_htmlen(dwho_trunc($ref['callerid'],25,'...',false))?>
+			<?=empty($ref['useridentity']) ? '-' :
+				dwho_htmlen(dwho_trunc($ref['useridentity'],25,'...',false))?>
 		</td>
 		<td class="txt-center">
 			<?=empty($ref['number']) ? '-' : $ref['number']?>
