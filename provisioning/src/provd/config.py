@@ -115,6 +115,7 @@ class DefaultConfigSource(object):
         ('general.request_config_dir', '/etc/pf-xivo/provd'),
         ('general.cache_dir', '/var/cache/pf-xivo/provd'),
         ('general.plugins_dir', '/var/lib/pf-xivo/provd/plugins'),
+        ('general.plugin_server', 'http://provd.xivo.fr/plugins/1/stable/'),
         ('general.info_extractor', 'default'),
         ('general.retriever', 'default'),
         ('general.updater', 'default'),
