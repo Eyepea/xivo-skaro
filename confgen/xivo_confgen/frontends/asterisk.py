@@ -773,7 +773,9 @@ class AsteriskFrontend(Frontend):
 			if v is None or k == 'id':
 				continue
 
-			print >>o, "%s = %s" % (k, v)
+			if isinstance(v, unicode):
+				v = v.encode('utf8')
+			print >>o, k, "=", v
 
 		trunks = dict([(t['id'], t) for t in self.backend.trunks.all()])
 
