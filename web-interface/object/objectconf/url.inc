@@ -161,9 +161,9 @@ $array['service/ipbx/web_services/phonebook/menu'] = 'service/ipbx/web_services.
 
 $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/local/';
 
-
 $array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
 $array['service/ipbx/json/restricted/pbx_settings/lines'] = 'service/ipbx/json.php/restricted/pbx_settings/lines/';
+$array['service/ipbx/json/restricted/pbx_settings/devices'] = 'service/ipbx/json.php/restricted/pbx_settings/devices/';
 $array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.php/restricted/pbx_settings/groups/';
 $array['service/ipbx/json/restricted/pbx_settings/meetme'] = 'service/ipbx/json.php/restricted/pbx_settings/meetme/';
 $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/json.php/restricted/pbx_settings/voicemail/';
@@ -177,9 +177,9 @@ $array['service/ipbx/json/restricted/call_center/queueskills'] = 'service/ipbx/j
 $array['service/ipbx/json/restricted/call_center/queueskillrules'] = 'service/ipbx/json.php/restricted/call_center/queueskillrules/';
 $array['service/ipbx/json/restricted/pbx_services/phonebook'] = 'service/ipbx/json.php/restricted/pbx_services/phonebook/';
 
-
-
 $array['service/ipbx/json/private/pbx_settings/users'] = 'service/ipbx/json.php/private/pbx_settings/users/';
+$array['service/ipbx/json/private/pbx_settings/lines'] = 'service/ipbx/json.php/private/pbx_settings/lines/';
+$array['service/ipbx/json/private/pbx_settings/devices'] = 'service/ipbx/json.php/private/pbx_settings/devices/';
 $array['service/ipbx/json/private/pbx_settings/groups'] = 'service/ipbx/json.php/private/pbx_settings/groups/';
 $array['service/ipbx/json/private/pbx_settings/meetme'] = 'service/ipbx/json.php/private/pbx_settings/meetme/';
 $array['service/ipbx/json/private/pbx_settings/voicemail'] = 'service/ipbx/json.php/private/pbx_settings/voicemail/';
