@@ -4,18 +4,21 @@ import os
 import re
 import filecmp
 import shutil
+import subprocess
 
 class ClusterEngine(object):
     def __init__(self, network_addr, multicast_addr, 
                     templates_path = '/usr/share/pf-xivo-ha/templates/corosync',
                     config_file    = "/etc/corosync/corosync.conf",
-                    default_file   = "/etc/default/corosync"
+                    default_file   = "/etc/default/corosync",
+                    init_file      = "/etc/init.d/corosync",
             ):
         self.network_addr   = network_addr
         self.multicast_addr = multicast_addr
         self.templates_path = templates_path
         self.config_file    = config_file
         self.default_file   = default_file
+        self.init_file      = init_file
 
     def _check_if_configured(self, config_file, pattern):
         '''
@@ -47,20 +50,22 @@ class ClusterEngine(object):
             data = open(template, 'r')
             f = open(temp_file, 'w')
 
-            ip_addr_pattern = "\t\tbindnetaddr: IP_ADDR\n"
-            mc_addr_pattern = "\t\tmcastaddr: MCAST_ADDR\n"
+            ip_addr_pattern = ['bindnetaddr', 'IP_ADDR']
+            mc_addr_pattern = ['mcastaddr', 'MCAST_ADDR']
 
             ip_addr_string  = "\t\tbindnetaddr: %s\n" % self.network_addr
             mc_addr_string  = "\t\tmcastaddr: %s\n" % self.multicast_addr
 
             for l in data.readlines():
-                if l == ip_addr_pattern:
+                temp = [e.strip() for e in l.split(':')]
+                if len(temp) == 2 and temp[0] == ip_addr_pattern[0] and temp[1] == ip_addr_pattern[1]:
                     l = ip_addr_string
-                elif l == mc_addr_pattern:
+                if len(temp) == 2 and temp[0] == mc_addr_pattern[0] and temp[1] == mc_addr_pattern[1]:
                     l = mc_addr_string
                 f.write(l)
             f.close()
-            return (temp_file, self.config_file)
+            if os.path.isfile(temp_file):
+                return (temp_file, self.config_file)
         except:
             raise
 
@@ -68,58 +73,102 @@ class ClusterEngine(object):
         '''
         deploy new config file
         '''
-        if not filecmp.cmp(new_file, old_file, shallow = False):
+        if not filecmp.cmp(new_file, old_file):
             os.rename(new_file, old_file)
             return True
         else:
             os.delete(new_file)
             return False
 
-    def _corosync_running(self):
+    def _corosync_not_running(self):
         '''
         check if service is running
         '''
-        if not os.path.isfile("/var/run/corosync.pid"):
-            return False
-        return True
+        if not self._manage_corosync("status", 3):
+            if self._manage_corosync("stop"):
+                return True
+        else:
+            return True
 
-    def _manage_corosync(self, action):
-        # TODO use subprocess
+
+    def _manage_corosync(self, action, ret = 0):
         '''
         corosync service management : 
             start|stop|restart|force-reload|status
         '''
         try:
-            os.system("invoke-rc.d corosync %s" % action)
-            return True
+            args = [self.init_file, action]
+            state = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+            if state.wait() == ret:
+                return True
+            else:
+                raise state.stderr.readline()
         except:
-            return False
+            raise IOError("impossible to start corosync") 
 
     def initialize(self):
         '''
         create config files, lauch service
         '''
-        if not self._corosync_running():
+        if self._corosync_not_running():
             # create config file
             try:
-                self._enabled_corosync()
+                if not self._enabled_corosync():
+                    raise IOError("pb to enabling corosync")
+
                 temp_file, config_file = self._create_corosync_config_file()
-                self._deploy_config_file(temp_file, config_file)
+
+                if not self._deploy_config_file(temp_file, config_file):
+                    raise IOError("impossible to create corosync.conf")
             except:
-                raise
-            # TODO: find a method to test service
+                raise IOError("impossible to configure corosync")
             # start service
             try:
-                self._manage_corosync("start")
+                if self._manage_corosync("start"):
+                    return True
             except:
-                raise("Impossible to start corosync")
+                raise IOError("Impossible to start corosync")
 
     def update(self):
         pass
 
-class ManageServices(object):
-    def __init__(self):
-        pass
-    def _disable_service():
-        # TODO use subprocess
-        pass
+class ManageService(object):
+    def __init__(self, service_name, init_path = "/etc/init.d", init_name = ''):
+        self.service_name = service_name
+        self.init_path = init_path
+        self.init_name = init_name
+
+    def _is_available(self):
+        '''
+        check if and init file exist for service
+        '''
+        if self.init_name:
+            file ="%s/%s" % (self.init_path, self.init_name)
+        else:
+            file ="%s/%s" % (self.init_path, self.service_name)
+
+        if os.path.isfile(file):
+            return True
+        else:
+            return False
+
+    def _disable_service(self):
+        try:
+            args = ['insserv', '-r', self.service_name]
+            state = subprocess.Popen(args, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            if state.wait() is 0:
+                return True
+            else:
+                return state.stderr.readline()
+        except:
+            raise IOError("impossible to disable service %s" % self.service_name)
+
+    def initialize(self):
+        if _is_available():
+            _disable_service()
+            return True
+        else:
+            return False
+
+
