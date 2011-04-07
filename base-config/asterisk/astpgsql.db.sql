@@ -2348,6 +2348,8 @@ CREATE TABLE "usersip" (
  "maxforwards" integer DEFAULT NULL,
  "disallowed_methods" varchar(1024) DEFAULT NULL,
  "textsupport" INTEGER DEFAULT NULL, -- BOOLEAN
+ "callgroup" varchar(64) DEFAULT '', -- i.e: 1,4-9
+ "pickupgroup" varchar(64) DEFAULT '',   -- i.e: 1,3-9
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
  PRIMARY KEY("id")
 );
