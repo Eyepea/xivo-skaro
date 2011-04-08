@@ -113,6 +113,18 @@ CREATE TABLE "agentqueueskill" (
 
 CREATE INDEX "agentqueueskill__idx__agentid" ON "agentqueueskill"("agentid");
 
+
+DROP TABLE IF EXISTS "attachment";
+CREATE TABLE "attachment" (
+ "id" SERIAL,
+ "name" varchar(64) NOT NULL,
+ "type" varchar(16) NOT NULL,
+ "file" bytea,
+ "size" INTEGER NOT NULL,
+ "mime" varchar(64) NOT NULL
+);
+
+
 DROP TABLE IF EXISTS "callerid";
 DROP TYPE  IF EXISTS "callerid_mode";
 DROP TYPE  IF EXISTS "callerid_type";
@@ -2086,6 +2098,7 @@ CREATE TABLE "userfeatures" (
  "voicemailtype" userfeatures_voicemailtype,
  "voicemailid" INTEGER,
  "agentid" INTEGER,
+ "pictureid" INTEGER,
  "entityid" integer,
  "callerid" varchar(160),
  "ringseconds" INTEGER NOT NULL DEFAULT 30,
