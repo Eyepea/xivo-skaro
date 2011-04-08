@@ -300,12 +300,12 @@ switch($act)
 
 		# MAIN
 		$tcpdefs = array();
-		$tcpdefs['fagi'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
-		$tcpdefs['cti'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
-		$tcpdefs['webi'] = array($load_inf[0]['webi_ip'], $load_inf[0]['webi_port']);
-		$tcpdefs['info'] = array($load_inf[0]['info_ip'], $load_inf[0]['info_port']);
+		$tcpdefs['FAGI'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
+		$tcpdefs['CTI'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
+		$tcpdefs['WEBI'] = array($load_inf[0]['webi_ip'], $load_inf[0]['webi_port']);
+		$tcpdefs['INFO'] = array($load_inf[0]['info_ip'], $load_inf[0]['info_port']);
 		$udpdefs = array();
-		$udpdefs['announce'] = array($load_inf[0]['announce_ip'], $load_inf[0]['announce_port']);
+		$udpdefs['ANNOUNCE'] = array($load_inf[0]['announce_ip'], $load_inf[0]['announce_port']);
 		$out['main']['incoming_tcp'] = $tcpdefs;
 		$out['main']['incoming_udp'] = $udpdefs;
 

@@ -282,8 +282,6 @@ class xivo_daemon:
         self.nreload += 1
 
         # global default definitions
-        incoming_tcp_ports = []
-        incoming_udp_ports = []
         ctilog = None
 
         self.update_userlist = {}
@@ -347,7 +345,7 @@ class xivo_daemon:
 
         log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, FAGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, FAGI, INFO) connections
-        for kind, bind_and_port in xivoconf_general.get('incoming_tcp_ports').iteritems():
+        for kind, bind_and_port in xivoconf_general.get('incoming_tcp').iteritems():
             try:
                 (bind, port) = bind_and_port
                 gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_STREAM, socket.SOL_TCP)
@@ -362,7 +360,7 @@ class xivo_daemon:
             except Exception:
                 log.exception('%s' % bind_and_port)
 
-        for kind, bind_and_port in xivoconf_general.get('incoming_udp_ports').iteritems():
+        for kind, bind_and_port in xivoconf_general.get('incoming_udp').iteritems():
             try:
                 (bind, port) = bind_and_port
                 gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
