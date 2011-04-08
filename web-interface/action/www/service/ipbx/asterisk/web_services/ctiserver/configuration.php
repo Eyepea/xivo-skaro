@@ -82,8 +82,17 @@ switch($act)
 			'directories' 	=> array(),
 			'displays' 		=> array(),
 			'sheets' 		=> array(),
-			'xivocti' 		=> array(),
 
+			'profiles' => array(),
+
+			# capabilities referred to by the profiles
+			'regcommands' => array(),
+			'ipbxcommands' => array(),
+			'services' => array(),
+			'functions' => array(),
+			'preferences' => array(),
+
+			# object display options referred to by the profiles
 			'userstatus' => array(),
 			'phonestatus' => array(),
 			'agentstatus' => array(),
@@ -334,8 +343,13 @@ switch($act)
 			$out['phonestatus']['itm_phonestatus'] = $hintsout;
 		}
 
+		$out['regcommands']['itm_regcommands'] = array("login_pass", "login_capas",
+                                                               "getlist", "ipbxcommand",
+                                                               "availstate", "keepalive", "history");
+		$out['ipbxcommands']['itm_ipbxcommands'] = array("originate", "agentlogin",
+                                                                 "atxfer", "transfer", "dial", "park");
+
 		# PROFILES
-		$out['xivocti']['allowedxlets'] = "file:///etc/pf-xivo/ctiservers/allowedxlets.json";
 		if(isset($load_profiles))
 		{
 			foreach($load_profiles as $pf)
@@ -352,20 +366,24 @@ switch($act)
 					if (preg_match($pattern, $p, $match) === 1)
 						$prefout[$match[1]] = $match[2];
 				}
-				$out['xivocti']['profiles'][$pfid] = array(
-					'appliname' => $pf['appliname'],
+				$out['profiles'][$pfid] = array(
+					'name' => $pf['appliname'],
 
 					'xlets' => dwho_json::decode($pf['xlets'], true),
-					'funcs' => explode(',', $pf['funcs']),
-					'services' => explode(',', $pf['services']),
-					'preferences' => $prefout,
-					# regcommands, ipbxcommands
+					'functions' => "itm_functions_".$pfid,
+					'services' => "itm_services_".$pfid,
+					'preferences' => "itm_preferences_".$pfid,
+					'regcommands' => "itm_regcommands",
+					'ipbxcommands' => "itm_ipbxcommands",
 
 					'userstatus' => $pf['presence'],
 					'phonestatus' => "itm_phonestatus",
 					'agentstatus' => "itm_agentstatus",
 					'channelstatus' => "itm_channelstatus"
 				);
+                                $out['functions']["itm_functions_".$pfid] = explode(',', $pf['funcs']);
+                                $out['services']["itm_services_".$pfid] = explode(',', $pf['services']);
+                                $out['preferences']["itm_preferences_".$pfid] = $prefout;
 			}
 		}
 
