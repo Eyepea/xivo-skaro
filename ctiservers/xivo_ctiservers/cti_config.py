@@ -68,36 +68,11 @@ class Config:
                         del xlet_attr[2]
                     if xlet_attr[1] == 'grid':
                         del xlet_attr[2]
-        self.translate()
+
         try:
             self.setdirconfigs()
         except:
             log.exception('setdirconfigs')
-        return
-
-    def translate(self):
-        # web-interface/action/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
-        # web-interface/tpl/www/bloc/menu/left/cti/menu.php
-        if self.xc_json.has_key('ipbxes'):
-            return
-
-        self.xc_json['ipbxes'] = {}
-        ipbxlist = self.xc_json.get('main').get('asterisklist')
-        for ipbxid in ipbxlist:
-            ipbxcfg = self.xc_json.pop(ipbxid)
-            ipbxcfg['urllists'] = {}
-            ipbxcfg['connection'] = {}
-            for k in ipbxcfg.iterkeys():
-                if k.startswith('urllist_'):
-                    ipbxcfg['urllists'][k] = ipbxcfg.get(k)
-            for k in ['ipaddress', 'ami_port', 'ami_login', 'ami_pass']:
-                ipbxcfg['connection'][k] = ipbxcfg.get(k)
-            self.xc_json['ipbxes'][ipbxid] = ipbxcfg
-
-        for ctx, ctxdef in self.xc_json.get('reversedid').iteritems():
-            if ctx not in self.xc_json.get('contexts'):
-                self.xc_json.get('contexts')[ctx] = {}
-            self.xc_json.get('contexts').get(ctx)['didextens'] = ctxdef
         return
 
     def setdirconfigs(self):

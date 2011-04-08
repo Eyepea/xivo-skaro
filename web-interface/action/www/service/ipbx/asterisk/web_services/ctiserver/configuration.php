@@ -77,10 +77,11 @@ switch($act)
 
 		$out = array(
 			'main' 			=> array(),
-			'reversedid' 	=> array(),
+
 			'contexts' 		=> array(),
 			'directories' 	=> array(),
 			'displays' 		=> array(),
+
 			'sheets' 		=> array(),
 
 			'profiles' => array(),
@@ -184,19 +185,18 @@ switch($act)
 			$rdidout = array();
 			$curctx  = null;
 			$curblok = null;
-			$out['reversedid'] = array();
 
 			foreach($load_rdid as $rdid)
 			{
 				if($rdid['context'] != $curctx)
 				{
 					if(!is_null($curctx))
-						$out['reversedid'][$curctx] = $curblok;
+						$out['contexts'][$curctx]['didextens'] = $curblok;
 					
 					$curctx  = $rdid['context'];
 					if(is_array($curctx) === true
-					&& array_key_exists($out['reversedid'], $curctx))
-						$curblok = $out['reversedid'][$curctx];
+					&& array_key_exists($out['contexts'], $curctx))
+						$curblok = $out['contexts'][$curctx];
 					else
 						$curblok = array();
 				}
@@ -206,11 +206,11 @@ switch($act)
 					$dirblok[$i] = "directories." . $dirblok[$i];
 
 				foreach(explode(',', $rdid['extensions']) as $exten)
-					$curblok[$exten] = $dirblok;
+					$curblok['didextens'][$exten] = $dirblok;
 			}
 
 			if(!is_null($curctx))
-				$out['reversedid'][$curctx] = $curblok;
+				$out['contexts'][$curctx] = $curblok;
 		}
 
 		# SHEETS
@@ -276,7 +276,6 @@ switch($act)
 		$out['main']['sockettimeout'] = $load_inf[0]['socket_timeout'];
 		$out['main']['updates_period'] = $load_inf[0]['updates_period'];
 		$out['main']['logintimeout'] = $load_inf[0]['login_timeout'];
-		$out['main']['asterisklist'] = array();
 		$out['main']['asterisk_queuestat_db'] = $db_queuelogger;
 		$out['main']['parting_astid_context'] = array();
 		if($load_inf[0]['parting_astid_context'] != "")
@@ -390,8 +389,8 @@ switch($act)
 		# XiVO SERVERS
 		if(isset($load_inf[0]['asterisklist']) && dwho_has_len($load_inf[0]['asterisklist']))
 		{
-			$astlist = explode(',', $load_inf[0]['asterisklist']);
-			foreach($astlist as $k => $v)
+			$ipbxlist = explode(',', $load_inf[0]['asterisklist']);
+			foreach($ipbxlist as $k => $v)
 			{
 				$hostname = $list[$v]['name'];
 				$url_scheme = $list[$v]['url']['scheme'];
@@ -405,9 +404,9 @@ switch($act)
 					$json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/restricted/';
 				}
 
-                                $out['main']['asterisklist'][] = $hostname;
                                 $out['main']['ctilog_db_uri'] = $db_cti;
-				$out[$hostname] = array(
+				$out['ipbxes'][$hostname] = array();
+				$urllists = array(
 					'urllist_users' => array($json . 'pbx_settings/users'),
 					'urllist_lines' => array($json . 'pbx_settings/lines'),
 					'urllist_devices' => array($json . 'pbx_settings/devices'),
@@ -419,23 +418,21 @@ switch($act)
 					'urllist_incalls' => array($json . 'call_management/incall'),
 					'urllist_outcalls' => array($json . 'call_management/outcall'),
 					'urllist_contexts' => array($json . 'system_management/context'),
-
-					'urllist_trunks' => array(
-											$json . 'trunk_management/sip',
-											$json . 'trunk_management/iax'
-										),
+					'urllist_trunks' => array($json . 'trunk_management/sip',
+                                                                  $json . 'trunk_management/iax'),
 					'urllist_phonebook' => array($json . 'pbx_services/phonebook'),
-					'urllist_extenfeatures' => array($json . 'pbx_services/extenfeatures'),
-
-					'ipaddress' => $list[$v]['host'],
-					'ami_port'            => $list[$v]['ami_port'],
-					'ami_login'           => $list[$v]['ami_login'],
-					'ami_pass'            => $list[$v]['ami_pass'],
-
-
-					'cdr_db_uri'          => $db_ast,
-					'userfeatures_db_uri' => $db_ast
+					'urllist_extenfeatures' => array($json . 'pbx_services/extenfeatures')
 				);
+				$connection = array(
+					'ipaddress' => $list[$v]['host'],
+					'ami_port'  => $list[$v]['ami_port'],
+					'ami_login' => $list[$v]['ami_login'],
+					'ami_pass'  => $list[$v]['ami_pass']
+				);
+				$out['ipbxes'][$hostname]['urllists'] = $urllists;
+				$out['ipbxes'][$hostname]['connection'] = $connection;
+				$out['ipbxes'][$hostname]['cdr_db_uri'] = $db_ast;
+				$out['ipbxes'][$hostname]['userfeatures_db_uri'] = $db_ast;
 			}
 		}
 
