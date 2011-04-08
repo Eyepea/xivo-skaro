@@ -46,13 +46,14 @@ class Context:
         return
 
     def update(self, contents):
-        directories = contents.get('directories')
         self.directories = list()
-        for direct in directories:
-            dtr = direct[12:]
-            if dtr not in self.directories:
-                self.directories.append(dtr)
-        self.display = contents.get('display')[9:]
+        if 'directories' in contents:
+            directories = contents.get('directories')
+            for direct in directories:
+                dtr = direct[12:]
+                if dtr not in self.directories:
+                    self.directories.append(dtr)
+        self.display = contents.get('display')
         self.didextens = contents.get('didextens')
         return
 
