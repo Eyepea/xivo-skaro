@@ -383,7 +383,9 @@ switch($act)
                                 $out['main']['userlists'][] = $json . 'pbx_settings/users' . '?astid=' . $hostname;
                                 $out['main']['ctilog_db_uri'] = $db_cti;
 				$out[$hostname] = array(
-					'urllist_phones' => array($json . 'pbx_settings/users'),
+					'urllist_users' => array($json . 'pbx_settings/users'),
+					'urllist_lines' => array($json . 'pbx_settings/lines'),
+					'urllist_devices' => array($json . 'pbx_settings/devices'),
 					'urllist_agents' => array($json . 'call_center/agents'),
 					'urllist_queues' => array($json . 'call_center/queues'),
 					'urllist_groups' => array($json . 'pbx_settings/groups'),

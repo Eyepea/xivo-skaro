@@ -39,6 +39,13 @@ $dhtml = &$this->get_module('dhtml');
 					'cti/general'),
 				'</dd>';
 		endif;
+		if(xivo_user::chk_acl('cti','general_settings/profiles', 'service') === true):
+			echo	'<dd id="mn-profiles">',
+				$url->href_html($this->bbf('mn_left_ctisettings-profiles'),
+					'cti/profiles'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('cti', 'general_settings/presences', 'service') === true):
 			echo	'<dd id="mn-presences">',
 				$url->href_html($this->bbf('mn_left_ctisettings-presences'),
@@ -51,10 +58,16 @@ $dhtml = &$this->get_module('dhtml');
 					'cti/phonehints'),
 				'</dd>';
 		endif;
-		if(xivo_user::chk_acl('cti','general_settings/profiles', 'service') === true):
-			echo	'<dd id="mn-profiles">',
-				$url->href_html($this->bbf('mn_left_ctisettings-profiles'),
-					'cti/profiles'),
+		if(xivo_user::chk_acl('cti','general_settings/agentstatus', 'service') === true):
+			echo	'<dd id="mn-agentstatus">',
+				$url->href_html($this->bbf('mn_left_ctisettings-agentstatus'),
+					'cti/agentstatus'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti','general_settings/channelstatus', 'service') === true):
+			echo	'<dd id="mn-channelstatus">',
+				$url->href_html($this->bbf('mn_left_ctisettings-channelstatus'),
+					'cti/channelstatus'),
 				'</dd>';
 		endif;
 	echo	'</dl>';

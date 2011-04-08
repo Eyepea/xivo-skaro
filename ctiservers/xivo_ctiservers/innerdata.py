@@ -41,9 +41,10 @@ log = logging.getLogger('safedeposit')
 class Safe:
     # matches between CTI lists and WEBI-given fields
     urlvars = {
-        'phones' : 'urllist_phones',
+        'users'  : 'urllist_users',
+        'phones' : 'urllist_lines',
+        # 'devices' : 'urllist_devices',
         'trunks' : 'urllist_trunks',
-        'users'  : 'urllist_phones',
 
         'agents' : 'urllist_agents',
         'queues' : 'urllist_queues',
@@ -56,6 +57,36 @@ class Safe:
 
         'phonebooks' : 'urllist_phonebook'
         }
+
+##[{"id":1,"firstname":"Bmwgsjr","lastname":"Ponciuj","voicemailtype":null,"voicemailid":null,"agentid":null,
+##  "entityid":1,"callerid":"\"Bmwgsjr Ponciuj\"","ringseconds":"30","simultcalls":"5","enableclient":true,
+##  "loginclient":"dsfsdf","passwdclient":"azeae","profileclient":"client","enablehint":true,"enablevoicemail":false,
+##  "enablexfer":false,"enableautomon":false,"callrecord":false,"incallfilter":false,"enablednd":false,
+##  "enableunc":false,"destunc":"","enablerna":false,"destrna":"","enablebusy":false,"destbusy":"","musiconhold":"",
+##  "outcallerid":"default","mobilephonenumber":"","bsfilter":"no","preprocess_subroutine":null,"timezone":"",
+##  "language":null,"ringintern":"","ringextern":"","ringgroup":"","ringforward":"","rightcallcode":"",
+##  "alarmclock":"00:00","pitch":null,"pitchdirection":null,"commented":false,"description":"",
+##  "fullname":"Bmwgsjr Ponciuj","identity":"Bmwgsjr Ponciuj","queueskills":[]}]
+
+##[{"id":1,"name":"0c624c","type":"friend","username":null,"secret":"JZ7JIJ",
+##  "md5secret":"11e29f53222b746c4f6c563c7ee23a29","context":"mamaop","language":null,"accountcode":null,
+##  "amaflags":"default","allowtransfer":null,"fromuser":null,"fromdomain":null,"mailbox":null,"subscribemwi":"0",
+##  "buggymwi":null,"call-limit":"10","callerid":"\"Bmwgsjr Ponciuj\" <1111>","fullname":null,"cid_number":null,
+##  "maxcallbitrate":null,"insecure":null,"nat":null,"promiscredir":null,"usereqphone":null,"videosupport":null,
+##  "trustrpid":null,"sendrpid":null,"allowsubscribe":null,"allowoverlap":null,"dtmfmode":null,
+##  "rfc2833compensate":null,"qualify":null,"g726nonstandard":null,"disallow":null,"allow":null,"autoframing":null,
+##  "mohinterpret":null,"mohsuggest":null,"useclientcode":null,"progressinband":null,"t38pt_udptl":null,
+##  "t38pt_usertpsource":null,"rtptimeout":null,"rtpholdtimeout":null,"rtpkeepalive":null,"deny":null,"permit":null,
+##  "defaultip":null,"setvar":"","host":"dynamic","port":null,"regexten":null,"subscribecontext":null,"vmexten":null,
+##  "callingpres":null,"ipaddr":"","regseconds":"0","regserver":null,"lastms":"","parkinglot":null,"protocol":"sip",
+##  "category":"user","outboundproxy":null,"transport":null,"remotesecret":null,"directmedia":null,"callcounter":null,
+##  "busylevel":null,"ignoresdpversion":null,"session-timers":null,"session-expires":null,"session-minse":null,
+##  "session-refresher":null,"callbackextension":null,"registertrying":null,"timert1":null,"timerb":null,
+##  "qualifyfreq":null,"contactpermit":null,"contactdeny":null,"unsolicited_mailbox":null,"use_q850_reason":null,
+##  "encryption":false,"snom_aoc_enabled":null,"maxforwards":null,"disallowed_methods":null,"textsupport":null,
+##  "commented":false,"callgroup":null,"pickupgroup":null,"initialized":false,"identity":"SIP\/0c624c",
+##  "protocolid":7,"iduserfeatures":1,"number":"1111","provisioningid":119921,"rules_type":"","rules_time":"",
+##  "rules_order":0,"rules_group":"","internal":false,"description":"","useridentity":"Bmwgsjr Ponciuj"}]
 
     # defines the list of parameters that might be sent to xivo clients
     props_config = { 'users' : ['loginclient',

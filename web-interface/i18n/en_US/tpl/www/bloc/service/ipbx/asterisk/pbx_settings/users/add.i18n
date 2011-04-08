@@ -53,7 +53,7 @@ Language:
 Entity: 
 
 ; hlp_fm_userfeatures_entity
-You can't modify entity if she has a line.
+You can't modify entity if it has a line.
 
 ; line_protocol-sip
 SIP
