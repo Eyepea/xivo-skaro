@@ -165,27 +165,30 @@ function update_row_infos()
 		count++;
 		
 		$(this).find('#linefeatures-rules_group').val(groupval);		
-		$(this).find('#linefeatures-rules_order').val(count);
+		$(this).find('#linefeatures-rules_order').val(count-1);
 		
-		if(tr_group === true)
-			return(false);
-		
-		context = $(this).find("#linefeatures-context");
-		context_val = $(context).val();
-		
-		if (context_val !== null) {
-			number = context.parents('tr').find('#linefeatures-number');
-			number.focus(function(){
-				context = $(this).parents('tr').find("#linefeatures-context");
-				map_autocomplete_extension_to($(this),context.val());
-				helper = $(this).parent().find('#numberpool_helper');
-				xivo_http_search_numpool(context.val(),helper);
-				helper.show('slow');
-			});
-			number.blur(function(){
-				context = $(this).parents('tr').find("#linefeatures-context");
-				$(this).parent().find('#numberpool_helper').hide('slow');
-			});
+		if(tr_group === false) {		
+			context = $(this).find("#linefeatures-context");
+
+			context_selected = context.parents('tr').find('#context-selected').val();
+			if (context_selected !== null)
+			context.find("option[value='"+context_selected+"']").attr("selected","selected");
+			
+			context_val = $(context).val();
+			
+			if (context_val !== null) {
+				number = context.parents('tr').find('#linefeatures-number');
+				number.focus(function(){
+					context = $(this).parents('tr').find("#linefeatures-context");
+					map_autocomplete_extension_to($(this),context.val());
+					helper = $(this).parent().find('#numberpool_helper');
+					xivo_http_search_numpool(context.val(),helper);
+					helper.show('slow');
+				});
+				number.blur(function(){
+					$(this).parent().find('#numberpool_helper').hide('slow');
+				});
+			}
 		}
 	});
 }
@@ -196,6 +199,8 @@ $(document).ready(function() {
 	$('#it-userfeatures-entityid').change(function() {
 		xivo_http_search_context_from_entity($(this).val());
 	});
+	
+	update_row_infos();
 
 	$("#list_linefeatures tbody").sortable({
 		helper: fixHelper,
