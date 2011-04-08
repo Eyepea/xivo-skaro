@@ -227,7 +227,7 @@ class xivo_daemon:
 
     def find_matching_ipbxid(self, ipaddress):
         found_ipbxid = None
-        for ipbxid, ipbxconfig in self.cconf.xc_json.get('ipbxes').iteritems():
+        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
             connparams = ipbxconfig.get('connection')
             cfg_ip_address = connparams.get('ipaddress')
             if ipaddress == socket.gethostbyname(cfg_ip_address):
@@ -289,9 +289,9 @@ class xivo_daemon:
 
         self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
 
-        queue_logger.queue_logger.init(self.cconf.xc_json['main'].get('asterisk_queuestat_db'))
+        queue_logger.queue_logger.init(self.cconf.getconfig('main').get('asterisk_queuestat_db'))
 
-        xivoconf_general = self.cconf.xc_json['main']
+        xivoconf_general = self.cconf.getconfig('main')
 
         # loads the general configuration
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
@@ -305,7 +305,7 @@ class xivo_daemon:
         if not self.pipe_queued_threads:
             self.pipe_queued_threads = os.pipe()
 
-        for ipbxid, ipbxconfig in self.cconf.xc_json.get('ipbxes').iteritems():
+        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
             # interface : safe deposit
             self.safe[ipbxid] = innerdata.Safe(self, ipbxid, ipbxconfig.get('urllists'))
             # interface : AMI
@@ -325,10 +325,10 @@ class xivo_daemon:
         self.fdlist_udp_cti = {}
         self.fdlist_ami = {}
 
-        log.info("the monitored ipbx's is/are : %s" % self.cconf.xc_json.get('ipbxes').keys())
+        log.info("the monitored ipbx's is/are : %s" % self.cconf.getconfig('ipbxes').keys())
         log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % self.xdname)
 
-        for ipbxid in self.cconf.xc_json.get('ipbxes').keys():
+        for ipbxid in self.cconf.getconfig('ipbxes').keys():
             try:
                 self.update_userlist[ipbxid] = []
                 self.lastrequest_time[ipbxid] = time.time()
@@ -551,7 +551,7 @@ class xivo_daemon:
                                 nc.set_ipbxid(ipbxid)
 
                             if kind in ['CTI', 'CTIS']:
-                                nc.logintimer = threading.Timer(int(self.cconf.xc_json['main'].get('logintimeout', 5)),
+                                nc.logintimer = threading.Timer(int(self.cconf.getconfig('main').get('logintimeout', 5)),
                                                                 self.cb_timer,
                                                                 ({'action' : 'ctilogin',
                                                                   'properties' : connc},))

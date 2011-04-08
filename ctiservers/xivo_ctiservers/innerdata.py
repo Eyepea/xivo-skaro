@@ -36,7 +36,7 @@ from xivo_ctiservers import lists
 from xivo_ctiservers.lists import *
 from xivo_ctiservers import cti_sheets
 
-log = logging.getLogger('safedeposit')
+log = logging.getLogger('innerdata')
 
 class Safe:
     # matches between CTI lists and WEBI-given fields

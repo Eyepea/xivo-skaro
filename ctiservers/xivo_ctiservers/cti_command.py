@@ -250,7 +250,11 @@ class Command:
                                  'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
                     if profilespecs.get(capakind):
                         tt = profilespecs.get(capakind)
-                        details = self.ctid.cconf.getconfig(capakind).get(tt)
+                        cfg_capakind = self.ctid.cconf.getconfig(capakind)
+                        if cfg_capakind:
+                            details = cfg_capakind.get(tt)
+                        else:
+                            details = {}
                         capastruct[capakind] = details
                     else:
                         log.warning('no capakind %s in profilespecs %s'
