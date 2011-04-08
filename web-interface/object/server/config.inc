@@ -41,7 +41,7 @@ $array['element']['ami_login'] = array();
 $array['element']['ami_login']['default'] = 'xivo_cti_user';
 
 $array['element']['ami_pass'] = array();
-$array['element']['ami_pass']['default'] = 'PhaickBebs9';
+$array['element']['ami_pass']['default'] = 'phaickbebs9';
 
 $array['element']['ssl'] = array();
 $array['element']['ssl']['value'] = array(0,1);

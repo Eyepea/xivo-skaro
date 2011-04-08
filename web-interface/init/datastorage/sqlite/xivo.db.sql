@@ -206,7 +206,7 @@ CREATE TABLE server (
  PRIMARY KEY(id)
 );
 
-INSERT INTO server VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','PhaickBebs9');
+INSERT INTO server VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
 
 CREATE INDEX server__idx__host ON server(host);
 CREATE INDEX server__idx__port ON server(port);
