@@ -59,7 +59,7 @@ class Config:
         self.json_config = response.read().replace('\/', '/')
         self.xc_json = cjson.decode(self.json_config)
 
-        for profile, profdef in self.xc_json['xivocti']['profiles'].iteritems():
+        for profile, profdef in self.xc_json['profiles'].iteritems():
             if profdef['xlets']:
                 for xlet_attr in profdef['xlets']:
                     if 'N/A' in xlet_attr:
