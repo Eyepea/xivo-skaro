@@ -21,9 +21,9 @@ setup(
 	scripts=['bin/pf-xivo-ha'],
 	data_files=[
                 ('/etc/pf-xivo', ['etc/pf-xivo-ha.conf']),
-                ('/usr/share/pf-xivo-ha/templates', [
-                                                     'templates/corosync/default_corosync',
-                                                     'templates/corosync/corosync.conf',
-                                                    ])
+                ('/usr/share/pf-xivo-ha/templates/corosync', [
+                                                              'templates/corosync/default_corosync',
+                                                              'templates/corosync/corosync.conf',
+                                                             ])
                ]
 )
