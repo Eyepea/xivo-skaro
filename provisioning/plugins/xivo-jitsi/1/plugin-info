@@ -1,0 +1,9 @@
+{
+    "version": "0.0.1",
+    "description": "Plugin for Jitsi in version 1.0.",
+    "capabilities": {
+        "Jitsi, Jitsi, 1.0": {
+            "sip.lines": 1
+        }
+    }
+}

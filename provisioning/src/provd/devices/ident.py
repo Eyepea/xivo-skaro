@@ -473,6 +473,14 @@ def SerialNumberDeviceRetriever(app):
     return SearchDeviceRetriever(app, u'sn')
 
 
+def UUIDDeviceRetriever(app):
+    """Retrieve device object by looking up in a device manager for an
+    object which UUID is the same as the device info object.
+    
+    """
+    return SearchDeviceRetriever(app, u'uuid')
+
+
 class AddDeviceRetriever(object):
     """A device retriever that does no lookup and always insert a new device
     in the application.

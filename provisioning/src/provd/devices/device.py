@@ -15,6 +15,7 @@ They both have the following standardized keys:
   mac -- the normalized MAC address of this device (unicode)
   sn -- the serial number of this device (unicode)
   ip -- the normalized IP address of this device (unicode)
+  uuid -- the UUID of this device (unicode)
   vendor -- the vendor name of this device (unicode)
   model -- the model name of this device (unicode)
   version -- the version of the software/firmware of this device (unicode)

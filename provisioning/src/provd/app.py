@@ -321,8 +321,8 @@ class ProvisioningApplication(object):
         else:
             defer.returnValue(device)
     
-    _SIGNIFICANT_KEYS = [u'plugin', u'config', u'mac', u'ip', u'vendor',
-                         u'model', u'version']
+    _SIGNIFICANT_KEYS = [u'plugin', u'config', u'mac', u'ip', u'uuid',
+                         u'vendor', u'model', u'version']
     
     def _dev_need_reconfiguration(self, old_device, new_device):
         # Return true if the device object are different enough that we
@@ -413,13 +413,13 @@ class ProvisioningApplication(object):
                     configured = yield self._dev_configure_if_possible(device)
                     device[u'configured'] = configured
                 else:
-                    logger.info('Not reconfiguring device %s: not needed.')
+                    logger.info('Not reconfiguring device %s: not needed.', id)
                 # Update device collection if the device is different from
                 # the old device
                 if device != old_device:
                     yield self._dev_collection.update(device)
                 else:
-                    logger.info('Not updating device %s: not changed')
+                    logger.info('Not updating device %s: not changed', id)
         except Exception:
             logger.error('Error while updating device', exc_info=True)
             raise
