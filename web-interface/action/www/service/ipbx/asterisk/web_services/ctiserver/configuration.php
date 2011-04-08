@@ -83,8 +83,11 @@ switch($act)
 			'displays' 		=> array(),
 			'sheets' 		=> array(),
 			'xivocti' 		=> array(),
-			'presences' 	=> array(),
-			'phonehints' 	=> array()
+
+			'userstatus' => array(),
+			'phonestatus' => array(),
+			'agentstatus' => array(),
+			'channelstatus' => array()
 		);
 
 		# CONTEXTS
@@ -291,7 +294,7 @@ switch($act)
 				foreach($load_status as $stat)
 				{
 					$name = $stat['name'];
-					$presout[$presid][$name]['display'] = $stat['display_name'];
+					$presout[$presid][$name]['longname'] = $stat['display_name'];
 					$presout[$presid][$name]['color'] = $stat['color'];
 					$accessids = $stat['access_status'];
 				
@@ -300,7 +303,7 @@ switch($act)
 					{
 						$accessstatus[] = $statref[$i];
 					}
-					$presout[$presid][$name]['status'] = $accessstatus;
+					$presout[$presid][$name]['allowed'] = $accessstatus;
 
 					$actions = explode(',', $stat['actions']);
 					$pattern = '/^(.*)\((.*)\)/';
@@ -314,7 +317,7 @@ switch($act)
 					$presout[$presid][$name]['actions'] = $actionsout;
 				}
 			}
-			$out['presences'] = $presout;
+			$out['userstatus'] = $presout;
 		}
 
 		# PHONEHINTS (LINE STATUSES)
@@ -324,9 +327,11 @@ switch($act)
 			foreach($load_phonehints as $ph)
 			{
 				$phid = $ph['number'];
-				$hintsout[$phid] = array($ph['name'], $ph['color']);
+				$hintsout[$phid] = array();
+				$hintsout[$phid]['longname'] = $ph['name'];
+				$hintsout[$phid]['color'] = $ph['color'];
 			}
-			$out['phonehints'] = $hintsout;
+			$out['phonestatus']['itm_phonestatus'] = $hintsout;
 		}
 
 		# PROFILES
@@ -348,13 +353,18 @@ switch($act)
 						$prefout[$match[1]] = $match[2];
 				}
 				$out['xivocti']['profiles'][$pfid] = array(
+					'appliname' => $pf['appliname'],
+
 					'xlets' => dwho_json::decode($pf['xlets'], true),
 					'funcs' => explode(',', $pf['funcs']),
-					'maxgui' => $pf['maxgui'],
-					'appliname' => $pf['appliname'],
-					'presence' => "presences.".$pf['presence'],
 					'services' => explode(',', $pf['services']),
-					'preferences' => $prefout
+					'preferences' => $prefout,
+					# regcommands, ipbxcommands
+
+					'userstatus' => $pf['presence'],
+					'phonestatus' => "itm_phonestatus",
+					'agentstatus' => "itm_agentstatus",
+					'channelstatus' => "itm_channelstatus"
 				);
 			}
 		}
