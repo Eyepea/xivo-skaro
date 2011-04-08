@@ -586,10 +586,18 @@ class AsteriskFrontend(Frontend):
 			print >>o
 
 
+			# test if we are in DUNDi active/active mode
+			dundi_aa = self.backend.general.get(id=1)['dundi'] == 1
+
 			# objects extensions (user, group, ...)
 			for exten in self.backend.extensions.all(context=ctx['name'], commented=False, order='context'):
 				app     = exten['app']
 				appdata = list(exten['appdata'].replace('|',',').split(','))
+
+				# active/active mode
+				if dundi_aa and appdata[0] == 'user':
+					exten['priority'] += 1
+
 				if app == 'Macro':
 					app     = 'Gosub'
 					appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
