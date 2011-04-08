@@ -81,7 +81,7 @@ def regenerate(dhcpd_dir, subnet_file):
 def _read_config_from_default(config):
     return {'general':
                 {'config_file': '/etc/pf-xivo/dhcpd-update.conf',
-                 'update_url': 'http://something.proformatique.com/dhcpd-update/1.2/',
+                 'update_url': 'http://provd.xivo.fr/xivo/dhcpd-update/1.2/',
                  'dhcpd_dir': '/etc/dhcp/',
                  'subnet_file': 'dhcpd_subnet.conf'},
             }
