@@ -139,13 +139,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(isset($arr['commented']) === true)
 			$r['commented'] = intval((bool) $arr['commented']);
 
-		if (defined('XIVO_ACTIF_ACTIF') === true
-		&& $r['app'] == 'Macro'
-		&& substr($r['appdata'],0,4) === 'user'
-		&& XIVO_ACTIF_ACTIF === 1)
-			$r['priority'] = 2;
-		else
-			$r['priority'] = 1;
+		$r['priority'] = 1;
 
 		return($this->_dso->edit($id,$r,$disable));
 	}
@@ -189,13 +183,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			return(false);
 		else if(isset($r['priority']) === false)
 			$r['priority'] = count($this->_exten[$id]) + 1;
-
-		if (defined('XIVO_ACTIF_ACTIF') === true
-		&& $r['priority'] == 1
-		&& $r['app'] == 'Macro'
-		&& substr($r['appdata'],0,4) === 'user'
-		&& XIVO_ACTIF_ACTIF === 1)
-			$r['priority'] = 2;
 
 		$this->_exten[$id][] = $r;
 
