@@ -92,7 +92,7 @@ class WEBI(Interfaces):
             try:
                 if usefulmsg == 'xivo[ctiprofilelist,get]':
                     clireply.extend(['%s:ID <%s>' % (XIVO_CLI_WEBI_HEADER, self.ipbxid),
-                                     '%s' % self.ctid.commandclass.getprofilelist(),
+                                     '%s' % self.ctid.cconf.getconfig('profiles').keys(),
                                      '%s:OK' % XIVO_CLI_WEBI_HEADER])
                     log.info('WEBI requested %s' % usefulmsg)
 

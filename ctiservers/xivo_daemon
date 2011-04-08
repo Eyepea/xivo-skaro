@@ -321,8 +321,6 @@ class xivo_daemon:
             self.safe[ipbxid].read_internatprefixes(prefixfile)
             self.safe[ipbxid].set_partings(parting_ipbxid_context)
 
-        self.guiconfig = self.cconf.getconfig()
-
         # sockets management
         self.fdlist_established = {}
         self.fdlist_listen_cti = {}

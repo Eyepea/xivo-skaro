@@ -96,9 +96,9 @@ class Command:
 
             if self.ripbxid:
                 profileclient = self.rinnerdata.weblist['users'].keeplist[self.ruserid].get('profileclient')
-                profilespecs = self.ctid.guiconfig.get('profiles').get(profileclient)
+                profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
                 regcommands_id = profilespecs.get('regcommands')
-                regcommands = self.ctid.guiconfig.get('regcommands').get(regcommands_id)
+                regcommands = self.ctid.cconf.getconfig('regcommands').get(regcommands_id)
                 if self.command not in regcommands:
                     log.warning('profile %s : unallowed command %s (intermediate %s)'
                                 % (profileclient, self.command, regcommands_id))
@@ -241,7 +241,7 @@ class Command:
 ##            return userinfo
 
             profileclient = self.innerdata.weblist['users'].keeplist[self.userid].get('profileclient')
-            profilespecs = self.ctid.guiconfig.get('profiles').get(profileclient)
+            profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
 
             capastruct = {}
             if profilespecs:
@@ -250,7 +250,7 @@ class Command:
                                  'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
                     if profilespecs.get(capakind):
                         tt = profilespecs.get(capakind)
-                        details = self.ctid.guiconfig.get(capakind).get(tt)
+                        details = self.ctid.cconf.getconfig(capakind).get(tt)
                         capastruct[capakind] = details
                     else:
                         log.warning('no capakind %s in profilespecs %s'
@@ -485,9 +485,9 @@ class Command:
             log.warning('unknown ipbxcommand %s' % self.ipbxcommand)
             return reply
         profileclient = self.rinnerdata.weblist['users'].keeplist[self.ruserid].get('profileclient')
-        profilespecs = self.ctid.guiconfig.get('profiles').get(profileclient)
+        profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
         ipbxcommands_id = profilespecs.get('ipbxcommands')
-        ipbxcommands = self.ctid.guiconfig.get('ipbxcommands').get(ipbxcommands_id)
+        ipbxcommands = self.ctid.cconf.getconfig('ipbxcommands').get(ipbxcommands_id)
         if self.ipbxcommand not in ipbxcommands:
             log.warning('profile %s : unallowed ipbxcommand %s (intermediate %s)'
                         % (profileclient, self.ipbxcommand, ipbxcommands_id))

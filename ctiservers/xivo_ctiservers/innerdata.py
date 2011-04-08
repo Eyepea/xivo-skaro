@@ -699,14 +699,14 @@ class Safe:
         oldstate = self.webstatus.get('users').get(userid)['availstate']
 
         profileid = self.user_get_ctiprofile(userid)
-        if profileid not in self.ctid.guiconfig.get('profiles'):
+        if profileid not in self.ctid.cconf.getconfig('profiles'):
             log.warning('profileid %s (for user %s) not defined in config' % (profileid, userid))
             return
-        presenceid = self.ctid.guiconfig.get('profiles').get(profileid).get('userstatus')
-        if presenceid not in self.ctid.guiconfig.get('userstatus'):
+        presenceid = self.ctid.cconf.getconfig('profiles').get(profileid).get('userstatus')
+        if presenceid not in self.ctid.cconf.getconfig('userstatus'):
             log.warning('presenceid %s (for user %s) not defined in config' % (presenceid, userid))
             return
-        profdetails = self.ctid.guiconfig.get('userstatus').get(presenceid)
+        profdetails = self.ctid.cconf.getconfig('userstatus').get(presenceid)
 
         # allow oldstate to be 'unknown' (as might be the case when connecting ...)
         if oldstate not in profdetails and oldstate not in ['unknown']:
@@ -770,9 +770,9 @@ class Safe:
         return idfound
 
     def sheetsend(self, where, channel, outdest = None):
-        if 'sheets' not in self.ctid.guiconfig:
+        if 'sheets' not in self.ctid.cconf.getconfig():
             return
-        bsheets = self.ctid.guiconfig.get('sheets')
+        bsheets = self.ctid.cconf.getconfig('sheets')
         self.sheetevents = bsheets.get('sheetevents')
         self.sheetdisplays = bsheets.get('sheetdisplays')
         self.sheetoptions = bsheets.get('sheetoptions')

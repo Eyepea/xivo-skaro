@@ -24,7 +24,6 @@ $access_subcategory = 'configuration';
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $act = $_QRY->get('act');
-define("CLIENT_VERSION", '5956');
 
 switch($act)
 {
@@ -300,12 +299,16 @@ switch($act)
 		}
 
 		# MAIN
-		$out['main']['commandset'] = $load_inf[0]['commandset'];
-		$out['main']['incoming_tcp_fagi'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
-		$out['main']['incoming_tcp_cti'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
-		$out['main']['incoming_tcp_webi'] = array($load_inf[0]['webi_ip'], $load_inf[0]['webi_port']);
-		$out['main']['incoming_tcp_info'] = array($load_inf[0]['info_ip'], $load_inf[0]['info_port']);
-		$out['main']['incoming_udp_announce'] = array($load_inf[0]['announce_ip'], $load_inf[0]['announce_port']);
+		$tcpdefs = array();
+		$tcpdefs['fagi'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
+		$tcpdefs['cti'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
+		$tcpdefs['webi'] = array($load_inf[0]['webi_ip'], $load_inf[0]['webi_port']);
+		$tcpdefs['info'] = array($load_inf[0]['info_ip'], $load_inf[0]['info_port']);
+		$udpdefs = array();
+		$udpdefs['announce'] = array($load_inf[0]['announce_ip'], $load_inf[0]['announce_port']);
+		$out['main']['incoming_tcp'] = $tcpdefs;
+		$out['main']['incoming_udp'] = $udpdefs;
+
 		$out['main']['sockettimeout'] = $load_inf[0]['socket_timeout'];
 		$out['main']['updates_period'] = $load_inf[0]['updates_period'];
 		$out['main']['logintimeout'] = $load_inf[0]['login_timeout'];
@@ -330,7 +333,6 @@ switch($act)
 
 		# PROFILES
 		$out['xivocti']['allowedxlets'] = "file:///etc/pf-xivo/ctiservers/allowedxlets.json";
-		$out['xivocti']['required_client_version'] = CLIENT_VERSION;
 		if(isset($load_profiles))
 		{
 			foreach($load_profiles as $pf)

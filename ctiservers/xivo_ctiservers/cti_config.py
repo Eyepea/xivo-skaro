@@ -94,15 +94,6 @@ class Config:
                 ipbxcfg['connection'][k] = ipbxcfg.get(k)
             self.xc_json['ipbxes'][ipbxid] = ipbxcfg
 
-        self.xc_json['main']['incoming_tcp_ports'] = {}
-        for z in ['FAGI', 'CTI', 'WEBI', 'INFO']:
-            oldone = 'incoming_tcp_%s' % z.lower()
-            self.xc_json['main']['incoming_tcp_ports'][z] = self.xc_json['main'].pop(oldone)
-        self.xc_json['main']['incoming_udp_ports'] = {}
-        for z in ['ANNOUNCE']:
-            oldone = 'incoming_udp_%s' % z.lower()
-            self.xc_json['main']['incoming_udp_ports'][z] = self.xc_json['main'].pop(oldone)
-
         for ctx, ctxdef in self.xc_json.get('reversedid').iteritems():
             if ctx not in self.xc_json.get('contexts'):
                 self.xc_json.get('contexts')[ctx] = {}
@@ -123,12 +114,9 @@ class Config:
                 self.ctxlist[contextname] = cti_directories.Context()
             self.ctxlist[contextname].update(contextdef)
 
-    def getconfig(self):
-        try:
-            response = urllib2.urlopen('file:///pathtoconf.json')
-            json_config = response.read()
-            gc = cjson.decode(json_config)
-        except Exception:
-            log.exception('getconfig')
-            gc = {}
-        return gc
+    def getconfig(self, key = None):
+        if key:
+            ret = self.xc_json.get(key)
+        else:
+            ret = self.xc_json
+        return ret
