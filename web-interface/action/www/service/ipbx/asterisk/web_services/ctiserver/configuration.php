@@ -40,8 +40,8 @@ switch($act)
 		$ctisheetevents = &$ipbx->get_module('ctisheetevents');
 		$ctimain = &$ipbx->get_module('ctimain');
 		$ctiprofiles = &$ipbx->get_module('ctiprofiles');
-		$ctipresences = &$ipbx->get_module('ctipresences');
 		$ctistatus = &$ipbx->get_module('ctistatus');
+		$ctipresences = &$ipbx->get_module('ctipresences');
 		$ctiphonehints = &$ipbx->get_module('ctiphonehints');
 		$ctirdid = &$ipbx->get_module('ctireversedirectories');
 
@@ -67,8 +67,8 @@ switch($act)
 		$load_sheetevents = $ctisheetevents->get_all();
 		$load_inf = $ctimain->get_all();
 		$load_profiles = $ctiprofiles->get_all();
-		$load_presences = $ctipresences->get_all();
 		$load_status = $ctistatus->get_all();
+		$load_presences = $ctipresences->get_all();
 		$load_phonehints = $ctiphonehints->get_all();
 		$load_rdid = $ctirdid->get_all();
 		$list = $app->get_server_list();
@@ -249,9 +249,28 @@ switch($act)
 			$out['sheets']['actions'] = $actout;
 			$out['sheets']['displays'] = $dispout;
 		}
-			
 
-		# PRESENCES
+		# MAIN
+		$tcpdefs = array();
+		$tcpdefs['FAGI'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
+		$tcpdefs['CTI'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
+		$tcpdefs['WEBI'] = array($load_inf[0]['webi_ip'], $load_inf[0]['webi_port']);
+		$tcpdefs['INFO'] = array($load_inf[0]['info_ip'], $load_inf[0]['info_port']);
+		$udpdefs = array();
+		$udpdefs['ANNOUNCE'] = array($load_inf[0]['announce_ip'], $load_inf[0]['announce_port']);
+		$out['main']['incoming_tcp'] = $tcpdefs;
+		$out['main']['incoming_udp'] = $udpdefs;
+
+		$out['main']['sockettimeout'] = $load_inf[0]['socket_timeout'];
+		$out['main']['updates_period'] = $load_inf[0]['updates_period'];
+		$out['main']['logintimeout'] = $load_inf[0]['login_timeout'];
+		$out['main']['asterisklist'] = array();
+		$out['main']['asterisk_queuestat_db'] = $db_queuelogger;
+		$out['main']['parting_astid_context'] = array();
+		if($load_inf[0]['parting_astid_context'] != "")
+			$out['main']['parting_astid_context'] = explode(",", $load_inf[0]['parting_astid_context']);
+
+		# PRESENCES (USER STATUSES)
 		if(isset($load_presences))
 		{
 			$presout = array();
@@ -298,28 +317,7 @@ switch($act)
 			$out['presences'] = $presout;
 		}
 
-		# MAIN
-		$tcpdefs = array();
-		$tcpdefs['FAGI'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
-		$tcpdefs['CTI'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
-		$tcpdefs['WEBI'] = array($load_inf[0]['webi_ip'], $load_inf[0]['webi_port']);
-		$tcpdefs['INFO'] = array($load_inf[0]['info_ip'], $load_inf[0]['info_port']);
-		$udpdefs = array();
-		$udpdefs['ANNOUNCE'] = array($load_inf[0]['announce_ip'], $load_inf[0]['announce_port']);
-		$out['main']['incoming_tcp'] = $tcpdefs;
-		$out['main']['incoming_udp'] = $udpdefs;
-
-		$out['main']['sockettimeout'] = $load_inf[0]['socket_timeout'];
-		$out['main']['updates_period'] = $load_inf[0]['updates_period'];
-		$out['main']['logintimeout'] = $load_inf[0]['login_timeout'];
-		$out['main']['asterisklist'] = array();
-		$out['main']['userlists'] = array();
-		$out['main']['parting_astid_context'] = array();
-		$out['main']['asterisk_queuestat_db'] = $db_queuelogger;
-		if($load_inf[0]['parting_astid_context'] != "")
-			$out['main']['parting_astid_context'] = explode(",", $load_inf[0]['parting_astid_context']);
-
-		# PHONEHINTS
+		# PHONEHINTS (LINE STATUSES)
 		if(isset($load_phonehints))
 		{
 			$hintsout = array();
@@ -380,7 +378,6 @@ switch($act)
 				}
 
                                 $out['main']['asterisklist'][] = $hostname;
-                                $out['main']['userlists'][] = $json . 'pbx_settings/users' . '?astid=' . $hostname;
                                 $out['main']['ctilog_db_uri'] = $db_cti;
 				$out[$hostname] = array(
 					'urllist_users' => array($json . 'pbx_settings/users'),
@@ -399,8 +396,8 @@ switch($act)
 											$json . 'trunk_management/sip',
 											$json . 'trunk_management/iax'
 										),
-					'urllist_phonebook'   => array($json . 'pbx_services/phonebook'),
-
+					'urllist_phonebook' => array($json . 'pbx_services/phonebook'),
+					'urllist_extenfeatures' => array($json . 'pbx_services/extenfeatures'),
 
 					'ipaddress' => $list[$v]['host'],
 					'ami_port'            => $list[$v]['ami_port'],
@@ -412,7 +409,6 @@ switch($act)
 					'userfeatures_db_uri' => $db_ast
 				);
 			}
-			$out['main']['userlists'][] = "file:///etc/pf-xivo/ctiservers/guest_account.json";
 		}
 
 		$_TPL->set_var('info',$out);
