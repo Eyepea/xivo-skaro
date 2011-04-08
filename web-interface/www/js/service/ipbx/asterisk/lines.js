@@ -27,14 +27,13 @@ var fixHelper = function(e, ui) {
 //get available extensions
 function map_autocomplete_extension_to(obj,context)
 {
-    obj.autocomplete('/service/ipbx/ui.php/pbx_settings/extension/search/', {
-    	width: 70, 
-    	extraParams: {
-    		context: context,
-    		obj: 'user',
-    		format: 'jquery'
-    	}
-    });
+	$.getJSON('/service/ipbx/ui.php/pbx_settings/extension/search/?obj=user&format=jquery&context='+context, function(data) {
+		if (data === null || (nb = data.length) === 0)
+			return false;		
+	    obj.autocomplete({
+	    	source: data.split('\n')
+	    });
+	});
 }
 
 //get available number pool
@@ -156,29 +155,37 @@ function update_row_infos()
 	
 	var groupval = '';
 	var count = 0;
-	$('#list_linefeatures > tbody').find('tr').each(function() {				
+	$('#list_linefeatures > tbody').find('tr').each(function() {
+		tr_group = false;			
 		if($(this).attr('id') == 'tr-rules_group') {
 			count = 0;
 			groupval = $(this).find('#td_rules_group_name').text();
+			tr_group = true;
 		}
 		count++;
+		
 		$(this).find('#linefeatures-rules_group').val(groupval);		
-		$(this).find('#linefeatures-rules_order').val(count-1);
+		$(this).find('#linefeatures-rules_order').val(count);
+		
+		if(tr_group === true)
+			return(false);
 		
 		context = $(this).find("#linefeatures-context");
 		context_val = $(context).val();
 		
 		if (context_val !== null) {
-			number = $(this).find('#linefeatures-number');
+			number = context.parents('tr').find('#linefeatures-number');
 			number.focus(function(){
+				context = $(this).parents('tr').find("#linefeatures-context");
+				map_autocomplete_extension_to($(this),context.val());
 				helper = $(this).parent().find('#numberpool_helper');
-				xivo_http_search_numpool(context_val,helper);
+				xivo_http_search_numpool(context.val(),helper);
 				helper.show('slow');
 			});
 			number.blur(function(){
+				context = $(this).parents('tr').find("#linefeatures-context");
 				$(this).parent().find('#numberpool_helper').hide('slow');
 			});
-			map_autocomplete_extension_to(number,context_val);
 		}
 	});
 }
