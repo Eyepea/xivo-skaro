@@ -58,7 +58,6 @@ class Config:
         response = urllib2.urlopen(uri)
         self.json_config = response.read().replace('\/', '/')
         self.xc_json = cjson.decode(self.json_config)
-
         for profile, profdef in self.xc_json['profiles'].iteritems():
             if profdef['xlets']:
                 for xlet_attr in profdef['xlets']:
@@ -68,7 +67,6 @@ class Config:
                         del xlet_attr[2]
                     if xlet_attr[1] == 'grid':
                         del xlet_attr[2]
-
         try:
             self.setdirconfigs()
         except:

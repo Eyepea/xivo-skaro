@@ -253,7 +253,7 @@ class Safe:
         for xitem in xlist:
             try:
                 if not xitem.get('commented'):
-                    # XXX to work over once ticket 2169 will be solved
+                    # XXX to work over once redmine#2169 will be solved
                     if 'id' in xitem:
                         key = str(xitem.get('id'))
                     else:
@@ -270,7 +270,7 @@ class Safe:
 
     def user_find(self, ctilogin, company):
         uinfo = self.weblist['users'].finduser(ctilogin, company)
-        return uinfo.get('id')
+        return str(uinfo.get('id')) # XXX redmine#2169
 
     def user_status(self, userid):
         print self.weblist['users'].keeplist[userid]
