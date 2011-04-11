@@ -115,7 +115,14 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 			$arr['pickupgroup'] = $arr['callgroup'];
 
 		if(isset($arr['setvar'],$arr['setvar']{0}) === false)
-			unset($arr['setvar']);
+			unset($arr['setvar']);			
+		
+		if(isset($arr['secret']) === true
+		&& empty($arr['secret']) === false)
+		{
+		      $arr['secret'] = $arr['secret'];
+		      $arr['md5secret'] = md5($arr['secret']);
+		}
 
 		unset($arr['username'],
 		      $arr['fullname'],
