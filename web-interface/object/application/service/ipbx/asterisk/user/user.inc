@@ -867,11 +867,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(($http_response = dwho_http::factory('response')) === false
 		|| ($fileinfo = $http_response->upload_file('picture',
 							    $this->_conf['picture']['file'])) === false)
-		{
-			$this->_set_result('picture',null);
-			$this->_set_error('picture','invalid data');
 			return(false);
-		}
 
 		$fileinfo['object_type'] = 'user';
 		$fileinfo['object_id'] = (int) $iduserfeatures;
@@ -963,8 +959,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 
 			$ref['iduserfeatures'] = (int) $iduserfeatures;
-			$ref['rules_order'] = (int) $ref['rules_order'];
-			$ref['rules_group'] = $ref['rules_group'];
+			if (isset($ref['rules_order']) === true)
+				$ref['rules_order'] = (int) $ref['rules_order'];
+				
+			if (isset($ref['rules_group']) === true)
+				$ref['rules_group'] = $ref['rules_group'];
+				
 			$callerid = $this->get_result_var('userfeatures','callerid');
 			$ref['callerid'] = $this->_service->mk_callerid($callerid,$number,$protocolname);
 
