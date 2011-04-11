@@ -11,6 +11,36 @@ restrictions:
   dictionaries, and this applies recursively (i.e. you can have a list
   containing dictionaries, etc).
 
+Some operations take a "selector" in arguments. A selector is a dictionary
+with some special semantic. It is inspired from the query language of mongodb.
+
+Here's examples of valid selector and the documents the selector will match:
+- {}
+    match every docs
+- {"a": 1}
+    docs where "a" is 1 or an array containing 1
+    Match: {"a": 1}, {"a": [1]}, {"a": [1, 2]}, {"a": 1, "b": 2}
+    Not match: {"a": "1"}, {}
+- {"a": 1, "b": 2}
+    docs where "a" is 1 or an array containing 1 and b is 2 or an array
+    containing 2
+    Match: {"a": 1, "b": 2}, {"a": 1, "b": 2, "c": 3}
+    Not match: {"a": 1}
+- {"a": [1]}
+    docs where "a" is the array [1]
+    Match: {"a": [1]}, {"a": [1], "b": 2}
+    Not match: {"a": 1}, {"a": [1, 2]}
+- {"a": {"b": 2}}
+    docs where "a" is the dictionary {"b": 2}
+    Match: {"a": {"b": 2}}, {"a": {"b": 2}, "c": 3}
+    Not match: {"a": {"b": 2, "c": 3}}, {"a": {"b": [2]}},
+- {"a.b": 2}
+    docs where "a" is a dictionary for which "b" is 2 or an array containing 2
+    Match: {"a": {"b": 2}}, {"a": {"b": [2]}}, {"a": {"b": 2, "c": 3}}
+- {"a": {"$in": [1, 2]}}
+    docs where "a" is either 1 or 2 or an array containing either 1 or 2
+    Match: {"a": 1}, {"a": 2}, {"a": [1]}, {"a": [1, 3]}
+
 """
 
 __version__ = "$Revision$ $Date$"
@@ -98,11 +128,6 @@ class IDocumentCollection(Interface):
     def find(selector):
         """Return a deferred that will fire with an iterator over documents
         that match the selector.
-        
-        A selector is a dictionary with some special semantic.
-        
-        Note that you can iterate over all the documents by passing an
-        empty selector ({}).
         
         """
     
