@@ -27,6 +27,7 @@ $http_response = dwho_http::factory('response');
 
 $modattachment = &$ipbx->get_module('attachment');
 
+$act = isset($_QR['act']) === false ? null : $_QR['act'];
 $obj = isset($_QR['obj']) === false ? null : $_QR['obj'];
 $id = isset($_QR['id']) === false ? null : (int) $_QR['id'];
 
@@ -50,14 +51,22 @@ switch ($obj)
 		}
 }
 
-header("Pragma: public"); // required 
-header("Expires: 0"); 
-header("Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
-header("Cache-Control: private",false); // required for certain browsers 
-header("Content-Type: ".$rs['mime'].""); 
-header("Content-Disposition: attachment; filename=\"".$rs['name']."\";" ); 
-header("Content-Transfer-Encoding: binary"); 
-header("Content-Length: ".$rs['size']);
+switch ($act)
+{
+	case 'download':
+		header("Pragma: public"); // required 
+		header("Expires: 0"); 
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
+		header("Cache-Control: private",false); // required for certain browsers 
+		header("Content-Type: ".$rs['mime']); 
+		header("Content-Disposition: attachment; filename=\"".$rs['name']."\";" ); 
+		header("Content-Transfer-Encoding: binary"); 
+		header("Content-Length: ".$rs['size']);
+		break;
+	case null:
+	default: 
+		header("Content-Type: ".$rs['mime']); 
+}
 
 ob_clean(); 
 flush();
