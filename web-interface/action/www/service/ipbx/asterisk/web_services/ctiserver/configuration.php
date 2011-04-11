@@ -345,7 +345,7 @@ switch($act)
 		$out['regcommands']['itm_regcommands'] = array("login_pass", "login_capas",
                                                                "getlist", "ipbxcommand",
                                                                "availstate", "keepalive", "history");
-		$out['ipbxcommands']['itm_ipbxcommands'] = array("originate", "agentlogin",
+		$out['ipbxcommands']['itm_ipbxcommands'] = array("originate", "agentlogin", "sipnotify",
                                                                  "atxfer", "transfer", "dial", "park");
 
 		# PROFILES
