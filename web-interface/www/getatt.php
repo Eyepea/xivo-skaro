@@ -22,12 +22,33 @@ require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
+dwho::load_class('dwho_http');
+$http_response = dwho_http::factory('response');
+
 $modattachment = &$ipbx->get_module('attachment');
 
-$id = isset($_QR['id']) === false ? '' : $_QR['id'];
+$obj = isset($_QR['obj']) === false ? null : $_QR['obj'];
+$id = isset($_QR['id']) === false ? null : (int) $_QR['id'];
 
-if(($rs = $modattachment->get($id)) === false)
-	die;
+switch ($obj)
+{
+	case null:
+		if(($rs = $modattachment->get($id)) === false)
+		{
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+		break;
+	default:
+		$arr = array();
+		$arr['object_type'] = $obj;
+		$arr['object_id'] = $id;
+		if(($rs = $modattachment->get_where($arr)) === false)
+		{
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+}
 
 header("Pragma: public"); // required 
 header("Expires: 0"); 
