@@ -67,6 +67,9 @@ $array['module']['agentgroup']['datastorage'] = true;
 $array['module']['ami'] = array();
 $array['module']['ami']['datastorage'] = false;
 
+$array['module']['attachment'] = array();
+$array['module']['attachment']['datastorage'] = true;
+
 $array['module']['autoprov'] = array();
 $array['module']['autoprov']['datastorage'] = true;
 

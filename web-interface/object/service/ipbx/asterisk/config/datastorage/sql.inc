@@ -32,6 +32,10 @@ $array['agentgroup'] = array();
 $array['agentgroup']['table'] = 'agentgroup';
 $array['agentgroup']['primary'] = array('id' => '');
 
+$array['attachment'] = array();
+$array['attachment']['table'] = 'attachment';
+$array['attachment']['primary'] = array('id' => '');
+
 $array['autoprov'] = array();
 $array['autoprov']['table'] = 'phone';
 $array['autoprov']['primary'] = array('macaddr' => '');

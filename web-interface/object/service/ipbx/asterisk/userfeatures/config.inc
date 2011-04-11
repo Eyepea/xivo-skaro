@@ -200,19 +200,8 @@ $array['element']['ringforward']['default'] = '';
 $array['element']['rightcallcode'] = array();
 $array['element']['rightcallcode']['default'] = '';
 
-$array['element']['alarmclock_hour'] = array();
-$arrhour = array();
-for ($i=0;$i<=23;$i++)
-	array_push($arrhour,strlen($i)===1?"0$i":$i);
-$array['element']['alarmclock_hour']['value'] = $arrhour;
-$array['element']['alarmclock_hour']['default'] = '';
-
-$array['element']['alarmclock_minute'] = array();
-$arrminute = array();
-for ($i=1;$i<=60;$i++)
-	array_push($arrminute,strlen($i)===1?"0$i":$i);
-$array['element']['alarmclock_minute']['value'] = $arrminute;
-$array['element']['alarmclock_minute']['default'] = '';
+$array['element']['alarmclock'] = array();
+$array['element']['alarmclock']['default'] = '';
 
 
 $array['filter'] = array();
@@ -279,8 +268,7 @@ $array['filter']['ringextern'] = array('set' => false,'chk' => 2,'maxlen' => 64)
 $array['filter']['ringgroup'] = array('set' => false,'chk' => 2,'maxlen' => 64);
 $array['filter']['ringforward'] = array('set' => false,'chk' => 2,'maxlen' => 64);
 $array['filter']['rightcallcode'] = array('set'	=> false,'chk' => 2,'regexp' => '/^[0-9]+$/','maxlen' => 15);
-$array['filter']['alarmclock_hour'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9]{2}$/');
-$array['filter']['alarmclock_minute'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9]{2}$/');
+$array['filter']['alarmclock'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9]{2}:[0-9]{2}$/');
 $array['filter']['pitch'] = array('set' => false,'chk' => 2,'key' => array('highest', 'higher', 'high', 'low', 'lower','lowest'));
 $array['filter']['pitchdirection'] = array('set' => false,'chk' => 2,'key' => array('rx', 'tx', 'both'));
 

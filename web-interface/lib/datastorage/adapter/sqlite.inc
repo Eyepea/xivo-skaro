@@ -269,6 +269,16 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 		return(sqlite_escape_string($str));
 	}
 
+	function escape_bytea($str)
+	{
+		return($str);
+	}
+
+	function unescape_bytea($str)
+	{
+		return($str);
+	}
+
 	function close()
 	{
 		$r = null;

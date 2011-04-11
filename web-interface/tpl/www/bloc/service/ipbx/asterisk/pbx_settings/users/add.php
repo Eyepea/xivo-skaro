@@ -21,6 +21,7 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $context_list = $this->get_var('context_list');
+$import_file = $this->get_var('import_file');
 
 if($context_list === false):
   $dhtml = &$this->get_module('dhtml');
@@ -46,12 +47,16 @@ endif;
 ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-group');
-										dwho.form.select('it-queue');
-										dwho.form.select('it-codec');
-										dwho.form.select('it-rightcall');">
+		<form action="#" method="post" accept-charset="utf-8" enctype="multipart/form-data"
+			 onsubmit="dwho.form.select('it-group');
+					dwho.form.select('it-queue');
+					dwho.form.select('it-codec');
+					dwho.form.select('it-rightcall');">
 <?php
-		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+		echo	$form->hidden(array('name'	=> 'max_file_size',
+					    'value'	=> $import_file['size'])),
+		
+			$form->hidden(array('name'	=> DWHO_SESS_NAME,
 					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'act',

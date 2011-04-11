@@ -70,6 +70,19 @@ endif;
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
+
+<div id="box-userfeatures_picture" style="width: 150px;height: 150px;position: absolute;background: #ddd;border: 1px solid #bbb;text-align:center;padding:2px;margin: 10px;">
+
+<?php
+
+if ($info['picture'] !== false):
+	echo $url->img_attachement($info['picture']['id'],$info['picture']['name']);
+endif;
+
+?>
+
+</div>
+
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_firstname'),
 				  'name'	=> 'userfeatures[firstname]',
@@ -88,6 +101,11 @@ endif;
 				  'value'	=> $info['userfeatures']['lastname'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'userfeatures', 'lastname')) )),
+						   
+		$form->file(array('desc'	=> $this->bbf('fm_userfeatures_picture'),
+						  'name'	=> 'picture',
+						  'id'		=> 'picture',
+						  'size'	=> 15)),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_loginclient'),
 				  'name'	=> 'userfeatures[loginclient]',
@@ -462,36 +480,17 @@ endif;
 				  'default'	=> $element['userfeatures']['ringforward']['default'],
 				  'value'	=> $info['userfeatures']['ringforward'],
 				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'ringforward')) ));
-?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-userfeatures-alarmclock" for="it-userfeatures-alarmclock"><?=$this->bbf('fm_userfeatures_alarmclock');?></label>
-<?php
-	echo $form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[alarmclock_hour]',
-				  'labelid'	=> 'userfeatures-alarmclock_hour',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'default'	=> $element['userfeatures']['alarmclock_hour']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','alarmclock_hour'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'alarmclock_hour'))),
-			      $element['userfeatures']['alarmclock_hour']['value']),
+				$this->get_var('error', 'userfeatures', 'ringforward')) )),
 
-		$form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[alarmclock_minute]',
-				  'labelid'	=> 'userfeatures-alarmclock_minute',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'default'	=> $element['userfeatures']['alarmclock_minute']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','alarmclock_minute'),
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_alarmclock'),
+				  'name'	=> 'userfeatures[alarmclock]',
+				  'labelid'	=> 'userfeatures-alarmclock',
+				  'size'	=> 5,
+				  'readonly'	=> true,
+				  'value'	=> $info['userfeatures']['alarmclock'],
 				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'alarmclock_minute'))),
-			      $element['userfeatures']['alarmclock_minute']['value']);
+				$this->get_var('error', 'userfeatures', 'alarmclock'))));
 ?>
-		</p>
-	</div>
 	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-userfeatures-pitch" for="it-userfeatures-pitch"><?=$this->bbf('fm_userfeatures_pitch');?></label>

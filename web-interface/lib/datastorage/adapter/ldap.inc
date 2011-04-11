@@ -633,6 +633,16 @@ class dwho_datastorage_adapter_ldap extends dwho_datastorage_adapter_abstract
 		return(str_replace($pat,$rep,$str));
 	}
 
+	function escape_bytea($str)
+	{
+		return($str);
+	}
+
+	function unescape_bytea($str)
+	{
+		return($str);
+	}
+
 	function from($table,$column='*')
 	{
 		if(($table = $this->_mk_table($table)) === false)

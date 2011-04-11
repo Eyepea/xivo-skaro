@@ -22,9 +22,6 @@
 if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
-$info['userfeatures']['alarmclock_hour'] = substr($info['userfeatures']['alarmclock'],0,2);
-$info['userfeatures']['alarmclock_minute'] = substr($info['userfeatures']['alarmclock'],3,4);
-
 $return = &$info;
 $return['schedule_id'] = false;
 

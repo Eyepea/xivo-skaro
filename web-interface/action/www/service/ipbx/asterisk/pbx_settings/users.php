@@ -65,23 +65,14 @@ switch($act)
 					
 				array_push($entity_list, $ref['entity']);
 			}	
-		}
-		
+		}		
 		$_TPL->set_var('entity_list',$entity_list);
+		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 		
 		$dhtml = &$_TPL->get_module('dhtml');
-		
-		/*
-		$lsfile = dwho_file::read_d('/usr/share/javascript/jquery-ui/ui','file');
-				
-		foreach($lsfile as $jsfile)
-			$dhtml->set_js('extra-libs/jquery-ui/ui/'.$jsfile,true);			
-		*/
-				
+		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
+		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
 		$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);
-		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.core.js',true);
-		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.widget.js',true);
-		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.position.js',true);
 		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js',true);
 		
 		include(dirname(__FILE__).'/users/'.$act.'.php');

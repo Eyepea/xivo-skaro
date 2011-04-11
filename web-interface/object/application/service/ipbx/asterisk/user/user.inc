@@ -45,6 +45,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_destination	= null;
 	var $_queueskills   = null;
 	var $_schedule_path = false;
+	var $_attachment 	= false;
 
 	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -69,6 +70,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			die();
 
 		$this->_conf['import']['file']['size'] = $size;
+		$this->_conf['picture']['file']['size'] = $size;
 
 		// init random generator
 		mt_srand(time()+mt_rand());
@@ -95,7 +97,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_appentity = &$_XOBJ->get_application('entity')) === false
 		|| ($this->_entity = &$_XOBJ->get_module('entity')) === false
-		|| ($this->_linefeatures = $this->_service->get_module('linefeatures')) === false)
+		|| ($this->_linefeatures = $this->_service->get_module('linefeatures')) === false
+		|| ($this->_attachment = $this->_service->get_module('attachment')) === false)
 			return(false);
 
 		$this->_queuemember = &$this->_service->get_module('queuemember');
@@ -125,6 +128,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(dwho_ak('entity',$nocomponents,true) === false)
 			$this->_get_entity();
+
+		if(dwho_ak('picture',$nocomponents,true) === false)
+			$this->_get_picture();
 
 		if(dwho_ak('linefeatures',$nocomponents,true) === false)
 			$this->_get_linefeatures();
@@ -191,6 +197,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['linefeatures'] = $this->_linefeatures->get_origin_list();
 
 		return($this->_info['linefeatures']);
+	}
+
+	function _get_picture()
+	{
+		$this->_info['picture'] = false;
+		$this->_origin['picture'] = false;
+
+		if(is_object($this->_attachment) === false)
+			return(false);
+
+		$this->_info['picture'] = $this->_attachment->get($this->_info['userfeatures']['pictureid']);		
+		$this->_origin['picture'] = $this->_attachment->get_origin();
+
+		return($this->_info['picture']);
 	}
 
 	function _get_entity()
@@ -349,6 +369,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function get_config_import_file()
 	{
 		return($this->_chk_exists_cfg('import','file',true));
+	}
+
+	function get_config_picture_file()
+	{
+		return($this->_chk_exists_cfg('picture','file',true));
 	}
 
 	function _get_config_file_maxsize()
@@ -643,8 +668,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(isset($arr['id']) === true)
 			$iduserfeatures = (int) $arr['id'];
 
-		if(isset($arr['userfeatures']['callerid']) === true)
+		if(isset($arr['userfeatures']['callerid']) === true
+		&& empty($arr['userfeatures']['callerid']) === false)
 			$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($arr['userfeatures']['callerid']);
+		else
+		{
+			$callerid = $arr['userfeatures']['firstname'].' '.$arr['userfeatures']['lastname'];
+			$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($callerid);
+		}
 
 		$vmaction = $action;
 
@@ -664,6 +695,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		$this->set_userfeatures($action,$arr['userfeatures']);
+		$this->set_picture($iduserfeatures);
 
 		if(dwho_issa('linefeatures',$arr) === true
 		&& isset($iduserfeatures) === true)
@@ -826,6 +858,37 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
+	function set_picture($iduserfeatures)
+	{
+		if($this->_attachment === false
+		|| ($userfeatures = $this->get_result('userfeatures')) === null)
+			return(false);
+
+		if(($http_response = dwho_http::factory('response')) === false
+		|| ($fileinfo = $http_response->upload_file('picture',
+							    $this->_conf['picture']['file'])) === false)
+		{
+			$this->_set_result('picture',null);
+			$this->_set_error('picture','invalid data');
+			return(false);
+		}
+
+		$fileinfo['object_type'] = 'user';
+		$fileinfo['object_id'] = (int) $iduserfeatures;
+		$fileinfo['file'] = $fileinfo['tmp_name'];
+	
+		if($fileinfo['error'] > 0
+		|| ($rs = $this->_attachment->chk_values($fileinfo)) === false)
+		{
+			$this->_set_result('picture',$this->_attachment->get_filter_result());
+			$this->_set_error('picture',$this->_attachment->get_filter_error());
+			return(false);
+		}
+		$this->_set_result('picture',$rs);
+
+		return(true);		
+	}
+
 	function set_linefeatures($arr,$iduserfeatures)
 	{
 		if(is_array($arr) === false
@@ -918,7 +981,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				}
 				$ref['id'] = (int) $ref['id'];
 				$ref['protocol'] = $linefeatures['protocol'];
-				$ref['context'] = $linefeatures['context'];
 				$ref['protocolid'] = $linefeatures['protocolid'];
 				$ref['name'] = $linefeatures['name'];
 				/*
@@ -1150,6 +1212,19 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return true;
 	}
 
+	function update_pictureid($pictureid,$iduserfeatures)
+	{
+		if(($pictureid = dwho_ulongint($pictureid)) === 0
+		|| ($iduserfeatures = dwho_ulongint($iduserfeatures)) === 0
+		|| ($userfeatures = &$this->_service->get_module('userfeatures')) === false)
+			return(false);
+
+		$val = array();
+		$val['pictureid'] = $pictureid;
+
+		return($userfeatures->edit($iduserfeatures,$val));
+	}
+
 	function add()
 	{
 		$r = true;
@@ -1160,6 +1235,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->get_errnb() > 0
 		|| ($userfeaturesid = $this->add_userfeatures()) === false
+		|| $this->add_picture($userfeaturesid) === false
 		|| $this->add_linefeatures($userfeaturesid) === false
 		|| $this->add_groupmember($userfeaturesid) === false
 		|| $this->add_queuemember($userfeaturesid) === false
@@ -1187,23 +1263,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $rs === false)
 			return(false);
 
-		if(empty($rs['alarmclock_hour']) === false)
-		{
-			$alarmclock = $rs['alarmclock_hour'];
-			$alarmclock .= ':';
-			if(empty($rs['alarmclock_minute']) === true)
-				$alarmclock .= '00';
-			else
-				$alarmclock .= $rs['alarmclock_minute'];
-			$rs['alarmclock'] = $alarmclock;
-		}
-
-		unset($rs['alarmclock_hour']);
-		unset($rs['alarmclock_minute']);
-
 		$this->_return['userfeatures'] = $this->_userfeatures->add($rs);
 
 		return($this->_return['userfeatures']);
+	}
+
+	function add_picture()
+	{
+		if(($rs = $this->get_result('picture')) === null
+		|| $rs === false)
+			return(false);
+
+		$this->_return['picture'] = $this->_attachment->add($rs);
+
+		return($this->_return['picture']);
 	}
 
 	function add_linefeatures($userfeaturesid)
@@ -1470,7 +1543,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(is_array($this->_info) === false
 		|| empty($this->_info) === true
 		|| $this->get_errnb() > 0
-		|| $this->edit_userfeatures() === false)
+		|| $this->edit_userfeatures() === false
+		|| $this->edit_picture() === false)
 		{
 			$this->_status = '';
 			return(false);
@@ -1501,42 +1575,48 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $rs === false)
 			return(false);
 
-		if(empty($rs['alarmclock_hour']) === false)
-		{
-			$alarmclock = $rs['alarmclock_hour'];
-			$alarmclock .= ':';
-			if(empty($rs['alarmclock_minute']) === true)
-				$alarmclock .= '00';
-			else
-				$alarmclock .= $rs['alarmclock_minute'];
-			$rs['alarmclock'] = $alarmclock;
-		}
-
-		unset($rs['alarmclock_hour']);
-		unset($rs['alarmclock_minute']);
-
 		$return = $this->_userfeatures->edit($this->_info['userfeatures']['id'],$rs);
 
 		return(($this->_return['userfeatures'] = $return));
 	}
 
+	function edit_picture()
+	{
+		if(($rs = $this->get_result('picture')) === null)
+			return($rs);
+		elseif($this->_attachment === false
+		|| $rs === false)
+			return(false);
+			
+		if(dwho_issa('picture',$this->_info) === false)
+		{
+			$return = $this->_attachment->add($rs);
+			$this->update_pictureid($return,$this->_info['userfeatures']['id']);
+		}
+		else
+		{
+			$return = $this->_attachment->edit($this->_info['picture']['id'],$rs);
+			$this->update_pictureid($this->_info['picture']['id'],$this->_info['userfeatures']['id']);
+		}
+
+		return(($this->_return['picture'] = $return));
+	}
+
 	function edit_linefeatures()
 	{
-		if(($rs = $this->get_result('linefeatures')) === null)
+		if(($rs = $this->get_result('linefeatures')) === null
+		|| ($nbrs = count($rs)) === 0)
 			return($rs);
-/*
-		if(dwho_issa('linefeatures',$this->_info) === false
-		|| $rs === false
-		|| $this->_line === false)
-			return(false);
-*/
-		if($this->_line === false)
+		
+		if($this->_line === false
+		|| $rs === false)
 			return(false);
 
 		$res = array();		
-		if (($info = $this->_info['linefeatures']) !== false)
+		if (($info = $this->_info['linefeatures']) !== false
+		&& ($nbinfo = count($info)) !== 0)
 		{
-			for($i = 0;$i < count($info);$i++)
+			for($i = 0;$i < $nbinfo;$i++)
 			{
 				$ref = &$info[$i];
 				$res[$ref['id']] = $ref;
@@ -1576,8 +1656,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 		}
 
-		$nb = count($rs);
-		for($i = 0;$i < $nb;$i++)
+		for($i = 0;$i < $nbrs;$i++)
 		{
 			$line = &$rs[$i];
 

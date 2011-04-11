@@ -48,8 +48,7 @@ $err = $this->get_var('error','linefeatures');
 			    'name'		=> 'list_lines_free',
 			    'id'		=> 'list_lines_free',
 			    'key'		=> 'identity',
-			    'altkey'	=> 'id'),
-		      $lines_free);?>
+			    'altkey'	=> 'id'));?>
 		<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 							       $this->bbf('col_line-add_free'),
 							       'border="0"'),
@@ -78,7 +77,7 @@ $err = $this->get_var('error','linefeatures');
 								$this->bbf('col_rules_group-add'));?>
 </p>
 			     
-<table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures" class="<?=$entityhascontext?>">
+<table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_line-protocol');?></th>
@@ -120,20 +119,20 @@ if($list !== false):
 		
 		$rulesgroup = $ref['rules_group'];	
 		if (($rulesorder = (int) $ref['rules_order']) === 0)
-			$rulesorder = 1;
+			$rulesgroup = 0;
+		if ($rulesgroup === '')
+			$rulesgroup = 0;
 		
 		if (isset($rs[$rulesgroup]) === false)
 			$rs[$rulesgroup] = array();
 			
-		if (isset($rs[$rulesgroup][$rulesorder]) === true)
-			$rs[$rulesgroup][$rulesorder+1] = $ref;
-		else
-			$rs[$rulesgroup][$rulesorder] = $ref;
+		array_push($rs[$rulesgroup],$ref);
 	endfor;
-
+	
 	foreach($rs as $rulesgroup => $list):
 
-		if (empty($rulesgroup) === false):
+		if (empty($rulesgroup) === false
+		|| $rulesgroup !== 0):
 ?>
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
 		<td colspan="4" class="td-left" id="td_rules_group_name">
@@ -154,7 +153,7 @@ if($list !== false):
 		endif;
 		if (($nblinegroup = count($list)) === 0)
 			continue;
-		for($i = 1;$i <= $nblinegroup;$i++):
+		for($i = 0;$i < $nblinegroup;$i++):
 			$ref = &$list[$i];
 			$secureclass = '';
 			if($ref['encryption'] === true)
@@ -163,7 +162,8 @@ if($list !== false):
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">
 		<td class="td-left txt-center">
 			<?=$form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));?>
-			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>			 	
+			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>
+			<?=$form->hidden(array('name' => '','id' => 'context-selected','value' => $ref['context']));?>		 	
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
 						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_group',
@@ -188,10 +188,7 @@ if($list !== false):
 			<?=$form->select(array('paragraph'	=> false,
 					    'name'		=> 'linefeatures[context][]',
 					    'id'		=> 'linefeatures-context',
-					    'label'		=> false,
-					    'key'		=> 'displayname',
-					    'altkey'	=> 'name',
-					    'selected'	=> $ref['context']));?>
+					    'label'		=> false));?>
 		</td>
 		<td>			
 			<?=$form->text(array('paragraph'	=> false,

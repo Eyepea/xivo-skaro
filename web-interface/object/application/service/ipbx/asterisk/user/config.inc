@@ -20,6 +20,10 @@
 
 $array = array();
 
+$array['picture'] = array();
+$array['picture']['file'] = array();
+$array['picture']['file']['mime'] = array('image/jpeg','image/png');
+
 $array['import'] = array();
 $array['import']['file'] = array();
 #$array['import']['file']['name'] = '/^[a-z0-9_-]{1,50}(?:\.[a-z]{1,10})?$/i';

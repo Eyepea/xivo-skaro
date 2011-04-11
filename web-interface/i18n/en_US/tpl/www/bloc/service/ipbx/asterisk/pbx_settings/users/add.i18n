@@ -95,10 +95,10 @@ Ring group:
 Ring forward:
 
 ; fm_userfeatures_alarmclock
-Alarm Clock
+Alarm Clock: 
 
 ; fm_userfeatures_pitch 
-Déformation de la voix :
+Voice pitch:
 
 ; fm_userfeatures_pitchdirection-opt(rx)
 Reception

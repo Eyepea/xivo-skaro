@@ -157,6 +157,15 @@ class dwho_tpl_url extends dwho_tpl_module
 		return('<img src="'.$this->img($url,$i18n,$internal).'"'.$opt.' alt="'.$alt.'" />');
 	}
 
+	function img_attachement($id,$alt=null,$opt=null)
+	{
+		$opt = dwho_has_len($opt) === true ? ' '.$opt : '';
+		$alt = trim(dwho_alttitle($alt));
+		$url = $this->url('gettatt.php?id='.$id);
+
+		return('<img src="'.$url.'"'.$opt.' alt="'.$alt.'" />');
+	}
+
 	function pager($nb,
 		       $page,
 		       $prev=false,
