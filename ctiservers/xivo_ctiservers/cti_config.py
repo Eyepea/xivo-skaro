@@ -78,6 +78,11 @@ class Config:
         return
 
     def translate(self):
+        """
+        Translate the config fetched from the remote IP iptranslate
+        in order to have the urllist and IPBX connection items pointing also to this IP.
+        The remote access(es) should be allowed there, of course.
+        """
         if self.iptranslate is None:
             return
         for k, v in self.xc_json.get('ipbxes').iteritems():

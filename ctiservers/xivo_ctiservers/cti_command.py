@@ -95,7 +95,7 @@ class Command:
         if self.command in COMMANDS:
 
             if self.ripbxid:
-                profileclient = self.rinnerdata.weblist['users'].keeplist[self.ruserid].get('profileclient')
+                profileclient = self.rinnerdata.xod_config['users'].keeplist[self.ruserid].get('profileclient')
                 profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
                 regcommands_id = profilespecs.get('regcommands')
                 regcommands = self.ctid.cconf.getconfig('regcommands').get(regcommands_id)
@@ -240,7 +240,7 @@ class Command:
 ##                userinfo['subscribe'] = 0
 ##            return userinfo
 
-            profileclient = self.innerdata.weblist['users'].keeplist[self.userid].get('profileclient')
+            profileclient = self.innerdata.xod_config['users'].keeplist[self.userid].get('profileclient')
             profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
 
             capastruct = {}
@@ -318,14 +318,14 @@ class Command:
                                 command = argums[2]
                                 chan = ''
                                 validuid = ''
-                                for uid, info in self.weblist['meetme'][astid]. \
+                                for uid, info in self.xod_config['meetme'][astid]. \
                                                  keeplist[confno]['uniqueids'].iteritems():
                                     if info['usernum'] == castid:
                                         chan = info['channel']
                                         validuid = uid
                                         break
 
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
                                 datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                                 if argums[1] == "start":
                                     self.__ami_execute__(astid, "monitor", chan,
@@ -336,7 +336,7 @@ class Command:
         elif function in ['MeetmePause']:
                                 confno = argums[0]
                                 status = argums[1]
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
                                 self.__ami_execute__(astid, 'sendcommand',
                                                      function, [('Meetme', '%s' % (roomname)),
                                                                 ('status', '%s' % (status))])
@@ -344,8 +344,8 @@ class Command:
         elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                adminnum = self.weblist['meetme'][astid].keeplist[confno]['adminnum']
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                adminnum = self.xod_config['meetme'][astid].keeplist[confno]['adminnum']
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
                                 self.__ami_execute__(astid, 'sendcommand',
                                                      function, [('Meetme', '%s' % (roomname)),
                                                                 ('Usernum', '%s' % (castid)),
@@ -354,14 +354,14 @@ class Command:
         elif function in ['kick', 'mute', 'unmute']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
                                 self.__ami_execute__(astid, 'sendcommand',
                                                             'Command', [('Command', 'meetme %s %s %s' %
                                                                         (function, roomname, castid))])
 
         elif function == 'getlist':
                                 fullstat = {}
-                                for iastid, v in self.weblist['meetme'].iteritems():
+                                for iastid, v in self.xod_config['meetme'].iteritems():
                                     fullstat[iastid] = v.keeplist
                                 tosend = { 'class' : 'meetme',
                                            'function' : 'sendlist',
@@ -444,8 +444,8 @@ class Command:
         function = self.commanddict.get('function')
 
         if function == 'listid':
-            if listname in self.rinnerdata.weblist:
-                g = self.rinnerdata.weblist[listname].keeplist.keys()
+            if listname in self.rinnerdata.xod_config:
+                g = self.rinnerdata.xod_config[listname].keeplist.keys()
                 reply = { 'action' : 'ok',
                           'dest' : 'me',
                           'message' : { 'class' : 'getlist',
@@ -453,7 +453,7 @@ class Command:
                                         'listname' : listname,
                                         'ipbxid' : self.ripbxid,
                                         'list' : g} }
-                # print listname, self.rinnerdata.weblist[listname].keeplist
+                # print listname, self.rinnerdata.xod_config[listname].keeplist
             else:
                 log.warning('no such list %s' % listname)
 
@@ -488,7 +488,7 @@ class Command:
         if self.ipbxcommand not in IPBXCOMMANDS:
             log.warning('unknown ipbxcommand %s' % self.ipbxcommand)
             return reply
-        profileclient = self.rinnerdata.weblist['users'].keeplist[self.ruserid].get('profileclient')
+        profileclient = self.rinnerdata.xod_config['users'].keeplist[self.ruserid].get('profileclient')
         profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
         ipbxcommands_id = profilespecs.get('ipbxcommands')
         ipbxcommands = self.ctid.cconf.getconfig('ipbxcommands').get(ipbxcommands_id)
@@ -592,7 +592,7 @@ class Command:
                     dstuinfo = userinfo
                 elif whodst == 'special:myvoicemail':
                     context_dst = context_src
-                    cidname_dst = '*98 (%s)' % self.weblist['voicemail'][astid_src].keeplist[userinfo["voicemailid"]]["password"]
+                    cidname_dst = '*98 (%s)' % self.xod_config['voicemail'][astid_src].keeplist[userinfo["voicemailid"]]["password"]
                     exten_dst = '*98'
                 else:
                     dstuinfo = self.ulist_ng.keeplist[whodst]
