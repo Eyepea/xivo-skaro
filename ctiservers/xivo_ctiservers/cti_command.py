@@ -58,6 +58,7 @@ IPBXCOMMANDS = [
     'originate', 'intercept', 'park',
     'transfer', 'atxfer', 'transfercancel',
     'hangup',
+    'sipnotify',
 
     'record', 'listen',
 
@@ -623,6 +624,16 @@ class Command:
                 log.exception('unable to originate')
 
         return
+
+    def ipbxcommand_sipnotify(self):
+        if 'variables' in self.commanddict:
+            variables = self.commanddict.get('variables')
+        channel = self.commanddict.get('channel')
+        if channel == 'user:special:me':
+            me = self.rinnerdata.weblist['users'].users()[self.userid]
+            channel = me['protocol'] + '/' + me['name']
+        reply = {'comm': 'sipnotify', 'args': (channel, variables)}
+        return reply
 
     # transfers
     def ipbxcommand_transferold(self):

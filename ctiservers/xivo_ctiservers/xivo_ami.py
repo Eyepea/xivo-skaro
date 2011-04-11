@@ -404,6 +404,14 @@ class AMIClass:
             ret = False
         return ret
 
+    # \brief Sends a sipnotify
+    def sipnotify(self, *variables):
+        channel = variables[0]
+        arglist = [('Variable', '%s=%s' % (k, v.replace('"', '\\"')))
+            for k, v in variables[len(variables) - 1].iteritems()]
+        arglist.append(('Channel', channel))
+        return self.sendcommand('SIPNotify', arglist)
+
     # \brief Transfers a channel towards a new extension.
     def transfer(self, channel, extension, context):
         ph = re.sub(__dialallowed__, '', extension)
