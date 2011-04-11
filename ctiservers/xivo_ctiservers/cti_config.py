@@ -36,17 +36,20 @@ log = logging.getLogger('cti_config')
 class Config:
     def __init__(self, * urilist):
         self.urilist = urilist
+        self.iptranslate = None
         self.ctxlist = {}
         self.dpylist = {}
         self.dirlist = {}
-
-        self.update()
         return
 
     def update(self):
         # the aim of the urilist would be to handle the URI's one after the other
         # when there is a reachability issue (like it can happen in first steps ...)
         self.update_uri(self.urilist[0])
+        return
+
+    def set_iptranslate(self, ip):
+        self.iptranslate = ip
         return
 
     def update_uri(self, uri):
@@ -71,6 +74,20 @@ class Config:
             self.setdirconfigs()
         except:
             log.exception('setdirconfigs')
+        self.translate()
+        return
+
+    def translate(self):
+        if self.iptranslate is None:
+            return
+        for k, v in self.xc_json.get('ipbxes').iteritems():
+            for kk, vv in v.get('urllists').iteritems():
+                nl = []
+                for item in vv:
+                    z = item.replace('://localhost/', '://%s/' % self.iptranslate).replace('/private/', '/restricted/')
+                    nl.append(z)
+                v['urllists'][kk] = nl
+            v.get('connection')['ipaddress'] = self.iptranslate
         return
 
     def setdirconfigs(self):

@@ -98,9 +98,10 @@ XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_confi
 XIVO_CONF_FILE         = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
 LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
-GETOPT_SHORTOPTS   = 'dc:p:l:'
-GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=']
+GETOPT_SHORTOPTS   = 'dc:p:l:i:'
+GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=', 'ip=']
 debug_mode = False
+xivoip = 'localhost'
 
 BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
@@ -110,7 +111,7 @@ filekey = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
 sslproto = ssl.PROTOCOL_TLSv1
 
 def parse_command_line():
-    global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, debug_mode
+    global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, debug_mode, xivoip
     for opt, arg in getopt.getopt( sys.argv[1:], GETOPT_SHORTOPTS, GETOPT_LONGOPTS)[0]:
         if opt == '-c':
             XIVO_CONF_FILE = arg
@@ -120,6 +121,8 @@ def parse_command_line():
             PIDFILE = arg
         elif opt == '-l':
             LOGFILENAME = arg
+        elif opt == '-i':
+            xivoip = arg
 
 class manage_connection:
     ## \brief Deals with requests from the UI clients.
@@ -288,6 +291,9 @@ class xivo_daemon:
         self.lastrequest_time = {}
 
         self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
+        if xivoip != 'localhost':
+            self.cconf.set_iptranslate(xivoip)
+        self.cconf.update()
 
         queue_logger.queue_logger.init(self.cconf.getconfig('main').get('asterisk_queuestat_db'))
 
@@ -548,7 +554,11 @@ class xivo_daemon:
                             nc.connected(connc)
                             if kind in ['WEBI', 'FAGI', 'INFO']:
                                 ipbxid = self.find_matching_ipbxid(sockparams[0])
-                                nc.set_ipbxid(ipbxid)
+                                if ipbxid:
+                                    nc.set_ipbxid(ipbxid)
+                                else:
+                                    log.warning('(%s interface) did not find a matching ipbxid for %s'
+                                                % (kind, sockparams[0]))
 
                             if kind in ['CTI', 'CTIS']:
                                 nc.logintimer = threading.Timer(int(self.cconf.getconfig('main').get('logintimeout', 5)),
@@ -697,4 +707,6 @@ class xivo_daemon:
     # }
 
 parse_command_line()
+if xivoip != 'localhost':
+    XIVO_CONF_FILE = 'https://%s/service/ipbx/json.php/restricted/ctiserver/configuration' % xivoip
 main = xivo_daemon()
