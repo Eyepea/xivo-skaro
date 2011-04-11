@@ -253,10 +253,12 @@ class Safe:
         for xitem in xlist:
             try:
                 if not xitem.get('commented'):
+                    # XXX to work over once ticket 2169 will be solved
                     if 'id' in xitem:
-                        key = xitem.get('id')
+                        key = str(xitem.get('id'))
                     else:
-                        key = xitem.get('uniqueid') # this is the case for voicemail XXX
+                        # for voicemail case
+                        key = str(xitem.get('uniqueid'))
                     lxlist[key] = xitem
                     # meetme : admin_moderationmode => moderated
                     # meetme : uniqueids and adminnum statuses
