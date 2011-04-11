@@ -685,7 +685,7 @@ Diversions
 On CTI status presence
 
 ; fld-diversion-nonctipresence
-On CTI status 
+On CTI status absence
 
 ; fld-diversion-waittime
 On estimated wait time overrun

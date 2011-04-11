@@ -22,22 +22,30 @@ $array = array();
 
 $array['element'] = array();
 $array['element']['blindxfer'] = array();
-$array['element']['blindxfer']['default'] = '*1';
-
-$array['element']['atxfer'] = array();
-$array['element']['atxfer']['default'] = '*2';
-
-$array['element']['automon'] = array();
-$array['element']['automon']['default'] = '*3';
+$array['element']['blindxfer']['default'] = '#1';
 
 $array['element']['disconnect'] = array();
 $array['element']['disconnect']['default'] = '*0';
 
+$array['element']['automon'] = array();
+$array['element']['automon']['default'] = '*1';
+
+$array['element']['atxfer'] = array();
+$array['element']['atxfer']['default'] = '*2';
+
+$array['element']['parkcall'] = array();
+$array['element']['parkcall']['default'] = '#72';
+
+$array['element']['automixmon'] = array();
+$array['element']['automixmon']['default'] = '*3';
+
 
 $array['filter'] = array();
 $array['filter']['blindxfer'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['atxfer'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['automon'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['disconnect'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['automon'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['atxfer'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['parkcall'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['automixmon'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 
 ?>

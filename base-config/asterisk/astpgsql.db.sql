@@ -847,10 +847,12 @@ INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf',
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferdroptcall','no');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferloopdelay','10');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxfercallbackretries','2');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','blindxfer','*1');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','atxfer','*2');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automon','*3');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','blindxfer','#1');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','disconnect','*0');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automon','*1');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','atxfer','*2');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','parkcall','#72');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automixmon','*3');
 
 
 DROP TABLE IF EXISTS "parkinglot";
