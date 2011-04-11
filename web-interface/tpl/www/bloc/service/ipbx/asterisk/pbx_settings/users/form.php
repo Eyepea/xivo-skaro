@@ -75,7 +75,8 @@ endif;
 
 <?php
 
-if ($info['picture'] !== false):
+if (is_array($info['picture']) === true
+&& isset($info['picture']['id']) === true):
 	echo $url->img_attachement($info['picture']['id'],$info['picture']['name']);
 endif;
 
