@@ -178,6 +178,9 @@ class Safe:
     def update_config_list_all(self):
         for listname, urllistkey in self.urlvars.iteritems():
             self.update_config_list(listname)
+
+        for k, v in self.xod_config['phones'].keeplist.iteritems():
+            print k, v.get('iduserfeatures')
         return
 
     def update_config_list(self, listname):
