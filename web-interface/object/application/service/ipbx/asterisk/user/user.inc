@@ -959,9 +959,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 
 			$ref['iduserfeatures'] = (int) $iduserfeatures;
+			$ref['rules_order'] = 0;
 			if (isset($ref['rules_order']) === true)
 				$ref['rules_order'] = (int) $ref['rules_order'];
 				
+			$ref['rules_group'] = '';
 			if (isset($ref['rules_group']) === true)
 				$ref['rules_group'] = $ref['rules_group'];
 				
@@ -971,7 +973,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if (isset($ref['id']) === true
 			&& (int) $ref['id'] !== 0)
 			{
-				$this->_line->_reset_info();
+				$this->_line->_reset_info();			
+				$this->_line->_reset();
 				if (($line = $this->_line->get($ref['id'])) === false
 				|| ($linefeatures = $line['linefeatures']) === false)
 				{
@@ -1548,7 +1551,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->_status = '';
 			return(false);
-		}
+		}			
 
 		if($this->edit_linefeatures() === false
 		|| $this->edit_groupmember() === false
@@ -1648,9 +1651,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$linefeatures_list = array_values($linefeatures['list']);
 			for($i = 0;$i < $nb;$i++)
 			{
-				$ref = &$linefeatures_list[$i];
-				if (isset($ref['id']) === true)
-				if ($this->_line->get($ref['id']) !== false
+				$ref = &$linefeatures_list[$i];		
+				$this->_line->_reset();
+				$this->_line->_reset_info();
+				if (isset($ref['id']) === true
+				&& $this->_line->get($ref['id']) !== false
 				&& $this->_line->delete() !== false)
 					continue;
 			}
@@ -1659,7 +1664,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nbrs;$i++)
 		{
 			$line = &$rs[$i];
-
+		
 			$this->_line->_reset_info();
 
 			if (isset($line['id']) === true
@@ -1668,7 +1673,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$methodset = 'set_edit';
 				$method = 'edit';
 
-				if (($this->_line->get($line['id'])) === false)
+				if ($this->_line->get($line['id']) === false)
 				{
 					$errnb++;
 					$error[$i] = 'line_not_exist';
@@ -1700,6 +1705,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$msg = array_shift($this->_line->get_error());
 				if (empty($msgkey) === false)
 					dwho_report::push('error','Line '.($i+1).': '.$msgkey.' '.$msg,'linefeatures');
+				else
+					dwho_report::push('error','Line '.($i+1).': unknow error during '.$method,'linefeatures');
 			}
 			else
 				$return[$i] = $line;

@@ -117,7 +117,7 @@ if($list !== false):
 			$ref['errdisplay'] = '';
 		endif;
 		
-		$rulesgroup = $ref['rules_group'];	
+		$rulesgroup = $ref['rules_group'];
 		if (($rulesorder = (int) $ref['rules_order']) === 0)
 			$rulesgroup = 0;
 		if ($rulesgroup === '')

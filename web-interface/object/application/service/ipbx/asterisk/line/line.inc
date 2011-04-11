@@ -628,12 +628,11 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| ($linefeaturesid = $this->add_linefeatures($protocolid)) === false)
 		{
 			$r = false;
-
 			if($linefeaturesid !== null)
 				$this->_reverse_add();
 		}
 
-		if ($iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures') !== 0
+		if (((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures')) !== 0
 		&& is_null($iduserfeatures) === false
 		&& dwho_has_len($this->get_result_var('linefeatures','number')) === true)
 		{
@@ -644,7 +643,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			|| $this->add_contextnummember($linefeaturesid) === false)
 			{
 				$r = false;
-
 				if($linefeaturesid !== null)
 					$this->_reverse_add();
 			}
@@ -821,7 +819,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		}
 
 		if ($this->get_result('linefeatures') !== null)
-		{
+		{				
 			if($this->edit_linefeatures($protocolret) === false)
 			{
 				$this->edit_origin_protocol($protocolret);
