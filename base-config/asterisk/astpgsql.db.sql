@@ -118,11 +118,14 @@ DROP TABLE IF EXISTS "attachment";
 CREATE TABLE "attachment" (
  "id" SERIAL,
  "name" varchar(64) NOT NULL,
- "type" varchar(16) NOT NULL,
+ "object_type" varchar(16) NOT NULL,
+ "object_id" INTEGER NOT NULL,
  "file" bytea,
  "size" INTEGER NOT NULL,
  "mime" varchar(64) NOT NULL
 );
+
+CREATE UNIQUE INDEX "attachment__uidx__object_type__object_id" ON "attachment"("object_type","object_id");
 
 
 DROP TABLE IF EXISTS "callerid";
