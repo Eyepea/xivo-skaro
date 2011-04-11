@@ -43,6 +43,9 @@ First name:
 ; fm_userfeatures_lastname
 Last name:
 
+; fm_userfeatures_picture
+User picture: 
+
 ; fm_userfeatures_callerid
 Caller ID: 
 

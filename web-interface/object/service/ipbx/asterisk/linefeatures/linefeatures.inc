@@ -51,10 +51,7 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		$data['rules_order'] = (int) $data['rules_order'];
 		$data['internal'] = (bool) $data['internal'];
 		$data['commented'] = (bool) $data['commented'];
-		
-		if (isset($data['encryption']) === true
-		|| is_null($data['encryption']) === true)
-			$data['encryption'] = (bool) $data['encryption'];
+		$data['encryption'] = isset($data['encryption']) ? (bool) $data['encryption'] : false;
 
 		return($data);
 	}

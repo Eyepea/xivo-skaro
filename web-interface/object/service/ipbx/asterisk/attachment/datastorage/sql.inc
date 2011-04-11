@@ -22,7 +22,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_attachment_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_autoincrement	= false;
+	var $_autoincrement	= true;
 	var $_disable		= null;
 	
 	private function _prepare_file_to_import($filepath)
@@ -43,12 +43,8 @@ class xivo_service_asterisk_attachment_sql extends xivo_service_asterisk_abstrac
 	}
 	
 	private function _prepare_file_to_export($filebin)
-	{		
-		$escaped_data = str_replace(array("\\\\", "''"), array("\\", "'"), $filebin); 
-		/* and later unescape the escaped data from the bytea field with following to get the original binary data */		
-		$file = $this->_dso->unescape_bytea($escaped_data);
-		
-		return($file);
+	{	
+		return($this->_dso->unescape_bytea($filebin));
 	}
 	
 	private function _normalize_img($file)
@@ -118,7 +114,7 @@ class xivo_service_asterisk_attachment_sql extends xivo_service_asterisk_abstrac
 	
 	    ob_end_clean();
 	
-	    return $final_image;   
+	    return($final_image);
 	}
 	
 	function get($arr,$disable=null,$primary=false,$exists=false)

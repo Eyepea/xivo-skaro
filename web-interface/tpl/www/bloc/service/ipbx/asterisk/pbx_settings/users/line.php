@@ -156,7 +156,8 @@ if($list !== false):
 		for($i = 0;$i < $nblinegroup;$i++):
 			$ref = &$list[$i];
 			$secureclass = '';
-			if($ref['encryption'] === true)
+			if(isset($ref['encryption']) === true
+			&& $ref['encryption'] === true)
 				$secureclass = 'xivo-icon xivo-icon-secure';
 ?>
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">

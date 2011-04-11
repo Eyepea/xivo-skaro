@@ -71,7 +71,7 @@ endif;
 
 <div id="sb-part-first" class="b-nodisplay">
 
-<div id="box-userfeatures_picture" style="width: 150px;height: 150px;position: absolute;background: #ddd;border: 1px solid #bbb;text-align:center;padding:2px;margin: 10px;">
+<div id="box-userfeatures_picture" class="box_userfeatures_picture">
 
 <?php
 

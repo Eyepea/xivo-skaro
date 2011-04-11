@@ -161,7 +161,7 @@ class dwho_tpl_url extends dwho_tpl_module
 	{
 		$opt = dwho_has_len($opt) === true ? ' '.$opt : '';
 		$alt = trim(dwho_alttitle($alt));
-		$url = $this->url('gettatt.php?id='.$id);
+		$url = $this->url('getatt.php?id='.$id);
 
 		return('<img src="'.$url.'"'.$opt.' alt="'.$alt.'" />');
 	}

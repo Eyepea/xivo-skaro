@@ -36,10 +36,10 @@ header("Cache-Control: private",false); // required for certain browsers
 header("Content-Type: ".$rs['mime'].""); 
 header("Content-Disposition: attachment; filename=\"".$rs['name']."\";" ); 
 header("Content-Transfer-Encoding: binary"); 
-header("Content-Length: ".$rs['size']); 
+header("Content-Length: ".$rs['size']);
 
 ob_clean(); 
-flush(); 
+flush();
 echo $rs['file'];
 die();
 
