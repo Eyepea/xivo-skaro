@@ -760,11 +760,12 @@ class IDeviceRouter(Interface):
     
     """
     
-    def route(device):
+    def route(device, dev_info):
         """Return a plugin ID from a device object, or None if there's no
         route.
         
         device -- either a device object or None.
+        dev_info -- a potentially empty device info object
         
         """
 
@@ -777,7 +778,7 @@ class PluginDeviceRouter(object):
     
     implements(IDeviceRouter)
     
-    def route(self, device):
+    def route(self, device, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         if device is None:
             return None
@@ -791,11 +792,11 @@ class StaticDeviceRouter(object):
     implements(IDeviceRouter)
     
     def __init__(self, pg_id):
-        self.pg_id = pg_id
+        self._pg_id = pg_id
         
-    def route(self, device):
+    def route(self, device, dev_info):
         logger.debug('In %s', self.__class__.__name__)
-        return self.pg_id
+        return self._pg_id
 
 
 def NullDeviceRouter():
@@ -811,10 +812,10 @@ class FirstCompositeDeviceRouter(object):
     def __init__(self, routers):
         self.routers = [] if routers is None else routers
         
-    def route(self, device):
+    def route(self, device, dev_info):
         logger.debug('In %s', self.__class__.__name__)
         for router in self.routers:
-            pg_id = router.route(device)
+            pg_id = router.route(device, dev_info)
             if pg_id is not None:
                 return pg_id
         return None
@@ -891,7 +892,7 @@ class RequestProcessingService(object):
         
         # 4. Return a plugin ID
         logger.info('<%s> Finding route', req_id)
-        pg_id = self.dev_router.route(device)
+        pg_id = self.dev_router.route(device, dev_info)
         if pg_id is None:
             logger.warn('<%s> No route found', req_id)
         else:
