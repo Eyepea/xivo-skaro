@@ -240,3 +240,68 @@ Défaut
 
 ; fm_success-save
 Extensions sauvegardées avec succès
+
+; fm_generalfeatures_parkedcall-opt(no)
+Aucuns
+
+; fm_generalfeatures_parkedcall-opt(callee)
+Destinataire
+
+; fm_generalfeatures_parkedcall-opt(caller)
+Émetteur
+
+; fm_generalfeatures_parkedcall-opt(both)
+Les deux
+
+; fm_generalfeatures_parkedcall-opt(parked)
+Parqué
+
+; fm_generalfeatures_findslot
+Trouver l'appel suivant : 
+
+; fm_generalfeatures_parkinghints
+Activer la supervision des parkings : 
+
+; fm_generalfeatures_comebacktoorigin
+Action sur expiration du délai de parquage : 
+
+; fm_generalfeatures_comebacktoorigin-opt(yes)
+Rappelle le poste qui a parqué l'appel
+
+; fm_generalfeatures_comebacktoorigin-opt(no)
+Envoi l'appel parqué dans le dialplan
+
+; fm_generalfeatures_parkeddynamic
+Autoriser la création d'emplacements de parkings à la volée : 
+
+; fm_generalfeatures_parkedplay
+Tonalité «appel dé-parqué» jouée à :
+
+; fm_generalfeatures_parkedcalltransfers
+Autoriser le transfer par DTMF sur reprise d'appel parqué : 
+
+; fm_generalfeatures_parkedcallreparking
+Autoriser le parquage par DTMF sur reprise d'appel parqué :
+
+; fm_generalfeatures_parkedcallhangup
+Autoriser le raccroché par DTMF sur reprise d'appel parqué : 
+
+; fm_generalfeatures_parkedcallrecording
+Autoriser l'enregistrement par DTMF sur reprise d'appel parqué :
+
+; fm_generalfeatures_parkedmusicclass
+Musique d'attente jouée aux appels parqués : 
+
+; fm_generalfeatures_atxfernoanswertimeout
+Durée d'attente de réponse pour un transfer annoncé : 
+
+; fm_generalfeatures_atxferdropcall
+Annuler le transfer si l'emetteur raccroche : 
+
+; fm_generalfeatures_atxferloopdelay
+Durée d'attente entre deux essais (transfer annoncé) : 
+
+; fm_generalfeatures_atxfercallbackretries
+Nombre d'essais (transfer annoncé) : 
+
+

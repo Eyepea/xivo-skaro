@@ -844,7 +844,7 @@ INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf',
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','pickupfailsound','');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','featuredigittimeout','500');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxfernoanswertimeout','15');
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferdroptcall','no');
+INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferdropcall','no');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxferloopdelay','10');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,1,'features.conf','general','atxfercallbackretries','2');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','blindxfer','#1');

@@ -41,6 +41,8 @@ $error['extenfeatures'] = array();
 $error['generalfeatures'] = array();
 $error['featuremap'] = array();
 
+$musiconhold = &$ipbx->get_module('musiconhold');
+
 $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
@@ -125,6 +127,7 @@ $_TPL->set_var('extenfeatures',$info['extenfeatures']);
 $_TPL->set_var('generalfeatures',$info['generalfeatures']);
 $_TPL->set_var('featuremap',$info['featuremap']);
 $_TPL->set_var('sound_list',$appgeneralfeatures->get_sound());
+$_TPL->set_var('musicclass', $musiconhold->get_all_by_category());
 $_TPL->set_var('element',$element);
 
 $dhtml = &$_TPL->get_module('dhtml');

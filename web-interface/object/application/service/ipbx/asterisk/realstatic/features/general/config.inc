@@ -54,7 +54,7 @@ $array['element']['parkingtime']['default'] = 45;
 
 $array['element']['comebacktoorigin'] = array();
 $array['element']['comebacktoorigin']['value'] = array('no','yes');
-$array['element']['comebacktoorigin']['default'] = 'no';
+$array['element']['comebacktoorigin']['default'] = 'yes';
 $array['element']['comebacktoorigin']['set'] = true;
 
 $array['element']['courtesytone'] = array();
@@ -76,10 +76,10 @@ $array['element']['parkedcallreparking']['value'] = array('callee','caller','bot
 $array['element']['parkedcallreparking']['default'] = 'no';
 $array['element']['parkedcallreparking']['null'] = true;
 
-$array['element']['parkedcallhanghup'] = array();
-$array['element']['parkedcallhanghup']['value'] = array('callee','caller','both','no');
-$array['element']['parkedcallhanghup']['default'] = 'no';
-$array['element']['parkedcallhanghup']['null'] = true;
+$array['element']['parkedcallhangup'] = array();
+$array['element']['parkedcallhangup']['value'] = array('callee','caller','both','no');
+$array['element']['parkedcallhangup']['default'] = 'no';
+$array['element']['parkedcallhangup']['null'] = true;
 
 $array['element']['parkedcallrecording'] = array();
 $array['element']['parkedcallrecording']['value'] = array('callee','caller','both','no');

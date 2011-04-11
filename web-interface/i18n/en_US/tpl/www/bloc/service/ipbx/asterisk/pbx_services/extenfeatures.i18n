@@ -344,3 +344,74 @@ phone initialization :
 ; fm_extenfeatures_enable-enablevmbox
 Enable voicemail:
 
+
+; fm_generalfeatures_parkpos
+Extension to dial to park:
+
+; fm_generalfeatures_adsipark
+ADSI parking announcements:
+
+; fm_generalfeatures_parkedcall-opt(no)
+None
+
+; fm_generalfeatures_parkedcall-opt(callee)
+Callee
+
+; fm_generalfeatures_parkedcall-opt(caller)
+Caller
+
+; fm_generalfeatures_parkedcall-opt(both)
+Both
+
+; fm_generalfeatures_parkedcall-opt(parked)
+Parked call
+
+; fm_generalfeatures_findslot
+Look for the next call:
+
+; fm_generalfeatures_parkinghints
+Parkings hints:
+
+; fm_generalfeatures_comebacktoorigin
+On parkedcall timeout:
+
+; fm_generalfeatures_comebacktoorigin-opt(yes)
+Callback the peer that parked this call
+
+; fm_generalfeatures_comebacktoorigin-opt(no)
+Send parked call to the dialplan
+
+; fm_generalfeatures_parkeddynamic
+Allow dynamically created parkinglots:
+
+; fm_generalfeatures_parkedplay
+Who to play courtesy tone when picking up parked call:
+
+; fm_generalfeatures_parkedcalltransfers
+Allow DTMF based transfers when picking up parked call:
+
+; fm_generalfeatures_parkedcallreparking
+Allow DTMF based parking when picking up parked call:
+
+; fm_generalfeatures_parkedcallhangup
+Allow DTMF based hangups when picking up parked call:
+
+; fm_generalfeatures_parkedcallrecording
+Allow DTMF based one-touch recording when picking up parked call:
+
+; fm_generalfeatures_parkedmusicclass
+MOH class to play to parked calls:
+
+; fm_generalfeatures_atxfernoanswertimeout
+Timeout for answer on attended transfer:
+
+; fm_generalfeatures_atxferdropcall
+Cancel transfer if attended transfer originator hangup before transfer success:
+
+; fm_generalfeatures_atxferloopdelay
+Wait time between 2 retries (attended transfer):
+
+; fm_generalfeatures_atxfercallbackretries
+Max try counts (attended transfer):
+
+
