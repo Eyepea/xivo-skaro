@@ -52,8 +52,9 @@ class Safe:
         'meetmes' : 'urllist_meetmes',
         'voicemails' : 'urllist_voicemails',
         'incalls' : 'urllist_incalls',
-        'outcalls' : 'urllist_outcalls',
-        'contexts' : 'urllist_contexts',
+        # 'outcalls' : 'urllist_outcalls',
+        # 'contexts' : 'urllist_contexts',
+        # 'entities' : 'urllist_entities',
 
         'phonebooks' : 'urllist_phonebook'
         }

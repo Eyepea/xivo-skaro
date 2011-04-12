@@ -91,16 +91,7 @@ class WEBI(Interfaces):
             if len(usefulmsg) == 0:
                 break
             try:
-                if usefulmsg == 'xivo[ctiprofilelist,get]':
-                    profiles = {}
-                    for k, v in self.ctid.cconf.getconfig('profiles').iteritems():
-                        profiles[k] = v.get('name')
-                    clireply.extend(['%s:ID <%s>' % (XIVO_CLI_WEBI_HEADER, self.ipbxid),
-                                     '%s' % cjson.encode(profiles),
-                                     '%s:OK' % XIVO_CLI_WEBI_HEADER])
-                    log.info('WEBI requested %s' % usefulmsg)
-
-                elif usefulmsg == 'xivo[daemon,reload]':
+                if usefulmsg == 'xivo[daemon,reload]':
                     self.ctid.askedtoquit = True
                     log.info('WEBI requested %s' % usefulmsg)
 
