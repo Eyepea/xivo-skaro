@@ -165,6 +165,11 @@ locale [optional]
   - fr_FR
   - en_CA
 
+config_encryption [optional]
+  A boolean indicating if configuration file encryption should be enabled.
+  If this parameter is not defined, then config file encryption SHOULD be
+  disabled.
+
 protocol [optional]
   The signaling protocol.
   This parameter can take one of the following value:
