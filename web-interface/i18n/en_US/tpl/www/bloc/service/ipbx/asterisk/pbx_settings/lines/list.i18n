@@ -7,7 +7,7 @@ Protocol
 ; col_name
 Username
 
-; col_user
+; col_line
 User
 
 ; col_phone
@@ -19,33 +19,20 @@ Provisioning
 ; col_identity
 Identity
 
-; user_protocol-sip
+; line_protocol-sip
 SIP
 
-; user_protocol-iax
+; line_protocol-iax
 IAX
 
-; user_protocol-sccp
+; line_protocol-sccp
 SCCP
 
-; user_protocol-custom
+; line_protocol-custom
 Customized
 
-; no_user
-No user found
+; no_line
+No line found
 
 ; opt_delete_confirm
-Are you sure you want to delete this user?
-
-; toolbar_adv_menu_autoprov
-Provisioning
-
-; autoprov_reboot_phones
-Reboot phones
-
-; autoprov_cancel
-Cancel
-
-; autoprov_validate
-OK
-
+Are you sure you want to delete this line?
