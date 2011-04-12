@@ -31,10 +31,18 @@ class ClusterEngineTestCase(unittest.TestCase):
         f = open(self.default_file, 'w')
         with f:
             f.write("START=no")
+        self.data = ClusterEngine(self.ip_addr, self.mc_addr, self.template, default_file = self.default_file) 
 
     def test_default_corosync(self):
-        data = ClusterEngine(self.ip_addr, self.mc_addr, self.template, default_file = self.default_file) 
-        self.assertTrue(data._enabled_corosync())
+        self.assertTrue(self.data._enabled_corosync())
+
+    def test_template_is_available(self):
+        self.assertTrue(self.data._template_available(self.default_file))
+
+    #def test_template_is_not_available(self):
+    #    not_file = "tmp/test"
+    #    data = ClusterEngine(self.ip_addr, self.mc_addr, default_file = not_file) 
+    #    self.assertRaises(IOError, data._template_available(), not_file)
 
     def test_create_corosync_config_file(self):
         files = []

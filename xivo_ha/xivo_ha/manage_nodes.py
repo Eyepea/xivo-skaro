@@ -36,9 +36,17 @@ class ClusterEngine(object):
         enable corosync at boot time
         '''
         template = "%s/default_corosync" % self.templates_path
+        self._template_available(template)
+
         if not self._check_if_configured(self.default_file, "START=yes"):
             shutil.copy2(template, self.default_file)
             return True
+
+    def _template_available(self, template):
+            if os.path.isfile(template):
+                return os.path.isfile(template)
+            else:
+                raise IOError('template not accessible', template)
 
     def _create_corosync_config_file(self):
         '''
@@ -46,6 +54,7 @@ class ClusterEngine(object):
         '''
         temp_file = "%s.tmp" % self.config_file
         template = "%s/corosync.conf" % self.templates_path
+        self._template_available(template)
         data = open(template, 'r')
         f = open(temp_file, 'w')
 
