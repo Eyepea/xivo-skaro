@@ -27,6 +27,7 @@ __author__    = 'Corentin Le Gall'
 WEBI Interface
 """
 
+import cjson
 import logging
 import time
 
@@ -91,8 +92,11 @@ class WEBI(Interfaces):
                 break
             try:
                 if usefulmsg == 'xivo[ctiprofilelist,get]':
+                    profiles = {}
+                    for k, v in self.ctid.cconf.getconfig('profiles').iteritems():
+                        profiles[k] = v.get('name')
                     clireply.extend(['%s:ID <%s>' % (XIVO_CLI_WEBI_HEADER, self.ipbxid),
-                                     '%s' % self.ctid.cconf.getconfig('profiles').keys(),
+                                     '%s' % cjson.encode(profiles),
                                      '%s:OK' % XIVO_CLI_WEBI_HEADER])
                     log.info('WEBI requested %s' % usefulmsg)
 
