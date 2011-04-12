@@ -32,6 +32,9 @@ The following parameters are defined:
     general.rest_username
     general.rest_password
     general.rest_is_public
+    general.rest_ssl
+    general.rest_ssl_certfile
+    general.rest_ssl_keyfile
     database.type
         The type of the 'database' used for storing devices and configs.
     database.generator
@@ -127,6 +130,9 @@ class DefaultConfigSource(object):
         ('general.rest_username', 'admin'),
         ('general.rest_password', 'admin'),
         ('general.rest_is_public', 'False'),
+        ('general.rest_ssl', 'False'),
+        ('general.rest_ssl_certfile', '/etc/pf-xivo/provd/keys/cert.pem'),
+        ('general.rest_ssl_keyfile', '/etc/pf-xivo/provd/keys/key.pem'),
         ('database.type', 'shelve'),
         ('database.generator', 'default'),
         ('database.shelve_dir', '/var/lib/pf-xivo/provd/shelvedb'),
@@ -337,6 +343,7 @@ _PARAMS_DEFINITION = [
     ('general.rest_username', (str, True)),
     ('general.rest_password', (str, True)),
     ('general.rest_is_public', (_bool, True)),
+    ('general.rest_ssl', (_bool, True)),
     ('database.type', (str, True)),
     ('database.generator', (str, True)),
 ]
@@ -357,6 +364,11 @@ def _check_and_convert_parameters(raw_config):
                                param_name, exc_info=True)
                 raise ConfigError('parameter "%s" is invalid: %s' %
                                   param_name, e)
+    if raw_config['general.rest_ssl']:
+        if 'general.rest_ssl_certfile' not in raw_config:
+            raise ConfigError('Missing parameter "rest_ssl_certfile"') 
+        if 'general.rest_ssl_keyfile' not in raw_config:
+            raise ConfigError('Missing parameter "rest_ssl_keyfile"')
     # load base_raw_config_file JSON document
     # XXX maybe we should put this in a separate method since it's more or less
     #     a check and not really a convert...

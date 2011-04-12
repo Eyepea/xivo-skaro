@@ -38,6 +38,7 @@ from provd.rest.server.server import new_server_resource,\
     new_restricted_server_resource
 from twisted.application.service import IServiceMaker, Service, MultiService
 from twisted.application import internet
+from twisted.internet import ssl
 from twisted.plugin import IPlugin
 from twisted.python import log
 from twisted.web.resource import Resource
@@ -232,7 +233,13 @@ class RemoteConfigurationService(Service):
         if interface == '*':
             interface = ''
         logger.info('Binding HTTP REST API service to "%s:%s"', interface, port)
-        self._tcp_server = internet.TCPServer(port, rest_site, interface=interface)
+        if self._config['general.rest_ssl']:
+            logger.info('SSL enabled for REST API')
+            context_factory = ssl.DefaultOpenSSLContextFactory(self._config['general.rest_ssl_keyfile'],
+                                                               self._config['general.rest_ssl_certfile'])
+            self._tcp_server = internet.SSLServer(port, rest_site, context_factory, interface=interface)
+        else:
+            self._tcp_server = internet.TCPServer(port, rest_site, interface=interface)
         self._tcp_server.startService()
         Service.startService(self)
     
