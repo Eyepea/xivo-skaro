@@ -98,7 +98,11 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 			$arr['name'] = strtolower($arr['name']);
 
 		if(isset($arr['setvar'],$arr['setvar']{0}) === false)
-			unset($arr['setvar']);
+			unset($arr['setvar']);			
+		
+		if(isset($arr['secret']) === true
+		&& empty($arr['secret']) === false)
+		      $arr['secret'] = $arr['secret'];
 
 		unset($arr['username'],
 		      $arr['fullname'],

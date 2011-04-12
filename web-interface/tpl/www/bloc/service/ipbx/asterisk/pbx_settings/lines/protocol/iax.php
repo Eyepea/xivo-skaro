@@ -191,17 +191,7 @@ $element = $this->get_var('element');
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['iax']['codecpriority']['default'],
 				    'selected'	=> $this->get_var('info','protocol','codecpriority')),
-			      $element['protocol']['iax']['codecpriority']['value']),
-
-    $form->text(array('desc'  => $this->bbf('fm_protocol-disallowed_methods'),
-            'name'     => 'protocol[disallowed_methods]',
-            'labelid'  => 'protocol-disallowed_methods',
-            'size'     => 35,
-            'help'     => $this->bbf('hlp_fm_protocol-disallowed_methods'),
-            'required' => false,
-            'value'    => $info['protocol']['disallowed_methods'],
-            'error'    => $this->bbf_args('error',
-        $this->get_var('error', 'disallowed_methods')) ));
+			      $element['protocol']['iax']['codecpriority']['value']);
 ?>
 </div>
 
@@ -358,16 +348,6 @@ $element = $this->get_var('element');
 				  'help'		=> $this->bbf('hlp_fm_adhocnumber'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'adhocnumber')) )),
-
-	    $form->text(array('desc'  => $this->bbf('fm_protocol-unsolicited_mailbox'),
-            'name'     => 'protocol[unsolicited_mailbox]',
-            'labelid'  => 'protocol-unsolicited_mailbox',
-            'size'     => 25,
-            'help'     => $this->bbf('hlp_fm_protocol-unsolicited_mailbox'),
-            'required' => false,
-            'value'    => $info['protocol']['unsolicited_mailbox'],
-            'error'    => $this->bbf_args('error',
-        $this->get_var('error', 'unsolicited_mailbox')) )),
 
      $form->select(array('desc'  => $this->bbf('fm_protocol-immediate'),
             'name'      => 'protocol[immediate]',

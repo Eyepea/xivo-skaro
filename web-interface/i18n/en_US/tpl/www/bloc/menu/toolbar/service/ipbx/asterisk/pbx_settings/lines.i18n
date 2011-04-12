@@ -1,0 +1,17 @@
+; toolbar_adv_menu_delete_confirm
+Are you sure you want to delete these lines?
+
+; toolbar_fm_free
+-- free --
+
+; toolbar_menu_add_sip
+Add SIP
+
+; toolbar_menu_add_iax
+Add IAX
+
+; toolbar_menu_add_sccp
+Add SCCP
+
+; toolbar_menu_add_custom
+Add CUSTOM

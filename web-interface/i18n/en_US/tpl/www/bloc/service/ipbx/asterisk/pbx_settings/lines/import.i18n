@@ -1,0 +1,23 @@
+; title_content_name
+Users > Import a file
+
+; fm_import
+File:
+
+; import_fail
+Fail
+
+; error(contextnummember__out of interval)
+Phone number out of interval (or invalid context)
+
+; error(userfeatures__client login exists)
+CTI login already set to another user
+
+; error(extenumbers__exists)
+Phone number already set to another user
+
+; error(protocol__invalid module)
+Unknown protocol
+
+; error(userfeatures__Array)
+

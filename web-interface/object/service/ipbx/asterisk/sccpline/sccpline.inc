@@ -54,7 +54,11 @@ class xivo_service_asterisk_sccpline extends xivo_service_asterisk_abstract
 	function edit($id,$arr,$disable=null)
 	{
 		if(is_array($arr) === false)
-			return(false);
+			return(false);			
+		
+		if(isset($arr['pin']) === true
+		&& empty($arr['pin']) === false)
+		      $arr['pin'] = $arr['pin'];
 
 		$arr['vmnum'] = '*98';
 		

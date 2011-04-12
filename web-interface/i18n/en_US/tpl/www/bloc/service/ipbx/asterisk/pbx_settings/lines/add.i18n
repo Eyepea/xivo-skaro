@@ -1,0 +1,1323 @@
+; title_content_name
+Users > Add
+
+; smenu_general
+General
+
+; smenu_voicemail
+Voicemail
+
+; smenu_dialaction
+No answer
+
+; smenu_services
+Services
+
+; smenu_signalling
+Signalling
+
+; smenu_queueskills
+Queueskills
+
+; smenu_groups
+Groups
+
+; smenu_autoprov
+Provisioning
+
+; smenu_advanced
+Advanced
+
+; smenu_codecs
+Codecs
+
+; smenu_rightcalls
+Call permissions
+
+; fm_linefeatures_firstname
+First name:
+
+; fm_linefeatures_lastname
+Last name:
+
+; fm_protocol_name
+Username:
+
+; fm_protocol_secret
+Password:
+
+; fm_protocol_interface
+Interface:
+
+; fm_protocol_host-type
+IP Addressing type:
+
+; fm_protocol_host-type-opt(dynamic)
+Dynamic
+
+; fm_protocol_host-type-opt(static)
+Static
+
+; fm_protocol_protocol
+Protocol:
+
+; fm_protocol_protocol-opt(sip)
+SIP
+
+; fm_protocol_protocol-opt(iax)
+IAX
+
+; fm_protocol_protocol-opt(sccp)
+SCCP
+
+; fm_protocol_protocol-opt(custom)
+Customized
+
+; fm_protocol_nat
+NAT:
+
+; fm_protocol_nat-opt(no)
+No
+
+; fm_protocol_nat-opt(yes)
+Yes
+
+; fm_protocol_nat-opt(never)
+Never
+
+; fm_protocol_nat-opt(route)
+Route
+
+; fm_protocol_context
+Context:
+
+; create_context
+Create a context
+
+; fm_protocol_language
+Language:
+
+; fm_protocol_amaflags
+Billing flag:
+
+; fm_protocol_amaflags-opt-default
+Default
+
+; fm_protocol_amaflags-opt-omit
+Omit
+
+; fm_protocol_amaflags-opt-billing
+Billing
+
+; fm_protocol_amaflags-opt-documentation
+Documentation
+
+; fm_protocol_canreinvite
+Invite:
+
+; fm_protocol_accountcode
+Account number:
+
+; fm_protocol_progressinband
+Events in the band RING:
+
+; fm_protocol_progressinband-opt(no)
+No
+
+; fm_protocol_progressinband-opt(yes)
+Yes
+
+; fm_protocol_progressinband-opt(never)
+Never
+
+; fm_protocol_dtmfmode
+DTMF:
+
+; fm_protocol_dtmfmode-opt(rfc2833)
+RFC 2833
+
+; fm_protocol_dtmfmode-opt(inband)
+InBand
+
+; fm_protocol_dtmfmode-opt(outofband)
+Outofband
+
+; fm_protocol_dtmfmode-opt(info)
+INFO
+
+; fm_protocol_dtmfmode-opt(auto)
+Auto
+
+; fm_protocol_rfc2833compensate
+Compensating for RFC 2833 DTMF from another IP PBX:
+
+; fm_protocol_qualify
+Monitoring:
+
+; fm_protocol_qualify-opt(no)
+No
+
+; fm_protocol_qualify-opt(yes)
+Yes
+
+; fm_protocol_qualify-opt
+%s milliseconds
+
+; fm_protocol_rtptimeout
+RTP timeout:
+
+; fm_protocol_rtptimeout-opt(0)
+Disabled
+
+; fm_protocol_rtptimeout-opt
+%s seconds
+
+; fm_protocol_rtpholdtimeout
+RTP hold timeout:
+
+; fm_protocol_rtpholdtimeout-opt(0)
+Disabled
+
+; fm_protocol_rtpholdtimeout-opt
+%s seconds
+
+; fm_protocol_rtpkeepalive
+RTP presence:
+
+; fm_protocol_rtpkeepalive-opt(0)
+Disabled
+
+; fm_protocol_rtpkeepalive-opt
+%s seconds
+
+; fm_linefeatures_number
+Phone number:
+
+; fm_linefeatures_ringseconds
+Ringing time:
+
+; fm_linefeatures_ringseconds-opt0
+Unlimited
+
+; fm_linefeatures_ringseconds-opt
+%s seconds
+
+; fm_protocol_allowtransfer
+Allow transfer:
+
+; fm_protocol_autoframing
+Auto framing:
+
+; fm_protocol_videosupport
+Video support:
+
+; fm_protocol_maxcallbitrate
+Max call bitrate video:
+
+; fm_protocol_codec-disallow
+Codecs disallow:
+
+; fm_protocol_codec-disallow-opt(all)
+All
+
+; fm_protocol_g726nonstandard
+Activate G726 no standard:
+
+; fm_linefeatures_simultcalls
+Simultaneous calls:
+
+; fm_linefeatures_musiconhold
+On-Hold Music:
+
+; fm_linefeatures_enableclient
+Enable XIVO Client:
+
+; fm_linefeatures_enablehint
+Enable supervision:
+
+; fm_linefeatures_enablevoicemail
+Enable voicemail:
+
+; fm_linefeatures_enablexfer
+Enable call transfer:
+
+; fm_linefeatures_enableautomon
+Enable online call recording:
+
+; fm_linefeatures_callrecord
+Call recording:
+
+; fm_linefeatures_incallfilter
+Incoming call filtering:
+
+; fm_linefeatures_enablednd
+Do not disturb:
+
+; fm_linefeatures_enablerna
+Forward on no-answer:
+
+; fm_linefeatures_destrna
+Destination:
+
+; fm_linefeatures_enablebusy
+Forward on busy:
+
+; fm_linefeatures_destbusy
+Destination:
+
+; fm_linefeatures_enableunc
+Unconditional forward:
+
+; fm_linefeatures_destunc
+Destination:
+
+; fm_linefeatures_bsfilter
+Filter Boss - Secretary:
+
+; fm_linefeatures_bsfilter-opt-no
+No
+
+; fm_linefeatures_bsfilter-opt-boss
+Boss
+
+; fm_linefeatures_bsfilter-opt-secretary
+Secretary
+
+; fld-callgroup
+Groups
+
+; bt_ingroup
+Add one or more groups ->
+
+; bt_outgroup
+<- Remove one or more groups
+
+; col_group-name
+Name
+
+; col_group-channel
+Channel
+
+; col_group-calllimit
+Call limit
+
+; no_group
+No interception groups
+
+; fld-queuegroup
+Queues
+
+; col_queue-name
+Name
+
+; col_queue-channel
+Channel
+
+; col_queue-penalty
+Penalty
+
+; col_queue-calllimit
+Call limit
+
+; no_queue
+No queues
+
+; bt_inqueue
+Add one or more queues ->
+
+; bt_outqueue
+<- Remove one or more queues
+
+; fm_codec-custom
+Customize:
+
+; fm_protocol_codec-disallow
+Disable:
+
+; fm_protocol_codec-disallow-opt-all
+All
+
+; fm_protocol_codec-allow
+Enable:
+
+; bt_upcodec
+Up one or more codecs
+
+; bt_downcodec
+Down one or more codecs
+
+; bt_incodec
+Add one or more codecs ->
+
+; bt_outcodec
+<- Remove one or more codecs
+
+; fm_linefeatures_voicemailid
+Selection of voicemail:
+
+; fm_voicemail-opt-add
+[Add a voicemail]
+
+; fm_voicemail_fullname
+Full name:
+
+; fm_voicemail_mailbox
+Voicemail:
+
+; fm_voicemail_password
+Password:
+
+; fm_voicemail_email
+E-mail:
+
+; fm_voicemail_tz
+Time zone:
+
+; fm_voicemailfeatures_skipcheckpass
+Disable password checking:
+
+; fm_voicemail_attach
+Attach the audio file:
+
+; fm_voicemail_deletevoicemail
+Delete message after notification:
+
+; fm_linefeatures_description
+Description:
+
+; bt_inrightcall
+Add one or more call permission ->
+
+; bt_outrightcall
+<- Delete one or more call permission
+
+; create_rightcall
+Create a call permission
+
+; fm_protocol_callerid
+Caller ID:
+
+; fm_linefeatures_outcallerid
+Outgoing Caller ID:
+
+; fm_linefeatures_outcallerid-opt(default)
+Default
+
+; fm_linefeatures_outcallerid-opt(anonymous)
+Anonymous
+
+; fm_linefeatures_outcallerid-opt(custom)
+Customize
+
+; fm_linefeatures_preprocess-subroutine
+Subroutine preprocess:
+
+; fm_protocol_insecure
+Insecure:
+
+; fm_protocol_insecure-opt(no)
+No
+
+; fm_protocol_insecure-opt(port)
+Port
+
+; fm_protocol_insecure-opt(invite)
+Invite
+
+; fm_protocol_insecure-opt(all)
+All
+
+; fm_protocol_permit
+IP address or subnet mask allowed:
+
+; fm_protocol_deny
+IP address or subnet mask denied:
+
+; fm_protocol_trustrpid
+Trusting the Remote-Party-ID:
+
+; fm_protocol_sendrpid
+Send the Remote-Party-ID:
+
+; fm_protocol_allowsubscribe
+Enable support subscriptions:
+
+; fm_protocol_allowoverlap
+Enable overlap:
+
+; fm_protocol_promiscredir
+Support for 302 redirects:
+
+; fm_protocol_usereqphone
+Add "user=phone" in the URI:
+
+; fm_protocol_fromuser
+Rewriting the From field-User:
+
+; fm_protocol_fromdomain
+Rewriting the From field-Domain:
+
+; fm_protocol_canreinvite-opt(no)
+No
+
+; fm_protocol_canreinvite-opt(yes)
+Yes
+
+; fm_protocol_canreinvite-opt(update)
+Update
+
+; fm_protocol_canreinvite-opt(nonat)
+Without NAT
+
+; fm_protocol_canreinvite-opt(update-nonat)
+Update without NAT
+
+; fm_protocol_useclientcode
+Client code:
+
+; fm_autoprov_modact
+Mode:
+
+; fm_autoprov_modact-opt(guest)
+Initialize
+
+; fm_autoprov_modact-opt(prov)
+Provisioning
+
+; fm_autoprov_vendormodel
+Model:
+
+; fm_autoprov_macaddr
+MAC Address:
+
+; col_phonefunckey-fknum
+Key
+
+; col_phonefunckey-type
+Type
+
+; col_phonefunckey-typeval
+Destination
+
+; col_phonefunckey-label
+Label
+
+; col_phonefunckey-supervision
+Supervision
+
+; col_phonefunckey-add
+Add
+
+; opt_phonefunckey-delete
+Delete
+
+; no_phonefunckey
+No function key
+
+; fm_phonefunckey_type-opt(user)
+User
+
+; fm_phonefunckey_type-opt(group)
+Group
+
+; fm_phonefunckey_type-opt(queue)
+Queue
+
+; fm_phonefunckey_type-opt(meetme)
+Conference room
+
+; fm_phonefunckey_type-opt(extension)
+Extension
+
+; fm_phonefunckey_type-opt(bosssecretary)
+Filter Boss - Secretary
+
+; fm_phonefunckey_type-opt(custom)
+Customized
+
+; fm_phonefunckey_type-optgroup(extension-general)
+General
+
+; fm_phonefunckey_type-opt(generalfeatures-pickupexten)
+Group interception
+
+; fm_phonefunckey_type-opt(extenfeatures-pickup)
+Call interception
+
+; fm_phonefunckey_type-opt(featuremap-automon)
+Online call recording
+
+; fm_phonefunckey_type-opt(extenfeatures-recsnd)
+Sound recording
+
+; fm_phonefunckey_type-opt(extenfeatures-phonestatus)
+Phone status
+
+; fm_phonefunckey_type-opt(extenfeatures-enablednd)
+Do not disturb
+
+; fm_phonefunckey_type-opt(extenfeatures-callrecord)
+Call recording
+
+; fm_phonefunckey_type-opt(extenfeatures-incallfilter)
+Incoming call filtering
+
+; fm_phonefunckey_type-opt(extenfeatures-calllistening)
+Listen to online calls
+
+; fm_phonefunckey_type-opt(extenfeatures-directoryaccess)
+Directory access
+
+; fm_phonefunckey_type-opt(extenfeatures-bsfilter)
+Filtering Boss - Secretary
+
+; fm_phonefunckey_type-optgroup(extension-transfers)
+Transfers
+
+; fm_phonefunckey_type-opt(featuremap-blindxfer)
+Blind transfer
+
+; fm_phonefunckey_type-opt(featuremap-atxfer)
+Indirect transfer
+
+; fm_phonefunckey_type-opt(featuremap-disconnect)
+Hangup
+
+; fm_phonefunckey_type-optgroup(extension-forwards)
+Forwards
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdundoall)
+Disable all forwarding
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdrna)
+Enable / Disable forwarding on no answer
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdbusy)
+Enable / Disable forwarding on busy
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdunc)
+Enable / Disable forwarding unconditional
+
+; fm_phonefunckey_type-optgroup(extension-voicemail)
+Voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-enablevm)
+Enable voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-enablevmbox)
+Activate voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-vmusermsg)
+Reach the voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-vmuserpurge)
+Delete messages from voicemail
+
+; fm_phonefunckey_type-optgroup(extension-agent)
+Agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogtoggle)
+Disconnect a static agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogin)
+Connect a static agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogoff)
+Disconnect a dynamic agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentdynamiclogin)
+Connect a dynamic agent
+
+; fm_phonefunckey_type-optgroup(extension-groups)
+Groups
+
+; fm_phonefunckey_type-opt(extenfeatures-grouptogglemember)
+Add/remove a member into/from a group
+
+; fm_phonefunckey_type-opt(extenfeatures-groupaddmember)
+Add a member into a group
+
+; fm_phonefunckey_type-opt(extenfeatures-groupremovemember)
+Remove a member from a group
+
+; fm_phonefunckey_type-opt(extenfeatures-queuetogglemember)
+Add/remove a member into/from a queue
+
+; fm_phonefunckey_type-opt(extenfeatures-queueaddmember)
+Add a member into a queue
+
+; fm_phonefunckey_type-opt(extenfeatures-queueremovemember)
+Remove a member from a queue
+
+; fm_phonefunckey_type-optgroup(extension-parking)
+Parking
+
+; fm_phonefunckey_type-opt(generalfeatures-parkext)
+Parking
+
+; fm_phonefunckey_supervision-opt(0)
+Disabled
+
+; fm_phonefunckey_supervision-opt(1)
+Enabled
+
+; fm_linefeatures_voicemailtype
+Messagerie vocale:
+
+; fm_linefeatures_voicemailtype-opt(none)
+None
+
+; fm_linefeatures_voicemailtype-opt(asterisk)
+Asterisk
+
+; fm_linefeatures_voicemailtype-opt(exchange)
+Exchange
+
+; fm_voicemail_option
+Option:
+
+; fm_voicemail_option-opt(add)
+Add
+
+; fm_voicemail_option-opt(search)
+Search
+
+; fm_voicemail_suggest
+Search filter
+
+; fm_protocol_subscribemwi
+Verify new messages presence:
+
+; fm_protocol_buggymwi
+Verify new messages presence (RFC non-conformant):
+
+; fm_linefeatures_loginclient
+Login:
+
+; fm_linefeatures_passwdclient
+Password:
+
+; fm_linefeatures_mobilephonenumber
+Mobile phone number:
+
+; fm_linefeatures_bsfilter-opt(no)
+No
+
+; fm_linefeatures_bsfilter-opt(boss)
+Boss
+
+; fm_linefeatures_bsfilter-opt(secretary)
+Secretary
+
+; create_agent
+Create Agent
+
+; fm_protocol_t38pt-udptl
+Activate T38 (UDPTL):
+
+; fm_protocol_t38pt-rtp
+Activate T38 (RTP):
+
+; fm_protocol_t38pt-tcp
+Activate T38 (TCP):
+
+; fm_protocol_t38pt-usertpsource
+Use the source IP address as the destination for the T38:
+
+; col_1
+Skill
+
+; smenu_t38
+T38
+
+; fm_linefeatures_profileclient
+Profile:
+
+; fm_linefeatures_agentid
+Agent:
+
+; col_2
+Weight
+
+; no_disp
+No skills
+
+; error_fm_queueskill_skillid(doubloon)
+Same skill can't be affected twice
+
+; error_fm_queueskill_weight(empty)
+You must set a weight (between 0 and 100)
+
+; error_fm_queueskill_weight(notnumeric)
+weight is not an integer
+
+; error_fm_queueskill_weight(unbound)
+weight must be an integer between 0 and 100
+
+; column_addon
+Expansion modules
+
+; smenu_sccp
+SCCP parameters
+
+; addon_description
+Add here expansion modules connected to the phone, from left to right.
+
+; fm_protocol_adhocnumber
+Adhoc number: 
+
+; fm_protocol_video_cos
+Video COS: 
+
+; fm_protocol_video_tos
+Video TOS: 
+
+; fm_protocol_audio_cos
+Audio COS: 
+
+; fm_protocol_audio_tos
+Audio TOS: 
+
+; fm_protocol_secondary_dialtone_tone
+Secondary dialtone tone: 
+
+; fm_protocol_secondary_dialtone_digits
+Secondary dialtone digits: 
+
+; fm_protocol_trustphoneip
+Trust phone IP: 
+
+; fm_protocol_imageversion
+Firmware image version: 
+
+; fm_protocol_tzoffset
+Timezone offset: 
+
+; fm_protocol_incominglimit
+Incoming calls limit: 
+
+; fm_protocol_silencesuppression
+Silence suppression: 
+
+; fm_protocol_echocancel
+Echo canceller: 
+
+; fm_protocol_mwioncall
+MWI on call: 
+
+; fm_protocol_mwilamp
+MWI lamp style: 
+
+; fm_protocol_privacy
+Privacy: 
+
+; fm_protocol_private
+Private softkey: 
+
+; fm_protocol_earlyrtp
+Early RTP: 
+
+; fm_protocol_directrtp
+Direct RTP: 
+
+; fm_protocol_dnd
+DND softkey: 
+
+; fm_protocol_pickupmodeanswer
+Call answered when pickup: 
+
+; fm_protocol_pickupcontext
+Direct pickup context: 
+
+; fm_protocol_pickupexten
+Direct pickup: 
+
+; fm_protocol_cfwdnoanswer
+Call forwarding on non-answer: 
+
+; fm_protocol_cfwdbusy
+Call forwarding on busy: 
+
+; fm_protocol_cfwdall
+Unconditional call forwarding: 
+
+; fm_protocol_park
+Park calls: 
+
+; fm_earlyrtp(none)
+None
+
+; fm_earlyrtp(offhook)
+Offhook
+
+; fm_earlyrtp(dial)
+Dial
+
+; fm_earlyrtp(ringout)
+Ringout
+
+; fm_mwilamp(on)
+On
+
+; fm_mwilamp(off)
+Off
+
+; fm_mwilamp(wink)
+Wink
+
+; fm_mwilamp(flash)
+Flash
+
+; fm_mwilamp(blink)
+Blink
+
+; fm_protocol_keepalive
+Keepalive: 
+
+; fm_privacy(on)
+Activated
+
+; fm_privacy(off)
+Depends on «private» softkey
+
+; fm_privacy(full)
+Deactivated
+
+; no_disp2
+No expansion module
+
+
+; hlp_fm_park
+Enable calls parking
+
+; hlp_fm_cfwdall
+Activate callforward key
+
+; hlp_fm_cfwdbusy
+
+; hlp_fm_cfwdnoanswer
+
+; hlp_fm_pickupexten
+Enable Pickup function to direct pickup an extension
+
+; hlp_fm_pickupcontext
+Context where direct pickup search for extensions. If not set will be ignored
+
+; hlp_fm_pickupmodeanswer
+If <b>asterisk mode</b>, the call has been answered when picked up.<br/>If <b>call manager mode</b>, the phone who picked up the call rings the call
+
+; hlp_fm_dnd
+Turn on the dnd key on the device. on = reject = busy signal; silent = no signal
+
+; hlp_fm_directrtp
+Allow device to do direct RTP sessions (default off)
+
+; hlp_fm_earlyrtp
+The audio stream will be opened in the progess and connected state. default is none
+
+; hlp_fm_private
+Turn on the private softkey on the device
+
+; hlp_fm_privacy
+
+; hlp_fm_mwilamp
+Set the MWI lamp style
+
+; hlp_fm_mwioncall
+Set the MWI on call
+
+; hlp_fm_echocancel
+Set the phone echocancel
+
+; hlp_fm_silencesuppression
+Set the silence suppression
+
+; hlp_fm_incominglimit
+more than 1 incoming call = call waiting
+
+; hlp_fm_keepalive
+Set 0 to disable keepalive check
+
+; hlp_fm_tzoffset
+
+; hlp_fm_imageversion
+Useful to upgrade old firmwares (the ones that do not load xml from the tftp server)
+
+; hlp_fm_trustphoneip
+Used if the phone is behind a NAT (so we must trust ip address connection, not phone ones)
+
+; hlp_fm_dialtone_digits
+Digits for the secondary dialtone (max 9 digits)
+
+; hlp_fm_dialtone_tone
+Outside dialtone
+
+; hlp_fm_audio_tos
+Default audio/RTP packets Type of Service (default is 0xb8 == 184). Possible values are 0x??, lowdelay, throughput, reliability, mincost (solaris only), none
+
+; hlp_fm_audio_cos
+Default audio/RTP packets Class of Service (defaults is 6)
+
+; hlp_fm_video_tos
+Default video/RTP packets Type of Service (default is 0x88 == 136)
+
+; hlp_fm_video_cos
+Default video/RTP packets Class of Service (default is 5)
+
+; hlp_fm_sccp_amaflags
+Default AMA flag code stored in the CDR record
+
+; hlp_fm_adhocnumber
+Adhoc number or Private-line automatic ringdown (PLAR). Adhoc/PLAR circuits are statically configured endpoints and do not required the user dialing to connect calls:<br/>
+<ul>
+<li>the adhocNumber is dialed as soon as the phone is taken off-hook or when the new-call button is pressed</li>
+<li>the number will not be dialed when choosing a line; so when you choose a line you can enter a number manually</li>
+</ul>
+
+; fm_pickupmodeanswer-opt(on)
+Asterisk mode
+
+; fm_pickupmodeanswer-opt(off)
+Callmanager mode
+
+
+; fld-softkeys
+Softkeys
+
+; softkey_order
+Order
+
+; softkey_key
+Key
+
+; no_softkeys
+No softkeys
+
+
+
+; softkey_event(onhook)
+On hook
+
+; softkey_event(connected)
+Connected
+
+; softkey_event(onhold)
+On hold
+
+; softkey_event(ringin)
+Ringing
+
+; softkey_event(offhook)
+Off hook
+
+; softkey_event(conntrans)
+; softkey_event(digitsfoll)
+; softkey_event(connconf)
+In Conference
+
+; softkey_event(ringout)
+Outgoing call
+
+; softkey_event(offhookfeat)
+; softkey_event(onhint)
+
+; softkey_redial
+Redial
+
+; softkey_newcall
+New call
+
+; softkey_cfwdall
+Unconditional transfer
+
+; softkey_cfwdbusy
+Transfer on busy
+
+; softkey_cfwdnoanswer
+Transfer on no answer
+
+; softkey_pickup
+Interception
+
+; softkey_gpickup
+; softkey_conflist
+; softkey_dnd
+DND
+
+; softkey_hold
+Put on hold
+
+; softkey_endcall
+Hangup
+
+; softkey_park
+Park call
+
+; softkey_select
+; softkey_idivert
+; softkey_resume
+Resume onhold-call
+
+; softkey_transfer
+Attended transfer
+
+; softkey_dirtrfr
+Direct transfer
+
+; softkey_answer
+Answer
+
+; softkey_transvm
+; softkey_private
+Private mode
+
+; softkey_meetme
+Conference room
+
+; softkey_barge
+; softkey_cbarge
+; softkey_conf
+; softkey_backjoin
+
+; fm_protocol_requirecalltoken
+Calltoken validation: 
+
+; fm_protocol_requirecalltoken-opt(no)
+no
+
+; fm_protocol_requirecalltoken-opt(yes)
+yes
+
+; fm_linefeatures_timezone
+Timezone: 
+
+
+;;; 1.8 fields
+; fm_protocol-transport
+Transport: 
+
+; hlp_fm_protocol-transport
+Config asterisk: transport
+
+; fm_protocol-remotesecret
+Remote password: 
+
+; hlp_fm_protocol-remotesecret
+Config asterisk: remotesecret
+
+; fm_protocol-directmedia
+Invite:
+
+; hlp_fm_protocol-directmedia
+Config asterisk: directmedia
+
+; fm_protocol-directmedia-opt(no)
+No
+
+; fm_protocol-directmedia-opt(yes)
+Yes
+
+; fm_protocol-directmedia-opt(nonat)
+
+Without NAT
+
+; fm_protocol-directmedia-opt(update)
+Update
+
+; fm_protocol-directmedia-opt(update,nonat)
+Update without NAT
+
+; fm_protocol-callcounter
+Enable calls counter:
+
+; hlp_fm_protocol-callcounter
+Config asterisk: callcounter
+
+; fm_protocol-busylevel
+Send BUSY up to num. calls:
+
+; hlp_fm_protocol-busylevel
+Config asterisk: busylevel
+
+; fm_protocol-ignoresdpversion
+Ignore SDP packets version:
+
+; hlp_fm_protocol-ignoresdpversion
+Config asterisk: ignoresdpversion
+
+; fm_protocol-session-timers
+Session-timers mode: 
+
+; hlp_fm_protocol-session-timers
+Config asterisk: session-timers
+
+; fm_protocol-session-timers-opt(originate)
+Originate
+
+; fm_protocol-session-timers-opt(accept)
+Accept
+
+; fm_protocol-session-timers-opt(refuse)
+Refuse
+
+; fm_protocol-session-expires
+Maximum session refresh interval: 
+
+; hlp_fm_protocol-session-expires
+Config asterisk: session-expires
+
+; fm_protocol-session-minse
+Minimum session refresh interval:
+
+; hlp_fm_protocol-session-minse
+Config asterisk: session-minse
+
+; fm_protocol-session-refresher
+Session refresher:
+
+; hlp_fm_protocol-session-refresher
+Config asterisk: session-refresher
+
+; fm_protocol-session-refresher-opt(uas)
+Server
+
+; fm_protocol-session-refresher-opt(uac)
+Client
+
+; fm_protocol-callbackextension
+Callback extension:
+
+; hlp_fm_protocol-callbackextension
+Config asterisk: callbackextension
+
+; fm_protocol-registertrying
+Send «100 Trying» when register: 
+
+; hlp_fm_protocol-registertrying
+Config asterisk: registertrying
+
+; fm_protocol-timert1
+Minimum time of the round trip (RTT) messages:
+
+; hlp_fm_protocol-timert1
+Config asterisk: timert1
+
+; fm_protocol-timerb
+Call setup timer: 
+
+; hlp_fm_protocol-timerb
+Config asterisk: timerb
+
+; fm_protocol-qualifyfreq
+Qualify frequency: 
+
+; hlp_fm_protocol-qualifyfreq
+Config asterisk: qualifyfreq
+
+; fm_protocol-contactpermit
+Authorised contact addresses: 
+
+; hlp_fm_protocol-contactpermit
+Config asterisk: contactpermit
+
+; fm_protocol-contactdeny
+Rejected contact addresses: 
+
+; hlp_fm_protocol-contactdeny
+Config asterisk: contactdeny
+
+
+; fm_register-transport
+Transport: 
+
+; hlp_fm_register-transport
+
+; fm_register-expiry
+Expiry: 
+
+; hlp_fm_register-expiry
+Config asterisk: expiry
+
+; fm_register-callbackextension
+Use callback extension: 
+
+
+; fm_protocol-immediate
+Immediate off-hook: 
+
+; hlp_fm_protocol-immediate
+Config asterisk: immediate
+
+
+; fm_protocol-unsolicited_mailbox
+Unsolicited mailbox : 
+
+; hlp_fm_protocol-unsolicited_mailbox
+Config asterisk: unsolicited_mailbox
+
+; fm_protocol-use_q850_reason
+Use «Reason» header: 
+
+; hlp_fm_protocol-use_q850_reason
+Config asterisk: use_q850_reason
+
+; fm_protocol-encryption
+Encryption:
+
+; hlp_fm_protocol-encryption
+Config asterisk: encryption
+
+; fm_protocol-forceencryption
+Force encryption:
+
+; hlp_fm_protocol-forceencryption
+Config asterisk: forceencryption
+
+; fm_protocol-snom_aoc_enabled
+Send AOC-D/AOC-E to Snom devices: 
+
+; hlp_fm_protocol-snom_aoc_enabled
+Config asterisk: snom_aoc_enabled
+
+; fm_protocol-disallowed_methods
+Disallow SIP methods:
+
+; hlp_fm_protocol-disallowed_methods
+Config asterisk: disallowed_methods
+
+; fm_protocol-maxforwards
+Max forward:
+
+; hlp_fm_protocol-maxforwards
+Config asterisk: maxforwards
+
+; fm_protocol-textsupport
+Text support:
+
+; hlp_fm_protocol-textsupport
+Config asterisk: textsupport
+
+; hlp_fm_protocol-videosupport
+Config asterisk: videosupport
+
+; fm_protocol-videosupport-opt(no)
+No
+
+; fm_protocol-videosupport-opt(yes)
+Yes
+
+; fm_protocol-videosupport-opt(always)
+Always
+
+; fm_protocol_maxauthreq
+Maximum authentication attempts:
+
+; smenu_schedule
+Schedules
+
+; fm_user_schedule
+Schedules:
+
+; create_schedules
+Create a schedule
+

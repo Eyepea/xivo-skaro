@@ -81,8 +81,7 @@ $context_js = $dhtml->escape($context);
 				      'style="margin-left: 10px;"');
 ?>
 	</div>
-</form>
-<?php
+</form><?php
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
 			       'id="toolbar-bt-add"
@@ -103,8 +102,7 @@ $context_js = $dhtml->escape($context);
 				       'service/ipbx/pbx_settings/lines',
 				       array('act'=>'add','proto'=>'custom'));?></li>
 	</ul>
-</div>
-<?php
+</div><?php
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
