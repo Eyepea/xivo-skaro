@@ -78,6 +78,7 @@ class Safe:
             #
             'ringseconds',
             'simultcalls',
+            'linelist',
             ],
         'phones' : [
             'context', 'protocol', 'number',
@@ -179,8 +180,19 @@ class Safe:
         for listname, urllistkey in self.urlvars.iteritems():
             self.update_config_list(listname)
 
-        for k, v in self.xod_config['phones'].keeplist.iteritems():
-            print k, v.get('iduserfeatures')
+        self.fill_lines_into_users()
+        return
+
+    def fill_lines_into_users(self):
+        user2phone = {}
+        for idphone, v in self.xod_config['phones'].keeplist.iteritems():
+            iduser = str(v.get('iduserfeatures'))
+            if iduser not in user2phone:
+                user2phone[iduser] = []
+            if idphone not in user2phone[iduser]:
+                user2phone[iduser].append(idphone)
+        for iduser, v in self.xod_config['users'].keeplist.iteritems():
+            v['linelist'] = user2phone.get(iduser, [])
         return
 
     def update_config_list(self, listname):
