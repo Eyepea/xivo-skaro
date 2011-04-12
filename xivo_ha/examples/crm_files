@@ -1,0 +1,10 @@
+configure
+   
+   # add cluster global action :
+   #disable stonith (for tests purpose)
+   property stonith-enabled=false
+   # disable quorum (not needed for two nodes cluster)
+   property no-quorum-policy=ignore
+   #all resource must be in the same node :
+   rsc_defaults resource-stickiness=100
+   commit

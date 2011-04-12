@@ -39,10 +39,10 @@ class ClusterEngineTestCase(unittest.TestCase):
     def test_template_is_available(self):
         self.assertTrue(self.data._template_available(self.default_file))
 
-    #def test_template_is_not_available(self):
-    #    not_file = "tmp/test"
-    #    data = ClusterEngine(self.ip_addr, self.mc_addr, default_file = not_file) 
-    #    self.assertRaises(IOError, data._template_available(), not_file)
+    def test_template_is_not_available(self):
+        not_file = "tmp/test"
+        data = ClusterEngine(self.ip_addr, self.mc_addr, default_file = not_file) 
+        self.assertRaises(IOError, data._template_available, not_file)
 
     def test_create_corosync_config_file(self):
         files = []
