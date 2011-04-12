@@ -35,6 +35,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_agentfeatures	= null;
 	var $_linefeatures	= false;
 	var $_line			= false;
+	var $_ctiprofiles	= false;
 	var $_appentity		= false;
 	var $_entity		= false;
 	var $_phonefunckey	= null;
@@ -94,6 +95,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'user'))) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'user'))) === false
 		|| ($this->_line = $this->_service->get_application('line')) === false
+		|| ($this->_ctiprofiles = $this->_service->get_application('ctiprofiles')) === false
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_appentity = &$_XOBJ->get_application('entity')) === false
 		|| ($this->_entity = &$_XOBJ->get_module('entity')) === false
@@ -411,10 +413,26 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	}
 
 	function get_profileclient_list()
-	{
+	{		
 		if(empty($this->_profileclientlist) === false)
 			return($this->_profileclientlist);
-		else if(($list = $this->_service->discuss('xivo[ctiprofilelist,get]',true)) === false
+		elseif($this->_ctiprofiles === false
+		|| ($list = $this->_ctiprofiles->get_profiles_list()) === false
+		|| ($nb = count($list)) === 0)
+			return(false);
+
+		$this->_profileclientlist = array();
+			
+		for($i=0;$i<$nb;$i++)
+		{
+			$ref = &$list[$i]['ctiprofiles'];
+			$this->_profileclientlist[$ref['name']] = $ref['appliname'];
+		}
+			
+		/*
+		 * remove old nethod to get list xivo client profiles
+		 * 
+		if(($list = $this->_service->discuss('xivo[ctiprofilelist,get]',true)) === false
 		|| is_array($list) === false
 		|| isset($list[0]) === false
 		|| dwho::load_class('dwho_json') === false
@@ -430,6 +448,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(preg_match('/^[a-z0-9_-]+$/',$key) === 1)
 				$this->_profileclientlist[$key] = $val;
 		}
+		*/
 
 		return($this->_profileclientlist);
 	}

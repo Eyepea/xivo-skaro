@@ -48,19 +48,9 @@ endif;
 $line_nb = 0;
 $line_list = false;
 
-if(dwho_issa('linefeatures',$info) === true):
-	$context_js = array();
-
-	if(($line_nb = count($info['linefeatures'])) > 0):
-		$line_list = $info['linefeatures'];
-		$context_js[] = 'dwho.dom.set_table_list(\'operator_line\','.$line_nb.');';
-	endif;
-
-	if(isset($context_js[0]) === true):
-		$dhtml = &$this->get_module('dhtml');
-		$dhtml->write_js($context_js);
-	endif;
-endif;
+if(dwho_issa('linefeatures',$info) === true
+&&($line_nb = count($info['linefeatures'])) > 0)
+	$line_list = $info['linefeatures'];
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -75,7 +65,8 @@ endif;
 
 <?php
 
-if (is_array($info['picture']) === true
+if (isset($info['picture']) === true
+&& is_array($info['picture']) === true
 && isset($info['picture']['id']) === true):
 	echo $url->img_attachement($info['picture']['id'],$info['picture']['name']);
 endif;
@@ -250,6 +241,7 @@ endif;
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
 					    'name'	=> 'userfeatures[profileclient]',
 					    'labelid'	=> 'userfeatures-profileclient',
+				   		'altkey'	=> 'name',
 					    'default'	=> $element['userfeatures']['profileclient']['default'],
 					    'selected'	=> $info['userfeatures']['profileclient']),
 				      $profileclient_list);
