@@ -630,8 +630,10 @@ class Command:
             variables = self.commanddict.get('variables')
         channel = self.commanddict.get('channel')
         if channel == 'user:special:me':
-            me = self.rinnerdata.weblist['users'].users()[self.userid]
-            channel = me['protocol'] + '/' + me['name']
+            uinfo = self.rinnerdata.xod_config['users'].keeplist[self.userid] 
+            # TODO: Choose the appropriate line if more than one                 
+            line = self.rinnerdata.xod_config['phones'].keeplist[uinfo['linelist'][0]]              
+            channel = line['identity'].replace('\\','')       
         reply = {'comm': 'sipnotify', 'args': (channel, variables)}
         return reply
 
