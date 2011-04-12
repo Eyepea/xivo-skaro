@@ -39,8 +39,14 @@ $array['element']['outkey']['default'] = '';
 $array['element']['include'] = array();
 $array['element']['include']['default'] = '';
 
+$array['element']['noinclude'] = array();
+$array['element']['noinclude']['default'] = '';
+
 $array['element']['permit'] = array();
 $array['element']['permit']['default'] = '';
+
+$array['element']['deny'] = array();
+$array['element']['deny']['default'] = '';
 
 $array['element']['qualify'] = array();
 $array['element']['qualify']['value'] = array('no','yes',500,1000,1500,2000,2500,3000,3500,4000);
@@ -67,13 +73,15 @@ $array['filter'] = array();
 $array['filter']['macaddr'] = array('set' => true,'chk' => 1, 'maxlen'=>64);
 $array['filter']['model'] = array('set' => true,'chk' => 1, 'key' => array('symmetric','inbound','outbound','none'));
 $array['filter']['host'] = array('set' => true,'chk' => 1, 'maxlen'=>256);
-$array['filter']['inkey'] = array('set' => true,'chk' => 1, 'maxlen'=>64);
-$array['filter']['outkey'] = array('set' => true,'chk' => 1, 'maxlen'=>64);
-$array['filter']['include'] = array('set' => true,'chk' => 1, 'maxlen'=>64);
-$array['filter']['permit'] = array('set' => true,'chk' => 1, 'maxlen'=>64);
+$array['filter']['inkey'] = array('set' => false,'chk' => 2, 'maxlen'=>64);
+$array['filter']['outkey'] = array('set' => false,'chk' => 2, 'maxlen'=>64);
+$array['filter']['include'] = array('set' => false,'chk' => 2, 'maxlen'=>64);
+$array['filter']['noinclude'] = array('set' => false,'chk' => 2, 'maxlen'=>64);
+$array['filter']['permit'] = array('set' => false,'chk' => 2, 'maxlen'=>64);
+$array['filter']['deny'] = array('set' => false,'chk' => 2, 'maxlen'=>64);
 $array['filter']['qualify'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
-$array['filter']['order'] = array('set' => true,'chk' => 1, 'key'=>array('primary','secondary','tertiary','quartiary'));
-$array['filter']['precache'] = array('set' => true,'chk' => 1, 'key' => array('symmetric','inbound','outbound','none'));
+$array['filter']['order'] = array('set' => false,'chk' => 2, 'key'=>array('primary','secondary','tertiary','quartiary'));
+$array['filter']['precache'] = array('set' => false,'chk' => 2, 'key' => array('symmetric','inbound','outbound','none'));
 $array['filter']['description'] = array('set' => false,'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);
 

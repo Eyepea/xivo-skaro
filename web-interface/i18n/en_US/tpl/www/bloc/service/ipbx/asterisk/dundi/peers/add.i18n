@@ -93,3 +93,15 @@ Asterisk config: qualify
  
 ; hlp_fm_dundipeer-order
 Asterisk config: order
+
+; fm_dundipeer_noinclude
+No include:
+
+; hlp_fm_dundipeer-noinclude
+Config asterisk: noinclude
+
+; fm_dundipeer_deny
+Deny:
+
+; hlp_fm_dundipeer-deny
+Config asterisk: deny

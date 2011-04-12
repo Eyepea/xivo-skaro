@@ -93,6 +93,16 @@ endif;
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'dundipeer', 'include')) )),
 
+	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_noinclude'),
+			  'name'	=> 'dundipeer[noinclude]',
+			  'labelid'	=> 'dundipeer-noinclude',
+			  'size'	=> 15,		
+		    'help'	=> $this->bbf('hlp_fm_dundipeer-noinclude'),
+			  'default'	=> $element['dundipeer']['noinclude']['default'],
+			  'value'	=> $info['dundipeer']['noinclude'],
+			  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'dundipeer', 'noinclude')) )),
+
 	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_permit'),
 			  'name'	=> 'dundipeer[permit]',
 			  'labelid'	=> 'dundipeer-permit',
@@ -102,6 +112,16 @@ endif;
 			  'value'	=> $info['dundipeer']['permit'],
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'dundipeer', 'permit')) )),
+
+	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_deny'),
+			  'name'	=> 'dundipeer[deny]',
+			  'labelid'	=> 'dundipeer-deny',
+			  'size'	=> 15,
+		    'help'	=> $this->bbf('hlp_fm_dundipeer-deny'),
+			  'default'	=> $element['dundipeer']['deny']['default'],
+			  'value'	=> $info['dundipeer']['deny'],
+			  'error'	=> $this->bbf_args('error',
+				$this->get_var('error', 'dundipeer', 'deny')) )),
 
 	$form->select(array('desc'	=> $this->bbf('fm_dundipeer_qualify'),
 				    'name'	=> 'dundipeer[qualify]',

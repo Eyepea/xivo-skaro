@@ -20,10 +20,10 @@ Clé (appels entrants) :
 Clé (appels sortants) : 
 
 ; fm_dundipeer_include
-Include : 
+Inclure dans le contexte : 
 
 ; fm_dundipeer_permit
-Permit : 
+Contexte de recherche autorisé : 
 
 ; fm_dundipeer_qualify
 Supervision : 
@@ -91,3 +91,15 @@ Config asterisk: qualify
  
 ; hlp_fm_dundipeer-order
 Config asterisk: order
+
+; fm_dundipeer_noinclude
+Ne pas inclure dans le contexte : 
+
+; hlp_fm_dundipeer-noinclude
+Config asterisk: noinclude
+
+; fm_dundipeer_deny
+Contexte de recherche interdit : 
+
+; hlp_fm_dundipeer-deny
+Config asterisk: deny
