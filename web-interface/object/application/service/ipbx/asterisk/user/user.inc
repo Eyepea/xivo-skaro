@@ -1292,8 +1292,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function add_picture()
 	{
-		if(($rs = $this->get_result('picture')) === null
-		|| $rs === false)
+		if(($rs = $this->get_result('picture')) === null)
+			return($rs);
+		elseif($rs === false)
 			return(false);
 
 		$this->_return['picture'] = $this->_attachment->add($rs);
