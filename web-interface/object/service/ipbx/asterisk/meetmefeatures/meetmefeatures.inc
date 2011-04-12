@@ -47,6 +47,8 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 	{
 		$this->_identity->_prepare_identity($data);
 
+		$data['id'] = (int) $data['id'];
+		$data['meetmeid'] = (int) $data['meetmeid'];
 		$data['admin_announceusercount']	= (bool) $data['admin_announceusercount'];
 		$data['admin_moderationmode']		= (bool) $data['admin_moderationmode'];
 		$data['admin_initiallymuted']		= (bool) $data['admin_initiallymuted'];

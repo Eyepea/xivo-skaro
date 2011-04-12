@@ -42,6 +42,14 @@ class xivo_service_asterisk_userqueueskill extends xivo_service_asterisk_abstrac
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['userid'] = (int) $data['userid'];
+		$data['skillid'] = (bool) $data['skillid'];
+
+		return($data);
+	}
+	
 	function get_skills($userid)
 	{
 	    return $this->_dso->get_skills($userid);

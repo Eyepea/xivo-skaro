@@ -26,6 +26,9 @@ class xivo_service_asterisk_realstatic_staticvoicemail extends xivo_service_aste
 
 	function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
+		$data['commented'] = (bool) $data['commented'];
+		
 		if($data['category'] === 'zonemessages')
 		{
 			$data['name'] = $data['var_name'];

@@ -41,6 +41,13 @@ class xivo_service_asterisk_sipauthentication extends xivo_service_asterisk_abst
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['usersip_id'] = (int) $data['usersip_id'];
+
+		return($data);
+	}
 }
 
 ?>

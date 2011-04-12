@@ -42,6 +42,15 @@ class xivo_service_asterisk_schedule_time extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['schedule_id'] = (int) $data['schedule_id'];
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
+
 }
 
 ?>

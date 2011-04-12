@@ -47,6 +47,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 	{
 		$this->_identity->_prepare_identity($data);
 
+		$data['id'] = (int) $data['id'];
 		$data['faxdetectenable'] = (bool) $data['faxdetectenable'];
 		$data['commented'] = (bool) $data['commented'];
 

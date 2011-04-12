@@ -40,6 +40,14 @@ class xivo_service_asterisk_voicemailfeatures extends xivo_service_asterisk_abst
 
 		$this->_load_config();
 	}
+
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['voicemailid'] = (int) $data['voicemailid'];
+
+		return($data);
+	}
 }
 
 ?>

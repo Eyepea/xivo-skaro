@@ -48,6 +48,7 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 	{
 		$this->_identity->_prepare_identity($data);
 
+		$data['id'] = (int) $data['id'];
 		$data['commented'] = (bool) $data['commented'];
 		$data['silent'] = (bool) $data['silent'];
 

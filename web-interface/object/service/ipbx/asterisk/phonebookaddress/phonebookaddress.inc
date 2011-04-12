@@ -42,6 +42,14 @@ class xivo_service_asterisk_phonebookaddress extends xivo_service_asterisk_abstr
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['phonebookid'] = (int) $data['phonebookid'];
+
+		return($data);
+	}
+
 	function get_all_type_by_phonebook($phonebookid,$prepare=true)
 	{
 		if(($phonebookid = dwho_ulongint($phonebookid)) === 0)

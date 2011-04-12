@@ -46,6 +46,9 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 	{
 		if(dwho_has_len($data,'exten') === true && $data['exten']{0} === '_')
 			$data['exten'] = substr($data['exten'],1);
+			
+		$data['id'] = (int) $data['id'];
+		$data['rightcallid'] = (int) $data['rightcallid'];
 
 		return($data);
 	}

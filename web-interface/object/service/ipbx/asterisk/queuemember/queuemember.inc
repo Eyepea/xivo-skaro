@@ -42,6 +42,14 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['userid'] = (int) $data['userid'];
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
+
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)

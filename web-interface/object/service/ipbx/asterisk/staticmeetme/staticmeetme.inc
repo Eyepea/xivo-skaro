@@ -26,6 +26,8 @@ class xivo_service_asterisk_realstatic_staticmeetme extends xivo_service_asteris
 
 	function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
+		$data['commented'] = (bool) $data['commented'];
 		if($data['category'] === 'rooms'
 		&& $data['var_name'] === 'conf')
 			return($this->parse_room($data));

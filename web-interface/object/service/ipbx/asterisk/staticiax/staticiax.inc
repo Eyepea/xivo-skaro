@@ -27,6 +27,8 @@ class xivo_service_asterisk_realstatic_staticiax extends xivo_service_asterisk_r
 
 	function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
+		$data['commented'] = (bool) $data['commented'];
 		if($data['category'] === 'general'
 		&& $data['var_name'] === 'register'
 		&& is_scalar($data['var_val']) === true

@@ -27,6 +27,9 @@ class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk
 
 	function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
+		$data['commented'] = (bool) $data['commented'];
+		
 		if($data['category'] === 'agents'
 		&& $data['var_name'] === 'agent')
 		{

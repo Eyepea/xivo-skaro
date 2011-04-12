@@ -42,6 +42,14 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['rightcallid'] = (int) $data['rightcallid'];
+
+		return($data);
+	}
+
 	function is_valid($type,$typeval,$disable=null)
 	{
 		$type = strval($type);

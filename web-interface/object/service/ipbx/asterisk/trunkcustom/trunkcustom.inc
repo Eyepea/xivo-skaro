@@ -46,7 +46,8 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$this->_identity->_prepare_identity($data);
-
+		
+		$data['id'] = (int) $data['id'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);

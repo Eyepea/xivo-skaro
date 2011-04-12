@@ -41,6 +41,15 @@ class xivo_service_asterisk_serverfeatures extends xivo_service_asterisk_abstrac
 
 		$this->_load_config();
 	}
+
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['serverid'] = (int) $data['serverid'];
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
 }
 
 ?>

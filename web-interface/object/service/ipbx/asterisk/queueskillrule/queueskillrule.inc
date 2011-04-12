@@ -49,6 +49,13 @@ class xivo_service_asterisk_queueskillrule extends xivo_service_asterisk_abstrac
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+
+		return($data);
+	}
+
 	/** 
 		Parser & Lexer to check a rule string
 	*/

@@ -43,6 +43,8 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
+		$data['protocolid'] = dwho_ulongint($data['protocolid']);
 		$data['registerid'] = dwho_ulongint($data['registerid']);
 		$data['registercommented'] = (bool) $data['registercommented'];
 

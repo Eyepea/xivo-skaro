@@ -41,6 +41,14 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+	
+	function _prepare($data)
+	{
+		$data['outcallid'] = (int) $data['outcallid'];
+		$data['trunkfeaturesid'] = (int) $data['trunkfeaturesid'];
+		
+		return($data);
+	}
 
 	function _origin($type,$val=null)
 	{

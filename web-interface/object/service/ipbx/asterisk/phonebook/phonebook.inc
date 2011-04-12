@@ -48,6 +48,8 @@ class xivo_service_asterisk_phonebook extends xivo_service_asterisk_abstract
 
 		if($data['fullname'] === '')
 			$data['fullname'] = $data['displayname'];
+			
+		$data['id'] = (int) $data['id'];
 
 		return($data);
 	}

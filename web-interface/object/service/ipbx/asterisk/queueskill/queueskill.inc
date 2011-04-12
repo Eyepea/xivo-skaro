@@ -41,6 +41,14 @@ class xivo_service_asterisk_queueskill extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['catid'] = (int) $data['catid'];
+
+		return($data);
+	}
 }
 
 ?>

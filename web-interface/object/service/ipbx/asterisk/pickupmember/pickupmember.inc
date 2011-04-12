@@ -41,5 +41,13 @@ class xivo_service_asterisk_pickupmember extends xivo_service_asterisk_abstract
 
 		$this->_load_config();	
 	}
+
+	function _prepare($data)
+	{
+		$data['pickupid'] = (int) $data['pickupid'];
+		$data['memberid'] = (int) $data['memberid'];
+
+		return($data);
+	}
 }
 ?>

@@ -42,6 +42,15 @@ class xivo_service_asterisk_schedule_path extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['schedule_id'] = (int) $data['schedule_id'];
+		$data['pathid'] = (bool) $data['pathid'];
+		$data['order'] = (bool) $data['order'];
+
+		return($data);
+	}
+
 	function schedule_add($schedule_id, $path, $pathid)
 	{
 		// no schedule

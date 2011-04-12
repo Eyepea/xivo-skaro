@@ -40,6 +40,14 @@ class xivo_service_asterisk_staticsccp extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
 }
 
 ?>

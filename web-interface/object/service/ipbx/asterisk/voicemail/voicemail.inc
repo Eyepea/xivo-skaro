@@ -48,6 +48,7 @@ class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 	{
 		$this->_identity->_prepare_identity($data);
 
+		$data['uniqueid'] = (int) $data['uniqueid'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);

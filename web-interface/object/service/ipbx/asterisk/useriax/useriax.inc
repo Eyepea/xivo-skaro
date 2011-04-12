@@ -43,6 +43,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$data['id'] = (int) $data['id'];
 		$data['initialized'] = false;
 		$data['commented'] = (bool) $data['commented'];
 		$data['identity'] = strtoupper($data['protocol']).'/'.$data['name'];
