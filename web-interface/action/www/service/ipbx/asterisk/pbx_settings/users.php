@@ -70,8 +70,12 @@ switch($act)
 		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 		
 		$dhtml = &$_TPL->get_module('dhtml');
+		
+		// timepicker
 		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
 		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
+		
+		// autocomplete
 		$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);
 		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js',true);
 		

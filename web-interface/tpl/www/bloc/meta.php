@@ -43,9 +43,6 @@
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery/jquery.min.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery-ui/jquery-ui.min.js'));?>"></script>
 
-<?php //and add temporarily jquery-ui in local jsdir because version of jquery-ui is to old in squeeze ?>
-<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/jquery-ui.min.js'));?>"></script>
-
 <?php
 
 $dhtml = &$this->get_module('dhtml');

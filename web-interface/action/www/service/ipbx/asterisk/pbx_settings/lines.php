@@ -72,7 +72,6 @@ switch($act)
 		if (isset($config['user'],$config['user']['readonly-idpwd']))
 		{
 			$ro = !($config['user']['readonly-idpwd'] == 'false');
-
 			$lol = 1;
 			while ($lol === 1)
 			{

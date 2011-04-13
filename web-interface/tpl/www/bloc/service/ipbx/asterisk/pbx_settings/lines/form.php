@@ -39,10 +39,11 @@ if(isset($info['protocol']) === true):
 	$amaflags = (string) dwho_ak('amaflags',$info['protocol'],true);
 	$qualify = (string) dwho_ak('qualify',$info['protocol'],true);
 	$host = (string) dwho_ak('host',$info['protocol'],true);
+	$number = (string) dwho_ak('number',$info['linefeatures'],true);
 else:
 	$allow = array();
 	$protocol = $this->get_var('proto');
-	$context = $amaflags = $qualify = $host = '';
+	$context = $amaflags = $qualify = $host = $number = '';
 endif;
 
 $codec_active = empty($allow) === false;
@@ -53,10 +54,15 @@ if($this->get_var('fm_save') === false):
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
-?>
-<?=$form->hidden(array('name' => 'proto','value' => $protocol))?>
-<?php
-	$filename = dirname(__FILE__).'/protocol/'.$protocol.'.php';
-	if (is_readable($filename) === true)
-		include($filename);
+echo $form->hidden(array('name' => 'proto','value' => $protocol));
+
+$hasnumber = false;
+if (empty($number) === false):
+	echo $form->hidden(array('name' => 'protocol[context]','value' => $context));
+	$hasnumber = true;
+endif;
+
+$filename = dirname(__FILE__).'/protocol/'.$protocol.'.php';
+if (is_readable($filename) === true)
+	include($filename);
 ?>

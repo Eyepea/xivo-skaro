@@ -56,6 +56,8 @@
 		echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
 					    'name'		=> 'protocol[context]',
 					    'labelid'	=> 'protocol-context',
+					 	'disabled'	=> $hasnumber,
+						'class'    	=> ($hasnumber ? 'it-disabled' : ''),
 					    'key'		=> 'identity',
 					    'altkey'	=> 'name',
 					    'selected'	=> $context),
