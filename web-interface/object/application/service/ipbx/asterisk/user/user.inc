@@ -686,6 +686,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$iduserfeatures = 0;
 		if(isset($arr['id']) === true)
 			$iduserfeatures = (int) $arr['id'];
+		elseif(isset($this->_info['userfeatures']) === true
+		&& isset($this->_info['userfeatures']['id']) === true)
+			$iduserfeatures = (int) $this->_info['userfeatures']['id'];
 
 		if(isset($arr['userfeatures']['callerid']) === true
 		&& empty($arr['userfeatures']['callerid']) === false)
@@ -716,8 +719,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->set_userfeatures($action,$arr['userfeatures']);
 		$this->set_picture($iduserfeatures);
 
-		if(dwho_issa('linefeatures',$arr) === true
-		&& isset($iduserfeatures) === true)
+		if(dwho_issa('linefeatures',$arr) === true)
 			$this->set_linefeatures($arr,$iduserfeatures);
 
 		$simultcalls = (int) $this->get_result_var('userfeatures','simultcalls');
@@ -934,12 +936,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('linefeatures','empty');
 			return(false);
 		}
-
+		
 		array_pop($reslist);
 
 		/*
-		 * je prend quelle line ?????????????????????
-
 		if(dwho_issa('queue',$arr) === true
 		&& dwho_issa('queue-select',$arr) === true)
 			$this->set_queuemember($arr['queue'],
@@ -948,15 +948,36 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					       $context,
 					       $number,
 					       $protocolname);
-
 		*/
-
-		$simultcalls = (int) $this->get_result_var('userfeatures','simultcalls');
-		$musiconhold = (string) $this->get_result_var('userfeatures','musiconhold');
 
 		for($i = 0;$i < count($reslist);$i++)
 		{
 			$ref = &$reslist[$i];
+
+			if (isset($ref['id']) === true
+			&& (int) $ref['id'] !== 0)
+			{
+				$this->_line->_reset_info();
+				$this->_line->_reset();
+				if (($line = $this->_line->get($ref['id'])) === false
+				|| ($linefeatures = $line['linefeatures']) === false)
+				{
+					$errnb++;
+					$error[$i] = 'line_not_exist';
+					continue;
+				}
+				$ref['id'] = (int) $ref['id'];
+				$ref['protocol'] = $linefeatures['protocol'];
+				$ref['protocolid'] = (int) $linefeatures['protocolid'];
+				$ref['name'] = $linefeatures['name'];
+				$ref['context'] = isset($ref['context']) ? $ref['context'] : $linefeatures['context'];
+			}
+			else
+			{
+				$ref['protocolid'] = 0;
+				$ref['name'] = $this->gen_password(6,true);
+				$ref['secret'] = $this->gen_password(6);
+			}
 
 			$protocolname = $ref['protocol'];
 			$number = $ref['number'];
@@ -983,35 +1004,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				
 			$callerid = $this->get_result_var('userfeatures','callerid');
 			$ref['callerid'] = $this->_service->mk_callerid($callerid,$number,$protocolname);
-
-			if (isset($ref['id']) === true
-			&& (int) $ref['id'] !== 0)
-			{
-				$this->_line->_reset_info();			
-				$this->_line->_reset();
-				if (($line = $this->_line->get($ref['id'])) === false
-				|| ($linefeatures = $line['linefeatures']) === false)
-				{
-					$errnb++;
-					$error[$i] = 'line_not_exist';
-					continue;
-				}
-				$ref['id'] = (int) $ref['id'];
-				$ref['protocol'] = $linefeatures['protocol'];
-				$ref['protocolid'] = $linefeatures['protocolid'];
-				$ref['name'] = $linefeatures['name'];
-				/*
-				$ref['id'] = (int) $ref['id'];
-				$ref['protocolid'] = 0;
-				*/
-			}
-			else
-			{
-				$ref['protocolid'] = 0;
-				$ref['iduserfeatures'] = 0;
-				$ref['name'] = $this->gen_password(6,true);
-				$ref['secret'] = $this->gen_password(6);
-			}
 
 			if($this->_linefeatures->chk_values($ref) === false)
 			{
@@ -1253,7 +1245,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->get_errnb() > 0
 		|| ($userfeaturesid = $this->add_userfeatures()) === false
 		|| $this->add_picture($userfeaturesid) === false
-		|| $this->add_linefeatures($userfeaturesid) === false
+		|| $this->edit_linefeatures($userfeaturesid) === false
 		|| $this->add_groupmember($userfeaturesid) === false
 		|| $this->add_queuemember($userfeaturesid) === false
 		|| $this->add_rightcall($userfeaturesid) === false
@@ -1264,7 +1256,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->add_schedule_path($userfeaturesid) === false)
 		{
 			$r = false;
-
 			if($userfeaturesid !== null)
 				$this->_reverse_add();
 		}
@@ -1295,60 +1286,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_return['picture'] = $this->_attachment->add($rs);
 
 		return($this->_return['picture']);
-	}
-
-	function add_linefeatures($userfeaturesid)
-	{
-		if(($rs = $this->get_result('linefeatures')) === null
-		|| $rs === false)
-			return(true);
-
-		if($this->_line === false)
-			return(false);
-
-		$userfeatures = $this->_info['userfeatures'];
-		$userfeatures['id'] = $userfeaturesid;
-
-		$return = $error = array();
-		$errnb = 0;
-
-		$arr = array();
-		$arr['userfeatures'] = $userfeatures;
-
-		for($i = 0;$i < count($rs);$i++)
-		{
-			$line = &$rs[$i];
-
-			$methodset = 'set_add';
-			$method = 'add';
-
-			$protocolname = $line['protocol'];
-
-			$arr['linefeatures'] = $line;
-			$arr['protocol'] = $line;
-
-			if($this->_line->set_add($arr,$protocolname) === false
-			|| $this->_line->add() === false)
-			{
-				$errnb++;
-				$return[$i] = $line;
-				$error[$i] = $this->_line->get_error();
-				$msgkey = array_shift(array_keys($this->_line->get_error()));
-				$msg = array_shift($this->_line->get_error());
-				if (empty($msgkey) === false)
-					dwho_report::push('error','Line '.($i+1).': '.$msgkey.' '.$msg,'linefeatures');
-			}
-			else
-				$return[$i] = $line;
-		}
-
-		if ($errnb >> 0)
-		{
-			$this->_set_error('linefeatures',$error);
-			return(false);
-		}
-
-		return(($this->_return['linefeatures'] = $return));
 	}
 
 	function add_groupmember($userfeaturesid)
@@ -1566,7 +1503,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->_status = '';
 			return(false);
-		}			
+		}
 
 		if($this->edit_linefeatures() === false
 		|| $this->edit_groupmember() === false
@@ -1620,7 +1557,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(($this->_return['picture'] = $return));
 	}
 
-	function edit_linefeatures()
+	function edit_linefeatures($userfeaturesid=0)
 	{
 		if(($rs = $this->get_result('linefeatures')) === null
 		|| ($nbrs = count($rs)) === 0)
@@ -1641,13 +1578,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 		}
 
-		$userfeatures = $this->_info['userfeatures'];
-
 		$return = $error = array();
 		$errnb = 0;
 
 		$arr = array();
-		$arr['userfeatures'] = $userfeatures;
+		$arr['userfeatures'] = $this->get_result('userfeatures');
+		
 
 		$linefeatures = array();
 		$linefeatures['list'] = $res;
@@ -1679,6 +1615,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nbrs;$i++)
 		{
 			$line = &$rs[$i];
+			
+			if($userfeaturesid !== 0)
+				$line['iduserfeatures'] = (int) $userfeaturesid;			
 		
 			$this->_line->_reset_info();
 
@@ -1714,7 +1653,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			|| $this->_line->$method() === false)
 			{
 				$errnb++;
-				$return[$i] = $line;
 				$error[$i] = $this->_line->get_error();
 				$msgkey = array_shift(array_keys($this->_line->get_error()));
 				$msg = array_shift($this->_line->get_error());
@@ -1723,8 +1661,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				else
 					dwho_report::push('error','Line '.($i+1).': unknow error during '.$method,'linefeatures');
 			}
-			else
-				$return[$i] = $line;
+				
+			$return[$i] = $line;
 		}
 
 		if ($errnb >> 0)
@@ -2285,6 +2223,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['userfeatures']['agentid'] = $agentid;
 
 		unset($arr['userfeatures']['agentnumber']);
+		
+		if(dwho_issa('linefeatures',$arr) === true)
+			array_push($arr['linefeatures']['id'],0);
 
 		return($arr);
 	}
