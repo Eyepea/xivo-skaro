@@ -1426,6 +1426,14 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
+	function _prepare_import($arr)
+	{
+		if(dwho_issa('protocol',$arr) === false)
+			return(false);
+		
+		return($arr);
+	}
+
 	function add_from_json()
 	{
 		if(($data = $this->_get_data_from_json()) === false
