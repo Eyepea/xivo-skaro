@@ -1,0 +1,17 @@
+[pkg_12x0IP-fw]
+desc: Firmware for Avaya 1220/1230 IP Deskphone
+version: 04.01.13.00
+files: file_12x0IP-fw
+install_proc: install_avaya-fw
+
+
+
+[install_avaya-fw]
+a-b: cp $FILE1 $DOC_ROOT/firmware/
+
+
+
+[file_12x0IP-fw]
+url: ftp://ftp.avaya.com/incoming/Up1cku9/tsoweb/11001200/041211/SIP12x004.01.13.00.bin
+size: 4101541
+sha1sum: 6ecb6064a06f91bec5bdb38b571b89e0b9aed853
