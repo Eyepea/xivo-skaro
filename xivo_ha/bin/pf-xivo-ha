@@ -12,7 +12,7 @@ from xivo_ha.manage_cluster import ClusterResourceManager
 from xivo_ha.manage_cluster import DatabaseManagement
 
 config = ConfigParser.RawConfigParser()
-config.read('/etc/pf-xivo/ha/pf-xivo-ha.conf')
+config.read('/etc/pf-xivo/pf-xivo-ha.conf')
 #config.read('etc/pf-xivo-ha.conf')
 
 # from http://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
@@ -56,6 +56,7 @@ if __name__ == '__main__':
     services = config.get("default", "services").split(', ')
 
     node_management  = ClusterEngine(network_addr, multicast_addr)
+    cluster_management = ClusterResourceManager(services)
 
     for address in network_addr, multicast_addr:
         is_valid_ipv4_address(address)
@@ -73,7 +74,8 @@ if __name__ == '__main__':
 
     if options.cluster:
         if options.cluster == "init":
-            pass
+           cluster_management.initialize() 
+            
         elif options.cluster == "update":
             pass
         else:

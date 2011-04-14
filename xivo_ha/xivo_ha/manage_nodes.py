@@ -43,7 +43,6 @@ class ClusterEngine(object):
             return True
 
     def _template_available(self, template):
-            print(template)
             if os.path.isfile(template):
                 return os.path.isfile(template)
             else:

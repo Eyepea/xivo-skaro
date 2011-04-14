@@ -10,24 +10,25 @@ from xivo_ha.manage_nodes import ManageService
 
 class ClusterEngineTestCase(unittest.TestCase):
     def setUp(self):
-        self.template = "../templates/corosync"
-        self.config   = "%s/corosync.conf" % self.template
-        self.ip_addr = "192.168.1.0"
-        self.mc_addr = "226.194.16.1"
+        self.template      = "templates/corosync"
+        self.config        = "%s/corosync.conf" % self.template
+        self.ip_addr       = "192.168.1.0"
+        self.mc_addr       = "226.194.16.1"
+        self.test_dir      =  "tests/tmp"
 
-        self.init_path = "tmp/etc/init.d" 
-        self.corosync_path = "tmp/etc/corosync"
-        self.default_path = "tmp/etc/default"
+        self.init_path = "%s/etc/init.d"  % self.test_dir
+        self.corosync_path = "%s/etc/corosync" % self.test_dir
+        self.default_path = "%s/etc/default" % self.test_dir
         for path in (self.init_path, self.corosync_path, self.default_path):
             if not os.path.isdir(path):
                 os.makedirs(path)
         
         # /etc/init.d/corosync
-        shutil.copy2("templates/corosync", self.init_path)
+        shutil.copy2("tests/templates/corosync", self.init_path)
         self.init_file = "%s/corosync" % self.init_path
         # /etc/default/corosync
 
-        self.default_file = "tmp/etc/default/corosync"
+        self.default_file = "%s/corosync" % self.default_path
         f = open(self.default_file, 'w')
         with f:
             f.write("START=no")
@@ -86,8 +87,8 @@ class ClusterEngineTestCase(unittest.TestCase):
 
 class ManageServiceTestCase(unittest.TestCase):
     def setUp(self):
-        self.init_path = "tmp/etc/init.d" 
-        shutil.copy2("templates/service", self.init_path)
+        self.init_path = "tests/tmp/etc/init.d" 
+        shutil.copy2("tests/templates/service", self.init_path)
 
     def test_is_not_available(self):
         data = ManageService("service-linux", self.init_path)
