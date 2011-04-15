@@ -1,3 +1,4 @@
+# -!- coding: utf8 -*-
 from __future__ import with_statement
 """ha module
 """

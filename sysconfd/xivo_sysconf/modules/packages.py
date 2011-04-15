@@ -1,3 +1,4 @@
+# -!- coding: utf8 -*-
 """packages module
 
 Copyright (C) 2010  Proformatique
