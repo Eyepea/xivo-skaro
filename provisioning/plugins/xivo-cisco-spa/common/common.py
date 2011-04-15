@@ -114,6 +114,7 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
         #   "Linksys/SPA-962-6.1.5(a) (4MM00F903042)"
         #   "Cisco/SPA501G-7.4.4 (8843E157DDCC)(CBT141100HR)"
         #   "Cisco/SPA508G-7.4.4 (0002FDFF2103)(CBT141400UK)"
+        #   "Cisco/SPA508G-7.4.8a (0002FDFF2103)(CBT141400UK)"
         #   "Cisco/SPA525G-7.4.4 (CBT141900G7)"
         #   "Cisco/SPA525G-7.4.7 (CBT141900G7)"
         if ua.startswith('Linksys/'):
