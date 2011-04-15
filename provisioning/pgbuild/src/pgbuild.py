@@ -282,13 +282,14 @@ def _get_package_sha1sum(package):
 
 
 def _get_package_info(package):
+    # Return a tuple <package name, package info>
     result = {}
     result['filename'] = _get_package_filename(package)
-    result['name'] = _get_package_name(package)
-    result.update(_get_package_plugin_info(package, result['name']))
+    name = _get_package_name(package)
+    result.update(_get_package_plugin_info(package, name))
     result['dsize'] = _get_package_dsize(package)
     result['sha1sum'] = _get_package_sha1sum(package)
-    return result
+    return name, result
 
 
 def _version_cmp(version1, version2):
@@ -324,18 +325,17 @@ def create_db_op(opts, args, src_dir, dest_dir):
     # get package infos, and only for the most recent packages
     package_infos = {}
     for package in packages:
-        package_info = _get_package_info(package)
-        name = package_info['name']
-        if name in package_infos:
+        package_name, package_info = _get_package_info(package)
+        if package_name in package_infos:
             cur_version = package_info['version']
-            last_version = package_infos[name]['version']
+            last_version = package_infos[package_name]['version']
             print >>stderr, "warning: found package %s in version %s and %s" % \
-                  (name, cur_version, last_version)
+                  (package_name, cur_version, last_version)
             if _version_cmp(cur_version, last_version) > 0:
-                package_infos[name] = package_info
+                package_infos[package_name] = package_info
         else:
             print "  Adding package '%s'..." % package
-            package_infos[name] = package_info
+            package_infos[package_name] = package_info
     
     # create db file
     fobj = open(db_file, 'w')
