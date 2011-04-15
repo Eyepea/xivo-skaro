@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <settings>
   <phone-settings>
+    <vlan perm="R"></vlan>
+    <ntp_server perm="R"></ntp_server>
     <time_24_format perm="R">on</time_24_format>
     <admin_mode perm="R">on</admin_mode>
+    <admin_mode_password perm="R">12345</admin_mode_password>
     <display_method perm="R">display_name_number</display_method>
-    <http_user perm="R">guest</http_user>
-    <http_pass perm="R">guest</http_pass>
+    <http_user perm="R"></http_user>
+    <http_pass perm="R"></http_pass>
     <pnp_config perm="R">off</pnp_config>
     <update_policy perm="R">auto_update</update_policy>
-    <user_dtmf_info idx="1" perm="R">on</user_dtmf_info>
-    <user_server_type idx="1" perm="R">Default</user_server_type>
     <mwi_dialtone perm="R">normal</mwi_dialtone>
     <subscription_delay perm="R">100</subscription_delay>
+    <mailbox_active perm="R">on</mailbox_active>
+    
+    <user_active idx="1" perm="R">off</user_active>
+    <user_active idx="2" perm="R">off</user_active>
+    <user_active idx="3" perm="R">off</user_active>
+    <user_active idx="4" perm="R">off</user_active>
+    <user_active idx="5" perm="R">off</user_active>
+    <user_active idx="6" perm="R">off</user_active>
+    <user_active idx="7" perm="R">off</user_active>
+    <user_active idx="8" perm="R">off</user_active>
+    <user_active idx="9" perm="R">off</user_active>
+    <user_active idx="10" perm="R">off</user_active>
+    <user_active idx="11" perm="R">off</user_active>
+    <user_active idx="12" perm="R">off</user_active>
     
     <!-- http://wiki.snom.com/Interoperability/PBX/Asterisk-->
     <call_completion perm="R">off</call_completion>

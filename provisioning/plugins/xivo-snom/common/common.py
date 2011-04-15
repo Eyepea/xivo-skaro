@@ -1,10 +1,14 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin for Snom 300, 320, 360, 370, 820, 821 and 870 in version 8.4.18."""
+"""Common code shared by the various xivo-snom plugins.
+
+Support the 300, 320, 360, 370, 820, 821 and 870.
+
+"""
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,41 +24,41 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 import os.path
 import re
-from jinja2 import TemplateNotFound
+from provd import sip
 from provd import tzinform
+from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
-    PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT,\
-    INCOMPLETE_SUPPORT
+    PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT
 from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
+from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer
-from twisted.web.resource import Resource
-from twisted.web.static import Data, File
+from twisted.python import failure
+
+logger = logging.getLogger('plugin.xivo-snom')
 
 
 class BaseSnomHTTPDeviceInfoExtractor(object):
-    def extract(self, request, request_type):
-        assert request_type == 'http'
-        return defer.succeed(self._do_extract(request))
+    _UA_REGEX = re.compile(r'\bsnom(\w+)-SIP ([\d.]+)')
+    _PATH_REGEX = re.compile(r'\bsnom\w+-([\dA-F]{12})\.htm$')
     
-    _UA_REGEX = re.compile(r'\bsnom([\w]+)-SIP ([\w.]+)')
-    _FILENAME_REGEX = re.compile(r'\b([\dA-F]{12})\b')
+    def extract(self, request, request_type):
+        return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
-            dev_info = {}
-            self._extract_from_ua(ua, dev_info)
+            dev_info = self._extract_from_ua(ua)
             if dev_info:
-                dev_info['vendor'] = 'Snom'
-                filename = request.path
-                self._extract_from_filename(filename, dev_info)
+                self._extract_from_path(request.path, dev_info)
                 return dev_info
+        return None
     
-    def _extract_from_ua(self, ua, dev_info):
+    def _extract_from_ua(self, ua):
         # HTTP User-Agent:
         #   "Mozilla/4.0 (compatible; snom lid 3605)" --> Snom 6.5.xx
         #   "Mozilla/4.0 (compatible; snom320-SIP 6.5.20; snom320 jffs2 v3.36; snom320 linux 3.38)"
@@ -65,22 +69,26 @@ class BaseSnomHTTPDeviceInfoExtractor(object):
         #   "Mozilla/4.0 (compatible; snom870-SIP 8.4.18 SPEAr300 SNOM 1.4)"
         m = self._UA_REGEX.search(ua)
         if m:
-            dev_info['model'], dev_info['version'] = m.groups()
+            raw_model, raw_version = m.groups()
+            return {u'vendor': u'Snom',
+                    u'model': raw_model.decode('ascii'),
+                    u'version': raw_version.decode('ascii')}
+        return None
     
-    def _extract_from_filename(self, filename, dev_info):
-        m = self._FILENAME_REGEX.search(filename)
+    def _extract_from_path(self, path, dev_info):
+        m = self._PATH_REGEX.search(path)
         if m:
-            dev_info['mac'] = norm_mac(m.group(1))
+            raw_mac = m.group(1)
+            dev_info[u'mac'] = norm_mac(raw_mac.decode('ascii'))
 
 
 class BaseSnomPgAssociator(BasePgAssociator):
-    def __init__(self, models, version, compat_models):
+    def __init__(self, models, version):
         self._models = models
         self._version = version
-        self._compat_models = compat_models
         
     def _do_associate(self, vendor, model, version):
-        if vendor == 'Snom':
+        if vendor == u'Snom':
             if version is None:
                 # Could be an old version with no XML support
                 return PROBABLE_SUPPORT
@@ -91,8 +99,6 @@ class BaseSnomPgAssociator(BasePgAssociator):
                 if version == self._version:
                     return FULL_SUPPORT
                 return COMPLETE_SUPPORT
-            if model in self._compat_models:
-                return INCOMPLETE_SUPPORT
             return PROBABLE_SUPPORT
         return IMPROBABLE_SUPPORT
     
@@ -113,136 +119,186 @@ class BaseSnomPgAssociator(BasePgAssociator):
         return False
 
 
-class BaseSnomHTTPService(Resource):
-    # XXX note that if we use common configuration, this could be removed
-    """Dynamic and static HTTP service."""
-    
-    def __init__(self, snom_pg):
-        Resource.__init__(self)
-        self._app = snom_pg._app
-        self._tpl_helper = snom_pg._tpl_helper
-        self._service = File(snom_pg._tftpboot_dir)
-        self._encoding = snom_pg._ENCODING
-    
-    def _static_render(self, path, request):
-        resrc = self._service
-        if resrc.isLeaf:
-            request.postpath.insert(0, request.prepath.pop())
-            return resrc
-        else:
-            return resrc.getChildWithDefault(path, request)
-    
-    def getChild(self, path, request):
-        # XXX that makes me think, how good will it handle the load, for
-        # example, after a power failure, if a large amount of phones
-        # reboot at the same time
-        # we do not render the base.xxx.tpl -- these are generated per request
-        if not path.startswith('base'):
-            dev = request.prov_dev
-            if dev and 'config' in dev:
-                try:
-                    tpl = self._tpl_helper.get_template(path + '.tpl')
-                except TemplateNotFound:
-                    pass
-                else:
-                    config = self._app.retrieve_cfg(dev['config'])
-                    content = self._tpl_helper.render(tpl, config, self._encoding)
-                    return Data(content, 'application/xml')
-        return self._static_render(path, request)
-
-
 class BaseSnomPlugin(StandardPlugin):
     _ENCODING = 'UTF-8'
+    _XX_DTMF = {
+        u'RTP-in-band': u'off',
+        u'RTP-out-of-band': u'off',
+        u'SIP-INFO': u'sip_info_only'
+    }
+    _XX_DTMF_DEF = u'off'
     _XX_LANG = {
-        'de_DE': ('Deutsch', 'GER'),
-        'en_US': ('English', 'USA'),
-        'es_ES': ('Espanol', 'ESP'),
-        'fr_FR': ('Francais', 'FRA'),
-        'fr_CA': ('Francais', 'USA'),
+        u'de_DE': (u'Deutsch', u'GER'),
+        u'en_US': (u'English', u'USA'),
+        u'es_ES': (u'Espanol', u'ESP'),
+        u'fr_FR': (u'Francais', u'FRA'),
+        u'fr_CA': (u'Francais', u'USA'),
     }
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
-        self._fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
+        
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        self.services = self._fetchfw_helper.services()
-        self.http_service = BaseSnomHTTPService(self)
+        
+        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
+        fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
+        
+        self.services = fetchfw_helper.services()
+        self.http_service = HTTPNoListingFileService(self._tftpboot_dir)
     
     http_dev_info_extractor = BaseSnomHTTPDeviceInfoExtractor()
     
-    def _get_xx_fkeys(self, config):
-        funckey = config['funckey']
-        proxy_ip = config['sip'][0]['proxy_ip']
-        sorted_keys = funckey.keys()
-        sorted_keys.sort()
-        fk_config_lines = []
-        for key in sorted_keys:
-            value = funckey[key]
-            exten = value['exten']
-
-            if value.get('supervision'):
-                xtype = "dest"
-            else:
-                xtype = "speed"
-            fk_config_lines.append('<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' % (int(key)-1, xtype, exten, proxy_ip))
-        return "\n".join(fk_config_lines)
+    def _common_templates(self):
+        yield ('common/gui_lang.xml.tpl', 'gui_lang.xml')
+        yield ('common/web_lang.xml.tpl', 'web_lang.xml')
+        for tpl_format, file_format in [('common/snom%s.htm.tpl', 'snom%s.htm'),
+                                        ('common/snom%s.xml.tpl', 'snom%s.xml'),
+                                        ('common/snom%s-firmware.xml.tpl', 'snom%s-firmware.xml')]:
+            for model in self._MODELS:
+                yield tpl_format % model, file_format % model
     
-    def _get_xx_lang(self, config):
-        if 'locale' in config:
-            return self._XX_LANG.get(config['locale'])
+    def configure_common(self, raw_config):
+        for tpl_filename, filename in self._common_templates():
+            tpl = self._tpl_helper.get_template(tpl_filename)
+            dst = os.path.join(self._tftpboot_dir, filename)
+            self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
+    
+    def _get_fkey_domain(self, raw_config):
+        # Return None if there's no usable domain
+        sip = raw_config[u'sip']
+        if u'proxy_ip' in sip:
+            return sip[u'proxy_ip']
+        else:
+            lines = sip[u'lines']
+            if lines:
+                return sip[u'lines'][sorted(lines.iterkeys())[0]][u'proxy_ip']
+        return None
+    
+    def _add_xx_fkeys(self, raw_config):
+        funckeys = raw_config[u'funckeys']
+        domain = self._get_fkey_domain(raw_config)
+        if domain:
+            sorted_keys = funckeys.keys()
+            sorted_keys.sort()
+            fk_config_lines = []
+            for key in sorted_keys:
+                value = funckeys[key]
+                exten = value[u'exten']
+    
+                if value[u'supervision']:
+                    xtype = u'dest'
+                else:
+                    xtype = u'speed'
+                fk_config_lines.append(u'<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
+                                       (int(key) - 1, xtype, exten, domain))
+            raw_config[u'XX_fkeys'] = u'\n'.join(fk_config_lines)
+    
+    def _add_xx_lang(self, raw_config):
+        if u'locale' in raw_config:
+            locale = raw_config[u'locale']
+            if locale in self._XX_LANG:
+                raw_config[u'XX_lang'] = self._XX_LANG[locale]
     
     def _format_dst_change(self, dst_change):
-        fmted_time = '%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)
+        fmted_time = u'%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)
         day = dst_change['day']
         if day.startswith('D'):
-            return '%02d.%02d %s' % (int(day[1:]), dst_change['month'], fmted_time)
+            return u'%02d.%02d %s' % (int(day[1:]), dst_change['month'], fmted_time)
         else:
             week, weekday = map(int, day[1:].split('.'))
             weekday = tzinform.week_start_on_monday(weekday)
-            return '%02d.%02d.%02d %s' % (dst_change['month'], week, weekday, fmted_time)
+            return u'%02d.%02d.%02d %s' % (dst_change['month'], week, weekday, fmted_time)
     
-    def _get_xx_timezone(self, config):
-        inform = tzinform.get_timezone_info(config['timezone'])
+    def _format_tzinfo(self, tzinfo):
         lines = []
-        lines.append('<timezone perm="R"></timezone>')
-        lines.append('<utc_offset perm="R">%+d</utc_offset>' % inform['utcoffset'].as_seconds)
-        if inform['dst'] is None:
-            lines.append('<dst perm="R"></dst>')
+        lines.append(u'<timezone perm="R"></timezone>')
+        lines.append(u'<utc_offset perm="R">%+d</utc_offset>' % tzinfo['utcoffset'].as_seconds)
+        if tzinfo['dst'] is None:
+            lines.append(u'<dst perm="R"></dst>')
         else:
-            lines.append('<dst perm="R">%d %s %s</dst>' % 
-                         (inform['dst']['save'].as_seconds,
-                          self._format_dst_change(inform['dst']['start']),
-                          self._format_dst_change(inform['dst']['end'])))
-        return '\n'.join(lines)
+            lines.append(u'<dst perm="R">%d %s %s</dst>' % 
+                         (tzinfo['dst']['save'].as_seconds,
+                          self._format_dst_change(tzinfo['dst']['start']),
+                          self._format_dst_change(tzinfo['dst']['end'])))
+        return u'\n'.join(lines)
     
-    def _dev_specific_filename(self, fmted_mac):
-        return fmted_mac + '.xml'
+    def _add_xx_timezone(self, raw_config):
+        if u'timezone' in raw_config:
+            try:
+                tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
+            except tzinform.TimezoneNotFoundError, e:
+                logger.warning('Unknown timezone %s: %s', raw_config[u'timezone'], e)
+            else:
+                raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
     
-    def configure(self, dev, config):
-        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
-        filename = self._dev_specific_filename(fmted_mac)
-        tpl = self._tpl_helper.get_dev_template(filename, dev)
+    def _add_xx_dtmf(self, raw_config):
+        sip = raw_config[u'sip']
+        for line in sip[u'lines']:
+            dtmf_mode = line.get(u'dtmf_mode') or sip.get(u'dtmf_mode')
+            line[u'XX_user_dtmf_info'] = self._XX_DTMF.get(dtmf_mode, self._XX_DTMF_DEF)
+    
+    def _dev_specific_filenames(self, device):
+        # Return a tuple (htm filename, xml filename)
+        fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
+        return 'snom%s-%s.htm' % (device[u'model'], fmted_mac), fmted_mac + '.xml'
+    
+    def _check_config(self, raw_config):
+        if u'http_port' not in raw_config:
+            raise RawConfigError('only support configuration via HTTP')
+        if u'sip' not in raw_config:
+            raise RawConfigError('must have a sip parameter')
+    
+    def _check_device(self, device):
+        if u'mac' not in device:
+            raise Exception('MAC address needed for device configuration')
+        # model is needed since filename has model name in it.
+        if u'model' not in device:
+            raise Exception('model needed for device configuration')
+    
+    def configure(self, device, raw_config):
+        self._check_config(raw_config)
+        self._check_device(device)
+        htm_filename, xml_filename = self._dev_specific_filenames(device)
         
-        config['XX_fkeys'] = self._get_xx_fkeys(config)
-        config['XX_lang'] = self._get_xx_lang(config)
-        config['XX_timezone'] = self._get_xx_timezone(config)
+        # generate xml file
+        tpl = self._tpl_helper.get_dev_template(xml_filename, device)
         
-        path = os.path.join(self._tftpboot_dir, filename)
-        self._tpl_helper.dump(tpl, config, path, self._ENCODING)
+        self._add_xx_fkeys(raw_config)
+        self._add_xx_lang(raw_config)
+        self._add_xx_timezone(raw_config)
         
-        # generate the intermediary 'redirect' file
-        redir_filename = '%s.htm' % fmted_mac
-        redir_tpl = self._tpl_helper.get_template('base.htm.tpl')
-        config['XX_mac'] = fmted_mac
-        redir_path = os.path.join(self._tftpboot_dir, redir_filename)
-        self._tpl_helper.dump(redir_tpl, config, redir_path, self._ENCODING)
+        path = os.path.join(self._tftpboot_dir, xml_filename)
+        self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
+        
+        # generate htm file
+        tpl = self._tpl_helper.get_template('other/base.htm.tpl')
+        
+        raw_config[u'XX_xml_filename'] = xml_filename
+        
+        path = os.path.join(self._tftpboot_dir, htm_filename)
+        self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
-    def deconfigure(self, dev):
-        fmted_mac = format_mac(dev['mac'], separator='', uppercase=True)
-        filename = self._dev_specific_filename(fmted_mac)
-        os.remove(os.path.join(self._tftpboot_dir, filename))
+    def deconfigure(self, device):
+        for filename in self._dev_specific_filenames(device):
+            try:
+                os.remove(os.path.join(self._tftpboot_dir, filename))
+            except OSError:
+                # ignore -- probably an already removed file
+                pass
     
-    def synchronize(self, dev, config):
-        # TODO
-        pass
+    def synchronize(self, device, raw_config):
+        try:
+            ip = device[u'ip']
+        except KeyError:
+            return defer.fail(Exception('IP address needed for device synchronization'))
+        else:
+            def callback(status_code):
+                if status_code == 200:
+                    return None
+                else:
+                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
+                    return failure.Failure(e)
+            uri = sip.URI('sip', ip, port=5060)
+            d = sip.send_notify(uri, 'check-sync')
+            d.addCallback(callback)
+            return d
