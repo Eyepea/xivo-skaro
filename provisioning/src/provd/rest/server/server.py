@@ -889,8 +889,18 @@ class PluginsResource(Resource):
         return json.dumps(content)
 
 
+class PluginInfoResource(Resource):
+    def __init__(self, plugin):
+        Resource.__init__(self)
+        self._plugin = plugin
+    
+    @json_response_entity
+    def render_GET(self, request):
+        return json.dumps({u'plugin_info': self._plugin.info()})
+
+
 def PluginResource(plugin):
-    links = []
+    links = [(u'pg.info', 'info', PluginInfoResource(plugin))]
     if 'install' in plugin.services:
         install_srv = plugin.services['install']
         links.append((REL_INSTALL_SRV, 'install', InstallServiceResource(install_srv)))

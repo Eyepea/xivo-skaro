@@ -49,6 +49,20 @@ from zope.interface import implements, Interface
 logger = logging.getLogger(__name__)
 
 
+_PLUGIN_INFO_FILENAME = 'plugin-info'
+# plugin information filename in each plugin directory.
+_PLUGIN_INFO_KEYS = [u'capabilities', u'description', u'version']
+_PLUGIN_INFO_INSTALLABLE_KEYS = _PLUGIN_INFO_KEYS + [u'dsize', u'filename', u'sha1sum']
+_PLUGIN_INFO_INSTALLED_KEYS = _PLUGIN_INFO_KEYS
+
+def _check_raw_plugin_info(raw_plugin_info, id, keys):
+    # Quick and incomplete check of a raw plugin info object.
+    for plugin_info_key in keys:
+        if plugin_info_key not in raw_plugin_info:
+            raise ValueError('invalid plugin info: missing %s key in %s'
+                             % (plugin_info_key, id))
+
+
 class Plugin(object):
     """Base class and entry point of every plugin.
     
@@ -332,7 +346,23 @@ class StandardPlugin(Plugin):
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
+        self._plugin_dir = plugin_dir
         self._tftpboot_dir = os.path.join(plugin_dir, self._TFTPBOOT_DIR)
+    
+    def info(self):
+        """Return the plugin information for this plugin.
+        
+        The dictionary returned is the same as the one returned by the
+        plugin manager list_installed method for this plugin.
+        
+        Raise an Exception if, the plugin information is missing or invalid.
+        
+        """
+        plugin_info_path = os.path.join(self._plugin_dir, _PLUGIN_INFO_FILENAME)
+        with open(plugin_info_path) as fobj:
+            raw_plugin_info = json.load(fobj)
+        _check_raw_plugin_info(raw_plugin_info, self.id, _PLUGIN_INFO_INSTALLED_KEYS)
+        return raw_plugin_info
 
 
 class TemplatePluginHelper(object):
@@ -603,12 +633,6 @@ class PluginManager(object):
     # name of the python plugin code
     _DB_FILENAME = 'plugins.db'
     # plugin definition filename on the remote and local server.
-    _PLUGIN_INFO_FILENAME = 'plugin-info'
-    # plugin information filename in each plugin directory.
-    _PLUGIN_INFO_KEYS = [u'capabilities', u'description', u'version']
-    _PLUGIN_INFO_INSTALLABLE_KEYS = _PLUGIN_INFO_KEYS + \
-                                    [u'dsize', u'filename', u'sha1sum']
-    _PLUGIN_INFO_INSTALLED_KEYS = _PLUGIN_INFO_KEYS
     
     _INSTALL_LABEL = 'install'
     _DOWNLOAD_LABEL = 'download'
@@ -822,13 +846,6 @@ class PluginManager(object):
         installable_plugins = self.list_installable()
         return installable_plugins[id]
     
-    def _check_raw_plugin_info(self, raw_plugin_info, id, keys):
-        # Quick and incomplte check of a raw plugin info object.
-        for plugin_info_key in keys:
-            if plugin_info_key not in raw_plugin_info:
-                raise ValueError('invalid plugin info: missing %s key in %s'
-                                 % (plugin_info_key, id))
-    
     def list_installable(self):
         """Return a dictionary of installable plugins, where keys are
         plugin identifier and values are dictionary of plugin information.
@@ -857,8 +874,8 @@ class PluginManager(object):
             return {}
         else:
             for plugin_id, raw_plugin_info in raw_plugin_infos.iteritems():
-                self._check_raw_plugin_info(raw_plugin_info, plugin_id,
-                                            self._PLUGIN_INFO_INSTALLABLE_KEYS)
+                _check_raw_plugin_info(raw_plugin_info, plugin_id,
+                                       _PLUGIN_INFO_INSTALLABLE_KEYS)
             return raw_plugin_infos
     
     def is_installed(self, id):
@@ -889,11 +906,11 @@ class PluginManager(object):
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
             if os.path.isdir(abs_plugin_dir):
-                plugin_info_path = os.path.join(abs_plugin_dir, self._PLUGIN_INFO_FILENAME)
+                plugin_info_path = os.path.join(abs_plugin_dir, _PLUGIN_INFO_FILENAME)
                 with open(plugin_info_path) as fobj:
                     raw_plugin_info = json.load(fobj)
-                self._check_raw_plugin_info(raw_plugin_info, rel_plugin_dir,
-                                            self._PLUGIN_INFO_INSTALLED_KEYS)
+                _check_raw_plugin_info(raw_plugin_info, rel_plugin_dir,
+                                       _PLUGIN_INFO_INSTALLED_KEYS)
                 installed_plugins[rel_plugin_dir] = raw_plugin_info
         return installed_plugins
     
