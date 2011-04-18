@@ -53,6 +53,12 @@ class NodeBuilder(object):
                                % ' '.join(tokens))
         return 'filters', install.TarFilter(args[0])
     
+    def _build_unrar(self, args, tokens):
+        if len(args) != 1:
+            raise ParsingError("invalid number of arguments for unrar: '%s'"
+                               % ' '.join(tokens))
+        return 'filters', install.RarFilter(args[0])
+    
     def _build_unsign(self, args, tokens):
         if len(args) != 2:
             raise ParsingError("invalid number of arguments for unsign: '%s'"

@@ -24,6 +24,7 @@ import itertools
 import logging
 import os
 import shutil
+import subprocess
 import tarfile
 import tempfile
 import zipfile
@@ -327,6 +328,32 @@ class TarFilter(object):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             with contextlib.closing(tarfile.open(pathname)) as tf:
                 tf.extractall(dst_directory)
+
+
+class RarFilter(object):
+    """A filter who transform a directory containing rar files to a directory containing
+    the content of these rar files.
+    
+    Note that it depends on the "unrar" executable to be present on the host
+    system.
+    
+    """
+    _CMD_PREFIX = ['unrar', 'e', '-idq', '-y']
+    
+    def __init__(self, pathnames):
+        self._glob_helper = _GlobHelper(pathnames)
+    
+    def apply(self, src_directory, dst_directory):
+        for pathname in self._glob_helper.iglob_in_dir(src_directory):
+            try:
+                cmd = self._CMD_PREFIX + [pathname, dst_directory]
+                logger.debug('Executing external command: %s', cmd)
+                retcode = subprocess.call(cmd)
+            except OSError, e:
+                raise InstallationError('unrar executable probably missing: %s' % e)
+            else:
+                if retcode:
+                    raise InstallationError('unrar returned status code %s' % retcode)
 
 
 class CiscoUnsignFilter(object):
