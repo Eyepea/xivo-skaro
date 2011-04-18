@@ -56,7 +56,7 @@ class JitsiHTTPDeviceInfoExtractor(object):
         #   "Jitsi/1.0-beta1-nightly.build.3408"
         m = self._UA_REGEX.match(ua)
         if m:
-            raw_version, = m.groups()
+            raw_version = m.group(1)
             return {u'vendor': u'Jitsi',
                     u'model': u'Jitsi',
                     u'version': raw_version.decode('ascii')}
@@ -65,7 +65,7 @@ class JitsiHTTPDeviceInfoExtractor(object):
     def _extract_from_path(self, path, dev_info):
         m = self._PATH_REGEX.search(path)
         if m:
-            raw_uuid, = m.groups()
+            raw_uuid = m.group(1)
             dev_info[u'uuid'] = raw_uuid.decode('ascii')
 
 

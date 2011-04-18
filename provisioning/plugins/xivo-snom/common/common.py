@@ -178,8 +178,7 @@ class BaseSnomPlugin(StandardPlugin):
         funckeys = raw_config[u'funckeys']
         domain = self._get_fkey_domain(raw_config)
         if domain:
-            sorted_keys = funckeys.keys()
-            sorted_keys.sort()
+            sorted_keys = sorted(funckeys.iterkeys())
             fk_config_lines = []
             for key in sorted_keys:
                 value = funckeys[key]
@@ -233,7 +232,7 @@ class BaseSnomPlugin(StandardPlugin):
     
     def _add_xx_dtmf(self, raw_config):
         sip = raw_config[u'sip']
-        for line in sip[u'lines']:
+        for line in sip[u'lines'].itervalues():
             dtmf_mode = line.get(u'dtmf_mode') or sip.get(u'dtmf_mode')
             line[u'XX_user_dtmf_info'] = self._XX_DTMF.get(dtmf_mode, self._XX_DTMF_DEF)
     
@@ -266,6 +265,7 @@ class BaseSnomPlugin(StandardPlugin):
         self._add_xx_fkeys(raw_config)
         self._add_xx_lang(raw_config)
         self._add_xx_timezone(raw_config)
+        self._add_xx_dtmf(raw_config)
         
         path = os.path.join(self._tftpboot_dir, xml_filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)

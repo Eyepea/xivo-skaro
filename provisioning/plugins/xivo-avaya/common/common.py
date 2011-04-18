@@ -135,7 +135,7 @@ class BaseAvayaPlugin(StandardPlugin):
         rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
         
-        self.services = fetchfw_helper.services() 
+        self.services = fetchfw_helper.services()
         self.tftp_service = TFTPFileService(self._tftpboot_dir)
         self.http_service = HTTPNoListingFileService(self._tftpboot_dir)
     

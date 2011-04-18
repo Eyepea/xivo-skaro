@@ -71,8 +71,8 @@ class BaseTechnicolorHTTPDeviceInfoExtractor(object):
             raw_model, raw_version, raw_mac = m.groups()
             try:
                 mac = norm_mac(raw_mac.decode('ascii'))
-            except ValueError:
-                logger.warning('Could not normalize MAC address "%s"' % raw_mac)
+            except ValueError, e:
+                logger.warning('Could not normalize MAC address "%s": %s', raw_mac, e)
             else:
                 return {u'vendor': u'Technicolor',
                         u'model': raw_model.decode('ascii'),

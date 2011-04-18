@@ -408,8 +408,7 @@ class BaseCiscoPlugin(StandardPlugin):
         fmted_mac = format_mac(dev[u'mac'], separator='')
         return fmted_mac + '.xml'
     
-    @classmethod
-    def _check_config(cls, raw_config):
+    def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
         if u'sip' not in raw_config:
