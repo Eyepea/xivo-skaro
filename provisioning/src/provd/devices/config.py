@@ -182,7 +182,7 @@ protocol [optional]
 sip [mandatory if protocol == 'SIP']
   A dictionary describing the configuration of all the SIP related stuff:
     
-    proxy_ip [mandatory if proxy_ip is not defined on a per line basis]
+    proxy_ip [mandatory if proxy_ip is not defined on a per line basis and there's at least 1 line]
       The IP address of the SIP proxy.
       If the device does not support a SIP proxy on a per line basis and this
       this parameter is not defined, an exception SHOULD be raised.

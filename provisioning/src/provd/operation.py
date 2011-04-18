@@ -73,7 +73,7 @@ def format_oip(oip):
       download|progress;10/100
       download|progress(file_1|progress;20/100)(file_2|waiting;0/50)
       download|progress;20/150(file_1|progress)(file_2|waiting)
-      op|progress(op1|progress(op1.1|progress)(op.1.2|waiting))(op2|progress)
+      op|progress(op1|progress(op11|progress)(op12|waiting))(op2|progress)
       
     """
     s = ''

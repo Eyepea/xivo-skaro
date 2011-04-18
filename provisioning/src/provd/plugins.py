@@ -131,7 +131,7 @@ class Plugin(object):
             XXX should specify better
         
         """
-        pass
+        self._plugin_dir = plugin_dir
     
     def close(self):
         """Close the plugin.
@@ -144,6 +144,26 @@ class Plugin(object):
         
         """
         pass
+    
+    def info(self):
+        """Return a dictionary containing information about this plugin.
+        
+        The dictionary MUST contains at least the following keys:
+          version -- the version of the plugin
+          description -- the description of the plugin
+          capabilities -- a dictionary where keys are string in format
+            "vendor, model, version" and values are capabilities dictionary.
+        
+        Note that the returned dictionary contains unicode strings.
+        
+        Raise an Exception if the plugin information is missing or invalid.
+        
+        """
+        plugin_info_path = os.path.join(self._plugin_dir, _PLUGIN_INFO_FILENAME)
+        with open(plugin_info_path) as fobj:
+            raw_plugin_info = json.load(fobj)
+        _check_raw_plugin_info(raw_plugin_info, self.id, _PLUGIN_INFO_INSTALLED_KEYS)
+        return raw_plugin_info
     
     # Methods for additional plugin services
     
@@ -290,7 +310,7 @@ class Plugin(object):
         Pre:  device is a device object
               the method 'configure' has been called at least once with the
                 same device object since the last call to deconfigure with
-                the same devie (i.e. a call to deconfigure can only follow
+                the same device (i.e. a call to deconfigure can only follow
                 a call to the configure method with the same device, and there
                 must not be a call to deconfigure between these 2 calls)
         Post: after a call to this method, if device dev does a request for
@@ -336,33 +356,17 @@ class Plugin(object):
 
 
 class StandardPlugin(Plugin):
-    """Plugin that helps with having a standardized plugin layout and
-    which helps with repeating tasks, etc etc, this is a bad description.
+    """Abstract base class for plugin classes.
     
-    Instances of this class have the following attributes:
-      _tftpboot_dir -- the directory where configuration file should be stored
+    Altough this class doesn't do much at the time of writing this, you'll
+    still want to inherit from it, unless you have good reason.
+    
     """
     _TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        self._plugin_dir = plugin_dir
         self._tftpboot_dir = os.path.join(plugin_dir, self._TFTPBOOT_DIR)
-    
-    def info(self):
-        """Return the plugin information for this plugin.
-        
-        The dictionary returned is the same as the one returned by the
-        plugin manager list_installed method for this plugin.
-        
-        Raise an Exception if, the plugin information is missing or invalid.
-        
-        """
-        plugin_info_path = os.path.join(self._plugin_dir, _PLUGIN_INFO_FILENAME)
-        with open(plugin_info_path) as fobj:
-            raw_plugin_info = json.load(fobj)
-        _check_raw_plugin_info(raw_plugin_info, self.id, _PLUGIN_INFO_INSTALLED_KEYS)
-        return raw_plugin_info
 
 
 class TemplatePluginHelper(object):
@@ -889,19 +893,14 @@ class PluginManager(object):
         """Return a dictionary of installed plugins, where keys are plugin
         identifier and value are dictionary of plugin information.
         
-        The plugin information dictionary contains the following keys:
-          version -- the version of the package
-          description -- the description of the package
-          capabilities -- a dictionary where keys are string in format
-            "vendor, model, version" and values are capabilities dictionary.
-        
-        Raise an Exception if, in the plugins directory, there's a directory
-        which has a missing or invalid plugin info file.
-        
-        Note that the returned dictionary contains unicode strings instead
-        of 'normal' string.
+        See Plugin.info() method for more information on the returned
+        dictionary.
         
         """
+        # XXX can't iterate over loaded plugins (i.e. self._plugins) here
+        #     because a plugin could be installed but not loaded (most common
+        #     case is when loading the plugins at the start). We might want to
+        #     rework a bit all this.
         installed_plugins = {}
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)

@@ -158,7 +158,7 @@ def json_response_entity(fun):
 
 
 def json_request_entity(fun):
-    """To use on resource render's method that reecive a PROV_MIME_TYPE
+    """To use on resource render's method that receive a PROV_MIME_TYPE
     entity.
     
     The entity will be deserialized and passed as a third argument to the
