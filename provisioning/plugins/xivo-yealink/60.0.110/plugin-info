@@ -1,0 +1,21 @@
+{
+    "version": "0.0.1",
+    "description": "Plugin for Yealink T12P, T20P, T22P, T26P and T28P in version 60.0.110.",
+    "capabilities": {
+        "Yealink, T12P, 5.60.0.110": {
+            "sip.lines": 2
+        },
+        "Yealink, T20P, 9.60.0.110": {
+            "sip.lines": 2
+        },
+        "Yealink, T22P, 7.60.0.110": {
+            "sip.lines": 3
+        },
+        "Yealink, T26P, 6.60.0.110": {
+            "sip.lines": 3
+        },
+        "Yealink, T28P, 2.60.0.110": {
+            "sip.lines": 6
+        }
+    }
+}

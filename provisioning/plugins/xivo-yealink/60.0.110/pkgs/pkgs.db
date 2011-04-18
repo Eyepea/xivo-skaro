@@ -1,0 +1,62 @@
+[pkg_T12P-fw]
+desc: Firmware files for Yealink T12P
+version: 5.60.0.110
+files: file_T12P-fw
+install_proc: install_yealink-fw
+
+[pkg_T20P-fw]
+desc: Firmware files for Yealink T20P
+version: 9.60.0.110
+files: file_T20P-fw
+install_proc: install_yealink-fw
+
+[pkg_T22P-fw]
+desc: Firmware files for Yealink T22P
+version: 7.60.0.110
+files: file_T22P-fw
+install_proc: install_yealink-fw
+
+[pkg_T26P-fw]
+desc: Firmware files for Yealink T26P
+version: 6.60.0.110
+files: file_T26P-fw
+install_proc: install_yealink-fw
+
+[pkg_T28P-fw]
+desc: Firmware files for Yealink T28P
+version: 2.60.0.110
+files: file_T28P-fw
+install_proc: install_yealink-fw
+
+
+
+[install_yealink-fw]
+a-b: unrar $FILE1 
+b-c: cp *.rom $DOC_ROOT/firmware/
+
+
+
+[file_T12P-fw]
+url: http://www.yealink.com/Uploads/download/4d940e0673f78.rar
+size: 6867953
+sha1sum: b6256b0730d85cd94f8e22507181aab67d6a7eec
+
+[file_T20P-fw]
+url: http://www.yealink.com/Uploads/download/4d940fc6de9d5.rar
+size: 6420464
+sha1sum: a1d5dd5d58aa9796aeb4190ad1449043f09d30cb
+
+[file_T22P-fw]
+url: http://www.yealink.com/Uploads/download/4d9411378c770.rar
+size: 6870188
+sha1sum: 3b1946cfe6b606160aad0d2b3b13709a49a08fc7
+
+[file_T26P-fw]
+url: http://www.yealink.com/Uploads/download/4d94133ba117b.rar
+size: 7037974
+sha1sum: 8bd2d88ee9b7366d2e392295e90003f25145ce90
+
+[file_T28P-fw]
+url: http://www.yealink.com/Uploads/download/4d9415e50576a.rar
+size: 6944424
+sha1sum: 1ad3f27c56e29caee3ece7eda7a7740f0c047715

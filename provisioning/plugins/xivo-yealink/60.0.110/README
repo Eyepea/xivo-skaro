@@ -1,0 +1,3 @@
+Warning: to install firmware for this plugin, the 'unrar' executable must be
+present on the host system. If it is not, you'll have a runtime error while
+trying to install any firmware.
