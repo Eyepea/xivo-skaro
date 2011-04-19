@@ -18,33 +18,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$appprov    = &$_XOBJ->get_application('provisioning');
+$provdplugin = &$_XOBJ->get_module('provdplugin');
 
-$ipbx = &$_SRE->get('ipbx');	
-$provd = &$_XOBJ->get_module('provd');
-$provd_plugin = &$provd->get_module('plugin');
-
-$fm_save = $error = null;
 $info = array();
 
-if(isset($_QR['fm_send']) === true)
+if(isset($_QR['fm_send']) === true
+&& isset($_QR['download_server']) === true)
 {
-	$fm_save = true;
-
-	if($provd_plugin->edit_infos_server($_QR['download_server']) === false)
-		$fm_save = false;
+	if($provdplugin->edit_infos_server($_QR['download_server']) === false)
+		dwho_report::push('error','error_during_update');
+	else	
+		dwho_report::push('info','successfully_updated');
 
 	$info = $_QR;
 }
 else
 { 
-	if (($download_server = $provd_plugin->get_infos_server()) !== false)
+	if (($download_server = $provdplugin->get_infos_server()) !== false)
 		$info['download_server'] = $download_server['value'];
 }
 
-$_TPL->set_var('fm_save', $fm_save);
 $_TPL->set_var('info', $info);
-$_TPL->set_var('error', $error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

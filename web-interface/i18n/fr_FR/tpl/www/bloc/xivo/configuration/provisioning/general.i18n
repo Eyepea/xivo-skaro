@@ -1,27 +1,9 @@
 
 ; title_content_name
-Approvisionnement
+Approvisionnement: configuration général
 
-; fld_registrar
-Registrar
+; fld_download_server
+Serveur de téléchargement
 
-; fm_registrar_main
-serveur principal :  
-
-; fm_registrar_backup
-serveur de secours : 
-
-; fld_proxy
-Proxy
-
-; fm_proxy_main
-serveur principal : 
-
-; fm_proxy_backup
-serveur de secours : 
-
-; fld_vlan
-VLAN Voix
-
-; fm_vlan_id
-id VLAN : 
+; fm_download_server
+Url :  

@@ -31,8 +31,8 @@ $param['page'] = $page;
 
 if($search !== '')
 	$param['search'] = $search;
-
-$result = $fm_save = $error = null;
+	
+$error = false;
 
 $appprovdplugin = &$_XOBJ->get_application('provdplugin');
 $provdplugin = &$_XOBJ->get_module('provdplugin');
@@ -121,7 +121,6 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
-$_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
