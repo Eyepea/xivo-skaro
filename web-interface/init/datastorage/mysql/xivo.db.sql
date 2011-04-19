@@ -441,18 +441,4 @@ CREATE TABLE `stats_conf_group` (
 );
 CREATE UNIQUE INDEX `stats_conf_group_index` ON `stats_conf_group`(`stats_conf_id`,`groupfeatures_id`);
 
--- provisioning
-DROP TABLE IF EXISTS `provisioning`;
-CREATE TABLE `provisioning` (
- `id` int(10) unsigned auto_increment,
- `registrar_main`   varchar(255) NOT NULL DEFAULT '',
- `registrar_backup` varchar(255) NOT NULL DEFAULT '',
- `proxy_main`       varchar(255) NOT NULL DEFAULT '',
- `proxy_backup`     varchar(255) NOT NULL DEFAULT '',
- `vlan_id`					integer,
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM;
-
-INSERT INTO `provisioning` VALUES(1, '', '', '', '', NULL);
-
 COMMIT;

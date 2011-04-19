@@ -469,21 +469,6 @@ CREATE TABLE "stats_conf_group" (
 );
 CREATE UNIQUE INDEX "stats_conf_group_index" ON "stats_conf_group" USING btree ("stats_conf_id","groupfeatures_id");
 
--- provisioning
-DROP TABLE IF EXISTS "provisioning";
-CREATE TABLE "provisioning" (
- "id" SERIAL,
- "registrar_main"   varchar(255) NOT NULL DEFAULT '',
- "registrar_backup" varchar(255) NOT NULL DEFAULT '',
- "proxy_main"       varchar(255) NOT NULL DEFAULT '',
- "proxy_backup"     varchar(255) NOT NULL DEFAULT '',
- "vlan_id"					integer,
- PRIMARY KEY("id")
-);
-
-INSERT INTO "provisioning" VALUES(1, '', '', '', '', NULL);
-SELECT setval('provisioning_id_seq', 2);
-
 -- grant all rights to xivo.* for xivo user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
