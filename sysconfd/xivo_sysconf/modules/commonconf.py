@@ -50,10 +50,7 @@ class CommonConf(jsoncore.JsonCore):
         self.monit      = options.configuration.get('commonconf', 'commonconf_monit')
    
     SECTIONS  = {
-        '1. VoIP'       : ['xivo.voip.ifaces', 'xivo.voip.vlan.id',
-            'xivo.registrar.main.ip', 'xivo.registrar.backup.ip',
-            'xivo.proxy.main.ip'    , 'xivo.proxy.backup.ip'
-        ],
+        '1. VoIP'       : ['xivo.voip.ifaces'],
         '2. Network'    : [
             'xivo.hostname', 'xivo.domain', 'xivo.net4.ip', 
             'xivo.net4.netmask', 'xivo.net4.broadcast', 'xivo.net4.subnet', 
