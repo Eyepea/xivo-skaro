@@ -22,6 +22,15 @@ Supprimer
 ; toolbar_adv_menu_select-all
 Tout sélectionner
 
+; toolbar_adv_menu_install
+Installer
+
+; toolbar_adv_menu_uninstall
+Desinstaller
+
+; toolbar_opt_update
+Mise à jour
+
 ; toolbar_fm_search
 Rechercher
 
@@ -36,6 +45,15 @@ Mode avancé
 
 ; col_action
 Action
+
+; opt_install
+Installer
+
+; opt_uninstall
+Désinstaller
+
+; opt_uninstall_confirm
+Confirmer la désinstallation?
 
 ; opt_add
 Ajouter
@@ -75,7 +93,6 @@ Toujours
 
 ; fm_bool-opt(aes128)
 AES128
-
 
 ; fm_success-save
 Le formulaire a bien été sauvegardé.

@@ -18,25 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','abstract.inc'),true);
+$array = array();
 
-class xivo_object_provisioning extends xivo_object_abstract
-{
-	var $_dso	      	= null;
-	var $_name		    = 'provisioning';
-	var $_filter	    = false;
-	var $_origin		  = false;
-	var $_origin_list	= false;
-
-	function xivo_object_provisioning(&$xobj,&$dso)
-	{
-		$this->xivo_object_abstract(&$xobj);
-		
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-    	$this->_dso = &$dso;
-	}
-}
+$array['provd'] = array();
+$array['provd']['host'] = '127.0.0.1';
+$array['provd']['port'] = 18866;
+$array['provd']['user'] = 'admin';
+$array['provd']['pass'] = 'admin';
+$array['provd']['connect_timeout'] = 180;
+$array['provd']['timeout'] = 90;
 
 ?>

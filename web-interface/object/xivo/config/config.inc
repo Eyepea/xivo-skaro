@@ -70,6 +70,9 @@ $array['module']['resolvconf']['datastorage'] = true;
 $array['module']['server'] = array();
 $array['module']['server']['datastorage'] = true;
 
+$array['module']['provd'] = array();
+$array['module']['provd']['datastorage'] = false;
+
 $array['module']['provisioning'] = array();
 $array['module']['provisioning']['datastorage'] = true;
 

@@ -1,0 +1,39 @@
+
+; title_content_name
+Edit plugin %s v. %s
+
+; plugin-description_legend
+Description
+
+; col_name
+Name
+
+; col_description
+Description
+
+; col_size
+Size
+
+; col_version
+Version
+
+; fm_username
+Username:
+
+; fm_password
+Password: 
+
+; no_package
+No package
+
+; opt_uninstall_confirm
+Are you sure you want to delete this package?
+
+; params_successfully_updated
+Params successfully updated
+
+; error_during_edit_params
+Error during edit params: %s
+
+; error_during_get_params
+Error during get params: %s

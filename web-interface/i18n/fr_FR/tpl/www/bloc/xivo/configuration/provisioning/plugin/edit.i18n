@@ -1,0 +1,39 @@
+
+; title_content_name
+Edition du greffon %s v. %s
+
+; plugin-description_legend
+Description
+
+; col_name
+Nom
+
+; col_description
+Description
+
+; col_size
+Taille
+
+; col_version
+Version
+
+; fm_username
+Identifiant:
+
+; fm_password
+Mot de passe: 
+
+; no_package
+Auncun paquet à installer
+
+; opt_uninstall_confirm
+Etes-vous sur de vouloir désinstaller ce paquet?
+
+; params_successfully_updated
+Le paramètre a été correctement mis à jour 
+
+; error_during_edit_params
+Une erreur est survenu durant l'édition du paramètre: %s
+
+; error_during_get_params
+Une erreur est survenu durant la récupération du paramètre: %s

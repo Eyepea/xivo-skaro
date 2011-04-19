@@ -18,24 +18,38 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','abstract.inc'),true);
+dwho_file::load_file('abstract.inc',dirname(__FILE__));
 
-class xivo_object_provisioning extends xivo_object_abstract
+class module_provd_device extends module_provd_abstract
 {
-	var $_dso	      	= null;
-	var $_name		    = 'provisioning';
-	var $_filter	    = false;
-	var $_origin		  = false;
-	var $_origin_list	= false;
-
-	function xivo_object_provisioning(&$xobj,&$dso)
+	protected $_name 		= 'device';
+	protected $_base_url 	= '/provd/pg_mgr';
+	
+	public function __construct($conf)
 	{
-		$this->xivo_object_abstract(&$xobj);
+		parent::__construct($conf);
+	}
+	
+	public function get_device_list()
+	{
+		$uri = $this->_build_uri(array($this->_name.'s'));
 		
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-    	$this->_dso = &$dso;
+		if (($rs = $this->request_get($uri)) === false
+		|| empty($rs['devices']) === true)
+			return(false);
+			
+		return $rs['devices'];
+	}
+	
+	public function get($str)
+	{
+		$uri = $this->_build_uri(array($this->_name.'s',$str));
+		
+		if (($rs = $this->request_get($uri)) === false
+		|| empty($rs['device']) === true)
+			return(false);
+			
+		return $rs['device'];
 	}
 }
 

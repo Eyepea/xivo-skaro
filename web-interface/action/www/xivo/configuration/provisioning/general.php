@@ -20,26 +20,31 @@
 
 $appprov    = &$_XOBJ->get_application('provisioning');
 
-$fm_save    = null;
-$error      = null;
+$ipbx = &$_SRE->get('ipbx');	
+$provd = &$_XOBJ->get_module('provd');
+$provd_plugin = &$provd->get_module('plugin');
+
+$fm_save = $error = null;
+$info = array();
+
 if(isset($_QR['fm_send']) === true)
 {
-	$fm_save 	= true;
+	$fm_save = true;
 
-	if($appprov->set($_QR) === false)
-	{
-		$fm_save    = false;
-		$error      = $appprov->get_error();
-	}
+	if($provd_plugin->edit_infos_server($_QR['download_server']) === false)
+		$fm_save = false;
 
 	$info = $_QR;
 }
 else
-{ $info 		= $appprov->get(); }
+{ 
+	if (($download_server = $provd_plugin->get_infos_server()) !== false)
+		$info['download_server'] = $download_server['value'];
+}
 
-$_TPL->set_var('fm_save' , $fm_save);
-$_TPL->set_var('info'    , $info);
-$_TPL->set_var('error'   , $error);
+$_TPL->set_var('fm_save', $fm_save);
+$_TPL->set_var('info', $info);
+$_TPL->set_var('error', $error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

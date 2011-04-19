@@ -1583,7 +1583,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$arr = array();
 		$arr['userfeatures'] = $this->get_result('userfeatures');
-		
 
 		$linefeatures = array();
 		$linefeatures['list'] = $res;

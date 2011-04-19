@@ -27,3 +27,21 @@ Search
 
 ; report_export
 Export
+
+; successfully_installed
+%s successfully installed
+
+; error_during_installation
+%s error during installation
+
+; successfully_uninstalled
+%s successfully uninstalled
+
+; error_during_uninstallation
+%s error during uninstallation
+
+; error_during_update
+Error during update
+
+; successfully_updated
+Successfully updated

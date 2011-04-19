@@ -127,6 +127,9 @@ class xivo extends dwho
 				$this->_conf['xivo']['ini']['sysconfd'] = $xivo_ini['sysconfd'];
 		}
 
+		if(dwho_issa('provd',$xivo_ini) === true)
+			$this->_cfg_ini_provd($xivo_ini['provd']);
+
 		if(defined('XIVO_WEBI_CONFIGURED') === false)
 			define('XIVO_WEBI_CONFIGURED',true);
 

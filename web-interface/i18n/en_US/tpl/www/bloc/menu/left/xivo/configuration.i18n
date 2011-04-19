@@ -81,3 +81,9 @@ Provisioning
 
 ; mn_left_provisioning-general
 General
+
+; mn_left_provisioning-config 
+Template
+
+; mn_left_provisioning-plugin 
+Plugin

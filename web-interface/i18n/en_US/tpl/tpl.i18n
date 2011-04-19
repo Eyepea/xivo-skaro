@@ -25,6 +25,9 @@ Select all
 ; toolbar_fm_search
 Search
 
+; toolbar_opt_update
+Update
+
 ; toolbar_opt_add
 Add
 
@@ -36,6 +39,15 @@ Advanced mode
 
 ; col_action
 Action
+
+; opt_install
+Install
+
+; opt_uninstall
+Uninstall
+
+; opt_uninstall_confirm
+Confirm uninstall?
 
 ; opt_modify
 Edit

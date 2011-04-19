@@ -118,6 +118,14 @@ $dhtml = &$this->get_module('dhtml');
 				<?=$url->href_html($this->bbf('mn_left_provisioning-general'),
 						   'xivo/configuration/provisioning/general');?>
 			</dd>
+			<dd id="mn-provisioning-config">
+				<?=$url->href_html($this->bbf('mn_left_provisioning-config'),
+						   'xivo/configuration/provisioning/config');?>
+			</dd>
+			<dd id="mn-provisioning-plugin">
+				<?=$url->href_html($this->bbf('mn_left_provisioning-plugin'),
+						   'xivo/configuration/provisioning/plugin');?>
+			</dd>
 		</dl>
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_controlsystem');?></dt>

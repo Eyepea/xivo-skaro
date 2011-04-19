@@ -194,6 +194,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-tmenu #toolbar-add-menu li,#b-tmenu #toolbar-advanced-menu li {text-align: left;}
 #b-tmenu #toolbar-add-menu li a,#b-tmenu #toolbar-advanced-menu li a {display: block;padding: 1px 4px;}
 #b-tmenu #toolbar-add-menu li a:hover,#b-tmenu #toolbar-advanced-menu li a:hover {background-color: #7f99b1;color: #fff;}
+#b-tmenu #toolbar .fm-paragraph {margin-left: 105px;width: 600px;float: left;text-align: center;}
 
 * html #b-tmenu .nav li li {height: auto;}
 * html #b-tmenu #tooltips {margin-top: 25px;margin-left: 0px;}

@@ -126,7 +126,6 @@ if($act === 'list'):
 	</ul>
 </div>
 
-
 <script type="text/javascript">
 dwho.dom.set_onload(function()
 {

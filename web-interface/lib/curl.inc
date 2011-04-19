@@ -536,7 +536,7 @@ class dwho_curl
 		if(($this->_error = $this->error()) === '')
 			$this->_error = 'unknown';
 
-		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_WARNING);
+		dwho_report::push('warning',$str.'Error: '.$this->_error.' - Errno: '.$this->_errno);
 	}
 
 	function create()

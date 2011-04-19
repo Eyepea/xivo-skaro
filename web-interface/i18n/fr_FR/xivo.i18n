@@ -27,3 +27,21 @@ Rechercher
 
 ; report_export
 Exporter
+
+; successfully_installed
+%s correctement installé
+
+; error_during_installation
+%s a rencontré une erreur durant l'installation
+
+; successfully_uninstalled
+%s correctement désinstallé
+
+; error_during_uninstallation
+%s a rencontré une erreur durant la désinstallation
+
+; error_during_update
+Une erreur est survenu durant la mise a jour
+
+; successfully_updated
+Mise à jour réussi

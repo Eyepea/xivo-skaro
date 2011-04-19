@@ -1,27 +1,9 @@
 
 ; title_content_name
-Provisioning
+Provisioning general settings
 
-; fld_registrar
-Registrar
+; fld_download_server
+Download server
 
-; fm_registrar_main
-main server :  
-
-; fm_registrar_backup
-backup server : 
-
-; fld_proxy
-Proxy
-
-; fm_proxy_main
-main server : 
-
-; fm_proxy_backup
-backup server : 
-
-; fld_vlan
-Voice VLAN
-
-; fm_vlan_id
-VLAN id : 
+; fm_download_server
+Server :  

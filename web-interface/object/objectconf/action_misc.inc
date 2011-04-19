@@ -29,12 +29,15 @@ $array['xivo/configuration/ui/manage/entity/get'] = array(
 	'path'		=> 'xivo/configuration/ui/manage/get',
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'get'));
 
+$array['xivo/configuration/ui/provisioning/plugin'] = array(
+	'path'		=> 'xivo/configuration/ui/provisioning/plugin');
+
 $array['service/ipbx/asterisk/ui/pbx_settings/users/agents/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/call_center/agents',
 	'define'	=> array(
-			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'pbx_settings',
+			'XIVO_LOC_UI_ACL_CATEGORY'		=> 'pbx_settings',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'agents',
-			'XIVO_LOC_UI_ACTION'		=> 'search'));
+			'XIVO_LOC_UI_ACTION'			=> 'search'));
 
 $array['service/ipbx/asterisk/ui/pbx_settings/users/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/users',
