@@ -29,7 +29,6 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_mail       = false;
 	var $_netiface   = false;
 	var $_resolvconf = false;
-	var $_prov       = false;
 	
 	function xivo_object_commonconf(&$xobj)
 	{
@@ -38,8 +37,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))     === false
 		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))         === false
 		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
-		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
-		|| ($this->_prov        = &$this->_xobj->get_module('provisioning')) === false)
+		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false)
 			return(false);
 
 		return(true);
@@ -133,7 +131,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         //  1. 1st vlan
         //  2. 1st voip iface
         //  3. voip ifaces list
-        //$vlanid     = 0;        //0 means no vlan
+        $vlanid     = 0;        //0 means no vlan
         $ifaces     = "";
         $cidr_id    = -1;
 
@@ -147,15 +145,14 @@ class xivo_object_commonconf extends xivo_object_abstract
                 
             $ifaces .= $item['netiface']['ifname'] . ' ';
 
-						/*
             if($vlanid == 0 && $item['netinfo']['vlanif'])
                 $vlanid = intval($item['netiface']['vlanid']);
-						*/
+               
             if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
                 $cidr_id = $i;
         }
 
-				// no VOIP netiface defined
+		// no VOIP netiface defined
         if($cidr_id < 0)
 					return false;
 
@@ -197,12 +194,11 @@ class xivo_object_commonconf extends xivo_object_abstract
         
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
-            //'xivo.voip.vlan.id'     => $vlanid,
-            
+            'xivo.voip.vlan.id'     => $vlanid,            
             'xivo.net4.ip'          => $net['ipaddr'],
             'xivo.net4.netmask'     => $net['netmask'],
             'xivo.net4.broadcast'   => $net['broadcast'],
-            'xivo.net4.subnet'      => $subnet,
+            'xivo.net4.subnet'      => $subnet
         ));
 
         // load database uri
@@ -216,18 +212,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 
         $conf = array_merge($conf, array(
             'xivo.astdb'            => $db_ast,
-            'xivo.xivodb'           => $db_xivo,
-					));
-
-				//provisioning
-				$rawdata = $this->_prov->get(1);
-				$conf = array_merge($conf, array(
-						'xivo.registrar.main.ip'   => $rawdata['registrar_main'],
-            'xivo.registrar.backup.ip' => $rawdata['registrar_backup'],
-            'xivo.proxy.main.ip'       => $rawdata['proxy_main'],
-            'xivo.proxy.backup.ip'     => $rawdata['proxy_backup'],
-            'xivo.voip.vlan.id'        => intval($rawdata['vlan_id'])==0?null:intval($rawdata['vlan_id']),
-					));
+            'xivo.xivodb'           => $db_xivo
+		));
 
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
 	}

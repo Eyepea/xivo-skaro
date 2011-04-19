@@ -1559,6 +1559,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		// save to database
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
+		
+		/*
+		 * 
+		 * remove old provisioning configuration
+		 * to do for me.......
+		 * 
 		$prov = &$this->_xobj->get_module('provisioning');
 
 		$data = $prov->get(1);
@@ -1572,7 +1578,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if($prov->edit(1, $data) === false)
 			return false;
-
+		*/
 		return(true);
 	}
 
