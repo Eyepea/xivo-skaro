@@ -1,0 +1,29 @@
+; col_name
+Nom
+
+; col_length
+Longueur de la clé (bits)
+
+; col_type
+Type
+
+; col_validity
+Date d'expiration
+
+; no_certificate
+Aucun certificat trouvé
+
+; opt_delete_confirm
+Êtes-vous certain de vouloir supprimer ce certificat ?
+
+; toolbar_adv_menu_delete_confirm
+Êtes-vous certain de vouloir supprimer ces certificats ?
+
+; ca_authority
+Autorité de Certification
+
+; autosigned
+Certificat autosigné
+
+; certificat
+Certificat

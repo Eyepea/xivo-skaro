@@ -61,6 +61,11 @@ $dhtml = &$this->get_module('dhtml');
 						   'xivo/configuration/manage/accesswebservice',
 						   'act=list');?>
 			</dd>
+			<dd id="mn-manage--certificate">
+				<?=$url->href_html($this->bbf('mn_left_manage-certificate'),
+							      'xivo/configuration/manage/certificate',
+							      'act=list');?>
+			</dd>
 		</dl>
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_network');?></dt>

@@ -1,0 +1,81 @@
+; title_content_name
+Certificats > Ajouter
+
+; smenu_general
+Général
+
+; smenu_issuers
+Émetteur
+
+; fm_name
+Nom : 
+
+; fm_CA
+Autorité de Certification : 
+
+; fm_autosigned
+Autosigné : 
+
+; fm_fingerprint
+Empreinte : 
+
+; fm_validity-start
+Début de validité : 
+
+; fm_validity-end
+Fin de validité : 
+
+; fm_subject_CN
+CommonName : 
+
+; fm_subject_emailAddress
+Email : 
+
+; fm_subject_OU
+Département : 
+
+; fm_subject_O
+Société : 
+
+; fm_subject_L
+Ville : 
+
+; fm_subject_ST
+État : 
+
+; fm_subject_C
+Pays : 
+
+
+; fm_issuer_CN
+CommonName : 
+
+; fm_issuer_emailAddress
+Email : 
+
+; fm_issuer_OU
+Département : 
+
+; fm_issuer_O
+Société : 
+
+; fm_issuer_L
+Ville : 
+
+; fm_issuer_ST
+État : 
+
+; fm_issuer_C
+Pays : 
+
+; fm_ca_authority
+Autorité de certification : 
+
+; fm_ca_password
+Mot de passe du CA : 
+
+; fm_password
+Mot de passe : 
+
+; fm_length
+Longueur de la clé : 

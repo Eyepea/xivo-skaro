@@ -22,6 +22,9 @@ Répertoires
 ; mn_left_manage-accesswebservice
 Accès aux services Web
 
+; mn_left_manage-certificate
+Certificats SSL
+
 ; mn_left_ti_network
 Réseau
 

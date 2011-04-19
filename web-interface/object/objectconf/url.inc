@@ -44,6 +44,7 @@ $array['xivo/configuration/manage/server'] = 'xivo/configuration/index.php/manag
 $array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
 $array['xivo/configuration/manage/directories'] = 'xivo/configuration/index.php/manage/directories/';
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
+$array['xivo/configuration/manage/certificate'] = 'xivo/configuration/index.php/manage/certificate/';
 
 $array['xivo/configuration/json/restricted/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
 

@@ -142,6 +142,7 @@ $array['tree']['xivo'] = array();
 $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;
+$array['tree']['xivo']['configuration']['manage']['certificate'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

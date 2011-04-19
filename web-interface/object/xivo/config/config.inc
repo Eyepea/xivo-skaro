@@ -94,4 +94,7 @@ $array['module']['stats_conf_incall']['datastorage'] = true;
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 
+$array['module']['certificate'] = array();
+$array['module']['certificate']['datastorage'] = false;
+
 ?>
