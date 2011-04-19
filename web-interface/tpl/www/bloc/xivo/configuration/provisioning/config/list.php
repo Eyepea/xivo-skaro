@@ -57,22 +57,17 @@ $page = $url->pager($pager['pages'],
 	</tr>
 <?php
 	else:
-		$i =0;
-		foreach ($list as $key => $val):
+		for($i = 0;$i < $nb;$i++):
+			$ref = &$list[$i];
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
-			<?=$form->checkbox(array('name'		=> 'configselection[]',
-						 'value'	=> $key,
-						 'label'	=> false,
-						 'id'		=> 'it-config-'.$i,
-						 'checked'	=> false,
-						 'paragraph'	=> false));?>
+			&nbsp;
 		</td>
-		<td class="txt-left" title="<?=dwho_alttitle($key);?>">
-			<?=dwho_htmlen(dwho_trunc($key,25,'...',false));?>
+		<td class="txt-left" title="<?=dwho_alttitle($ref['name']);?>">
+			<?=dwho_htmlen(dwho_trunc($ref['name'],25,'...',false));?>
 		</td>
 		<td class="td-right" colspan="2">
 <?php
@@ -81,7 +76,7 @@ $page = $url->pager($pager['pages'],
 							       'border="0"'),
 						'xivo/configuration/provisioning/config',
 						array('act'	=> 'edit',
-						      'id'	=> $key),
+						      'id'	=> $ref['name']),
 						null,
 						$this->bbf('opt_modify'));
 					
@@ -90,7 +85,7 @@ $page = $url->pager($pager['pages'],
 								       'border="0"'),
 							'xivo/configuration/provisioning/config',
 							array('act'	=> 'delete',
-				      			      'id'	=> $key,
+				      			      'id'	=> $ref['name'],
 				      			      'page'	=> $pager['page']),
 							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 							$this->bbf('opt_delete'));
@@ -98,8 +93,7 @@ $page = $url->pager($pager['pages'],
 		</td>
 	</tr>
 <?php
-		$i++;
-		endforeach;
+		endfor;
 	endif;
 ?>
 	<tr class="sb-foot">

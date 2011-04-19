@@ -23,7 +23,6 @@ $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
 $info = $this->get_var('info');
-$provd_plugin = $this->get_var('provd_plugin');
 
 if (($params = $info['params']) !== false
 && is_array($params) === true):

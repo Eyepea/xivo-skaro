@@ -20,7 +20,7 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
-class xivo_object_abstract extends xivo_libdatastorage_abstract
+abstract class xivo_object_abstract extends xivo_libdatastorage_abstract
 {
 	var $_conf	= array();
 	var $_xobj	= null;
@@ -40,7 +40,7 @@ class xivo_object_abstract extends xivo_libdatastorage_abstract
 		return($this->_name);
 	}
 
-	function _load_config()
+	function _load_config($merge_abstract=false)
 	{
 		if(empty($this->_conf) === false)
 			return(null);
@@ -52,6 +52,23 @@ class xivo_object_abstract extends xivo_libdatastorage_abstract
 
 		if(($this->_conf = dwho_gat::get_file($dir)) === false)
 			$this->_conf = array();
+			
+		if ($merge_abstract === true
+		&& ($conf = $this->_get_config_abstract()) !== false)
+			$this->_conf = array_merge($this->_conf,$conf);
+	}
+
+	private function _get_config_abstract()
+	{
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
+					   'xivo',
+					   'abstract',
+					   'config');
+
+		if(($conf = dwho_gat::get_file($dir)) === false)
+			$conf = false;
+			
+		return($conf);
 	}
 }
 

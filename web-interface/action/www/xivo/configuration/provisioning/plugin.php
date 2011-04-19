@@ -34,16 +34,13 @@ if($search !== '')
 
 $result = $fm_save = $error = null;
 
-$ipbx = &$_SRE->get('ipbx');	
-$provd = &$_XOBJ->get_module('provd');
-$provd_plugin = &$provd->get_module('plugin');
-
-$_TPL->set_var('provd_plugin',$provd_plugin);
+$appprovdplugin = &$_XOBJ->get_application('provdplugin');
+$provdplugin = &$_XOBJ->get_module('provdplugin');
 
 switch($act)
 {
 	case 'update':
-		if ($provd_plugin->update() === false)
+		if ($provdplugin->update() === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_update'));
 		else	
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_updated'));
@@ -52,7 +49,7 @@ switch($act)
 		break;
 	case 'install':
 		if (isset($_QR['id']) === false
-		|| $provd_plugin->install($_QR['id']) === false)
+		|| $provdplugin->install($_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_installation',array($_QR['id'])));
 		else	
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_installed',array($_QR['id'])));
@@ -60,14 +57,14 @@ switch($act)
 		break;
 	case 'uninstall':
 		if (isset($_QR['id']) === false
-		|| $provd_plugin->uninstall($_QR['id']) === false)
+		|| $provdplugin->uninstall($_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_uninstallation',array($_QR['id'])));
 		else	
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_uninstalled',array($_QR['id'])));
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
 		break;
 	case 'edit':
-		if(isset($_QR['id']) === false || ($info = $provd_plugin->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false || ($info = $appprovdplugin->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
 			
 		$_TPL->set_var('id',$_QR['id']);
@@ -76,7 +73,7 @@ switch($act)
 	case 'install-pkgs':
 		if (isset($_QR['id']) === false
 		|| isset($_QR['plugin']) === false
-		|| $provd_plugin->install_pkgs($_QR['plugin'],$_QR['id']) === false)
+		|| $provdplugin->install_pkgs($_QR['plugin'],$_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_installation',array($_QR['id'])));
 		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_installed',array($_QR['id'])));
@@ -88,7 +85,7 @@ switch($act)
 	case 'uninstall-pkgs':
 		if (isset($_QR['id']) === false
 		|| isset($_QR['plugin']) === false
-		|| $provd_plugin->uninstall_pkgs($_QR['plugin'],$_QR['id']) === false)
+		|| $provdplugin->uninstall_pkgs($_QR['plugin'],$_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_uninstallation',array($_QR['id'])));
 		else	
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_uninstalled',array($_QR['id'])));
@@ -108,36 +105,9 @@ switch($act)
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
-
-		if (($list_installed = $provd_plugin->get_plugin_installed($search,$order,$limit)) === false)
-			$list_installed = array();
 		
-		if (($list_installable = $provd_plugin->get_plugin_installable($search,$order,$limit,true)) === false)
-			$list_installable = array();
-		
-		$plugins = array();
-		$plugins['list'] = $list_installable;
-		$plugins['slt'] = dwho_array_intersect_key($list_installed,$plugins['list'],'name');
-		$plugins['info'] = false;
-
-		if($plugins['slt'] !== false)
-		{
-			$plugins['info'] = dwho_array_copy_intersect_key($list_installed,$plugins['slt'],'name');
-			$plugins['list'] = dwho_array_diff_key($plugins['list'],$plugins['slt']);
-		}
-		
-		$list = array_merge($plugins['info'],$plugins['list']);
-		$list = array_values($list);
-				
-		$total = count($list);		
-		for($i=0;$i<$total;$i++)
-		{
-			if ($i >= $limit[0] && $i <= ($limit[0]+$limit[1]))
-				continue;
-			unset($list[$i]);
-		}
-		
-		$list = array_values($list);
+		$list = $appprovdplugin->get_plugin_list($search,$order,$limit);
+		$total = $appprovdplugin->get_cnt();
 		
 		if($list === false && $total > 0 && $prevpage > 0)
 		{

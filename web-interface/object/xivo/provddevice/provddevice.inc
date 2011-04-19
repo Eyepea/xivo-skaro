@@ -18,38 +18,39 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-dwho_file::load_file('abstract.inc',dirname(__FILE__));
+xivo_object::required(array('abstract','provd.inc'),true);
 
-class module_provd_config extends module_provd_abstract
+class xivo_object_provddevice extends xivo_object_provd_abstract
 {
-	protected $_name 		= 'config';
-	protected $_base_url 	= '/provd/cfg_mgr';
+	protected $_name 		= 'provddevice';
+	protected $_base_url 	= '/provd/pg_mgr';
 	
-	public function __construct($conf)
+	public function __construct(&$xobj,$param=array())
 	{
-		parent::__construct($conf);
+		$this->_load_config(true);
+		$this->_load_init();
 	}
 	
-	public function get_config_list()
+	public function get_device_list()
 	{
-		$uri = $this->_build_uri(array($this->_name.'s'));
+		$uri = $this->_build_uri(array('devices'));
 		
 		if (($rs = $this->request_get($uri)) === false
-		|| empty($rs['configs']) === true)
+		|| empty($rs['devices']) === true)
 			return(false);
 			
-		return $rs['configs'];
+		return $rs['devices'];
 	}
 	
 	public function get($str)
 	{
-		$uri = $this->_build_uri(array($this->_name.'s',$str));
+		$uri = $this->_build_uri(array('devices',$str));
 		
 		if (($rs = $this->request_get($uri)) === false
-		|| empty($rs['config']) === true)
+		|| empty($rs['device']) === true)
 			return(false);
 			
-		return $rs['config'];
+		return $rs['device'];
 	}
 }
 

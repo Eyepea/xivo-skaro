@@ -18,39 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-dwho_file::load_file('abstract.inc',dirname(__FILE__));
 
-class module_provd_device extends module_provd_abstract
-{
-	protected $_name 		= 'device';
-	protected $_base_url 	= '/provd/pg_mgr';
-	
-	public function __construct($conf)
-	{
-		parent::__construct($conf);
-	}
-	
-	public function get_device_list()
-	{
-		$uri = $this->_build_uri(array($this->_name.'s'));
-		
-		if (($rs = $this->request_get($uri)) === false
-		|| empty($rs['devices']) === true)
-			return(false);
-			
-		return $rs['devices'];
-	}
-	
-	public function get($str)
-	{
-		$uri = $this->_build_uri(array($this->_name.'s',$str));
-		
-		if (($rs = $this->request_get($uri)) === false
-		|| empty($rs['device']) === true)
-			return(false);
-			
-		return $rs['device'];
-	}
-}
+$array = array();
+
+$array['provd'] = array();
+$array['provd']['host'] = '127.0.0.1';
+$array['provd']['port'] = 18866;
+$array['provd']['user'] = 'admin';
+$array['provd']['pass'] = 'admin';
+$array['provd']['connect_timeout'] = 180;
+$array['provd']['timeout'] = 90;
 
 ?>

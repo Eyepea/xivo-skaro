@@ -70,8 +70,14 @@ $array['module']['resolvconf']['datastorage'] = true;
 $array['module']['server'] = array();
 $array['module']['server']['datastorage'] = true;
 
-$array['module']['provd'] = array();
-$array['module']['provd']['datastorage'] = false;
+$array['module']['provdconfig'] = array();
+$array['module']['provdconfig']['datastorage'] = false;
+
+$array['module']['provdplugin'] = array();
+$array['module']['provdplugin']['datastorage'] = false;
+
+$array['module']['provddevice'] = array();
+$array['module']['provddevice']['datastorage'] = false;
 
 $array['module']['provisioning'] = array();
 $array['module']['provisioning']['datastorage'] = true;

@@ -18,120 +18,32 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_prefs');
+$prefs = new dwho_prefs('provd_config');
+
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
-$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
+$page    = dwho_uint($prefs->get('page', 1));
+$search  = strval($prefs->get('search', ''));
 
 $param = array();
 $param['act'] = 'list';
+$param['page'] = $page;
+
+if($search !== '')
+	$param['search'] = $search;
 
 $result = $fm_save = $error = null;
 
-$ipbx = &$_SRE->get('ipbx');	
-$provd = &$_XOBJ->get_module('provd');
-$provd_config = &$provd->get_module('config');
+$appprovdconfig = &$_XOBJ->get_application('provdconfig');
 
 switch($act)
 {
-	case 'add':
-		$appconfig = &$_XOBJ->get_application('config',null,false);
-
-		if(isset($_QR['fm_send']) === true)
-		{
-			if($appconfig->set_add($_QR) === false
-			|| $appconfig->add() === false)
-			{
-				$fm_save = false;
-				$result = $appconfig->get_result('config');
-				$error = $appconfig->get_error('config');
-			}
-			else
-				$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-		}
-
-		$_TPL->set_var('info',$result);
-		$_TPL->set_var('element',$appconfig->get_elements());
-		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
-		break;
 	case 'edit':
-		$appconfig = &$_XOBJ->get_application('config');
-
-		if(isset($_QR['id']) === false || ($info = $appconfig->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false || ($info = $appprovdconfig->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-
-		$return = &$info['config'];
-
-		if(isset($_QR['fm_send']) === true)
-		{
-			$return = &$result;
-
-			if($appconfig->set_edit($_QR) === false
-			|| $appconfig->edit() === false)
-			{
-				$fm_save = false;
-				$result = $appconfig->get_result('config');
-				$error = $appconfig->get_error('config');
-			}
-			else
-				$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-		}
-
-		$_TPL->set_var('id',$info['config']['id']);
-		$_TPL->set_var('info',$return);
-		$_TPL->set_var('element',$appconfig->get_elements());
-		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
-		break;
-	case 'delete':
-		$param['page'] = $page;
-
-		$appconfig = &$_XOBJ->get_application('config');
-
-		if(isset($_QR['id']) === false || $appconfig->get($_QR['id']) === false)
-			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-
-		$appconfig->delete();
-
-		$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-		break;
-	case 'deletes':
-		$param['page'] = $page;
-
-		if(($values = dwho_issa_val('config',$_QR)) === false)
-			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-
-		$appconfig = &$_XOBJ->get_application('config');
-
-		$nb = count($values);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($appconfig->get($values[$i]) !== false)
-				$appconfig->delete();
-		}
-
-		$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-		break;
-	case 'enables':
-	case 'disables':
-		$param['page'] = $page;
-
-		if(($values = dwho_issa_val('config',$_QR)) === false)
-			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
-
-		$appconfig = &$_XOBJ->get_application('config',null,false);
-
-		$nb = count($values);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($appconfig->get($values[$i]) === false)
-				continue;
-			else if($act === 'disables')
-				$appconfig->disable();
-			else
-				$appconfig->enable();
-		}
-
-		$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
+			
+		$_TPL->set_var('id',$_QR['id']);
+		$_TPL->set_var('info',$info);
 		break;
 	default:
 		$act = 'list';
@@ -145,10 +57,11 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $provd_config->get_config_list($order,$limit);
-		#$total = $provd_config->get_cnt();
-		$total= count($list);
-
+		if (($list = $appprovdconfig->get_config_list($search,$order,$limit)) === false)
+			$list = array();
+			
+		$total = $appprovdconfig->get_cnt();
+		
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
@@ -157,6 +70,7 @@ switch($act)
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
+		$_TPL->set_var('search',$search);
 }
 
 $_TPL->set_var('act',$act);
@@ -167,6 +81,9 @@ $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 $menu->set_toolbar('toolbar/xivo/configuration/provisioning/config');
+
+$dhtml = &$_TPL->get_module('dhtml');
+$dhtml->set_js('js/xivo/configuration/provisioning/config.js');
 
 $_TPL->set_bloc('main','xivo/configuration/provisioning/config/'.$act);
 $_TPL->set_struct('xivo/configuration');

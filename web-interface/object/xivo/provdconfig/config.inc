@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2020  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,13 +19,8 @@
 #
 
 $array = array();
+$array['element'] = array();
 
-$array['provd'] = array();
-$array['provd']['host'] = '127.0.0.1';
-$array['provd']['port'] = 18866;
-$array['provd']['user'] = 'admin';
-$array['provd']['pass'] = 'admin';
-$array['provd']['connect_timeout'] = 180;
-$array['provd']['timeout'] = 90;
+$array['filter'] = array();
 
 ?>

@@ -18,23 +18,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-dwho_file::load_file('abstract.inc',dirname(__FILE__));
+xivo_object::required(array('abstract','provd.inc'),true);
 
-class module_provd_plugin extends module_provd_abstract
+class xivo_object_provdplugin extends xivo_object_provd_abstract
 {
-	protected $_name 		= 'plugin';
+	protected $_name 		= 'provdplugin';
 	protected $_base_url 	= '/provd/pg_mgr';
 	
-	public function __construct($conf)
+	public function __construct(&$xobj,$param=array())
 	{
-		parent::__construct($conf);
+		$this->_load_config(true);
+		$this->_load_init();
 	}
 	
 	public function get($name)
 	{		
 		$res = array();
 		
-		$uri = $this->_build_uri(array($this->_name.'s',$name,'info'));
+		$uri = $this->_build_uri(array('plugins',$name,'info'));
 		
 		if (($rs = $this->request_get($uri)) === false
 		|| $this->_status_code === 404
@@ -48,7 +49,7 @@ class module_provd_plugin extends module_provd_abstract
 		$res['pkgs'] = $pkgs = array();
 		$res['params'] = false;
 		
-		$uri = $this->_build_uri(array($this->_name.'s',$name,'install','installable'));
+		$uri = $this->_build_uri(array('plugins',$name,'install','installable'));
 		
 		if (($rs = $this->request_get($uri)) !== false
 		&& isset($rs['pkgs']) === true
@@ -62,7 +63,7 @@ class module_provd_plugin extends module_provd_abstract
 					
 			$pkgs['list'] = $rs['pkgs'];
 		
-			$uri = $this->_build_uri(array($this->_name.'s',$name,'install','installed'));
+			$uri = $this->_build_uri(array('plugins',$name,'install','installed'));
 			
 			if (($rs = $this->request_get($uri)) !== false
 			&& isset($rs['pkgs']) === true
@@ -88,7 +89,7 @@ class module_provd_plugin extends module_provd_abstract
 			$res['pkgs'] = array_values($list);
 		}
 			
-		$uri = $this->_build_uri(array($this->_name.'s',$name,'configure'));
+		$uri = $this->_build_uri(array('plugins',$name,'configure'));
 		
 		if (($rs = $this->request_get($uri)) !== false
 		&& $this->_status_code === 200)	{
@@ -98,17 +99,17 @@ class module_provd_plugin extends module_provd_abstract
 		return($res);
 	}
 	
-	public function get_plugin_installed($search='',$order=null,$limit=null,$assoc=false)
+	public function get_plugin_installed($search='',$assoc=false)
 	{
-		return($this->_get_plugins('installed',$search,$order,$limit,$assoc));
+		return($this->_get_plugins('installed',$search,$assoc));
 	}
 	
-	public function get_plugin_installable($search='',$order=null,$limit=null,$assoc=false)
+	public function get_plugin_installable($search='',$assoc=false)
 	{
-		return($this->_get_plugins('installable',$search,$order,$limit,$assoc));
+		return($this->_get_plugins('installable',$search,$assoc));
 	}
 	
-	private function _get_plugins($type,$search='',$order=null,$limit=null,$assoc=false)
+	private function _get_plugins($type,$search='',$assoc=false)
 	{
 		switch ($type)
 		{
@@ -124,19 +125,16 @@ class module_provd_plugin extends module_provd_abstract
 		|| ($rs = $rs['pkgs']) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
-			
+		
 		foreach($rs as $k => &$r)
 		{
 			$r['type'] = $type;
 			$r['name'] = $k;
 			
-			if ($search !== '')
-			{
-				if (preg_match('/'.$search.'/', $r['name']) !== 0
-				|| preg_match('/'.$search.'/', $r['description']) !== 0)
-					continue;
+			if ($search !== ''
+			&& preg_match('/'.$search.'/', $r['name']) === 0
+			&& preg_match('/'.$search.'/', $r['description']) === 0)
 				unset($rs[$k]);
-			}
 		}
 
 		if((bool) $assoc === false)
@@ -180,7 +178,7 @@ class module_provd_plugin extends module_provd_abstract
 	
 	public function install_pkgs($plugin,$name)
 	{
-		$uri = $this->_build_uri(array($this->_name.'s',$plugin,'install','install'));
+		$uri = $this->_build_uri(array('plugins',$plugin,'install','install'));
 
 		$data = array('id' => $name);
 		
@@ -218,7 +216,7 @@ class module_provd_plugin extends module_provd_abstract
 	
 	public function uninstall_pkgs($plugin,$name)
 	{
-		$uri = $this->_build_uri(array($this->_name.'s',$plugin,'install','uninstall'));
+		$uri = $this->_build_uri(array('plugins',$plugin,'install','uninstall'));
 
 		$data = array('id' => $name);
 		

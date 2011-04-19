@@ -83,6 +83,16 @@ abstract class xivo_application_abstract extends xivo_libconfig_abstract
 		return(($ref = &$r));
 	}
 
+	function &get_provd_module($name,$param=null)
+	{
+		$name = (string) 'provd'.$name;
+
+		if(($module = &$this->_xobj->get_module($name,$param)) === false)
+			return(false);
+
+		return($module);
+	}
+
 	function load_init($param=null)
 	{
 		$this->_reset_info();

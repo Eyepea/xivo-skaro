@@ -38,7 +38,6 @@ class xivo_object_sysconfd extends xivo_object_abstract
 		$this->xivo_object_abstract(&$xobj);
 		$this->_load_config();
 		$this->_set_configuration();
-
 		$this->_url = array('scheme'	=> 'http',
 				    'host'	=> $this->_conf['sysconfd']['host'],
 				    'port'	=> $this->_conf['sysconfd']['port']);

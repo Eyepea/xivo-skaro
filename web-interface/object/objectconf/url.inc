@@ -89,7 +89,6 @@ $array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configurati
 // provisioning
 $array['xivo/configuration/provisioning/general'] = 'xivo/configuration/index.php/provisioning/general/';
 $array['xivo/configuration/provisioning/config'] = 'xivo/configuration/index.php/provisioning/config/';
-$array['xivo/configuration/provisioning/device'] = 'xivo/configuration/index.php/provisioning/device/';
 $array['xivo/configuration/provisioning/plugin'] = 'xivo/configuration/index.php/provisioning/plugin/';
 
 $array['xivo/configuration/json/restricted/provisioning/general'] = 'xivo/configuration/json.php/restricted/provisioning/general/';

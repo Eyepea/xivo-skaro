@@ -18,24 +18,96 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-abstract class module_provd_abstract
+dwho::load_class('dwho_network');
+dwho::load_class('dwho_uri');
+dwho::load_class('dwho_curl');
+dwho::load_class('dwho_json');
+dwho::load_class('dwho_file');
+
+xivo_object::required(array('abstract','abstract.inc'),true);
+
+abstract class xivo_object_provd_abstract extends xivo_object_abstract
 {
-	var $_conf			= null;
-	var $_curl			= null;
-	var $_uri			= null;
-	var $_url			= array();
-	var $_status_code	= null;
-	var $_curl_opt		= array();
+	protected $_curl		= null;
+	protected $_uri			= null;
+	protected $_url			= array();
+	protected $_status_code	= null;
+	protected $_curl_opt	= array();
 	
-	public function __construct($conf)
-	{		
-		$this->_conf = $conf;
+	protected function _load_init()
+	{
+		$this->_set_configuration();
+		
+		if (isset($this->_conf['provd']) === false)
+			return(false);
+		
 		$this->_url = array('scheme' => 'http',
-				    'host' => $this->_conf['host'],
-				    'port' => $this->_conf['port']);
+				    'host' => $this->_conf['provd']['host'],
+				    'port' => $this->_conf['provd']['port']);
 
 		$this->_uri = new dwho_uri();
 		$this->_curl = new dwho_curl();
+	}
+
+	protected function _set_configuration()
+	{
+		$_CF = &dwho_gat::get('_CF');
+
+		if(dwho_issa('provd',$_CF['xivo']['ini']) === false)
+			return(null);
+
+		$ref = &$_CF['xivo']['ini']['provd'];
+
+		if(isset($ref['host']) === true)
+		{
+			if(dwho_network::valid_host($ref['host'],
+						    (DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)) === true)
+				$this->_conf['provd']['host'] = $ref['host'];
+			else
+				dwho_report('warning','Invalid option host for section provd in XIVO init file');
+		}
+
+		if(isset($ref['port']) === true)
+		{
+			if(dwho_network::valid_port_number($ref['port']) === true)
+				$this->_conf['provd']['port'] = (int) $ref['port'];
+			else
+				dwho_report('warning','Invalid option port for section provd in XIVO init file');
+		}
+
+		if(isset($ref['user']) === true)
+		{
+			if(empty($ref['user']) === false)
+				$this->_conf['provd']['user'] = $ref['user'];
+			else
+				dwho_report('warning','Invalid option login for section provd in XIVO init file');
+		}
+
+		if(isset($ref['pass']) === true)
+		{
+			if(empty($ref['pass']) === false)
+				$this->_conf['provd']['pass'] = $ref['pass'];
+			else
+				dwho_report('warning','Invalid option pass for section provd in XIVO init file');
+		}
+
+		if(isset($ref['connect_timeout']) === true)
+		{
+			if(dwho_is_uint($ref['connect_timeout']) === true)
+				$this->_conf['provd']['connect_timeout'] = $ref['connect_timeout'];
+			else
+				dwho_report('warning','Invalid option connect_timeout for section provd in XIVO init file');
+		}
+
+		if(isset($ref['timeout']) === true)
+		{
+			if(dwho_is_uint($ref['timeout']) === true)
+				$this->_conf['provd']['timeout'] = $ref['timeout'];
+			else
+				dwho_report('warning','Invalid option timeout for section provd in XIVO init file');
+		}
+
+		return(true);
 	}
 
 	protected function _set_curl_opt($key,$value)
@@ -48,7 +120,7 @@ abstract class module_provd_abstract
 		return(true);
 	}
 	
-	protected function _build_uri($arr)
+	public function _build_uri($arr)
 	{
 		if (is_array($arr) === false
 		|| ($nb = count($arr)) === 0)
@@ -81,15 +153,7 @@ abstract class module_provd_abstract
 		return($ret);
 	}
 	
-	public function header($ch, $string)
-	{
-    	$length = strlen($string); 
-		dwho_var_dump($ch);
-		dwho_var_dump($string);
-		return($length);
-	}
-	
-	function _split_top_parentheses($str)
+	protected function _split_top_parentheses($str)
 	{
 		$idx = 0;
 	    $length = count($str);
@@ -118,10 +182,10 @@ abstract class module_provd_abstract
 	    return $result;
 	}
 
-	private function _create()
+	protected function _create()
 	{
-		$opt = array('connect_timeout'	=> $this->_conf['connect_timeout'],
-					'timeout'			=> $this->_conf['timeout'],
+		$opt = array('connect_timeout'	=> $this->_conf['provd']['connect_timeout'],
+					'timeout'			=> $this->_conf['provd']['timeout'],
 					#'writefunction'	=> array($this,'header'),
 					#'followlocation'	=> true,
 					#'httpheader'		=> array(dwho_json::get_header()));
@@ -131,8 +195,8 @@ abstract class module_provd_abstract
 		&& empty($this->_curl_opt) === false)
 			$opt = array_merge($opt, $this->_curl_opt);
 		
-		if (($user = $this->_conf['user']) !== ''
-		&& ($pass = $this->_conf['pass']) !== '')
+		if (($user = $this->_conf['provd']['user']) !== ''
+		&& ($pass = $this->_conf['provd']['pass']) !== '')
 			$opt = array_merge($opt, array('httpauth' => CURLAUTH_DIGEST,
 				'userpwd' => $user.':'.$pass));
 		
@@ -156,7 +220,7 @@ abstract class module_provd_abstract
 		return($uri);
 	}
 
-	private function _connect($path,$query=null)
+	protected function _connect($path,$query=null)
 	{
 		if(($uri = $this->build_href($path,$query)) === false
 		|| $this->_curl->set_option('url',$uri) === false)

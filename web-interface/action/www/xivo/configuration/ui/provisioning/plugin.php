@@ -25,15 +25,13 @@ include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $act = $_QRY->get('act');
 
-$ipbx = &$_SRE->get('ipbx');	
-$provd = &$_XOBJ->get_module('provd');
-$provd_plugin = &$provd->get_module('plugin');
+$provdplugin = &$_XOBJ->get_module('provdplugin');
 
 switch($act)
 {
 	case 'install':
 		if (isset($_QR['id']) === false
-		|| $provd_plugin->install($_QR['id']) === false)
+		|| $provdplugin->install($_QR['id']) === false)
 		{
 			$http_response->set_status_line(400);
 			$http_response->send(true);
@@ -44,7 +42,7 @@ switch($act)
 	case 'install-pkgs':
 		if (isset($_QR['id']) === false
 		|| isset($_QR['plugin']) === false
-		|| ($location = $provd_plugin->install_pkgs($_QR['plugin'],$_QR['id'])) === false)
+		|| ($location = $provdplugin->install_pkgs($_QR['plugin'],$_QR['id'])) === false)
 		{
 			$http_response->set_status_line(400);
 			$http_response->send(true);
@@ -54,7 +52,7 @@ switch($act)
 	case 'getparams':
 		if (isset($_QR['uri']) === false
 		|| ($uri = $_QR['uri']) === ''
-		|| (($res = $provd_plugin->get_params($uri))) === false
+		|| (($res = $provdplugin->get_params($uri))) === false
 		|| isset($res['value']) === false)
 		{
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_get_params',array($value)));
@@ -67,7 +65,7 @@ switch($act)
 		if (isset($_QR['uri']) === false
 		|| ($uri = $_QR['uri']) === ''
 		|| isset($_QR['value']) === false
-		|| ($provd_plugin->edit_params($uri,$_QR['value'])) === false) 
+		|| ($provdplugin->edit_params($uri,$_QR['value'])) === false) 
 		{
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_edit_params',array($_QR['value'])));
 			die(dwho_report::get_message('error'));
@@ -87,7 +85,7 @@ switch($act)
 		elseif (isset($_QR['path']) === false
 		|| isset($_QR['id']) === false
 		|| ($path = urldecode($_QR['path'])) === false
-		|| ($r = $provd_plugin->request_oip($path)) === false
+		|| ($r = $provdplugin->request_oip($path)) === false
 		|| ($data = dwho_json::decode($r,true)) === false
 		|| isset($data['status']) === false)
 		{
