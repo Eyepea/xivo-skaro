@@ -75,7 +75,8 @@ class OpenSSL(object):
 
             certs.append({
 							'name'					 : os.path.basename(fname).rsplit('.',2)[0],
-							'CA'             : cert.check_ca(),
+							'CA'             : cert.check_ca() == 1,
+							'autosigned'     : str(cert.get_subject()) == str(cert.get_issuer()),
 							'length'         : len(cert.get_pubkey().get_rsa()),
 							'fingerprint'    : 'md5:'+cert.get_fingerprint(),
 							'validity-end'   : cert.get_not_after().get_datetime().strftime("%Y/%m/%d %H:%M:%S %Z"),
@@ -121,13 +122,15 @@ class OpenSSL(object):
 							'extensions'     : {}
 						}
         """
+        print options, args
         if not os.path.exists(self._crtfile(options['name'])):
             raise HttpReqError(404, "%s certificate not found" % options['name'])
 
         cert = X509.load_cert(self._crtfile(options['name']))
         infos = {
 						'sn'             : cert.get_serial_number(),
-						'CA'             : cert.check_ca(),
+						'CA'             : cert.check_ca() == 1,
+						'autosigned'     : str(cert.get_subject()) == str(cert.get_issuer()),
 						'length'         : len(cert.get_pubkey().get_rsa()),
 						'fingerprint'    : 'md5:'+cert.get_fingerprint(),
 						'validity-start' : cert.get_not_before().get_datetime().strftime("%Y/%m/%d %H:%M:%S %Z"),
@@ -361,14 +364,14 @@ class OpenSSL(object):
         """
         if 'name' not in args:
             raise HttpReqError(400, "missing 'name' option")
-        elif os.path.exists(os.path.join(self.certsdir, args['name']+'.key')):
+        elif os.path.exists(os.path.join(self.certsdir, str(args['name'])+'.key')):
             raise HttpReqError(409, "a certificat with this name is already found")
 
         autosigned = int(args.get('autosigned',0))
         if autosigned == 0:
             if 'ca' not in args:
                 raise HttpReqError(400, "missing 'ca' option")
-            elif not os.path.exists(os.path.join(self.certsdir, args['ca']+'.key')):
+            elif not os.path.exists(os.path.join(self.certsdir, str(args['ca'])+'.key')):
                 raise HttpReqError(409, "CA certificate key not found")
 
             # loading CA private key
