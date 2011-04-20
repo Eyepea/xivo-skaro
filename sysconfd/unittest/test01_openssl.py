@@ -156,6 +156,38 @@ class TestOpenSSL(unittest.TestCase):
 		# whose 3 are CA certificates
 		self.assertEqual(len(filter(lambda c: c['CA'] == 1, data)), 3)
 
+	def test_21_listkeys(self):
+		(resp, data) = self.client.request('GET', '/openssl_listkeys', {})
+		self.assertEqual(resp.status, 200)
+
+		try:
+			data = cjson.decode(data)
+		except Exception:
+			fail('cannot decode json data')
+
+		allcount = len(data)
+
+		(resp, data) = self.client.request('GET', '/openssl_listkeys', {'type':'private'})
+		self.assertEqual(resp.status, 200)
+
+		try:
+			data = cjson.decode(data)
+		except Exception:
+			fail('cannot decode json data')
+
+		privcount = len(data)
+
+		(resp, data) = self.client.request('GET', '/openssl_listkeys', {'type':'public'})
+		self.assertEqual(resp.status, 200)
+
+		try:
+			data = cjson.decode(data)
+		except Exception:
+			fail('cannot decode json data')
+
+		pubcount = len(data)
+		self.assertEqual(allcount, pubcount+privcount)
+
 	def test_30_getinfos(self):
 		# CA
 		(resp, data) = self.client.request('GET',	'/openssl_certificateinfos',

@@ -48,6 +48,8 @@ class OpenSSL(object):
 
         http_json_server.register(self.listCertificates, CMD_R,
 						name='openssl_listcertificates', safe_init=self.safe_init)
+        http_json_server.register(self.listKeys, CMD_R,
+						name='openssl_listkeys')
         http_json_server.register(self.getCertificateInfos, CMD_R,
 						name='openssl_certificateinfos')
         http_json_server.register(self.createSSLCACertificate, CMD_RW,
@@ -101,6 +103,35 @@ class OpenSSL(object):
 						})
 
         return certs
+
+    def listKeys(self, args, options):
+        """Return list of available keys
+
+					arguments:
+						type (str, optional): 'both','private' or 'public', depending on wether
+						you want to get all, private only or public only keys
+        """
+        keys = []; index = {}
+
+        type = options.get('type','both')
+        if type in ('both','private'):
+            for fname in glob.iglob(os.path.join(self.certsdir, '*.key')):
+                keys.append({
+                  'name'             : os.path.basename(fname).rsplit('.',2)[0],
+                  'path'             : fname,
+                  'type'             : 'private',
+                })
+
+        if type in ('both','public'):
+            for fname in glob.iglob(os.path.join(self.certsdir, '*.pub')):
+                keys.append({
+                  'name'             : os.path.basename(fname).rsplit('.',2)[0],
+                  'path'             : fname,
+                  'type'             : 'public',
+                })
+
+        return keys
+
 
     def getCertificateInfos(self, args, options):
         """Return informations about a certificate
