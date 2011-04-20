@@ -80,6 +80,7 @@ class OpenSSL(object):
 							'length'         : len(cert.get_pubkey().get_rsa()),
 							'fingerprint'    : 'md5:'+cert.get_fingerprint(),
 							'validity-end'   : cert.get_not_after().get_datetime().strftime("%Y/%m/%d %H:%M:%S %Z"),
+							'path'           : fname,
 						})
 
         return certs
@@ -123,10 +124,10 @@ class OpenSSL(object):
 						}
         """
         print options, args
-        if not os.path.exists(self._crtfile(options['name'])):
+        if not os.path.exists(self._pemfile(options['name'])):
             raise HttpReqError(404, "%s certificate not found" % options['name'])
 
-        cert = X509.load_cert(self._crtfile(options['name']))
+        cert = X509.load_cert(self._pemfile(options['name']))
         infos = {
 						'sn'             : cert.get_serial_number(),
 						'CA'             : cert.check_ca() == 1,
@@ -135,6 +136,7 @@ class OpenSSL(object):
 						'fingerprint'    : 'md5:'+cert.get_fingerprint(),
 						'validity-start' : cert.get_not_before().get_datetime().strftime("%Y/%m/%d %H:%M:%S %Z"),
 						'validity-end'   : cert.get_not_after().get_datetime().strftime("%Y/%m/%d %H:%M:%S %Z"),
+						'path'           : self._pemfile(options['name'])
 					}
 
         infos['subject'] = dict([(k, v) for (k, v) in [nid.split('=') for nid in 

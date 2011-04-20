@@ -122,6 +122,16 @@ class TestOpenSSL(unittest.TestCase):
 				})
 		self.assertEqual(resp.status, 200)
 
+		# None value as CA name
+		(resp, data) = self.client.request('POST', '/openssl_createcertificate',
+				{
+					'name'     : 'fail1',
+					'length'   : 512,
+					'ca'       : None,
+				})
+		self.assertEqual(resp.status, 409)
+
+
 	def test_20_listcerts(self):
 		(resp, data) = self.client.request('GET', '/openssl_listcertificates', {})
 		self.assertEqual(resp.status, 200)
