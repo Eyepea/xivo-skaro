@@ -20,6 +20,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
 import logging
 from zope.interface import Attribute, Interface, implements
 
@@ -31,54 +32,51 @@ class InvalidParameterError(Exception):
 
 
 class IConfigureService(Interface):
-    """Interface for a simple configuration service.
+    """Interface for a "configuration service".
     
-    These services are similar to key-value store, where you can set a value
-    for...
+    This service offers an easy way to discover a certain number of "parameters"
+    exposed by an underlying object, get the values of these parameters and
+    set these parameters to new values, without previous knowledge of the
+    underlying object. With this, it's possible to parameterize objects in a
+    generic way.
     
-    The keys used MUST be strings.
+    Note that when the word string is used here, it means unicode strings,
+    not "raw" strings.
+    
+    To keep it as simple as possible, parameter names must match [\w.-]+. and
+    parameters values must not contain any newline characters.
     
     """
-    # XXX values should be in unicode instead of raw_string
     
-    def get(key):
-        """Return the value associated with a key.
+    def get(name):
+        """Return the value associated with a parameter.
         
-        The object returned might not be a string, but it MUST have the
-        following property:
-          str_val1 = str(self.get(key))
-          self.set(key, str_val1)
-          str_val2 = str(self.get(key))
-          str_val1 == str_val2
-        with str_val1 (and str_val2) being meaningful value for the parameter.
+        The object returned MUST be a string, or None if there's no value
+        associated with the parameter. This means the None value can't be a
+        valid value for a parameter.
         
-        If there's no value associated with key, return None. This means the
-        None value can't be associated with a key.
-        
-        Raise a KeyError if key is not a known valid key. 
+        Raise a KeyError if name is not a known valid parameter name.
         
         """
 
-    def set(key, value):
-        """Associate a value with a key.
+    def set(name, value):
+        """Associate a value with a parameter.
         
-        The object MUST be ready to accept value as a string, although it
-        MAY change this value to a different representation. Once this
-        value is set, the property of the get method must be respected.
+        The value MUST be a string, or None if there's no value to associate
+        with the parameter.
         
-        If value is None, this is equivalent to 'deleting' the value. This
-        means None has a special meaning and can't be used a value.
+        Raise a KeyError if name is not a known valid parameter.
         
-        Raise an InvalidParameterError if the value for this key is not
-        valid/acceptable.
+        Raise an InvalidParameterError if the value for this parameter is not
+        valid/acceptable. This means None has a special meaning and can't
+        be used as a value.
         
-        Raise a KeyError if key is not a known valid key.
         
         """
     
     description = Attribute(
-        """A dictionary where keys are the key that can be set, and
-        values are a short description of the key.
+        """A read-only dictionary where keys are the parameters that can be
+        set, and values are short descriptions of the parameters.
         
         If a parameter has no description, the value for this key MUST be
         None.
@@ -190,30 +188,91 @@ class AttrConfigureServiceParam(object):
         return getattr(self._obj, self._name)
     
     def set(self, value):
-        logger.info('Setting %s attribute of %s to %s', self._name, self._obj, value)
         setattr(self._obj, self._name, value)
 
 
 class BaseConfigureService(object):
     implements(IConfigureService)
     
-    def __init__(self, params_map):
+    def __init__(self, params):
         """
-        params_map -- a dictionary object where keys are key and values are
-          IConfigureServiceParam object. After a call to this method, the
-          params_map object belong to this object. 
+        params -- a dictionary object where keys are parameter names and
+          values are IConfigureServiceParam objects. After a call to this
+          method, the params object belong to this object. 
         """
-        self._params_map = params_map
+        self._params = params
 
-    def get(self, key):
-        param = self._params_map[key]
+    def get(self, name):
+        param = self._params[name]
         return param.get()
     
-    def set(self, key, value):
-        param = self._params_map[key]
+    def set(self, name, value):
+        param = self._params[name]
         param.set(value)
     
     @property
     def description(self):
-        return dict((key, p.description) for key, p in
-                    self._params_map.iteritems())
+        return dict((k, v.description) for k, v in
+                    self._params.iteritems())
+
+
+class PersistentConfigureServiceDecorator(object):
+    # Add persistence to a configure service.
+    # This is quite ad-hoc, and something more centralized with something a
+    # bit more elaborated could be better on certain point, but since our
+    # needs is low currently, this might be just fine.
+    def __init__(self, cfg_service, persister):
+        self._cfg_service = cfg_service
+        self._persister = persister
+        self._load_params()
+    
+    def _load_params(self):
+        params = self._persister.params()
+        for name, value in params.iteritems():
+            try:
+                self._cfg_service.set(name, value)
+            except KeyError, e:
+                logger.info('Could not set unknown parameter "%s"', name)
+            except InvalidParameterError, e:
+                logger.warning('Invalid value "%s" for parameter "%s": %s',
+                               value, name, e)
+    
+    def get(self, name):
+        return self._cfg_service.get(name)
+    
+    def set(self, name, value):
+        self._cfg_service.set(name, value)
+        self._persister.update(name, value)
+    
+    @property
+    def description(self):
+        return self._cfg_service.description
+
+
+class JsonConfigPersister(object):
+    def __init__(self, filename):
+        self._filename = filename
+        self._cache = {}
+        self._load()
+    
+    def _load(self):
+        try:
+            with open(self._filename) as fobj:
+                self._cache = json.load(fobj)
+        except IOError, e:
+            logger.debug('Could not load file %s: %s', self._filename, e)
+        except ValueError, e:
+            logger.warning('Invalid content in file %s: %s', self._filename, e)
+    
+    def _save(self):
+        with open(self._filename, 'w') as fobj:
+            json.dump(self._cache, fobj)
+    
+    def params(self):
+        # Return every persisted parameter as a dictionary of parameters
+        # names and values.
+        return dict(self._cache)
+    
+    def update(self, name, value):
+        self._cache[name] = value
+        self._save()

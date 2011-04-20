@@ -201,7 +201,7 @@ class ProvisioningApplication(object):
                                     config['general.plugins_dir'],
                                     config['general.cache_dir'],
                                     self._splitted_config['proxy'])
-        if 'general.plugin_server' in config:
+        if 'general.plugin_server' in config and not self.pg_mgr.server:
             self.pg_mgr.server = config['general.plugin_server']
         self._base_raw_config = config['general.base_raw_config']
         logger.info('Using base raw config %s', self._base_raw_config)

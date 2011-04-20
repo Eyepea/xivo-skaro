@@ -40,7 +40,8 @@ from provd.loaders import ProvdFileSystemLoader
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
 from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
-    IInstallService, InvalidParameterError
+    IInstallService, InvalidParameterError, JsonConfigPersister,\
+    PersistentConfigureServiceDecorator
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
 from twisted.internet import defer
@@ -651,15 +652,16 @@ class PluginManager(object):
         self._app = app
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
-        # XXX move the cfg_service stuff out of the PgMgr ?
+        self.server = None
         server_p = AttrConfigureServiceParam(self, 'server',
-                                             'The base address of the plugins repository')
-        self._cfg_service = BaseConfigureService({'server': server_p})
+                                             u'The base address of the plugins repository')
+        cfg_service = BaseConfigureService({u'server': server_p})
+        persister = JsonConfigPersister(os.path.join(plugins_dir, 'config.json'))
+        self._cfg_service = PersistentConfigureServiceDecorator(cfg_service, persister)
         self._in_update = False
         self._in_install = set()
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
-        self.server = None
         self._downloader = DefaultDownloader(new_handlers(proxies))
     
     def close(self):

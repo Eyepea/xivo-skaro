@@ -713,7 +713,7 @@ class ConfigResource(Resource):
         if path == 'raw':
             return RawConfigResource(self._app, self._id)
         else:
-            return Resource.getChild(self)
+            return Resource.getChild(self, path, request)
     
     @json_response_entity
     def render_GET(self, request):

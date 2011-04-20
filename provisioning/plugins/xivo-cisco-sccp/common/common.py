@@ -42,10 +42,12 @@ from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
 from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from provd.servers.tftp.service import TFTPFileService
+from provd.services import PersistentConfigureServiceDecorator,\
+    JsonConfigPersister
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer
 
-logger = logging.getLogger('plugin-xivo-cisco-sccp')
+logger = logging.getLogger('plugin.xivo-cisco-sccp')
 
 
 class WeakCiscoCredentialsError(DownloadError):
@@ -269,42 +271,43 @@ def _gen_tz_map():
 
 class CiscoConfigureService(object):
     # implements(IConfigureService)
+    
     def __init__(self, cisco_dler, username, password):
         # Creating an instance will also set the password to the downloader
         # if applicable
         self._cisco_dler = cisco_dler
-        self._key_username = username
-        self._key_password = password
+        self._param_username = username
+        self._param_password = password
         self._update_dler()
     
     def _update_dler(self):
-        if self._key_username is not None and self._key_password is not None:
-            self._cisco_dler.set_password(self._key_username, self._key_password)
+        if self._param_username is not None and self._param_password is not None:
+            self._cisco_dler.set_password(self._param_username, self._param_password)
     
     @staticmethod
-    def _get_attr_name(key):
-        # Return the key attribute name from the key
-        return '_key_' + key
+    def _get_attr_name(name):
+        # Return the key attribute name from the parameter name
+        return '_param_' + name
     
-    def get(self, key):
+    def get(self, name):
         try:
-            return getattr(self, self._get_attr_name(key))
+            return getattr(self, self._get_attr_name(name))
         except AttributeError, e:
             raise KeyError(e)
     
-    def set(self, key, value):
+    def set(self, name, value):
         try:
-            setattr(self, self._get_attr_name(key), str(value))
+            setattr(self, self._get_attr_name(name), value)
         except AttributeError, e:
             raise KeyError(e)
         else:
             self._update_dler()
     
     description = {
-        'username': 'The username used to download files from cisco.com website',
-        'password': 'The password used to download files from cisco.com website',
+        u'username': u'The username used to download files from cisco.com website',
+        u'password': u'The password used to download files from cisco.com website',
     }
-    
+
 
 class BaseCiscoSccpPlugin(StandardPlugin):
     # XXX actually, we didn't find which encoding Cisco SCCP are using
@@ -353,6 +356,9 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         
         cfg_service = CiscoConfigureService(cisco_dler, spec_cfg.get('username'),
                                             spec_cfg.get('password'))
+        persister = JsonConfigPersister(os.path.join(self._plugin_dir, 'var',
+                                                     'config.json'))
+        cfg_service = PersistentConfigureServiceDecorator(cfg_service, persister)
         
         self.services = {'configure': cfg_service,
                          'install': fetchfw_helper}  
