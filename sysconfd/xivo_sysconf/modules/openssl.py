@@ -30,6 +30,15 @@ from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
 
+CIPHERS = {
+	'aes'  : 'aes_128_cbc',
+	'des'  : 'des_ede_cbc',
+	'des3' : 'des_ede3_cbc',
+	'idea' : 'idea_cbc'
+}
+
+DEFAULT_CIPHER = CIPHERS['aes']
+
 class OpenSSL(object):
     """
     """
@@ -57,13 +66,21 @@ class OpenSSL(object):
 
 
     def _keyfile(self, name):
+        """private key"""
         return os.path.join(self.certsdir, name+'.key')
 
     def _crtfile(self, name):
+        """certificate"""
         return os.path.join(self.certsdir, name+'.crt')
 
     def _pemfile(self, name):
+        """private ket + certificate"""
         return os.path.join(self.certsdir, name+'.pem')
+
+    def _pubfile(self, name):
+        """pub key"""
+        return os.path.join(self.certsdir, name+'.pub')
+
 
     def listCertificates(self, args, options):
         """Return list of available certificates
@@ -152,7 +169,7 @@ class OpenSSL(object):
 
         return infos
 
-    def _makekey(self, name, password='', keylen=1024):
+    def _makekey(self, name, password='', keylen=1024, cipher=DEFAULT_CIPHER):
         """Create a RSA key.
 
 					*private function*
@@ -161,6 +178,7 @@ class OpenSSL(object):
 						. name     : key name (filename will be 'name.key')
             . password : key password (if empty, key will be passwordless)
 						. keylen   : private key size, in bits
+						. cipher   : cipher used to encrypt key
 
 					returns:
 					  . the key
@@ -171,9 +189,11 @@ class OpenSSL(object):
         def _getpwd(*_args):
             return password
 				#NOTE: when empty password, need not to use a cipher, or generated key file is empty
-        rsa.save_key(os.path.join(self.certsdir, name),
-            cipher='aes_256_cbc' if len(password) > 0 else None,
+        rsa.save_key(self._keyfile(name),
+            cipher=cipher if len(password) > 0 else None,
 						callback=_getpwd)
+
+        rsa.save_pub_key(self._pubfile(name))
 
         return rsa
         
@@ -304,7 +324,7 @@ class OpenSSL(object):
 
 
         # Create private key
-        pkey = self._makekey(args['name']+'.key', args.get('password',''), int(args.get('length',1024)))
+        pkey = self._makekey(args['name'], args.get('password',''), int(args.get('length',1024)))
 
         # Create request
         # pubkey != req.get_pubkey() !!!
@@ -337,6 +357,7 @@ class OpenSSL(object):
 								default = 1024
 						. validity    (int)  : certificate validity (in days) from now
 								default = 365
+						. cipher      (str)  : 'des','des3',aes','idea'
 
 						== issuer/subject keys ==
 						. CN           (str)  : CommonName                (default=*)
@@ -391,9 +412,12 @@ class OpenSSL(object):
             cakey.assign_rsa(_cakey)
 
             cacert = X509.load_cert(self._crtfile(args['ca']))
-        
+       
+        cipher = CIPHERS.get(args.get('cipher'), DEFAULT_CIPHER)
+
         # Create private key
-        pkey = self._makekey(args['name']+'.key', args.get('password',''), int(args.get('length',1024)))
+        pkey = self._makekey(args['name'], args.get('password',''),
+						int(args.get('length',1024)), cipher)
 
         # Create request
         # pubkey != req.get_pubkey() !!!

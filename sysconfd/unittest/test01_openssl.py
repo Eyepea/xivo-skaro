@@ -131,6 +131,16 @@ class TestOpenSSL(unittest.TestCase):
 				})
 		self.assertEqual(resp.status, 409)
 
+		# Certificate with des3 key cipher
+		(resp, data) = self.client.request('POST', '/openssl_createcertificate',
+				{
+					'name'      : 'usercert6',
+					'autosigned': 1,
+					'password'  : 'fooo',
+					'cipher'    : 'des3'
+				})
+		self.assertEqual(resp.status, 200)
+
 
 	def test_20_listcerts(self):
 		(resp, data) = self.client.request('GET', '/openssl_listcertificates', {})
@@ -142,7 +152,7 @@ class TestOpenSSL(unittest.TestCase):
 			fail('cannot decode json data')
 
 		# do we have our 6 certificates
-		self.assertEqual(len(data), 7)
+		self.assertEqual(len(data), 8)
 		# whose 3 are CA certificates
 		self.assertEqual(len(filter(lambda c: c['CA'] == 1, data)), 3)
 
@@ -212,7 +222,7 @@ class TestOpenSSL(unittest.TestCase):
 			fail('cannot decode json data')
 
 		# do we have our 6 certificates
-		self.assertEqual(len(data), 6)
+		self.assertEqual(len(data), 7)
 
 
 	def xtest_99_cleanup(self):
