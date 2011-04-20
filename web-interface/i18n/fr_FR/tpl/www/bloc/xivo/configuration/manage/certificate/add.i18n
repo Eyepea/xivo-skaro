@@ -79,3 +79,6 @@ Mot de passe :
 
 ; fm_length
 Longueur de la clé : 
+
+; fm_cipher
+Cipher

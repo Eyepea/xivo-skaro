@@ -87,6 +87,17 @@ endif;
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'password')) )),
 
+	$form->select(array('desc'	=> $this->bbf('fm_cipher'),
+				    'name'	=> 'cipher',
+				    'labelid'	=> 'cipher',
+						'empty' => true,
+						'size' => 15,
+						'key' => 'name',
+						'altkey' => 'name',
+				    'selected'	=> $this->get_var('info','cipher'),
+				    'default'	=> $element['cipher']['default']),
+							array('aes','des','des3','idea')),
+
 	$form->text(array('desc'	=> $this->bbf('fm_fingerprint'),
 			  'name'	=> 'fingerprint',
 			  'labelid'	=> 'fingerprint',

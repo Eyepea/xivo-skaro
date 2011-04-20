@@ -73,6 +73,11 @@ $array['element']['ca']['default'] = '';
 $array['element']['ca_password'] = array();
 $array['element']['ca_password']['default'] = '';
 
+$array['element']['cipher'] = array();
+$array['element']['cipher']['value'] = array('aes','des','des3','idea');
+$array['element']['cipher']['default'] = 'aes';
+$array['element']['cipher']['null'] = true;
+
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['password'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
@@ -89,5 +94,6 @@ $array['filter']['length'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['validity'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['is_ca'] = array('bool' => true);
 $array['filter']['autosigned'] = array('bool' => true);
+$array['filter']['cipher'] = array('set' => false, 'chk' => 2, 'key' => array('aes','des','des3','idea'));
 
 ?>

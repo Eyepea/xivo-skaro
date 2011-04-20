@@ -35,6 +35,7 @@ function certinit(mode) {
 		$('#fd-ca_password').css('display','none');
 		$('#fd-password').css('display','none');
 		$('#fd-length').css('display','none');
+		$('#fd-cipher').css('display','none');
 
 		if ($('#it-autosigned').attr('checked'))
 		{
