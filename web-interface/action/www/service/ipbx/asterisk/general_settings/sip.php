@@ -29,6 +29,7 @@ $fm_save = $error = null;
 
 $info = $appgeneralsip->get_all_val_by_category(false);
 $auth = $modauth->get_all_where(array('usersip_id' => null));
+$modcert = &$_XOBJ->get_module('certificate');
 
 if(isset($_QR['fm_send']) === true)
 {
@@ -104,8 +105,16 @@ $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsip->get_context_list());
 $_TPL->set_var('parking_list', $modpark->get_all());
-$_TPL->set_var('tlscertfiles', $appgeneralsip->get_certificate_files('cert', $config['tls']['certdir']));
-$_TPL->set_var('tlscafiles', $appgeneralsip->get_certificate_files('cert', $config['tls']['cadir']));
+
+function cafilter($cert)
+{ return $cert['CA']; }
+
+function certfilter($cert)
+{	return !$cert['CA'];	}
+
+$allcerts = $modcert->get_all();
+$_TPL->set_var('tlscertfiles', array_filter($allcerts, "certfilter"));
+$_TPL->set_var('tlscafiles'  , array_filter($allcerts, "cafilter"));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
