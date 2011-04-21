@@ -85,9 +85,9 @@ $page = $url->pager($pager['pages'],
 		<td class="txt-left">
 			<label for="it-certificate-<?=$i?>" id="lb-certificate-<?=$i?>">
 <?php
-			if( $ref['CA'] == 1)
+			if(array_key_exists('CA', $ref) && $ref['CA'] == 1)
 				echo '<img title="'.$this->bbf('ca_authority').'" src="/img/site/utils/cacert.png" />';
-			else if($ref['autosigned'])
+			else if(array_key_exists('autosigned',$ref) && $ref['autosigned'])
 				echo '<img title="'.$this->bbf('autosigned').'" src="/img/site/utils/autosigned.png" />';
 			else
 				echo '<img title="'.$this->bbf('certificate').'" src="/img/site/utils/stock_lock.png" />';
