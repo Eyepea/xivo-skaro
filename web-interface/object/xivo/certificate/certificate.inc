@@ -68,6 +68,11 @@ class xivo_object_certificate extends xivo_object_abstract
 	{
 		$this->_sysconfd->request_get('/openssl_deletecertificate', array(array('name',$name)));
 	}
+
+	function get_pubkey($name)
+	{
+		return $this->_sysconfd->request_get('/openssl_exportpubkey', array(array('name',$name)));
+	}
 }
 
 ?>

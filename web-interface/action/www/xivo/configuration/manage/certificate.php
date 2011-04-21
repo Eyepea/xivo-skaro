@@ -124,6 +124,16 @@ switch($act)
 		$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 		break;
 
+	case 'export':
+		$pubkey = $modcert->get_pubkey($_QR['id']);
+
+		$_TPL->set_var('name', $_QR['id']);
+		$_TPL->set_var('pubkey',$pubkey);
+		$_TPL->display('/bloc/xivo/configuration/manage/certificate/pubkey');
+
+		$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
+		break;
+
 	case 'list':
 	default:
 		$act = 'list';

@@ -26,7 +26,10 @@ Début de validité :
 Fin de validité : 
 
 ; fm_subject_CN
-CommonName : 
+Nom commun : 
+
+; hlp_fm_CN
+CommonName (CN)
 
 ; fm_subject_emailAddress
 Email : 

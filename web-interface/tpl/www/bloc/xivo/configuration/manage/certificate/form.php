@@ -155,6 +155,7 @@ endif;
 	  $form->text(array('desc'	=> $this->bbf('fm_subject_CN'),
 			  'name'	=> 'subject[CN]',
 			  'labelid'	=> 'subject-CN',
+				'help'		=> $this->bbf('hlp_fm_CN'),
 			  'size'	=> 15,
 			  'default'	=> $element['subject']['CN']['default'],
 			  'value'	=> $this->get_var('info','subject','CN'),
