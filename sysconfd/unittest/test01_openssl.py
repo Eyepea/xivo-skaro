@@ -236,6 +236,17 @@ class TestOpenSSL(unittest.TestCase):
 		self.assertEqual(data['CA']    , 0)
 		self.assertNotEqual(data['subject']['emailAddress'], data['issuer']['emailAddress'])
 
+	def test_31_exports(self):
+		(resp, data) = self.client.request('GET', '/openssl_exportpubkey', {'name': 'usercert1'})
+		self.assertEqual(resp.status, 200)
+
+		try:
+			data = cjson.decode(data)
+		except Exception:
+			fail('cannot decode cjson data')
+
+		self.assertTrue(data.startswith('-----BEGIN PUBLIC KEY-----'))
+
 	def test_40_delete(self):
 		(resp, data) = self.client.request('GET',	'/openssl_deletecertificate', {'name':'usercert4'})
 		self.assertEqual(resp.status, 200)

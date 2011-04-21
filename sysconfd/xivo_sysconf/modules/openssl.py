@@ -52,6 +52,8 @@ class OpenSSL(object):
 						name='openssl_listkeys')
         http_json_server.register(self.getCertificateInfos, CMD_R,
 						name='openssl_certificateinfos')
+        http_json_server.register(self.getPubKey, CMD_R,
+						name='openssl_exportpubkey')
         http_json_server.register(self.createSSLCACertificate, CMD_RW,
 						name='openssl_createcacertificate')
         http_json_server.register(self.createSSLCertificate, CMD_RW,
@@ -171,7 +173,6 @@ class OpenSSL(object):
 							'extensions'     : {}
 						}
         """
-        print options, args
         if not os.path.exists(self._pemfile(options['name'])):
             raise HttpReqError(404, "%s certificate not found" % options['name'])
 
@@ -199,6 +200,31 @@ class OpenSSL(object):
         infos['extensions'] = exts
 
         return infos
+
+    def getPubKey(self, args, options):
+        """Export certificate public key
+
+					args:
+						. certificate name
+
+					returns
+						a text stream (pubkey)
+				
+					>>> getPubKey('wiki.proformatique.com')
+					-----BEGIN PUBLIC KEY-----
+					MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDGPItvzRZKECt6mLOpuFLZUAqy
+					U7CRFcTSUidTK75Hy5x10FvkNT1B6v/anL6+h2Smpyx6cs9NnnmfY8KVifONLHnb
+					kOZOsQH73gWUrS12tMC1ZhQjz53POFQLGEK8wYq84IwD7F5IzoMXZA0nyi2YCyxO
+					Drz539XmIqqVxSOfVwIDAQAB
+					-----END PUBLIC KEY-----
+        """
+        if not os.path.exists(self._pubfile(options['name'])):
+            raise HttpReqError(404, "%s pubkey not found" % options['name'])
+
+        with open(self._pubfile(options['name'])) as f:
+            pubkey = f.read()
+
+        return pubkey
 
     def _makekey(self, name, password='', keylen=1024, cipher=DEFAULT_CIPHER):
         """Create a RSA key.
