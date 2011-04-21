@@ -1,6 +1,8 @@
 
 function certinit(mode) {
-	
+
+	$('#it-validity-end-format').css('display','none');
+
 	if(mode == "add")
 	{
 		$('#dwsm-tab-2').css('display','none');
@@ -9,7 +11,13 @@ function certinit(mode) {
 		$('#fd-validity-start').css('display','none');
 		$('#fd-fingerprint').css('display','none');
 		$('#fd-length_text').css('display','none');
-		$('#it-validity-end').datepicker();
+		$('#it-validity-end').datepicker({
+			changeMonth: true,
+			changeYear: true,
+			minDate: +1,
+			altField: '#it-validity-end-format',
+			altFormat: 'yy-mm-dd'
+		});
 
 		cacheck = function() {
 			var c1 = $('#it-CA').attr('checked');

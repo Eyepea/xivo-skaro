@@ -144,6 +144,12 @@ endif;
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'validity-end')) )),
 
+		// hidden field
+	  $form->text(array(
+			  'name'	=> 'validity-end-format',
+			  'labelid'	=> 'validity-end-format',
+			  'size'	=> 25)),
+
 		'<br/>',
 
 	  $form->text(array('desc'	=> $this->bbf('fm_subject_CN'),

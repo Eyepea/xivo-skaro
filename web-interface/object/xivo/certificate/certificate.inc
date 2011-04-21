@@ -49,6 +49,11 @@ class xivo_object_certificate extends xivo_object_abstract
 		return $this->_sysconfd->request_get('/openssl_certificateinfos', array(array('name',$id)));
 	}
 
+	function get_keys()
+	{
+		return $this->_sysconfd->request_get('/openssl_listkeys');
+	}
+
 	function add($is_ca, $arr)
 	{
 		if ($is_ca)

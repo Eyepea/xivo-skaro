@@ -38,6 +38,8 @@ else if($context !== '')
 $contexts = false;
 $error    = false;
 
+$language = $_TPL->_i18n->get_language();
+
 switch($act)
 {
 	case 'add':
@@ -45,19 +47,22 @@ switch($act)
 
 		if(isset($_QR['fm_send']) 	 === true)
 		{	
+			$now = new DateTime("now");
+			$end = DateTime::createFromFormat("Y-m-d", $_QR['validity-end-format']);
+
 			// cleanup
 			$cert = array(
 				'name'     => $_QR['name'],
 				'password' => $_QR['password'],
 				'length'   => $_QR['length'],
-				'validity' => 365
+				'validity' => $end->diff($now)->days
 			);
 
-			if($_QR['CA'] != 1)
+			if(!array_key_exists('CA', $_QR) || $_QR['CA'] != 1)
 			{
 				$cert['autosigned'] = $_QR['autosigned'] == 1;
 
-				if($_QR['autosigned'] != 1)
+				if(array_key_exists('autosigned',$_QR) && $_QR['autosigned'] != 1)
 				{ $cert['ca'] = $_QR['ca_authority']; $cert['ca_password'] = $_QR['ca_password']; }
 			}
 
@@ -65,7 +70,7 @@ switch($act)
 			{ $cert[$k] = $v; }
 
 			// save item
-			if($modcert->add($_QR['CA'] == 1, $cert) === true)
+			if(($ret = $modcert->add(array_key_exists('CA',$_QR) && $_QR['CA'] == 1, $cert)) === true)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 
 			$error = $modcert->get_filter_error();
@@ -83,8 +88,11 @@ switch($act)
 		$_TPL->set_var('ca_authorities', $authorities);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/xivo/configuration/manager/certificate.js');
 		$dhtml->set_css('extra-libs/jquery-ui/css/ui-lightness/jquery-ui.css', true);
+
+		$dhtml->set_js('extra-libs/jquery-ui/ui/minified/jquery.ui.datepicker.min.js', true);
+		$dhtml->set_js('extra-libs/jquery-ui/ui/i18n/jquery.ui.datepicker-'.$language.'.js', true);
+		$dhtml->set_js('js/xivo/configuration/manager/certificate.js');
 		break;
 
 	case 'edit':
