@@ -55,6 +55,29 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 	{
 		$this->_cnt = 0;
 		
+		if (($list_installed = $this->_provdplugin->get_plugin_installed($search,$order)) === false)
+			$list_installed = array();
+		
+		if (($list_installable = $this->_provdplugin->get_plugin_installable($search,$order)) === false)
+			$list_installable = array();
+			
+		$list_old_pni = array_diff_key($list_installed, $list_installable);	
+		$list_installable = array_merge($list_installable,$list_old_pni);
+		
+		ksort($list_installable);
+			
+		$list = array();
+		foreach ($list_installable as $k => &$v) 
+		{			
+			if (isset($list_installed[$k]) === true)
+			{
+				$v['version'] = $list_installed[$k]['version'];
+				$v['type'] = 'installed';
+			}
+			array_push($list, $v);
+		}
+		
+		/*
 		if (($list_installed = $this->_provdplugin->get_plugin_installed($search,$order,null)) === false)
 			$list_installed = array();
 		
@@ -74,7 +97,7 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 		
 		$list = array_merge($plugins['info'],$plugins['list']);
 		$list = array_values($list);
-				
+		*/	
 		$this->_cnt = $total = count($list);
 		for($i=0;$i<$total;$i++)
 		{
