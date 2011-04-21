@@ -48,12 +48,73 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 	
 	public function get($id,$nocomponents=null)
 	{
-		return($this->_provdconfig->get($id));
+		$this->_info = $this->_provdconfig->get($id);
+		
+		return($this->_info);
 	}
 	
 	public function get_config_list($search='',$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_provdconfig->get_configs('list',$search,$order,$limit,$assoc));
+		$list = $this->_provdconfig->get_configs('list',$search,$order,$limit,$assoc);
+		
+		return($list);
+	}
+
+	public function get_elements()
+	{
+		$r = $this->_provdconfig->get_supp_elements();
+		$r['config'] = $this->_provdconfig->get_element();
+		
+		return($r);
+	}
+
+	public function set_add($arr)
+	{
+		return($this->_set('add',$arr));
+	}
+
+	public function set_edit($arr)
+	{
+		if(empty($this->_info) === true)
+			return(false);
+
+		return($this->_set('edit',$arr));
+	}
+
+	private  function _set($action,$arr)
+	{
+		$this->_reset();
+
+		if(($action !== 'add' && $action !== 'edit') === true
+		|| dwho_issa('config',$arr) === false)
+			return(false);
+
+		$this->set_config($arr['config']);
+
+		return(($this->get_errnb() < 1));
+	}
+
+	public function set_config($arr)
+	{
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('config',null);
+			$this->_set_error('config','invalid data');
+			return(false);
+		}
+		
+		dwho_var_dump($arr);
+
+		if(($rs = $this->_provdconfig->chk_values($arr)) === false)
+		{
+			$this->_set_result('config',$this->_provdconfig->get_filter_result());
+			$this->_set_error('config',$this->_provdconfig->get_filter_error());
+			return(false);
+		}
+
+		$this->_set_result('config',$rs);
+
+		return(true);
 	}
 }
 

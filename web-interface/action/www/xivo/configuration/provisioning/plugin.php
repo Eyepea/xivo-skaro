@@ -21,12 +21,12 @@
 dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('provd_plugin');
 
-$act = isset($_QR['act']) === true ? $_QR['act']  : '';
+$act = isset($_QR['act']) === true ? $_QR['act']  : 'list';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
 
 $param = array();
-$param['act'] = 'list';
+$param['act'] = $act;
 $param['page'] = $page;
 
 if($search !== '')
@@ -47,12 +47,22 @@ switch($act)
 		$param['act'] = 'list';
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
 		break;
+	case 'upgrade':
+		if (isset($_QR['id']) === false
+		|| $provdplugin->upgrade($_QR['id']) === false)
+			dwho_report::push('error',dwho_i18n::babelfish('error_during_upgrade',array($_QR['id'])));
+		else
+			dwho_report::push('info',dwho_i18n::babelfish('successfully_upgraded',array($_QR['id'])));
+		$param['act'] = 'list';
+		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
+		break;
 	case 'install':
 		if (isset($_QR['id']) === false
 		|| $provdplugin->install($_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_installation',array($_QR['id'])));
 		else	
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_installed',array($_QR['id'])));
+		$param['act'] = 'list';
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
 		break;
 	case 'uninstall':
@@ -61,6 +71,7 @@ switch($act)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_uninstallation',array($_QR['id'])));
 		else	
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_uninstalled',array($_QR['id'])));
+		$param['act'] = 'list';
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
 		break;
 	case 'edit':

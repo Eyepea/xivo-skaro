@@ -47,6 +47,7 @@ $page = $url->pager($pager['pages'],
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_description');?></th>
+		<th class="th-center"><?=$this->bbf('col_version');?></th>
 		<th class="th-center"><?=$this->bbf('col_size');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -55,12 +56,24 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="6" class="td-single"><?=$this->bbf('no_plugin');?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_plugin');?></td>
 	</tr>
 <?php
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
+			
+		$upgrade = false;
+		if (isset($ref['version-installable']) === true):
+			if($ref['version'] !== $ref['version-installable']):
+				$upgrade = true;
+			 	$version = '<b>'.$ref['version'].' / '.$ref['version-installable'].'</b>';
+			else:
+				$version = $ref['version'];
+			endif;	
+		else:
+			$version = $ref['version'];
+		endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -73,6 +86,21 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($ref['description']);?>">
 			<?=dwho_htmlen(dwho_trunc($ref['description'],50,'...',false));?>
+		</td>
+		<td>
+			<?=$version?>
+			<?php 
+		if ($upgrade === true):
+			echo	$url->href_html($url->img_html('img/site/utils/app-upgrade.png',
+							       $this->bbf('opt_upgrade'),
+							       'border="0"'),
+						'xivo/configuration/provisioning/plugin',
+						array('act'	=> 'upgrade',
+						      'id'	=> $ref['name']),
+						'style="margin-left:2px"',
+						$this->bbf('opt_upgrade'));
+		endif;
+		?>
 		</td>
 		<td><?=(isset($ref['dsize']) === true ? dwho_byte_to($ref['dsize']) : '-')?></td>
 		<td class="td-right" colspan="2">
@@ -113,7 +141,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

@@ -129,6 +129,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		foreach($rs as $k => &$r)
 		{
 			$r['type'] = $type;
+			$r['version-'.$type] = $r['version'];
 			$r['name'] = $k;
 			
 			if ($search !== ''
@@ -224,6 +225,27 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		$this->_set_curl_opt('returntransfer', true);
 		
 		if (($rs = $this->request_post($uri,$data)) === false)
+			return(false);
+			
+		return(true);
+	}
+	
+	public function upgrade($name)
+	{
+		$uri = $this->_build_uri(array('install','upgrade'));
+		
+		$data = array('id' => $name);
+		
+		$this->_set_curl_opt('header', true);
+		$this->_set_curl_opt('returntransfer', true);
+		
+		if (($rs = $this->request_post($uri,$data)) === false)
+			return(false);
+		
+		$decoded = $this->decode_header($rs);
+		
+		if (isset($decoded['Location']) === false		
+		|| $this->request_delete($decoded['Location']) === false)
 			return(false);
 			
 		return(true);
