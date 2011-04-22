@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 $modcert = &$_XOBJ->get_module('certificate');
 
 $act 		  = isset($_QR['act']) === true ? $_QR['act'] : '';
@@ -132,6 +131,26 @@ switch($act)
 		$_TPL->display('/bloc/xivo/configuration/manage/certificate/pubkey');
 
 		$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
+		break;
+
+	case 'import':
+		if(isset($_QR['fm_send']) === true)
+		{
+			dwho::load_class('dwho_http');
+			dwho::load_class('dwho::file::csv');
+			$http_response = dwho_http::factory('response');
+			$fileinfo = $http_response->upload_file('import');
+
+			$import = array(
+				'type'    => $_QR['type'],
+				'name'    => substr($fileinfo['name'], 0, strpos($fileinfo['name'],'.')),
+				'content' => file_get_contents($fileinfo['tmp_name'])
+			);
+			//var_dump($import); die(1);
+			$modcert->import($import);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'),$param);
+		}
+
 		break;
 
 	case 'list':

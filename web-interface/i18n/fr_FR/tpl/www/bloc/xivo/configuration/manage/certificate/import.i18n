@@ -1,0 +1,15 @@
+
+; title_content_name
+Import de Certificat SSL
+
+; fm_type
+Type : 
+
+; fm_import
+Fichier : 
+
+; fm_import(pubkey)
+Clé publique
+
+; fm_import(cert)
+Certificat (format PEM)

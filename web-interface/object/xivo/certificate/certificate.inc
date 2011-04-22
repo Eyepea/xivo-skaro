@@ -73,6 +73,11 @@ class xivo_object_certificate extends xivo_object_abstract
 	{
 		return $this->_sysconfd->request_get('/openssl_exportpubkey', array(array('name',$name)));
 	}
+
+	function import($arr)
+	{
+		return $this->_sysconfd->request_post('/openssl_import', $arr);
+	}
 }
 
 ?>
