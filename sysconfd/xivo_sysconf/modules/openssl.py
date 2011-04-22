@@ -59,6 +59,8 @@ class OpenSSL(object):
         http_json_server.register(self.createSSLCertificate, CMD_RW,
 						name='openssl_createcertificate')
         http_json_server.register(self.deleteCertificate, CMD_R, name='openssl_deletecertificate')
+        http_json_server.register(self._import, CMD_RW,
+						name='openssl_import')
 
     def safe_init(self, options):
         self.certsdir       = options.configuration.get('openssl', 'certsdir')
@@ -510,6 +512,32 @@ class OpenSSL(object):
         for fname in glob.glob(os.path.join(self.certsdir, options['name']+'.*')):
             os.remove(fname)
 
+        for fname in glob.glob(os.path.join('/var/lib/asterisk/keys', options['name']+'.*')):
+            os.remove(fname)
+
         return True
+
+    def _import(self, args, options):
+        if 'name' not in args:
+            raise HttpReqError(400, "missing 'name' arg")
+        elif 'type' not in args:
+            raise HttpReqError(400, "missing 'type' arg")
+        elif 'content' not in args:
+            raise HttpReqError(400, "missing 'content' arg")
+
+        #TODO: test content IS a pubkey, name is not already present, type is valid
+        if args['type'] == 'pubkey':
+            fname = self._pubfile(args['name'])
+        elif args['type'] == 'cert':
+            fname = self._pemfile(args['name'])
+
+        with open(fname, 'w') as f:
+            f.write(args['content'])
+
+        if args['type'] == 'pubkey':
+            os.symlink(fname,	os.path.join('/var/lib/asterisk/keys',args['name']+'.pub'))
+
+        return True
+
 
 openssl = OpenSSL()

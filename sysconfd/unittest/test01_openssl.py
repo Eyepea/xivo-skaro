@@ -267,6 +267,19 @@ class TestOpenSSL(unittest.TestCase):
 		# do we have our 6 certificates
 		self.assertEqual(len(data), 7)
 
+	def test_50_imports(self):
+		with open('./cert2.pub') as f:
+			pubkey = f.read()
+
+		(resp, data) = self.client.request('POST', '/openssl_import', {'name': 'importkey', 'type': 'pubkey', 'content': pubkey})
+		self.assertEqual(resp.status, 200)
+
+		with open('./cert1.pem') as f:
+			cert = f.read()
+
+		(resp, data) = self.client.request('POST', '/openssl_import', {'name':
+			'importcert', 'type': 'cert', 'content': cert})
+		self.assertEqual(resp.status, 200)
 
 	def xtest_99_cleanup(self):
 		#NOTE: this last test is only to do cleanup
