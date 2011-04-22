@@ -32,6 +32,8 @@ $info = $result = array();
 $param = array();
 $param['act'] = 'list';
 
+$modcert = &$_XOBJ->get_module('certificate');
+
 switch($act)
 {
 	case 'add':
@@ -44,6 +46,9 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
+			if(array_key_exists('inkeys',$_QR['protocol']))
+				$_QR['protocol']['inkeys'] = implode(',', $_QR['protocol']['inkeys']);
+
 			if($apptrunk->set_add($_QR) === false
 			|| $apptrunk->add() === false)
 			{
@@ -77,6 +82,12 @@ switch($act)
 			$result['protocol']['allow'] = $allow;
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('js/tmp/multiselect/css/ui.multiselect.css');
+		$dhtml->set_css('js/tmp/multiselect/css/common.css');
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/localisation/jquery.localisation-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/ui.multiselect.js');
+
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/dwho/submenu.js');
@@ -87,6 +98,17 @@ switch($act)
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('context_list',$apptrunk->get_context_list());
 		$_TPL->set_var('timezone_list',$apptrunk->get_timezones());
+
+		function pkfilter($key)
+		{ return $key['type'] == 'private'; }
+
+		function pubkfilter($key)
+		{	return $key['type'] == 'public';	}
+
+		$keys = $modcert->get_keys();
+		//var_dump($keys);
+		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
+		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 		break;
 	case 'edit':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -141,17 +163,36 @@ switch($act)
 			$return['protocol']['allow'] = $allow;
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('js/tmp/multiselect/css/ui.multiselect.css');
+		$dhtml->set_css('js/tmp/multiselect/css/common.css');
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/localisation/jquery.localisation-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/ui.multiselect.js');
+
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['trunkfeatures']['id']);
+		$return['protocol']['inkeys'] = array('protocol[inkeys][]' => explode(',',$info['protocol']['inkeys']));
+
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('context_list',$apptrunk->get_context_list());
 		$_TPL->set_var('timezone_list',$apptrunk->get_timezones());
+		
+		function pkfilter($key)
+		{ return $key['type'] == 'private'; }
+
+		function pubkfilter($key)
+		{	return $key['type'] == 'public';	}
+
+		$keys = $modcert->get_keys();
+		//var_dump($keys);
+		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
+		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 		break;
 	case 'delete':
 		$param['page'] = $page;

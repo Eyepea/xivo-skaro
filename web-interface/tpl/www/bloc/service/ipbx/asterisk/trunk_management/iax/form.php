@@ -24,6 +24,10 @@ $url = $this->get_module('url');
 $info = $this->get_var('info');
 $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
+$privkeys = $this->get_var('privkeys');
+$pubkeys = $this->get_var('pubkeys');
+
+//var_dump($info['protocol']['inkeys']);
 
 if(isset($info['protocol']) === true):
 	if(dwho_issa('allow',$info['protocol']) === true):
@@ -451,7 +455,7 @@ endif;
 				    'default'	=> $element['protocol']['auth']['default'],
 				    'selected'	=> $info['protocol']['auth']),
 			      $element['protocol']['auth']['value']),
-
+/*
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_inkeys'),
 				  'name'	=> 'protocol[inkeys]',
 				  'labelid'	=> 'protocol-inkeys',
@@ -460,15 +464,30 @@ endif;
 				  'value'	=> $info['protocol']['inkeys'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'inkeys')) )),
+ */
+     $form->select(array('desc'  => $this->bbf('fm_protocol_inkeys'),
+            'name'    => 'protocol[inkeys][]',
+						'labelid' => 'protocol-inkeys',
+						'class'   => 'multiselect',
+						'multiple' => true,
+						'key'   => 'name',
+						'altkey'   => 'name',
+            //'empty' => true,
+            //'help'    => $this->bbf('hlp_fm_protocol-inkeys'),
+            'selected'  => $info['protocol']['inkeys'],
+            'default' => $element['protocol']['inkeys']['default']),
+				$pubkeys),
 
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_outkey'),
-				  'name'	=> 'protocol[outkey]',
-				  'labelid'	=> 'protocol-outkey',
-				  'size'	=> 20,
-				  'default'	=> $element['protocol']['outkey']['default'],
-				  'value'	=> $info['protocol']['outkey'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'outkey')) )),
+     $form->select(array('desc'  => $this->bbf('fm_protocol_outkey'),
+            'name'    => 'protocol[outkey]',
+            'labelid' => 'protocol-outkey',
+						'key'   => 'name',
+						'altkey'   => 'name',
+            'empty' => true,
+            'help'    => $this->bbf('hlp_fm_protocol-outkey'),
+            'selected'  => $info['protocol']['outkey'],
+            'default' => $element['protocol']['outkey']['default']),
+				$privkeys),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_encryption'),
 				    'name'	=> 'protocol[encryption]',
@@ -580,3 +599,4 @@ endif;
 				   $info['trunkfeatures']['description']);?>
 	</div>
 </div>
+

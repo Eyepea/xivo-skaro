@@ -212,7 +212,7 @@ MD5 ou RSA
 Texte, MD5 ou RSA
 
 ; fm_protocol_inkeys
-Clé RSA publique :
+Clés RSA publiques :
 
 ; fm_protocol_outkey
 Clé RSA privée :

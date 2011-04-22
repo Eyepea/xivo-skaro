@@ -148,11 +148,6 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		&& isset($this->_musiconhold[$arr['mohsuggest']]) === false)
 			$arr['mohsuggest'] = '';
 
-		if(strlen($arr['tlscertfile']) > 0)
-			$arr['tlscertfile'] = $this->_tlscertdir.'/'.$arr['tlscertfile'];
-		if(strlen($arr['tlscafile']) > 0)
-			$arr['tlscafile'] = $this->_tlscadir.'/'.$arr['tlscafile'];
-
 		$ret = parent::set_save_all($arr,$disable);
 		if($ret === false)
 			return($ret);
@@ -165,18 +160,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		return $ret;
 	}
 
-	function get_all_val_by_category($disable=null)
-	{
-		$arr = parent::get_all_val_by_category($disable);
-
-		if(array_key_exists('tlscertfile', $arr))
-			$arr['tlscertfile']['var_val'] = substr(strrchr($arr['tlscertfile']['var_val'], '/'), 1);
-		if(array_key_exists('tlscafile', $arr))
-			$arr['tlscafile']['var_val'] = substr(strrchr($arr['tlscafile']['var_val'], '/'), 1);
-
-		return($arr);
-	}
-
+	/*
 	function get_certificate_files($type='cert', $path)
 	{
 		$files = array();
@@ -196,7 +180,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 		return $files;
 	}
-
+	*/
 }
 
 ?>
