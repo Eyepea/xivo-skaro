@@ -38,6 +38,8 @@ else if($context !== '')
 $contexts = false;
 $error    = false;
 
+$modcert = &$_XOBJ->get_module('certificate');
+
 switch($act)
 {
 	case 'add':
@@ -46,6 +48,7 @@ switch($act)
 		if(isset($_QR['fm_send']) 	 === true 
 		&& dwho_issa('dundipeer', $_QR) === true)
 		{	
+			var_dump($_QR);
 			// save item
 			if($apppeer->set_add($_QR) === true
 			&& $apppeer->add() === true)
@@ -56,6 +59,17 @@ switch($act)
 			$fm_save = false;
 			$_TPL->set_var('fm_save' , $fm_save);
 		}
+
+		function pkfilter($key)
+		{ return $key['type'] == 'private'; }
+
+		function pubkfilter($key)
+		{	return $key['type'] == 'public';	}
+
+		$keys = $modcert->get_keys();
+		//var_dump($keys);
+		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
+		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 
 		break;
 
@@ -80,6 +94,18 @@ switch($act)
 			$info  = $_QR;
 			$info['dundipeer']['id'] = $_QR['id'];
 		}
+
+		function pkfilter($key)
+		{ return $key['type'] == 'private'; }
+
+		function pubkfilter($key)
+		{	return $key['type'] == 'public';	}
+
+		$keys = $modcert->get_keys();
+		//var_dump($keys);
+		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
+		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
+
 
 		$_TPL->set_var('id'      , $info['dundipeer']['id']);
 		$_TPL->set_var('info'    , $info);

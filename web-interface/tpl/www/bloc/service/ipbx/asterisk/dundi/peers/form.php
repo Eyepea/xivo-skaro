@@ -23,6 +23,8 @@ $url     = $this->get_module('url');
 
 $info    = $this->get_var('info');
 $element = $this->get_var('element');
+$privkeys = $this->get_var('privkeys');
+$pubkeys = $this->get_var('pubkeys');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -63,25 +65,29 @@ endif;
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'dundipeer', 'host')) )),
 
-	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_inkey'),
-			  'name'	=> 'dundipeer[inkey]',
-			  'labelid'	=> 'dundipeer-inkey',
-			  'size'	=> 15,
-		    'help'	=> $this->bbf('hlp_fm_dundipeer-inkey'),
-			  'default'	=> $element['dundipeer']['inkey']['default'],
-			  'value'	=> $info['dundipeer']['inkey'],
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'dundipeer', 'inkey')) )),
+	$form->select(array('desc'	=> $this->bbf('fm_dundipeer_inkey'),
+				    'name'	=> 'dundipeer[inkey]',
+				    'labelid'	=> 'dundipeer-inkey',
+						'empty' => true,
+						'size' => 15,
+						'key' => 'name',
+						'altkey' => 'name',
+				    'help'	=> $this->bbf('hlp_fm_dundipeer-inkey'),
+				    'selected'	=> $this->get_var('info','dundipeer','inkey'),
+				    'default'	=> $element['dundipeer']['inkey']['default']),
+			      $pubkeys),
 
-	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_outkey'),
-			  'name'	=> 'dundipeer[outkey]',
-			  'labelid'	=> 'dundipeer-outkey',
-			  'size'	=> 15,
-		    'help'	=> $this->bbf('hlp_fm_dundipeer-outkey'),
-			  'default'	=> $element['dundipeer']['outkey']['default'],
-			  'value'	=> $info['dundipeer']['outkey'],
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'dundipeer', 'outkey')) )),
+	$form->select(array('desc'	=> $this->bbf('fm_dundipeer_outkey'),
+				    'name'	=> 'dundipeer[outkey]',
+				    'labelid'	=> 'dundipeer-outkey',
+						'empty' => true,
+						'size' => 15,
+						'key' => 'name',
+						'altkey' => 'name',
+				    'help'	=> $this->bbf('hlp_fm_dundipeer-outkey'),
+				    'selected'	=> $this->get_var('info','dundipeer','outkey'),
+				    'default'	=> $element['dundipeer']['outkey']['default']),
+			      $privkeys),
 
 	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_include'),
 			  'name'	=> 'dundipeer[include]',
