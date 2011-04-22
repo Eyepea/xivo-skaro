@@ -41,15 +41,16 @@
 	.clear {clear:both;}
 	*/
 	/* multiselect styles */
+
 	.multiselect {
-		width: 460px;
-		height: 200px;
+		width: 360px;
+		height: 101px;
+		margin-bottom: 5px;
 	}
 
 	.ui-multiselect {
 		position: relative;
-		left: 373px;
-		right: 10px;
+		left: 376px;
 		margin: 0px;
 		padding: 0px;
 		border: 1px solid #7F99B1;
@@ -57,7 +58,7 @@
 	}
 
 	.ui-multiselect .selected {
-		margin: 0px;
+		margin: -10px;
 		top: 0px;
 		border: 2px solid red;
 	}
@@ -72,6 +73,7 @@
 	.ui-multiselect .ui-widget-header a {
 		color: grey;
 	}
+
 /*	
 	#switcher {
 		margin-top: 20px;

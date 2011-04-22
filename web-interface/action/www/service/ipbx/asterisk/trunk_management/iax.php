@@ -106,7 +106,6 @@ switch($act)
 		{	return $key['type'] == 'public';	}
 
 		$keys = $modcert->get_keys();
-		//var_dump($keys);
 		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
 		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 		break;
@@ -129,6 +128,8 @@ switch($act)
 		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
 			$return = &$result;
+			if(array_key_exists('inkeys',$_QR['protocol']))
+				$_QR['protocol']['inkeys'] = implode(',', $_QR['protocol']['inkeys']);
 
 			if($apptrunk->set_edit($_QR) === false
 			|| $apptrunk->edit() === false)
@@ -174,7 +175,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['trunkfeatures']['id']);
-		$return['protocol']['inkeys'] = array('protocol[inkeys][]' => explode(',',$info['protocol']['inkeys']));
+		$return['protocol']['inkeys'] = explode(',',$info['protocol']['inkeys']);
 
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('error',$error);
@@ -190,9 +191,17 @@ switch($act)
 		{	return $key['type'] == 'public';	}
 
 		$keys = $modcert->get_keys();
-		//var_dump($keys);
+
+		$pubkeys = array();
+		function arr2dict(&$item, $key)
+		{
+			global $pubkeys;
+			$pubkeys[$item['name']] = $item;
+		}
+		array_walk(array_filter($keys,"pubkfilter"), "arr2dict");
+
 		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
-		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
+		$_TPL->set_var('pubkeys' , $pubkeys);
 		break;
 	case 'delete':
 		$param['page'] = $page;

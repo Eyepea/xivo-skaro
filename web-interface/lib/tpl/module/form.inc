@@ -1162,7 +1162,9 @@ class dwho_tpl_form extends dwho_tpl_module
 		if($this->_param['valuef'] !== false)
 			$key = sprintf(dwho_printf_escape($this->_param['valuef'],1),$key);
 
-		if((string) $key !== $val)
+		if (is_array($val) === true && in_array($key, $val) === true)
+			return(' selected="selected"');
+		elseif((string) $key !== $val)
 			return('');
 
 		$this->_selected = true;
@@ -1517,6 +1519,87 @@ class dwho_tpl_form extends dwho_tpl_module
 			</script>\n\n";
 		return $r;
 	}
+
+	function jq_select($v,$arr=array(),$o='',$more=array())
+	{
+		$this->_render = '';
+		$this->_selected = false;
+		$this->_optgroup = $this->_uniqoptgroup = array();
+
+		$v = (array) $v;
+		$o = (string) $o;
+		$class = 'multiselect';
+
+		$this->_set_param($v);
+
+		if(isset($v['selected']) === true)
+		{
+			$selected = $v['selected'];
+			$altkey = $v['key'];
+			$rs = array();
+			$nb = count($selected);
+			for ($i=0;$i<$nb;$i++)
+			{
+				$ref = $selected[$i];
+
+				if (isset($arr[$ref]) === true)
+					$rs[] = $this->_mk_param_value($ref,$arr);
+			}
+
+			$this->_param['selected'] = $rs;
+		}
+
+		$r = "\n";
+		$r .= '<p class="ms-box">';
+		$r .= '<select name="'.$this->_param['name'].'"';
+		$r .= ' multiple="multiple"';
+
+		if($this->_param['disabled'] !== false)
+			$r .= ' disabled="disabled"';
+
+		if($this->_param['id'] !== false)
+			$r .= ' id="'.$this->_param['id'].'"';
+
+		if($this->_param['size'] !== false)
+			$r .= ' size="'.$this->_param['size'].'"';
+
+		if($this->_param['class'] !== false)
+			$class .= ' '.$this->_param['class'];
+
+		if($this->_param['required'] !== false)
+			$class .= ' _dwho-form-field-required';
+
+		if(($class = trim($class)) !== '')
+			$r .= ' class="'.$class.'"';
+
+		if(isset($o{0}) === true)
+			$r .= ' '.$o;
+
+		$r .= '>'."\n";
+
+		if($this->_param['empty'] !== false
+		|| ($this->_param['invalid'] === true
+		   && $this->_selected === false) === true)
+			$r .= $this->_mk_slt_option_empty();
+
+		if($arr !== '' && $arr !== false)
+			$this->_mk_slt_option($arr);
+
+		$this->_render = $r.$this->_render.'</select>';
+		$this->_render .= '</p>'."\n";
+
+		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		$this->_render .= '<div class="clear"></div>';
+
+		return($this->_render);
+	}
+
 }
 
 ?>

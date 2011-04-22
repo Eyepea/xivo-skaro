@@ -27,8 +27,6 @@ $context_list = $this->get_var('context_list');
 $privkeys = $this->get_var('privkeys');
 $pubkeys = $this->get_var('pubkeys');
 
-//var_dump($info['protocol']['inkeys']);
-
 if(isset($info['protocol']) === true):
 	if(dwho_issa('allow',$info['protocol']) === true):
 		$allow = $info['protocol']['allow'];
@@ -454,18 +452,9 @@ endif;
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['auth']['default'],
 				    'selected'	=> $info['protocol']['auth']),
-			      $element['protocol']['auth']['value']),
-/*
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_inkeys'),
-				  'name'	=> 'protocol[inkeys]',
-				  'labelid'	=> 'protocol-inkeys',
-				  'size'	=> 20,
-				  'default'	=> $element['protocol']['inkeys']['default'],
-				  'value'	=> $info['protocol']['inkeys'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'inkeys')) )),
- */
-     $form->select(array('desc'  => $this->bbf('fm_protocol_inkeys'),
+				$element['protocol']['auth']['value']),
+
+     $form->jq_select(array('desc'  => $this->bbf('fm_protocol_inkeys'),
             'name'    => 'protocol[inkeys][]',
 						'labelid' => 'protocol-inkeys',
 						'class'   => 'multiselect',
