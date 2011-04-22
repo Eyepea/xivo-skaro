@@ -472,7 +472,7 @@ class AsteriskFrontend(Frontend):
 
 		# parkinglots
 		for f in self.backend.parkinglot.all(commented=False):
-			print >>o, "\n[%s]" % f['name']
+			print >>o, "\n[parkinglot_%s]" % f['name']
 			print >>o, "context => %s" % f['context']
 			print >>o, "parkext => %s" % f['extension']
 			print >>o, "parkpos => %d-%d" % (f['pos_start'], f['pos_end'])
