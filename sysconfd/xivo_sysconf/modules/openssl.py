@@ -252,6 +252,11 @@ class OpenSSL(object):
 
         rsa.save_pub_key(self._pubfile(name))
 
+				# create symlinks in /var/lib/asterisk/keys
+				# (required for IAX trunks)
+        os.symlink(self._keyfile(name),	os.path.join('/var/lib/asterisk/keys',name+'.key'))
+        os.symlink(self._pubfile(name),	os.path.join('/var/lib/asterisk/keys',name+'.pub'))
+
         return rsa
         
     def _makerequest(self, name, privkey, subject):
