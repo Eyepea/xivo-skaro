@@ -68,6 +68,7 @@ class ClusterEngineTestCase(unittest.TestCase):
             result = data._create_corosync_config_file()
             # we add only the new file
             files.append(result[0])
+        print(files)
         self.assertFalse(filecmp.cmp(files[0], files[1]))
 
     def test_deploy_config_file(self):

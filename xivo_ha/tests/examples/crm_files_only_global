@@ -1,0 +1,5 @@
+configure
+   property stonith-enabled=false
+   property no-quorum-policy=ignore
+   rsc_defaults resource-stickiness=100
+   commit
