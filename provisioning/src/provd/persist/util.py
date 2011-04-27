@@ -108,6 +108,10 @@ def _new_le_matcher(ref_value):
     return _new_matcher_from_operator_fun_right(ref_value, operator.le)
 
 
+def _new_ne_matcher(ref_value):
+    return _new_matcher_from_operator_fun_right(ref_value, operator.ne)
+ 
+
 def _new_and_matcher(matchers):
     # Return true if all the given matchers returns true.
     def aux(document_value):
@@ -124,6 +128,7 @@ _MATCHER_FACTORY = {
     u'$ge': _new_ge_matcher,
     u'$lt': _new_lt_matcher,
     u'$le': _new_le_matcher,
+    u'$ne': _new_ne_matcher,
 }
 
 def _new_value_matcher(selector_value):
