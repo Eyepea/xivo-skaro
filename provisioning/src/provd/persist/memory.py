@@ -49,7 +49,7 @@ class DictSimpleBackend(object):
 
 
 class ListSimpleBackend(object):
-    # Useful for testing when you want to conserve the insertion order...
+    # Useful for testing when you want to keep the insertion order...
     def __init__(self):
         self._list = []
     
@@ -104,13 +104,13 @@ class MemoryDatabase(object):
     def close(self):
         self._collections = {}
     
-    def _new_collection(self, id):
+    def _new_collection(self):
         generator = self._generator_factory()
         return self._collection_factory(generator)
     
     def collection(self, id):
         if id not in self._collections:
-            self._collections[id] = self._new_collection(id)
+            self._collections[id] = self._new_collection()
         return self._collections[id]
 
 

@@ -89,6 +89,14 @@ class ProvisioningService(Service):
         try:
             cfg_collection = ConfigCollection(self._database.collection('configs'))
             dev_collection = DeviceCollection(self._database.collection('devices'))
+            if self._config['database.ensure_common_indexes']:
+                logger.debug('Ensuring index existence on collections')
+                try:
+                    dev_collection.ensure_index(u'mac')
+                    dev_collection.ensure_index(u'ip')
+                    dev_collection.ensure_index(u'sn')
+                except AttributeError, e:
+                    logger.warning('This type of database doesn\'t seem to support index: %s', e)
             self.app = ProvisioningApplication(cfg_collection, dev_collection, self._config)
         except Exception:
             try:

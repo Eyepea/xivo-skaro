@@ -143,13 +143,9 @@ RAW_HELP_MAP = {
     
         configs['foo']
     
-    List all known config IDs
+    List all known config
     
         configs.find()
-    
-    List all known configs
-    
-        configs.find_and_retrieve()
     
     Add config 'foo'
     
@@ -217,13 +213,9 @@ RAW_HELP_MAP = {
     
         devices['foo']
     
-    List all known device IDs which are using 'xivo-aastra-2.6.0.2010' plugin
-    
-        devices.find({'plugin': 'xivo-aastra-2.6.0.2010'})
-    
     List all known devices which are using 'xivo-aastra-2.6.0.2010' plugin
     
-        devices.find_and_retrieve({'plugin': 'xivo-aastra-2.6.0.2010'})
+        devices.find({'plugin': 'xivo-aastra-2.6.0.2010'})
     
     Add device 'foo'
     

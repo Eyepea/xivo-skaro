@@ -159,7 +159,7 @@ def _set_defaults_raw_config(raw_config):
     else:
         funckeys = raw_config[u'funckeys']
         for funckey in funckeys.itervalues():
-            _set_if_absent(funckey, u'supervision', False)    
+            _set_if_absent(funckey, u'supervision', False)
 
 
 def _split_config(config):
@@ -414,6 +414,7 @@ class ProvisioningApplication(object):
                     device[u'configured'] = configured
                 else:
                     logger.info('Not reconfiguring device %s: not needed.', id)
+                    device[u'configured'] = old_device[u'configured']
                 # Update device collection if the device is different from
                 # the old device
                 if device != old_device:
@@ -458,11 +459,11 @@ class ProvisioningApplication(object):
         """
         return self._dev_collection.retrieve(id)
     
-    def dev_find(self, selector):
-        return self._dev_collection.find(selector)
+    def dev_find(self, selector, *args, **kwargs):
+        return self._dev_collection.find(selector, *args, **kwargs)
     
-    def dev_find_one(self, selector):
-        return self._dev_collection.find_one(selector)
+    def dev_find_one(self, selector, *args, **kwargs):
+        return self._dev_collection.find_one(selector, *args, **kwargs)
     
     @_wlock
     @defer.inlineCallbacks
@@ -709,11 +710,11 @@ class ProvisioningApplication(object):
     def cfg_retrieve_raw_config(self, id):
         return self._cfg_collection.get_raw_config(id, self._base_raw_config)
     
-    def cfg_find(self, selector):
-        return self._cfg_collection.find(selector)
+    def cfg_find(self, selector, *args, **kwargs):
+        return self._cfg_collection.find(selector, *args, **kwargs)
     
-    def cfg_find_one(self, selector):
-        return self._cfg_collection.find_one(selector)
+    def cfg_find_one(self, selector, *args, **kwargs):
+        return self._cfg_collection.find_one(selector, *args, **kwargs)
     
     # plugin methods
     

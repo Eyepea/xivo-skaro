@@ -685,17 +685,14 @@ class DefaultConfigDeviceUpdater(object):
     associated with the device.
     
     """
-    # XXX don't know if it's really better than our original idea of using
-    #     a StaticDeviceUpdater for setting a default config. It's probable
-    #     that I don't have enough information to take the wisest choice
-    #     right now.
     def __init__(self, app):
         self._app = app
     
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
+        logger.debug('In %s', self.__class__.__name__)
         if u'config' not in device:
-            cfg_id = yield self._app.cfg_find_one({u'role': u'default'})
+            cfg_id = (yield self._app.cfg_find_one({u'role': u'default'}))[ID_KEY]
             if cfg_id is None:
                 logger.warning('No config with the default role found')
             else:

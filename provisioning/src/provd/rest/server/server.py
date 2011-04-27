@@ -178,14 +178,80 @@ def json_request_entity(fun):
     return aux
 
 
-def selector_from_request(request):
-    # create a selector from a request query string
+def _add_selector_parameter(args, result):
+    # q={"configured": false}
+    result['selector'] = {}
+    if 'q' in args:
+        raw_selector = args['q'][0]
+        try:
+            selector = json.loads(raw_selector)
+        except ValueError, e:
+            logger.warning('Invalid q value: %s', e)
+        else:
+            result['selector'] = selector
+
+
+def _add_fields_parameter(args, result):
+    # fields=mac,ip
+    if 'fields' in args:
+        raw_fields = args['fields'][0]
+        fields = raw_fields.split(',')
+        result['fields'] = fields
+
+
+def _add_skip_parameter(args, result):
+    # skip=10
+    if 'skip' in args:
+        raw_skip = args['skip'][0]
+        try:
+            skip = int(raw_skip)
+        except ValueError, e:
+            logger.warning('Invalid skip value: %s', e)
+        else:
+            result['skip'] = skip
+
+
+def _add_limit_parameters(args, result):
+    # limit=10
+    if 'limit' in args:
+        raw_limit = args['limit'][0]
+        try:
+            limit = int(raw_limit)
+        except ValueError, e:
+            logger.warning('Invalid limit value: %s', e)
+        else:
+            result['limit'] = limit
+
+
+def _add_sort_parameters(args, result):
+    # sort=mac
+    # sort=mac&sort_ord=ASC
+    if 'sort' in args:
+        key = args['sort'][0]
+        direction = 1
+        if 'sort_ord' in args:
+            raw_direction = args['sort_ord'][0]
+            if raw_direction == 'ASC':
+                direction = 1
+            elif raw_direction == 'DESC':
+                direction = -1
+            else:
+                logger.warning('Invalid sort_ord value: %s', raw_direction)
+        result['sort'] = (key, direction)
+
+
+def find_arguments_from_request(request):
+    # Return a dictionary representing the different find parameters that
+    # were passed in the request. The dictionary is usable as **kwargs for
+    # the find method of collections.
+    result = {}
     args = request.args
-    selector = {}
-    for select_key, values in args.iteritems():
-        # keep the last value from the list
-        selector[select_key] = values[-1]
-    return selector
+    _add_selector_parameter(args, result)
+    _add_fields_parameter(args, result)
+    _add_skip_parameter(args, result)
+    _add_limit_parameters(args, result)
+    _add_sort_parameters(args, result)
+    return result
 
 
 def _return_value(value):
@@ -571,18 +637,13 @@ class DevicesResource(Resource):
     
     @json_response_entity
     def render_GET(self, request):
-        selector = selector_from_request(request)
+        find_arguments = find_arguments_from_request(request)
         def on_callback(devices):
-            device_dict = {}
-            for device in devices:
-                id = device[ID_KEY]
-                links = [{u'rel': u'dev.device', u'href': uri_append_path(request.path, str(id))}]
-                device_dict[id] = {u'links': links}
-            data = json.dumps({u'devices': device_dict})
+            data = json.dumps({u'devices': list(devices)})
             deferred_respond_ok(request, data)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
-        d = self._app.dev_find(selector)
+        d = self._app.dev_find(**find_arguments)
         d.addCallbacks(on_callback, on_errback)
         return NOT_DONE_YET
     
@@ -669,21 +730,13 @@ class ConfigsResource(Resource):
     
     @json_response_entity
     def render_GET(self, request):
-        selector = selector_from_request(request)
+        find_arguments = find_arguments_from_request(request)
         def on_callback(configs):
-            config_dict = {}
-            for config in configs:
-                id = config[ID_KEY]
-                href_config = uri_append_path(request.path, str(id))
-                href_raw_config = uri_append_path(href_config, 'raw')
-                links = [{u'rel': u'cfg.config', u'href': href_config},
-                         {u'rel': u'cfg.raw_config', u'href': href_raw_config}]
-                config_dict[id] = {u'links': links}
-            data = json.dumps({u'configs': config_dict})
+            data = json.dumps({u'configs': list(configs)})
             deferred_respond_ok(request, data)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
-        d = self._app.cfg_find(selector)
+        d = self._app.cfg_find(**find_arguments)
         d.addCallbacks(on_callback, on_errback)
         return NOT_DONE_YET
     
@@ -721,8 +774,6 @@ class ConfigResource(Resource):
             if config is None:
                 deferred_respond_no_resource(request)
             else:
-                # XXX one day... if we find this useful... add link to parents
-                #     configs
                 data = json.dumps({u'config': config})
                 deferred_respond_ok(request, data)
         def on_error(failure):

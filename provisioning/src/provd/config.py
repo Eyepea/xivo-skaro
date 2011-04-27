@@ -39,6 +39,8 @@ The following parameters are defined:
         The type of the 'database' used for storing devices and configs.
     database.generator
         The kind of generator used to generate ID for devices and configs.
+    database.ensure_common_indexes
+        Make sure common indexes on the collections are present.
     database.shelve_dir
         For 'shelve' database, the directory where files are stored.
     database.mongo_uri
@@ -135,6 +137,7 @@ class DefaultConfigSource(object):
         ('general.rest_ssl_keyfile', '/etc/pf-xivo/provd/keys/key.pem'),
         ('database.type', 'shelve'),
         ('database.generator', 'default'),
+        ('database.ensure_common_indexes', 'False'),
         ('database.shelve_dir', '/var/lib/pf-xivo/provd/shelvedb'),
     ]
     
@@ -346,6 +349,7 @@ _PARAMS_DEFINITION = [
     ('general.rest_ssl', (_bool, True)),
     ('database.type', (str, True)),
     ('database.generator', (str, True)),
+    ('database.ensure_common_indexes', (_bool, True))
 ]
 
 def _check_and_convert_parameters(raw_config):

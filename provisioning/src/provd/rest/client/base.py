@@ -66,6 +66,32 @@ def new_delete_request(uri):
     return DeleteRequest(uri, None, GET_HEADERS)
 
 
+def _build_find_query_string(selector=None, fields=None, skip=0, limit=0, sort=None):
+    query_dict = {}
+    if selector:
+        query_dict['q'] = json.dumps(selector)
+    if fields:
+        query_dict['fields'] = ','.join(fields)
+    if skip:
+        query_dict['skip'] = skip
+    if limit:
+        query_dict['limit'] = limit
+    if sort:
+        key, direction = sort
+        query_dict['sort'] = key
+        if direction == 1:
+            query_dict['sort_ord'] = 'ASC'
+        elif direction == -1:
+            query_dict['sort_ord'] = 'DESC'
+        else:
+            raise ValueError('invalid direction %s', direction)
+    if query_dict:
+        query_string = urllib.urlencode(query_dict)
+    else:
+        query_string = None
+    return query_string
+
+
 class RequestBroker(object):
     def __init__(self, opener):
         self._opener = opener
@@ -392,25 +418,29 @@ class DevicesResource(object):
         response, _ = self._broker.json_content(request)
         return response[u'id']
     
-    def _build_find_request(self, selector):
-        if selector:
-            query = urllib.urlencode(selector)
-            uri = uri_append_query(self._devices_uri, query)
+    def _build_find_request(self, *args, **kwargs):
+        query_string = _build_find_query_string(*args, **kwargs)
+        if query_string:
+            uri = uri_append_query(self._devices_uri, query_string)
         else:
             uri = self._devices_uri
         return new_get_request(uri)
     
-    def find(self, selector):
-        """Return a list of device ID matching the selector.
+    def find(self, *args, **kwargs):
+        """Return a list of devices matching the given parameters.
         
-        selector can only be 'simple' selector, where keys and values are
-        only strings.
+        Valid arguments to this methods are, in order:
+          selector -- a selector (i.e. a dict)
+          fields -- a list of fields
+          skip -- a skip value, i.e. the number of documents to skip
+          limit -- a limit, i.e. the maximum number of documents to return
+          sort -- a tuple (key, direction), where key is the key to do the sort
+            and direction is either 1 for ASC and -1 for DESC
         
         """
-        request = self._build_find_request(selector)
+        request = self._build_find_request(*args, **kwargs)
         response, _ = self._broker.json_content(request)
-        ids = list(response[u'devices'].iterkeys())
-        return ids
+        return response[u'devices']
     
     def device_res(self, id):
         device_uri = uri_append_path(self._devices_uri, id)
@@ -479,20 +509,29 @@ class ConfigsResource(object):
         response, _ = self._broker.json_content(request)
         return response[u'id']
     
-    def _build_find_request(self, selector):
-        if selector:
-            query = urllib.urlencode(selector)
-            uri = uri_append_query(self._configs_uri, query)
+    def _build_find_request(self, *args, **kwargs):
+        query_string = _build_find_query_string(*args, **kwargs)
+        if query_string:
+            uri = uri_append_query(self._configs_uri, query_string)
         else:
             uri = self._configs_uri
         return new_get_request(uri)
     
-    def find(self, selector):
-        """Return a list of config ID matching the selector."""
-        request = self._build_find_request(selector)
+    def find(self, *args, **kwargs):
+        """Return a list of configs matching the given parameters.
+        
+        Valid arguments to this methods are, in order:
+          selector -- a selector (i.e. a dict)
+          fields -- a list of fields
+          skip -- a skip value, i.e. the number of documents to skip
+          limit -- a limit, i.e. the maximum number of documents to return
+          sort -- a tuple (key, direction), where key is the key to do the sort
+            and direction is either 1 for ASC and -1 for DESC
+        
+        """
+        request = self._build_find_request(*args, **kwargs)
         response, _ = self._broker.json_content(request)
-        ids = list(response[u'configs'].iterkeys())
-        return ids
+        return response[u'configs']
     
     def config_res(self, id):
         config_uri = uri_append_path(self._configs_uri, id)

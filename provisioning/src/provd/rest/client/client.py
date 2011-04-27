@@ -110,15 +110,20 @@ class ConfigManager(object):
         config_res = self._get_config_res(id)
         config_res.delete()
     
-    def find(self, selector):
+    def find(self, *args, **kwargs):
         """Return a list of configs ID that match the given selector.
         
-        The selector is a dictionary where keys and values are [unicode]
-        string. If you want to list every config, pass an empty dictionary.
+        Valid arguments to this method are, in order:
+          selector -- a selector (i.e. a dict)
+          fields -- a list of fields
+          skip -- a skip value, i.e. the number of documents to skip
+          limit -- a limit, i.e. the maximum number of documents to return
+          sort -- a tuple (key, direction), where key is the key to do the sort
+            and direction is either 1 for ASC and -1 for DESC
         
         """
         configs_res = self._get_configs_res()
-        return configs_res.find(selector)
+        return configs_res.find(*args, **kwargs)
     
     def rename(self, id, new_id):
         raise NotImplementedError('not supported by client and server yet')
@@ -175,10 +180,20 @@ class DeviceManager(object):
         device_res = self._get_device_res(id)
         device_res.delete()
     
-    def find(self, selector):
-        """Return a list of device ID that match the given selector."""
+    def find(self, *args, **kwargs):
+        """Return a list of devices matching the given parameters.
+        
+        Valid arguments to this method are, in order:
+          selector -- a selector (i.e. a dict)
+          fields -- a list of fields
+          skip -- a skip value, i.e. the number of documents to skip
+          limit -- a limit, i.e. the maximum number of documents to return
+          sort -- a tuple (key, direction), where key is the key to do the sort
+            and direction is either 1 for ASC and -1 for DESC
+        
+        """
         devices_res = self._get_devices_res()
-        return devices_res.find(selector)
+        return devices_res.find(*args, **kwargs)
     
     def rename(self, id, new_id):
         raise NotImplementedError('not supported by client and server yet')

@@ -296,14 +296,8 @@ class Configs(object):
             config[ID_KEY] = new_id
         return self._cfg_mgr.add(config)
     
-    def find(self, selector={}):
-        return self._cfg_mgr.find(selector)
-    
-    def find_and_retrieve(self, selector={}):
-        res = []
-        for id in self._cfg_mgr.find(selector):
-            res.append(self._cfg_mgr.get(id))
-        return res
+    def find(self, *args, **kwargs):
+        return self._cfg_mgr.find(*args, **kwargs)
     
     def __getitem__(self, name):
         return Config(name, self._cfg_mgr)
@@ -396,15 +390,8 @@ class Devices(object):
         finally:
             client_oip.delete()
     
-    def find(self, selector={}):
-        return self._dev_mgr.find(selector)
-    
-    def find_and_retrieve(self, selector={}):
-        selector = selector or {}
-        res = []
-        for id in self._dev_mgr.find(selector):
-            res.append(self._dev_mgr.get(id))
-        return res
+    def find(self, *args, **kwargs):
+        return self._dev_mgr.find(*args, **kwargs)
     
     def __getitem__(self, name):
         return Device(name, self._dev_mgr)

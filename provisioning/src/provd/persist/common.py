@@ -4,8 +4,8 @@
 
 A document is just another term for a dictionary with the following
 restrictions:
-- must have an 'id' key, which is a unicode string that is unique for
-  every document in the same collection.
+- must have an 'id' key, which is a unicode string matching \w+ that is unique
+  for every document in the same collection.
 - every key is a unicode string that match the following regex: [_a-zA-Z0-9]+
 - values are either number, boolean, None, unicode string, list or
   dictionaries, and this applies recursively (i.e. you can have a list
@@ -61,8 +61,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO document the syntax/semantic of selector
-
 from zope.interface import Interface, Attribute
 
 ID_KEY = u'id'
@@ -93,11 +91,11 @@ class IDocumentCollection(Interface):
         generated and added to the document (the document object passed in
         will be modified). The deferred errback is fired with an
         InvalidIdError if the given ID is already in used. This mean that
-        when the deferred fire it's callback, document is guaranteed to have
+        when the deferred fire its callback, document is guaranteed to have
         an 'id' key.
         
         """
-
+    
     def update(document):
         """Update the document with the current document and return a
         deferred that fire with None once the document has been successfully
@@ -124,16 +122,39 @@ class IDocumentCollection(Interface):
         ID, or fire with None if there's no such document.
         
         """
-        
-    def find(selector):
+    
+    def find(selector, fields, skip, limit, sort):
         """Return a deferred that will fire with an iterator over documents
         that match the selector.
+        
+        Valid arguments to this method are, in order:
+          selector -- a selector (i.e. a dict)
+          fields -- a list of fields to include for every matched documents.
+            Note that the id fields is always included. If not specified
+            or empty, return all the fields
+          skip -- a skip value, i.e. the number of documents to skip
+          limit -- a limit, i.e. the maximum number of documents to return
+          sort -- a tuple (key, direction), where key is the key to do the sort
+            and direction is either 1 for ASC and -1 for DESC
         
         """
     
     def find_one(selector):
         """Return a deferred that will fire with the 'first' document that
         match the selector, or fire with None if there's no document. 
+        
+        """
+    
+    def ensure_index(complex_key):
+        """Create an index on the given complex key if it does not already
+        exist and return a deferred that fire with None once the index has
+        been created.
+        
+        complex_key has the same format as keys for selectors.
+        
+        This is an optional operation, and some implementation might not
+        implement it, i.e. you should be ready to catch an AttributeError
+        when accessing the 'ensure_index' name.
         
         """
 

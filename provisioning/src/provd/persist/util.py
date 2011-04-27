@@ -18,16 +18,21 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
+import operator
+from itertools import ifilter, imap
 from provd.persist.common import ID_KEY, InvalidIdError
 from twisted.internet import defer
 from zope.interface import Interface
+
+logger = logging.getLogger(__name__)
 
 
 def _select_value(select_key, document):
     # Return an iterator of matched value, i.e. all the value in the
     # document that matches the select key
     def aux(current_select_key, current_document):
-        pre, sep, post = current_select_key.partition('.')
+        pre, sep, post = current_select_key.partition(u'.')
         if not sep:
             assert pre == current_select_key
             if isinstance(current_document, dict):
@@ -53,42 +58,100 @@ def _select_value(select_key, document):
     return aux(select_key, document)
 
 
-def _contains_operator(dict_):
-    for k in dict_.iterkeys():
-        if isinstance(k, basestring) and k.startswith('$'):
-            return True
+def _contains_operator(selector_value):
+    # Return true if the value associated with a key of a selector
+    # is an operator value, i.e. has an operator semantic.
+    if isinstance(selector_value, dict):
+        for k in selector_value.iterkeys():
+            if k.startswith(u'$'):
+                return True
     return False
 
 
-def _create_value_matcher(select_value):
-    """Return a predicate taking a document value as argument and returning
-    true if the document value matches it, else false.
-    
-    """
-    # XXX this is quite ugly
-    if isinstance(select_value, dict):
-        if _contains_operator(select_value):
-            if ((len(select_value) != 1 and u'$in' not in select_value) or
-                not hasattr(select_value, '__contains__')):
-                raise ValueError('invalid selector value "%s"' % select_value)
+def _new_matcher_from_operator_fun_right(ref_value, operator_fun):
+    # Note that the reference value will be the second argument to the
+    # operator function.
+    def aux(value):
+        return operator_fun(value, ref_value)
+    return aux
+
+
+def _new_matcher_from_operator_fun_left(ref_value, operator_fun):
+    # Note that the reference value will be the first argument to the
+    # operator function.
+    def aux(value):
+        return operator_fun(ref_value, value)
+    return aux
+
+
+def _new_equality_matcher(ref_value):
+    return _new_matcher_from_operator_fun_right(ref_value, operator.eq)
+
+
+def _new_in_matcher(ref_value):
+    return _new_matcher_from_operator_fun_left(ref_value, operator.contains)
+
+
+def _new_gt_matcher(ref_value):
+    return _new_matcher_from_operator_fun_right(ref_value, operator.gt)
+
+
+def _new_ge_matcher(ref_value):
+    return _new_matcher_from_operator_fun_right(ref_value, operator.ge)
+
+
+def _new_lt_matcher(ref_value):
+    return _new_matcher_from_operator_fun_right(ref_value, operator.lt)
+
+
+def _new_le_matcher(ref_value):
+    return _new_matcher_from_operator_fun_right(ref_value, operator.le)
+
+
+def _new_and_matcher(matchers):
+    # Return true if all the given matchers returns true.
+    def aux(document_value):
+        for matcher in matchers:
+            if not matcher(document_value):
+                return False
+        return True
+    return aux
+
+
+_MATCHER_FACTORY = {
+    u'$in': _new_in_matcher,
+    u'$gt': _new_gt_matcher,
+    u'$ge': _new_ge_matcher,
+    u'$lt': _new_lt_matcher,
+    u'$le': _new_le_matcher,
+}
+
+def _new_value_matcher(selector_value):
+    # Return a predicate taking a document value as argument and returning
+    # true if the document value matches it, else false.
+    if _contains_operator(selector_value):
+        matchers = []
+        for operator_key, operator_value in selector_value.iteritems():
+            try:
+                matcher_factory = _MATCHER_FACTORY[operator_key]
+            except KeyError:
+                raise ValueError('invalid operator: %s' % operator_key)
             else:
-                possible_matches = select_value[u'$in']
-                def in_matcher(document_value):
-                    return document_value in possible_matches
-                return in_matcher
-    def std_matcher(document_value):
-        return select_value == document_value
-    return std_matcher
+                matchers.append(matcher_factory(operator_value))
+        if len(matchers) == 1:
+            matcher = matchers[0]
+        else:
+            matcher = _new_and_matcher(matchers)
+        return matcher
+    return _new_equality_matcher(selector_value)
 
 
 def _create_predicate_from_selector(selector):
-    """Return a predicate taking a document as argument and returning
-    true if the selector matches it, else false.
-    
-    """
+    # Return a predicate taking a document as argument and returning
+    # true if the selector matches it, else false.
+    selector_matchers = [(k, _new_value_matcher(v)) for k, v in selector.iteritems()]
     def aux(document):
-        for select_key, select_value in selector.iteritems():
-            matcher = _create_value_matcher(select_value)
+        for select_key, matcher in selector_matchers:
             for document_value in _select_value(select_key, document):
                 if matcher(document_value):
                     break
@@ -96,21 +159,6 @@ def _create_predicate_from_selector(selector):
                 return False
         return True
     return aux
-
-
-def find(selector, iterable):
-    match = _create_predicate_from_selector(selector)
-    for document in iterable:
-        if match(document):
-            yield document
-
-
-def find_one(selector, iterable):
-    it = find(selector, iterable)
-    try:
-        return it.next()
-    except StopIteration:
-        return None
 
 
 class ISimpleBackend(Interface):
@@ -137,6 +185,7 @@ class SimpleBackendDocumentCollection(object):
     def __init__(self, backend, generator):
         self._backend = backend
         self._generator = generator
+        self._indexes = {}
         self.closed = False
     
     def close(self):
@@ -161,6 +210,7 @@ class SimpleBackendDocumentCollection(object):
         assert id == document[ID_KEY]
         assert id not in self._backend
         self._backend[id] = document
+        self._add_document_update_indexes(document)
         return defer.succeed(id)
     
     def update(self, document):
@@ -172,11 +222,15 @@ class SimpleBackendDocumentCollection(object):
         else:
             if id not in self._backend:
                 return defer.fail(InvalidIdError(id))
+            old_document = self._backend[id]
             self._backend[id] = document
+            self._update_document_update_indexes(document, old_document)
             return defer.succeed(None)
     
     def delete(self, id):
         try:
+            old_document = self._backend[id]
+            self._del_document_update_indexes(old_document)
             del self._backend[id]
         except KeyError:
             return defer.fail(InvalidIdError(id))
@@ -189,11 +243,259 @@ class SimpleBackendDocumentCollection(object):
         except KeyError:
             return defer.succeed(None)
     
-    def find(self, selector):
-        return defer.succeed(find(selector, self._backend.itervalues()))
+    def _new_key_fun_from_key(self, key):
+        # Return a function usable for the key parameter of the sorted function
+        # from a [sort] key
+        splitted_key = key.split(u'.')
+        def aux(document):
+            cur_elem = document
+            try:
+                for cur_key in splitted_key:
+                    cur_elem = cur_elem[cur_key]
+            except (KeyError, TypeError):
+                # document does not have the given key -- return None
+                return None
+            else:
+                return cur_elem
+        return aux
+    
+    def _reverse_from_direction(self, direction):
+        # Return the reverse value for the reverse parameter of the sorted
+        # function from a [sort] direction
+        if direction == 1:
+            return False
+        elif direction == -1:
+            return True
+        else:
+            # XXX should probably create a more meaningful exception class
+            raise Exception('invalid direction %s' % direction)
+    
+    def _do_find_sorted(self, selector, fields, skip, limit, sort):
+        documents = list(self._do_find_unsorted(selector, fields, 0, 0))
+        key, direction = sort
+        key_fun = self._new_key_fun_from_key(key)
+        reverse = self._reverse_from_direction(direction)
+        documents.sort(key=key_fun, reverse=reverse)
+        documents = self._new_skip_iterator(skip, documents)
+        documents = self._new_limit_iterator(limit, documents)
+        return documents
+    
+    def _new_fields_map_function(self, fields):
+        if not fields:
+            return lambda x: x
+        else:
+            splitted_keys = [field.split(u'.') for field in fields]
+            def aux(document):
+                result = {ID_KEY: document[ID_KEY]}
+                for splitted_key in splitted_keys:
+                    cur_elem = document
+                    try:
+                        for cur_key in splitted_key:
+                            cur_elem = cur_elem[cur_key]
+                    except (KeyError, TypeError):
+                        # element does not have the given key or is not a dictionary -- ignore
+                        pass
+                    else:
+                        cur_result = result
+                        for cur_key in splitted_key[:-1]:
+                            cur_result = cur_result.setdefault(cur_key, {})
+                        cur_result[splitted_key[-1]] = cur_elem
+                return result
+            return aux
+    
+    def _new_skip_iterator(self, skip, documents):
+        try:
+            documents = iter(documents)
+            while skip > 0:
+                skip -= 1
+                documents.next()
+        except StopIteration:
+            # skip is larger than the number of elements -- do nothing
+            pass
+        return documents
+    
+    def _new_limit_iterator(self, limit, documents):
+        if not limit:
+            return documents
+        else:
+            def aux(limit):
+                # limit is an argument to aux, else it will raise an
+                # UnboundLocalVariable exception (since we are using python 2)
+                try:
+                    while limit > 0:
+                        limit -= 1
+                        yield documents.next()
+                except StopIteration:
+                    # limit is larger than the number of elements -- do nothing
+                    pass
+            return aux(limit)
+    
+    def _new_iterator(self, selector, documents):
+        # Return an iterator that will return every documents matching
+        # the given "regular" selector
+        pred = _create_predicate_from_selector(selector)
+        return ifilter(pred, documents)
+    
+    def _new_indexes_iterator(self, indexes_selector):
+        # Return an iterator that will return every documents in the backend
+        # matching the given "indexes" selector. Note that an indexes selector
+        # can't be empty.
+        ids = set()
+        first_loop = True
+        for selector_key, selector_value in indexes_selector.iteritems():
+            index = self._indexes[selector_key]
+            index_entry = index.get(selector_value, [])
+            if first_loop:
+                first_loop = False
+                ids.update(index_entry)
+            else:
+                ids.intersection_update(index_entry)
+        for id in ids:
+            yield self._backend[id]
+    
+    def _new_iterator_over_matching_documents(self, selector):
+        # Return an iterator that will yield every document in the backend
+        # matching the given selector. This may or may not use indices.
+        # 1. check if there's some key-value in the selector usable by the
+        #    indexes
+        indexes_selector = {}
+        regular_selector = {}
+        for selector_key, selector_value in selector.iteritems():
+            if (selector_key in self._indexes and 
+                not _contains_operator(selector_value)):
+                indexes_selector[selector_key] = selector_value
+            else:
+                regular_selector[selector_key] = selector_value
+        # 2. use indexes selector if possible
+        if indexes_selector:
+            documents = self._new_indexes_iterator(indexes_selector)
+        else:
+            documents = self._backend.itervalues()
+        # 3. use regular selector if possible
+        if regular_selector:
+            documents = self._new_iterator(regular_selector, documents)
+        return documents
+    
+    def _do_find_unsorted(self, selector, fields, skip, limit):
+        documents = self._new_iterator_over_matching_documents(selector)
+        documents = self._new_skip_iterator(skip, documents)
+        documents = self._new_limit_iterator(limit, documents)
+        documents = imap(self._new_fields_map_function(fields), documents)
+        return documents
+    
+    def _do_find(self, selector, fields, skip, limit, sort):
+        # Return an iterator over the documents
+        if sort:
+            return self._do_find_sorted(selector, fields, skip, limit, sort)
+        else:
+            return self._do_find_unsorted(selector, fields, skip, limit)
+    
+    def find(self, selector, fields=None, skip=0, limit=0, sort=None):
+        return defer.succeed(self._do_find(selector, fields, skip, limit, sort))
     
     def find_one(self, selector):
-        return defer.succeed(find_one(selector, self._backend.itervalues()))
+        it = self._do_find(selector, None, 0, 1, None)
+        try:
+            result = it.next()
+        except StopIteration:
+            result = None
+        return defer.succeed(result)
+    
+    def _add_document_update_indexes(self, document):
+        # Update the indexes after adding a document to the backend.
+        id = document[ID_KEY]
+        for complex_key, index in self._indexes.iteritems():
+            has_key, value = self._get_value_from_complex_key(complex_key, document)
+            if has_key:
+                self._new_value_for_index(index, id, value)
+    
+    def _update_document_update_indexes(self, document, old_document):
+        # Update the indexes after updating a document to the backend.
+        self._del_document_update_indexes(old_document)
+        self._add_document_update_indexes(document)
+    
+    def _del_document_update_indexes(self, old_document):
+        # Update the indexes after removing document from the backend.
+        id = old_document[ID_KEY]
+        for complex_key, index in self._indexes.iteritems():
+            has_key, value = self._get_value_from_complex_key(complex_key, old_document)
+            if has_key:
+                self._del_value_for_index(index, id, value)
+    
+    def _new_value_for_index(self, index, id, value):
+        # Add the value belonging to the document with the given id to the
+        # given index.
+        def aux(value):
+            if value in index:
+                index_entry = index[value]
+                if id not in index_entry:
+                    index_entry.append(id)
+            else:
+                index[value] = [id]
+        aux(value)
+        if isinstance(value, list):
+            for list_item in value:
+                aux(list_item)
+    
+    def _del_value_for_index(self, index, id, value):
+        # Delete the value belonging to the document with the given id to
+        # the given index.
+        def aux(value):
+            index_entry = index[value]
+            index_entry.remove(id)
+            if not index_entry:
+                del index[value]
+        aux(value)
+        if isinstance(value, list):
+            for list_item in value:
+                aux(list_item)
+    
+    def _get_value_from_complex_key(self, complex_key, document):
+        get_value_fun = self._new_get_value_fun_from_complex_key(complex_key)
+        return get_value_fun(document)
+    
+    def _new_get_value_fun_from_complex_key(self, complex_key):
+        # Return a function that takes a document and return a tuple where
+        # the first element is true if the document has the complex key, and
+        # the second element is the value of the complex key for this document
+        key_tokens = complex_key.split(u'.')
+        def aux(document):
+            value = document
+            for key_token in key_tokens:
+                try:
+                    if key_token in value:
+                        value = value[key_token]
+                    else:
+                        break
+                except TypeError:
+                    break
+            else:
+                # document has the key and value is the value of this key for
+                # this document
+                return True, value
+            return False, None
+        return aux
+    
+    def _new_id_and_value_iterator(self, complex_key):
+        # Return an iterator that yield (id, value) tuple for each document
+        # in the backend that has the given complex key.
+        get_value_fun = self._new_get_value_fun_from_complex_key(complex_key)
+        for document in self._backend.itervalues():
+            has_key, value = get_value_fun(document)
+            if has_key:
+                yield document[ID_KEY], value
+    
+    def _create_index(self, complex_key):
+        logger.debug('Creating index on complex key %s', complex_key)
+        index = {}
+        for id, value in self._new_id_and_value_iterator(complex_key):
+            self._new_value_for_index(index, id, value)
+        self._indexes[complex_key] = index
+    
+    def ensure_index(self, complex_key):
+        if complex_key not in self._indexes:
+            self._create_index(complex_key)
+        return defer.succeed(None)
 
 
 def new_backend_based_collection(backend, generator):
@@ -204,23 +506,5 @@ class ForwardingDocumentCollection(object):
     def __init__(self, collection):
         self.__collection = collection
     
-    def close(self):
-        self.__collection.close()
-    
-    def insert(self, document):
-        return self.__collection.insert(document)
-    
-    def update(self, document):
-        return self.__collection.update(document)
-    
-    def delete(self, id):
-        return self.__collection.delete(id)
-    
-    def retrieve(self, id):
-        return self.__collection.retrieve(id)
-    
-    def find(self, selector):
-        return self.__collection.find(selector)
-    
-    def find_one(self, selector):
-        return self.__collection.find_one(selector)
+    def __getattr__(self, name):
+        return getattr(self.__collection, name)
