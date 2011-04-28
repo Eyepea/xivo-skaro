@@ -92,6 +92,12 @@ def _new_in_matcher(ref_value):
     return _new_matcher_from_operator_fun_left(ref_value, operator.contains)
 
 
+def _new_nin_matcher(ref_value):
+    def aux(value):
+        return value not in ref_value
+    return aux
+
+
 def _new_gt_matcher(ref_value):
     return _new_matcher_from_operator_fun_right(ref_value, operator.gt)
 
@@ -124,6 +130,7 @@ def _new_and_matcher(matchers):
 
 _MATCHER_FACTORY = {
     u'$in': _new_in_matcher,
+    u'$nin': _new_nin_matcher,
     u'$gt': _new_gt_matcher,
     u'$ge': _new_ge_matcher,
     u'$lt': _new_lt_matcher,

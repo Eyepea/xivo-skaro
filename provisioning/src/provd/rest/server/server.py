@@ -35,7 +35,7 @@ __license__ = """
 
 import logging
 import json
-from binascii import a2b_hex
+from binascii import a2b_hex, a2b_base64
 from provd.app import InvalidIdError
 from provd.operation import format_oip, operation_in_progres_from_deferred
 from provd.persist.common import ID_KEY
@@ -181,7 +181,19 @@ def json_request_entity(fun):
 def _add_selector_parameter(args, result):
     # q={"configured": false}
     result['selector'] = {}
-    if 'q' in args:
+    if 'q64' in args:
+        try:
+            raw_selector = a2b_base64(args['q64'][0])
+        except Exception, e:
+            logger.warning('Invalid q64 value: %s', e)
+        else:
+            try:
+                selector = json.loads(raw_selector)
+            except ValueError, e:
+                logger.warning('Invalid q64 value: %s', e)
+            else:
+                result['selector'] = selector
+    elif 'q' in args:
         raw_selector = args['q'][0]
         try:
             selector = json.loads(raw_selector)
