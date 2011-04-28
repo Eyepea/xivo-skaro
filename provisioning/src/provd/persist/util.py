@@ -19,7 +19,6 @@ __license__ = """
 """
 
 import logging
-import operator
 from itertools import ifilter, imap
 from provd.persist.common import ID_KEY, InvalidIdError
 from twisted.internet import defer
@@ -28,34 +27,29 @@ from zope.interface import Interface
 logger = logging.getLogger(__name__)
 
 
-def _select_value(select_key, document):
+def _retrieve_doc_values(s_key, doc):
     # Return an iterator of matched value, i.e. all the value in the
-    # document that matches the select key
-    def aux(current_select_key, current_document):
-        pre, sep, post = current_select_key.partition(u'.')
+    # doc that matches the select key
+    def aux(current_s_key, current_doc):
+        pre, sep, post = current_s_key.partition(u'.')
         if not sep:
-            assert pre == current_select_key
-            if isinstance(current_document, dict):
-                if current_select_key in current_document:
-                    value = current_document[current_select_key]
-                    if isinstance(value, list):
-                        for elem in value:
-                            yield elem
-                    else:
-                        yield value
-            elif isinstance(current_document, list):
-                for elem in current_document:
-                    for result in aux(current_select_key, elem): 
+            assert pre == current_s_key
+            if isinstance(current_doc, dict):
+                if current_s_key in current_doc:
+                    yield current_doc[current_s_key]
+            elif isinstance(current_doc, list):
+                for elem in current_doc:
+                    for result in aux(current_s_key, elem): 
                         yield result
         else:
-            assert pre != current_select_key
+            assert pre != current_s_key
             if post is None:
-                raise ValueError('invalid selector key "%s"' % select_key)
+                raise ValueError('invalid selector key "%s"' % s_key)
             
-            if isinstance(current_document, dict) and pre in current_document:
-                for result in aux(post, current_document[pre]):
+            if isinstance(current_doc, dict) and pre in current_doc:
+                for result in aux(post, current_doc[pre]):
                     yield result
-    return aux(select_key, document)
+    return aux(s_key, doc)
 
 
 def _contains_operator(selector_value):
@@ -68,67 +62,106 @@ def _contains_operator(selector_value):
     return False
 
 
-def _new_matcher_from_operator_fun_right(ref_value, operator_fun):
-    # Note that the reference value will be the second argument to the
-    # operator function.
-    def aux(value):
-        return operator_fun(value, ref_value)
+def _new_simple_matcher_from_pred(pred):
+    # Return a matcher that returns true if there's a value in the document
+    # matching the select key for which pred(value) is true
+    def aux(s_key, doc):
+        for doc_value in _retrieve_doc_values(s_key, doc):
+            if pred(doc_value):
+                return True
+        return False
     return aux
 
 
-def _new_matcher_from_operator_fun_left(ref_value, operator_fun):
-    # Note that the reference value will be the first argument to the
-    # operator function.
-    def aux(value):
-        return operator_fun(ref_value, value)
-    return aux
-
-
-def _new_equality_matcher(ref_value):
-    return _new_matcher_from_operator_fun_right(ref_value, operator.eq)
-
-
-def _new_in_matcher(ref_value):
-    return _new_matcher_from_operator_fun_left(ref_value, operator.contains)
-
-
-def _new_nin_matcher(ref_value):
-    def aux(value):
-        return value not in ref_value
-    return aux
-
-
-def _new_gt_matcher(ref_value):
-    return _new_matcher_from_operator_fun_right(ref_value, operator.gt)
-
-
-def _new_ge_matcher(ref_value):
-    return _new_matcher_from_operator_fun_right(ref_value, operator.ge)
-
-
-def _new_lt_matcher(ref_value):
-    return _new_matcher_from_operator_fun_right(ref_value, operator.lt)
-
-
-def _new_le_matcher(ref_value):
-    return _new_matcher_from_operator_fun_right(ref_value, operator.le)
-
-
-def _new_ne_matcher(ref_value):
-    return _new_matcher_from_operator_fun_right(ref_value, operator.ne)
- 
-
-def _new_and_matcher(matchers):
-    # Return true if all the given matchers returns true.
-    def aux(document_value):
-        for matcher in matchers:
-            if not matcher(document_value):
+def _new_simple_inv_matcher_from_pred(pred):
+    # Return a matcher that returns true if there's no value in the document
+    # matching the select key for which pred(value) is true
+    def aux(s_key, doc):
+        for doc_value in _retrieve_doc_values(s_key, doc):
+            if pred(doc_value):
                 return False
         return True
     return aux
 
 
-_MATCHER_FACTORY = {
+def _new_in_matcher(s_value):
+    # Return a matcher that returns true if there's a value in the document
+    # matching the select key that is equal to one of the value in s_value
+    if not isinstance(s_value, list):
+        raise ValueError('selector value for in matcher must be a list: %s is not' % s_value)
+    pred = lambda doc_value: doc_value in s_value
+    return _new_simple_matcher_from_pred(pred)
+
+
+def _new_nin_matcher(s_value):
+    # Return a matcher that returns true if there's no values in the document
+    # matching the select key that is equal to one of the value in s_value
+    if not isinstance(s_value, list):
+        raise ValueError('selector value for nin matcher must be a list: %s is not' % s_value)
+    pred = lambda doc_value: doc_value in s_value
+    return _new_simple_inv_matcher_from_pred(pred)
+
+
+def _new_eq_matcher(s_value):
+    # Return a matcher that returns true if there's a value in the document
+    # matching the select key that is equal to s_value
+    pred = lambda doc_value: doc_value == s_value
+    return _new_simple_matcher_from_pred(pred)
+
+
+def _new_ne_matcher(s_value):
+    # Return a matcher that returns true if there's no value in the document
+    # matching the select key that is equal to s_value
+    pred = lambda doc_value: doc_value == s_value
+    return _new_simple_inv_matcher_from_pred(pred)
+
+
+def _new_gt_matcher(s_value):
+    # Return a matcher that returns true if there's a value in the document
+    # matching the select key that is greater (>) to s_value
+    pred = lambda doc_value: doc_value > s_value
+    return _new_simple_matcher_from_pred(pred)
+
+
+def _new_ge_matcher(s_value):
+    pred = lambda doc_value: doc_value >= s_value
+    return _new_simple_matcher_from_pred(pred)
+
+
+def _new_lt_matcher(s_value):
+    pred = lambda doc_value: doc_value < s_value
+    return _new_simple_matcher_from_pred(pred)
+
+
+def _new_le_matcher(s_value):
+    pred = lambda doc_value: doc_value <= s_value
+    return _new_simple_matcher_from_pred(pred)
+
+
+def _new_exists_matcher(s_value):
+    s_value = bool(s_value)
+    def aux(s_key, doc):
+        it = iter(_retrieve_doc_values(s_key, doc))
+        try:
+            it.next()
+        except StopIteration:
+            return not s_value
+        else:
+            return s_value
+    return aux
+
+
+def _new_and_matcher(matchers):
+    # Return true if all the given matchers returns true.
+    def aux(s_key, doc):
+        for matcher in matchers:
+            if not matcher(s_key, doc):
+                return False
+        return True
+    return aux
+
+
+_MATCHER_FACTORIES = {
     u'$in': _new_in_matcher,
     u'$nin': _new_nin_matcher,
     u'$gt': _new_gt_matcher,
@@ -136,38 +169,39 @@ _MATCHER_FACTORY = {
     u'$lt': _new_lt_matcher,
     u'$le': _new_le_matcher,
     u'$ne': _new_ne_matcher,
+    u'$exists': _new_exists_matcher,
 }
 
-def _new_value_matcher(selector_value):
-    # Return a predicate taking a document value as argument and returning
-    # true if the document value matches it, else false.
-    if _contains_operator(selector_value):
-        matchers = []
-        for operator_key, operator_value in selector_value.iteritems():
-            try:
-                matcher_factory = _MATCHER_FACTORY[operator_key]
-            except KeyError:
-                raise ValueError('invalid operator: %s' % operator_key)
-            else:
-                matchers.append(matcher_factory(operator_value))
+def _new_operator_matcher(operator_key, operator_value):
+    try:
+        matcher_factory = _MATCHER_FACTORIES[operator_key]
+    except KeyError:
+        raise ValueError('invalid operator: %s' % operator_key)
+    else:
+        return matcher_factory(operator_value)
+
+
+def _new_matcher(s_value):
+    # Return a predicate taking a select key and a document that returns true
+    # if the document value matches it, else false.
+    if _contains_operator(s_value):
+        matchers = [_new_operator_matcher(k, v) for k, v in s_value.iteritems()]
         if len(matchers) == 1:
             matcher = matchers[0]
         else:
             matcher = _new_and_matcher(matchers)
         return matcher
-    return _new_equality_matcher(selector_value)
+    else:
+        return _new_eq_matcher(s_value)
 
 
-def _create_predicate_from_selector(selector):
+def _create_pred_from_selector(selector):
     # Return a predicate taking a document as argument and returning
     # true if the selector matches it, else false.
-    selector_matchers = [(k, _new_value_matcher(v)) for k, v in selector.iteritems()]
+    selector_matchers = [(k, _new_matcher(v)) for k, v in selector.iteritems()]
     def aux(document):
-        for select_key, matcher in selector_matchers:
-            for document_value in _select_value(select_key, document):
-                if matcher(document_value):
-                    break
-            else:
+        for s_key, matcher in selector_matchers:
+            if not matcher(s_key, document):
                 return False
         return True
     return aux
@@ -345,7 +379,7 @@ class SimpleBackendDocumentCollection(object):
     def _new_iterator(self, selector, documents):
         # Return an iterator that will return every documents matching
         # the given "regular" selector
-        pred = _create_predicate_from_selector(selector)
+        pred = _create_pred_from_selector(selector)
         return ifilter(pred, documents)
     
     def _new_indexes_iterator(self, indexes_selector):
@@ -403,6 +437,13 @@ class SimpleBackendDocumentCollection(object):
             return self._do_find_unsorted(selector, fields, skip, limit)
     
     def find(self, selector, fields=None, skip=0, limit=0, sort=None):
+        logger.debug('Executing find in backend based collection with:\n'
+                     '  selector: %s\n'
+                     '  fields: %s\n'
+                     '  skip: %s\n'
+                     '  limit: %s\n'
+                     '  sort: %s',
+                     selector, fields, skip, limit, sort)
         return defer.succeed(self._do_find(selector, fields, skip, limit, sort))
     
     def find_one(self, selector):

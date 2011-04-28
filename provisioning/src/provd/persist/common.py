@@ -132,10 +132,15 @@ class IDocumentCollection(Interface):
           fields -- a list of fields to include for every matched documents.
             Note that the id fields is always included. If not specified
             or empty, return all the fields
-          skip -- a skip value, i.e. the number of documents to skip
-          limit -- a limit, i.e. the maximum number of documents to return
+          skip -- a skip value, i.e. the number of documents to skip. If not
+            specified or 0, no matching documents are skipped.
+          limit -- a limit, i.e. the maximum number of documents to return. If
+            not specified or 0, all matching documents are returned.
           sort -- a tuple (key, direction), where key is the key to do the sort
-            and direction is either 1 for ASC and -1 for DESC
+            and direction is either 1 for ASC and -1 for DESC. If not specified,
+            the matching documents are not sorted.
+        
+        All arguments are optional except for selector.
         
         """
     
