@@ -6,21 +6,19 @@ import time
 from time import localtime, strftime
 
 class ClusterResourceManager(object):
-    def __init__(self, services   = [],
-                 cluster_name     = None,
-                 cluster_addr     = None,
-                 cluster_itf      = None,
-                 cluster_group    = False, 
+    def __init__(self,
+                 cluster_config   = {},
                  backup_directory = "/var/backups/pf-xivo/pf-xivo-ha",
                  cluster_cfg      = "/etc/pf-xivo/xivo_ha/cluster.cfg",
                 ):
-        self.services         = services
-        self.cluster_name     = cluster_name
-        self.cluster_addr     = cluster_addr
-        self.cluster_itf      = cluster_itf
-        self.cluster_group    = cluster_group
-        self.backup_directory = backup_directory
-        self.cluster_cfg      = cluster_cfg
+        if cluster_config != {}:
+            self.services         = cluster_config['services'].keys()
+            self.cluster_name     = cluster_config['cluster_name']
+            self.cluster_addr     = cluster_config['cluster_addr']
+            self.cluster_itf      = cluster_config['cluster_itf']
+            self.cluster_group    = cluster_config['cluster_group']
+            self.backup_directory = backup_directory
+            self.cluster_cfg      = cluster_cfg
 
     def _filename(self, filename, directory):
         if not directory:
@@ -33,26 +31,35 @@ class ClusterResourceManager(object):
         return backup_file
 
     # Cluster Management
-    def _cluster_command(self, args = []):
+
+    def _lsb_status(self, res, expected_state):
+        script = '/etc/init.d/%s' % res
+        if os.path.isfile(script):
+            cmd = [script, 'status']
+            result, ret, error = self._cluster_command(cmd)
+            if ret is 0:
+                state = "started"
+            elif ret is 3:
+                state = "stopped"
+            return state
+        else:
+            return False
+
+    def _cluster_command(self, args = None):
         '''
         command to manage cluster
         _cluster_command(['crm', 'command', 'arg']
         _cluster_command(['crm_verify', '-LV']
-        return a turple with (stdout, return code)
+        return a turple with (stdout, return code, errors)
         '''
-        if args.__len__() is not 0:
+        if args: 
             command = subprocess.Popen(args,stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  
             error   = command.stderr.__str__()
             result  = command.stdout.readlines()
             ret     = command.wait()
-            if ret is 0:
-                return (result)
-            if ret is 2:
-                return ret
-            else:
-                raise OSError(result) 
+            return result, ret, error
         else:
-            raise ValueError, "You have to provide command (args = %s)" % args
+            raise ValueError
 
     def _cluster_backup(self, directory = '', filename = ''):
         '''
@@ -60,7 +67,7 @@ class ClusterResourceManager(object):
         '''
         backup_file = self._filename(filename, directory)
         args        = ['crm', 'configure', 'save', backup_file]
-        if self._cluster_command(args) == []:
+        if self._cluster_command(args)[1] is 0:
             return True
 
     def _cluster_restore(self, directory = '', filename = ''):
@@ -71,7 +78,7 @@ class ClusterResourceManager(object):
         if backup_file:
             if os.path.isfile(backup_file):
                 args        = ['crm', 'configure', 'load', 'replace', backup_file]
-                if self._cluster_command(args) == []:
+                if self._cluster_command(args)[1] is 0:
                     return True
             else:
                 raise IOError("the backup file does not exist")
@@ -121,9 +128,8 @@ class ClusterResourceManager(object):
         '''
         if res != 'NO':
             args = ['crm', 'resource', 'show', res]
-            data = self._cluster_command(args)
+            data, res, error = self._cluster_command(args)
             res_state = data[0].split()[3]
-            lsb_args = ['/etc/init.d/%s', 'status']
             if res_state == 'NOT':
                 res_state = 'stopped'
             return res_state
@@ -137,7 +143,7 @@ class ClusterResourceManager(object):
         '''
         all_res = []
         args = ['crm', 'resource', 'show']
-        data =  self._cluster_command(args)
+        data, res, error =  self._cluster_command(args)
         for elem in data:
             if elem.split()[0] != 'Resource':
                 all_res.append(elem.split()[0])
@@ -162,9 +168,14 @@ class ClusterResourceManager(object):
         if data.__contains__('NO'):
             pass
         for res in data:
-            if self._cluster_resource_state(res) == 'running':
-                self._cluster_stop_resource(res)
+            if self._lsb_status(res, "stopped"):
+                state = self._lsb_status(res, "stopped")
+                while state != "stopped":
+                    if self._cluster_resource_state(res) == 'running':
+                        self._cluster_stop_resource(res)
+                    state = self._lsb_status(res, "stopped")
         return True
+
     # Cluster configuration
     def _cluster_property(self, stonith = False, quorum_policy = 'ignore'):
         '''
@@ -255,7 +266,7 @@ class ClusterResourceManager(object):
 
     def _services_order(self, services):
         # TODO
-        return services
+        return services.sort()
 
     def _resources_order(self):
         '''
@@ -272,8 +283,9 @@ class ClusterResourceManager(object):
 
         if not self.cluster_group:
             # TODO: use lsb information to lauch data in the right order
-            services = self._services_order(self.services)
-            for service in services:
+            # services = self._services_order(self.services)
+            # at the moment, it is just sorted
+            for service in sorted(self.services):
                 result += " %s:start" % service
         else:
             result +=  " group_%s:start" % name
@@ -291,7 +303,9 @@ class ClusterResourceManager(object):
         if ip_res:
             result += " ip_%s" % name
         if not self.cluster_group:
-            for service in self.services:
+            # same as _resources_order
+            # need refactoring
+            for service in sorted(self.services):
                 result += " %s" % service
         else:
             result +=  " group_%s" % name
@@ -358,20 +372,13 @@ class ClusterResourceManager(object):
                                             )
     
 
-    def cluster_manager(self):
-        #self._cluster_backup()
-        #if self._cluster_status():
-        #    # pass globals options
-        #    self._cluster_global_option()
-        #    self._cluster_configure_service()
-        #    return True
-        #else:
-        #    self._cluster_rollback()
-        pass
+    def manage(self):
+        self._cluster_backup()
+        self._cluster_stop_all_resources()
+        self._cluster_erase_configuration()
+        self._cluster_configure()
+        return self._cluster_push_config()
 
-    def update(self):
-        raise NotImplementedError
-    
 
 class DatabaseManagement(object):
     '''

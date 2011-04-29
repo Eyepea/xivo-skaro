@@ -61,8 +61,6 @@ if __name__ == '__main__':
     network_addr   = nodes_config['network_addr']
     multicast_addr = nodes_config['multicast_addr']
 
-    services = cluster_config['services'].keys()
-
     node_management  = ClusterEngine(network_addr, multicast_addr)
     cluster = ClusterResourceManager(cluster_config)
 
