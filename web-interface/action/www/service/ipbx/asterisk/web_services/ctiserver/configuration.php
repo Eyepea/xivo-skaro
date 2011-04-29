@@ -117,7 +117,7 @@ switch($act)
 				}
 				$ctxout[$ctxid]['directories'] = $arr;
 
-				$ctxout[$ctxid]['display'] = "displays." . $context['display'];
+				$ctxout[$ctxid]['display'] = $context['display'];
 			}
 			$out['contexts'] = $ctxout;
 		}
@@ -222,44 +222,50 @@ switch($act)
 			{
 				if($k == 'id')
 					continue;
-				$evtout[$k] = $load_sheetevents[0][$k];
+				if($load_sheetevents[0][$k] == "")
+					continue;
+                                $eventdef = array();
+                                $eventdef["display"] = $load_sheetevents[0][$k];
+                                $eventdef["option"] = $load_sheetevents[0][$k];
+                                $eventdef["condition"] = $load_sheetevents[0][$k];
+				$evtout[$k][] = $eventdef;
 			}
 			$evtout['custom'] = dwho_json::decode($evtout['custom'], true) == false ? array() : dwho_json::decode($evtout['custom'], true);
 			$out['sheets']['events'] = $evtout;
 		}
 		if(isset($load_sheetactions))
 		{
-			$actout = array();
+			$optout = array();
 			$dispout = array();
+                        $condout = array();
+
 			foreach($load_sheetactions as $action)
 			{
-				$qtui = "null";
 				$actid = $action['name'];
-				$actout[$actid]['whom'] = $action['whom'];
-				$actout[$actid]['focus'] = $action['focus'] == 1 ? "yes" : "no";
-				$actout[$actid]['contexts'] = dwho_json::decode($action['context'], true) == false ? array() : dwho_json::decode($action['context'], true);
-				$actout[$actid]['capaids'] = dwho_json::decode($action['capaids'], true) == false ? array() : dwho_json::decode($action['capaids'], true);
-				$actout[$actid]['sheet_info'] = "sheets.displays.screens.".$actid;
-				$actout[$actid]['systray_info'] = "sheets.displays.systrays.".$actid;
-				$actout[$actid]['sheet_qtui'] = "sheets.displays.qtui.".$actid;
-				$actout[$actid]['action_info'] = "sheets.displays.infos.".$actid;
+
+				$optout[$actid]['whom'] = $action['whom'];
+				$optout[$actid]['focus'] = $action['focus'] == 1 ? "yes" : "no";
+
+				$condout[$actid]['contexts'] = dwho_json::decode($action['context'], true) == false ? array() : dwho_json::decode($action['context'], true);
+				$condout[$actid]['capaids'] = dwho_json::decode($action['capaids'], true) == false ? array() : dwho_json::decode($action['capaids'], true);
 
 				$arr = array();
 				$arr = dwho_json::decode($action['sheet_info'], true);
+				$qtui = "null";
 				foreach($arr as $k=>$v)
 				{
 					$a1 = $arr[$k];
 					if($a1[1] == 'form')
 						$qtui = $a1[3];
 				}
-				$dispout['systrays'][$actid] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
-				$dispout['screens'][$actid] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
-				$dispout['qtui'][$actid][$qtui] = $action['sheet_qtui'];
-				$dispout['infos'][$actid] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
-
+				$dispout[$actid]['systrays'] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
+				$dispout[$actid]['screens'] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
+				$dispout[$actid]['qtui'][$qtui] = $action['sheet_qtui'];
+				$dispout[$actid]['infos'] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
 			}
-			$out['sheets']['actions'] = $actout;
+			$out['sheets']['options'] = $optout;
 			$out['sheets']['displays'] = $dispout;
+			$out['sheets']['conditions'] = $condout;
 		}
 
 		# MAIN

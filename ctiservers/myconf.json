@@ -105,13 +105,13 @@
                 }
             }
   "sheets" : {
-        "sheetdisplays" : { "bb" : "ac" },
-        "sheetoptions" : { "o1" : { "focus" : "", "zip" : "" } },
-        "sheetconditions" : { "c1" : { "context" : ["mamaop"],
-                                                     "profile" : ["oper"]
-                                                     }},
-        "sheetevents" : { "newchannel" :
+        "events" : { "newchannel" :
                                         [ ["bb", "c1", "o1"], ["bb2", "c2", "ff"] ]
                                         }
+        "displays" : { "bb" : "ac" },
+        "options" : { "o1" : { "focus" : "", "zip" : "" } },
+        "conditions" : { "c1" : { "context" : ["mamaop"],
+                                                     "profile" : ["oper"]
+                                                     }},
         }
 }

@@ -58,6 +58,9 @@ class Config:
         if uri.find(':') < 0:
             return
 
+        # web-interface/tpl/www/bloc/cti/general.php
+        # web-interface/action/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
+
         response = urllib2.urlopen(uri)
         self.json_config = response.read().replace('\/', '/')
         self.xc_json = cjson.decode(self.json_config)

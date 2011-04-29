@@ -2962,7 +2962,6 @@ class XivoCTICommand(BaseCommand):
                 log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
 
         elif eventname == 'LocalCall':
-            log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
             appli = event.get('XIVO_ORIGAPPLI')
             actionid = event.get('XIVO_ORIGACTIONID')
             if uniqueid in self.uniqueids[astid]:
@@ -3001,7 +3000,6 @@ class XivoCTICommand(BaseCommand):
                                     % (astid, eventname))
 
         elif eventname == 'Feature':
-            log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
             function = event.get('Function')
             xivo_userid = event.get('XIVO_USERID')
             services_functions_list = ['busy', 'rna', 'unc', 'vm', 'dnd',

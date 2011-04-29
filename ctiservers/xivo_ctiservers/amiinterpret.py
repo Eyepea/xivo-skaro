@@ -496,11 +496,48 @@ class AMI_1_8:
         log.info('ami_dtmf %s' % (event))
         return
 
+    def userevent_did(self):
+        return
+
+    def userevent_lookupdirectory(self):
+        return
+
+    def userevent_user(self):
+        return
+
+    def userevent_group(self):
+        return
+
+    def userevent_queue(self):
+        return
+
+    def userevent_outcall(self):
+        return
+
+    def userevent_meetme(self):
+        return
+
+    def userevent_localcall(self):
+        return
+
+    def userevent_feature(self):
+        return
+
+    def userevent_custom(self):
+        return
+
+    def userevent_dialplan2cti(self):
+        return
+
     def ami_userevent(self, event):
         eventname = event.pop('UserEvent')
         channel = event.pop('CHANNEL', None)
         # syntax in dialplan : exten = xx,n,UserEvent(myevent,var1: ${var1},var2: ${var2})
-        log.info('ami_userevent %s %s : %s' % (eventname, channel, event))
+        if eventname in userevents:
+            methodname = 'userevent_%s' % eventname.lower()
+            if hasattr(self, methodname):
+                log.info('ami_userevent %s %s : %s' % (eventname, channel, event))
+                getattr(self, methodname)()
         return
 
     def ami_agiexec(self, event):
@@ -759,7 +796,6 @@ class AMI_1_8:
     def ami_sendfaxstatus(self, event):
         return
 
-##    def ami_agentringnoanswer(self, event): return
 ##    def ami_agiexec(self, event): return
 ##    def ami_aoc_d(self, event): return
 ##    def ami_aoc_e(self, event): return

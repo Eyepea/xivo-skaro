@@ -110,6 +110,7 @@ class INFO(Interfaces):
                                      'show_meetme', 'show_voicemail']
                 if usefulmsg == 'help':
                     clireply.extend(infohelptext)
+
                 elif usefulmsg == 'show_infos':
                     time_uptime = int(time.time() - time.mktime(self.ctid.time_start))
                     reply = 'infos=' \
@@ -184,12 +185,14 @@ class INFO(Interfaces):
                             pass
                         else:
                             clireply.append('unknown action <%s> for loglevel : try set or get' % action)
+
                 elif usefulmsg == 'show_users':
                     for user, info in self.ctid.commandclass.users().iteritems():
                         try:
                             clireply.append('%s %s' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
+
                 elif usefulmsg in show_command_list:
                     itemname = usefulmsg[5:]
                     for astid, itm in self.ctid.commandclass.getdetails(itemname).iteritems():
@@ -199,6 +202,7 @@ class INFO(Interfaces):
                                 clireply.append('%s %s' % (id, idv))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
+
                 elif usefulmsg.startswith('show_var '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -244,12 +248,19 @@ class INFO(Interfaces):
                                 [ipaddr, ipport] = ['err_addr', 'err_port']
                             clireply.append('user %s : ip:port = %s:%s'
                                             % (user.encode('latin1'), ipaddr, ipport))
+
                 elif usefulmsg == 'show_logged':
                     for user, info in self.ctid.commandclass.connected_users().iteritems():
                         try:
                             clireply.append('%s %s' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
+
+                elif usefulmsg.startswith('sheet '):
+                    k = usefulmsg.split(' ')
+                    self.innerdata.sheetsend(k[1], k[2])
+                    clireply.append('thank you !')
+
                 elif usefulmsg == 'fdlist':
                     for k, v in self.ctid.fdlist_listen_cti.iteritems():
                         clireply.append('  listen TCP : %s %s' % (k, v))
@@ -258,6 +269,7 @@ class INFO(Interfaces):
                     for k, v in self.ctid.fdlist_established.iteritems():
                         clireply.append('  conn   TCP : %s %s' % (k, v))
                     clireply.append('  full : %s' % self.ctid.fdlist_full)
+
                 elif usefulmsg.startswith('reverse '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -270,6 +282,7 @@ class INFO(Interfaces):
                                     clireply.append('%s %s' % (number, rep.encode('utf8')))
                                 else:
                                     clireply.append('%s %s' % (number, rep))
+
                 elif usefulmsg.startswith('disc '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -286,12 +299,15 @@ class INFO(Interfaces):
                             del self.ctid.fdlist_established[socktoremove]
                         else:
                             clireply.append('nobody disconnected')
+
                 elif usefulmsg == 'show_ami':
                     for astid, ami in self.ctid.amilist.ami.iteritems():
                         clireply.append('commands : %s : %s' % (astid, ami))
+
                 elif usefulmsg.startswith('ami inits '):
                     g = usefulmsg[10:]
                     self.ctid.myami[self.ipbxid].initrequest(g)
+
                 elif usefulmsg.startswith('ami '):
                     amicmd = usefulmsg.split()[1:]
                     if amicmd:
@@ -301,11 +317,14 @@ class INFO(Interfaces):
                             cmd = amicmd[1]
                             cmdargs = amicmd[2:]
                             self.ctid.amilist.execute(astid, cmd, *cmdargs)
+
                 elif usefulmsg.startswith('webs reload '):
                     listname = usefulmsg[12:]
                     self.innerdata.update_config_list(listname)
+
                 elif usefulmsg == 'currentstatus':
                     clireply.extend(self.innerdata.currentstatus())
+
                 elif usefulmsg.startswith('kick '):
                     command_args = usefulmsg.split()
                     try:
@@ -335,8 +354,10 @@ class INFO(Interfaces):
                     except Exception:
                         log.exception('INFO %s' % usefulmsg)
                         clireply.append('(exception when trying to kick - see server log)')
+
                 elif usefulmsg.startswith('%s:' % self.ctid.commandset):
                     self.ctid.commandclass.cliaction(self.connid, usefulmsg)
+
                 else:
                     retstr = 'KO'
 

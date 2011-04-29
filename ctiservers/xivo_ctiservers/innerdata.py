@@ -798,21 +798,26 @@ class Safe:
         if 'sheets' not in self.ctid.cconf.getconfig():
             return
         bsheets = self.ctid.cconf.getconfig('sheets')
-        self.sheetevents = bsheets.get('sheetevents')
-        self.sheetdisplays = bsheets.get('sheetdisplays')
-        self.sheetoptions = bsheets.get('sheetoptions')
-        self.sheetconditions = bsheets.get('sheetconditions')
+        self.sheetevents = bsheets.get('events')
+        self.sheetdisplays = bsheets.get('displays')
+        self.sheetoptions = bsheets.get('options')
+        self.sheetconditions = bsheets.get('conditions')
 
         if where not in self.sheetevents:
+            log.warning('%s sheet event is not in %s' % (where, self.sheetevents.keys()))
             return
-        if channel not in self.channels:
+        if channel not in self.channels and channel not in ['special']:
+            log.warning('%s channel is not in %s' % (channel, self.channels.keys()))
             return
         for se in self.sheetevents[where]:
-            display_id, condition_id, option_id = se
+            display_id = se.get('display')
+            condition_id = se.get('condition')
+            option_id = se.get('option')
+            print display_id, condition_id, option_id
             if not self.sheetdisplays.get(display_id):
                 continue
-            # print channel, self.sheetdisplays.get(display_id), self.sheetconditions.get(condition_id)
-            c = self.channels[channel]
+            print channel, self.sheetdisplays.get(display_id), self.sheetconditions.get(condition_id)
+            c = self.channels.get(channel)
 
             sheet = cti_sheets.Sheet(where, self.ipbxid, channel)
             if self.sheetoptions.get(option_id):
