@@ -23,7 +23,7 @@ Config collection objects are used as a storage for config objects.
 
 This section specify the general form of configuration parameters and the
 meaning and usage of standardized parameters.
-  
+
 This specification use the words MUST, SHOULD, MAY as defined in RFC2119.
 
 Except when explicitly stated, unsupported parameters or supported parameters
@@ -87,50 +87,56 @@ tftp_port [mandatory if http_port is not defined]
   If the device only support TFTP yet this value is not defined, an Exception
   SHOULD be raised.
 
-vlan [optional]
-  A dictionary describing the VLAN (802.1Q) configuration.
-  If this parameter is not defined, VLAN tagging MUST be disabled.
-  
-    id [mandatory]
-      The VLAN ID. An integer between 0 and 4094.
-      A value of 0 means that the frame does not belong to any VLAN; in this
-      case only a priority is specified.
-    
-    priority [optional]
-      The (802.1p) priority. A integer between 0 and 7 inclusive.
-    
-    pc_port_id [optional]
-      The VLAN ID of the PC port. An integer between 0 and 4094.
-      This means that tagged frame with the specified VLAN ID received by
-      the device on its LAN port should be forwarded (tagged) on the PC
-      port, and vice-versa.
-      If this parameter is not defined, then untagged frame received by the
-      device on its LAN port SHOULD be forwarded untagged on the PC port, and
-      vice-versa.
+ntp_enabled [optional]
+  A boolean indicating if NTP is enabled or not.
+  If this parameter is not defined or is false, NTP MUST be disabled and
+  all the ntp_* parameters MUST be ignored.
 
-ntp_server_ip [optional]
-  The IP address or domain name of the NTP server.
-  If this parameter is not defined, NTP MUST be disabled.
+ntp_ip [mandatory if ntp_enabled is true]
+  The IP address or domain name of a NTP server.
   See: ip (comment about domain name).
 
-syslog [optional]
-  A dictionary describing the syslog settings of the device.
-  If this parameter is not defined, syslog MUST be disabled.
-  
-    ip [mandatory]
-      The IP address of a syslog server.
-    
-    port [optional|default to 514]
-      The port of the syslog server.
-    
-    level [optional|default to 'warning']
-      The debug level to enable on the device.
-      This parameter can take one of the following value:
-      - critical
-      - error
-      - warning
-      - info
-      - debug
+vlan_enabled [optional]
+  A boolean indicating if VLAN is enabled or not.
+  If this parameter is not defined or is false, VLAN must be disabled and
+  all the vlan_* parameters MUST be ignored.
+
+vlan_id [mandatory if vlan_enabled is true]
+  The VLAN ID. An integer between 0 and 4094.
+  A value of 0 means that the frame does not belong to any VLAN; in this
+  case only a priority is specified.
+
+vlan_priority [optional]
+  The (802.1p) priority. A integer between 0 and 7 inclusive.
+
+vlan_pc_port_id [optional]
+  The VLAN ID of the PC port. An integer between 0 and 4094.
+  This means that tagged frame with the specified VLAN ID received by
+  the device on its LAN port should be forwarded (tagged) on the PC
+  port, and vice-versa.
+  If this parameter is not defined, then untagged frame received by the
+  device on its LAN port SHOULD be forwarded untagged on the PC port, and
+  vice-versa.
+
+syslog_enabled [optional]
+  A boolean indicating if syslog is enabled or not.
+  If this parameter is not defined or is false, syslog MUST be disabled and
+  all the syslog_* parameters MUST be ignored.
+
+syslog_ip [mandatory if syslog_enabled]
+  The IP address of a syslog server.
+
+syslog_port [optional|default to 514]
+  The port of the syslog server.
+
+syslog_level [optional|default to 'warning']
+  The debug level to enable on the device.
+  This parameter can take one of the following value:
+  - critical
+  - error
+  - warning
+  - info
+  - debug
 
 admin_username [optional]
   The administrator username. When applicable, the administrator account gives
@@ -165,9 +171,10 @@ locale [optional]
   - fr_FR
   - en_CA
 
-config_encryption [optional]
-  A boolean indicating if configuration file encryption should be enabled.
-  If this parameter is not defined, then config file encryption SHOULD be
+config_encryption_enabled [optional]
+  A boolean indicating if configuration file encryption should be enabled or
+  not.
+  If this parameter is not defined, configuration file encryption SHOULD be
   disabled.
 
 protocol [optional]
@@ -179,200 +186,192 @@ protocol [optional]
   (RawConfigError) MAY be raised or the device MAY be misconfigured.
   This parameter is mostly useful for multi-protocol device/plugin.
 
-sip [mandatory if protocol == 'SIP']
-  A dictionary describing the configuration of all the SIP related stuff:
-    
-    proxy_ip [mandatory if proxy_ip is not defined on a per line basis and there's at least 1 line]
-      The IP address of the SIP proxy.
-      If the device does not support a SIP proxy on a per line basis and this
-      this parameter is not defined, an exception SHOULD be raised.
-      If the device does not support the proxy/registrar separation, the
-      value of this parameter will be used as the registrar IP.
+sip_proxy_ip [mandatory if proxy_ip is not defined on a per line basis and there's at least 1 line]
+  The IP address of the SIP proxy.
+  If the device does not support a SIP proxy on a per line basis and this
+  this parameter is not defined, an exception SHOULD be raised.
+  If the device does not support the proxy/registrar separation, the
+  value of this parameter will be used as the registrar IP.
+
+sip_proxy_port [optional]
+  The port of the SIP proxy.
+
+sip_backup_proxy_ip [optional]
+  The IP address of the backup SIP proxy.
+
+sip_backup_proxy_port [optional]
+  The port of the backup SIP proxy.
+
+sip_registrar_ip [optional|default to value of proxy_ip]
+  The IP address of the SIP registrar.
+  See: proxy_ip.
+
+sip_registrar_port [optional]
+  The port of the SIP registrar.
+
+sip_backup_registrar_ip [optional]
+  The IP address of the backup SIP registrar
+
+sip_backup_registrar_port [optional]
+  The port of the backup SIP registrar.
+
+sip_outbound_proxy_ip [optional]
+  The IP address of the SIP outbound proxy.
+
+sip_outbound_proxy_port [optional]
+  The port of the SIP outbound proxy.
+
+sip_dtmf_mode [optional]
+  The mode used to send DTMF and other events.
+  This parameter can take one of the following value:
+  - RTP-in-band
+  - RTP-out-of-band
+  - SIP-INFO
+  If this parameter is not defined and the device has some support for
+  automatically picking the DTMF mode, then the device should be
+  configured this way.
+
+sip_srtp_mode [optional|default to 'disabled']
+  The RTP/SRTP mode.
+  This parameter can take one of the following values:
+  - disabled
+  - preferred
+  - required
+
+sip_transport [optional|default to 'udp']
+  The transport type for SIP messages.
+  This parameter can take one of the following values:
+  - udp
+  - tcp
+  - tls
+
+sip_servers_root_and_intermediate_certificates [optional]
+  The list of certificates that particpated in the signing of the
+  servers certificates, i.e. of the server the device will connect to,
+  in PEM format. The list must be ordered by certificate signing, i.e.
+  the root certificate must be the first in the list.
+
+sip_local_root_and_intermediate_certificates [optional]
+  The list of certificates that participated in the signing of the
+  local certificate, in PEM format. The list must be ordered by
+  certificate signing, i.e. the root certificate must be the first in
+  the list.
+
+sip_local_certificate [optional]
+  The local certificate, in PEM format.
+
+sip_local_key [optional]
+  The private key which is related to the public key in the local
+  certificate, in PEM format.
+
+sip_subscribe_mwi [optional]
+  A boolean indicating if we should explicitly subscribe for message
+  notification or not.
+
+sip_lines [optional|default to empty dictionary]
+  A dictionary where keys are line number and values are dictionaries with
+  the following keys:
+  
+    proxy_ip [mandatory if proxy_ip is not defined globally]
+      See sip_proxy_ip.
     
     proxy_port [optional]
-      The port of the SIP proxy.
+      See sip_proxy_port.
     
     backup_proxy_ip [optional]
-      The IP address of the backup SIP proxy.
+      See sip_backup_proxy_ip.
     
     backup_proxy_port [optional]
-      The port of the backup SIP proxy.
+      See sip_backup_proxy_port.
     
     registrar_ip [optional|default to value of proxy_ip]
-      The IP address of the SIP registrar.
-      See: proxy_ip.
+      See sip_registrar_ip.
     
     registrar_port [optional]
-      The port of the SIP registrar.
+      See sip_registrar_port.
     
     backup_registrar_ip [optional]
-      The IP address of the backup SIP registrar
+      See sip_backup_registrar_ip.
     
     backup_registrar_port [optional]
-      The port of the backup SIP registrar.
+      See sip_backup_registrar_port.
     
     outbound_proxy_ip [optional]
-      The IP address of the SIP outbound proxy.
+      See sip_outbound_proxy_ip.
     
     outbound_proxy_port [optional]
-      The port of the SIP outbound proxy.
+      See sip_outbound_proxy_port.
+    
+    username [mandatory]
+      The username of this SIP identity.
+    
+    auth_username [optional|default to value of username]
+      The username used for authentication (i.e. the username in the SIP
+      Authorization or Proxy-Authorization header field).
+      If the device doesn't allow the auth username to be different from
+      the username, then the username MUST be used for authentication.
+    
+    password [mandatory]
+      The password used for authentication.
+    
+    display_name [mandatory]
+      The display name (caller ID).
+    
+    number [optional]
+      The main extension number other users can dial to reach this line.
+      This parameter is for display purpose only.
     
     dtmf_mode [optional]
-      The mode used to send DTMF and other events.
-      This parameter can take one of the following value:
-      - RTP-in-band
-      - RTP-out-of-band
-      - SIP-INFO
-      If this parameter is not defined and the device has some support for
-      automatically picking the DTMF mode, then the device should be
-      configured this way.
+      See: sip_dtmf_mode.
     
-    srtp_mode [optional|default to 'disabled']
-      The RTP/SRTP mode.
-      This parameter can take one of the following values:
-      - disabled
-      - preferred
-      - required
-    
-    transport [optional|default to 'udp']
-      The transport type for SIP messages.
-      This parameter can take one of the following values:
-      - udp
-      - tcp
-      - tls
-    
-    servers_root_and_intermediate_certificates [optional]
-      The list of certificates that particpated in the signing of the
-      servers certificates, i.e. of the server the device will connect to,
-      in PEM format. The list must be ordered by certificate signing, i.e.
-      the root certificate must be the first in the list.
-    
-    local_root_and_intermediate_certificates [optional]
-      The list of certificates that participated in the signing of the
-      local certificate, in PEM format. The list must be ordered by
-      certificate signing, i.e. the root certificate must be the first in
-      the list.
-    
-    local_certificate [optional]
-      The local certificate, in PEM format.
-    
-    local_key [optional]
-      The private key which is related to the public key in the local
-      certificate, in PEM format.
-    
-    subscribe_mwi [optional]
-      A boolean indicating if we should explicitly subscribe for message
-      notification or not.
-    
-    lines [optional|default to empty dictionary]
-      A dictionary where keys are line number and values are dictionary with
-      the following keys:
-    
-        proxy_ip [mandatory if proxy_ip is not defined globally]
-          See sip.proxy_ip.
-        
-        proxy_port [optional]
-          See sip.proxy_port.
-        
-        backup_proxy_ip [optional]
-          See sip.backup_proxy_ip.
-        
-        backup_proxy_port [optional]
-          See sip.backup_proxy_port.
-        
-        registrar_ip [optional|default to value of proxy_ip]
-          See sip.registrar_ip.
-        
-        registrar_port [optional]
-          See sip.registrar_port.
-        
-        backup_registrar_ip [optional]
-          See sip.backup_registrar_ip.
-        
-        backup_registrar_port [optional]
-          See sip.backup_registrar_port.
-        
-        outbound_proxy_ip [optional]
-          See sip.outbound_proxy_ip.
-        
-        outbound_proxy_port [optional]
-          See sip.outbound_proxy_port.
-        
-        username [mandatory]
-          The username of this SIP identity.
-        
-        auth_username [optional|default to value of username]
-          The username used for authentication (i.e. the username in the SIP
-          Authorization or Proxy-Authorization header field).
-          If the device doesn't allow the auth username to be different from
-          the username, then the username MUST be used for authentication.
-        
-        password [mandatory]
-          The password used for authentication.
-        
-        display_name [mandatory]
-          The display name (caller ID).
-        
-        number [optional]
-          The main extension number other users can dial to reach this line.
-          This parameter is for display purpose only.
-        
-        dtmf_mode [optional]
-          See: sip.dtmf_mode.
-        
-        voicemail [optional]
-          The extension number to retrieve voicemail for this line.
-
-sccp [mandatory if protocol == 'SCCP']
-  A dictionary describing the configuration of all the SCCP related stuff:
-  
-    call_managers [optional|default to empty dictionary]
-      A dictionary where keys are priority number and value are dictionary
-      with the following keys:
-        
-        ip [mandatory]
-          The IP address of the call manager.
-        
-        port [optional]
-          The port number of the call manager.
-
-exten [optional|default to empty dictionary]
-  A dictionary describing the available extension number:
-  XXX this is not device configuration per se and until we have better support
-  for references (for example, funckey referencing an extension), the value
-  of this has yet to be seen. The only use right now is in templates.
-  
-    dnd [optional]
-      The extension number to enable/disable 'do not disturb'.
-    
-    fwd_unconditional [optional]
-      The extension number prefix to unable unconditional forward.
-    
-    fwd_no_answer [optional]
-      The extension number prefix to unable forward on no-answer.
-    
-    fwd_busy [optional]
-      The extension number prefix to unable forward on busy.
-    
-    fwd_disable_all [optional]
-      The extension number prefix to disable every call forward.
-    
-    park [optional]
-      The park extension number.
-    
-    pickup_group [optional]
-      The extension number to pick up a call to a group.
-    
-    pickup_call [optional]
-      The extension number prefix to pick up a call.
+    srtp_mode [optional]
+      See: sip_srtp_mode.
     
     voicemail [optional]
-      The extension number to retrieve voicemail.
+      The extension number to retrieve voicemail for this line.
+      See: exten_voicemail.
+
+sccp_call_managers [optional|default to empty dictionary]
+  A dictionary where keys are priority number, where the highest priority
+  is 1, and values are dictionaries with the following keys:
+  
+    ip [mandatory]
+      The IP address of the call manager.
+    
+    port [optional]
+      The port number of the call manager.
+
+exten_dnd [optional]
+  The extension number to enable/disable 'do not disturb'.
+
+exten_fwd_unconditional [optional]
+  The extension number prefix to unable unconditional forward.
+
+exten_fwd_no_answer [optional]
+  The extension number prefix to unable forward on no-answer.
+
+exten_fwd_busy [optional]
+  The extension number prefix to unable forward on busy.
+
+exten_fwd_disable_all [optional]
+  The extension number prefix to disable every call forward.
+
+exten_park [optional]
+  The park extension number.
+
+exten_pickup_group [optional]
+  The extension number to pick up a call to a group.
+
+exten_pickup_call [optional]
+  The extension number prefix to pick up a call.
+
+exten_voicemail [optional]
+  The extension number to retrieve voicemail.
 
 funckeys [optional|default to empty dictionary]
   A dictionary where keys are function key number and values are dictionary:
   XXX this has to be reviewed (type/value vs exten/supervision ?)
-    
+  
     exten [mandatory]
       The extension number
     
@@ -392,9 +391,9 @@ the 'X_xivo_' namespace:
 X_xivo_phonebook_ip [optional]
   Remote XiVO phonebook service
 
-Parameter names starting with 'XX_' must not be used in config object. They
-must only be used as a way for a plugins to push/pass plugin specific values
-to a template.
+Parameter names starting with 'XX_' must not be used. They are reserved for
+plugins usage. For example, a plugin can use these names to push/pass plugin
+specific values to a template.
 
 """
 
