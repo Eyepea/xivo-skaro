@@ -119,13 +119,16 @@ class ClusterResourceManager(object):
         '''
         return resource state (running, stopped)
         '''
-        args = ['crm', 'resource', 'show', res]
-        data = self._cluster_command(args)
-        res_state = data[0].split()[3]
-        lsb_args = ['/etc/init.d/%s', 'status']
-        if res_state == 'NOT':
-            res_state = 'stopped'
-        return res_state
+        if res != 'NO':
+            args = ['crm', 'resource', 'show', res]
+            data = self._cluster_command(args)
+            res_state = data[0].split()[3]
+            lsb_args = ['/etc/init.d/%s', 'status']
+            if res_state == 'NOT':
+                res_state = 'stopped'
+            return res_state
+        else:
+            return 'stopped'
         
 
     def _cluster_get_all_resources(self):

@@ -13,7 +13,7 @@ from xivo_ha.manage_cluster import DatabaseManagement
 class ClusterResourceManagerTestCase(unittest.TestCase):
     def setUp(self):
         self.test_dir     = "tests/tmp"
-        self.backup_dir   = "%s/var/backups/pf-xivo/pf-xivo-ha" % self.test_dir
+        self.backup_dir   = "%s/var/backups/pf-xivo/xivo_ha" % self.test_dir
         self.etc_dir      = "%s/etc/pf-xivo/xivo_ha/" % self.test_dir
 
         #self.services     = ['asterisk', 'dhcpd', 'monit', 'mailto', 'lighttpd'] 
