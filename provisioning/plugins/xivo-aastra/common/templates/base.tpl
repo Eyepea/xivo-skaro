@@ -1,29 +1,29 @@
 {# Syslog settings -#}
-{% if syslog -%}
-log server ip: {{ syslog['ip'] }}
-log server port: {{ syslog['port'] }}
-log module linemgr: {{ XX_syslog_level }}
-log module user interface: {{ XX_syslog_level }}
-log module sip: {{ XX_syslog_level }}
-log module ept: {{ XX_syslog_level }}
-log module ind: {{ XX_syslog_level }}
-log module kbd: {{ XX_syslog_level }}
-log module net: {{ XX_syslog_level }}
-log module provis: {{ XX_syslog_level }}
-log module rtpt: {{ XX_syslog_level }}
-log module snd: {{ XX_syslog_level }}
-log module stun: {{ XX_syslog_level }}
+{% if syslog_enabled -%}
+log server ip: {{ syslog_ip }}
+log server port: {{ syslog_port }}
+log module linemgr: {{ XX_log_level }}
+log module user interface: {{ XX_log_level }}
+log module sip: {{ XX_log_level }}
+log module ept: {{ XX_log_level }}
+log module ind: {{ XX_log_level }}
+log module kbd: {{ XX_log_level }}
+log module net: {{ XX_log_level }}
+log module provis: {{ XX_log_level }}
+log module rtpt: {{ XX_log_level }}
+log module snd: {{ XX_log_level }}
+log module stun: {{ XX_log_level }}
 {% endif -%}
 
 {# VLAN settings -#}
-{% if vlan -%}
+{% if vlan_enabled -%}
 tagging enabled: 1
-vlan id: {{ vlan['id'] }}
-{% if vlan['priority'] is defined -%}
-priority non-ip: {{ vlan['priority'] }}
+vlan id: {{ vlan_id }}
+{% if vlan_priority is defined -%}
+priority non-ip: {{ vlan_priority }}
 {% endif -%}
-{% if vlan['pc_port_id'] is defined -%}
-vlan id port 1: {{ vlan['pc_port_id'] }}
+{% if vlan_pc_port_id is defined -%}
+vlan id port 1: {{ vlan_pc_port_id }}
 {% else -%}
 vlan id port 1: 4095
 {% endif -%}
@@ -32,9 +32,9 @@ tagging enabled: 0
 {% endif -%}
 
 {# NTP settings -#}
-{% if ntp_server_ip -%}
+{% if ntp_enabled -%}
 time server disabled: 0
-time server1: {{ ntp_server_ip }}
+time server1: {{ ntp_ip }}
 {% else -%}
 time server disabled: 1
 {% endif -%}
@@ -48,79 +48,41 @@ user password: {{ user_password }}
 
 {{ XX_timezone }}
 
-{% if locale == 'de_DE' -%}
+{% if XX_locale -%}
 language: 1
-language 1: i18n/lang_de.txt
-tone set: Germany
-input language: German
-{% elif locale == 'es_ES' -%}
-language: 1
-language 1: i18n/lang_es.txt
-tone set: Europe
-input language: Spanish
-{% elif locale == 'fr_FR' -%}
-language: 1
-language 1: i18n/lang_fr.txt
-tone set: France
-input language: French
-{% elif locale == 'fr_CA' -%}
-language: 1
-language 1: i18n/lang_fr_ca.txt
-tone set: US
-input language: French
-{% else -%}
-language: 0
-tone set: US
-input language: English
+language 1: i18n/{{ XX_locale[0] }}
+tone set: {{ XX_locale[1] }}
+input language: {{ XX_locale[2] }}
 {% endif -%}
 
 {# SIP global settings -#}
-{# DTMF -#}
-{% if sip['dtmf_mode'] == 'RTP-in-band' -%}
-sip out-of-band dtmf: 0
-sip dtmf method: 0
-{% elif sip['dtmf_mode'] == 'RTP-out-of-band' -%}
-sip out-of-band dtmf: 1
-sip dtmf method: 0
-{% elif sip['dtmf_mode'] == 'SIP-INFO' -%}
-sip dtmf method: 1
+{# DTMF global settings-#}
+{% if XX_out_of_band_dtmf -%}
+sip out-of-band dtmf: {{ XX_out_of_band_dtmf }}
 {% endif -%}
 
-{% if sip['subscribe_mwi'] is defined -%}
-sip explicit mwi subscription: {{ sip['subscribe_mwi']|int }}
+{% if sip_subscribe_mwi is defined -%}
+sip explicit mwi subscription: {{ sip_subscribe_mwi|int }}
 {% endif -%}
 
-sip transport protocol: {{ XX_sip_transport }}
-
-sip srtp mode: {{ XX_sip_srtp_mode }}
-
-{% if XX_servers_root_and_intermediate_certificates -%}
-sips trusted certificates: {{ XX_servers_root_and_intermediate_certificates }}
+{% if XX_transport_proto -%}
+sip transport protocol: {{ XX_transport_proto }}
 {% endif -%}
 
-{% if XX_local_root_and_intermediate_certificates -%}
-sips root and intermediate certificates: {{ XX_local_root_and_intermediate_certificates }}
-{% endif -%}
-
-{% if XX_local_certificate -%}
-sips local certificate: {{ XX_local_certificate }}
-{% endif -%}
-
-{% if XX_local_key %}
-{# XXX this file should not be accessible to everyone... -#}
-sips private key: {{ XX_local_key }}
+{% if XX_trusted_certificates -%}
+sips trusted certificates: {{ XX_trusted_certificates }}
 {% endif -%}
 
 {# SIP per-line settings -#}
-{% for line_no, line in sip['lines'].iteritems() %}
-sip line{{ line_no }} proxy ip: {{ line['proxy_ip'] or sip['proxy_ip'] }}
-sip line{{ line_no }} registrar ip: {{ line['registrar_ip'] or sip['registrar_ip'] }}
-{% if line['backup_proxy_ip'] or sip['backup_proxy_ip'] -%}
-sip line{{ line_no }} backup proxy ip: {{ line['backup_proxy_ip'] or sip['backup_proxy_ip'] }}
-{% endif -%}
-{% if line['backup_registrar_ip'] or sip['backup_registrar_ip'] -%}
-sip line{{ line_no }} backup registrar ip: {{ line['backup_registrar_ip'] or sip['backup_registrar_ip'] }}
-{% endif -%}
+{% for line_no, line in sip_lines.iteritems() %}
+sip line{{ line_no }} proxy ip: {{ line['proxy_ip'] }}
+sip line{{ line_no }} proxy port: {{ line['proxy_port'] }}
+sip line{{ line_no }} backup proxy ip: {{ line['backup_proxy_ip'] }}
+sip line{{ line_no }} backup proxy port: {{ line['backup_proxy_port'] }}
+sip line{{ line_no }} registrar ip: {{ line['registrar_ip'] }}
+sip line{{ line_no }} registrar port: {{ line['registrar_port'] }}
+sip line{{ line_no }} backup registrar ip: {{ line['backup_registrar_ip'] }}
+sip line{{ line_no }} backup registrar port: {{ line['backup_registrar_port'] }}
 sip line{{ line_no }} user name: {{ line['username'] }}
 sip line{{ line_no }} auth name: {{ line['auth_username'] }}
 sip line{{ line_no }} password: {{ line['password'] }}
@@ -129,14 +91,15 @@ sip line{{ line_no }} screen name: {{ line['display_name'] }}
 {% if line['number'] -%}
 sip line{{ line_no }} screen name 2: {{ line['number'] }}
 {% endif -%}
+sip line{{ line_no }} dtmf method: {{ line['XX_dtmf_method'] }}
+sip line{{ line_no }} srtp mode: {{ line['XX_srtp_mode'] }}
+{% if line['voicemail'] -%}
+sip line{{ line_no }} vmail: {{ line['voicemail'] }}
+{% endif -%}
 {% endfor -%}
 
-{% if exten['voicemail'] -%}
-sip vmail: {{ exten['voicemail'] }}
-{% endif -%}
-
-{% if exten['pickup_call'] -%}
-directed call pickup prefix: {{ exten['pickup_call'] }}
+{% if exten_pickup_call -%}
+directed call pickup prefix: {{ exten_pickup_call }}
 {% endif -%}
 
 {{ XX_fkeys }}

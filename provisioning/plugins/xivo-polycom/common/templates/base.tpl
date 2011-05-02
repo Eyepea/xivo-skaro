@@ -9,8 +9,8 @@ device.set="1"
 
 {# VLAN settings -#}
 device.net.vlanId.set="1"
-{% if vlan -%}
-device.net.vlanId="{{ vlan['id'] }}"
+{% if vlan_enabled -%}
+device.net.vlanId="{{ vlan_id }}"
 {% else -%}
 device.net.vlanId=""
 {% endif -%}
@@ -19,8 +19,8 @@ device.net.vlanId=""
 device.syslog.serverName.set="1"
 device.syslog.transport.set="1"
 device.syslog.renderLevel.set="1"
-{% if syslog -%}
-device.syslog.serverName="{{ syslog['ip'] }}"
+{% if syslog_enabled -%}
+device.syslog.serverName="{{ syslog_ip }}"
 device.syslog.transport="1"
 device.syslog.renderLevel="{{ XX_syslog_level }}"
 {% else -%}
@@ -38,24 +38,24 @@ device.sec.SSL.customCert="{{ XX_custom_cert }}"
 device.sec.SSL.certList="default"
 {% endif -%}
 
-{% if sip['srtp_mode'] == 'disabled' -%}
+{% if sip_srtp_mode == 'disabled' -%}
 sec.srtp.enable="0"
 sec.srtp.offer="0"
 sec.srtp.require="0"
-{% elif sip['srtp_mode'] == 'preferred' -%}
+{% elif sip_srtp_mode == 'preferred' -%}
 sec.srtp.enable="1"
 sec.srtp.offer="1"
 sec.srtp.require="0"
-{% elif sip['srtp_mode'] == 'required' -%}
+{% elif sip_srtp_mode == 'required' -%}
 sec.srtp.enable="1"
 sec.srtp.offer="1"
 sec.srtp.require="1"
 {% endif -%}
 
 {# NTP settings -#}
-{% if ntp_server_ip -%}
+{% if ntp_enabled -%}
 tcpIpApp.sntp.address.overrideDHCP="1"
-tcpIpApp.sntp.address="{{ ntp_server_ip }}"
+tcpIpApp.sntp.address="{{ ntp_ip }}"
 {% else -%}
 tcpIpApp.sntp.address.overrideDHCP="0"
 tcpIpApp.sntp.address=""
@@ -65,20 +65,20 @@ tcpIpApp.sntp.address=""
 
 lcl.ml.lang="{{ XX_language }}"
 
-{% if sip['dtmf_mode'] == 'RTP-in-band' -%}
+{% if sip_dtmf_mode == 'RTP-in-band' -%}
 tone.dtmf.viaRtp="1"
 tone.dtmf.rfc2833Control="0"
 voIpProt.SIP.dtmfViaSignaling.rfc2976="0"
-{% elif sip['dtmf_mode'] == 'RTP-out-of-band' -%}
+{% elif sip_dtmf_mode == 'RTP-out-of-band' -%}
 tone.dtmf.viaRtp="1"
 tone.dtmf.rfc2833Control="1"
 voIpProt.SIP.dtmfViaSignaling.rfc2976="0"
-{% elif sip['dtmf_mode'] == 'SIP-INFO' -%}
+{% elif sip_dtmf_mode == 'SIP-INFO' -%}
 tone.dtmf.viaRtp="0"
 voIpProt.SIP.dtmfViaSignaling.rfc2976="1"
 {% endif -%}
 
-{% for line_no, line in sip['lines'].iteritems() %}
+{% for line_no, line in sip_lines.iteritems() %}
 reg.{{ line_no }}.server.1.address="{{ line['proxy_ip'] }}"
 reg.{{ line_no }}.server.1.port=""
 reg.{{ line_no }}.server.1.transport="{{ XX_sip_transport }}"
@@ -96,17 +96,17 @@ reg.{{ line_no }}.label="{{ line['username']|e }}"
 reg.{{ line_no }}.address="{{ line['username']|e }}"
 reg.{{ line_no }}.auth.userId="{{ line['auth_username']|e }}"
 reg.{{ line_no }}.auth.password="{{ line['password']|e }}"
-{% if sip['subscribe_mwi'] -%}
+{% if sip_subscribe_mwi -%}
 msg.mwi.{{ line_no }}.subscribe="{{ line['number'] }}"
 {% else -%}
 msg.mwi.{{ line_no }}.subscribe=""
 {% endif -%}
 msg.mwi.{{ line_no }}.callBackMode="contact"
-msg.mwi.{{ line_no }}.callBack="{{ line['voicemail'] or exten['voicemail'] }}"
+msg.mwi.{{ line_no }}.callBack="{{ line['voicemail'] or exten_voicemail }}"
 {% endfor -%}
 
-{% if exten['pickup_call'] -%}
-call.directedCallPickupString="{{ exten['pickup_call'] }}"
+{% if exten_pickup_call -%}
+call.directedCallPickupString="{{ exten_pickup_call }}"
 {% endif -%}
 
 {{ XX_fkeys }}

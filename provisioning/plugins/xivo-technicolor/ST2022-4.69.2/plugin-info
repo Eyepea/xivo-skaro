@@ -1,6 +1,6 @@
 {
-    "version": "0.0.1",
-    "description": "Plugin for Technicolor ST2022 in version 4.69.2.",
+    "version": "0.0.2",
+    "description": "Plugin for Technicolor (previously known as Thomson) ST2022 in version 4.69.2.",
     "capabilities": {
         "Technicolor, ST2022, 4.69.2": {
             "sip.lines": 4

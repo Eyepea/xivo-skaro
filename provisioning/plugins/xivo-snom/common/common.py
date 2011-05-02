@@ -27,6 +27,7 @@ __license__ = """
 import logging
 import os.path
 import re
+from operator import itemgetter
 from provd import sip
 from provd import tzinform
 from provd.devices.config import RawConfigError
@@ -121,18 +122,17 @@ class BaseSnomPgAssociator(BasePgAssociator):
 
 class BaseSnomPlugin(StandardPlugin):
     _ENCODING = 'UTF-8'
-    _XX_DTMF = {
-        u'RTP-in-band': u'off',
-        u'RTP-out-of-band': u'off',
-        u'SIP-INFO': u'sip_info_only'
-    }
-    _XX_DTMF_DEF = u'off'
-    _XX_LANG = {
+    _LOCALE = {
         u'de_DE': (u'Deutsch', u'GER'),
         u'en_US': (u'English', u'USA'),
         u'es_ES': (u'Espanol', u'ESP'),
         u'fr_FR': (u'Francais', u'FRA'),
         u'fr_CA': (u'Francais', u'USA'),
+    }
+    _SIP_DTMF_MODE = {
+        u'RTP-in-band': u'off',
+        u'RTP-out-of-band': u'off',
+        u'SIP-INFO': u'sip_info_only'
     }
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
@@ -165,38 +165,41 @@ class BaseSnomPlugin(StandardPlugin):
     
     def _get_fkey_domain(self, raw_config):
         # Return None if there's no usable domain
-        sip = raw_config[u'sip']
-        if u'proxy_ip' in sip:
-            return sip[u'proxy_ip']
+        if u'sip_proxy_ip' in raw_config:
+            return raw_config[u'sip_proxy_ip']
         else:
-            lines = sip[u'lines']
+            lines = raw_config[u'sip_lines']
             if lines:
-                return sip[u'lines'][sorted(lines.iterkeys())[0]][u'proxy_ip']
+                return lines[min(lines.iterkeys())][u'proxy_ip']
         return None
     
-    def _add_xx_fkeys(self, raw_config):
-        funckeys = raw_config[u'funckeys']
+    def _add_fkeys(self, raw_config):
         domain = self._get_fkey_domain(raw_config)
-        if domain:
-            sorted_keys = sorted(funckeys.iterkeys())
-            fk_config_lines = []
-            for key in sorted_keys:
-                value = funckeys[key]
-                exten = value[u'exten']
-    
-                if value[u'supervision']:
-                    xtype = u'dest'
+        if domain is None:
+            if raw_config[u'funckeys']:
+                logger.warning('Could not set funckeys: no domain part')
+        else:
+            lines = []
+            for funckey_no, funckey_dict in sorted(raw_config[u'funckeys'].iteritems(),
+                                                   key=itemgetter(0)):
+                funckey_type = funckey_dict[u'type']
+                if funckey_type == u'speeddial':
+                    type_ = u'speed'
+                elif funckey_type == u'blf':
+                    type_ = u'dest'
                 else:
-                    xtype = u'speed'
-                fk_config_lines.append(u'<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
-                                       (int(key) - 1, xtype, exten, domain))
-            raw_config[u'XX_fkeys'] = u'\n'.join(fk_config_lines)
+                    logger.info('Unsupported funckey type: %s', funckey_type)
+                    continue
+                value = funckey_dict[u'value']
+                lines.append(u'<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
+                            (int(funckey_no) - 1, type_, value, domain))
+            raw_config[u'XX_fkeys'] = u'\n'.join(lines)
     
-    def _add_xx_lang(self, raw_config):
+    def _add_lang(self, raw_config):
         if u'locale' in raw_config:
             locale = raw_config[u'locale']
-            if locale in self._XX_LANG:
-                raw_config[u'XX_lang'] = self._XX_LANG[locale]
+            if locale in self._LOCALE:
+                raw_config[u'XX_lang'] = self._LOCALE[locale]
     
     def _format_dst_change(self, dst_change):
         fmted_time = u'%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)
@@ -221,7 +224,7 @@ class BaseSnomPlugin(StandardPlugin):
                           self._format_dst_change(tzinfo['dst']['end'])))
         return u'\n'.join(lines)
     
-    def _add_xx_timezone(self, raw_config):
+    def _add_timezone(self, raw_config):
         if u'timezone' in raw_config:
             try:
                 tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
@@ -230,11 +233,11 @@ class BaseSnomPlugin(StandardPlugin):
             else:
                 raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
     
-    def _add_xx_dtmf(self, raw_config):
-        sip = raw_config[u'sip']
-        for line in sip[u'lines'].itervalues():
-            dtmf_mode = line.get(u'dtmf_mode') or sip.get(u'dtmf_mode')
-            line[u'XX_user_dtmf_info'] = self._XX_DTMF.get(dtmf_mode, self._XX_DTMF_DEF)
+    def _add_user_dtmf_info(self, raw_config):
+        dtmf_mode = raw_config.get(u'sip_dtmf_mode')
+        for line in raw_config[u'sip_lines'].itervalues():
+            cur_dtmf_mode = line.get(u'dtmf_mode', dtmf_mode)
+            line[u'XX_user_dtmf_info'] = self._SIP_DTMF_MODE.get(cur_dtmf_mode, u'off')
     
     def _dev_specific_filenames(self, device):
         # Return a tuple (htm filename, xml filename)
@@ -244,8 +247,6 @@ class BaseSnomPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def _check_device(self, device):
         if u'mac' not in device:
@@ -262,10 +263,10 @@ class BaseSnomPlugin(StandardPlugin):
         # generate xml file
         tpl = self._tpl_helper.get_dev_template(xml_filename, device)
         
-        self._add_xx_fkeys(raw_config)
-        self._add_xx_lang(raw_config)
-        self._add_xx_timezone(raw_config)
-        self._add_xx_dtmf(raw_config)
+        self._add_fkeys(raw_config)
+        self._add_lang(raw_config)
+        self._add_timezone(raw_config)
+        self._add_user_dtmf_info(raw_config)
         
         path = os.path.join(self._tftpboot_dir, xml_filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
@@ -282,9 +283,9 @@ class BaseSnomPlugin(StandardPlugin):
         for filename in self._dev_specific_filenames(device):
             try:
                 os.remove(os.path.join(self._tftpboot_dir, filename))
-            except OSError:
-                # ignore -- probably an already removed file
-                pass
+            except OSError, e:
+                # ignore
+                logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
         try:

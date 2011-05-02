@@ -8,7 +8,7 @@
 LanguageType={{ XX_language_type }}
 
 [net]
-{% if vlan -%}
+{% if vlan_enabled -%}
 VLAN=1
 {% else -%}
 VLAN=0
@@ -17,15 +17,17 @@ VLAN=0
 [sip]
 {% for line_no in range(1, 5) -%}
 {% set line_no = line_no|string -%}
-{% if line_no in sip['lines'] -%}
-{% set line = sip['lines'][line_no] -%}
+{% if line_no in sip_lines -%}
+{% set line = sip_lines[line_no] -%}
 DisplayNumFlag{{ line_no }}=1
 DisplayNum{{ line_no }}={{ line['number'] }}
 DisplayName{{ line_no }}={{ line['display_name'] }}
-ProxyServerMP{{ line_no }}={{ line['proxy_ip'] or sip['proxy_ip'] }}
-ProxyServerBK{{ line_no }}={{ line['backup_proxy_ip'] or sip['backup_proxy_ip'] }}
+ProxyServerMP{{ line_no }}={{ line['proxy_ip'] or sip_proxy_ip }}
+ProxyServerBK{{ line_no }}={{ line['backup_proxy_ip'] or sip_backup_proxy_ip }}
 regid{{ line_no }}={{ line['auth_username'] }}
 regpwd{{ line_no }}={{ line['password'] }}
+RegisterServerMP{{ line_no }}={{ line['registrar_ip'] or sip_registrar_ip }}
+RegisterServerBK{{ line_no }}={{ line['backup_registrar_ip'] or sip_backup_registrar_ip }}
 TEL{{ line_no }}Number={{ line['username'] }}
 TEL0{{ line_no }}Use=1
 {% else -%}
@@ -36,18 +38,20 @@ ProxyServerMP{{ line_no }}=
 ProxyServerBK{{ line_no }}=
 regid{{ line_no }}=
 regpwd{{ line_no }}=
+RegisterServerMP{{ line_no }}=
+RegisterServerBK{{ line_no }}=
 TEL{{ line_no }}Number=
 TEL0{{ line_no }}Use=0
 {% endif %}
 {% endfor %}
 
-{% if exten['voicemail'] -%}
-VoiceMailTelNum={{ exten['voicemail'] }}
+{% if exten_voicemail -%}
+VoiceMailTelNum={{ exten_voicemail }}
 {% else -%}
 VoiceMailTelNum=
 {% endif -%}
 
-{% if sip['subscribe_mwi'] -%}
+{% if sip_subscribe_mwi -%}
 subscribe_event=1
 {% else -%}
 subscribe_event=0
@@ -64,14 +68,7 @@ Phonebook1_url=
 {% endif -%}
 Phonebook1_name={{ XX_phonebook_name }}
 
-{% for fkey_no in range(1, 66) -%}
-{% set fkey_no_s = fkey_no|string -%}
-{% if fkey_no_s in XX_function_keys -%}
-FeatureKeyExt{{ '{0:02d}'.format(fkey_no) }}={{ XX_function_keys[fkey_no_s] }}
-{% else -%}
-FeatureKeyExt{{ '{0:02d}'.format(fkey_no) }}=L/<sip:>
-{% endif -%}
-{% endfor -%}
+{{ XX_fkeys }}
 
 {% if user_username is defined -%}
 UserID={{ user_username }}
@@ -88,20 +85,20 @@ WebPWD={{ admin_password }}
 {% endif %}
 
 [qos]
-{% if vlan -%}
-VLANid1={{ vlan['id'] }}
-{% if vlan['pc_port_id'] -%}
-VLANid2={{ vlan['pc_port_id'] }}
+{% if vlan_enabled -%}
+VLANid1={{ vlan_id }}
+{% if vlan_pc_port_id -%}
+VLANid2={{ vlan_pc_port_id }}
 {% endif -%}
-{% if vlan['priority'] is defined -%}
-VLANTag1={{ vlan['priority'] }}
+{% if vlan_priority is defined -%}
+VLANTag1={{ vlan_priority }}
 {% endif %}
 {% endif %}
 
 [ntp]
-{% if ntp_server_ip -%}
+{% if ntp_enabled -%}
 NTPFlag=1
-NtpIP={{ ntp_server_ip }}
+NtpIP={{ ntp_ip }}
 {% else -%}
 NTPFlag=0
 {% endif -%}

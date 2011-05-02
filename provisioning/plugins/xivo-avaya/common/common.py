@@ -143,12 +143,12 @@ class BaseAvayaPlugin(StandardPlugin):
     
     tftp_dev_info_extractor = BaseAvayaTFTPDeviceInfoExtractor()
     
-    def _gen_xx_timezone(self, raw_config):
+    def _add_timezone(self, raw_config):
         if u'timezone' in raw_config:
             try:
                 tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
             except tzinform.TimezoneNotFoundError, e:
-                logger.warning('Unknown timezone %s: %s', raw_config[u'timezone'], e)
+                logger.warning('Unknown timezone: %s', e)
             else:
                 raw_config[u'XX_timezone'] = u'TIMEZONE_OFFSET %d' % tzinfo['utcoffset'].as_seconds
     
@@ -160,8 +160,6 @@ class BaseAvayaPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def _check_device(self, device):
         if u'mac' not in device:
@@ -173,18 +171,18 @@ class BaseAvayaPlugin(StandardPlugin):
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        self._gen_xx_timezone(raw_config)
+        self._add_timezone(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
     def deconfigure(self, device):
-        self._check_device(device)
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
             os.remove(path)
         except OSError, e:
-            logger.warning('error while deconfiguring device: %s', e)
+            # ignore
+            logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
         try:

@@ -27,6 +27,7 @@ __license__ = """
 import logging
 import re
 import os.path
+from operator import itemgetter
 from provd import sip
 from provd import tzinform
 from provd.devices.config import RawConfigError
@@ -92,17 +93,17 @@ class BaseYealinkPgAssociator(BasePgAssociator):
 
 class BaseYealinkPlugin(StandardPlugin):
     _ENCODING = 'UTF-8'
-    _DTMF = {
-        u'RTP-in-band': 0,
-        u'RTP-out-of-band': 1,
-        u'SIP-INFO': 2,
-    }
-    _LOCALES = {
+    _LOCALE = {
         u'de_DE': (u'German', u'Germany'),
         u'en_US': (u'English', u'United States'),
         u'es_ES': (u'Spanish', u'Spain'),
         u'fr_FR': (u'French', u'France'),
         u'fr_CA': (u'French', u'United States'),
+    }
+    _SIP_DTMF_MODE = {
+        u'RTP-in-band': u'0',
+        u'RTP-out-of-band': u'1',
+        u'SIP-INFO': u'2',
     }
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
@@ -125,72 +126,79 @@ class BaseYealinkPlugin(StandardPlugin):
             raw_config[u'XX_fw_filename'] = fw_filename
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
     
-    def _add_and_update_lines(self, raw_config):
-        # XXX we are setting some normalized param (proxy_ip,
-        #     proxy_port, dtmf_mode) here, so the question is:
-        #     - should we do this on a global basis or for all device ?
-        #     - should we use non-normalized (i.e. XX_) key ?
-        sip = raw_config[u'sip']
-        for line_no, line in sip['lines'].iteritems():
+    def _update_sip_lines(self, raw_config):
+        for line_no, line in raw_config['sip_lines'].iteritems():
             # set line number (Yealink start at 0)
             line[u'XX_line_no'] = int(line_no) - 1
             # set dtmf inband transfer
-            dtmf_mode = line.get(u'dtmf_mode') or sip.get(u'dtmf_mode')
-            if dtmf_mode in self._DTMF:
-                line[u'XX_dtmf_inband_transfer'] = self._DTMF[dtmf_mode]
+            dtmf_mode = line.get(u'dtmf_mode') or raw_config.get(u'sip_dtmf_mode')
+            if dtmf_mode in self._SIP_DTMF_MODE:
+                line[u'XX_dtmf_inband_transfer'] = self._SIP_DTMF_MODE[dtmf_mode]
             # set voicemail
-            if u'voicemail' not in line and u'voicemail' in raw_config[u'exten']:
-                line[u'voicemail'] = raw_config[u'exten']['voicemail']
+            if u'voicemail' not in line and u'exten_voicemail' in raw_config:
+                line[u'voicemail'] = raw_config[u'exten_voicemail']
             # set proxy_ip
             if u'proxy_ip' not in line:
-                line[u'proxy_ip'] = sip[u'proxy_ip']
+                line[u'proxy_ip'] = raw_config[u'sip_proxy_ip']
             # set proxy_port
-            if u'proxy_port' not in line and u'proxy_port' in sip:
-                line[u'proxy_port'] = sip[u'proxy_port']
+            if u'proxy_port' not in line and u'sip_proxy_port' in raw_config:
+                line[u'proxy_port'] = raw_config[u'sip_proxy_port']
     
-    def _format_function_key(self, key_num, key_value, exten_pickup_call):
-        # Return the lines to add to the config file for 1 function key
-        config_lines = []
-        config_lines.append(u'[ memory%s ]' % key_num)
-        config_lines.append(u'path = /config/vpPhone/vpPhone.ini')
-        if u'line' in key_value:
-            line = int(key_value[u'line']) - 1
-        else:
-            line = u'0'
-        config_lines.append(u'Line = %s' % line)
-        value = key_value[u'exten']
-        config_lines.append(u'Value = %s' % value)
-        if key_value[u'supervision'] and key_num <= 10 and exten_pickup_call:
-            type = u'blf'
-            config_lines.append(u'type = %s' % type)
-            pickup_value = u'%s%s' % (exten_pickup_call, value)
-            config_lines.append(u'PickupValue = %s' % pickup_value)
-            dktype = u'16'
-        else:
-            dktype = u'13'
-        config_lines.append(u'DKtype = %s' % dktype)
-        if 11 <= key_num <= 16:
-            # line key can use labels
-            config_lines.append(u'Label = %s' % key_value.get(u'label', u''))
-        return config_lines
+    def _add_funckey_header(self, funckey_no, lines):
+        lines.append(u'[ memory%s ]' % funckey_no)
+        lines.append(u'path = /config/vpPhone/vpPhone.ini')
+    
+    def _format_funckey_speeddial(self, funckey_no, funckey_dict):
+        lines = []
+        self._add_funckey_header(funckey_no, lines)
+        lines.append(u'Line = %s' % funckey_dict.get(u'line', u'0'))
+        lines.append(u'DKtype = 13')
+        lines.append(u'Value = %s' % funckey_dict[u'value'])
+        lines.append(u'Label = %s' % funckey_dict.get(u'label', u''))
+        return lines
+    
+    def _format_funckey_blf(self, funckey_no, funckey_dict, exten_pickup_call=None):
+        # Be warned that blf works only for DSS keys.
+        lines = []
+        self._add_funckey_header(funckey_no, lines)
+        # line for blf start at 0 (instead of 1 for speeddial)
+        lines.append(u'Line = %s' % funckey_dict.get(u'line', 1) - 1)
+        lines.append(u'DKtype = 16')
+        lines.append(u'type = blf')
+        value = funckey_dict[u'value']
+        lines.append(u'Value = %s' % value)
+        if exten_pickup_call:
+            lines.append(u'PickupValue = %s' % (exten_pickup_call, value))
+        lines.append(u'Label = %s' % funckey_dict.get(u'label', u''))
+        return lines
     
     def _add_fkeys(self, raw_config):
-        funckeys = raw_config[u'funckeys']
-        sorted_keys = sorted(funckeys.iterkeys())
-        config_lines = []
-        for key in sorted_keys:
-            value = funckeys[key]
-            cur_config_lines = self._format_function_key(int(key), value,
-                                                         raw_config['exten'].get('pickup_call'))
-            config_lines.extend(cur_config_lines)
-            config_lines.append('')
-        raw_config[u'XX_fkeys'] = u'\n'.join(config_lines)
+        # XXX maybe rework this, a bit ugly
+        lines = []
+        exten_pickup_call = raw_config.get('exten_pickup_call')
+        for funckey_no, funckey_dict in sorted(raw_config[u'funckeys'].iteritems(),
+                                               key=itemgetter(0)):
+            keynum = int(funckey_no)
+            funckey_type = funckey_dict[u'type']
+            if funckey_type == u'speeddial':
+                lines.extend(self._format_funckey_speeddial(funckey_dict))
+            elif funckey_type == u'blf':
+                if keynum <= 10:
+                    lines.extend(self._format_funckey_blf(funckey_no, funckey_dict,
+                                                          exten_pickup_call))
+                else:
+                    logger.info('For Yealink, blf is only available on DSS keys')
+                    lines.extend(self._format_funckey_speeddial(funckey_no, funckey_dict))
+            else:
+                logger.info('Unsupported funckey type: %s', funckey_type)
+                continue
+            lines.append(u'')
+        raw_config[u'XX_fkeys'] = u'\n'.join(lines)
     
     def _add_country_and_lang(self, raw_config):
-        if u'locale' in raw_config:
-            locale = raw_config[u'locale']
-            if locale in self._LOCALES:
-                raw_config[u'XX_lang'], raw_config[u'XX_country'] = self._LOCALES[locale]
+        locale = raw_config.get(u'locale')
+        if locale in self._LOCALE:
+            raw_config[u'XX_lang'], raw_config[u'XX_country'] = self._LOCALE[locale]
     
     def _format_dst_change(self, dst_change):
         if dst_change['day'].startswith('D'):
@@ -221,7 +229,7 @@ class BaseYealinkPlugin(StandardPlugin):
             try:
                 tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
             except tzinform.TimezoneNotFoundError, e:
-                logger.warning('Unknown timezone %s: %s', raw_config[u'timezone'], e)
+                logger.warning('Unknown timezone: %s', e)
             else:
                 raw_config[u'XX_timezone'] = self._format_tz_info(tzinfo)
     
@@ -233,8 +241,6 @@ class BaseYealinkPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def _check_device(self, device):
         if u'mac' not in device:
@@ -246,10 +252,10 @@ class BaseYealinkPlugin(StandardPlugin):
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        self._add_and_update_lines(raw_config)
         self._add_fkeys(raw_config)
         self._add_country_and_lang(raw_config)
         self._add_timezone(raw_config)
+        self._update_sip_lines(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
@@ -259,7 +265,8 @@ class BaseYealinkPlugin(StandardPlugin):
         try:
             os.remove(path)
         except OSError, e:
-            logger.warning('error while deconfiguring device: %s', e)
+            # ignore
+            logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
         try:

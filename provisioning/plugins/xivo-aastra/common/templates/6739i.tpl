@@ -1,13 +1,13 @@
-{% if exten['fwd_unconditional'] -%}
+{% if exten_fwd_unconditional -%}
 softkey1 type: speeddial
 softkey1 label: "{{ XX_dict['fwd_unconditional'] }}"
-softkey1 value: {{ exten['fwd_unconditional'] }}
+softkey1 value: {{ exten_fwd_unconditional }}
 {% endif -%}
 
-{% if exten['dnd'] -%}
+{% if exten_dnd -%}
 softkey2 type: speeddial
 softkey2 label: "{{ XX_dict['dnd'] }}"
-softkey2 value: {{ exten['dnd'] }}
+softkey2 value: {{ exten_dnd }}
 {% endif -%}
 
 {% if X_xivo_phonebook_ip -%}

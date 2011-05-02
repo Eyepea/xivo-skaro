@@ -26,12 +26,12 @@ __license__ = """
 # XXX right now, config file encryption depends on the presence of the
 #     openssl application
 
-import math
 import logging
 import os
 import re
 import subprocess
 from binascii import b2a_hex
+from operator import itemgetter
 from xml.sax.saxutils import escape
 from provd import sip, tzinform
 from provd.devices.config import RawConfigError
@@ -58,7 +58,6 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
     _RAW_VENDORS = ['LINKSYS', 'Cisco']
     
     def extract(self, request, request_type):
-        assert request_type == 'dhcp'
         return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
@@ -93,7 +92,6 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
     _CISCO_UA_REGEX = re.compile(r'^Cisco/(\w+)-(\S+) (?:\(([\dA-F]{12})\))?\((\w+)\)$')
     
     def extract(self, request, request_type):
-        assert request_type == 'http'
         return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
@@ -148,7 +146,6 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
     _SPAFILE_REGEX = re.compile(r'^/spa(.+?)\.cfg$')
     
     def extract(self, request, request_type):
-        assert request_type == 'tftp'
         return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
@@ -240,7 +237,21 @@ class BaseCiscoPlugin(StandardPlugin):
     """
     
     _ENCODING = 'UTF-8'
-    _XX_LANGUAGE = {
+    _NB_FKEY = {
+        # <model>: (<nb keys>, <nb expansion modules>)
+        u'SPA941': (4, 0),
+        u'SPA942': (4, 0),
+        u'SPA962': (6, 2),
+        u'SPA303': (3, 2),
+        u'SPA501G': (8, 2),
+        u'SPA502G': (2, 2),
+        u'SPA504G': (4, 2),
+        u'SPA508G': (8, 2),
+        u'SPA509G': (12, 2),
+        u'SPA525G': (5, 2),
+        u'SPA525G2': (5, 2)
+    }
+    _LOCALE = {
         u'de_DE': u'German',
         u'en_US': u'English',
         u'es_ES': u'Spanish',
@@ -275,73 +286,43 @@ class BaseCiscoPlugin(StandardPlugin):
             dst = os.path.join(self._tftpboot_dir, filename)
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
     
-    def _format_function_keys_unit(self, key, func):
-        unit = int(math.ceil(float(key) / 32))
-        key %= 32
-
-        if key == 0:
-            key = 32
-
-        return u'<Unit_%d_Key_%d>%s</Unit_%d_Key_%d>' % (unit, key, func, unit, key)
-    
-    def _format_function_keys(self, funckeys, model):
-        if model is None:
-            return ''
-        sorted_keys = funckeys.keys()
-        sorted_keys.sort()
-        fk_config_lines = []
-        for key in sorted_keys:
-            value   = funckeys[key]
-            exten   = value[u'exten']
-            key     = int(key)
-            if u'label' in value and value[u'label'] is not None:
-                label = value[u'label']
+    def _add_fkeys(self, raw_config, model):
+        if model not in self._NB_FKEY:
+            logger.info(u'Unknown model or model with no funckeys: %s', model)
+            return
+        nb_keys, nb_expmods = self._NB_FKEY[model]
+        lines = []
+        for funckey_no, funckey_dict in sorted(raw_config[u'funckeys'].iteritems(),
+                                               key=itemgetter(0)):
+            funckey_type = funckey_dict[u'type']
+            if funckey_type == u'speeddial':
+                fnc = u'sd+cp'
+            elif funckey_type == u'blf':
+                fnc = u'sd+cp+blf'
             else:
-                label = exten
-            label = escape(label)
-
-            if value.get('supervision'):
-                blf = u'+blf'
-            else:
-                blf = u''
-
-            func = u'fnc=sd+cp%s;sub=%s@$PROXY;nme=%s' % (blf, exten, label)
-
-            if model in [u'SPA501G', u'SPA508G']:
-                if key > 8:
-                    key -= 8
-                    fk_config_lines.append(self._format_function_keys_unit(key, func))
-                    continue
-            elif model == u'SPA502G':
-                if key > 2:
-                    key -= 2
-                    fk_config_lines.append(self._format_function_keys_unit(key, func))
-                    continue
-            elif model == u'SPA504G':
-                if key > 4:
-                    key -= 4
-                    fk_config_lines.append(self._format_function_keys_unit(key, func))
-                    continue
-            elif model == u'SPA509G':
-                if key > 12:
-                    key -= 12
-                    fk_config_lines.append(self._format_function_keys_unit(key, func))
-                    continue
-            elif model == u'SPA525G' or model == u'SPA525G2':
-                if key > 5:
-                    key -= 5
-                    fk_config_lines.append(self._format_function_keys_unit(key, func))
-                    continue
-            elif key > 12:
+                logger.info('Unsupported funckey type: %s', funckey_type)
                 continue
-
-            fk_config_lines.append(u'<Extension_%d_>Disabled</Extension_%d_>' % (key, key))
-            fk_config_lines.append(u'<Short_Name_%d_>%s</Short_Name_%d_>' % (key, label, key))
-            fk_config_lines.append(u'<Extended_Function_%d_>%s</Extended_Function_%d_>' % (key, func, key))
-        return u'\n'.join(fk_config_lines)
-    
-    def _gen_xx_fkeys(self, config, model):
-        return self._format_function_keys(config[u'funckeys'], model)
+            value = funckey_dict[u'value']
+            label = escape(funckey_dict.get(u'label', value))
+            function = u'fnc=%s;sub=%s@$PROXY;nme=%s' % (fnc, value, label)
+            keynum = int(funckey_no)
+            if keynum <= nb_keys:
+                lines.append(u'<Extension_%s_>Disabled</Extension_%s_>' %
+                             (funckey_no, funckey_no))
+                lines.append(u'<Short_Name_%s_>%s</Short_Name_%s_>' %
+                             (funckey_no, label, funckey_no))
+                lines.append(u'<Extended_Function_%s_>%s</Extended_Function_%s_>' %
+                             (funckey_no, function, funckey_no))
+            else:
+                expmod_keynum = keynum - nb_keys - 1
+                expmod_no = expmod_keynum // 32 + 1
+                if expmod_no > nb_expmods:
+                    logger.info('Model %s has less than %s function keys', model, funckey_no)
+                else:
+                    expmod_key_no = expmod_keynum % 32 + 1
+                    lines.append(u'<Unit_%s_Key_%s>%s</Unit_%s_Key_%s>' %
+                                 (expmod_no, expmod_key_no, function, expmod_no, expmod_key_no))
+        raw_config[u'XX_fkeys'] = u'\n'.join(lines)
     
     def _format_dst_change(self, dst_change):
         _day = dst_change['day']
@@ -375,30 +356,33 @@ class BaseCiscoPlugin(StandardPlugin):
                           ))
         return u'\n'.join(lines)
     
-    def _gen_xx_timezone(self, raw_config):
-        try:
-            tzinfo = tzinform.get_timezone_info(raw_config.get(u'timezone'))
-        except tzinform.TimezoneNotFoundError:
-            return None
-        else:
-            return self._format_tzinfo(tzinfo)
+    def _add_timezone(self, raw_config):
+        if u'timezone' in raw_config:
+            try:
+                tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
+            except tzinform.TimezoneNotFoundError, e:
+                logger.info('Unknown timezone: %s', e)
+            else:
+                raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
     
-    def _format_proxy(self, sip, line):
-        proxy_ip = line.get(u'proxy_ip') or sip[u'proxy_ip']
+    def _format_proxy(self, raw_config, line):
+        proxy_ip = line.get(u'proxy_ip') or raw_config[u'sip_proxy_ip']
         proxy_value = u'xivo_proxies:SRV=%s:5060:p=0' % proxy_ip
-        backup_proxy_ip = line.get(u'backup_proxy_ip') or sip.get(u'backup_proxy_ip')
+        backup_proxy_ip = line.get(u'backup_proxy_ip') or raw_config.get(u'sip_backup_proxy_ip')
         if backup_proxy_ip:
             proxy_value += u'|%s:5060:p=1' % backup_proxy_ip
         return proxy_value
     
-    def _gen_xx_proxies(self, raw_config):
+    def _add_proxies(self, raw_config):
         proxies = {}
-        for line_no, line in raw_config[u'sip'][u'lines'].iteritems():
-            proxies[line_no] = self._format_proxy(raw_config[u'sip'], line)
-        return proxies
+        for line_no, line in raw_config[u'sip_lines'].iteritems():
+            proxies[line_no] = self._format_proxy(raw_config, line)
+        raw_config[u'XX_proxies'] = proxies
     
-    def _gen_xx_language(self, raw_config):
-        return self._XX_LANGUAGE.get(raw_config.get(u'locale'))
+    def _add_language(self, raw_config):
+        locale = raw_config.get(u'locale')
+        if locale in self._LOCALE:
+            raw_config[u'XX_language'] = self._LOCALE[locale]
     
     def _new_encryption_key(self):
         return b2a_hex(os.urandom(32))
@@ -411,18 +395,16 @@ class BaseCiscoPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        raw_config[u'XX_fkeys'] = self._gen_xx_fkeys(raw_config, device.get(u'model'))
-        raw_config[u'XX_timezone'] = self._gen_xx_timezone(raw_config)
-        raw_config[u'XX_proxies'] = self._gen_xx_proxies(raw_config)
-        raw_config[u'XX_language'] = self._gen_xx_language(raw_config)
+        self._add_fkeys(raw_config, device.get(u'model'))
+        self._add_timezone(raw_config)
+        self._add_proxies(raw_config)
+        self._add_language(raw_config)
         
         update_device = False
         if raw_config.get(u'config_encryption'):
@@ -480,7 +462,7 @@ class BaseCiscoPlugin(StandardPlugin):
                 else:
                     e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
                     return failure.Failure(e)
-            for sip_line in raw_config[u'sip'][u'lines'].itervalues():
+            for sip_line in raw_config[u'sip_lines'].itervalues():
                 username = sip_line[u'username']
                 password = sip_line[u'password']
                 break

@@ -1,16 +1,16 @@
-{% if exten['voicemail'] -%}
+{% if exten_voicemail -%}
 prgkey1 type: speeddial
-prgkey1 value: {{ exten['voicemail'] }}
+prgkey1 value: {{ exten_voicemail }}
 {% endif -%}
 
-{% if exten['fwd_unconditional'] -%}
+{% if exten_fwd_unconditional -%}
 prgkey2 type: speeddial
-prgkey2 value: {{ exten['fwd_unconditional'] }}
+prgkey2 value: {{ exten_fwd_unconditional }}
 {% endif -%}
 
-{% if exten['dnd'] -%}
+{% if exten_dnd -%}
 prgkey3 type: speeddial
-prgkey3 value: {{ exten['dnd'] }}
+prgkey3 value: {{ exten_dnd }}
 {% endif -%}
 
 prgkey4 type: directory

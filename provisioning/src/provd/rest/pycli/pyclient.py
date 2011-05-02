@@ -303,8 +303,8 @@ class Configs(object):
         return Config(name, self._cfg_mgr)
     
     def remove_all(self):
-        for id in self._cfg_mgr.find({}):
-            self._cfg_mgr.remove(id)
+        for config in self._cfg_mgr.find({}):
+            self._cfg_mgr.remove(config[ID_KEY])
 
 
 class Config(object):
@@ -397,8 +397,8 @@ class Devices(object):
         return Device(name, self._dev_mgr)
 
     def remove_all(self):
-        for id in self._dev_mgr.find({}):
-            self._dev_mgr.remove(id)
+        for device in self._dev_mgr.find({}):
+            self._dev_mgr.remove(device[ID_KEY])
 
 
 class Device(object):

@@ -26,11 +26,11 @@ __license__ = """
 
 # XXX does the CT models identify themselves differently ? i.e. does the
 #     57i CT identify itself as 57i or something like 57iCT ?
-# TODO add function key support for 9143i and 9180i
 
 import logging
 import re
 import os.path
+from operator import itemgetter
 from provd import sip, tzinform
 from provd.devices.config import RawConfigError
 from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
@@ -55,7 +55,6 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
     }
     
     def extract(self, request, request_type):
-        assert request_type == 'http'
         return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
@@ -80,8 +79,8 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
             raw_model, raw_mac, raw_version = m.groups()
             try:
                 mac = norm_mac(raw_mac.decode('ascii'))
-            except ValueError:
-                logger.warning('Could not normalize MAC address "%s"' % raw_mac)
+            except ValueError, e:
+                logger.warning('Could not normalize MAC address: %s', e)
             else:
                 if raw_model in self._UA_MODELS_MAP:
                     model = self._UA_MODELS_MAP[raw_model]
@@ -114,10 +113,50 @@ class BaseAastraPgAssociator(BasePgAssociator):
 
 
 class BaseAastraPlugin(StandardPlugin):
-    # Note that no TFTP support is included since Aastra phones are capable of
-    # protocol selection via DHCP options.
     # XXX actually, we didn't find which encoding Aastra were using
     _ENCODING = 'UTF-8'
+    _KEYTYPE = {
+        # <model>: ([(<nb keys>, <keytype>), ...], <nb expansion modules>)
+        u'6730i': ([(8, u'prgkey')], 0),
+        u'6731i': ([(8, u'prgkey')], 0),
+        u'6739i': ([(55, u'softkey')], 3),
+        u'6753i': ([(6, u'prgkey')], 3),
+        u'6755i': ([(6, u'prgkey'), (20, u'softkey')], 3),
+        u'6757i': ([(10, u'topsoftkey'), (20, u'softkey')], 3),
+        u'9143i': ([(7, u'prgkey')], 0),
+        u'9480i': ([(6, u'softkey')], 0)
+    }
+    _TRUSTED_ROOT_CERTS_SUFFIX = '-ca_servers.crt'
+    _LOCALE = {
+        # <locale>: (<lang file>, <tone set>, <input language>)
+        u'de_DE': (u'lang_de.txt', u'Germany', u'German'),
+        u'es_ES': (u'lang_es.txt', u'Europe', u'Spanish'),
+        u'fr_FR': (u'lang_fr.txt', u'France', u'French'),
+        u'fr_CA': (u'lang_fr_ca.txt', u'US', u'French')
+    }
+    _SIP_DTMF_MODE = {
+        # <dtmf mode>: (<out-of-band dtmf>, <dtmf method>)
+        u'RTP-in-band': (u'0', u'0'),
+        u'RTP-out-of-band': (u'1', u'0'),
+        u'SIP-INFO': (u'1', u'1')
+    }
+    _SIP_SRTP_MODE = {
+        u'disabled': u'0',
+        u'preferred': u'1',
+        u'required': u'2'
+    }
+    _SIP_TRANSPORT = {
+        u'udp': u'1',
+        u'tcp': u'2',
+        u'tls': u'4'
+    }
+    _SYSLOG_LEVEL = {
+        u'critical': u'1',
+        u'error': u'3',
+        u'warning': u'7',
+        u'info': u'39',
+        u'debug': u'65535'
+    }
     _XX_DICT_DEF = u'en'
     _XX_DICT = {
         u'en': {
@@ -141,30 +180,6 @@ class BaseAastraPlugin(StandardPlugin):
             u'remote_directory': u'Annuaire',
         },
     }
-    _XX_SYSLOG_LEVEL = {
-        u'critical': 1,
-        u'error': 3,
-        u'warning': 7,
-        u'info': 39,
-        u'debug': 65535
-    }
-    _XX_SYSLOG_LEVEL_DEF = 1
-    _XX_SIP_TRANSPORT = {
-        u'udp': 1,
-        u'tcp': 2,
-        u'tls': 4
-    }
-    _XX_SIP_TRANSPORT_DEF = 1
-    _XX_SIP_SRTP_MODE = {
-        u'disabled': 0,
-        u'preferred': 1,
-        u'required': 2
-    }
-    _XX_SIP_SRTP_MODE_DEF = 0
-    _XX_SERVERS_ROOT_CERT_SUFFIX = '-ca_servers.crt'
-    _XX_LOCAL_ROOT_CERT_SUFFIX = '-ca_local.crt'
-    _XX_LOCAL_CERT_SUFFIX = '-local.crt'
-    _XX_LOCAL_KEY_SUFFIX = '-local.key'
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
@@ -179,81 +194,24 @@ class BaseAastraPlugin(StandardPlugin):
     
     http_dev_info_extractor = BaseAastraHTTPDeviceInfoExtractor()
     
-    def _format_expmod(self, keynum):
-        # XXX you get a weird behavior if you have more than 1 M670i expansion module.
-        # For example, if you have a 6757i and you want to set the first key of the
-        # second module, you'll have to pick, in the xivo web interface, the key number
-        # 91 (30 phone softkeys + 60 M675i expansion module keys + 1) instead of 67.
-        # That's because the Aastras support more than one type of expansion module, and they
-        # don't have the same number of keys. Since we don't know which one the phone is actually
-        # using, we pick the one with the most keys, so every expansion module can be fully
-        # used, but this leave a weird behavior for multi-expansion setup when smaller
-        # expansion module are used....
-        if keynum <= 180:
-            return u'expmod%d key%d' % ((keynum - 1) // 60 + 1, (keynum - 1) % 60 + 1)
-        return None
+    def _add_out_of_band_dtmf(self, raw_config):
+        dtmf_mode = raw_config.get(u'sip_dtmf_mode')
+        if dtmf_mode in self._SIP_DTMF_MODE:
+            raw_config[u'XX_out_of_band_dtmf'] = self._SIP_DTMF_MODE[dtmf_mode][0]
     
-    def _get_keytype_from_model_and_keynum(self, model, keynum):
-        if model in [u'6730i', u'6731i']:
-            if keynum <= 8:
-                return u'prgkey%d' % keynum
-        elif model == '6739i':
-            if keynum <= 55:
-                return u'softkey%d' % keynum
-            else:
-                return self._format_expmod(keynum - 55)
-        elif model == u'6753i':
-            if keynum <= 6:
-                return u'prgkey%d' % keynum
-            else:
-                return self._format_expmod(keynum - 6)
-        elif model == u'6755i':
-            if keynum <= 6:
-                return u'prgkey%d' % keynum
-            else:
-                keynum -= 6
-                if keynum <= 20:
-                    return u'softkey%d' % keynum
-                else:
-                    return self._format_expmod(keynum - 20)
-        elif model == u'6757i':
-            # The 57i has 6 'top keys' and 6 'bottom keys'. 10 functions are programmable for
-            # the top keys and 20 are for the bottom keys.
-            if keynum <= 10:
-                return u'topsoftkey%d' % keynum
-            else:
-                keynum -= 10
-                if keynum <= 20:
-                    return u'softkey%d' % keynum
-                else:
-                    return self._format_expmod(keynum - 20)
-        return None
+    def _add_locale(self, raw_config):
+        locale = raw_config.get(u'locale')
+        if locale in self._LOCALE:
+            raw_config[u'XX_locale'] = self._LOCALE[locale]
     
-    def _format_function_keys(self, funckeys, model):
-        if model is None:
-            return u''
-        sorted_keys = funckeys.keys()
-        sorted_keys.sort()
-        fk_config_lines = []
-        for key in sorted_keys:
-            keytype = self._get_keytype_from_model_and_keynum(model, int(key))
-            if keytype is not None:
-                value = funckeys[key]
-                exten = value[u'exten']
-                if value.get(u'supervision'):
-                    xtype = u'blf'
-                else:
-                    xtype = u'speeddial'
-                if u'label' in value and value[u'label'] is not None:
-                    label = value[u'label']
-                else:
-                    label = exten
-                line = value.get(u'line', 1)
-                fk_config_lines.append(u'%s type: %s' % (keytype, xtype))
-                fk_config_lines.append(u'%s label: %s' % (keytype, label))
-                fk_config_lines.append(u'%s value: %s' % (keytype, exten))
-                fk_config_lines.append(u'%s line: %s' % (keytype, line))
-        return u'\n'.join(fk_config_lines)
+    def _add_log_level(self, raw_config):
+        syslog_level = raw_config.get(u'syslog_level')
+        raw_config[u'XX_log_level'] = self._SYSLOG_LEVEL.get(syslog_level, u'1')
+    
+    def _add_transport_proto(self, raw_config):
+        sip_transport = raw_config.get(u'sip_transport')
+        if sip_transport in self._SIP_TRANSPORT:
+            raw_config[u'XX_transport_proto'] = self._SIP_TRANSPORT[sip_transport]
     
     def _format_dst_change(self, suffix, dst_change):
         lines = []
@@ -287,16 +245,118 @@ class BaseAastraPlugin(StandardPlugin):
             lines.extend(self._format_dst_change('end', tzinfo['dst']['end']))
         return u'\n'.join(lines)
     
-    def _gen_xx_fkeys(self, raw_config, model):
-        return self._format_function_keys(raw_config[u'funckeys'], model)
+    def _add_timezone(self, raw_config):
+        if u'timezone' in raw_config:
+            try:
+                tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
+            except tzinform.TimezoneNotFoundError, e:
+                logger.info('Unknown timezone: %s', e)
+            else:
+                raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
     
-    def _gen_xx_timezone(self, raw_config):
-        try:
-            tzinfo = tzinform.get_timezone_info(raw_config.get(u'timezone'))
-        except tzinform.TimezoneNotFoundError:
-            return ''
+    def _get_keytype(self, model, keynum):
+        # Return a key type (i.e. prgkey, softkey, topsoftkey, etc..) from a
+        # model name and a key number (an integer).
+        assert model in self._KEYTYPE
+        keytype_list, nb_expmods = self._KEYTYPE[model]
+        keycount = 0
+        # check for non-expmod keytype
+        for nb_keys, keytype in keytype_list:
+            if keynum <= keycount + nb_keys:
+                return keytype
+            else:
+                keycount += nb_keys
+        # check for expmod keytype
+        # Note that if you have 2 M670i expansion module (with 36 keys each)
+        # on a 53i for example, the first key of the second expansion module
+        # will be number 67 (6 + 60 + 1) and not 43 (6 + 36 + 1) because we
+        # are counting 60 keys per expansion module (nb of keys of the M675i),
+        # not 36.
+        expmod_keynum = keynum - keycount - 1
+        expmod_no = expmod_keynum // 60 + 1,
+        if expmod_no > nb_expmods:
+            logger.info('Model %s has less than %s function keys', model, keynum)
+            return None
         else:
-            return self._format_tzinfo(tzinfo)
+            expmod_key_no = expmod_keynum % 60 + 1
+            return u'expmod%s key%s' % (expmod_no, expmod_key_no) 
+    
+    def _add_fkeys(self, raw_config, model):
+        if model not in self._KEYTYPE:
+            logger.info(u'Unknown model or model with no funckeys: %s', model)
+            return
+        lines = []
+        for funckey_no, funckey_dict in sorted(raw_config[u'funckeys'].iteritems(),
+                                               key=itemgetter(0)):
+            keytype = self._get_keytype(model, int(funckey_no))
+            if keytype is not None:
+                funckey_type = funckey_dict[u'type']
+                if funckey_type == u'speeddial':
+                    type_ = u'speeddial'
+                elif funckey_type == u'blf':
+                    type_ = u'blf'
+                else:
+                    logger.info('Unsupported funckey type: %s', funckey_type)
+                    continue
+                value = funckey_dict[u'value']
+                label = funckey_dict.get(u'label', value)
+                line = funckey_dict.get(u'line', u'1')
+                lines.append(u'%s type: %s' % (keytype, type_))
+                lines.append(u'%s value: %s' % (keytype, value))
+                lines.append(u'%s label: %s' % (keytype, label))
+                lines.append(u'%s line: %s' % (keytype, line))
+        raw_config[u'XX_fkeys'] = u'\n'.join(lines)
+    
+    def _update_sip_lines(self, raw_config):
+        # XXX some stuff here might not be so good...
+        proxy_ip = raw_config.get(u'sip_proxy_ip')
+        proxy_port = raw_config.get(u'sip_proxy_port', u'0')
+        backup_proxy_ip = raw_config.get(u'sip_backup_proxy_ip', u'0.0.0.0')
+        backup_proxy_port = raw_config.get(u'sip_backup_proxy_port', u'0')
+        registrar_ip = raw_config.get(u'sip_registrar_ip')
+        registrar_port = raw_config.get(u'sip_registrar_port', u'0')
+        backup_registrar_ip = raw_config.get(u'sip_backup_registrar_ip', u'0.0.0.0')
+        backup_registrar_port = raw_config.get(u'sip_backup_registrar_port', u'0')
+        dtmf_mode = raw_config.get(u'sip_dtmf_mode')
+        srtp_mode = raw_config.get(u'sip_srtp_mode')
+        voicemail = raw_config.get(u'exten_voicemail')
+        for line in raw_config[u'sip_lines'].itervalues():
+            # add proxy ip
+            if u'proxy_ip' not in line:
+                line[u'proxy_ip'] = proxy_ip
+            # add proxy port
+            if u'proxy_port' not in line:
+                line[u'proxy_port'] = proxy_port
+            # add backup proxy ip
+            if u'backup_proxy_ip' not in line:
+                line[u'backup_proxy_ip'] = backup_proxy_ip
+            # add backup proxy port
+            if u'backup_proxy_port' not in line:
+                line[u'backup_proxy_port'] = backup_proxy_port
+            # add registrar ip
+            if u'registrar_ip' not in line:
+                line[u'registrar_ip'] = registrar_ip
+            # add registrar port
+            if u'registrar_port' not in line:
+                line[u'registrar_port'] = registrar_port
+            # add backup registrar ip
+            if u'backup_registrar_ip' not in line:
+                line[u'backup_registrar_ip'] = backup_registrar_ip
+            # add backup registrar port
+            if u'backup_registrar_port' not in line:
+                line[u'backup_registrar_port'] = backup_registrar_port
+            # add XX_dtmf_method
+            cur_dtmf_mode = line.get(u'dtmf_mode', dtmf_mode)
+            if cur_dtmf_mode in self._SIP_DTMF_MODE:
+                line[u'XX_dtmf_method'] = self._SIP_DTMF_MODE[cur_dtmf_mode][1]
+            else:
+                line[u'XX_dtmf_method'] = u'0'
+            # add XX_srtp_mode
+            cur_srtp_mode = line.get(u'srtp_mode', srtp_mode)
+            line[u'XX_srtp_mode'] = self._SIP_SRTP_MODE.get(cur_srtp_mode, u'0')
+            # add voicemail
+            if u'voicemail' not in line and voicemail:
+                line[u'voicemail'] = voicemail
     
     def _gen_xx_dict(self, raw_config):
         xx_dict = self._XX_DICT[self._XX_DICT_DEF]
@@ -307,54 +367,26 @@ class BaseAastraPlugin(StandardPlugin):
                 xx_dict = self._XX_DICT[lang]
         return xx_dict
     
-    def _gen_xx_syslog_level(self, raw_config):
-        if u'syslog' in raw_config:
-            return self._XX_SYSLOG_LEVEL.get(raw_config[u'level'],
-                                             self._XX_SYSLOG_LEVEL_DEF)
-        else:
-            return None
-    
-    def _gen_xx_sip_transport(self, raw_config):
-        return self._XX_SIP_TRANSPORT.get(raw_config[u'sip'][u'transport'],
-                                          self._XX_SIP_TRANSPORT_DEF)
-    
-    def _gen_xx_sip_srtp_mode(self, raw_config):
-        return self._XX_SIP_SRTP_MODE.get(raw_config[u'sip'][u'srtp_mode'],
-                                          self._XX_SIP_SRTP_MODE_DEF)
-    
     def _device_cert_or_key_filename(self, device, suffix):
         # Return the cert or key file filename for a device 
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + suffix
     
-    def _gen_cert_or_key_file(self, raw_config, device, param, suffix):
-        if param in raw_config[u'sip']:
-            filename = self._device_cert_or_key_filename(device, suffix)
-            pathname = os.path.join(self._tftpboot_dir, filename)
-            with open(pathname, 'w') as f:
-                f.write(raw_config[u'sip'][param])
-            # return the path, from the point of view of the device
-            return filename
-        else:
-            return None
+    def _write_cert_or_key_file(self, pem_cert, device, suffix):
+        filename = self._device_cert_or_key_filename(device, suffix)
+        pathname = os.path.join(self._tftpboot_dir, filename)
+        with open(pathname, 'w') as f:
+            f.write(pem_cert)
+        # return the path, from the point of view of the device
+        return filename
     
-    def _gen_xx_servers_root_and_intermediate_certificates(self, raw_config, device):
-        return self._gen_cert_or_key_file(raw_config, device, u'servers_root_and_intermediate_certificates',
-                                          self._XX_SERVERS_ROOT_CERT_SUFFIX)
+    def _add_trusted_certificates(self, raw_config, device):
+        if u'sip_servers_root_and_intermediate_certificates' in raw_config:
+            pem_cert = raw_config[u'sip_servers_root_and_intermediate_certificates']
+            raw_config[u'XX_trusted_certificates'] = self._write_cert_or_key_file(pem_cert, device,
+                                                                    self._TRUSTED_ROOT_CERTS_SUFFIX)
     
-    def _gen_xx_local_root_and_intermediate_certificates(self, raw_config, device):
-        return self._gen_cert_or_key_file(raw_config, device, u'local_root_and_intermediate_certificates',
-                                          self._XX_LOCAL_ROOT_CERT_SUFFIX)
-    
-    def _gen_xx_local_certificate(self, raw_config, device):
-        return self._gen_cert_or_key_file(raw_config, device, u'local_certificate',
-                                          self._XX_LOCAL_CERT_SUFFIX)
-    
-    def _gen_xx_local_key(self, raw_config, device):
-        return self._gen_cert_or_key_file(raw_config, device, u'local_key',
-                                          self._XX_LOCAL_KEY_SUFFIX)
-
-    def _device_config_filename(self, device):
+    def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + '.cfg'
@@ -362,8 +394,6 @@ class BaseAastraPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def _check_device(self, device):
         if u'mac' not in device:
@@ -372,44 +402,38 @@ class BaseAastraPlugin(StandardPlugin):
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
-        filename = self._device_config_filename(device)
+        filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        raw_config[u'XX_fkeys'] = self._gen_xx_fkeys(raw_config, device.get(u'model'))
-        raw_config[u'XX_timezone'] = self._gen_xx_timezone(raw_config)
+        self._add_out_of_band_dtmf(raw_config)
+        self._add_fkeys(raw_config, device.get(u'model'))
+        self._add_locale(raw_config)
+        self._add_log_level(raw_config)
+        self._add_timezone(raw_config)
+        self._add_transport_proto(raw_config)
+        self._add_trusted_certificates(raw_config, device)
+        self._update_sip_lines(raw_config)
         raw_config[u'XX_dict'] = self._gen_xx_dict(raw_config)
-        raw_config[u'XX_syslog_level'] = self._gen_xx_syslog_level(raw_config)
-        raw_config[u'XX_sip_transport'] = self._gen_xx_sip_transport(raw_config)
-        raw_config[u'XX_sip_srtp_mode'] = self._gen_xx_sip_srtp_mode(raw_config)
-        raw_config[u'XX_servers_root_and_intermediate_certificates'] = \
-            self._gen_xx_servers_root_and_intermediate_certificates(raw_config, device)
-        raw_config[u'XX_local_root_and_intermediate_certificates'] = \
-            self._gen_xx_local_root_and_intermediate_certificates(raw_config, device)
-        raw_config[u'XX_local_certificate'] = \
-            self._gen_xx_local_certificate(raw_config, device)
-        raw_config[u'XX_local_key'] = self._gen_xx_local_key(raw_config, device)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
     def deconfigure(self, device):
         # remove device configuration file
-        path = os.path.join(self._tftpboot_dir, self._device_config_filename(device))
+        path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
             os.remove(path)
-        except OSError:
+        except OSError, e:
             # ignore
-            pass
-        # remove device certificates and key files
-        for suffix in [self._XX_SERVERS_ROOT_CERT_SUFFIX, self._XX_LOCAL_ROOT_CERT_SUFFIX,
-                       self._XX_LOCAL_CERT_SUFFIX, self._XX_LOCAL_KEY_SUFFIX]:
-            path = os.path.join(self._tftpboot_dir,
-                                self._device_cert_or_key_filename(device, suffix))
-            try:
-                os.remove(path)
-            except OSError:
-                # ignore
-                pass
+            logger.info('error while removing file: %s', e)
+        # remove device certificate file
+        path = os.path.join(self._tftpboot_dir,
+                            self._device_cert_or_key_filename(device, self._TRUSTED_ROOT_CERTS_SUFFIX))
+        try:
+            os.remove(path)
+        except OSError, e:
+            # ignore
+            logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
         try:

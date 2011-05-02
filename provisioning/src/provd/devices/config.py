@@ -332,8 +332,9 @@ sip_lines [optional|default to empty dictionary]
       See: exten_voicemail.
 
 sccp_call_managers [optional|default to empty dictionary]
-  A dictionary where keys are priority number, where the highest priority
-  is 1, and values are dictionaries with the following keys:
+  A dictionary where keys are priority number (unicode string representing
+  integers > 0, where 1 is the highest priority) and values are dictionaries
+  with the following keys:
   
     ip [mandatory]
       The IP address of the call manager.
@@ -369,20 +370,27 @@ exten_voicemail [optional]
   The extension number to retrieve voicemail.
 
 funckeys [optional|default to empty dictionary]
-  A dictionary where keys are function key number and values are dictionary:
-  XXX this has to be reviewed (type/value vs exten/supervision ?)
+  A dictionary where keys are function key number (unicode string representing
+  integers > 0) and values are dictionary:
   
-    exten [mandatory]
-      The extension number
-    
-    supervision [optional|default to false]
-      A boolean indicating if we supervise this extension or not
+    type [mandatory]
+      The type of the function key.
+      This parameter can take one of the following value:
+      - speeddial
+      - blf
+      Note that when possible, a blf function key should also be usable as
+      a speeddial function key.
+      
+    value [mandatory if type is speeddial or blf]
+      The value of the function key.
+      For the speeddial type, this is an extension number.
+      For the blf type, this is the monitored extension number.
     
     label [optional]
       The label.
     
     line [optional]
-      The line number.
+      The line number (as an integer).
 
 Non-standard parameter names must begin with 'X_'. A unique second level ID
 should be used to prevent name clashes. Here's the list of parameters in

@@ -126,15 +126,17 @@ class BaseCiscoPgAssociator(BasePgAssociator):
     
     def _do_associate(self, vendor, model, version):
         if vendor == u'Cisco':
-            if version is None:
-                # Could be either in SIP or SCCP...
-                return PROBABLE_SUPPORT
             if model is None:
                 # There's so many Cisco models it's hard to say something
                 # precise when we have no model information
                 return PROBABLE_SUPPORT
-            assert version is not None
             assert model is not None
+            if model.startswith(u'SPA'):
+                return NO_SUPPORT
+            if version is None:
+                # Could be either in SIP or SCCP...
+                return PROBABLE_SUPPORT
+            assert version is not None
             if version.endswith('/SIP'):
                 return NO_SUPPORT
             if model in self._model_version:
@@ -149,7 +151,6 @@ class BaseCiscoPgAssociator(BasePgAssociator):
 
 class BaseCiscoDHCPDeviceInfoExtractor(object):
     def extract(self, request, request_type):
-        assert request_type == 'dhcp'
         return defer.succeed(self._do_extract(request))
     
     _VDI_REGEX = re.compile('\\s(?:79(\\d\\d)|CP-79(\\d\\d)G(?:-GE)?\x00)$')
@@ -176,7 +177,6 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
 
 class BaseCiscoTFTPDeviceInfoExtractor(object):
     def extract(self, request, request_type):
-        assert request_type == 'tftp'
         return defer.succeed(self._do_extract(request))
     
     _FILENAME_REGEX = [
@@ -313,33 +313,14 @@ class BaseCiscoSccpPlugin(StandardPlugin):
     # XXX actually, we didn't find which encoding Cisco SCCP are using
     _ENCODING = 'UTF-8'
     _TZ_MAP = _gen_tz_map()
-    _TZ_VALUE_DEFAULT = u'Eastern Standard/Daylight Time'
-    _XX_LANG = {
-        u'de_DE': {
-            u'name': u'german_germany',
-            u'lang_code': u'de',
-            u'network_locale': u'germany'
-        },
-        u'en_US': {
-            u'name': u'english_united_states',
-            u'lang_code': u'en',
-            u'network_locale': u'united_states'
-        },
-        u'es_ES': {
-            u'name': u'spanish_spain',
-            u'lang_code': u'es',
-            u'network_locale': u'spain'
-        },
-        u'fr_FR': {
-            u'name': u'french_france',
-            u'lang_code': u'fr',
-            u'network_locale': u'france'
-        },
-        u'fr_CA': {
-            u'name': u'french_france',
-            u'lang_code': u'fr',
-            u'network_locale': u'canada'
-        }
+    _TZ_VALUE_DEF = u'Eastern Standard/Daylight Time'
+    _LOCALE = {
+        # <locale>: (<name>, <lang code>, <network locale>)
+        u'de_DE': (u'german_germany', u'de', u'germany'),
+        u'en_US': (u'english_united_states', u'en', u'united_states'),
+        u'es_ES': (u'spanish_spain', u'es', u'spain'),
+        u'fr_FR': (u'french_france', u'fr', u'france'),
+        u'fr_CA': (u'french_france', u'fr', u'canada')
     }
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
@@ -368,26 +349,22 @@ class BaseCiscoSccpPlugin(StandardPlugin):
     
     tftp_dev_info_extractor = BaseCiscoTFTPDeviceInfoExtractor() 
     
-    def _get_xx_language(self, config):
-        xx_lang = None
-        if u'locale' in config:
-            locale = config[u'locale']
-            if locale in self._XX_LANG:
-                xx_lang = self._XX_LANG[locale]
-        return xx_lang
+    def _add_locale(self, raw_config):
+        locale = raw_config.get(u'locale')
+        if locale in self._LOCALE:
+            raw_config[u'XX_locale'] = self._LOCALE[locale]
     
-    def _timezone_name_to_value(self, timezone):
-        tzinfo = tzinform.get_timezone_info(timezone)
+    def _tzinfo_to_value(self, tzinfo):
         utcoffset_m = tzinfo['utcoffset'].as_minutes
         if utcoffset_m not in self._TZ_MAP:
             # No UTC offset matching. Let's try finding one relatively close...
-            for supp_offset in (30, -30, 60, -60):
+            for supp_offset in [30, -30, 60, -60]:
                 if utcoffset_m + supp_offset in self._TZ_MAP:
                     utcoffset_m += supp_offset
                     break
             else:
-                return u'Central Europe Standard/Daylight Time'
-            
+                return self._TZ_VALUE_DEF
+        
         dst_map = self._TZ_MAP[utcoffset_m]
         if tzinfo['dst']:
             dst_key = tzinfo['dst']['as_string']
@@ -402,24 +379,28 @@ class BaseCiscoSccpPlugin(StandardPlugin):
                 dst_key = dst_map.keys[0]
         return dst_map[dst_key]
     
-    def _get_xx_timezone(self, config):
-        if u'timezone' in config:
-            timezone = config[u'timezone']
-            tz_value = self._timezone_name_to_value(timezone)
-        else:
-            tz_value = self._TZ_VALUE_DEFAULT
-        return tz_value
+    def _add_timezone(self, raw_config):
+        raw_config[u'XX_timezone'] = self._TZ_VALUE_DEF
+        if u'timezone' in raw_config:
+            try:
+                tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
+            except tzinform.TimezoneNotFoundError, e:
+                logger.info('Unknown timezone: %s', e)
+            else:
+                raw_config[u'XX_timezone'] = self._tzinfo_to_value(tzinfo)
+    
+    def _update_call_managers(self, raw_config):
+        for priority, call_manager in raw_config[u'sccp_call_managers'].iteritems():
+            call_manager[u'XX_priority'] = unicode(int(priority) - 1)
     
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
-        return 'SEP' + fmted_mac + '.cfg.xml'
+        return 'SEP%s.cfg.xml' % fmted_mac
     
     def _check_config(self, raw_config):
         if u'tftp_port' not in raw_config:
             raise RawConfigError('only support configuration via TFTP')
-        if u'sccp' not in raw_config:
-            raise RawConfigError('must have a sccp parameter')
     
     def _check_device(self, device):
         if u'mac' not in device:
@@ -434,8 +415,9 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         # TODO check support for addons, and test what the addOnModules is
         #      really doing...
         raw_config[u'XX_addons'] = ''
-        raw_config[u'XX_lang'] = self._get_xx_language(raw_config)
-        raw_config[u'XX_timezone'] = self._get_xx_timezone(raw_config)
+        self._add_locale(raw_config)
+        self._add_timezone(raw_config)
+        self._update_call_managers(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
@@ -444,11 +426,11 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
             os.remove(path)
-        except OSError:
-            # ignore -- probably an already removed file
-            pass
+        except OSError, e:
+            # ignore
+            logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
         # The only known way to synchronize SCCP device is to do an
         # 'sccp reload' or 'sccp restart' or similar from Asterisk
-        return defer.fail(Exception('Resynchronization not supported for SCCP devices'))
+        return defer.fail(Exception('Synchronization not supported for SCCP devices'))

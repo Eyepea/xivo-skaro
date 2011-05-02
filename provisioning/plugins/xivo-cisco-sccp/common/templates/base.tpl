@@ -4,9 +4,9 @@
    <dateTemplate>D-M-YA</dateTemplate>
    <timeZone>{{ XX_timezone }}</timeZone>
    <ntps>
-{% if ntp_server_ip -%}
+{% if ntp_enabled -%}
     <ntp>
-     <name>{{ ntp_server_ip }}</name>
+     <name>{{ ntp_ip }}</name>
      <ntpMode>Unicast</ntpMode>
     </ntp>
 {% endif -%}
@@ -14,8 +14,8 @@
   </dateTimeSetting>
   <callManagerGroup>
    <members>
-{% for priority, call_manager in sccp['call_managers'].iteritems() %}
-    <member priority="{{ priority }}">
+{% for call_manager in sccp_call_managers.iteritems() %}
+    <member priority="{{ call_manager['XX_priority'] }}">
      <callManager>
       <ports>
        <ethernetPhonePort>{{ call_manager['port']|d('2000') }}</ethernetPhonePort>
@@ -31,12 +31,12 @@
  <loadInformation>{% block loadInformation %}{% endblock %}</loadInformation>
  <addOnModules>{{ XX_addons }}</addOnModules>
 
-{% if XX_lang -%}
+{% if XX_locale -%}
  <userLocale>
-  <name>i18n/{{ XX_lang['name'] }}</name>
-  <langCode>{{ XX_lang['lang_code'] }}</langCode>
+  <name>i18n/{{ XX_locale[0] }}</name>
+  <langCode>{{ XX_locale[1] }}</langCode>
  </userLocale>
- <networkLocale>i18n/{{ XX_lang['network_locale'] }}</networkLocale>
+ <networkLocale>i18n/{{ XX_locale[2] }}</networkLocale>
 {% endif -%}
 
  <idleTimeout>0</idleTimeout>

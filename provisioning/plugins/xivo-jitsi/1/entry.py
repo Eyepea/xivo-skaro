@@ -24,6 +24,7 @@ __license__ = """
 
 # provisioning url: http://<provd_ip>/${uuid}.properties
 
+import logging
 import os.path
 import re
 from provd.devices.config import RawConfigError
@@ -33,13 +34,14 @@ from provd.plugins import StandardPlugin, TemplatePluginHelper
 from provd.servers.http import HTTPNoListingFileService
 from twisted.internet import defer
 
+logger = logging.getLogger('plugin.xivo-jitsi')
+
 
 class JitsiHTTPDeviceInfoExtractor(object):
     _UA_REGEX = re.compile(r'^Jitsi/(\S+)$')
     _PATH_REGEX = re.compile(r'/(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})\.properties$')
     
     def extract(self, request, request_type):
-        assert request_type == 'http'
         return defer.succeed(self._do_extract(request))
     
     def _do_extract(self, request):
@@ -101,8 +103,6 @@ class JitsiPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def _check_device(self, device):
         if u'uuid' not in device:
@@ -121,6 +121,5 @@ class JitsiPlugin(StandardPlugin):
         path = os.path.join(self._tftpboot_dir, self._device_config_filename(device))
         try:
             os.remove(path)
-        except OSError:
-            # ignore
-            pass
+        except OSError, e:
+            logger.warning('error while deconfiguring device: %s', e)

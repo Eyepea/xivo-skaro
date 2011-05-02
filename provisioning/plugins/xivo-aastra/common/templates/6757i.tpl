@@ -1,18 +1,18 @@
-{% if exten['voicemail'] -%}
+{% if exten_voicemail -%}
 topsoftkey1 type: speeddial
-topsoftkey1 value: {{ exten['voicemail'] }}
+topsoftkey1 value: {{ exten_voicemail }}
 topsoftkey1 label: "{{ XX_dict['voicemail'] }}"
 {% endif -%}
 
-{% if exten['fwd_unconditional'] -%}
+{% if exten_fwd_unconditional -%}
 topsoftkey2 type: speeddial
-topsoftkey2 value: {{ exten['fwd_unconditional'] }}
+topsoftkey2 value: {{ exten_fwd_unconditional }}
 topsoftkey2 label: "{{ XX_dict['fwd_unconditional'] }}"
 {% endif -%}
 
-{% if exten['dnd'] -%}
+{% if exten_dnd -%}
 topsoftkey3 type: speeddial
-topsoftkey3 value: {{ exten['dnd'] }}
+topsoftkey3 value: {{ exten_dnd }}
 topsoftkey3 label: "{{ XX_dict['dnd'] }}"
 {% endif -%}
 
@@ -25,9 +25,9 @@ topsoftkey5 label: "{{ XX_dict['callers'] }}"
 topsoftkey6 type: services
 topsoftkey6 label: "{{ XX_dict['services'] }}"
 
-{% if exten['pickup_call'] -%}
+{% if exten_pickup_call -%}
 topsoftkey7 type: speeddial
-topsoftkey7 value: {{ exten['pickup_call'] }}
+topsoftkey7 value: {{ exten_pickup_call }}
 topsoftkey7 label: "{{ XX_dict['pickup_call'] }}"
 {% endif -%}
 

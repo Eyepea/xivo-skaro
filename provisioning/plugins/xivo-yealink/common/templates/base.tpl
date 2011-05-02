@@ -1,21 +1,21 @@
-{% if vlan -%}
+{% if vlan_enabled -%}
 [ VLAN ]
 path = /config/Network/Network.cfg
 ISVLAN = 1
-VID = {{ vlan['id'] }}
-{% if vlan['priority'] -%}
-USRPRIORITY = {{ vlan['priority'] }}
+VID = {{ vlan_id }}
+{% if vlan_priority -%}
+USRPRIORITY = {{ vlan_priority }}
 {% endif -%}
-{% if vlan['pc_port_id'] -%}
+{% if vlan_pc_port_id -%}
 PC_PORT_VLAN_ENABLE = 1
-PC_PORT_VID = {{ vlan['pc_port_id'] }}
+PC_PORT_VID = {{ vlan_pc_port_id }}
 {% endif -%}
 {% endif -%}
 
-{% if syslog -%}
+{% if syslog_enabled -%}
 [ SYSLOG ]
 path = /config/Network/Network.cfg
-SyslogdIP = {{ syslog['ip'] }}
+SyslogdIP = {{ syslog_ip }}
 {% endif -%}
 
 {% if XX_lang -%}
@@ -27,12 +27,10 @@ ActiveWebLanguage = {{ XX_lang }}
 
 [ Time ]
 path = /config/Setting/Setting.cfg
-{% if ntp_server_ip -%}
-TimeServer1 = {{ ntp_server_ip }}
+{% if ntp_enabled -%}
+TimeServer1 = {{ ntp_ip }}
 {% endif -%}
-{% if XX_timezone -%}
 {{ XX_timezone }}
-{% endif -%}
 
 {% if XX_country -%}
 [ Country ]
@@ -68,7 +66,7 @@ Admin = {{ admin_username }}
 User = {{ user_username }}
 {% endif -%}
 
-{% for line in sip['lines'].itervalues() %}
+{% for line in sip_lines.itervalues() %}
 [ account ]
 path = /config/voip/sipAccount{{ line['XX_line_no'] }}.cfg
 Enable = 1

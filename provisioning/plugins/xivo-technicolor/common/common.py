@@ -47,7 +47,6 @@ class BaseTechnicolorHTTPDeviceInfoExtractor(object):
     _UA_REGEX = re.compile(r'^(?:Thomson|THOMSON) (\w+) hw[^ ]+ fw([^ ]+) ([^ ]+)$')
     
     def extract(self, request, request_type):
-        assert request_type == 'http'
         return defer.succeed(self._do_extract(request))
 
     def _do_extract(self, request):
@@ -178,30 +177,28 @@ def _gen_tz_map():
 
 class BaseTechnicolorPlugin(StandardPlugin):
     _ENCODING = 'UTF-8'
-    _XX_LOCALE_MAP = {
+    _TZ_MAP = _gen_tz_map()
+    _LOCALE = {
         # <locale id>, (<langage type>, <country code>)
-        u'de_DE': (3, u'DE'),
-        u'en_US': (0, u'US'),
-        u'es_ES': (2, u'ES'),
-        u'fr_FR': (1, u'FR'),
-        u'fr_CA': (1, u'US'),
+        u'de_DE': (u'3', u'DE'),
+        u'en_US': (u'0', u'US'),
+        u'es_ES': (u'2', u'ES'),
+        u'fr_FR': (u'1', u'FR'),
+        u'fr_CA': (u'1', u'US'),
     }
-    _XX_LANGUAGE_TYPE_DEF = 0
-    _XX_COUNTRY_CODE_DEF = u'US'
-    _XX_DTMF_MODE_FLAG_MAP = {
-        u'RTP-in-band': 0,
-        u'RTP-out-of-band': 1,
-        u'SIP-INFO': 4
+    _LOCALE_DEF = (u'0', u'US')
+    _SIP_DTMF_MODE = {
+        u'RTP-in-band': u'0',
+        u'RTP-out-of-band': u'1',
+        u'SIP-INFO': u'4'
     }
-    _XX_DTMF_MODE_FLAG_DEF = 1
+    _DTMF_DEF = u'1'
+    _NTP_ZONE_NUM_DEF = u'23'
     _XX_PHONEBOOK_NAME = {
         u'fr': u'Annuaire entreprise',
         u'en': u'Enterprise directory'
     }
     _XX_PHONEBOOK_NAME_DEF = u''
-    _XX_NTP_ZONE_NUM_DEF = 23
-    
-    _TZ_MAP = _gen_tz_map()
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
@@ -222,28 +219,19 @@ class BaseTechnicolorPlugin(StandardPlugin):
             dst = os.path.join(self._tftpboot_dir, filename)
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
     
-    def _gen_xx_language_type(self, raw_config):
+    def _add_country_and_lang(self, raw_config):
         locale = raw_config.get(u'locale')
-        if locale in self._XX_LOCALE_MAP:
-            return self._XX_LOCALE_MAP[locale][0]
-        else:
-            return self._XX_LANGUAGE_TYPE_DEF
+        raw_config[u'XX_language_type'], raw_config[u'XX_country_code'] = \
+                                self._LOCALE.get(locale, self._LOCALE_DEF)
     
-    def _gen_xx_country_code(self, raw_config):
-        locale = raw_config.get(u'locale')
-        if locale in self._XX_LOCALE_MAP:
-            return self._XX_LOCALE_MAP[locale][1]
-        else:
-            return self._XX_COUNTRY_CODE_DEF
-    
-    def _gen_xx_config_sn(self, raw_config):
+    def _add_config_sn(self, raw_config):
         # The only thing config_sn needs to be is 12 digit long and different
         # from one config file to another.
-        return '%012.f' % time.time()
+        raw_config[u'XX_config_sn'] = '%012.f' % time.time()
     
-    def _gen_xx_dtmf_mode_flag(self, raw_config):
-        return self._XX_DTMF_MODE_FLAG_MAP.get(raw_config[u'sip'].get(u'dtmf_mode'),
-                                               self._XX_DTMF_MODE_FLAG_DEF)
+    def _add_dtmf_mode_flag(self, raw_config):
+        raw_config[u'XX_dtmf_mode_flag'] = self._SIP_DTMF_MODE.get(raw_config.get[u'sip_dtmf_mode'],
+                                                          self._DTMF_DEF)
     
     def _gen_xx_phonebook_name(self, raw_config):
         if u'locale' in raw_config:
@@ -253,18 +241,11 @@ class BaseTechnicolorPlugin(StandardPlugin):
         else:
             return self._XX_PHONEBOOK_NAME_DEF
     
-    def _gen_xx_ntp_zone_num(self, raw_config):
-        if u'timezone' in raw_config:
-            return self._timezone_to_num(raw_config[u'timezone'])
-        else:
-            return self._XX_NTP_ZONE_NUM_DEF
-    
-    def _timezone_to_num(self, timezone):
-        inform = tzinform.get_timezone_info(timezone)
-        utcoffset_m = inform['utcoffset'].as_minutes
+    def _tzinfo_to_zone_num(self, tzinfo):
+        utcoffset_m = tzinfo['utcoffset'].as_minutes
         if utcoffset_m not in self._TZ_MAP:
             # No UTC offset matching. Let's try finding one relatively close...
-            for supp_offset in (30, -30, 60, -60):
+            for supp_offset in [30, -30, 60, -60]:
                 if utcoffset_m + supp_offset in self._TZ_MAP:
                     utcoffset_m += supp_offset
                     break
@@ -272,8 +253,8 @@ class BaseTechnicolorPlugin(StandardPlugin):
                 return self._XX_NTP_ZONE_NUM_DEF
         
         dst_map = self._TZ_MAP[utcoffset_m]
-        if inform['dst']:
-            dst_key = inform['dst']['as_string']
+        if tzinfo['dst']:
+            dst_key = tzinfo['dst']['as_string']
         else:
             dst_key = None
         if dst_key not in dst_map:
@@ -285,16 +266,37 @@ class BaseTechnicolorPlugin(StandardPlugin):
                 dst_key = dst_map.keys[0]
         return dst_map[dst_key]
     
-    def _gen_xx_function_keys(self, raw_config):
-        return self._format_function_keys(raw_config[u'funckeys'])
+    def _add_ntp_zone_num(self, raw_config):
+        raw_config[u'XX_ntp_zone_num'] = self._NTP_ZONE_NUM_DEF
+        if u'timezone' in raw_config:
+            try:
+                tzinfo = tzinform.get_timezone_info(raw_config[u'timezone'])
+            except tzinform.TimezoneNotFoundError, e:
+                logger.info('Unknown timezone: %s', e)
+            else:
+                raw_config[u'XX_ntp_zone_num'] = self._tzinfo_to_zone_num(tzinfo)
     
-    def _format_function_keys(self, funckeys):
-        function_keys = {}
-        for key_no, key in funckeys.iteritems():
-            exten = key[u'exten']
-            supervise = int(key[u'supervision'])
-            function_keys[key_no] = u'%s/<sip:%s>' % (u'LS'[supervise], exten)
-        return function_keys
+    def _add_fkeys(self, raw_config):
+        funckeys = raw_config[u'funckeys']
+        lines = []
+        for keynum in xrange(1, 67):
+            funckey_no = unicode(keynum)
+            if funckey_no in funckeys:
+                funckey_dict = funckeys[funckey_no]
+                funckey_type = funckey_dict[u'type']
+                if funckey_type == u'speeddial':
+                    prefix = u'L'
+                elif funckey_type == u'blf':
+                    prefix = u'S'
+                else:
+                    logger.info('Unsupported funckey type: %s', funckey_type)
+                    lines.append(u'FeatureKeyExt%02d=L/<sip:>' % keynum)
+                    continue
+                lines.append(u'FeatureKeyExt%02d=%s/<sip:%s>' %
+                             (keynum, prefix, funckey_dict[u'value']))
+            else:
+                lines.append(u'FeatureKeyExt%02d=L/<sip:>' % keynum)
+        raw_config[u'XX_fkeys'] = u'\n'.join(lines)
     
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
@@ -304,8 +306,6 @@ class BaseTechnicolorPlugin(StandardPlugin):
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-        if u'sip' not in raw_config:
-            raise RawConfigError('must have a sip parameter')
     
     def _check_device(self, device):
         if u'mac' not in device:
@@ -317,24 +317,23 @@ class BaseTechnicolorPlugin(StandardPlugin):
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         
-        raw_config[u'XX_language_type'] = self._gen_xx_language_type(raw_config)
-        raw_config[u'XX_country_code'] = self._gen_xx_country_code(raw_config)
-        raw_config[u'XX_config_sn'] = self._gen_xx_config_sn(raw_config)
-        raw_config[u'XX_dtmf_mode_flag'] = self._gen_xx_dtmf_mode_flag(raw_config)
+        self._add_country_and_lang(raw_config)
+        self._add_config_sn(raw_config)
+        self._add_dtmf_mode_flag(raw_config)
+        self._add_ntp_zone_num(raw_config)
+        self._add_fkeys(raw_config)
         raw_config[u'XX_phonebook_name'] = self._gen_xx_phonebook_name(raw_config)
-        raw_config[u'XX_function_keys'] = self._gen_xx_function_keys(raw_config)
-        raw_config[u'XX_ntp_zone_num'] = self._gen_xx_ntp_zone_num(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
     
     def deconfigure(self, device):
-        self._check_device(device)
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
             os.remove(path)
         except OSError, e:
-            logger.warning('error while deconfiguring device: %s', e)
+            # ignore
+            logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
         try:
@@ -349,6 +348,6 @@ class BaseTechnicolorPlugin(StandardPlugin):
                     e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
                     return failure.Failure(e)
             uri = sip.URI('sip', ip, port=5060)
-            d = sip.send_notify(uri, 'check-sync')
+            d = sip.send_notify(uri, 'check-sync;reboot=false')
             d.addCallback(callback)
             return d

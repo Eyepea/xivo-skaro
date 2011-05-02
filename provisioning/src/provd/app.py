@@ -87,79 +87,71 @@ def _check_common_raw_config_validity(raw_config):
     # Check if the common raw config is valid or raise an exception
     for param in [u'ip', u'http_port', u'tftp_port']:
         if param not in raw_config:
-            raise RawConfigError('missing "%s" parameter' % param)
+            raise RawConfigError('missing %s parameter' % param)
 
 
 def _check_raw_config_validity(raw_config):
-    # check if all the mandatory parameters are present
+    # Check if all the mandatory parameters are present. Note that this
+    # check is done before settings the default values. 
     # XXX this is bit repetitive...
     _check_common_raw_config_validity(raw_config)
-    if u'sip' in raw_config:
-        sip = raw_config[u'sip']
-        if u'lines' in sip:
-            for line_no, line in sip[u'lines'].iteritems():
-                for param in [u'proxy_ip']:
-                    if param not in line and param not in sip:
-                        raise RawConfigError('missing parameter "sip.lines.%s.%s"' %
-                                             (line_no, param))
-                for param in [u'username', u'password', u'display_name']:
-                    if param not in line:
-                        raise RawConfigError('missing parameter "sip.lines.%s.%s"' %
-                                             (line_no, param))
-    if u'sccp' in raw_config:
-        sccp = raw_config[u'sccp']
-        if u'call_managers' in sccp:
-            for priority, call_manager in sccp[u'call_managers'].iteritems():
-                for param in [u'ip']:
-                    if param not in call_manager:
-                        raise RawConfigError('missing parameter "sccp.call_managers.%s.%s"' %
-                                             (priority, param))
+    if raw_config.get(u'ntp_enabled'):
+        if u'ntp_ip' not in raw_config:
+            raise RawConfigError('missing ntp_ip parameter')
+    if raw_config.get(u'vlan_enabled'):
+        if u'vlan_id' not in raw_config:
+            raise RawConfigError('missing vlan_id parameter')
+    if raw_config.get(u'syslog_enabled'):
+        if u'syslog_ip' not in raw_config:
+            raise RawConfigError('missing syslog_ip parameter')
+    if u'sip_lines' in raw_config:
+        for line_no, line in raw_config[u'sip_lines'].iteritems():
+            if u'proxy_ip' not in line and u'sip_proxy_ip' not in raw_config:
+                raise RawConfigError('missing proxy_ip parameter for line %s' %
+                                     line_no)
+            for param in [u'username', u'password', u'display_name']:
+                if param not in line:
+                    raise RawConfigError('missing %s parameter for line %s' %
+                                         (param, line_no))
+    if u'sccp_call_managers' in raw_config:
+        for priority, call_manager in raw_config[u'sccp_all_managers'].iteritems():
+            if u'ip' not in call_manager:
+                raise RawConfigError('missing ip parameter for call manager %s' %
+                                     priority)
     if u'funckeys' in raw_config:
         funckeys = raw_config[u'funckeys']
-        for funckey in funckeys.itervalues():
-            for param in [u'exten']:
-                if param not in funckey:
-                    raise RawConfigError('missing parameter "funckeys.x.%s"' %
-                                         param)
-
-
-def _set_if_absent(dict_, key, value):
-    # dict_[key] = value if key not in dict_
-    if key not in dict_:
-        dict_[key] = value
+        for funckey_no, funckey in funckeys.iteritems():
+            try:
+                type_ = funckey[u'type']
+            except KeyError:
+                raise RawConfigError('missing type parameter for funckey %s' %
+                                     funckey_no)
+            else:
+                if (type_ == u'speeddial' or type_ == u'blf') and u'value' not in funckey:
+                    raise RawConfigError('missing value parameter for funckey %s' %
+                                         funckey_no)
 
 
 def _set_defaults_raw_config(raw_config):
+    # Set defaults parameter in raw config.
+    # Note that this is done after checking the raw config is valid.
     # modify raw_config by setting default parameter value
-    # XXX it's getting a bit repetitive, i.e. might be time to refactor...
-    if u'syslog' in raw_config:
-        syslog = raw_config[u'syslog']
-        _set_if_absent(syslog, u'port', 514)
-        _set_if_absent(syslog, u'level', u'warning')
-    if u'sip' in raw_config:
-        sip = raw_config[u'sip']
-        if u'proxy_ip' in sip:
-            _set_if_absent(sip, u'registrar_ip', sip[u'proxy_ip'])
-        _set_if_absent(sip, u'srtp_mode', u'disabled')
-        _set_if_absent(sip, u'transport', u'udp')
-        if u'lines' not in sip:
-            sip[u'lines'] = {}
-        else:
-            lines = sip[u'lines']
-            for line in lines.itervalues():
-                if u'proxy_ip' in line:
-                    _set_if_absent(line, u'registrar_ip', line[u'proxy_ip'])
-                _set_if_absent(line, u'auth_username', line[u'username'])
-    if u'sccp' in raw_config:
-        sccp = raw_config[u'sccp']
-        _set_if_absent(sccp, u'call_managers', {})
-    _set_if_absent(raw_config, u'exten', {})
-    if u'funckeys' not in raw_config:
-        raw_config[u'funckeys'] = {}
+    if raw_config.get(u'syslog_enabled'):
+        raw_config.setdefault(u'syslog_port', 514)
+        raw_config.setdefault(u'level', u'warning')
+    if u'sip_proxy_ip' in raw_config:
+        raw_config.setdefault(u'sip_registrar_ip', raw_config[u'sip_proxy_ip'])
+    raw_config.setdefault(u'sip_srtp_mode', u'disabled')
+    raw_config.setdefault(u'sip_transport', u'udp')
+    if u'sip_lines' not in raw_config:
+        raw_config[u'sip_lines'] = {}
     else:
-        funckeys = raw_config[u'funckeys']
-        for funckey in funckeys.itervalues():
-            _set_if_absent(funckey, u'supervision', False)
+        for line in raw_config[u'sip_lines'].itervalues():
+            if u'proxy_ip' in line:
+                line.setdefault(u'registrar_ip', line[u'proxy_ip'])
+            line.setdefault(u'auth_username', line[u'username'])
+    raw_config.setdefault(u'sccp_call_managers', {})
+    raw_config.setdefault(u'funckeys', {})
 
 
 def _split_config(config):
@@ -252,8 +244,9 @@ class ProvisioningApplication(object):
         logger.info('Configuring device %s with plugin %s', device[ID_KEY], plugin.id)
         try:
             _check_raw_config_validity(raw_config)
-        except Exception, e:
-            logger.error('Error while configuring device %s: %s', device[ID_KEY], e)
+        except Exception:
+            logger.error('Error while configuring device %s', device[ID_KEY],
+                         exc_info=True)
         else:
             _set_defaults_raw_config(raw_config)
             try:

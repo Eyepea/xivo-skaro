@@ -15,20 +15,23 @@
 {% if user_password is defined -%}
 <User_Password>{{ user_password|e }}</User_Password>
 {% endif -%}
-<Primary_NTP_Server>{{ ntp_server_ip }}</Primary_NTP_Server>
+
+{% if ntp_enabled -%}
+<Primary_NTP_Server>{{ ntp_ip }}</Primary_NTP_Server>
+{% endif -%}
 
 {# Syslog settings -#}
-{% if syslog -%}
-<Syslog_Server>syslog['ip']:syslog['port']</Syslog_Server>
+{% if syslog_enabled -%}
+<Syslog_Server>{{ syslog_ip }}:{{ syslog_port }}</Syslog_Server>
 {% endif -%}
 
 {# VLAN settings -#}
-{% if vlan -%}
+{% if vlan_enabled -%}
 <Enable_VLAN>Yes</Enable_VLAN>
-<VLAN_ID>{{ vlan['id'] }}</VLAN_ID>
-{% if vlan['pc_port_id'] is defined -%}
+<VLAN_ID>{{ vlan_id }}</VLAN_ID>
+{% if vlan_pc_port_id is defined -%}
 <Enable_PC_Port_VLAN_Tagging>Yes</Enable_PC_Port_VLAN_Tagging>
-<PC_Port_VLAN_ID>{{ vlan['pc_port_id'] }}</PC_Port_VLAN_ID>
+<PC_Port_VLAN_ID>{{ vlan_pc_port_id }}</PC_Port_VLAN_ID>
 {% endif -%}
 {% endif -%}
 
@@ -36,12 +39,12 @@
 <Upgrade_Rule></Upgrade_Rule>
 {% endblock -%}
 
-<Voice_Mail_Number>{{ exten['voicemail'] }}</Voice_Mail_Number>
-<Call_Pickup_Code>{{ exten['pickup_call'] }}</Call_Pickup_Code>
-<Attendant_Console_Call_Pickup_Code>{{ exten['pickup_call'] }}</Attendant_Console_Call_Pickup_Code>
+<Voice_Mail_Number>{{ exten_voicemail }}</Voice_Mail_Number>
+<Call_Pickup_Code>{{ exten_pickup_call }}</Call_Pickup_Code>
+<Attendant_Console_Call_Pickup_Code>{{ exten_pickup_call }}</Attendant_Console_Call_Pickup_Code>
 
-{% if '1' in sip['lines'] -%}
-<Station_Name>{{ sip['lines']['1']['display_name']|e }}</Station_Name>
+{% if '1' in sip_lines -%}
+<Station_Name>{{ sip_lines['1']['display_name']|e }}</Station_Name>
 {% endif -%}
 
 {% block dictionary_server_script -%}
@@ -50,7 +53,7 @@
 <Language_Selection>{{ XX_language }}</Language_Selection>
 {{ XX_timezone }}
 
-{% for line_no, line in sip['lines'].iteritems() %}
+{% for line_no, line in sip_lines.iteritems() %}
 <Line_Enable_{{ line_no }}_>Yes</Line_Enable_{{ line_no }}_>
 <Proxy_{{ line_no }}_>{{ XX_proxies[line_no] }}</Proxy_{{ line_no }}_>
 <Use_DNS_SRV_{{ line_no }}_>Yes</Use_DNS_SRV_{{ line_no }}_>
@@ -75,9 +78,9 @@
      want to line key def to override the func key def (is it what we want ?) -->
 {{ XX_fkeys }}
 
-{% for line_no, line in sip['lines'].iteritems() %}
+{% for line_no, line in sip_lines.iteritems() %}
 <Extension_{{ line_no }}_>{{ line_no }}</Extension_{{ line_no }}_>
-<Short_Name_{{ line_no }}_>$USER</Short_Name_{{ line_no }}_>
+<Short_Name_{{ line_no }}_>{{ line['number']|d('$USER') }}</Short_Name_{{ line_no }}_>
 <Extended_Function_{{ line_no }}_></Extended_Function_{{ line_no }}_>
 {% endfor -%}
 
