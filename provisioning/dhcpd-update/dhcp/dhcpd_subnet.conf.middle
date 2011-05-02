@@ -46,7 +46,6 @@
         # Kirk
         allow members of "KirkIP6000";
         # Linksys
-        allow members of "LinksysSPA400";
         allow members of "LinksysSPA901";
         allow members of "LinksysSPA921";
         allow members of "LinksysSPA922";

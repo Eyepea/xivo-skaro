@@ -2,9 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 """Small utility to download and update the configuration files of the DHCP
-   server installed on a XiVO, so that any phone that is supported by one
-   of the xivo-* provd plugins is able to boot correctly using the DHCP server
-   installed on a XiVO.
+server installed on a XiVO, so that any phone that is supported by one
+of the xivo-* provd plugins is able to boot correctly using the DHCP server
+installed on a XiVO.
+
 """
 
 __version__ = "$Revision$ $Date$"
