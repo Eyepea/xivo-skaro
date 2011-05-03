@@ -243,11 +243,12 @@ switch($act)
 			{
 				$actid = $action['name'];
 
-				$optout[$actid]['whom'] = $action['whom'];
 				$optout[$actid]['focus'] = $action['focus'] == 1 ? "yes" : "no";
+				$optout[$actid]['zip'] = 1;
 
+				$condout[$actid]['whom'] = $action['whom'];
 				$condout[$actid]['contexts'] = dwho_json::decode($action['context'], true) == false ? array() : dwho_json::decode($action['context'], true);
-				$condout[$actid]['capaids'] = dwho_json::decode($action['capaids'], true) == false ? array() : dwho_json::decode($action['capaids'], true);
+				$condout[$actid]['profileids'] = dwho_json::decode($action['capaids'], true) == false ? array() : dwho_json::decode($action['capaids'], true);
 
 				$arr = array();
 				$arr = dwho_json::decode($action['sheet_info'], true);
@@ -258,10 +259,10 @@ switch($act)
 					if($a1[1] == 'form')
 						$qtui = $a1[3];
 				}
-				$dispout[$actid]['systrays'] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
-				$dispout[$actid]['screens'] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
-				$dispout[$actid]['qtui'][$qtui] = $action['sheet_qtui'];
-				$dispout[$actid]['infos'] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
+				$dispout[$actid]['systray_info'] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
+				$dispout[$actid]['sheet_info'] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
+				$dispout[$actid]['action_info'] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
+				$dispout[$actid]['sheet_qtui'][$qtui] = $action['sheet_qtui'];
 			}
 			$out['sheets']['options'] = $optout;
 			$out['sheets']['displays'] = $dispout;
@@ -350,7 +351,9 @@ switch($act)
 
 		$out['regcommands']['itm_regcommands'] = array("login_pass", "login_capas",
                                                                "getlist", "ipbxcommand",
-                                                               "availstate", "keepalive", "history");
+                                                               "availstate", "keepalive",
+                                                               "featuresput", "featuresget",
+                                                               "history");
 		$out['ipbxcommands']['itm_ipbxcommands'] = array("originate", "agentlogin", "sipnotify",
                                                                  "atxfer", "transfer", "dial", "park");
 
