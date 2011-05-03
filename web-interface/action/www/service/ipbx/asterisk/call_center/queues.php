@@ -45,7 +45,8 @@ switch($act)
 	case 'add':
 		$appqueue = &$ipbx->get_application('queue');
 
-		$result = $fm_save = $error = null;
+		$fm_save = $error = null;
+		$result = array();
 
 		$pannounce = array();
 		$pannounce['list'] = $appqueue->get_announce();
@@ -116,6 +117,11 @@ switch($act)
 				$cti[] = $_QR['nonctipresence-name'][$i].':'.$_QR['nonctipresence-weight'][$i];
 			}
 			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
+
+			if(is_array($_QR['queue']['joinempty']))
+				$_QR['queue']['joinempty'] = implode(',', $_QR['queue']['joinempty']);
+			if(is_array($_QR['queue']['leavewhenempty']))
+				$_QR['queue']['leavewhenempty'] = implode(',', $_QR['queue']['leavewhenempty']);
 
 			if($appqueue->set_add($_QR) === false
 			|| $err === true
@@ -210,31 +216,48 @@ switch($act)
 		}
 
 		// CTI presences
-		$pres = array();
-		if(strlen($_QR['queuefeatures']['ctipresence']) > 0)
+		if(array_key_exists('queuefeatures', $_QR))
 		{
-			foreach(split(',',$_QR['queuefeatures']['ctipresence']) as $ctitem)
+			$pres = array();
+			if(strlen($_QR['queuefeatures']['ctipresence']) > 0)
 			{
-				list($pid, $num) = explode(':',$ctitem);
-				$pres[] = array($ctistatus[$pid], $num);
+				foreach(split(',',$_QR['queuefeatures']['ctipresence']) as $ctitem)
+				{
+					list($pid, $num) = explode(':',$ctitem);
+					$pres[] = array($ctistatus[$pid], $num);
+				}
 			}
-		}
-		$result['queuefeatures']['ctipresence'] = $pres;
+			$result['queuefeatures']['ctipresence'] = $pres;
 
-		$pres = array();
-		if(strlen($_QR['queuefeatures']['nonctipresence']) > 0)
-		{
-			foreach(split(',',$_QR['queuefeatures']['nonctipresence']) as $ctitem)
+			$pres = array();
+			if(strlen($_QR['queuefeatures']['nonctipresence']) > 0)
 			{
-				list($pid, $num) = explode(':',$ctitem);
-				$pres[] = array($ctistatus[$pid], $num);
+				foreach(split(',',$_QR['queuefeatures']['nonctipresence']) as $ctitem)
+				{
+					list($pid, $num) = explode(':',$ctitem);
+					$pres[] = array($ctistatus[$pid], $num);
+				}
 			}
+			$result['queuefeatures']['nonctipresence'] = $pres;
 		}
-		$result['queuefeatures']['nonctipresence'] = $pres;
-		var_dump($_QR['queuefeatures']);
-		var_dump($result['queuefeatures']);
+
+		if(array_key_exists('queue',$result))
+		{
+			if(!is_null($result['queue']['joinempty']))
+				$result['queue']['joinempty'] = explode(',', $result['queue']['joinempty']);
+
+			if(!is_null($result['queue']['leavewhenempty']))
+				$result['queue']['leavewhenempty'] = explode(',', $result['queue']['leavewhenempty']);
+		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('js/tmp/multiselect/css/ui.multiselect.css');
+		$dhtml->set_css('js/tmp/multiselect/css/common.css');
+
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/localisation/jquery.localisation-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/ui.multiselect.js');
+
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/suggest.js');
@@ -246,7 +269,8 @@ switch($act)
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
-		$_TPL->set_var('dialaction',$result['dialaction']);
+		if(array_key_exists('dialaction',$result))
+			$_TPL->set_var('dialaction',$result['dialaction']);
 		$_TPL->set_var('dialaction_from','queue');
 		$_TPL->set_var('element',$appqueue->get_elements());
 		$_TPL->set_var('user',$user);
@@ -257,10 +281,12 @@ switch($act)
 		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
 		$_TPL->set_var('context_list',$appqueue->get_context_list());
-		$_TPL->set_var('schedule_id', $result['schedule_id']);
 		$_TPL->set_var('ctipresence', $ctistatus);
 		$_TPL->set_var('nonctipresence', $ctistatus);
+		if(array_key_exists('schedule_id', $result))
+			$_TPL->set_var('schedule_id', $result['schedule_id']);
 		break;
+
 	case 'edit':
 		$appqueue = &$ipbx->get_application('queue');
 
@@ -341,6 +367,11 @@ switch($act)
 			}
 			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
 
+			if(is_array($_QR['queue']['joinempty']))
+				$_QR['queue']['joinempty'] = implode(',', $_QR['queue']['joinempty']);
+			if(is_array($_QR['queue']['leavewhenempty']))
+				$_QR['queue']['leavewhenempty'] = implode(',', $_QR['queue']['leavewhenempty']);
+
 			if($appqueue->set_edit($_QR) === false
 			|| $err === true
 			|| $appqueue->edit() === false)
@@ -348,7 +379,6 @@ switch($act)
 				$fm_save = false;
 				$result = $appqueue->get_result();
 				$error = array_merge($appqueue->get_error(), $errval);
-				var_dump($error);
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
@@ -457,7 +487,20 @@ switch($act)
 		}
 		$return['queuefeatures']['nonctipresence'] = $pres;
 
+		if(!is_null($return['queue']['joinempty']))
+			$return['queue']['joinempty'] = explode(',', $return['queue']['joinempty']);
+
+		if(!is_null($return['queue']['leavewhenempty']))
+			$return['queue']['leavewhenempty'] = explode(',', $return['queue']['leavewhenempty']);
+
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('js/tmp/multiselect/css/ui.multiselect.css');
+		$dhtml->set_css('js/tmp/multiselect/css/common.css');
+
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/localisation/jquery.localisation-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js');
+		$dhtml->set_js('js/tmp/multiselect/js/ui.multiselect.js');
+
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/suggest.js');
@@ -481,10 +524,12 @@ switch($act)
 		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
 		$_TPL->set_var('context_list',$appqueue->get_context_list());
-		$_TPL->set_var('schedule_id', $return['schedule_id']);
+		if(array_key_exists('schedule_id',$return))
+			$_TPL->set_var('schedule_id', $return['schedule_id']);
 		$_TPL->set_var('ctipresence', $ctistatus);
 		$_TPL->set_var('nonctipresence', $ctistatus);
 		break;
+
 	case 'delete':
 		$param['page'] = $page;
 

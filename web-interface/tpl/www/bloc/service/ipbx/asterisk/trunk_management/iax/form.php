@@ -461,8 +461,6 @@ endif;
 						'multiple' => true,
 						'key'   => 'name',
 						'altkey'   => 'name',
-            //'empty' => true,
-            //'help'    => $this->bbf('hlp_fm_protocol-inkeys'),
             'selected'  => $info['protocol']['inkeys'],
             'default' => $element['protocol']['inkeys']['default']),
 				$pubkeys),

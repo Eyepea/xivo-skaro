@@ -25,7 +25,7 @@ $info = $this->get_var('info');
 <div id="sr-queues" class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?><font><?=$info['queuefeatures']['identity']?></font></span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?><font><?=$this->get_var('info','queuefeatures','identity')?></font></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 <?php

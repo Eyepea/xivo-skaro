@@ -47,7 +47,7 @@ endif;
 				  'labelid' => 'queuefeatures-name',
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['displayname']['default'],
-				  'value'	=> $info['queuefeatures']['displayname'],
+				  'value'	=> $this->get_var('info','queuefeatures','displayname'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queuefeatures','displayname')))),
 
@@ -56,7 +56,7 @@ endif;
 				  'labelid' => 'queuefeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['number']['default'],
-				  'value'	=> $info['queuefeatures']['number'],
+				  'value'	=> $this->get_var('info','queuefeatures','number'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queuefeatures','number')))),
 
@@ -68,7 +68,7 @@ endif;
 				    'bbf'	=> 'fm_queue_strategy-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['strategy']['default'],
-				    'selected'	=> $info['queue']['strategy']),
+				    'selected'	=> $this->get_var('info','queue','strategy')),
 			      $element['queue']['strategy']['value']);
 
 if($context_list !== false):
@@ -78,7 +78,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['queuefeatures']['context']['default'],
-				    'selected'	=> $info['queuefeatures']['context']),
+				    'selected'	=> $this->get_var('info','queuefeatures','context')),
 			      $context_list);
 else:
 	echo	'<div id="fd-queuefeatures-context" class="txt-center">',
@@ -97,7 +97,7 @@ if($moh_list !== false):
 				    'key'	=> 'category',
 				    'invalid'	=> ($this->get_var('act') === 'edit'),
 				    'default'	=> ($this->get_var('act') === 'add' ? $element['queue']['musicclass']['default'] : null),
-				    'selected'	=> $info['queue']['musicclass']),
+				    'selected'	=> $this->get_var('info','queue','musicclass')),
 			      $moh_list);
 endif;
 
@@ -108,7 +108,7 @@ if($announce_list !== false):
 						'help' => $this->bbf('hlp_fm_queue-announce'),
 				    'empty'	=> true,
 				    'default'	=> $element['queue']['announce']['default'],
-				    'selected'	=> $info['queue']['announce']),
+				    'selected'	=> $this->get_var('info','queue','announce')),
 			      $announce_list);
 else:
 	echo	'<div class="txt-center">',
@@ -127,7 +127,7 @@ endif;
 				    'bbf'	=> 'fm_callerid_mode-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callerid']['mode']['default'],
-				    'selected'	=> $info['callerid']['mode']),
+				    'selected'	=> $this->get_var('info','callerid','mode')),
 			      $element['callerid']['mode']['value'],
 			      'onchange="xivo_ast_chg_callerid_mode(this);"'),
 
@@ -137,7 +137,7 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $info['callerid']['callerdisplay'],
+				  'value'	=> $this->get_var('info','callerid','callerdisplay'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','callerid','callerdisplay')))),
 
@@ -146,7 +146,7 @@ endif;
 				  'labelid' => 'queuefeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['queuefeatures']['preprocess_subroutine'],
+				  'value'	=> $this->get_var('info','queuefeatures','preprocess_subroutine'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queuefeatures','preprocess_subroutine'))));
 ?>
@@ -165,7 +165,7 @@ endif;
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
 				    'default'	=> $element['queue']['announce-frequency']['default'],
-				    'selected'	=> $info['queue']['announce-frequency']),
+				    'selected'	=> $this->get_var('info','queue','announce-frequency')),
 			      $element['queue']['announce-frequency']['value']),
 
      $form->select(array('desc'  => $this->bbf('fm_queue_min-announce-frequency'),
@@ -177,7 +177,7 @@ endif;
             'bbfopt'  => array('argmode' => 'paramvalue',
                  'time' => array('from'=>'second', 'format'=>'%M%s')),
             'help'    => $this->bbf('hlp_fm_queue_min-announce-frequency'),
-            'selected'  => $info['queue']['min-announce-frequency'],
+            'selected'  => $this->get_var('info','queue','min-announce-frequency'),
             'default' => $element['queue']['min-announce-frequency']['default']),
          $element['queue']['min-announce-frequency']['value']),
 
@@ -189,14 +189,14 @@ endif;
 				    'bbf'	=> 'fm_queue_announce-holdtime-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['announce-holdtime']['default'],
-				    'selected'	=> $info['queue']['announce-holdtime']),
+				    'selected'	=> $this->get_var('info','queue','announce-holdtime')),
 				$element['queue']['announce-holdtime']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_announce_holdtime'),
 				      'name'	=> 'queuefeatures[announce_holdtime]',
 				      'labelid' => 'queuefeatures-announce_holdtime',
 				      'default'	=> $element['queuefeatures']['announce_holdtime']['default'],
-				      'checked'	=> $info['queuefeatures']['announce_holdtime'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','announce_holdtime'))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_announce-round-seconds'),
 				    'name'	=> 'queue[announce-round-seconds]',
@@ -206,7 +206,7 @@ endif;
 				    'bbf'	=> 'fm_queue_announce-round-seconds-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['announce-round-seconds']['default'],
-				    'selected'	=> $info['queue']['announce-round-seconds']),
+				    'selected'	=> $this->get_var('info','queue','announce-round-seconds')),
 			      $element['queue']['announce-round-seconds']['value']),
 
      $form->select(array('desc'  => $this->bbf('fm_queue_announce-position'),
@@ -217,7 +217,7 @@ endif;
             'bbf'   => 'fm_queue_announce-position-opt',
             'bbfopt'  => array('argmode' => 'paramvalue'),
             'help'    => $this->bbf('hlp_fm_queue_announce-position'),
-            'selected'  => $info['queue']['announce-position'],
+            'selected'  => $this->get_var('info','queue','announce-position'),
             'default' => $element['queue']['announce-position']['default']),
          $element['queue']['announce-position']['value']),
 
@@ -227,7 +227,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-announce-position-limit'),
             'key'      => false,
             'help'     => $this->bbf('hlp_fm_queue_announce-position-limit'),
-            'selected' => $info['queue']['announce-position-limit'],
+            'selected' => $this->get_var('info','queue','announce-position-limit'),
             'default'  => $element['queue']['announce-position-limit']['default']),
         $element['queue']['announce-position-limit']['value']),
 
@@ -237,7 +237,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-youarenext'),
 				    'empty'	=> $this->bbf('fm_queue_queue-youarenext-opt','default'),
 				    'default'	=> $element['queue']['queue-youarenext']['default'],
-				    'selected'	=> $info['queue']['queue-youarenext']),
+				    'selected'	=> $this->get_var('info','queue','queue-youarenext')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-thereare'),
@@ -246,7 +246,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-thereare'),
 				    'empty'	=> $this->bbf('fm_queue_queue-thereare-opt','default'),
 				    'default'	=> $element['queue']['queue-thereare']['default'],
-				    'selected'	=> $info['queue']['queue-thereare']),
+				    'selected'	=> $this->get_var('info','queue','queue-thereare')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-callswaiting'),
@@ -255,7 +255,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-callswaiting'),
 				    'empty'	=> $this->bbf('fm_queue_queue-callswaiting-opt','default'),
 				    'default'	=> $element['queue']['queue-callswaiting']['default'],
-				    'selected'	=> $info['queue']['queue-callswaiting']),
+				    'selected'	=> $this->get_var('info','queue','queue-callswaiting')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-holdtime'),
@@ -264,7 +264,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-holdtime'),
 				    'empty'	=> $this->bbf('fm_queue_queue-holdtime-opt','default'),
 				    'default'	=> $element['queue']['queue-holdtime']['default'],
-				    'selected'	=> $info['queue']['queue-holdtime']),
+				    'selected'	=> $this->get_var('info','queue','queue-holdtime')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-minutes'),
@@ -273,7 +273,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-minutes'),
 				    'empty'	=> $this->bbf('fm_queue_queue-minutes-opt','default'),
 				    'default'	=> $element['queue']['queue-minutes']['default'],
-				    'selected'	=> $info['queue']['queue-minutes']),
+				    'selected'	=> $this->get_var('info','queue','queue-minutes')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-seconds'),
@@ -282,7 +282,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-seconds'),
 				    'empty'	=> $this->bbf('fm_queue_queue-seconds-opt','default'),
 				    'default'	=> $element['queue']['queue-seconds']['default'],
-				    'selected'	=> $info['queue']['queue-seconds']),
+				    'selected'	=> $this->get_var('info','queue','queue-seconds')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-thankyou'),
@@ -291,7 +291,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-thankyou'),
 				    'empty'	=> $this->bbf('fm_queue_queue-thankyou-opt','default'),
 				    'default'	=> $element['queue']['queue-thankyou']['default'],
-				    'selected'	=> $info['queue']['queue-thankyou']),
+				    'selected'	=> $this->get_var('info','queue','queue-thankyou')),
 			      $announce_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_queue-reporthold'),
@@ -300,7 +300,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-queue-reporthold'),
 				    'empty'	=> $this->bbf('fm_queue_queue-reporthold-opt','default'),
 				    'default'	=> $element['queue']['queue-reporthold']['default'],
-				    'selected'	=> $info['queue']['queue-reporthold']),
+				    'selected'	=> $this->get_var('info','queue','queue-reporthold')),
 			      $announce_list);
 
 	if(empty($announce_list) === false):
@@ -393,7 +393,7 @@ endif;
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
 				    'default'	=> $element['queue']['periodic-announce-frequency']['default'],
-				    'selected'	=> $info['queue']['periodic-announce-frequency']),
+				    'selected'	=> $this->get_var('info','queue','periodic-announce-frequency')),
 			      $element['queue']['periodic-announce-frequency']['value']);
 
   echo $form->checkbox(array('desc'  => $this->bbf('fm_queue_random-periodic-announce'),
@@ -401,7 +401,7 @@ endif;
               'labelid' => 'queue-random-periodic-announce',
 					'help' => $this->bbf('hlp_fm_queue-random-periodic-announce'),
               'help'    => $this->bbf('hlp_fm_queue_random-periodic-announce'),
-              'checked' => $info['queue']['random-periodic-announce'],
+              'checked' => $this->get_var('info','queue','random-periodic-announce'),
               'default' => $element['queue']['random-periodic-announce']['default']));
 
 ?>
@@ -615,7 +615,7 @@ endif;
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
 				    'default'	=> $element['queuefeatures']['timeout']['default'],
-				    'selected'	=> $info['queuefeatures']['timeout']),
+				    'selected'	=> $this->get_var('info','queuefeatures','timeout')),
 			      $element['queuefeatures']['timeout']['value']),
 
      $form->select(array('desc'  => $this->bbf('fm_queue_timeoutpriority'),
@@ -626,7 +626,7 @@ endif;
             'bbf'   => 'fm_queue_timeoutpriority-opt',
             'bbfopt'  => array('argmode' => 'paramvalue'),
             'help'    => $this->bbf('hlp_fm_queue_timeoutpriority'),
-            'selected'  => $info['queue']['timeoutpriority'],
+            'selected'  => $this->get_var('info','queue','timeoutpriority'),
             'default' => $element['queue']['timeoutpriority']['default']),
          $element['queue']['timeoutpriority']['value']),
 
@@ -634,55 +634,55 @@ endif;
 				      'name'	=> 'queuefeatures[data_quality]',
 				      'labelid' => 'queuefeatures-data-quality',
 				      'default'	=> $element['queuefeatures']['data_quality']['default'],
-				      'checked'	=> $info['queuefeatures']['data_quality'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','data_quality'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_hitting-callee'),
 				      'name'	=> 'queuefeatures[hitting_callee]',
 				      'labelid' => 'queuefeatures-hitting-callee',
 				      'default'	=> $element['queuefeatures']['hitting_callee']['default'],
-				      'checked'	=> $info['queuefeatures']['hitting_callee'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','hitting_callee'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_hitting-caller'),
 				      'name'	=> 'queuefeatures[hitting_caller]',
 				      'labelid' => 'queuefeatures-hitting-caller',
 				      'default'	=> $element['queuefeatures']['hitting_caller']['default'],
-				      'checked'	=> $info['queuefeatures']['hitting_caller'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','hitting_caller'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_retries'),
 				      'name'	=> 'queuefeatures[retries]',
 				      'labelid' => 'queuefeatures-retries',
 				      'default'	=> $element['queuefeatures']['retries']['default'],
-				      'checked'	=> $info['queuefeatures']['retries'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','retries'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_ring'),
 				      'name'	=> 'queuefeatures[ring]',
 				      'labelid' => 'queuefeatures-ring',
 				      'default'	=> $element['queuefeatures']['ring']['default'],
-				      'checked'	=> $info['queuefeatures']['ring'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','ring'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_transfer-user'),
 				      'name'	=> 'queuefeatures[transfer_user]',
 				      'labelid' => 'queuefeatures-transfer-user',
 				      'default'	=> $element['queuefeatures']['transfer_user']['default'],
-				      'checked'	=> $info['queuefeatures']['transfer_user'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','transfer_user'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_transfer-call'),
 				      'name'	=> 'queuefeatures[transfer_call]',
 				      'labelid' => 'queuefeatures-transfer-call',
 				      'default'	=> $element['queuefeatures']['transfer_call']['default'],
-				      'checked'	=> $info['queuefeatures']['transfer_call'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','transfer_call'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_write-caller'),
 				      'name'	=> 'queuefeatures[write_caller]',
 				      'labelid' => 'queuefeatures-write-caller',
 				      'default'	=> $element['queuefeatures']['write_caller']['default'],
-				      'checked'	=> $info['queuefeatures']['write_caller'])),
+				      'checked'	=> $this->get_var('info','queuefeatures','write_caller'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queuefeatures_write-calling'),
 				      'name'	=> 'queuefeatures[write_calling]',
 				      'labelid' => 'queuefeatures-write-calling',
 				      'default'	=> $element['queuefeatures']['write_calling']['default'],
-				      'checked'	=> $info['queuefeatures']['write_calling']));
+				      'checked'	=> $this->get_var('info','queuefeatures','write_calling')));
 ?>
 </div>
 
@@ -732,7 +732,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['queue']['context']['default'],
-				    'selected'	=> $info['queue']['context']),
+				    'selected'	=> $this->get_var('info','queue','context')),
 			      $context_list);
 endif;
 
@@ -742,7 +742,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-servicelevel'),
 				  'size'	=> 15,
 				  'default'	=> $element['queue']['servicelevel']['default'],
-				  'value'	=> $info['queue']['servicelevel'],
+				  'value'	=> $this->get_var('info','queue','servicelevel'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queue','servicelevel')))),
 
@@ -755,7 +755,7 @@ endif;
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'error'	=> $this->get_var('error','queue','timeout'),
 				    'default'	=> $element['queue']['timeout']['default'],
-				    'selected'	=> $info['queue']['timeout']),
+				    'selected'	=> $this->get_var('info','queue','timeout')),
 			      $element['queue']['timeout']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_retry'),
@@ -767,7 +767,7 @@ endif;
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'error'	=> $this->get_var('error','queue','retry'),
 				    'default'	=> $element['queue']['retry']['default'],
-				    'selected'	=> $info['queue']['retry']),
+				    'selected'	=> $this->get_var('info','queue','retry')),
 			      $element['queue']['retry']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_weight'),
@@ -777,7 +777,7 @@ endif;
 				    'key'	=> false,
 				    'default'	=> $element['queue']['weight']['default'],
 				    'error'	=> $this->get_var('error','queue','weight'),
-				    'selected'	=> $info['queue']['weight']),
+				    'selected'	=> $this->get_var('info','queue','weight')),
 			      $element['queue']['weight']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_wrapuptime'),
@@ -789,7 +789,7 @@ endif;
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'error'	=> $this->get_var('error','queue','warpuptime'),
 				    'default'	=> $element['queue']['wrapuptime']['default'],
-				    'selected'	=> $info['queue']['wrapuptime']),
+				    'selected'	=> $this->get_var('info','queue','wrapuptime')),
 			      $element['queue']['wrapuptime']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_queue_maxlen'),
@@ -798,7 +798,7 @@ endif;
 					'help' => $this->bbf('hlp_fm_queue-maxlen'),
 				  'size'	=> 5,
 				  'default'	=> $element['queue']['maxlen']['default'],
-				  'value'	=> $info['queue']['maxlen'],
+				  'value'	=> $this->get_var('info','queue','maxlen'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queue','maxlen')))),
 
@@ -811,7 +811,7 @@ endif;
 				    'bbf'	=> 'fm_queue_monitor-type-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['monitor-type']['default'],
-				    'selected'	=> $info['queue']['monitor-type']),
+				    'selected'	=> $this->get_var('info','queue','monitor-type')),
 			      $element['queue']['monitor-type']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_monitor-format'),
@@ -823,44 +823,42 @@ endif;
 				    'bbf'	=> 'ast_format_name_info',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['monitor-format']['default'],
-				    'selected'	=> $info['queue']['monitor-format']),
+				    'selected'	=> $this->get_var('info','queue','monitor-format')),
 			      $element['queue']['monitor-format']['value']),
 
-		$form->select(array('desc'	=> $this->bbf('fm_queue_joinempty'),
-				    'name'	=> 'queue[joinempty]',
-				    'labelid' => 'queue-joinempty',
-					'help' => $this->bbf('hlp_fm_queue-joinempty'),
-				    'key'	=> false,
-				    'bbf'	=> 'fm_queue_joinempty-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['queue']['joinempty']['default'],
-				    'selected'	=> $info['queue']['joinempty']),
-			      $element['queue']['joinempty']['value']),
+     $form->jq_select(array('desc'  => $this->bbf('fm_queue_joinempty'),
+            'name'    => 'queue[joinempty][]',
+						'labelid' => 'queue-joinempty',
+						'class'   => 'multiselect',
+						'multiple' => true,
+						'key'			=> false,
+            'selected'  => $this->get_var('info','queue','joinempty'),
+            'default' => $element['queue']['joinempty']['default']),
+				$element['queue']['joinempty']['value']),
 
-		$form->select(array('desc'	=> $this->bbf('fm_queue_leavewhenempty'),
-				    'name'	=> 'queue[leavewhenempty]',
-				    'labelid' => 'queue-leavewhenempty',
-					'help' => $this->bbf('hlp_fm_queue-leavewhenempty'),
-				    'key'	=> false,
-				    'bbf'	=> 'fm_queue_leavewhenempty-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['queue']['leavewhenempty']['default'],
-				    'selected'	=> $info['queue']['leavewhenempty']),
-			      $element['queue']['leavewhenempty']['value']),
+     $form->jq_select(array('desc'  => $this->bbf('fm_queue_leavewhenempty'),
+            'name'    => 'queue[leavewhenempty][]',
+						'labelid' => 'queue-leavewhenempty',
+						'class'   => 'multiselect',
+						'multiple' => true,
+						'key'   => false,
+            'selected'  => $this->get_var('info','queue','leavewhenempty'),
+            'default' => $element['queue']['leavewhenempty']['default']),
+				$element['queue']['leavewhenempty']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_ringinuse'),
 				      'name'	=> 'queue[ringinuse]',
 				      'labelid' => 'queue-ringinuse',
 					'help' => $this->bbf('hlp_fm_queue-ringinuse'),
 				      'default'	=> $element['queue']['ringinuse']['default'],
-				      'checked'	=> $info['queue']['ringinuse'])),
+				      'checked'	=> $this->get_var('info','queue','ringinuse'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_eventwhencalled'),
 				      'name'	=> 'queue[eventwhencalled]',
 				      'labelid' => 'queue-eventwhencalled',
 					'help' => $this->bbf('hlp_fm_queue-eventwhencalled'),
 				      'default'	=> $element['queue']['eventwhencalled']['default'],
-				      'checked'	=> $info['queue']['eventwhencalled']),
+				      'checked'	=> $this->get_var('info','queue','eventwhencalled')),
 				'disabled="disabled"'),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_eventmemberstatus'),
@@ -868,7 +866,7 @@ endif;
 				      'labelid' => 'queue-eventmemberstatus',
 					'help' => $this->bbf('hlp_fm_queue-eventmemberstatus'),
 				      'default'	=> $element['queue']['eventmemberstatus']['default'],
-				      'checked'	=> $info['queue']['eventmemberstatus']),
+				      'checked'	=> $this->get_var('info','queue','eventmemberstatus')),
 				'disabled="disabled"'),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_reportholdtime'),
@@ -876,7 +874,7 @@ endif;
 				      'labelid' => 'queue-reportholdtime',
 					'help' => $this->bbf('hlp_fm_queue-reportholdtime'),
 				      'default'	=> $element['queue']['reportholdtime']['default'],
-				      'checked'	=> $info['queue']['reportholdtime'])),
+				      'checked'	=> $this->get_var('info','queue','reportholdtime'))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_memberdelay'),
 				    'name'	=> 'queue[memberdelay]',
@@ -886,7 +884,7 @@ endif;
 				    'bbf'	=> 'fm_queue_memberdelay-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['memberdelay']['default'],
-				    'selected'	=> $info['queue']['memberdelay']),
+				    'selected'	=> $this->get_var('info','queue','memberdelay')),
 			      $element['queue']['memberdelay']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_timeoutrestart'),
@@ -894,42 +892,42 @@ endif;
 				      'labelid' => 'queue-timeoutrestart',
 					'help' => $this->bbf('hlp_fm_queue-timeoutrestart'),
 				      'default'	=> $element['queue']['timeoutrestart']['default'],
-							'checked' => $info['queue']['timeoutrestart']));
+							'checked' => $this->get_var('info','queue','timeoutrestart')));
 
 		// asterisk 1.8 fields
     echo $form->checkbox(array('desc'  => $this->bbf('fm_queue_autofill'),
               'name'    => 'queue[autofill]',
               'labelid' => 'queue-autofill',
               'help'    => $this->bbf('hlp_fm_queue_autofill'),
-              'checked' => $info['queue']['autofill'],
+              'checked' => $this->get_var('info','queue','autofill'),
               'default' => $element['queue']['autofill']['default'])),
 
     $form->checkbox(array('desc'  => $this->bbf('fm_queue_autopause'),
               'name'    => 'queue[autopause]',
               'labelid' => 'queue-autopause',
               'help'    => $this->bbf('hlp_fm_queue_autopause'),
-              'checked' => $info['queue']['autopause'],
+              'checked' => $this->get_var('info','queue','autopause'),
               'default' => $element['queue']['autopause']['default'])),
 
     $form->checkbox(array('desc'  => $this->bbf('fm_queue_setinterfacevar'),
               'name'    => 'queue[setinterfacevar]',
               'labelid' => 'queue-setinterfacevar',
               'help'    => $this->bbf('hlp_fm_queue_setinterfacevar'),
-              'checked' => $info['queue']['setinterfacevar'],
+              'checked' => $this->get_var('info','queue','setinterfacevar'),
               'default' => $element['queue']['setinterfacevar']['default'])),
 
     $form->checkbox(array('desc'  => $this->bbf('fm_queue_setqueueentryvar'),
               'name'    => 'queue[setqueueentryvar]',
               'labelid' => 'queue-setqueueentryvar',
               'help'    => $this->bbf('hlp_fm_queue_setqueueentryvar'),
-              'checked' => $info['queue']['setqueueentryvar'],
+              'checked' => $this->get_var('info','queue','setqueueentryvar'),
               'default' => $element['queue']['setqueueentryvar']['default'])),
 
     $form->checkbox(array('desc'  => $this->bbf('fm_queue_setqueuevar'),
               'name'    => 'queue[setqueuevar]',
               'labelid' => 'queue-setqueuevar',
               'help'    => $this->bbf('hlp_fm_queue_setqueuevar'),
-              'checked' => $info['queue']['setqueuevar'],
+              'checked' => $this->get_var('info','queue','setqueuevar'),
               'default' => $element['queue']['setqueuevar']['default'])),
 
     $form->text(array('desc'  => $this->bbf('fm_queue_membermacro'),
@@ -938,7 +936,7 @@ endif;
             'size'     => 15,
             'help'     => $this->bbf('hlp_fm_queue_membermacro'),
             'required' => false,
-            'value'    => $info['queue']['membermacro'],
+            'value'    => $this->get_var('info','queue','membermacro'),
             'default'  => $element['queue']['membermacro']['default'],
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'membermacro')) )),
@@ -950,7 +948,7 @@ endif;
 						'altkey'    => 'id',
 						'empty'     => true,
             'help'     => $this->bbf('hlp_fm_queue_defaultrule'),
-				    'selected'	=> $info['queue']['defaultrule']),
+				    'selected'	=> $this->get_var('info','queue','defaultrule')),
 			$defaultrules);
 
 ?>
@@ -1013,7 +1011,7 @@ endif;
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
 				    'default'	=> $element['queuefeatures']['waittime']['default'],
-				    'selected'	=> $info['queuefeatures']['waittime']),
+				    'selected'	=> $this->get_var('info','queuefeatures','waittime')),
 				$element['queuefeatures']['waittime']['value']);
 
 		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
@@ -1029,7 +1027,7 @@ endif;
             'size'     => 15,
             'help'     => $this->bbf('hlp_fm_queuefeatures_waitratio'),
             'required' => false,
-            'value'    => $info['queuefeatures']['waitratio'],
+            'value'    => $this->get_var('info','queuefeatures','waitratio'),
             'default'  => $element['queuefeatures']['waitratio']['default'],
             'error'    => $this->bbf_args('error',
         $this->get_var('error', 'waitratio')) ));

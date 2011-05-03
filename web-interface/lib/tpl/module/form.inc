@@ -1544,6 +1544,8 @@ class dwho_tpl_form extends dwho_tpl_module
 
 				if (isset($arr[$ref]) === true)
 					$rs[] = $this->_mk_param_value($ref,$arr);
+				else if(in_array($ref, $arr))
+					$rs[] = $ref;
 			}
 
 			$this->_param['selected'] = $rs;

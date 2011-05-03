@@ -61,3 +61,8 @@ function xivo_ast_queue_onload()
 }
 
 dwho.dom.set_onload(xivo_ast_queue_onload);
+
+
+$(document).ready(function() {
+	$('.multiselect').multiselect();
+})

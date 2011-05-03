@@ -108,14 +108,12 @@ $array['element']['monitor-type']['default'] = '';
 $array['element']['monitor-type']['null'] = true;
 
 $array['element']['joinempty'] = array();
-$array['element']['joinempty']['value'] = array('no','yes','strict');
-$array['element']['joinempty']['default'] = 'no';
-$array['element']['joinempty']['setdef'] = true;
+$array['element']['joinempty']['value']   = array('paused','penalty','inuse','ringing','unavailable','invalid','unknown','warpup');
+$array['element']['joinempty']['default'] = '';
 
 $array['element']['leavewhenempty'] = array();
-$array['element']['leavewhenempty']['value'] = array('no','yes','strict');
-$array['element']['leavewhenempty']['default'] = 'no';
-$array['element']['leavewhenempty']['setdef'] = true;
+$array['element']['leavewhenempty']['value']   = array('paused','penalty','inuse','ringing','unavailable','invalid','unknown','warpup');
+$array['element']['leavewhenempty']['default'] = '';
 
 $array['element']['ringinuse'] = array();
 $array['element']['ringinuse']['value'] = array(0,1);
@@ -276,8 +274,8 @@ $array['filter']['announce-holdtime'] = array('set' => false,'chk' => 2,'key' =>
 $array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'key' => array('gsm','wav','wav49'));
 $array['filter']['monitor-type'] = array('set' => false,'chk' => 2,'key' => array('no','mixmonitor'));
-$array['filter']['joinempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
-$array['filter']['leavewhenempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
+$array['filter']['joinempty'] = array('set' => false,'chk' => 2);
+$array['filter']['leavewhenempty'] = array('set' => false,'chk' => 2);
 $array['filter']['ringinuse'] = array('bool' => true);
 $array['filter']['eventwhencalled'] = array('bool' => true);
 $array['filter']['eventmemberstatus'] = array('bool' => true);
