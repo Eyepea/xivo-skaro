@@ -291,8 +291,7 @@ class xivo_daemon:
         self.lastrequest_time = {}
 
         self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
-        if xivoip != 'localhost':
-            self.cconf.set_iptranslate(xivoip)
+        self.cconf.set_ipwebs(xivoip)
         self.cconf.update()
 
         queue_logger.queue_logger.init(self.cconf.getconfig('main').get('asterisk_queuestat_db'))

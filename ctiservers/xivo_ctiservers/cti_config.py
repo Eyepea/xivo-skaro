@@ -36,7 +36,7 @@ log = logging.getLogger('cti_config')
 class Config:
     def __init__(self, * urilist):
         self.urilist = urilist
-        self.iptranslate = None
+        self.ipwebs = None
         self.ctxlist = {}
         self.dpylist = {}
         self.dirlist = {}
@@ -48,8 +48,8 @@ class Config:
         self.update_uri(self.urilist[0])
         return
 
-    def set_iptranslate(self, ip):
-        self.iptranslate = ip
+    def set_ipwebs(self, ipwebs):
+        self.ipwebs = ipwebs
         return
 
     def update_uri(self, uri):
@@ -82,20 +82,20 @@ class Config:
 
     def translate(self):
         """
-        Translate the config fetched from the remote IP iptranslate
+        Translate the config fetched from the remote IP ipwebs
         in order to have the urllist and IPBX connection items pointing also to this IP.
         The remote access(es) should be allowed there, of course.
         """
-        if self.iptranslate is None:
+        if self.ipwebs is None or self.ipwebs == 'localhost':
             return
         for k, v in self.xc_json.get('ipbxes').iteritems():
             for kk, vv in v.get('urllists').iteritems():
                 nl = []
                 for item in vv:
-                    z = item.replace('://localhost/', '://%s/' % self.iptranslate).replace('/private/', '/restricted/')
+                    z = item.replace('://localhost/', '://%s/' % self.ipwebs).replace('/private/', '/restricted/')
                     nl.append(z)
                 v['urllists'][kk] = nl
-            v.get('connection')['ipaddress'] = self.iptranslate
+            v.get('connection')['ipaddress'] = self.ipwebs
         return
 
     def setdirconfigs(self):

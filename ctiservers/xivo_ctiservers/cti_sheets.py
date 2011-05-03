@@ -7,18 +7,45 @@ class Sheet:
         self.internaldata = { 'where' : where,
                               'ipbxid' : ipbxid,
                               'channel' : channel }
-        self.linestosend = []
+        # config items
         self.options = {}
+        self.displays = {}
+        # temporary structure
+        self.fields = {}
+        # output
+        self.linestosend = []
         return
 
     def setoptions(self, options):
-        self.options = options
+        if options:
+            self.options = options
+        return
+
+    def setdisplays(self, displays):
+        if displays:
+            self.displays = displays
         return
 
     def addinternal(self, varname, varvalue):
         self.linestosend.append('<internal name="%s"><![CDATA[%s]]></internal>'
                                 % (varname, varvalue))
         return
+
+    def setfields(self):
+        for sheetpart, v in self.displays.iteritems():
+            self.fields[sheetpart] = {}
+            if sheetpart in ['sheet_info', 'systray_info' 'action_info']:
+                if not isinstance(v, dict):
+                    continue
+                for order, vv in v.iteritems():
+                    [title, ftype, defaultval, sformat] = vv
+                    ## XXX TODO : replace sformat/defaultval with variables stuff
+                    self.fields[sheetpart][order] = {'name' : title, 'type': ftype, 'contents' : sformat}
+            else:
+                print sheetpart, v
+##        linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
+        return
+
 
     def makexml(self):
         self.linestosend = []
@@ -27,19 +54,20 @@ class Sheet:
                             '<user>']
         for k, v in self.internaldata.iteritems():
             self.addinternal(k, v)
+
         for k, v in self.options.iteritems():
             self.addinternal(k, v)
 
-        self.linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
-                                % ("sheet_info", 34, "op", "text", "gaga", "sheet_info"))
-
-##        linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
-##        linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
-##        linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
-##        linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
-
+        for sheetpart, v in self.fields.iteritems():
+            for order, vv in v.iteritems():
+                title = vv.get('name')
+                ftype = vv.get('type')
+                contents = vv.get('contents')
+                self.linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
+                                        % (sheetpart, order, title, ftype, contents, sheetpart))
         self.linestosend.extend(['</user>', '</profile>'])
         return
+
 
     def buildpayload(self):
         self.xmlstring = ''.join(self.linestosend).encode('utf8')

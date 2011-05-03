@@ -806,25 +806,33 @@ class Safe:
         if where not in self.sheetevents:
             log.warning('%s sheet event is not in %s' % (where, self.sheetevents.keys()))
             return
-        if channel not in self.channels and channel not in ['special']:
+        if channel not in self.channels and not channel.startswith('special'):
             log.warning('%s channel is not in %s' % (channel, self.channels.keys()))
             return
         for se in self.sheetevents[where]:
             display_id = se.get('display')
             condition_id = se.get('condition')
             option_id = se.get('option')
-            print display_id, condition_id, option_id
+
             if not self.sheetdisplays.get(display_id):
                 continue
-            print channel, self.sheetdisplays.get(display_id), self.sheetconditions.get(condition_id)
-            c = self.channels.get(channel)
 
+            c = self.channels.get(channel)
             sheet = cti_sheets.Sheet(where, self.ipbxid, channel)
-            if self.sheetoptions.get(option_id):
-                sheet.setoptions(self.sheetoptions.get(option_id))
+            sheet.setoptions(self.sheetoptions.get(option_id))
+            sheet.setdisplays(self.sheetdisplays.get(display_id))
+
             # 1. whom / userinfos : according to outdest or destlist to update in Channel structure
+            #    + according to conditions
+            #    final 'whom' description should be clearly written in order to send across 'any path'
+            whom = self.sheetconditions.get(condition_id).get('whom')
+            contexts = self.sheetconditions.get(condition_id).get('contexts')
+            profileids = self.sheetconditions.get(condition_id).get('profileids')
+
             # 2. make an extra call to a db if requested ? could be done elsewhere (before) also ...
+
             # 3. build sheet items (according to values)
+            sheet.setfields()
             # 4. sheet construct (according to serialization)
             sheet.makexml()
             sheet.buildpayload()

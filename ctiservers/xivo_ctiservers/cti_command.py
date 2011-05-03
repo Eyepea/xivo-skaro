@@ -27,6 +27,7 @@ __author__    = 'Corentin Le Gall'
 import logging
 import random
 import string
+from xivo_ctiservers import xivo_webservices
 
 log = logging.getLogger('cti_command')
 
@@ -373,12 +374,21 @@ class Command:
 
     def handle_featuresget(self):
         reply = {}
-        # if anything is done, requests the status for enable XXX from the user-lists
+        print 'handle_featuresget', self.commanddict, self.userid, self.ruserid
+        z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
+        z.connect()
+        e = z.serviceget(self.ruserid)
+        z.close()
+        print e.get('userfeatures')
         return reply
 
     def handle_featuresput(self):
         reply = {}
-        # XXX update the status through webservice
+        print 'handle_featuresput', self.commanddict, self.userid, self.ruserid
+        z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
+        z.connect()
+        z.serviceput(self.ruserid, self.commanddict.get('function'), self.commanddict.get('value'))
+        z.close()
         return reply
 
     def handle_directory(self):
