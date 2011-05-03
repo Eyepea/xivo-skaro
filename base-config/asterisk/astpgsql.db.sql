@@ -1313,8 +1313,8 @@ CREATE TABLE "queue" (
  "maxlen" INTEGER,
  "servicelevel" INTEGER,
  "strategy" varchar(11),
- "joinempty" varchar(6),
- "leavewhenempty" varchar(6),
+ "joinempty" varchar(255),
+ "leavewhenempty" varchar(255),
  "eventmemberstatus" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "eventwhencalled" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "ringinuse" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
