@@ -63,9 +63,13 @@ class CommonConf(jsoncore.JsonCore):
             'xivo.smtp.mydomain', 'xivo.smtp.origin', 'xivo.smtp.relayhost', 
             'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'
          ],
-        '5. Maintenance': ['xivo.maintenance'],
-        '6. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
-        '7. Databases'  : ['xivo.xivodb' , 'xivo.astdb'],
+        '5. Provd'      : [
+            'xivo.provd.net4_ip', 'xivo.provd.http_port',
+            'xivo.provd.dhcp_integration'
+         ],
+        '6. Maintenance': ['xivo.maintenance'],
+        '7. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
+        '8. Databases'  : ['xivo.xivodb' , 'xivo.astdb'],
     }
     KEYSELECT = ''
     

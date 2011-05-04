@@ -65,3 +65,9 @@ fi
 if [ -z "${XIVO_PROVD_NET4_IP}" ]; then
   XIVO_PROVD_NET4_IP="${XIVO_NET4_IP}"
 fi
+
+if [ "${XIVO_PROVD_INTEGRATION}" = "1" ]; then
+  _XIVO_PROVD_DHCP_INTEGRATION="true"
+else
+  _XIVO_PROVD_DHCP_INTEGRATION="false"
+fi

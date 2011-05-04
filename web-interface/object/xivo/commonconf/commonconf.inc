@@ -82,6 +82,14 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.smtp.canonical'          => $rawdata['canonical'],
         ));
 
+        // provd
+        // FIXME (this is a mock, need to be replaced by something useful...)
+        $conf = array_merge($conf, array(
+            'xivo.provd.net4_ip'          => null,
+            'xivo.provd.http_port'        => '8666',
+            'xivo.provd.dhcp_integration' => false,
+        ));
+
         // monitoring
         $rawdata = $this->_monitoring->get(1);
         $conf = array_merge($conf, array(
