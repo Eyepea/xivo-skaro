@@ -1,7 +1,7 @@
 # Default configuration for the device updater
 
 add_info_updater = AddInfoDeviceUpdater()
-pg_updater = PluginAssociatorDeviceUpdater(app.pg_mgr, AlphabeticConflictSolver())
+pg_updater = PluginAssociatorDeviceUpdater(app.pg_mgr, ReverseAlphabeticConflictSolver())
 default_cfg_updater = DefaultConfigDeviceUpdater(app)
 remove_updater = RemoveDuplicateDeviceUpdater(app)
 updater = CompositeDeviceUpdater([remove_updater, add_info_updater, pg_updater, default_cfg_updater])

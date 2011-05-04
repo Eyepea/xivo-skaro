@@ -37,6 +37,8 @@ import urllib2
 import urlparse
 import tempfile
 
+PKG_FILENAME = 'dhcpd.tar.bz2'
+
 
 def _build_opener(proxies):
     return urllib2.build_opener(urllib2.ProxyHandler(proxies))
@@ -48,9 +50,9 @@ def _extract_pkg_file(fobj, dhcpd_dir):
 
 
 def download(url, dhcpd_dir, proxies=None):
-    # Download the url and extract its content into dhcpd_dir.
+    # Download the package at url and extract its content into dhcpd_dir.
+    opener = _build_opener(proxies)
     with tempfile.TemporaryFile() as fobj:
-        opener = _build_opener(proxies)
         with contextlib.closing(opener.open(url)) as url_fobj:
             fobj.write(url_fobj.read())
         fobj.seek(0)
@@ -135,7 +137,7 @@ def read_config():
     # Read and return the configuration for this program.
     # Config is a dictionary of dictionary, with the following keys:
     #   general
-    #     config_file -- path to the configuration file
+    #     config_file -- path to this application configuration file
     #     update_url
     #     dhcpd_dir
     #     subnet_file
@@ -154,7 +156,7 @@ def read_config():
 
 
 def _do_download(config):
-    url = urlparse.urljoin(config['general']['update_url'], 'dhcpd.tar.bz2')
+    url = urlparse.urljoin(config['general']['update_url'], PKG_FILENAME)
     dhcpd_dir = config['general']['dhcpd_dir']
     proxies = config['proxy']
     download(url, dhcpd_dir, proxies)

@@ -29,7 +29,8 @@ setup(
     package_data={'provd': ['tzinform/tzdatax'],
                   'twisted': ['.noinit'],
                   'twisted.plugins': ['provd_plugins.py', '.noinit']},
-    scripts=['dhcp-xtor/dxtora',
+    scripts=['dhcpd-update/dhcpd-update',
+             'dhcp-xtor/dxtora',
              'dhcp-xtor/dxtorc',
              'scripts/provd_pycli'],
     data_files=[('/etc/pf-xivo/provd', ['resources/etc/provd.conf',
@@ -40,6 +41,7 @@ setup(
                                         'resources/etc/router.py.conf.default',
                                         'resources/etc/updater.py.conf.default',
                                         'resources/etc/updater.py.conf.secure']),
-                ('/etc/pf-xivo', ['dhcp-xtor/dxtora.conf']),
+                ('/etc/pf-xivo', ['dhcpd-update/dhcpd-update.conf',
+                                  'dhcp-xtor/dxtora.conf']),
                 ('/usr/share/doc/dhcp-xtor/', ['dhcp-xtor/dhcpd.conf.example'])],
 )
