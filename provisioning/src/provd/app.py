@@ -114,7 +114,7 @@ def _check_raw_config_validity(raw_config):
                     raise RawConfigError('missing %s parameter for line %s' %
                                          (param, line_no))
     if u'sccp_call_managers' in raw_config:
-        for priority, call_manager in raw_config[u'sccp_all_managers'].iteritems():
+        for priority, call_manager in raw_config[u'sccp_call_managers'].iteritems():
             if u'ip' not in call_manager:
                 raise RawConfigError('missing ip parameter for call manager %s' %
                                      priority)

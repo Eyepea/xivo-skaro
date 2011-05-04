@@ -21,6 +21,8 @@ __license__ = """
 """
 
 import logging
+from collections import defaultdict
+from operator import itemgetter
 from provd.devices.ident import IDeviceUpdater
 from twisted.internet import defer
 from zope.interface import Interface, implements
@@ -50,11 +52,6 @@ COMPLETE_SUPPORT = 50
 FULL_SUPPORT = 60
 # The device is exactly what the plugin is targeting.
 
-# huh
-LEVELS  = [NO_SUPPORT, IMPROBABLE_SUPPORT, UNKNOWN_SUPPORT, PROBABLE_SUPPORT,
-           INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT]
-RLEVELS = list(reversed(LEVELS))
-
 
 class IPluginAssociator(Interface):
     def associate(dev_info):
@@ -80,7 +77,7 @@ class BasePgAssociator(object):
         raise NotImplementedError('must be overridden in derived class')
 
 
-class ConflictSolver(Interface):
+class IConflictSolver(Interface):
     def solve(pg_ids):
         """
         Return a pg_id or None if not able to solve the conflict.
@@ -90,7 +87,7 @@ class ConflictSolver(Interface):
 
 
 class PreferredConflictSolver(object):
-    implements(ConflictSolver)
+    implements(IConflictSolver)
     
     def __init__(self, preferred_pg_ids):
         self._pref_pg_ids = preferred_pg_ids
@@ -99,18 +96,25 @@ class PreferredConflictSolver(object):
         for pg_id in self._pref_pg_ids:
             if pg_id in pg_ids:
                 return pg_id
+        return None
 
 
 class AlphabeticConflictSolver(object):
-    # Useful to get a deterministic behaviour
-    implements(ConflictSolver)
+    implements(IConflictSolver)
     
     def solve(self, pg_ids):
         return min(pg_ids)
 
 
+class ReverseAlphabeticConflictSolver(object):
+    implements(IConflictSolver)
+    
+    def solve(self, pg_ids):
+        return max(pg_ids)
+
+
 class CompositeConflictSolver(object):
-    implements(ConflictSolver)
+    implements(IConflictSolver)
     
     def __init__(self, solvers):
         self._solvers = solvers
@@ -120,6 +124,7 @@ class CompositeConflictSolver(object):
             pg_id = solver.solve(pg_ids)
             if pg_id:
                 return pg_id
+        return None
 
 
 class PluginAssociatorDeviceUpdater(object):
@@ -142,27 +147,31 @@ class PluginAssociatorDeviceUpdater(object):
     
     def _do_update(self, dev_info):
         pg_scores = self._get_scores(dev_info)
-        for level in RLEVELS:
-            if level < self.min_level:
-                return
-            pg_ids = pg_scores[level]
-            if pg_ids:
+        if pg_scores:
+            max_score, pg_ids = max(pg_scores.iteritems(), key=itemgetter(0))
+            if max_score >= self.min_level:
+                assert pg_ids
                 if len(pg_ids) == 1:
                     return pg_ids[0]
                 else:
                     pg_id = self._solver.solve(pg_ids)
                     if pg_id:
                         return pg_id
+                    else:
+                        logger.warning('Conflict resolution yielded nothing for plugins: %s',
+                                       pg_ids)
+        return None
     
     def _get_scores(self, dev_info):
-        pg_scores = dict((level, []) for level in LEVELS)
+        pg_scores = defaultdict(list)
         for pg_id, pg in self._pg_mgr.iteritems():
             sstor = pg.pg_associator
             if sstor is not None:
-                score = sstor.associate(dev_info)
                 try:
+                    score = sstor.associate(dev_info)
+                except Exception:
+                    logger.error('Error during plugin association for plugin %s',
+                                 pg_id, exc_info=True)
+                else:
                     pg_scores[score].append(pg_id)
-                except KeyError:
-                    # XXX not compliant pg_associator - should log
-                    pass
         return pg_scores
