@@ -23,6 +23,8 @@ __license__ = """
 """
 
 # provisioning url: http://<provd_ip>/${uuid}.properties
+# TODO: update for provisioning url: http://<provd_ip>/jitsi?uuid=${uuid}
+#       and POST request handling
 
 import logging
 import os.path

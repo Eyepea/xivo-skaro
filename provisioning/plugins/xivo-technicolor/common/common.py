@@ -230,7 +230,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
         raw_config[u'XX_config_sn'] = '%012.f' % time.time()
     
     def _add_dtmf_mode_flag(self, raw_config):
-        raw_config[u'XX_dtmf_mode_flag'] = self._SIP_DTMF_MODE.get(raw_config.get[u'sip_dtmf_mode'],
+        raw_config[u'XX_dtmf_mode_flag'] = self._SIP_DTMF_MODE.get(raw_config.get(u'sip_dtmf_mode'),
                                                           self._DTMF_DEF)
     
     def _gen_xx_phonebook_name(self, raw_config):

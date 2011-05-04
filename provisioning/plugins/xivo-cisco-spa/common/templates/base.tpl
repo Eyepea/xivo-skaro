@@ -62,7 +62,7 @@
 <User_ID_{{ line_no }}_>{{ line['username']|e }}</User_ID_{{ line_no }}_>
 <Password_{{ line_no }}_>{{ line['password']|e }}</Password_{{ line_no }}_>
 <Auth_ID_{{ line_no }}_>{{ line['auth_username']|e }}</Auth_ID_{{ line_no }}_>
-{% set dtmf_mode = line['dtmf_mode'] or sip['dtmf_mode'] -%}
+{% set dtmf_mode = line['dtmf_mode'] or sip_dtmf_mode -%}
 {% if dtmf_mode == 'RTP-in-band' -%}
 <DTMF_Tx_Method_{{ line_no }}_>InBand</DTMF_Tx_Method_{{ line_no }}_>
 {% elif dtmf_mode == 'RTP-out-of-band' -%}
