@@ -156,12 +156,6 @@ for P in ${LIST}; do
   fi
 done
 
-# Unconditionally regenerate dhcpd_subnet.conf
-if [ -n "${DEBUG}" ]; then
-  echo "DEBUG: regenerating dhcpd_subnet.conf
-fi
-dhcpd-update -r
-
 if [ -x /usr/sbin/pf-check-dahdi-ports ]; then
   if [ -n "${DEBUG}" ]; then
     echo "DEBUG: create monit DAHDI ports configuration"

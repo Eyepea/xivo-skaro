@@ -1,1 +1,3 @@
+#!/bin/sh
+dhcpd-update -nri
 invoke-rc.d isc-dhcp-server restart
