@@ -272,6 +272,74 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 		return(false);
 	}
+
+	function get_type($type='',$typeval='',$typeright='',$typevalright='',$id=null,$disable=null)
+	{
+		$rs = array();
+		switch($type)
+		{
+			case 'extenfeatures':
+				switch($typeval)
+				{
+					case 'bsfilter':
+						$rs['type'] = $type;
+						$rs['val'] = $typeval;
+						return($rs);
+					case 'agentdynamiclogin':
+					case 'agentstaticlogin':
+					case 'agentstaticlogoff':
+					case 'agentstaticlogtoggle':
+					case 'groupaddmember':
+					case 'groupremovemember':
+					case 'grouptogglemember':
+					case 'queueaddmember':
+					case 'queueremovemember':
+					case 'queuetogglemember':
+						if($typeright !== substr($typeval,0,5))
+							return(false);
+						break;
+				}
+			case 'featuremap':
+			case 'generalfeatures':
+				if($this->_chk_exists_cfg('type',$type.'-'.$typeval) === false)
+					return(false);
+				else if(dwho_has_len($typeright) === false)
+				{
+					$rs['type'] = $type;
+					$rs['val'] = $typeval;
+					return($rs);
+				}
+				break;
+			default:
+				if(dwho_has_len($type) === true)
+					return(false);
+		}
+
+		switch($typeright)
+		{
+			case 'agent':
+				if($type !== 'extenfeatures'
+				|| ($typeval !== 'agentdynamiclogin'
+				   && $typeval !== 'agentstaticlogin'
+				   && $typeval !== 'agentstaticlogoff'
+				   && $typeval !== 'agentstaticlogtoggle') === true)
+				{
+					$rs['type'] = $typeright;
+					$rs['val'] = $typevalright;
+				}
+				break;
+			case 'user':
+			case 'queue':
+			case 'group':
+			case 'meetme':
+				$rs['type'] = $typeright;
+				$rs['val'] = $typevalright;
+				break;
+		}
+		
+		return($rs);
+
+	}
 }
 
 ?>

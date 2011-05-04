@@ -20,7 +20,7 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
-class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
+abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 {
 	function _reset_params()
 	{

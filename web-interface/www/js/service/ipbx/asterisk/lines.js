@@ -57,7 +57,6 @@ function xivo_http_search_context_from_entity(entityid)
 			$('#box-lines_free').hide('slow');
 			$('#list_linefeatures').hide();
 			$('#box-no_context').show();
-			update_row_infos();
 			return false;
 		}
 		$('#box-no_context').hide();
@@ -73,9 +72,8 @@ function xivo_http_search_context_from_entity(entityid)
 		    for (var i = 0; i< nb; i++)
 		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
 	    });
-		update_row_infos();
+		xivo_http_search_linefree_by_entity(entityid);
 	});		
-	xivo_http_search_linefree_by_entity(entityid);
 }
 
 //get list line free available for a entity
@@ -93,8 +91,8 @@ function xivo_http_search_linefree_by_entity(entityid)
 		    for (var i = 0; i< data.length; i++)
 		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
 	    });
-	});	
-	update_row_infos();
+		update_row_infos();
+	});
 }
 
 function lnkdroprow(obj)
@@ -172,18 +170,18 @@ function update_row_infos()
 
 			context_selected = context.parents('tr').find('#context-selected').val();
 			if (context_selected !== null)
-				context.find("option[value='"+context_selected+"']").attr("selected","selected");			
+				context.find("option[value='"+context_selected+"']").attr("selected","selected");
 			
 			if (context.val() !== null) {
 				var number = context.parents('tr').find('#linefeatures-number');
-				number.bind('focus', function(){
+				number.focus(function(){
 					helper = $(this).parent().find('#numberpool_helper');
 					context = $(this).parents('tr').find("#linefeatures-context");
 					xivo_http_search_numpool(context.val(),helper);
 					helper.show('slow');
 					map_autocomplete_extension_to($(this),context.val());
 				});
-				number.bind('blur', function(){
+				number.blur(function(){
 					$(this).parent().find('#numberpool_helper').hide('slow');
 				});
 			}
@@ -197,8 +195,6 @@ $(document).ready(function() {
 	$('#it-userfeatures-entityid').change(function() {
 		xivo_http_search_context_from_entity($(this).val());
 	});
-	
-	update_row_infos();
 
 	$("#list_linefeatures tbody").sortable({
 		helper: fixHelper,

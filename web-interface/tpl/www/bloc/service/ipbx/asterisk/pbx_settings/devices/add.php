@@ -28,6 +28,7 @@ $url = &$this->get_module('url');
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
+<?php $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/devices/submenu'); ?>
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>

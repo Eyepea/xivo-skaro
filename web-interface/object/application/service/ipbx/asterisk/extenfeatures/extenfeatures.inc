@@ -25,7 +25,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	var $_extensions	= false;
 	var $_extenumbers	= false;
 	var $_staticsip		= null;
-	var $_conf		= array();
+	var $_conf			= array();
 	var $_filter		= false;
 	var $_context		= XIVO_SRE_IPBX_AST_CONTEXT_FEATURES;
 

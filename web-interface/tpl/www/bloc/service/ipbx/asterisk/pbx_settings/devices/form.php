@@ -27,8 +27,6 @@ $plugininstalled = $this->get_var('plugininstalled');
 $listline = $this->get_var('listline');
 $element = $this->get_var('element');
 
-#dwho_var_dump($info);
-
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
@@ -36,8 +34,7 @@ endif;
 
 ?>
 
-<fieldset>
-	<legend><?=$this->bbf('device-global_config')?></legend>
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_devicefeatures_ip'),
 				  'name'	=> 'devicefeatures[ip]',
@@ -178,7 +175,8 @@ endif;
 						   $this->get_var('error', '_comment', 'description')) ),
 				   $this->get_var('info','config','_comment'));?>
 	</div>
-</fieldset>
+</div>
+<div id="sb-part-advanced" class="b-nodisplay">
 <fieldset>
 	<legend><?=$this->bbf('device-srtp_config')?></legend>
 <?php		       
@@ -271,6 +269,8 @@ endif;
 			      $element['config']['syslog_level']['value']);
 ?>
 </fieldset>
+</div>
+<div id="sb-part-last" class="b-nodisplay">
 <?php 
 
 $nbcap = 0;
@@ -354,6 +354,4 @@ endif;
 	</tfoot>
 </table>
 </div>
-<?php 	
-
-?>
+</div>

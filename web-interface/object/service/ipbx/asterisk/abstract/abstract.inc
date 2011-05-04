@@ -20,7 +20,7 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
-class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
+abstract class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 {
 	var $_conf	= array();
 	var $_sre	= null;
@@ -351,9 +351,9 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 		if(($module = $this->_sre->get_module($type)) === false
 		|| ($info = $module->get(intval($actionarg1),$disable)) === false
-		|| ($id !== null && $id === $info['id']) === true
-		|| ((bool) $chknumber === true && dwho_has_len($info['number']) === false) === true
-		|| ((bool) $chkcontext === true && $info['context'] !== $context) === true)
+		|| ($id !== null && $id === $info['id']) === true)
+		#|| ((bool) $chknumber === true && dwho_has_len($info['number']) === false) === true
+		#|| ((bool) $chkcontext === true && $info['context'] !== $context) === true)
 			return(false);
 
 		$r = array();

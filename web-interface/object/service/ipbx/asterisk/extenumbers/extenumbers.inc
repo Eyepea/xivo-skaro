@@ -24,8 +24,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
 	var $_name		= 'extenumbers';
-	var $_filter		= false;
-	var $_origin		= false;
+	var $_filter	= false;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_extenumbers(&$sre,&$dso)
 	{

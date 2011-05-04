@@ -107,6 +107,9 @@ switch($act)
 		}
 		
 		$element = $appdevice->get_elements();
+		
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['devicefeatures']['id']);
 		$_TPL->set_var('deviceid',$info['devicefeatures']['deviceid']);

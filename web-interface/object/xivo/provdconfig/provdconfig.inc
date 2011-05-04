@@ -22,18 +22,22 @@ xivo_object::required(array('abstract','provd.inc'),true);
 
 class xivo_object_provdconfig extends xivo_object_provd_abstract
 {
-	protected $_name 		= 'provdconfig';
-	protected $_base_url 	= '/provd/cfg_mgr';
-	protected $_internal 	= array('base','autoprov');
-	protected $_confdefault = false;
-	protected $_extenfeatures = false;
-	protected $_phonefunckey = false;
+	protected $_name 			= 'provdconfig';
+	protected $_base_url 		= '/provd/cfg_mgr';
+	protected $_internal 		= array('base','autoprov');
+	protected $_confdefault 	= false;
+	protected $_extenfeatures 	= false;
+	protected $_phonefunckey 	= false;
+	protected $_extenumbers  	= false;
+	protected $_linefeatures  	= false;
 	
 	public function __construct(&$xobj,$param=array())
 	{		
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
 		|| ($ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_extenfeatures = &$ipbx->get_application('extenfeatures')) === false
+		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
+		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false)
 			return(false);
 		
@@ -276,10 +280,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	public function get_exten($name)
 	{
 		if($this->_extenfeatures === false
-		|| ($rs = $this->_extenfeatures->get($name)) === false
-		|| isset($rs['extenfeatures']) === false
-		|| ($exten = $rs['extenfeatures']['exten']) === '')
+		|| ($rs = $this->_extenfeatures->_get_extenumbers($name)) === false)
 			return(false);
+			
+		$exten = $rs['exten'];
 			
 		$exten = str_replace('_', '', $exten);
 		$exten = str_replace('.', '', $exten);
@@ -390,11 +394,13 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 						$raw_config['sip_lines'] = $rslines;
 					
 					// build funckey from masterline
-					if ($iduserfeatures !== false)
+					if ($iduserfeatures !== false
+					&& ($rs = $this->_build_funckey($iduserfeatures)) !== false
+					&& empty($rs) === false)
 						$raw_config['funckeys'] = $this->_build_funckey($iduserfeatures);
 					else 
 						unset($raw_config['funckeys']);
-				}					
+				}
 				$raw_config = array_merge($raw_config,$this->_build_exten_config());
 		}
 		
@@ -421,7 +427,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{		
 		$conf = array();
 
-		if(is_object($this->_phonefunckey) === false)
+		if(is_object($this->_phonefunckey) === false
+		|| is_object($this->_linefeatures) === false)
 			return(false);
 
 		$where = array();
@@ -430,13 +437,39 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (($rs = $this->_phonefunckey->get_all_where($where, null,true, array('fknum' => SORT_ASC))) === false
 		|| ($nb = count($rs)) === 0)
 			return($conf);
-			
+		
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
+		
+			$type = $this->_phonefunckey->get_type($ref['typeextenumbers'],
+													$ref['typevalextenumbers'],
+													$ref['typeextenumbersright'],
+													$ref['typevalextenumbersright']);
+								
+			$exten = '';		
+			if (empty($type) === false)
+			{				
+				switch ($type['type'])
+				{
+					case 'user':
+						$where = array();
+						$where['iduserfeatures'] = $type['val'];
+						if(($linefeatures = $this->_linefeatures->get_all_where($where)) !== false)						
+							$exten = $linefeatures[0]['number'];
+						break;
+					default:
+						$where = array();
+						$where['type'] = $type['type'];
+						$where['typeval'] = $type['val'];
+						if (($rsexten = $this->_extenumbers->get_where($where)) !== false)					
+							$exten = $rsexten['exten'];
+				}
+			}
+												
 			$conf[$ref['fknum']] = array();
 			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
-			$conf[$ref['fknum']]['value'] = $ref['exten'];
+			$conf[$ref['fknum']]['value'] = $exten;
 			$conf[$ref['fknum']]['label'] = $ref['label'];
 			$conf[$ref['fknum']]['line'] = 1;
 		}
