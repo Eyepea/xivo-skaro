@@ -88,5 +88,9 @@ Général
 ; mn_left_provisioning-plugin
 Greffons
 
-; mn_left_provisioning-config
-Modèles
+; mn_left_provisioning-configregistrar
+Modèles site
+
+; mn_left_provisioning-configdevice 
+Modèles terminaison
+

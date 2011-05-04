@@ -82,8 +82,11 @@ Provisioning
 ; mn_left_provisioning-general
 General
 
-; mn_left_provisioning-config 
-Template
+; mn_left_provisioning-configregistrar
+Template site
+
+; mn_left_provisioning-configdevice 
+Template device
 
 ; mn_left_provisioning-plugin 
 Plugin

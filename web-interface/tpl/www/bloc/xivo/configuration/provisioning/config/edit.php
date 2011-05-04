@@ -23,13 +23,12 @@ $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
 $info = $this->get_var('info');
+$element = $this->get_var('element');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
-
-dwho_var_dump($info);
 
 ?>
 <div class="b-infos b-form">
@@ -38,11 +37,16 @@ dwho_var_dump($info);
 		<span class="span-center"><?=$this->bbf('title_content_name',array($this->get_var('id')));?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
+<?php $this->file_include('bloc/xivo/configuration/provisioning/config/submenu'); ?>
 	<div class="sb-content">
-	<fieldset>
-		<legend><?=$this->bbf('plugin-description_legend',array($this->get_var('id')));?></legend>
-		<?$this->bbf('plugin-description');?>
-	</fieldset>
+		<form action="#" method="post" accept-charset="utf-8">
+		<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>
+		<?=$form->hidden(array('name' => 'act','value' => 'edit'))?>
+		<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
+		<?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')))?>
+		<?php $this->file_include('bloc/xivo/configuration/provisioning/config/form'); ?>
+		<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')))?>
+		</form>
 	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

@@ -38,8 +38,8 @@ switch($act)
 {
 	case 'add':
 	case 'edit':
-		$appuser = &$ipbx->get_application('user');
-
+		$appuser = &$ipbx->get_application('user');		
+		
 		$appcontext= &$ipbx->get_application('context');
 		$context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'intern');
 		
@@ -65,8 +65,19 @@ switch($act)
 					
 				array_push($entity_list, $ref['entity']);
 			}	
-		}		
+		}
+		
+		$appprovdconfig = &$_XOBJ->get_application('provdconfig');		
+		$order = array('displayname' => SORT_ASC);
+		$list_configregistrar = $appprovdconfig->get_config_list('',$order,false,false,false,'registrar');
+		
+		$appdevice = &$ipbx->get_application('device');
+		$order = array('ip' => SORT_ASC);
+		$list_device_line = $appdevice->get_devices_list(null,$order,false);
+		
 		$_TPL->set_var('entity_list',$entity_list);
+		$_TPL->set_var('list_configregistrar',$list_configregistrar);
+		$_TPL->set_var('list_device_line',$list_device_line);
 		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 		
 		$dhtml = &$_TPL->get_module('dhtml');

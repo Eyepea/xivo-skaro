@@ -44,6 +44,15 @@
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery-ui/jquery-ui.min.js'));?>"></script>
 
 <?php
+/*
+<script type="text/javascript" charset="utf-8" 
+src="<?=$this->file_time($this->url('js/tmp/jquery-1.5.2.min.js'));?>"></script>
+<script type="text/javascript" charset="utf-8" 
+src="<?=$this->file_time($this->url('js/tmp/jquery-ui-1.8.12.custom.min.js'));?>"></script>
+
+<link rel="stylesheet" type="text/css" charset="utf-8" 
+href="<?=$this->file_time($this->url('js/tmp/css/ui-lightness/jquery-ui-1.8.12.custom.css'));?>">
+*/
 
 $dhtml = &$this->get_module('dhtml');
 

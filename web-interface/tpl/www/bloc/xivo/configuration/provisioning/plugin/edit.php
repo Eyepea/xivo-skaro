@@ -106,13 +106,6 @@ else:
 							'#',
 							null,
 							'onclick="init_install(\''.$this->get_var('id').'\',\''.$ref['name'].'\');return(false);"',
-							/*
-							'xivo/configuration/provisioning/plugin',
-							array('act'	=> 'install-pkgs',
-							      'plugin'	=> $this->get_var('id'),
-							      'id'	=> $ref['name']),
-							null,
-							*/
 							$this->bbf('opt_install'));
 			elseif ($ref['type'] === 'installed'):
 				echo	$url->href_html($url->img_html('img/site/utils/app-delete.png',

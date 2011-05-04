@@ -25,6 +25,8 @@ $info = $this->get_var('info');
 $element = $this->get_var('element');
 $nb = $this->get_var('count');
 $list = $this->get_var('list');
+$list_configregistrar = $this->get_var('list_configregistrar');
+$list_device_line = $this->get_var('list_device_line');
 $err = $this->get_var('error','linefeatures');
 
 ?>
@@ -84,14 +86,9 @@ $err = $this->get_var('error','linefeatures');
 		<th class="th-center"><?=$this->bbf('col_line-name');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
-<?php 
-/*
-		<th class="th-center"><?=$this->bbf('col_line-rules_type');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-rules_time');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-rules_order');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-rules_group');?></th>
-*/ 
-?>
+		<th class="th-center"><?=$this->bbf('col_line-config_registrar');?></th>
+		<th class="th-center"><?=$this->bbf('col_line-device');?></th>
+		<th class="th-center"><?=$this->bbf('col_line-num');?></th>
 		<th class="th-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 								       $this->bbf('col_line-add'),
@@ -135,7 +132,7 @@ if($list !== false):
 		|| $rulesgroup !== 0):
 ?>
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="4" class="td-left" id="td_rules_group_name">
+		<td colspan="7" class="td-left" id="td_rules_group_name">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 			<?=$rulesgroup?>
 		</td>
@@ -201,6 +198,38 @@ if($list !== false):
 					     'default'	=> $element['linefeatures']['number']['default']));?>
 			<div class="dialog-helper" id="numberpool_helper"></div>
 		</td>
+		<td>
+			<?=$form->select(array('paragraph'	=> false,
+				    'name'		=> 'linefeatures[configregistrar][]',
+				    'id'		=> 'linefeatures-configregistrar',
+				    'label'		=> false,
+				    'key'		=> 'displayname',
+				    'altkey'	=> 'id',
+				    'default'	=> $element['linefeatures']['configregistrar']['default'],
+					'selected'	=> $ref['configregistrar']),
+			      $list_configregistrar);?>
+		</td>
+		<td>
+			<?=$form->select(array('paragraph'	=> false,
+				    'name'		=> 'linefeatures[device][]',
+				    'id'		=> 'linefeatures-device',
+				    'label'		=> false,
+				    'key'		=> 'ip',
+				    'altkey'	=> 'id',
+				    'empty'		=> true,
+				    'default'	=> $element['linefeatures']['device']['default'],
+					'selected'	=> $ref['device']),
+			      $list_device_line);?>
+		</td>
+		<td>
+			<?=$form->select(array('paragraph'	=> false,
+					    'name'		=> 'linefeatures[num][]',
+					    'id'		=> 'linefeatures-num',
+					    'label'		=> false,
+				    	'key'		=> false,
+						'selected'	=> $ref['num']),
+					$element['linefeatures']['num']['value']);?>
+		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 						       $this->bbf('opt_line-delete'),
@@ -219,7 +248,7 @@ endif;
 	</tbody>
 	<tfoot>
 	<tr id="no-linefeatures"<?=($list !== false ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="5" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
+		<td colspan="8" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
 	</tr>
 	</tfoot>
 </table>
@@ -227,7 +256,7 @@ endif;
 <table class="b-nodisplay">
 	<tbody id="ex-rules_group">
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="4" class="td-left" id="td_rules_group_name">
+		<td colspan="7" class="td-left" id="td_rules_group_name">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 		</td>
 		<td class="td-right">
@@ -270,8 +299,6 @@ endif;
 				    'name'		=> 'linefeatures[context][]',
 				    'id'		=> 'linefeatures-context',
 				    'label'		=> false,
-				    'key'		=> 'displayname',
-				    'altkey'	=> 'name',
 				    'default'	=> $element['linefeatures']['context']['default']));?>
 		</td>
 		<td id="td_ex-linefeatures-number">
@@ -282,6 +309,36 @@ endif;
 					     'size'		=> 5,
 					     'default'	=> $element['linefeatures']['number']['default']));?>
 			<div class="dialog-helper" id="numberpool_helper"></div>
+		</td>
+		<td id="td_ex-linefeatures-configregistrar">
+			<?=$form->select(array('paragraph'	=> false,
+				    'name'		=> 'linefeatures[configregistrar][]',
+				    'id'		=> 'linefeatures-configregistrar',
+				    'label'		=> false,
+				    'key'		=> 'displayname',
+				    'altkey'	=> 'id',
+				    #'empty'		=> true,
+				    'default'	=> $element['linefeatures']['configregistrar']['default']),
+			      $list_configregistrar);?>
+		</td>
+		<td id="td_ex-linefeatures-device">
+			<?=$form->select(array('paragraph'	=> false,
+				    'name'		=> 'linefeatures[device][]',
+				    'id'		=> 'linefeatures-device',
+				    'label'		=> false,
+				    'key'		=> 'ip',
+				    'altkey'	=> 'id',
+				    'default'	=> $element['linefeatures']['device']['default'],
+				    'empty'		=> true),
+			      $list_device_line);?>
+		</td>
+		<td>
+			<?=$form->select(array('paragraph'	=> false,
+					    'name'		=> 'linefeatures[num][]',
+					    'id'		=> 'linefeatures-num',
+					    'label'		=> false,
+				   		'default'	=> $element['linefeatures']['num']['default']),
+					$element['linefeatures']['num']['value']);?>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

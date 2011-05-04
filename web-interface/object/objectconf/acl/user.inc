@@ -145,8 +145,11 @@ $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning'] = array();
-$array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['general'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['configregistrar'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['confignetwork'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['config'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

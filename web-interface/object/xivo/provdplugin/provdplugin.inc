@@ -92,9 +92,8 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		$uri = $this->_build_uri(array('plugins',$name,'configure'));
 		
 		if (($rs = $this->request_get($uri)) !== false
-		&& $this->_status_code === 200)	{
+		&& $this->_status_code === 200)
 			$res['params'] = $rs['params'];
-		}
 			
 		return($res);
 	}
@@ -191,7 +190,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		
 		$decoded = $this->decode_header($rs);
 		/*
-		if (isset($decoded['Location']) === false		
+		if (isset($decoded['Location']) === false
 		|| $this->request_delete($decoded['Location']) === false)
 			return(false);
 			

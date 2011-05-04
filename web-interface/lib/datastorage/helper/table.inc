@@ -135,7 +135,10 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		|| is_scalar($val) === false
 		|| is_array($this->_primary) === false
 		|| count($this->_primary) !== 1)
+		{
+			dwho_report::push('error', 'duplicate primary key: '.$val);
 			return(false);
+		}
 
 		return(array(key($this->_primary) => $val));
 	}
@@ -164,7 +167,10 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		if(isset($this->_primary) === false
 		|| is_array($this->_primary) === false
 		|| count($this->_primary) < 2)
+		{
+			dwho_report::push('error', 'not multi primary key');
 			return(false);
+		}
 
 		return(true);
 	}
@@ -289,9 +295,7 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 			if(is_array($val) === true)
 			{
 				$where = array();
-
 				$i = 0;
-
 				reset($val);
 
 				while(list($key2) = each($val))
@@ -325,9 +329,13 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		if($this->_dso->get_where() === null)
 			return(true);
 		else if(is_array($primary) === true)
-			$this->_dso->andwherenot($primary,null,false);
-
-		return(($this->_dso->select_single() === false));
+			$this->_dso->andwherenot($primary,null,false);			
+			
+		if($this->_dso->select_single() === false)
+			return(true);
+		
+		dwho_report::push('debug', 'unique key already exist on table '.$this->_table.' File: '.__FILE__.' Line: '.__LINE__);
+		return(false);
 	}
 
 	function add($arr,$insertid=true,$unique=true)

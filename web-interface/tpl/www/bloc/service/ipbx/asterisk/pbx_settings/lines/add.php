@@ -34,18 +34,14 @@ else:
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/lines/submenu');
-?>
+<?php $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/lines/submenu'); ?>
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'))?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
 <?=$form->hidden(array('name' => 'proto','value' => $proto))?>
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/lines/form');
-?>
+<?php $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/lines/form'); ?>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')))?>
 		</form>
 	</div>

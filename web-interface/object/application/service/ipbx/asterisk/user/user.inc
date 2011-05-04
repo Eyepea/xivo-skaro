@@ -720,7 +720,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->set_picture($iduserfeatures);
 
 		if(dwho_issa('linefeatures',$arr) === true)
-			$this->set_linefeatures($arr,$iduserfeatures);
+			$this->set_linefeatures($arr['linefeatures'],$iduserfeatures);
 
 		$simultcalls = (int) $this->get_result_var('userfeatures','simultcalls');
 		$musiconhold = (string) $this->get_result_var('userfeatures','musiconhold');
@@ -913,20 +913,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($userfeatures = $this->get_result('userfeatures')) === null)
 			return(false);
 
-		$linefeatures = $arr['linefeatures'];
-
 		$reslist = $error = array();
 		$errnb = 0;
 
-		foreach($linefeatures as $key => $list)
+		foreach($arr as $key => $list)
 		{
 			for($i = 0;$i < count($list);$i++)
 			{
-				if (isset($linefeatures[$key][$i]) === false
-				|| $linefeatures[$key][$i] === '')
+				if (isset($arr[$key][$i]) === false
+				|| $arr[$key][$i] === '')
 					$reslist[$i][$key] = '';
 				else
-					$reslist[$i][$key] = $linefeatures[$key][$i];
+					$reslist[$i][$key] = $arr[$key][$i];
 			}
 		}
 
@@ -976,7 +974,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$ref['protocolid'] = 0;
 				$ref['name'] = $this->gen_password(6,true);
-				$ref['secret'] = $this->gen_password(6);
 			}
 
 			$protocolname = $ref['protocol'];
@@ -1643,7 +1640,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$protocolname = $line['protocol'];
 
 			$arr['linefeatures'] = $line;
-			$arr['protocol'] = $line;
+			$arr['protocol'] = $line;	
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];

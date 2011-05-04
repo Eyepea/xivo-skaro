@@ -820,6 +820,15 @@ Temps
 ; col_line-rules_group
 Groupe
 
+; col_line-config_registrar
+Site
+
+; col_line-num
+Ligne (N°)
+
+; col_line-device
+Terminaison
+
 ; no_lines-line
 Aucune ligne enregistrée
 

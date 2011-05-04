@@ -68,9 +68,9 @@ if(isset($_QR['fm_send']) === true
 	for($i = 0; $i < $count; $i++)
 	{
 		$queueskills[] = array(
-		'userid'=> $_QR['id'],
-		'skillid'       => $_QR['queueskill-skill'][$i],
-		'weight'=> $_QR['queueskill-weight'][$i],
+		'userid' => $_QR['id'],
+		'skillid' => $_QR['queueskill-skill'][$i],
+		'weight' => $_QR['queueskill-weight'][$i],
 		);
 	}
 	$skillerr = $appqueue->userskills_setedit($queueskills);

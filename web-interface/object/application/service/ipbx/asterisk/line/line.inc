@@ -26,16 +26,19 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_line extends xivo_application_asterisk_abstract
 {
-	var $_dso				= null;
-	var	$_contextlist		= false;
-	var $_linefeatures 		= false;
-	var $_protocolname		= false;
-	var $_extenumbers		= false;
-	var $_extensions		= false;
-	var $_contextnummember	= false;
-	var $_protocol			= false;
-	var $_conf				= array();
-	var $_param				= array('internal'	=> false);
+	protected $_dso				= null;
+	protected $_contextlist		= false;
+	protected $_linefeatures 	= false;
+	protected $_protocolname	= false;
+	protected $_extenumbers		= false;
+	protected $_extensions		= false;
+	protected $_contextnummember= false;
+	protected $_protocol		= false;
+	protected $_provdconfig		= false;
+	protected $_provddevice		= false;
+	protected $_devicefeatures 	= false;
+	protected $_conf			= array();
+	protected $_param			= array('internal'	=> false);
 
 	public function __construct(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -72,11 +75,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	{
 		$this->_components = true;
 
-		if(($this->_servicesgroup = &$this->_service->get_application('servicesgroup')) === false
-		|| ($this->_servicesgroup_user = &$this->_service->get_module('servicesgroup_user')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
+		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'user'))) === false
-		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'user'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'user'))) === false
+		|| ($this->_devicefeatures = &$this->_service->get_module('devicefeatures')) === false
+		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
+		|| ($this->_provdconfig = &$_XOBJ->get_module('provdconfig')) === false
+		|| ($this->_provddevice = &$_XOBJ->get_module('provddevice')) === false)
 			return(false);
 
 		return(true);
@@ -219,7 +224,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$r = array();
 
 		$r['protocol'] = $this->_service->get_protocol_element();
-		$r['servicesgroup'] = $this->_servicesgroup->get_element();
 
 		return($r);
 	}
@@ -230,6 +234,11 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			ksort($r);
 
 		return($r);
+	}
+
+	public function get_lines_device($deviceid,$context='',$disable=null,$order=null,$limit=null,$assoc=false,$free=null)
+	{
+		return($this->_get_lines('device',null,$disable,'',$context,$order,$limit,$assoc,null,$free,null,$deviceid));
 	}
 
 	public function get_lines_search($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
@@ -262,7 +271,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	 *		- internal: if true, also return internal accounts (*guest* account indeed)
 	 *		- free: if true, also return iduserfeatures=0, null = both, false return iduserfeatures != 0	 *
 	*/
-	private function _get_lines($action,$protocols=null,$disable=null,$search='',$context='',$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null)
+	private function _get_lines($action,$protocols=null,$disable=null,$search='',$context='',
+	$order=null,$limit=null,$assoc=false,$initialized=null,$free=null,$internal=null,$deviceid=null)
 	{
 		$search = strval($search);
 
@@ -276,6 +286,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		switch($action)
 		{
+			case 'device':
+				$rs = $this->_dso->device($deviceid,$context,$disable,$order,$limit,$free);
+				break;				
 			case 'search':
 				$rs = $this->_dso->search($search,$context,$protocols,$disable,$initialized,$order,$limit);
 				break;
@@ -381,6 +394,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			return(false);
 
 		$this->_protocolname = $protocolname;
+		
+		if ($action === 'add')
+			$arr['protocol']['secret'] = $this->gen_password(6);
 
 		if(isset($arr['protocol']['callerid']) === true)
 			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
@@ -401,22 +417,21 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$arr['linefeatures']['name'] = $name;
 			$arr['linefeatures']['protocol'] = $protocolname;
 			$arr['linefeatures']['protocolid'] = 0;
+			$arr['linefeatures']['rules_order'] = 0;
+			$arr['linefeatures']['rules_group'] = '';
 			$arr['linefeatures']['context'] = $context;
 			$arr['linefeatures']['iduserfeatures'] = 0;
 		}
 
 		if (dwho_issa('userfeatures',$arr) === false)
-		{		
-			$arr['linefeatures']['secret'] = $this->get_result_var('protocol','secret');
-			$arr['linefeatures']['rules_order'] = 0;
+		{
 			$this->set_linefeatures($action,$arr['linefeatures']);
 			if($this->get_errnb() === 0)
 				return(true);
 				
 			return(false);
 		}
-
-		if (dwho_issa('userfeatures',$arr) === true)
+		else
 		{
 			if (isset($arr['userfeatures']['id']) === true)
 				$arr['linefeatures']['iduserfeatures'] = (int) $arr['userfeatures']['id'];
@@ -442,6 +457,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		}
 
 		$this->set_linefeatures($action,$arr['linefeatures']);
+		$this->_set_result('userfeatures',$arr['userfeatures']);
 
 		$this->_extenumbers->_reset();
 		$this->_contextnummember->_reset();
@@ -577,6 +593,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if (isset($this->_info['linefeatures']) === true
 		&& ($iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
 			$rs['iduserfeatures'] = (int) $iduserfeatures;
+			
 		$this->_set_result('linefeatures',$rs);
 
 		return(true);
@@ -635,7 +652,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if($this->get_errnb() > 0
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
-		|| ($linefeaturesid = $this->add_linefeatures($protocolid)) === false)
+		|| ($linefeaturesid = $this->add_linefeatures($protocolid)) === false
+		|| $this->add_config() === false)
 		{
 			$r = false;
 			if($protocolid !== null)
@@ -689,16 +707,31 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$rs['protocolid'] = (int) $protocolid;
 
 		$this->_return['linefeatures'] = $this->_linefeatures->add($rs);
-
-		if (isset($rs['servicesgroup_id']) === true
-		&& empty($rs['servicesgroup_id']) === false)
-		{
-			$arr = array();
-			$arr['servicesgroup_id'] = (int) $rs['servicesgroup_id'];
-			$arr['linefeatures_id'] = (int) $this->_return['linefeatures'];
-			$this->_servicesgroup_user->add($arr);
-		}
+		
 		return($this->_return['linefeatures']);
+	}
+
+	function add_config()
+	{
+		if($this->_provdconfig === false
+		|| $this->_provddevice === false
+		|| dwho_issa('linefeatures',$this->_info) === false
+		|| dwho_issa('protocol',$this->_info) === false
+		|| ($rs = $this->get_result('linefeatures')) === null
+		|| $rs === false)
+			return(false);
+			
+		dwho_hr('ADD');
+		
+			
+		if ($this->_info['linefeatures']['device'] !== $rs['device'])
+		{			
+			dwho_var_dump($this->_info['linefeatures']);
+			dwho_var_dump($this->get_result('linefeatures'));
+			
+			#$this->_provddevice->update_config_from_line();
+			die;			
+		}
 	}
 
 	function update_protocol_setvar($protocolid,$iduserfeatures)
@@ -832,7 +865,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			return(false);
 		}
 
-		if($this->edit_linefeatures($protocolret) === false)
+		if($this->edit_linefeatures($protocolret) === false
+		|| $this->edit_config() === false)
 		{
 			$this->edit_origin_protocol($protocolret);
 			$this->_status = '';
@@ -983,21 +1017,75 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		else
 			return(false);
 
-		if (isset($rs['servicesgroup_id']) === true
-		&& empty($rs['servicesgroup_id']) === false)
-		{
-			$arr = array();
-			$arr['servicesgroup_id'] = (int) $rs['servicesgroup_id'];
-			$arr['linefeatures_id'] = (int) $this->_info['linefeatures']['id'];
-			if ($this->_servicesgroup_user->get_nb($arr) === 0)
-				$this->_servicesgroup_user->add($arr);
-			else
-				$this->_servicesgroup_user->edit($arr['servicesgroup_id'],$arr);
-		}
-
 		return(($this->_return['linefeatures'] = $this->_linefeatures->edit($this->_info['linefeatures']['id'],
 										    $rs,
 										    $provisioning)));
+	}
+
+	function edit_config()
+	{
+		if($this->_provdconfig === false
+		|| $this->_provddevice === false
+		|| dwho_issa('linefeatures',$this->_info) === false
+		|| dwho_issa('protocol',$this->_info) === false
+		|| ($rs = $this->get_result('linefeatures')) === null
+		|| $rs === false)
+			return(false);
+			
+		#if ($this->_info['linefeatures']['device'] !== $rs['device'])
+		if (empty($rs['device']) === false)
+		{
+			$linefeaturesid = $this->_info['linefeatures']['id'];
+			$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
+				
+			$info = array();
+			$info['linefeatures'] = $this->get_result('linefeatures');
+			$info['userfeatures'] = $this->get_result('userfeatures');
+			
+			if(($this->_protocol = &$this->_service->get_protocol_module($info['linefeatures']['protocol'])) === false
+			|| ($protocol = $this->_protocol->get($info['linefeatures']['protocolid'])) === false)
+				return(false);
+			
+			$info['protocol'] = $protocol;
+			
+			// new device associated
+			if (empty($rs['device']) === false)
+			{
+				if (($device = $this->_devicefeatures->get($rs['device'])) === false)
+				{
+					dwho_report::push('error', 'device doesn\'t exist');
+					return(false);
+				}			
+				elseif($this->_provddevice->update_config_from_line($info,$device['deviceid']) === false)
+				{
+					dwho_report::push('error', 'Can\'t edit device');
+					return(false);
+				}	
+			}
+			// remove device associated
+			elseif (empty($rs['device']) === true)
+			{
+				$arr = array();
+				$arr['device'] = '';
+				if (($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
+				{
+					dwho_report::push('error', 'device doesn\'t exist');
+					return(false);
+				}			
+				elseif ($this->_provddevice->remove_config_from_line($info,$device['deviceid']) === false)
+				{
+					dwho_report::push('error', 'Can\'t remove device');
+					return(false);
+				}			
+				elseif ($this->_dso->edit($linefeaturesid,$arr) === false)
+				{
+					dwho_report::push('error', 'Can\'t remove config from line: '.$linefeaturesid);
+					return(false);
+				}
+				
+			}
+		}
+		return(true);
 	}
 
 	function edit_usermacro($iduserfeatures)

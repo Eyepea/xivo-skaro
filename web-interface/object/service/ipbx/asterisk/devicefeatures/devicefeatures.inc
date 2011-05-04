@@ -43,6 +43,15 @@ class xivo_service_asterisk_devicefeatures extends xivo_service_asterisk_abstrac
 		$this->_chk_autoprov();
 	}
 
+	function _prepare($data)
+	{
+		$data['id'] = (int) $data['id'];
+		$data['configured'] = (bool) $data['configured'];
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
+
 	function _chk_autoprov()
 	{
 		if(dwho_issa($this->_name,$this->_sre->_ini) === false

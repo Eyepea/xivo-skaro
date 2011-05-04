@@ -20,25 +20,25 @@
 
 class dwho_json
 {
-	function load_extension()
+	public static function load_extension()
 	{
 		if(dwho::load_extension('json') === false)
 			trigger_error('Unable to load json',E_USER_ERROR);
 	}
 
-	function get_header()
+	public static function get_header()
 	{
 		return('Content-Type: application/json');
 	}
-
-	function encode($data)
+	
+	public static function encode($data,$options=0)
 	{
 		dwho_json::load_extension();
 
-		return(json_encode($data));
-	}
+		return(json_encode($data,$options));
+	}	
 
-	function decode($data,$assoc=false)
+	public static function decode($data,$assoc=false)
 	{
 		if(dwho_has_len($data) === false)
 			return(false);

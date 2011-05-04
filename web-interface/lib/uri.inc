@@ -432,7 +432,7 @@ class dwho_uri
 			return($r);
 
 		$r = array();
-
+		
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$query[$i];
@@ -464,7 +464,7 @@ class dwho_uri
 			else
 				$r[$i] .= '='.$ref[1];
 		}
-
+		
 		return(implode($separator,$r));
 	}
 

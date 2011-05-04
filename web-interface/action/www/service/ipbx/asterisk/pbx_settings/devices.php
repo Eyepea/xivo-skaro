@@ -32,15 +32,90 @@ $param['act'] = 'list';
 if($search !== '')
 	$param['search'] = $search;
 
-$contexts = false;
-
 switch($act)
 {
+	case 'update':
+		$appdevice = &$ipbx->get_application('device');
+		if ($appdevice->update() === false)
+			dwho_report::push('error',dwho_i18n::babelfish('error_during_update'));
+		else	
+			dwho_report::push('info',dwho_i18n::babelfish('successfully_updated'));
+		$act = 'list';
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+		break;
 	case 'add':
+		$appdevice = &$ipbx->get_application('device');
+		$modprovdplugin = &$_XOBJ->get_module('provdplugin');
+		
+		$plugininstalled = $modprovdplugin->get_plugin_installed();
+
+		$result = $fm_save = $error = null;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('devicefeatures',$_QR) === true)
+		{
+			if($appdevice->set_add($_QR) === false
+			|| $appdevice->add('provd') === false)
+			{
+				$fm_save = false;
+				$result = $appdevice->get_result();
+				$error = $appdevice->get_error();
+			}
+			else
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+		}
+
+		$element = $appdevice->get_elements();
+
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('plugininstalled',$plugininstalled);
+		$_TPL->set_var('element',$element);
+		break;
 	case 'edit':
 		$appdevice = &$ipbx->get_application('device');
 
-		include(dirname(__FILE__).'/devices/'.$act.'.php');
+		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+			
+		$modprovdplugin = &$_XOBJ->get_module('provdplugin');		
+		$plugininstalled = $modprovdplugin->get_plugin_installed();
+		
+		$appline = &$ipbx->get_application('line');
+		$order = array('num' => SORT_ASC);
+		$listline = $appline->get_lines_device((int) $_QR['id'],'',null,$order);
+		
+		$return = &$info;
+
+		$result = $fm_save = $error = null;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('devicefeatures',$_QR) === true)
+		{
+			$return = &$result;
+
+			if($appdevice->set_edit($_QR) === false
+			|| $appdevice->edit('provd') === false)
+			{
+				$fm_save = false;
+				$result = $appdevice->get_result();
+				$error = $appdevice->get_error();
+			}
+			else
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+		}
+		
+		$element = $appdevice->get_elements();
+
+		$_TPL->set_var('id',$info['devicefeatures']['id']);
+		$_TPL->set_var('deviceid',$info['devicefeatures']['deviceid']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('plugininstalled',$plugininstalled);
+		$_TPL->set_var('listline',$listline);
+		$_TPL->set_var('element',$element);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -51,8 +126,6 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 
 		$appdevice->delete();
-
-		$ipbx->discuss('xivo[userlist,update]');
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		break;
@@ -120,9 +193,9 @@ switch($act)
 		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$list = $appdevice->get_devices_search($search,$context,null,null,$order,$limit);
+			$list = $appdevice->get_devices_search($search,null,$order,$limit);
 		else
-			$list = $appdevice->get_devices_list(null,null,$order,$limit,null,null);
+			$list = $appdevice->get_devices_list(null,$order,$limit);
 
 		$total = $appdevice->get_cnt();
 

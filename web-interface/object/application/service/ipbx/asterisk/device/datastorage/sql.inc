@@ -61,7 +61,7 @@ class xivo_application_service_asterisk_device_sql extends xivo_application_abst
 		$this->_dso->new_order($order,null,$this->_table['devicefeatures']);
 		$this->_dso->limit($limit);
 
-		$r = $this->_dso->select_all(null,true,true);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();

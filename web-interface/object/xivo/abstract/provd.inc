@@ -28,11 +28,16 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 
 abstract class xivo_object_provd_abstract extends xivo_object_abstract
 {
-	protected $_curl		= null;
-	protected $_uri			= null;
-	protected $_url			= array();
-	protected $_status_code	= null;
-	protected $_curl_opt	= array();
+	protected 	$_curl			= null;
+	protected 	$_uri			= null;
+	protected 	$_url			= array();
+	protected 	$_status_code	= 0;
+	protected 	$_curl_opt		= array();
+	protected 	$_limit			= array();
+	protected 	$_order			= array();
+	protected 	$_filter		= false;
+	protected 	$_origin		= false;
+	protected 	$_origin_list	= false;
 	
 	protected function _load_init()
 	{
@@ -108,6 +113,12 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 		}
 
 		return(true);
+	}
+	
+	protected function reset()
+	{
+		$this->_limit = array();
+		$this->_order = array();
 	}
 
 	protected function _set_curl_opt($key,$value)
@@ -203,6 +214,61 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 		return($this->_curl->load(null,$opt,false));
 	}
 	
+	protected function set_limit($limit)
+	{
+		$this->_limit = array();
+		
+		if (is_null($limit) === true
+		|| is_array($limit) === false
+		|| count($limit) !== 2)
+			return(false);
+			
+		$this->_limit = $limit;	
+	}
+	
+	protected function set_order($column,$sort='')
+	{
+		$this->_order = array();
+		
+		if (is_null($column) === true
+		|| is_array($column) === false)
+			return(false);
+
+		$r = array();
+		{
+			if(empty($column) === true)
+				return(false);
+
+			foreach($column as $key => $val)
+			{
+				$tmp = array();
+				$tmp['sort'] = $key;
+				$tmp['sort_ord'] = $this->_set_sort($val);
+				$r[] = $tmp;
+			}
+			
+			if (isset($r[0]) === false)
+				return(false);
+		}
+			
+		$this->_order = $r[0];
+	}
+
+	private function _set_sort($sort='')
+	{
+		$sort = strtoupper($sort);
+
+		switch($sort)
+		{
+			case 'D':
+			case 'DESC':
+			case SORT_DESC:
+				return('DESC');
+		}
+
+		return('ASC');
+	}
+	
 	public function build_href($path,$query=null)
 	{
 		if(dwho_has_len($path) === false)
@@ -216,15 +282,32 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		if(($uri = $this->_uri->build_uri($url)) === false)
 			return(false);
-			
+		
 		return($uri);
 	}
 
 	protected function _connect($path,$query=null)
 	{
+		if (is_null($query) === true)
+			$query = array();			
+		
+		if (empty($this->_limit) === false)
+		{
+			array_push($query,array('skip',$this->_limit[0]));
+			array_push($query,array('limit',$this->_limit[1]));
+		}
+		
+		if (empty($this->_order) === false)
+		{
+			if (isset($this->_order['sort']) === true)
+				array_push($query,array('sort',$this->_order['sort']));
+			if (isset($this->_order['sort_ord']) === true)
+				array_push($query,array('sort_ord',$this->_order['sort_ord']));
+		}
+		
 		if(($uri = $this->build_href($path,$query)) === false
 		|| $this->_curl->set_option('url',$uri) === false)
-			return(false);
+			return(false);			
 
 		return($this->_curl->connect());
 	}
@@ -325,7 +408,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_curl->set_option('customrequest','PUT');
 		$this->_curl->set_option('post',true);
-		$this->_curl->set_option('postfields',dwho_json::encode($data));
+		$this->_curl->set_option('postfields',dwho_json::encode($data));		
 
 		if(($r = $this->_connect($path,$query)) !== false
 		&& $r !== '')

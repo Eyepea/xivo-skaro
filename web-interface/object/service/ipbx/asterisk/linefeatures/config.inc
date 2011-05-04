@@ -58,6 +58,15 @@ $array['element']['context']['default'] = 'default';
 $array['element']['number'] = array();
 $array['element']['number']['default'] = '';
 
+$array['element']['config'] = array();
+$array['element']['config']['default'] = '';
+
+$array['element']['configregistrar'] = array();
+$array['element']['configregistrar']['default'] = '';
+
+$array['element']['device'] = array();
+$array['element']['device']['default'] = '';
+
 $array['element']['rules_type'] = array();
 $array['element']['rules_type']['value'] = array('simul');
 $array['element']['rules_type']['empty'] = true;
@@ -71,6 +80,10 @@ $array['element']['rules_order']['default'] = 0;
 
 $array['element']['rules_group'] = array();
 $array['element']['rules_group']['default'] = '';
+
+$array['element']['num'] = array();
+$array['element']['num']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
+$array['element']['num']['default'] = 0;
 
 $array['element']['internal'] = array();
 $array['element']['internal']['value'] = array(0,1);
@@ -88,7 +101,11 @@ $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['iduserfeatures'] = array('set' => false,'cast' => 'ulongint');
+$array['filter']['num'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
+$array['filter']['config'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
+$array['filter']['configregistrar'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
+$array['filter']['device'] =  array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9]+$/','maxlen' => 32);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,

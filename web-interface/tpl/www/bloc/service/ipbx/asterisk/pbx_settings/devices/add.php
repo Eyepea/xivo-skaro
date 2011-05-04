@@ -20,18 +20,6 @@
 
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
-$context_list = $this->get_var('context_list');
-
-if($context_list === false):
-  $dhtml = &$this->get_module('dhtml');
-  echo	'<div id="fd-protocol-context" class="txt-center">',
-	  $url->href_htmln($this->bbf('create_context'),
-			  'service/ipbx/system_management/context',
-			  'act=add'),
-	  $dhtml->message_error($this->bbf('error_before_create_context'));
-	  '</div>';
-  return;
-endif;
 
 ?>
 <div id="sr-users" class="b-infos b-form">
@@ -40,32 +28,13 @@ endif;
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/submenu');
-?>
-
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-group');
-										dwho.form.select('it-queue');
-										dwho.form.select('it-codec');
-										dwho.form.select('it-rightcall');">
-<?php
-		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
-					    'value'	=> DWHO_SESS_ID)),
-
-			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'add')),
-
-			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1));
-
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/form');
-
-		echo	$form->submit(array('name'	=> 'submit',
-					    'id'	=> 'it-submit',
-					    'value'	=> $this->bbf('fm_bt-save')));
-?>
+		<form action="#" method="post" accept-charset="utf-8">
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>
+<?=$form->hidden(array('name' => 'act','value' => 'add'))?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
+<?php $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/devices/form'); ?>
+<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')))?>
 		</form>
 	</div>
 	<div class="sb-foot xspan">

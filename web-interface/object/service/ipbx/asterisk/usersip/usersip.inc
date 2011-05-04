@@ -83,7 +83,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 
 		$arr['type'] = 'friend';
 		$arr['username'] = null;
-		$arr['md5secret'] = md5($arr['secret']);
+		#$arr['md5secret'] = md5($arr['secret']);
 		$arr['fullname'] = null;
 		$arr['cid_number'] = null;
 		$arr['mohinterpret'] = null;
@@ -122,8 +122,14 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		&& empty($arr['secret']) === false)
 		{
 		      $arr['secret'] = $arr['secret'];
-		      $arr['md5secret'] = md5($arr['secret']);
+		     # $arr['md5secret'] = md5($arr['secret']);
 		}
+		else
+		{
+			unset($arr['secret'],
+			      $arr['md5secret']);
+		}
+		$arr['md5secret'] = '';
 
 		unset($arr['username'],
 		      $arr['fullname'],

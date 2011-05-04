@@ -872,5 +872,14 @@ Order
 ; col_line-rules_group
 Group
 
+; col_line-config_registrar
+Site
+
+; col_line-num
+Line (N°)
+
+; col_line-device
+Device
+
 ; fm_type-opt(simul)
 simul

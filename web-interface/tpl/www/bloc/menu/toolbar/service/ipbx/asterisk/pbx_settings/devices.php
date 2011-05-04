@@ -29,8 +29,8 @@ $linked = (string) $this->get_var('linked');
 
 $toolbar_js = array();
 $toolbar_js[] = 'var xivo_toolbar_fm_search = \''.$dhtml->escape($search).'\';';
-$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-users-list\';';
-$toolbar_js[] = 'var xivo_toolbar_form_list = \'users[]\';';
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-devices-list\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'devices[]\';';
 $toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
 $dhtml->write_js($toolbar_js);
@@ -61,19 +61,10 @@ $linked_js = $dhtml->escape($linked);
 					   'id'		=> 'it-toolbar-subsearch',
 					   'src'	=> $url->img('img/menu/top/toolbar/bt-search.gif'),
 					   'paragraph'	=> false,
-					   'alt'	=> $this->bbf('toolbar_fm_search'))),
-
-			$form->select(array('name'	=> 'linked',
-					    'id'	=> 'it-toolbar-linked',
-					    'paragraph'	=> false,
-					    'empty'	=> $this->bbf('toolbar_fm_linked'),
-					    'selected'	=> $linked),
-				      $this->get_var('linkeds'),
-				      'style="margin-left: 20px;"');
+					   'alt'	=> $this->bbf('toolbar_fm_search')));
 ?>
 	</div>
-</form>
-<?php
+</form><?php
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
 			       'id="toolbar-bt-add"
@@ -82,14 +73,13 @@ $linked_js = $dhtml->escape($linked);
 <div class="sb-advanced-menu">
 	<ul id="toolbar-add-menu">
 		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),
-				       'service/ipbx/pbx_settings/users',
+				       'service/ipbx/pbx_settings/devices',
 				       'act=add');?></li>
 		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),
-				       'service/ipbx/pbx_settings/users',
+				       'service/ipbx/pbx_settings/devices',
 				       'act=import');?></li>
 	</ul>
 </div><?php
-
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
@@ -115,7 +105,6 @@ if($act === 'list'):
 		</li>
 	</ul>
 </div>
-
 
 <script type="text/javascript">
 dwho.dom.set_onload(function()
