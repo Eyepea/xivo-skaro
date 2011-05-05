@@ -592,23 +592,28 @@ SELECT setval('ctistatus_id_seq', 6);
 DROP TABLE IF EXISTS "devicefeatures";
 CREATE TABLE "devicefeatures" (
  "id" SERIAL,
- "macaddr" character(17) NOT NULL,
+ "mac" character(17) NOT NULL,
  "vendor" varchar(16) NOT NULL,
  "model" varchar(16) NOT NULL,
  "proto" varchar(50) NOT NULL,
  "sn" varchar(128),
  "ip" varchar(39),
  "version" varchar(128),
- "isinalan" integer DEFAULT 0 NOT NULL,
- "provid" integer DEFAULT 0 NOT NULL,
- "pluginid" integer DEFAULT 0 NOT NULL,
- "configid" integer DEFAULT 0 NOT NULL,
+ "plugin" vacrchar(128),
+ "config" vacrchar(64),
+ "deviceid" varchar(32) NOT NULL
  "internal" integer DEFAULT 0 NOT NULL,
  "configured" integer DEFAULT 0 NOT NULL,
  "commented" integer DEFAULT 0 NOT NULL,
  "description" text,
  PRIMARY KEY("id")
 );
+
+CREATE INDEX "devicefeatures__idx__mac" ON "devicefeatures"("mac");
+CREATE INDEX "devicefeatures__idx__ip" ON "devicefeatures"("ip");
+CREATE INDEX "devicefeatures__idx__plugin" ON "devicefeatures"("plugin");
+CREATE INDEX "devicefeatures__idx__config" ON "devicefeatures"("config");
+CREATE INDEX "devicefeatures__idx__deviceid" ON "devicefeatures"("deviceid");
 
 DROP TABLE IF EXISTS "dialaction";
 DROP TABLE IF EXISTS "schedule"; -- USE dialaction_action
@@ -956,6 +961,7 @@ CREATE TABLE "linefeatures" (
  "rules_order" integer DEFAULT 0,
  "rules_group" varchar(16),
  "num" integer DEFAULT 0,
+ "line_num" integer DEFAULT 0,
  "internal" integer DEFAULT 0 NOT NULL,
  "commented" integer DEFAULT 0 NOT NULL,
  "description" text,
