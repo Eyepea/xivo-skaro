@@ -599,12 +599,12 @@ CREATE TABLE "devicefeatures" (
  "sn" varchar(128),
  "ip" varchar(39),
  "version" varchar(128),
- "plugin" vacrchar(128),
- "config" vacrchar(64),
- "deviceid" varchar(32) NOT NULL
- "internal" integer DEFAULT 0 NOT NULL,
- "configured" integer DEFAULT 0 NOT NULL,
- "commented" integer DEFAULT 0 NOT NULL,
+ "plugin" varchar(128),
+ "config" varchar(64),
+ "deviceid" varchar(32) NOT NULL,
+ "internal" INTEGER NOT NULL DEFAULT 0,
+ "configured" INTEGER NOT NULL DEFAULT 0,
+ "commented" INTEGER NOT NULL DEFAULT 0,
  "description" text,
  PRIMARY KEY("id")
 );
@@ -946,9 +946,8 @@ DROP TABLE IF EXISTS "linefeatures";
 CREATE TABLE "linefeatures" (
  "id" SERIAL,
  "protocol" varchar(50) NOT NULL,
- "protocolid" integer NOT NULL,
+ "protocolid" INTEGER NOT NULL,
  "iduserfeatures" integer DEFAULT 0,
- "line_num" integer DEFAULT 0,
  "config" varchar(128),
  "device" varchar(32),
  "configregistrar" varchar(128),
@@ -960,10 +959,10 @@ CREATE TABLE "linefeatures" (
  "rules_time" varchar(8),
  "rules_order" integer DEFAULT 0,
  "rules_group" varchar(16),
- "num" integer DEFAULT 0,
- "line_num" integer DEFAULT 0,
- "internal" integer NOT NULL DEFAULT 0,
- "commented" integer NOT NULL DEFAULT 0,
+ "num" INTEGER DEFAULT 0,
+ "line_num" INTEGER DEFAULT 0,
+ "internal" INTEGER NOT NULL DEFAULT 0,
+ "commented" INTEGER NOT NULL DEFAULT 0,
  "description" text,
  PRIMARY KEY("id")
 );
@@ -2292,9 +2291,9 @@ CREATE TABLE "usersip" (
  "md5secret" varchar(32) NOT NULL DEFAULT '', -- user / peer --
  "context" varchar(39), -- general / user / peer --
  "language" varchar(20), -- general / user / peer --
-
  "accountcode" varchar(20), -- user / peer --
  "amaflags" useriax_amaflags NOT NULL DEFAULT 'default', -- user / peer --
+
  "allowtransfer" INTEGER, -- BOOLEAN -- general / user / peer --
  "fromuser" varchar(80), -- peer --
  "fromdomain" varchar(255), -- general / peer --
@@ -2303,7 +2302,6 @@ CREATE TABLE "usersip" (
  "buggymwi" INTEGER, -- BOOLEAN -- general / user / peer --
  "call-limit" INTEGER NOT NULL DEFAULT 0, -- user / peer --
  "callerid" varchar(160), -- general / user / peer --
-
  "fullname" varchar(80), -- user / peer --
  "cid_number" varchar(80), -- user / peer --
  "maxcallbitrate" INTEGER, -- general / user / peer --
@@ -2314,9 +2312,9 @@ CREATE TABLE "usersip" (
  "videosupport" usersip_videosupport DEFAULT NULL, -- general / user / peer --
  "trustrpid" INTEGER, -- BOOLEAN -- general / user / peer --
  "sendrpid" INTEGER, -- BOOLEAN -- general / user / peer --
+
  "allowsubscribe" INTEGER, -- BOOLEAN -- general / user / peer --
  "allowoverlap" INTEGER, -- BOOLEAN -- general / user / peer --
-
  "dtmfmode" usersip_dtmfmode, -- general / user / peer --
  "rfc2833compensate" INTEGER, -- BOOLEAN -- general / user / peer --
  "qualify" varchar(4), -- general / peer --
@@ -2337,8 +2335,8 @@ CREATE TABLE "usersip" (
  "deny" varchar(31), -- user / peer --
  "permit" varchar(31), -- user / peer --
  "defaultip" varchar(255), -- peer --
- "setvar" varchar(100) NOT NULL DEFAULT '', -- user / peer --
 
+ "setvar" varchar(100) NOT NULL DEFAULT '', -- user / peer --
  "host" varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
  "port" INTEGER, -- peer --
  "regexten" varchar(80), -- peer --
@@ -2370,6 +2368,7 @@ CREATE TABLE "usersip" (
  "registertrying" INTEGER DEFAULT NULL, -- BOOLEAN
  "timert1" integer DEFAULT NULL,
  "timerb" integer DEFAULT NULL,
+ 
  "qualifyfreq" integer DEFAULT NULL,
  "contactpermit" varchar(1024) DEFAULT NULL,
  "contactdeny" varchar(1024) DEFAULT NULL,
@@ -2394,6 +2393,16 @@ CREATE INDEX "usersip__idx__host_port" ON "usersip"("host","port");
 CREATE INDEX "usersip__idx__ipaddr_port" ON "usersip"("ipaddr","port");
 CREATE INDEX "usersip__idx__lastms" ON "usersip"("lastms");
 CREATE UNIQUE INDEX "usersip__uidx__name" ON "usersip"("name");
+ 
+INSERT INTO "usersip" VALUES (1, 'autoprov','friend','autoprov','autoprov','','xivo-initconfig',NULL,NULL,'default',
+NULL,NULL,NULL,NULL,0,NULL,0,'Autoprov Mode',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+'XIVO_USERID=1','dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'',NULL,'sip','user',
+NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','',0);
+
+SELECT setval('usersip_id_seq', 2);
+
 
 DROP TABLE IF EXISTS "voicemail";
 DROP TYPE  IF EXISTS "voicemail_hidefromdir";
