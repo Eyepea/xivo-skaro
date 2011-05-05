@@ -72,6 +72,7 @@ function xivo_http_search_context_from_entity(entityid)
 		    for (var i = 0; i< nb; i++)
 		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
 	    });
+		update_row_infos();
 		xivo_http_search_linefree_by_entity(entityid);
 	});		
 }
@@ -82,7 +83,6 @@ function xivo_http_search_linefree_by_entity(entityid)
 	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=intern&free=1', function(data) {
 		if (data === null || data.length === 0){
 			$('#box-lines_free').hide('slow');
-			update_row_infos();
 			return false;
 		}
 		$('#box-lines_free').show();
@@ -91,7 +91,6 @@ function xivo_http_search_linefree_by_entity(entityid)
 		    for (var i = 0; i< data.length; i++)
 		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
 	    });
-		update_row_infos();
 	});
 }
 
@@ -200,7 +199,7 @@ $(document).ready(function() {
 		helper: fixHelper,
 		cursor: 'crosshair',
 		update: update_row_infos
-	}).disableSelection();
+	});
 	
 	$('#lnk-add-row').click(function(){		
 		$('#no-linefeatures').hide('fast');
