@@ -1579,7 +1579,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$config['registrar_main'] = $netiface['address'];
 		
 		if ($provdconfig->add($config) === false
-		|| $provdconfig->add_required_config() === false)
+		|| $provdconfig->add_required_config($config) === false)
 			return false;
 			
 		return(true);

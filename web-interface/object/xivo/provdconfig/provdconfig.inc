@@ -211,10 +211,15 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return(true);
 	}
 	
-	public function add_required_config()
+	public function add_required_config($config=null)
 	{
-		if (($confdefault = $this->get('default')) === false)
-			return(false);
+		if (is_null($config) === false)
+		{
+			if(($confdefault = $this->get('default')) === false)
+				return(false);
+		}
+		else
+			$confdefault = $config;
 		
 		if ($this->_add_base($confdefault) === false
 		|| $this->_add_autoprov($confdefault) === false)
@@ -231,7 +236,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		&& $this->get_default() === false)
 			return(false);
 		
-		$base['X_type'] = 'internal';		
+		$base['X_type'] = 'internal';
 		
 		$base['raw_config']['ntp_enabled'] = true;
 		$base['raw_config']['ntp_ip'] = $this->_confdefault['proxy_main'];
