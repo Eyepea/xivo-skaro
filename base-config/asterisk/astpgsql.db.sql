@@ -943,6 +943,7 @@ CREATE TABLE "linefeatures" (
  "protocol" varchar(50) NOT NULL,
  "protocolid" integer NOT NULL,
  "iduserfeatures" integer DEFAULT 0,
+ "line_num" integer DEFAULT 0,
  "config" varchar(128),
  "device" varchar(32),
  "configregistrar" varchar(128),
@@ -962,6 +963,7 @@ CREATE TABLE "linefeatures" (
 );
 
 CREATE INDEX "linefeatures__idx__iduserfeatures" ON "linefeatures"("iduserfeatures");
+CREATE INDEX "linefeatures__idx__line_num" ON "linefeatures"("line_num");
 CREATE INDEX "linefeatures__idx__config" ON "linefeatures"("config");
 CREATE INDEX "linefeatures__idx__device" ON "linefeatures"("device");
 CREATE INDEX "linefeatures__idx__number" ON "linefeatures"("number");
