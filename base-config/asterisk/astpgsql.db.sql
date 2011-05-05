@@ -943,6 +943,9 @@ CREATE TABLE "linefeatures" (
  "protocol" varchar(50) NOT NULL,
  "protocolid" integer NOT NULL,
  "iduserfeatures" integer DEFAULT 0,
+ "config" varchar(128),
+ "device" varchar(32),
+ "configregistrar" varchar(128),
  "name" varchar(20) NOT NULL,
  "number" varchar(40),
  "context" varchar(39) NOT NULL,
@@ -951,6 +954,7 @@ CREATE TABLE "linefeatures" (
  "rules_time" varchar(8),
  "rules_order" integer DEFAULT 0,
  "rules_group" varchar(16),
+ "num" integer DEFAULT 0,
  "internal" integer DEFAULT 0 NOT NULL,
  "commented" integer DEFAULT 0 NOT NULL,
  "description" text,
@@ -958,6 +962,8 @@ CREATE TABLE "linefeatures" (
 );
 
 CREATE INDEX "linefeatures__idx__iduserfeatures" ON "linefeatures"("iduserfeatures");
+CREATE INDEX "linefeatures__idx__config" ON "linefeatures"("config");
+CREATE INDEX "linefeatures__idx__device" ON "linefeatures"("device");
 CREATE INDEX "linefeatures__idx__number" ON "linefeatures"("number");
 CREATE INDEX "linefeatures__idx__context" ON "linefeatures"("context");
 CREATE INDEX "linefeatures__idx__commented" ON "linefeatures"("commented");
