@@ -223,19 +223,22 @@ class Safe:
                                        'list' : deltas.get('del')
                                        } )
             for id, v in deltas.get('change').iteritems():
+                if not v:
+                    continue
                 props = self.xod_config[listname].keeplist[id]
                 newc = {}
                 for p in v:
                     if p in self.props_config.get(listname):
                         newc[p] = props[p]
-                # tells clients about changed object
-                self.events_cti.put( { 'class' : 'getlist',
-                                       'listname' : listname,
-                                       'function' : 'updateconfig',
-                                       'ipbxid' : self.ipbxid,
-                                       'id' : id,
-                                       'config' : newc
-                                       } )
+                # tells clients about changed object (if really so ...)
+                if newc:
+                    self.events_cti.put( { 'class' : 'getlist',
+                                           'listname' : listname,
+                                           'function' : 'updateconfig',
+                                           'ipbxid' : self.ipbxid,
+                                           'id' : id,
+                                           'config' : newc
+                                           } )
         except Exception:
             log.exception('update_config_list %s' % listname)
         return

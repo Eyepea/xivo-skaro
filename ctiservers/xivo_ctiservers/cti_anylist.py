@@ -55,12 +55,14 @@ class AnyList:
             else:
                 oldfull = self.keeplist[a]
                 if b != oldfull:
-                    lstchange[a] = []
+                    keywords = []
                     for bk, bv in b.iteritems():
                         oldval = self.keeplist[a][bk]
                         if bv != oldval:
                             self.keeplist[a][bk] = bv
-                            lstchange[a].append(bk)
+                            keywords.append(bk)
+                    if keywords:
+                        lstchange[a] = keywords
         for a, b in oldlist.iteritems():
             if a not in newlist:
                 lstdel.append(a)

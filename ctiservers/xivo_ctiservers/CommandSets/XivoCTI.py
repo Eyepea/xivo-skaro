@@ -3611,15 +3611,6 @@ class XivoCTICommand(BaseCommand):
                                        'fileid' : newfax.reference }
                             repstr = self.__cjson_encode__(tosend)
 
-                    elif classcomm == 'featuresput':
-                        if self.capas[capaid].match_funcs(ucapa, 'features'):
-                            log.info('%s %s' % (classcomm, icommand.struct))
-                            rep = self.__build_features_put__(icommand.struct.get('userid'),
-                                                              icommand.struct.get('function'),
-                                                              icommand.struct.get('value'),
-                                                              icommand.struct.get('destination'))
-                            self.__send_msg_to_cti_client__(userinfo, rep)
-
                     elif classcomm == 'getfilelist':
                         lst = os.listdir(MONITORDIR)
                         monitoredfiles = []
@@ -3836,47 +3827,6 @@ class XivoCTICommand(BaseCommand):
             log.exception('(__parting_astid_context__) %s/%s %s'
                           % (userinfo.get('astid'), userinfo.get('xivo_userid'), listname))
         return fullstat
-
-
-    # \brief Builds the features_put reply.
-    def __build_features_put__(self, userid, key, value, destination = None):
-        userinfo = self.ulist_ng.keeplist[userid]
-        user = userinfo.get('user')
-        astid = userinfo.get('astid')
-        company = userinfo.get('company')
-        context = userinfo.get('context')
-        srcnum = userinfo.get('phonenum')
-        phoneid = userinfo.get('phoneid')
-
-        if not self.configs[astid].userfeatures_db_conn:
-            log.warning('__build_features_put__ : no userfeatures_db_conn set for %s' % astid)
-            return
-
-        try:
-            query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND name = %s AND context = %s'
-            params = [value, srcnum, phoneid, context]
-            cursor = self.configs[astid].userfeatures_db_conn.cursor()
-            cursor.query(query, parameters = params)
-            self.configs[astid].userfeatures_db_conn.commit()
-            repstr = { key : { 'enabled' : bool(int(value)) } }
-            if destination:
-                query = 'UPDATE userfeatures SET ' + 'dest' + key[6:] + ' = %s WHERE number = %s AND name = %s AND context = %s'
-                params = [destination, srcnum, phoneid, context]
-                cursor = self.configs[astid].userfeatures_db_conn.cursor()
-                cursor.query(query, parameters = params)
-                self.configs[astid].userfeatures_db_conn.commit()
-                repstr[key]['number'] = destination
-            # log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
-        except Exception:
-            repstr = {}
-            log.exception('features_put id=%s %s %s' % (userid, key, value))
-        tosend = { 'class' : 'features',
-                   'function' : 'put',
-                   'userid' : userid,
-                   'payload' : repstr }
-        return self.__cjson_encode__(tosend)
-
-
 
 
     def __cutid__(self, uinfo, fullid):

@@ -374,12 +374,20 @@ class Command:
 
     def handle_featuresget(self):
         reply = {}
-        print 'handle_featuresget', self.commanddict, self.userid, self.ruserid
         z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
         z.connect()
-        e = z.serviceget(self.ruserid)
+        services = z.serviceget(self.ruserid)
         z.close()
-        print e.get('userfeatures')
+        reply = {
+            'action' : 'ok',
+            'dest' : 'me',
+            'message' : { 'class' : 'features',
+                          'function' : 'get',
+                          'ipbxid' : self.ripbxid,
+                          'userid' : self.ruserid,
+                          'userfeatures' : services.get('userfeatures'),
+                          }
+            }
         return reply
 
     def handle_featuresput(self):
