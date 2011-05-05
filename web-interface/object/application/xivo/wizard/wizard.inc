@@ -1559,6 +1559,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		// save to database
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
+		
+		$provd = array();
+		$provd['net4_ip'] = $netiface['address'];
+		
+		if($appprovisionning->set($provd) === false)
+			return(false);
 
 		if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)
 			trigger_error('Unable to load provdconfig module',E_USER_ERROR);
@@ -1575,12 +1581,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$config['registrar_backup'] = $netiface['address'];
 		$config['registrar_main'] = $netiface['address'];
 		
-		$provd = array();
-		$provd['net4_ip'] = $netiface['address'];
-		
 		if ($provdconfig->add($config) === false
-		|| $provdconfig->add_required_config() === false
-		|| $appprovisionning->set($provd) === false)
+		|| $provdconfig->add_required_config() === false)
 			return false;
 			
 		return(true);
