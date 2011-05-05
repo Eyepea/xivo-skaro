@@ -41,7 +41,7 @@ RUN_DAEMON="no"
 NAME=dhcpd
 DESC="ISC DHCP server"
 DHCPDPID=/var/run/dhcpd.pid
-DEFAULTSFILE=/etc/default/$NAME
+DEFAULTSFILE=/etc/default/isc-dhcp-server
 
 test_config()
 {

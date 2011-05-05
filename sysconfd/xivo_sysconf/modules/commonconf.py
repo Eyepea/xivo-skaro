@@ -65,7 +65,8 @@ class CommonConf(jsoncore.JsonCore):
          ],
         '5. Provd'      : [
             'xivo.provd.net4_ip', 'xivo.provd.http_port',
-            'xivo.provd.dhcp_integration'
+            'xivo.provd.dhcp_integration', 'xivo.provd.rest_port',
+            'xivo.provd.username', 'xivo.provd.password'
          ],
         '6. Maintenance': ['xivo.maintenance'],
         '7. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
