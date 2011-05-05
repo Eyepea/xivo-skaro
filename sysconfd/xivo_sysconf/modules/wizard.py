@@ -574,25 +574,25 @@ def exec_db_file(args, options):
     elif 'xivodb' not in args:
         raise HttpReqError(415, "missing option 'xivodb'")
     else:
-        out = ["** CREATE XIVO DB **"]
-        if args['backend'] == 'postgresql':
-            try:
-                subprocess.call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
-            except OSError, e:
-                traceback.print_exc()
-                raise HttpReqError(500, out)
-        
-        if args['backend'] == 'mysql':
-            try:
-                subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
-            except OSError, e:
+	out = ["** CREATE XIVO DB **"]
+	if args['backend'] == 'postgresql':	
+	    try:
+		subprocess.check_call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
+            except (OSError, CalledProcessError), e:
+               traceback.print_exc()
+               raise HttpReqError(500, out)
+	
+	if args['backend'] == 'mysql':
+	    try:
+		subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
+            except (OSError, CalledProcessError), e:
                 traceback.print_exc()
                 raise HttpReqError(500, out)
 
         if args['backend'] == 'sqlite':
             try:
-                subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
-            except OSError, e:
+		subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
+            except (OSError, CalledProcessError), e:
                 traceback.print_exc()
                 raise HttpReqError(500, out)
 
@@ -605,27 +605,26 @@ def exec_db_file(args, options):
         if args['backend'] == 'postgresql':
             try:
                 #cmd_exec('create XIVO DB with postgresql', ['sudo', '-u', 'postgres', 'psql', '-f', "/%s" % args['xivoscript'], 'template1'], out)
-                subprocess.call(["sudo -u postgres psql -f /%s" % args['ipbxscript']], shell=True)
-            except OSError, e:
+                subprocess.check_call(["sudo -u postgres psql -f /%s" % args['ipbxscript']], shell=True)
+            except (OSError, CalledProcessError), e:
                 traceback.print_exc()
                 raise HttpReqError(500, '\n'.join(out))
         
         if args['backend'] == 'mysql':
             try:
                 #cmd_exec('create XIVO DB with mysql', ['mysql', "--defaults-file=%s" % '/etc/mysql/debian.cnf', '<', "/%s" % args['xivoscript']], out)
-                subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
-            except OSError, e:
+                subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
+            except (OSError, CalledProcessError), e:
                 traceback.print_exc()
                 raise HttpReqError(500, '\n'.join(out))
 
         if args['backend'] == 'sqlite':
             try:
                 #cmd_exec('create XIVO DB with sqlite', ['sqlite', args['xivodb'], '<', "/%s" % args['xivoscript']], out)
-                subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
-            except OSError, e:
+                subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
+            except (OSError, CalledProcessError), e:
                 traceback.print_exc()
                 raise HttpReqError(500, '\n'.join(out))
-
 
 
 http_json_server.register(exec_db_file, CMD_RW, name="exec_db_file")
