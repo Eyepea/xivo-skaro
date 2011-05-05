@@ -55,45 +55,44 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	}
 
 	protected function _set_configuration()
-	{
-		$_CF = &dwho_gat::get('_CF');
+	{		
+		$_XOBJ = &dwho_gct::get('xivo_object');
+		$appprovisionning = &$_XOBJ->get_application('provisioning');
+		$ref = $appprovisionning->get(1);
+		
+		$this->_conf['provd'] = array();
 
-		if(dwho_issa('provd',$_CF['xivo']['ini']) === false)
-			return(null);
-
-		$ref = &$_CF['xivo']['ini']['provd'];
-
-		if(isset($ref['host']) === true)
+		if(isset($ref['net4_ip']) === true)
 		{
-			if(dwho_network::valid_host($ref['host'],
+			if(dwho_network::valid_host($ref['net4_ip'],
 						    (DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)) === true)
-				$this->_conf['provd']['host'] = $ref['host'];
+				$this->_conf['provd']['host'] = $ref['net4_ip'];
 			else
-				dwho_report('warning','Invalid option host for section provd in XIVO init file');
+				dwho_report('warning','Invalid option net4_ip for conf provisioning');
 		}
 
-		if(isset($ref['port']) === true)
+		if(isset($ref['rest_port']) === true)
 		{
-			if(dwho_network::valid_port_number($ref['port']) === true)
-				$this->_conf['provd']['port'] = (int) $ref['port'];
+			if(dwho_network::valid_port_number($ref['rest_port']) === true)
+				$this->_conf['provd']['port'] = (int) $ref['rest_port'];
 			else
-				dwho_report('warning','Invalid option port for section provd in XIVO init file');
+				dwho_report('warning','Invalid option rest_port for conf provisioning');
 		}
 
-		if(isset($ref['user']) === true)
+		if(isset($ref['username']) === true)
 		{
-			if(empty($ref['user']) === false)
-				$this->_conf['provd']['user'] = $ref['user'];
+			if(empty($ref['username']) === false)
+				$this->_conf['provd']['user'] = $ref['username'];
 			else
-				dwho_report('warning','Invalid option login for section provd in XIVO init file');
+				dwho_report('warning','Invalid option username for conf provisioning');
 		}
 
-		if(isset($ref['pass']) === true)
+		if(isset($ref['password']) === true)
 		{
-			if(empty($ref['pass']) === false)
-				$this->_conf['provd']['pass'] = $ref['pass'];
+			if(empty($ref['password']) === false)
+				$this->_conf['provd']['pass'] = $ref['password'];
 			else
-				dwho_report('warning','Invalid option pass for section provd in XIVO init file');
+				dwho_report('warning','Invalid option password for conf provisioning');
 		}
 
 		if(isset($ref['connect_timeout']) === true)
@@ -103,6 +102,8 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			else
 				dwho_report('warning','Invalid option connect_timeout for section provd in XIVO init file');
 		}
+		else
+			$this->_conf['provd']['connect_timeout'] = 30;
 
 		if(isset($ref['timeout']) === true)
 		{
@@ -111,6 +112,8 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			else
 				dwho_report('warning','Invalid option timeout for section provd in XIVO init file');
 		}
+		else
+			$this->_conf['provd']['timeout'] = 60;
 
 		return(true);
 	}

@@ -27,21 +27,25 @@ if(isset($_QR['fm_send']) === true
 && isset($_QR['download_server']) === true
 && isset($_QR['provd']) === true)
 {
-	if($provdplugin->edit_infos_server($_QR['download_server']) === false
-	|| $appprovisionning->set($_QR['provd']) === false)
-		dwho_report::push('error','error_during_update');
+	if($appprovisionning->set($_QR['provd']) === false)
+		dwho_report::push('error','error_during_update',array('provd'));
 	else
+	{
 		dwho_report::push('info','successfully_updated');
-
+		if($provdplugin->edit_infos_server($_QR['download_server']) === false)
+			dwho_report::push('error','error_during_update',array('download_server'));
+	}
+	 			
 	$info = $_QR;
 }
 else
-{ 
+{
 	if (($download_server = $provdplugin->get_infos_server()) !== false)
 		$info['download_server'] = $download_server['value'];
 		
 	$info['provd'] = $appprovisionning->get();
 }
+
 
 $_TPL->set_var('info', $info);
 

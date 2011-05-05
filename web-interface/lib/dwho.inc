@@ -222,19 +222,6 @@ class dwho
 		if(isset($error['file']) === true)
 			$this->_conf['dwho']['ini']['error']['file'] = (string) $error['file'];
 	}
-	
-	function _cfg_ini_provd($provd_conf)
-	{
-		$this->_conf['xivo']['ini']['provd'] = array();
-		$xivo_ini_provd = &$this->_conf['xivo']['ini']['provd'];
-		
-		if (is_array($provd_conf) === false
-		|| empty($provd_conf) === true)
-			return(false);
-
-		foreach($provd_conf as $key => $value)
-			$xivo_ini_provd[$key] = $value;
-	}
 
 	function _cfg_infos_extension()
 	{
