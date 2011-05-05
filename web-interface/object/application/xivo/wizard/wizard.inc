@@ -1575,10 +1575,14 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$config['registrar_backup'] = $netiface['address'];
 		$config['registrar_main'] = $netiface['address'];
 		
-		if ($provdconfig->add($config) === false
-		|| $provdconfig->add_required_config() === false)
-			return false;
+		$provd = array();
+		$provd['net4_ip'] = $netiface['address'];
 		
+		if ($provdconfig->add($config) === false
+		|| $provdconfig->add_required_config() === false
+		|| $appprovisionning->set($provd) === false)
+			return false;
+			
 		return(true);
 	}
 
@@ -1760,7 +1764,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 
 		// restart provisioning service
-		if($this->_sysconfd->request_post('/services', array('pf-xivo-provisioning' => 'restart')) === false)
+		if($this->_sysconfd->request_post('/services', array('provd' => 'restart')) === false)
 			return(false);
 
 		// restart asterisk service

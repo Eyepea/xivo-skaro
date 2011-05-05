@@ -156,11 +156,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			
 		$data['id'] = $id;
 		
-		############################################
-		# return false, bug in provd
-		return(false);
-		############################################
-		
 		if (($rs = $this->request_post($uri,$data)) === false)
 			return(false);
 		

@@ -39,9 +39,6 @@ $modprovdconfig = &$_XOBJ->get_module('provdconfig');
 
 switch($act)
 {
-	case 'lol':
-		$modprovdconfig->add_required_config();
-		break;
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appprovdconfig->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);

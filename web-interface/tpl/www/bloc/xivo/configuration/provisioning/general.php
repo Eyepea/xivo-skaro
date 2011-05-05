@@ -21,14 +21,6 @@
 $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
-$element = $this->get_var('element');
-
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div class="b-infos b-form">
@@ -44,19 +36,65 @@ endif;
 <div id="sb-part-first">
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
+
 <fieldset id="fld-registrar">
 	<legend><?=$this->bbf('fld_download_server');?></legend>
 <?php
-		echo $form->text(array('desc'	=> $this->bbf('fm_download_server'),
+	echo $form->text(array('desc'	=> $this->bbf('fm_download_server'),
 				  'name'	  	=> 'download_server',
 				  'labelid'		=> 'download_server',
 				  'size'	  	=> 40,
-				  'default'		=> $element['dhcp']['download_server']['default'],
 				  'value'	  	=> $this->get_var('info','download_server'),
 				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'download_server'))));
 ?>
 </fieldset>
 
+<fieldset id="fld-registrar">
+	<legend><?=$this->bbf('fld_provd_server_configuration');?></legend>
+<?php
+	echo $form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip'),
+				  'name'	=> 'provd[net4_ip]',
+				  'labelid'	=> 'provd-net4_ip',
+				  'size'	  	=> 16,
+				  'value'	  	=> $this->get_var('info','provd','net4_ip'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','net4_ip')))),
+	
+	$form->text(array('desc'	=> $this->bbf('fm_provd_http_port'),
+				  'name'	=> 'provd[http_port]',
+				  'labelid'	=> 'provd-http_port',
+				  'size'	  	=> 4,
+				  'value'	  	=> $this->get_var('info','provd','http_port'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','provd_http_port')))),
+	
+	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_dhcp_integration'),
+				      'name'	=> 'provd[dhcp_integration]',
+				      'labelid'	=> 'provd-dhcp_integration',
+				      'checked'	=> $this->get_var('info','provd','dhcp_integration'))),
+	
+	$form->text(array('desc'	=> $this->bbf('fm_provd_username'),
+				  'name'		=> 'provd[username]',
+				  'labelid'		=> 'provd-username',
+				  'size'	  	=> 12,
+				  'value'	  	=> $this->get_var('info','provd','username'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','username')))),
+	
+	$form->text(array('desc'	=> $this->bbf('fm_provd_password'),
+				  'name'		=> 'provd[password]',
+				  'labelid'		=> 'provd-password',
+				  'size'	  	=> 12,
+				  'value'	  	=> $this->get_var('info','provd','password'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','password')))),
+	
+	$form->text(array('desc'	=> $this->bbf('fm_provd_rest_port'),
+				  'name'		=> 'provd[rest_port]',
+				  'labelid'		=> 'provd-rest_port',
+				  'size'	  	=> 4,
+				  'value'	  	=> $this->get_var('info','provd','rest_port'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','rest_port'))));
+	
+	
+?>	
+</fieldset>
 </div>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

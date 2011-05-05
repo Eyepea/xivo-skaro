@@ -84,6 +84,10 @@ $array['stats_conf'] = array();
 $array['stats_conf']['table'] = 'stats_conf';
 $array['stats_conf']['primary'] = array('id' => '');
 
+$array['provisioning'] = array();
+$array['provisioning']['table'] = 'provisioning';
+$array['provisioning']['primary'] = array('id' => '');
+
 $array['stats_conf_queue'] = array();
 $array['stats_conf_queue']['table'] = 'stats_conf_queue';
 $array['stats_conf_queue']['primary'] = array('stats_conf_id' => '');

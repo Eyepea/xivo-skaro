@@ -29,6 +29,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_mail       = false;
 	var $_netiface   = false;
 	var $_resolvconf = false;
+	var $_provisioning = false;
 	
 	function xivo_object_commonconf(&$xobj)
 	{
@@ -37,7 +38,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))     === false
 		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))         === false
 		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
-		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false)
+		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
+		|| ($this->_provisioning = &$this->_xobj->get_module('provisioning')) === false)
 			return(false);
 
 		return(true);
@@ -81,13 +83,16 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.smtp.fallback_relayhost' => $rawdata['fallback_relayhost'],
             'xivo.smtp.canonical'          => $rawdata['canonical'],
         ));
-
-        // provd
-        // FIXME (this is a mock, need to be replaced by something useful...)
+        
+        $provisioning = $this->_provisioning->get(1);
+        
         $conf = array_merge($conf, array(
-            'xivo.provd.net4_ip'          => null,
-            'xivo.provd.http_port'        => '8666',
-            'xivo.provd.dhcp_integration' => false,
+            'xivo.provd.net4_ip'		=> $provisioning['net4_ip'],
+            'xivo.provd.http_port'		=> $provisioning['http_port'],
+            'xivo.provd.username'		=> $provisioning['username'],
+            'xivo.provd.password'		=> $provisioning['password'],
+            'xivo.provd.rest_port'		=> $provisioning['rest_port'],
+            'xivo.provd.dhcp_integration' => (bool) $provisioning['dhcp_integration']
         ));
 
         // monitoring
@@ -117,7 +122,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         if(strlen($rawdata['resolvconf']['nameserver3']) > 0)
             $ns .= $rawdata['resolvconf']['nameserver3'];
         $ns = trim($ns);
-            
+
         $conf = array_merge($conf, array(
             'xivo.hostname'                => 
                 is_null($rawdata['resolvconf']['hostname'])?'':$rawdata['resolvconf']['hostname'],
@@ -132,7 +137,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         $this->_netiface    = &$this->_xobj->get_application('netiface');
         if($this->_netiface == false)
             return false;
-            
+
         $list = $this->_netiface->get_netifaces_list();
 
         // we filter network devices list, keeping only 'voip' interfaces:
