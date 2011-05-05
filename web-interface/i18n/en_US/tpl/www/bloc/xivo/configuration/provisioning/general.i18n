@@ -6,4 +6,25 @@ Provisioning general settings
 Download server
 
 ; fm_download_server
-Server :  
+Server:  
+
+; fld_provd_server_configuration
+Server configuration
+
+; fm_provd_net4_ip
+Ip server:
+
+; fm_provd_http_port
+Http port: 
+
+; fm_provd_dhcp_integration
+DHCP integration: 
+
+; fm_provd_username
+Username: 
+
+; fm_provd_password
+Password: 
+
+; fm_provd_rest_port
+API REST port: 

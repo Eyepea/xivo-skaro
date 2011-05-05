@@ -7,3 +7,24 @@ Serveur de téléchargement
 
 ; fm_download_server
 Url :  
+
+; fld_provd_server_configuration
+Configuration du serveur
+
+; fm_provd_net4_ip
+Adresse IP:
+
+; fm_provd_http_port
+Port HTTP: 
+
+; fm_provd_dhcp_integration
+Intégration du DHCP: 
+
+; fm_provd_username
+Identifiant: 
+
+; fm_provd_password
+Mot de passe: 
+
+; fm_provd_rest_port
+Port API REST: 

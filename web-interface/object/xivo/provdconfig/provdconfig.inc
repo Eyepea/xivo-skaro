@@ -238,6 +238,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{			
 		$base = $this->_conf['base'];
 		
+		if ($this->chk_confregistrar($confregistrar) === false)
+			return(false);
+		
 		$base['X_type'] = 'internal';
 		
 		$base['raw_config']['ntp_enabled'] = true;
@@ -264,6 +267,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{			
 		$autoprov = $this->_conf['autoprov'];
 		
+		if ($this->chk_confregistrar($confregistrar) === false)
+			return(false);
+				
 		$autoprov['X_type'] = 'internal';
 		$autoprov['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
 		$autoprov['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
@@ -315,13 +321,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			
 		$confdefault = $this->_confdefault;
 		
-		if ($create === false)
+		if ($create === false
+		&& ($globalconfig = $this->get($configid)) === false)
 		{
-			if(($globalconfig = $this->get($configid)) === false)
-			{
-				dwho_report::push('error', 'config not exist: '.$configid);
-				return(false);
-			}
+			dwho_report::push('error', 'config not exist: '.$configid);
+			return(false);
 		}
 		else 
 		{
@@ -486,7 +490,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	
 	public function build_raw_config_siplines($arr,$confregistrar)
 	{
-		if (is_array($arr) === false)
+		if (is_array($arr) === false		
+		|| $this->chk_confregistrar($confregistrar) === false)
 			return(false);
 		
 		$conf = array();
@@ -527,7 +532,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (is_array($arr) === false
 		|| isset($arr['id'],$arr['registrar_main'],$arr['registrar_backup'],
 			$arr['proxy_main'],$arr['proxy_backup'],$arr['displayname']) === false)
+		{
+			dwho_report::push('error', 'config registrar not valid');
 			return(false);
+		}
 		
 		return($arr);
 	}
