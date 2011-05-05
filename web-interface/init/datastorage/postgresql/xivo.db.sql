@@ -405,10 +405,10 @@ DROP TABLE IF EXISTS "provisioning";
 CREATE TABLE "provisioning" (
  "id" SERIAL,
  "net4_ip" varchar(39) NOT NULL,
- "username" varchar(32) DEFAULT NOT NULL,
- "password" varchar(32) DEFAULT NOT NULL,
+ "username" varchar(32) NOT NULL 'admin',
+ "password" varchar(32) NOT NULL 'admin',
  "dhcp_integration" INTEGER NOT NULL DEFAULT 0,
- "rest_port" integer DEFAULT 18666 NOT NULL,
+ "rest_port" integer DEFAULT 8666 NOT NULL,
  "http_port" integer DEFAULT 8667 NOT NULL,
  PRIMARY KEY ("id")
 );
