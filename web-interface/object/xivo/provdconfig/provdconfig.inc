@@ -257,7 +257,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{			
 		$autoprov = $this->_conf['autoprov'];
 		
-		$autoprov['X_type'] = 'internal';		
+		$autoprov['X_type'] = 'internal';
 		$autoprov['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
 		$autoprov['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
 		$autoprov['raw_config']['sip_lines'][1]['registrar_ip'] = $confregistrar['registrar_main'];
@@ -317,7 +317,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			}
 		}
 		else 
-		{	
+		{
 			$globalconfig = array();
 			$globalconfig['id'] = $configid;
 			$globalconfig['parent_ids'] = array();

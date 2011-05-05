@@ -43,7 +43,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))   === false)
+		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false)
 			trigger_error('Unable to load sysconfd module',E_USER_ERROR);
 
 		$this->_uri = new dwho_uri();
@@ -1559,26 +1559,26 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		// save to database
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
+
+		if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)
+			trigger_error('Unable to load provdconfig module',E_USER_ERROR);
 		
-		/*
-		 * 
-		 * remove old provisioning configuration
-		 * to do for me.......
-		 * 
-		$prov = &$this->_xobj->get_module('provisioning');
-
-		$data = $prov->get(1);
-		if(strlen($data['registrar_main']) == 0)
-			$data['registrar_main'] = $netiface['address'];
-		if(strlen($data['proxy_main']) == 0)
-			$data['proxy_main'] = $netiface['address'];
-
-		if(($data = $prov->chk_values($data)) === false)
+		$config = array();
+		$config['X_type'] = 'registrar';
+		$config['id'] = 'default';
+		$config['displayname'] = 'local';
+		$config['parent_ids'] = array();
+		// required raw_config dict by provd
+		$config['raw_config'] = array('X_key' => 'xivo');
+		$config['proxy_backup'] = $netiface['address'];
+		$config['proxy_main'] = $netiface['address'];
+		$config['registrar_backup'] = $netiface['address'];
+		$config['registrar_main'] = $netiface['address'];
+		
+		if ($provdconfig->add($config) === false
+		|| $provdconfig->add_required_config() === false)
 			return false;
-
-		if($prov->edit(1, $data) === false)
-			return false;
-		*/
+		
 		return(true);
 	}
 
