@@ -1560,13 +1560,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
 		
-		$appprovisionning = &$this->_xobj->get_application('provisioning');
-		
-		$provd = array();
-		$provd['net4_ip'] = $netiface['address'];
-		
-		if($appprovisionning->set($provd) === false)
-			return(false);
+		$modprov = &$this->_xobj->get_module('provisioning');		
+		$modprov->edit(1, array('net4_ip' => $netiface['address']));
 
 		if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)
 			trigger_error('Unable to load provdconfig module',E_USER_ERROR);
