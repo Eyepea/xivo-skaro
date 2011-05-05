@@ -374,8 +374,9 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
     Entry point for Asterisk configuration
     """
     dbname = 'asterisk'
+    dbtype = dburi[0]
 
-		# MYSQL
+    # MYSQL
     if dburi[0] == 'mysql':
         if dburi[2]:
             if dburi[2][0] == '/':
@@ -402,7 +403,7 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbparams,
                                                       dbinfo['cdr'])},
                           ipbxengine='asterisk')
-		# POSTGRESQL
+    # POSTGRESQL
     elif dburi[0] == 'postgresql':
         if dburi[2]:
             if dburi[2][0] == '/':
@@ -430,10 +431,10 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbinfo['cdr'])},
                           ipbxengine='asterisk')
 
-	# change db type for asterisk compatibility
-	dbtype = 'pgsql'
+        # change db type for asterisk compatibility
+        dbtype = 'pgsql'
 
-		# SQLITE
+    # SQLITE
     elif dburi[0] == 'sqlite':
         merge_config_file(Wdc['asterisk_res_sqlite_tpl_file'],
                           Wdc['asterisk_res_sqlite_custom_tpl_file'],
@@ -441,9 +442,6 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                           {'general':
                                 {'dbfile':   dburi[2]}},
                           ipbxengine='asterisk')
-
-    if dbtype is None:
-	dbtype = dburi[0]
 
     if 'modules' in dbinfo:
         asterisk_modules_config(Wdc['asterisk_modules_tpl_file'],
@@ -551,7 +549,7 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
                           Wdc['webinterface_cti_file'],
                           {'general':
                                 {'datastorage': '"%s"' % args['xivo']},
-			  })
+                          })
 
         merge_config_file("%s.%s" % (Wdc['webinterface_ipbx_tpl_file'], args['ipbxengine']),
                           "%s.%s" % (Wdc['webinterface_ipbx_custom_tpl_file'], args['ipbxengine']),
@@ -576,27 +574,27 @@ def exec_db_file(args, options):
     elif 'xivodb' not in args:
         raise HttpReqError(415, "missing option 'xivodb'")
     else:
-	out = ["** CREATE XIVO DB **"]
-	if args['backend'] == 'postgresql':	
-	    try:
-		subprocess.call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
-            except OSError, e:
-               traceback.print_exc()
-               raise HttpReqError(500, out)
-	
-	if args['backend'] == 'mysql':
-	    try:
-		subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
-            except OSError, e:
-               traceback.print_exc()
-               raise HttpReqError(500, out)
-
-	if args['backend'] == 'sqlite':
+        out = ["** CREATE XIVO DB **"]
+        if args['backend'] == 'postgresql':
             try:
-		subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
+                subprocess.call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
             except OSError, e:
-               traceback.print_exc()
-               raise HttpReqError(500, out)
+                traceback.print_exc()
+                raise HttpReqError(500, out)
+        
+        if args['backend'] == 'mysql':
+            try:
+                subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
+            except OSError, e:
+                traceback.print_exc()
+                raise HttpReqError(500, out)
+
+        if args['backend'] == 'sqlite':
+            try:
+                subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
+            except OSError, e:
+                traceback.print_exc()
+                raise HttpReqError(500, out)
 
     if 'ipbxscript' not in args:
         raise HttpReqError(415, "missing option 'ipbxscript'")
@@ -609,24 +607,24 @@ def exec_db_file(args, options):
                 #cmd_exec('create XIVO DB with postgresql', ['sudo', '-u', 'postgres', 'psql', '-f', "/%s" % args['xivoscript'], 'template1'], out)
                 subprocess.call(["sudo -u postgres psql -f /%s" % args['ipbxscript']], shell=True)
             except OSError, e:
-               traceback.print_exc()
-               raise HttpReqError(500, '\n'.join(out))
+                traceback.print_exc()
+                raise HttpReqError(500, '\n'.join(out))
         
         if args['backend'] == 'mysql':
             try:
                 #cmd_exec('create XIVO DB with mysql', ['mysql', "--defaults-file=%s" % '/etc/mysql/debian.cnf', '<', "/%s" % args['xivoscript']], out)
                 subprocess.call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
             except OSError, e:
-               traceback.print_exc()
-               raise HttpReqError(500, '\n'.join(out))
+                traceback.print_exc()
+                raise HttpReqError(500, '\n'.join(out))
 
         if args['backend'] == 'sqlite':
             try:
                 #cmd_exec('create XIVO DB with sqlite', ['sqlite', args['xivodb'], '<', "/%s" % args['xivoscript']], out)
                 subprocess.call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
             except OSError, e:
-               traceback.print_exc()
-               raise HttpReqError(500, '\n'.join(out))
+                traceback.print_exc()
+                raise HttpReqError(500, '\n'.join(out))
 
 
 
