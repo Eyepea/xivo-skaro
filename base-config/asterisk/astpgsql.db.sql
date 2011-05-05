@@ -962,8 +962,8 @@ CREATE TABLE "linefeatures" (
  "rules_group" varchar(16),
  "num" integer DEFAULT 0,
  "line_num" integer DEFAULT 0,
- "internal" integer DEFAULT 0 NOT NULL,
- "commented" integer DEFAULT 0 NOT NULL,
+ "internal" integer NOT NULL DEFAULT 0,
+ "commented" integer NOT NULL DEFAULT 0,
  "description" text,
  PRIMARY KEY("id")
 );
