@@ -878,16 +878,18 @@ class UDPUACProtocol(DatagramProtocol):
     
     """
     
-    # TODO add timeout stuff to fail if we don't receive a response
     # FIXME this is a quick fix for Cisco SMB that need to wait
     #       for a certain amount of time before resending a request...
+    _TIMEOUT = 25
     _UNAUTH_RETRY_TIMEOUT = 20
     
     def __init__(self, uri, message, credentials):
         self._uri = uri
         self._message = message
         self._credentials = credentials
+        self._closed = False
         self._nb_try = 0
+        self._timeout_timer = None
         self.deferred = Deferred()
 
     def _add_missing_header_fields(self):
@@ -906,32 +908,64 @@ class UDPUACProtocol(DatagramProtocol):
         self.transport.connect(self._uri.host, self._uri.port)
         self._add_missing_header_fields()
         datagram = self._message.build()
-        self.transport.write(datagram)
-
+        self._send_dgram(datagram)
+    
+    def _send_dgram(self, dgram):
+        self.transport.write(dgram)
+        self._set_timeout()
+    
+    def _close(self):
+        if not self._closed:
+            self._cancel_timeout()
+            self.transport.stopListening()
+            self._closed = True
+    
+    def _fail_and_close(self, msg):
+        self.deferred.errback(Exception(msg))
+        self._close()
+    
+    def _cancel_timeout(self):
+        if self._timeout_timer:
+            self._timeout_timer.cancel()
+            self._timeout_timer = None
+    
+    def _on_timeout(self):
+        self._fail_and_close('SIP timeout expired')
+    
+    def _set_timeout(self):
+        from twisted.internet import reactor
+        self._timeout_timer = reactor.callLater(self._TIMEOUT, self._on_timeout)
+    
     def datagramReceived(self, data, (host, port)):
+        self._cancel_timeout()
         try:
             message = parse_message(data)
         except InvalidMessageError:
             logger.warning('Invalid SIP message from %s (bad format)' % host)
+            self._fail_and_close('Invalid SIP message')
         else:
             try:
                 response_via = message.header_fields['Via']
             except KeyError:
                 logger.warning('No Via header in SIP message from %s' % host)
+                self._fail_and_close('No Via header')
             else:
                 request_via = self._message.header_fields['Via']
                 if response_via.branch != request_via.branch:
                     logger.warning('Received SIP message from an unknown transaction (received "%s", expecting "%s"' %
                                    response_via.branch, request_via.branch)
+                    self._fail_and_close('Unknown SIP transaction')
                 else:
                     # parse status line
                     try:
                         status_code = parse_status_line(message.start_line)
                     except ValueError:
                         logger.warning('Unable to parse status line "%s"' % message.start_line) 
+                        self._fail_and_close('Invalid status line')
                     else:
                         if 100 <= status_code < 200:
                             logger.info('Received provisional response "%s", waiting for final response' % status_code)
+                            self._set_timeout()
                         elif status_code == 401 and self._nb_try < 1 and self._credentials:
                             username, password = self._credentials
                             logger.info('Received 401 response, trying to authenticate')
@@ -944,11 +978,11 @@ class UDPUACProtocol(DatagramProtocol):
                             datagram = self._message.build()
                             logger.debug('Sending next message in %s seconds' % self._UNAUTH_RETRY_TIMEOUT)
                             from twisted.internet import reactor
-                            reactor.callLater(self._UNAUTH_RETRY_TIMEOUT, self.transport.write, datagram)
+                            reactor.callLater(self._UNAUTH_RETRY_TIMEOUT, self._send_dgram, datagram)
                         else:
                             logger.info('Received final response "%s", firing callback' % status_code)
                             self.deferred.callback(status_code)
-                            self.transport.stopListening()
+                            self._close()
 
 
 def _send_notify_udp(uri, message, credentials):

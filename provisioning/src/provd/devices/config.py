@@ -315,7 +315,8 @@ sip_lines [optional|default to empty dictionary]
       The password used for authentication.
     
     display_name [mandatory]
-      The display name (caller ID).
+      The display name to use in the From header field. It should also be
+      usable as a label for the line.
     
     number [optional]
       The main extension number other users can dial to reach this line.
