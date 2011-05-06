@@ -1,0 +1,27 @@
+
+; title_content_name
+Modele site / Ajouter
+
+; fm_config-id
+Nom unique: 
+
+; fm_config-displayname
+Nom affiché: 
+
+; fld_registrar
+Serveur d'enregistrement
+
+; fm_config-registrar_main
+Principal: 
+
+; fm_config-registrar_backup
+Secondaire: 
+
+; fld_proxy
+Proxy d'enregistrement
+
+; fm_config-proxy_main
+Principal:
+
+; fm_config-proxy_backup
+Secondaire: 

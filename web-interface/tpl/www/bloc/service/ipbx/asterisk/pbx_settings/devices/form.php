@@ -178,7 +178,7 @@ endif;
 </div>
 <div id="sb-part-advanced" class="b-nodisplay">
 <fieldset>
-	<legend><?=$this->bbf('device-srtp_config')?></legend>
+	<legend><?=$this->bbf('fld-device-srtp_config')?></legend>
 <?php		       
 	echo	$form->select(array('desc'	=> $this->bbf('fm_config_sip_srtp_mode'),
 				    'name'	=> 'config[sip_srtp_mode]',
@@ -198,7 +198,7 @@ endif;
 ?>
 </fieldset>
 <fieldset>
-	<legend><?=$this->bbf('device-vlan_config')?></legend>
+	<legend><?=$this->bbf('fld-device-vlan_config')?></legend>
 <?php		       
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_config_vlan_enabled'),
 				      'name'	=> 'config[vlan_enabled]',
@@ -234,7 +234,7 @@ endif;
 ?>
 </fieldset>
 <fieldset>
-	<legend><?=$this->bbf('device-syslog_config')?></legend>
+	<legend><?=$this->bbf('fld-device-syslog_config')?></legend>
 <?php		       
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_config_syslog_enabled'),
 				      'name'	=> 'config[syslog_enabled]',

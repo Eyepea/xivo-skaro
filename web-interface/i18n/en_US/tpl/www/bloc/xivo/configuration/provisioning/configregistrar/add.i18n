@@ -1,0 +1,27 @@
+
+; title_content_name
+Template site / Add
+
+; fm_config-id
+Unique name: 
+
+; fm_config-displayname
+Display name: 
+
+; fld_registrar
+Registrar
+
+; fm_config-registrar_main
+Main: 
+
+; fm_config-registrar_backup
+Secondary: 
+
+; fld_proxy
+Proxy
+
+; fm_config-proxy_main
+Main:
+
+; fm_config-proxy_backup
+Secondary: 

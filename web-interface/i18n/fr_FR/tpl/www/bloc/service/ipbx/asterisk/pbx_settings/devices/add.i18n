@@ -1,0 +1,129 @@
+
+; title_content_name
+Terminaison / Ajouter
+
+; smenu_general
+Général
+
+; smenu_advanced
+Avancées
+
+; smenu_lines
+Lignes
+
+; fm_devicefeatures_ip
+IP: 
+
+; fm_devicefeatures_mac
+MAC: 
+
+; fm_devicefeatures_plugin
+Greffon: 
+
+; fm_config_language
+Locale: 
+
+; fm_config_timezone
+Fuseau horaire: 
+
+; fm_config_protocol
+Protocole:
+ 
+; fm_config_config_encryption_enabled
+Encryption des fichiers de configuration: 
+
+; fm_config_ntp_enabled
+Activer NTP: 
+
+; fm_config_ntp_ip
+Serveur NTP: 
+
+; fm_config_sip_dtmf_mode
+DTMF: 
+
+; fm_config_admin_username
+Identifiant (admin): 
+
+; fm_config_admin_password
+Mot de passe (admin): 
+
+; fm_config_user_username
+Identifiant (user): 
+
+; fm_config_user_password
+Mot de passe (user): 
+
+; fm_config_sip_subscribe_mwi
+Notification explicite de messages: 
+
+; fm_userfeatures_description
+Description:
+
+; fld-device-srtp_config
+SRTP
+
+; fm_config_sip_srtp_mode
+Mode:
+
+; fm_config_sip_transport
+Transport: 
+
+; fld-device-vlan_config
+VLAN
+
+; fm_config_vlan_enabled
+Activer: 
+
+; fm_config_vlan_id
+ID: 
+
+; fm_config_vlan_priority
+Priorité: 
+
+; fm_config_vlan_pc_port_id
+PC PORT ID: 
+
+; fld-device-syslog_config
+SYSLOG
+
+; fm_config_syslog_enabled
+Activer: 
+
+; fm_config_syslog_ip
+Serveur: 
+
+; fm_config_syslog_port
+Port:
+
+; fm_config_syslog_level
+Niveau:
+
+
+; nb_line_busy-free
+Liste des lignes:
+Occupée: %d
+Disponible: %d
+
+; col_line-line	
+Ligne
+
+; col_line-protocol	
+Protocole
+
+; col_line-name	
+Nom
+
+; col_line-context
+Contexte
+	
+; col_line-number
+Numéro
+
+; col_line-config_registrar	
+Site
+
+; col_line-user
+ Utilisateur
+ 
+; no_lines
+Aucune ligne

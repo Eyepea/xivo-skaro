@@ -1,0 +1,41 @@
+; col_mac
+MAC
+
+; col_ip
+IP
+
+; col_vendor
+Marque
+
+; col_model
+Modele
+
+; col_plugin
+Greffon
+
+; device-list_legend
+Legende
+
+; device-list_legend-opt(link_provd_exist)
+Bien existant dans le serveur d'approvisionement
+
+; device-list_legend-opt(link_provd_not_exist)
+Non existant dans le serveur d'approvisionement
+
+; device-list_legend-opt(configured)
+Terminaison correctement configurée
+
+; device-list_legend-opt(autoprov-mode)
+Terminaison configurée en mode (Autoprov)
+
+; device-list_legend-opt(not_configured)
+Terminaison non configurée (verifié si le greffon est bien installé pour cette terminaison)
+
+; no_device
+Aucune terminaison trouvée
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette terminaison ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces terminaisons ?
