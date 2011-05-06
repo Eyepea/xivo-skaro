@@ -26,12 +26,12 @@ if(isset($_QR['fm_send']) === true
 && isset($_QR['provd']) === true)
 {
 	if($appprovisionning->set($_QR['provd']) === false)
-		dwho_report::push('error','error_during_update',array('provd'));
+		dwho_report::push('error','error_during_update');
 	else
 	{
 		dwho_report::push('info','successfully_updated');
 		if($provdplugin->edit_infos_server($_QR['download_server']) === false)
-			dwho_report::push('error','error_during_update',array('download_server'));
+			dwho_report::push('error','error_during_update');
 	}
 	 			
 	$info = $_QR;

@@ -33,7 +33,7 @@ Mot de passe:
 PORT REST secure (https): 
 
 ; fm_provd_net4_ip_rest
-ATPI REST IP: 
+API REST IP: 
 
 ; fm_provd_rest_port
 Port API REST: 

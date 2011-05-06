@@ -159,18 +159,23 @@ if($list !== false):
 ?>
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">
 		<td class="td-left txt-center">
-			<?=$form->hidden(array('name' => 'linefeatures[id][]','value' => $ref['id']));?>
-			<?=$form->hidden(array('name' => 'linefeatures[protocol][]','value' => $ref['protocol']));?>
-			<?=$form->hidden(array('name' => '','id' => 'context-selected','value' => $ref['context']));?>		 	
+			<?=$form->hidden(array('name' => 'linefeatures[id][]',
+						'value' => $ref['id']));?>
+			<?=$form->hidden(array('name' => 'linefeatures[protocol][]',
+						'value' => $ref['protocol']));?>
+			<?=$form->hidden(array('name' => '','id' => 'context-selected',
+						'value' => $ref['context']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
-						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_group',
 					    'value'	=> $ref['rules_group'],));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_order][]',
-						'value' 	=> null,
 					    'id'		=> 'linefeatures-rules_order',
 					    'value'	=> $ref['rules_order']));?>
+			<?=$form->hidden(array('name' => 'linefeatures[line_num][]',
+					    'id'		=> 'linefeatures-line_num',
+					    'value'	=> $ref['line_num']));?>
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+			<span id="box-line_num" style="float:left;font-weight:bold;"></span>
 			<span>
 				<span class="<?=$secureclass?>">&nbsp;</span>
 				<?=$this->bbf('line_protocol-'.$ref['protocol'])?>
@@ -284,6 +289,10 @@ endif;
 	<tr class="fm-paragraph" style="cursor: move;">
 		<td class="td-left txt-center" id="td_ex-linefeatures-protocol">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+			<span id="box-line_num" style="float:left;font-weight:bold;"></span>
+			<?=$form->hidden(array('name' => 'linefeatures[line_num][]',
+						'value' 	=> 0,
+					    'id'		=> 'linefeatures-line_num'));?>
 			<?=$form->hidden(array('name' => 'linefeatures[id][]',
 					'value' 	=> 0,
 				    'id'		=> 'linefeatures-id'));?>

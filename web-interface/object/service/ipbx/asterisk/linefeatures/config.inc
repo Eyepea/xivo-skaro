@@ -85,6 +85,9 @@ $array['element']['num'] = array();
 $array['element']['num']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
 $array['element']['num']['default'] = 0;
 
+$array['element']['line_num'] = array();
+$array['element']['line_num']['default'] = 0;
+
 $array['element']['internal'] = array();
 $array['element']['internal']['value'] = array(0,1);
 $array['element']['internal']['default'] = 0;
@@ -102,6 +105,7 @@ $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['iduserfeatures'] = array('set' => false,'cast' => 'ulongint');
 $array['filter']['num'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
+$array['filter']['line_num'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['config'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['configregistrar'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');

@@ -98,7 +98,7 @@ $array['xivo/configuration/json/restricted/provisioning/general'] = 'xivo/config
 $array['xivo/configuration/json/private/provisioning/general'] = 'xivo/configuration/json.php/private/provisioning/general/';
 
 $array['xivo/configuration/ui/provisioning/plugin'] = 'xivo/configuration/ui.php/provisioning/plugin';
-
+$array['xivo/configuration/ui/provisioning/config'] = 'xivo/configuration/ui.php/provisioning/config';
 
 // controlsystem
 $array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';

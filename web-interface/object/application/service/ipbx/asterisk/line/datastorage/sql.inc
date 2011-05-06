@@ -104,7 +104,8 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 	 *		- internal: if true, also return internal accounts (*guest* account indeed)
 	 *		- free: if true, also return iduserfeatures=0, null = both, false return iduserfeatures != 0
 	*/
-	public function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null,$internal=false,$free=null)
+	public function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,
+	$value=null,$context=null,$mode=null,$internal=false,$free=null,$userfeaturesid=null)
 	{
 		$this->_cnt = 0;
 
@@ -131,6 +132,9 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 
 		if(!$internal)
 			$arr['internal'] = 0;
+			
+		if(is_null($userfeaturesid) === false)
+			$arr['iduserfeatures'] = $userfeaturesid;
 
 		if($free === false)
 			$this->_dso->andwherenot(array('iduserfeatures' => 0),$this->_table['linefeatures']);

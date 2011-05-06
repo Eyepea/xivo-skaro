@@ -26,6 +26,7 @@ class xivo_application_service_asterisk_servicesgroup extends xivo_application_a
 	private		$_servicesgroup		= false;
 	private		$_servicesgroup_user	= false;
 	private 	$_userfeatures		= false;
+	private		$_line				= false;
 	private 	$_user				= false;
 
 	public function __construct(&$service,&$dso,$param=null,$components=true)
@@ -51,6 +52,7 @@ class xivo_application_service_asterisk_servicesgroup extends xivo_application_a
 
 		if(($this->_servicesgroup_user = &$this->_service->get_module('servicesgroup_user')) === false
 		|| ($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
+		|| ($this->_line = &$this->_service->get_application('line')) === false
 		|| ($this->_user = &$this->_service->get_application('user',null,false)) === false)
 			return(false);
 
@@ -246,17 +248,25 @@ class xivo_application_service_asterisk_servicesgroup extends xivo_application_a
 		for($i = 0;$i < count($arr);$i++)
 		{
 			$ref = &$arr[$i];
-			if(($userfeatures = $this->_userfeatures->get($ref)) === false)
+			$iduserfeatures = (int) $ref;
+			if(($userfeatures = $this->_userfeatures->get($iduserfeatures)) === false
+			|| ($linefeatures = $this->_line->get_lines_user($iduserfeatures)) === false
+			| ($nblinesfeautres = count($linefeatures)) === 0)
 			{
 				$errnb++;
 				$error[$i] = 'bad_user';
 			}
 			else
-			{
-				$rs['id'] = (int) $ref;
-				$rs['protocol'] = $userfeatures['protocol'];
-				$rs['protocolid'] = (int) $userfeatures['protocolid'];
-				array_push($reslist,$rs);
+			{				
+				for($l = 0;$l < $nblinesfeautres;$l++)
+				{
+					$protoline = &$linefeatures[$l];
+					$rs = array();
+					$rs['id'] = $iduserfeatures;
+					$rs['protocol'] = $protoline['protocol'];
+					$rs['protocolid'] = (int) $protoline['protocolid'];
+					array_push($reslist,$rs);
+				}
 			}
 		}
 		$this->_set_result('user',$reslist);
@@ -322,17 +332,22 @@ class xivo_application_service_asterisk_servicesgroup extends xivo_application_a
 		{
 			$ref = &$rs[$i];
 			$arr['userfeatures_id'] = (int) $ref['id'];
-			if (($ret = $this->_servicesgroup_user->add($arr)) === false
-			|| ($user = $this->_service->get_module('user'.$ref['protocol'])) === false
-			|| $user->edit($ref['protocolid'],$wac) === false)
+			if ($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+				continue;
+		
+			if ($this->_servicesgroup_user->get_nb($arr) === 0)
+				$this->_servicesgroup_user->add($arr);
+			
+			if(($proto = $this->_service->get_module('user'.$ref['protocol'])) === false
+			|| $proto->edit($ref['protocolid'],$wac) === false)
 			{
 				dwho_report::push('error','error during proccess user');
 				return(false);
 			}
 
-			$this->_return['user'][] = $ret;
+			$this->_return['user'][] = $arr['userfeatures_id'];
 		}
-
+		
 		if(isset($this->_return['user'][0]) === false)
 			$this->_return['user'] = false;
 
@@ -513,11 +528,24 @@ class xivo_application_service_asterisk_servicesgroup extends xivo_application_a
 		{
 			$ref = &$rs[$i];
 			$arr['userfeatures_id'] = (int) $ref['id'];
-			if (($user = $this->_service->get_module('user'.$ref['protocol'])) === false
-			|| $user->edit($ref['protocolid'],$wac) === false)
-			{
-				dwho_report::push('error','error during proccess user');
-				return(false);
+		
+			if(($linefeatures = $this->_line->get_lines_user($arr['userfeatures_id'])) === false
+			| ($nblinesfeautres = count($linefeatures)) === 0)
+				dwho_report::push('error','bad_user: '.$arr['userfeatures_id']);
+			else
+			{				
+				for($l = 0;$l < $nblinesfeautres;$l++)
+				{
+					$protoline = &$linefeatures[$l];
+					if ($protoline['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+						continue;		
+					if (($proto = $this->_service->get_module('user'.$protoline['protocol'])) === false
+					|| $proto->edit($protoline['protocolid'],$wac) === false)
+					{
+						dwho_report::push('error','error during edit: user'.$protoline['protocol']);
+						return(false);
+					}
+				}
 			}
 		}
 

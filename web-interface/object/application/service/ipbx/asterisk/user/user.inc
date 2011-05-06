@@ -428,27 +428,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref = &$list[$i]['ctiprofiles'];
 			$this->_profileclientlist[$ref['name']] = $ref['appliname'];
 		}
-			
-		/*
-		 * remove old nethod to get list xivo client profiles
-		 * 
-		if(($list = $this->_service->discuss('xivo[ctiprofilelist,get]',true)) === false
-		|| is_array($list) === false
-		|| isset($list[0]) === false
-		|| dwho::load_class('dwho_json') === false
-		|| ($list = dwho_json::decode($list[0],true)) === false
-		|| is_array($list) === false
-		|| empty($list) === true)
-			return(false);
-
-		$this->_profileclientlist = array();
-
-		foreach($list as $key => $val)
-		{
-			if(preg_match('/^[a-z0-9_-]+$/',$key) === 1)
-				$this->_profileclientlist[$key] = $val;
-		}
-		*/
 
 		return($this->_profileclientlist);
 	}

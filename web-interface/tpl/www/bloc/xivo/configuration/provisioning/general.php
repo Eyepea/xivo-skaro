@@ -90,6 +90,11 @@ $dhtml   = &$this->get_module('dhtml');
 				  'value'	  	=> $this->get_var('info','provd','password'),
 				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','password')))),
 	
+	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_secure_rest'),
+				      'name'	=> 'provd[secure]',
+				      'labelid'	=> 'provd-secure',
+				      'checked'	=> $this->get_var('info','provd','secure'))),
+	
 	$form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip_rest'),
 				  'name'	=> 'provd[net4_ip_rest]',
 				  'labelid'	=> 'provd-net4_ip_rest',

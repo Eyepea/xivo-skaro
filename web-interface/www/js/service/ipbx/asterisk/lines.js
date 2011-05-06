@@ -24,6 +24,16 @@ var fixHelper = function(e, ui) {
 	return ui;
 };
 
+//get available line for a device
+function xivo_http_search_line_from_provd(config)
+{
+	$.getJSON('/xivo/configuration/ui.php/provisioning/config?act=get&id='+config, function(data) {
+		if (data === null || (nb = data.length) === 0)
+			return false;
+		data.split('\n');
+	});
+}
+
 //get available extensions
 function map_autocomplete_extension_to(obj,context)
 {
@@ -151,18 +161,23 @@ function update_row_infos()
 	}
 	
 	var groupval = '';
-	var count = 0;
+	var count = 1;
 	$('#list_linefeatures > tbody').find('tr').each(function() {
-		tr_group = false;			
+		
+		tr_group = false;
 		if($(this).attr('id') == 'tr-rules_group') {
 			count = 0;
 			groupval = $(this).find('#td_rules_group_name').text();
 			tr_group = true;
 		}
-		count++;
 		
-		$(this).find('#linefeatures-rules_group').val(groupval);		
-		$(this).find('#linefeatures-rules_order').val(count-1);
+		$(this).find('#linefeatures-rules_group').val(groupval);
+		
+		$(this).find('#linefeatures-rules_order').val();
+		$(this).find('#box-line_num').html(count);
+		$(this).find('#linefeatures-line_num').val(count);
+
+		count++;
 		
 		if(tr_group === false) {
 			context = $(this).find("#linefeatures-context");

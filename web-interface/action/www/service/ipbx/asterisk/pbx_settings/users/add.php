@@ -85,7 +85,6 @@ if(isset($_QR['fm_send']) === true
 		$ipbx->discuss('xivo[userlist,update]');
 		// must reload app_queue
 		$ipbx->discuss('module reload app_queue.so');
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 

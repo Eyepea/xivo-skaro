@@ -65,7 +65,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 						    (DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)) === true)
 				$this->_conf['provd']['host'] = $ref['net4_ip_rest'];
 			else
-				dwho_report('warning','Invalid option net4_ip_rest for conf provisioning');
+				dwho_report::push('warning','Invalid option net4_ip_rest for conf provisioning');
 		}
 
 		if(isset($ref['rest_port']) === true)
@@ -73,25 +73,18 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			if(dwho_network::valid_port_number($ref['rest_port']) === true)
 				$this->_conf['provd']['port'] = (int) $ref['rest_port'];
 			else
-				dwho_report('warning','Invalid option rest_port for conf provisioning');
+				dwho_report::push('warning','Invalid option rest_port for conf provisioning');
 		}
 
 		if(isset($ref['private']) === true)
-		{
-			if(dwho_is_uint($ref['private']) === true)
-				$this->_conf['provd']['private'] = (bool) $ref['private'];
-			else
-				dwho_report('warning','Invalid option private for conf provisioning');
-		}
-		else
-			$this->_conf['provd']['timeout'] = 60;
+			$this->_conf['provd']['private'] = (bool) $ref['private'];
 
 		if(isset($ref['username']) === true)
 		{
 			if(empty($ref['username']) === false)
 				$this->_conf['provd']['user'] = $ref['username'];
 			else
-				dwho_report('warning','Invalid option username for conf provisioning');
+				dwho_report::push('warning','Invalid option username for conf provisioning');
 		}
 
 		if(isset($ref['password']) === true)
@@ -99,23 +92,18 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			if(empty($ref['password']) === false)
 				$this->_conf['provd']['pass'] = $ref['password'];
 			else
-				dwho_report('warning','Invalid option password for conf provisioning');
+				dwho_report::push('warning','Invalid option password for conf provisioning');
 		}
 
 		if(isset($ref['secure']) === true)
-		{
-			if(empty($ref['secure']) === false)
-				$this->_conf['provd']['secure'] = (bool) $ref['secure'];
-			else
-				dwho_report('warning','Invalid option secure for conf provisioning');
-		}
+			$this->_conf['provd']['secure'] = (bool) $ref['secure'];
 
 		if(isset($ref['connect_timeout']) === true)
 		{
 			if(dwho_is_uint($ref['connect_timeout']) === true)
 				$this->_conf['provd']['connect_timeout'] = $ref['connect_timeout'];
 			else
-				dwho_report('warning','Invalid option connect_timeout for conf provisioning');
+				dwho_report::push('warning','Invalid option connect_timeout for conf provisioning');
 		}
 		else
 			$this->_conf['provd']['connect_timeout'] = 30;
@@ -125,7 +113,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			if(dwho_is_uint($ref['timeout']) === true)
 				$this->_conf['provd']['timeout'] = $ref['timeout'];
 			else
-				dwho_report('warning','Invalid option timeout for conf provisioning');
+				dwho_report::push('warning','Invalid option timeout for conf provisioning');
 		}
 		else
 			$this->_conf['provd']['timeout'] = 60;
@@ -220,15 +208,25 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 					#'httpheader'		=> array(dwho_json::get_header()));
 					'httpheader'		=> array('Content-Type: text/plain'));
 		
-		if((bool) $this->_conf['provd']['private'] === true
-		&& is_array($this->_curl_opt) === true
+		if(is_array($this->_curl_opt) === true
 		&& empty($this->_curl_opt) === false)
 			$opt = array_merge($opt, $this->_curl_opt);
-		
-		if (($user = $this->_conf['provd']['user']) !== ''
+			
+		if(((bool) $this->_conf['provd']['private']) === true
+		&& ($user = $this->_conf['provd']['user']) !== ''
 		&& ($pass = $this->_conf['provd']['pass']) !== '')
 			$opt = array_merge($opt, array('httpauth' => CURLAUTH_DIGEST,
 				'userpwd' => $user.':'.$pass));
+			
+		if(((bool) $this->_conf['provd']['secure']) === true)
+		{
+			$ssl = array(CURLOPT_PROTOCOLS	=> CURLPROTO_HTTPS,
+					CURLOPT_SSL_VERIFYHOST	=> 0,
+					CURLOPT_SSL_VERIFYPEER 	=> 0,
+					CURLOPT_SSLVERSION 		=> 3);
+					
+			$opt = array_merge($opt, $ssl);
+		}
 		
 		return($this->_curl->load(null,$opt,false));
 	}
