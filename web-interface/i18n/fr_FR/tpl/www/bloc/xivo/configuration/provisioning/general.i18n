@@ -20,6 +20,9 @@ Port HTTP:
 ; fm_provd_dhcp_integration
 Intégration du DHCP: 
 
+; fm_provd_private
+Authenfication: 
+
 ; fm_provd_username
 Identifiant: 
 

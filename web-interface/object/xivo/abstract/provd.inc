@@ -76,6 +76,16 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 				dwho_report('warning','Invalid option rest_port for conf provisioning');
 		}
 
+		if(isset($ref['private']) === true)
+		{
+			if(dwho_is_uint($ref['private']) === true)
+				$this->_conf['provd']['private'] = $ref['private'];
+			else
+				dwho_report('warning','Invalid option private  for conf provisioning');
+		}
+		else
+			$this->_conf['provd']['timeout'] = 60;
+
 		if(isset($ref['username']) === true)
 		{
 			if(empty($ref['username']) === false)
@@ -97,7 +107,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			if(dwho_is_uint($ref['connect_timeout']) === true)
 				$this->_conf['provd']['connect_timeout'] = $ref['connect_timeout'];
 			else
-				dwho_report('warning','Invalid option connect_timeout for section provd in XIVO init file');
+				dwho_report('warning','Invalid option connect_timeout for conf provisioning');
 		}
 		else
 			$this->_conf['provd']['connect_timeout'] = 30;
@@ -107,7 +117,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			if(dwho_is_uint($ref['timeout']) === true)
 				$this->_conf['provd']['timeout'] = $ref['timeout'];
 			else
-				dwho_report('warning','Invalid option timeout for section provd in XIVO init file');
+				dwho_report('warning','Invalid option timeout for conf provisioning');
 		}
 		else
 			$this->_conf['provd']['timeout'] = 60;
@@ -202,7 +212,8 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 					#'httpheader'		=> array(dwho_json::get_header()));
 					'httpheader'		=> array('Content-Type: text/plain'));
 		
-		if(is_array($this->_curl_opt) === true
+		if((bool) $this->_conf['provd']['private'] === true
+		&& is_array($this->_curl_opt) === true
 		&& empty($this->_curl_opt) === false)
 			$opt = array_merge($opt, $this->_curl_opt);
 		

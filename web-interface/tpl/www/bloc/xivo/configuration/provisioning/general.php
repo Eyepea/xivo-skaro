@@ -71,6 +71,11 @@ $dhtml   = &$this->get_module('dhtml');
 				      'labelid'	=> 'provd-dhcp_integration',
 				      'checked'	=> $this->get_var('info','provd','dhcp_integration'))),
 	
+	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_private'),
+				      'name'	=> 'provd[private]',
+				      'labelid'	=> 'provd-private',
+				      'checked'	=> $this->get_var('info','provd','private'))),
+	
 	$form->text(array('desc'	=> $this->bbf('fm_provd_username'),
 				  'name'		=> 'provd[username]',
 				  'labelid'		=> 'provd-username',
