@@ -21,8 +21,6 @@
 $provdplugin = &$_XOBJ->get_module('provdplugin');
 $appprovisionning = &$_XOBJ->get_application('provisioning');
 
-$info = array();
-
 if(isset($_QR['fm_send']) === true
 && isset($_QR['download_server']) === true
 && isset($_QR['provd']) === true)

@@ -213,6 +213,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	
 	public function add_required_config($config=null)
 	{
+		$confdefault = false;
 		if (is_null($config) === true
 		&& ($confdefault = $this->get('default')) === false)
 		{
@@ -221,9 +222,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		}
 		elseif(is_array($config) === true)
 			$confdefault = $config;
-		else
+		elseif($confdefault === false)
 		{
-			dwho_report::push('error', 'fail to get default config');
+			dwho_report::push('error', 'invalid default config');
 			return(false);
 		}
 		
@@ -264,7 +265,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	}
 	
 	private function _add_autoprov($confregistrar)
-	{			
+	{
 		$autoprov = $this->_conf['autoprov'];
 		
 		if ($this->chk_confregistrar($confregistrar) === false)

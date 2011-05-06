@@ -43,9 +43,6 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	{
 		$this->_set_configuration();
 		
-		if (isset($this->_conf['provd']) === false)
-			return(false);
-		
 		$this->_url = array('scheme' => 'http',
 				    'host' => $this->_conf['provd']['host'],
 				    'port' => $this->_conf['provd']['port']);
@@ -62,13 +59,13 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 		
 		$this->_conf['provd'] = array();
 
-		if(isset($ref['net4_ip']) === true)
+		if(isset($ref['net4_ip_rest']) === true)
 		{
-			if(dwho_network::valid_host($ref['net4_ip'],
+			if(dwho_network::valid_host($ref['net4_ip_rest'],
 						    (DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)) === true)
-				$this->_conf['provd']['host'] = $ref['net4_ip'];
+				$this->_conf['provd']['host'] = $ref['net4_ip_rest'];
 			else
-				dwho_report('warning','Invalid option net4_ip for conf provisioning');
+				dwho_report('warning','Invalid option net4_ip_rest for conf provisioning');
 		}
 
 		if(isset($ref['rest_port']) === true)

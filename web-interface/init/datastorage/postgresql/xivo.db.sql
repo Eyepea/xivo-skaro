@@ -405,6 +405,7 @@ DROP TABLE IF EXISTS "provisioning";
 CREATE TABLE "provisioning" (
  "id" SERIAL,
  "net4_ip" varchar(39) NOT NULL,
+ "net4_ip_rest" varchar(39) NOT NULL,
  "username" varchar(32) NOT NULL,
  "password" varchar(32) NOT NULL,
  "dhcp_integration" INTEGER NOT NULL DEFAULT 0,
@@ -413,7 +414,7 @@ CREATE TABLE "provisioning" (
  PRIMARY KEY ("id")
 );
 
-INSERT INTO "provisioning" VALUES(1, '', 'admin', 'admin', 0, 8666, 8667);
+INSERT INTO "provisioning" VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667);
 SELECT setval('provisioning_id_seq', 2);
 
 --- STATS ---

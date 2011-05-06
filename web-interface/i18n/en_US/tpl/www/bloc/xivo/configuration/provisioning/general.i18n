@@ -12,10 +12,10 @@ Server:
 Server configuration
 
 ; fm_provd_net4_ip
-Ip server:
+IP server:
 
 ; fm_provd_http_port
-Http port: 
+HTTP port: 
 
 ; fm_provd_dhcp_integration
 DHCP integration: 
@@ -25,6 +25,9 @@ Username:
 
 ; fm_provd_password
 Password: 
+
+; fm_provd_net4_ip_rest
+ATPI REST IP: 
 
 ; fm_provd_rest_port
 API REST port: 

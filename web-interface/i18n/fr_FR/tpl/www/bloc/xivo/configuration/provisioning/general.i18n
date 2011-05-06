@@ -26,5 +26,8 @@ Identifiant:
 ; fm_provd_password
 Mot de passe: 
 
+; fm_provd_net4_ip_rest
+ATPI REST IP: 
+
 ; fm_provd_rest_port
 Port API REST: 

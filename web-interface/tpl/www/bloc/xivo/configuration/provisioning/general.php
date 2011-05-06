@@ -85,6 +85,13 @@ $dhtml   = &$this->get_module('dhtml');
 				  'value'	  	=> $this->get_var('info','provd','password'),
 				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','password')))),
 	
+	$form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip_rest'),
+				  'name'	=> 'provd[net4_ip_rest]',
+				  'labelid'	=> 'provd-net4_ip_rest',
+				  'size'	  	=> 16,
+				  'value'	  	=> $this->get_var('info','provd','net4_ip_rest'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','net4_ip_rest')))),
+	
 	$form->text(array('desc'	=> $this->bbf('fm_provd_rest_port'),
 				  'name'		=> 'provd[rest_port]',
 				  'labelid'		=> 'provd-rest_port',
