@@ -709,7 +709,23 @@ class AMI_1_8:
     # XXX dahdi channels
     def ami_voicemailuserentry(self, event):
         if log_ami_events_statusrequest:
-            # log.info('ami_voicemailuserentry %s' % (event))
+            mailbox = event.pop('VoiceMailbox')
+            new = event.pop('NewMessageCount')
+            for k, v in self.innerdata.xod_config['voicemails'].keeplist.iteritems():
+                if mailbox == v.get('mailbox'):
+                    print mailbox, v.get('mailbox'), '/', v.get('identity'), '/', v.get('fullmailbox')
+                    break
+            log.info('ami_voicemailuserentry %s %s %s' % (mailbox, new, event))
+            # only NewMessageCount here - OldMessageCount only when IMAP compiled
+            # relation with Old/New/Waiting in MessageWaiting UserEvent ?
+
+##            {u'SayEnvelope': u'Yes', u'TimeZone': u'eu-fr', u'Email': u'', u'VoiceMailbox': u'1539',
+##             u'MailCommand': u'', u'SayCID': u'No', u'ExitContext': u'',
+##             u'Dialout': u'', u'DeleteMessage': u'Yes', u'Pager': u'', u'Language': u'', u'ServerEmail': u'',
+##             u'CallOperator': u'Yes', u'MaxMessageLength': u'0', u'Callback': u'', u'VMContext': u'mamaop',
+##             u'SayDurationMinimum': u'2', u'Fullname': u'Mmqgpkx Iaonrps',
+##             u'AttachmentFormat': u'', u'CanReview': u'Yes', u'VolumeGain': u'0.00', u'AttachMessage': u'Yes',
+##             u'ActionID': u'init-voicemailuserslist-apoazpe-1304692404', u'UniqueID': u''}
             pass
         return
 

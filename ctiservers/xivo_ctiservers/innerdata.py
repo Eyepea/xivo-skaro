@@ -135,7 +135,7 @@ class Safe:
                      'meetmes' : { 'pseudochan' : None,
                                    'channels' : []
                                    },
-                     'voicemails' : {},
+                     'voicemails' : { 'messages' : 0 },
                      'incalls' : {},
                      'outcalls' : {},
                      'contexts' : {},
