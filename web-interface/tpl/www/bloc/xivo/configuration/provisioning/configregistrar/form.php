@@ -35,7 +35,7 @@ $element = $this->get_var('element');
 		<span class="fm-desc clearboth">
 			<label for="it-config-id"><?=$this->bbf('fm_config-id')?></label>
 		</span>
-		&nbsp; 	<?=$this->get_var('info','id')?>
+		&nbsp; 	<?=$this->get_var('info','config','id')?>
 	</p>
 <?php
 	else:
@@ -43,16 +43,16 @@ $element = $this->get_var('element');
 				  'name'	  => 'config[id]',
 				  'labelid'	=> 'config-id',
 				  'size'	  => 15,
-				  'value'	  => $this->get_var('info','id'),
-				  'error'   => $this->bbf_args('error', $this->get_var('error', 'id')) ));
+				  'value'	  => $this->get_var('info','config','id'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error','config','id')) ));
 	endif;
 	
 		echo $form->text(array('desc'	=> $this->bbf('fm_config-displayname'),
 				  'name'	  => 'config[displayname]',
 				  'labelid'	=> 'config-displayname',
 				  'size'	  => 15,
-				  'value'	  => $this->get_var('info','displayname'),
-				  'error'   => $this->bbf_args('error', $this->get_var('error', 'displayname')) ));
+				  'value'	  => $this->get_var('info','config','displayname'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error','config','displayname')) ));
 ?>
 <fieldset id="fld-registrar">
 	<legend><?=$this->bbf('fld_registrar');?></legend>
@@ -61,15 +61,15 @@ $element = $this->get_var('element');
 				  'name'	  => 'config[registrar_main]',
 				  'labelid'	=> 'config-registrar_main',
 				  'size'	  => 15,
-				  'value'	  => $this->get_var('info','registrar_main'),
-				  'error'   => $this->bbf_args('error', $this->get_var('error', 'registrar_main')) )),
+				  'value'	  => $this->get_var('info','config','registrar_main'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error','config','registrar_main')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config-registrar_backup'),
 				  'name'	  => 'config[registrar_backup]',
 				  'labelid'	=> 'config-registrar_backup',
 				  'size'	  => 15,
-				  'value'	  => $this->get_var('info','registrar_backup'),
-				  'error'   => $this->bbf_args('error', $this->get_var('error', 'registrar_backup'))
+				  'value'	  => $this->get_var('info','config','registrar_backup'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error','config','registrar_backup'))
 				));
 ?>
 </fieldset>
@@ -81,14 +81,14 @@ $element = $this->get_var('element');
 				  'name'	  => 'config[proxy_main]',
 				  'labelid'	=> 'config-proxy_main',
 				  'size'	  => 15,
-				  'value'	  => $this->get_var('info','proxy_main'),
-				  'error'   => $this->bbf_args('error', $this->get_var('error', 'proxy_main')) )),
+				  'value'	  => $this->get_var('info','config','proxy_main'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error','config','proxy_main')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config-proxy_backup'),
 				  'name'	  => 'config[proxy_backup]',
 				  'labelid'	=> 'config-proxy_backup',
 				  'size'	  => 15,
-				  'value'	  => $this->get_var('info','proxy_backup'),
-				  'error'   => $this->bbf_args('error', $this->get_var('error', 'proxy_backup')) ));?>
+				  'value'	  => $this->get_var('info','config','proxy_backup'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error','config','proxy_backup')) ));?>
 </fieldset>
 </div>

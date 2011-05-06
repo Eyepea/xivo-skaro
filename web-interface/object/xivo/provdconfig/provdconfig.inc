@@ -530,8 +530,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	public function chk_confregistrar($arr)
 	{
 		if (is_array($arr) === false
-		|| isset($arr['id'],$arr['registrar_main'],$arr['registrar_backup'],
-			$arr['proxy_main'],$arr['proxy_backup'],$arr['displayname']) === false)
+		|| isset($arr['id'],$arr['registrar_main'],
+			$arr['proxy_main'],$arr['displayname']) === false)
 		{
 			dwho_report::push('error', 'config registrar not valid');
 			return(false);

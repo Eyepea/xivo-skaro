@@ -59,7 +59,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appprovdconfig->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
 
-		$return = &$info['config'];
+		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true)
 		{

@@ -129,7 +129,7 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 		{
 			case 'registrar':		
 				$arr['parent_ids'] = array();
-				$arr['raw_config'] = array();
+				$arr['raw_config'] = array('X_key' => '');
 				if(($rs = $this->_provdconfig->chk_confregistrar($arr)) === false)
 				{
 					dwho_report::push('error', 'fail to create config');
@@ -177,7 +177,7 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 	{
 		if(($rs = $this->get_result('config')) === null
 		|| $rs === false)
-			return(false);	
+			return(false);
 		
 		$this->_return['config'] = $this->_provdconfig->add($rs);
 		
