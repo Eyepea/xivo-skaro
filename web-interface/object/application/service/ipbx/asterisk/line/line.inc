@@ -653,7 +653,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($linefeaturesid = $this->add_linefeatures($protocolid)) === false
-		|| $this->add_config() === false)
+		|| $this->add_config($linefeaturesid,$protocolid) === false)
 		{
 			$r = false;
 			if($protocolid !== null)
@@ -711,27 +711,39 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($this->_return['linefeatures']);
 	}
 
-	function add_config()
+	function add_config($linefeaturesid,$protocolid)
 	{
-		if($this->_provdconfig === false
+		if(($linefeaturesid = dwho_ulongint($linefeaturesid)) === 0
 		|| $this->_provddevice === false
-		|| dwho_issa('linefeatures',$this->_info) === false
-		|| dwho_issa('protocol',$this->_info) === false
 		|| ($rs = $this->get_result('linefeatures')) === null
 		|| $rs === false)
 			return(false);
-			
-		dwho_hr('ADD');
 		
+		if (empty($rs['device']) === false)
+		{
+			$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
+				
+			$arr = array();
+			$arr['linefeatures'] = $this->get_result('linefeatures');
+			$arr['userfeatures'] = $this->get_result('userfeatures');
+			$arr['protocol'] = $this->get_result('protocol');
 			
-		if ($this->_info['linefeatures']['device'] !== $rs['device'])
-		{			
-			dwho_var_dump($this->_info['linefeatures']);
-			dwho_var_dump($this->get_result('linefeatures'));
-			
-			#$this->_provddevice->update_config_from_line();
-			die;			
+			// new device associated
+			if (empty($rs['device']) === false)
+			{
+				if (($device = $this->_devicefeatures->get($rs['device'])) === false)
+				{
+					dwho_report::push('error', 'device doesn\'t exist');
+					return(false);
+				}			
+				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
+				{
+					dwho_report::push('error', 'Can\'t edit device');
+					return(false);
+				}	
+			}
 		}
+		return(true);
 	}
 
 	function update_protocol_setvar($protocolid,$iduserfeatures)

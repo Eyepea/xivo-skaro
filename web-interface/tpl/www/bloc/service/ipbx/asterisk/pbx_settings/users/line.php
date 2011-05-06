@@ -210,6 +210,12 @@ if($list !== false):
 			      $list_configregistrar);?>
 		</td>
 		<td>
+		<?php if ($list_device_line === false): ?>
+			 - 
+			<?=$form->hidden(array('name' => 'linefeatures[device][]',
+					'value' 	=> null,
+				    'id'		=> 'linefeatures-device'));?>
+		<?php else: ?>
 			<?=$form->select(array('paragraph'	=> false,
 				    'name'		=> 'linefeatures[device][]',
 				    'id'		=> 'linefeatures-device',
@@ -220,6 +226,7 @@ if($list !== false):
 				    'default'	=> $element['linefeatures']['device']['default'],
 					'selected'	=> $ref['device']),
 			      $list_device_line);?>
+		<?php endif; ?>
 		</td>
 		<td>
 			<?=$form->select(array('paragraph'	=> false,
@@ -322,6 +329,12 @@ endif;
 			      $list_configregistrar);?>
 		</td>
 		<td id="td_ex-linefeatures-device">
+		<?php if ($list_device_line === false): ?>
+			 - 
+			<?=$form->hidden(array('name' => 'linefeatures[device][]',
+					'value' 	=> null,
+				    'id'		=> 'linefeatures-device'));?>
+		<?php else: ?>
 			<?=$form->select(array('paragraph'	=> false,
 				    'name'		=> 'linefeatures[device][]',
 				    'id'		=> 'linefeatures-device',
@@ -331,6 +344,7 @@ endif;
 				    'default'	=> $element['linefeatures']['device']['default'],
 				    'empty'		=> true),
 			      $list_device_line);?>
+		<?php endif; ?>
 		</td>
 		<td>
 			<?=$form->select(array('paragraph'	=> false,
