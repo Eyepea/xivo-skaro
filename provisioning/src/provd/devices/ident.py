@@ -692,11 +692,11 @@ class DefaultConfigDeviceUpdater(object):
     def update(self, device, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
         if u'config' not in device:
-            cfg_id = (yield self._app.cfg_find_one({u'role': u'default'}))[ID_KEY]
-            if cfg_id is None:
-                logger.warning('No config with the default role found')
+            config = yield self._app.cfg_find_one({u'role': u'default'})
+            if config:
+                device[u'config'] = config[ID_KEY]
             else:
-                device[u'config'] = cfg_id
+                logger.warning('No config with the default role found')
         defer.returnValue(False)
 
 
