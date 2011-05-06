@@ -47,7 +47,8 @@ class Request(server.Request):
         self.prepath = []
         self.postpath = map(server.unquote, string.split(self.path[1:], '/'))
         d = self.site.getResourceFor(self)
-        d.addCallbacks(self.render, self.processingFailed)
+        d.addCallback(self.render)
+        d.addErrback(self.processingFailed)
 
 
 class Site(server.Site):

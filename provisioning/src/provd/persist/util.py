@@ -557,7 +557,7 @@ def new_backend_based_collection(backend, generator):
 
 class ForwardingDocumentCollection(object):
     def __init__(self, collection):
-        self.__collection = collection
+        self._collection = collection
     
     def __getattr__(self, name):
-        return getattr(self.__collection, name)
+        return getattr(self._collection, name)

@@ -315,6 +315,11 @@ class ProvisioningServiceMaker(object):
         config = self._read_config(options)
         top_service = MultiService()
         
+        # check config for verbosity
+        if config['general.verbose']:
+            logging.getLogger().setLevel(logging.DEBUG)
+        logger.debug('Day oh')
+        
         prov_service = ProvisioningService(config)
         prov_service.setServiceParent(top_service)
         

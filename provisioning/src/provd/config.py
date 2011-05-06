@@ -35,6 +35,7 @@ The following parameters are defined:
     general.rest_ssl
     general.rest_ssl_certfile
     general.rest_ssl_keyfile
+    general.verbose
     database.type
         The type of the 'database' used for storing devices and configs.
     database.generator
@@ -135,6 +136,7 @@ class DefaultConfigSource(object):
         ('general.rest_ssl', 'False'),
         ('general.rest_ssl_certfile', '/etc/pf-xivo/provd/keys/cert.pem'),
         ('general.rest_ssl_keyfile', '/etc/pf-xivo/provd/keys/key.pem'),
+        ('general.verbose', 'False'),
         ('database.type', 'shelve'),
         ('database.generator', 'default'),
         ('database.ensure_common_indexes', 'False'),
@@ -146,9 +148,9 @@ class DefaultConfigSource(object):
 
 
 class Options(usage.Options):
-    # The 'stderr' and 'debug' options should probably be defined somewhere
-    # else but it's more practical to define them here. They SHOULD NOT be
-    # inserted in the config though.
+    # The 'stderr' option should probably be defined somewhere else but
+    # it's more practical to define it here. It SHOULD NOT be inserted
+    # in the config though.
     optFlags = [
         ('stderr', 's', 'Log to standard error instead of syslog.'),
         ('verbose', 'v', 'Increase verbosity.'),
@@ -184,6 +186,7 @@ class CommandLineConfigSource(object):
         ('http-port', 'general.http_port'),
         ('tftp-port', 'general.tftp_port'),
         ('rest-port', 'general.rest_port'),
+        ('verbose', 'general.verbose'),
     ]
     
     def __init__(self, options):
@@ -347,6 +350,7 @@ _PARAMS_DEFINITION = [
     ('general.rest_password', (str, True)),
     ('general.rest_is_public', (_bool, True)),
     ('general.rest_ssl', (_bool, True)),
+    ('general.verbose', (_bool, True)),
     ('database.type', (str, True)),
     ('database.generator', (str, True)),
     ('database.ensure_common_indexes', (_bool, True))
@@ -364,10 +368,7 @@ def _check_and_convert_parameters(raw_config):
             try:
                 raw_config[param_name] = fun(raw_config[param_name])
             except Exception, e:
-                logger.warning('Error while transforming/checking parameter "%s"',
-                               param_name, exc_info=True)
-                raise ConfigError('parameter "%s" is invalid: %s' %
-                                  param_name, e)
+                raise ConfigError('parameter "%s" is invalid: %s' % (param_name, e))
     if raw_config['general.rest_ssl']:
         if 'general.rest_ssl_certfile' not in raw_config:
             raise ConfigError('Missing parameter "rest_ssl_certfile"') 

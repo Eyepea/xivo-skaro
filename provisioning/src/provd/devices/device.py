@@ -57,10 +57,24 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from provd.util import is_normed_mac, is_normed_ip
 from provd.persist.util import ForwardingDocumentCollection
 
 
+def _check_device_validity(device):
+    if u'mac' in device:
+        if not is_normed_mac(device[u'mac']):
+            raise ValueError('Non-normalized MAC address %s' % device[u'mac'])
+    if u'ip' in device:
+        if not is_normed_ip(device[u'ip']):
+            raise ValueError('Non-normalized IP address %s' % device[u'ip'])
+
+
 class DeviceCollection(ForwardingDocumentCollection):
-    # right now, a device collection is nothing more than a standard
-    # collection
-    pass
+    def insert(self, device):
+        _check_device_validity(device)
+        return self._collection.insert(device)
+    
+    def update(self, device):
+        _check_device_validity(device)
+        return self._collection.update(device)

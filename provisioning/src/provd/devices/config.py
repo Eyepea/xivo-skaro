@@ -490,10 +490,6 @@ def _needs_childs_and_parents_indexes(fun):
 
 
 class ConfigCollection(ForwardingDocumentCollection):
-    def __init__(self, collection):
-        ForwardingDocumentCollection.__init__(self, collection)
-        self._collection = collection
-    
     @defer.inlineCallbacks
     def _build_childs_and_parents_indexes(self):
         # Build childs and parents index from scratch.

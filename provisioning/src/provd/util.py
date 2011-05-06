@@ -65,6 +65,23 @@ def norm_ip(ip_string):
     return from_ip(to_ip(ip_string))
 
 
+def is_normed_ip(ip_string):
+    """Return true if the given MAC address string is in normalized format,
+    else false.
+    
+    """
+    try:
+        digits = map(int, ip_string.split('.'))
+    except ValueError:
+        # probably a non integer in the string
+        return False
+    else:
+        if len(digits) != 4:
+            return False
+        else:
+            return all(map(lambda n: 0 <= n <= 255, digits))
+
+
 _MAC_ADDR = re.compile(ur'^[\da-fA-F]{1,2}([:-]?)(?:[\da-fA-F]{1,2}\1){4}[\da-fA-F]{1,2}$')
 
 def to_mac(mac_string):
@@ -132,6 +149,16 @@ def norm_mac(mac_string):
      
     """
     return from_mac(to_mac(mac_string))
+
+
+_NORMED_MAC = re.compile(ur'^(?:[\da-f]{2}:){5}[\da-f]{2}$')
+
+def is_normed_mac(mac_string):
+    """Return true if the given MAC address string is in normalized format,
+    else false.
+    
+    """
+    return bool(_NORMED_MAC.match(mac_string))
 
 
 def format_mac(mac_string, separator=u':', uppercase=False):

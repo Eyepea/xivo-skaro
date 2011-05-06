@@ -147,10 +147,9 @@ def json_response_entity(fun):
     @functools.wraps(fun)
     def aux(self, request):
         if not accept_mime_type(PROV_MIME_TYPE, request):
-            request.setResponseCode(http.NOT_ACCEPTABLE)
-            request.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-            return (u"You must accept the '%s' MIME type '%s'."
-                    % PROV_MIME_TYPE).encode('UTF-8')
+            return respond_error(request,
+                                 'You must accept the "%s" MIME type.' % PROV_MIME_TYPE,
+                                 http.NOT_ACCEPTABLE)
         else:
             request.setHeader('Content-Type', PROV_MIME_TYPE)
             return fun(self, request)
@@ -169,12 +168,17 @@ def json_request_entity(fun):
     def aux(self, request):
         content_type = request.getHeader('Content-Type')
         if content_type != PROV_MIME_TYPE:
-            request.setResponseCode(http.UNSUPPORTED_MEDIA_TYPE)
-            request.setHeader('Content-Type', 'text/plain; charset=ascii')
-            return ("Entity must be in media type '%s'." % PROV_MIME_TYPE)
+            return respond_error(request,
+                                 'Entity must be in media type "%s".' % PROV_MIME_TYPE,
+                                 http.UNSUPPORTED_MEDIA_TYPE)
         else:
-            content = json.loads(request.content.getvalue())
-            return fun(self, request, content)
+            try:
+                content = json.loads(request.content.getvalue())
+            except ValueError, e:
+                logger.info('Received invalid JSON document: %s', e)
+                return respond_error(request, 'Invalid JSON document: %s' % e)
+            else:
+                return fun(self, request, content)
     return aux
 
 
