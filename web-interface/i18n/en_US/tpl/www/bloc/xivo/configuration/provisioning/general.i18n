@@ -29,6 +29,9 @@ Username:
 ; fm_provd_password
 Password: 
 
+; fm_provd_secure_rest
+PORT REST secure (https): 
+
 ; fm_provd_net4_ip_rest
 ATPI REST IP: 
 

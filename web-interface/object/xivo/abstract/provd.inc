@@ -79,9 +79,9 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 		if(isset($ref['private']) === true)
 		{
 			if(dwho_is_uint($ref['private']) === true)
-				$this->_conf['provd']['private'] = $ref['private'];
+				$this->_conf['provd']['private'] = (bool) $ref['private'];
 			else
-				dwho_report('warning','Invalid option private  for conf provisioning');
+				dwho_report('warning','Invalid option private for conf provisioning');
 		}
 		else
 			$this->_conf['provd']['timeout'] = 60;
@@ -100,6 +100,14 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 				$this->_conf['provd']['pass'] = $ref['password'];
 			else
 				dwho_report('warning','Invalid option password for conf provisioning');
+		}
+
+		if(isset($ref['secure']) === true)
+		{
+			if(empty($ref['secure']) === false)
+				$this->_conf['provd']['secure'] = (bool) $ref['secure'];
+			else
+				dwho_report('warning','Invalid option secure for conf provisioning');
 		}
 
 		if(isset($ref['connect_timeout']) === true)

@@ -412,10 +412,11 @@ CREATE TABLE "provisioning" (
  "rest_port" integer NOT NULL,
  "http_port" integer NOT NULL,
  "private" INTEGER NOT NULL DEFAULT 0,
+ "secure" INTEGER NOT NULL DEFAULT 0,
  PRIMARY KEY ("id")
 );
 
-INSERT INTO "provisioning" VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0);
+INSERT INTO "provisioning" VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0, 0);
 SELECT setval('provisioning_id_seq', 2);
 
 --- STATS ---

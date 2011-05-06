@@ -56,6 +56,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
             'http_port',
             'username',
             'password',
+        	'secure',
         	'net4_ip_rest',
             'rest_port',
             'dhcp_integration');

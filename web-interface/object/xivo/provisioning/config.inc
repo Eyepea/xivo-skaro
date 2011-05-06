@@ -38,6 +38,11 @@ $array['element']['username']['default'] = 'admin';
 $array['element']['password'] = array();
 $array['element']['password']['default'] = 'admin';
 
+$array['element']['secure'] = array();
+$array['element']['secure']['value'] = array(0,1);
+$array['element']['secure']['default'] = 0;
+$array['element']['secure']['set'] = true;
+
 $array['element']['net4_ip_rest'] = array();
 $array['element']['net4_ip_rest']['default'] = '127.0.0.1';
 
@@ -57,7 +62,7 @@ $array['filter']['net4_ip'] = array('set' 		=> false,
 						    'callback'		=> 'dwho_network::valid_host',
 						    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 $array['filter']['http_port'] = array('cast' => 'uint','between' => array(1,65535));
-
+$array['filter']['secure'] = array('bool' => true);
 $array['filter']['net4_ip_rest'] = array('set' 		=> false,
 						    'chk'			=> 2,
 						    'callback'		=> 'dwho_network::valid_host',
