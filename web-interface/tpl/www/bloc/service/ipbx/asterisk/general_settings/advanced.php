@@ -145,14 +145,7 @@ if(isset($error_js[0]) === true)
 
 <div id="sb-part-agents" class="b-nodisplay">
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_persistentagents'),
-				      'name'	=> 'generalagents[persistentagents]',
-				      'labelid'	=> 'generalagents-persistentagents',
-				      'default'	=> $element['generalagents']['persistentagents']['default'],
-				      'help'	=> $this->bbf('hlp_fm_generalagents_persistentagents'),
-				      'checked'	=> $this->get_var('generalagents','persistentagents','var_val'))),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_multiplelogin'),
+		echo $form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_multiplelogin'),
 				      'name'	=> 'generalagents[multiplelogin]',
 				      'labelid'	=> 'generalagents-multiplelogin',
 				      'default'	=> $element['generalagents']['multiplelogin']['default'],

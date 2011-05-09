@@ -17,37 +17,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+$info = array();
+$element = array();
 
 $appagents = &$ipbx->get_apprealstatic('agents');
 $appgeneralagents = &$appagents->get_module('general');
+$info['generalagents'] = $appgeneralagents->get_all_by_category();
+$element['generalagents'] = $appgeneralagents->get_elements();
+
 $appoptionsagents = &$appagents->get_module('agentoptions');
+$info['agentoptions']  = $appoptionsagents->get_all_by_category();
+$element['agentoptions']  = $appoptionsagents->get_elements();
 
 $appqueues = &$ipbx->get_apprealstatic('queues');
 $appgeneralqueues = &$appqueues->get_module('general');
+$info['generalqueues'] = $appgeneralqueues->get_all_by_category();
+$element['generalqueues'] = $appgeneralqueues->get_elements();
 
 $appmeetme = &$ipbx->get_apprealstatic('meetme');
 $appgeneralmeetme = &$appmeetme->get_module('general');
+$info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
+$element['generalmeetme'] = $appgeneralmeetme->get_elements();
 
 $appuserguest = &$ipbx->get_application('user',array('internal' => 1),false);
-
-$general   = &$ipbx->get_module('general');
-
-
-$info = array();
-$info['generalagents'] = $appgeneralagents->get_all_by_category();
-$info['agentoptions']  = $appoptionsagents->get_all_by_category();
-$info['generalqueues'] = $appgeneralqueues->get_all_by_category();
-$info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
-$info['general']       = $general->get(1);
-
 $info['userinternal'] = array();
 $info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest'),null,true);
 
-$element = array();
-$element['generalagents'] = $appgeneralagents->get_elements();
-$element['agentoptions']  = $appoptionsagents->get_elements();
-$element['generalqueues'] = $appgeneralqueues->get_elements();
-$element['generalmeetme'] = $appgeneralmeetme->get_elements();
+$general   = &$ipbx->get_module('general');
+$info['general']       = $general->get(1);
 $element['general']       = array_keys(dwho_i18n::get_timezone_list());
 
 $error = array();

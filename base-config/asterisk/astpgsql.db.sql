@@ -1617,10 +1617,9 @@ CREATE INDEX "staticagent__idx__category" ON "staticagent"("category");
 CREATE INDEX "staticagent__idx__var_name" ON "staticagent"("var_name");
 CREATE INDEX "staticagent__idx__var_val" ON "staticagent"("var_val");
 
-INSERT INTO "staticagent" VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
 INSERT INTO "staticagent" VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
-INSERT INTO "staticagent" VALUES (3,0,0,0,'agents.conf','general','recordagentcalls','no');
-INSERT INTO "staticagent" VALUES (4,0,0,0,'agents.conf','general','recordformat','wav');
+INSERT INTO "staticagent" VALUES (3,1,0,0,'agents.conf','agents','recordagentcalls','no');
+INSERT INTO "staticagent" VALUES (4,1,0,0,'agents.conf','agents','recordformat','wav');
 INSERT INTO "staticagent" VALUES (5,1,1000000,0,'agents.conf','agents','group',1);
 SELECT setval('staticagent_id_seq', 6);
 
