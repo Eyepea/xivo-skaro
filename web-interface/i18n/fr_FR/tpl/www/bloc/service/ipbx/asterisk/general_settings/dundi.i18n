@@ -82,11 +82,6 @@ Activer les statistiques :
 ; hlp_fm_dundi-storehistory
 Config asterisk: storehistory
 
-; fm_general_dundi
-Activer le mode actif/actif : 
-
-; hlp_fm_general-dundi
-
 ; hlp_fm_dundi-department
 Config asterisk: department
 

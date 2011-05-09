@@ -19,25 +19,17 @@
 #
 
 $dundi   = &$ipbx->get_module('dundi');
-$general = &$ipbx->get_module('general');
 
 $fm_save = null;
 $info = $error = array();
-
-$gen = $general->get(1);
 
 if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 {
 	$fm_save = true;
 
-	$gen['dundi'] = array_key_exists('general', $_QR) && ($_QR['general']['dundi'] == '1');
-
-	if($dundi->edit(1, $_QR['dundi']) === false
-	|| $general->edit(1, $gen)        === false)
+	if($dundi->edit(1, $_QR['dundi']) === false)
 	{
 			$info['dundi']    = $_QR['dundi'];
-			$error['general'] = $dundi->get_filter_error();
-
 			$fm_save = false;
 	}
 }
@@ -45,14 +37,11 @@ if(isset($_QR['fm_send']) === true && dwho_issa('dundi',$_QR) === true)
 if (!array_key_exists('dundi', $info))
 	$info['dundi'] = $dundi->get(1);
 
-$info['general'] = $gen;
-$general = array('dundi' => array('default' => 0));
-
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
-$_TPL->set_var('element', array('dundi' => $dundi->get_element(), 'general' => $general));
+$_TPL->set_var('element', array('dundi' => $dundi->get_element()));
 $_TPL->set_var('info',$info);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('countries',dwho_i18n::get_territory_translated_list());

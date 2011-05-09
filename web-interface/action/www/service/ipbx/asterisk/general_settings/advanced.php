@@ -133,20 +133,18 @@ if(isset($_QR['fm_send']) === true)
 	
 	if(dwho_issa('general',$_QR) === false)
 		$_QR['general'] = array();
-	
-	$arr = $general->get(1);
-	if($arr['timezone'] != $_QR['general']['timezone'])
-	{
-		if(!$general->edit(1, $_QR['general']))
-		{
-			$info['general']  = $general->get_filter_result();
-			$error['general'] = $general->get_filter_error();
+	if(!array_key_exists('dundi',$_QR['general']))
+		$_QR['general']['dundi'] = 0;
 
-			$fm_save = false;
-		}
-		else
-		{ $info['general'] = $_QR['general']; }
+	if(!$general->edit(1, $_QR['general']))
+	{
+		$info['general']  = $general->get_filter_result();
+		$error['general'] = $general->get_filter_error();
+
+		$fm_save = false;
 	}
+	else
+	{ $info['general'] = $_QR['general']; }
 }
 
 $_TPL->set_var('fm_save'      , $fm_save);

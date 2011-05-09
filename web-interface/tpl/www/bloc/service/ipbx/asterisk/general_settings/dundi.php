@@ -163,15 +163,7 @@ endif;
 
 <div id="sb-part-advanced" class="b-nodisplay">
 <?php
-		echo $form->checkbox(array('desc'	=> $this->bbf('fm_general_dundi'),
-				  	'name'		  => 'general[dundi]',
-						'labelid'	  => 'general-dundi',
-					  'help'	  	=> $this->bbf('hlp_fm_general-dundi'),
-					  'required'	=> false,
-			      'checked'		=> $this->get_var('info','general','dundi'),
-			      'default'		=> $element['general']['dundi']['default'])),
-		
-    $form->text(array('desc'  => $this->bbf('fm_dundi_bindaddr'),
+  echo  $form->text(array('desc'  => $this->bbf('fm_dundi_bindaddr'),
             'name' => 'dundi[bindaddr]',
             'labelid'  => 'dundi-bindaddr',
             'size'     => 10,

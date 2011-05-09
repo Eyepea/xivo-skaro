@@ -99,13 +99,25 @@ if(isset($error_js[0]) === true)
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-5"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-timezone');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#timezone"><?=$this->bbf('smenu_timezone');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-6"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-timezone',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-dundi',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#timezone"><?=$this->bbf('smenu_timezone');?></a>
+					<a href="#dundi"><?=$this->bbf('smenu_dundi');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -346,6 +358,18 @@ if(isset($error_js[0]) === true)
 				    'help'     => $this->bbf('hlp_fm_general_timezone'),
 				    'selected' => $this->get_var('general','timezone')),
 			      $element['general']);
+?>
+</div>
+
+<div id="sb-part-dundi" class="b-nodisplay">
+<?php
+		echo $form->checkbox(array('desc'	=> $this->bbf('fm_general_dundi'),
+				  	'name'		  => 'general[dundi]',
+						'labelid'	  => 'general-dundi',
+					  'help'	  	=> $this->bbf('hlp_fm_general-dundi'),
+					  'required'	=> false,
+			      'checked'		=> $this->get_var('info','general','dundi'),
+			      'default'		=> $this->get_var('elements','generaldundi','dundi','default')));
 ?>
 </div>
 

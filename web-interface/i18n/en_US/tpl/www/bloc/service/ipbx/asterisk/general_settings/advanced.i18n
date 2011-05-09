@@ -276,3 +276,12 @@ Timezone:
 
 ; hlp_fm_general_timezone
 Phones provisioned timezone<br\>(can be overriden by user account)
+
+; smenu_dundi
+Dynamic recording
+
+; fm_general_dundi
+Enable dynamic recording : 
+
+; hlp_fm_general-dundi
+

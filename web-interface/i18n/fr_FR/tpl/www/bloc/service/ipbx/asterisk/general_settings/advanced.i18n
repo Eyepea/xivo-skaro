@@ -189,3 +189,12 @@ Fuseau horaire :
 
 ; hlp_fm_general_timezone
 Fuseau horaire provisioné dans les téléphones<br\>(Cette valeur peut-être surchargée par compte utilisateur)
+
+; smenu_dundi
+Enregistrement dynamique
+
+; fm_general_dundi
+Activer l'enregistrement dynamique : 
+
+; hlp_fm_general-dundi
+
