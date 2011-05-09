@@ -24,7 +24,7 @@ $prefs = new dwho_prefs('servicesgroup');
 $act     = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
-$trunk = strval($prefs->get('trunk', ''));
+$trunk 	 = strval($prefs->get('trunk', ''));
 $sort    = $prefs->flipflop('sort', 'name');
 
 $param = array();
@@ -96,7 +96,7 @@ switch($act)
 
 		$user = array();
 		$user['slt'] = array();
-		$user['list'] = $appuser->get_users_list(null,null,null,null,true);
+		$user['list'] = $appuser->get_users_list(null,null,null,true);
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('servicesgroup',$_QR) === true)
