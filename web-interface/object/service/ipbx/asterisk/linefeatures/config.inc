@@ -82,8 +82,8 @@ $array['element']['rules_group'] = array();
 $array['element']['rules_group']['default'] = '';
 
 $array['element']['num'] = array();
-$array['element']['num']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
-$array['element']['num']['default'] = 0;
+$array['element']['num']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12);
+$array['element']['num']['default'] = 1;
 
 $array['element']['line_num'] = array();
 $array['element']['line_num']['default'] = 0;

@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('provd_plugin');
 
@@ -76,7 +75,7 @@ switch($act)
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appprovdplugin->get($_QR['id'])) === false)
-			$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),array('act' => 'list'));
 			
 		$_TPL->set_var('id',$_QR['id']);
 		$_TPL->set_var('info',$info);

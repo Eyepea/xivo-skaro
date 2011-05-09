@@ -33,7 +33,6 @@ class dwho_curl
 	var $_url	= null;
 	var $_option	= array(
 				'connecttimeout'	=> 5,
-#				'timeout'		    => 30,
 				'timeout'		    => 180,
 				'returntransfer'	=> true);
 	var $_error	= '';
@@ -535,8 +534,15 @@ class dwho_curl
 
 		if(($this->_error = $this->error()) === '')
 			$this->_error = 'unknown';
+			
+		if ($str === ''
+		&& is_resource($this->_link) === true
+		&& ($curlinfos = curl_getinfo($this->_link)) !== false)
+		{
+			$str = $curlinfos['url'];
+		}
 
-		dwho_report::push('warning',$str.'Error: '.$this->_error.' - Errno: '.$this->_errno);
+		dwho_report::push('warning',$str.' Error: '.$this->_error.' - Errno: '.$this->_errno);
 	}
 
 	function create()
@@ -592,6 +598,31 @@ class dwho_curl
 			$r = curl_error($this->_link);
 
 		return($r);
+	}
+	
+	function decode_response($response)
+	{
+		if(is_resource($this->_link) === false)
+			return(false);
+		
+        $result = array( 'header' 		=> '',
+                         'body' 		=> '',
+                         'curl_error' 	=> '',
+                         'http_code' 	=> '',
+                         'last_url' 	=> '');
+        
+        if ($this->error() !== '')
+            $result['curl_error'] = $this->error();
+        else 
+        {        
+			$header_size = $this->get_info(CURLINFO_HEADER_SIZE);
+	        $result['header'] = substr($response, 0, $header_size);
+	        $result['body'] = substr( $response, $header_size );
+	        $result['http_code'] = $this->get_info(CURLINFO_HTTP_CODE);
+	        $result['last_url'] = $this->get_info(CURLINFO_EFFECTIVE_URL);
+        }
+		
+		return($result);
 	}
 
 	function get_info($info=null)

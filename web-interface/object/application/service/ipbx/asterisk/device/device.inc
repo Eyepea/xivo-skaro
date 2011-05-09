@@ -76,19 +76,16 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		if (($listd = $this->_provddevice->get_device_list('')) === false
 		|| is_array($listd) === false
 		|| ($nb = count($listd)) === 0)
-		{
-			dwho_report::push('info','no_device_registered_on_provd');
 			return($ret);
-		}
 		
 		for($i=0;$i<$nb;$i++)
 		{
 			$ref = &$listd[$i];
 			$deviceid = $ref['id'];
-			$ret[$deviceid] = true;
+			$ret[$deviceid] = false;		
 			
 			if((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
-			{			
+			{
 				if(isset($ref['ip']) === true
 				&& ($devicefeatures = $this->_devicefeatures->get_where(array('ip' => $ref['ip']))) !== false
 				&& $this->get_by_deviceid($devicefeatures['deviceid']) !== false)
@@ -112,7 +109,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				dwho_report::push('error','error during update device: '.$deviceid);
 				continue;
 			}
-				
+			
+			$ret[$deviceid] = true;	
 			
 			unset($ref['id']);
 			$arr = array();

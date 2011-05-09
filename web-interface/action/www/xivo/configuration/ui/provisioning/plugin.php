@@ -85,8 +85,7 @@ switch($act)
 		elseif (isset($_QR['path']) === false
 		|| isset($_QR['id']) === false
 		|| ($path = urldecode($_QR['path'])) === false
-		|| ($r = $provdplugin->request_oip($path)) === false
-		|| ($data = dwho_json::decode($r,true)) === false
+		|| ($data = $provdplugin->request_oip($path)) === false
 		|| isset($data['status']) === false)
 		{
 			$http_response->set_status_line(400);
@@ -173,14 +172,9 @@ switch($act)
 		
 		die($rs);
 		break;
-	case 'list':
 	default:
-		$act = 'list';
-		dwho_var_dump('list');
-		die;
-		$_TPL->set_var('act',$act);
-		$_TPL->display('/xivo/configuration/provisioning/generic');
-		break;
+		$http_response->set_status_line(400);
+		$http_response->send(true);
 }
 
 ?>

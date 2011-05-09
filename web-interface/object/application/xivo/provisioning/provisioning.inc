@@ -54,6 +54,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 
         $keys = array('net4_ip',
             'http_port',
+        	'private',
             'username',
             'password',
         	'secure',

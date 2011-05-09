@@ -24,13 +24,28 @@ var fixHelper = function(e, ui) {
 	return ui;
 };
 
-//get available line for a device
-function xivo_http_search_line_from_provd(config)
+function map_autocomplete_line_free_to(obj,list)
 {
-	$.getJSON('/xivo/configuration/ui.php/provisioning/config?act=get&id='+config, function(data) {
-		if (data === null || (nb = data.length) === 0)
-			return false;
-		data.split('\n');
+	obj.show();
+	if (list === null || (nb = list.length) === 0)
+		return false;
+    for (var i = 0; i< nb; i++){
+		obj.find('option').each(function(){
+	    	if ($(this).val() == list[i])
+	    		$(this).remove();
+		});
+    }
+}
+
+//get available line for a device
+function xivo_http_search_line_from_provd(obj,config)
+{
+	if (config == ''){
+		obj.hide();
+		return;
+	}
+	$.getJSON('/xivo/configuration/ui.php/provisioning/config?act=getbydeviceid&id='+config, function(data) {
+		map_autocomplete_line_free_to(obj,data);
 	});
 }
 
@@ -171,9 +186,8 @@ function update_row_infos()
 			tr_group = true;
 		}
 		
-		$(this).find('#linefeatures-rules_group').val(groupval);
-		
-		$(this).find('#linefeatures-rules_order').val();
+		$(this).find('#linefeatures-rules_group').val(groupval);		
+		$(this).find('#linefeatures-rules_order').val(count);
 		$(this).find('#box-line_num').html(count);
 		$(this).find('#linefeatures-line_num').val(count);
 
@@ -197,6 +211,15 @@ function update_row_infos()
 				});
 				number.blur(function(){
 					$(this).parent().find('#numberpool_helper').hide('slow');
+				});
+				device = $(this).find('#linefeatures-device').val();
+				num = $(this).find("#linefeatures-num");
+				if (device == '')
+					num.hide();
+				
+				$(this).find('#linefeatures-device').change(function() {
+					num = $(this).parents('tr').find("#linefeatures-num");
+					xivo_http_search_line_from_provd(num,$(this).val());
 				});
 			}
 		}

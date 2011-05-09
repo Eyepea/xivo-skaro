@@ -161,13 +161,12 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 
 		$data = array('id' => $name);
 		
-		$this->_set_curl_opt('header', true);
-		$this->_set_curl_opt('returntransfer', true);
-		
-		if (($rs = $this->request_post($uri,$data)) === false)
+		$rs = $this->request_post($uri,$data);
+			
+		if ($this->_status_code !== 201)
 			return(false);
 		
-		$decoded = $this->decode_header($rs);
+		$decoded = $this->decode_header($this->_response['header']);
 		
 		if (isset($decoded['Location']) === false		
 		|| $this->request_delete($decoded['Location']) === false)
@@ -182,13 +181,13 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 
 		$data = array('id' => $name);
 		
-		$this->_set_curl_opt('header', true);
-		$this->_set_curl_opt('returntransfer', true);
-		
-		if (($rs = $this->request_post($uri,$data)) === false)
+		$rs = $this->request_post($uri,$data);
+			
+		if ($this->_status_code !== 201)
 			return(false);
 		
-		$decoded = $this->decode_header($rs);
+		$decoded = $this->decode_header($this->_response['header']);
+		
 		/*
 		if (isset($decoded['Location']) === false
 		|| $this->request_delete($decoded['Location']) === false)
@@ -205,10 +204,9 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 
 		$data = array('id' => $name);
 		
-		$this->_set_curl_opt('header', true);
-		$this->_set_curl_opt('returntransfer', true);
-		
-		if (($rs = $this->request_post($uri,$data)) === false)
+		$rs = $this->request_post($uri,$data);
+			
+		if ($this->_status_code !== 204)
 			return(false);
 			
 		return(true);
@@ -220,10 +218,9 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 
 		$data = array('id' => $name);
 		
-		$this->_set_curl_opt('header', true);
-		$this->_set_curl_opt('returntransfer', true);
-		
-		if (($rs = $this->request_post($uri,$data)) === false)
+		$rs = $this->request_post($uri,$data);
+			
+		if ($this->_status_code !== 204)
 			return(false);
 			
 		return(true);
@@ -233,15 +230,14 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	{
 		$uri = $this->_build_uri(array('install','upgrade'));
 		
-		$data = array('id' => $name);
+		$data = array('id' => $name);		
 		
-		$this->_set_curl_opt('header', true);
-		$this->_set_curl_opt('returntransfer', true);
-		
-		if (($rs = $this->request_post($uri,$data)) === false)
+		$rs = $this->request_post($uri,$data);
+			
+		if ($this->_status_code !== 201)
 			return(false);
 		
-		$decoded = $this->decode_header($rs);
+		$decoded = $this->decode_header($this->_response['header']);
 		
 		if (isset($decoded['Location']) === false		
 		|| $this->request_delete($decoded['Location']) === false)
@@ -254,13 +250,13 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	{
 		$uri = $this->_build_uri(array('install','update'));
 		
-		$this->_set_curl_opt('header', true);
-		$this->_set_curl_opt('returntransfer', true);
 		
-		if (($rs = $this->request_post($uri,array(''))) === false)
+		$rs = $this->request_post($uri,array());
+			
+		if ($this->_status_code !== 201)
 			return(false);
 		
-		$decoded = $this->decode_header($rs);
+		$decoded = $this->decode_header($this->_response['header']);
 		
 		if (isset($decoded['Location']) === false		
 		|| $this->request_delete($decoded['Location']) === false)

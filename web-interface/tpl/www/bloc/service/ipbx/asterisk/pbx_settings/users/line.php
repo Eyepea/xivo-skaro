@@ -79,6 +79,8 @@ $err = $this->get_var('error','linefeatures');
 								$this->bbf('col_rules_group-add'));?>
 </p>
 
+<div id="lol"></div>
+
 <table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures">
 	<thead>
 	<tr class="sb-top">
@@ -356,12 +358,19 @@ endif;
 		<?php endif; ?>
 		</td>
 		<td>
+		<?php if ($list_device_line === false): ?>
+			 - 
+			<?=$form->hidden(array('name' => 'linefeatures[num][]',
+					'value' 	=> null,
+				    'id'		=> 'linefeatures-num'));?>
+		<?php else: ?>
 			<?=$form->select(array('paragraph'	=> false,
 					    'name'		=> 'linefeatures[num][]',
 					    'id'		=> 'linefeatures-num',
 					    'label'		=> false,
 				   		'default'	=> $element['linefeatures']['num']['default']),
 					$element['linefeatures']['num']['value']);?>
+		<?php endif; ?>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

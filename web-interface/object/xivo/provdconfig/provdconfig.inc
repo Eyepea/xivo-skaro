@@ -78,10 +78,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{	
 		$this->_confdefault = false;
 		if (($confdefault = $this->get('default')) === false)
-		{
-			dwho_report::push('error', 'config default not exist');
 			return(false);
-		}
 		
 		return(($this->_confdefault = $confdefault));
 	}

@@ -50,7 +50,7 @@ switch($act)
 		$param['page'] = $page;
 
 		if(isset($_QR['id']) === false || $appprovdconfig->get($_QR['id']) === false)
-			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
 
 		$appprovdconfig->delete();
 
