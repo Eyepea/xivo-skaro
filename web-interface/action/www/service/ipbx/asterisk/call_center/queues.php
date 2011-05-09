@@ -251,12 +251,12 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('js/tmp/multiselect/css/ui.multiselect.css');
-		$dhtml->set_css('js/tmp/multiselect/css/common.css');
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
 
-		$dhtml->set_js('js/tmp/multiselect/js/plugins/localisation/jquery.localisation-min.js');
-		$dhtml->set_js('js/tmp/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js');
-		$dhtml->set_js('js/tmp/multiselect/js/ui.multiselect.js');
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
@@ -494,12 +494,12 @@ switch($act)
 			$return['queue']['leavewhenempty'] = explode(',', $return['queue']['leavewhenempty']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('js/tmp/multiselect/css/ui.multiselect.css');
-		$dhtml->set_css('js/tmp/multiselect/css/common.css');
+		$dhtml->set_css('/extra-libs//multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
 
-		$dhtml->set_js('js/tmp/multiselect/js/plugins/localisation/jquery.localisation-min.js');
-		$dhtml->set_js('js/tmp/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js');
-		$dhtml->set_js('js/tmp/multiselect/js/ui.multiselect.js');
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
