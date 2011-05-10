@@ -90,18 +90,23 @@ class HttpReqError(Exception):
     in a consistent way.
     """
 
-    def __init__(self, code, text=None, exc=None):
+    def __init__(self, code, text=None, exc=None, json=False):
         self.code = code
         self.text = text
         self.exc = exc
+        self.json = json				
         msg = text or BaseHTTPRequestHandler.responses[code][1]
         Exception.__init__(self, msg)
+				
     def report(self, req_handler):
         "Send a response corresponding to this error to the client"
         if self.exc:
             req_handler.send_exception(self.code, self.exc)
         elif self.text:
-            req_handler.send_error_msgtxt(self.code, self.text)
+            if self.json:
+                req_handler.send_error_json(self.code, self.text)
+            else:
+                req_handler.send_error_msgtxt(self.code, self.text)
         else:
             req_handler.send_error(self.code)
 
@@ -180,6 +185,17 @@ class HttpReqHandler(BaseHTTPRequestHandler):
             code,
             ''.join(("<pre>\n", cgi.escape(text), "</pre>\n"))
         )
+
+    def send_error_json(self, code, text):
+        "send an error to the client. text message is formatted	in a json stream"
+        self.send_response(code)
+        self.send_header("Connection"  , "close")
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps({
+            'code'   : code,
+            'message': text,
+        }))
 
     def send_exception(self, code, exc_info=None):
         "send an error response including a backtrace to the client"
