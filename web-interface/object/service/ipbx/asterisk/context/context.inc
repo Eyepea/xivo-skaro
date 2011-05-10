@@ -115,7 +115,7 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 	function get_all_except($name=null,$order=null,$limit=null,$assoc=false,$type=null)
 	{
 		if(dwho_has_len($name) === false)
-			return($this->get_all(null,true,$order,$limit,$assoc));
+			return($this->get_all(null,$order,$limit,$assoc));
 
 		$name = strtolower($name);
 

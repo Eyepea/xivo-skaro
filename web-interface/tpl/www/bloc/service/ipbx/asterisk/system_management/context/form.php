@@ -104,7 +104,6 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 		echo $form->select(array('desc'		=> $this->bbf('fm_context_entity'),
 					 'name'		=> 'context[entity]',
 					 'labelid'	=> 'context-entity',
-					 'empty'	=> isset($info['deletable']) === true ? $info['deletable'] : true,
 					 'key'		=> 'displayname',
 					 'altkey'	=> 'name',
 					 'invalid'	=> ($this->get_var('act') === 'edit'),
