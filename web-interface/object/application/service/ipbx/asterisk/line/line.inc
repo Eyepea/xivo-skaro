@@ -879,6 +879,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_status = '';
 			return(false);
 		}
+		
+		$linefeaturesid = (int) $this->_info['linefeatures']['id'];
 
 		if($this->edit_linefeatures($protocolret) === false
 		|| $this->edit_config() === false)
@@ -890,8 +892,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		else if($this->_info['linefeatures']['iduserfeatures'] === 0
 		&& (((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures'))) !== 0)
 		{
-			if($this->add_usermacro($iduserfeatures) === false
-			|| $this->add_extenumbers($this->_info['linefeatures']['id']) === false
+			if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
+			|| $this->add_extenumbers($linefeaturesid) === false
 			|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 			   && $this->add_hints() === false) === true)
 			{
@@ -900,8 +902,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				return(false);
 			}
 		}
-		else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0
-		&& ((int) $linefeaturesid = $this->_info['linefeatures']['id']) !== 0)
+		else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
 		{
 			if ($this->update_protocol_setvar($this->_info['protocol']['id'], $iduserfeatures) === false)
 			{
@@ -943,7 +944,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				}
 			}
 			else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
-			|| $this->add_extenumbers($this->_info['linefeatures']['id']) === false
+			|| $this->add_extenumbers($linefeaturesid) === false
 			|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 			   && $this->add_hints() === false) === true)
 			{
@@ -985,7 +986,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			if(($ret = $protocol->edit($this->_info['protocol']['id'],$rs)) === false)
 			{	$this->_return['protocol'] = $ret; return false; }
 
-			return(($this->_return['protocol'] = $ret));
+			return(($this->_return['protocol'] = $this->_info['protocol']['id']));
 		}
 		else if(($protocolid = $this->add_protocol()) === false)
 			return(false);

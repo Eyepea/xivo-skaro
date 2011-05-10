@@ -209,7 +209,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(is_object($this->_attachment) === false)
 			return(false);
 
-		$this->_info['picture'] = $this->_attachment->get($this->_info['userfeatures']['pictureid']);		
+		$this->_info['picture'] = $this->_attachment->get($this->_info['userfeatures']['pictureid']);
 		$this->_origin['picture'] = $this->_attachment->get_origin();
 
 		return($this->_info['picture']);
@@ -413,7 +413,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	}
 
 	function get_profileclient_list()
-	{		
+	{
 		if(empty($this->_profileclientlist) === false)
 			return($this->_profileclientlist);
 		elseif($this->_ctiprofiles === false
@@ -882,7 +882,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 		$this->_set_result('picture',$rs);
 
-		return(true);		
+		return(true);
 	}
 
 	function set_linefeatures($arr,$iduserfeatures)
@@ -974,7 +974,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			    break;
 			}
 
-			$ref['iduserfeatures'] = (int) $iduserfeatures;							
+			$ref['iduserfeatures'] = (int) $iduserfeatures;
 			$ref['rules_order'] = isset($ref['rules_order']) ? (int) $ref['rules_order'] : 0;
 			$ref['rules_group'] = isset($ref['rules_group']) ? $ref['rules_group'] : '';
 				
@@ -1535,15 +1535,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_linefeatures($userfeaturesid=0)
 	{
-		if(($rs = $this->get_result('linefeatures')) === null
-		|| ($nbrs = count($rs)) === 0)
-			return($rs);
 		
-		if($this->_line === false
-		|| $rs === false)
-			return(false);
+		if((($rs = $this->get_result('linefeatures')) === null
+		|| ($nbrs = count($rs)) === 0)
+			&& $this->_info['linefeatures'] === false)
+			return($rs);
+			
+		if(is_null($rs) === true)
+			$rs = array();
 
-		$res = array();		
+		$res = array();
 		if (($info = $this->_info['linefeatures']) !== false
 		&& ($nbinfo = count($info)) !== 0)
 		{
@@ -1577,7 +1578,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$linefeatures_list = array_values($linefeatures['list']);
 			for($i = 0;$i < $nb;$i++)
 			{
-				$ref = &$linefeatures_list[$i];		
+				$ref = &$linefeatures_list[$i];
 				$this->_line->_reset();
 				$this->_line->_reset_info();
 				if (isset($ref['id']) === true
@@ -1592,7 +1593,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$line = &$rs[$i];
 			
 			if($userfeaturesid !== 0)
-				$line['iduserfeatures'] = (int) $userfeaturesid;			
+				$line['iduserfeatures'] = (int) $userfeaturesid;
 		
 			$this->_line->_reset_info();
 
@@ -1619,7 +1620,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$protocolname = $line['protocol'];
 
 			$arr['linefeatures'] = $line;
-			$arr['protocol'] = $line;	
+			$arr['protocol'] = $line;
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];
@@ -1636,7 +1637,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				else
 					dwho_report::push('error','Line '.($i+1).': unknow error during '.$method,'linefeatures');
 			}
-				
 			$return[$i] = $line;
 		}
 
