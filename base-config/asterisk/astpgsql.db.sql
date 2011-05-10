@@ -980,6 +980,11 @@ CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
 CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
 
 
+INSERT INTO "linefeatures" VALUES (1,'sip',1,0,'autoprov','','default','autoprov','','xivo-initconfig',0,'','',0,'',0,0,1,0);
+
+SELECT setval('linefeatures_id_seq', 2);
+
+
 DROP TABLE IF EXISTS "ldapfilter";
 DROP TYPE  IF EXISTS "ldapfilter_additionaltype";
 
