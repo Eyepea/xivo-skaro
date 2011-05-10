@@ -335,9 +335,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			default:
 				$raw_config['ntp_enabled'] = true;
 				$raw_config['ntp_ip'] = $confdefault['proxy_main'];
-				
-				if ($create === true)
-					break;
 					
 				$this->_set_config_var($raw_config,$raw,'timezone');
 				$this->_set_config_var($raw_config,$raw,'locale');

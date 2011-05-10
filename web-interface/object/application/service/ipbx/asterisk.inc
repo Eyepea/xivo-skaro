@@ -375,7 +375,7 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 	function edit_macro($name)
 	{
 		$rs = false;
-
+		
 		if(dwho_issa($name,$this->_info) === false
 		|| ($rs = $this->get_result($name)) === null
 		|| $rs === false)

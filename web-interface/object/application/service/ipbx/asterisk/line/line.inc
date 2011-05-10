@@ -513,7 +513,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 			if(($rsusermacro = $this->chk_macro('usermacro',
 							    $number,
-							    $this->_mk_usermacro_appdata(0),
+							    $this->_mk_usermacro_appdata(0,'',0),
 							    $context)) !== false)
 				$this->_set_result('usermacro',$rsusermacro);
 
@@ -599,7 +599,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function _set_usermacro($action,$iduserfeatures)
+	function _set_usermacro($action,$iduserfeatures,$idlinefeatures)
 	{
 		$rs = false;
 
@@ -610,7 +610,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		else if(($rsmacro = $this->set_macro($action,
 						     'usermacro',
 						     $rs['exten'],
-						     $this->_mk_usermacro_appdata($iduserfeatures),
+						     $this->_mk_usermacro_appdata($iduserfeatures,'',$idlinefeatures),
 						     $rs['context'])) === false)
 			return(false);
 
@@ -629,13 +629,14 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($this->_extensions->new_hints($name,$protocolname,$number,$disable));
 	}
 
-	function _mk_usermacro_appdata($iduserfeatures,$timeout='')
+	function _mk_usermacro_appdata($iduserfeatures,$timeout='',$idlinefeatures)
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
 		$arr['appdata'][1] = dwho_ulongint($iduserfeatures);
-		$arr['appdata'][2] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
-		$arr['appdata'][3] = $this->_result['protocol']['language'];
+		$arr['appdata'][2] = dwho_ulongint($idlinefeatures);
+		$arr['appdata'][3] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
+		$arr['appdata'][4] = $this->_result['protocol']['language'];
 
 		return($arr);
 	}
@@ -676,7 +677,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		&& dwho_has_len($this->get_result_var('linefeatures','number')) === true)
 		{
 			if($this->update_protocol_setvar($protocolid,$iduserfeatures) === false
-			|| $this->add_usermacro($iduserfeatures) === false)
+			|| $this->add_usermacro($iduserfeatures,$linefeaturesid) === false)
 				$r = false;
 		}
 		
@@ -763,9 +764,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($protocol->edit($protocolid,$val));
 	}
 
-	function add_usermacro($iduserfeatures)
+	function add_usermacro($iduserfeatures,$linefeaturesid)
 	{
-		if(($rs = $this->_set_usermacro('add',$iduserfeatures)) !== true)
+		if(($rs = $this->_set_usermacro('add',$iduserfeatures,$linefeaturesid)) !== true)
 			return($rs);
 
 		return(parent::add_macro('usermacro'));
@@ -899,7 +900,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				return(false);
 			}
 		}
-		else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
+		else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0
+		&& ((int) $linefeaturesid = $this->_info['linefeatures']['id']) !== 0)
 		{
 			if ($this->update_protocol_setvar($this->_info['protocol']['id'], $iduserfeatures) === false)
 			{
@@ -916,7 +918,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$this->delete_extenumbers();
 					$this->delete_hints();
 				}
-				else if ($this->edit_usermacro($iduserfeatures) === false
+				else if ($this->edit_usermacro($iduserfeatures,$linefeaturesid) === false
 				|| $this->edit_extenumbers() === false)
 				{
 					$this->_reverse_edit($protocolret);
@@ -940,7 +942,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					}
 				}
 			}
-			else if($this->add_usermacro($iduserfeatures) === false
+			else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
 			|| $this->add_extenumbers($this->_info['linefeatures']['id']) === false
 			|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 			   && $this->add_hints() === false) === true)
@@ -1104,9 +1106,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function edit_usermacro($iduserfeatures)
+	function edit_usermacro($iduserfeatures,$linefeaturesid)
 	{
-		if(($rs = $this->_set_usermacro('edit',$iduserfeatures)) !== true)
+		if(($rs = $this->_set_usermacro('edit',$iduserfeatures,$linefeaturesid)) !== true)
 			return($rs);
 
 		$ret = parent::edit_macro('usermacro');

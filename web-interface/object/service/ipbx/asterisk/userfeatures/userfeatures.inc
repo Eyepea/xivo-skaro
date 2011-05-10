@@ -214,8 +214,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function search_number($value,$disable=null,$order=null,$limit=null)
 	{
-		// missing die ??????
-		//die('search_number '.__FILE__.' '.__LINE__);
 		return($this->search($value,$disable,$order,$limit,true));
 	}
 

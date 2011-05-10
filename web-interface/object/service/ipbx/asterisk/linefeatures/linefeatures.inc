@@ -153,7 +153,7 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		if (is_int($arr['num']) === false)
 			$arr['num'] = (int) $arr['num'];
 			
-		if (is_int($value['line_num']) === false)
+		if (is_int($arr['line_num']) === false)
 			$arr['line_num'] = (int) $arr['line_num'];
 
 		return(parent::edit($id,$arr,$disable));
