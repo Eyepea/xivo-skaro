@@ -2,10 +2,13 @@
 
 import subprocess
 import os
+import sys
 import time
+import hashlib
+from xivo_ha.tools import Tools
 from time import localtime, strftime
 
-class ClusterResourceManager(object):
+class ClusterResourceManager(Tools):
     def __init__(self,
                  cluster_config   = {},
                  backup_directory = "/var/backups/pf-xivo/pf-xivo-ha",
@@ -13,6 +16,8 @@ class ClusterResourceManager(object):
                 ):
         if cluster_config != {}:
             self.services         = cluster_config['services'].keys()
+            self.services_data    = cluster_config['services']
+            self.cluster_nodes    = cluster_config['cluster_nodes']
             self.cluster_name     = cluster_config['cluster_name']
             self.cluster_addr     = cluster_config['cluster_addr']
             self.cluster_itf      = cluster_config['cluster_itf']
@@ -45,22 +50,6 @@ class ClusterResourceManager(object):
         else:
             return False
 
-    def _cluster_command(self, args = None):
-        '''
-        command to manage cluster
-        _cluster_command(['crm', 'command', 'arg']
-        _cluster_command(['crm_verify', '-LV']
-        return a turple with (stdout, return code, errors)
-        '''
-        if args: 
-            command = subprocess.Popen(args,stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  
-            error   = command.stderr.__str__()
-            result  = command.stdout.readlines()
-            ret     = command.wait()
-            return result, ret, error
-        else:
-            raise ValueError
-
     def _cluster_backup(self, directory = '', filename = ''):
         '''
         cluster configuration backup
@@ -78,8 +67,11 @@ class ClusterResourceManager(object):
         if backup_file:
             if os.path.isfile(backup_file):
                 args        = ['crm', 'configure', 'load', 'replace', backup_file]
-                if self._cluster_command(args)[1] is 0:
+                result, ret, error = self._cluster_command(args)
+                if ret is 0:
                     return True
+                else:
+                    return result
             else:
                 raise IOError("the backup file does not exist")
 
@@ -149,15 +141,17 @@ class ClusterResourceManager(object):
                 all_res.append(elem.split()[0])
         return all_res
     
-    def _cluster_stop_resource(self, res):
+    def _cluster_stop_resource(self, resource):
         '''
         to stop a resource
         '''
         result = []
-        if self._cluster_resource_state(res) == 'running':
-            args = ['crm', 'resource', 'stop', res]
-            result = self._cluster_command(args)
-        return result
+        res    = None
+        error  = None
+        if self._cluster_resource_state(resource) == 'running':
+            args = ['crm', 'resource', 'stop', resource]
+            result, res, error = self._cluster_command(args)
+        return result, res, error
 
 
     def _cluster_stop_all_resources(self):
@@ -174,6 +168,8 @@ class ClusterResourceManager(object):
                     if self._cluster_resource_state(res) == 'running':
                         self._cluster_stop_resource(res)
                     state = self._lsb_status(res, "stopped")
+            else:
+                self._cluster_stop_resource(res)
         return True
 
     # Cluster configuration
@@ -199,6 +195,7 @@ class ClusterResourceManager(object):
         for a in args:
             result.append("rsc_defaults %s" % a)
         return result
+
 
     def _resource_primitive(self, rsc,
                             rsc_class = None,
@@ -231,10 +228,6 @@ class ClusterResourceManager(object):
         result = "primitive " + rsc + rsc_class + rsc_provider + rsc_type + rsc_params + rsc_operation + rsc_op_result
         return result
 
-    def _format_string(self, string):
-        string = "\t" + string + "\n"
-        return string
-
     def _cluster_configure(self):
         '''
         create cluster config file
@@ -259,6 +252,14 @@ class ClusterResourceManager(object):
                 group = self._resource_group(self.services)
                 file_.write(self._format_string(group))
 
+            for res, val in self.services_data.iteritems():
+                if val:
+                    monitor_interval = val['monitor'] if val.has_key('monitor') else None
+                    monitor_timeout  = val['timeout'] if val.has_key('timeout') else None
+                    monitor_role     = val['role']    if val.has_key('role')    else None
+                    file_.write(self._format_string(self._resource_monitor(res, monitor_interval, monitor_timeout, monitor_role)))
+
+            file_.write(self._format_string(self._resources_location()))
             file_.write(self._format_string(self._resources_order()))
             file_.write(self._format_string(self._resources_colocation()))
             file_.write("\tcommit\n")
@@ -267,6 +268,22 @@ class ClusterResourceManager(object):
     def _services_order(self, services):
         # TODO
         return services.sort()
+
+    def _resources_location(self, prefered_node = None, score = None):
+        '''
+        to manage cluster location
+        '''
+        name = self.cluster_name
+        prefered_node = self.cluster_nodes[0] if prefered_node is None else prefered_node 
+        score = '100' if score is None else score 
+        result = 'location location_%s' % name 
+        ip_res = self._cluster_addr()
+        if ip_res:
+            result += " ip_%s" % name
+        result += " %s:" % score
+        result += " %s" % prefered_node
+        return result
+
 
     def _resources_order(self):
         '''
@@ -334,22 +351,22 @@ class ClusterResourceManager(object):
         return group_res + group_meta + group_params
     
     def _resource_monitor(self, rsc,
-                            monitor_role     = None,
                             monitor_interval = None,
-                            monitor_timeout  = None
+                            monitor_timeout  = None,
+                            monitor_role     = None
                          ):
         '''
         monitor resource
         mandatory :
          - rsc
-         - interval (in millisecond)
         optional :
          - timeout in s
+         - interval (default 0)
          - role (only used with master/slave)
         return a string 
         '''
         monitor_role     = '' if monitor_role is None else ':%s' % monitor_role
-        monitor_interval = '' if monitor_interval is None else ' %sm' % monitor_interval
+        monitor_interval = '0' if monitor_interval is None else ' %sm' % monitor_interval
         monitor_timeout  = '' if monitor_timeout is None else ':%ss' % monitor_timeout
         return 'monitor ' + rsc + monitor_role + monitor_interval + monitor_timeout
 
@@ -379,6 +396,12 @@ class ClusterResourceManager(object):
         self._cluster_configure()
         return self._cluster_push_config()
 
+    def status(self):
+        args = ['crm_mon', '-1']
+        data, res, error = self._cluster_command(args)
+        for l in data:
+            sys.stdout.write(l)
+        return True
 
 class DatabaseManagement(object):
     '''
@@ -392,3 +415,4 @@ class DatabaseManagement(object):
 
     def update(self):
         raise NotImplementedError
+

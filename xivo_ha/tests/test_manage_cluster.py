@@ -20,6 +20,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         self.cluster_cfg  = "%s/cluster.cfg" % self.etc_dir
         self.backup_file  = "pf-xivo-ha.bck"
         self.cluster_data = {'cluster_name': 'xivo',
+                               'cluster_nodes': ['ha-xivo-1', 'ha-xivo-2'],
                                'cluster_addr': '192.168.1.34',
                                'cluster_itf': 'eth0',
                                'cluster_group': 'yes',
@@ -122,6 +123,11 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
                                                        'monitor role=Slave interval=300s'])
         self.assertEqual(data, drbd_expected)
 
+    def test_resources_location(self):
+        # location <id> <rsc> <score>: <node>
+        expected = 'location location_xivo ip_xivo 100: ha-xivo-1'
+        data = self.data._resources_location()
+        self.assertEqual(data, expected)
     
     def test_resources_order_group(self):
         expected = 'order order_xivo inf: ip_xivo:start group_xivo:start'
@@ -160,11 +166,13 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
                                            monitor_timeout  = '60')
         self.assertEqual(expected, data)
 
-    #def test_resource_master_slave(self):
-    #    pass
-
-    #def test_cluster_configure_service(self):
-    #    pass
+    def test_cluster_configure(self):
+        expected = "tests/templates/cluster.cfg"
+        result   = self.data._cluster_configure()
+        self.assertTrue(filecmp.cmp(expected, result))
+        
+    def test_resource_master_slave(self):
+        pass
 
     def test_cluster_addr(self):
         expected = 'primitive ip_xivo ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"'
@@ -200,14 +208,14 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
     
     def test_cluster_restore_with_backup_file(self) :
         self.data._cluster_backup(filename = self.backup_file)
-        self.data._cluster_stop_all_resources()
-        self._erase_cluster_configuration()
-        self.assertTrue(self.data._cluster_restore(filename = self.backup_file))
+        self._reset_cluster()
+        state = self.data._cluster_restore(filename = self.backup_file)
+        self.assertTrue(state)
 
     def test_cluster_resource_state(self):
         self._reset_cluster()
-        # asterisk need 0.1 seconde to start
-        time.sleep(0.1)
+        # asterisk need 0.5 seconde to start
+        time.sleep(0.5)
         data_ast   = self.data._cluster_resource_state("asterisk")
         self.assertEqual('running', data_ast)
 
@@ -218,23 +226,27 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_cluster_stop_all_resources(self):
         self._reset_cluster()
-        self.assertTrue(self.data._cluster_stop_all_resources())
+        state = self.data._cluster_stop_all_resources()
+        self.assertTrue(state)
 
-    def test__manage(self):
+    def test_manage(self):
         self.assertTrue(self.data.manage())
+
+    def test_status(self):
+        self.assertTrue(self.data.status())
 
 
 class DatabaseManagementTestCase(unittest.TestCase):
     def test_update_not_implemented(self):
         data = DatabaseManagement()
-        self.assertRaises(NotImplementedError, data.initialize)
+        self.assertRaises(NotImplementedError, data.update)
 
     def test_initialize_not_implemented(self):
         data = DatabaseManagement()
         self.assertRaises(NotImplementedError, data.initialize)
 
+
 if __name__ == '__main__':
     os.system("rm -rf tests/tmp")
     unittest.main()
-
 

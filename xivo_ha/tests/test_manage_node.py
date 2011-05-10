@@ -4,9 +4,12 @@ import sys
 import os
 import shutil
 import filecmp
-sys.path.append("..") 
+import hashlib
+
+from xivo_ha.tools import Tools
 from xivo_ha.manage_nodes import ClusterEngine
 from xivo_ha.manage_nodes import ManageService
+from xivo_ha.manage_nodes import FilesReplicationManagement
 
 class ClusterEngineTestCase(unittest.TestCase):
     def setUp(self):
@@ -68,8 +71,7 @@ class ClusterEngineTestCase(unittest.TestCase):
             result = data._create_corosync_config_file()
             # we add only the new file
             files.append(result[0])
-        print(files)
-        self.assertFalse(filecmp.cmp(files[0], files[1]))
+        self.assertFalse(filecmp.cmp(files[0], files[1], shallow = False))
 
     def test_deploy_config_file(self):
         temp_config  = "%s/corosync.conf" % self.corosync_path
@@ -89,6 +91,7 @@ class ClusterEngineTestCase(unittest.TestCase):
 class ManageServiceTestCase(unittest.TestCase):
     def setUp(self):
         self.init_path = "tests/tmp/etc/init.d" 
+        os.makedirs(self.init_path)
         shutil.copy2("tests/templates/service", self.init_path)
 
     def test_is_not_available(self):
@@ -99,6 +102,83 @@ class ManageServiceTestCase(unittest.TestCase):
         data = ManageService("service-linux", self.init_path, init_name = 'service')
         self.assertTrue(data._is_available())
 
+class FilesReplicationManagementTestCase(unittest.TestCase):
+    def setUp(self):
+        self.test_dir     = "tests/tmp"
+        self.etc_dir      = "%s/etc" % self.test_dir
+        self.backup_dir   = "%s/var/backups/pf-xivo/xivo_ha" % self.test_dir
+        self.csync_data   = {'conflict_resolution': 'younger',
+                             'key_file':    '%s/csync2.key' % self.etc_dir,
+                             'backup_dir':  '%s/csync2' % self.backup_dir,
+                             'backup_keep': '3',
+                             'dirs':        ['/etc/asterisk', '/etc/dahdi'],
+                             'files':       ['/etc/default/atftpd', '/etc/init.d/pf.firewall'],
+                             'hosts':       ['ha-xivo-1', 'ha-xivo-2'],
+                             'config_file' : '%s/csync2.cfg' % self.etc_dir,
+                            }
+        self.data         = FilesReplicationManagement(self.csync_data)
+        for dir_ in (self.backup_dir, self.etc_dir, self.backup_dir):
+            if os.path.isdir(dir_):
+                shutil.rmtree(dir_)
+            os.makedirs(dir_)
+
+    def test_generate_ssl_key(self):
+        string = "%s%s" % (self.csync_data['hosts'][0], self.csync_data['hosts'][1])
+        expected = hashlib.md5(string).hexdigest()
+        data = self.data._generate_ssl_key()
+        self.assertEqual(expected, data)
+
+    def test_create_key_file(self):
+        file_ = self.data._create_key_file()
+        self.assertTrue(os.path.isfile(file_))
+
+    def test_config_file_hosts(self):
+        expected = "host ha-xivo-1 ha-xivo-2;"
+        result   = self.data._config_file_hosts()
+        self.assertEqual(expected, result)
+
+    def test_config_file_key_file(self):
+        expected = "key %s;" % self.data.key_file 
+        result   = self.data._config_file_key_file()
+        self.assertEqual(expected, result)
+
+    def test_config_file_include(self):
+        dir_     = "asterisk" 
+        expected = "include %s;" % dir_
+        result   = self.data._config_file_include(dir_)
+        self.assertEqual(expected, result)
+    
+    def test_config_file_include(self):
+        dir_     = "asterisk" 
+        expected = "exclude %s;" % dir_
+        result   = self.data._config_file_exclude(dir_)
+        self.assertEqual(expected, result)
+   
+    def test_config_file_backup_dir(self):
+        expected = "backup-directory %s;" % self.data.backup_dir
+        result   = self.data._config_file_backup_dir()
+        self.assertEqual(expected, result)
+
+    def test_config_file_backup_rotate(self):
+        expected = "backup-generations %s;" % self.data.backup_keep
+        result   = self.data._config_file_backup_rotate()
+        self.assertEqual(expected, result)
+
+    def test_config_file_conflict_resolution(self):
+        expected = "auto %s;" % self.data.conflict_res
+        result   = self.data._config_file_conflict_resolution()
+        self.assertEqual(expected, result)
+
+    def test_create_config_file(self):
+        expected = "tests/templates/csync2.cfg"
+        result   = self.data._create_config_file()
+        self.assertTrue(filecmp.cmp(expected, result))
+
+    def test_update_not_implemented(self):
+        data = FilesReplicationManagement(self.csync_data)
+        self.assertRaises(NotImplementedError, data.start)
+
 if __name__ == '__main__':
+    os.system("rm -rf tests/tmp")
     unittest.main()
 

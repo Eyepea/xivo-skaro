@@ -6,6 +6,8 @@ import sys
 import filecmp
 import shutil
 import subprocess
+import hashlib
+from xivo_ha.tools import Tools
 
 class ClusterEngine(object):
     def __init__(self, network_addr, multicast_addr, 
@@ -94,7 +96,7 @@ class ClusterEngine(object):
         stop corosync if it's running
         '''
         if not self._manage_corosync("status", 3):
-            sys.stdout.write("stopping corosync, please be patient\n")
+            sys.stdout.write("stopping corosync\n")
             self._manage_corosync("stop")
         return True
 
@@ -134,6 +136,7 @@ class ClusterEngine(object):
                     return True
             except:
                 raise IOError("Impossible to start corosync")
+            sys.stdout.write('Cluster Engine is configured and running\n')
 
     def update(self):
         pass
@@ -177,4 +180,97 @@ class ManageService(object):
         else:
             return False
 
+class FilesReplicationManagement(Tools):
+    '''
+    Used to manage files replication
+    '''
+    def __init__(self,data):
+        self.dirs         = data['dirs']
+        self.files        = data['files']
+        self.conflict_res = data['conflict_resolution']
+        self.hosts        = data['hosts']
+        self.key_file     = data['key_file']
+        self.config_file  = data['config_file'] if data.has_key('config_file') else "/etc/csync.cfg"
+        self.backup_dir   = data['backup_dir']
+        self.backup_keep  = data['backup_keep']
 
+    def _generate_ssl_key(self):
+        string = "%s%s" % (self.hosts[0], self.hosts[1])
+        return hashlib.md5(string).hexdigest()
+
+    def _create_key_file(self):
+        key_file = self.key_file
+        key = self._generate_ssl_key()
+        with open(key_file, 'w') as file_:
+            file_.write(key)
+        return key_file
+
+    def _config_file_hosts(self):
+        '''
+        return a string with host statement
+        '''
+        string = "host"
+        for host in self.hosts:
+            string += " %s" % host
+        string += ";"
+        return string
+
+    def _config_file_key_file(self):
+        string = "key"
+        string += " %s;" % self.key_file
+        return string
+
+    def _config_file_include(self, include):
+        string = "include"
+        string += " %s;" % include
+        return string
+    
+    def _config_file_exclude(self, exclude):
+        string = "exclude"
+        string += " %s;" % exclude
+        return string
+   
+    def _config_file_backup_dir(self):
+        string = "backup-directory"
+        string += " %s;" % self.backup_dir
+        return string
+
+    def _config_file_backup_rotate(self):
+        string = "backup-generations"
+        string += " %s;" % self.backup_keep
+        return string
+
+    def _config_file_conflict_resolution(self):
+        string = "auto"
+        string += " %s;" % self.conflict_res
+        return string
+
+    def _create_config_file(self):
+        config_file = self.config_file
+        with open(config_file, 'w') as file_:
+            file_.write('group xivo\n')
+            file_.write('{\n')
+            # host statement
+            file_.write(self._format_string(self._config_file_hosts()))
+            # key file
+            file_.write(self._format_string(self._config_file_key_file()))
+            # manage include
+            data = self.dirs + self.files
+            for f in data:
+                file_.write(self._format_string(self._config_file_include(f)))
+            # backup dir
+            file_.write(self._format_string(self._config_file_backup_dir()))
+            # backup rotation
+            file_.write(self._format_string(self._config_file_backup_rotate()))
+            # key file
+            file_.write(self._format_string(self._config_file_conflict_resolution()))
+            file_.write('}\n')
+
+        return config_file
+
+    def initialize(self):
+        sys.stdout.write("create configuration file for csync2")
+        self._create_config_file()
+
+    def start(self):
+        raise NotImplementedError
