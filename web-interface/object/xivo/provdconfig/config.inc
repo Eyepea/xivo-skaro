@@ -26,6 +26,7 @@ $array['base']['id'] = 'base';
 $array['base']['parent_ids'] = array();
 
 $array['base']['raw_config'] = array();
+$array['base']['raw_config']['sip_dtmf_mode'] = 'SIP-INFO';
 $array['base']['raw_config']['sip_lines'] = array();
 $array['base']['raw_config']['sip_lines'][1] = array();
 $array['base']['raw_config']['sccp_call_managers'] = array();

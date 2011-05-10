@@ -49,6 +49,9 @@ $array['element']['protocolid']['default'] = 0;
 $array['element']['iduserfeatures'] = array();
 $array['element']['iduserfeatures']['default'] = 0;
 
+$array['element']['provisioningid'] = array();
+$array['element']['provisioningid']['default'] = 0;
+
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 

@@ -32,26 +32,36 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	}
 	
 	public function get($name)
-	{		
+	{
+		$this->reset();
+		
+		if(dwho_has_len($name) === false)
+			return(false);
+		
 		$res = array();
 		
 		$uri = $this->_build_uri(array('plugins',$name,'info'));
 		
-		if (($rs = $this->request_get($uri)) === false
-		|| $this->_status_code === 404
+		$rs = $this->request_get($uri);
+		
+		if (is_array($rs) === false
+		|| $this->_status_code !== 200
 		|| empty($rs['plugin_info']) === true)
 		{
 			dwho_report::push('error','error: Can\'t get '.$name.' or plugin doesn\'t installed.');
 			return(false);
-		}			
+		}
 		
-		$res['info'] = $rs['plugin_info'];		
+		$res['info'] = $rs['plugin_info'];
 		$res['pkgs'] = $pkgs = array();
 		$res['params'] = false;
 		
 		$uri = $this->_build_uri(array('plugins',$name,'install','installable'));
 		
-		if (($rs = $this->request_get($uri)) !== false
+		$rs = $this->request_get($uri);
+		
+		if (is_array($rs) === true
+		&& $this->_status_code === 200
 		&& isset($rs['pkgs']) === true
 		&& is_array($rs['pkgs']) === true)
 		{
@@ -65,7 +75,10 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		
 			$uri = $this->_build_uri(array('plugins',$name,'install','installed'));
 			
-			if (($rs = $this->request_get($uri)) !== false
+			$rs = $this->request_get($uri);
+			
+			if (is_array($rs) === true
+			&& $this->_status_code === 200
 			&& isset($rs['pkgs']) === true
 			&& is_array($rs['pkgs']) === true)
 			{
@@ -91,7 +104,9 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 			
 		$uri = $this->_build_uri(array('plugins',$name,'configure'));
 		
-		if (($rs = $this->request_get($uri)) !== false
+		$rs = $this->request_get($uri);
+			
+		if (is_array($rs) === true
 		&& $this->_status_code === 200)
 			$res['params'] = $rs['params'];
 			
@@ -120,7 +135,10 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 				$uri = $this->_build_uri(array('install','installable'));
 		}
 		
-		if (($rs = $this->request_get($uri)) === false
+		$rs = $this->request_get($uri);
+		
+		if (is_array($rs) === false
+		|| $this->_status_code !== 200
 		|| ($rs = $rs['pkgs']) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
@@ -151,12 +169,15 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function edit_infos_server($value)
 	{
-		$uri = $this->_build_uri(array('configure','server'));	
+		$uri = $this->_build_uri(array('configure','server'));
 		return($this->edit_params($uri,$value));
 	}
 	
 	public function install($name)
 	{
+		if(dwho_has_len($name) === false)
+			return(false);
+		
 		$uri = $this->_build_uri(array('install','install'));
 
 		$data = array('id' => $name);
@@ -168,7 +189,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		
 		$decoded = $this->decode_header($this->_response['header']);
 		
-		if (isset($decoded['Location']) === false)	
+		if (isset($decoded['Location']) === false)
 			return(false);
 		
 		$this->request_delete($decoded['Location']);
@@ -181,6 +202,10 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function install_pkgs($plugin,$name)
 	{
+		if(dwho_has_len($plugin) === false
+		|| dwho_has_len($name) === false)
+			return(false);
+		
 		$uri = $this->_build_uri(array('plugins',$plugin,'install','install'));
 
 		$data = array('id' => $name);
@@ -190,11 +215,11 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		if ($this->_status_code !== 201)
 			return(false);
 		
-		$decoded = $this->decode_header($this->_response['header']);		
-		/*		
-		if (isset($decoded['Location']) === false)	
-			return(false);
+		$decoded = $this->decode_header($this->_response['header']);
 		
+		if (isset($decoded['Location']) === false)
+			return(false);
+		/*
 		$this->request_delete($decoded['Location']);
 			
 		if ($this->_status_code !== 204)
@@ -207,6 +232,9 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function uninstall($name)
 	{
+		if(dwho_has_len($name) === false)
+			return(false);
+		
 		$uri = $this->_build_uri(array('install','uninstall'));
 
 		$data = array('id' => $name);
@@ -221,6 +249,10 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function uninstall_pkgs($plugin,$name)
 	{
+		if(dwho_has_len($plugin) === false
+		|| dwho_has_len($name) === false)
+			return(false);
+		
 		$uri = $this->_build_uri(array('plugins',$plugin,'install','uninstall'));
 
 		$data = array('id' => $name);
@@ -235,9 +267,12 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function upgrade($name)
 	{
+		if(dwho_has_len($name) === false)
+			return(false);
+			
 		$uri = $this->_build_uri(array('install','upgrade'));
 		
-		$data = array('id' => $name);		
+		$data = array('id' => $name);
 		
 		$rs = $this->request_post($uri,$data);
 			
@@ -246,7 +281,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		
 		$decoded = $this->decode_header($this->_response['header']);
 		
-		if (isset($decoded['Location']) === false)	
+		if (isset($decoded['Location']) === false)
 			return(false);
 		
 		$this->request_delete($decoded['Location']);
@@ -259,7 +294,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function update()
 	{
-		$uri = $this->_build_uri(array('install','update'));		
+		$uri = $this->_build_uri(array('install','update'));
 		
 		$rs = $this->request_post($uri,array());
 			
@@ -268,7 +303,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		
 		$decoded = $this->decode_header($this->_response['header']);
 		
-		if (isset($decoded['Location']) === false)	
+		if (isset($decoded['Location']) === false)
 			return(false);
 		
 		$this->request_delete($decoded['Location']);

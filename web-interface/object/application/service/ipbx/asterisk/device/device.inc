@@ -71,7 +71,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	}
 
 	public function update()
-	{		
+	{
 		$ret = array();
 		if (($listd = $this->_provddevice->get_device_list('')) === false
 		|| is_array($listd) === false
@@ -82,7 +82,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		{
 			$ref = &$listd[$i];
 			$deviceid = $ref['id'];
-			$ret[$deviceid] = false;		
+			$ret[$deviceid] = false;
 			
 			if((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
 			{
@@ -93,7 +93,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 					$act_set = 'set_edit';
 					$act = 'edit';
 				}
-				else 
+				else
 				{
 					$act_set = 'set_add';
 					$act = 'add';
@@ -104,13 +104,13 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				$act_set = 'set_edit';
 				$act = 'edit';
 			}
-			else 
+			else
 			{
 				dwho_report::push('error','error during update device: '.$deviceid);
 				continue;
 			}
 			
-			$ret[$deviceid] = true;	
+			$ret[$deviceid] = true;
 			
 			unset($ref['id']);
 			$arr = array();
@@ -129,12 +129,20 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return($ret);
 	}
 
-	public function get($id,$disable=null,$nocomponents=null)
+	public function get($id,$disable=null,$nocomponents=null,$where=null)
 	{
 		$this->_info = $this->_origin = array();
-
-		if(($this->_info['devicefeatures'] = $this->_devicefeatures->get($id,$disable)) === false)
-			return(false);			
+	
+		if (is_array($where) === true)
+		{
+			if(($this->_info['devicefeatures'] = $this->_devicefeatures->get_where($where)) === false)
+				return(false);
+		}
+		else
+		{
+			if(($this->_info['devicefeatures'] = $this->_devicefeatures->get($id,$disable)) === false)
+				return(false);
+		}
 
 		$this->_origin['devicefeatures'] = $this->_devicefeatures->get_origin();
 
@@ -150,27 +158,22 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 	public function get_by_deviceid($deviceid,$disable=null,$nocomponents=null)
 	{
-		$this->_info = $this->_origin = array();
-
 		$w = array();
 		$w['deviceid'] = $deviceid;
 		if (is_null($disable) === false)
 			$w['commented'] = true;
-		
-		if(($this->_info['devicefeatures'] = $this->_devicefeatures->get_where($w)) === false)
-			return(false);
 
-		$this->_origin['devicefeatures'] = $this->_devicefeatures->get_origin();
+		return($this->get(0,$disable,$nocomponents,$w));
+	}
 
-		if($this->_components === false
-		|| $nocomponents === false)
-			return($this->_info);
-			
-		$this->get_deviceprovd();
-		$this->get_capabilities();
-		$this->get_config();
+	public function get_by_ip($ip,$disable=null,$nocomponents=null)
+	{
+		$w = array();
+		$w['ip'] = $ip;
+		if (is_null($disable) === false)
+			$w['commented'] = true;
 
-		return($this->_info);
+		return($this->get(0,$disable,$nocomponents,$w));
 	}
 
 	public function get_nb($arr=null,$disable=null,$initialized=null)
@@ -179,7 +182,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	}
 
 	public function get_deviceprovd()
-	{			
+	{
 		$this->_info['deviceprovd'] = $this->_provddevice->get($this->_info['devicefeatures']['deviceid']);
 		$this->_origin['deviceprovd'] = $this->_provddevice->get_origin();
 	}
@@ -206,12 +209,12 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			break;
 		}
 		
-		$this->_info['capabilities'] = $r;		
+		$this->_info['capabilities'] = $r;
 	}
 	
 	public function get_capabilities_by_plugin($pluginid)
 	{
-		if (isset($this->_info['deviceprovd']) === false
+		if ($this->_info['deviceprovd'] === false
 		|| ($rs = $this->_provdplugin->get($pluginid)) === false
 		|| ($info = $rs['info']) === null
 		|| isset($info['capabilities']) === false
@@ -220,15 +223,16 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		
 		foreach ($info['capabilities'] as $k => $v)
 		{
-			if(preg_match('/'.$this->_info['deviceprovd']['model'].'/', $k) === 0)
+			if(isset($this->_info['deviceprovd']['model']) === false
+			|| preg_match('/'.$this->_info['deviceprovd']['model'].'/', $k) === 0)
 				continue;
 			return($v);
 		}
-		return(false);		
+		return(false);
 	}
 	
 	public function get_config()
-	{		
+	{
 		$this->_info['config'] = false;
 		
 		if (isset($this->_info['devicefeatures'], $this->_info['devicefeatures']['deviceid']) === false
@@ -409,7 +413,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				$this->_return['devicefeatures'] = $this->_provddevice->add($rs);
 				break;
 			default:
-			case 'local':				
+			case 'local':
 				$this->_return['devicefeatures'] = $this->_devicefeatures->add($rs);
 		}
 			
@@ -477,7 +481,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				foreach($this->_info['deviceprovd'] as $k => &$v)
 				{
 					if (isset($rs[$k]) === false)
-						continue;	
+						continue;
 					elseif($rs[$k] !== $v
 					&& empty($rs[$k]) === false)
 						$arr[$k] = $rs[$k];
@@ -496,7 +500,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	}
 
 	function edit_config()
-	{		
+	{
 		if(($rs = $this->get_result('config')) === null)
 			return($rs);
 			

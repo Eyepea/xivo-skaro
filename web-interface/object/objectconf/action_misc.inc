@@ -145,9 +145,12 @@ $array['xivo/configuration/web_services/private/network/resolvconf'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/resolvconf',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-
 $array['xivo/configuration/web_services/private/provisioning/general'] = array(
 	'path'		=> 'xivo/configuration/web_services/provisioning/general',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['xivo/configuration/web_services/private/provisioning/autoprov'] = array(
+	'path'		=> 'xivo/configuration/web_services/provisioning/autoprov',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/ctiserver/configuration'] = array(

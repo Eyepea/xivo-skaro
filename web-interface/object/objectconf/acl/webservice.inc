@@ -38,6 +38,7 @@ $array['tree']['xivo']['configuration']['network']['ha'] = true;
 $array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['autoprov'] = true;
 
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();

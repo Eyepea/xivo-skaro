@@ -94,8 +94,10 @@ $array['xivo/configuration/provisioning/configdevice'] = 'xivo/configuration/ind
 $array['xivo/configuration/provisioning/plugin'] = 'xivo/configuration/index.php/provisioning/plugin/';
 
 $array['xivo/configuration/json/restricted/provisioning/general'] = 'xivo/configuration/json.php/restricted/provisioning/general/';
+$array['xivo/configuration/json/restricted/provisioning/autoprov'] = 'xivo/configuration/json.php/restricted/provisioning/autoprov/';
 
 $array['xivo/configuration/json/private/provisioning/general'] = 'xivo/configuration/json.php/private/provisioning/general/';
+$array['xivo/configuration/json/private/provisioning/autoprov'] = 'xivo/configuration/json.php/private/provisioning/autoprov/';
 
 $array['xivo/configuration/ui/provisioning/plugin'] = 'xivo/configuration/ui.php/provisioning/plugin';
 $array['xivo/configuration/ui/provisioning/config'] = 'xivo/configuration/ui.php/provisioning/config';

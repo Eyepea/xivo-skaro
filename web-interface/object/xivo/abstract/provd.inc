@@ -57,7 +57,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	}
 
 	protected function _set_configuration()
-	{		
+	{
 		$_XOBJ = &dwho_gct::get('xivo_object');
 		$appprovisionning = &$_XOBJ->get_application('provisioning');
 		$ref = $appprovisionning->get(1);
@@ -133,7 +133,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	}
 
 	protected function _set_curl_opt($key,$value)
-	{		
+	{
 		if (is_array($this->_curl_opt) === false)
 			return(false);
 
@@ -158,11 +158,11 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	
 	public function decode_header($header)
 	{
-		$ret = array();		
+		$ret = array();
 		$fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
-		foreach( $fields as $field ) 
+		foreach( $fields as $field )
 		{
-			if( preg_match('/([^:]+): (.+)/m', $field, $match) ) 
+			if( preg_match('/([^:]+): (.+)/m', $field, $match) )
 			{
 				$match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
 				if( isset($ret[$match[1]]) )
@@ -247,7 +247,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 		|| count($limit) !== 2)
 			return(false);
 			
-		$this->_limit = $limit;	
+		$this->_limit = $limit;
 	}
 	
 	protected function set_order($column,$sort='')
@@ -313,7 +313,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	protected function _connect($path,$query=null)
 	{
 		if (is_null($query) === true)
-			$query = array();			
+			$query = array();
 		
 		if (empty($this->_limit) === false)
 		{
@@ -345,21 +345,25 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	}
 	
 	public function edit_params($uri,$value)
-	{		
+	{
 		$data = array();
 		$data['param'] = array();
 		$data['param']['value'] = $value;
 		
-		if ($this->request_put($uri,$data) === false
-		|| $this->_status_code !== 204)
+		$rs = $this->request_put($uri,$data);
+		
+		if($this->_status_code !== 204)
 			return(false);
 			
 		return(true);
 	}
 	
 	public function get_params($uri)
-	{		
-		if (($rs = $this->request_get($uri)) === false
+	{
+		$rs = $this->request_get($uri);
+		
+		if(is_array($rs) === false
+		|| $this->_status_code !== 200
 		|| empty($rs['param']) === true)
 			return(false);
 			
@@ -444,7 +448,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_curl->set_option('customrequest','PUT');
 		$this->_curl->set_option('post',true);
-		$this->_curl->set_option('postfields',dwho_json::encode($data));		
+		$this->_curl->set_option('postfields',dwho_json::encode($data));
 
 		$rs = false;
 		if(($r = $this->_connect($path,$query)) !== false)

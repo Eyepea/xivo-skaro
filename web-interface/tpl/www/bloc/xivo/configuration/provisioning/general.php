@@ -69,7 +69,19 @@ $dhtml   = &$this->get_module('dhtml');
 	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_dhcp_integration'),
 				      'name'	=> 'provd[dhcp_integration]',
 				      'labelid'	=> 'provd-dhcp_integration',
-				      'checked'	=> $this->get_var('info','provd','dhcp_integration'))),
+				      'checked'	=> $this->get_var('info','provd','dhcp_integration')));
+?>
+</fieldset>
+
+<fieldset id="fld-registrar">
+	<legend><?=$this->bbf('fld_provd_server_configuration');?></legend>
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip_rest'),
+				  'name'	=> 'provd[net4_ip_rest]',
+				  'labelid'	=> 'provd-net4_ip_rest',
+				  'size'	  	=> 16,
+				  'value'	  	=> $this->get_var('info','provd','net4_ip_rest'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','net4_ip_rest')))),
 	
 	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_private'),
 				      'name'	=> 'provd[private]',
@@ -95,13 +107,6 @@ $dhtml   = &$this->get_module('dhtml');
 				      'labelid'	=> 'provd-secure',
 				      'checked'	=> $this->get_var('info','provd','secure'))),
 	
-	$form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip_rest'),
-				  'name'	=> 'provd[net4_ip_rest]',
-				  'labelid'	=> 'provd-net4_ip_rest',
-				  'size'	  	=> 16,
-				  'value'	  	=> $this->get_var('info','provd','net4_ip_rest'),
-				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','net4_ip_rest')))),
-	
 	$form->text(array('desc'	=> $this->bbf('fm_provd_rest_port'),
 				  'name'		=> 'provd[rest_port]',
 				  'labelid'		=> 'provd-rest_port',
@@ -110,7 +115,7 @@ $dhtml   = &$this->get_module('dhtml');
 				  'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','rest_port'))));
 	
 	
-?>	
+?>
 </fieldset>
 </div>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>

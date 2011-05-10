@@ -23,8 +23,12 @@ $access_subcategory = 'config';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$act = $_QRY->get('act');
 $ipbx = &$_SRE->get('ipbx');
+
+if(defined('XIVO_LOC_UI_ACTION') === true)
+	$act = XIVO_LOC_UI_ACTION;
+else
+	$act = $_QRY->get('act');
 
 $provdconfig = &$_XOBJ->get_module('provdconfig');
 $appdevice = &$ipbx->get_application('device',null,false);

@@ -691,6 +691,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$this->_service->discuss('sccp reload');
+		
+		$this->_service->discuss('dialplan reload');
 
 		$this->_status = '';
 
@@ -969,6 +971,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$this->_service->discuss('sccp reload');
+			
+		$this->_service->discuss('dialplan reload');
 
 		$this->_status = '';
 		return(true);
