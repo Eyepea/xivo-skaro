@@ -224,14 +224,14 @@ class RemoteConfigurationService(Service):
     def startService(self):
         app = self._prov_service.app
         dhcp_request_processing_service = self._dhcp_process_service.dhcp_request_processing_service
-        if self._config['general.rest_is_public']:
-            server_resource = new_server_resource(app, dhcp_request_processing_service)
-            logger.warning('No authentication is required for REST API')
-        else:
+        if self._config['general.rest_authentication']:
             credentials = (self._config['general.rest_username'],
                            self._config['general.rest_password'])
             server_resource = new_restricted_server_resource(app, dhcp_request_processing_service, credentials)
             logger.info('Authentication is required for REST API')
+        else:
+            server_resource = new_server_resource(app, dhcp_request_processing_service)
+            logger.warning('No authentication is required for REST API')
         root_resource = Resource()
         root_resource.putChild('provd', server_resource)
         rest_site = Site(root_resource)
@@ -318,7 +318,6 @@ class ProvisioningServiceMaker(object):
         # check config for verbosity
         if config['general.verbose']:
             logging.getLogger().setLevel(logging.DEBUG)
-        logger.debug('Day oh')
         
         prov_service = ProvisioningService(config)
         prov_service.setServiceParent(top_service)

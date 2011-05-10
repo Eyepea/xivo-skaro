@@ -21,13 +21,12 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, logging, subprocess, traceback
-from datetime import datetime
+import logging, subprocess, traceback
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
-from xivo_sysconf import helpers, jsoncore
+from xivo_sysconf import jsoncore
 
 
 class CommonConf(jsoncore.JsonCore):
@@ -64,9 +63,15 @@ class CommonConf(jsoncore.JsonCore):
             'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'
          ],
         '5. Provd'      : [
-            'xivo.provd.net4_ip', 'xivo.provd.http_port',
-            'xivo.provd.dhcp_integration', 'xivo.provd.rest_port',
-            'xivo.provd.username', 'xivo.provd.password'
+            'xivo.provd.net4_ip',
+            'xivo.provd.http_port',
+            'xivo.provd.dhcp_integration',
+            'xivo.provd.rest_net4_ip',
+            'xivo.provd.rest_port',
+            'xivo.provd.rest_authentication',
+            'xivo.provd.rest_ssl',
+            'xivo.provd.username',
+            'xivo.provd.password'
          ],
         '6. Maintenance': ['xivo.maintenance'],
         '7. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],

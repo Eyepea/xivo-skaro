@@ -31,7 +31,7 @@ The following parameters are defined:
     general.rest_ip
     general.rest_username
     general.rest_password
-    general.rest_is_public
+    general.rest_authentication
     general.rest_ssl
     general.rest_ssl_certfile
     general.rest_ssl_keyfile
@@ -132,7 +132,7 @@ class DefaultConfigSource(object):
         ('general.rest_port', '8666'),
         ('general.rest_username', 'admin'),
         ('general.rest_password', 'admin'),
-        ('general.rest_is_public', 'False'),
+        ('general.rest_authentication', 'False'),
         ('general.rest_ssl', 'False'),
         ('general.rest_ssl_certfile', '/etc/pf-xivo/provd/keys/cert.pem'),
         ('general.rest_ssl_keyfile', '/etc/pf-xivo/provd/keys/key.pem'),
@@ -349,7 +349,7 @@ _PARAMS_DEFINITION = [
     ('general.rest_ip', (_ip_address_or_star, True)),
     ('general.rest_username', (str, True)),
     ('general.rest_password', (str, True)),
-    ('general.rest_is_public', (_bool, True)),
+    ('general.rest_authentication', (_bool, True)),
     ('general.rest_ssl', (_bool, True)),
     ('general.verbose', (_bool, True)),
     ('database.type', (str, True)),
