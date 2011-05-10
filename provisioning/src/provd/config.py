@@ -186,7 +186,6 @@ class CommandLineConfigSource(object):
         ('http-port', 'general.http_port'),
         ('tftp-port', 'general.tftp_port'),
         ('rest-port', 'general.rest_port'),
-        ('verbose', 'general.verbose'),
     ]
     
     def __init__(self, options):
@@ -197,6 +196,8 @@ class CommandLineConfigSource(object):
         for option_name, param_name in self._OPTION_TO_PARAM_LIST:
             if self.options[option_name] is not None:
                 raw_config[param_name] = self.options[option_name]
+        if self.options['verbose']:
+            raw_config['general.verbose'] = 'True'
         return raw_config
 
 
