@@ -76,7 +76,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         // mail (postfix)
         $rawdata = $this->_mail->get(1);
         $conf = array_merge($conf, array(
-            'xivo.smtp.mydomain'           => 
+            'xivo.smtp.mydomain'           =>
                 strlen($rawdata['mydomain'])==0?null:$rawdata['mydomain'],
             'xivo.smtp.origin'             => $rawdata['origin'],
             'xivo.smtp.relayhost'          => $rawdata['relayhost'],
@@ -92,6 +92,9 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.provd.username'		=> $provisioning['username'],
             'xivo.provd.password'		=> $provisioning['password'],
             'xivo.provd.rest_port'		=> $provisioning['rest_port'],
+            'xivo.provd.rest_net4_ip'	=> $provisioning['net4_ip_rest'],
+            'xivo.provd.rest_authentication'	=> (bool) $provisioning['private'],
+            'xivo.provd.rest_ssl'		=> (bool) $provisioning['secure'],
             'xivo.provd.dhcp_integration' => (bool) $provisioning['dhcp_integration']
         ));
 
@@ -99,11 +102,11 @@ class xivo_object_commonconf extends xivo_object_abstract
         $rawdata = $this->_monitoring->get(1);
         $conf = array_merge($conf, array(
             'xivo.maintenance'             => $rawdata['maintenance']==0?false:true,
-            'alert_emails'                 => 
+            'alert_emails'                 =>
                 strlen($rawdata['alert_emails']) == 0?null:str_replace("\r\n", " ", $rawdata['alert_emails']),
-            'dahdi_monitor_ports'          => 
+            'dahdi_monitor_ports'          =>
                 strlen($rawdata['dahdi_monitor_ports'])==0?null:$rawdata['dahdi_monitor_ports'],
-            'max_call_duration'            => 
+            'max_call_duration'            =>
                 strlen($rawdata['max_call_duration'])==0?null:$rawdata['max_call_duration'],
         ));
 
@@ -124,9 +127,9 @@ class xivo_object_commonconf extends xivo_object_abstract
         $ns = trim($ns);
 
         $conf = array_merge($conf, array(
-            'xivo.hostname'                => 
+            'xivo.hostname'                =>
                 is_null($rawdata['resolvconf']['hostname'])?'':$rawdata['resolvconf']['hostname'],
-            'xivo.domain'                  => 
+            'xivo.domain'                  =>
                 is_null($rawdata['resolvconf']['domain'])?'':$rawdata['resolvconf']['domain'],
             'xivo.extra.dns.search'        => '',
             'xivo.nameservers'             => $ns,
@@ -170,8 +173,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 					return false;
 
         $net = array(
-            'ipaddr'    => $list[$cidr_id]['netiface']['address'], 
-            'netmask'   => $list[$cidr_id]['netiface']['netmask'], 
+            'ipaddr'    => $list[$cidr_id]['netiface']['address'],
+            'netmask'   => $list[$cidr_id]['netiface']['netmask'],
             'broadcast' => $list[$cidr_id]['netiface']['broadcast']);
 
         $ifaces = trim($ifaces);
@@ -207,7 +210,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
-            'xivo.voip.vlan.id'     => $vlanid,            
+            'xivo.voip.vlan.id'     => $vlanid,
             'xivo.net4.ip'          => $net['ipaddr'],
             'xivo.net4.netmask'     => $net['netmask'],
             'xivo.net4.broadcast'   => $net['broadcast'],
