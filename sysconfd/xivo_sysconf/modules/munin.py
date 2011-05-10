@@ -48,7 +48,7 @@ class Munin(object):
    
     def update(self, args, options):
         try:
-            p = subprocess.Popen(self.cmd1)
+            p = subprocess.Popen(self.cmd1, close_fds=True)
             ret = p.wait()
         except Exception:
             self.log.debug("can't execute '%s'" % self.cmd1)
@@ -58,7 +58,7 @@ class Munin(object):
 
         try:
             # NOTE: process run in background
-            p = subprocess.Popen(self.cmd2)
+            p = subprocess.Popen(self.cmd2, close_fds=True)
             #ret = p.wait()
         except Exception:
             self.log.debug("can't execute '%s'" % self.cmd2)

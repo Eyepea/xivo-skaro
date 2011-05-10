@@ -28,13 +28,10 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, re, cjson, traceback, logging
+import re, cjson, traceback
 from datetime import datetime
 
-from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
-from xivo.http_json_server import CMD_RW, CMD_R
-from xivo import xys
 
 
 class JsonCore(object):

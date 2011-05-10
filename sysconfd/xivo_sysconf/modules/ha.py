@@ -71,7 +71,8 @@ class Ha(jsoncore.JsonCore):
 
     def _exec(self, title, command, output):
         output.append("* %s" % title)
-        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             close_fds=True)
         ret = p.wait()
         output.append(p.stdout.read())
         

@@ -44,8 +44,9 @@ def services(args, options):
             logger.error("action %s not authorized on %s service" % (act, svc))
 
         try:
-            p = subprocess.Popen(["/etc/init.d/%s" % svc, act], \
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p = subprocess.Popen(["/etc/init.d/%s" % svc, act],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                close_fds=True)
             ret = p.wait()
             output = p.stdout.read()
             logger.debug("/etc/init.d/%s %s : %d" % (svc, act, ret))
