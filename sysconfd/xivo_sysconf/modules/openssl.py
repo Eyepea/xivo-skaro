@@ -176,7 +176,7 @@ class OpenSSL(object):
 						}
         """
         if not os.path.exists(self._pemfile(options['name'])):
-            raise HttpReqError(404, "%s certificate not found" % options['name'])
+            raise HttpReqError(404, "%s certificate not found" % options['name'], json=True)
 
         cert = X509.load_cert(self._pemfile(options['name']))
         infos = {
@@ -221,7 +221,7 @@ class OpenSSL(object):
 					-----END PUBLIC KEY-----
         """
         if not os.path.exists(self._pubfile(options['name'])):
-            raise HttpReqError(404, "%s pubkey not found" % options['name'])
+            raise HttpReqError(404, "%s pubkey not found" % options['name'], json=True)
 
         with open(self._pubfile(options['name'])) as f:
             pubkey = f.read()
@@ -382,9 +382,9 @@ class OpenSSL(object):
 					}, {})
         """
         if 'name' not in args:
-            raise HttpReqError(400, "missing 'name' option")
+            raise HttpReqError(400, "missing 'name' option", json=True)
         elif os.path.exists(os.path.join(self.certsdir, args['name']+'.key')):
-            raise HttpReqError(409, "a certificat with this name is already found")
+            raise HttpReqError(409, "a certificat with this name is already found	(%s, json=True)" % os.path.join(self.certsdir, args['name']+'.key'))
 
 
         # Create private key
@@ -450,16 +450,16 @@ class OpenSSL(object):
 					}, {})
         """
         if 'name' not in args:
-            raise HttpReqError(400, "missing 'name' option")
+            raise HttpReqError(400, "missing 'name' option", json=True)
         elif os.path.exists(os.path.join(self.certsdir, str(args['name'])+'.key')):
-            raise HttpReqError(409, "a certificat with this name is already found")
+            raise HttpReqError(409, "a certificat with this name is already found", json=True)
 
         autosigned = int(args.get('autosigned',0))
         if autosigned == 0:
             if 'ca' not in args:
-                raise HttpReqError(400, "missing 'ca' option")
+                raise HttpReqError(400, "missing 'ca' option", json=True)
             elif not os.path.exists(os.path.join(self.certsdir, str(args['ca'])+'.key')):
-                raise HttpReqError(409, "CA certificate key not found")
+                raise HttpReqError(409, "CA certificate key not found", json=True)
 
             # loading CA private key
 			    	#NOTE: RSA fail to read password (with "bad password read message") if we
@@ -471,7 +471,7 @@ class OpenSSL(object):
             try:
                 _cakey = RSA.load_key(os.path.join(self.certsdir, args['ca']+'.key'), _getpass)
             except RSA.RSAError, e:
-                raise HttpReqError(403, "invalid CA password")
+                raise HttpReqError(403, "invalid CA password", json=True)
             cakey = EVP.PKey()
             cakey.assign_rsa(_cakey)
 
@@ -505,9 +505,9 @@ class OpenSSL(object):
         """
         """
         if 'name' not in options:
-            raise HttpReqError(400, "missing 'name' option")
+            raise HttpReqError(400, "missing 'name' option", json=True)
         elif not os.path.exists(self._pemfile(options['name'])):
-            raise HttpReqError(404, "a certificat with this name was not found")
+            raise HttpReqError(404, "a certificat with this name was not found", json=True)
 
         for fname in glob.glob(os.path.join(self.certsdir, options['name']+'.*')):
             os.remove(fname)
@@ -519,11 +519,11 @@ class OpenSSL(object):
 
     def _import(self, args, options):
         if 'name' not in args:
-            raise HttpReqError(400, "missing 'name' arg")
+            raise HttpReqError(400, "missing 'name' arg", json=True)
         elif 'type' not in args:
-            raise HttpReqError(400, "missing 'type' arg")
+            raise HttpReqError(400, "missing 'type' arg", json=True)
         elif 'content' not in args:
-            raise HttpReqError(400, "missing 'content' arg")
+            raise HttpReqError(400, "missing 'content' arg", json=True)
 
         #TODO: test content IS a pubkey, name is not already present, type is valid
         if args['type'] == 'pubkey':
