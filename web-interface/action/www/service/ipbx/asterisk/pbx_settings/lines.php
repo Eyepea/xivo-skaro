@@ -46,6 +46,7 @@ switch($act)
 		if (isset($_QR['proto']) === false)
 			break;
 		$appline = &$ipbx->get_application('line');
+		$modpark = &$ipbx->get_module('parkinglot');
 
 		$contexts = $appline->get_all_context();
 
@@ -99,25 +100,26 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('context_list',$appline->get_context_list());
+		$_TPL->set_var('parking_list', $modpark->get_all());
 		$_TPL->set_var('proto',$_QR['proto']);
 		break;
 	case 'edit':
 		$appline = &$ipbx->get_application('line');
+		$modpark = &$ipbx->get_module('parkinglot');
 
 		if(isset($_QR['id']) === false || ($info = $appline->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 
 		$contexts = $appline->get_all_context();
 
+		$fm_save = $error = null;
 		$return = &$info;
-
-		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('protocol',$_QR) === true)
 		{
-			$return = &$result;
-
+			$_QR['linefeatures'] = $return['linefeatures'];
+			
 			if($appline->set_edit($_QR,$_QR['proto']) === false
 			|| $appline->edit() === false)
 			{
@@ -157,6 +159,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
 		$_TPL->set_var('context_list',$appline->get_context_list());
+		$_TPL->set_var('parking_list', $modpark->get_all());
 		break;
 	case 'delete':
 		$param['page'] = $page;

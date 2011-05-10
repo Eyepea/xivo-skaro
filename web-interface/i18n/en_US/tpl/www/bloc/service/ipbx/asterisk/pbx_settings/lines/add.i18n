@@ -88,6 +88,12 @@ Never
 ; fm_protocol_nat-opt(route)
 Route
 
+; fm_protocol_parkinglot
+Parking:
+
+; hlp_fm_parkinglot
+Config Asterisk: parkinglot
+
 ; fm_protocol_context
 Context:
 

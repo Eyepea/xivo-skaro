@@ -76,6 +76,12 @@ Vérifier la présence de nouveaux messages :
 ; fm_protocol_buggymwi
 Vérification, non conforme à la RFC, de nouveaux messages :
 
+; fm_protocol_parkinglot
+Parking :
+
+; hlp_fm_parkinglot
+Config Asterisk: parkinglot
+
 ; fm_protocol_progressinband
 Evénement RING dans la bande :
 

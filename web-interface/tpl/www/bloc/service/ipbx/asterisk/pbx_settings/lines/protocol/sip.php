@@ -117,7 +117,19 @@
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['sip']['buggymwi']['default'],
 				    'selected'	=> $this->get_var('info','protocol','buggymwi')),
-			      $element['protocol']['sip']['buggymwi']['value']);
+			      $element['protocol']['sip']['buggymwi']['value']),
+			      
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_parkinglot'),
+					'name'	=> 'protocol[parkinglot]',
+					'labelid'   => 'procotol-parkinglot',
+					'help'      => $this->bbf('hlp_fm_parkinglot'),
+					'required'  => false,
+					'key'       => 'name',
+					'altkey'    => 'id',
+					'empty'     => true,
+					'selected'  => $this->get_var('info','protocol','parkinglot')),
+					//'default'     => $element['protocol']['parkinglot']['default']),
+						$this->get_var('parking_list'));
 ?>
 </div>
 

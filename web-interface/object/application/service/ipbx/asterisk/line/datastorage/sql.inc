@@ -229,7 +229,7 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 		$this->_dso->aggregate_where();
 		
 		if (is_array($context) === true
-		&& empty($context) === false)		
+		&& empty($context) === false)
 			$this->_dso->wherein('context',$context,$this->_table['linefeatures']);
 		elseif(($has_context = dwho_has_len($context)) === true)
 			$this->_dso->where($this->_table['linefeatures'].'.context = %s',$context);
@@ -237,7 +237,7 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
-			$this->_dso->orwherecontain('number',$value,true,$this->_table['linefeatures']);
+			$this->_dso->wherecontain('number',$value,true,$this->_table['linefeatures']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['linefeatures']);
 
 			if($mode === null && $has_context === false && $context !== false)
@@ -385,7 +385,7 @@ class xivo_application_service_asterisk_line_sql extends xivo_application_abstra
 		$this->_dso->aggregate_where();
 		
 		if (is_array($context) === true
-		&& empty($context) === false)		
+		&& empty($context) === false)
 			$this->_dso->wherein('context',$context,$this->_table['linefeatures']);
 		elseif(($has_context = dwho_has_len($context)) === true)
 			$this->_dso->where($this->_table['linefeatures'].'.context = %s',$context);
