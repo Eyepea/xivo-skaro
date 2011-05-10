@@ -39,9 +39,9 @@ $appgeneralmeetme = &$appmeetme->get_module('general');
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 $element['generalmeetme'] = $appgeneralmeetme->get_elements();
 
-$appuserguest = &$ipbx->get_application('user',array('internal' => 1),false);
+$applineautoprov = &$ipbx->get_application('line',array('internal' => 1),false);
 $info['userinternal'] = array();
-$info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest'),null,true);
+$info['userinternal']['guest'] = $applineautoprov->get(1,null,false);
 
 $general   = &$ipbx->get_module('general');
 $info['general']       = $general->get(1);
@@ -118,13 +118,13 @@ if(isset($_QR['fm_send']) === true)
 	{
 		if(isset($_QR['userinternal']['guest']) === true)
 		{
-			if($appuserguest->enable() === true)
-				$info['userinternal']['guest']['userfeatures']['commented'] = false;
+			if($applineautoprov->enable() === true)
+				$info['userinternal']['guest']['linefeatures']['commented'] = false;
 		}
 		else
 		{
-			if($appuserguest->disable() === true)
-				$info['userinternal']['guest']['userfeatures']['commented'] = true;
+			if($applineautoprov->disable() === true)
+				$info['userinternal']['guest']['linefeatures']['commented'] = true;
 		}
 	}
 	

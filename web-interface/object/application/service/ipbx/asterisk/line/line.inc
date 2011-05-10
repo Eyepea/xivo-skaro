@@ -94,15 +94,11 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(parent::_reset());
 	}
 
-	/**
-	 * NOTE: internal can take 3 values:
-	 *	- false : don't search in internal users
-	 *	- true  : search ONLY in internal users
-	 *	- null  : search in BOTH internal and non-internal users
-	 */
-	public function get($id,$disable=null,$internal=false,$nocomponents=null)
+	public function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
+
+		$this->_linefeatures->set_dso_param('internal',$this->_param['internal']);
 
 		if(($this->_info['linefeatures'] = $this->_linefeatures->get($id)) === false)
 			return(false);
@@ -110,12 +106,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if($this->_info['linefeatures'] === false
 		|| ($this->_protocol = &$this->_service->get_protocol_module($this->_info['linefeatures']['protocol'])) === false
 		|| ($this->_info['protocol'] = $this->_protocol->get($this->_info['linefeatures']['protocolid'],$disable)) === false)
-		{
-			$this->_linefeatures->set_dso_param('internal',$this->_param['internal']);
 			return(false);
-		}
-
-		$this->_linefeatures->set_dso_param('internal',$this->_param['internal']);
 
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
 		$this->_origin['linefeatures'] = $this->_linefeatures->get_origin();
@@ -294,10 +285,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		{
 			case 'user':
 				$rs = $this->_dso->get_all(null,null,null,$order,$limit,null,null,null,null,$free,$userfeaturesid);
-				break;		
+				break;
 			case 'device':
 				$rs = $this->_dso->device($deviceid,$context,$disable,$order,$limit,$free);
-				break;				
+				break;
 			case 'search':
 				$rs = $this->_dso->search($search,$context,$protocols,$disable,$initialized,$order,$limit);
 				break;
@@ -746,12 +737,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				{
 					dwho_report::push('error', 'device doesn\'t exist');
 					return(false);
-				}			
+				}
 				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
 				{
 					dwho_report::push('error', 'Can\'t edit device');
 					return(false);
-				}	
+				}
 			}
 		}
 		return(true);
@@ -1080,12 +1071,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				{
 					dwho_report::push('error', 'device doesn\'t exist');
 					return(false);
-				}			
+				}
 				elseif($this->_provddevice->update_config_from_line($info,$device['deviceid']) === false)
 				{
 					dwho_report::push('error', 'Can\'t edit device');
 					return(false);
-				}	
+				}
 			}
 			// remove device associated
 			elseif (empty($rs['device']) === true)
@@ -1096,12 +1087,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				{
 					dwho_report::push('error', 'device doesn\'t exist');
 					return(false);
-				}			
+				}
 				elseif ($this->_provddevice->remove_config_from_line($info,$device['deviceid']) === false)
 				{
 					dwho_report::push('error', 'Can\'t remove device');
 					return(false);
-				}			
+				}
 				elseif ($this->_dso->edit($linefeaturesid,$arr) === false)
 				{
 					dwho_report::push('error', 'Can\'t remove config from line: '.$linefeaturesid);
