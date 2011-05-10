@@ -1,3 +1,4 @@
+
         ### Assign who is going to use this pool
         allow members of "voip-mac-address-prefix";
         # Aastra
