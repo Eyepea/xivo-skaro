@@ -930,6 +930,7 @@ class UDPUACProtocol(DatagramProtocol):
             self._timeout_timer = None
     
     def _on_timeout(self):
+        self._timeout_timer = None
         self._fail_and_close('SIP timeout expired')
     
     def _set_timeout(self):
