@@ -40,6 +40,9 @@ Advanced mode
 ; col_action
 Action
 
+; opt_synchronize
+Synchronize
+
 ; opt_install
 Install
 

@@ -45,3 +45,9 @@ Une erreur est survenu durant la mise a jour
 
 ; successfully_updated
 Mise à jour réussi
+
+; successfully_synchronize
+Synchronisation de la terminaison réussi
+
+; error_during_synchronize
+Une erreur est survenu durant la synchronisation de la terminaison

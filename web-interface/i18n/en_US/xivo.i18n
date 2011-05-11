@@ -45,3 +45,9 @@ Error during update
 
 ; successfully_updated
 Successfully updated
+
+; successfully_synchronize
+Device successfully synchronize
+
+; error_during_synchronize
+Error during device synchronize
