@@ -34,13 +34,16 @@ if($search !== '')
 
 switch($act)
 {
-	case 'update':
-		$appdevice = &$ipbx->get_application('device');
-		if ($appdevice->update() === false)
-			dwho_report::push('error',dwho_i18n::babelfish('error_during_update'));
-		else	
-			dwho_report::push('info',dwho_i18n::babelfish('successfully_updated'));
-		$act = 'list';
+	case 'synchronize':
+		$appdevice = &$ipbx->get_application('device',null,false);
+		$modprovddevice = &$_XOBJ->get_module('provddevice');
+
+		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+		elseif ($modprovddevice->synchronize($info['devicefeatures']['deviceid']) === false)
+			dwho_report::push('error','error_during_synchronize');
+		else
+			dwho_report::push('info','successfully_synchronize');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		break;
 	case 'add':
@@ -79,7 +82,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 			
-		$modprovdplugin = &$_XOBJ->get_module('provdplugin');		
+		$modprovdplugin = &$_XOBJ->get_module('provdplugin');
 		$plugininstalled = $modprovdplugin->get_plugin_installed();
 		
 		$appline = &$ipbx->get_application('line');

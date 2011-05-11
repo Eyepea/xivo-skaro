@@ -309,7 +309,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			unset($config[$var]);
 	}
 	
-	public function build_raw_config($configid,$lines=null,$raw=null,$protocolname='sip')
+	public function build_raw_config($configid,$lines=null,$raw=null,$deviceid,$protocolname='sip')
 	{
 		if ($this->_confdefault === false
 		&& $this->get_default() === false)
@@ -390,6 +390,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 						if ((int) $num === 1)
 							$iduserfeatures = $linefeatures['iduserfeatures'];
 					}
+					
 					if (isset($raw_config['sip_lines']) === true)
 						$raw_config['sip_lines'] = array_replace($raw_config['sip_lines'],$rslines);
 					else
@@ -525,6 +526,33 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf['syslog_level'] = true;
 		
 		return($conf);
+	}
+	
+	public function remove_line_from_config($config,$line_num)
+	{
+		if(dwho_has_len($config) === false
+		||dwho_has_len($line_num) === false)
+			return(false);
+		
+		if (($globalconfig = $this->get($config)) === false)
+		{
+			dwho_report::push('error', 'config not exist: '.$config);
+			return(false);
+		}
+			
+		$raw_config = &$globalconfig['raw_config'];
+					
+		if (isset($raw_config['sip_lines']) === true
+		&& isset($raw_config['sip_lines'][$line_num]) === true)
+		{
+			unset($raw_config['sip_lines'][$line_num]);
+			if($this->edit($config,$globalconfig) === false)
+			{
+				dwho_report::push('error', 'Can\'t remove line fromn config: '.$config);
+				return(false);
+			}
+		}
+		return(true);
 	}
 	
 	public function chk_confregistrar($arr)

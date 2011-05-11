@@ -259,6 +259,26 @@ function dwho_has_len(val,key)
 	return((val.length > 0));
 }
 
+function dwho_in_array(needle,haystack,argStrict) 
+{
+    var key = '',strict = !! argStrict;
+ 
+    if (strict) 
+    {
+        for (key in haystack) {
+            if (haystack[key] === needle)            
+            	return(true);
+        }
+    } 
+    else 
+    {
+        for (key in haystack) {            
+        	if (haystack[key] == needle)
+                return(true);
+        }
+    } 
+    return(false);
+}
 
 function dwho_chk_ipv4_strict(value)
 {

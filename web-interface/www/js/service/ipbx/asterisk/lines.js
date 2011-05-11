@@ -24,28 +24,29 @@ var fixHelper = function(e, ui) {
 	return ui;
 };
 
-function map_autocomplete_line_free_to(obj,list)
+function map_autocomplete_line_free_to(obj,list,exept)
 {
-	obj.show();
+	$(obj).show();
 	if (list === null || (nb = list.length) === 0)
 		return false;
-    for (var i = 0; i< nb; i++){
-		obj.find('option').each(function(){
-	    	if ($(this).val() == list[i])
-	    		$(this).remove();
-		});
-    }
+	if(!exept)
+		exept = 0;
+	$(obj).find('option').each(function(){
+		if(exept != $(this).val()
+		&& dwho_in_array($(this).val(),list))
+			$(this).remove();
+	});
 }
 
 //get available line for a device
-function xivo_http_search_line_from_provd(obj,config)
+function xivo_http_search_line_from_provd(obj,config,exept)
 {
 	if (config == ''){
 		obj.hide();
 		return;
 	}
 	$.getJSON('/xivo/configuration/ui.php/provisioning/config?act=getbydeviceid&id='+config, function(data) {
-		map_autocomplete_line_free_to(obj,data);
+		map_autocomplete_line_free_to(obj,data,exept);
 	});
 }
 
@@ -157,6 +158,19 @@ function get_entityid_val()
 	return(entityid_val);
 }
 
+function update_row_time(time,group)
+{
+	var groupval = '';
+	$('#list_linefeatures > tbody').find('tr').each(function() {
+		if($(this).attr('id') == 'tr-rules_group')
+			groupval = $(this).find('#td_rules_group_name').text();
+		else{
+			if(groupval == group)
+				$(this).find('#linefeatures-rules_time').val(time);
+		}
+	});
+}
+
 function update_row_infos()
 {
 	if ((entityid_val = get_entityid_val()) === false)
@@ -176,7 +190,7 @@ function update_row_infos()
 	}
 	
 	var groupval = '';
-	var count = 1;
+	var count = 0;
 	$('#list_linefeatures > tbody').find('tr').each(function() {
 		
 		tr_group = false;
@@ -185,22 +199,45 @@ function update_row_infos()
 			groupval = $(this).find('#td_rules_group_name').text();
 			tr_group = true;
 		}
-		
-		$(this).find('#linefeatures-rules_group').val(groupval);		
-		$(this).find('#linefeatures-rules_order').val(count);
+				
 		$(this).find('#box-line_num').html(count);
-		$(this).find('#linefeatures-line_num').val(count);
 
 		count++;
 		
 		if(tr_group === false) {
 			context = $(this).find("#linefeatures-context");
 
+			$(context).parents('tr').find('#linefeatures-rules_group').val(groupval);
+			$(context).parents('tr').find('#linefeatures-line_num').val(count);
+			$(context).parents('tr').find('#linefeatures-rules_order').val(count);
+
 			context_selected = context.parents('tr').find('#context-selected').val();
 			if (context_selected !== null)
 				context.find("option[value='"+context_selected+"']").attr("selected","selected");
 			
 			if (context.val() !== null) {
+				
+				num = $(context).parents('tr').find("#linefeatures-num");
+				config = $(context).parents('tr').find('#linefeatures-device').val();
+				xivo_http_search_line_from_provd(num,config,num.val());
+
+				$(context).parents('tr').find('#linefeatures-rules_time').
+				change(function(){
+					update_row_time($(this).val(),
+							$(this).parents('tr').find('#linefeatures-rules_group').val());
+				});
+				/*
+				timepicker({
+					timeFormat: 's',
+					showHour: false,
+					showMinute: false,
+					showSecond: true,
+					onClose: function(a){
+						update_row_time(a,group);
+					}
+				});
+				*/
+				
 				var number = context.parents('tr').find('#linefeatures-number');
 				number.focus(function(){
 					helper = $(this).parent().find('#numberpool_helper');
@@ -219,6 +256,11 @@ function update_row_infos()
 				
 				$(this).find('#linefeatures-device').change(function() {
 					num = $(this).parents('tr').find("#linefeatures-num");
+					$(num).each(function(){
+						$(this).find('option').remove();
+					    for (var i=1; i<=12; i++)
+							$(this).append("<option value="+i+">"+i+"</option>");
+					});
 					xivo_http_search_line_from_provd(num,$(this).val());
 				});
 			}
@@ -307,8 +349,8 @@ $(document).ready(function() {
 	    protoname = $('#list_lines_free option[value='+idlinefeatures+']').text();
 	    
 	    if (protoname.indexOf('/') == -1) {
-		    td_protocol.append('error: undefined protoco');
-			td_name.append('error: undefined peer');
+		    td_protocol.append('fatal error: undefined protocol');
+			td_name.append('fatal error: undefined peer');
 	    }
 	    else {
 		    str_protocol = protoname.substring(0, protoname.indexOf('/')).toLowerCase();
@@ -330,5 +372,6 @@ $(document).ready(function() {
 	    
 	    update_row_infos();		
 		return false;
-	});	
+	});
+	
 });

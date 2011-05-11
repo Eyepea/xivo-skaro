@@ -215,7 +215,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 	
-	public function update_rawconfig($deviceid,$rawconfig)
+	public function update_rawconfig($deviceid,$rawconfig,$synchronize=false)
 	{
 		if(dwho_has_len($deviceid) === false
 		|| is_array($rawconfig) === false)
@@ -235,13 +235,14 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			return(false);
 		}
 		
-		if ($this->synchronize($deviceid) === false)
+		if ($synchronize === true
+		&& $this->synchronize($deviceid) === false)
 			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 		
 		return(true);
 	}
 	
-	public function update_configid($deviceid,$configid)
+	public function update_configid($deviceid,$configid,$synchronize=false)
 	{
 		if(dwho_has_len($deviceid) === false
 		|| dwho_has_len($configid) === false)
@@ -260,7 +261,8 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			return(false);
 		}
 		
-		if ($this->synchronize($deviceid) === false)
+		if ($synchronize === true
+		&& $this->synchronize($deviceid) === false)
 			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 		
 		return(true);
@@ -277,7 +279,8 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		
 		$global = $arr['userfeatures'];
 		
-		if (dwho_empty($arr['linefeatures']['num']) === true)
+		if (empty($arr['linefeatures']['num']) === true
+		|| $arr['linefeatures']['num'] === 0)
 			$arr['linefeatures']['num'] = 1;
 		
 		$lines = array();
@@ -285,7 +288,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		$lines[$arr['linefeatures']['num']]['protocol'] = $arr['protocol'];
 		$lines[$arr['linefeatures']['num']]['linefeatures'] = $arr['linefeatures'];
 		
-		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines,$global)) === false)
+		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines,$global,$arr['linefeatures']['device'])) === false)
 			return(false);
 			
 		if ($this->_provdconfig->edit($deviceid,$conf) === false)
@@ -302,7 +305,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 	
-	public function remove_config($deviceid)
+	public function remove_config($deviceid,$synchronize=false)
 	{
 		if(dwho_has_len($deviceid) === false)
 			return(false);
@@ -319,6 +322,10 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			dwho_report::push('error', 'fail to edit device: '.$deviceid);
 			return(false);
 		}
+		
+		if ($synchronize === true
+		&& $this->synchronize($deviceid) === false)
+			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 		
 		return(true);
 	}

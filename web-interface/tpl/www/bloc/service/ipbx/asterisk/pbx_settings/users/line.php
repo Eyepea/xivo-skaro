@@ -69,7 +69,7 @@ $err = $this->get_var('error','linefeatures');
 			     'name'		=> false,
 			     'id'		=> 'it-rules_group',
 			     'label'	=> false,
-			     'size'		=> 10));?>		     
+			     'size'		=> 10));?>
 	<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									       $this->bbf('col_rules_group-add'),
 									       'border="0"'),
@@ -79,16 +79,16 @@ $err = $this->get_var('error','linefeatures');
 								$this->bbf('col_rules_group-add'));?>
 </p>
 
-<div id="lol"></div>
-
 <table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures">
 	<thead>
 	<tr class="sb-top">
-		<th class="th-left"><?=$this->bbf('col_line-protocol');?></th>
+		<th class="th-left th-rule">&nbsp;</th>
+		<th class="th-center"><?=$this->bbf('col_line-protocol');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-name');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-config_registrar');?></th>
+		<th class="th-center th-rule"><?=$this->bbf('col_line-rules_time');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-device');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-num');?></th>
 		<th class="th-right">
@@ -134,8 +134,10 @@ if($list !== false):
 		|| $rulesgroup !== 0):
 ?>
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="7" class="td-left" id="td_rules_group_name">
+		<td class="td-left">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+		</td>
+		<td colspan="8" class="txt-center" id="td_rules_group_name">
 			<?=$rulesgroup?>
 		</td>
 		<td class="td-right">
@@ -160,31 +162,35 @@ if($list !== false):
 				$secureclass = 'xivo-icon xivo-icon-secure';
 ?>
 	<tr class="fm-paragraph<?=$ref['errdisplay']?>" style="cursor: move;">
-		<td class="td-left txt-center">
+		<td class="td-left">
 			<?=$form->hidden(array('name' => 'linefeatures[id][]',
-						'value' => $ref['id']));?>
+						'value' 	=> $ref['id']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[protocol][]',
-						'value' => $ref['protocol']));?>
-			<?=$form->hidden(array('name' => '','id' => 'context-selected',
-						'value' => $ref['context']));?>
+						'value' 	=> $ref['protocol']));?>
+			<?=$form->hidden(array('name' => '',
+						'id' 		=> 'context-selected',
+						'value' 	=> $ref['context']));?>
+			<?=$form->hidden(array('name' => 'linefeatures[name][]',
+						'value' 	=> $ref['name']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
 					    'id'		=> 'linefeatures-rules_group',
-					    'value'	=> $ref['rules_group'],));?>
+					    'value'		=> $ref['rules_group'],));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_order][]',
 					    'id'		=> 'linefeatures-rules_order',
-					    'value'	=> $ref['rules_order']));?>
+					    'value'		=> $ref['rules_order']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[line_num][]',
 					    'id'		=> 'linefeatures-line_num',
-					    'value'	=> $ref['line_num']));?>
+					    'value'		=> $ref['line_num']));?>
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 			<span id="box-line_num" style="float:left;font-weight:bold;"></span>
+		</td>
+		<td>
 			<span>
 				<span class="<?=$secureclass?>">&nbsp;</span>
 				<?=$this->bbf('line_protocol-'.$ref['protocol'])?>
 			</span>
 		</td>
 		<td>
-			<?=$form->hidden(array('name' => 'linefeatures[name][]','value' => $ref['name']));?>
 			<?=$url->href_html($ref['name'],
 				'service/ipbx/pbx_settings/lines',
 				array('act' => 'edit', 'id' => $ref['id']));?>
@@ -195,7 +201,7 @@ if($list !== false):
 					    'id'		=> 'linefeatures-context',
 					    'label'		=> false));?>
 		</td>
-		<td>			
+		<td>
 			<?=$form->text(array('paragraph'	=> false,
 					     'name'		=> 'linefeatures[number][]',
 				   		 'id'		=> 'linefeatures-number',
@@ -217,8 +223,16 @@ if($list !== false):
 			      $list_configregistrar);?>
 		</td>
 		<td>
+			<?=$form->text(array('paragraph'	=> false,
+				  'name'	=> 'linefeatures[rules_time][]',
+				  'id'		=> 'linefeatures-rules_time',
+				  'label'	=> false,
+				  'size'	=> 2,
+				  'value'	=> $ref['rules_time']));?>
+		</td>
+		<td>
 		<?php if ($list_device_line === false): ?>
-			 - 
+			 -
 			<?=$form->hidden(array('name' => 'linefeatures[device][]',
 					'value' 	=> null,
 				    'id'		=> 'linefeatures-device'));?>
@@ -236,11 +250,13 @@ if($list !== false):
 		<?php endif; ?>
 		</td>
 		<td>
+			&nbsp;
 			<?=$form->select(array('paragraph'	=> false,
 					    'name'		=> 'linefeatures[num][]',
 					    'id'		=> 'linefeatures-num',
 					    'label'		=> false,
 				    	'key'		=> false,
+				    	'altkey'	=> false,
 						'selected'	=> $ref['num']),
 					$element['linefeatures']['num']['value']);?>
 		</td>
@@ -262,7 +278,7 @@ endif;
 	</tbody>
 	<tfoot>
 	<tr id="no-linefeatures"<?=($list !== false ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="8" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
+		<td colspan="10" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
 	</tr>
 	</tfoot>
 </table>
@@ -270,8 +286,10 @@ endif;
 <table class="b-nodisplay">
 	<tbody id="ex-rules_group">
 	<tr class="fm-paragraph l-subth" id="tr-rules_group">
-		<td colspan="7" class="td-left" id="td_rules_group_name">
+		<td class="td-left">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+		</td>
+		<td colspan="8" class="txt-center" id="td_rules_group_name">
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -289,15 +307,17 @@ endif;
 <table class="b-nodisplay">
 	<tbody id="ex-linefeatures">
 	<tr class="fm-paragraph" style="cursor: move;">
-		<td class="td-left txt-center" id="td_ex-linefeatures-protocol">
+		<td class="td-left txt-center">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 			<span id="box-line_num" style="float:left;font-weight:bold;"></span>
 			<?=$form->hidden(array('name' => 'linefeatures[line_num][]',
 						'value' 	=> 0,
 					    'id'		=> 'linefeatures-line_num'));?>
 			<?=$form->hidden(array('name' => 'linefeatures[id][]',
-					'value' 	=> 0,
-				    'id'		=> 'linefeatures-id'));?>
+						'value' 	=> 0,
+					    'id'		=> 'linefeatures-id'));?>
+		</td>
+		<td id="td_ex-linefeatures-protocol">
 			<?=$form->select(array('paragraph'	=> false,
 				    'name'		=> 'linefeatures[protocol][]',
 				    'id'		=> 'linefeatures-protocol',
@@ -339,9 +359,16 @@ endif;
 				    'default'	=> $element['linefeatures']['configregistrar']['default']),
 			      $list_configregistrar);?>
 		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+				  'name'	=> 'linefeatures[rules_time][]',
+				  'id'		=> 'linefeatures-rules_time',
+				  'label'	=> false,
+				  'size'	=> 2));?>
+		</td>
 		<td id="td_ex-linefeatures-device">
 		<?php if ($list_device_line === false): ?>
-			 - 
+			 -
 			<?=$form->hidden(array('name' => 'linefeatures[device][]',
 					'value' 	=> null,
 				    'id'		=> 'linefeatures-device'));?>
@@ -358,8 +385,9 @@ endif;
 		<?php endif; ?>
 		</td>
 		<td>
+			&nbsp;
 		<?php if ($list_device_line === false): ?>
-			 - 
+			 -
 			<?=$form->hidden(array('name' => 'linefeatures[num][]',
 					'value' 	=> null,
 				    'id'		=> 'linefeatures-num'));?>
@@ -368,6 +396,8 @@ endif;
 					    'name'		=> 'linefeatures[num][]',
 					    'id'		=> 'linefeatures-num',
 					    'label'		=> false,
+				    	'key'		=> false,
+				    	'altkey'	=> false,
 				   		'default'	=> $element['linefeatures']['num']['default']),
 					$element['linefeatures']['num']['value']);?>
 		<?php endif; ?>
