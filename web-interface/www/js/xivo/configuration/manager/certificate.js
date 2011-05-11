@@ -1,6 +1,5 @@
 
 function certinit(mode) {
-
 	$('#it-validity-end-format').css('display','none');
 
 	if(mode == "add")
@@ -35,6 +34,9 @@ function certinit(mode) {
 
 		$('#it-CA').click(cacheck);
 		$('#it-autosigned').click(cacheck);
+
+		// called once to init when redisplayed form after an error
+		cacheck();
 
 	} else {
 		$('input').attr('disabled','true').addClass('it-disabled');

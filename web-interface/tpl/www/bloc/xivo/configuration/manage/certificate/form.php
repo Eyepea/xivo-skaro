@@ -146,9 +146,10 @@ endif;
 
 		// hidden field
 	  $form->text(array(
-			  'name'	=> 'validity-end-format',
+			  'name'	  => 'validity-end-format',
 			  'labelid'	=> 'validity-end-format',
-			  'size'	=> 25)),
+				'size'	  => 25,
+				'value'   => $this->get_var('info','validity-end-format'))),
 
 		'<br/>',
 
@@ -221,34 +222,6 @@ endif;
 
 <div id="sb-part-issuer" class="b-nodisplay">
 <?php
-/*
-	echo $form->text(array('desc'	=> $this->bbf('fm_issuer_fingerprint'),
-			  'name'	=> 'issuer[fingerprint]',
-			  'labelid'	=> 'issuer-fingerprint',
-			  'size'	=> 15,
-			  'default'	=> $element['issuer']['fingerprint']['default'],
-			  'value'	=> $info['issuer']['fingerprint'],
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'issuer', 'fingerprint')) )),
-
-	  $form->text(array('desc'	=> $this->bbf('fm_issuer_validity-start'),
-			  'name'	=> 'issuer[validity-start]',
-			  'labelid'	=> 'issuer-validity-start',
-			  'size'	=> 15,
-			  'default'	=> $element['issuer']['validity-start']['default'],
-			  'value'	=> $info['issuer']['validity-start'],
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'issuer', 'validity-start')) )),
-
-	  $form->text(array('desc'	=> $this->bbf('fm_issuer_validity-end'),
-			  'name'	=> 'issuer[validity-end]',
-			  'labelid'	=> 'issuer-validity-end',
-			  'size'	=> 15,
-			  'default'	=> $element['issuer']['validity-end']['default'],
-			  'value'	=> $info['issuer']['validity-end'],
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'issuer', 'validity-end')) )),
- */
 
 	  echo $form->text(array('desc'	=> $this->bbf('fm_issuer_CN'),
 			  'name'	=> 'issuer[CN]',

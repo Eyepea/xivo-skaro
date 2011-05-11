@@ -43,3 +43,5 @@ Type de la valeur incorrect
 ; error(between)
 La valeur n'est pas dans l'intervalle
 
+; error(invalidpwd)
+Mot de passe incorrect

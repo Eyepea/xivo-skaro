@@ -49,30 +49,41 @@ switch($act)
 			$now = new DateTime("now");
 			$end = DateTime::createFromFormat("Y-m-d", $_QR['validity-end-format']);
 
-			// cleanup
-			$cert = array(
-				'name'     => $_QR['name'],
-				'password' => $_QR['password'],
-				'length'   => $_QR['length'],
-				'validity' => $end->diff($now)->days
-			);
+			if(strlen($_QR['name']) > 0 && $end !== false) {
 
-			if(!array_key_exists('CA', $_QR) || $_QR['CA'] != 1)
-			{
-				$cert['autosigned'] = $_QR['autosigned'] == 1;
+				// cleanup
+				$cert = array(
+					'name'     => $_QR['name'],
+					'password' => $_QR['password'],
+					'length'   => $_QR['length'],
+					'validity' => $end->diff($now)->days
+				);
 
-				if(array_key_exists('autosigned',$_QR) && $_QR['autosigned'] != 1)
-				{ $cert['ca'] = $_QR['ca_authority']; $cert['ca_password'] = $_QR['ca_password']; }
+				if(!array_key_exists('CA', $_QR) || $_QR['CA'] != 1)
+				{
+					$cert['autosigned'] = isset($_QR['autosigned']);
+	
+					if(!array_key_exists('autosigned',$_QR) || $_QR['autosigned'] != 1)
+					{ $cert['ca'] = $_QR['ca_authority']; $cert['ca_password'] = $_QR['ca_password']; }
+				}
+
+				foreach($_QR['subject'] as $k => $v)
+				{ $cert[$k] = $v; }
+
+				// save item
+				if(($ret = $modcert->add(array_key_exists('CA',$_QR) && $_QR['CA'] == 1, $cert)) === true)
+					$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 			}
 
-			foreach($_QR['subject'] as $k => $v)
-			{ $cert[$k] = $v; }
-
-			// save item
-			if(($ret = $modcert->add(array_key_exists('CA',$_QR) && $_QR['CA'] == 1, $cert)) === true)
-				$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
-
 			$error = $modcert->get_filter_error();
+			if($end === false)
+				$error['validity-end'] = 'invalid';
+			if(strlen($_QR['name']) === 0)
+				$error['name'] = 'empty';
+			if($ret['code'] == 403)
+				$error['ca_password'] = 'invalidpwd';
+
+			$_TPL->set_var('error', $error);
 			$_TPL->set_var('info', $_QR);
 			$_TPL->set_var('id', $_QR['name']);
 			$_TPL->set_var('fm_save' , false);
