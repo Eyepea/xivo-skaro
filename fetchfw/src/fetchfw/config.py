@@ -59,9 +59,12 @@ def new_package_manager(config_filename=DEF_CFG_FILENAME):
     if cfg_parser.has_section('general'):
         set_if('general', 'cache_dir')
         set_if('general', 'storage_dir')
-        set_if('general', 'http_proxy_url')
         set_if('general', 'auth_sections', lambda x: x.split())
-    downloaders = _create_downloaders(cfg_dict.get('http_proxy_url'))
+    if cfg_parser.has_section('proxy'):
+        proxies = dict(cfg_parser.items('proxy'))
+    else:
+        proxies = None
+    downloaders = _create_downloaders(proxies)
     # add credentials to auth downloader
     for section in cfg_dict['auth_sections']:
         if not cfg_parser.has_section(section):
@@ -93,6 +96,6 @@ def new_package_manager(config_filename=DEF_CFG_FILENAME):
     return manager
 
 
-def _create_downloaders(http_proxy_url=None):
-    handlers = download.new_handlers(http_proxy_url)
+def _create_downloaders(proxies):
+    handlers = download.new_handlers(proxies)
     return download.new_downloaders(handlers)
