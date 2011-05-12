@@ -94,15 +94,11 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 	function cmd($cmd,$read=false)
 	{
 		$cmd = $this->eval_cmd($cmd);
-		
-		dwho_var_dump($cmd);
 
 		if(dwho_is_sgraph($cmd) === false
 		|| $this->_load_socket() === false
 		|| $this->_set_options() === false)
 			return(false);
-			
-		dwho_var_dump($cmd);
 		
 		if(($r = $this->_socket->write($cmd)) !== false && (bool) $read === true)
 			$r = $this->_parse_cti_recv($this->_socket->read_binary());
