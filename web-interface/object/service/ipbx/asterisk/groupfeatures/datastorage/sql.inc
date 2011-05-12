@@ -22,9 +22,9 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_groupfeatures_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_disable	= 'deleted';
+	var $_disable		= 'deleted';
 	var $_autoincrement = true;
-	var $_unique  = array('name','number');
+	var $_unique  		= array('name',array('name','number'));
 
 	function get_all_wherein($id,$where)
 	{

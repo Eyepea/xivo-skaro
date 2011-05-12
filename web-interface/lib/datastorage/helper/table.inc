@@ -329,7 +329,7 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		if($this->_dso->get_where() === null)
 			return(true);
 		else if(is_array($primary) === true)
-			$this->_dso->andwherenot($primary,null,false);			
+			$this->_dso->andwherenot($primary,null,false);
 			
 		if($this->_dso->select_single() === false)
 			return(true);

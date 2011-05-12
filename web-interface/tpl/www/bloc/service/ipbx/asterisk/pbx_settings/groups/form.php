@@ -47,6 +47,12 @@ endif;
 
 <div id="sb-part-first" class="b-nodisplay">
 <?php
+
+if (is_null($this->get_var('error','groupfeatures','number')))
+	$err_number = $this->get_var('error','extenumbers');
+else
+	$err_number = $this->get_var('error','groupfeatures','number');
+	   		
 	echo	$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_name'),
 				  'name'	=> 'groupfeatures[name]',
 				  'labelid'	=> 'groupfeatures-name',
@@ -55,15 +61,14 @@ endif;
 				  'value'	=> $info['groupfeatures']['name'],
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','groupfeatures','name')))),
-
+					   		
 		$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_number'),
 				  'name'	=> 'groupfeatures[number]',
 				  'labelid'	=> 'groupfeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['number']['default'],
 				  'value' 	=> $info['groupfeatures']['number'],
-				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error','groupfeatures','number')))),
+				  'error'	=> $this->bbf_args('error',$err_number))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_strategy'),
 				    'name'	=> 'queue[strategy]',
