@@ -94,7 +94,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(parent::_reset());
 	}
 
-	public function get($id,$disable=null,$nocomponents=null)
+	public function get($id,$disable=null,$nocomponents=null,$ipbxinfos=false)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -126,7 +126,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(dwho_ak('contextnummember',$nocomponents,true) === false)
 			$this->_get_contextnummember($this->_info['linefeatures']['id']);
 
-		$this->_get_ipbx_infos();
+		if ($ipbxinfos === true)
+			$this->_get_ipbx_infos();
 
 		return($this->_info);
 	}
@@ -183,6 +184,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		);
 
 		$infos = $this->_service->discuss($q, true);
+		
 		if(!is_array($infos))
 			return false;
 
