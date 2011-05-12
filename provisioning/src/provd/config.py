@@ -307,8 +307,8 @@ def _ip_address_or_star(raw_value):
         return _ip_address(raw_value)
 
 
-_BOOL_TRUE = ['True', 'true']
-_BOOL_FALSE = ['False', 'false']
+_BOOL_TRUE = ['True', 'true', '1']
+_BOOL_FALSE = ['False', 'false', '0']
 
 def _bool(raw_value):
     # Return a boolean (type boolean) from a boolean string representation
