@@ -1,0 +1,47 @@
+; title_content_name 
+Operator / Add
+
+; fm_operator_name
+Name: 
+
+; fm_operator_default_price 
+Default price: 
+
+; hlp_fm_operator_default_price 
+Default price for unit.
+
+; fm_operator_default_price_is
+Unit: 
+
+; fm_default_price_is-opt(minute)
+minute
+
+; fm_default_price_is-opt(second)
+second
+
+; fm_operator_currency
+Currency: 
+
+; fm_operator_description
+Description:  
+  
+; col_operator_destination-name	
+Name
+
+; col_operator_destination-exten	
+Extension
+
+; col_operator_destination-price	
+Price
+
+; col_operator_destination-price_is
+Unit
+
+; fm_price_is-opt(minute)
+minute
+
+; fm_price_is-opt(second)
+second
+
+; no_operator-destination
+No destination
