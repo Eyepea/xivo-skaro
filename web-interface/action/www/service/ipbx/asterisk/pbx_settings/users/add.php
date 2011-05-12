@@ -82,10 +82,10 @@ if(isset($_QR['fm_send']) === true
 
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 	} else {
-		$ipbx->discuss('xivo[userlist,update]');
-		$ipbx->discuss('dialplan reload');
 		// must reload app_queue
-		$ipbx->discuss('module reload app_queue.so');
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]',
+							'module reload app_queue.so'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 

@@ -81,15 +81,30 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
+	function eval_cmd($cmd)
+	{
+		if (is_scalar($cmd) === true)
+			return(trim($cmd));
+		elseif(is_array($cmd) === true)
+			return(implode('\n', array_values($cmd)));
+		else
+			return(null);
+	}
+
 	function cmd($cmd,$read=false)
 	{
-		$cmd = trim($cmd);
+		$cmd = $this->eval_cmd($cmd);
+		
+		dwho_var_dump($cmd);
 
 		if(dwho_is_sgraph($cmd) === false
 		|| $this->_load_socket() === false
 		|| $this->_set_options() === false)
 			return(false);
-		else if(($r = $this->_socket->write($cmd)) !== false && (bool) $read === true)
+			
+		dwho_var_dump($cmd);
+		
+		if(($r = $this->_socket->write($cmd)) !== false && (bool) $read === true)
 			$r = $this->_parse_cti_recv($this->_socket->read_binary());
 
 		$this->_socket->shutdown();

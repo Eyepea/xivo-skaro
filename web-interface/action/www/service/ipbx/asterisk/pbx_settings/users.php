@@ -38,7 +38,7 @@ switch($act)
 {
 	case 'add':
 	case 'edit':
-		$appuser = &$ipbx->get_application('user');		
+		$appuser = &$ipbx->get_application('user');
 		
 		$appcontext= &$ipbx->get_application('context');
 		$context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'intern');
@@ -64,10 +64,10 @@ switch($act)
 					continue;
 					
 				array_push($entity_list, $ref['entity']);
-			}	
+			}
 		}
 		
-		$appprovdconfig = &$_XOBJ->get_application('provdconfig');		
+		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
 		$order = array('displayname' => SORT_ASC);
 		$list_configregistrar = $appprovdconfig->get_config_list('',$order,false,false,false,'registrar');
 		
@@ -103,6 +103,10 @@ switch($act)
 		$appuser->delete();
 		$appqueue = &$ipbx->get_application('queue');
 		$appqueue->userskills_delete($_QR['id']);
+		
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]',
+							'module reload app_queue.so'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
@@ -124,6 +128,10 @@ switch($act)
 
 			$appqueue->userskills_delete($values[$i]);
 		}
+		
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]',
+							'module reload app_queue.so'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
@@ -147,6 +155,9 @@ switch($act)
 			else
 				$appuser->enable();
 		}
+		
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
