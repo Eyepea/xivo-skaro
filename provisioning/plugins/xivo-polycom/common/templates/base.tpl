@@ -92,7 +92,7 @@ reg.{{ line_no }}.server.2.transport="{{ XX_sip_transport }}"
 reg.{{ line_no }}.server.2.expires="3600"
 {% endif -%}
 reg.{{ line_no }}.displayName="{{ line['display_name']|e }}"
-reg.{{ line_no }}.label="{{ line['username']|e }}"
+reg.{{ line_no }}.label="{{ line['number']|e }}"
 reg.{{ line_no }}.address="{{ line['username']|e }}"
 reg.{{ line_no }}.auth.userId="{{ line['auth_username']|e }}"
 reg.{{ line_no }}.auth.password="{{ line['password']|e }}"

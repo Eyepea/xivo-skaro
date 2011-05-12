@@ -129,9 +129,7 @@ def _read_config_from_file(config):
     # create config dictionary out of it
     result = {}
     for section in config_parser.sections():
-        result[section] = {}
-        for key, value in config_parser.items(section):
-            result[section][key] = value
+        result[section] = dict(config_parser.items(section))
     return result
 
 

@@ -263,7 +263,7 @@ class BaseAastraPlugin(StandardPlugin):
         # check for non-expmod keytype
         for nb_keys, keytype in keytype_list:
             if keynum <= keycount + nb_keys:
-                return keytype
+                return "%s%s" % (keytype, keynum - keycount)
             else:
                 keycount += nb_keys
         # check for expmod keytype

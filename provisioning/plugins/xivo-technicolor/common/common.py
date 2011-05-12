@@ -28,6 +28,7 @@ import logging
 import os.path
 import re
 import time
+from operator import itemgetter
 from provd import sip
 from provd import tzinform
 from provd.devices.config import RawConfigError
@@ -341,13 +342,19 @@ class BaseTechnicolorPlugin(StandardPlugin):
         except KeyError:
             return defer.fail(Exception('IP address needed for device synchronization'))
         else:
-            def callback(status_code):
-                if status_code == 200:
-                    return None
-                else:
-                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
-                    return failure.Failure(e)
-            uri = sip.URI('sip', ip, port=5060)
-            d = sip.send_notify(uri, 'check-sync;reboot=false')
-            d.addCallback(callback)
-            return d
+            if not raw_config[u'sip_lines']:
+                e = Exception('Need at least one configured line to resynchronize')
+                return failure.Failure(e)
+            else:
+                def callback(status_code):
+                    if status_code == 200:
+                        return None
+                    else:
+                        e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
+                        return failure.Failure(e)
+                line = min(raw_config[u'sip_lines'].iteritems(), key=itemgetter(0))[1]
+                username = line[u'username']
+                uri = sip.URI('sip', ip, user=username, port=5060)
+                d = sip.send_notify(uri, 'check-sync')
+                d.addCallback(callback)
+                return d

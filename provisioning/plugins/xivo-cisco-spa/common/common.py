@@ -26,6 +26,7 @@ __license__ = """
 # XXX right now, config file encryption depends on the presence of the
 #     openssl application
 
+import errno
 import logging
 import os
 import re
@@ -432,7 +433,14 @@ class BaseCiscoPlugin(StandardPlugin):
         # create a link to unencrypted config file if needed
         if not raw_config.get(u'config_encryption') or not device.get(u'X_xivo_cisco_spa_encrypted'):
             tftpboot_path = os.path.join(self._tftpboot_dir, filename)
-            os.symlink(cache_path, tftpboot_path)
+            try:
+                os.symlink(cache_path, tftpboot_path)
+            except OSError, e:
+                if e.errno == errno.EEXIST:
+                    os.remove(tftpboot_path)
+                    os.symlink(cache_path, tftpboot_path)
+                else:
+                    raise
         
         # update device if needed
         if update_device:
@@ -456,20 +464,19 @@ class BaseCiscoPlugin(StandardPlugin):
         except KeyError:
             return defer.fail(Exception('IP address needed for device synchronization'))
         else:
-            def callback(status_code):
-                if status_code == 200:
-                    return None
-                else:
-                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
-                    return failure.Failure(e)
-            for sip_line in raw_config[u'sip_lines'].itervalues():
-                username = sip_line[u'username']
-                password = sip_line[u'password']
-                break
-            else:
+            if not raw_config[u'sip_lines']:
                 e = Exception('Need at least one configured line to resynchronize')
                 return failure.Failure(e)
-            uri = sip.URI('sip', ip, user=username, port=5060)
-            d = sip.send_notify(uri, 'check-sync', (username, password))
-            d.addCallback(callback)
-            return d
+            else:
+                def callback(status_code):
+                    if status_code == 200:
+                        return None
+                    else:
+                        e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
+                        return failure.Failure(e)
+                line = min(raw_config[u'sip_lines'].iteritems(), key=itemgetter(0))[1]
+                username, password = line[u'username'], line[u'password']
+                uri = sip.URI('sip', ip, user=username, port=5060)
+                d = sip.send_notify(uri, 'check-sync', (username, password))
+                d.addCallback(callback)
+                return d
