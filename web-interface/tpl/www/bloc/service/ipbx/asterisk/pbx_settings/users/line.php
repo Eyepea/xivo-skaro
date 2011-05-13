@@ -182,7 +182,7 @@ if($list !== false):
 					    'id'		=> 'linefeatures-line_num',
 					    'value'		=> $ref['line_num']));?>
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
-			<span id="box-line_num" style="float:left;font-weight:bold;"></span>
+			<span id="box-grouporder" style="float:left;font-weight:bold;"></span>
 		</td>
 		<td>
 			<span>
@@ -309,7 +309,7 @@ endif;
 	<tr class="fm-paragraph" style="cursor: move;">
 		<td class="td-left txt-center">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
-			<span id="box-line_num" style="float:left;font-weight:bold;"></span>
+			<span id="box-grouporder" style="float:left;font-weight:bold;"></span>
 			<?=$form->hidden(array('name' => 'linefeatures[line_num][]',
 						'value' 	=> 0,
 					    'id'		=> 'linefeatures-line_num'));?>

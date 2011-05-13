@@ -14,15 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */;
+ */
 
-// Return a helper with preserved width of cells
-var fixHelper = function(e, ui) {
-	ui.children().each(function() {
-		$(this).width($(this).width());
-	});
-	return ui;
-};
 
 function map_autocomplete_line_free_to(obj,list,exept)
 {
@@ -190,36 +183,35 @@ function update_row_infos()
 	}
 	
 	var groupval = '';
-	var count = 0;
-	$('#list_linefeatures > tbody').find('tr').each(function() {
-		
+	var grouporder = 0;
+	var line_num = 0;
+	$('#list_linefeatures > tbody').find('tr').each(function() {		
 		tr_group = false;
 		if($(this).attr('id') == 'tr-rules_group') {
-			count = 0;
+			grouporder = 0;
+			line_num++;
 			groupval = $(this).find('#td_rules_group_name').text();
 			tr_group = true;
 		}
-				
-		$(this).find('#box-line_num').html(count);
-
-		count++;
+		else
+			grouporder++;
+		
+		$(this).find('#box-grouporder').html(grouporder);
 		
 		if(tr_group === false) {
 			context = $(this).find("#linefeatures-context");
-
 			$(context).parents('tr').find('#linefeatures-rules_group').val(groupval);
-			$(context).parents('tr').find('#linefeatures-line_num').val(count);
-			$(context).parents('tr').find('#linefeatures-rules_order').val(count);
+			$(context).parents('tr').find('#linefeatures-line_num').val(line_num);
+			$(context).parents('tr').find('#linefeatures-rules_order').val(grouporder);
 
 			context_selected = context.parents('tr').find('#context-selected').val();
 			if (context_selected !== null)
 				context.find("option[value='"+context_selected+"']").attr("selected","selected");
 			
-			if (context.val() !== null) {
-				
-				num = $(context).parents('tr').find("#linefeatures-num");
+			if (context.val() !== null) {				
+				devicenumline = $(context).parents('tr').find("#linefeatures-num");
 				config = $(context).parents('tr').find('#linefeatures-device').val();
-				xivo_http_search_line_from_provd(num,config,num.val());
+				xivo_http_search_line_from_provd(devicenumline,config,devicenumline.val());
 
 				$(context).parents('tr').find('#linefeatures-rules_time').
 				change(function(){
@@ -250,18 +242,18 @@ function update_row_infos()
 					$(this).parent().find('#numberpool_helper').hide('slow');
 				});
 				device = $(this).find('#linefeatures-device').val();
-				num = $(this).find("#linefeatures-num");
+				devicenumline = $(this).find("#linefeatures-num");
 				if (device == '')
-					num.hide();
+					devicenumline.hide();
 				
 				$(this).find('#linefeatures-device').change(function() {
-					num = $(this).parents('tr').find("#linefeatures-num");
-					$(num).each(function(){
+					devicenumline = $(this).parents('tr').find("#linefeatures-num");
+					$(devicenumline).each(function(){
 						$(this).find('option').remove();
 					    for (var i=1; i<=12; i++)
 							$(this).append("<option value="+i+">"+i+"</option>");
 					});
-					xivo_http_search_line_from_provd(num,$(this).val());
+					xivo_http_search_line_from_provd(devicenumline,$(this).val());
 				});
 			}
 		}
@@ -269,6 +261,7 @@ function update_row_infos()
 }
 
 $(document).ready(function() {
+	
 	xivo_http_search_context_from_entity(get_entityid_val());
 	
 	$('#it-userfeatures-entityid').change(function() {
