@@ -173,6 +173,11 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
     def test_resource_master_slave(self):
         pass
 
+    def test_simple_addr(self):
+        expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"'}
+        data = self.data._cluster_addr(['eth0:192.168.1.34'])
+        self.assertEqual(expected, data)
+
     def test_cluster_addr(self):
         expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"',
                     'ip_xivo_eth0.1': 'primitive ip_xivo_eth0.1 ocf:heartbeat:IPaddr2 params ip="192.168.2.34" nic="eth0.1"'}
@@ -191,7 +196,6 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_cluster_backup(self) :
         for f in os.listdir(self.backup_dir):
-            # do not delete self.backup_file
             if f != self.backup_file:
                 os.remove("%s/%s" % (self.backup_dir, f))
         self.assertTrue(self.data._cluster_backup(self.backup_dir))

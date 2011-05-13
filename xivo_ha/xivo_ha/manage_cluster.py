@@ -274,6 +274,10 @@ class ClusterResourceManager(Tools):
         # TODO
         return services.sort()
 
+    def _launch_external_script(self):
+        # TODO
+        pass
+
     def _resources_location(self, prefered_node = None, score = None):
         '''
         to manage cluster location
@@ -387,12 +391,13 @@ class ClusterResourceManager(Tools):
         '''
         raise NotImplementedError
 
-    def _cluster_addr(self):
+    def _cluster_addr(self, addr = None):
         '''
         return a dict {'itf_name': 'data'}
         '''
         result = {}
-        for data in self.cluster_addr:
+        cluster_addr = self.cluster_addr if addr is None else addr
+        for data in cluster_addr:
             itf, addr = data.split(':')
             cluster_addr_name = "ip_%s_%s" % (self.cluster_name, itf)
             ip_params = 'ip="%s" nic="%s"' % (addr, itf)
@@ -405,6 +410,13 @@ class ClusterResourceManager(Tools):
         return result
 
     def manage(self):
+        '''
+        used to configure cluster :
+            - backup old configuration
+            - stopping all running resources
+            - erase cluster configuration
+            - push the new configuration
+        '''
         self._cluster_backup()
         self._cluster_stop_all_resources()
         self._cluster_erase_configuration()
@@ -412,6 +424,9 @@ class ClusterResourceManager(Tools):
         return self._cluster_push_config()
 
     def status(self):
+        '''
+        return cluster status
+        '''
         args = ['crm_mon', '-1']
         data, res, error = self._cluster_command(args)
         for l in data:

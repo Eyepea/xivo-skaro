@@ -2,8 +2,9 @@
 
 import os
 import socket
-from configobj import ConfigObj
 import sys
+import pprint
+from configobj import ConfigObj
 from optparse import OptionParser
 from xivo_ha.manage_nodes import ClusterEngine
 from xivo_ha.manage_nodes import ManageService
@@ -51,6 +52,33 @@ if __name__ == '__main__':
     if not options.node and not options.cluster and not options.csync:
         parser.error("option --cluster or --node is mandatory")
 
+    # parse /etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf
+    extra = "/etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf"
+    def _get_extra_services():
+        for l in open(extra):
+            data = l.replace(' ', '').strip()
+            data = data.split("=")
+            if data[0] == 'services' and data[1] is not '':
+                services = data[1].split(',')
+                return services
+
+    def _get_extra_scripts():
+        for l in open(extra):
+            data = l.replace(' ', '').strip()
+            data = data.split("=")
+            if data[0] == 'scripts' and data[1] is not '':
+                scripts = data[1].split(',')
+                cluster_config['scripts'] = scripts
+                return True
+
+
+    def _check_if_service_exist(service):
+        file_ = "/etc/init.d/%s" % service
+        if not os.path.isfile(file_):
+            warn = "init file %s does not exist" % file_
+            raise IOError(warn)
+
+
     # corosync data
     nodes_config   = config['nodes']
     network_addr   = nodes_config['network_addr']
@@ -65,6 +93,16 @@ if __name__ == '__main__':
     cluster_config = config['cluster']
     cluster_config['cluster_nodes'] = nodes 
 
+    extra_services = _get_extra_services() 
+    extra_scripts  = _get_extra_scripts()
+    if extra_services is not None:
+        # node data
+        services = services + extra_services
+        # cluster data
+        for service in extra_services:
+            _check_if_service_exist(service)
+            cluster_config['services'][service] = {}
+
     node_management  = ClusterEngine(network_addr, multicast_addr)
     cluster = ClusterResourceManager(cluster_config)
 
@@ -72,7 +110,6 @@ if __name__ == '__main__':
     csync_data  = cluster_config['csync2']
     csync_data['hosts'] = nodes
     csync2 = FilesReplicationManagement(csync_data)
-
 
     for address in network_addr, multicast_addr:
         is_valid_ipv4_address(address)
