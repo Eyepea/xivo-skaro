@@ -529,11 +529,14 @@ class AMI_1_8:
     def userevent_dialplan2cti(self):
         return
 
+    userevents = ['Queue', 'User', 'Custom', 'Meetme', 'Group',
+                  'LocalCall']
+
     def ami_userevent(self, event):
         eventname = event.pop('UserEvent')
         channel = event.pop('CHANNEL', None)
         # syntax in dialplan : exten = xx,n,UserEvent(myevent,var1: ${var1},var2: ${var2})
-        if eventname in userevents:
+        if eventname in self.userevents:
             methodname = 'userevent_%s' % eventname.lower()
             if hasattr(self, methodname):
                 log.info('ami_userevent %s %s : %s' % (eventname, channel, event))
@@ -542,9 +545,14 @@ class AMI_1_8:
 
     def ami_agiexec(self, event):
         # occurs when there is a variable set
-        subevent = event.pop('SubEvent')
         command = event.pop('Command')
-        log.info('ami_agiexec %s %s : %s' % (command, subevent, event))
+        commandid = event.pop('CommandId')
+        channel = event.pop('Channel')
+        subevent = event.pop('SubEvent')
+        if subevent == 'End':
+            resultcode = event.pop('ResultCode')
+            # log.info('ami_agiexec %s %s %s' % (channel, resultcode, command))
+        # command = 'VERBOSE "" 4'
         return
 
     def handle_fagi(self, fastagi):
@@ -555,6 +563,13 @@ class AMI_1_8:
         # syntax in dialplan : exten = xx,n,AGI(agi://ip:port/function,arg1,arg2)
         log.info('handle_fagi %s %s : %s' % (function, channel, args))
         return
+
+    def ami_messagewaiting(self, event):
+        old = event.pop('Old')
+        new = event.pop('New')
+        waiting = event.pop('Waiting')
+        mailbox = event.pop('Mailbox')
+        self.innerdata.voicemailupdate(mailbox, new, old, waiting)
 
     # Status replies events
     def ami_peerentry(self, event):
@@ -706,29 +721,16 @@ class AMI_1_8:
         if log_ami_events_statusrequest:
             log.info('ami_listdialplan %s' % (event))
         return
+
     # XXX dahdi channels
+
     def ami_voicemailuserentry(self, event):
-        if log_ami_events_statusrequest:
-            mailbox = event.pop('VoiceMailbox')
-            new = event.pop('NewMessageCount')
-            for k, v in self.innerdata.xod_config['voicemails'].keeplist.iteritems():
-                if mailbox == v.get('mailbox'):
-                    print mailbox, v.get('mailbox'), '/', v.get('identity'), '/', v.get('fullmailbox')
-                    break
-            log.info('ami_voicemailuserentry %s %s %s' % (mailbox, new, event))
-            # only NewMessageCount here - OldMessageCount only when IMAP compiled
-            # relation with Old/New/Waiting in MessageWaiting UserEvent ?
-
-##            {u'SayEnvelope': u'Yes', u'TimeZone': u'eu-fr', u'Email': u'', u'VoiceMailbox': u'1539',
-##             u'MailCommand': u'', u'SayCID': u'No', u'ExitContext': u'',
-##             u'Dialout': u'', u'DeleteMessage': u'Yes', u'Pager': u'', u'Language': u'', u'ServerEmail': u'',
-##             u'CallOperator': u'Yes', u'MaxMessageLength': u'0', u'Callback': u'', u'VMContext': u'mamaop',
-##             u'SayDurationMinimum': u'2', u'Fullname': u'Mmqgpkx Iaonrps',
-##             u'AttachmentFormat': u'', u'CanReview': u'Yes', u'VolumeGain': u'0.00', u'AttachMessage': u'Yes',
-##             u'ActionID': u'init-voicemailuserslist-apoazpe-1304692404', u'UniqueID': u''}
-            pass
+        mailbox = event.pop('VoiceMailbox')
+        new = event.pop('NewMessageCount')
+        # only NewMessageCount here - OldMessageCount only when IMAP compiled
+        # relation to Old/New/Waiting in MessageWaiting UserEvent ?
+        self.innerdata.voicemailupdate(mailbox, new)
         return
-
 
     # Monitor, Spy
     def ami_monitorstart(self, event):

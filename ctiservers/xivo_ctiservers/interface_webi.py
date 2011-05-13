@@ -29,6 +29,7 @@ WEBI Interface
 
 import cjson
 import logging
+import re
 import time
 
 from xivo_ctiservers.interfaces import Interfaces
@@ -44,7 +45,6 @@ AMI_REQUESTS = [
     'module reload',
     'module reload app_queue.so',
     'module reload chan_agent.so',
-    'sip show peer xxxxxx load',
     ]
 
 UPDATE_REQUESTS = [
@@ -94,18 +94,25 @@ class WEBI(Interfaces):
             try:
                 if usefulmsg == 'xivo[daemon,reload]':
                     self.ctid.askedtoquit = True
-                    log.info('WEBI requested %s' % usefulmsg)
+                    log.info('WEBI requested (reload) %s' % usefulmsg)
 
                 elif usefulmsg in UPDATE_REQUESTS:
                     self.ctid.update_userlist[self.ipbxid].append(usefulmsg)
-                    log.info('WEBI requested %s' % usefulmsg)
+                    log.info('WEBI requested (update) %s' % usefulmsg)
 
                 elif usefulmsg in AMI_REQUESTS:
                     self.ctid.myami.get(self.ipbxid).delayed_action(usefulmsg, self)
+                    log.info('WEBI requested (ami) %s' % usefulmsg)
                     closemenow = False
 
                 else:
-                    log.warning('WEBI did an unexpected request %s' % usefulmsg)
+                    recomp = re.compile('sip show peer .* load')
+                    if re.match(recomp, usefulmsg):
+                        self.ctid.myami.get(self.ipbxid).delayed_action(usefulmsg, self)
+                        log.info('WEBI requested (ami RE) %s' % usefulmsg)
+                        closemenow = False
+                    else:
+                        log.warning('WEBI did an unexpected request %s' % usefulmsg)
 
             except Exception:
                 log.exception('WEBI connection [%s] : KO when defining for %s'

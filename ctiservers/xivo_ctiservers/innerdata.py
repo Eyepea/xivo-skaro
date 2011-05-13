@@ -135,7 +135,10 @@ class Safe:
                      'meetmes' : { 'pseudochan' : None,
                                    'channels' : []
                                    },
-                     'voicemails' : { 'messages' : 0 },
+                     'voicemails' : { 'waiting' : False,
+                                      'old' : 0,
+                                      'new' : 0
+                                      },
                      'incalls' : {},
                      'outcalls' : {},
                      'contexts' : {},
@@ -410,6 +413,24 @@ class Safe:
         agstatus['status'] = status
         # define relations for agent:x : channel:y and phone:z
         self.handle_cti_stack('empty_stack')
+        return
+
+    def voicemailupdate(self, mailbox, new, old = None, waiting = None):
+        log.info('voicemailupdate : %s %s' % (mailbox, new))
+        for k, v in self.xod_config['voicemails'].keeplist.iteritems():
+            if mailbox == v.get('fullmailbox'):
+                self.xod_status['voicemails'][k].update({'old' : old,
+                                                         'new' : new,
+                                                         'waiting' : waiting})
+                # print self.xod_status['voicemails'][k]
+                self.events_cti.put( { 'class' : 'getlist',
+                                       'listname' : 'voicemails',
+                                       'function' : 'updatestatus',
+                                       'ipbxid' : self.ipbxid,
+                                       'id' : k,
+                                       'status' : self.xod_status['voicemails'][k]
+                                       } )
+                break
         return
 
     def queuememberupdate(self, queuename, location, props = None):
