@@ -185,15 +185,17 @@ function update_row_infos()
 	var groupval = '';
 	var grouporder = 0;
 	var line_num = 0;
-	$('#list_linefeatures > tbody').find('tr').each(function() {		
+	var idx = 0;
+	$('#list_linefeatures > tbody').find('tr').each(function() {	
 		tr_group = false;
+		
 		if($(this).attr('id') == 'tr-rules_group') {
 			grouporder = 0;
-			line_num++;
+			if (idx > 0)
+				line_num++;
 			groupval = $(this).find('#td_rules_group_name').text();
 			tr_group = true;
-		}
-		else
+		} else
 			grouporder++;
 		
 		$(this).find('#box-grouporder').html(grouporder);
@@ -257,6 +259,7 @@ function update_row_infos()
 				});
 			}
 		}
+		idx++;
 	});
 }
 
