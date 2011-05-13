@@ -726,10 +726,12 @@ class AMI_1_8:
 
     def ami_voicemailuserentry(self, event):
         mailbox = event.pop('VoiceMailbox')
+        context = event.pop('VMContext')
         new = event.pop('NewMessageCount')
+        fullmailbox = '%s@%s' % (mailbox, context)
         # only NewMessageCount here - OldMessageCount only when IMAP compiled
         # relation to Old/New/Waiting in MessageWaiting UserEvent ?
-        self.innerdata.voicemailupdate(mailbox, new)
+        self.innerdata.voicemailupdate(fullmailbox, new)
         return
 
     # Monitor, Spy
@@ -745,7 +747,6 @@ class AMI_1_8:
     def ami_chanspystop(self, event):
         log.info('ami_chanspystop %s' % (event))
         return
-
 
     # End of status requests
     def ami_peerlistcomplete(self, event):
