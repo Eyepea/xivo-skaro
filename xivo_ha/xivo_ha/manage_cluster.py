@@ -20,7 +20,6 @@ class ClusterResourceManager(Tools):
             self.cluster_nodes    = cluster_config['cluster_nodes']
             self.cluster_name     = cluster_config['cluster_name']
             self.cluster_addr     = cluster_config['cluster_addr']
-            self.cluster_itf      = cluster_config['cluster_itf']
             self.cluster_group    = cluster_config['cluster_group']
             self.backup_directory = backup_directory
             self.cluster_cfg      = cluster_cfg
@@ -244,13 +243,19 @@ class ClusterResourceManager(Tools):
 
             for rsc_prop in self._cluster_rsc_defaults('resource-stickiness=100'):
                 file_.write(self._format_string(rsc_prop))
+
             if self.cluster_addr:
-                file_.write(self._format_string(self._cluster_addr()))
+               for itf in self._cluster_addr().iteritems():
+                   file_.write(self._format_string(itf[1]))
+
             for service in self.services:
                 file_.write(self._format_string(self._resource_primitive(service, rsc_class = 'lsb')))
             if self.cluster_group:
-                group = self._resource_group(self.services)
+                group = self._resource_group(self.services, group_name = 'srv_xivo')
                 file_.write(self._format_string(group))
+            if len(self.cluster_addr) > 1:
+                ip_group = self._resource_group(self._cluster_addr().keys(), group_name = 'ip_xivo')
+                file_.write(self._format_string(ip_group))
 
             for res, val in self.services_data.iteritems():
                 if val:
@@ -278,7 +283,9 @@ class ClusterResourceManager(Tools):
         score = '100' if score is None else score 
         result = 'location location_%s' % name 
         ip_res = self._cluster_addr()
-        if ip_res:
+        if ip_res > 1:
+            result += " group_ip_%s" % name
+        else:
             result += " ip_%s" % name
         result += " %s:" % score
         result += " %s" % prefered_node
@@ -295,7 +302,9 @@ class ClusterResourceManager(Tools):
         result = 'order order_%s inf:' % name
         # add cluster_addr first
         ip_res = self._cluster_addr()
-        if ip_res:
+        if ip_res > 1:
+            result += " group_ip_%s:start" % name
+        else:
             result += " ip_%s:start" % name
 
         if not self.cluster_group:
@@ -305,7 +314,7 @@ class ClusterResourceManager(Tools):
             for service in sorted(self.services):
                 result += " %s:start" % service
         else:
-            result +=  " group_%s:start" % name
+            result +=  " group_srv_%s:start" % name
         return result
         
     def _resources_colocation(self):
@@ -317,7 +326,9 @@ class ClusterResourceManager(Tools):
         result = 'colocation colocation_%s inf:' % name
         # add cluster_addr first
         ip_res = self._cluster_addr()
-        if ip_res:
+        if ip_res > 1:
+            result += " group_ip_%s" % name
+        else:
             result += " ip_%s" % name
         if not self.cluster_group:
             # same as _resources_order
@@ -325,7 +336,7 @@ class ClusterResourceManager(Tools):
             for service in sorted(self.services):
                 result += " %s" % service
         else:
-            result +=  " group_%s" % name
+            result +=  " group_srv_%s" % name
         return result
 
 
@@ -376,18 +387,22 @@ class ClusterResourceManager(Tools):
         '''
         raise NotImplementedError
 
-    def _cluster_addr(self, cluster_addr_name = None):
-        if cluster_addr_name is None:
-            cluster_addr_name = "ip_%s" % self.cluster_name
-        if self.cluster_addr and self.cluster_itf:
-            ip_params = 'ip="%s" nic="%s"' % (self.cluster_addr, self.cluster_itf)
-            return self._resource_primitive(cluster_addr_name,
-                                             rsc_class    = "ocf",
-                                             rsc_provider = 'heartbeat',
-                                             rsc_type     = "IPaddr2",
-                                             rsc_params   = ip_params
-                                            )
-    
+    def _cluster_addr(self):
+        '''
+        return a dict {'itf_name': 'data'}
+        '''
+        result = {}
+        for data in self.cluster_addr:
+            itf, addr = data.split(':')
+            cluster_addr_name = "ip_%s_%s" % (self.cluster_name, itf)
+            ip_params = 'ip="%s" nic="%s"' % (addr, itf)
+            result[cluster_addr_name] = (self._resource_primitive(cluster_addr_name,
+                                         rsc_class    = "ocf",
+                                         rsc_provider = 'heartbeat',
+                                         rsc_type     = "IPaddr2",
+                                         rsc_params   = ip_params
+                                         ))
+        return result
 
     def manage(self):
         self._cluster_backup()

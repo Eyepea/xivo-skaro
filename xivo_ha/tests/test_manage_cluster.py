@@ -21,8 +21,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         self.backup_file  = "pf-xivo-ha.bck"
         self.cluster_data = {'cluster_name': 'xivo',
                                'cluster_nodes': ['ha-xivo-1', 'ha-xivo-2'],
-                               'cluster_addr': '192.168.1.34',
-                               'cluster_itf': 'eth0',
+                               'cluster_addr': ['eth0:192.168.1.34', 'eth0.1:192.168.2.34'],
                                'cluster_group': 'yes',
                                'services': {'asterisk': {'monitor': '30', 'timeout': '60'},
                                             'lighttpd': {}
@@ -125,29 +124,29 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_resources_location(self):
         # location <id> <rsc> <score>: <node>
-        expected = 'location location_xivo ip_xivo 100: ha-xivo-1'
+        expected = 'location location_xivo group_ip_xivo 100: ha-xivo-1'
         data = self.data._resources_location()
         self.assertEqual(data, expected)
     
     def test_resources_order_group(self):
-        expected = 'order order_xivo inf: ip_xivo:start group_xivo:start'
+        expected = 'order order_xivo inf: group_ip_xivo:start group_srv_xivo:start'
         data = self.data._resources_order()
         self.assertEqual(expected, data)
 
     def test_resources_order_services(self):
         self.data.cluster_group = False
-        expected = 'order order_xivo inf: ip_xivo:start asterisk:start lighttpd:start'
+        expected = 'order order_xivo inf: group_ip_xivo:start asterisk:start lighttpd:start'
         data = self.data._resources_order()
         self.assertEqual(expected, data)
 
     def test_resources_colocation_group(self):
-        expected = 'colocation colocation_xivo inf: ip_xivo group_xivo'
+        expected = 'colocation colocation_xivo inf: group_ip_xivo group_srv_xivo'
         data = self.data._resources_colocation()
         self.assertEqual(expected, data)
 
     def test_resources_colocation_services(self):
         self.data.cluster_group = False
-        expected = 'colocation colocation_xivo inf: ip_xivo asterisk lighttpd'
+        expected = 'colocation colocation_xivo inf: group_ip_xivo asterisk lighttpd'
         data = self.data._resources_colocation()
         self.assertEqual(expected, data)
 
@@ -175,7 +174,8 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         pass
 
     def test_cluster_addr(self):
-        expected = 'primitive ip_xivo ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"'
+        expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"',
+                    'ip_xivo_eth0.1': 'primitive ip_xivo_eth0.1 ocf:heartbeat:IPaddr2 params ip="192.168.2.34" nic="eth0.1"'}
         data = self.data._cluster_addr()
         self.assertEqual(expected, data)
 
