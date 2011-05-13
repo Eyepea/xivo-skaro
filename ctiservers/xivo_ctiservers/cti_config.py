@@ -40,6 +40,7 @@ class Config:
         self.ctxlist = {}
         self.dpylist = {}
         self.dirlist = {}
+        self.xc_json = {}
         return
 
     def update(self):
@@ -61,10 +62,14 @@ class Config:
         # web-interface/tpl/www/bloc/cti/general.php
         # web-interface/action/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
 
-        response = urllib2.urlopen(uri)
-        self.json_config = response.read().replace('\/', '/')
-        self.xc_json = cjson.decode(self.json_config)
-        for profile, profdef in self.xc_json['profiles'].iteritems():
+        try:
+            response = urllib2.urlopen(uri)
+            self.json_config = response.read().replace('\/', '/')
+            self.xc_json = cjson.decode(self.json_config)
+        except:
+            log.exception('fetch url %s' % uri)
+
+        for profile, profdef in self.xc_json.get('profiles', {}).iteritems():
             if profdef['xlets']:
                 for xlet_attr in profdef['xlets']:
                     if 'N/A' in xlet_attr:
@@ -73,10 +78,12 @@ class Config:
                         del xlet_attr[2]
                     if xlet_attr[1] == 'grid':
                         del xlet_attr[2]
+
         try:
             self.setdirconfigs()
         except:
             log.exception('setdirconfigs')
+
         self.translate()
         return
 
@@ -88,7 +95,7 @@ class Config:
         """
         if self.ipwebs is None or self.ipwebs == 'localhost':
             return
-        for k, v in self.xc_json.get('ipbxes').iteritems():
+        for k, v in self.xc_json.get('ipbxes', {}).iteritems():
             for kk, vv in v.get('urllists').iteritems():
                 nl = []
                 for item in vv:
@@ -99,22 +106,22 @@ class Config:
         return
 
     def setdirconfigs(self):
-        for dirid, dirdet in self.xc_json['directories'].iteritems():
+        for dirid, dirdet in self.xc_json.get('directories', {}).iteritems():
             if dirid not in self.dirlist:
                 self.dirlist[dirid] = cti_directories.Directory(dirid)
             self.dirlist[dirid].update(dirdet)
-        for dpyid, dpydet in self.xc_json['displays'].iteritems():
+        for dpyid, dpydet in self.xc_json.get('displays', {}).iteritems():
             if dpyid not in self.dpylist:
                 self.dpylist[dpyid] = cti_directories.Display()
             self.dpylist[dpyid].update(dpydet)
-        for contextname, contextdef in self.xc_json['contexts'].iteritems():
+        for contextname, contextdef in self.xc_json.get('contexts', {}).iteritems():
             if contextname not in self.ctxlist:
                 self.ctxlist[contextname] = cti_directories.Context()
             self.ctxlist[contextname].update(contextdef)
 
     def getconfig(self, key = None):
         if key:
-            ret = self.xc_json.get(key)
+            ret = self.xc_json.get(key, {})
         else:
             ret = self.xc_json
         return ret

@@ -416,13 +416,11 @@ class Safe:
         return
 
     def voicemailupdate(self, mailbox, new, old = None, waiting = None):
-        log.info('voicemailupdate : %s %s' % (mailbox, new))
         for k, v in self.xod_config['voicemails'].keeplist.iteritems():
             if mailbox == v.get('fullmailbox'):
                 self.xod_status['voicemails'][k].update({'old' : old,
                                                          'new' : new,
                                                          'waiting' : waiting})
-                # print self.xod_status['voicemails'][k]
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : 'voicemails',
                                        'function' : 'updatestatus',

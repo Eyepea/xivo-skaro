@@ -202,8 +202,6 @@ class xivo_daemon:
             try:
                 self.main_loop()
             except Exception:
-                # this will occur at server startup, when WEBI is not started yet
-                # XXX this is a very naughty way, however, to handle that
                 log.exception('main loop has crashed ... retrying in 5 seconds ...')
                 time.sleep(5)
 
@@ -350,7 +348,7 @@ class xivo_daemon:
 
         log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, FAGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, FAGI, INFO) connections
-        for kind, bind_and_port in xivoconf_general.get('incoming_tcp').iteritems():
+        for kind, bind_and_port in xivoconf_general.get('incoming_tcp', {}).iteritems():
             try:
                 (bind, port) = bind_and_port
                 gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_STREAM, socket.SOL_TCP)
@@ -365,7 +363,7 @@ class xivo_daemon:
             except Exception:
                 log.exception('%s' % bind_and_port)
 
-        for kind, bind_and_port in xivoconf_general.get('incoming_udp').iteritems():
+        for kind, bind_and_port in xivoconf_general.get('incoming_udp', {}).iteritems():
             try:
                 (bind, port) = bind_and_port
                 gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
@@ -380,8 +378,17 @@ class xivo_daemon:
                 log.exception('%s' % bind_and_port)
 
         # Main select() loop - Receive messages
-        while not self.askedtoquit:
-            self.select_step()
+        if not self.cconf.getconfig():
+            nsecs = 5
+            log.info('waiting %d seconds in case a config would be available ...' % nsecs)
+            try:
+                time.sleep(nsecs)
+                # select.select([], [], [], nsecs)
+            except:
+                sys.exit()
+        else:
+            while not self.askedtoquit:
+                self.select_step()
     # }
 
     def loop_over_cti_queue(self, ipbxid):

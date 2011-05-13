@@ -499,6 +499,7 @@ class Command:
                                     'ipbxid' : self.ripbxid,
                                     'id' : rid,
                                     'status' : g} }
+
         return reply
 
     def handle_ipbxcommand(self):
