@@ -83,6 +83,7 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
+$array['tree']['service']['ipbx']['pbx_services']['parkinglot']    = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['context'] = true;

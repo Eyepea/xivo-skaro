@@ -4,7 +4,7 @@
 __version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
-    Copyright (C) 2010  Proformatique
+    Copyright (C) 2010-2011 Guillaume Bour, Proformatique
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@ class JSONClient(object):
         'queueskill'    : ['service/ipbx'            , 'call_center'],
         'queueskillrules': ['service/ipbx'            , 'call_center'],
         'agents'        : ['service/ipbx'            , 'call_center'],
+
+        'parkinglot'    : ['service/ipbx'            , 'pbx_services'],
         
         'mail'          : ['xivo/configuration'      , 'network'],
         'dhcp'          : ['xivo/configuration'      , 'network'],
@@ -90,13 +92,18 @@ class JSONClient(object):
             content
         )
 
-    def edit(self, obj, content):
+    def edit(self, obj, content, id=None):
         if obj not in self.objects:
             raise Exception('Unknown %s object' % obj)
          
         params = self.objects[obj]
+        uri = self.baseuri % (params[0], params[1], obj, 'edit')
+        # kuick ack to support edit urls requiring id parameter
+        if id is not None:
+            uri += '&id='+id					
+
         return self.request('POST', 
-            self.baseuri % (params[0], params[1], obj, 'edit'), 
+            uri,
             content
         )
 
