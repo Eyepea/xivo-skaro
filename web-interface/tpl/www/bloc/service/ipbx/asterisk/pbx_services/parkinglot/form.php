@@ -65,34 +65,19 @@ endif;
 				  'default'	=> $element['parkinglot']['extension']['default'],
 				  'value'	=> $info['extension'],
 				  'error'	=> $this->bbf_args('error',
-					$this->get_var('error', 'parkinglot', 'extension')) ));
-?>
-<p class="fm-paragraph">
-<?php
-		echo $form->select(array('desc'	=> $this->bbf('fm_parkinglot_pos_start'),
-				    'name'	=> 'parkinglot[pos_start]',
-				    'labelid'	=> 'parkinglot-pos_start',
-						'paragraph' => false,
-				    'key'	=> false,
-				    'default'	=> $element['parkinglot']['pos_start']['default'],
-				    'selected'	=> $info['pos_start']),
-		$element['parkinglot']['pos_start']['value']);
-?>
-&nbsp;-
-<?php
-		echo $form->select(array('desc'	=> false,
-				    'name'	=> 'parkinglot[pos_end]',
-						'labelid'	=> 'parkinglot-pos_end',
-						'paragraph' => false,
-						'key'	=> false,
-				    'default'	=> $element['parkinglot']['pos_end']['default'],
-				    'selected'	=> $info['pos_end']),
-			      $element['parkinglot']['pos_end']['value']);
+					$this->get_var('error', 'parkinglot', 'extension')) )),
 
-?>
-</p>
-<?php
-		echo $form->checkbox(array('desc'	=> $this->bbf('fm_parkinglot_next'),
+		$form->text(array('desc'	=> $this->bbf('fm_parkinglot_positions'),
+				  'name'	=> 'parkinglot[positions]',
+				  'labelid'	=> 'parkinglot-positions',
+				  'size'	=> 15,
+				  'default'	=> $element['parkinglot']['positions']['default'],
+					'value'	=> $info['positions'],
+					'help'  => $this->bbf('hlp_fm_positions'),
+				  'error'	=> $this->bbf_args('error',
+					$this->get_var('error', 'parkinglot', 'positions')) )),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_parkinglot_next'),
 				      'name'	=> 'parkinglot[next]',
 				      'labelid'	=> 'parkinglot-next',
 							'help'      => $this->bbf('hlp_fm_next'),

@@ -101,7 +101,7 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td><?=$ref['context'];?></td>
 		<td><?=$ref['extension'];?></td>
-		<td><?=$ref['pos_start'].'-'.$ref['pos_end'];?></td>
+		<td><?=($ref['extension']+1).'-'.($ref['extension']+$ref['positions']);?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

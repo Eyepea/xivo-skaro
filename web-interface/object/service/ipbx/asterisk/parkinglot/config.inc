@@ -31,13 +31,8 @@ $array['element']['context']['default'] = '';
 $array['element']['extension'] = array();
 $array['element']['extension']['default'] = '';
 
-$array['element']['pos_start'] = array();
-$array['element']['pos_start']['value'] = range(0,500);
-$array['element']['pos_start']['default'] = '';
-
-$array['element']['pos_end'] = array();
-$array['element']['pos_end']['value'] = range(0,500);
-$array['element']['pos_end']['default'] = '';
+$array['element']['positions'] = array();
+$array['element']['positions']['default'] = 50;
 
 $array['element']['next'] = array();
 $array['element']['next']['value'] = array(0,1);
@@ -55,9 +50,8 @@ $array['element']['commented']['set'] = true;
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['context'] = array('set' => true, 'chk' => 1, 'maxlen' => 39);
-$array['filter']['extension'] = array('set' => true, 'chk' => 1, 'maxlen' => 40);
-$array['filter']['pos_start'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
-$array['filter']['pos_end'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
+$array['filter']['extension'] = array('set' => true, 'chk' => 1, 'maxlen' => 40, 'cast' => 'uint');
+$array['filter']['positions'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['next'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false, 'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);

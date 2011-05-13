@@ -475,7 +475,7 @@ class AsteriskFrontend(Frontend):
 			print >>o, "\n[parkinglot_%s]" % f['name']
 			print >>o, "context => %s" % f['context']
 			print >>o, "parkext => %s" % f['extension']
-			print >>o, "parkpos => %d-%d" % (f['pos_start'], f['pos_end'])
+			print >>o, "parkpos => %d-%d" % (int(f['extension'])+1, int(f['extension'])+f['positions'])
 			if f['next'] == 1:
 				print >>o, "findslot => next"
 				
@@ -790,11 +790,11 @@ class AsteriskFrontend(Frontend):
 		print >>o, "\n[mappings]"
 		for m in self.backend.dundimapping.all(commented=False):
 			#dundi_context => local_context,weight,tech,dest[,options]]
-			_t = trunks[m.trunk]
+			_t = trunks.get(m.trunk,{})
 			_m = "%s => %s,%s,%s,%s:%s@%s/%s" % \
 					(m['name'],m['context'],m['weight'], 
-					_t['protocol'].upper(), _t['username'],	_t['secret'], 
-					_t['host']  if _t['host'] != 'dynamic' else '${IPADDR}',
+					_t.get('protocol','').upper(), _t.get('username',''),	_t.get('', 'secret'), 
+					_t['host']  if _t.get('host','dynamic') != 'dynamic' else '${IPADDR}',
 					m['number'] if m['number'] is not None else '${NUMBER}',
 			)
 

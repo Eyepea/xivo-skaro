@@ -10,8 +10,11 @@ Context:
 ; fm_parkinglot_extension
 Extension:
 
-; fm_parkinglot_pos_start
-Positions :
+; fm_parkinglot_positions
+Num of positions :
+
+; hlp_fp_positions
+Positions starts at extension+1
 
 ; fm_parkinglot_next
 Use next available free position:

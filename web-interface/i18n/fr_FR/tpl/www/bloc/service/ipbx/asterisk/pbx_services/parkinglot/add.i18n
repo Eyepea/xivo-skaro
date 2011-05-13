@@ -10,8 +10,11 @@ Contexte :
 ; fm_parkinglot_extension
 Extension : 
 
-; fm_parkinglot_pos_start
-Emplacements : 
+; fm_parkinglot_positions
+Nombre d'emplacements : 
+
+; hlp_fm_positions
+Les positions démarrent à extension+1
 
 ; fm_parkinglot_next
 Utiliser la position libre suivante : 
