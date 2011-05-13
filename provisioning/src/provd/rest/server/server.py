@@ -390,6 +390,7 @@ class ConfigureParameterResource(Resource):
         try:
             value = self._cfg_srv.get(self._key)
         except KeyError:
+            logger.info('Invalid/unknown key: %s', self._key)
             return respond_no_resource(request)
         else:
             content = {u'param': {u'value': value}}
@@ -405,8 +406,10 @@ class ConfigureParameterResource(Resource):
             try:
                 self._cfg_srv.set(self._key, value)
             except InvalidParameterError, e:
+                logger.info('Invalid value for key %s: %s', self._key, value)
                 return respond_error(request, e)
             except KeyError:
+                logger.info('Invalid/unknown key: %s', self._key)
                 return respond_no_resource(request)
             else:
                 return respond_no_content(request)

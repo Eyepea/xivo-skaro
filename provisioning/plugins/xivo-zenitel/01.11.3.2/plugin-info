@@ -1,0 +1,9 @@
+{
+    "version": "0.1",
+    "description": "Plugin for Zenitel IP stations in version 01.11.3.2.",
+    "capabilities": {
+        "Zenitel, IP station, 01.11.3.2": {
+            "sip.lines": 1
+        }
+    }
+}

@@ -89,6 +89,8 @@ class AuthenticatingDownloader(DefaultDownloader):
         self._opener.add_handler(urllib2.HTTPDigestAuthHandler(self._pwd_manager))
         
     def add_password(self, realm, uri, user, passwd):
+        # Note that if the realm and uri are the same that for an already
+        # added user/passwd, it will be replaced by the new value
         self._pwd_manager.add_password(realm, uri, user, passwd)
 
 

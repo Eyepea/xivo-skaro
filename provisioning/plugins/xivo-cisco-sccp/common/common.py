@@ -176,10 +176,7 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
 
 
 class BaseCiscoTFTPDeviceInfoExtractor(object):
-    def extract(self, request, request_type):
-        return defer.succeed(self._do_extract(request))
-    
-    _FILENAME_REGEX = [
+    _FILENAME_REGEXES = [
         # We know this pattern is not unique to the 7900
         re.compile(r'^SEP([\dA-F]{12})\.cnf\.xml$'),
         re.compile(r'^CTLSEP([\dA-F]{12})\.tlv$'),
@@ -188,15 +185,21 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
         re.compile(r'^g3-tones\.xml$'),
     ]
     
+    def extract(self, request, request_type):
+        return defer.succeed(self._do_extract(request))
+    
     def _do_extract(self, request):
         packet = request['packet']
         filename = packet['filename']
-        for regex in self._FILENAME_REGEX:
+        for regex in self._FILENAME_REGEXES:
             m = regex.match(filename)
             if m:
                 dev_info = {u'vendor': u'Cisco'}
                 if m.lastindex == 1:
-                    dev_info[u'mac'] = norm_mac(m.group(1))
+                    try:
+                        dev_info[u'mac'] = norm_mac(m.group(1).decode('ascii'))
+                    except ValueError, e:
+                        logger.warning('Could not normalize MAC address: %s', e)
                 return dev_info
 
 
@@ -276,32 +279,24 @@ class CiscoConfigureService(object):
         # Creating an instance will also set the password to the downloader
         # if applicable
         self._cisco_dler = cisco_dler
-        self._param_username = username
-        self._param_password = password
+        self._p_username = username
+        self._p_password = password
         self._update_dler()
-    
-    def _update_dler(self):
-        if self._param_username is not None and self._param_password is not None:
-            self._cisco_dler.set_password(self._param_username, self._param_password)
-    
-    @staticmethod
-    def _get_attr_name(name):
-        # Return the key attribute name from the parameter name
-        return '_param_' + name
     
     def get(self, name):
         try:
-            return getattr(self, self._get_attr_name(name))
+            return getattr(self, '_p_' + name)
         except AttributeError, e:
             raise KeyError(e)
     
     def set(self, name, value):
-        try:
-            setattr(self, self._get_attr_name(name), value)
-        except AttributeError, e:
-            raise KeyError(e)
+        attrname = '_p_' + name
+        if hasattr(self, attrname):
+            setattr(self, attrname, value)
+            if self._p_username is not None and self._p_password is not None:
+                self._cisco_dler.set_password(self._p_username, self._p_password)
         else:
-            self._update_dler()
+            raise KeyError(name)
     
     description = {
         u'username': u'The username used to download files from cisco.com website',
