@@ -7,6 +7,6 @@ mkdir tmp
 cd tmp
 tar xzf ../tarballs/asterisk_${VER}+dfsg.orig.tar.gz
 cd asterisk-${VER}
-ln -s ../../patches/classic patches
+ln -s ../../patches/ patches
 quilt push -a
 
