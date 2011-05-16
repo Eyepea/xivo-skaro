@@ -1181,12 +1181,8 @@ DROP TABLE IF EXISTS "outcall";
 CREATE TABLE "outcall" (
  "id" SERIAL,
  "name" varchar(128) NOT NULL,
- "exten" varchar(40) NOT NULL,
  "context" varchar(39) NOT NULL,
- "externprefix" varchar(20) NOT NULL DEFAULT '',
- "stripnum" INTEGER NOT NULL DEFAULT 0,
- "setcallerid" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "callerid" varchar(80) NOT NULL DEFAULT '',
+ "routing" varchar(20) NOT NULL DEFAULT '',
  "useenum" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "internal" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "preprocess_subroutine" varchar(39),
