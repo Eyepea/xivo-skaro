@@ -108,7 +108,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 			if($exists === false)
 				$this->_set_error($this->_extenumbers->get_filter_error());
 			else
-				$this->_set_error('exists');
+				$this->_set_error('extenumbers exists');
 
 			return(false);
 		}

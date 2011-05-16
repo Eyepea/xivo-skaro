@@ -132,6 +132,10 @@ $array['dialaction'] = array();
 $array['dialaction']['table'] = 'dialaction';
 $array['dialaction']['primary'] = array('event' => '','category' => '','categoryval' => '');
 
+$array['dialpattern'] = array();
+$array['dialpattern']['table'] = 'dialpattern';
+$array['dialpattern']['primary'] = array('id' => '');
+
 $array['extensions'] = array();
 $array['extensions']['table'] = 'extensions';
 $array['extensions']['primary'] = array('id' => '');

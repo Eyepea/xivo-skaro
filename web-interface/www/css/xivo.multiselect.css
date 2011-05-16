@@ -1,15 +1,17 @@
 
+/* reset xivo css width limit select */
+.fm-paragraph select {max-width: 500px;}
+
 .multiselect {
-	width: 360px;
+	width: 500px;
 	height: 101px;
 	margin-bottom: 5px;
 }
 
 .ui-multiselect {
-	position: relative;
-	left: 376px;
-	margin: 0px;
+	margin: auto;
 	padding: 0px;
+	text-align: left;
 	border: 1px solid #7F99B1;
 }
 

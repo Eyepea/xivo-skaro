@@ -257,6 +257,7 @@ switch($act)
 		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
 		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
 		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/locale/ui-multiselect-fr.js', true);
 
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');

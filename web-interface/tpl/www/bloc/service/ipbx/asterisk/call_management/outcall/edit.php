@@ -20,11 +20,12 @@
 
 $form = &$this->get_module('form');
 $info = $this->get_var('info');
+
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?> <font><?=$info['outcall']['identity']?></font></span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?> <font><?=$info['outcall']['name']?></font></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 

@@ -4,6 +4,9 @@ Outgoing calls > Add
 ; smenu_general
 General
 
+; smenu_exten
+Exten
+
 ; smenu_rightcalls
 Call permissions
 
@@ -148,3 +151,22 @@ Schedules:
 ; create_schedules
 Create a schedule
 
+; col_outcall-dialpattern_prefix
+Prefix
+
+; col_outcall-dialpattern_externprefix
+Extern prefix
+
+; col_outcall-dialpattern_exten
+Exten
+
+; col_outcall-dialpattern_stripnum
+Stripnum
+
+; col_outcall-dialpattern_callerid
+Callerid
+
+; col_outcall-dialpattern_emergency 	
+Emergency
+
+   

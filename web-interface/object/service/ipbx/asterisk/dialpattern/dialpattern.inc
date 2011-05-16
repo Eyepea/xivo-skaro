@@ -20,15 +20,15 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_dialpattern extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
-	var $_name		= 'outcall';
+	var $_name		= 'dialpattern';
 	var $_filter	= false;
 	var $_origin	= false;
 	var $_identity	= false;
 
-	function xivo_service_asterisk_outcall(&$sre,&$dso)
+	public function __construct(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -40,17 +40,16 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
-		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		$this->_identity->_prepare_identity($data);
-
 		$data['id'] = (int) $data['id'];
-		$data['useenum'] = (bool) $data['useenum'];
-		$data['internal'] = (bool) $data['internal'];
-		$data['commented'] = (bool) $data['commented'];
+		$data['exten'] = $this->_sre->display_extension($data['exten']);
+		$data['outcallid'] = (int) $data['outcallid'];
+		$data['stripnum'] = (int) $data['stripnum'];
+		$data['setcallerid'] = (bool) $data['setcallerid'];
+		$data['emergency'] = (bool) $data['emergency'];
 
 		return($data);
 	}
@@ -59,8 +58,9 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(isset($arr['name']) === true)
-			$arr['name'] = strtolower($arr['name']);
+
+		if(isset($arr['exten']) === true)
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::add($arr,$id));
 	}
@@ -69,8 +69,9 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(isset($arr['name']) === true)
-			$arr['name'] = strtolower($arr['name']);
+
+		if(isset($arr['exten']) === true)
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit($id,$arr,$disable));
 	}

@@ -63,77 +63,7 @@ else:
 		'</div>';
 endif;
 
-		echo $form->select(array('desc'	=> $this->bbf('fm_outcall_mode'),
-				    'name'	=> 'outcall[mode]',
-				    'labelid'	=> 'outcall-mode',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_outcall_mode-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['outcall']['mode']['default'],
-				    'selected'	=> $this->get_var('info','outcall','mode')),
-			      $element['outcall']['mode']['value']),
-
-		$form->text(array('desc'	=> $this->bbf('fm_outcall_prefix'),
-				  'name'	=> 'outcall[prefix]',
-				  'labelid'	=> 'outcall-prefix',
-				  'size'	=> 15,
-				  'default'	=> $element['outcall']['prefix']['default'],
-				  'value'	=> $this->get_var('info','prefix','name'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'prefix')) )),
-
-		$form->select(array('desc'	=> $this->bbf('fm_outcall_numlen'),
-				    'name'	=> 'outcall[numlen]',
-				    'labelid'	=> 'outcall-numlen',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'default'	=> $element['outcall']['numlen']['default'],
-				    'selected'	=> $this->get_var('info','numlen','name')),
-			      $element['outcall']['numlen']['value']),
-
-		$form->text(array('desc'	=> $this->bbf('fm_outcall_exten'),
-				  'name'	=> 'outcall[exten]',
-				  'labelid'	=> 'outcall-exten',
-				  'size'	=> 15,
-				  'default'	=> $element['outcall']['exten']['default'],
-				  'value'	=> $this->get_var('info','outcall','exten'),
-				  'error'	=> $this->bbf_args('error',
-							$this->get_var('error', 'outcall', 'exten')) )),
-
-    $form->select(array('desc'	=> $this->bbf('fm_outcall_stripnum'),
-				    'name'	=> 'outcall[stripnum]',
-				    'labelid'	=> 'outcall-stripnum',
-				    'key'	=> false,
-				    'default'	=> $element['outcall']['stripnum']['default'],
-				    'selected'	=> $this->get_var('info','outcall','stripnum')),
-			      $element['outcall']['stripnum']['value']),
-
-    $form->text(array('desc'	=> $this->bbf('fm_outcall_externprefix'),
-				  'name'	=> 'outcall[externprefix]',
-				  'labelid'	=> 'outcall-externprefix',
-				  'size'	=> 15,
-				  'default'	=> $element['outcall']['externprefix']['default'],
-				  'value'	=> $this->get_var('info','outcall','externprefix'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'externprefix')) )),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_setcallerid'),
-				      'name'	=> 'outcall[setcallerid]',
-				      'labelid'	=> 'setcallerid',
-				      'checked'	=> $this->get_var('info','outcall','setcallerid'),
-				      'default'	=> $element['outcall']['setcallerid']['default'])),
-
-		$form->text(array('desc'	=> $this->bbf('fm_outcall_callerid'),
-				  'name'	=> 'outcall[callerid]',
-				  'labelid'	=> 'outcall-callerid',
-				  'size'	=> 15,
-				  'notag'	=> false,
-				  'default'	=> $element['outcall']['callerid']['default'],
-				  'value'	=> $this->get_var('info','outcall','callerid'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'callerid')) )),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_useenum'),
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_useenum'),
 				      'name'	=> 'outcall[useenum]',
 				      'labelid'	=> 'useenum',
 				      'checked'	=> $this->get_var('info','outcall','useenum'),
@@ -186,67 +116,19 @@ endif;
 <?php
 if($outcalltrunk['list'] !== false):
 ?>
-<div id="outcalltrunklist" class="fm-paragraph fm-multilist">
+<div id="outcalltrunklist" class="fm-paragraph fm-description">
 	<p>
-		<label id="lb-outcalltrunklist" for="it-outcalltrunklist"><?=$this->bbf('fm_outcalltrunk');?></label>
+		<label id="lb-outcalltrunk" for="it-outcalltrunk"><?=$this->bbf('fm_outcalltrunk');?></label>
 	</p>
-				<?=$form->input_for_ms('outcalltrunklist',$this->bbf('ms_seek'))?>
-	<div class="slt-outlist">
-		<?=$form->select(array('name'		=> 'outcalltrunklist',
-				       'label'		=> false,
-				       'id'		=> 'it-outcalltrunklist',
-				       'key'		=> 'identity',
-				       'altkey'		=> 'id',
-				       'multiple'	=> true,
-				       'size'		=> 5,
-				       'paragraph'	=> false),
-				 $outcalltrunk['list']);?>
-	</div>
-
-	<div class="inout-list">
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-outcalltrunklist','it-outcalltrunk');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_inoutcalltrunk');?>">
-			<?=$url->img_html('img/site/button/arrow-left.gif',
-					  $this->bbf('bt_inoutcalltrunk'),
-					  'class="bt-inlist" id="bt-inoutcalltrunk" border="0"');?></a><br />
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-outcalltrunk','it-outcalltrunklist');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_outoutcalltrunk');?>">
-			<?=$url->img_html('img/site/button/arrow-right.gif',
-					  $this->bbf('bt_outoutcalltrunk'),
-					  'class="bt-outlist" id="bt-outoutcalltrunk" border="0"');?></a>
-	</div>
-
-	<div class="slt-inlist">
-		<?=$form->select(array('name'		=> 'outcalltrunk[]',
-				       'label'		=> false,
-				       'id'		=> 'it-outcalltrunk',
-				       'key'		=> 'identity',
-				       'altkey'		=> 'id',
-				       'multiple'	=> true,
-				       'size'		=> 5,
-				       'paragraph'	=> false),
-				 $outcalltrunk['slt']);?>
-		<div class="bt-updown">
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-outcalltrunk',1);
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_upoutcalltrunk');?>">
-				<?=$url->img_html('img/site/button/arrow-up.gif',
-						  $this->bbf('bt_upoutcalltrunk'),
-						  'class="bt-uplist" id="bt-upoutcalltrunk" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-outcalltrunk',-1);
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_downoutcalltrunk');?>">
-				<?=$url->img_html('img/site/button/arrow-down.gif',
-						  $this->bbf('bt_downoutcalltrunk'),
-						  'class="bt-downlist" id="bt-downoutcalltrunk" border="0"');?></a>
-		</div>
-	</div>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'outcalltrunk[]',
+						'labelid' 	=> 'outcalltrunk',
+						'multiple' 	=> true,
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => array_keys($outcalltrunk['slt'])),
+					$outcalltrunk['list']);?>
 </div>
 <div class="clearboth"></div>
 <?php
@@ -258,6 +140,12 @@ else:
 		'</div>';
 endif;
 ?>
+</div>
+
+<div id="sb-part-exten" class="b-nodisplay">
+	<div class="sb-list">
+<?php $this->file_include('bloc/service/ipbx/asterisk/call_management/outcall/exten'); ?>
+	</div>
 </div>
 
 <div id="sb-part-rightcalls" class="b-nodisplay">
@@ -274,7 +162,6 @@ endif;
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
-					       'size'		=> 5,
 					       'paragraph'	=> false),
 					 $rightcall['list']);?>
 		</div>

@@ -68,19 +68,6 @@ $page = $url->pager($pager['pages'],
 ?>
 		</th>
 		<th class="th-center">
-			<span class="title <?= $sort[1]=='exten'?'underline':''?>">
-				<?=$this->bbf('col_exten');?>
-			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_exten'), 'border="0"'),
-					'service/ipbx/call_management/outcall',
-					array('act'	=> 'list', 'sort' => 'exten'),
-					null,
-					$this->bbf('col_sort_exten'));
-?>
-		</th>
-		<th class="th-center">
 			<span class="title <?= $sort[1]=='context'?'underline':''?>">
 				<?=$this->bbf('col_context');?>
 			</span>
@@ -100,7 +87,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="6" class="td-single"><?=$this->bbf('no_outcall');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_outcall');?></td>
 	</tr>
 <?php
 	else:
@@ -133,7 +120,6 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$ref['exten']?></td>
 		<td><?=$ref['context']?></td>
 		<td class="td-right" colspan="2">
 <?php
@@ -163,7 +149,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

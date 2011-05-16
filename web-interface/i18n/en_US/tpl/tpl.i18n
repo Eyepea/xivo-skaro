@@ -49,6 +49,12 @@ Install
 ; opt_uninstall
 Uninstall
 
+; col_row-add
+Add a line
+
+; opt_row-delete
+Delete a line
+
 ; opt_uninstall_confirm
 Confirm uninstall?
 

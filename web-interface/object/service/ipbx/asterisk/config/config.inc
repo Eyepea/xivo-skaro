@@ -152,6 +152,9 @@ $array['module']['ctistatus']['datastorage'] = true;
 $array['module']['dialaction'] = array();
 $array['module']['dialaction']['datastorage'] = true;
 
+$array['module']['dialpattern'] = array();
+$array['module']['dialpattern']['datastorage'] = true;
+
 $array['module']['extensions'] = array();
 $array['module']['extensions']['datastorage'] = true;
 

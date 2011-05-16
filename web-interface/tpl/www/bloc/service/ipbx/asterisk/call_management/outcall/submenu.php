@@ -21,20 +21,37 @@
 ?>
 	<div class="sb-smenu">
 		<ul>
-			<li id="dwsm-tab-1" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-first');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
-				<div class="tab"><span class="span-center"><a href="#first"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+			<li id="dwsm-tab-1"
+				class="dwsm-blur"
+				onclick="dwho_submenu.select(this,'sb-part-first');"
+				onmouseout="dwho_submenu.blur(this);"
+				onmouseover="dwho_submenu.focus(this);">
+				<div class="tab">
+					<span class="span-center"><a href="#first"><?=$this->bbf('smenu_general');?></a></span>
+				</div>
+				<span class="span-right">&nbsp;</span>
 			</li>
-			<li id="dwsm-tab-2" 
-				class="dwsm-blur" 
-				onclick="dwho_submenu.select(this,'sb-part-rightcalls');" 
-				onmouseout="dwho_submenu.blur(this);" 
+			<li id="dwsm-tab-2"
+				class="dwsm-blur"
+				onclick="dwho_submenu.select(this,'sb-part-exten');"
+				onmouseout="dwho_submenu.blur(this);"
+				onmouseover="dwho_submenu.focus(this);">
+				<div class="tab">
+					<span class="span-center"><a href="#exten"><?=$this->bbf('smenu_exten');?></a></span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</li>
+			<li id="dwsm-tab-3"
+				class="dwsm-blur"
+				onclick="dwho_submenu.select(this,'sb-part-rightcalls');"
+				onmouseout="dwho_submenu.blur(this);"
 				onmouseover="dwho_submenu.focus(this);">
 				<div class="tab">
 					<span class="span-center"><a href="#rightcalls"><?=$this->bbf('smenu_rightcalls');?></a></span>
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</li>
-			<li id="dwsm-tab-3"
+			<li id="dwsm-tab-4"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-schedule',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"

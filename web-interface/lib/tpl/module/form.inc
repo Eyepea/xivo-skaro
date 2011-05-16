@@ -1552,7 +1552,6 @@ class dwho_tpl_form extends dwho_tpl_module
 		}
 
 		$r = "\n";
-		$r .= '<p class="ms-box">';
 		$r .= '<select name="'.$this->_param['name'].'"';
 		$r .= ' multiple="multiple"';
 
@@ -1588,7 +1587,7 @@ class dwho_tpl_form extends dwho_tpl_module
 			$this->_mk_slt_option($arr);
 
 		$this->_render = $r.$this->_render.'</select>';
-		$this->_render .= '</p>'."\n";
+		$this->_render .= "\n";
 
 		$this->_mk_help();
 		$this->_mk_error();

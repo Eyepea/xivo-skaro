@@ -4,6 +4,9 @@ Appels sortants > Ajouter
 ; smenu_general
 Général
 
+; smenu_exten
+Extensions
+
 ; smenu_rightcalls
 Droits d'appels
 
@@ -117,3 +120,21 @@ Horaires :
 
 ; create_schedules
 Créer un horaire
+
+; col_outcall-dialpattern_prefix
+Préfixe
+
+; col_outcall-dialpattern_externprefix
+Préfixe externe
+
+; col_outcall-dialpattern_exten
+Extension
+
+; col_outcall-dialpattern_stripnum
+Stripnum
+
+; col_outcall-dialpattern_callerid
+Nom d'appel
+
+; col_outcall-dialpattern_emergency 	
+Urgence
