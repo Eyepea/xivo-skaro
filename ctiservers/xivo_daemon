@@ -161,7 +161,7 @@ class manage_connection:
 
 class xivo_daemon:
     xivoversion = '1.2'
-    revision = __version__.split()[1]
+    revision = 'githash'
     xdname = 'XiVO CTI Server'
 
     def __init__(self):
@@ -278,7 +278,7 @@ class xivo_daemon:
         self.askedtoquit = False
 
         self.time_start = time.localtime()
-        log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Starting (%d)'
+        log.info('# STARTING XiVO CTI Server %s (pid %d) / git:%s # (0/3) Starting (%d)'
                  % (self.xivoversion, os.getpid(), self.revision, self.nreload))
         self.nreload += 1
 
@@ -315,7 +315,7 @@ class xivo_daemon:
             self.myami[ipbxid] = interface_ami.AMI(self, ipbxid, ipbxconfig.get('connection'))
             self.commandclass = amiinterpret.AMI_1_8(self, ipbxid)
 
-            log.info('# STARTING %s / svn:%s / %d'
+            log.info('# STARTING %s / git:%s / %d'
                      % (self.xdname, self.safe[ipbxid].version(), self.nreload))
 
             self.safe[ipbxid].set_ctilog(ctilog)
@@ -452,7 +452,7 @@ class xivo_daemon:
             if self.askedtoquit:
                 # self.commandclass.reset('stop') # used to call __fill_ctilog__('daemon stop', mode)
                 time_uptime = int(time.time() - time.mktime(self.time_start))
-                log.info('# STOPPING XiVO CTI Server %s (pid %d) / svn:%s # uptime %d s (since %s)'
+                log.info('# STOPPING XiVO CTI Server %s (pid %d) / git:%s # uptime %d s (since %s)'
                          % (self.xivoversion, os.getpid(), self.revision,
                             time_uptime, time.asctime(self.time_start)))
                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
