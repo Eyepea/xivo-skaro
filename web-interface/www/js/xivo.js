@@ -279,7 +279,7 @@ function xivo_form_mk_acl(tree)
 	var ref = tree.form[tree.name];
 	var value = tree.value;
 	var len = value.length;
-	var nb = ref.length
+	var nb = ref.length;
 	var sub = 0;
 	var rs = false;
 
@@ -333,13 +333,21 @@ function xivo_set_confirm_uri_for_main_listing()
 dwho.dom.set_onload(xivo_set_confirm_uri_for_main_listing);
 dwho.dom.set_onload(xivo_menu_active);
 
+//Return a helper with preserved width of cells
+var fixHelper = function(e, ui) {
+	ui.children().each(function() {
+		$(this).width($(this).width());
+	});
+	return ui;
+};
+
 // object for manage multiselect filter
 function clean_ms(input_id,select_from,select_to)
 {
 	var box = dwho_eid(input_id);
 	var select = dwho_eid(select_from);
 	var select2 = dwho_eid(select_to);
-	var select_cache = Array();
+	var select_cache = new Array();
 	
     this.__init = __init;
     this.reset = reset;
