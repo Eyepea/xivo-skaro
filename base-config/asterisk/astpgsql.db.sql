@@ -671,6 +671,24 @@ CREATE INDEX "dialaction__idx__actionarg2" ON "dialaction"("actionarg2");
 CREATE INDEX "dialaction__idx__linked" ON "dialaction"("linked");
 
 
+DROP TABLE IF EXISTS "dialpattern";
+CREATE TABLE "dialpattern" (
+ "id" SERIAL,
+ "outcallid" integer NOT NULL,
+ "type" varchar(32) NOT NULL,
+ "externprefix" varchar(64),
+ "prefix" varchar(32),
+ "exten" varchar(40) NOT NULL,
+ "stripnum" integer,
+ "emergency" integer,
+ "setcallerid" integer NOT NULL DEFAULT 0,
+ "callerid" varchar(80),
+ PRIMARY KEY("id")
+);
+
+CREATE INDEX "dialpattern__idx__outcallid" ON "dialpattern"("outcallid");
+CREATE INDEX "dialpattern__idx__type" ON "dialpattern"("type");
+
 DROP TABLE IF EXISTS "extensions";
 CREATE TABLE "extensions" (
  "id" SERIAL,
