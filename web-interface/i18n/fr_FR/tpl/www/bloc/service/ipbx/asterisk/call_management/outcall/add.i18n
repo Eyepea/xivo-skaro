@@ -16,6 +16,9 @@ Créer une interconnexion
 ; fm_outcall_name
 Nom :
 
+; fm_outcall_routing
+Routage dynamique : 
+
 ; fm_outcall_context
 Contexte :
 

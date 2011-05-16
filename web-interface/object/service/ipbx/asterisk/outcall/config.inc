@@ -27,6 +27,9 @@ $array['element']['name']['default'] = '';
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
+$array['element']['routing'] = array();
+$array['element']['routing']['default'] = '';
+
 $array['element']['useenum'] = array();
 $array['element']['useenum']['value'] = array(0,1);
 $array['element']['useenum']['default'] = 0;
@@ -59,6 +62,7 @@ $array['element']['commented']['set'] = true;
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['routing'] = array('set' => false,'chk' => 2,'maxlen' => 64,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['useenum'] = array('bool' => true);
 $array['filter']['internal'] = array('bool' => true);
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');

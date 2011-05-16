@@ -69,6 +69,15 @@ endif;
 				      'checked'	=> $this->get_var('info','outcall','useenum'),
 				      'default'	=> $element['outcall']['useenum']['default'])),
 
+		$form->text(array('desc'	=> $this->bbf('fm_outcall_routing'),
+				  'name'	=> 'outcall[routing]',
+				  'labelid'	=> 'outcall-routing',
+				  'size'	=> 15,
+				  'default'	=> $element['outcall']['routing']['default'],
+				  'value'	=> $this->get_var('info','outcall','routing'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'routing')) )),
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_internal'),
 				      'name'	=> 'outcall[internal]',
 				      'labelid'	=> 'internal',
@@ -98,21 +107,6 @@ endif;
 			      $element['outcall']['hangupringtime']['value']);
 
 ?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-outcall-description" for="it-outcall-description"><?=$this->bbf('fm_outcall_description');?></label>
-		</p>
-		<?=$form->textarea(array('paragraph'	=> false,
-					 'label'	=> false,
-					 'name'		=> 'outcall[description]',
-					 'id'		=> 'outcall-description',
-					 'cols'		=> 60,
-					 'rows'		=> 5,
-					 'default'	=> $element['outcall']['description']['default'],
-					 'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'description')) ),
-				   $this->get_var('info','outcall','description'));?>
-	</div>
 <?php
 if($outcalltrunk['list'] !== false):
 ?>
@@ -139,6 +133,21 @@ else:
 		'</div>';
 endif;
 ?>
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-outcall-description" for="it-outcall-description"><?=$this->bbf('fm_outcall_description');?></label>
+		</p>
+		<?=$form->textarea(array('paragraph'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'outcall[description]',
+					 'id'		=> 'outcall-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['outcall']['description']['default'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'description')) ),
+				   $this->get_var('info','outcall','description'));?>
+	</div>
 </div>
 
 <div id="sb-part-exten" class="b-nodisplay">
