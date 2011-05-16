@@ -69,16 +69,11 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
-
-		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true)
+		
+		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true)
 		{
-			$outcalltrunksort = new dwho_sort(array('key' => 'priority'));
-			usort($result['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
-
-			$outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
-
-			if($outcalltrunk['slt'] !== false)
-				$outcalltrunk['list'] = dwho_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
+			$outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
+			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
 		}
 
 		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
@@ -97,6 +92,14 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
+		$dhtml->set_js('js/utils/dyntable.js');
+		
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
 		$_TPL->set_var('rightcall',$rightcall);
@@ -122,7 +125,11 @@ switch($act)
 		dwho::load_class('dwho_sort');
 
 		$apptrunk = &$ipbx->get_application('trunk',null,false);
-		$outcalltrunk['list'] = $apptrunk->get_trunks_list(null,null, array('name' => SORT_ASC),null,true);
+		if(($outcalltrunk['list'] = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
+		{
+			$trunksort = new dwho_sort(array('key' => 'identity'));
+			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
+		}
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -130,14 +137,12 @@ switch($act)
 		if(isset($_QR['fm_send']) === true && dwho_issa('outcall',$_QR) === true)
 		{
 			$return = &$result;
-
 			if($appoutcall->set_edit($_QR) === false
 			|| $appoutcall->edit() === false)
 			{
 				$fm_save = false;
 				$result = $appoutcall->get_result();
 				$error = $appoutcall->get_error();
-				dwho_var_dump($error);
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
@@ -145,10 +150,8 @@ switch($act)
 
 		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true)
 		{
-			$outcalltrunksort = new dwho_sort(array('key' => 'priority'));
-			usort($return['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
-
 			$outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
+			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
 		}
 
 		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)

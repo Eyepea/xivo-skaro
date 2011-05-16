@@ -123,11 +123,10 @@ if($outcalltrunk['list'] !== false):
 		<?=$form->jq_select(array('paragraph'	=> false,
 					 	'label'		=> false,
             			'name'    	=> 'outcalltrunk[]',
-						'labelid' 	=> 'outcalltrunk',
-						'multiple' 	=> true,
+						'id' 		=> 'outcalltrunk',
 						'key'		=> 'identity',
 				       	'altkey'	=> 'id',
-            			'selected'  => array_keys($outcalltrunk['slt'])),
+            			'selected'  => $outcalltrunk['slt']),
 					$outcalltrunk['list']);?>
 </div>
 <div class="clearboth"></div>

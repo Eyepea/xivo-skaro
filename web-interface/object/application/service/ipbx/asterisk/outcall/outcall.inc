@@ -249,7 +249,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return(false);
 
 		$reslist = $error = array();
-		$errnb = 0;
 
 		foreach($arr as $key => $list)
 		{
@@ -262,16 +261,13 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					$reslist[$i][$key] = $arr[$key][$i];
 			}
 		}
-
-		if(empty($reslist) === true)
-		{
-			$this->_set_result('dialpattern',false);
-			$this->_set_error('dialpattern','empty');
-			return(false);
-		}
 		
 		array_pop($reslist);
+		
+		if(empty($reslist) === true)
+			return(null);
 
+		$errnb = 0;
 		$res = array();
 		for($i = 0;$i < count($reslist);$i++)
 		{
@@ -375,6 +371,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if($this->get_errnb() > 0
 		|| ($outcallid = $this->add_outcall()) === false
+		|| $this->edit_dialpattern($outcallid) === false
 		|| $this->add_outcalltrunk($outcallid) === false
 		|| $this->add_rightcall($outcallid) === false
 		|| $this->add_contextmember($outcallid) === false
