@@ -23,7 +23,7 @@ $array['index'] = 'index.php';
 
 /*
  * XIVO SECTION
- * 
+ *
  */
 
 $array['xivo'] = 'xivo/index.php';
@@ -110,7 +110,7 @@ $array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.p
 
 /*
  * SERVICE SECTION
- * 
+ *
  */
 
 $array['service/ipbx'] = 'service/ipbx/index.php';
@@ -280,7 +280,7 @@ $array['service/ipbx/dundi/mappings'] = 'service/ipbx/index.php/dundi/mappings';
 
 /*
  * CTI SECTION
- * 
+ *
  */
 
 $array['cti']                    = 'cti/index.php';
@@ -304,11 +304,11 @@ $array['service/ipbx/json/private/queuelogger/configuration']  = 'service/ipbx/j
 
 /*
  * MUNIN STATS SECTION
- * 
+ *
  */
 
 $array['graphs'] = 'graphs/index.php';
-$array['graphs/munin/apache']       = 'graphs/munin/index.php/apache';
+$array['graphs/munin/lighttpd']     = 'graphs/munin/index.php/lighttpd';
 $array['graphs/munin/asterisk']     = 'graphs/munin/index.php/asterisk';
 $array['graphs/munin/disk']         = 'graphs/munin/index.php/disk';
 $array['graphs/munin/time']         = 'graphs/munin/index.php/time';
@@ -320,7 +320,7 @@ $array['graphs/munin/other']        = 'graphs/munin/index.php/other';
 
 /*
  * STATISTICS SECTION
- * 
+ *
  */
 
 $array['statistics']								= 'statistics/index.php';

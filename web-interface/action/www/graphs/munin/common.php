@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$domain     = 'localdomain/localhost.localdomain';
+
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'munin.inc');
 
 $basedir        = "img/graphs/munin/$domain/";

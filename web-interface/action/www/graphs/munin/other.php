@@ -19,7 +19,7 @@
 #
 
 $module     = 'other';
-$domain     = 'localdomain';
+#domain     = 'localdomain';
 #$graphs     = array('dhcpd3', 'uptime');
 $freqs      = array('day', 'week', 'month', 'year');
 

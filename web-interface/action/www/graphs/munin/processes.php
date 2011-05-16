@@ -19,7 +19,7 @@
 #
 
 $module     = 'processes';
-$domain     = 'localdomain';
+#domain     = 'localdomain';
 #$graphs     = array('forks', 'processes', 'vmstat');
 $freqs      = array('day', 'week', 'month', 'year');
 

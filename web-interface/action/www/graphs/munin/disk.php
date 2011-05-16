@@ -19,7 +19,7 @@
 #
 
 $module     = 'disk';
-$domain     = 'localdomain';
+$#domain     = 'localdomain';
 #$graphs     = array('df', 'df_inode', 'iostat');
 $freqs      = array('day', 'week', 'month', 'year');
 

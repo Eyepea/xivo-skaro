@@ -19,7 +19,7 @@
 #
 
 $module     = 'system';
-$domain     = 'localdomain';
+#domain     = 'localdomain';
 #$graphs     = array('cpu', 'entropy', 'interrupts', 'irqstats', 'load', 'memory',
 #    'open_files', 'open_inodes', 'swap');
 $freqs      = array('day', 'week', 'month', 'year');

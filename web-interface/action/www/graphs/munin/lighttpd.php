@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$module     = 'apache';
-$domain     = 'localdomain';
+$module     = 'lighttpd';
+#domain     = 'localdomain';
 #$graphs     = array('apache_accesses', 'apache_processes');
 $freqs      = array('day', 'week', 'month', 'year');
 

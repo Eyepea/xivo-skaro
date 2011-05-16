@@ -19,7 +19,7 @@
 #
 
 $module     = 'time';
-$domain     = 'localdomain';
+#domain     = 'localdomain';
 #$graphs     = array('ntp_offset', 'ntp_states');
 $freqs      = array('day', 'week', 'month', 'year');
 

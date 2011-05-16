@@ -24,9 +24,9 @@ require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'file.inc');
 function dwho_munin_graphstree($urldir, $domain)
 {
     $classifier = array(
-        'apache_.*'       => 'apache',
+        'lighttpd_.*'     => 'lighttpd',
         'asterisk_.*'     => 'asterisk',
-        'df.*'            => 'disk', 
+        'df.*'            => 'disk',
         'iostat'          => 'disk',
         'smart_.*'        => 'disk',
         'hddtemp_.*'      => 'disk',
@@ -38,14 +38,14 @@ function dwho_munin_graphstree($urldir, $domain)
         'forks'           => 'processes',
         'processes'       => 'processes',
         'vmstat'          => 'processes',
-        'cpu'             => 'system', 
-        'entropy'         => 'system', 
-        'interrupts'      => 'system', 
-        'irqstats'        => 'system', 
-        'load'            => 'system', 
+        'cpu'             => 'system',
+        'entropy'         => 'system',
+        'interrupts'      => 'system',
+        'irqstats'        => 'system',
+        'load'            => 'system',
         'memory'          => 'system',
-        'open_.*'         => 'system', 
-        'open_.*'         => 'system', 
+        'open_.*'         => 'system',
+        'open_.*'         => 'system',
         'swap'            => 'system',
         'ntp_.*'          => 'time',
         'mysql_.*'        => 'mysql'
@@ -59,7 +59,7 @@ function dwho_munin_graphstree($urldir, $domain)
     $tree = array();
     foreach($r as $graph)
     {
-        list($xivo, $domain, $type, $freq, $fmt)= split("[\.-]", $graph);
+        list($type, $freq, $fmt)= split("[\.-]", $graph);
         
         $cat = null;
         foreach($classifier as $key => $value)
