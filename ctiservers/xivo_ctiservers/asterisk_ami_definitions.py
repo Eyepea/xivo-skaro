@@ -153,7 +153,8 @@ manager_commands['fetchstatuses'] = [
     'Agents', 'MeetmeList', 'VoicemailUsersList',
     'QueueStatus', # QueueStatus after CoreShowChannels in order for channels involved to be already known
     'QueueSummary',
-    'ParkedCalls', 'Status'
+    'ParkedCalls', 'Status',
+    'ShowDialPlan'
 ]
 
 manager_commands['other'] = [

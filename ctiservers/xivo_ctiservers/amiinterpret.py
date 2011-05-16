@@ -452,13 +452,17 @@ class AMI_1_8:
 
     # XXX TODO handle former AgentCallBacklogin & logoff
 
+    def ami_musiconhold(self, event):
+        channel = event.pop('Channel')
+        log.info('ami_musiconhold %s : %s' % (channel, event))
+        return
 
     # Parking events
     def ami_parkedcall(self, event):
         channel = event.pop('Channel')
         exten = event.pop('Exten')
         parkinglot = event.pop('Parkinglot')
-        log.info('ami_parkedcall %s %s' % (channel, event))
+        log.info('ami_parkedcall %s %s %s %s' % (channel, parkinglot, exten, event))
         if channel in self.innerdata.channels:
             self.innerdata.channels[channel].setparking(exten, parkinglot)
         return
@@ -496,41 +500,71 @@ class AMI_1_8:
         log.info('ami_dtmf %s' % (event))
         return
 
-    def userevent_did(self):
+
+    def userevent_user(self, channel, event):
         return
 
-    def userevent_lookupdirectory(self):
+    def userevent_group(self, channel, event):
         return
 
-    def userevent_user(self):
+    def userevent_queue(self, channel, event):
         return
 
-    def userevent_group(self):
+    def userevent_meetme(self, channel, event):
         return
 
-    def userevent_queue(self):
+    def userevent_outcall(self, channel, event):
         return
 
-    def userevent_outcall(self):
+    def userevent_did(self, eventname, channel, event):
+        calleridnum = event.get('XIVO_SRCNUM')
+        calleridname = event.get('XIVO_SRCNAME')
+        calleridton = event.get('XIVO_SRCTON')
+        calleridrdnis = event.get('XIVO_SRCRDNIS')
+        didnumber = event.get('XIVO_EXTENPATTERN')
         return
 
-    def userevent_meetme(self):
+
+    def userevent_lookupdirectory(self, eventname, channel, event):
+        calleridnum = event.get('XIVO_SRCNUM')
+        calleridname = event.get('XIVO_SRCNAME')
+        calleridton = event.get('XIVO_SRCTON')
+        calleridrdnis = event.get('XIVO_SRCRDNIS')
+        context = event.get('XIVO_CONTEXT')
         return
 
-    def userevent_localcall(self):
+    def userevent_localcall(self, channel, event):
         return
 
-    def userevent_feature(self):
+    def userevent_feature(self, channel, event):
+        log.info('userevent_feature %s : %s' % (channel, event))
         return
 
-    def userevent_custom(self):
+    def userevent_custom(self, channel, event):
         return
 
-    def userevent_dialplan2cti(self):
+    def userevent_dialplan2cti(self, channel, event):
+        # why "UserEvent + dialplan2cti" and not "Newexten + Set" ?
+        # - more selective
+        # - variables declarations are not always done with Set (Read(), AGI(), ...)
+        # - if there is a need for extra useful data (XIVO_USERID, ...)
+        # - (future ?) multiple settings at once
+        cti_varname = event.get('VARIABLE')
+        dp_value = event.get('VALUE')
+        log.info('dialplan2cti %s' % (channel))
+        if self.uniqueids[astid].has_key(uniqueid):
+            if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
+                dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
+                dialplan_data['dp-%s' % cti_varname] = dp_value
+            else:
+                log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)'
+                            % (astid, eventname))
         return
 
-    userevents = ['Queue', 'User', 'Custom', 'Meetme', 'Group',
-                  'LocalCall']
+    userevents = ['Feature',
+                  'OutCall', 'Custom', 'LocalCall', 'dialplan2cti', 'LookupDirectory',
+                  'User', 'Queue', 'Group','Meetme', 'Did',
+                  ]
 
     def ami_userevent(self, event):
         eventname = event.pop('UserEvent')
@@ -540,7 +574,7 @@ class AMI_1_8:
             methodname = 'userevent_%s' % eventname.lower()
             if hasattr(self, methodname):
                 log.info('ami_userevent %s %s : %s' % (eventname, channel, event))
-                getattr(self, methodname)()
+                getattr(self, methodname)(channel, event)
         return
 
     def ami_agiexec(self, event):
@@ -573,13 +607,21 @@ class AMI_1_8:
 
     # Status replies events
     def ami_peerentry(self, event):
-        if log_ami_events_statusrequest:
-            # log.info('ami_peerentry %s' % (event))
-            pass
+        ipaddress = event.pop('IPaddress')
+        ipport = event.pop('IPport')
+        if ipport != '0' and ipaddress != '-none-':
+            channeltype = event.pop('Channeltype')
+            objectname = event.pop('ObjectName')
+            log.info('ami_peerentry %s:%s %s %s'
+                     % (ipaddress, ipport, channeltype, objectname))
+            # {u'Status': u'Unmonitored', u'ChanObjectType': u'peer', u'RealtimeDevice': u'no',
+            # u'Dynamic': u'yes', u'TextSupport': u'no', u'ACL': u'no', u'VideoSupport': u'no',
+            # u'Forcerport': u'no'}
         return
+
     def ami_registryentry(self, event):
         if log_ami_events_statusrequest:
-            # log.info('ami_registryentry %s' % (event))
+            log.info('ami_registryentry %s' % (event))
             pass
         return
 
@@ -718,8 +760,22 @@ class AMI_1_8:
         return
 
     def ami_listdialplan(self, event):
-        if log_ami_events_statusrequest:
-            log.info('ami_listdialplan %s' % (event))
+        if 'Extension' not in event:
+            return
+        extension = event.pop('Extension')
+        if extension.isdigit():
+            context = event.pop('Context')
+            priority = event.pop('Priority')
+            if priority == '1':
+                conn_ami = self.ctid.myami.get(self.ipbxid).amicl
+                ipbxcmd = 'sendextensionstate'
+                if hasattr(conn_ami, ipbxcmd):
+                    conn_ami.actionid = ''.join(random.sample(__alphanums__, 10))
+                    log.info('starting ipbxcommand %s with actionid %s'
+                             % (ipbxcmd, conn_ami.actionid))
+                    r = getattr(conn_ami, ipbxcmd)(* (extension, context))
+                else:
+                    log.warning('no such AMI command %s' % ipbxcmd)
         return
 
     # XXX dahdi channels
@@ -849,9 +905,7 @@ class AMI_1_8:
 ##    def ami_minivoicemail(self, event): return
 ##    def ami_mobilestatus(self, event): return
 ##    def ami_moduleloadreport(self, event): return
-##    def ami_musiconhold(self, event): return
 ##    def ami_newpeeraccount(self, event): return
-##    def ami_peerentry(self, event): return
 ##    def ami_placeholder(self, event): return
 ##    def ami_queuememberpenalty(self, event): return
 ##    def ami_spanalarm(self, event): return
@@ -859,9 +913,21 @@ class AMI_1_8:
 ##    def ami_waiteventcomplete(self, event): return
 
     # Responses
+    def amiresponse_extensionstatus(self, event):
+        exten = event.pop('Exten')
+        context = event.pop('Context')
+        hint = event.pop('Hint')
+        status = event.pop('Status')
+        if hint:
+            log.info('amiresponse_extensionstatus : %s %s %s %s' % (exten, context, hint, status))
+            self.innerdata.updatehint(hint, status)
+        return
+
     def amiresponse_success(self, event, nocolon):
-        log.info('amiresponse_success %s' % event)
+        msg = event.get('Message')
         actionid = event.get('ActionID')
+        log.info('amiresponse_success %s' % event)
+
         if actionid in self.getvar_requests:
             del self.getvar_requests[actionid]
         if actionid in self.a2c: # created at newchannel event
@@ -870,6 +936,10 @@ class AMI_1_8:
                 channel = self.a2c.get(actionid)
                 self.innerdata.autocall(channel, value)
             del self.a2c[actionid]
+
+        if msg == 'Extension Status':
+            # this is the reply to 'ExtensionState'
+            self.amiresponse_extensionstatus(event)
         return
 
     def amiresponse_error(self, event, nocolon):

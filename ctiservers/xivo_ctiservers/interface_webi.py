@@ -48,6 +48,8 @@ AMI_REQUESTS = [
     ]
 
 UPDATE_REQUESTS = [
+    'xivo[cticonfig,update]',
+
     'xivo[userlist,update]',
     'xivo[devicelist,update]',
     'xivo[linelist,update]',
