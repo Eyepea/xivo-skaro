@@ -126,10 +126,10 @@ function lnkdroprow(obj)
 	if (it_id.val() == 0)
 		return false;
     
-    td_protocol = $(obj).parents('tr').find('#td_ex-linefeatures-protocol');
-    td_name = $(obj).parents('tr').find('#td_ex-linefeatures-name');
+    it_protocol = $(obj).parents('tr').find('#linefeatures-protocol');
+    it_name = $(obj).parents('tr').find('#linefeatures-name');
     
-	$('#list_lines_free').append("<option value=" + it_id.val() + ">" + td_protocol.text()+'/'+td_name.text() + "</option>");
+	$('#list_lines_free').append("<option value=" + it_id.val() + ">" + it_protocol.val()+'/'+it_name.val() + "</option>");
 	
     if ($('#list_lines_free option').length > 0)
     	$('#box-lines_free').show();

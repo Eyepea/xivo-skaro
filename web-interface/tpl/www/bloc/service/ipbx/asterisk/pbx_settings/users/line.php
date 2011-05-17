@@ -166,11 +166,13 @@ if($list !== false):
 			<?=$form->hidden(array('name' => 'linefeatures[id][]',
 						'value' 	=> $ref['id']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[protocol][]',
+				    	'id'		=> 'linefeatures-protocol',
 						'value' 	=> $ref['protocol']));?>
 			<?=$form->hidden(array('name' => '',
 						'id' 		=> 'context-selected',
 						'value' 	=> $ref['context']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[name][]',
+				    	'id'		=> 'linefeatures-name',
 						'value' 	=> $ref['name']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
 					    'id'		=> 'linefeatures-rules_group',

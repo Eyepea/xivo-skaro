@@ -357,7 +357,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
 					$custom = dwho_array_startswith_key($ref,'usercustom.',true);
 					$custom['initialized'] = true;
-					$custom['identity'] = strtoupper(XIVO_SRE_IPBX_AST_PROTO_CUSTOM).'/'.$custom['interface'];
+					#$custom['identity'] = strtoupper(XIVO_SRE_IPBX_AST_PROTO_CUSTOM).'/'.$custom['interface'];
+					$custom['identity'] = $custom['interface'];
 					$r[$linefeatures['id']] = array_merge($custom,$linefeatures);
 					break;
 				default:
@@ -1315,12 +1316,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(false);
 		
-		// remove device associated
+		// remove device if associated
 		if(($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
-		{
-			dwho_report::push('error', 'device doesn\'t exist');
-			return(false);
-		}
+			return(true);
 		elseif($this->_provdconfig->remove_line_from_config($device['deviceid'],$this->_info['linefeatures']['num']) === false)
 			return(false);
 		

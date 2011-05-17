@@ -136,8 +136,7 @@ $page = $url->pager($pager['pages'],
 			<?=empty($ref['provisioningid']) ? '-' : $ref['provisioningid']?>
 		</td>
 		<td class="txt-center">
-			<?=empty($ref['useridentity']) ? '-' :
-				dwho_htmlen(dwho_trunc($ref['useridentity'],25,'...',false))?>
+			<?=dwho_htmlen(dwho_trunc($ref['useridentity'],25,'...',false))?>
 		</td>
 		<td class="txt-center">
 			<?=empty($ref['number']) ? '-' : $ref['number']?>
@@ -151,8 +150,10 @@ $page = $url->pager($pager['pages'],
 					array('act'	=> 'edit',
 					      'id'	=> $ref['id']),
 					null,
-					$this->bbf('opt_modify')),"\n",
-			$url->href_html($url->img_html('img/site/button/delete.gif',
+					$this->bbf('opt_modify')),"\n";
+					
+		if (dwho_has_len($ref['number']) === false):
+			echo	$url->href_html($url->img_html('img/site/button/delete.gif',
 						       $this->bbf('opt_delete'),
 						       'border="0"'),
 					'service/ipbx/pbx_settings/lines',
@@ -162,6 +163,7 @@ $page = $url->pager($pager['pages'],
 					      $param),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 					$this->bbf('opt_delete'));
+		endif;
 ?>
 		</td>
 	</tr>
