@@ -32,12 +32,17 @@ def is_valid_ipv4_address(address):
 if __name__ == '__main__':
 
     parser = OptionParser()
-    parser.add_option("--node", dest="node", type='string', metavar="ACTION",
-            help="configure node, must be used executed on each node ex : pf-xivo-ha --node init")
-    parser.add_option("--cluster", dest="cluster", type='string', metavar="ACTION",
-            help="configure the cluster resource manager (init or status)")
-    parser.add_option("--config_file", dest="config_file", type='string', metavar="CONFIG_FILE",
-            help="specify the config file to use (default : /etc/pf-xivo/xivo_ha/pf-xivo-ha.conf)")
+    parser.add_option('--node', dest='node', type='string', metavar='ACTION',
+            help='configure node, must be used executed on each node (init or update)\n'
+                 'you must specify --role and --hostname')
+    parser.add_option('--cluster', dest='cluster', type='string', metavar='ACTION',
+            help='configure the cluster resource manager (manage or status)')
+    parser.add_option('-r', '--role', dest='role', type='string', metavar='ROLE',
+            help='specify role (master or slave)')
+    parser.add_option('-n', '--hostname', dest='host', type='string', metavar='HOSTNAME',
+            help='specify hostname')
+    parser.add_option('-f', '--config_file', dest='config_file', type='string', metavar='CONFIG_FILE',
+            help='specify the config file to use (default : /etc/pf-xivo/xivo_ha/pf-xivo-ha.conf)')
     (options, args) = parser.parse_args()
 
 
@@ -49,10 +54,13 @@ if __name__ == '__main__':
     config = ConfigObj(config_file)
 
     # check if one option is given
-    if not options.node and not options.cluster and not options.csync:
+    if not options.node and not options.cluster:
         parser.error("option --cluster or --node is mandatory")
 
-    # parse /etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf
+    if options.node:
+        if not options.role or not options.host:
+            parser.error("You have to specify role and hostname")
+
     extra = "/etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf"
     def _get_extra_services():
         for l in open(extra):
@@ -77,6 +85,17 @@ if __name__ == '__main__':
         if not os.path.isfile(file_):
             warn = "init file %s does not exist" % file_
             raise IOError(warn)
+
+    def _get_extra_csync_data():
+        for l in open(extra):
+            data = l.replace(' ', '').strip()
+            data = data.split("=")
+            if data[0] == 'extra_include' and data[1] is not '':
+                data = data[1].split(',')
+                csync_data['extra_include'] = data
+            if data[0] == 'extra_exclude' and data[1] is not '':
+                data = data[1].split(',')
+                csync_data['extra_exclude'] = data
 
 
     # corosync data
@@ -107,27 +126,34 @@ if __name__ == '__main__':
     cluster = ClusterResourceManager(cluster_config)
 
     # csync2 configuration.
-    csync_data  = cluster_config['csync2']
+    csync_data = {}
     csync_data['hosts'] = nodes
+    _get_extra_csync_data()
     csync2 = FilesReplicationManagement(csync_data)
+    print(csync_data)
 
     for address in network_addr, multicast_addr:
         is_valid_ipv4_address(address)
 
     if options.node:
         if options.node == 'init':
+            print('node initialization')
             node_management.initialize()
             for service in services:
                 manage_service = ManageService(service)
                 manage_service.initialize()
             csync2.initialize()
-            sys.stdout.write("You have to copy /etc/pf-xivo/xivo-ha/pf-xivo-ha.conf to the other node\n")
-            sys.stdout.write("You have to do the same action on the other node to finish node configuration\n")
+            if options.role == 'master':
+                print('start lighttpd on %s' % options.host)
+        elif options.node == 'update':
+            print('updating node configuration')
+        elif options.node == 'deploy':
+            print('deploy config file')
         else:
             parser.error("this option is not allowed")
 
     if options.cluster:
-        if options.cluster == 'init':
+        if options.cluster == 'manage':
             cluster.manage() 
         elif options.cluster == 'status':
             cluster.status()

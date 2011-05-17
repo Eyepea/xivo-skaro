@@ -7,6 +7,7 @@ import filecmp
 import shutil
 import subprocess
 import hashlib
+from time import localtime, strftime
 from xivo_ha.tools import Tools
 
 class ClusterEngine(object):
@@ -185,24 +186,28 @@ class FilesReplicationManagement(Tools):
     Used to manage files replication
     '''
     def __init__(self,data):
-        self.dirs         = data['dirs']
-        self.files        = data['files']
-        self.conflict_res = data['conflict_resolution']
-        self.hosts        = data['hosts']
-        self.key_file     = data['key_file']
-        self.config_file  = data['config_file'] if data.has_key('config_file') else "/etc/csync.cfg"
-        self.backup_dir   = data['backup_dir']
-        self.backup_keep  = data['backup_keep']
+        self.hosts         = data['hosts']
+        self.extra_include = data['extra_include'] if data.has_key('extra_include') else None
+        self.extra_exclude = data['extra_exclude'] if data.has_key('extra_exclude') else None
+        self.config_tmp    = data['config_tmp']  if data.has_key('config_tmp')  else '/usr/share/pf-xivo-ha/templates/csync2/csync2.cfg' 
+        self.key_file      = data['key_file']    if data.has_key('key_file')    else "/etc/csync2.key"
+        self.config_file   = data['config_file'] if data.has_key('config_file') else "/etc/csync2.cfg"
+        self.backup_dir    = data['backup_dir']  if data.has_key('backup_dir')  else '/var/backups/pf-xivo/xivo_ha/csync2' 
+        self.backup_keep   = data['backup_keep'] if data.has_key('backup_keep') else '/var/backups/pf-xivo/xivo_ha/csync2' 
+        self.conflict_res  = 'younger'
 
-    def _generate_ssl_key(self):
-        string = "%s%s" % (self.hosts[0], self.hosts[1])
+    def _generate_ssl_key(self, time = None):
+        if time is None:
+            time = strftime("%Y%m%d-%H%M%S", localtime())
+        string = "%s%s%s" % (self.hosts[0], self.hosts[1], time )
         return hashlib.md5(string).hexdigest()
 
     def _create_key_file(self):
         key_file = self.key_file
-        key = self._generate_ssl_key()
-        with open(key_file, 'w') as file_:
-            file_.write(key)
+        if not os.path.isfile(self.config_file):
+            key = self._generate_ssl_key()
+            with open(key_file, 'w') as file_:
+                file_.write(key)
         return key_file
 
     def _config_file_hosts(self):
@@ -215,21 +220,11 @@ class FilesReplicationManagement(Tools):
         string += ";"
         return string
 
-    def _config_file_key_file(self):
+    def _config_file_key(self):
         string = "key"
         string += " %s;" % self.key_file
         return string
 
-    def _config_file_include(self, include):
-        string = "include"
-        string += " %s;" % include
-        return string
-    
-    def _config_file_exclude(self, exclude):
-        string = "exclude"
-        string += " %s;" % exclude
-        return string
-   
     def _config_file_backup_dir(self):
         string = "backup-directory"
         string += " %s;" % self.backup_dir
@@ -245,32 +240,56 @@ class FilesReplicationManagement(Tools):
         string += " %s;" % self.conflict_res
         return string
 
-    def _create_config_file(self):
-        config_file = self.config_file
-        with open(config_file, 'w') as file_:
-            file_.write('group xivo\n')
-            file_.write('{\n')
-            # host statement
-            file_.write(self._format_string(self._config_file_hosts()))
-            # key file
-            file_.write(self._format_string(self._config_file_key_file()))
-            # manage include
-            data = self.dirs + self.files
-            for f in data:
-                file_.write(self._format_string(self._config_file_include(f)))
-            # backup dir
-            file_.write(self._format_string(self._config_file_backup_dir()))
-            # backup rotation
-            file_.write(self._format_string(self._config_file_backup_rotate()))
-            # key file
-            file_.write(self._format_string(self._config_file_conflict_resolution()))
-            file_.write('}\n')
+    
+    def _config_file_include(self, include):
+        string = "include"
+        string += " %s;" % include
+        return string
 
-        return config_file
+    def _config_file_exclude(self, exclude):
+        string = "exclude"
+        string += " %s;" % exclude
+        return string
+
+    def _create_config_file(self):
+        template = open(self.config_tmp).readlines()
+        with open(self.config_file, 'w') as file_:
+            for line in template:
+                line = line.rstrip()
+                if line == '\tHOSTS;':
+                    file_.write(self._format_string(self._config_file_hosts()))
+                elif line == '\tKEY;':
+                    file_.write(self._format_string(self._config_file_key()))
+                elif line == '\tBACKUP_DIR;':
+                    file_.write(self._format_string(self._config_file_backup_dir()))
+                elif line == '\tBACKUP_KEEP;':
+                    file_.write(self._format_string(self._config_file_backup_rotate()))
+                elif line == '\tCONFLICT_RESOLUTION;':
+                    file_.write(self._format_string(self._config_file_conflict_resolution()))
+                elif line == '\tEXTRA_INCLUDE;':
+                    if self.extra_include:
+                        for include in self.extra_include:
+                            file_.write(self._format_string(self._config_file_include(include)))
+                elif line == '\tEXTRA_EXCLUDE;':
+                    if self.extra_exclude:
+                        for exclude in self.extra_exclude:
+                            file_.write(self._format_string(self._config_file_exclude(exclude)))
+                            
+                else:
+                    file_.write('%s\n' % line)
+        return self.config_file
+
+
 
     def initialize(self):
-        sys.stdout.write("create configuration file for csync2")
-        self._create_config_file()
+        '''
+        create /etc/csync2.cfg and /etc/csync2.key
+        '''
+        #self._create_config_file()
+        print('initialize csync2')
 
-    def start(self):
-        raise NotImplementedError
+    def update(self):
+        '''
+        updating /etc/csync2.conf
+        '''
+        print('updating csync2')

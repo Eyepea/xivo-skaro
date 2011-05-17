@@ -109,12 +109,11 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
         self.backup_dir   = "%s/var/backups/pf-xivo/xivo_ha" % self.test_dir
         self.csync_data   = {'conflict_resolution': 'younger',
                              'key_file':    '%s/csync2.key' % self.etc_dir,
-                             'backup_dir':  '%s/csync2' % self.backup_dir,
                              'backup_keep': '3',
-                             'dirs':        ['/etc/asterisk', '/etc/dahdi'],
-                             'files':       ['/etc/default/atftpd', '/etc/init.d/pf.firewall'],
                              'hosts':       ['ha-xivo-1', 'ha-xivo-2'],
                              'config_file' : '%s/csync2.cfg' % self.etc_dir,
+                             'extra_include' : ['/etc/vim', '/etc/python'],
+                             'extra_exclude' : ['/etc/vim/vimrc'],
                             }
         self.data         = FilesReplicationManagement(self.csync_data)
         for dir_ in (self.backup_dir, self.etc_dir, self.backup_dir):
@@ -123,9 +122,9 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
             os.makedirs(dir_)
 
     def test_generate_ssl_key(self):
-        string = "%s%s" % (self.csync_data['hosts'][0], self.csync_data['hosts'][1])
+        string = "%s%s%s" % (self.csync_data['hosts'][0], self.csync_data['hosts'][1], '123456')
         expected = hashlib.md5(string).hexdigest()
-        data = self.data._generate_ssl_key()
+        data = self.data._generate_ssl_key(time = 123456)
         self.assertEqual(expected, data)
 
     def test_create_key_file(self):
@@ -139,21 +138,9 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
 
     def test_config_file_key_file(self):
         expected = "key %s;" % self.data.key_file 
-        result   = self.data._config_file_key_file()
+        result   = self.data._config_file_key()
         self.assertEqual(expected, result)
 
-    def test_config_file_include(self):
-        dir_     = "asterisk" 
-        expected = "include %s;" % dir_
-        result   = self.data._config_file_include(dir_)
-        self.assertEqual(expected, result)
-    
-    def test_config_file_include(self):
-        dir_     = "asterisk" 
-        expected = "exclude %s;" % dir_
-        result   = self.data._config_file_exclude(dir_)
-        self.assertEqual(expected, result)
-   
     def test_config_file_backup_dir(self):
         expected = "backup-directory %s;" % self.data.backup_dir
         result   = self.data._config_file_backup_dir()
@@ -173,10 +160,6 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
         expected = "tests/templates/csync2.cfg"
         result   = self.data._create_config_file()
         self.assertTrue(filecmp.cmp(expected, result))
-
-    def test_update_not_implemented(self):
-        data = FilesReplicationManagement(self.csync_data)
-        self.assertRaises(NotImplementedError, data.start)
 
 if __name__ == '__main__':
     os.system("rm -rf tests/tmp")
