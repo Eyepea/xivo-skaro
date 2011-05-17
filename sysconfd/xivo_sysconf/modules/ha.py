@@ -59,7 +59,14 @@ class Ha(object):
         print >>self.OUT, '\n' + '['*self.DEPTH + key + ']'*self.DEPTH
 
         self.DEPTH += 1
+        # DICT values must be handled lastly
+        dicts = []
         for k, v in val.iteritems():
+            if isinstance(v, dict):
+                dicts.append((k, v)); continue
+            self._dispatch(k, v)
+
+        for k, v in dicts:
             self._dispatch(k, v)
 
         self.DEPTH -= 1						
