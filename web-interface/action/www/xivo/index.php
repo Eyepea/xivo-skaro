@@ -50,6 +50,7 @@ if(isset($_QR['service'],$_QR['action']) === true)
 }
 
 $mon_telephony = $monitoring->get_group('telephony');
+
 $mon_grpundef = $monitoring->get_group_undefined();
 $devstats = $monitoring->get_device();
 

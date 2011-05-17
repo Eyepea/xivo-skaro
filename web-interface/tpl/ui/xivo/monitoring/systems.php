@@ -99,18 +99,14 @@ endif;
 	if(is_array($devstats) === true && ($nb = count($devstats)) > 0):
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$devstats[$i]['block'];
-			$total = $ref['total'] * $ref['size'];
-			$free = $ref['free'] * $ref['size'];
-			$used = $total - $free;
-			$devtotal = dwho_size_iec($total);
-			$devfree = dwho_size_iec($free);
-			$devused = dwho_size_iec($used);
-
-			if($total > 0):
-				$devpercent = ($used / $total * 100);
-			else:
-				$devpercent = 0;
-			endif;
+			$devfree = 0;
+			$hastotal = preg_match('/^([0-9.]+) ([a-z]+)$/i', $ref['total'],$total);
+			$hasusage = preg_match('/^([0-9.]+) ([a-z]+)$/i', $ref['usage'],$usage);
+			if ($hastotal !== 0 && $hasusage !== 0)
+				$devfree = ($total[1] - $usage[1]).' '.$total[2];
+			$devtotal = $ref['total'];
+			$devused = $ref['usage'];
+			$devpercent = $ref['percent'];
 ?>
 			<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
 				<td title="<?=dwho_alttitle($devstats[$i]['name']);?>">
@@ -120,9 +116,9 @@ endif;
 					<div><div style="width: <?=round($devpercent);?>px;">&nbsp;</div></div>
 				</td>
 				<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$devpercent);?></td>
-				<td class="txt-right"><?=$this->bbf('size_iec_'.$devfree[1],$devfree[0]);?></td>
-				<td class="txt-right"><?=$this->bbf('size_iec_'.$devused[1],$devused[0]);?></td>
-				<td class="td-right txt-right"><?=$this->bbf('size_iec_'.$devtotal[1],$devtotal[0]);?></td>
+				<td class="txt-right"><?=$devfree;?></td>
+				<td class="txt-right"><?=$devused;?></td>
+				<td class="td-right txt-right"><?=$devtotal;?></td>
 			</tr>
 <?php
 		endfor;

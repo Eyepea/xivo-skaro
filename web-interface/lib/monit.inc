@@ -353,9 +353,6 @@ class dwho_monit
 
 	function recv_info()
 	{
-		//$data = $this->_curl->load($this->_statusurl,$this->_option);
-		//print_r(dwho_xml::decode($data,true));
-		//die();
 		if($this->_conf === false
 		|| ($data = $this->_curl->load($this->_statusurl,$this->_option)) === false
 		|| ($infos = dwho_xml::decode($data,true)) === false
@@ -366,11 +363,11 @@ class dwho_monit
 			return(false);
 		}
 
-		if(isset($infos['monit']) === true && dwho_issa('server',$infos['monit']) === true)
-			$this->_monit = $infos['monit']['server'];
+		if(dwho_issa('server',$infos) === true)
+			$this->_monit = $infos['server'];
 
-		if(dwho_issa('service',$infos['monit']) === false
-		|| ($nb = count($infos['monit']['service'])) === 0)
+		if(dwho_issa('service',$infos) === false
+		|| ($nb = count($infos['service'])) === 0)
 		{
 			$this->_curl->close();
 			return(true);
@@ -386,22 +383,33 @@ class dwho_monit
 		$this->_remotehost	= array();
 		$this->_fifo		= array();
 
-
-
 		for($i = 0;$i < $nb;$i++)
 		{
-			$infos['monit']['service'][$i]['type'] = 3;
-			if(($typename = $this->get_typename($infos['monit']['service'][$i]['type'])) === false
-			|| ($monitorname = $this->get_monitorname($infos['monit']['service'][$i]['monitor'])) === false)
+			if(($typename = $this->get_typename($infos['service'][$i]['@attributes']['type'])) === false
+			|| ($monitorname = $this->get_monitorname($infos['service'][$i]['monitor'])) === false)
 				continue;
+			
+			$type = $infos['service'][$i]['@attributes']['type'];
+			$groups = $infos['service'][$i]['groups'];
+			
+			unset($infos['service'][$i]['groups']);
+			unset($infos['service'][$i]['@attributes']);
 
-			$name = $infos['monit']['service'][$i]['name'];
+			$name = $infos['service'][$i]['name'];
 
-			$this->_service[$name] = $infos['monit']['service'][$i];
+			$this->_service[$name] = $infos['service'][$i];
 			$ref = &$this->_service[$name];
-			//var_dump($ref);
+			
+			$ref['status'] = (int) $ref['status'];
+			$ref['status_hint'] = (int) $ref['status_hint'];
+			$ref['monitormode'] = (int) $ref['monitormode'];
+			$ref['pendingaction'] = (int) $ref['pendingaction'];
+			$ref['monitor'] = (int) $ref['monitor'];
+			$ref['status'] = (int) $ref['status'];
+			$ref['type'] = (int) $type;
 			$ref['typename'] = $typename;
 			$ref['monitorname'] = $monitorname;
+			$ref['groups'] = $groups;
 
 			if($ref['monitor'] === 1)
 				$ref['state'] = $this->get_statusname($ref['status'],$ref['type']);
@@ -450,13 +458,14 @@ class dwho_monit
 					break;
 			}
 
-			if($ref['groups'] !== '')
-				$grpname = $group = $ref['groups'];
-			else
+			if(empty($ref['groups']) === true
+			|| isset($ref['groups']['name']) === false)
 			{
 				$grpname = 'undefined';
 				$group = '__undefined__';
 			}
+			else
+				$grpname = $group = $ref['groups']['name'];
 
 			if(dwho_issa('groups',$this->_conf) === true
 			&& isset($this->_conf['groups'][$grpname]) === true
@@ -465,7 +474,7 @@ class dwho_monit
 
 			if(isset($this->_group[$group]) === false)
 				$this->_group[$group] = array();
-
+			
 			$this->_group[$group][] = $ref;
 		}
 
