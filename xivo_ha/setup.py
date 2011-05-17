@@ -24,6 +24,9 @@ setup(
                 ('/usr/share/pf-xivo-ha/templates/corosync', [
                                                               'templates/corosync/default_corosync',
                                                               'templates/corosync/corosync.conf',
-                                                             ])
+                                                             ]),
+                ('/usr/share/pf-xivo-ha/templates/csync2', [
+                                                              'templates/csync2/csync2.cfg',
+                                                             ]),
                ]
 )
