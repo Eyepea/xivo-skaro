@@ -350,56 +350,75 @@ CREATE INDEX "queue_info_queue_name_index" ON "queue_info"("queue_name");
 DROP TABLE IF EXISTS "ha";
 CREATE TABLE "ha" (
  "id" SERIAL,
- "apache2" INTEGER NOT NULL DEFAULT 0,
- "asterisk" INTEGER NOT NULL DEFAULT 0,
- "dhcp" INTEGER NOT NULL DEFAULT 0,
- "monit" INTEGER NOT NULL DEFAULT 0,
- "mysql" INTEGER NOT NULL DEFAULT 0,
- "ntp" INTEGER NOT NULL DEFAULT 0,
- "rsync" INTEGER NOT NULL DEFAULT 0,
- "smokeping" INTEGER NOT NULL DEFAULT 0,
- "mailto" INTEGER NOT NULL DEFAULT 0,
- "alert_emails" varchar(1024) DEFAULT NULL,
- "serial" varchar(16) NOT NULL DEFAULT '',
- "authkeys" varchar(128) NOT NULL DEFAULT '',
- "com_mode" varchar(8) NOT NULL DEFAULT 'ucast',
- "user" varchar(16) NOT NULL DEFAULT 'pf-replication',
- "password" varchar(16) NOT NULL DEFAULT 'proformatique',
- "dest_user" varchar(16) NOT NULL DEFAULT 'pf-replication',
- "dest_password" varchar(16) NOT NULL DEFAULT 'proformatique',
+ "netaddr"     VARCHAR(255) DEFAULT NULL,
+ "netmask"     VARCHAR(255) DEFAULT NULL,
+ "mcast"       VARCHAR(255) DEFAULT NULL,
+
+ -- node 1
+ "node1_ip"    VARCHAR(255) DEFAULT NULL,
+ "node1_name"  VARCHAR(255) DEFAULT NULL,
+ -- node 2
+ "node2_ip"    VARCHAR(255) DEFAULT NULL,
+ "node2_name"  VARCHAR(255) DEFAULT NULL,
+
+ -- cluster
+ "cluster_name"  VARCHAR(255) DEFAULT NULL,
+ "cluster_group" INTEGER NOT NULL DEFAULT 1,
+
+ --"alert_emails" varchar(1024) DEFAULT NULL,
+ --"user" varchar(16) NOT NULL DEFAULT 'pf-replication',
+ --"password" varchar(16) NOT NULL DEFAULT 'proformatique',
+ --"dest_user" varchar(16) NOT NULL DEFAULT 'pf-replication',
+ --"dest_password" varchar(16) NOT NULL DEFAULT 'proformatique',
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ha" VALUES (1,0,0,0,0,0,0,0,0,0,NULL,'','','ucast','pf-replication','proformatique','pf-replication','proformatique');
+INSERT INTO "ha" VALUES (1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1);
 SELECT setval('ha_id_seq', 2);
 
-DROP TABLE IF EXISTS "ha_uname_node";
-CREATE TABLE "ha_uname_node" (
- "uname_node" varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY ("uname_node")
+DROP TABLE IF EXISTS "ha_cluster_node";
+CREATE TABLE "ha_cluster_node" (
+ "device"  VARCHAR(255) NOT NULL DEFAULT '',
+ "address" VARCHAR(255) NOT NULL DEFAULT '',
+ PRIMARY KEY ("device", "address")
 );
 
-DROP TABLE IF EXISTS "ha_ping_ipaddr";
-CREATE TABLE "ha_ping_ipaddr" (
- "ping_ipaddr" varchar(39) NOT NULL DEFAULT '',
- PRIMARY KEY ("ping_ipaddr")
+DROP TABLE IF EXISTS "ha_service";
+CREATE TABLE "ha_service" (
+ "name"    VARCHAR(128) NOT NULL,
+ "active"  INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "monitor" INTEGER DEFAULT NULL,
+ "timeout" INTEGER DEFAULT NULL,
+ PRIMARY KEY ("name")
 );
 
-DROP TABLE IF EXISTS "ha_virtual_network";
-CREATE TABLE "ha_virtual_network" (
- "ipaddr" varchar(39) NOT NULL DEFAULT '',
- "netmask" varchar(39) NOT NULL DEFAULT '',
- "broadcast" varchar(39) NOT NULL DEFAULT '',
- PRIMARY KEY ("ipaddr")
-);
+INSERT INTO "ha_service" VALUES ('asterisk', 0, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('lighttpd', 0, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('dhcp'    , 0, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('ntp'     , 0, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('csync'   , 0, NULL, NULL);
 
-DROP TABLE IF EXISTS "ha_peer";
-CREATE TABLE "ha_peer" (
- "iface" varchar(64) NOT NULL DEFAULT '',
- "host" varchar(128) NOT NULL DEFAULT '',
- "transfer" INTEGER NOT NULL DEFAULT 0,
- PRIMARY KEY ("iface", "host")
-);
+--DROP TABLE IF EXISTS "ha_ping_ipaddr";
+--CREATE TABLE "ha_ping_ipaddr" (
+-- "ping_ipaddr" varchar(39) NOT NULL DEFAULT '',
+-- PRIMARY KEY ("ping_ipaddr")
+--);
+
+--DROP TABLE IF EXISTS "ha_virtual_network";
+--CREATE TABLE "ha_virtual_network" (
+-- "ipaddr" varchar(39) NOT NULL DEFAULT '',
+-- "netmask" varchar(39) NOT NULL DEFAULT '',
+-- "broadcast" varchar(39) NOT NULL DEFAULT '',
+-- PRIMARY KEY ("ipaddr")
+--);
+
+--DROP TABLE IF EXISTS "ha_peer";
+--CREATE TABLE "ha_peer" (
+-- "iface" varchar(64) NOT NULL DEFAULT '',
+-- "host" varchar(128) NOT NULL DEFAULT '',
+-- "transfer" INTEGER NOT NULL DEFAULT 0,
+-- PRIMARY KEY ("iface", "host")
+--);
 
 DROP TABLE IF EXISTS "provisioning";
 CREATE TABLE "provisioning" (

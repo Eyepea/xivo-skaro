@@ -2,13 +2,13 @@
 Haute-Disponibilité
 
 ; smenu_status
-Statut
+Général
 
 ; smenu_services
-Services activés
+Services
 
 ; smenu_network
-Configuration réseau
+Cluster
 
 ; smenu_params
 Paramètres heartbeat
@@ -140,7 +140,7 @@ Masque de sous-réseau
 Adresse broadcast
 
 ; fm_ha_nodes
-Liens de communication heartbeat : 
+Members du cluster : 
 
 ; fm_ha_virtnet_col_iface
 Interface réseau
@@ -222,3 +222,93 @@ Le nom comprend des caractères invalides
 
 ; no disp found
 Aucune machine définie
+
+
+
+
+
+; fm_ha_netaddr
+Adresse du réseau : 
+
+; fm_ha_netmask
+Masque de réseau : 
+
+; fm_ha_mcast
+Adresse multicast : 
+
+; fld-node1
+Noeud maître
+
+; fm_ha_node1_name
+Nom : 
+
+; fm_ha_node1_ip
+Adresse IP : 
+
+; fld-node2
+Noeud esclave
+
+; fm_ha_node2_name
+Nom : 
+
+; fm_ha_node2_ip
+Adresse IP : 
+
+; fm_ha_service_asterisk
+Asterisk : 
+
+; fm_ha_service_asterisk_monitor
+Intervalle entre 2 vérifications : 
+
+
+; fm_ha_service_asterisk_timeout
+Délai avant bascule : 
+
+
+; fm_ha_service_lighttpd
+Lighttpd : 
+
+; fm_ha_service_lighttpd_monitor
+Intervalle entre 2 vérifications : 
+
+
+; fm_ha_service_lighttpd_timeout
+Délai avant bascule : 
+
+
+; fm_ha_service_dhcp
+DHCP : 
+
+; fm_ha_service_dhcp_monitor
+Intervalle entre 2 vérifications : 
+
+; fm_ha_service_dhcp_timeout
+Délai avant bascule : 
+
+
+; fm_ha_service_ntp
+NTP : 
+
+; fm_ha_service_ntp_monitor
+Intervalle entre 2 vérifications : 
+
+; fm_ha_service_ntp_timeout
+Délai avant bascule : 
+
+
+; fm_ha_service_csync
+Csync : 
+
+; fm_ha_service_csync_monitor
+Intervalle entre 2 vérifications : 
+
+; fm_ha_service_csync_timeout
+Délai avant bascule : 
+
+; fm_ha_cluster_name
+Nom du cluster : 
+
+; fm_ha_cluster_group
+Grouper : 
+
+

@@ -21,19 +21,23 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['iface'] = array();
-$array['element']['iface']['default'] = '';
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
 
-$array['element']['host'] = array();
-$array['element']['host']['default'] = '';
+$array['element']['active'] = array();
+$array['element']['active']['value']   = array(0,1);
+$array['element']['active']['default'] = 0;
+$array['element']['active']['set']     = true;
 
-$array['element']['transfer'] = array();
-$array['element']['transfer']['default'] = false;
+$array['element']['monitor'] = array();
+$array['element']['monitor']['default'] = '';
+$array['element']['monitor']['null'] = true;
+
+$array['element']['timeout'] = array();
+$array['element']['timeout']['default'] = '';
+$array['element']['timeout']['null'] = true;
 
 ### filters ###
 $array['filter'] = array();
-$array['filter']['iface']	        = array('chk'		    => 1);
-$array['filter']['host']	        = array('chk'		    => 1);
-$array['filter']['transfer']	    = array('chk'		    => 1);
 
 ?>

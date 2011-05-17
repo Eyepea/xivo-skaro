@@ -24,10 +24,8 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 {
 	var $_sysconfd	    = false;
 	var $_ha_svc        = false;
-	var $_uname_svc     = false;
-	var $_ping_svc      = false;
-	var $_virtnet_svc   = false;
-	var $_peer_svc      = false;
+	var $_cnodes_svc    = false;
+	var $_service_svc   = false;
 
 	function xivo_application_xivo_object_ha(&$xobj)
 	{
@@ -35,10 +33,8 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))   === false
 		|| ($this->_ha_svc      = &$this->_xobj->get_module('ha'))         === false
-		|| ($this->_uname_svc   = &$this->_xobj->get_module('ha_uname'))   === false
-		|| ($this->_ping_svc    = &$this->_xobj->get_module('ha_ping'))    === false
-		|| ($this->_virtnet_svc = &$this->_xobj->get_module('ha_virtnet')) === false
-		|| ($this->_peer_svc    = &$this->_xobj->get_module('ha_peer'))    === false)
+		|| ($this->_service_svc = &$this->_xobj->get_module('ha_service')) === false
+		|| ($this->_cnodes_svc    = &$this->_xobj->get_module('ha_cluster_node'))    === false)
 			return(false);
 
 		return(true);
@@ -46,25 +42,17 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 	function get()
 	{
-	    $arr = array();
-        $arr['global'] = $this->_ha_svc->get(1);
+		$arr = array();
+		$arr['ha'] = $this->_ha_svc->get(1);
 
-        // uname
-        $arr['uname_node'] = array();
-        foreach($this->_uname_svc->get_all() as $node)
-            $arr['uname_node'][] = $node['uname_node'];
-            
-        // ping_ipaddr
-        $arr['ping_ipaddr'] = array();
-        foreach($this->_ping_svc->get_all() as $node)
-            $arr['ping_ipaddr'][] = $node['ping_ipaddr'];
-            
-        // virtnet
-        $arr['virtnet'] = $this->_virtnet_svc->get_all();
-        // peer
-        $arr['peer'] = $this->_peer_svc->get_all();
-        
-        return $arr;
+		// services
+		$arr['service'] = array();
+		foreach($this->_service_svc->get_all() as $svc)
+			$arr['service'][$svc['name']] = $svc;
+
+		$arr['cnodes'] = $this->_cnodes_svc->get_all();
+
+    return $arr;
 	}
 
 	
@@ -86,60 +74,6 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	    { return false; }
 	    
 	    return $status;
-	}
-	
-	function _set_format($arr)
-	{
-	    $conf = array('global' => array());
-
-        $services = array('apache2', 'asterisk', 'dhcp', 'monit', 'mysql', 
-            'ntp', 'rsync', 'smokeping', 'mailto');
-        foreach($services as $svc)
-            $conf['global'][$svc] = array_key_exists($svc, $arr);
-        
-        $conf['global']['alert_emails'] = 
-            strlen(trim($arr['alert_emails']))==0?null:trim($arr['alert_emails']);
-        
-        $settings = array('serial', 'authkeys', 'com_mode',
-            'user', 'password', 'dest_user', 'dest_password');
-        foreach($settings as $setting)
-            $conf['global'][$setting] = $arr[$setting];
-        
-        // uname_node array
-        $conf['uname_node'] = $arr['uname_node'];
-        array_pop($conf['uname_node']);
-
-         // ping_ipaddr
-        $conf['ping_ipaddr'] = $arr['ping_ipaddr'];
-        array_pop($conf['ping_ipaddr']);
-        
-        // virtnet
-        $conf['virtnet'] = array();
-        for($i = 0; $i < count($arr['virtnet_ipaddr']) - 1; $i++)
-        {
-            $virtnet = array(
-                'ipaddr'        => $arr['virtnet_ipaddr'][$i],
-                'netmask'       => $arr['virtnet_netmask'][$i],
-                'broadcast'     => $arr['virtnet_broadcast'][$i],
-            );
-
-            $conf['virtnet'][] = $virtnet;
-        }
-
-        // peer
-        $conf['peer'] = array();
-        for($i = 0; $i < count($arr['peer_iface']) - 1; $i++)
-        {
-            $virtnet = array(
-                'iface'        => $arr['peer_iface'][$i],
-                'host'         => $arr['peer_host'][$i],
-                'transfer'     => $arr['peer_xfer'][$i],
-            );
-
-            $conf['peer'][] = $virtnet;
-        }
-
-        return $conf;
 	}
 	
 	function _set_check($conf)
@@ -180,96 +114,110 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	function _set_save($conf)
 	{
         // IF ALL IT'S OK, SAVE DATA
-        if($this->_ha_svc->edit(1, $conf['global']) === false)
-            return false;
-        
-        if($this->_uname_svc->delete_all() === false)
-            return false;
-        foreach($conf['uname_node'] as $node)
-            $this->_uname_svc->add(array('uname_node' => $node));
+        if($this->_ha_svc->edit(1, $conf['ha']) === false)
+					return false;
 
-        if($this->_ping_svc->delete_all() === false)
-            return false;
+				foreach($conf['service'] as $key => $val)
+					if($this->_service_svc->edit($key, $val) === false)
+						return false;
 
-        foreach($conf['ping_ipaddr'] as $ip)
-            $this->_ping_svc->add(array('ping_ipaddr' => $ip));
 
-        if($this->_virtnet_svc->delete_all() === false)
+				// cluster nodes
+        if($this->_cnodes_svc->delete_all() === false)
             return false;
 
-        for($i = 0; $i < count($conf['virtnet']); $i++)
-            $this->_virtnet_svc->add($conf['virtnet'][$i]);
-
-        if($this->_peer_svc->delete_all() === false)
-            return false;
-
-        foreach($conf['peer'] as $peer)
-            $this->_peer_svc->add($peer);
+        foreach($conf['cnodes'] as $cnode)
+					if($this->_cnodes_svc->add($cnode) === false)
+						return false;
         
         if($this->get_errnb() > 0)
             return false;
         
-        return $this->generate();
+				return true;
 	}
 	
 	function set($arr)
 	{
-	    $this->_reset();
-	    $conf = $this->_set_format($arr);
-        $this->_set_result('ha', $conf);
+		$this->_reset();
+		$this->_set_result('ha', $arr);
         
-        // 1. TEST DATA
-        if(!$this->_set_check($conf))
-            return false;
+		// 1. TEST DATA
+		/*
+		if(!$this->_set_check($conf))
+			return false;
+		*/
             
-        // IF ALL IT'S OK, SAVE DATA
-        return $this->_set_save($conf);
-    }
-    
-    function generate()
-    {
-        $arr  = $this->get();
-        $conf = array();
-        
-        $services = array('apache2', 'asterisk', 'dhcp', 'monit', 'mysql', 
-            'ntp', 'rsync', 'smokeping', 'mailto');
-        foreach($services as $svc)
-            $conf["pf.ha.$svc"] = ($arr['global'][$svc] == 1);
-        
-        $settings = array('alert_emails', 'serial', 'authkeys', 'com_mode',
-            'user', 'password', 'dest_user', 'dest_password');
-        foreach($settings as $setting)
-            $conf["pf.ha.$setting"] = $arr['global'][$setting];
+		// IF ALL IT'S OK, SAVE DATA
+		if($this->_set_save($arr) === false)
+			return false;
 
-        $conf['pf.ha.uname_node'] = array();
-        foreach($arr['uname_node'] as $node)
-            $conf['pf.ha.uname_node'][] = $node;
+		return $this->generate();
+	}
 
-        $conf['pf.ha.ping_ipaddr'] = array();
-        foreach($arr['ping_ipaddr'] as $node)
-            $conf['pf.ha.ping_ipaddr'][] = $node;
+	/** Send informations to sysconfd to update HA configuration file
+	 **/
+  function generate()
+	{
+		$arr  = $this->get();
+		$conf = array('nodes' => array(), 'cluster' => array(), 'services' => array());
 
-        $conf['pf.ha']      = $arr['virtnet'];
-        if($conf['pf.ha'] === false)
-            $conf['pf.ha'] = array();
-            
-        $conf['pf.ha.dest'] = $arr['peer'];
-        if($conf['pf.ha.dest'] === false)
-            $conf['pf.ha.dest'] = array();
-            
-        for($i = 0; $i < count($conf['pf.ha.dest']); $i++)
-            $conf['pf.ha.dest'][$i]['transfer'] = ($conf['pf.ha.dest'][$i]['transfer'] == '1');
-            
-        if($this->_sysconfd->request_post('/ha_generate', $conf) === false)
-            return false;
+		foreach($arr['service'] as $name => $attrs)
+			if(intval($attrs['active']) === 1)
+				$conf['services'][$name] = array(
+					'monitor' => intval($attrs['monitor']),
+					'timeout' => intval($attrs['timeout'])
+			);
+
+		$conf['cluster']['cluster_addr'] = array();
+		foreach($arr['cnodes'] as $node)
+			$conf['cluster']['cluster_addr'][] = $node['device'].':'.$node['address'];
+
+		$conf['cluster']['cluster_name']  = $arr['ha']['cluster_name'];
+		$conf['cluster']['cluster_group'] = $arr['ha']['cluster_group'] == '1';
+
+		$subnet = $this->_ip2subnet($arr['ha']['netaddr'], $arr['ha']['netmask']);
+		$conf['nodes'] = array(
+			'network_addr'     => $subnet,
+			'multicast_addr'   => $arr['ha']['mcast'],
+
+			'first_node'       => array(
+				'name'           => $arr['ha']['node1_name'],
+				'ip'             => $arr['ha']['node1_ip'],
+			),
+			'second_node'      => array(
+				'name'           => $arr['ha']['node2_name'],
+				'ip'             => $arr['ha']['node2_ip'],
+			)
+		);
+		//var_dump($conf); return(true);	
+
+		if($this->_sysconfd->request_post('/ha_generate', $conf) === false)
+			return false;
         
-        // update commonconf
+		// update commonconf
+		/*
         if(($_commonconf = &$this->_xobj->get_module('commonconf')) === false
         || $_commonconf->generate()                                 === false)
             return false;
+		*/
+    return true;
+	}
 
-        return true;
-    }
+	function _ip2subnet($ip, $netmask)
+	{
+		$dotted_ip = split('\.', $ip);
+		$dotted_nm = split('\.', $netmask);
+
+		$subnet = sprintf("%d.%d.%d.%d",
+			(((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
+			(((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
+			(((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
+			(((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
+		);
+
+		return($subnet);
+	}
+	
 }
 
 ?>

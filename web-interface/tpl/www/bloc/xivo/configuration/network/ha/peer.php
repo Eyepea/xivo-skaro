@@ -22,19 +22,18 @@ $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
 $info = $this->get_var('info');
-$data = $info['peer'];
-
 $netifaces 	= $this->get_var('netifaces');
 ?>
 
 <div class="sb-list">
 <?php
 	$type       = 'disp-nodes';
-	$count      = $data?count($data):0;
+	$count      = isset($info['cnodes'])?count($info['cnodes']):0;
 	$errdisplay = '';
 ?>
 	<p>&nbsp;</p>
-    <?= $this->bbf("fm_ha_nodes") ?>
+	<?= $this->bbf("fm_ha_nodes") ?>
+
 	<div class="sb-list2">
 		<table cellspacing="0" cellpadding="0" border="0">
 			<thead>
@@ -42,7 +41,7 @@ $netifaces 	= $this->get_var('netifaces');
 
 				<th class="th-left"><?=$this->bbf('fm_ha_virtnet_col_iface');?></th>
 				<th class="th-center"><?=$this->bbf('fm_ha_virtnet_col_peer');?></th>
-				<th class="th-center"><?=$this->bbf('fm_ha_virtnet_col_xfer');?></th>
+	<?php /*			<!--th class="th-center"><?=$this->bbf('fm_ha_virtnet_col_xfer');?></th--> */ ?>
 				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_add'),
@@ -63,13 +62,13 @@ $netifaces 	= $this->get_var('netifaces');
 				<td class="td-left">
 	<?php
 					echo	$form->select(array(
-							'name'		=> 'peer.iface[]',
-							'id'		=> "it-pf-ha-iface[$i]",
-							'empty'		=> true,
-							'key'		=> false,
-							'selected'	=> $data[$i]['iface'],
-							'error'    	=> $this->bbf_args	('iface', 
-							    $this->get_var('error', "peer", $i, 'iface'))
+							'name'		  => 'cnodes[device][]',
+							'id'		    => "it-pf-ha-iface[$i]",
+							'empty'		  => true,
+							'key'		    => false,
+							'selected'	=> $info['cnodes'][$i]['device'],
+							'error'    	=> $this->bbf_args	('cnode', 
+							    $this->get_var('error', "cnodes", $i, 'device'))
 						),
 						$netifaces);
 	 ?>
@@ -77,19 +76,19 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'peer.host[]',
+								   'name'	=> 'cnodes[address][]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
 								   'default'	=> '',
-								   'value'	=> $data[$i]['host'],
-								   'error'      => $this->bbf_args	('host', 
-								       $this->get_var('error', "peer", $i, 'host'))));
+								   'value'	=> $info['cnodes'][$i]['address'],
+								   'error'      => $this->bbf_args	('cnode', 
+								       $this->get_var('error', "cnodes", $i, 'address'))));
 	 ?>
 				</td>
-				<td>
-	<?php
+<?php
+/*	<td>
 					echo	$form->select(array('desc' => '&nbsp;',
 							'name'		=> 'peer.xfer[]',
 							'id'		=> "it-pf-ha-xfer[$i]",
@@ -98,8 +97,9 @@ $netifaces 	= $this->get_var('netifaces');
 							'selected'	=> $data[$i]['transfer']
 						),
 						array('no', 'yes'));
-	 ?>
-				</td>
+		 </td>
+ */
+?>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 									  $this->bbf('opt_'.$type.'-delete'),
@@ -128,7 +128,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td class="td-left">
 	<?php
 					echo	$form->select(array(
-							'name'		=> 'peer.iface[]',
+							'name'		=> 'cnodes[device][]',
 							'id'		=> "it-pf-ha-iface[$i]",
 							'key'		=> false,
 							'empty'		=> true,
@@ -139,7 +139,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'peer.host[]',
+								   'name'	=> 'cnodes[address][]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -147,15 +147,9 @@ $netifaces 	= $this->get_var('netifaces');
 								   'default'	=> ''));
 	 ?>
 				</td>
-				<td>
-	<?php
+<?php
 	/*
-		            echo $form->checkbox(array('desc'	=> '&nbsp',
-             				      'name'	=> 'pf.ha.xfer[]',
-            				      'labelid'	=> 'pf.ha.xfer',
-			            	      'default'	=> false,
-			            	      'checked'	=> false));
-	*/
+				<td>
 					echo	$form->select(array('desc' => '&nbsp',
 							'name'		=> 'peer.xfer[]',
 							'id'		=> "it-pf-ha-xfer[$i]",
@@ -163,8 +157,9 @@ $netifaces 	= $this->get_var('netifaces');
 							'empty'		=> false,
 						),
 						array('no', 'yes'));
+	</td>
+	 */
 	 ?>
-				</td>
 
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

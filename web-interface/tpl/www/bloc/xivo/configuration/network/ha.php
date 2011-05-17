@@ -22,9 +22,8 @@ $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
 $info     = $this->get_var('info');
-$data     = $info['global'];
+//var_dump($info);
 $status   = $this->get_var('status');
-$commodes = $this->get_var('commodes');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\'' .$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -54,16 +53,6 @@ endif;
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-services');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
-			<div class="tab">
-				<span class="span-center"><a href="#services"><?=$this->bbf('smenu_services');?></a></span>
-			</div>
-			<span class="span-right">&nbsp;</span>
-		</li>
-		<li id="dwsm-tab-3"
-		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-network');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
@@ -72,6 +61,17 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
+		<li id="dwsm-tab-3"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-services',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
+			<div class="tab">
+				<span class="span-center"><a href="#services"><?=$this->bbf('smenu_services');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+<?php /*
 		<li id="dwsm-tab-4"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
@@ -81,7 +81,9 @@ endif;
 				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_params');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
-		</li>
+			</li>
+ */
+?>
 	</ul>
 </div>
 
@@ -89,6 +91,67 @@ endif;
 <form action="#" method="post" accept-charset="utf-8">
 
 <div id="sb-part-first" class="b-nodisplay">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_netaddr'),
+				  'name'	=> 'ha[netaddr]',
+				  'labelid'	=> 'netaddr',
+				  'size'	=> 15,
+			    'help'    => $this->bbf('fm_help-ha_netaddr'),
+				  'value'	=> $this->get_var('info', 'ha', 'netaddr'))),
+
+	$form->text(array('desc'	=> $this->bbf('fm_ha_netmask'),
+				  'name'	=> 'ha[netmask]',
+				  'labelid'	=> 'netmask',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('info', 'ha', 'netmask'))),
+				  
+	$form->text(array('desc'	=> $this->bbf('fm_ha_mcast'),
+				  'name'	=> 'ha[mcast]',
+				  'labelid'	=> 'mcast',
+				  'size'	=> 15,
+					'value'	=> $this->get_var('info', 'ha', 'mcast')));
+?>
+	<fieldset id="fld-node1">
+		<legend><?=$this->bbf('fld-node1');?></legend>
+
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_node1_name'),
+				  'name'	=> 'ha[node1_name]',
+				  'labelid'	=> 'node1_name',
+				  'size'	=> 15,
+			    'help'    => $this->bbf('fm_help-ha_node1_name'),
+				  'value'	=> $this->get_var('info', 'ha', 'node1_name'))),
+
+	$form->text(array('desc'	=> $this->bbf('fm_ha_node1_ip'),
+				  'name'	=> 'ha[node1_ip]',
+				  'labelid'	=> 'node1_ip',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('info', 'ha', 'node1_ip')));
+?>		  
+	</fieldset>
+	<fieldset id="fld-node2">
+		<legend><?=$this->bbf('fld-node2');?></legend>
+
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_node2_name'),
+				  'name'	=> 'ha[node2_name]',
+				  'labelid'	=> 'node2_name',
+				  'size'	=> 15,
+			    'help'    => $this->bbf('fm_help-ha_node2_name'),
+				  'value'	=> $this->get_var('info', 'ha', 'node2_name'))),
+
+	$form->text(array('desc'	=> $this->bbf('fm_ha_node2_ip'),
+				  'name'	=> 'ha[node2_ip]',
+				  'labelid'	=> 'node2_ip',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('info', 'ha', 'node2_ip')));
+?>		  
+	</fieldset>
+
+
+</div>
+
+<div id="z-sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_status'),
 	              'class'   => 'readonly',
@@ -107,92 +170,125 @@ endif;
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
 
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_apache2'),
-				      'name'		=> 'apache2',
-				      'labelid'		=> 'ha_apache2',
-				      'checked'		=> $data['apache2'],
-#				      'help'        => $this->bbf('fm_help-ha_apache2')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_asterisk'),
-				      'name'		=> 'asterisk',
+		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_asterisk'),
+				      'name'		=> 'service[asterisk][active]',
 				      'labelid'		=> 'ha_asterisk',
-				      'checked'		=> $data['asterisk'],
-#				      'help'        => $this->bbf('fm_help-ha_asterisk')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_dhcp'),
-				      'name'		=> 'dhcp',
-				      'labelid'		=> 'ha_dhcp',
-				      'checked'		=> $data['dhcp'],
-#				      'help'        => $this->bbf('fm_help-ha_dhcp')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_monit'),
-				      'name'		=> 'monit',
-				      'labelid'		=> 'ha_monit',
-				      'checked'		=> $data['monit'],
-#				      'help'        => $this->bbf('fm_help-ha_monit')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_mysql'),
-				      'name'		=> 'mysql',
-				      'labelid'		=> 'ha_mysql',
-				      'checked'		=> $data['mysql'],
-#				      'help'        => $this->bbf('fm_help-ha_mysql')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_ntp'),
-				      'name'		=> 'ntp',
-				      'labelid'		=> 'ha_ntp',
-				      'checked'		=> $data['ntp'],
-#				      'help'        => $this->bbf('fm_help-ha_ntp')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_rsync'),
-				      'name'		=> 'rsync',
-				      'labelid'		=> 'ha_rsync',
-				      'checked'		=> $data['rsync'],
-#				      'help'        => $this->bbf('fm_help-ha_rsync')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_smokeping'),
-				      'name'		=> 'smokeping',
-				      'labelid'		=> 'ha_smokeping',
-				      'checked'		=> $data['smokeping'],
-#				      'help'        => $this->bbf('fm_help-ha_smokeping')
-				      )),
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_mailto'),
-				      'name'		=> 'mailto',
-				      'labelid'		=> 'ha_mailto',
-				      'checked'		=> $data['mailto'],
-#				      'help'        => $this->bbf('fm_help-ha_mailto')
-				      ));
+				      'checked'		=> $info['service']['asterisk']['active'],
+						)),
+	
+		'<fieldset id="fld-svc-asterisk">',
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_asterisk_monitor'),
+					'name'		=> 'service[asterisk][monitor]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','asterisk','monitor'))),
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_asterisk_timeout'),
+					'name'		=> 'service[asterisk][timeout]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','asterisk','timeout'))),
+		'</fieldset>',
 
+
+		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_lighttpd'),
+				      'name'		=> 'service[lighttpd][active]',
+				      'labelid'		=> 'ha_lighttpd',
+				      'checked'		=> $info['service']['lighttpd']['active'],
+						)),
+	
+		'<fieldset id="fld-svc-lighttpd">',
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_lighttpd_monitor'),
+					'name'		=> 'service[lighttpd][monitor]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','lighttpd','monitor'))),
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_lighttpd_timeout'),
+					'name'		=> 'service[lighttpd][timeout]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','lighttpd','timeout'))),
+		'</fieldset>',
+
+		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_dhcp'),
+				      'name'		=> 'service[dhcp][active]',
+				      'labelid'		=> 'ha_dhcp',
+				      'checked'		=> $info['service']['dhcp']['active'],
+						)),
+	
+		'<fieldset id="fld-svc-dhcp">',
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_dhcp_monitor'),
+					'name'		=> 'service[dhcp][monitor]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','dhcp','monitor'))),
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_dhcp_timeout'),
+					'name'		=> 'service[dhcp][timeout]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','dhcp','timeout'))),
+		'</fieldset>',
+
+		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_ntp'),
+				      'name'		=> 'service[ntp][active]',
+				      'labelid'		=> 'ha_ntp',
+				      'checked'		=> $info['service']['ntp']['active'],
+						)),
+	
+		'<fieldset id="fld-svc-ntp">',
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_ntp_monitor'),
+					'name'		=> 'service[ntp][monitor]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','ntp','monitor'))),
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_ntp_timeout'),
+					'name'		=> 'service[ntp][timeout]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','ntp','timeout'))),
+		'</fieldset>',
+
+		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_csync'),
+				      'name'		=> 'service[csync][active]',
+				      'labelid'		=> 'ha_csync',
+				      'checked'		=> $info['service']['csync']['active'],
+						)),
+	
+		'<fieldset id="fld-svc-csync">',
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_csync_monitor'),
+					'name'		=> 'service[csync][monitor]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','csync','monitor'))),
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_service_csync_timeout'),
+					'name'		=> 'service[csync][timeout]',
+					'size'	  => 4,
+					'value'   => $this->get_var('info', 'service','csync','timeout'))),
+		'</fieldset>';
 ?>
 </div>
 
 <div id="sb-part-network" class="b-nodisplay">
-    <div style="margin-bottom:15px">
-    <?php
-        $this->file_include('bloc/xivo/configuration/network/ha/uname');
-    ?>
-    </div>
-  
-    <div style="margin-bottom:15px">
-    <?php
-        $this->file_include('bloc/xivo/configuration/network/ha/ping');
-    ?>
-    </div>
+<?php
+		echo $form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_name'),
+					'name'		=> 'ha[cluster_name]',
+					'size'	  => 25,
+					'value'   => $this->get_var('info','ha','cluster_name'))),
 
-    <div style="margin-bottom:15px">
-    <?php
-        $this->file_include('bloc/xivo/configuration/network/ha/virtnet');
-    ?>
-    </div>
+		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_cluster_group'),
+				      'name'		=> 'ha[cluster_group]',
+				      'labelid'		=> 'ha_cluster_group',
+				      'checked'		=> $info['ha']['cluster_group'],
+						));
 
-    <div>
-    <?php
-	    $this->file_include('bloc/xivo/configuration/network/ha/peer');
-    ?>
-    </div>
+    $this->file_include('bloc/xivo/configuration/network/ha/peer');
+?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="z-sb-part-last" class="b-nodisplay">
 <?php
+		/*
 	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_alert_emails'),
 				  'name'	=> 'alert_emails',
 				  'labelid'	=> 'alert_emails',
@@ -222,7 +318,8 @@ endif;
 			'selected'	=> $this->get_var('info', 'global', 'com_mode'),
     		'error'    	=> $this->bbf_args	('error_pf_ha_com_mode', 
 		    $this->get_var('error', 'pf_ha_com_mode'))),
-		$commodes);
+	$commodes);
+		 */
 ?>
 <br/>
 
@@ -230,6 +327,7 @@ endif;
 	<legend><?=$this->bbf('fm_ha_user_title');?></legend>
 <div>
 <?php
+		/*
     echo $form->text(array('desc'	=> $this->bbf('fm_ha_user'),
 				  'name'	=> 'user',
 				  'labelid'	=> 'user',
@@ -240,7 +338,8 @@ endif;
 				  'name'	=> 'password',
 				  'labelid'	=> 'password',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'global', 'password')));
+					'value'	=> $this->get_var('info', 'global', 'password')));
+		 */
 ?>
 </div>
 </fieldset>
@@ -249,6 +348,7 @@ endif;
 	<legend><?= $this->bbf('fm_ha_dest_user_title') ?></legend>
 <div>
 <?php
+		/*
 	echo $form->text(array('desc'	=> $this->bbf('fm_ha_dest_user'),
 				  'name'	=> 'dest_user',
 				  'labelid'	=> 'dest_user',
@@ -259,7 +359,8 @@ endif;
 				  'name'	=> 'dest_password',
 				  'labelid'	=> 'dest_password',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'global', 'dest_password')));
+					'value'	=> $this->get_var('info', 'global', 'dest_password')));
+		 */
 ?>
 </div>
 </fieldset>

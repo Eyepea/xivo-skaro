@@ -18,11 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','datastorage','sql.inc'),true);
+xivo_object::required(array('abstract','abstract.inc'),true);
 
-class xivo_object_ha_peer_sql extends xivo_object_abstract_sql
+class xivo_object_ha_service extends xivo_object_abstract
 {
-	var $_disable	= null;
+	var $_dso		= null;
+	var $_name		= 'ha_service';
+  var $_filter    = false;
+
+	function xivo_object_ha_service(&$xobj,&$dso)
+	{
+		$this->xivo_object_abstract(&$xobj);
+        if(is_object($dso) === false)
+            trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+
+        $this->_dso = &$dso;
+	}
 }
 
 ?>

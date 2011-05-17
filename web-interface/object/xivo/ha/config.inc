@@ -21,44 +21,33 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['apache2'] = array();
-$array['element']['apache2']['default'] = false;
+$array['element']['netaddr'] = array();
+$array['element']['netaddr']['default'] = '';
 
-$array['element']['asterisk'] = array();
-$array['element']['asterisk']['default'] = false;
+$array['element']['netmask'] = array();
+$array['element']['netmask']['default'] = '';
 
-$array['element']['dhcp'] = array();
-$array['element']['dhcp']['default'] = false;
+$array['element']['mcast'] = array();
+$array['element']['mcast']['default'] = '';
 
-$array['element']['monit'] = array();
-$array['element']['monit']['default'] = false;
+$array['element']['node1_ip'] = array();
+$array['element']['node1_ip']['default'] = '';
 
-$array['element']['mysql'] = array();
-$array['element']['mysql']['default'] = false;
+$array['element']['node1_name'] = array();
+$array['element']['node1_name']['default'] = '';
 
-$array['element']['ntp'] = array();
-$array['element']['ntp']['default'] = false;
+$array['element']['node2_ip'] = array();
+$array['element']['node2_ip']['default'] = '';
 
-$array['element']['rsync'] = array();
-$array['element']['rsync']['default'] = false;
+$array['element']['node2_name'] = array();
+$array['element']['node2_name']['default'] = '';
 
-$array['element']['smokeping'] = array();
-$array['element']['smokeping']['default'] = false;
+$array['element']['cluster_name'] = array();
+$array['element']['cluster_group']['default'] = '';
 
-$array['element']['mailto'] = array();
-$array['element']['mailto']['default'] = false;
-
+/*
 $array['element']['alert_emails'] = array();
 $array['element']['alert_emails']['default'] = '';
-
-$array['element']['serial'] = array();
-$array['element']['serial']['default'] = '';
-
-$array['element']['authkeys'] = array();
-$array['element']['authkeys']['default'] = '';
-
-$array['element']['com_mode'] = array();
-$array['element']['com_mode']['default'] = '';
 
 $array['element']['user'] = array();
 $array['element']['user']['default'] = '';
@@ -71,7 +60,7 @@ $array['element']['dest_user']['default'] = '';
 
 $array['element']['dest_password'] = array();
 $array['element']['dest_password']['default'] = '';
-
+ */
 
 ### filters ###
 $array['filter'] = array();

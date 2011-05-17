@@ -23,31 +23,51 @@ $fm_save    = null;
 // XiVO server network interfaces
 $netifaces  = $appHA->get_netifaces();
 // HA node status
-$status     = $appHA->get_status();
-// valid heartbeat com_mode values
-$commodes   = array('bcast', 'mcast', 'ucast');
+//$status     = $appHA->get_status();
 
-
+$info = null;
 if(isset($_QR['fm_send']) === true)
 {
     $fm_save    = true;
-    
-	if($appHA->set($_QR) === false)
-	{
-		$fm_save = false;
-		$_TPL->set_var('error'        , $appHA->get_error());
+
+		$cnodes = array();
+		for($i = 0; $i < count($_QR['cnodes']['device'])-1; $i++)
+		{
+			$cnodes[] = array(
+				'device' => $_QR['cnodes']['device'][$i],
+				'address' => $_QR['cnodes']['address'][$i]
+			);
+		}
+		$_QR['cnodes'] = $cnodes;
+
+		foreach($_QR['service'] as $key => &$val)
+		{
+			if(!isset($val['active']))
+				$val['active'] = 0;
+			else
+				$val['active'] = 1;
+		}
+
+		if(!isset($_QR['ha']['cluster_group']))
+			$_QR['ha']['cluster_group'] = 0;
+
+//var_dump($_QR); die(1);		
+		if($appHA->set($_QR) === false)
+		{
+			$fm_save = false;
+			$_TPL->set_var('error'        , $appHA->get_error());
+
+			$info = $_QR;
     }
-    
-    $info = $appHA->get_result("ha");
 }
-else
-{ $info       = $appHA->get(); }
+
+if(is_null($info))
+	$info = $appHA->get();
 
 $_TPL->set_var('fm_save'     , $fm_save);
 $_TPL->set_var('info'        , $info);
 $_TPL->set_var('netifaces'   , $netifaces);
-$_TPL->set_var('status'      , $status);
-$_TPL->set_var('commodes'    , $commodes);
+//$_TPL->set_var('status'      , $status);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
