@@ -581,23 +581,23 @@ class xivo_daemon:
                         try: # {
                             kind = self.fdlist_established[sel_i]
                             requester = '%s:%d' % sel_i.getpeername()[:2]
+                            closemenow = False
                             if isinstance(sel_i, ClientConnection):
                                 try:
                                     lines = sel_i.readlines()
                                     for line in lines:
                                         if line:
-                                            manage_connection.manage_tcp_connections(sel_i, line, kind)
+                                            closemenow = manage_connection.manage_tcp_connections(sel_i, line, kind)
                                             for ipbxid in self.safe.keys():
                                                 self.loop_over_cti_queue(ipbxid)
                                 except ClientConnection.CloseException, cexc:
                                     kind.disconnected('end_receiving')
+                                    # don't close since it has been done
                                     del self.fdlist_established[sel_i]
                                     # if requester in self.commandclass.transfers_ref:
                                     #   self.commandclass.transfer_endbuf(requester)
                                     log.info('TCP socket %s closed(A %s) on %s' % (kind.kind, cexc, requester))
                             else: # {
-                                closemenow = False
-
                                 try:
                                     msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                     lmsg = len(msg)
@@ -616,13 +616,13 @@ class xivo_daemon:
                                     closemenow = True
                                     # XXX connc : kind.manage_logout('end_receiving')
 
-                                if closemenow:
-                                    kind.disconnected('by_client')
-                                    sel_i.close()
-                                    del self.fdlist_established[sel_i]
-                                    # if requester in self.commandclass.transfers_ref:
-                                    #   self.commandclass.transfer_endbuf(requester)
-                                    log.info('TCP socket %s closed(B) on %s' % (kind.kind, requester))
+                            if closemenow:
+                                kind.disconnected('by_client')
+                                sel_i.close()
+                                del self.fdlist_established[sel_i]
+                                # if requester in self.commandclass.transfers_ref:
+                                #   self.commandclass.transfer_endbuf(requester)
+                                log.info('TCP socket %s closed(B) on %s' % (kind.kind, requester))
                             # }
                         # }
                         except Exception:

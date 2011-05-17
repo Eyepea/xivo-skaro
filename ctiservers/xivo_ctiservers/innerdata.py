@@ -268,7 +268,10 @@ class Safe:
 
     def user_find(self, ctilogin, company):
         uinfo = self.xod_config['users'].finduser(ctilogin, company)
-        return str(uinfo.get('id')) # XXX redmine#2169
+        if uinfo:
+            return str(uinfo.get('id')) # XXX redmine#2169
+        else:
+            return None
 
     def user_status(self, userid):
         print self.xod_config['users'].keeplist[userid]
