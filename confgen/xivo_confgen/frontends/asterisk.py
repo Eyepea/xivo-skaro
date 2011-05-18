@@ -478,6 +478,18 @@ class AsteriskFrontend(Frontend):
 			print >>o, "parkpos => %d-%d" % (int(f['extension'])+1, int(f['extension'])+f['positions'])
 			if f['next'] == 1:
 				print >>o, "findslot => next"
+
+			mmap = {
+				'duration'     : 'parkingtime',
+				'calltransfers': 'parkedcalltransfers',
+				'callreparking': 'parkedcallreparking',
+				'callhangup'   : 'parkedcallhangup',
+				'callreparking': 'parkedcallreparking',
+				'musicclass'   : 'parkedmusicclass',
+			}
+			for k, v in mmap.iteritems():
+				if f[k] is not None:
+					print >>o, "%s => %s" % (v, str(f[k]))
 				
 		print >>o, '\n[featuremap]'
 		for f in self.backend.features.all(commented=False, category='featuremap'):
