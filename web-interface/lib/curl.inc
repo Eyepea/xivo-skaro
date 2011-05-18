@@ -613,8 +613,8 @@ class dwho_curl
         
         if ($this->error() !== '')
             $result['curl_error'] = $this->error();
-        else 
-        {        
+        else
+        {
 			$header_size = $this->get_info(CURLINFO_HEADER_SIZE);
 	        $result['header'] = substr($response, 0, $header_size);
 	        $result['body'] = substr( $response, $header_size );
@@ -627,7 +627,7 @@ class dwho_curl
 
 	function get_info($info=null)
 	{
-		if(is_resource($this->_link) === false 
+		if(is_resource($this->_link) === false
 		|| ($info = $this->_chk_info($info)) === false)
 			return(false);
 		else if($info === null)

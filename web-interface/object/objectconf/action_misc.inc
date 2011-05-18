@@ -22,8 +22,11 @@ $array = array();
 
 /*
  * UI SECTION
- * 
+ *
  */
+
+$array['xivo/ui/monit/'] = array(
+	'path'		=> 'xivo/ui/monit/');
 
 $array['xivo/configuration/ui/manage/entity/get'] = array(
 	'path'		=> 'xivo/configuration/ui/manage/get',
@@ -126,7 +129,7 @@ $array['service/ipbx/asterisk/ui/call_management/schedule'] = array(
 
 /*
  * PRIVATE SECTION
- * 
+ *
  */
 
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
@@ -280,7 +283,7 @@ $array['statistics/web_services/private/call_center/queue'] = array(
 
 /*
  * RESTRICTED SECTION
- * 
+ *
  */
 
 $array['statistics/web_services/restricted/call_center/queue'] = array(
@@ -329,8 +332,6 @@ $array['xivo/configuration/web_services/restricted/provisioning/general'] = arra
 	'path'		=> 'xivo/configuration/web_services/provisioning/general',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-
-
 
 $array['service/ipbx/asterisk/web_services/restricted/ctiserver/configuration'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',

@@ -139,6 +139,10 @@ $array['tree']['service']['statistics']['cdr']['advanced_search'] = true;
 
 
 $array['tree']['xivo'] = array();
+
+$array['tree']['xivo']['monit'] = array();
+$array['tree']['xivo']['monit']['request'] = true;
+
 $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;

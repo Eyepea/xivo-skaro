@@ -36,6 +36,15 @@ $array['xivo/logoff'] = 'xivo/logoff.php';
 // just check is user can access webservices
 $array['xivo/configuration/json/restricted/check'] = 'xivo/configuration/json.php/restricted/check/';
 
+// just for monit local requesting
+$array['xivo/ui/monit'] = 'xivo/ui.php/monit/';
+
+
+// just for monitoring page refresh
+$array['xivo/configuration/json/restricted/support/monitoring'] = 'xivo/configuration/json.php/restricted/support/monitoring/';
+
+$array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configuration/json.php/private/support/monitoring/';
+
 
 // manage
 $array['xivo/configuration/manage/user'] = 'xivo/configuration/index.php/manage/user/';
@@ -80,10 +89,6 @@ $array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/
 $array['xivo/configuration/support/xivo'] = 'xivo/configuration/index.php/support/xivo/';
 $array['xivo/configuration/support/alerts'] = 'xivo/configuration/index.php/support/alerts/';
 $array['xivo/configuration/support/limits'] = 'xivo/configuration/index.php/support/limits/';
-
-$array['xivo/configuration/json/restricted/support/monitoring'] = 'xivo/configuration/json.php/restricted/support/monitoring/';
-
-$array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configuration/json.php/private/support/monitoring/';
 
 
 // provisioning

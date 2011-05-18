@@ -20,57 +20,58 @@
 
 class dwho_monit
 {
-	var $_url		= 'https://localhost:443/monit/';
-	var $_statusurl		= 'https://localhost:443/monit/_status?format=xml';
+	#var $_url			= 'https://localhost:443/monit/';
+	var $_url			= 'https://192.168.32.135/xivo/ui.php/monit/?act=request';
+	var $_statusurl		= 'https://localhost:443/_status?format=xml';
 	var $_option		= array('ssl_verifypeer' => false);
-	var $_curl		= null;
-	var $_uri		= null;
-	var $_conf		= false;
-	var $_monit		= false;
+	var $_curl			= null;
+	var $_uri			= null;
+	var $_conf			= false;
+	var $_monit			= false;
 	var $_service		= array();
-	var $_group		= array();
+	var $_group			= array();
 	var $_device		= array();
 	var $_directory		= array();
-	var $_file		= array();
+	var $_file			= array();
 	var $_process		= array();
 	var $_remotehost	= array();
-	var $_fifo		= array();
+	var $_fifo			= array();
 	var $_status		= array('accessible',
-					'accessible',
-					'accessible',
-					'running',
-					'online',
-					'running',
-					'accessible');
-	var $_types		= array('Device',
-					'Directory',
-					'File',
-					'Process',
-					'Remote Host',
-					'System',
-					'Fifo');
+								'accessible',
+								'accessible',
+								'running',
+								'online',
+								'running',
+								'accessible');
+	var $_types			= array('Device',
+								'Directory',
+								'File',
+								'Process',
+								'Remote Host',
+								'System',
+								'Fifo');
 	var $_monitor		= array('notmonitored',
-					'monitored',
-					'initializing');
+								'monitored',
+								'initializing');
 	var $_events		= array(0x00		=> 'noevent',
-					0x01		=> 'checksum',
-					0x02		=> 'resource',
-					0x04		=> 'timeout',
-					0x08		=> 'timestamp',
-					0x10		=> 'size',
-					0x20		=> 'connection',
-					0x40		=> 'permission',
-					0x80		=> 'uid',
-					0x100		=> 'gid',
-					0x200		=> 'noexist',
-					0x400		=> 'invalid',
-					0x800		=> 'data',
-					0x1000		=> 'exec',
-					0x2000		=> 'changed',
-					0x4000		=> 'icmp',
-					0x8000		=> 'match',
-					0x10000		=> 'instance',
-					0xFFFFFFFF	=> 'all');
+								0x01		=> 'checksum',
+								0x02		=> 'resource',
+								0x04		=> 'timeout',
+								0x08		=> 'timestamp',
+								0x10		=> 'size',
+								0x20		=> 'connection',
+								0x40		=> 'permission',
+								0x80		=> 'uid',
+								0x100		=> 'gid',
+								0x200		=> 'noexist',
+								0x400		=> 'invalid',
+								0x800		=> 'data',
+								0x1000		=> 'exec',
+								0x2000		=> 'changed',
+								0x4000		=> 'icmp',
+								0x8000		=> 'match',
+								0x10000		=> 'instance',
+								0xFFFFFFFF	=> 'all');
 
 	function dwho_monit($conf=null)
 	{
@@ -188,8 +189,10 @@ class dwho_monit
 		&& isset($this->_conf['service'][$name]) === true
 		&& (bool) $this->_conf['service'][$name] === false)
 			return(false);
-
-		$r = $this->_curl->load($this->_url.$name.'?action='.$action,$this->_option);
+			
+		$url = $this->_url.'&service='.$name.'&action='.$action;
+		$r = $this->_curl->load($url,$this->_option);
+		#$r = $this->_curl->load($this->_url.$name.'?action='.$action,$this->_option);
 
 		$this->_curl->close();
 

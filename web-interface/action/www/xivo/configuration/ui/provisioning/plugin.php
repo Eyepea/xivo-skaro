@@ -65,7 +65,7 @@ switch($act)
 		if (isset($_QR['uri']) === false
 		|| ($uri = $_QR['uri']) === ''
 		|| isset($_QR['value']) === false
-		|| ($provdplugin->edit_params($uri,$_QR['value'])) === false) 
+		|| ($provdplugin->edit_params($uri,$_QR['value'])) === false)
 		{
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_edit_params',array($_QR['value'])));
 			die(dwho_report::get_message('error'));
@@ -81,7 +81,7 @@ switch($act)
 		{
 			$http_response->set_status_line(500);
 			$http_response->send(true);
-		}		
+		}
 		elseif (isset($_QR['path']) === false
 		|| isset($_QR['id']) === false
 		|| ($path = urldecode($_QR['path'])) === false
@@ -164,7 +164,7 @@ switch($act)
 						if ($str === '') break;
 						$rs .= " $str";
 						break;
-				}		
+				}
 			}
 			$rs .= "</li>";
 		}
