@@ -1,0 +1,8 @@
+check process pf-xivo-confgend with pidfile /var/run/pf-xivo-confgend.pid
+	group telephony
+	start program = "/etc/init.d/pf-xivo-confgend start"
+	stop program = "/etc/init.d/pf-xivo-confgend stop"
+	if failed host 127.0.0.1 port 8669 use type tcp
+        	then alert #restart
+	if 5 restarts within 5 cycles then timeout
+
