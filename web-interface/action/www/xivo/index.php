@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$monitoring = &$_SRE->get('monitoring');
+
 $mon_telephony = $monitoring->get_group('telephony');
 $mon_grpundef = $monitoring->get_group_undefined();
 $devstats = $monitoring->get_device();

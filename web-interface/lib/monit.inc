@@ -21,7 +21,7 @@
 class dwho_monit
 {
 	var $_url			= 'http://localhost:2812/';
-	var $_statusurl		= 'https://localhost:443/_status?format=xml';
+	var $_statusurl		= 'https://localhost:443/monit/_status?format=xml';
 	var $_option		= array('ssl_verifypeer' => false,
 								'ssl_verifyhost' => false);
 	var $_curl			= null;
