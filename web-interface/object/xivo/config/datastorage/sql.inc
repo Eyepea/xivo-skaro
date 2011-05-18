@@ -32,21 +32,13 @@ $array['ha'] = array();
 $array['ha']['table'] = 'ha';
 $array['ha']['primary'] = array('id' => '');
 
-$array['ha_uname'] = array();
-$array['ha_uname']['table'] = 'ha_uname_node';
-$array['ha_uname']['primary'] = array('id' => '');
+$array['ha_cluster_node'] = array();
+$array['ha_cluster_node']['table'] = 'ha_cluster_node';
+$array['ha_cluster_node']['primary'] = array('device' => '', 'address' => '');
 
-$array['ha_ping'] = array();
-$array['ha_ping']['table'] = 'ha_ping_ipaddr';
-$array['ha_ping']['primary'] = array('id' => '');
-
-$array['ha_virtnet'] = array();
-$array['ha_virtnet']['table'] = 'ha_virtual_network';
-$array['ha_virtnet']['primary'] = array('id' => '');
-
-$array['ha_peer'] = array();
-$array['ha_peer']['table'] = 'ha_peer';
-$array['ha_peer']['primary'] = array('id' => '');
+$array['ha_service'] = array();
+$array['ha_service']['table'] = 'ha_service';
+$array['ha_service']['primary'] = array('name' => '');
 
 $array['iproute'] = array();
 $array['iproute']['table'] = 'iproute';

@@ -883,14 +883,22 @@ INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf',
 
 DROP TABLE IF EXISTS "parkinglot";
 CREATE TABLE "parkinglot" (
- "id"          SERIAL,
- "name"        VARCHAR(255) NOT NULL,
- "context"     VARCHAR(39) NOT NULL,  -- SHOULD BE A REF TO CONTEXT TABLE IN 2.0
- "extension"   VARCHAR(40) NOT NULL,
- "positions"   INTEGER NOT NULL,      -- NUMBER OF POSITIONS, (positions starts at extension + 1)
- "next"        INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "commented"   INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "description" TEXT NOT NULL,
+ "id"            SERIAL,
+ "name"          VARCHAR(255) NOT NULL,
+ "context"       VARCHAR(39) NOT NULL,       -- SHOULD BE A REF TO CONTEXT TABLE IN 2.0
+ "extension"     VARCHAR(40) NOT NULL,
+ "positions"     INTEGER NOT NULL,           -- NUMBER OF POSITIONS, (positions starts at extension + 1)
+ "next"          INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ "duration"      INTEGER DEFAULT NULL,
+ 
+ "calltransfers" VARCHAR(8) DEFAULT NULL,
+ "callreparking" VARCHAR(8) DEFAULT NULL,
+ "callhangup"    VARCHAR(8) DEFAULT NULL,
+ "callrecording" VARCHAR(8) DEFAULT NULL,
+ "musicclass"    VARCHAR(255) DEFAULT NULL,
+
+ "commented"     INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "description"   TEXT NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
 
