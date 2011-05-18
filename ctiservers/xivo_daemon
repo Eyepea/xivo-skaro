@@ -97,9 +97,10 @@ except:
 XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
 XIVO_CONF_FILE         = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
+PORTDELTA          = 0
 LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
-GETOPT_SHORTOPTS   = 'dc:p:l:i:'
-GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=', 'ip=']
+GETOPT_SHORTOPTS   = 'dc:p:l:i:P:'
+GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=', 'ip=', 'portdelta=']
 debug_mode = False
 xivoip = 'localhost'
 
@@ -111,7 +112,7 @@ filekey = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
 sslproto = ssl.PROTOCOL_TLSv1
 
 def parse_command_line():
-    global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, debug_mode, xivoip
+    global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, PORTDELTA, debug_mode, xivoip
     for opt, arg in getopt.getopt( sys.argv[1:], GETOPT_SHORTOPTS, GETOPT_LONGOPTS)[0]:
         if opt == '-c':
             XIVO_CONF_FILE = arg
@@ -123,6 +124,8 @@ def parse_command_line():
             LOGFILENAME = arg
         elif opt == '-i':
             xivoip = arg
+        elif opt == '-P':
+            PORTDELTA = int(arg)
 
 class manage_connection:
     ## \brief Deals with requests from the UI clients.
@@ -351,7 +354,8 @@ class xivo_daemon:
         for kind, bind_and_port in xivoconf_general.get('incoming_tcp', {}).iteritems():
             try:
                 (bind, port) = bind_and_port
-                gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_STREAM, socket.SOL_TCP)
+                trueport = int(port) + PORTDELTA
+                gai = socket.getaddrinfo(bind, trueport, 0, socket.SOCK_STREAM, socket.SOL_TCP)
                 if not gai:
                     continue
                 (afinet, socktype, proto, dummy, bindtuple) = gai[0]
@@ -361,12 +365,13 @@ class xivo_daemon:
                 UIsock.listen(10)
                 self.fdlist_listen_cti[UIsock] = '%s:%s' % (kind, 1)
             except Exception:
-                log.exception('%s' % bind_and_port)
+                log.exception('tcp %s %d' % (bind, trueport))
 
         for kind, bind_and_port in xivoconf_general.get('incoming_udp', {}).iteritems():
             try:
                 (bind, port) = bind_and_port
-                gai = socket.getaddrinfo(bind, port, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
+                trueport = int(port) + PORTDELTA
+                gai = socket.getaddrinfo(bind, trueport, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
                 if not gai:
                     continue
                 (afinet, socktype, proto, dummy, bindtuple) = gai[0]
@@ -375,7 +380,7 @@ class xivo_daemon:
                 UIsock.bind(bindtuple)
                 self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, 1)
             except Exception:
-                log.exception('%s' % bind_and_port)
+                log.exception('udp %s %d' % (bind, trueport))
 
         # Main select() loop - Receive messages
         if not self.cconf.getconfig():

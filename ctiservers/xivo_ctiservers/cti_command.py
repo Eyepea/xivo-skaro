@@ -199,7 +199,7 @@ class Command:
             if argum not in self.commanddict:
                 missings.append(argum)
         if len(missings) > 0:
-            log.warning('%s - missing args : %s' % (head, ','.join(missings)))
+            log.warning('%s - missing args : %s' % (head, missings))
             return 'missing:%s' % ','.join(missings)
 
         this_hashed_password = self.commanddict.get('hashedpassword')
@@ -227,7 +227,7 @@ class Command:
             if argum not in self.commanddict:
                 missings.append(argum)
         if len(missings) > 0:
-            log.warning('%s - missing args : %s' % (head, ','.join(missings)))
+            log.warning('%s - missing args : %s' % (head, missings))
             return 'missing:%s' % ','.join(missings)
 
         # settings (in agent mode for instance)
@@ -257,22 +257,22 @@ class Command:
 
         capastruct = {}
         if profilespecs:
-                for capakind in ['regcommands', 'ipbxcommands',
-                                 'services', 'functions',
-                                 'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
-                    if profilespecs.get(capakind):
-                        tt = profilespecs.get(capakind)
-                        cfg_capakind = self.ctid.cconf.getconfig(capakind)
-                        if cfg_capakind:
-                            details = cfg_capakind.get(tt)
-                        else:
-                            details = {}
-                        capastruct[capakind] = details
+            for capakind in ['regcommands', 'ipbxcommands',
+                             'services', 'functions',
+                             'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
+                if profilespecs.get(capakind):
+                    tt = profilespecs.get(capakind)
+                    cfg_capakind = self.ctid.cconf.getconfig(capakind)
+                    if cfg_capakind:
+                        details = cfg_capakind.get(tt)
                     else:
-                        log.warning('no capakind %s in profilespecs %s'
-                                    % (capakind, profilespecs.keys()))
+                        details = {}
+                    capastruct[capakind] = details
+                else:
+                    log.warning('no capakind %s in profilespecs %s'
+                                % (capakind, profilespecs.keys()))
         else:
-                log.warning('empty profilespecs %s' % profilespecs)
+            log.warning('empty profilespecs %s' % profilespecs)
 
         reply = { 'ipbxid' : self.ipbxid,
                   'userid' : self.userid,
@@ -383,11 +383,7 @@ class Command:
         z.connect()
         services = z.serviceget(self.ruserid)
         z.close()
-        reply = { 'function' : 'get',
-                  'ipbxid' : self.ripbxid,
-                  'userid' : self.ruserid,
-                  'userfeatures' : services.get('userfeatures'),
-                  }
+        reply = { 'userfeatures' : services.get('userfeatures') }
         return reply
 
     def regcommand_featuresput(self):
