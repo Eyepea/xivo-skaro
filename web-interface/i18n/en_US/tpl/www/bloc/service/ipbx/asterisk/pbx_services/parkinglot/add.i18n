@@ -11,7 +11,7 @@ Context:
 Extension:
 
 ; fm_parkinglot_positions
-Num of positions :
+Num of positions:
 
 ; hlp_fp_positions
 Positions starts at extension+1
@@ -24,3 +24,31 @@ If not checked, use first available free position, from start
 
 ; fm_parkinglot_description
 Description : 
+
+; fm_parkinglot_duration
+Duration:
+
+; fm_parkinglot_calltransfers
+Allow DTMF based transfers when picking up parked call:
+
+; fm_parkinglot_callhangup
+Allow DTMF based hangups when picking up parked call:
+
+; fm_parkinglot_callrecording
+Allow DTMF based one-touch recording when picking up parked call:
+
+; fm_parkinglot_callreparking
+Allow DTMF based parking when picking up parked call:
+
+; fm_parkinglot_musicclass
+MOH class to play to parked calls:
+
+; parkinglot_call(caller)
+Caller
+
+; parkinglot_call(callee)
+Callee
+
+; parkinglot_call(both)
+Both
+

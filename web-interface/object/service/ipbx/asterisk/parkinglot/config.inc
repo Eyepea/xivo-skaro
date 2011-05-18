@@ -39,6 +39,33 @@ $array['element']['next']['value'] = array(0,1);
 $array['element']['next']['default'] = 1;
 $array['element']['next']['set'] = true;
 
+$array['element']['duration'] = array();
+$array['element']['duration']['default'] = '';
+$array['element']['duration']['null'] = true;
+
+$array['element']['calltransfers'] = array();
+$array['element']['calltransfers']['value'] = array('callee','caller','both');
+$array['element']['calltransfers']['default'] = '';
+$array['element']['calltransfers']['null'] = true;
+
+$array['element']['callreparking'] = array();
+$array['element']['callreparking']['value'] = array('callee','caller','both');
+$array['element']['callreparking']['default'] = '';
+$array['element']['callreparking']['null'] = true;
+
+$array['element']['callhangup'] = array();
+$array['element']['callhangup']['value'] = array('callee','caller','both');
+$array['element']['callhangup']['default'] = '';
+$array['element']['callhangup']['null'] = true;
+
+$array['element']['callrecording'] = array();
+$array['element']['callrecording']['value'] = array('callee','caller','both');
+$array['element']['callrecording']['default'] = '';
+$array['element']['callrecording']['null'] = true;
+
+$array['element']['musicclass'] = array();
+$array['element']['musicclass']['default'] = '';
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
@@ -53,6 +80,12 @@ $array['filter']['context'] = array('set' => true, 'chk' => 1, 'maxlen' => 39);
 $array['filter']['extension'] = array('set' => true, 'chk' => 1, 'maxlen' => 40, 'cast' => 'uint');
 $array['filter']['positions'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['next'] = array('bool' => true);
+$array['filter']['duration'] = array('set' => false, 'chk' => 2, 'cast' => 'uint');
+$array['filter']['calltransfers'] = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both'));
+$array['filter']['callreparking'] = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both'));
+$array['filter']['callhangup']    = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both'));
+$array['filter']['callrecording'] = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both'));
+$array['filter']['musicclass'] = array('set' => false, 'chk' => 2, 'maxlen' => 255);
 $array['filter']['description'] = array('set' => false, 'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);
 

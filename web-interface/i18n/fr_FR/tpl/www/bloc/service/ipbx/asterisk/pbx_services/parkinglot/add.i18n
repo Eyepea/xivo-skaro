@@ -24,3 +24,30 @@ Si décoché, utilise la 1ère position libre (depuis le début)
 
 ; fm_parkinglot_description
 Description : 
+
+; fm_parkinglot_duration
+Durée de parking : 
+
+; fm_parkinglot_calltransfers
+Autoriser le transfer par DTMF sur reprise d'appel parqué : 
+
+; fm_parkinglot_callhangup
+Autoriser le raccroché par DTMF sur reprise d'appel parqué : 
+
+; fm_parkinglot_callrecording
+Autoriser l'enregistrement par DTMF sur reprise d'appel parqué : 
+
+; fm_parkinglot_callreparking
+Autoriser le parquage par DTMF sur reprise d'appel parqué : 
+
+; fm_parkinglot_musicclass
+Musique d'attente jouée aux appels parqués : 
+
+; parkinglot_call(caller)
+Émetteur
+
+; parkinglot_call(callee)
+Destinataire
+
+; parkinglot_call(both)
+Les deux

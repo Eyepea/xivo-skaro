@@ -24,6 +24,7 @@ $url          = $this->get_module('url');
 $info         = $this->get_var('info');
 $element      = $this->get_var('element');
 $context_list = $this->get_var('contexts');
+$moh          = $this->get_var('moh');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -82,7 +83,61 @@ endif;
 				      'labelid'	=> 'parkinglot-next',
 							'help'      => $this->bbf('hlp_fm_next'),
 				      'default'	=> $element['parkinglot']['next']['default'],
-							'checked'	=> $this->get_var('info','next')=='1'));
+							'checked'	=> $this->get_var('info','next')=='1')),
+
+		$form->text(array('desc'	=> $this->bbf('fm_parkinglot_duration'),
+				  'name'	=> 'parkinglot[duration]',
+				  'labelid'	=> 'parkinglot-duration',
+				  'size'	=> 15,
+				  'default'	=> $element['parkinglot']['duration']['default'],
+					'value'	=> $info['duration'],
+				  'error'	=> $this->bbf_args('error',
+						$this->get_var('error', 'parkinglot', 'duration')) )),
+
+		$form->select(array('desc'	=> $this->bbf('fm_parkinglot_calltransfers'),
+					    'name'	=> 'parkinglot[calltransfers]',
+							'labelid'	=> 'parkinglot-calltransfers',
+							'empty' => true,
+					    'key'	=> false,
+							'bbf'	=> 'parkinglot_call',
+					    'selected'	=> $info['calltransfers']),
+			      $element['parkinglot']['calltransfers']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_parkinglot_callreparking'),
+					    'name'	=> 'parkinglot[callreparking]',
+					    'labelid'	=> 'parkinglot-callreparking',
+							'empty' => true,
+					    'key'	=> false,
+							'bbf'	=> 'parkinglot_call',
+					    'selected'	=> $info['callreparking']),
+			      $element['parkinglot']['callreparking']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_parkinglot_callhangup'),
+					    'name'	=> 'parkinglot[callhangup]',
+					    'labelid'	=> 'parkinglot-callhangup',
+							'empty' => true,
+					    'key'	=> false,
+							'bbf'	=> 'parkinglot_call',
+					    'selected'	=> $info['callhangup']),
+			      $element['parkinglot']['callhangup']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_parkinglot_callrecording'),
+					    'name'	=> 'parkinglot[callrecording]',
+					    'labelid'	=> 'parkinglot-callrecording',
+							'empty' => true,
+					    'key'	=> false,
+							'bbf'	=> 'parkinglot_call',
+					    'selected'	=> $info['callrecording']),
+			      $element['parkinglot']['callrecording']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_parkinglot_musicclass'),
+					    'name'	=> 'parkinglot[musicclass]',
+					    'labelid'	=> 'parkinglot-musicclass',
+							'empty' => true,
+					    'key'	=> 'category',
+					    'altkey'	=> 'category',
+					    'selected'	=> $info['musicclass']),
+			      $moh);
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>

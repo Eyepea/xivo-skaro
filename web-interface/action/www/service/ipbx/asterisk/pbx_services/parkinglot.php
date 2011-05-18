@@ -18,8 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$appark = $ipbx->get_module('parkinglot');
+$appark   = $ipbx->get_module('parkinglot');
 $contexts = $ipbx->get_module('context');
+$moh      = $ipbx->get_module('musiconhold');
 
 $act 		  = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page 		= isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
@@ -155,6 +156,7 @@ switch($act)
 
 $_TPL->set_var('act'      , $act);
 $_TPL->set_var('contexts' , $contexts->get_all());
+$_TPL->set_var('moh'      , $moh->get_all_category(null, false));
 $_TPL->set_var('error'    , array('parkinglot' => $error));
 $_TPL->set_var('element'  , array('parkinglot' => $appark->get_element()));
 
