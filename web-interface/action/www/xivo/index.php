@@ -18,39 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$monitoring = &$_SRE->get('monitoring');
-
-if(isset($_QR['service'],$_QR['action']) === true)
-{
-	switch($_QR['action'])
-	{
-		case 'start':
-			$monitoring->start_service($_QR['service']);
-			$_QRY->go($_TPL->url('xivo'));
-			break;
-		case 'stop':
-			$monitoring->stop_service($_QR['service']);
-			$_QRY->go($_TPL->url('xivo'));
-			break;
-		case 'restart':
-			$monitoring->restart_service($_QR['service']);
-			$_QRY->go($_TPL->url('xivo'));
-			break;
-		case 'monitor':
-			$monitoring->enable_monitor($_QR['service']);
-			$_QRY->go($_TPL->url('xivo'));
-			break;
-		case 'unmonitor':
-			$monitoring->disable_monitor($_QR['service']);
-			$_QRY->go($_TPL->url('xivo'));
-			break;
-		default:
-			break;
-	}
-}
-
 $mon_telephony = $monitoring->get_group('telephony');
-
 $mon_grpundef = $monitoring->get_group_undefined();
 $devstats = $monitoring->get_device();
 

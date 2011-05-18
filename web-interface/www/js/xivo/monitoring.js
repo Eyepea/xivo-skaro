@@ -39,7 +39,7 @@ function init_action(service,action)
 	//$('#box_infos').show();
 	$.ajax({
 		async: false,
-		url: '/xivo/ui.php/monitoring/?' + dwho_sess_str+'&act=request&service='+service+'&action='+action,
+		url: '/xivo/ui.php/monit/?' + dwho_sess_str+'&act=request&service='+service+'&action='+action,
 		success: function(){
 			$('#box_infos').hide();
 		}

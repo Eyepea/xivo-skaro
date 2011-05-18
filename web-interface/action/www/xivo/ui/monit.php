@@ -28,25 +28,40 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'request':
-		if (isset($_QR['service']) === false
-		|| isset($_QR['action']) === false)
+		$monitoring = &$_SRE->get('monitoring');
+		
+		if(isset($_QR['service'],$_QR['action']) === true)
 		{
-			$http_response->set_status_line(400);
+			switch($_QR['action'])
+			{
+				case 'start':
+					$monitoring->start_service($_QR['service']);
+					break;
+				case 'stop':
+					$monitoring->stop_service($_QR['service']);
+					break;
+				case 'restart':
+					$monitoring->restart_service($_QR['service']);
+					break;
+				case 'monitor':
+					$monitoring->enable_monitor($_QR['service']);
+					break;
+				case 'unmonitor':
+					$monitoring->disable_monitor($_QR['service']);
+					break;
+				default:
+					$http_response->set_status_line(400);
+					$http_response->send(true);
+					break;
+			}
+			$http_response->set_status_line(200);
 			$http_response->send(true);
 		}
-			
-		dwho::load_class('dwho_curl');
-		$_curl = new dwho_curl();
-		$url = 'http://127.0.0.1:2812/'.$_QR['service'].'?action='.$_QR['action'];
-		$opt = array('get'	=> true);
-		$rs = $_curl->load($url,$opt,true);
-		print($rs);
-		$http_response->set_status_line(200);
-		$http_response->send(true);
 		break;
 	default:
 		$http_response->set_status_line(400);
 		$http_response->send(true);
+		break;
 }
 
 ?>
