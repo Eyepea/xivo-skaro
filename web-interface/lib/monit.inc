@@ -20,10 +20,10 @@
 
 class dwho_monit
 {
-	#var $_url			= 'https://localhost:443/monit/';
-	var $_url			= 'https://192.168.32.135/xivo/ui.php/monit/?act=request';
+	var $_url			= 'https://localhost:443/monit/';
 	var $_statusurl		= 'https://localhost:443/_status?format=xml';
-	var $_option		= array('ssl_verifypeer' => false);
+	var $_option		= array('ssl_verifypeer' => false,
+								'ssl_verifyhost' => false);
 	var $_curl			= null;
 	var $_uri			= null;
 	var $_conf			= false;
@@ -189,9 +189,15 @@ class dwho_monit
 		&& isset($this->_conf['service'][$name]) === true
 		&& (bool) $this->_conf['service'][$name] === false)
 			return(false);
+		
+		$opt = array('header'		=> true,
+					'returntransfer'=> true);
+		$this->_option = array_merge($this->_option,$opt);
 			
-		$url = $this->_url.'&service='.$name.'&action='.$action;
+		$url = 'https://'.$_SERVER['SERVER_ADDR'].':443/xivo/ui.php/monit/?'.DWHO_SESS_STR.'&act=request';
+		$url .= '&service='.$name.'&action='.$action;
 		$r = $this->_curl->load($url,$this->_option);
+		
 		#$r = $this->_curl->load($this->_url.$name.'?action='.$action,$this->_option);
 
 		$this->_curl->close();

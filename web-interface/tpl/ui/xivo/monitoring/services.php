@@ -90,11 +90,10 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 								       $this->bbf('sysinfos_opt_start',
 										  $ref['name']),
 								       'border="0"'),
-							'xivo',
-							array('service'	=> $ref['name'],
-							      'action'	=> 'start'),
-							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_start_confirm',
-												    $ref['name'])).'\'));"',
+							'#',
+							null,
+							'onclick="if(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_start_confirm',$ref['name'])).'\'))
+									{init_action(\''.$ref['name'].'\',\'start\')}else{return(false)};"',
 							$this->bbf('sysinfos_opt_start',
 								   $ref['name'])),"\n";
 			endif;
@@ -105,11 +104,10 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 								       $this->bbf('sysinfos_opt_restart',
 										  $ref['name']),
 								       'border="0"'),
-							'xivo',
-							array('service'	=> $ref['name'],
-							      'action'	=> 'restart'),
-							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_restart_confirm',
-													       $ref['name'])).'\'));"',
+							'#',
+							null,
+							'onclick="if(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_restart_confirm',$ref['name'])).'\'))
+									{init_action(\''.$ref['name'].'\',\'restart\');}else{return(false);};"',
 							$this->bbf('sysinfos_opt_restart',
 								   $ref['name'])),"\n";
 			endif;
@@ -120,11 +118,10 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 								       $this->bbf('sysinfos_opt_stop',
 										  $ref['name']),
 								       'border="0"'),
-							'xivo',
-							array('service'	=> $ref['name'],
-							      'action'	=> 'stop'),
-							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_stop_confirm',
-													       $ref['name'])).'\'));"',
+							'#',
+							null,
+							'onclick="if(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_stop_confirm',$ref['name'])).'\'))
+									{init_action(\''.$ref['name'].'\',\'stop\')}else{return(false)};"',
 							$this->bbf('sysinfos_opt_stop',
 								   $ref['name'])),"\n";
 			endif;
@@ -135,11 +132,10 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 								       $this->bbf('sysinfos_opt_monitor',
 										  $ref['name']),
 								       'border="0"'),
-							'xivo',
-							array('service'	=> $ref['name'],
-							      'action'	=> 'monitor'),
-							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_monitor_confirm',
-													       $ref['name'])).'\'));"',
+							'#',
+							null,
+							'onclick="if(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_monitor_confirm',$ref['name'])).'\'))
+									{init_action(\''.$ref['name'].'\',\'monitor\')}else{return(false)};"',
 							$this->bbf('sysinfos_opt_monitor',
 								   $ref['name'])),"\n";
 			elseif($ref['unmonitorable'] === true && xivo_user::chk_acl('control_system','unmonitor','service/monitoring') === true):
@@ -148,11 +144,10 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 								       $this->bbf('sysinfos_opt_unmonitor',
 										  $ref['name']),
 								       'border="0"'),
-							'xivo',
-							array('service'	=> $ref['name'],
-							      'action'	=> 'unmonitor'),
-							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_unmonitor_confirm',
-													       $ref['name'])).'\'));"',
+							'#',
+							null,
+							'onclick="if(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_unmonitor_confirm',$ref['name'])).'\'))
+									{init_action(\''.$ref['name'].'\',\'unmonitor\');}else{return(false);};"',
 							$this->bbf('sysinfos_opt_unmonitor',
 								   $ref['name'])),"\n";
 			endif;

@@ -1524,7 +1524,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$bcast  = implode('.', $bcast);
 
-
 		$data = array(
 			'name'        => $name,
 			'ifname'      => $name,
@@ -1560,7 +1559,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
 		
-		$modprov = &$this->_xobj->get_module('provisioning');		
+		$modprov = &$this->_xobj->get_module('provisioning');
 		$modprov->edit(1, array('net4_ip' => $netiface['address']));
 
 		if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)

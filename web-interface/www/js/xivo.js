@@ -341,6 +341,14 @@ var fixHelper = function(e, ui) {
 	return ui;
 };
 
+var delay = (function(){
+  var timer = 0;
+  return function(callback, ms){
+    clearTimeout (timer);
+    timer = setTimeout(callback, ms);
+  };
+})();
+
 // object for manage multiselect filter
 function clean_ms(input_id,select_from,select_to)
 {

@@ -18,20 +18,34 @@
  
 function xivo_monitoring_get_all()
 {
-	new dwho.http('/xivo/ui.php/monitoring/?' + dwho_sess_str,
-		      {'callbackcomplete': function(xhr) { document.getElementById('monitoring').innerHTML = xhr.responseText; },
-		       'method': 'post',
-		       'cache':	false},
-		      {'bloc': 'monitoring'},
-		      true);
+	$.post('/xivo/ui.php/monitoring/?' + dwho_sess_str, 
+		{'bloc': 'monitoring'}, 
+		function(data) {
+			$('#monitoring').html(data);
+	});
 }
 
 function xivo_monitoring_get_bloc(bloc)
 {
-	new dwho.http('/xivo/ui.php/monitoring/?' + dwho_sess_str,
-		      {'callbackcomplete': function(xhr) { document.getElementById(bloc).innerHTML = xhr.responseText; },
-		       'method': 'post',
-		       'cache':	false},
-		      {'bloc': bloc},
-		      true);
+	$.post('/xivo/ui.php/monitoring/?' + dwho_sess_str, 
+		{'bloc': bloc}, 
+		function(data) {
+			$('#'+bloc).html(data);
+	});
 }
+
+function init_action(service,action)
+{
+	//$('#box_infos').show();
+	$.ajax({
+		async: false,
+		url: '/xivo/ui.php/monitoring/?' + dwho_sess_str+'&act=request&service='+service+'&action='+action,
+		success: function(){
+			$('#box_infos').hide();
+		}
+	});
+}
+
+$(function(){
+	$('#box_infos').hide();
+});

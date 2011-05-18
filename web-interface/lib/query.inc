@@ -125,7 +125,7 @@ class dwho_query
 
 			$q .= DWHO_SESS_STR;
 		}
-	 */
+	 	*/
 		if(dwho_has_len($q) === true)
 			$location .= '?'.$q;
 

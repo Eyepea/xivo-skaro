@@ -16,14 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var delay = (function(){
-  var timer = 0;
-  return function(callback, ms){
-    clearTimeout (timer);
-    timer = setTimeout(callback, ms);
-  };
-})();
-
 $(function(){
 	mt = ($('#tb-list-pkgs').height() / 2) - ($('#box_installer').find('div').height() / 2);
 	$('#box_installer').css('height',$('#tb-list-pkgs').height()+'px');
