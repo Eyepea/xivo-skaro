@@ -896,6 +896,7 @@ CREATE TABLE "parkinglot" (
  "callhangup"    VARCHAR(8) DEFAULT NULL,
  "callrecording" VARCHAR(8) DEFAULT NULL,
  "musicclass"    VARCHAR(255) DEFAULT NULL,
+ "hints"         INTEGER    NOT NULL DEFAULT 0, -- BOOLEAN
 
  "commented"     INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description"   TEXT NOT NULL DEFAULT '',

@@ -66,6 +66,11 @@ $array['element']['callrecording']['null'] = true;
 $array['element']['musicclass'] = array();
 $array['element']['musicclass']['default'] = '';
 
+$array['element']['hints'] = array();
+$array['element']['hints']['value'] = array(0,1);
+$array['element']['hints']['default'] = 0;
+$array['element']['hints']['set'] = true;
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
@@ -86,6 +91,7 @@ $array['filter']['callreparking'] = array('set' => false,'chk' => 2, 'key' => ar
 $array['filter']['callhangup']    = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both'));
 $array['filter']['callrecording'] = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both'));
 $array['filter']['musicclass'] = array('set' => false, 'chk' => 2, 'maxlen' => 255);
+$array['filter']['hints'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false, 'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);
 

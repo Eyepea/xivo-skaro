@@ -486,6 +486,7 @@ class AsteriskFrontend(Frontend):
 				'callhangup'   : 'parkedcallhangup',
 				'callreparking': 'parkedcallreparking',
 				'musicclass'   : 'parkedmusicclass',
+				'hints'        : 'parkinghints',
 			}
 			for k, v in mmap.iteritems():
 				if f[k] is not None:

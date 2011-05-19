@@ -137,7 +137,14 @@ endif;
 					    'key'	=> 'category',
 					    'altkey'	=> 'category',
 					    'selected'	=> $info['musicclass']),
-			      $moh);
+					$moh),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_parkinglot_hints'),
+				      'name'	=> 'parkinglot[hints]',
+				      'labelid'	=> 'parkinglot-hints',
+				      'default'	=> $element['parkinglot']['hints']['default'],
+							'checked'	=> $this->get_var('info','hints')=='1'));
+
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
