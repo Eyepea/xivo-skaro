@@ -755,7 +755,6 @@ CREATE TYPE "extenumbers_type" AS ENUM ('extenfeatures',
 'featuremap',
 'generalfeatures',
 'group',
-'handynumbers',
 'incall',
 'meetme',
 'outcall',
@@ -881,6 +880,33 @@ INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf',
 INSERT INTO "features" VALUES (nextval('features_id_seq'),1,0,0,'features.conf','featuremap','automixmon','*3');
 
 
+DROP TABLE IF EXISTS "paging";
+CREATE TABLE "paging" (
+ "id"		 		SERIAL NOT NULL,
+ "number" 			VARCHAR(32),
+ "duplex" 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "default_group" 	INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "record" 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "quiet" 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "callnotbusy" 		INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "timeout" 			INTEGER NOT NULL,
+ "announcement_file" VARCHAR(64),
+ "announcement_play" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "commented" 		INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ "description" 		text,
+ PRIMARY KEY("id")
+);
+
+CREATE UNIQUE INDEX "paging__idx__number" ON "paging"("number");
+
+DROP TABLE IF EXISTS "paginguser";
+CREATE TABLE "paginguser" (
+ "pagingid" 		INTEGER NOT NULL,
+ "userfeaturesid" 	INTEGER NOT NULL,
+ PRIMARY KEY("pagingid","userfeaturesid")
+);
+
+
 DROP TABLE IF EXISTS "parkinglot";
 CREATE TABLE "parkinglot" (
  "id"            SERIAL,
@@ -926,26 +952,6 @@ CREATE INDEX "groupfeatures__idx__name" ON "groupfeatures"("name");
 CREATE INDEX "groupfeatures__idx__number" ON "groupfeatures"("number");
 CREATE INDEX "groupfeatures__idx__context" ON "groupfeatures"("context");
 CREATE INDEX "groupfeatures__idx__deleted" ON "groupfeatures"("deleted");
-
-
-DROP TABLE IF EXISTS "handynumbers";
-DROP TYPE  IF EXISTS "handynumbers_type";
-
-CREATE TYPE "handynumbers_type" AS ENUM ('emergency', 'special');
-
-CREATE TABLE "handynumbers" (
- "id" SERIAL,
- "exten" varchar(40) NOT NULL DEFAULT '',
- "trunkfeaturesid" INTEGER NOT NULL DEFAULT 0,
- "type" handynumbers_type NOT NULL,
- "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- PRIMARY KEY("id")
-);
-
-CREATE INDEX "handynumbers__idx__trunkfeaturesid" ON "handynumbers"("trunkfeaturesid");
-CREATE INDEX "handynumbers__idx__type" ON "handynumbers"("type");
-CREATE INDEX "handynumbers__idx__commented" ON "handynumbers"("commented");
-CREATE UNIQUE INDEX "handynumbers__uidx__exten" ON "handynumbers"("exten");
 
 
 DROP TABLE IF EXISTS "incall";
