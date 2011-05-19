@@ -152,10 +152,6 @@ $array['groupfeatures'] = array();
 $array['groupfeatures']['table'] = 'groupfeatures';
 $array['groupfeatures']['primary'] = array('id' => '');
 
-$array['handynumbers'] = array();
-$array['handynumbers']['table'] = 'handynumbers';
-$array['handynumbers']['primary'] = array('id' => '');
-
 $array['incall'] = array();
 $array['incall']['table'] = 'incall';
 $array['incall']['primary'] = array('id' => '');
@@ -183,6 +179,14 @@ $array['outcall']['primary'] = array('id' => '');
 $array['outcalltrunk'] = array();
 $array['outcalltrunk']['table'] = 'outcalltrunk';
 $array['outcalltrunk']['primary'] = array('outcallid' => '','trunkfeaturesid' => '');
+
+$array['paging'] = array();
+$array['paging']['table'] = 'paging';
+$array['paging']['primary'] = array('id' => '');
+
+$array['paginguser'] = array();
+$array['paginguser']['table'] = 'paginguser';
+$array['paginguser']['primary'] = array('pagingid' => '','userfeaturesid' => '');
 
 $array['phonebook'] = array();
 $array['phonebook']['table'] = 'phonebook';

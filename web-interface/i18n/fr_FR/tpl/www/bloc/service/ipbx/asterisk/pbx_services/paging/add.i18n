@@ -1,0 +1,39 @@
+; title_content_name
+Paging > Ajouter
+
+; fm_paging_number
+Numéro:
+
+; fm_paging_duplex
+Audio full duplex:
+
+; fm_paging_default_group
+paging par default:
+
+; fm_paging_record
+Enregistrer le paging dans un fichier: 
+
+; fm_paging_quiet
+Silence, ne pas jouer le bip:
+
+; fm_paging_callnotbusy
+Appeler seulement les utilisateurs qui n'ont pas le statut occupé: 
+
+; fm_paging_announcement_play
+Jouer le son d'annonce sur tous les utilisateurs appelés: 
+
+; fm_paging_announcement_file
+Son d'annonce: 
+
+; fm_paging_timeout
+Expiration: 
+
+; hlp_fm_paging_timetout
+Spécifier le temps que le système tente de se connecter pour un appel. <br>
+Après cette durée, tous les appels intercom qui n'ont pas reçu de réponse seront terminés par le système.
+
+; fm_paginguser
+Liste des utilisateurs: 
+
+; fm_paging_description
+Description: 

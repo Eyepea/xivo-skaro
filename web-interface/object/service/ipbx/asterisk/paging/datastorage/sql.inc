@@ -18,19 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
-$array['element'] = array();
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-$array['element']['servicesgroup_id'] = array();
-$array['element']['servicesgroup_id']['default'] = 0;
-
-$array['element']['userfeatures_id'] = array();
-$array['element']['userfeatures_id']['default'] = 0;
-
-
-$array['filter'] = array();
-
-$array['filter']['servicesgroup_id'] = array('cast' => 'ulongint');
-$array['filter']['userfeatures_id'] = array('cast' => 'ulongint');
+class xivo_service_asterisk_paging_sql extends xivo_service_asterisk_abstract_sql
+{
+	var $_unique	= array('number');
+}
 
 ?>

@@ -161,9 +161,6 @@ $array['module']['extensions']['datastorage'] = true;
 $array['module']['extenumbers'] = array();
 $array['module']['extenumbers']['datastorage'] = true;
 
-$array['module']['handynumbers'] = array();
-$array['module']['handynumbers']['datastorage'] = true;
-
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;
 
@@ -190,6 +187,12 @@ $array['module']['outcall']['datastorage'] = true;
 
 $array['module']['outcalltrunk'] = array();
 $array['module']['outcalltrunk']['datastorage'] = true;
+
+$array['module']['paging'] = array();
+$array['module']['paging']['datastorage'] = true;
+
+$array['module']['paginguser'] = array();
+$array['module']['paginguser']['datastorage'] = true;
 
 $array['module']['phonebook'] = array();
 $array['module']['phonebook']['datastorage'] = true;

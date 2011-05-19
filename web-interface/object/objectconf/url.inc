@@ -220,7 +220,7 @@ $array['service/ipbx/json/restricted/trunk_management/custom'] = 'service/ipbx/j
 $array['service/ipbx/pbx_services/sounds'] = 'service/ipbx/index.php/pbx_services/sounds/';
 $array['service/ipbx/pbx_services/musiconhold'] = 'service/ipbx/index.php/pbx_services/musiconhold/';
 $array['service/ipbx/pbx_services/extenfeatures'] = 'service/ipbx/index.php/pbx_services/extenfeatures/';
-$array['service/ipbx/pbx_services/handynumbers'] = 'service/ipbx/index.php/pbx_services/paging/';
+$array['service/ipbx/pbx_services/paging'] = 'service/ipbx/index.php/pbx_services/paging/';
 $array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
 $array['service/ipbx/pbx_services/phonebook'] = 'service/ipbx/index.php/pbx_services/phonebook/';
 

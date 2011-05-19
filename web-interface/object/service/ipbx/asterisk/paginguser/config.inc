@@ -21,16 +21,16 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['servicesgroup_id'] = array();
-$array['element']['servicesgroup_id']['default'] = 0;
+$array['element']['pagingid'] = array();
+$array['element']['pagingid']['default'] = 0;
 
-$array['element']['userfeatures_id'] = array();
-$array['element']['userfeatures_id']['default'] = 0;
+$array['element']['userfeaturesid'] = array();
+$array['element']['userfeaturesid']['default'] = 0;
 
 
 $array['filter'] = array();
 
-$array['filter']['servicesgroup_id'] = array('cast' => 'ulongint');
-$array['filter']['userfeatures_id'] = array('cast' => 'ulongint');
+$array['filter']['pagingid'] = array('cast' => 'ulongint');
+$array['filter']['userfeaturesid'] = array('cast' => 'ulongint');
 
 ?>

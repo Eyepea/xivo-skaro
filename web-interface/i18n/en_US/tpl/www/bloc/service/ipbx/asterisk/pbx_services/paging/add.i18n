@@ -1,0 +1,42 @@
+; title_content_name
+Paging > Add
+
+; fm_paging_number
+Number:
+
+; fm_paging_force_page
+Force if busy:
+
+; fm_paging_duplex
+Full duplex audio:
+
+; fm_paging_default_group
+Default page group:
+
+; fm_paging_record
+Record the page into a file: 
+
+; fm_paging_quiet
+Quiet, do not play beep to caller:
+
+; fm_paging_callnotbusy
+Only dial a channel if its device state says that it is 'NOT_INUSE': 
+
+; fm_paging_announcement_play
+Do not play simultaneous announcement to caller: 
+
+; fm_paging_announcement_file
+The announcement to playback in all devices: 
+
+; fm_paging_timeout
+Timeout: 
+
+; hlp_fm_paging_timetout
+Specify the length of time that the system will attempt to connect a call. <br>
+After this duration, any intercom calls that have not been answered will be hung up by the system.
+
+; fm_paginguser
+User list: 
+
+; fm_paging_description
+Description: 

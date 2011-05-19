@@ -70,9 +70,9 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 		
-		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true)
+		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true)
 		{
-			$outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
+			$outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
 		}
 
