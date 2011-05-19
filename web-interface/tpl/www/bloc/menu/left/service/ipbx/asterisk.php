@@ -352,17 +352,17 @@ $dhtml = &$this->get_module('dhtml');
 						'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('pbx_services','paging') === true):
+			echo	'<dd id="mn-pbx-services--paging">',
+				$url->href_html($this->bbf('mn_left_pbx_services-paging'),
+						'service/ipbx/pbx_services/paging'),
+						'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('pbx_services','parkinglot') === true):
 			echo	'<dd id="mn-pbx-services--parkinglot">',
 				$url->href_html($this->bbf('mn_left_pbx_services-parkinglot'),
 						'service/ipbx/pbx_services/parkinglot'),
-						'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('pbx_services','handynumbers') === true):
-			echo	'<dd id="mn-pbx-services--handynumbers">',
-				$url->href_html($this->bbf('mn_left_pbx_services-handynumbers'),
-						'service/ipbx/pbx_services/handynumbers'),
 						'</dd>';
 		endif;
 
