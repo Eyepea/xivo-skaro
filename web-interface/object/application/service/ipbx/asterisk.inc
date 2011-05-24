@@ -528,6 +528,8 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 			$queueid = dwho_ulongint($id);
 		else if($type === 'schedule')
 			$scheduleid = dwho_ulongint($id);
+		else if($type === 'outcall')
+			$outcallid  = dwho_ulongint($id);
 
 		$r['users'] = $this->get_destination_users($userid,$number);
 		$r['groups'] = $this->get_destination_groups($groupid,$number);
@@ -537,6 +539,7 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 		//NEW SCHEDULE MODE
 		//$r['schedule'] = $this->get_destination_schedule($scheduleid);
 		$r['voicemenu'] = $this->get_destination_voicemenu();
+		$r['outcalls']  = $this->get_destination_outcall();
 
 		return($r);
 	}
@@ -637,6 +640,19 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 
 		return(false);
 	}
+
+	function get_destination_outcall()
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		if(($outcall = &$this->_service->get_module('outcall')) !== false
+		&& ($r = $outcall->get_all(null, true, $order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
 }
 
 ?>

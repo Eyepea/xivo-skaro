@@ -47,7 +47,7 @@ $array['element']['event']['value'] = array('answer',
 $array['element']['event']['default'] = '';
 
 $array['element']['category'] = array();
-$array['element']['category']['value'] = array('callfilter','group','incall','queue','schedule','user');
+$array['element']['category']['value'] = array('callfilter','group','incall','queue','schedule','user','outcall');
 $array['element']['category']['default'] = '';
 
 $array['element']['categoryval'] = array();
@@ -65,7 +65,8 @@ $array['element']['action']['value'] = array('none',
 					     'voicemail',
 					     'schedule',
 					     'voicemenu',
-					     'extension',
+							 'extension',
+							 'outcall',
 					     'application:callbackdisa',
 					     'application:disa',
 					     'application:directory',
@@ -95,6 +96,7 @@ $array['element']['actiontype']['value'] = array('none',
 						 //'schedule',
 						 'voicemenu',
 						 'extension',
+						 'outcall',
 						 'application',
 						 'sound',
 						 'custom');
@@ -142,7 +144,8 @@ $array['filter']['action'] = array('key' => array('none',
 						  'voicemail',
 						  //'schedule',
 						  'voicemenu',
-						  'extension',
+							'extension',
+							'outcall',
 						  'application:callbackdisa',
 						  'application:disa',
 						  'application:directory',

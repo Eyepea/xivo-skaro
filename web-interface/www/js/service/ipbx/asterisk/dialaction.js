@@ -49,6 +49,7 @@ var xivo_dialaction_actiontype = {
 					 'actionarg2-j'],
 			//'schedule':	['actiontype','actionarg1'],
 			'voicemenu':	['actiontype','actionarg1'],
+			'outcall':		['actiontype','actionarg1','actionarg2'],
 			'extension':	['actiontype','actionarg1','actionarg2'],
 			'application':	['action',
 					 'actiontype',

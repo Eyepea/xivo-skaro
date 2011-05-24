@@ -186,6 +186,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		$r['voicemail'] = $arr;
 		$r['schedule'] = $arr;
 		$r['voicemenu'] = $arr;
+		$r['outcall'] = $arr;
 		$r['extension'] = $arr;
 		$r['application'] = $arr;
 		$r['sound'] = $arr;
@@ -277,7 +278,6 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 			return(false);
 		else if(dwho_issa(0,$this->_origin) === false)
 			return($this->add($categoryval));
-
 		$this->_return = $this->delete($status);
 
 		if(($rs = $this->get_result()) === null)
