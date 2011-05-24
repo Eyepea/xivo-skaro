@@ -28,6 +28,9 @@ $array['module']['accesswebservice']['datastorage'] = true;
 $array['module']['commonconf'] = array();
 $array['module']['commonconf']['datastorage'] = false;
 
+$array['module']['dahdi'] = array();
+$array['module']['dahdi']['datastorage'] = false;
+
 $array['module']['dhcp'] = array();
 $array['module']['dhcp']['datastorage'] = true;
 

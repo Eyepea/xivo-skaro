@@ -86,7 +86,7 @@ Provisioning
 General
 
 ; mn_left_provisioning-configregistrar
-Template site
+Template line
 
 ; mn_left_provisioning-configdevice 
 Template device

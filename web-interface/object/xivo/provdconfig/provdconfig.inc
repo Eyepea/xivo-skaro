@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 xivo_object::required(array('abstract','provd.inc'),true);
 
 class xivo_object_provdconfig extends xivo_object_provd_abstract
@@ -76,8 +78,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	
 	public function get_default()
 	{
-		$this->_confdefault = false;
-		if (($confdefault = $this->get('default')) === false)
+		if (is_array($this->_confdefault) === true)
+			return($this->_confdefault);
+		elseif ($this->_confdefault === false
+		&& ($confdefault = $this->get('default')) === false)
 			return(false);
 		
 		return(($this->_confdefault = $confdefault));
@@ -121,12 +125,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			case 'registrar':
 				$q = dwho_json::encode(array('X_type' => 'registrar'));
 				break;
-			case 'network':
-				$q = dwho_json::encode(array('X_type' => 'network'));
+			case 'device':
+				$q = dwho_json::encode(array('X_type' => 'device'));
 				break;
 			case 'all':
 			default:
-				$w = array('$nin' => array('registrar','network'));
+				$w = array('$nin' => array('registrar','device'));
 				$q = dwho_json::encode(array('X_type' => $w));
 		}
 		array_push($query,array('q64',base64_encode($q)));
@@ -206,27 +210,87 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return(true);
 	}
 	
-	public function add_required_config($config=null)
+	public function rebuild_required_config()
+	{
+		$this->delete('autoprov');
+		$this->delete('base');
+		$this->delete('defaultconfigdevice');
+		
+		$confdefault = $this->get('default');
+		
+		if ($this->_add_base($confdefault) === false
+		|| $this->_add_autoprov($confdefault) === false
+		|| $this->_add_configdevice($confdefault) === false)
+			return(false);
+			
+		return(true);
+	}
+	
+	public function eval_required_config($registrarip=null,$reset=false)
 	{
 		$confdefault = false;
-		if (is_null($config) === true
-		&& ($confdefault = $this->get('default')) === false)
+		
+		if ($reset === true)
 		{
-			dwho_report::push('error', 'fail to get default config');
-			return(false);
+			$this->delete('default');
+			$this->delete('autoprov');
+			$this->delete('base');
+			$this->delete('defaultconfigdevice');
+			if (is_null($registrarip) === true)
+				$registrarip = $_SERVER['SERVER_ADDR'];
+			return($this->eval_required_config($registrarip));
 		}
-		elseif(is_array($config) === true)
-			$confdefault = $config;
-		elseif($confdefault === false)
+		
+		if (is_null($registrarip) === false)
 		{
-			dwho_report::push('error', 'invalid default config');
+			if (dwho_network::valid_ipv4($registrarip) === false
+			|| $this->_add_default_registrar_config($registrarip) === false
+			|| is_array($this->_confdefault) === false)
+			{
+				dwho_report::push('error', 'fail to create default registrar config');
+				return(false);
+			}
+			$confdefault = $this->_confdefault;
+		}
+		elseif(($confdefault = $this->get('default')) === false
+		|| $this->eval_required_config(null,true) === false
+		|| $this->eval_required_config() === false)
+		{
+			dwho_report::push('error', 'invalid default registrar config');
 			return(false);
 		}
 		
 		if ($this->_add_base($confdefault) === false
-		|| $this->_add_autoprov($confdefault) === false)
+		|| $this->_add_autoprov($confdefault) === false
+		|| $this->_add_configdevice($confdefault) === false)
 			return(false);
 			
+		return(true);
+	}
+	
+	private function _add_default_registrar_config($registrarip)
+	{
+		$config = array();
+		$config['X_type'] = 'registrar';
+		$config['id'] = 'default';
+		$config['displayname'] = 'local';
+		$config['parent_ids'] = array();
+		// required raw_config dict by provd
+		$config['raw_config'] = array('X_key' => 'xivo');
+		//$config['proxy_backup'] = $registrarip;
+		$config['proxy_main'] = $registrarip;
+		//$config['registrar_backup'] = $registrarip;
+		$config['registrar_main'] = $registrarip;
+		
+		if ($this->chk_confregistrar($config) === false
+		|| $this->add($config) === false)
+		{
+			dwho_report::push('error', 'fail to create default registrar config');
+			return(false);
+		}
+		
+		$this->_confdefault = $config;
+		
 		return(true);
 	}
 	
@@ -243,12 +307,16 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$base['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
 				
 		$base['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
-		$base['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
 		
 		$base['raw_config']['sccp_call_managers'][1] = array();
 		$base['raw_config']['sccp_call_managers'][1]['ip'] = $confregistrar['proxy_main'];
-		$base['raw_config']['sccp_call_managers'][2] = array();
-		$base['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
+		
+		if (empty($confregistrar['proxy_backup']) === false)
+		{
+			$base['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
+			$base['raw_config']['sccp_call_managers'][2] = array();
+			$base['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
+		}
 		
 		if ($this->add($base) === false)
 		{
@@ -268,18 +336,43 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				
 		$autoprov['X_type'] = 'internal';
 		$autoprov['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
-		$autoprov['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
 		$autoprov['raw_config']['sip_lines'][1]['registrar_ip'] = $confregistrar['registrar_main'];
-		$autoprov['raw_config']['sip_lines'][1]['backup_registrar_ip'] = $confregistrar['registrar_backup'];
 		
 		$autoprov['raw_config']['sccp_call_managers'][1] = array();
 		$autoprov['raw_config']['sccp_call_managers'][1]['ip'] = $confregistrar['proxy_main'];
-		$autoprov['raw_config']['sccp_call_managers'][2] = array();
-		$autoprov['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
+		
+		if (empty($confregistrar['proxy_backup']) === false)
+		{
+			$autoprov['raw_config']['sip_lines'][1]['backup_registrar_ip'] = $confregistrar['proxy_backup'];
+			$autoprov['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
+			$autoprov['raw_config']['sccp_call_managers'][2] = array();
+			$autoprov['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
+		}
 		
 		if ($this->add($autoprov) === false)
 		{
 			dwho_report::push('error', 'fail to create autoprov config');
+			return(false);
+		}
+		
+		return(true);
+	}
+	
+	private function _add_configdevice($confregistrar)
+	{
+		if ($this->chk_confregistrar($confregistrar) === false)
+			return(false);
+
+		$conf = array();
+		$conf['X_type'] = 'device';
+		$conf['id'] = 'defaultconfigdevice';
+		$conf['label'] = 'Default config';
+		$conf['parent_ids'] = array();
+		$conf['raw_config'] = array('X_key' => 'xivo');
+		
+		if ($this->add($conf) === false)
+		{
+			dwho_report::push('error', 'fail to create default config device');
 			return(false);
 		}
 		
@@ -309,7 +402,43 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			unset($config[$var]);
 	}
 	
-	public function build_raw_config($configid,$lines=null,$raw=null,$deviceid,$protocolname='sip')
+	public function update_parents_ids($configid,$method,$id)
+	{
+		if (($config = $this->get($configid)) === false)
+		{
+			dwho_report::push('error', 'Config not exist: '.$config);
+			return(false);
+		}
+		
+		$parents_ids = &$config['parent_ids'];
+		switch ($method)
+		{
+			case 'add':
+			case 'edit':
+				if (in_array($id,$parents_ids) === false)
+					array_push($parents_ids,$id);
+				$config['configdevice'] = $id;
+				break;
+			case 'del':
+				for ($i=0;$i<count($parents_ids);$i++)
+				{
+					if ($id === $parents_ids[$i])
+						unset($parents_ids[$i]);
+				}
+				unset($config['configdevice']);
+				break;
+		}
+		
+		if ($this->edit($configid,$config) === false)
+		{
+			dwho_report::push('error', 'fail to update config: '.$configid);
+			return(false);
+		}
+		
+		return(true);
+	}
+	
+	public function build_raw_config($configid,$lines=null,$raw=null,$protocolname='sip')
 	{
 		if ($this->_confdefault === false
 		&& $this->get_default() === false)
@@ -321,93 +450,116 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		{
 			$globalconfig = array();
 			$globalconfig['id'] = $configid;
-			$globalconfig['parent_ids'] = array();
+			$globalconfig['configdevice'] = 'defaultconfigdevice';
+			$globalconfig['parent_ids'] = array('base','defaultconfigdevice');
 			$globalconfig['raw_config'] = array('X_key' => '');
 			
 			$this->add($globalconfig);
 		}
+					
+		if (in_array('base',$globalconfig['parent_ids']) === false)
+			array_push($globalconfig['parent_ids'],'base');
 			
+		if (is_null($raw) === false)
+			$raw = array();
+		
 		$raw_config = &$globalconfig['raw_config'];
 		
 		switch ($protocolname)
 		{
 			case 'sip':
 			default:
-				$raw_config['ntp_enabled'] = true;
-				$raw_config['ntp_ip'] = $confdefault['proxy_main'];
-					
-				$this->_set_config_var($raw_config,$raw,'timezone');
-				$this->_set_config_var($raw_config,$raw,'locale');
-				$this->_set_config_var($raw_config,$raw,'protocol');
-				$this->_set_config_var($raw_config,$raw,'config_encryption_enabled');
-				$this->_set_config_var($raw_config,$raw,'sip_proxy_ip');
-				$this->_set_config_var($raw_config,$raw,'sip_proxy_port');
-				$this->_set_config_var($raw_config,$raw,'sip_backup_proxy_ip');
-				$this->_set_config_var($raw_config,$raw,'sip_backup_proxy_port');
-				$this->_set_config_var($raw_config,$raw,'sip_registrar_port');
-				$this->_set_config_var($raw_config,$raw,'sip_backup_registrar_ip');
-				$this->_set_config_var($raw_config,$raw,'sip_backup_registrar_port');
-				$this->_set_config_var($raw_config,$raw,'sip_outbound_proxy_ip');
-				$this->_set_config_var($raw_config,$raw,'sip_outbound_proxy_port');
-				$this->_set_config_var($raw_config,$raw,'sip_dtmf_mode');
-				$this->_set_config_var($raw_config,$raw,'sip_srtp_mode');
-				$this->_set_config_var($raw_config,$raw,'sip_transport');
-				$this->_set_config_var($raw_config,$raw,'sip_servers_root_and_intermediate_certificates');
-				$this->_set_config_var($raw_config,$raw,'sip_local_root_and_intermediate_certificates');
-				$this->_set_config_var($raw_config,$raw,'sip_local_certificate');
-				$this->_set_config_var($raw_config,$raw,'sip_local_key');
-				$this->_set_config_var($raw_config,$raw,'sip_subscribe_mwi');
+				$raw['ntp_enabled'] = true;
+				$raw['ntp_ip'] = $confdefault['proxy_main'];
 				
-				if (is_array($lines) === true
-				|| empty($lines) === false
-				&& empty($raw_config['sip_lines']) === false)
+				$raw_config = array_merge($raw_config,
+					$this->build_raw_config_device($raw));
+				
+				if (is_array($lines) === true)
 				{
-					$rslines = array();
-					$iduserfeatures = false;
-					
-					if (in_array('base',$globalconfig['parent_ids']) === false)
-						array_push($globalconfig['parent_ids'],'base');
-						
-					foreach ($lines as $num => $val)
-					{
-						if (dwho_issa('protocol',$val) === false
-						|| dwho_issa('linefeatures',$val) === false)
-							return(false);
-						
-						$protocol = $val['protocol'];
-						$linefeatures = $val['linefeatures'];
-						
-						$protolines = array_merge($protocol,$linefeatures);
-						if (($confregistrar = $this->get($linefeatures['configregistrar'])) === false)
-							$confregistrar = $this->get_default();
-						
-						if(($siplines = $this->build_raw_config_siplines($protolines,$confregistrar)) === false)
-							return(false);
-			
-						$rslines[$linefeatures['num']] = $siplines;
-						
-						// getting iduserfeatures from line 1
-						if ((int) $num === 1)
-							$iduserfeatures = $linefeatures['iduserfeatures'];
-					}
-					
+					$rslines = $this->_build_lines($lines);
 					if (isset($raw_config['sip_lines']) === true)
 						$raw_config['sip_lines'] = array_replace($raw_config['sip_lines'],$rslines);
 					else
 						$raw_config['sip_lines'] = $rslines;
-					
-					// build funckey from masterline
-					if ($iduserfeatures !== false
-					&& ($rs = $this->_build_funckey($iduserfeatures)) !== false
-					&& empty($rs) === false)
-						$raw_config['funckeys'] = $this->_build_funckey($iduserfeatures);
-					else
-						unset($raw_config['funckeys']);
 				}
+				$raw_config = array_merge($raw_config,$this->_init_device_master_line($configid));
 				$raw_config = array_merge($raw_config,$this->_build_exten_config());
 		}
 		
 		return($globalconfig);
+	}
+	
+	public function rebuild_device_config($deviceid)
+	{
+		if (($_SRE = &dwho_gct::get('xivo_service')) === false
+		|| ($ipbx = &$_SRE->get('ipbx')) === false
+		|| ($appline = &$ipbx->get_application('line')) === false
+		|| ($moddf = &$ipbx->get_module('devicefeatures')) === false)
+			return(false);
+			
+		$listline = $appline->get_lines_device($deviceid);
+		$device = $moddf->get($deviceid);
+		
+		$rslines = array();
+		while($listline)
+		{
+			$line = array_shift($listline);
+			$line = $appline->get($line['id']);
+			$rslines[$line['linefeatures']['num']] = $line;
+		}
+		$conf = $this->build_raw_config($device['deviceid'],$rslines);
+		if ($this->edit($device['deviceid'],$conf) === false)
+		{
+			dwho_report::push('error', 'fail to edit config for this device: '.$device['deviceid']);
+			return(false);
+		}
+		return(true);
+	}
+	
+	private function _init_device_master_line($deviceid)
+	{
+		$raw_config = array();
+		
+		if (($masterline = $this->_linefeatures->get_user_masterline($deviceid)) === false
+		|| (int) $masterline['iduserfeatures'] === 0)
+			return($raw_config);
+		
+		$iduserfeatures = $masterline['iduserfeatures'];
+				
+		// build funckey from user masterline
+		if ($iduserfeatures !== false
+		&& ($rs = $this->_build_funckey($iduserfeatures)) !== false
+		&& empty($rs) === false)
+			$raw_config['funckeys'] = $this->_build_funckey($iduserfeatures);
+		else
+			unset($raw_config['funckeys']);
+			
+		return($raw_config);
+	}
+	
+	private function _build_lines($lines)
+	{
+		$rslines = array();
+		foreach ($lines as $num => $val)
+		{
+			if (dwho_issa('protocol',$val) === false
+			|| dwho_issa('linefeatures',$val) === false)
+				return(false);
+			
+			$protocol = $val['protocol'];
+			$linefeatures = $val['linefeatures'];
+			
+			$protolines = array_merge($protocol,$linefeatures);
+			if (($confregistrar = $this->get($linefeatures['configregistrar'])) === false)
+				$confregistrar = $this->get_default();
+						
+			if(($siplines = $this->build_raw_config_siplines($protolines,$confregistrar)) === false)
+				return(false);
+			
+			$rslines[$linefeatures['num']] = $siplines;
+		}
+		return($rslines);
 	}
 	
 	private function _build_exten_config()
@@ -505,25 +657,46 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf['display_name'] = $calleridname;
 		
 		$conf['number'] = $arr['number'];
-		#$conf['dtmf_mode'] = null;
-		#$conf['srtp_mode'] = null;
-		#$conf['voicemail'] = null;
+		$this->_set_config_var($conf,$arr,'dtmf_mode');
+		$this->_set_config_var($conf,$arr,'srtp_mode');
+		$this->_set_config_var($conf,$arr,'voicemail');
 		
 		return($conf);
 	}
 	
-	public function build_raw_config_from_confnetwork($confnetwork)
+	public function build_raw_config_device($raw)
 	{
 		$conf = array();
-		$conf['vlan_enabled'] = true;
-		$conf['vlan_id'] = true;
-		$conf['vlan_priority'] = true;
-		$conf['vlan_pc_port_id'] = true;
-		
-		$conf['syslog_enabled'] = true;
-		$conf['syslog_ip'] = true;
-		$conf['syslog_port'] = true;
-		$conf['syslog_level'] = true;
+					
+		$this->_set_config_var($conf,$raw,'_comment');
+		$this->_set_config_var($conf,$raw,'timezone');
+		$this->_set_config_var($conf,$raw,'locale');
+		$this->_set_config_var($conf,$raw,'protocol');
+		$this->_set_config_var($conf,$raw,'vlan_enabled');
+		$this->_set_config_var($conf,$raw,'vlan_id');
+		$this->_set_config_var($conf,$raw,'vlan_priority');
+		$this->_set_config_var($conf,$raw,'vlan_pc_port_id');
+		$this->_set_config_var($conf,$raw,'syslog_ip');
+		$this->_set_config_var($conf,$raw,'syslog_port');
+		$this->_set_config_var($conf,$raw,'syslog_level');
+		$this->_set_config_var($conf,$raw,'config_encryption_enabled');
+		$this->_set_config_var($conf,$raw,'sip_proxy_ip');
+		$this->_set_config_var($conf,$raw,'sip_proxy_port');
+		$this->_set_config_var($conf,$raw,'sip_backup_proxy_ip');
+		$this->_set_config_var($conf,$raw,'sip_backup_proxy_port');
+		$this->_set_config_var($conf,$raw,'sip_registrar_port');
+		$this->_set_config_var($conf,$raw,'sip_backup_registrar_ip');
+		$this->_set_config_var($conf,$raw,'sip_backup_registrar_port');
+		$this->_set_config_var($conf,$raw,'sip_outbound_proxy_ip');
+		$this->_set_config_var($conf,$raw,'sip_outbound_proxy_port');
+		$this->_set_config_var($conf,$raw,'sip_dtmf_mode');
+		$this->_set_config_var($conf,$raw,'sip_srtp_mode');
+		$this->_set_config_var($conf,$raw,'sip_transport');
+		$this->_set_config_var($conf,$raw,'sip_servers_root_and_intermediate_certificates');
+		$this->_set_config_var($conf,$raw,'sip_local_root_and_intermediate_certificates');
+		$this->_set_config_var($conf,$raw,'sip_local_certificate');
+		$this->_set_config_var($conf,$raw,'sip_local_key');
+		$this->_set_config_var($conf,$raw,'sip_subscribe_mwi');
 		
 		return($conf);
 	}
@@ -559,7 +732,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{
 		if (is_array($arr) === false
 		|| isset($arr['id'],$arr['registrar_main'],
-			$arr['proxy_main'],$arr['displayname']) === false)
+			$arr['proxy_main'],$arr['displayname']) === false
+		|| dwho_network::valid_ipv4($arr['registrar_main']) === false
+		|| dwho_network::valid_ipv4($arr['proxy_main']) === false)
 		{
 			dwho_report::push('error', 'config registrar not valid');
 			return(false);

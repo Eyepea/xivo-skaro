@@ -17,6 +17,9 @@ IP:
 ; fm_devicefeatures_mac
 MAC: 
 
+; fm_devicefeatures_configdevice 
+Modele de configuration de la terminaison :  
+
 ; fm_devicefeatures_plugin
 Greffon: 
 

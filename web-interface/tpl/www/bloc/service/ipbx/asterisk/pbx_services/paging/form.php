@@ -76,7 +76,6 @@ endif;
 					    'name'		=> 'paging[timeout]',
 					    'labelid'	=> 'paging-timeout',
 						'help'		=> $this->bbf('hlp_fm_paging_timetout'),
-						'empty' 	=> true,
 					    'key'		=> false,
 					    'default'	=> $element['paging']['timeout']['default'],
 					    'selected'	=> $this->get_var('info','paging','timeout')),

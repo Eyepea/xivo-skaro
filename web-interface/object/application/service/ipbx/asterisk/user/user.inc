@@ -737,10 +737,21 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->set_rightcall($arr['rightcall']);
 
 		if(dwho_issa('voicemail',$arr) === true
-		&& dwho_has_len($arr['voicemail'],'mailbox') === true)
+		&& dwho_has_len($arr['voicemail'],'mailbox') === true
+		// getting master line
+		&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 		{
+			$context = $linefeatures['context'];
+			
+			if($vmaction === 'add')
+				$arr['voicemail']['context'] = $context;
+			
+			$arr['voicemail']['locale'] = $this->get_result_var('userfeatures','language');
+
 			if(isset($arr['voicemail']['deletevoicemail']) === false)
 				$arr['voicemail']['deletevoicemail'] = 0;
+
+			$this->_set_result_var('protocol','mailbox',$arr['voicemail']['mailbox'].'@'.$context);
 
 			if($vmaction !== 'disable')
 			{
@@ -762,7 +773,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$r = false;
 		else
 			$r = true;
-
+		
 		// schedule
 		if(array_key_exists('schedule_id', $arr))
 			$this->_set_result('schedule_id', intval($arr['schedule_id']));
@@ -943,6 +954,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$error[$i] = 'line_not_exist';
 					continue;
 				}
+		
 				$ref['id'] = (int) $ref['id'];
 				$ref['protocol'] = $linefeatures['protocol'];
 				$ref['protocolid'] = (int) $linefeatures['protocolid'];
@@ -987,6 +999,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$error[$i] = $this->_linefeatures->get_filter_error();
 			}
 		}
+		
 		$this->_set_result('linefeatures',$reslist);
 
 		if ($errnb >> 0)
@@ -1621,6 +1634,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$arr['linefeatures'] = $line;
 			$arr['protocol'] = $line;
+			$arr['protocol']['mailbox'] = $this->get_result_var('protocol','mailbox');
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];

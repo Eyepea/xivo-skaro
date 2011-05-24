@@ -182,7 +182,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 
         /* checking with HA configuration
              If HA is activated, we must use HA ip address instead of server one
-#        */
+        */
+        /*
         if(($havirtnet_mod = &$this->_xobj->get_module('ha_virtnet')) === false)
             return false;
         
@@ -207,7 +208,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             if(!$hafound)
                 return false;
         }
-        
+        */
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
             'xivo.voip.vlan.id'     => $vlanid,

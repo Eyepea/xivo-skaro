@@ -20,8 +20,10 @@
 
 require_once('xivo.php');
 
+$go = array_key_exists('go', $_GET)?$_GET['go']:null;
+
 if(xivo_user::chk_authorize('root') === false)
-	$_QRY->go($_TPL->url('xivo'));
+	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_css('css/xivo/configuration.css');
@@ -31,7 +33,7 @@ $action_path = $_LOC->get_action_path('xivo/configuration',2);
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 
 if($action_path === false)
-	$_QRY->go($_TPL->url('xivo'));
+	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
 
 die(include($action_path));
 

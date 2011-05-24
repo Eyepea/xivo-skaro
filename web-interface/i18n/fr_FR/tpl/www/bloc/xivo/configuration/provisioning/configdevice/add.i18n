@@ -1,15 +1,18 @@
 
 ; title_content_name
-Device / Add
+Modele Terminaison / Ajouter
 
 ; smenu_general
-Genéral
+Général
 
 ; smenu_advanced
-Advanced
+Avancées
 
 ; smenu_lines
-Lines
+Lignes
+
+; fm_config_label
+Label: 
 
 ; fm_devicefeatures_ip
 IP: 
@@ -18,46 +21,46 @@ IP:
 MAC: 
 
 ; fm_devicefeatures_configdevice 
-Device config template: 
+Modele de configuration de la terminaison :  
 
 ; fm_devicefeatures_plugin
-Plugin: 
+Greffon: 
 
 ; fm_config_language
-Language: 
+Locale: 
 
 ; fm_config_timezone
-Timezone: 
+Fuseau horaire: 
 
 ; fm_config_protocol
-Protocol:
+Protocole:
  
 ; fm_config_config_encryption_enabled
-Enabled encryption config file: 
+Encryption des fichiers de configuration: 
 
 ; fm_config_ntp_enabled
-Enabled NTP: 
+Activer NTP: 
 
 ; fm_config_ntp_ip
-NTP server: 
+Serveur NTP: 
 
 ; fm_config_sip_dtmf_mode
 DTMF: 
 
 ; fm_config_admin_username
-Login (admin): 
+Identifiant (admin): 
 
 ; fm_config_admin_password
-Password (admin): 
+Mot de passe (admin): 
 
 ; fm_config_user_username
-Login (user): 
+Identifiant (user): 
 
 ; fm_config_user_password
-Password (user): 
+Mot de passe (user): 
 
 ; fm_config_sip_subscribe_mwi
-Explicit notification of messages: 
+Notification explicite de messages: 
 
 ; fm_userfeatures_description
 Description:
@@ -75,13 +78,13 @@ Transport:
 VLAN
 
 ; fm_config_vlan_enabled
-Enabled: 
+Activer: 
 
 ; fm_config_vlan_id
 ID: 
 
 ; fm_config_vlan_priority
-Priority: 
+Priorité: 
 
 ; fm_config_vlan_pc_port_id
 PC PORT ID: 
@@ -90,42 +93,43 @@ PC PORT ID:
 SYSLOG
 
 ; fm_config_syslog_enabled
-Enabled: 
+Activer: 
 
 ; fm_config_syslog_ip
-Server: 
+Serveur: 
 
 ; fm_config_syslog_port
 Port:
 
 ; fm_config_syslog_level
-Level:
+Niveau:
+
 
 ; nb_line_busy-free
-Lines list:
-Busy: %d
-Free: %d
+Liste des lignes:
+Occupée: %d
+Disponible: %d
 
 ; col_line-line	
-Line
+Ligne
 
 ; col_line-protocol	
-Protocol
+Protocole
 
 ; col_line-name	
-Name
+Nom
 
 ; col_line-context
-Context
+Contexte
 	
 ; col_line-number
-Number
+Numéro
 
 ; col_line-config_registrar	
 Site
 
 ; col_line-user
- User
+ Utilisateur
  
 ; no_lines
-No line
+Aucune ligne

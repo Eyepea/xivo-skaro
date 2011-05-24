@@ -74,6 +74,15 @@ class xivo_service_asterisk_linefeatures_sql extends xivo_service_asterisk_abstr
 
 		return($r);
 	}
+	
+	function user_masterline()
+	{
+		$this->_dso->new_select($this->_table);
+		$this->_dso->where(array('line_num' => 0));
+		$this->_dso->where(array('rules_order' => 1));
+		$r = $this->_dso->select_one();
+		return($r);
+	}
 
 	function search($value,$disable=null,$order=null,$limit=null,$number=false)
 	{

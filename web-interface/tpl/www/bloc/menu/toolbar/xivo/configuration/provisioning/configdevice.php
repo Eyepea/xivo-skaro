@@ -21,13 +21,6 @@
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$toolbar_js = array();
-$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-configregistrar-list\';';
-$toolbar_js[] = 'var xivo_toolbar_form_list = \'configregistrarselection[]\';';
-$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
-
-$dhtml->write_js($toolbar_js);
-
 ?>
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
 <?php
@@ -36,7 +29,7 @@ echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
 				       $this->bbf('toolbar_opt_add'),
 				       'id="toolbar-bt-add"
 					border="0"'),
-			'xivo/configuration/provisioning/configregistrar',
+			'xivo/configuration/provisioning/configdevice',
 			'act=add',
 			null,
 			$this->bbf('toolbar_opt_add'));

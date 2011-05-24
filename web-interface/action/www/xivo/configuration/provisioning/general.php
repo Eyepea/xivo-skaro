@@ -19,6 +19,7 @@
 #
 
 $provdplugin = &$_XOBJ->get_module('provdplugin');
+$provdconfig = &$_XOBJ->get_module('provdconfig');
 $appprovisionning = &$_XOBJ->get_application('provisioning');
 
 $info = array();
@@ -27,6 +28,16 @@ if (($download_server = $provdplugin->get_infos_server()) !== false)
 	$info['download_server'] = $download_server['value'];
 	
 $info['provd'] = $appprovisionning->get();
+
+
+if(isset($_QR['act']) === true
+&& $_QR['act'] === 'reset')
+{
+	if ($provdconfig->eval_required_config(null,true) === false)
+		dwho_report::push('error','error_during_update');
+	else
+		dwho_report::push('info','successfully_updated');
+}
 
 if(isset($_QR['fm_send']) === true
 && isset($_QR['download_server']) === true
@@ -52,6 +63,7 @@ $_TPL->set_var('info', $info);
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
+$menu->set_toolbar('toolbar/xivo/configuration/provisioning/general');
 
 $_TPL->set_bloc('main','xivo/configuration/provisioning/general');
 $_TPL->set_struct('xivo/configuration');

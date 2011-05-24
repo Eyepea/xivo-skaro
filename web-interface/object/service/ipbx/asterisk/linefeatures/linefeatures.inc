@@ -55,6 +55,11 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
+	
+	function get_user_masterline()
+	{
+		return($this->_dso->user_masterline());
+	}
 
 	function get($id,$orig=true,$disable=null)
 	{

@@ -109,7 +109,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		|| isset($rs['id']) === false)
 			return(false);
 			
-		$this->eval_config_device($arr);
+		$this->eval_config_device($id);
 		
 		return($rs['id']);
 	}
@@ -129,7 +129,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		if($this->_status_code !== 204)
 			return(false);
 			
-		$this->eval_config_device($arr);
+		$this->eval_config_device($id);
 			
 		return(true);
 	}
@@ -192,22 +192,19 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 	
-	public function eval_config_device($arr)
+	public function eval_config_device($id)
 	{
 		if ($this->_provdconfig === false
-		|| is_array($arr) === false
-		|| isset($arr['deviceid'],$arr['id']) === false)
+		|| empty($id) === true)
 			return(false);
 			
-		$deviceid = isset($arr['deviceid']) ? $arr['deviceid'] : $arr['id'];
-		
 		// create config for this device if not exist
-		if (($rs = $this->_provdconfig->get($deviceid)) === false)
+		if (($rs = $this->_provdconfig->get($id)) === false)
 		{
-			if (($conf = $this->_provdconfig->build_raw_config($deviceid,null,null)) === false
-			|| $this->_provdconfig->add($conf) === false)
+			if (($conf = $this->_provdconfig->build_raw_config($id)) === false
+			|| $this->_provdconfig->edit($id,$conf) === false)
 			{
-				dwho_report::push('error', 'fail to create config for this device: '.$deviceid);
+				dwho_report::push('error', 'fail to create config for this device: '.$id);
 				return(false);
 			}
 		}
@@ -226,7 +223,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			dwho_report::push('error', 'device not exist: '.$deviceid);
 			return(false);
 		}
-		$conf = $this->_provdconfig->build_raw_config($deviceid,null,$rawconfig);
 					
 		if (($conf = $this->_provdconfig->build_raw_config($deviceid,null,$rawconfig)) === false
 		|| $this->_provdconfig->edit($conf['id'],$conf) === false)
@@ -277,8 +273,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		|| dwho_issa('userfeatures',$arr) === false)
 			return(false);
 		
-		$global = $arr['userfeatures'];
-		
 		if (empty($arr['linefeatures']['num']) === true
 		|| $arr['linefeatures']['num'] === 0)
 			$arr['linefeatures']['num'] = 1;
@@ -288,7 +282,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		$lines[$arr['linefeatures']['num']]['protocol'] = $arr['protocol'];
 		$lines[$arr['linefeatures']['num']]['linefeatures'] = $arr['linefeatures'];
 		
-		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines,$global,$arr['linefeatures']['device'])) === false)
+		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines)) === false)
 			return(false);
 			
 		if ($this->_provdconfig->edit($deviceid,$conf) === false)

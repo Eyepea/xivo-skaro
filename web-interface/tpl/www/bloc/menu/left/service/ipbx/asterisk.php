@@ -61,6 +61,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('general_settings','dahdi') === true):
+			echo	'<dd id="mn-general-settings--dahdi">',
+				$url->href_html($this->bbf('mn_left_generalsettings-dahdi'),
+						'service/ipbx/general_settings/dahdi'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('general_settings','voicemail') === true):
 			echo	'<dd id="mn-general-settings--voicemail">',
 				$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),

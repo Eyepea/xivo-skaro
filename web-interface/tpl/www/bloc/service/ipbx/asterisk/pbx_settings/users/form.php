@@ -180,7 +180,9 @@ endif;
 				    'empty'	=> true,
 				    'key'	=> false,
 				    'default'	=> $element['userfeatures']['language']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','language')),
+				    'selected'	=> $this->get_var('info','userfeatures','language'),
+				  	'error'	=> $this->bbf_args('error',
+							$this->get_var('error', 'voicemail', 'locale')) ),
 			      $element['userfeatures']['language']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_timezone'),
@@ -306,7 +308,7 @@ endif;
 				      'name'	=> 'userfeatures[enablevoicemail]',
 				      'labelid'	=> 'userfeatures-enablevoicemail',
 				      'default'	=> $element['userfeatures']['enablevoicemail']['default'],
-				      'checked'	=> $info['userfeatures']['enablevoicemail'])),		
+				      'checked'	=> $info['userfeatures']['enablevoicemail'])),
 
 		$form->hidden(array('name'	=> 'userfeatures[voicemailid]',
 				    'id'	=> 'it-userfeatures-voicemailid',
@@ -585,7 +587,7 @@ endif;
 	</fieldset>
 	
 	<fieldset id="fld-rightcalls">
-		<legend><?=$this->bbf('fld-rightcalls');?></legend>	
+		<legend><?=$this->bbf('fld-rightcalls');?></legend>
 <?php
 
 		echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_rightcallcode'),

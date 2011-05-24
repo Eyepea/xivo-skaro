@@ -54,6 +54,7 @@ $array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/m
 $array['xivo/configuration/manage/directories'] = 'xivo/configuration/index.php/manage/directories/';
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
 $array['xivo/configuration/manage/certificate'] = 'xivo/configuration/index.php/manage/certificate/';
+$array['xivo/configuration/manage/dahdihardware'] = 'xivo/configuration/index.php/manage/dahdihardware/';
 
 $array['xivo/configuration/json/restricted/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
 
@@ -129,6 +130,7 @@ $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/gene
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
 $array['service/ipbx/general_settings/outboundmwi'] = 'service/ipbx/index.php/general_settings/outboundmwi/';
 $array['service/ipbx/general_settings/dundi'] = 'service/ipbx/index.php/general_settings/dundi';
+$array['service/ipbx/general_settings/dahdi'] = 'service/ipbx/index.php/general_settings/dahdi';
 
 $array['service/ipbx/json/restricted/general_settings/sip']         = 'service/ipbx/json.php/restricted/general_settings/sip/';
 $array['service/ipbx/json/restricted/general_settings/iax']         = 'service/ipbx/json.php/restricted/general_settings/iax/';

@@ -43,7 +43,7 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
-
+		
 		$provddevice = &$_XOBJ->get_module('provddevice');
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$linefeatures = &$ipbx->get_module('linefeatures');
@@ -58,15 +58,19 @@ switch($act)
 		elseif ($data['code'] === 'autoprov')
 		{
 			$provddevice->update_configid($devicefeatures['deviceid'],'autoprov');
+			$provddevice->synchronize($devicefeatures['deviceid']);
+			echo "Autoprov configured\n";
 			$http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
 		|| ($rs = $appline->get($line['id'])) === false
 		|| ($rs['userfeatures'] = $userfeatures->get($line['iduserfeatures'])) === false
-		|| $provddevice->update_config_from_line($rs,$devicefeatures['deviceid']) === false)
+		|| $provddevice->update_config_from_line($rs,$devicefeatures['deviceid']) === false
+		|| $provddevice->synchronize($devicefeatures['deviceid']) === false)
 			$http_response->set_status_line(204);
 		else
 			$http_response->set_status_line(200);
+		
 		$http_response->send(true);
 		break;
 	default:

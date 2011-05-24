@@ -24,7 +24,6 @@ $url = &$this->get_module('url');
 $info    = $this->get_var('info');
 $error   = $this->get_var('error');
 $plugininstalled = $this->get_var('plugininstalled');
-$listconfigdevice = $this->get_var('listconfigdevice');
 $listline = $this->get_var('listline');
 $element = $this->get_var('element');
 
@@ -37,42 +36,14 @@ endif;
 
 <div id="sb-part-first" class="b-nodisplay">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_devicefeatures_ip'),
-				  'name'	=> 'devicefeatures[ip]',
-				  'labelid'	=> 'devicefeatures-ip',
-				  'size'	=> 15,
-				  'default'	=> $element['devicefeatures']['ip']['default'],
-				  'value'	=> $this->get_var('info','devicefeatures','ip'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_config_label'),
+				  'name'	=> 'config[label]',
+				  'labelid'	=> 'config-label',
+				  'size'	=> 25,
+				  'value'	=> $this->get_var('info','config','label'),
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'devicefeatures', 'ip')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_devicefeatures_mac'),
-				  'name'	=> 'devicefeatures[mac]',
-				  'labelid'	=> 'devicefeatures-mac',
-				  'size'	=> 15,
-				  'default'	=> $element['devicefeatures']['mac']['default'],
-				  'value'	=> $this->get_var('info','devicefeatures','mac'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'devicefeatures', 'mac')) )),
-
-		$form->select(array('desc'	=> $this->bbf('fm_devicefeatures_plugin'),
-				  'name'	=> 'devicefeatures[plugin]',
-				  'labelid'	=> 'devicefeatures-plugin',
-				  'empty'	=> true,
-				  'key'		=> 'name',
-				  'altkey'	=> 'name',
-				  'default'	=> $element['devicefeatures']['plugin']['default'],
-				  'selected'	=> $this->get_var('info','devicefeatures','plugin')),
-			      $plugininstalled),
-
-		$form->select(array('desc'	=> $this->bbf('fm_devicefeatures_configdevice'),
-				  'name'	=> 'configdevice',
-				  'labelid'	=> 'configdevice',
-				  'key'		=> 'label',
-				  'altkey'	=> 'id',
-				  'selected'	=> $this->get_var('info','deviceconfig','configdevice')),
-			      $listconfigdevice),
-			      
+						   $this->get_var('error', 'config', 'label')) )),
+						   
 		$form->select(array('desc'	=> $this->bbf('fm_config_language'),
 				    'name'		=> 'config[locale]',
 				    'labelid'	=> 'config-locale',
@@ -278,89 +249,4 @@ endif;
 			      $element['config']['syslog_level']['value']);
 ?>
 </fieldset>
-</div>
-<div id="sb-part-last" class="b-nodisplay">
-<?php
-
-$nbcap = 0;
-if (($capabilities = $info['capabilities']) !== false):
-
-	if(isset($capabilities['sip.lines']) === true
-	&& ($nbcap = (int) $capabilities['sip.lines']) !== 0):
-		echo $this->bbf('nb_line_busy-free',array(count($listline),$nbcap));
-	endif;
-
-endif;
-	
-?>
-<div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0">
-	<thead>
-	<tr class="sb-top">
-		<th class="th-left"><?=$this->bbf('col_line-line');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-protocol');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-name');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-config_registrar');?></th>
-		<th class="th-right"><?=$this->bbf('col_line-user');?></th>
-	</tr>
-	</thead>
-	<tbody>
-<?php
-if($listline !== false
-&& ($nb = count($listline)) !== 0):
-
-#dwho_var_dump($listline);
-	
-	for($i = 0;$i < $nb;$i++):
-		$ref = &$listline[$i];
-		
-		$secureclass = '';
-		if(isset($ref['encryption']) === true
-		&& $ref['encryption'] === true)
-			$secureclass = 'xivo-icon xivo-icon-secure';
-?>
-	<tr class="fm-paragraph">
-		<td class="td-left">
-			<?=$ref['num']?>
-		</td>
-		<td class="txt-center">
-			<span>
-				<span class="<?=$secureclass?>">&nbsp;</span>
-				<?=$this->bbf('line_protocol-'.$ref['protocol'])?>
-			</span>
-		</td>
-		<td>
-			<?=$url->href_html($ref['name'],
-				'service/ipbx/pbx_settings/lines',
-				array('act' => 'edit', 'id' => $ref['id']));?>
-		</td>
-		<td>
-			<?=$ref['context']?>
-		</td>
-		<td>
-			<?=$ref['number']?>
-		</td>
-		<td>
-			<?=$ref['configregistrar']?>
-		</td>
-		<td class="td-right">
-			<?=$url->href_html($ref['useridentity'],
-				'service/ipbx/pbx_settings/users',
-				array('act' => 'edit', 'id' => $ref['iduserfeatures']));?>
-		</td>
-	</tr>
-<?php
-	endfor;
-endif;
-?>
-	</tbody>
-	<tfoot>
-	<tr id="no-devicefeatures"<?=($listline !== false ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="7" class="td-single"><?=$this->bbf('no_lines');?></td>
-	</tr>
-	</tfoot>
-</table>
-</div>
 </div>

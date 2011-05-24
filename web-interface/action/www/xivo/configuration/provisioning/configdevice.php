@@ -22,8 +22,8 @@ dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('provd_config');
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
-$page    = dwho_uint($prefs->get('page', 1));
-$search  = strval($prefs->get('search', ''));
+$page = dwho_uint($prefs->get('page', 1));
+$search = strval($prefs->get('search', ''));
 
 $param = array();
 $param['act'] = 'list';
@@ -39,12 +39,51 @@ $modprovdconfig = &$_XOBJ->get_module('provdconfig');
 
 switch($act)
 {
+	case 'add':
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('config',$_QR) === true)
+		{
+			$_QR['config']['X_type'] = 'device';
+			if($appprovdconfig->set_add($_QR,'device') === false
+			|| $appprovdconfig->add() === false)
+			{
+				$fm_save = false;
+				$result = $appprovdconfig->get_result('config');
+				$error = $appprovdconfig->get_error('config');
+			}
+			else
+				$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
+		}
+
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('element',$appprovdconfig->get_elements());
+		break;
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appprovdconfig->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
-			
-		$_TPL->set_var('id',$_QR['id']);
-		$_TPL->set_var('info',$info);
+
+		$return = &$info;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('config',$_QR) === true)
+		{
+			$return = &$result;
+
+			$_QR['config']['X_type'] = 'device';
+			if($appprovdconfig->set_edit($_QR,'device') === false
+			|| $appprovdconfig->edit() === false)
+			{
+				$fm_save = false;
+				$result = $appprovdconfig->get_result('config');
+				$error = $appprovdconfig->get_error('config');
+			}
+			else
+				$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
+		}
+
+		$_TPL->set_var('id',$info['config']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('element',$appprovdconfig->get_elements());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -56,6 +95,22 @@ switch($act)
 
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
 		break;
+	case 'deletes':
+		$param['page'] = $page;
+
+		if(($values = dwho_issa_val('configdevice',$_QR)) === false)
+			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($appprovdconfig->get($values[$i]) !== false)
+				$appprovdconfig->delete();
+		}
+
+		$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
+		break;
 	case 'list':
 	default:
 		$act = 'list';
@@ -63,13 +118,13 @@ switch($act)
 		$nbbypage = 20;
 
 		$order = array();
-		$order['name'] = SORT_ASC;
+		$order['id'] = SORT_ASC;
 
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		if (($list = $appprovdconfig->get_config_list($search,$order,$limit)) === false)
+		if (($list = $appprovdconfig->get_config_list($search,$order,$limit,false,false,'device')) === false)
 			$list = array();
 			
 		$total = $appprovdconfig->get_cnt();
@@ -77,7 +132,7 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configdevice'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/provisioning/config'),$param);
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
@@ -95,7 +150,6 @@ $menu->set_left('left/xivo/configuration');
 $menu->set_toolbar('toolbar/xivo/configuration/provisioning/configdevice');
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/xivo/configuration/provisioning/config.js');
 $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_bloc('main','xivo/configuration/provisioning/configdevice/'.$act);

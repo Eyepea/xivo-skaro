@@ -1,6 +1,6 @@
 
 ; title_content_name
-Device / Add
+Template Device / Add
 
 ; smenu_general
 Genéral
@@ -10,6 +10,9 @@ Advanced
 
 ; smenu_lines
 Lines
+
+; fm_config_label
+Label: 
 
 ; fm_devicefeatures_ip
 IP: 

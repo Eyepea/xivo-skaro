@@ -29,7 +29,7 @@ $element = $this->get_var('element');
 <?php
 	if ($this->get_var('act') === 'edit'):
 		echo $form->hidden(array('name'	  => 'config[id]',
-				  'value'	  => $this->get_var('info','id')));
+				  'value'	  => $this->get_var('info','config','id')));
 ?>
 	<p id="fd-config-id" class="fm-paragraph">
 		<span class="fm-desc clearboth">

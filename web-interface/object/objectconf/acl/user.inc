@@ -34,6 +34,7 @@ $array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
 $array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
 $array['tree']['service']['ipbx']['general_settings']['dundi'] = true;
+$array['tree']['service']['ipbx']['general_settings']['dahdi'] = true;
 
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['agents'] = true;
@@ -146,6 +147,7 @@ $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
+$array['tree']['xivo']['configuration']['manage']['dahdihardware'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning'] = array();
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;

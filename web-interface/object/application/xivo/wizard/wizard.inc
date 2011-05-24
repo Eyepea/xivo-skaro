@@ -1565,20 +1565,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)
 			trigger_error('Unable to load provdconfig module',E_USER_ERROR);
 		
-		$config = array();
-		$config['X_type'] = 'registrar';
-		$config['id'] = 'default';
-		$config['displayname'] = 'local';
-		$config['parent_ids'] = array();
-		// required raw_config dict by provd
-		$config['raw_config'] = array('X_key' => 'xivo');
-		$config['proxy_backup'] = $netiface['address'];
-		$config['proxy_main'] = $netiface['address'];
-		$config['registrar_backup'] = $netiface['address'];
-		$config['registrar_main'] = $netiface['address'];
-		
-		if ($provdconfig->add($config) === false
-		|| $provdconfig->add_required_config($config) === false)
+		if ($provdconfig->eval_required_config($netiface['address'],true) === false)
 			return false;
 			
 		return(true);

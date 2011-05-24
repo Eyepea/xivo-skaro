@@ -35,7 +35,7 @@ $array['base']['raw_config']['sccp_call_managers'] = array();
 $array['autoprov'] = array();
 $array['autoprov']['id'] = 'autoprov';
 $array['autoprov']['role'] = 'default';
-$array['autoprov']['parent_ids'] = array('base');
+$array['autoprov']['parent_ids'] = array('base','defaultconfigdevice');
 
 $array['autoprov']['raw_config'] = array();
 $array['autoprov']['raw_config']['sip_lines'] = array();
@@ -51,6 +51,9 @@ $array['element'] = array();
 
 $array['element']['_comment'] = array();
 $array['element']['_comment']['default'] = '';
+
+$array['element']['label'] = array();
+$array['element']['label']['default'] = '';
 
 $array['element']['ip'] = array();
 $array['element']['ip']['default'] = '';
@@ -219,6 +222,7 @@ $array['element']['exten_voicemail']['default'] = '';
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
+$array['filter']['label'] = array('set' => false,'chk' => 2,'maxlen' => 64,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['_comment'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['ip'] = array('set' => false,
 				    'chk'			=> 2,
@@ -248,7 +252,7 @@ $array['filter']['user_username'] = array('set' => false,'chk' => 2);
 $array['filter']['user_password'] = array('set' => false,'chk' => 2);
 $array['filter']['timezone'] = array('set' => false,'chk' => 2);
 $array['filter']['sip_subscribe_mwi'] = array('bool' => true);
-$array['filter']['locale'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['locale'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => $array['element']['locale']['value']);
 $array['filter']['config_encryption_enabled'] = array('bool' => true);
 $array['filter']['protocol'] = array('set' => false,'chk' => 2,'key' => $array['element']['protocol']['value']);
 $array['filter']['sip_dtmf_mode'] = array('set' => false,'chk' => 2,'key' => $array['element']['sip_dtmf_mode']['value']);

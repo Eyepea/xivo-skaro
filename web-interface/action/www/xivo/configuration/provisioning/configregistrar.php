@@ -38,15 +38,16 @@ $modprovdconfig = &$_XOBJ->get_module('provdconfig');
 switch($act)
 {
 	case 'add':
-		if(isset($_QR['fm_send']) === true)
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('config',$_QR) === true)
 		{
 			$_QR['config']['X_type'] = 'registrar';
 			if($appprovdconfig->set_add($_QR,'registrar') === false
 			|| $appprovdconfig->add() === false)
 			{
 				$fm_save = false;
-				$result = $appprovdconfig->get_result('configregistrar');
-				$error = $appprovdconfig->get_error('configregistrar');
+				$result = $appprovdconfig->get_result('config');
+				$error = $appprovdconfig->get_error('config');
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
@@ -61,7 +62,8 @@ switch($act)
 
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true)
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('config',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -70,8 +72,8 @@ switch($act)
 			|| $appprovdconfig->edit() === false)
 			{
 				$fm_save = false;
-				$result = $appprovdconfig->get_result('configregistrar');
-				$error = $appprovdconfig->get_error('configregistrar');
+				$result = $appprovdconfig->get_result('config');
+				$error = $appprovdconfig->get_error('config');
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
@@ -83,8 +85,6 @@ switch($act)
 		break;
 	case 'delete':
 		$param['page'] = $page;
-
-		$appprovdconfig = &$_XOBJ->get_application('configregistrar');
 
 		if(isset($_QR['id']) === false || $appprovdconfig->get($_QR['id']) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
@@ -98,8 +98,6 @@ switch($act)
 
 		if(($values = dwho_issa_val('configregistrar',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
-
-		$appprovdconfig = &$_XOBJ->get_application('configregistrar');
 
 		$nb = count($values);
 

@@ -51,6 +51,10 @@ switch($act)
 		$modprovdplugin = &$_XOBJ->get_module('provdplugin');
 		
 		$plugininstalled = $modprovdplugin->get_plugin_installed();
+		
+		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
+		$order = array('label' => SORT_ASC);
+		$listconfigdevice = $appprovdconfig->get_config_list('',$order,null,false,false,'device');
 
 		$result = $fm_save = $error = null;
 
@@ -74,6 +78,7 @@ switch($act)
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('plugininstalled',$plugininstalled);
+		$_TPL->set_var('listconfigdevice',$listconfigdevice);
 		$_TPL->set_var('element',$element);
 		break;
 	case 'edit':
@@ -81,29 +86,33 @@ switch($act)
 
 		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-			
+		
 		$modprovdplugin = &$_XOBJ->get_module('provdplugin');
 		$plugininstalled = $modprovdplugin->get_plugin_installed();
+		
+		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
+		$order = array('label' => SORT_ASC);
+		$listconfigdevice = $appprovdconfig->get_config_list('',$order,null,false,false,'device');
 		
 		$appline = &$ipbx->get_application('line');
 		$order = array('num' => SORT_ASC);
 		$listline = $appline->get_lines_device((int) $_QR['id'],'',null,$order);
 		
-		$return = &$info;
-
 		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('devicefeatures',$_QR) === true)
 		{
-			$return = &$result;
-
+			
 			if($appdevice->set_edit($_QR) === false
 			|| $appdevice->edit('provd') === false)
 			{
 				$fm_save = false;
 				$result = $appdevice->get_result();
 				$error = $appdevice->get_error();
+		
+				dwho_var_dump($error);
+				dwho_var_dump($result);
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
@@ -114,12 +123,13 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 
-		$_TPL->set_var('id',$info['devicefeatures']['id']);
+		$_TPL->set_var('id',$_QR['id']);
 		$_TPL->set_var('deviceid',$info['devicefeatures']['deviceid']);
-		$_TPL->set_var('info',$return);
+		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('plugininstalled',$plugininstalled);
+		$_TPL->set_var('listconfigdevice',$listconfigdevice);
 		$_TPL->set_var('listline',$listline);
 		$_TPL->set_var('element',$element);
 		break;
