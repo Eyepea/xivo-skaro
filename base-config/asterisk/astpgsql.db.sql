@@ -1208,10 +1208,8 @@ CREATE TABLE "outcall" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "outcall__idx__exten" ON "outcall"("exten");
 CREATE INDEX "outcall__idx__commented" ON "outcall"("commented");
 CREATE UNIQUE INDEX "outcall__uidx__name" ON "outcall"("name");
-CREATE UNIQUE INDEX "outcall__uidx__exten_context" ON "outcall"("exten","context");
 
 
 DROP TABLE IF EXISTS "outcalltrunk";
