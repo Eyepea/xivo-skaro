@@ -20,7 +20,7 @@ setup(
 	package_dir={'xivo_ha': 'xivo_ha'},
 	scripts=['bin/pf-xivo-ha'],
 	data_files=[
-                ('/etc/pf-xivo', ['etc/pf-xivo-ha.conf']),
+                ('/etc/pf-xivo', ['etc/pf-xivo-ha.conf', 'etc/pf-xivo-ha-extra.conf']),
                 ('/usr/share/pf-xivo-ha/templates/corosync', [
                                                               'templates/corosync/default_corosync',
                                                               'templates/corosync/corosync.conf',

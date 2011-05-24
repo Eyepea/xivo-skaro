@@ -16,18 +16,21 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         self.backup_dir   = "%s/var/backups/pf-xivo/xivo_ha" % self.test_dir
         self.etc_dir      = "%s/etc/pf-xivo/xivo_ha/" % self.test_dir
 
-        #self.services     = ['asterisk', 'dhcpd', 'monit', 'mailto', 'lighttpd'] 
+                               #'scripts': ['/root/pf-xivo-ha/tests/templates/script-1.sh', '/root/pf-xivo-ha/tests/templates/script-2.sh'],
         self.cluster_cfg  = "%s/cluster.cfg" % self.etc_dir
         self.backup_file  = "pf-xivo-ha.bck"
         self.cluster_data = {'cluster_name': 'xivo',
-                               'cluster_nodes': ['ha-xivo-1', 'ha-xivo-2'],
-                               'cluster_addr': ['eth0:192.168.1.34', 'eth0.1:192.168.2.34'],
-                               'cluster_group': 'yes',
-                               'services': {'asterisk': {'monitor': '30', 'timeout': '60'},
-                                            'lighttpd': {}
-                                           }
+                              'cluster_nodes': ['ha-xivo-1', 'ha-xivo-2'],
+                              'cluster_addr': ['eth0:192.168.1.34', 'eth0.10:192.168.2.34'],
+                              'cluster_monitor': '10s',
+                              'cluster_timeout': '60s',
+                              'cluster_group': 'yes',
+                              'cluster_mailto': 'nhicher@proformatique.com',
+                              'cluster_pingd': '192.168.1.254',
+                              'services': {'asterisk': {'rsc_class': 'lsb', 'monitor': '30', 'timeout': '15'},
+                                           'nginx':    {'rsc_class': 'ocf'}
                               }
-
+                            }
         self.data                = ClusterResourceManager(
                                         self.cluster_data,
                                         backup_directory = self.backup_dir,
@@ -66,14 +69,14 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         self.assertTrue(data)
 
     def test_lsb_status(self):
-         os.system("/etc/init.d/ntp start > /dev/null 2>&1")
-         # false service
-         self.assertFalse(self.data._lsb_status("false_service", "started"))
-         # started
-         self.assertEqual(self.data._lsb_status("ntp", "started"), "started")
-         # stopped
-         os.system("/etc/init.d/ntp stop > /dev/null 2>&1")
-         self.assertEqual(self.data._lsb_status("ntp", "stopped"), "stopped")
+        os.system("/etc/init.d/ntp start > /dev/null 2>&1")
+        # false service
+        self.assertFalse(self.data._lsb_status("false_service", "started"))
+        # started
+        self.assertEqual(self.data._lsb_status("ntp", "started"), "started")
+        # stopped
+        os.system("/etc/init.d/ntp stop > /dev/null 2>&1")
+        self.assertEqual(self.data._lsb_status("ntp", "stopped"), "stopped")
 
 
     def test_cluster_property(self):
@@ -122,6 +125,20 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
                                                        'monitor role=Slave interval=300s'])
         self.assertEqual(data, drbd_expected)
 
+    def test_resource_script(self):
+        expected = 'primitive script_xivo_script.sh ocf:heartbeat:anything params binfile="/root/script.sh"'
+        data = self.data._resource_script("/root/script.sh")
+        self.assertEqual(data[1], expected)
+
+    def test_configure_services(self):
+        expected = [ 'primitive asterisk lsb:asterisk',
+                     'primitive nginx ocf:heartbeat:nginx'
+                   ]
+        result = []
+        for service, data in self.cluster_data['services'].iteritems():
+            result.append(self.data._resource_primitive(service))
+        self.assertEqual(sorted(expected), sorted(result))
+
     def test_resources_location(self):
         # location <id> <rsc> <score>: <node>
         expected = 'location location_xivo group_ip_xivo 100: ha-xivo-1'
@@ -135,7 +152,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_resources_order_services(self):
         self.data.cluster_group = False
-        expected = 'order order_xivo inf: group_ip_xivo:start asterisk:start lighttpd:start'
+        expected = 'order order_xivo inf: group_ip_xivo:start asterisk:start nginx:start'
         data = self.data._resources_order()
         self.assertEqual(expected, data)
 
@@ -146,7 +163,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_resources_colocation_services(self):
         self.data.cluster_group = False
-        expected = 'colocation colocation_xivo inf: group_ip_xivo asterisk lighttpd'
+        expected = 'colocation colocation_xivo inf: group_ip_xivo asterisk nginx'
         data = self.data._resources_colocation()
         self.assertEqual(expected, data)
 
@@ -161,8 +178,13 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
     def test_resource_monitor(self):
         expected = 'monitor apcfence 60m:60s'
         data = self.data._resource_monitor('apcfence',
-                                           monitor_interval = '60',
-                                           monitor_timeout  = '60')
+                                           monitor_interval = '60m',
+                                           monitor_timeout  = '60s')
+        self.assertEqual(expected, data)
+
+    def test_resource_default_monitor(self):
+        expected = 'monitor nginx 10s:60s'
+        data = self.data._resource_monitor('nginx')
         self.assertEqual(expected, data)
 
     def test_cluster_configure(self):
@@ -180,7 +202,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_cluster_addr(self):
         expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"',
-                    'ip_xivo_eth0.1': 'primitive ip_xivo_eth0.1 ocf:heartbeat:IPaddr2 params ip="192.168.2.34" nic="eth0.1"'}
+                    'ip_xivo_eth0.10': 'primitive ip_xivo_eth0.10 ocf:heartbeat:IPaddr2 params ip="192.168.2.34" nic="eth0.10"'}
         data = self.data._cluster_addr()
         self.assertEqual(expected, data)
 
@@ -216,15 +238,29 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         state = self.data._cluster_restore(filename = self.backup_file)
         self.assertTrue(state)
 
-    def test_cluster_resource_state(self):
+    def test_get_group_members(self):
         self._reset_cluster()
-        # asterisk need 0.5 seconde to start
-        time.sleep(0.5)
-        data_ast   = self.data._cluster_resource_state("asterisk")
-        self.assertEqual('running', data_ast)
+        ip = sorted(['ip_xivo_eth0.10', 'ip_xivo_eth0'])
+        srv = sorted(['nginx', 'asterisk', 'mailto_xivo'])
+        expected = {'group_ip_xivo': ip,
+                    'group_srv_xivo': srv
+                   }
+        result = self.data._cluster_get_group_members()
+        self.assertEqual(expected, result)
+
+    def test_cluster_mailto(self):
+        expected = 'primitive mailto_xivo ocf:heartbeat:MailTo params email=%s' % self.cluster_data['cluster_mailto']
+        name, result = self.data._cluster_mailto()
+        self.assertEqual(expected, result)
+
+    def test_cluster_pingd(self):
+        expected = ['primitive pingd_xivo ocf:pacemaker:pingd params host_list=192.168.1.254 multiplier=100',
+                    'clone pingdclone pingd_xivo meta globally-unique=false']
+        result = self.data._cluster_pingd()
+        self.assertEqual(expected, result)
 
     def test_get_all_resources(self):
-        expected = ['ip_xivo', 'asterisk', 'lighttpd'].sort()
+        expected = ['ip_xivo', 'asterisk', 'nginx'].sort()
         data     = self.data._cluster_get_all_resources().sort()
         self.assertEqual(expected, data)
 
@@ -236,8 +272,8 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
     def test_manage(self):
         self.assertTrue(self.data.manage())
 
-    def test_status(self):
-        self.assertTrue(self.data.status())
+    #def test_status(self):
+    #    self.assertTrue(self.data.status())
 
 
 class DatabaseManagementTestCase(unittest.TestCase):

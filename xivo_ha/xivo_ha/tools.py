@@ -1,5 +1,7 @@
 import subprocess
 
+import os
+
 class Tools(object):
     def _cluster_command(self, args = None):
         '''
@@ -20,4 +22,17 @@ class Tools(object):
     def _format_string(self, string):
         string = "\t" + string + "\n"
         return string
+
+    def _lsb_status(self, res, expected_state):
+        script = '/etc/init.d/%s' % res
+        if os.path.isfile(script):
+            cmd = [script, 'status']
+            result, ret, error = self._cluster_command(cmd)
+            if ret is 0:
+                state = "started"
+            elif ret is 3:
+                state = "stopped"
+            return state
+        else:
+            return False
 

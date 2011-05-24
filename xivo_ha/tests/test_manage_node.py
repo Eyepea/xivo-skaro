@@ -108,12 +108,13 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
         self.etc_dir      = "%s/etc" % self.test_dir
         self.backup_dir   = "%s/var/backups/pf-xivo/xivo_ha" % self.test_dir
         self.csync_data   = {'conflict_resolution': 'younger',
-                             'key_file':    '%s/csync2.key' % self.etc_dir,
+                             'key_file': '%s/csync2.key' % self.etc_dir,
                              'backup_keep': '3',
-                             'hosts':       ['ha-xivo-1', 'ha-xivo-2'],
-                             'config_file' : '%s/csync2.cfg' % self.etc_dir,
-                             'extra_include' : ['/etc/vim', '/etc/python'],
-                             'extra_exclude' : ['/etc/vim/vimrc'],
+                             'hosts': ['ha-xivo-1', 'ha-xivo-2'],
+                             'config_file': '%s/csync2.cfg' % self.etc_dir,
+                             'extra_include': ['/etc/vim', '/etc/python'],
+                             'extra_exclude': ['/etc/vim/vimrc'],
+                             'role': 'master'
                             }
         self.data         = FilesReplicationManagement(self.csync_data)
         for dir_ in (self.backup_dir, self.etc_dir, self.backup_dir):
@@ -131,9 +132,18 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
         file_ = self.data._create_key_file()
         self.assertTrue(os.path.isfile(file_))
 
-    def test_config_file_hosts(self):
-        expected = "host ha-xivo-1 ha-xivo-2;"
+    def test_config_file_hosts_without_itf(self):
+        self.csync_data['data_itf'] = None
+        expected = "host ha-xivo-1 ha-xivo-2;" 
         result   = self.data._config_file_hosts()
+        self.assertEqual(expected, result)
+
+    def test_config_file_hosts_with_itf(self):
+        csync_data = self.csync_data
+        itf        = csync_data['data_itf'] = 'eth0.10'
+        self.data  = FilesReplicationManagement(csync_data)
+        expected   = "host ha-xivo-1@ha-xivo-1-%s ha-xivo-2@ha-xivo-2-%s;" % (itf, itf)
+        result     = self.data._config_file_hosts()
         self.assertEqual(expected, result)
 
     def test_config_file_key_file(self):
@@ -156,10 +166,16 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
         result   = self.data._config_file_conflict_resolution()
         self.assertEqual(expected, result)
 
+    def test_clean_files_for_sync(self):
+        self.data._clean_files_for_sync()
+
     def test_create_config_file(self):
         expected = "tests/templates/csync2.cfg"
         result   = self.data._create_config_file()
         self.assertTrue(filecmp.cmp(expected, result))
+
+    def test_initialize(self):
+        self.data.initialize()
 
 if __name__ == '__main__':
     os.system("rm -rf tests/tmp")

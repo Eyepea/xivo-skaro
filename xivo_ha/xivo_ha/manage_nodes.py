@@ -187,6 +187,8 @@ class FilesReplicationManagement(Tools):
     '''
     def __init__(self,data):
         self.hosts         = data['hosts']
+        self.role          = data['role']
+        self.itf           = data['data_itf'] if data.has_key('data_itf') else None
         self.extra_include = data['extra_include'] if data.has_key('extra_include') else None
         self.extra_exclude = data['extra_exclude'] if data.has_key('extra_exclude') else None
         self.config_tmp    = data['config_tmp']  if data.has_key('config_tmp')  else '/usr/share/pf-xivo-ha/templates/csync2/csync2.cfg' 
@@ -204,7 +206,7 @@ class FilesReplicationManagement(Tools):
 
     def _create_key_file(self):
         key_file = self.key_file
-        if not os.path.isfile(self.config_file):
+        if not os.path.isfile(key_file):
             key = self._generate_ssl_key()
             with open(key_file, 'w') as file_:
                 file_.write(key)
@@ -216,7 +218,10 @@ class FilesReplicationManagement(Tools):
         '''
         string = "host"
         for host in self.hosts:
-            string += " %s" % host
+            if self.itf:
+                string += " %s@%s-%s" % (host, host, self.itf)
+            else:
+                string += " %s" % host
         string += ";"
         return string
 
@@ -253,7 +258,8 @@ class FilesReplicationManagement(Tools):
 
     def _create_config_file(self):
         template = open(self.config_tmp).readlines()
-        with open(self.config_file, 'w') as file_:
+        config_file = self.config_file
+        with open(config_file, 'w') as file_:
             for line in template:
                 line = line.rstrip()
                 if line == '\tHOSTS;':
@@ -277,16 +283,63 @@ class FilesReplicationManagement(Tools):
                             
                 else:
                     file_.write('%s\n' % line)
-        return self.config_file
+        return config_file
 
 
+    def _clean_files_for_sync(self):
+        '''
+        clean files for csync2 :
+            theses files are the same on master/slave (same creation date)
+            we need to touch them from the slave to allow full sync
+            we use time information from /etc/fstab
+        '''
+        files_to_clean = ['/var/lib/asterisk/astsqlite',
+                        '/var/lib/pf-xivo-cti-server/sqlite/xivo.db',
+                        '/var/lib/pf-xivo-web-interface/sqlite/xivo.db',
+                        '/var/lib/pf-xivo/provd/shelvedb/configs',
+                        '/var/lib/pf-xivo/provd/shelvedb/devices',
+                        '/var/log/asterisk/fail2ban',
+                        '/var/log/asterisk/messages',
+                        '/var/log/asterisk/queue_log',
+                       ]
+        ref_file = '/etc/fstab'
+
+        for file_ in files_to_clean:
+            if os.path.isfile(file_):
+                if self.role == 'master':
+                    args = ['csync2', '-f', file_] 
+                else:
+                    args = ['touch', '-r', ref_file, file_] 
+                data, ret, error = self._cluster_command(args)
+
+        return True
+                    
+
+    def _deploy_crontab(self): 
+        '''
+        create crontab file for csync2
+        '''
+        sync_interval = 2
+        crontab_file = '/etc/cron.d/csync2'
+        string = '*/%s * * * * root /usr/sbin/csync2 -cr / ; /usr/sbin/csync2 -T ; /usr/sbin/csync2 -x\n' % sync_interval
+        with open(crontab_file, 'w') as file_:
+            file_.write(string)
+        return True
 
     def initialize(self):
         '''
-        create /etc/csync2.cfg and /etc/csync2.key
+        create /etc/csync2.cfg and /etc/csync2.key on master
+        normalize files on slave
         '''
-        #self._create_config_file()
-        print('initialize csync2')
+        role = self.role
+        if role == 'master':
+            key_file   = self._create_key_file()
+            config_file = self._create_config_file()
+            sys.stdout.write('you have to copy %s and %s on slave\n' % (config_file, key_file))
+        self._clean_files_for_sync()
+        self._deploy_crontab()
+        sys.stdout.write('Done\n')
+
 
     def update(self):
         '''

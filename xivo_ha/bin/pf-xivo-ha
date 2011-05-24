@@ -3,7 +3,7 @@
 import os
 import socket
 import sys
-import pprint
+import subprocess
 from configobj import ConfigObj
 from optparse import OptionParser
 from xivo_ha.manage_nodes import ClusterEngine
@@ -13,55 +13,23 @@ from xivo_ha.manage_cluster import ClusterResourceManager
 from xivo_ha.manage_cluster import DatabaseManagement
 from xivo_ha.tools import Tools
 
-# from http://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
-def is_valid_ipv4_address(address):
-    '''check if ip address is valid'''
-    try:
-        addr= socket.inet_pton(socket.AF_INET, address)
-    except AttributeError: 
-        try:
-            addr= socket.inet_aton(address)
-        except socket.error:
-            return False
-        return address.count('.') == 3
-    except socket.error: # not a valid address
-        return False
-    return True
-
-
 if __name__ == '__main__':
 
-    parser = OptionParser()
-    parser.add_option('--node', dest='node', type='string', metavar='ACTION',
-            help='configure node, must be used executed on each node (init or update)\n'
-                 'you must specify --role and --hostname')
-    parser.add_option('--cluster', dest='cluster', type='string', metavar='ACTION',
-            help='configure the cluster resource manager (manage or status)')
-    parser.add_option('-r', '--role', dest='role', type='string', metavar='ROLE',
-            help='specify role (master or slave)')
-    parser.add_option('-n', '--hostname', dest='host', type='string', metavar='HOSTNAME',
-            help='specify hostname')
-    parser.add_option('-f', '--config_file', dest='config_file', type='string', metavar='CONFIG_FILE',
-            help='specify the config file to use (default : /etc/pf-xivo/xivo_ha/pf-xivo-ha.conf)')
-    (options, args) = parser.parse_args()
+# from http://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
+    def _check_ipv4_address(address):
+        '''check if ip address is valid'''
+        try:
+            addr= socket.inet_pton(socket.AF_INET, address)
+        except AttributeError: 
+            try:
+                addr= socket.inet_aton(address)
+            except socket.error:
+                return False
+            return address.count('.') == 3
+        except socket.error: # not a valid address
+            return False
+        return True
 
-
-    if options.config_file is None:
-        config_file = '/etc/pf-xivo/xivo_ha/pf-xivo-ha.conf'
-    else:
-        config_file = options.config_file
-
-    config = ConfigObj(config_file)
-
-    # check if one option is given
-    if not options.node and not options.cluster:
-        parser.error("option --cluster or --node is mandatory")
-
-    if options.node:
-        if not options.role or not options.host:
-            parser.error("You have to specify role and hostname")
-
-    extra = "/etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf"
     def _get_extra_services():
         for l in open(extra):
             data = l.replace(' ', '').strip()
@@ -70,14 +38,14 @@ if __name__ == '__main__':
                 services = data[1].split(',')
                 return services
 
-    def _get_extra_scripts():
-        for l in open(extra):
-            data = l.replace(' ', '').strip()
-            data = data.split("=")
-            if data[0] == 'scripts' and data[1] is not '':
-                scripts = data[1].split(',')
-                cluster_config['scripts'] = scripts
-                return True
+    #def _get_extra_scripts():
+    #    for l in open(extra):
+    #        data = l.replace(' ', '').strip()
+    #        data = data.split("=")
+    #        if data[0] == 'scripts' and data[1] is not '':
+    #            scripts = data[1].split(',')
+    #            cluster_config['scripts'] = scripts
+    #            return True
 
 
     def _check_if_service_exist(service):
@@ -85,6 +53,21 @@ if __name__ == '__main__':
         if not os.path.isfile(file_):
             warn = "init file %s does not exist" % file_
             raise IOError(warn)
+
+
+    def _check_if_itf_exist():
+        '''
+        check if interfaces specified in pf-xivo-ha.conf exist
+        '''
+        itfs =  cluster_config['cluster_addr']
+        for itf in itfs:
+            itf = itf.split(':')[0]
+            args = ['ip', 'a', 's', itf]
+            data = subprocess.Popen(args, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+            ret = data.wait()
+            if ret is not 0:
+                raise OSError("interface %s is not configured" % itf)
+            
 
     def _get_extra_csync_data():
         for l in open(extra):
@@ -98,11 +81,49 @@ if __name__ == '__main__':
                 csync_data['extra_exclude'] = data
 
 
+    parser = OptionParser()
+    parser.add_option('--node', dest='node', type='string', metavar='ACTION',
+            help='configure node, must be used executed on each node (init or update)\n'
+                 'you must specify --role and --hostname')
+    parser.add_option('--cluster', dest='cluster', type='string', metavar='ACTION',
+            help='configure the cluster resource manager (manage or status)')
+    parser.add_option('-m', '--master', dest='master', action='store_true',
+            help='specify if the node is master')
+    parser.add_option('-s', '--slave', dest='slave', action='store_true',
+            help='specify if the node is slave')
+    parser.add_option('-f', '--config_file', dest='config_file', type='string', metavar='CONFIG_FILE',
+            help='specify the config file to use (default : /etc/pf-xivo/xivo_ha/pf-xivo-ha.conf)')
+    parser.add_option('--dry-run', dest='dry_run', action="store_true",
+            help='print cluster data')
+    (options, args) = parser.parse_args()
+
+
+    if options.config_file is None:
+        config_file = '/etc/pf-xivo/xivo_ha/pf-xivo-ha.conf'
+    else:
+        config_file = options.config_file
+
+    config = ConfigObj(config_file)
+
+    # check if one option is given
+    if options.node is None and options.cluster is None and options.dry_run is None:
+        parser.error("You have to provide an option")
+
+    if options.node:
+        if options.master is None and options.slave is None:
+            parser.error('you have to specify role for this node (--master or --slave)')
+
+    extra = "/etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf"
+
+    role = 'master' if options.master else 'slave'
+
     # corosync data
     nodes_config   = config['nodes']
     network_addr   = nodes_config['network_addr']
     multicast_addr = nodes_config['multicast_addr']
     services       = config['cluster']['services'].keys()
+    # TODO : force master or slave 
+    nodes_config['master'] = options.master
 
     nodes = [
              nodes_config['first_node']['name'],
@@ -113,7 +134,8 @@ if __name__ == '__main__':
     cluster_config['cluster_nodes'] = nodes 
 
     extra_services = _get_extra_services() 
-    extra_scripts  = _get_extra_scripts()
+    #extra_scripts  = _get_extra_scripts()
+
     if extra_services is not None:
         # node data
         services = services + extra_services
@@ -122,18 +144,45 @@ if __name__ == '__main__':
             _check_if_service_exist(service)
             cluster_config['services'][service] = {}
 
+    for service, data in cluster_config['services'].iteritems():
+        if type(data) is str:
+            cluster_config['services'][service] = {}
+            key, value = data.split(':')
+            cluster_config['services'][service][key] = value
+        else:
+            cluster_config['services'][service] = {}
+            for elem in data:
+                key, value = elem.split(':')
+                cluster_config['services'][service][key] = value
+
     node_management  = ClusterEngine(network_addr, multicast_addr)
     cluster = ClusterResourceManager(cluster_config)
 
     # csync2 configuration.
     csync_data = {}
-    csync_data['hosts'] = nodes
+    csync_data['hosts']    = nodes
+    csync_data['data_itf'] = cluster_config['cluster_ift_data']
+    csync_data['role']     = role
     _get_extra_csync_data()
     csync2 = FilesReplicationManagement(csync_data)
-    print(csync_data)
+
+    if cluster_config.has_key('cluster_addr'):
+        _check_if_itf_exist()
 
     for address in network_addr, multicast_addr:
-        is_valid_ipv4_address(address)
+        _check_ipv4_address(address)
+
+    if options.dry_run:
+        print('---- Nodes configuration ----')
+        print(nodes_config)
+        print('-----------------------------')
+        print('---- Csync configuration ----')
+        print(csync_data)
+        print('-----------------------------')
+        print('---- Cluster configuration ----')
+        print(cluster_config)
+        print('-----------------------------')
+        sys.exit()
 
     if options.node:
         if options.node == 'init':
@@ -143,19 +192,20 @@ if __name__ == '__main__':
                 manage_service = ManageService(service)
                 manage_service.initialize()
             csync2.initialize()
-            if options.role == 'master':
-                print('start lighttpd on %s' % options.host)
+            if role == 'master':
+                print('start lighttpd on master')
         elif options.node == 'update':
-            print('updating node configuration')
-        elif options.node == 'deploy':
-            print('deploy config file')
+            raise NotImplementedError
         else:
             parser.error("this option is not allowed")
 
     if options.cluster:
-        if options.cluster == 'manage':
+        option = options.cluster
+        if option == 'manage':
             cluster.manage() 
-        elif options.cluster == 'status':
+        elif option == 'status':
             cluster.status()
+        elif option == 'stop':
+            cluster.stop()
         else:
             parser.error("this option is not allowed")
