@@ -36,8 +36,6 @@ from xivo_ctiservers import lists
 from xivo_ctiservers.lists import *
 from xivo_ctiservers import cti_sheets
 
-log = logging.getLogger('innerdata')
-
 class Safe:
     # matches between CTI lists and WEBI-given fields
     urlvars = {
@@ -66,6 +64,7 @@ class Safe:
             'firstname', 'lastname', 'fullname',
             'entityid', # XXX (for entity/context relations)
             'mobilephonenumber',
+            'profileclient',
 
             'agentid',
             'voicemailid',
@@ -103,7 +102,7 @@ class Safe:
         'contexts' : [],
         }
 
-    props_status = { 'users' : { 'mwi' : [],
+    props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
                                  'availstate' : 'unknown'
                                  },
                      'phones' : { 'hintstatus' : '-4',
@@ -148,9 +147,10 @@ class Safe:
     # 'queueskills',
     # links towards other properties
 
-    def __init__(self, ctid, ipbxid, cnf):
+    def __init__(self, ctid, ipbxid, cnf = None):
         self.ctid = ctid
         self.ipbxid = ipbxid
+        self.log = logging.getLogger('innerdata(%s)' % self.ipbxid)
         self.xod_config = {}
         self.xod_status = {}
 
@@ -167,17 +167,31 @@ class Safe:
 
         for listname, urllistkey in self.urlvars.iteritems():
             try:
-                if cnf.has_key(urllistkey):
-                    cf = eval('lists.cti_%slist' % listname[:-1])
-                    cn = '%s%sList' % (listname[0].upper(), listname[1:-1])
+                cf = eval('lists.cti_%slist' % listname[:-1])
+                cn = '%s%sList' % (listname[0].upper(), listname[1:-1])
+                if cnf and cnf.has_key(urllistkey):
                     self.xod_config[listname] = getattr(cf, cn)(cnf.get(urllistkey)) # urllist, { 'conf' : self.lconf })
-                    self.xod_config[listname].setcommandclass(self)
-                    self.xod_config[listname].setgetter('get_x_list')
-                    self.xod_status[listname] = {}
                 else:
-                    log.warning('no such key %s in configuration' % urllistkey)
+                    self.log.warning('no such key %s in configuration' % (urllistkey))
+                    self.xod_config[listname] = getattr(cf, cn)()
+                self.xod_config[listname].setcommandclass(self)
+                self.xod_config[listname].setgetter('get_x_list')
+                self.xod_status[listname] = {}
             except Exception:
-                log.exception(listname)
+                self.log.exception(listname)
+        return
+
+    def make_ctiserver_account(self, ipbxid, username, password):
+        actualid = 'cs:%s' % ipbxid # prepend with letters in order to be sure it is not a number
+        self.xod_config['users'].keeplist[actualid] = { 'loginclient' : username,
+                                                        'id' : actualid,
+                                                        # 'profileclient' : 'switchboard',
+                                                        'profileclient' : 'ctiserver',
+                                                        'passwdclient' : password
+                                                        }
+        self.xod_status['users'][actualid] = {'connection' : None,
+                                              'availstate' : 'unknown'
+                                              }
         return
 
     def update_config_list_all(self):
@@ -199,9 +213,31 @@ class Safe:
             v['linelist'] = user2phone.get(iduser, [])
         return
 
+    def config_from_external(self, listname, contents):
+        function = contents.get('function')
+        if function == 'listid':
+            for k in contents.get('list'):
+                self.xod_config[listname].keeplist[k] = {}
+                self.xod_status[listname][k] = {}
+        elif function == 'updateconfig':
+            tid = contents.get('tid')
+            self.xod_config[listname].keeplist[tid] = contents.get('config')
+        elif function == 'updatestatus':
+            tid = contents.get('tid')
+            if self.xod_status[listname].get(tid) != contents.get('status'):
+                self.xod_status[listname][tid] = contents.get('status')
+                self.events_cti.put( { 'class' : 'getlist',
+                                       'listname' : listname,
+                                       'function' : 'updatestatus',
+                                       'tipbxid' : self.ipbxid,
+                                       'tid' : tid,
+                                       'status' : self.xod_status[listname][tid]
+                                       } )
+        return
+
     def update_config_list(self, listname):
         if listname not in self.xod_config:
-            log.warning('no such listname %s' % listname)
+            self.log.warning('no such listname %s' % listname)
         try:
             deltas = self.xod_config[listname].update()
             for k in deltas.get('add'):
@@ -212,7 +248,7 @@ class Safe:
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : listname,
                                        'function' : 'addconfig',
-                                       'ipbxid' : self.ipbxid,
+                                       'tipbxid' : self.ipbxid,
                                        'list' : [k]
                                        } )
             if deltas.get('del'):
@@ -222,7 +258,7 @@ class Safe:
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : listname,
                                        'function' : 'delconfig',
-                                       'ipbxid' : self.ipbxid,
+                                       'tipbxid' : self.ipbxid,
                                        'list' : deltas.get('del')
                                        } )
             for id, v in deltas.get('change').iteritems():
@@ -238,12 +274,12 @@ class Safe:
                     self.events_cti.put( { 'class' : 'getlist',
                                            'listname' : listname,
                                            'function' : 'updateconfig',
-                                           'ipbxid' : self.ipbxid,
-                                           'id' : id,
+                                           'tipbxid' : self.ipbxid,
+                                           'tid' : id,
                                            'config' : newc
                                            } )
         except Exception:
-            log.exception('update_config_list %s' % listname)
+            self.log.exception('update_config_list %s' % listname)
         return
 
     def get_x_list(self, xlist):
@@ -261,7 +297,7 @@ class Safe:
                     # meetme : admin_moderationmode => moderated
                     # meetme : uniqueids and adminnum statuses
             except Exception:
-                log.exception('(get_x_list : %s)' % xitem)
+                self.log.exception('(get_x_list : %s)' % xitem)
         return lxlist
 
 
@@ -293,11 +329,11 @@ class Safe:
         reply = {}
         configdict = self.xod_config.get(listname).keeplist
         if not isinstance(configdict, dict):
-            log.warning('get_config : problem with listname %s' % listname)
+            self.log.warning('get_config : problem with listname %s' % listname)
             return reply
         periddict = configdict.get(id)
         if not isinstance(periddict, dict):
-            log.warning('get_config : problem with id %s in listname %s' % (id, listname))
+            self.log.warning('get_config : problem with id %s in listname %s' % (id, listname))
             return reply
 
         if limit:
@@ -329,11 +365,11 @@ class Safe:
         reply = {}
         statusdict = self.xod_status.get(listname)
         if not isinstance(statusdict, dict):
-            log.warning('get_status : problem with listname %s' % listname)
+            self.log.warning('get_status : problem with listname %s' % listname)
             return reply
         periddict = statusdict.get(id)
         if not isinstance(periddict, dict):
-            log.warning('get_status : problem with id %s in listname %s' % (id, listname))
+            self.log.warning('get_status : problem with id %s in listname %s' % (id, listname))
             return reply
 
         if limit:
@@ -347,7 +383,7 @@ class Safe:
         return reply
 
     def autocall(self, channel, actionid):
-        log.info('autocall %s %s' % (channel, actionid))
+        self.log.info('autocall %s %s' % (channel, actionid))
 
     def newstate(self, channel, state):
         self.channels[channel].update_state(state)
@@ -427,8 +463,8 @@ class Safe:
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : 'voicemails',
                                        'function' : 'updatestatus',
-                                       'ipbxid' : self.ipbxid,
-                                       'id' : k,
+                                       'tipbxid' : self.ipbxid,
+                                       'tid' : k,
                                        'status' : self.xod_status['voicemails'][k]
                                        } )
                 break
@@ -496,7 +532,7 @@ class Safe:
             self.events_cti.put({'class' : 'getlist',
                                  'listname' : 'queuemembers',
                                  'function' : 'delconfig',
-                                 'ipbxid' : self.ipbxid,
+                                 'tipbxid' : self.ipbxid,
                                  'list' : [midx]
                                  })
 
@@ -514,7 +550,7 @@ class Safe:
                 if int(position) != len(incalls) + 1:
                     # can it occur ? : for meetme, it occurs when 2 people join the room almost
                     # simultaneously as first and second members
-                    log.warning('queueentryupdate (add) : mismatch between %d and %d'
+                    self.log.warning('queueentryupdate (add) : mismatch between %d and %d'
                                 % (int(position), len(incalls) + 1))
                 incalls.append(channel)
             if channel in self.channels:
@@ -522,7 +558,7 @@ class Safe:
                 self.channels[channel].addrelation('queue:%s' % qid)
         else:
             if int(position) != incalls.index(channel) + 1:
-                log.warning('queueentryupdate (del) : mismatch between %d and %d'
+                self.log.warning('queueentryupdate (del) : mismatch between %d and %d'
                             % (int(position), incalls.index(channel) + 1))
             incalls.remove(channel)
             if channel in self.channels:
@@ -550,17 +586,17 @@ class Safe:
             if id in self.channels:
                 status = self.channels.get(id).properties
             else:
-                log.warning('%s not in channels' % id)
+                self.log.warning('%s not in channels' % id)
         elif listname == 'queuemembers':
             if id in self.queuemembers:
                 status = self.queuemembers.get(id)
             else:
-                log.warning('%s not in queuemembers' % id)
+                self.log.warning('%s not in queuemembers' % id)
         else:
             if id in self.xod_status[listname]:
                 status = self.xod_status[listname].get(id)
             else:
-                log.warning('%s not in xod_status for %s' % (id, listname))
+                self.log.warning('%s not in xod_status for %s' % (id, listname))
         return status
 
     def appendcti(self, listname, which, id, status = None):
@@ -571,8 +607,8 @@ class Safe:
                 'class' : 'getlist',
                 'listname' : listname,
                 'function' : which,
-                'ipbxid' : self.ipbxid,
-                'id' : id,
+                'tipbxid' : self.ipbxid,
+                'tid' : id,
                 'status' : status
                 }
             self.events_cti.put(evt)
@@ -621,17 +657,17 @@ class Safe:
                         chanlist.remove(channel)
                         self.appendcti('phones', 'updatestatus', phoneid)
                     else:
-                        log.warning('%s not in channel list for phoneid %s' % (channel, phoneid))
+                        self.log.warning('%s not in channel list for phoneid %s' % (channel, phoneid))
             del self.channels[channel]
             self.events_cti.put({'class' : 'getlist',
                                  'listname' : 'channels',
                                  'function' : 'delconfig',
-                                 'ipbxid' : self.ipbxid,
+                                 'tipbxid' : self.ipbxid,
                                  'list' : [channel]
                                  })
         else:
-            log.warning('channel %s not there ...' % channel)
-        log.info('remaining channels : %s' % self.channels.keys())
+            self.log.warning('channel %s not there ...' % channel)
+        self.log.info('remaining channels : %s' % self.channels.keys())
         return
 
     def updatehint(self, hint, status):
@@ -644,8 +680,8 @@ class Safe:
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : 'phones',
                                        'function' : 'updatestatus',
-                                       'ipbxid' : self.ipbxid,
-                                       'id' : p,
+                                       'tipbxid' : self.ipbxid,
+                                       'tid' : p,
                                        'status' : {'hintstatus' : status}
                                        } )
         return
@@ -674,11 +710,11 @@ class Safe:
                     oldchans.append(channel)
                 self.xod_status['phones'][t]['channels'] = oldchans
         except Exception:
-            log.exception('find termination according to channel %s' % channel)
+            self.log.exception('find termination according to channel %s' % channel)
         return
 
     def masquerade(self, oldchannel, newchannel):
-        log.info('masquerading channel %s into %s' % (oldchannel, newchannel))
+        self.log.info('masquerading channel %s into %s' % (oldchannel, newchannel))
         oldrelations = self.channels[oldchannel].relations
         newrelations = self.channels[newchannel].relations
 
@@ -699,13 +735,13 @@ class Safe:
             self.setpeerchannel(newfirstchannel, newchannel)
         else:
             if oldchannel.startswith('SIPPeer'):
-                log.info('no peerchannel setting, since parking action (A) (%s %s)'
+                self.log.info('no peerchannel setting, since parking action (A) (%s %s)'
                          % (oldchannel, newchannel))
             elif oldchannel.startswith('Parking'):
-                log.info('no peerchannel setting, since parking action (B) (%s %s)'
+                self.log.info('no peerchannel setting, since parking action (B) (%s %s)'
                          % (oldchannel, newchannel))
             else:
-                log.warning('no peerchannel setting ... why ? %s %s'
+                self.log.warning('no peerchannel setting ... why ? %s %s'
                             % (oldchannel, newchannel))
         return
 
@@ -745,25 +781,29 @@ class Safe:
         rep.append('--------------')
         return rep
 
+    def user_connection_status(self, userid):
+        
+        return
+
     def update_presence(self, userid, newstate):
         oldstate = self.xod_status.get('users').get(userid)['availstate']
 
         profileid = self.user_get_ctiprofile(userid)
         if profileid not in self.ctid.cconf.getconfig('profiles'):
-            log.warning('profileid %s (for user %s) not defined in config' % (profileid, userid))
+            self.log.warning('profileid %s (for user %s) not defined in config' % (profileid, userid))
             return
         presenceid = self.ctid.cconf.getconfig('profiles').get(profileid).get('userstatus')
         if presenceid not in self.ctid.cconf.getconfig('userstatus'):
-            log.warning('presenceid %s (for user %s) not defined in config' % (presenceid, userid))
+            self.log.warning('presenceid %s (for user %s) not defined in config' % (presenceid, userid))
             return
         profdetails = self.ctid.cconf.getconfig('userstatus').get(presenceid)
 
         # allow oldstate to be 'unknown' (as might be the case when connecting ...)
         if oldstate not in profdetails and oldstate not in ['unknown']:
-            log.warning('old state %s (for user %s) not defined in config' % (oldstate, userid))
+            self.log.warning('old state %s (for user %s) not defined in config' % (oldstate, userid))
             return
         if newstate not in profdetails:
-            log.warning('new state %s (for user %s) not defined in config' % (newstate, userid))
+            self.log.warning('new state %s (for user %s) not defined in config' % (newstate, userid))
             return
 
         # XXX check on allowed states old => new
@@ -794,11 +834,11 @@ class Safe:
             if len(cutchan2) > 1:
                 chanid = cutchan2[1]
             else:
-                log.warning('%s is not a channel per-se' % cutchan2)
+                self.log.warning('%s is not a channel per-se' % cutchan2)
         elif len(cutchan1) < 2:
-            log.warning('not enough /es in %s' % cutchan1)
+            self.log.warning('not enough /es in %s' % cutchan1)
         elif len(cutchan1) > 2:
-            log.warning('too much /es in %s ?' % cutchan1)
+            self.log.warning('too much /es in %s ?' % cutchan1)
         return term
 
     def zphones(self, protocol, name):
@@ -829,10 +869,10 @@ class Safe:
         self.sheetconditions = bsheets.get('conditions')
 
         if where not in self.sheetevents:
-            log.warning('%s sheet event is not in %s' % (where, self.sheetevents.keys()))
+            self.log.warning('%s sheet event is not in %s' % (where, self.sheetevents.keys()))
             return
         if channel not in self.channels and not channel.startswith('special'):
-            log.warning('%s channel is not in %s' % (channel, self.channels.keys()))
+            self.log.warning('%s channel is not in %s' % (channel, self.channels.keys()))
             return
         for se in self.sheetevents[where]:
             display_id = se.get('display')
@@ -873,7 +913,7 @@ class Safe:
     # Timers/Synchro stuff - begin
 
     def checkqueue(self):
-        log.info('entering checkqueue')
+        self.log.info('entering checkqueue')
         ncount = 0
         while self.timeout_queue.qsize() > 0:
             ncount += 1
@@ -888,11 +928,11 @@ class Safe:
 
     def cb_timer(self, *args):
         try:
-            log.info('cb_timer (timer finished at %s) %s' % (time.asctime(), args))
+            self.log.info('cb_timer (timer finished at %s) %s' % (time.asctime(), args))
             self.timeout_queue.put(args)
             os.write(self.ctid.pipe_queued_threads[1], 'innerdata:%s\n' % self.ipbxid)
         except Exception:
-            log.exception('cb_timer %s' % args)
+            self.log.exception('cb_timer %s' % args)
         return
 
     # Timers/Synchro stuff - end
@@ -927,12 +967,12 @@ class Safe:
             del self.ctid.fdlist_established[cid]
             del self.fagichannels[channel]
         except Exception:
-            log.exception('problem when closing channel %s' % channel)
+            self.log.exception('problem when closing channel %s' % channel)
         return
 
     def fagi_setup(self, fagistruct):
         if fagistruct.channel in self.fagichannels:
-            log.warning('fagi_setup for %s already done ... (%s)'
+            self.log.warning('fagi_setup for %s already done ... (%s)'
                         % (fagistruct.channel, fagistruct.agidetails.get('agi_network_script')))
         tm = threading.Timer(0.2, self.cb_timer, ({'action' : 'fagi_noami',
                                                    'properties' : fagistruct},))
@@ -943,9 +983,9 @@ class Safe:
         return
 
     def fagi_handle(self, channel, where):
-        log.info('handle FAGI for channel %s, sync comes from %s' % (channel, where))
+        self.log.info('handle FAGI for channel %s, sync comes from %s' % (channel, where))
         if channel not in self.fagichannels:
-            log.warning('fagi_setup for %s not done' % channel)
+            self.log.warning('fagi_setup for %s not done' % channel)
             return
 
         # handle fagi event
@@ -953,12 +993,12 @@ class Safe:
         timer = self.fagichannels[channel]['timer']
         timer.cancel()
         agievent = fagistruct.agidetails
-        log.info('handle FAGI for channel %s : %s' % (channel, agievent))
+        self.log.info('handle FAGI for channel %s : %s' % (channel, agievent))
 
         try:
             varstoset = self.fagi_handle_real(agievent)
         except:
-            log.exception('for channel %s' % channel)
+            self.log.exception('for channel %s' % channel)
             varstoset = {}
 
         # the AGI handling has been done, exiting ...
@@ -968,7 +1008,7 @@ class Safe:
     def fagi_handle_real(self, agievent):
         # check capas !
         varstoset = {}
-        log.info('agievent %s' % agievent)
+        self.log.info('agievent %s' % agievent)
         try:
             function = agievent.get('agi_network_script')
             uniqueid = agievent.get('agi_uniqueid')
@@ -986,11 +1026,11 @@ class Safe:
             if callingani2 != '0':
                 cidnumstrs.append('agi_callingani2=%s' % callingani2)
 
-            log.info('handle_fagi (%s) context=%s uid=%s chan=%s %s'
+            self.log.info('handle_fagi (%s) context=%s uid=%s chan=%s %s'
                      % (function,
                         context, uniqueid, channel, ' '.join(cidnumstrs)))
         except Exception:
-            log.exception('handle_fagi %s' % (agievent))
+            self.log.exception('handle_fagi %s' % (agievent))
             return varstoset
 
         if function == 'presence':
@@ -1004,7 +1044,7 @@ class Safe:
                     varstoset['XIVO_PRESENCE'] = ','.join(aststatus)
                     # XIVO_PRESENCE = available:37,onlineoutgoing:2,fastpickup:6
             except Exception:
-                log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
             return varstoset
 
         elif function == 'queuestatus':
@@ -1031,7 +1071,7 @@ class Safe:
                         fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
                         fastagi.set_variable('XIVO_QUEUEID', queueid)
             except Exception:
-                log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
             return varstoset
 
         elif function == 'queueentries':
@@ -1046,7 +1086,7 @@ class Safe:
                             lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
                         fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
             except Exception:
-                log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
             return varstoset
 
         elif function == 'queueholdtime':
@@ -1063,11 +1103,11 @@ class Safe:
                         if 'Holdtime' in qprops['queuestats']:
                             lst.append('%s:%s' % (queuename, qprops['queuestats']['Holdtime']))
                         else:
-                            log.warning('handle_fagi %s : no Holdtime defined in queuestats for %s'
+                            self.log.warning('handle_fagi %s : no Holdtime defined in queuestats for %s'
                                         % (function, queuename))
                     fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
             except Exception:
-                log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
             return varstoset
 
 
@@ -1083,22 +1123,22 @@ class Safe:
                     dialplan_data = uniqueiddefs['dialplan_data']
                     calleridsolved = dialplan_data.get('dbr-display')
                 else:
-                    log.warning('handle_fagi %s no dialplan_data received yet'
+                    self.log.warning('handle_fagi %s no dialplan_data received yet'
                                 % (function))
                     calleridsolved = None
             else:
-                log.warning('handle_fagi %s no such uniqueid received yet : %s %s'
+                self.log.warning('handle_fagi %s no such uniqueid received yet : %s %s'
                             % (function, uniqueid, channel))
                 calleridsolved = None
 
             calleridname = agievent.get('agi_calleridname')
             if calleridsolved:
                 td = 'handle_fagi %s : calleridsolved="%s"' % (function, calleridsolved)
-                log.info(td.encode('utf8'))
+                self.log.info(td.encode('utf8'))
                 if calleridname in ['', 'unknown', calleridnum]:
                     calleridname = calleridsolved
                 else:
-                    log.warning('handle_fagi %s : (solved) there is already a calleridname="%s"'
+                    self.log.warning('handle_fagi %s : (solved) there is already a calleridname="%s"'
                                 % (function, calleridname))
 
             # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
@@ -1107,13 +1147,13 @@ class Safe:
             if calleridname in ['', 'unknown']:
                 calleridname = calleridnum
             else:
-                log.warning('handle_fagi %s : (number) there is already a calleridname="%s"'
+                self.log.warning('handle_fagi %s : (number) there is already a calleridname="%s"'
                             % (function, calleridname))
 
             calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
             td = 'handle_fagi %s : the callerid will be set to %s' % (function,
                                                                       calleridtoset.decode('utf8'))
-            log.info(td.encode('utf8'))
+            self.log.info(td.encode('utf8'))
             fastagi.set_callerid(calleridtoset)
             return varstoset
 
@@ -1122,7 +1162,7 @@ class Safe:
                 dp_varname = fastagi.args[0]
                 cti_varname = fastagi.args[1]
             else:
-                log.warning('handle_fagi %s not enough arguments : %s'
+                self.log.warning('handle_fagi %s not enough arguments : %s'
                             % (function, fastagi.args))
                 return
             if self.uniqueids.has_key(uniqueid):
@@ -1132,21 +1172,21 @@ class Safe:
                     if dialplan_data.has_key(cti_varname):
                         fastagi.set_variable(dp_varname, dialplan_data[cti_varname])
                     else:
-                        log.warning('handle_fagi %s no such variable %s in dialplan data'
+                        self.log.warning('handle_fagi %s no such variable %s in dialplan data'
                                     % (function, cti_varname))
                         ## XXX fastagi.set_variable(empty)
                 else:
-                    log.warning('handle_fagi %s no dialplan_data received yet'
+                    self.log.warning('handle_fagi %s no dialplan_data received yet'
                                 % (function))
                     ## XXX fastagi.set_variable(not yet)
             else:
-                log.warning('handle_fagi %s no such uniqueid received yet : %s %s'
+                self.log.warning('handle_fagi %s no such uniqueid received yet : %s %s'
                             % (function, uniqueid, channel))
                 ## XXX fastagi.set_variable(not yet (uniqueid))
             return varstoset
 
         else:
-            log.warning('handle_fagi %s : unknown function' % (function))
+            self.log.warning('handle_fagi %s : unknown function' % (function))
 
         return varstoset
 
@@ -1189,7 +1229,7 @@ class Safe:
         else:
             ctxdef = self.ctid.cconf.ctxlist.get('*', None)
         if not ctxdef:
-            log.warning('context %s not defined' % context)
+            self.log.warning('context %s not defined' % context)
             return [], None
         # ctxdef defines the context properties : list of directories + display options
         if exten is None:
@@ -1204,7 +1244,7 @@ class Safe:
         return [], None
 
     def findreverse(self, context, exten, number):
-        log.info('findreverse %s %s %s' % (context, exten, number))
+        self.log.info('findreverse %s %s %s' % (context, exten, number))
         if not number.isdigit():
             return
         dirlist, dummy = self.get_matching_dirs(context, exten)
@@ -1215,7 +1255,7 @@ class Safe:
             try:
                 y = dirdef.findpattern(number, True)
             except Exception:
-                log.exception('(findreverse) %s %s %s' % (dirlist, dirid, number))
+                self.log.exception('(findreverse) %s %s %s' % (dirlist, dirid, number))
                 y = []
             if y:
                 itemdir['xivo-reverse-nresults'] = str(len(y))
@@ -1234,14 +1274,14 @@ class Safe:
                 y = dirdef.findpattern(pattern, False)
                 fulllist.extend(y)
             except Exception:
-                log.exception('getcustomers (%s)' % dirid)
+                self.log.exception('getcustomers (%s)' % dirid)
 
         # fulllist is the unformatted list of results, coming from all directories
 
         mylines = []
 
         if not dpyid or dpyid not in self.ctid.cconf.dpylist:
-            log.warning('display %s not defined' % dpyid)
+            self.log.warning('display %s not defined' % dpyid)
             return {'status' : 'ko', 'reason' : 'undefined_display'}
 
         dpydef = self.ctid.cconf.dpylist.get(dpyid)

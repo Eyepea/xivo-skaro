@@ -68,19 +68,22 @@ import time
 import logging
 from logging.handlers import RotatingFileHandler
 import Queue
+import urllib
 import urllib2
 import cjson
 
+# XIVO lib-python modules initialization
+from xivo import daemonize
+
 # XIVO CTI modules
 from xivo_ctiservers.client_connection import ClientConnection
-from xivo import daemonize
 from xivo_ctiservers import cti_config
-
 from xivo_ctiservers import interface_webi
 from xivo_ctiservers import interface_info
 from xivo_ctiservers import interface_cti
 from xivo_ctiservers import interface_ami
 from xivo_ctiservers import interface_fagi
+from xivo_ctiservers import interface_rcti
 from xivo_ctiservers import innerdata
 from xivo_ctiservers import amiinterpret
 from xivo_ctiservers import queue_logger
@@ -93,16 +96,18 @@ try:
 except:
     DAEMONNAME = 'ctid'
 
-# XIVO lib-python modules initialization
 XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
-XIVO_CONF_FILE         = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
+
+DEBUG_MODE         = False
+XIVO_CONF_FILE     = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
+XIVO_CONF_OVER     = None
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
-PORTDELTA          = 0
 LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
-GETOPT_SHORTOPTS   = 'dc:p:l:i:P:'
-GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=', 'ip=', 'portdelta=']
-debug_mode = False
-xivoip = 'localhost'
+XIVOIP             = 'localhost'
+PORTDELTA          = 0
+GETOPT_SHORTOPTS   = 'dc:C:p:l:i:P:'
+GETOPT_LONGOPTS    = ['debug', 'config=', 'confoverride=', 'pidfile=',
+                      'logfile=', 'ip=', 'portdelta=']
 
 BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
@@ -112,18 +117,20 @@ filekey = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
 sslproto = ssl.PROTOCOL_TLSv1
 
 def parse_command_line():
-    global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, PORTDELTA, debug_mode, xivoip
+    global DEBUG_MODE, XIVO_CONF_FILE, XIVO_CONF_OVER, PIDFILE, LOGFILENAME, XIVOIP, PORTDELTA
     for opt, arg in getopt.getopt( sys.argv[1:], GETOPT_SHORTOPTS, GETOPT_LONGOPTS)[0]:
-        if opt == '-c':
+        if opt == '-d':
+            DEBUG_MODE = True
+        elif opt == '-c':
             XIVO_CONF_FILE = arg
-        elif opt == '-d':
-            debug_mode = True
+        elif opt == '-C':
+            XIVO_CONF_OVER = arg
         elif opt == '-p':
             PIDFILE = arg
         elif opt == '-l':
             LOGFILENAME = arg
         elif opt == '-i':
-            xivoip = arg
+            XIVOIP = arg
         elif opt == '-P':
             PORTDELTA = int(arg)
 
@@ -186,7 +193,7 @@ class xivo_daemon:
         except Exception:
             log.exception('logfilehandler')
 
-        if not debug_mode:
+        if not DEBUG_MODE:
             daemonize.daemonize()
 
         daemonize.lock_pidfile_or_die(PIDFILE)
@@ -197,6 +204,7 @@ class xivo_daemon:
 
         self.nreload = 0
         self.myami = {}
+        self.mycti = {}
         self.safe = {}
         self.timeout_queue = Queue.Queue()
         self.pipe_queued_threads = None
@@ -213,7 +221,8 @@ class xivo_daemon:
     # \param frame frame
     # \return none
     def sighandler(self, signum, frame):
-        log.warning('(sighandler) signal %s lineno %s (atq = %s) received : quits' % (signum, frame.f_lineno, self.askedtoquit))
+        log.warning('(sighandler) signal %s lineno %s (atq = %s) received : quits'
+                    % (signum, frame.f_lineno, self.askedtoquit))
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
             print '--- living thread <%s>' % (t.getName())
             t._Thread__stop()
@@ -225,18 +234,20 @@ class xivo_daemon:
     # \param frame frame
     # \return none
     def sighandler_reload(self, signum, frame):
-        log.warning('(sighandler_reload) signal %s lineno %s (atq = %s) received : reloads' % (signum, frame.f_lineno, self.askedtoquit))
+        log.warning('(sighandler_reload) signal %s lineno %s (atq = %s) received : reloads'
+                    % (signum, frame.f_lineno, self.askedtoquit))
         self.askedtoquit = False
         return
 
     def find_matching_ipbxid(self, ipaddress):
         found_ipbxid = None
         for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
-            connparams = ipbxconfig.get('connection')
-            cfg_ip_address = connparams.get('ipaddress')
-            if ipaddress == socket.gethostbyname(cfg_ip_address):
-                found_ipbxid = ipbxid
-                break
+            if 'ipbx_connection' in ipbxconfig:
+                connparams = ipbxconfig.get('ipbx_connection')
+                cfg_ip_address = connparams.get('ipaddress')
+                if ipaddress == socket.gethostbyname(cfg_ip_address):
+                    found_ipbxid = ipbxid
+                    break
         return found_ipbxid
 
     def checkqueue(self):
@@ -248,15 +259,27 @@ class xivo_daemon:
             action = toload.get('action')
             if action == 'ipbxup':
                 sockparams = toload.get('properties').get('sockparams')
-                got_ip_address = sockparams[0]
-                ipbxid = self.find_matching_ipbxid(got_ip_address)
-                if ipbxid:
-                    log.info('attempting to reconnect the AMI for %s' % ipbxid)
-                    z = self.myami[ipbxid].connect()
-                    self.fdlist_ami[z] = self.myami[ipbxid]
-                else:
-                    log.warning('did not found a matching ipbxid for the address %s'
-                                % got_ip_address)
+                data = toload.get('properties').get('data')
+                if data.startswith('asterisk'):
+                    got_ip_address = sockparams[0]
+                    ipbxid = self.find_matching_ipbxid(got_ip_address)
+                    if ipbxid:
+                        if self.myami[ipbxid].connected():
+                            log.info('do NOT attempt to reconnect to the AMI for %s' % ipbxid)
+                        else:
+                            log.info('attempt to reconnect to the AMI for %s' % ipbxid)
+                            z = self.myami[ipbxid].connect()
+                            if z:
+                                self.fdlist_ami[z] = self.myami[ipbxid]
+                    else:
+                        log.warning('did not found a matching ipbxid for the address %s'
+                                    % got_ip_address)
+                elif data.startswith('ctiserver'):
+                    for k, v in self.mycti.iteritems():
+                        if not v.connected():
+                            z = v.connect()
+                            if z:
+                                self.fdlist_remote_cti[z] = v
             elif action == 'ctilogin':
                 connc = toload.get('properties')
                 connc.close()
@@ -292,64 +315,109 @@ class xivo_daemon:
         self.lastrequest_time = {}
 
         self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
-        self.cconf.set_ipwebs(xivoip)
+        self.cconf.set_ipwebs(XIVOIP)
         self.cconf.update()
 
         queue_logger.queue_logger.init(self.cconf.getconfig('main').get('asterisk_queuestat_db'))
 
+        if XIVO_CONF_OVER:
+            e = urllib.urlopen(XIVO_CONF_OVER)
+            f = e.read()
+            e.close()
+            t = cjson.decode(f)
+            self.cconf.xc_json['ipbxes'] = t
         xivoconf_general = self.cconf.getconfig('main')
+
+        self.cconf.xc_json['profiles']['ctiserver'] = { 'functions' : None,
+                                                        'regcommands' : 'itw_regcommands', # XXX
+                                                        'userstatus': None, # XXX
+                                                        'preferences': None, # XXX
+                                                        'name' : 'CTIServer',
+                                                        'ipbxcommands' : None,
+                                                        'phonestatus': None,
+                                                        'agentstatus': None,
+                                                        'channelstatus': None,
+                                                        'xlets': None,
+                                                        'services' : None
+                                                        }
 
         # loads the general configuration
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
         ctilog = xivoconf_general.get('ctilog_db_uri')
-        socktimeout = xivoconf_general.get('sockettimeout', '2')
+        socktimeout = float(xivoconf_general.get('sockettimeout', '2'))
         prefixfile = xivoconf_general.get('prefixfile')
         parting_ipbxid_context = xivoconf_general.get('parting_ipbxid_context')
 
-        socket.setdefaulttimeout(float(socktimeout))
+        socket.setdefaulttimeout(socktimeout)
 
         if not self.pipe_queued_threads:
             self.pipe_queued_threads = os.pipe()
-
-        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
-            # interface : safe deposit
-            self.safe[ipbxid] = innerdata.Safe(self, ipbxid, ipbxconfig.get('urllists'))
-            # interface : AMI
-            self.myami[ipbxid] = interface_ami.AMI(self, ipbxid, ipbxconfig.get('connection'))
-            self.commandclass = amiinterpret.AMI_1_8(self, ipbxid)
-
-            log.info('# STARTING %s / git:%s / %d'
-                     % (self.xdname, self.safe[ipbxid].version(), self.nreload))
-
-            self.safe[ipbxid].set_ctilog(ctilog)
-            self.safe[ipbxid].read_internatprefixes(prefixfile)
-            self.safe[ipbxid].set_partings(parting_ipbxid_context)
 
         # sockets management
         self.fdlist_established = {}
         self.fdlist_listen_cti = {}
         self.fdlist_udp_cti = {}
         self.fdlist_ami = {}
+        self.fdlist_remote_cti = {}
 
         log.info("the monitored ipbx's is/are : %s" % self.cconf.getconfig('ipbxes').keys())
-        log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % self.xdname)
 
-        for ipbxid in self.cconf.getconfig('ipbxes').keys():
+        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
+            if 'ipbx_connection' in ipbxconfig:
+                self.myipbxid = ipbxid
+                break
+
+        log.info('# STARTING %s # (1/3) Local AMI socket connection' % self.xdname)
+
+        if self.myipbxid:
+            ipbxconfig = self.cconf.getconfig('ipbxes').get(self.myipbxid)
+            # interface : safe deposit
+            self.safe[self.myipbxid] = innerdata.Safe(self, self.myipbxid,
+                                                      ipbxconfig.get('urllists'))
+            # interface : AMI
+            self.myami[self.myipbxid] = interface_ami.AMI(self, self.myipbxid,
+                                                          ipbxconfig.get('ipbx_connection'))
+            self.commandclass = amiinterpret.AMI_1_8(self, self.myipbxid)
+
+            log.info('# STARTING %s / git:%s / %d'
+                     % (self.xdname, self.safe[self.myipbxid].version(), self.nreload))
+
+            self.safe[self.myipbxid].set_ctilog(ctilog)
+            self.safe[self.myipbxid].read_internatprefixes(prefixfile)
+            self.safe[self.myipbxid].set_partings(parting_ipbxid_context)
+
+            self.update_userlist[self.myipbxid] = []
+            self.lastrequest_time[self.myipbxid] = time.time()
+
+            z = self.myami[self.myipbxid].connect()
+            if z:
+                self.fdlist_ami[z] = self.myami[self.myipbxid]
+
             try:
+                self.safe[self.myipbxid].update_config_list_all()
+            except Exception:
+                log.exception('%s : commandclass.updates()' % self.myipbxid)
+
+        log.info('# STARTING %s # (2/3) Remote CTI connections' % self.xdname)
+        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
+            if ipbxid != self.myipbxid:
+                log.info('other ipbx to connect to : %s' % ipbxid)
+                try:
+                    self.safe[ipbxid] = innerdata.Safe(self, ipbxid)
+                    self.mycti[ipbxid] = interface_rcti.RCTI(self, ipbxid,
+                                                             ipbxconfig.get('cti_connection'))
+                except:
+                    log.exception('remote CTI connection to %s' % ipbxid)
+
                 self.update_userlist[ipbxid] = []
                 self.lastrequest_time[ipbxid] = time.time()
-                z = self.myami[ipbxid].connect()
-                self.fdlist_ami[z] = self.myami[ipbxid]
-            except Exception:
-                log.exception('%s : failed while connecting to the ipbx' % ipbxid)
 
-            try:
-                self.safe[ipbxid].update_config_list_all()
-            except Exception:
-                log.exception('%s : commandclass.updates()' % ipbxid)
+                z = self.mycti[ipbxid].connect()
+                if z:
+                    self.fdlist_remote_cti[z] = self.mycti[ipbxid]
         # }
 
-        log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, FAGI, INFO)' % self.xdname)
+        log.info('# STARTING %s # (3/3) listening sockets (CTI, WEBI, FAGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, FAGI, INFO) connections
         for kind, bind_and_port in xivoconf_general.get('incoming_tcp', {}).iteritems():
             try:
@@ -382,6 +450,19 @@ class xivo_daemon:
             except Exception:
                 log.exception('udp %s %d' % (bind, trueport))
 
+        ctiup = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ctiup.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        tosend = 'ctiserver-1.2'
+        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
+            if ipbxid != self.myipbxid:
+                cticonn = ipbxconfig.get('cti_connection')
+                cti_address = cticonn.get('ipaddress')
+                dport = int(cticonn.get('announce_port'))
+                self.safe[self.myipbxid].make_ctiserver_account(ipbxid,
+                                                                cticonn.get('account'),
+                                                                cticonn.get('pwd'))
+                ctiup.sendto(tosend, (cti_address, dport))
+
         # Main select() loop - Receive messages
         if not self.cconf.getconfig():
             nsecs = 5
@@ -396,13 +477,21 @@ class xivo_daemon:
                 self.select_step()
     # }
 
-    def loop_over_cti_queue(self, ipbxid):
-        cti_queue = self.safe[ipbxid].events_cti
+    def loop_over_cti_queue(self, innerdata):
+        cti_queue = innerdata.events_cti
+        queuesize = cti_queue.qsize()
         while cti_queue.qsize() > 0:
             it = cti_queue.get()
             for k in self.fdlist_established.itervalues():
                 if not isinstance(k, str) and k.kind == 'CTI':
                     k.reply(it)
+        return queuesize
+
+    def loop_over_cti_queues(self):
+        for ipbxid, innerdata in self.safe.iteritems():
+            queuesize = self.loop_over_cti_queue(innerdata)
+            if queuesize > 0:
+                log.info('loop_over_cti_queue %s %d items' % (ipbxid, queuesize))
         return
 
     def select_step(self):  # {
@@ -428,6 +517,7 @@ class xivo_daemon:
             self.fdlist_full.extend(self.fdlist_listen_cti.keys())
             self.fdlist_full.extend(self.fdlist_udp_cti.keys())
             self.fdlist_full.extend(self.fdlist_established.keys())
+            self.fdlist_full.extend(self.fdlist_remote_cti.keys())
             writefds = []
             for iconn, kind in self.fdlist_established.iteritems():
                 if kind == 'CTI' and iconn.need_sending():
@@ -443,6 +533,8 @@ class xivo_daemon:
                         % self.fdlist_established)
             log.warning('(select) current open TCP connections : (AMI) %s'
                         % self.fdlist_ami.keys())
+            log.warning('(select) current open TCP connections : (RCTI) %s'
+                        % self.fdlist_remote_cti.keys())
 
             for s in self.fdlist_full:
                 if s in self.fdlist_established:
@@ -495,21 +587,39 @@ class xivo_daemon:
                     # these AMI connections are used in order to manage AMI commands and events
                     if sel_i in self.fdlist_ami.keys():
                         try:
-                            amiint = self.fdlist_ami[sel_i]
+                            amiint = self.fdlist_ami.get(sel_i)
                             ipbxid = amiint.ipbxid
                             buf = sel_i.recv(200000)
                             if len(buf) == 0:
-                                log.warning('%s AMI : CLOSING' % ipbxid)
+                                log.warning('AMI %s : CLOSING' % ipbxid)
                                 del self.fdlist_ami[sel_i]
                                 sel_i.close()
+                                amiint.disconnect()
                             else:
                                 try:
-                                    self.fdlist_ami[sel_i].handle_ami_event(buf)
-                                    self.loop_over_cti_queue(ipbxid)
+                                    amiint.handle_event(buf)
                                 except Exception:
-                                    log.exception('(handle_ami_event) %s' % ipbxid)
+                                    log.exception('(handle_event) %s' % ipbxid)
                         except Exception:
                             log.exception('(amilist)')
+
+                    elif sel_i in self.fdlist_remote_cti.keys():
+                        try:
+                            cticonn = self.fdlist_remote_cti.get(sel_i)
+                            ipbxid = cticonn.ipbxid
+                            buf = sel_i.recv(200000)
+                            if len(buf) == 0:
+                                log.warning('RCTI %s : CLOSING' % ipbxid)
+                                del self.fdlist_remote_cti[sel_i]
+                                sel_i.close()
+                                cticonn.disconnect()
+                            else:
+                                try:
+                                    cticonn.handle_event(buf)
+                                except Exception:
+                                    log.exception('(handle_event) %s' % ipbxid)
+                        except Exception:
+                            log.exception('(remotecti)')
 
                     # } the UDP messages (ANNOUNCE) are catched here
                     elif sel_i in self.fdlist_udp_cti: # {
@@ -593,8 +703,6 @@ class xivo_daemon:
                                     for line in lines:
                                         if line:
                                             closemenow = manage_connection.manage_tcp_connections(sel_i, line, kind)
-                                            for ipbxid in self.safe.keys():
-                                                self.loop_over_cti_queue(ipbxid)
                                 except ClientConnection.CloseException, cexc:
                                     kind.disconnected('end_receiving')
                                     # don't close since it has been done
@@ -613,8 +721,6 @@ class xivo_daemon:
                                 if lmsg > 0:
                                     try:
                                         closemenow = manage_connection.manage_tcp_connections(sel_i, msg, kind)
-                                        for ipbxid in self.safe.keys():
-                                            self.loop_over_cti_queue(ipbxid)
                                     except Exception:
                                         log.exception('handling %s (%s)' % (requester, kind))
                                 else:
@@ -653,14 +759,13 @@ class xivo_daemon:
                                     if not pb:
                                         continue
                                     [kind, where] = pb.split(':')
-                                    if kind == 'innerdata':
-                                        nactions = self.safe[where].checkqueue()
-                                        log.info('handled %d actions for %s' % (nactions, kind))
-                                    elif kind == 'main':
-                                        nactions = self.checkqueue()
-                                        log.info('handled %d actions for %s' % (nactions, kind))
-                                    elif kind == 'ami':
-                                        nactions = self.myami[where].checkqueue()
+                                    if kind in ['innerdata', 'main', 'ami']:
+                                        if kind == 'innerdata':
+                                            nactions = self.safe[where].checkqueue()
+                                        elif kind == 'main':
+                                            nactions = self.checkqueue()
+                                        elif kind == 'ami':
+                                            nactions = self.myami[where].checkqueue()
                                         log.info('handled %d actions for %s' % (nactions, kind))
                                     else:
                                         log.warning('unknown kind %s' % kind)
@@ -668,7 +773,11 @@ class xivo_daemon:
                             log.exception('[pipe_queued_threads]')
 
                     # }
+
+                    self.loop_over_cti_queues()
+
                     for ipbxid, safe in self.safe.iteritems():
+                      if ipbxid == self.myipbxid:
                         if (time.time() - self.lastrequest_time[ipbxid]) > self.updates_period or self.update_userlist[ipbxid]:
                             self.lastrequest_time[ipbxid] = time.time()
                             log.info('[%s] %s : updates (computed timeout) %s (%s)'
@@ -690,6 +799,8 @@ class xivo_daemon:
                                     safe.update_config_list_all()
                             except Exception:
                                 log.exception('%s : commandclass.updates() (computed timeout)' % ipbxid)
+                      else:
+                          pass
                     # }
                 # }
             # }
@@ -697,6 +808,7 @@ class xivo_daemon:
                 log.info('[%s] updates (select timeout) %s'
                           % (self.xdname, time.asctime()))
                 for ipbxid, safe in self.safe.iteritems():
+                  if ipbxid == self.myipbxid:
                     try:
                         safe.update_config_list_all()
                     except Exception:
@@ -710,6 +822,8 @@ class xivo_daemon:
                         safe.regular_update()
                     except Exception:
                         log.exception('%s : failed while updating lists and sockets (select timeout)' % ipbxid)
+                  else:
+                      pass
                 # }
             # }
         # }
@@ -718,6 +832,6 @@ class xivo_daemon:
     # }
 
 parse_command_line()
-if xivoip != 'localhost':
-    XIVO_CONF_FILE = 'https://%s/service/ipbx/json.php/restricted/ctiserver/configuration' % xivoip
+if XIVOIP != 'localhost':
+    XIVO_CONF_FILE = 'https://%s/service/ipbx/json.php/restricted/ctiserver/configuration' % XIVOIP
 main = xivo_daemon()

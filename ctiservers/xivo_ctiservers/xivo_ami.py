@@ -53,8 +53,7 @@ class AMIClass:
     # \brief Class initialization.
     def __init__(self, ipbxid, ipaddress, ipport, loginname, password, events):
         self.ipbxid    = ipbxid
-        global log
-        log = logging.getLogger('xivo_ami(%s)' % self.ipbxid)
+        self.log = logging.getLogger('xivo_ami(%s)' % self.ipbxid)
         self.ipaddress = ipaddress
         self.ipport    = ipport
         self.loginname = loginname
@@ -66,11 +65,15 @@ class AMIClass:
     # \brief Connection to a socket.
     def connect(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.ipaddress, self.ipport))
-        self.sock.settimeout(30)
-        self.fd = self.sock.fileno()
-        log.info('connection properties : here=%s remote=%s fd=%s'
-                 % (self.sock.getsockname(), self.sock.getpeername(), self.fd))
+        sockret = self.sock.connect_ex((self.ipaddress, self.ipport))
+        if sockret:
+            self.log.warning('unable to connect to %s:%d - reason %d'
+                             % (self.ipaddress, self.ipport, sockret))
+        else:
+            self.sock.settimeout(30)
+            self.fd = self.sock.fileno()
+            self.log.info('connection properties : here=%s remote=%s fd=%s'
+                          % (self.sock.getsockname(), self.sock.getpeername(), self.fd))
         return
 
     # \brief Sending any AMI command.
@@ -83,7 +86,7 @@ class AMIClass:
                 try:
                     towritefields.append('%s: %s' % (name, value))
                 except Exception:
-                    log.exception('(sendcommand build %s : %s = %s (%r))'
+                    self.log.exception('(sendcommand build %s : %s = %s (%r))'
                                   % (action, name, value, value))
             if self.actionid:
                 towritefields.append('ActionId: %s' % self.actionid)
@@ -97,27 +100,27 @@ class AMIClass:
             self.sock.sendall(ustr)
             ret = True
         except UnicodeEncodeError:
-            log.exception('(sendcommand UnicodeEncodeError (%s %s %s))'
-                          % (towritefields, self.actionid, self.fd))
+            self.log.exception('(sendcommand UnicodeEncodeError (%s %s %s))'
+                               % (towritefields, self.actionid, self.fd))
             ret = True
         except UnicodeDecodeError:
-            log.exception('(sendcommand UnicodeDecodeError (%s %s %s))'
-                          % (action, self.actionid, self.fd))
+            self.log.exception('(sendcommand UnicodeDecodeError (%s %s %s))'
+                               % (action, self.actionid, self.fd))
             ret = True
         except socket.timeout:
             t1 = time.time()
-            log.exception('(sendcommand timeout (%s %s %s) timespent=%f)'
-                          % (action, self.actionid, self.fd, (t1 - t0)))
+            self.log.exception('(sendcommand timeout (%s %s %s) timespent=%f)'
+                               % (action, self.actionid, self.fd, (t1 - t0)))
             ret = False
         except Exception:
             t1 = time.time()
-            log.exception('(sendcommand other (%s %s %s) timespent=%f)'
-                          % (action, self.actionid, self.fd, (t1 - t0)))
+            self.log.exception('(sendcommand other (%s %s %s) timespent=%f)'
+                               % (action, self.actionid, self.fd, (t1 - t0)))
             ret = False
         if ret == False:
             if loopnum == 0:
-                log.warning('second attempt for AMI command (%s %s %s)'
-                            % (action, self.actionid, self.fd))
+                self.log.warning('second attempt for AMI command (%s %s %s)'
+                                 % (action, self.actionid, self.fd))
                 # tries to reconnect
                 try:
                     self.sock.close()
@@ -128,12 +131,13 @@ class AMIClass:
                         # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
                         self.sendcommand(action, args, 1)
                     else:
-                        log.warning('self is undefined %s' % self)
+                        self.log.warning('self is undefined %s' % self)
                 except Exception:
-                    log.exception("reconnection (%s %s %s)" % (action, self.actionid, self.fd))
+                    self.log.exception('reconnection (%s %s %s)'
+                                       % (action, self.actionid, self.fd))
             else:
-                log.warning('2 attempts have failed for AMI command (%s %s %s)'
-                            % (action, self.actionid, self.fd))
+                self.log.warning('2 attempts have failed for AMI command (%s %s %s)'
+                                 % (action, self.actionid, self.fd))
         if self.actionid:
             self.actionid = None
         return ret
@@ -188,7 +192,7 @@ class AMIClass:
     def hangup(self, channel, channel_peer = None):
         ret = 0
         try:
-            log.info('hanging up %s as requested' % (channel))
+            self.log.info('hanging up %s as requested' % (channel))
             self.sendcommand('Hangup',
                              [('Channel', channel)])
             ret += 1
@@ -199,7 +203,7 @@ class AMIClass:
 
         if channel_peer:
             try:
-                log.info('hanging up %s (peer) as requested' % (channel_peer))
+                self.log.info('hanging up %s (peer) as requested' % (channel_peer))
                 self.sendcommand('Hangup',
                                  [('Channel', channel_peer)])
                 ret += 2

@@ -36,6 +36,7 @@ COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
 
 REGCOMMANDS = [
     'login_id', 'login_pass', 'login_capas', 'logout',
+    'getipbxlist',
     'getlist',
     'availstate', 'keepalive',
 
@@ -81,56 +82,67 @@ class Command:
     def parse(self):
         self.command = self.commanddict.pop('class', None)
         self.commandid = self.commanddict.pop('commandid', None)
-        self.onbehalf = self.commanddict.pop('onbehalf', None)
-        # should reply with commandid and onbehalf if they have been provided
 
         self.ipbxid = self.connection.connection_details.get('ipbxid')
         self.userid = self.connection.connection_details.get('userid')
         self.innerdata = self.ctid.safe.get(self.ipbxid)
 
         # identifiers for the requester
-        self.ripbxid = self.commanddict.pop('ipbxid', self.ipbxid)
-        self.ruserid = self.commanddict.pop('userid', self.userid)
+        self.ripbxid = self.commanddict.get('ipbxid', self.ipbxid)
+        self.ruserid = self.commanddict.get('userid', self.userid)
         self.rinnerdata = self.ctid.safe.get(self.ripbxid)
 
+        # identifiers for the requested
+        self.tipbxid = self.commanddict.get('tipbxid', self.ipbxid)
+        self.tinnerdata = self.ctid.safe.get(self.tipbxid)
 
         messagebase = { 'class' : self.command }
         if self.commandid:
-            messagebase['commandid'] = self.commandid
+            messagebase['replyid'] = self.commandid
 
         if self.command in REGCOMMANDS:
             if self.ripbxid:
                 profileclient = self.rinnerdata.xod_config['users'].keeplist[self.ruserid].get('profileclient')
                 profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
-                regcommands_id = profilespecs.get('regcommands')
-                regcommands = self.ctid.cconf.getconfig('regcommands').get(regcommands_id)
-                if self.command not in regcommands:
-                    log.warning('profile %s : unallowed command %s (intermediate %s)'
-                                % (profileclient, self.command, regcommands_id))
-                    messagebase['warningstring'] = 'unallowed'
+                if profilespecs:
+                    regcommands_id = profilespecs.get('regcommands')
+                    regcommands = self.ctid.cconf.getconfig('regcommands').get(regcommands_id)
+                    if regcommands:
+                        if self.command not in regcommands:
+                            log.warning('profile %s : unallowed command %s (intermediate %s)'
+                                        % (profileclient, self.command, regcommands_id))
+                            messagebase['warning_string'] = 'unallowed'
+                    else:
+                        messagebase['warning_string'] = 'no_regcommands'
+                else:
+                    log.warning('profile %s : undefined'
+                                % (profileclient))
+                    messagebase['warning_string'] = 'unknown_profile'
 
             methodname = 'regcommand_%s' % self.command
             if hasattr(self, methodname):
                 try:
                     ztmp = getattr(self, methodname)()
-                    if isinstance(ztmp, str):
-                        messagebase['errorstring'] = ztmp
+                    if ztmp is None:
+                        messagebase['warning_string'] = 'return_is_none'
+                    elif isinstance(ztmp, str):
+                        messagebase['error_string'] = ztmp
                     else:
                         messagebase.update(ztmp)
                 except Exception:
                     log.exception('calling %s' % methodname)
-                    messagebase['warningstring'] = 'exception'
+                    messagebase['warning_string'] = 'exception'
             else:
-                messagebase['warningstring'] = 'unimplemented'
+                messagebase['warning_string'] = 'unimplemented'
                 log.warning('no such method %s' % methodname)
         else:
-            messagebase['warningstring'] = 'unknown'
+            messagebase['warning_string'] = 'unknown'
             log.warning('unknown command %s' % self.command)
 
         z = { 'dest' : 'me',
               'message' : messagebase
               }
-        if 'errorstring' in messagebase:
+        if 'error_string' in messagebase:
             z['closemenow'] = True
         return z
 
@@ -162,34 +174,41 @@ class Command:
         ident = self.commanddict.get('ident')
         whatsmyos = ident.split('-')[0]
         if whatsmyos.lower() not in ['x11', 'win', 'mac',
+                                     'ctiserver',
                                      'web', 'android', 'ios']:
             log.warning('%s - wrong OS identifier : %s' % (head, ident))
             return 'wrong_client_os_identifier:%s' % whatsmyos
 
         # user match
-        userinfo = None
         if self.commanddict.get('userlogin'):
-            for ipbxid, saferef in self.ctid.safe.iteritems():
-                userid = saferef.user_find(self.commanddict.get('userlogin'),
-                                           self.commanddict.get('company'))
-                if userid:
-                    self.connection.connection_details.update({ 'ipbxid' : ipbxid,
-                                                                'userid' : userid })
-                    break
+            ipbxid = self.ctid.myipbxid
+            saferef = self.ctid.safe.get(ipbxid)
+            log.info('searching user %s in %s'
+                     % (self.commanddict.get('userlogin'), ipbxid))
+            userid = saferef.user_find(self.commanddict.get('userlogin'),
+                                       self.commanddict.get('company'))
+            if userid:
+                self.connection.connection_details.update({ 'ipbxid' : ipbxid,
+                                                            'userid' : userid })
 
         if not self.connection.connection_details.get('userid'):
             log.warning('%s - unknown login : %s' % (head, self.commanddict.get('userlogin')))
             # return 'user_not_found'
             # do not give a hint that the login might be good or wrong
             return 'login_password'
-        self.connection.connection_details['prelogin'] = {'cticlientos' : whatsmyos,
-                                                          'version' : rcsversion,
-                                               'sessionid' : ''.join(random.sample(__alphanums__, 10))}
+
+        self.connection.connection_details['prelogin'] = {
+            'cticlientos' : whatsmyos,
+            'version' : rcsversion,
+            'sessionid' : ''.join(random.sample(__alphanums__, 10))
+            }
+
         reply = { 'xivoversion' : XIVOVERSION_NUM,
                   'version' : '7777',
                   'sessionid' : self.connection.connection_details['prelogin']['sessionid']
                   }
         return reply
+
 
     def regcommand_login_pass(self):
         head = '%s:%d - LOGINFAIL - login_pass' % (self.connection.requester)
@@ -203,19 +222,16 @@ class Command:
             return 'missing:%s' % ','.join(missings)
 
         this_hashed_password = self.commanddict.get('hashedpassword')
+        cdetails = self.connection.connection_details
 
-        ipbxid = self.connection.connection_details['ipbxid']
-        userid = self.connection.connection_details['userid']
-        sessionid = self.connection.connection_details['prelogin']['sessionid']
+        ipbxid = cdetails.get('ipbxid')
+        userid = cdetails.get('userid')
+        sessionid = cdetails.get('prelogin').get('sessionid')
 
         ref_hashed_password = self.ctid.safe[ipbxid].user_get_hashed_password(userid, sessionid)
         if ref_hashed_password != this_hashed_password:
             log.warning('%s - wrong hashed password' % head)
             return 'login_password'
-
-##            iserr = self.__check_user_connection__(userinfo)
-##            if iserr is not None:
-##                return iserr
 
         reply = { 'capalist' : [self.ctid.safe[ipbxid].user_get_ctiprofile(userid)] }
         return reply
@@ -232,7 +248,7 @@ class Command:
 
         # settings (in agent mode for instance)
         # userinfo['agent']['phonenum'] = phonenum
-        userinfo = self.connection.connection_details
+        cdetails = self.connection.connection_details
 
         state = self.commanddict.get('state')
         capaid = self.commanddict.get('capaid')
@@ -240,11 +256,19 @@ class Command:
         lastconnwins = self.commanddict.get('lastconnwins')
         loginkind = self.commanddict.get('loginkind')
 
-##            iserr = self.__check_capa_connection__(userinfo, capaid)
-##            if iserr is not None:
-##                return iserr
+        iserr = self.__check_capa_connection__(capaid)
+        if iserr is not None:
+            log.warning('%s - wrong capaid : %s %s' % (head, iserr, capaid))
+            return iserr
 
-        self.__connect_user__(userinfo, state, capaid, lastconnwins)
+        iserr = self.__check_user_connection__()
+        if iserr is not None:
+            log.warning('%s - user connection : %s' % (head, iserr))
+            return iserr
+
+        self.__connect_user__(state, capaid)
+        head = '%s:%d - LOGIN SUCCESSFUL' % (self.connection.requester)
+        log.info('%s for %s' % (head, cdetails))
 
 ##            if loginkind == 'agent':
 ##                userinfo['agentphonenumber'] = self.commanddict.get('agentphonenumber')
@@ -256,6 +280,7 @@ class Command:
         profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
 
         capastruct = {}
+        summarycapas = {}
         if profilespecs:
             for capakind in ['regcommands', 'ipbxcommands',
                              'services', 'functions',
@@ -268,9 +293,11 @@ class Command:
                     else:
                         details = {}
                     capastruct[capakind] = details
+                    if details:
+                        summarycapas[capakind] = tt
                 else:
-                    log.warning('no capakind %s in profilespecs %s'
-                                % (capakind, profilespecs.keys()))
+                    capastruct[capakind] = {}
+                    # log.warning('no capakind %s in profilespecs %s' % (capakind, profilespecs.keys()))
         else:
             log.warning('empty profilespecs %s' % profilespecs)
 
@@ -282,6 +309,7 @@ class Command:
                   'capas' : capastruct,
                   'presence' : 'available',
                   }
+
         self.connection.logintimer.cancel()
         return reply
 
@@ -295,8 +323,42 @@ class Command:
 ##  "presencecounter": {"connected": 1},
 ## "capafuncs": ["switchboard", "dial", "presence", "customerinfo", "agents", "conference", "directory", "features", "history", "fax", "chitchat", "database"],
 
-    def __connect_user__(self, u, s, c, l):
-        print u, s, c, l
+    def __check_user_connection__(self):
+        cdetails = self.connection.connection_details
+        ipbxid = cdetails.get('ipbxid')
+        userid = cdetails.get('userid')
+        # if self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] == 'yes':
+        # return 'alreadythere'
+        return
+
+    def __check_capa_connection__(self, capaid):
+        cdetails = self.connection.connection_details
+        ipbxid = cdetails.get('ipbxid')
+        userid = cdetails.get('userid')
+        if capaid not in self.ctid.cconf.getconfig('profiles').keys():
+            return 'unknownprofile'
+        if capaid != self.ctid.safe[ipbxid].xod_config['users'].keeplist[userid]['profileclient']:
+            return 'wrongprofile'
+        # XXX : too much users ?
+        return
+
+    def __connect_user__(self, availstate, c):
+        cdetails = self.connection.connection_details
+        ipbxid = cdetails.get('ipbxid')
+        userid = cdetails.get('userid')
+        self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] = 'yes'
+        # self.ctid.safe[ipbxid].xod_status['users'][userid]['availstate'] = availstate
+        self.ctid.safe[ipbxid].update_presence(userid, availstate)
+        # connection : os, version, sessionid, socket data, capaid
+        # {'prelogin': {'cticlientos': 'X11', 'version': '1305641743-87aa765', 'sessionid': 'deyLicgThU'}}
+        return
+
+    def __disconnect_user__(self):
+        cdetails = self.connection.connection_details
+        ipbxid = cdetails.get('ipbxid')
+        userid = cdetails.get('userid')
+        self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] = None
+        self.ctid.safe[ipbxid].xod_status['users'][userid]['availstate'] = availstate
         return
 
     # end of login/logout related commands
@@ -453,38 +515,46 @@ class Command:
         self.rinnerdata.update_presence(self.ruserid, state)
         return reply
 
+    def regcommand_getipbxlist(self):
+        reply = { 'ipbxlist' : self.ctid.cconf.getconfig('ipbxes').keys() }
+        return reply
+
     def regcommand_getlist(self):
         reply = {}
         listname = self.commanddict.get('listname')
         function = self.commanddict.get('function')
 
         if function == 'listid':
-            if listname in self.rinnerdata.xod_config:
-                g = self.rinnerdata.xod_config[listname].keeplist.keys()
+            if listname in self.tinnerdata.xod_config:
+                g = list()
+                for gg in self.tinnerdata.xod_config[listname].keeplist.keys():
+                    if gg.isdigit():
+                        # there could be other criteria, this one is to prevent displaying
+                        # the account for remote cti servers
+                        g.append(gg)
                 reply = { 'function' : 'listid',
                           'listname' : listname,
-                          'ipbxid' : self.ripbxid,
+                          'tipbxid' : self.tipbxid,
                           'list' : g }
-                # print listname, self.rinnerdata.xod_config[listname].keeplist
             else:
                 log.warning('no such list %s' % listname)
 
         elif function == 'updateconfig':
-            rid = self.commanddict.get('id')
-            g = self.rinnerdata.get_config(listname, rid)
+            tid = self.commanddict.get('tid')
+            g = self.tinnerdata.get_config(listname, tid)
             reply = { 'function' : 'updateconfig',
                       'listname' : listname,
-                      'ipbxid' : self.ripbxid,
-                      'id' : rid,
+                      'tipbxid' : self.tipbxid,
+                      'tid' : tid,
                       'config' : g }
 
         elif function == 'updatestatus':
-            rid = self.commanddict.get('id')
-            g = self.rinnerdata.get_status(listname, rid)
+            tid = self.commanddict.get('tid')
+            g = self.tinnerdata.get_status(listname, tid)
             reply = { 'function' : 'updatestatus',
                       'listname' : listname,
-                      'ipbxid' : self.ripbxid,
-                      'id' : rid,
+                      'tipbxid' : self.tipbxid,
+                      'tid' : tid,
                       'status' : g }
 
         return reply

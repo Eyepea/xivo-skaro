@@ -1,0 +1,30 @@
+{"puteaux":
+         {"ipbx_connection": {
+         "username": "xivo_cti_user", "ipaddress": "192.168.0.182",
+         "password": "phaickbebs9", "ipport": "5038"},
+         "userfeatures_db_uri": "postgresql://asterisk:proformatique@localhost/asterisk?charset=utf8",
+         "urllists": {"urllist_incalls": ["https://192.168.0.182/service/ipbx/json.php/restricted/call_management/incall"],
+         "urllist_groups": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/groups"],
+ "urllist_contexts": ["https://192.168.0.182/service/ipbx/json.php/restricted/system_management/context"],
+ "urllist_extenfeatures": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_services/extenfeatures"],
+ "urllist_queues": ["https://192.168.0.182/service/ipbx/json.php/restricted/call_center/queues"],
+ "urllist_outcalls": ["https://192.168.0.182/service/ipbx/json.php/restricted/call_management/outcall"],
+ "urllist_agents": ["https://192.168.0.182/service/ipbx/json.php/restricted/call_center/agents"],
+ "urllist_trunks": ["https://192.168.0.182/service/ipbx/json.php/restricted/trunk_management/sip",
+ "https://192.168.0.182/service/ipbx/json.php/restricted/trunk_management/iax"],
+ "urllist_lines": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/lines"],
+ "urllist_meetmes": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/meetme"],
+ "urllist_devices": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/devices"],
+ "urllist_voicemails": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/voicemail"],
+ "urllist_users": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/users"],
+ "urllist_phonebook": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_services/phonebook"]},
+ "cdr_db_uri": "postgresql://asterisk:proformatique@localhost/asterisk?charset=utf8"},
+
+
+ "quebec": {"cti_connection": {"pwd": "qpassonp", "account": "xivoquebec",
+        "password": "ppassonq", "username": "xivoputeaux",
+         "ipaddress": "192.168.0.146", "ipport": "7003", "announce_port": "7006"}},
+
+ "limonest": {"cti_connection": {"pwd": "lpassonp", "account": "xivolimonest",
+        "password": "ppassonl", "username": "xivoputeaux",
+         "ipaddress": "192.168.0.146", "ipport": "6003", "announce_port": "6006"}}}

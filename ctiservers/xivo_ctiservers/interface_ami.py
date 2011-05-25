@@ -43,36 +43,44 @@ class AMI:
     def __init__(self, ctid, ipbxid, config):
         self.ctid = ctid
         self.ipbxid = ipbxid
-        global log
-        log = logging.getLogger('interface_ami(%s)' % self.ipbxid)
+        self.log = logging.getLogger('interface_ami(%s)' % self.ipbxid)
         self.save_for_next_packet_events = ''
         self.waiting_actionid = {}
         self.ipaddress = config.get('ipaddress', '127.0.0.1')
-        self.ipport = int(config.get('ami_port', 5038))
-        self.ami_login = config.get('ami_login', 'xivouser')
-        self.ami_pass = config.get('ami_pass', 'xivouser')
+        self.ipport = int(config.get('ipport', 5038))
+        self.ami_login = config.get('username', 'xivouser')
+        self.ami_pass = config.get('password', 'xivouser')
         self.timeout_queue = Queue.Queue()
+        self.amicl = None
         return
 
     def connect(self):
+        ret = None
         try:
             self.amicl = xivo_ami.AMIClass(self.ipbxid,
                                            self.ipaddress, self.ipport,
                                            self.ami_login, self.ami_pass,
                                            True)
-        except Exception:
-            log.exception('unable to setup the class')
-
-        try:
             self.amicl.connect()
-        except Exception:
-            log.exception('unable to connect')
-
-        try:
             self.amicl.login()
+            ret = self.amicl.sock
         except Exception:
-            log.exception('unable to login')
-        return self.amicl.sock
+            self.log.exception('unable to connect/login')
+        return ret
+
+    def disconnect(self):
+        self.amicl.sock.close()
+        self.amicl = None
+        return
+
+    def connected(self):
+        ret = None
+        if self.amicl and self.amicl.sock:
+            try:
+                ret = self.amicl.sock.getpeername()
+            except Exception:
+                pass
+        return ret
 
     def initrequest(self, phaseid):
         # 'CoreSettings', 'CoreStatus', 'ListCommands',
@@ -86,15 +94,15 @@ class AMI:
 
     def cb_timer(self, *args):
         try:
-            log.info('cb_timer (timer finished at %s) %s' % (time.asctime(), args))
+            self.log.info('cb_timer (timer finished at %s) %s' % (time.asctime(), args))
             self.timeout_queue.put(args)
             os.write(self.ctid.pipe_queued_threads[1], 'ami:%s\n' % self.ipbxid)
         except Exception:
-            log.exception('cb_timer %s' % args)
+            self.log.exception('cb_timer %s' % args)
         return
 
     def checkqueue(self):
-        log.info('entering checkqueue')
+        self.log.info('entering checkqueue')
         ncount = 0
         while self.timeout_queue.qsize() > 0:
             ncount += 1
@@ -107,7 +115,7 @@ class AMI:
                     sockparams.makereply_close(actionid, 'timeout')
                     del self.waiting_actionid[actionid]
                 else:
-                    log.warning('timeout on actionid %s but no more in our structure' % actionid)
+                    self.log.warning('timeout on actionid %s but no more in our structure' % actionid)
         return ncount
 
     def delayed_action(self, usefulmsg, replyto):
@@ -121,7 +129,7 @@ class AMI:
         replyto.replytimer.start()
         return
 
-    def handle_ami_event(self, idata):
+    def handle_event(self, idata):
         """
         Handles the AMI events occuring on Asterisk.
         If the Event field is there, calls the handle_ami_function() function.
@@ -134,7 +142,7 @@ class AMI:
             try:
                 evt = ievt.decode('utf8')
             except Exception:
-                log.exception('could not decode event %r' % (ievt))
+                self.log.exception('could not decode event %r' % (ievt))
                 continue
             this_event = {}
             nocolon = []
@@ -146,21 +154,21 @@ class AMI:
                             this_event[myfieldvalue[0]] = myfieldvalue[1]
                         else:
                             if myline.startswith('Asterisk Call Manager'):
-                                log.info('%s' % (myline))
+                                self.log.info('%s' % (myline))
                             elif myline == 'ReportBlock:':
                                 # single line in RTCPSent events - ignoring it for the time being
                                 pass
                             else:
-                                log.warning('unable to parse <%s> : %s'
+                                self.log.warning('unable to parse <%s> : %s'
                                             % (myline, evt.split('\r\n')))
                 else:
                     nocolon.append(myline)
 
             if len(nocolon) > 1:
-                log.warning('nocolon is %s' % (nocolon))
+                self.log.warning('nocolon is %s' % (nocolon))
 
             evfunction = this_event.pop('Event', None)
-            # log.info('(all)  %s  : %s' % (evfunction, this_event))
+            # self.log.info('(all)  %s  : %s' % (evfunction, this_event))
             if evfunction is not None:
                 for ik, iv in self.ctid.fdlist_established.iteritems():
                     if not isinstance(iv, str) and iv.kind == 'INFO' and iv.dumpami_enable:
@@ -190,7 +198,7 @@ class AMI:
                                     while toremove in arggs:
                                         arggs.remove(toremove)
                                 if arggs:
-                                    log.info('Response : %s' % (arggs))
+                                    self.log.info('Response : %s' % (arggs))
                                     for argg in arggs:
                                         reply.append(argg)
 
@@ -204,19 +212,19 @@ class AMI:
                                     del self.waiting_actionid[actionid]
 
                         except Exception, e:
-                            # log.exception('(command reply to %s, %s)' % (connreply, actionid))
-                            log.exception('(command reply)')
+                            # self.log.exception('(command reply to %s, %s)' % (connreply, actionid))
+                            self.log.exception('(command reply)')
                             print e
                         try:
                             self.ctid.commandclass.amiresponse_follows(this_event, nocolon)
                         except Exception:
-                            log.exception('response_follows (%s) (%s)' % (this_event, nocolon))
+                            self.log.exception('response_follows (%s) (%s)' % (this_event, nocolon))
 
                     elif response == 'Success':
                         try:
                             self.ctid.commandclass.amiresponse_success(this_event, nocolon)
                         except Exception:
-                            log.exception('response_success (%s) (%s)' % (this_event, nocolon))
+                            self.log.exception('response_success (%s) (%s)' % (this_event, nocolon))
 
                     elif response == 'Error':
                         if 'ActionID' in this_event:
@@ -230,18 +238,18 @@ class AMI:
                         try:
                             self.ctid.commandclass.amiresponse_error(this_event, nocolon)
                         except Exception:
-                            log.exception('response_error (%s) (%s)' % (this_event, nocolon))
+                            self.log.exception('response_error (%s) (%s)' % (this_event, nocolon))
                     else:
-                        log.warning('Response=%s (untracked) : %s' % (response, this_event))
+                        self.log.warning('Response=%s (untracked) : %s' % (response, this_event))
 
                 elif len(this_event) > 0:
-                    log.warning('XXX: %s' % (this_event))
+                    self.log.warning('XXX: %s' % (this_event))
                 else:
-                    log.warning('Other : %s' % (this_event))
+                    self.log.warning('Other : %s' % (this_event))
             # }
         nevts = len(evlist)
         if nevts > 200:
-            log.info('handled %d (> 200) events' % (nevts))
+            self.log.info('handled %d (> 200) events' % (nevts))
         return
 
     def handle_ami_function(self, evfunction, this_event):
@@ -257,14 +265,14 @@ class AMI:
                 if hasattr(self.ctid.commandclass, methodname):
                     getattr(self.ctid.commandclass, methodname)(this_event)
                 else:
-                    log.warning('this event (%s) is tracked but no %s method is defined : %s'
-                                % (evfunction, methodname, this_event))
+                    self.log.warning('this event (%s) is tracked but no %s method is defined : %s'
+                                     % (evfunction, methodname, this_event))
             else:
-                log.warning('this event (%s) is not tracked : %s'
-                            % (evfunction, this_event))
+                self.log.warning('this event (%s) is not tracked : %s'
+                                 % (evfunction, this_event))
 
         except Exception:
-            log.exception('%s : event %s' % (evfunction, this_event))
+            self.log.exception('%s : event %s' % (evfunction, this_event))
         return
 
 
@@ -273,7 +281,7 @@ class AMI:
 ##        if ipbxid in self.ami:
 ##            conn_ami = self.ami.get(ipbxid)
 ##            if conn_ami is None:
-##                log.warning('ami (command %s) : <%s> in list but not connected - wait for the next update ?'
+##                self.log.warning('ami (command %s) : <%s> in list but not connected - wait for the next update ?'
 ##                            % (command, ipbxid))
 ##            else:
 ##                try:
@@ -281,8 +289,8 @@ class AMI:
 ##                    conn_ami.setactionid(actionid)
 ##                    ret = getattr(conn_ami, command)(*args)
 ##                except Exception:
-##                    log.exception('command %s' % (command))
+##                    self.log.exception('command %s' % (command))
 ##        else:
-##            log.warning('ami (command %s) : %s not in list - wait for the next update ?'
+##            self.log.warning('ami (command %s) : %s not in list - wait for the next update ?'
 ##                        % (command, ipbxid))
 ##        return actionid

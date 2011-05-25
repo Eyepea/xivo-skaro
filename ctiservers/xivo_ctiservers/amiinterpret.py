@@ -862,6 +862,10 @@ class AMI_1_8:
         # log.info('ami_rtcpsent %s' % (event))
         return
 
+    def ami_moduleloadreport(self, event):
+        log.info('ami_moduleloadreport %s' % (event))
+        return
+
     def ami_receivefax(self, event):
         return
     def ami_receivefaxstatus(self, event):
@@ -904,7 +908,6 @@ class AMI_1_8:
 ##    def ami_mcid(self, event): return
 ##    def ami_minivoicemail(self, event): return
 ##    def ami_mobilestatus(self, event): return
-##    def ami_moduleloadreport(self, event): return
 ##    def ami_newpeeraccount(self, event): return
 ##    def ami_placeholder(self, event): return
 ##    def ami_queuememberpenalty(self, event): return

@@ -103,7 +103,7 @@ class CTI(Interfaces):
                     % (self.details, errorstring))
         # self.logintimer.cancel() + close
         tosend = { 'class' : 'loginko',
-                   'errorstring' : errorstring }
+                   'error_string' : errorstring }
         return self.serial.encode(tosend)
 
 class CTIS(CTI):
@@ -301,18 +301,6 @@ class OldLoginFromXivoCTIDummy:
                 return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
         return None
 
-    def __check_capa_connection__(self, userinfo, capaid):
-        """
-        Tells whether the user limit (if there is one) has been reached
-        for a given profile.
-        """
-        if capaid in self.capas and capaid in userinfo.get('capaids'):
-            if self.capas[capaid].toomuchusers():
-                return 'toomuchusers:%s' % self.capas[capaid].getmaxgui()
-        else:
-            return 'capaid_undefined:%s' % capaid
-        return None
-
     def __connect_user__(self, userinfo, state, capaid, lastconnwins):
         try:
             userinfo['capaid'] = capaid
@@ -355,7 +343,7 @@ class OldLoginFromXivoCTIDummy:
             log.exception('connect_user %s' % userinfo)
         return
 
-    def __disconnect_user__(self, userinfo, type='force'):
+    def __disconnect_user__(self, userinfo, type = 'force'):
         try:
             # state is unchanged
             if 'login' in userinfo:
@@ -384,7 +372,7 @@ class OldLoginFromXivoCTIDummy:
         log.warning('user can not connect (%s) : sending %s' % (loginparams, errorstring))
         # self.logintimer.cancel() + close
         tosend = { 'class' : 'loginko',
-                   'errorstring' : errorstring }
+                   'error_string' : errorstring }
         connid.sendall('%s\n' % self.__cjson_encode__(tosend))
         return
 
