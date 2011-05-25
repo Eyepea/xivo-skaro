@@ -129,3 +129,15 @@ Site
  
 ; no_lines
 No line
+
+; line_protocol-sip
+SIP
+
+; line_protocol-iax
+IAX
+
+; line_protocol-sccp
+SCCP
+
+; line_protocol-custom
+Customized

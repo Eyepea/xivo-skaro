@@ -41,6 +41,7 @@ endif;
 				  'name'	=> 'devicefeatures[ip]',
 				  'labelid'	=> 'devicefeatures-ip',
 				  'size'	=> 15,
+				  'readonly'=> true,
 				  'default'	=> $element['devicefeatures']['ip']['default'],
 				  'value'	=> $this->get_var('info','devicefeatures','ip'),
 				  'error'	=> $this->bbf_args('error',
@@ -50,6 +51,7 @@ endif;
 				  'name'	=> 'devicefeatures[mac]',
 				  'labelid'	=> 'devicefeatures-mac',
 				  'size'	=> 15,
+				  'readonly'=> true,
 				  'default'	=> $element['devicefeatures']['mac']['default'],
 				  'value'	=> $this->get_var('info','devicefeatures','mac'),
 				  'error'	=> $this->bbf_args('error',
@@ -287,7 +289,8 @@ if (($capabilities = $info['capabilities']) !== false):
 
 	if(isset($capabilities['sip.lines']) === true
 	&& ($nbcap = (int) $capabilities['sip.lines']) !== 0):
-		echo $this->bbf('nb_line_busy-free',array(count($listline),$nbcap));
+		$busy = count($listline);
+		echo $this->bbf('nb_line_busy-free',array($busy,$nbcap-$busy));
 	endif;
 
 endif;
