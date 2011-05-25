@@ -85,7 +85,7 @@ $array['filter']['timeout'] = array('set'	=> false,
 $array['filter']['announcement_file'] = array('set' => false,
 											'chk' => 2,
 											'regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
-								XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/');
+								XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'$/');
 $array['filter']['announcement_play'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

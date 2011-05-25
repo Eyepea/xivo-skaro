@@ -46,8 +46,25 @@ class xivo_service_asterisk_paginguser extends xivo_service_asterisk_abstract
 	{
 		$data['pagingid'] = (int) $data['pagingid'];
 		$data['userfeaturesid'] = (int) $data['userfeaturesid'];
+		$data['caller'] = (bool) $data['caller'];
 
 		return($data);
+	}
+	
+	function get_list_paginguser($pagingid,$caller=false,$order=null,$limit=null)
+	{
+		if (($list = $this->_dso->get_list_paginguser($pagingid,$caller,$order,$limit)) === false
+		|| ($nb = count($list)) === 0)
+			return(false);
+		
+		$r = array();
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+			
+		return($r);
 	}
 
 	function add($arr,$id=0)

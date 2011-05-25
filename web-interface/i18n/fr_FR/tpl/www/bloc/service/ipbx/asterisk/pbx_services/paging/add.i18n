@@ -1,6 +1,12 @@
 ; title_content_name
 Paging > Ajouter
 
+; smenu_general
+Général
+
+; smenu_users
+Utilisateurs
+
 ; fm_paging_number
 Numéro:
 
@@ -32,8 +38,11 @@ Expiration:
 Spécifier le temps que le système tente de se connecter pour un appel. <br>
 Après cette durée, tous les appels intercom qui n'ont pas reçu de réponse seront terminés par le système.
 
-; fm_paginguser
-Liste des utilisateurs: 
-
 ; fm_paging_description
 Description: 
+
+; fm_paginguser
+Itilisateurs appelés : 
+
+; fm_pagingcaller
+Utilisateurs appelants :

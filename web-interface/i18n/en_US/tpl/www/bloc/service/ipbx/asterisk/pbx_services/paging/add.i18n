@@ -1,6 +1,12 @@
 ; title_content_name
 Paging > Add
 
+; smenu_general
+General
+
+; smenu_users
+Users
+
 ; fm_paging_number
 Number:
 
@@ -35,8 +41,11 @@ Timeout:
 Specify the length of time that the system will attempt to connect a call. <br>
 After this duration, any intercom calls that have not been answered will be hung up by the system.
 
-; fm_paginguser
-User list: 
-
 ; fm_paging_description
 Description: 
+
+; fm_paginguser
+Users called: 
+
+; fm_pagingcaller
+Users caller: 

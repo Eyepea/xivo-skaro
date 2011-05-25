@@ -24,8 +24,8 @@ xivo_service_asterisk::required(array('staticconf','staticconf.inc'),true);
 
 class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 {
-	var $_dso		= null;
-	var $_name		= 'musiconhold';
+	var $_dso			= null;
+	var $_name			= 'musiconhold';
 	var $_filename		= 'musiconhold.conf';
 	var $_filter		= false;
 	var $_mohpath		= '';

@@ -38,21 +38,21 @@ switch($act)
 		$fm_save = true;
 		
 		$files = array();
-		$musiconhold = &$ipbx->get_module('musiconhold');
-		if(($listfiles = $musiconhold->get_category('playback')) !== false
-		&& ($files = $listfiles['dir']['files']) !== false)
+		$sounds = &$ipbx->get_module('sounds');
+		if(($listfiles = $sounds->get_dir('playback',true)) !== false
+		&& ($files = $listfiles['files']) !== false)
 		{
 			dwho::load_class('dwho_sort');
 			$sort = new dwho_sort(array('key' => 'name'));
 			usort($files,array(&$sort,'strnat_usort'));
 		}
 
-		$paginguser = array();
-		$paginguser['slt'] = array();
+		$paginguser = $pagingcaller = array();
+		$paginguser['slt'] = $pagingcaller['slt'] = array();
 
 		$appuser = &$ipbx->get_application('user',null,false);
 		$sort = array('firstname' => SORT_ASC,'lastname' => SORT_ASC);
-		$paginguser['list'] = $appuser->get_users_list(null,$sort,null,true);
+		$paginguser['list'] = $pagingcaller['list'] = $appuser->get_users_list(null,$sort,null,true);
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('paging', $_QR) === true)
@@ -74,8 +74,15 @@ switch($act)
 			$paginguser['slt'] = array_keys($paginguser['slt']);
 		}
 		
+		if($pagingcaller['list'] !== false && dwho_issa('pagingcaller',$result) === true)
+		{
+			$pagingcaller['slt'] = dwho_array_intersect_key($result['pagingcaller'],$pagingcaller['list'],'userfeaturesid');
+			$pagingcaller['slt'] = array_keys($pagingcaller['slt']);
+		}
+		
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/paging.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		
 		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
 		$dhtml->set_css('css/xivo.multiselect.css');
@@ -88,6 +95,7 @@ switch($act)
 		$_TPL->set_var('fm_save', $fm_save);
 		$_TPL->set_var('error', $error);
 		$_TPL->set_var('element', $apppaging->get_elements());
+		$_TPL->set_var('pagingcaller',$pagingcaller);
 		$_TPL->set_var('files', $files);
 		break;
 
@@ -100,21 +108,21 @@ switch($act)
 		$return = &$info;
 
 		$files = array();
-		$musiconhold = &$ipbx->get_module('musiconhold');
-		if(($listfiles = $musiconhold->get_category('playback')) !== false
-		&& ($files = $listfiles['dir']['files']) !== false)
+		$sounds = &$ipbx->get_module('sounds');
+		if(($listfiles = $sounds->get_dir('playback',true)) !== false
+		&& ($files = $listfiles['files']) !== false)
 		{
 			dwho::load_class('dwho_sort');
 			$sort = new dwho_sort(array('key' => 'name'));
 			usort($files,array(&$sort,'strnat_usort'));
 		}
 
-		$paginguser = array();
-		$paginguser['slt'] = array();
+		$paginguser = $pagingcaller = array();
+		$paginguser['slt'] = $pagingcaller['slt'] = array();
 
 		$appuser = &$ipbx->get_application('user',null,false);
 		$sort = array('firstname' => SORT_ASC,'lastname' => SORT_ASC);
-		$paginguser['list'] = $appuser->get_users_list(null,$sort,null,true);
+		$paginguser['list'] = $pagingcaller['list'] = $appuser->get_users_list(null,$sort,null,true);
 
 		$act = 'edit';
 		if(isset($_QR['fm_send']) === true
@@ -138,8 +146,15 @@ switch($act)
 			$paginguser['slt'] = array_keys($paginguser['slt']);
 		}
 		
+		if($pagingcaller['list'] !== false && dwho_issa('pagingcaller',$return) === true)
+		{
+			$pagingcaller['slt'] = dwho_array_intersect_key($return['pagingcaller'],$pagingcaller['list'],'userfeaturesid');
+			$pagingcaller['slt'] = array_keys($pagingcaller['slt']);
+		}
+		
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/paging.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		
 		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
 		$dhtml->set_css('css/xivo.multiselect.css');
@@ -153,13 +168,16 @@ switch($act)
 		$_TPL->set_var('error', $error);
 		$_TPL->set_var('files', $files);
 		$_TPL->set_var('element', $apppaging->get_elements());
+		$_TPL->set_var('pagingcaller',$pagingcaller);
 		$_TPL->set_var('paginguser',$paginguser);
 		$_TPL->set_var('fm_save' , $fm_save);
 		break;
 
 	case 'delete':
-		if(isset($_QR['id']))
-			$apppaging->delete($_QR['id']);
+		if(isset($_QR['id']) === false || ($info = $apppaging->get($_QR['id'])) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/paging'), $param);
+		
+		$apppaging->delete();
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/paging'),$param);
 		break;
@@ -173,7 +191,10 @@ switch($act)
 
 		$nb = count($values);
 		for($i = 0; $i < $nb; $i++)
-			$apppaging->delete($values[$i]);
+		{
+			$apppaging->get($values[$i]);
+			$apppaging->delete();
+		}
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/paging'), $param);
 		break;

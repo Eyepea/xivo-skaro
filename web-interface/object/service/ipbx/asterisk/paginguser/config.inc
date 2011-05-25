@@ -27,10 +27,16 @@ $array['element']['pagingid']['default'] = 0;
 $array['element']['userfeaturesid'] = array();
 $array['element']['userfeaturesid']['default'] = 0;
 
+$array['element']['caller'] = array();
+$array['element']['caller']['value'] = array(0,1);
+$array['element']['caller']['default'] = 0;
+$array['element']['caller']['set'] = true;
+
 
 $array['filter'] = array();
 
 $array['filter']['pagingid'] = array('cast' => 'ulongint');
 $array['filter']['userfeaturesid'] = array('cast' => 'ulongint');
+$array['filter']['caller'] = array('bool' => true);
 
 ?>

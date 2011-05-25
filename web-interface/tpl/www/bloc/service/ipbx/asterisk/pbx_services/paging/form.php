@@ -24,6 +24,7 @@ $url          = $this->get_module('url');
 $info         = $this->get_var('info');
 $element      = $this->get_var('element');
 $paginguser   = $this->get_var('paginguser');
+$pagingcaller   = $this->get_var('pagingcaller');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -32,6 +33,7 @@ endif;
 
 ?>
 
+<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo $form->text(array('desc'	=> $this->bbf('fm_paging_number'),
 				  'name'	=> 'paging[number]',
@@ -91,36 +93,10 @@ endif;
 					    'name'		=> 'paging[announcement_file]',
 					    'labelid'	=> 'paging-announcement_file',
 						'empty' 	=> true,
-					    'key'		=> false,
+					    'key'		=> 'filename',
+					    'altkey'	=> 'filename',
 					    'selected'	=> $this->get_var('info','paging','announcement_file')),
 					$this->get_var('files'));
-?>
-
-<?php
-if($paginguser['list'] !== false):
-?>
-<div id="paginguserlist" class="fm-paragraph fm-description">
-	<p>
-		<label id="lb-paginguser" for="it-paginguser"><?=$this->bbf('fm_paginguser');?></label>
-	</p>
-		<?=$form->jq_select(array('paragraph'	=> false,
-					 	'label'		=> false,
-            			'name'    	=> 'paginguser[]',
-						'id' 		=> 'paginguser',
-						'key'		=> 'identity',
-				       	'altkey'	=> 'id',
-            			'selected'  => $paginguser['slt']),
-					$paginguser['list']);?>
-</div>
-<div class="clearboth"></div>
-<?php
-else:
-	echo	'<div class="txt-center">',
-		$url->href_htmln($this->bbf('create_user'),
-				'service/ipbx/pbx_settings/users',
-				'act=add'),
-		'</div>';
-endif;
 ?>
 
 	<div class="fm-paragraph fm-description">
@@ -138,4 +114,46 @@ endif;
 						   $this->get_var('error', 'paging', 'description')) ),
 				   $this->get_var('info','paging','description'));?>
 	</div>
-
+</div>
+<div id="sb-part-last" class="b-nodisplay">
+<?php
+if($paginguser['list'] === false):
+	echo	'<div class="txt-center">',
+		$url->href_htmln($this->bbf('create_user'),
+				'service/ipbx/pbx_settings/users',
+				'act=add'),
+		'</div>';
+else:
+?>
+<div id="paginguserlist" class="fm-paragraph fm-description">
+	<p>
+		<label id="lb-paginguser" for="it-paginguser"><?=$this->bbf('fm_paginguser');?></label>
+	</p>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'paginguser[]',
+						'id' 		=> 'paginguser',
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => $paginguser['slt']),
+					$paginguser['list']);?>
+</div>
+<div class="clearboth"></div>
+<div id="pagingcallerlist" class="fm-paragraph fm-description">
+	<p>
+		<label id="lb-pagingcaller" for="it-pagingcaller"><?=$this->bbf('fm_pagingcaller');?></label>
+	</p>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'pagingcaller[]',
+						'id' 		=> 'pagingcaller',
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => $pagingcaller['slt']),
+					$pagingcaller['list']);?>
+</div>
+<div class="clearboth"></div>
+<?php
+endif;
+?>
+</div>

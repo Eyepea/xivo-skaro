@@ -22,7 +22,34 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_paginguser_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_unique	= array(array('pagingid','userfeaturesid'));
+	var $_unique	= array(array('pagingid','userfeaturesid','caller'));
+
+
+	function get_list_paginguser($id,$caller=false,$order=null,$limit=null)
+	{
+		$this->_dso->new_select($this->_table,'*');
+
+		if(($id = dwho_ulongint($id)) !== 0)
+			$this->_dso->where(array('pagingid' => $id));
+
+		if((bool) $caller === true)
+			$this->_dso->andwhere(array('caller' => 1));
+		else
+			$this->_dso->andwhere(array('caller' => 0));
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>
