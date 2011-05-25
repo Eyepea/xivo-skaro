@@ -643,6 +643,7 @@ CREATE TYPE "dialaction_action" AS ENUM ('none',
   'queue',
   'meetme',
   'voicemail',
+  'trunk',
   'schedule',
   'voicemenu',
   'extension',
@@ -2823,7 +2824,7 @@ CREATE TABLE "dundi_peer" (
 );
 
 
--- grant all rights to xivo.* for xivo user
+-- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
 BEGIN
