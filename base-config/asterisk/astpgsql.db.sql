@@ -898,14 +898,19 @@ CREATE TABLE "paging" (
  PRIMARY KEY("id")
 );
 
-CREATE UNIQUE INDEX "paging__idx__number" ON "paging"("number");
+CREATE UNIQUE INDEX "paging__uidx__number" ON "paging"("number");
 
 DROP TABLE IF EXISTS "paginguser";
 CREATE TABLE "paginguser" (
  "pagingid" 		INTEGER NOT NULL,
  "userfeaturesid" 	INTEGER NOT NULL,
- PRIMARY KEY("pagingid","userfeaturesid")
+ "caller" 			INTEGER NOT NULL, -- BOOLEAN
+ PRIMARY KEY("pagingid","userfeaturesid","caller")
 );
+
+CREATE INDEX "paginguser__idx__pagingid" ON "paginguser"("pagingid");
+CREATE INDEX "paginguser__idx__userfeaturesid" ON "paginguser"("userfeaturesid");
+CREATE INDEX "paginguser__idx__caller" ON "paginguser"("caller");
 
 
 DROP TABLE IF EXISTS "parkinglot";
