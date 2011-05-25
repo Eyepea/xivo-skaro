@@ -36,5 +36,4 @@ pf_profor-banner
 #pf_manager_rename
 
 # digium patches
-dig_27789_chansip_nullpeer.patch
 pf_skill_queues
