@@ -32,6 +32,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_phonefunckey 	= false;
 	protected $_extenumbers  	= false;
 	protected $_linefeatures  	= false;
+	protected $_devicefeatures 	= false;
 	
 	public function __construct(&$xobj,$param=array())
 	{
@@ -40,6 +41,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($this->_extenfeatures = &$ipbx->get_application('extenfeatures')) === false
 		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
 		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
+		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false)
 			return(false);
 		
@@ -521,7 +523,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{
 		$raw_config = array();
 		
-		if (($masterline = $this->_linefeatures->get_user_masterline($deviceid)) === false
+		if (($device = $this->_devicefeatures->get_where(array('deviceid' => $deviceid))) === false
+		|| ($masterline = $this->_linefeatures->get_user_masterline(null,$device['id'])) === false
 		|| (int) $masterline['iduserfeatures'] === 0)
 			return($raw_config);
 		

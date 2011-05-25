@@ -68,6 +68,9 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		if(dwho_ak('paginguser',$nocomponents,true) === false)
 			$this->_get_paginguser();
 
+		if(dwho_ak('pagingcaller',$nocomponents,true) === false)
+			$this->_get_pagingcaller();
+
 		return($this->_info);
 	}
 	
@@ -76,13 +79,21 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		$this->_info['paginguser'] = false;
 		$this->_origin['paginguser'] = false;
 
-		$where = array();
-		$where['pagingid'] = $this->_info['paging']['id'];
-
-		if(($this->_info['paginguser'] = $this->_paginguser->get_all_where($where)) !== false)
+		if(($this->_info['paginguser'] = $this->_paginguser->get_list_paginguser($this->_info['paging']['id'])) !== false)
 			$this->_origin['paginguser'] = $this->_paginguser->get_origin_list();
 
 		return($this->_info['paginguser']);
+	}
+	
+	function _get_pagingcaller()
+	{
+		$this->_info['pagingcaller'] = false;
+		$this->_origin['pagingcaller'] = false;
+
+		if(($this->_info['pagingcaller'] = $this->_paginguser->get_list_paginguser($this->_info['paging']['id'],true)) !== false)
+			$this->_origin['pagingcaller'] = $this->_paginguser->get_origin_list();
+
+		return($this->_info['pagingcaller']);
 	}
 
 	function get_elements()
@@ -166,8 +177,9 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 
 		if(dwho_issa('paginguser',$arr) === true)
 			$this->set_paginguser($arr['paginguser']);
-		else
-			$this->_set_error('paginguser','invalid data');
+
+		if(dwho_issa('pagingcaller',$arr) === true)
+			$this->set_pagingcaller($arr['pagingcaller']);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -213,6 +225,7 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 
 		$info = array();
 		$info['pagingid'] = 0;
+		$info['caller'] = 0;
 
 		$reslist = $tmp = array();
 
@@ -234,6 +247,47 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		$this->_set_result('paginguser',$reslist);
 		return(true);
 	}
+	
+	function set_pagingcaller($arr)
+	{
+		if(is_array($arr) === false || ($nb = count($arr)) === 0)
+		{
+			$this->_set_result('pagingcaller',null);
+			$this->_set_error('pagingcaller','invalid data');
+			return(false);
+		}
+		else if($this->_paginguser === false)
+		{
+			$this->_set_result('pagingcaller',false);
+			return(false);
+		}
+
+		$arr = array_values($arr);
+
+		$info = array();
+		$info['pagingid'] = 0;
+		$info['caller'] = 1;
+
+		$reslist = $tmp = array();
+
+		for($i = 0,$j = 0;$i < $nb;$i++)
+		{
+			$info['userfeaturesid'] = $arr[$j];
+			if(($rs = $this->_paginguser->chk_values($info)) === false)
+				continue;
+
+			$reslist[$j++] = $rs;
+		}
+
+		if(isset($reslist[0]) === false)
+		{
+			$this->_set_result('pagingcaller',false);
+			return(false);
+		}
+
+		$this->_set_result('pagingcaller',$reslist);
+		return(true);
+	}
 
 	function add()
 	{
@@ -245,7 +299,8 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 
 		if($this->get_errnb() > 0
 		|| ($pagingid = $this->add_paging()) === false
-		|| $this->add_paginguser($pagingid) === false)
+		|| $this->add_paginguser($pagingid) === false
+		|| $this->add_pagingcaller($pagingid) === false)
 		{
 			$r = false;
 			if($pagingid !== null)
@@ -268,8 +323,10 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 
 	function add_paginguser($pagingid)
 	{
+		if(($rs = $this->get_result('paginguser')) === null)
+			return($rs);
+		
 		if(($pagingid = dwho_ulongint($pagingid)) === 0
-		|| ($rs = $this->get_result('paginguser')) === null
 		|| $rs === false)
 			return(false);
 
@@ -300,6 +357,42 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		return(true);
 	}
 
+	function add_pagingcaller($pagingid)
+	{
+		if(($rs = $this->get_result('pagingcaller')) === null)
+			return($rs);
+			
+		if(($pagingid = dwho_ulongint($pagingid)) === 0
+		|| $rs === false)
+			return(false);
+
+		$id = array();
+
+		$nb = count($rs);
+
+		$this->_return['pagingcaller'] = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$rs[$i]['pagingid'] = $pagingid;
+
+			$id['pagingid'] = $pagingid;
+
+			if($this->_paginguser->add($rs[$i]) === false)
+				return(false);
+
+			$this->_return['pagingcaller'][] = $id;
+		}
+
+		if(isset($this->_return['pagingcaller'][0]) === false)
+		{
+			$this->_return['pagingcaller'] = false;
+			return(false);
+		}
+
+		return(true);
+	}
+
 	function _reverse_add($pagingid)
 	{
 		if($this->get_errnb() > 0
@@ -319,6 +412,7 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 				case 'paging':
 					$this->_paging->delete($pagingid);
 					break;
+				case 'pagingcaller':
 				case 'paginguser':
 					$this->_paginguser->delete_where(array('pagingid' => $pagingid));
 					break;
@@ -337,7 +431,8 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		
 		if($this->get_errnb() > 0
 		|| $this->edit_paging() === false
-		|| $this->edit_paginguser() === false)
+		|| $this->edit_paginguser() === false
+		|| $this->edit_pagingcaller() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -370,6 +465,16 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		return($this->add_paginguser($this->_info['paging']['id']));
 	}
 
+	function edit_pagingcaller()
+	{
+		if(dwho_issa('paging',$this->_info) === false)
+			return(false);
+
+		$this->_return['pagingcaller'] = $this->delete_pagingcaller();
+
+		return($this->add_pagingcaller($this->_info['paging']['id']));
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -398,6 +503,12 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 					&& $this->_origin['paginguser'] !== false)
 						$this->_paginguser->add_origin_list($this->_origin['paginguser']);
 					break;
+				case 'pagingcaller':
+					$this->delete_pagingcaller();
+					if(isset($this->_origin['pagingcaller']) === true
+					&& $this->_origin['pagingcaller'] !== false)
+						$this->_paginguser->add_origin_list($this->_origin['pagingcaller']);
+					break;
 			}
 		}
 
@@ -412,7 +523,8 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 		$this->_return = array();
 
 		if($this->delete_paging() === false
-		|| $this->delete_paginguser() === false)
+		|| $this->delete_paginguser() === false
+		|| $this->delete_pagingcaller() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -442,8 +554,31 @@ class xivo_application_service_asterisk_paging extends xivo_application_asterisk
 			return(null);
 		else if(dwho_issa('paging',$this->_info) === false)
 			return(false);
+			
+		$w = array();
+		$w['pagingid'] = $this->_info['paging']['id'];
+		$w['caller'] = 0;
 
-		$r = $this->_paginguser->delete_where(array('pagingid' => $this->_info['paging']['id']));
+		$r = $this->_paginguser->delete_where($w);
+
+		if($this->_status === 'delete')
+			$this->_return['paginguser'] = $r;
+
+		return($r);
+	}
+	
+	function delete_pagingcaller()
+	{
+		if(dwho_issa('paginguser',$this->_info) === false)
+			return(null);
+		else if(dwho_issa('paging',$this->_info) === false)
+			return(false);
+			
+		$w = array();
+		$w['pagingid'] = $this->_info['paging']['id'];
+		$w['caller'] = 1;
+
+		$r = $this->_paginguser->delete_where($w);
 
 		if($this->_status === 'delete')
 			$this->_return['paginguser'] = $r;

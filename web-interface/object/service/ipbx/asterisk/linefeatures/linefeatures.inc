@@ -56,9 +56,12 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 	
-	function get_user_masterline()
+	function get_user_masterline($userid=null,$deviceid=null)
 	{
-		return($this->_dso->user_masterline());
+		if (($rs = $this->_dso->user_masterline($userid,$deviceid)) === false)
+			return(false);
+		
+		return($this->_prepare($rs));
 	}
 
 	function get($id,$orig=true,$disable=null)
