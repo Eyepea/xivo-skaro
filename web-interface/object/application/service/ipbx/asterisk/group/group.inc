@@ -393,6 +393,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| is_array($list) === false
 		|| is_scalar($name) === false
 		|| ($userfeatures = &$this->_service->get_module('userfeatures')) === false
+		|| ($linefeatures = &$this->_service->get_module('linefeatures')) === false
 		|| $this->_queuemember === false)
 			return(false);
 
@@ -423,6 +424,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				$this->_set_error('user','wrong user');
 				continue;
 			}
+			
+			if(($masterline = $linefeatures->get_user_masterline($list[$i])) === false)
+			{
+				$this->_set_error('line','invalid master line');
+				continue;
+			}
 
 			$where['userid'] = $uinfo['id'];
 
@@ -436,11 +443,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				$info = array_merge($info,$orig);
 			else
 			{
-				$interface = $this->mk_interface($uinfo['name'],
+				$interface = $this->mk_interface($masterline['name'],
 								 null,
-								 $uinfo['context'],
-								 $uinfo['number'],
-								 $uinfo['protocol']);
+								 $masterline['context'],
+								 $masterline['number'],
+								 $masterline['protocol']);
 
 				if($interface === false)
 					continue;
@@ -454,12 +461,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			if(($rs = $this->_queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
 				continue;
-			else if($uinfo['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP)
+			else if($masterline['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP)
 				$callgroup[$uinfo['id']] = false;
 			else
 			{
-				$callgroup[$uinfo['id']] = array('protocol' => $uinfo['protocol'],
-								 'protocolid' => $uinfo['protocolid']);
+				$callgroup[$uinfo['id']] = array('protocol' => $masterline['protocol'],
+								 'protocolid' => $masterline['protocolid']);
 			}
 
 			$tmp[$uinfo['id']] = 1;

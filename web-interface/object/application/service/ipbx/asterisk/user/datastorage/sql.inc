@@ -28,6 +28,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 				'callfiltermember'	=> '',
 				'phonefunckey'		=> '',
 				'agentfeatures'		=> '',
+				'linefeatures'		=> '',
 				'groupfeatures'		=> '',
 				'queuefeatures'		=> '',
 				'meetmefeatures'	=> '');
@@ -47,12 +48,9 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		return(dwho_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
 	}
 
-	function get_all($disable=null,$initialized=null,$order=null,$limit=null,$value=null,$mode=null)
+	function get_all($disable=null,$initialized=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_cnt = 0;
-
-		if($mode !== 'number')
-			$mode = null;
 
 		$arr = array();
 
@@ -62,9 +60,25 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			$arr['commented'] = intval((bool) $disable);
 
 		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
-
-		//if($mode === 'number')
-		//	$this->_dso->andwherenot('COALESCE('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
+		
+		if($initialized === true)
+		{
+			$this->_dso->innerjoin($this->_table['linefeatures'],
+					       $this->_table['linefeatures'].'.iduserfeatures = '. $this->_dso->cast($this->_table['userfeatures'].'.id', 'int'),
+					       null,
+					       'id');
+			$this->_dso->joinwhere($this->_table['linefeatures'],array('line_num' => 0));
+			$this->_dso->andjoinwhere($this->_table['linefeatures'],array('rules_order' => 1));
+		}
+		elseif($initialized === false)
+		{
+			$this->_dso->innerjoin($this->_table['linefeatures'],
+					       $this->_table['linefeatures'].'.iduserfeatures = '. $this->_dso->cast($this->_table['userfeatures'].'.id', 'int'),
+					       null,
+					       'id');
+			$this->_dso->joinwherenot($this->_table['linefeatures'],array('line_num' => 0));
+			$this->_dso->andjoinwherenot($this->_table['linefeatures'],array('rules_order' => 1));
+		}
 
 		$this->_dso->aggregate_where();
 

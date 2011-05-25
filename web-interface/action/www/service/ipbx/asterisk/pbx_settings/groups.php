@@ -40,6 +40,7 @@ switch($act)
 		$appgroup = &$ipbx->get_application('group');
 
 		$result = $fm_save = $error = null;
+		$result['schedule_id'] = 0;
 
 		$user = $rightcall = array();
 		$user['slt'] = $rightcall['slt'] = array();
@@ -135,6 +136,13 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 		break;
 
 	case 'edit':
@@ -144,7 +152,8 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 
 		$result = $fm_save = $error = null;
-		$return = &$info;
+		if (isset($info['schedule_id']) === false)
+			$info['schedule_id'] = 0;
 
 		$user = $rightcall = array();
 		$user['slt'] = $rightcall['slt'] = array();
@@ -152,13 +161,10 @@ switch($act)
 		$userorder = array();
 		$userorder['firstname'] = SORT_ASC;
 		$userorder['lastname'] = SORT_ASC;
-		$userorder['number'] = SORT_ASC;
-		$userorder['context'] = SORT_ASC;
-		$userorder['name'] = SORT_ASC;
 
 		$appuser = &$ipbx->get_application('user',null,false);
-		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
-
+		$user['list'] = $appuser->get_users_list(null,$userorder,null,true,true);
+			
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
@@ -166,8 +172,6 @@ switch($act)
 		&& dwho_issa('groupfeatures',$_QR) === true
 		&& dwho_issa('queue',$_QR) === true)
 		{
-			$return = &$result;
-
 			if($appgroup->set_edit($_QR) === false
 			|| $appgroup->edit() === false)
 			{
@@ -175,6 +179,7 @@ switch($act)
 				$result = $appgroup->get_result();
 				$error = $appgroup->get_error();
 				$result['dialaction'] = $appgroup->get_dialaction_result();
+				$info = array_merge($info,$result);
 			}
 			else
 			{
@@ -184,23 +189,16 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($user['list'] !== false && dwho_ak('user',$return) === true)
+		
+		if($user['list'] !== false && dwho_issa('user',$info) === true)
 		{
-			$user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'userid');
-
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
+			$user['slt'] = dwho_array_intersect_key($info['user'],$user['list'],'userid');
+			$user['slt'] = array_keys($user['slt']);
 		}
 
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$info) === true)
 		{
-			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($info['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
@@ -211,20 +209,20 @@ switch($act)
 			}
 		}
 
-		if(empty($return) === false)
+		if(empty($info) === false)
 		{
-			if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
-				$return['dialaction'] = null;
+			if(dwho_issa('dialaction',$info) === false || empty($info['dialaction']) === true)
+				$info['dialaction'] = null;
 
-			if(dwho_issa('callerid',$return) === false || empty($return['callerid']) === true)
-				$return['callerid'] = null;
+			if(dwho_issa('callerid',$info) === false || empty($info['callerid']) === true)
+				$info['callerid'] = null;
 		}
 
-		$_TPL->set_var('id',$info['groupfeatures']['id']);
-		$_TPL->set_var('info',$return);
+		$_TPL->set_var('id',$_QR['id']);
+		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
-		$_TPL->set_var('dialaction',$return['dialaction']);
+		$_TPL->set_var('dialaction',$info['dialaction']);
 		$_TPL->set_var('dialaction_from','group');
 		$_TPL->set_var('element',$appgroup->get_elements());
 		$_TPL->set_var('user',$user);
@@ -232,7 +230,7 @@ switch($act)
 		$_TPL->set_var('destination_list',$appgroup->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appgroup->get_musiconhold());
 		$_TPL->set_var('context_list',$appgroup->get_context_list());
-		$_TPL->set_var('schedule_id', $return['schedule_id']);
+		$_TPL->set_var('schedule_id', $info['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');
@@ -242,6 +240,13 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 		break;
 	case 'delete':
 		$param['page'] = $page;

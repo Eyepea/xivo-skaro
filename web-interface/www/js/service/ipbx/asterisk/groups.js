@@ -58,3 +58,13 @@ function xivo_ast_group_onload()
 }
 
 dwho.dom.set_onload(xivo_ast_group_onload);
+
+$(function() {
+
+	$.localise('ui-multiselect', {
+		language: 'fr',
+		path: '/extra-libs/multiselect/js/locale/'
+	});
+	$(".multiselect").multiselect();	
+	
+});
