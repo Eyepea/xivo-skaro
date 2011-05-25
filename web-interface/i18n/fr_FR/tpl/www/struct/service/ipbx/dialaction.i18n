@@ -28,6 +28,15 @@ Renvoyez vers :
 ; fm_dialaction_user-actionarg2
 Temps de sonnerie :
 
+; fm_dialaction_actiontype-opt(trunk)
+Interconnexion
+
+; fm_dialaction_trunk-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_trunk-actionarg2
+Temps de sonnerie :
+
 ; fm_dialaction_actiontype-opt(group)
 Groupe
 

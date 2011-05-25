@@ -230,6 +230,8 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 					return(false);
 
 				return($this->chk_dest_outcall($actionarg1,$actionarg2,$id,$disable));
+			case 'trunk':
+				return($this->chk_dest_trunk($actionarg1,$actionarg2,$id,$disable));
 			case 'extension':
 				return($this->chk_dest_extension($actionarg1,$actionarg2));
 			case 'application:callbackdisa':

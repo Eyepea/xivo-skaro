@@ -28,6 +28,7 @@ $array['categoryevent']['queue'] = array('noanswer','congestion','busy','chanuna
 		'qctipresence','qnonctipresence','qwaittime','qwaitratio');
 //$array['categoryevent']['schedule'] = array('inschedule','outschedule');
 $array['categoryevent']['user'] = array('noanswer','congestion','busy','chanunavail');
+$array['categoryevent']['trunk'] = array('noanswer','congestion','busy','chanunavail');
 
 
 $array['element'] = array();
@@ -63,6 +64,7 @@ $array['element']['action']['value'] = array('none',
 					     'queue',
 					     'meetme',
 					     'voicemail',
+					     'trunk',
 					     'schedule',
 					     'voicemenu',
 							 'extension',
@@ -93,6 +95,7 @@ $array['element']['actiontype']['value'] = array('none',
 						 'queue',
 						 'meetme',
 						 'voicemail',
+						 'trunk',
 						 //'schedule',
 						 'voicemenu',
 						 'extension',
@@ -121,39 +124,40 @@ $array['element']['linked']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['event'] = array('key' => array('answer',
-						 'noanswer',
-						 'congestion',
-						 'busy',
-						 'chanunavail',
-						 'inschedule',
-						 'outschedule',
-					   'qctipresence',
-					   'qnonctipresence',
-					   'qwaittime',
-					   'qwaitratio'));
+						'noanswer',
+						'congestion',
+						'busy',
+						'chanunavail',
+						'inschedule',
+						'outschedule',
+					   	'qctipresence',
+					   	'qnonctipresence',
+					   	'qwaittime',
+					   	'qwaitratio'));
 $array['filter']['category'] = array('key' => array('callfilter','group','incall','queue','schedule','user'));
 $array['filter']['categoryval'] = array('maxlen' => 128,'cast' => 'sgraph');
 $array['filter']['action'] = array('key' => array('none',
-						  'endcall:busy',
-						  'endcall:congestion',
-						  'endcall:hangup',
-						  'user',
-						  'group',
-						  'queue',
-						  'meetme',
-						  'voicemail',
-						  //'schedule',
-						  'voicemenu',
-							'extension',
-							'outcall',
-						  'application:callbackdisa',
-						  'application:disa',
-						  'application:directory',
-						  'application:faxtomail',
-						  'application:voicemailmain',
-						  'application:password',
-						  'sound',
-						  'custom'));
+						'endcall:busy',
+						'endcall:congestion',
+						'endcall:hangup',
+						'user',
+						'group',
+						'queue',
+						'meetme',
+						'voicemail',
+						'trunk',
+						//'schedule',
+						'voicemenu',
+						'extension',
+						'outcall',
+						'application:callbackdisa',
+						'application:disa',
+						'application:directory',
+						'application:faxtomail',
+						'application:voicemailmain',
+						'application:password',
+						'sound',
+						'custom'));
 $array['filter']['actionarg1'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['actionarg2'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['linked'] = array('bool' => true);

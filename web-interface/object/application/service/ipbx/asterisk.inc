@@ -540,6 +540,7 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 		//$r['schedule'] = $this->get_destination_schedule($scheduleid);
 		$r['voicemenu'] = $this->get_destination_voicemenu();
 		$r['outcalls']  = $this->get_destination_outcall();
+		$r['trunk']  = $this->get_destination_trunk();
 
 		return($r);
 	}
@@ -648,6 +649,18 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 
 		if(($outcall = &$this->_service->get_module('outcall')) !== false
 		&& ($r = $outcall->get_all(null, true, $order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
+	function get_destination_trunk($protocols=null)
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		if(($apptrunk = &$this->_service->get_application('trunk')) !== false
+		&& ($r = $apptrunk->get_trunks_list($protocols, null, $order)) !== false)
 			return($r);
 
 		return(false);

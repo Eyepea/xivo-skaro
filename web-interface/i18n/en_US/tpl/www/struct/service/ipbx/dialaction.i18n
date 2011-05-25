@@ -28,6 +28,15 @@ Redirect to :
 ; fm_dialaction_user-actionarg2
 Ring time :
 
+; fm_dialaction_actiontype-opt(trunk)
+Trunk
+
+; fm_dialaction_trunk-actionarg1
+Redirect to :
+
+; fm_dialaction_trunk-actionarg2
+Ring time :
+
 ; fm_dialaction_actiontype-opt(group)
 Group
 
