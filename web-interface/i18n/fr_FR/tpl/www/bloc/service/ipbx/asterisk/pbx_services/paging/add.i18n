@@ -1,5 +1,5 @@
 ; title_content_name
-Paging > Ajouter
+Intercom > Ajouter
 
 ; smenu_general
 Général
@@ -13,17 +13,20 @@ Numéro:
 ; fm_paging_duplex
 Audio full duplex:
 
-; fm_paging_default_group
-paging par default:
+; fm_paging_ignore
+Ignorer les tentatives de transmettre l'appel:
 
 ; fm_paging_record
-Enregistrer le paging dans un fichier: 
+Enregistrement du flux audio: 
 
 ; fm_paging_quiet
 Silence, ne pas jouer le bip:
 
 ; fm_paging_callnotbusy
 Appeler seulement les utilisateurs qui n'ont pas le statut occupé: 
+
+; fm_paging_announcement_caller
+Ne pas jouer le son d'annonce à l'appelant:
 
 ; fm_paging_announcement_play
 Jouer le son d'annonce sur tous les utilisateurs appelés: 
@@ -42,7 +45,7 @@ Après cette durée, tous les appels intercom qui n'ont pas reçu de réponse se
 Description: 
 
 ; fm_paginguser
-Itilisateurs appelés : 
+Utilisateurs appelés : 
 
 ; fm_pagingcaller
 Utilisateurs appelants :

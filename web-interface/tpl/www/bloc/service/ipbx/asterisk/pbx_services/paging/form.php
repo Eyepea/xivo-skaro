@@ -50,11 +50,11 @@ endif;
 				      'default'		=> $element['paging']['duplex']['default'],
 					  'checked'		=> $this->get_var('info','paging','duplex'))),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_paging_default_group'),
-				      'name'		=> 'paging[default_group]',
-				      'labelid'		=> 'paging-default_group',
-				      'default'		=> $element['paging']['default_group']['default'],
-					  'checked'		=> $this->get_var('info','paging','default_group'))),
+		$form->checkbox(array('desc'	=> $this->bbf('fm_paging_ignore'),
+				      'name'		=> 'paging[ignore]',
+				      'labelid'		=> 'paging-ignore',
+				      'default'		=> $element['paging']['ignore']['default'],
+					  'checked'		=> $this->get_var('info','paging','ignore'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_paging_record'),
 				      'name'		=> 'paging[record]',
@@ -82,6 +82,12 @@ endif;
 					    'default'	=> $element['paging']['timeout']['default'],
 					    'selected'	=> $this->get_var('info','paging','timeout')),
 					$element['paging']['timeout']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_paging_announcement_caller'),
+				      'name'		=> 'paging[announcement_caller]',
+				      'labelid'		=> 'paging-announcement_caller',
+				      'default'		=> $element['paging']['announcement_caller']['default'],
+					  'checked'		=> $this->get_var('info','paging','announcement_caller'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_paging_announcement_play'),
 				      'name'		=> 'paging[announcement_play]',

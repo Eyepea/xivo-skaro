@@ -16,8 +16,8 @@ Force if busy:
 ; fm_paging_duplex
 Full duplex audio:
 
-; fm_paging_default_group
-Default page group:
+; fm_paging_ignore
+Ignore attempts to forward the call: 
 
 ; fm_paging_record
 Record the page into a file: 
@@ -28,8 +28,11 @@ Quiet, do not play beep to caller:
 ; fm_paging_callnotbusy
 Only dial a channel if its device state says that it is 'NOT_INUSE': 
 
+; fm_paging_announcement_caller
+Do not play simultaneous announcement to caller:
+
 ; fm_paging_announcement_play
-Do not play simultaneous announcement to caller: 
+Play simultaneous announcement to called users: 
 
 ; fm_paging_announcement_file
 The announcement to playback in all devices: 

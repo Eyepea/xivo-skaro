@@ -29,10 +29,10 @@ $array['element']['duplex']['value'] = array(0,1);
 $array['element']['duplex']['default'] = 0;
 $array['element']['duplex']['set'] = true;
 
-$array['element']['default_group'] = array();
-$array['element']['default_group']['value'] = array(0,1);
-$array['element']['default_group']['default'] = 0;
-$array['element']['default_group']['set'] = true;
+$array['element']['ignore'] = array();
+$array['element']['ignore']['value'] = array(0,1);
+$array['element']['ignore']['default'] = 0;
+$array['element']['ignore']['set'] = true;
 
 $array['element']['record'] = array();
 $array['element']['record']['value'] = array(0,1);
@@ -64,6 +64,11 @@ $array['element']['announcement_play']['value'] = array(0,1);
 $array['element']['announcement_play']['default'] = 0;
 $array['element']['announcement_play']['set'] = true;
 
+$array['element']['announcement_caller'] = array();
+$array['element']['announcement_caller']['value'] = array(0,1);
+$array['element']['announcement_caller']['default'] = 0;
+$array['element']['announcement_caller']['set'] = true;
+
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
@@ -76,7 +81,7 @@ $array['element']['description']['default'] = '';
 $array['filter'] = array();
 $array['filter']['number'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(?:[saotTih]|_?\+?[0-9NXZ\*#\-\[\]]+[\.\!]?)$/');
 $array['filter']['duplex'] = array('bool' => true);
-$array['filter']['default_group'] = array('bool' => true);
+$array['filter']['ignore'] = array('bool' => true);
 $array['filter']['quiet'] = array('bool' => true);
 $array['filter']['callnotbusy'] = array('bool' => true);
 $array['filter']['timeout'] = array('set'	=> false,
@@ -87,6 +92,7 @@ $array['filter']['announcement_file'] = array('set' => false,
 											'regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
 								XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'$/');
 $array['filter']['announcement_play'] = array('bool' => true);
+$array['filter']['announcement_caller'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

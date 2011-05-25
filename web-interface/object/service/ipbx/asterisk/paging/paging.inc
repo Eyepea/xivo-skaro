@@ -46,13 +46,13 @@ class xivo_service_asterisk_paging extends xivo_service_asterisk_abstract
 	{
 		$data['id'] = (int) $data['id'];
 		$data['timeout'] = (int) $data['timeout'];
-		$data['force_page'] = (bool) $data['force_page'];
 		$data['duplex'] = (bool) $data['duplex'];
-		$data['default_group'] = (bool) $data['default_group'];
+		$data['ignore'] = (bool) $data['ignore'];
 		$data['record'] = (bool) $data['record'];
 		$data['quiet'] = (bool) $data['quiet'];
 		$data['callnotbusy'] = (bool) $data['callnotbusy'];
 		$data['announcement_play'] = (bool) $data['announcement_play'];
+		$data['announcement_caller'] = (bool) $data['announcement_caller'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
