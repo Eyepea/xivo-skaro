@@ -185,7 +185,6 @@ class Safe:
         actualid = 'cs:%s' % ipbxid # prepend with letters in order to be sure it is not a number
         self.xod_config['users'].keeplist[actualid] = { 'loginclient' : username,
                                                         'id' : actualid,
-                                                        # 'profileclient' : 'switchboard',
                                                         'profileclient' : 'ctiserver',
                                                         'passwdclient' : password
                                                         }
@@ -320,7 +319,7 @@ class Safe:
         return sha1sum
 
     def user_get_ctiprofile(self, userid):
-        return self.xod_config['users'].keeplist[userid].get('profileclient')
+        return self.xod_config.get('users').keeplist.get(userid).get('profileclient')
 
     def user_get_all(self):
         return self.xod_config['users'].keeplist.keys()
@@ -786,17 +785,8 @@ class Safe:
         return
 
     def update_presence(self, userid, newstate):
-        oldstate = self.xod_status.get('users').get(userid)['availstate']
-
-        profileid = self.user_get_ctiprofile(userid)
-        if profileid not in self.ctid.cconf.getconfig('profiles'):
-            self.log.warning('profileid %s (for user %s) not defined in config' % (profileid, userid))
-            return
-        presenceid = self.ctid.cconf.getconfig('profiles').get(profileid).get('userstatus')
-        if presenceid not in self.ctid.cconf.getconfig('userstatus'):
-            self.log.warning('presenceid %s (for user %s) not defined in config' % (presenceid, userid))
-            return
-        profdetails = self.ctid.cconf.getconfig('userstatus').get(presenceid)
+        oldstate = self.xod_status.get('users').get(userid).get('availstate')
+        profdetails = self.get_user_permissions('userstatus', userid)
 
         # allow oldstate to be 'unknown' (as might be the case when connecting ...)
         if oldstate not in profdetails and oldstate not in ['unknown']:
@@ -812,13 +802,54 @@ class Safe:
         truestate = newstate
         if truestate != oldstate:
             self.xod_status.get('users').get(userid)['availstate'] = truestate
+            # XXX log to ctilog self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
             self.appendcti('users', 'updatestatus', userid)
-            # XXX call presence_action
+            self.presence_action(userid)
         return
 
-    def presence_action(self):
-        # XXX
+    def presence_action(self, userid):
+        availstate = self.xod_status.get('users').get(userid).get('availstate')
+        userstatuses = self.get_user_permissions('userstatus', userid)
+        if availstate not in userstatuses:
+            self.log.warning('presence_action for %s : %s not a right state'
+                             % (userid, availstate))
+            return
+
+        for actionname, actionopt in userstatuses.get(availstate).get('actions', {}).iteritems():
+            if not actionname or not actionopt:
+                continue
+            if actionname in self.services_actions_list:
+                print 'presence_action (service)', availstate, actionname, actionopt
+            if actionname in self.queues_actions_list:
+                print 'presence_action (queues)', availstate, actionname, actionopt
         return
+
+    services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
+                             'enableunc', 'enablebusy', 'enablerna']
+    queues_actions_list = ['queueadd', 'queueremove', 'queuepause', 'queueunpause',
+                           'queuepause_all', 'queueunpause_all']
+    permission_kinds = ['regcommands', 'userstatus']
+
+    def get_user_permissions(self, kind, userid):
+        ret = {}
+        if kind not in self.permission_kinds:
+            return ret
+        profileclient = self.user_get_ctiprofile(userid)
+        if profileclient:
+            profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
+            if profilespecs:
+                kindid = profilespecs.get(kind)
+                if kindid:
+                    ret = self.ctid.cconf.getconfig(kind).get(kindid)
+                else:
+                    self.log.warning('get_user_permissions %s %s : no kindid' % (kind, userid))
+            else:
+                self.log.warning('get_user_permissions %s %s : no profilespecs' % (kind, userid))
+        else:
+            self.log.warning('get_user_permissions %s %s : no profileclient' % (kind, userid))
+        return ret
+
+    # IPBX side
 
     def ast_channel_to_termination(self, channel):
         term = {}

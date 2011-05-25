@@ -100,9 +100,9 @@ class RCTI:
                     sessionid = t.get('sessionid')
                     self.login_pass(sessionid, self.password)
                 elif t.get('class') == 'login_pass':
-                    self.login_capas('available', t.get('capalist')[0])
+                    self.login_capas('onlystate', t.get('capalist')[0])
                 elif t.get('class') == 'login_capas':
-                    print 'done ...'
+                    self.log.info('got my capabilities : %s' % t)
                     self.getlist('users')
                 elif t.get('class') == 'getlist':
                     tipbxid = t.get('tipbxid')

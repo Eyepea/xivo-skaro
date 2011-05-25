@@ -328,9 +328,14 @@ class xivo_daemon:
             self.cconf.xc_json['ipbxes'] = t
         xivoconf_general = self.cconf.getconfig('main')
 
+        self.cconf.xc_json['userstatus']['ctiserver'] = {
+            'onlystate' : {
+                'allowed' : ['onlystate']
+                }
+            }
         self.cconf.xc_json['profiles']['ctiserver'] = { 'functions' : None,
-                                                        'regcommands' : 'itw_regcommands', # XXX
-                                                        'userstatus': None, # XXX
+                                                        'regcommands' : 'itm_regcommands', # XXX
+                                                        'userstatus': 'ctiserver',
                                                         'preferences': None, # XXX
                                                         'name' : 'CTIServer',
                                                         'ipbxcommands' : None,

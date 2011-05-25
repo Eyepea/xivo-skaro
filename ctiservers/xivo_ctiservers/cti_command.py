@@ -36,8 +36,9 @@ COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
 
 REGCOMMANDS = [
     'login_id', 'login_pass', 'login_capas', 'logout',
-    'getipbxlist',
     'getlist',
+
+    'getipbxlist',
     'availstate', 'keepalive',
 
     'featuresget', 'featuresput',
@@ -102,22 +103,14 @@ class Command:
 
         if self.command in REGCOMMANDS:
             if self.ripbxid:
-                profileclient = self.rinnerdata.xod_config['users'].keeplist[self.ruserid].get('profileclient')
-                profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
-                if profilespecs:
-                    regcommands_id = profilespecs.get('regcommands')
-                    regcommands = self.ctid.cconf.getconfig('regcommands').get(regcommands_id)
-                    if regcommands:
-                        if self.command not in regcommands:
-                            log.warning('profile %s : unallowed command %s (intermediate %s)'
-                                        % (profileclient, self.command, regcommands_id))
-                            messagebase['warning_string'] = 'unallowed'
-                    else:
-                        messagebase['warning_string'] = 'no_regcommands'
+                regcommands = self.rinnerdata.get_user_permissions('regcommands', self.ruserid)
+                if regcommands:
+                    if self.command not in regcommands:
+                        log.warning('user %s : unallowed command %s' % (self.ruserid, self.command))
+                        messagebase['warning_string'] = 'unallowed'
                 else:
-                    log.warning('profile %s : undefined'
-                                % (profileclient))
-                    messagebase['warning_string'] = 'unknown_profile'
+                    log.warning('user %s : unallowed command %s - empty regcommands' % (self.ruserid, self.command))
+                    messagebase['warning_string'] = 'no_regcommands'
 
             methodname = 'regcommand_%s' % self.command
             if hasattr(self, methodname):
@@ -347,7 +340,6 @@ class Command:
         ipbxid = cdetails.get('ipbxid')
         userid = cdetails.get('userid')
         self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] = 'yes'
-        # self.ctid.safe[ipbxid].xod_status['users'][userid]['availstate'] = availstate
         self.ctid.safe[ipbxid].update_presence(userid, availstate)
         # connection : os, version, sessionid, socket data, capaid
         # {'prelogin': {'cticlientos': 'X11', 'version': '1305641743-87aa765', 'sessionid': 'deyLicgThU'}}
@@ -358,7 +350,8 @@ class Command:
         ipbxid = cdetails.get('ipbxid')
         userid = cdetails.get('userid')
         self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] = None
-        self.ctid.safe[ipbxid].xod_status['users'][userid]['availstate'] = availstate
+        # disconnected vs. invisible vs. recordstatus ?
+        self.ctid.safe[ipbxid].update_presence(userid, availstate)
         return
 
     # end of login/logout related commands
@@ -459,7 +452,7 @@ class Command:
 
     def regcommand_directory(self):
         reply = {}
-        result = self.innerdata.getcustomers('maqsmaop', self.commanddict.get('pattern'))
+        result = self.rinnerdata.getcustomers('maqsmaop', self.commanddict.get('pattern'))
         return reply
 
     def regcommand_history(self):
@@ -506,13 +499,10 @@ class Command:
 
     def regcommand_availstate(self):
         reply = {}
-##                        if self.capas[capaid].match_funcs(ucapa, 'presence'):
-##                            # updates the new status and sends it to other people
-##                            repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
-##                            self.__presence_action__(astid, userinfo.get('agentid'), userinfo)
-##                            self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
-        state = self.commanddict.get('availstate')
-        self.rinnerdata.update_presence(self.ruserid, state)
+        # if self.capas[capaid].match_funcs(ucapa, 'presence'):
+        # self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
+        availstate = self.commanddict.get('availstate')
+        self.rinnerdata.update_presence(self.ruserid, availstate)
         return reply
 
     def regcommand_getipbxlist(self):
