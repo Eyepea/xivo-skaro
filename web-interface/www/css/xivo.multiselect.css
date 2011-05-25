@@ -2,9 +2,13 @@
 /* reset xivo css width limit select */
 .fm-paragraph select {max-width: 500px;}
 
+/* fix size on multiselect */
+.ui-multiselect li {font-size: 10px;}
+.ui-multiselect li a {font-size: 10px;}
+
 .multiselect {
 	width: 500px;
-	height: 101px;
+	height: 151px;
 	margin-bottom: 5px;
 }
 
@@ -22,12 +26,13 @@
 }
 
 .ui-multiselect .ui-widget-header {
-	border-top: 1px solid #7F99B1;
 	border-bottom: 1px solid #7F99B1;
 	background: #BEDDFB;
 	color: black;
+	font-size: 10px;
 }
 
 .ui-multiselect .ui-widget-header a {
 	color: grey;
+	font-size: 10px;
 }
