@@ -47,18 +47,25 @@ class TestHA(unittest.TestCase):
 					'eth0:192.168.1.34',
 					'eth0.1:192.168.2.34'
 				],
-				'cluster_group': True
-			},
-				
-			'services': {
-				'asterisk': {
-					'monitor': 30,
-					'timeout': 60
+				'cluster_itf_data': 'eth0.1',
+				'cluster_group'   : True,
+				'cluster_monitor' : 20,
+				'cluster_timeout' : 60,
+				'cluster_mailto'  : 'gbour@proformatique.com',
+				'cluster_pingd'   : '192.168.1.254',
+
+				'services': {
+					'asterisk': {
+						'rsc_class': 'lsb',
+						'monitor'  : 30,
+						'timeout'  : 60
+					},
+					'lighttpd': {
+						'rsc_class': 'ocf',
+						'monitor'  : 30
+					}
 				},
-				'lighttpd': {
-					'monitor': 30
-				}
-			},
+			},			
 		}
 
 		# push config

@@ -52,13 +52,13 @@ class Ha(object):
         self.OUT   = None
 
     def _dispatch(self, key, val):
-
         getattr(self, '_do_'+type(val).__name__)(key, val)
 
     def _do_dict(self, key, val):
         print >>self.OUT, '\n' + '['*self.DEPTH + key + ']'*self.DEPTH
 
         self.DEPTH += 1
+
         # DICT values must be handled lastly
         dicts = []
         for k, v in val.iteritems():
@@ -66,20 +66,28 @@ class Ha(object):
                 dicts.append((k, v)); continue
             self._dispatch(k, v)
 
-        for k, v in dicts:
-            self._dispatch(k, v)
+        if key == 'services':
+            # 'services' content is dict but generated conf is not standard
+            self._do_svc(dicts)
+        else:
+	          for k, v in dicts:
+		            self._dispatch(k, v)
 
-        self.DEPTH -= 1						
+        self.DEPTH -= 1
 
     def _do_list(self, key, val):
         print >>self.OUT, "%s = %s" % (key, ','.join(val))
 
-    def _do_str(self, key, val):								
+    def _do_str(self, key, val):
         print >>self.OUT, "%s = %s" % (key, val)
     _do_int = _do_str
 
     def _do_bool(self, key, val):
         print >>self.OUT, "%s = %s" % (key, 'yes' if val else 'no')
+
+    def _do_svc(self, svcs):
+        for k, v in svcs:
+           print >>self.OUT, "%s = %s" % (k, ', '.join(['%s:%s' % (opt, v[opt]) for opt in v]))
 
     def generate(self, args, options):
         """Generate HA configuration file (erase previous configuration)
