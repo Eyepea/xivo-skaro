@@ -120,8 +120,8 @@ class WEBI(Interfaces):
                 log.exception('WEBI connection [%s] : KO when defining for %s'
                               % (usefulmsg, self.requester))
 
-        freply = { 'message' : clireply,
-                   'closemenow' : closemenow }
+        freply = [ { 'message' : clireply,
+                     'closemenow' : closemenow } ]
         return freply
 
     def reply(self, replylines):

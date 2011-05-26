@@ -78,6 +78,7 @@ class Command:
         self.connection = connection
         self.ctid = self.connection.ctid
         self.commanddict = thiscommand
+        self.othermessages = list()
         return
 
     def parse(self):
@@ -106,10 +107,12 @@ class Command:
                 regcommands = self.rinnerdata.get_user_permissions('regcommands', self.ruserid)
                 if regcommands:
                     if self.command not in regcommands:
-                        log.warning('user %s : unallowed command %s' % (self.ruserid, self.command))
+                        log.warning('user %s/%s : unallowed command %s'
+                                    % (self.ripbxid, self.ruserid, self.command))
                         messagebase['warning_string'] = 'unallowed'
                 else:
-                    log.warning('user %s : unallowed command %s - empty regcommands' % (self.ruserid, self.command))
+                    log.warning('user %s/%s : unallowed command %s - empty regcommands'
+                                % (self.ripbxid, self.ruserid, self.command))
                     messagebase['warning_string'] = 'no_regcommands'
 
             methodname = 'regcommand_%s' % self.command
@@ -132,11 +135,16 @@ class Command:
             messagebase['warning_string'] = 'unknown'
             log.warning('unknown command %s' % self.command)
 
-        z = { 'dest' : 'me',
-              'message' : messagebase
-              }
+        ackmessage = { 'message' : messagebase }
         if 'error_string' in messagebase:
-            z['closemenow'] = True
+            ackmessage['closemenow'] = True
+
+        z = [ackmessage]
+        for extramessage in self.othermessages:
+            bmsg = extramessage.get('message')
+            bmsg['class'] = self.command
+            z.append( { 'dest' : extramessage.get('dest'),
+                        'message' : bmsg } )
         return z
 
     def regcommand_login_id(self):
@@ -363,15 +371,16 @@ class Command:
 
     def regcommand_chitchat(self):
         reply = {}
-        to_userid = icommand.struct.get('to')
-        to_userinfo = self.ulist_ng.keeplist[to_userid]
-        message = icommand.struct.get('text')
-        tosend = { 'class' : 'chitchat',
-                   'from' : self.ruserid,
-                   'text' : message }
+        (ipbxid, userid) = self.commanddict.get('to').split('/')
+        chitchattext = self.commanddict.get('text')
+        self.othermessages.append( {'dest' : self.commanddict.get('to'),
+                                    'message' : { 'to' : self.commanddict.get('to'),
+                                                  'from' : '%s/%s' % (self.ripbxid, self.ruserid),
+                                                  'text' : chitchattext}} )
         return reply
 
     def regcommand_meetme(self):
+        print 'regcommand_meetme', self.commanddict, self.userid, self.ruserid
         function = icommand.struct.get('function')
         argums = icommand.struct.get('functionargs')
         if function == 'record' and len(argums) == 3 and argums[2] in ['start' , 'stop']:

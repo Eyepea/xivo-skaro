@@ -75,7 +75,7 @@ class RCTI:
     def handle_reply(self, reply):
         t = None
         try:
-            t = cjson.decode(reply)
+            t = cjson.decode(reply.replace('\\/', '/'))
         except Exception, exc:
             print 'exception', exc
         return t
@@ -96,15 +96,16 @@ class RCTI:
             if not t:
                 return
             if 'class' in t:
-                if t.get('class') == 'login_id':
+                classname = t.get('class')
+                if classname == 'login_id':
                     sessionid = t.get('sessionid')
                     self.login_pass(sessionid, self.password)
-                elif t.get('class') == 'login_pass':
+                elif classname == 'login_pass':
                     self.login_capas('onlystate', t.get('capalist')[0])
-                elif t.get('class') == 'login_capas':
+                elif classname == 'login_capas':
                     self.log.info('got my capabilities : %s' % t)
                     self.getlist('users')
-                elif t.get('class') == 'getlist':
+                elif classname == 'getlist':
                     tipbxid = t.get('tipbxid')
                     if tipbxid == self.ipbxid:
                         function = t.get('function')
@@ -125,8 +126,11 @@ class RCTI:
                         elif function == 'updatestatus':
                             if self.innerdata:
                                 self.innerdata.config_from_external(ln, t)
+                elif classname == 'chitchat':
+                    self.log.info('got %s' % t)
+                    self.ctid.send_to_cti_client(t.get('to'), t)
                 else:
-                    print 'unknown class', t.get('class')
+                    self.log.warning('unknown class : %s' % classname)
             else:
                 print 'unknown value', t
         return

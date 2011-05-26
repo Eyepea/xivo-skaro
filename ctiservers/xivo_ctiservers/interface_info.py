@@ -366,7 +366,7 @@ class INFO(Interfaces):
                 log.exception('INFO connection [%s] : KO when defining for %s'
                               % (usefulmsg, self.requester))
 
-        freply = { 'message' : clireply }
+        freply = [ { 'message' : clireply } ]
         return freply
 
     def reply(self, replylines):

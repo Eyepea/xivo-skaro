@@ -75,11 +75,11 @@ class CTI(Interfaces):
 
     def manage_connection(self, msg):
         multimsg = msg.split(self.sep)
-        z = None
+        z = list()
         for usefulmsgpart in multimsg:
             cmd = self.serial.decode(usefulmsgpart)
             nc = cti_command.Command(self, cmd)
-            z = nc.parse()
+            z.extend(nc.parse())
             # print nc.commandid
         return z
 
