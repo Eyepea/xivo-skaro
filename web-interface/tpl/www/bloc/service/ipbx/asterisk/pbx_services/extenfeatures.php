@@ -41,6 +41,7 @@ $error_js = array();
 $error_nb = count($error['extenfeatures']);
 
 for($i = 0;$i < $error_nb;$i++):
+	if (isset($error['extenfeatures'][$i]) === false) continue;
 	$error_js[] = 'dwho.form.error[\'it-extenfeatures-'.$error['extenfeatures'][$i].'\'] = true;';
 	$invalid['extenfeatures'][$error['extenfeatures'][$i]] = true;
 endfor;
@@ -48,6 +49,7 @@ endfor;
 $error_nb = count($error['generalfeatures']);
 
 for($i = 0;$i < $error_nb;$i++):
+	if (isset($error['generalfeatures'][$i]) === false) continue;
 	$error_js[] = 'dwho.form.error[\'it-generalfeatures-'.$error['generalfeatures'][$i].'\'] = true;';
 	$invalid['generalfeatures'][$error['generalfeatures'][$i]] = true;
 endfor;
@@ -55,6 +57,7 @@ endfor;
 $error_nb = count($error['featuremap']);
 
 for($i = 0;$i < $error_nb;$i++):
+	if (isset($error['featuremap'][$i]) === false) continue;
 	$error_js[] = 'dwho.form.error[\'it-featuremap-'.$error['featuremap'][$i].'\'] = true;';
 	$invalid['featuremap'][$error['featuremap'][$i]] = true;
 endfor;
@@ -92,7 +95,10 @@ if(isset($error_js[0]) === true)
 							<?=$this->bbf('smenu_transfers');?></a></li>
 					<li><a href="#forward"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-forward');">
-							<?=$this->bbf('smenu_forwards');?></a></li>			</div>
+							<?=$this->bbf('smenu_forwards');?></a></li>
+				
+				</ul>
+			</div>
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
@@ -138,7 +144,12 @@ if(isset($error_js[0]) === true)
 				<ul>
 					<li><a href="#parking"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-parking',1);">
-							<?=$this->bbf('smenu_parking');?></a></li>			</div>
+							<?=$this->bbf('smenu_parking');?></a></li>
+					<li><a href="#paging"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-paging',1);">
+							<?=$this->bbf('smenu_paging');?></a></li>
+				</ul>
+			</div>
 		</li>
 	</ul>
 </div>
@@ -1247,6 +1258,25 @@ if(isset($error_js[0]) === true)
 				      'checked'	=> $this->get_var('generalfeatures','adsipark','var_val'),
 				      'default'	=> $element['generalfeatures']['adsipark']['default']));
 ?>
+	</div>
+
+	<div id="sb-part-paging" class="b-nodisplay">
+		<div class="fm-paragraph">
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-paging'),
+				      'name'	=> 'extenfeatures[paging][enable]',
+				      'labelid'	=> 'extenfeatures-enable-paging_enable',
+				      'checked'	=> ((bool) $this->get_var('extenfeatures','paging','commented') === false)));
+	
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-paging_exten'),
+				  'name'	=> 'extenfeatures[paging][exten]',
+				  'paragraph'	=> false,
+				  'labelid'	=> 'extenfeatures-paging-exten',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('extenfeatures','paging','exten'),
+				  'default'	=> $element['extenfeatures']['phoneprogfunckey']['default']));
+?>
+		</div>
 	</div>
 
 	<div id="sb-part-last" class="b-nodisplay">

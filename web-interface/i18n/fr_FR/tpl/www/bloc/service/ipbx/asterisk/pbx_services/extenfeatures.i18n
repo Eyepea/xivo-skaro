@@ -13,6 +13,9 @@ Transferts
 ; smenu_forwards
 Renvois
 
+; smenu_paging
+Intercom
+
 ; smenu_voicemail
 Messagerie vocale
 
@@ -304,4 +307,8 @@ Durée d'attente entre deux essais (transfer annoncé) :
 ; fm_generalfeatures_atxfercallbackretries
 Nombre d'essais (transfer annoncé) : 
 
+; fm_extenfeatures_enable-paging
+Activer intercom : 
 
+; fm_extenfeatures-paging_exten
+Intercom extension: 

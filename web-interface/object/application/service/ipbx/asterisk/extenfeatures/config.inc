@@ -253,6 +253,12 @@ $array['exten']['vmuserslt']['appdata'] = array();
 $array['exten']['vmuserslt']['appdata'][0] = 'vmuser';
 $array['exten']['vmuserslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
+$array['exten']['paging'] = array();
+$array['exten']['paging']['app'] = 'Macro';
+$array['exten']['paging']['appdata'] = array();
+$array['exten']['paging']['appdata'][0] = 'paging';
+$array['exten']['paging']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+
 $array['element'] = array();
 
 $array['element']['agentdynamiclogin'] = array();

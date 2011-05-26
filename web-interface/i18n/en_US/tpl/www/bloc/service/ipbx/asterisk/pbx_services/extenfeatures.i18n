@@ -13,6 +13,9 @@ Forwards
 ; smenu_agents
 Agents
 
+; smenu_paging
+Paging
+
 ; smenu_parking
 Parking
 
@@ -414,4 +417,8 @@ Wait time between 2 retries (attended transfer):
 ; fm_generalfeatures_atxfercallbackretries
 Max try counts (attended transfer):
 
+; fm_extenfeatures_enable-paging
+Enable paging: 
 
+; fm_extenfeatures-paging_exten
+Paging exten: 

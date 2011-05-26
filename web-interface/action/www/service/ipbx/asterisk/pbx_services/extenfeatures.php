@@ -62,6 +62,7 @@ if(isset($_QR['fm_send']) === true)
 
 			while(list($key) = each($extens))
 			{
+			
 				if(dwho_issa($key,$_QR['extenfeatures']) === false)
 					continue;
 				else if(isset($_QR['extenfeatures'][$key]['exten']) === true)
@@ -88,7 +89,7 @@ if(isset($_QR['fm_send']) === true)
 					$error['extenfeatures'][] = $key;
 				}
 			}
-
+			
 			if(isset($error['extenfeatures'][0]) === true)
 				$fm_save = false;
 			else if($fm_save !== false)
