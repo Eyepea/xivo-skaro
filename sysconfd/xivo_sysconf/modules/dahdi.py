@@ -22,7 +22,7 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, os.path, logging, fcntl, struct
+import os, os.path, re, logging, fcntl, struct
 from datetime import datetime
 
 from xivo import http_json_server
@@ -135,6 +135,146 @@ _p = [
 	'chan_alarms'				# alarms on this channel
 ]
 
+PCI_IDS = {
+	# from wct4xxp
+	'10ee:0314'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE410P/TE405P (1st Gen)' },
+	'd161:1420'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE420 (5th Gen)' },
+	'd161:1410'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE410P (5th Gen)' },
+	'd161:1405'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE405P (5th Gen)' },
+	'd161:0420/0004'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE420 (4th Gen)' },
+	'd161:0410/0004'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE410P (4th Gen)' },
+	'd161:0405/0004'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE405P (4th Gen)' },
+	'd161:0410/0003'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE410P (3rd Gen)' },
+	'd161:0405/0003'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE405P (3rd Gen)' },
+	'd161:0410'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE410P (2nd Gen)' },
+	'd161:0405'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE405P (2nd Gen)' },
+	'd161:1220'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE220 (5th Gen)' },
+	'd161:1205'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE205P (5th Gen)' },
+	'd161:1210'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE210P (5th Gen)' },
+	'd161:0220/0004'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE220 (4th Gen)' },
+	'd161:0205/0004'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE205P (4th Gen)' },
+	'd161:0210/0004'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE210P (4th Gen)' },
+	'd161:0205/0003'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE205P (3rd Gen)' },
+	'd161:0210/0003'	: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE210P (3rd Gen)' },
+	'd161:0205'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE205P ' },
+	'd161:0210'		: { 'driver' : 'wct4xxp', 'description' : 'Wildcard TE210P ' },
+
+	# from wctdm24xxp
+	'd161:2400'		: { 'driver' : 'wctdm24xxp', 'description' : 'Wildcard TDM2400P' },
+	'd161:0800'		: { 'driver' : 'wctdm24xxp', 'description' : 'Wildcard TDM800P' },
+	'd161:8002'		: { 'driver' : 'wctdm24xxp', 'description' : 'Wildcard AEX800' },
+	'd161:8003'		: { 'driver' : 'wctdm24xxp', 'description' : 'Wildcard AEX2400' },
+	'd161:8005'		: { 'driver' : 'wctdm24xxp', 'description' : 'Wildcard TDM410P' },
+	'd161:8006'		: { 'driver' : 'wctdm24xxp', 'description' : 'Wildcard AEX410P' },
+	'd161:8007'		: { 'driver' : 'wctdm24xxp', 'description' : 'HA8-0000' },
+	'd161:8008'		: { 'driver' : 'wctdm24xxp', 'description' : 'HB8-0000' },
+
+	# from pciradio
+	'e159:0001/e16b'	: { 'driver' : 'pciradio', 'description' : 'PCIRADIO' },
+
+	# from wcfxo
+	'e159:0001/8084'	: { 'driver' : 'wcfxo', 'description' : 'Wildcard X101P clone' },
+	'e159:0001/8085'	: { 'driver' : 'wcfxo', 'description' : 'Wildcard X101P' },
+	'e159:0001/8086'	: { 'driver' : 'wcfxo', 'description' : 'Wildcard X101P clone' },
+	'e159:0001/8087'	: { 'driver' : 'wcfxo', 'description' : 'Wildcard X101P clone' },
+	'1057:5608'		: { 'driver' : 'wcfxo', 'description' : 'Wildcard X100P' },
+
+	# from wct1xxp
+	'e159:0001/6159'	: { 'driver' : 'wct1xxp', 'description' : 'Digium Wildcard T100P T1/PRI or E100P E1/PRA Board' },
+
+	# from wctdm
+	'e159:0001/a159'	: { 'driver' : 'wctdm', 'description' : 'Wildcard S400P Prototype' },
+	'e159:0001/e159'	: { 'driver' : 'wctdm', 'description' : 'Wildcard S400P Prototype' },
+	'e159:0001/b100'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV E/F' },
+	'e159:0001/b1d9'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV I' },
+	'e159:0001/b118'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV I' },
+	'e159:0001/b119'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV I' },
+	'e159:0001/a9fd'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+	'e159:0001/a8fd'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+	'e159:0001/a800'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+	'e159:0001/a801'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+	'e159:0001/a908'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+	'e159:0001/a901'	: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+	#'e159:0001'		: { 'driver' : 'wctdm', 'description' : 'Wildcard TDM400P REV H' },
+
+	# from wcte11xp
+	'e159:0001/71fe'	: { 'driver' : 'wcte11xp', 'description' : 'Digium Wildcard TE110P T1/E1 Board' },
+	'e159:0001/79fe'	: { 'driver' : 'wcte11xp', 'description' : 'Digium Wildcard TE110P T1/E1 Board' },
+	'e159:0001/795e'	: { 'driver' : 'wcte11xp', 'description' : 'Digium Wildcard TE110P T1/E1 Board' },
+	'e159:0001/79de'	: { 'driver' : 'wcte11xp', 'description' : 'Digium Wildcard TE110P T1/E1 Board' },
+	'e159:0001/797e'	: { 'driver' : 'wcte11xp', 'description' : 'Digium Wildcard TE110P T1/E1 Board' },
+
+	# from wcte12xp
+	'd161:0120'		: { 'driver' : 'wcte12xp', 'description' : 'Wildcard TE12xP' },
+	'd161:8000'		: { 'driver' : 'wcte12xp', 'description' : 'Wildcard TE121' },
+	'd161:8001'		: { 'driver' : 'wcte12xp', 'description' : 'Wildcard TE122' },
+
+	# from wcb4xxp
+	'd161:b410'		: { 'driver' : 'wcb4xxp', 'description' : 'Digium Wildcard B410P' },
+
+	# from tor2
+	'10b5:9030'		: { 'driver' : 'tor2', 'description' : 'PLX 9030' },
+	'10b5:3001'		: { 'driver' : 'tor2', 'description' : 'PLX Development Board' },
+	'10b5:d00d'		: { 'driver' : 'tor2', 'description' : 'Tormenta 2 Quad T1/PRI or E1/PRA' },
+	'10b5:4000'		: { 'driver' : 'tor2', 'description' : 'Tormenta 2 Quad T1/E1 (non-Digium clone)' },
+
+	# # from wctc4xxp
+	'd161:3400'		: { 'driver' : 'wctc4xxp', 'description' : 'Wildcard TC400P' },
+	'd161:8004'		: { 'driver' : 'wctc4xxp', 'description' : 'Wildcard TCE400P' },
+
+	# Cologne Chips:
+	# (Still a partial list)
+	'1397:08b4/1397:b540'	: { 'driver' : 'wcb4xxp', 'description' : 'Swyx 4xS0 SX2 QuadBri' },
+	'1397:08b4/1397:b556'	: { 'driver' : 'wcb4xxp', 'description' : 'Junghanns DuoBRI ISDN card' },
+	'1397:08b4/1397:b520'	: { 'driver' : 'wcb4xxp', 'description' : 'Junghanns QuadBRI ISDN card' },
+	'1397:08b4/1397:b550'	: { 'driver' : 'wcb4xxp', 'description' : 'Junghanns QuadBRI ISDN card' },
+	'1397:08b4/1397:b752'	: { 'driver' : 'wcb4xxp', 'description' : 'Junghanns QuadBRI ISDN PCI-E card' },
+	'1397:16b8/1397:b552'	: { 'driver' : 'wcb4xxp', 'description' : 'Junghanns OctoBRI ISDN card' },
+	'1397:16b8/1397:b55b'	: { 'driver' : 'wcb4xxp', 'description' : 'Junghanns OctoBRI ISDN card' },
+	'1397:08b4/1397:e884'	: { 'driver' : 'wcb4xxp', 'description' : 'OpenVox B200P' },
+	'1397:08b4/1397:e888'	: { 'driver' : 'wcb4xxp', 'description' : 'OpenVox B400P' },
+	'1397:16b8/1397:e998'	: { 'driver' : 'wcb4xxp', 'description' : 'OpenVox B800P' },
+	'1397:08b4/1397:b566'	: { 'driver' : 'wcb4xxp', 'description' : 'BeroNet BN2S0' },
+	'1397:08b4/1397:b560'	: { 'driver' : 'wcb4xxp', 'description' : 'BeroNet BN4S0' },
+	'1397:08b4/1397:b762'	: { 'driver' : 'wcb4xxp', 'description' : 'BeroNet BN4S0 PCI-E card' },
+	'1397:16b8/1397:b562'	: { 'driver' : 'wcb4xxp', 'description' : 'BeroNet BN8S0' },
+	'1397:08b4'		: { 'driver' : 'qozap', 'description' : 'Generic Cologne ISDN card' },
+	'1397:16b8'		: { 'driver' : 'qozap', 'description' : 'Generic OctoBRI ISDN card' },
+	'1397:30b1'		: { 'driver' : 'cwain', 'description' : 'HFC-E1 ISDN E1 card' },
+	'1397:2bd0'		: { 'driver' : 'zaphfc', 'description' : 'HFC-S ISDN BRI card' },
+	# Has three submodels. Tested with 0675:1704:
+	'1043:0675'		: { 'driver' : 'zaphfc', 'description' : 'ASUSTeK Computer Inc. ISDNLink P-IN100-ST-D' },
+	'1397:f001'		: { 'driver' : 'ztgsm', 'description' : 'HFC-GSM Cologne Chips GSM' },
+
+	# Rhino cards (based on pci.ids)
+	'0b0b:0105'	: { 'driver' : 'r1t1', 'description' : 'Rhino R1T1' },
+	'0b0b:0205'	: { 'driver' : 'r4fxo', 'description' : 'Rhino R14FXO' },
+	'0b0b:0206'	: { 'driver' : 'rcbfx', 'description' : 'Rhino RCB4FXO 4-channel FXO analog telphony card' },
+	'0b0b:0305'	: { 'driver' : 'r1t1', 'description' : 'Rhino R1T1' },
+	'0b0b:0405'	: { 'driver' : 'rcbfx', 'description' : 'Rhino R8FXX' },
+	'0b0b:0406'	: { 'driver' : 'rcbfx', 'description' : 'Rhino RCB8FXX 8-channel modular analog telphony card' },
+	'0b0b:0505'	: { 'driver' : 'rcbfx', 'description' : 'Rhino R24FXX' },
+	'0b0b:0506'	: { 'driver' : 'rcbfx', 'description' : 'Rhino RCB24FXS 24-Channel FXS analog telphony card' },
+	'0b0b:0605'	: { 'driver' : 'rxt1', 'description' : 'Rhino R2T1' },
+	'0b0b:0705'	: { 'driver' : 'rcbfx', 'description' : 'Rhino R24FXS' },
+	'0b0b:0706'	: { 'driver' : 'rcbfx', 'description' : 'Rhino RCB24FXO 24-Channel FXO analog telphony card' },
+	'0b0b:0906'	: { 'driver' : 'rcbfx', 'description' : 'Rhino RCB24FXX 24-channel modular analog telphony card' },
+
+	# Sangoma cards (based on pci.ids)
+	'1923:0040'	: { 'driver' : 'wanpipe', 'description' : 'Sangoma Technologies Corp. A200/Remora FXO/FXS Analog AFT card' },
+	'1923:0100'	: { 'driver' : 'wanpipe', 'description' : 'Sangoma Technologies Corp. A104d QUAD T1/E1 AFT card' },
+	'1923:0300'	: { 'driver' : 'wanpipe', 'description' : 'Sangoma Technologies Corp. A101 single-port T1/E1' },
+	'1923:0400'	: { 'driver' : 'wanpipe', 'description' : 'Sangoma Technologies Corp. A104u Quad T1/E1 AFT' },
+
+	# Yeastar (from output of modinfo):
+	'e159:0001/2151' : { 'driver' : 'ystdm8xx', 'description' : 'Yeastar YSTDM8xx'},
+
+	'e159:0001/9500:0003' : { 'driver' : 'opvxa1200', 'description' : 'OpenVox A800P' },
+
+	# Aligera
+ 	'10ee:1004'		: { 'driver' : 'ap400', 'description' : 'Aligera AP40X/APE40X 1E1/2E1/4E1 card' },
+}
+
 # //END-DEFINES//
 
 
@@ -145,7 +285,9 @@ class Dahdi(object):
 		super(Dahdi, self).__init__()
 		self.log = logging.getLogger('xivo_sysconf.modules.dahdi')
 
-		http_json_server.register(self.dahdi_get_spaninfos , CMD_R, name='dahdi_get_spaninfos',
+		http_json_server.register(self.spansinfo , CMD_R,	name='dahdi_get_spansinfo',
+			safe_init=self.safe_init)
+		http_json_server.register(self.cardsinfo , CMD_R,	name='dahdi_get_cardsinfo',
 			safe_init=self.safe_init)
 		#http_json_server.register(self.status   , CMD_R , name='ha_status')
 
@@ -153,7 +295,9 @@ class Dahdi(object):
 		#self.file       = options.configuration.get('ha', 'ha_file')
 		pass
 
-	def dahdi_get_spaninfos(self, args, options):
+	def spansinfo(self, args, options):
+		"""Basically a reimplementation of dahdi_scan program
+		"""
 		try:
 			fd = open('/dev/dahdi/ctl', 'r')
 		except:
@@ -257,6 +401,43 @@ class Dahdi(object):
 			basechan += ret[_s.index('totalchans')]
 
 		return spans
+
+	def cardsinfo(self, args, options):
+		"""Basically a -incomplete- reimplementation of dahdi_hardware program
+		"""
+		devices = {}
+		DEVPATH = '/sys/bus/pci/devices'
+
+		for pciid in os.listdir(DEVPATH):
+			dev = {'loaded': False}
+			for k in ('vendor','device','subsystem_vendor','subsystem_device'):
+				with open(os.path.join(DEVPATH,pciid,k)) as f:
+					dev[k] = f.read()[2:-1] # remove starting '0x' and trailing '\n'
+
+			pcikey = re.split('([:/])',
+				"{vendor}:{device}/{subsystem_vendor}:{subsystem_device}".format(**dev))
+			for i in (7,5,3):
+				subkey = ''.join(pcikey[:i])
+				if subkey in PCI_IDS:
+					dev.update(PCI_IDS[subkey]); devices[pciid] = dev; break
+
+
+		DRVPATH = '/sys/bus/pci/drivers'
+		for drvname in os.listdir(DRVPATH):
+			try:
+				# fail if no pciid (i.e 0000:03:0c.0) found
+				pciid = [f for f in os.listdir(os.path.join(DRVPATH, drvname)) if	re.match("^[\da-f.:]+$", f)][0]
+
+				# fail if no module defined for pci device
+				modname = os.path.basename(os.readlink(os.path.join(DRVPATH, drvname, 'module')))
+
+				# fail if pci device is unknown
+				devices[pciid]['loaded'] = devices[pciid]['driver'] == modname
+			except:
+				continue
+		
+		return devices
+
 
 dahdi = Dahdi()
 

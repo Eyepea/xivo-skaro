@@ -28,11 +28,15 @@ class TestDahdi(unittest.TestCase):
 
 	def test_01_infos(self):
 		# get infos
-		(resp, data) = self.client.request('GET', '/dahdi_get_spaninfos', {})
+		(resp, data) = self.client.request('GET', '/dahdi_get_spansinfo', {})
 		print resp.status
 		self.assertEqual(resp.status, 200)
 		import pprint; pprint.pprint(cjson.decode(data))
 
+		(resp, data) = self.client.request('GET', '/dahdi_get_cardsinfo', {})
+		print resp.status
+		self.assertEqual(resp.status, 200)
+		import pprint; pprint.pprint(cjson.decode(data))
 
 if __name__ == '__main__':
 	unittest.main()
