@@ -1,12 +1,12 @@
 server {
-  server_name localhost;
+  server_name ~^(www\.)?(?<domain>.+)$;
   location / {
-    rewrite ^/(.*) https://localhost permanent;
+    rewrite ^/(.*) https://$domain permanent;
   }
 }
 server {
   listen 443;
-  server_name localhost;
+  server_name $domain;
 
   access_log /var/log/nginx/xivo.access.log;
   error_log /var/log/nginx/xivo.error.log;
