@@ -31,6 +31,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_extenfeatures 	= false;
 	protected $_phonefunckey 	= false;
 	protected $_extenumbers  	= false;
+	protected $_extensions  	= false;
 	protected $_linefeatures  	= false;
 	protected $_devicefeatures 	= false;
 	
@@ -40,6 +41,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_extenfeatures = &$ipbx->get_application('extenfeatures')) === false
 		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
+		|| ($this->_extensions = &$ipbx->get_module('extensions')) === false
 		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false)
@@ -622,9 +624,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 						$where['typeval'] = $type['val'];
 						if (($rsexten = $this->_extenumbers->get_where($where)) !== false)
 							$exten = $rsexten['exten'];
+						$exten = str_replace('.', $ref['typevalextenumbersright'], $exten);
 				}
 			}
-												
+									
 			$conf[$ref['fknum']] = array();
 			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
 			$conf[$ref['fknum']]['value'] = $exten;

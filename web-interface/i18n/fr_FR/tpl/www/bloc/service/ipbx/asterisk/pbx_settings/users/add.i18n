@@ -451,6 +451,12 @@ Parking
 ; fm_phonefunckey_type-opt(generalfeatures-parkext)
 Parking
 
+; fm_phonefunckey_type-optgroup(extension-paging)
+Intercom
+
+; fm_phonefunckey_type-opt(extenfeatures-paging)
+Intercom
+
 ; fm_phonefunckey_type-opt(custom)
 Personnalisé
 

@@ -258,6 +258,13 @@ $array['type']['generalfeatures-parkext']['category'] = 'extension-parking';
 $array['type']['generalfeatures-parkext']['name'] = 'generalfeatures-parkext';
 $array['type']['generalfeatures-parkext']['extension'] = true;
 
+$array['type']['extenfeatures-paging'] = array();
+$array['type']['extenfeatures-paging']['category'] = 'extension-paging';
+$array['type']['extenfeatures-paging']['name'] = 'extenfeatures-paging';
+$array['type']['extenfeatures-paging']['extension'] = true;
+$array['type']['extenfeatures-paging']['destination'] = true;
+
+
 $array['element'] = array();
 
 $array['element']['iduserfeatures'] = array();

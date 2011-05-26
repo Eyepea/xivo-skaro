@@ -55,12 +55,18 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		$data['extension'] = false;
 		$data['supervision'] = (bool) $data['supervision'];
 		$data['progfunckey'] = (bool) $data['progfunckey'];
-
+		
 		switch($data['typeextenumbers'])
 		{
 			case 'extenfeatures':
 				switch($data['typevalextenumbers'])
 				{
+					case 'paging':
+						$data['extension'] = true;
+						$data['exten'] = $data['typevalextenumbersright'];
+						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
+						$data['typeval'] = $data['typevalextenumbersright'];
+						return($data);
 					case 'bsfilter':
 						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 						$data['typeval'] = $data['typevalextenumbersright'];
@@ -112,6 +118,37 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		}
 
 		return($data);
+	}
+
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false
+		|| isset($arr['iduserfeatures']) === false
+		|| ((int) $arr['iduserfeatures']) === 0)
+			return(false);
+			
+		if (($rs = parent::add($arr,$id)) === false)
+			return(false);
+			
+		if(($modlinefeatures = &$this->_sre->get_module('linefeatures')) === false
+		|| ($moddevicefeatures = &$this->_sre->get_module('devicefeatures')) === false)
+			return(false);
+			
+		if(($masterline = $modlinefeatures->get_user_masterline($arr['iduserfeatures'])) === false)
+			return($rs);
+		elseif(($device = $moddevicefeatures->get($masterline['device'])) === false
+		|| $this->rebuild_device_config($device['id']) === false)
+			return(false);
+
+		return($rs);
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		return(parent::edit($id,$arr,$disable));
 	}
 
 	function get_type_list()
@@ -168,7 +205,6 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures-queuetogglemember':
 				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
-
 				$r['typeextenumbers'] = 'extenfeatures';
 				$r['typevalextenumbers'] = $type[1];
 				$r['typeextenumbersright'] = substr($type[1],0,5);
@@ -178,6 +214,15 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
 
+				$r['typeextenumbers'] = 'extenfeatures';
+				$r['typevalextenumbers'] = $type[1];
+				$r['typeextenumbersright'] = 'user';
+				$r['typevalextenumbersright'] = $arr['typeval'];
+				return($r);
+			case 'extenfeatures-paging':
+				if(dwho_has_len($arr['typeval']) === false)
+					return(false);
+					
 				$r['typeextenumbers'] = 'extenfeatures';
 				$r['typevalextenumbers'] = $type[1];
 				$r['typeextenumbersright'] = 'user';
@@ -221,6 +266,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures':
 				switch($typeval)
 				{
+					case 'paging':
 					case 'bsfilter':
 						return(true);
 					case 'agentdynamiclogin':
@@ -281,6 +327,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures':
 				switch($typeval)
 				{
+					case 'paging':
 					case 'bsfilter':
 						$rs['type'] = $type;
 						$rs['val'] = $typeval;
