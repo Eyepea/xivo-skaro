@@ -125,3 +125,24 @@ class Config:
         else:
             ret = self.xc_json
         return ret
+
+    def set_rcti_special_profile(self):
+        self.xc_json['userstatus']['ctiserver'] = { 'onlystate' : { 'allowed' : ['onlystate'] } }
+        self.xc_json['profiles']['ctiserver'] = {
+            'functions' : None,
+            'regcommands' : 'itm_regcommands', # XXX
+            'userstatus': 'ctiserver',
+            'preferences': None, # XXX
+            'name' : 'CTIServer',
+            'ipbxcommands' : None,
+            'phonestatus': None,
+            'agentstatus': None,
+            'channelstatus': None,
+            'xlets': None,
+            'services' : None
+            }
+        return
+
+    def set_rcti_override_ipbxes(self, overconf):
+        self.xc_json['ipbxes'] = overconf
+        return
