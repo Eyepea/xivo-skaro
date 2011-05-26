@@ -361,6 +361,27 @@ class AMIClass:
             ret = False
         return ret
 
+    # \brief Logs a Queue Event
+    def queuelog(self, queuename, event,
+                 uniqueid = None,
+                 interface = None,
+                 message = None):
+        command_details = [('Queue', queuename),
+                           ('Event', event)]
+        if uniqueid:
+            command_details.append(('Uniqueid', uniqueid))
+        if interface:
+            command_details.append(('Interface', interface))
+        if message:
+            command_details.append(('Message', message))
+        try:
+            ret = self.sendcommand('QueueLog', command_details)
+        except self.AMIError:
+            ret = False
+        except Exception:
+            ret = False
+        return ret
+
     # \brief Requests the Mailbox informations
     def mailbox(self, phone, context):
         try:
