@@ -212,15 +212,15 @@ $array['app']['gotoif']['arg'][0] = array('minlen'	=> 4,
 $array['app']['hangup'] = array();
 $array['app']['hangup']['displayname'] = 'Hangup';
 
-$array['app']['macro'] = array();
-$array['app']['macro']['displayname'] = 'Macro';
-$array['app']['macro']['arg'] = array();
-$array['app']['macro']['arg'][0] = array('minlen'	=> 1,
+$array['app']['gosub'] = array();
+$array['app']['gosub']['displayname'] = 'GoSub';
+$array['app']['gosub']['arg'] = array();
+$array['app']['gosub']['arg'][0] = array('minlen'	=> 1,
 					 'regexp'	=> '/^(?:[a-z0-9_-]{1,80}'.
 							   '|(?:[a-z0-9_-]*'.
 								XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
 								'[a-z0-9_-]*)+)$/');
-$array['app']['macro']['arg'][1] = array('set'		=> false,
+$array['app']['gosub']['arg'][1] = array('set'		=> false,
 					 'chk'		=> 2);
 
 $array['app']['mixmonitor'] = array();

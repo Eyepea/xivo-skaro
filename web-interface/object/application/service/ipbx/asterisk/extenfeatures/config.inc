@@ -22,66 +22,66 @@ $array = array();
 
 $array['exten'] = array();
 $array['exten']['agentdynamiclogin'] = array();
-$array['exten']['agentdynamiclogin']['app'] = 'Macro';
+$array['exten']['agentdynamiclogin']['app'] = 'GoSub';
 $array['exten']['agentdynamiclogin']['appdata'] = array();
 $array['exten']['agentdynamiclogin']['appdata'][0] = 'agentdynamiclogin';
 $array['exten']['agentdynamiclogin']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentstaticlogin'] = array();
-$array['exten']['agentstaticlogin']['app'] = 'Macro';
+$array['exten']['agentstaticlogin']['app'] = 'GoSub';
 $array['exten']['agentstaticlogin']['appdata'] = array();
 $array['exten']['agentstaticlogin']['appdata'][0] = 'agentstaticlogin';
 $array['exten']['agentstaticlogin']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentstaticlogoff'] = array();
-$array['exten']['agentstaticlogoff']['app'] = 'Macro';
+$array['exten']['agentstaticlogoff']['app'] = 'GoSub';
 $array['exten']['agentstaticlogoff']['appdata'] = array();
 $array['exten']['agentstaticlogoff']['appdata'][0] = 'agentstaticlogoff';
 $array['exten']['agentstaticlogoff']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentstaticlogtoggle'] = array();
-$array['exten']['agentstaticlogtoggle']['app'] = 'Macro';
+$array['exten']['agentstaticlogtoggle']['app'] = 'GoSub';
 $array['exten']['agentstaticlogtoggle']['appdata'] = array();
 $array['exten']['agentstaticlogtoggle']['appdata'][0] = 'agentstaticlogtoggle';
 $array['exten']['agentstaticlogtoggle']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['bsfilter'] = array();
-$array['exten']['bsfilter']['app'] = 'Macro';
+$array['exten']['bsfilter']['app'] = 'GoSub';
 $array['exten']['bsfilter']['appdata'] = array();
 $array['exten']['bsfilter']['appdata'][0] = 'bsfilter';
 $array['exten']['bsfilter']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['callgroup'] = array();
-$array['exten']['callgroup']['app'] = 'Macro';
+$array['exten']['callgroup']['app'] = 'GoSub';
 $array['exten']['callgroup']['appdata'] = array();
 $array['exten']['callgroup']['appdata'][0] = 'group';
 $array['exten']['callgroup']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 $array['exten']['callgroup']['appdata'][2] = '';
 
 $array['exten']['calllistening'] = array();
-$array['exten']['calllistening']['app'] = 'Macro';
+$array['exten']['calllistening']['app'] = 'GoSub';
 $array['exten']['calllistening']['appdata'] = 'calllistening';
 
 $array['exten']['callmeetme'] = array();
-$array['exten']['callmeetme']['app'] = 'Macro';
+$array['exten']['callmeetme']['app'] = 'GoSub';
 $array['exten']['callmeetme']['appdata'] = array();
 $array['exten']['callmeetme']['appdata'][0] = 'meetme';
 $array['exten']['callmeetme']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 $array['exten']['callmeetme']['appdata'][2] = '';
 
 $array['exten']['callqueue'] = array();
-$array['exten']['callqueue']['app'] = 'Macro';
+$array['exten']['callqueue']['app'] = 'GoSub';
 $array['exten']['callqueue']['appdata'] = array();
 $array['exten']['callqueue']['appdata'][0] = 'queue';
 $array['exten']['callqueue']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 $array['exten']['callqueue']['appdata'][2] = '';
 
 $array['exten']['callrecord'] = array();
-$array['exten']['callrecord']['app'] = 'Macro';
+$array['exten']['callrecord']['app'] = 'GoSub';
 $array['exten']['callrecord']['appdata'] = 'callrecord';
 
 $array['exten']['calluser'] = array();
-$array['exten']['calluser']['app'] = 'Macro';
+$array['exten']['calluser']['app'] = 'GoSub';
 $array['exten']['calluser']['appdata'] = array();
 $array['exten']['calluser']['appdata'][0] = 'user';
 $array['exten']['calluser']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
@@ -92,54 +92,54 @@ $array['exten']['directoryaccess']['app'] = 'Directory';
 $array['exten']['directoryaccess']['appdata'] = '${CONTEXT}';
 
 $array['exten']['enablednd'] = array();
-$array['exten']['enablednd']['app'] = 'Macro';
+$array['exten']['enablednd']['app'] = 'GoSub';
 $array['exten']['enablednd']['appdata'] = 'enablednd';
 
 $array['exten']['enablevm'] = array();
-$array['exten']['enablevm']['app'] = 'Macro';
+$array['exten']['enablevm']['app'] = 'GoSub';
 $array['exten']['enablevm']['appdata'] = 'enablevm';
 
 $array['exten']['enablevmbox'] = array();
-$array['exten']['enablevmbox']['app'] = 'Macro';
+$array['exten']['enablevmbox']['app'] = 'GoSub';
 $array['exten']['enablevmbox']['appdata'] = 'enablevmbox';
 
 $array['exten']['enablevmboxslt'] = array();
-$array['exten']['enablevmboxslt']['app'] = 'Macro';
+$array['exten']['enablevmboxslt']['app'] = 'GoSub';
 $array['exten']['enablevmboxslt']['appdata'] = array();
 $array['exten']['enablevmboxslt']['appdata'][0] = 'enablevmbox';
 $array['exten']['enablevmboxslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['enablevmslt'] = array();
-$array['exten']['enablevmslt']['app'] = 'Macro';
+$array['exten']['enablevmslt']['app'] = 'GoSub';
 $array['exten']['enablevmslt']['appdata'] = array();
 $array['exten']['enablevmslt']['appdata'][0] = 'enablevm';
 $array['exten']['enablevmslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdbusy'] = array();
-$array['exten']['fwdbusy']['app'] = 'Macro';
+$array['exten']['fwdbusy']['app'] = 'GoSub';
 $array['exten']['fwdbusy']['appdata'] = array();
 $array['exten']['fwdbusy']['appdata'][0] = 'feature_forward';
 $array['exten']['fwdbusy']['appdata'][1] = 'busy';
 $array['exten']['fwdbusy']['appdata'][2] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdrna'] = array();
-$array['exten']['fwdrna']['app'] = 'Macro';
+$array['exten']['fwdrna']['app'] = 'GoSub';
 $array['exten']['fwdrna']['appdata'][0] = 'feature_forward';
 $array['exten']['fwdrna']['appdata'][1] = 'rna';
 $array['exten']['fwdrna']['appdata'][2] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdunc'] = array();
-$array['exten']['fwdunc']['app'] = 'Macro';
+$array['exten']['fwdunc']['app'] = 'GoSub';
 $array['exten']['fwdunc']['appdata'][0] = 'feature_forward';
 $array['exten']['fwdunc']['appdata'][1] = 'unc';
 $array['exten']['fwdunc']['appdata'][2] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdundoall'] = array();
-$array['exten']['fwdundoall']['app'] = 'Macro';
+$array['exten']['fwdundoall']['app'] = 'GoSub';
 $array['exten']['fwdundoall']['appdata'] = 'fwdundoall';
 
 $array['exten']['groupaddmember'] = array();
-$array['exten']['groupaddmember']['app'] = 'Macro';
+$array['exten']['groupaddmember']['app'] = 'GoSub';
 $array['exten']['groupaddmember']['appdata'] = array();
 $array['exten']['groupaddmember']['appdata'][0] = 'groupmember';
 $array['exten']['groupaddmember']['appdata'][1] = 'group';
@@ -147,7 +147,7 @@ $array['exten']['groupaddmember']['appdata'][2] = 'add';
 $array['exten']['groupaddmember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['groupremovemember'] = array();
-$array['exten']['groupremovemember']['app'] = 'Macro';
+$array['exten']['groupremovemember']['app'] = 'GoSub';
 $array['exten']['groupremovemember']['appdata'] = array();
 $array['exten']['groupremovemember']['appdata'][0] = 'groupmember';
 $array['exten']['groupremovemember']['appdata'][1] = 'group';
@@ -155,7 +155,7 @@ $array['exten']['groupremovemember']['appdata'][2] = 'remove';
 $array['exten']['groupremovemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['grouptogglemember'] = array();
-$array['exten']['grouptogglemember']['app'] = 'Macro';
+$array['exten']['grouptogglemember']['app'] = 'GoSub';
 $array['exten']['grouptogglemember']['appdata'] = array();
 $array['exten']['grouptogglemember']['appdata'][0] = 'groupmember';
 $array['exten']['grouptogglemember']['appdata'][1] = 'group';
@@ -163,22 +163,22 @@ $array['exten']['grouptogglemember']['appdata'][2] = 'toggle';
 $array['exten']['grouptogglemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['guestprov'] = array();
-$array['exten']['guestprov']['app'] = 'Macro';
+$array['exten']['guestprov']['app'] = 'GoSub';
 $array['exten']['guestprov']['appdata'] = 'guestprov';
 
 $array['exten']['incallfilter'] = array();
-$array['exten']['incallfilter']['app'] = 'Macro';
+$array['exten']['incallfilter']['app'] = 'GoSub';
 $array['exten']['incallfilter']['appdata'] = 'incallfilter';
 
 $array['exten']['phoneprogfunckey'] = array();
-$array['exten']['phoneprogfunckey']['app'] = 'Macro';
+$array['exten']['phoneprogfunckey']['app'] = 'GoSub';
 $array['exten']['phoneprogfunckey']['appdata'] = array();
 $array['exten']['phoneprogfunckey']['appdata'][0] = 'phoneprogfunckey';
 $array['exten']['phoneprogfunckey']['appdata'][1] = '${EXTEN:0:$<EXTNUMLEN>}';
 $array['exten']['phoneprogfunckey']['appdata'][2] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['phonestatus'] = array();
-$array['exten']['phonestatus']['app'] = 'Macro';
+$array['exten']['phonestatus']['app'] = 'GoSub';
 $array['exten']['phonestatus']['appdata'] = 'phonestatus';
 
 $array['exten']['pickup'] = array();
@@ -186,7 +186,7 @@ $array['exten']['pickup']['app'] = 'Pickup';
 $array['exten']['pickup']['appdata'] = '${EXTEN:$<EXTNUMLEN>}%${CONTEXT}@PICKUPMARK';
 
 $array['exten']['queueaddmember'] = array();
-$array['exten']['queueaddmember']['app'] = 'Macro';
+$array['exten']['queueaddmember']['app'] = 'GoSub';
 $array['exten']['queueaddmember']['appdata'] = array();
 $array['exten']['queueaddmember']['appdata'][0] = 'groupmember';
 $array['exten']['queueaddmember']['appdata'][1] = 'queue';
@@ -194,7 +194,7 @@ $array['exten']['queueaddmember']['appdata'][2] = 'add';
 $array['exten']['queueaddmember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['queueremovemember'] = array();
-$array['exten']['queueremovemember']['app'] = 'Macro';
+$array['exten']['queueremovemember']['app'] = 'GoSub';
 $array['exten']['queueremovemember']['appdata'] = array();
 $array['exten']['queueremovemember']['appdata'][0] = 'groupmember';
 $array['exten']['queueremovemember']['appdata'][1] = 'queue';
@@ -202,7 +202,7 @@ $array['exten']['queueremovemember']['appdata'][2] = 'remove';
 $array['exten']['queueremovemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['queuetogglemember'] = array();
-$array['exten']['queuetogglemember']['app'] = 'Macro';
+$array['exten']['queuetogglemember']['app'] = 'GoSub';
 $array['exten']['queuetogglemember']['appdata'] = array();
 $array['exten']['queuetogglemember']['appdata'][0] = 'groupmember';
 $array['exten']['queuetogglemember']['appdata'][1] = 'queue';
@@ -210,54 +210,55 @@ $array['exten']['queuetogglemember']['appdata'][2] = 'toggle';
 $array['exten']['queuetogglemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['recsnd'] = array();
-$array['exten']['recsnd']['app'] = 'Macro';
+$array['exten']['recsnd']['app'] = 'GoSub';
 $array['exten']['recsnd']['appdata'] = array();
 $array['exten']['recsnd']['appdata'][0] = 'recsnd';
 $array['exten']['recsnd']['appdata'][1] = 'wav';
 
 $array['exten']['vmboxmsgslt'] = array();
-$array['exten']['vmboxmsgslt']['app'] = 'Macro';
+$array['exten']['vmboxmsgslt']['app'] = 'GoSub';
 $array['exten']['vmboxmsgslt']['appdata'] = array();
 $array['exten']['vmboxmsgslt']['appdata'][0] = 'vmboxmsg';
 $array['exten']['vmboxmsgslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['vmboxpurgeslt'] = array();
-$array['exten']['vmboxpurgeslt']['app'] = 'Macro';
+$array['exten']['vmboxpurgeslt']['app'] = 'GoSub';
 $array['exten']['vmboxpurgeslt']['appdata'] = array();
 $array['exten']['vmboxpurgeslt']['appdata'][0] = 'vmboxpurge';
 $array['exten']['vmboxpurgeslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['vmboxslt'] = array();
-$array['exten']['vmboxslt']['app'] = 'Macro';
+$array['exten']['vmboxslt']['app'] = 'GoSub';
 $array['exten']['vmboxslt']['appdata'] = array();
 $array['exten']['vmboxslt']['appdata'][0] = 'vmbox';
 $array['exten']['vmboxslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['vmusermsg'] = array();
-$array['exten']['vmusermsg']['app'] = 'Macro';
+$array['exten']['vmusermsg']['app'] = 'GoSub';
 $array['exten']['vmusermsg']['appdata'] = 'vmusermsg';
 
 $array['exten']['vmuserpurge'] = array();
-$array['exten']['vmuserpurge']['app'] = 'Macro';
+$array['exten']['vmuserpurge']['app'] = 'GoSub';
 $array['exten']['vmuserpurge']['appdata'] = 'vmuserpurge';
 
 $array['exten']['vmuserpurgeslt'] = array();
-$array['exten']['vmuserpurgeslt']['app'] = 'Macro';
+$array['exten']['vmuserpurgeslt']['app'] = 'GoSub';
 $array['exten']['vmuserpurgeslt']['appdata'] = array();
 $array['exten']['vmuserpurgeslt']['appdata'][0] = 'vmuserpurge';
 $array['exten']['vmuserpurgeslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['vmuserslt'] = array();
-$array['exten']['vmuserslt']['app'] = 'Macro';
+$array['exten']['vmuserslt']['app'] = 'GoSub';
 $array['exten']['vmuserslt']['appdata'] = array();
 $array['exten']['vmuserslt']['appdata'][0] = 'vmuser';
 $array['exten']['vmuserslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['paging'] = array();
-$array['exten']['paging']['app'] = 'Macro';
+$array['exten']['paging']['app'] = 'GoSub';
 $array['exten']['paging']['appdata'] = array();
 $array['exten']['paging']['appdata'][0] = 'paging';
-$array['exten']['paging']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['paging']['appdata'][1] = 's';
+$array['exten']['paging']['appdata'][2] = '1(${EXTEN:$<EXTNUMLEN>})';
 
 $array['element'] = array();
 
@@ -381,6 +382,9 @@ $array['element']['vmuserpurgeslt']['default'] = '*92.';
 $array['element']['vmuserslt'] = array();
 $array['element']['vmuserslt']['default'] = '*96.';
 
+$array['element']['paging'] = array();
+$array['element']['paging']['default'] = '*11.';
+
 $array['filter'] = array();
 $array['filter']['agentdynamiclogin'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['agentstaticlogin'] = array('minlen' => 1,'maxlen' => 40);
@@ -422,5 +426,6 @@ $array['filter']['vmusermsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '
 $array['filter']['vmuserpurge'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['vmuserpurgeslt'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['vmuserslt'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['paging'] = array('minlen' => 1,'maxlen' => 40);
 
 ?>
