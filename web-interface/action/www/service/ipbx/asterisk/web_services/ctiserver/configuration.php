@@ -434,12 +434,12 @@ switch($act)
 				);
 				$connection = array(
 					'ipaddress' => $list[$v]['host'],
-					'ami_port'  => $list[$v]['ami_port'],
-					'ami_login' => $list[$v]['ami_login'],
-					'ami_pass'  => $list[$v]['ami_pass']
+					'ipport'    => $list[$v]['ami_port'],
+					'username'  => $list[$v]['ami_login'],
+					'password'  => $list[$v]['ami_pass']
 				);
 				$out['ipbxes'][$hostname]['urllists'] = $urllists;
-				$out['ipbxes'][$hostname]['connection'] = $connection;
+				$out['ipbxes'][$hostname]['ipbx_connection'] = $connection;
 				$out['ipbxes'][$hostname]['cdr_db_uri'] = $db_ast;
 				$out['ipbxes'][$hostname]['userfeatures_db_uri'] = $db_ast;
 			}
