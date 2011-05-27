@@ -181,7 +181,7 @@ class BaseYealinkPlugin(StandardPlugin):
             keynum = int(funckey_no)
             funckey_type = funckey_dict[u'type']
             if funckey_type == u'speeddial':
-                lines.extend(self._format_funckey_speeddial(funckey_dict))
+                lines.extend(self._format_funckey_speeddial(funckey_no, funckey_dict))
             elif funckey_type == u'blf':
                 if keynum <= 10:
                     lines.extend(self._format_funckey_blf(funckey_no, funckey_dict,
