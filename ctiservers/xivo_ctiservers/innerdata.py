@@ -251,15 +251,19 @@ class Safe:
                                        'list' : [k]
                                        } )
             if deltas.get('del'):
+                finaldels = list()
                 for k in deltas.get('del'):
-                    del self.xod_status[listname][k]
-                # tells clients about deleted object XXX
-                self.events_cti.put( { 'class' : 'getlist',
-                                       'listname' : listname,
-                                       'function' : 'delconfig',
-                                       'tipbxid' : self.ipbxid,
-                                       'list' : deltas.get('del')
-                                       } )
+                    if not k.startswith('cs:'):
+                        finaldels.append(k)
+                        del self.xod_status[listname][k]
+                # tells clients about deleted objects
+                if finaldels:
+                    self.events_cti.put( { 'class' : 'getlist',
+                                           'listname' : listname,
+                                           'function' : 'delconfig',
+                                           'tipbxid' : self.ipbxid,
+                                           'list' : finaldels
+                                           } )
             for id, v in deltas.get('change').iteritems():
                 if not v:
                     continue

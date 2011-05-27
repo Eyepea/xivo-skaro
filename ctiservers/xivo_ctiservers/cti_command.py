@@ -116,7 +116,7 @@ class Command:
                     messagebase['warning_string'] = 'no_regcommands'
 
             methodname = 'regcommand_%s' % self.command
-            if hasattr(self, methodname):
+            if hasattr(self, methodname) and 'warning_string' not in messagebase:
                 try:
                     ztmp = getattr(self, methodname)()
                     if ztmp is None:
@@ -129,11 +129,11 @@ class Command:
                     log.exception('calling %s' % methodname)
                     messagebase['warning_string'] = 'exception'
             else:
-                messagebase['warning_string'] = 'unimplemented'
                 log.warning('no such method %s' % methodname)
+                messagebase['warning_string'] = 'unimplemented'
         else:
-            messagebase['warning_string'] = 'unknown'
             log.warning('unknown command %s' % self.command)
+            messagebase['warning_string'] = 'unknown'
 
         ackmessage = { 'message' : messagebase }
         if 'error_string' in messagebase:
@@ -194,9 +194,9 @@ class Command:
 
         if not self.connection.connection_details.get('userid'):
             log.warning('%s - unknown login : %s' % (head, self.commanddict.get('userlogin')))
-            # return 'user_not_found'
             # do not give a hint that the login might be good or wrong
-            return 'login_password'
+            # since this is the first part of the handshake, we shall anyway proceed "as if"
+            # until the password step, before sending a "wrong password" message ...
 
         self.connection.connection_details['prelogin'] = {
             'cticlientos' : whatsmyos,
@@ -229,9 +229,13 @@ class Command:
         userid = cdetails.get('userid')
         sessionid = cdetails.get('prelogin').get('sessionid')
 
-        ref_hashed_password = self.ctid.safe[ipbxid].user_get_hashed_password(userid, sessionid)
-        if ref_hashed_password != this_hashed_password:
-            log.warning('%s - wrong hashed password' % head)
+        if ipbxid and userid:
+            ref_hashed_password = self.ctid.safe[ipbxid].user_get_hashed_password(userid, sessionid)
+            if ref_hashed_password != this_hashed_password:
+                log.warning('%s - wrong hashed password' % head)
+                return 'login_password'
+        else:
+            log.warning('%s - undefined user : probably the login_id step failed' % head)
             return 'login_password'
 
         reply = { 'capalist' : [self.ctid.safe[ipbxid].user_get_ctiprofile(userid)] }

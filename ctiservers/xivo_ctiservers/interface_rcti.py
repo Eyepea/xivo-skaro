@@ -98,10 +98,16 @@ class RCTI:
             if 'class' in t:
                 classname = t.get('class')
                 if classname == 'login_id':
-                    sessionid = t.get('sessionid')
-                    self.login_pass(sessionid, self.password)
+                    if 'error_string' in t:
+                        self.log.warning('step %s error %s' % (classname, t.get('error_string')))
+                    else:
+                        sessionid = t.get('sessionid')
+                        self.login_pass(sessionid, self.password)
                 elif classname == 'login_pass':
-                    self.login_capas('onlystate', t.get('capalist')[0])
+                    if 'error_string' in t:
+                        self.log.warning('step %s error %s' % (classname, t.get('error_string')))
+                    else:
+                        self.login_capas('onlystate', t.get('capalist')[0])
                 elif classname == 'login_capas':
                     self.log.info('got my capabilities : %s' % t)
                     self.getlist('users')
