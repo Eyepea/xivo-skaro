@@ -56,10 +56,10 @@ class RCTI:
             try:
                 if self.encrypt:
                     ssl_sock = ssl.wrap_socket(self.socket, ssl_version = ssl.PROTOCOL_TLSv1)
-                    ssl_sock.connect((self.ipaddress, self.ipport))
+                    ssl_sock.connect(bindtuple)
                     self.socket = ssl_sock
                 else:
-                    self.socket.connect((self.ipaddress, self.ipport))
+                    self.socket.connect(bindtuple)
                 ret = self.socket
             except Exception, exc:
                 self.log.warning('unable to connect to %s:%d - reason %d'

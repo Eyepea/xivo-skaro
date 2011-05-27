@@ -429,18 +429,23 @@ class xivo_daemon:
             except Exception:
                 log.exception('udp %s %d' % (bind, trueport))
 
-        ctiup = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        ctiup.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         tosend = 'ctiserver-1.2'
         for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
             if ipbxid != self.myipbxid:
                 cticonn = ipbxconfig.get('cti_connection')
                 cti_address = cticonn.get('ipaddress')
                 dport = int(cticonn.get('announce_port'))
+                gai = socket.getaddrinfo(cti_address, dport, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
+                (afinet, socktype, proto, dummy, bindtuple) = gai[0]
+                ctiup = socket.socket(afinet, socktype)
+                ctiup.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                 self.safe[self.myipbxid].make_ctiserver_account(ipbxid,
                                                                 cticonn.get('account'),
                                                                 cticonn.get('pwd'))
-                ctiup.sendto(tosend, (cti_address, dport))
+                try:
+                    ctiup.sendto(tosend, bindtuple)
+                except Exception:
+                    log.exception('%s - sending to %s:%d' % (ipbxid, cti_address, dport))
 
         # Main select() loop - Receive messages
         if not self.cconf.getconfig():
