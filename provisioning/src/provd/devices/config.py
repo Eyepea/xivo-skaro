@@ -462,12 +462,16 @@ def _check_config_validity(config):
     # raise a value error if config is blatantly incorrect
     if u'parent_ids' not in config:
         raise ValueError('missing "parent_ids" field in config')
-    elif not isinstance(config[u'parent_ids'], list):
+    if not isinstance(config[u'parent_ids'], list):
         raise ValueError('"parent_ids" field must be a list; is %s' %
                          type(config[u'parent_ids']))
+    for id_ in config[u'parent_ids']:
+        if not isinstance(id_, basestring):
+            raise ValueError('parent id must be a string; is %s' % type(id_))
+    
     if u'raw_config' not in config:
         raise ValueError('missing "raw_config" field in config')
-    elif not isinstance(config[u'raw_config'], dict):
+    if not isinstance(config[u'raw_config'], dict):
         raise ValueError('"raw_config" field must be a dict; is %s' %
                          type(config[u'raw_config']))
 

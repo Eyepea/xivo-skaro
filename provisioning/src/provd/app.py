@@ -294,6 +294,7 @@ class ProvisioningApplication(object):
         # Return a deferred that will fire with None once the device
         # synchronization is completed.
         logger.info('Synchronizing device %s with plugin %s', device[ID_KEY], plugin.id)
+        _set_defaults_raw_config(raw_config)
         return plugin.synchronize(device, raw_config)
     
     @defer.inlineCallbacks

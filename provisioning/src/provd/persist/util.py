@@ -93,6 +93,13 @@ def _new_in_matcher(s_value):
     return _new_simple_matcher_from_pred(pred)
 
 
+def _new_contains_matcher(s_value):
+    # Return a matcher that returns true if there's a value in the document
+    # matching the select key that one of the value in s_value
+    pred = lambda doc_value: hasattr(doc_value, '__contains__') and s_value in doc_value
+    return _new_simple_matcher_from_pred(pred)
+
+
 def _new_nin_matcher(s_value):
     # Return a matcher that returns true if there's no values in the document
     # matching the select key that is equal to one of the value in s_value
@@ -164,6 +171,7 @@ def _new_and_matcher(matchers):
 _MATCHER_FACTORIES = {
     u'$in': _new_in_matcher,
     u'$nin': _new_nin_matcher,
+    u'$contains': _new_contains_matcher,
     u'$gt': _new_gt_matcher,
     u'$ge': _new_ge_matcher,
     u'$lt': _new_lt_matcher,

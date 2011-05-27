@@ -390,14 +390,17 @@ class TemplatePluginHelper(object):
         # XXX not sure device that device specific template should have the
         #     form 'filename' + '.tpl'...
         # get device-specific template
-        logger.info('Getting device specific template')
-        try:
-            return self._env.get_template(filename + '.tpl')
-        except TemplateNotFound:
-            logger.info('Device specific template not found.')
+        if filename:
+            logger.info('Getting device specific template')
+            try:
+                return self._env.get_template(filename + '.tpl')
+            except TemplateNotFound:
+                logger.info('Device specific template not found.')
+        else:
+            logger.info('No device specific information available for device.')
         # get model-specific template
-        logger.info('Getting model specific template')
         if 'model' in dev:
+            logger.info('Getting model specific template')
             model = dev['model']
             try:
                 return self._env.get_template(model + '.tpl')
