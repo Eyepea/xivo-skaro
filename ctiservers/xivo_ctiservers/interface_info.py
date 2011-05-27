@@ -186,12 +186,19 @@ class INFO(Interfaces):
                         else:
                             clireply.append('unknown action <%s> for loglevel : try set or get' % action)
 
-                elif usefulmsg == 'show_users':
-                    for user, info in self.ctid.commandclass.users().iteritems():
-                        try:
-                            clireply.append('%s %s' % (user.encode('latin1'), info))
-                        except Exception:
-                            log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg.startswith('showlist'):
+                    args = usefulmsg.split()
+                    for ipbxid, z in self.ctid.safe.iteritems():
+                        clireply.append('ipbxid : %s' % ipbxid)
+                        for k, v in z.xod_config.iteritems():
+                            clireply.append('    %s' % k)
+                            for kk, vv in v.keeplist.iteritems():
+                                clireply.append('        %s %s' % (kk, vv))
+##                    for user, info in self.ctid.safe.get(ipbxid).xod_config..users().iteritems():
+##                        try:
+##                            clireply.append('%s %s' % (user.encode('latin1'), info))
+##                        except Exception:
+##                            log.exception('INFO %s' % usefulmsg)
 
                 elif usefulmsg in show_command_list:
                     itemname = usefulmsg[5:]

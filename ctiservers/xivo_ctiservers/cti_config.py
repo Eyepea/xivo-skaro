@@ -41,6 +41,7 @@ class Config:
         self.dpylist = {}
         self.dirlist = {}
         self.xc_json = {}
+        self.overconf = None
         return
 
     def update(self):
@@ -85,6 +86,14 @@ class Config:
             log.exception('setdirconfigs')
 
         self.translate()
+
+        if self.overconf:
+            self.xc_json['ipbxes'] = self.overconf
+
+        # temporarily forced configuration items
+        self.xc_json['certfile'] = '/usr/share/doc/libssl-dev/demos/sign/cert.pem'
+        self.xc_json['keyfile'] = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
+        self.xc_json['main']['incoming_tcp']['CTIS'] = ['0.0.0.0', '5013']
         return
 
     def translate(self):
@@ -102,7 +111,8 @@ class Config:
                     z = item.replace('://localhost/', '://%s/' % self.ipwebs).replace('/private/', '/restricted/')
                     nl.append(z)
                 v['urllists'][kk] = nl
-            v.get('connection')['ipaddress'] = self.ipwebs
+            if 'ipbx_connection' in v:
+                v.get('ipbx_connection')['ipaddress'] = self.ipwebs
         return
 
     def setdirconfigs(self):
@@ -144,5 +154,5 @@ class Config:
         return
 
     def set_rcti_override_ipbxes(self, overconf):
-        self.xc_json['ipbxes'] = overconf
+        self.overconf = overconf
         return

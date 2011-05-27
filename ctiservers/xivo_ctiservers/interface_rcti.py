@@ -27,6 +27,7 @@ __author__    = 'Corentin Le Gall'
 import cjson
 import hashlib
 import logging
+import ssl
 import socket
 import time
 
@@ -42,6 +43,7 @@ class RCTI:
         self.ipport = int(config.get('ipport'))
         self.username = config.get('username')
         self.password = config.get('password')
+        self.encrypt = config.get('encrypt', False)
         return
 
     def connect(self):
@@ -51,12 +53,17 @@ class RCTI:
             (afinet, socktype, proto, dummy, bindtuple) = gai[0]
             self.socket = socket.socket(afinet, socktype)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sockret = self.socket.connect_ex((self.ipaddress, self.ipport))
-            if sockret:
-                self.log.warning('unable to connect to %s:%d - reason %d'
-                                 % (self.ipaddress, self.ipport, sockret))
-            else:
+            try:
+                if self.encrypt:
+                    ssl_sock = ssl.wrap_socket(self.socket, ssl_version = ssl.PROTOCOL_TLSv1)
+                    ssl_sock.connect((self.ipaddress, self.ipport))
+                    self.socket = ssl_sock
+                else:
+                    self.socket.connect((self.ipaddress, self.ipport))
                 ret = self.socket
+            except Exception, exc:
+                self.log.warning('unable to connect to %s:%d - reason %d'
+                                 % (self.ipaddress, self.ipport, exc.errno))
         return ret
 
     def disconnect(self):

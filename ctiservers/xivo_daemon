@@ -112,9 +112,7 @@ GETOPT_LONGOPTS    = ['debug', 'config=', 'confoverride=', 'pidfile=',
 BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
 
-filecert = '/usr/share/doc/libssl-dev/demos/sign/cert.pem'
-filekey = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
-sslproto = ssl.PROTOCOL_TLSv1
+SSLPROTO = ssl.PROTOCOL_TLSv1
 
 def parse_command_line():
     global DEBUG_MODE, XIVO_CONF_FILE, XIVO_CONF_OVER, PIDFILE, LOGFILENAME, XIVOIP, PORTDELTA
@@ -309,14 +307,14 @@ class xivo_daemon:
 
         self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
         self.cconf.set_ipwebs(XIVOIP)
-        self.cconf.update()
-        self.cconf.set_rcti_special_profile()
         if XIVO_CONF_OVER:
             urldata = urllib.urlopen(XIVO_CONF_OVER)
             payload = urldata.read()
             urldata.close()
             overconf = cjson.decode(payload)
             self.cconf.set_rcti_override_ipbxes(overconf)
+        self.cconf.update()
+        self.cconf.set_rcti_special_profile()
 
         queue_logger.queue_logger.init(self.cconf.getconfig('main').get('asterisk_queuestat_db'))
 
@@ -464,7 +462,7 @@ class xivo_daemon:
         while cti_queue.qsize() > 0:
             it = cti_queue.get()
             for k in self.fdlist_established.itervalues():
-                if not isinstance(k, str) and k.kind == 'CTI':
+                if not isinstance(k, str) and k.kind in ['CTI', 'CTIS']:
                     k.reply(it)
         return queuesize
 
@@ -478,7 +476,7 @@ class xivo_daemon:
     def send_to_cti_client(self, who, what):
         (ipbxid, userid) = who.split('/')
         for k in self.fdlist_established.itervalues():
-            if not isinstance(k, str) and k.kind == 'CTI':
+            if not isinstance(k, str) and k.kind in ['CTI', 'CTIS']:
                 if ipbxid == self.myipbxid:
                     if k.connection_details.get('userid') == userid:
                         k.reply(what)
@@ -512,7 +510,7 @@ class xivo_daemon:
             self.fdlist_full.extend(self.fdlist_remote_cti.keys())
             writefds = []
             for iconn, kind in self.fdlist_established.iteritems():
-                if kind == 'CTI' and iconn.need_sending():
+                if kind in ['CTI', 'CTIS'] and iconn.need_sending():
                     writefds.append(iconn)
             [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [],
                                                      self.updates_period)
@@ -643,9 +641,9 @@ class xivo_daemon:
                             try:
                                 connstream = ssl.wrap_socket(connc,
                                                              server_side = True,
-                                                             certfile = filecert,
-                                                             keyfile = filekey,
-                                                             ssl_version = sslproto)
+                                                             certfile = self.cconf.getconfig('certfile'),
+                                                             keyfile = self.cconf.getconfig('keyfile'),
+                                                             ssl_version = SSLPROTO)
                                 connc = ClientConnection(connstream, sockparams, ctiseparator)
                             except ssl.SSLError, exc:
                                 log.exception('%s:%s:%d' % (kind, sockparams[0], sockparams[1]))

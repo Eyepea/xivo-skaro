@@ -23,8 +23,14 @@
 
  "quebec": {"cti_connection": {"pwd": "qpassonp", "account": "xivoquebec",
         "password": "ppassonq", "username": "xivoputeaux",
-         "ipaddress": "192.168.0.146", "ipport": "7003", "announce_port": "7006"}},
+         "ipaddress": "192.168.0.146",
+         "ipport": "7003",
+         "encrypt": false,
+         "announce_port": "7006"}},
 
  "limonest": {"cti_connection": {"pwd": "lpassonp", "account": "xivolimonest",
         "password": "ppassonl", "username": "xivoputeaux",
-         "ipaddress": "192.168.0.146", "ipport": "6003", "announce_port": "6006"}}}
+         "ipaddress": "192.168.0.146",
+         "ipport": "6013",
+         "encrypt": true,
+         "announce_port": "6006"}}}
