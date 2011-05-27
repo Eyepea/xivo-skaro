@@ -1,29 +1,36 @@
 server {
+  listen 80;
   server_name ~^(www\.)?(?<domain>.+)$;
   location / {
     rewrite ^/(.*) https://$domain permanent;
   }
 }
 server {
-  listen 443;
-  server_name $domain;
+    listen 443;
+    server_name $domain;
 
-  access_log /var/log/nginx/xivo.access.log;
-  error_log /var/log/nginx/xivo.error.log;
+    access_log /var/log/nginx/xivo.access.log;
+    error_log /var/log/nginx/xivo.error.log debug;
+    root /usr/share/pf-xivo-web-interface/www;
 
-  root /usr/share/pf-xivo-web-interface/www;
-
-  location / {
-    include /etc/nginx/fastcgi_params;
-#    fastcgi_pass unix:/tmp/php.socket;
-    fastcgi_pass  127.0.0.1:9000;
-    fastcgi_index index.php;
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    fastcgi_param HTTPS on;
-  }
-
-  gzip  off; # gzipping SSL encripted data is a waste of time
-  ssl  on;
-  ssl_certificate /etc/nginx/ssl/server.crt;
-  ssl_certificate_key /etc/nginx/ssl/server.key;
+    location / {
+    }
+    location ~ \.php$ {
+        #fastcgi_pass unix:/var/run/php-fastcgi/php-fastcgi.socket;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_index index.php;
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS on;
+    }
+    location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
+        expires max;
+        add_header Pragma public;
+        add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+    }
+    gzip  off; # gzipping SSL encripted data is a waste of time
+    ssl  on;
+    ssl_certificate /etc/nginx/ssl/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/server.key;
 }
+
