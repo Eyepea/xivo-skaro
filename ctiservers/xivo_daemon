@@ -735,7 +735,7 @@ class xivo_daemon:
                             # socket.error : exc.args[0]
                             log.exception('[%s] %s' % (kind, sel_i))
                             try:
-                                log.warning('logging off %s following unexpected socket breakup' % userinfo)
+                                log.warning('unexpected socket breakup')
                                 kind.disconnected('exception')
                                 sel_i.close()
                                 del self.fdlist_established[sel_i]
