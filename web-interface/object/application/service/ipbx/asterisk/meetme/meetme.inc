@@ -133,7 +133,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			return(false);
 
 		return($this->_userfeatures->get_where(
-					array('context'	=> $context),
+					#array('context'	=> $context),
+					array(),
 					false,
 					null,
 					$internalid));

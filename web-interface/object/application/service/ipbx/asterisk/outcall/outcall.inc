@@ -463,7 +463,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					$this->_dialpattern->reverse_add('add');
 					break;
 				case 'outcalltrunk':
-					$this->_outcalltrunk->delete_where(array('typeid' => $outcallid));
+					$this->_outcalltrunk->delete_where(array('outcallid' => $outcallid));
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
