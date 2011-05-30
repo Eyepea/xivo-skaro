@@ -379,6 +379,7 @@ funckeys [optional|default to empty dictionary]
       This parameter can take one of the following value:
       - speeddial
       - blf
+      - park
       Note that when possible, a blf function key should also be usable as
       a speeddial function key.
       
@@ -386,6 +387,7 @@ funckeys [optional|default to empty dictionary]
       The value of the function key.
       For the speeddial type, this is an extension number.
       For the blf type, this is the monitored extension number.
+      For the park type, this is the parking extension number.
     
     label [optional]
       The label.
