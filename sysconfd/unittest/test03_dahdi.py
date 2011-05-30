@@ -140,8 +140,10 @@ class TestDahdi(unittest.TestCase):
 					'timingsrc': 5,
 					'lbo'      : 0,
 					'framing'  : 'css',
-					'coding'   : 'hdb3',
+					'coding'   : 'ami',
 					'crc4'     : False,
+					'termination': True,
+					'softntte' : 'te',
 				},
 				'echocanceller': None
 			}],

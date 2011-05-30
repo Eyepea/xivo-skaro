@@ -325,7 +325,7 @@ class Dahdi(object):
 			span = {
 				'spanno'  : spanno, 
 				'irq'     : ret[_s.index('irq')],
-				'channels': (basechan, basechan+ret[_s.index('totalchans')]),
+				'channels': (basechan, basechan+ret[_s.index('totalchans')]-1),
 				'alarms'  : [],
 			}
 			for k in ('name','description','manufacturer','devicetype'):
@@ -489,10 +489,12 @@ class Dahdi(object):
 							print >>f, "echocanceller=%s,%d" % (port[2], port[0])
 				else:
 					c = span['config']
-					print >>f, "span=%d,%d,%d,%s,%s%s%s" % (
+					print >>f, "span=%d,%d,%d,%s,%s%s%s%s%s" % (
 						span['spanno'],	c['timingsrc'],	c['lbo'], c['framing'],	c['coding'],
 						',crc4'   if c.get('crc4',False) else '',
-						',yellow' if c.get('yellow',False) else ''
+						',yellow' if c.get('yellow',False) else '',
+						',term'   if c.get('termination', False) else '',
+						',%s' % c['softntte'] if 'softntte' in c else '',
 					)
 
 					dchan = DIGITAL_DCHAN[span['type'].upper()]
