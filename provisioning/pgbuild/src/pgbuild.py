@@ -203,7 +203,7 @@ def package_op(opts, args, src_dir, dest_dir):
     
     # parse plugins to package
     if args:
-        plugins = [os.path.join(pg_dir, arg) for arg in args]
+        plugins = [file for arg in args for file in glob.iglob(os.path.join(pg_dir, arg))]
         # make sure plugins are plugins...
         for plugin in plugins:
             if not _is_plugin(plugin):
