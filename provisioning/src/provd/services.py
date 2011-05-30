@@ -191,6 +191,26 @@ class AttrConfigureServiceParam(object):
         setattr(self._obj, self._name, value)
 
 
+class DictConfigureServiceParam(object):
+    # implements(IConfigureServiceParam)
+    
+    # Note that this delete the key from the dict when setting a None value
+    
+    def __init__(self, dict_, key, description=None):
+        self._dict = dict_
+        self._key = key
+        self.description = description
+    
+    def get(self):
+        return self._dict.get(self._key)
+    
+    def set(self, value):
+        if value is None and self._key in self._dict:
+            del self._dict[self._key]
+        else:
+            self._dict[self._key] = value
+
+
 class BaseConfigureService(object):
     implements(IConfigureService)
     

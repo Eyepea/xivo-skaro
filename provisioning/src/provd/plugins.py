@@ -29,8 +29,8 @@ import shutil
 import tarfile
 import weakref
 from binascii import a2b_hex
-from fetchfw.download import new_handlers, new_downloaders, DefaultDownloader,\
-    RemoteFile, SHA1Hook
+from fetchfw.download import new_downloaders, DefaultDownloader, RemoteFile,\
+    SHA1Hook
 from fetchfw.package import DefaultInstaller, PackageManager
 from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
     DefaultPackageStorage
@@ -39,9 +39,10 @@ from provd.download import async_download_multiseq_with_oip,\
 from provd.loaders import ProvdFileSystemLoader
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
+from provd.proxy import DynProxyHandler
 from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
     IInstallService, InvalidParameterError, JsonConfigPersister,\
-    PersistentConfigureServiceDecorator
+    PersistentConfigureServiceDecorator, DictConfigureServiceParam
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
 from twisted.internet import defer
@@ -495,6 +496,14 @@ def _async_install(pkg_ids, installable_pkgs, installed_pkgs):
     return (deferred, oip)
 
 
+def _new_handlers(proxies=None):
+    if proxies is None:
+        handlers = []
+    else:
+        handlers = [DynProxyHandler(proxies)]
+    return handlers
+
+
 class FetchfwPluginHelper(object):
     """Helper for plugins that needs to download files to really
     be able to support a certain kind of device.
@@ -513,8 +522,12 @@ class FetchfwPluginHelper(object):
     """Base directory where the files are extracted."""
     
     @classmethod
+    def new_handlers(cls, proxies=None):
+        return _new_handlers(proxies)
+    
+    @classmethod
     def new_rfile_builder(cls, proxies=None):
-        downloaders = new_downloaders(new_handlers(proxies))
+        downloaders = new_downloaders(_new_handlers(proxies))
         return RemoteFileBuilder(downloaders)
     
     def __init__(self, plugin_dir, rfile_builder=None, installation_mgr_builder=None):
@@ -646,7 +659,7 @@ class PluginManager(object):
     _DOWNLOAD_LABEL = 'download'
     _UPDATE_LABEL = 'update'
     
-    def __init__(self, app, plugins_dir, cache_dir, proxies):
+    def __init__(self, app, plugins_dir, cache_dir):
         """
         app -- a provisioning application object
         plugins_dir -- the directory where plugins are installed
@@ -656,16 +669,27 @@ class PluginManager(object):
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
         self.server = None
+        proxies = app.proxies
         server_p = AttrConfigureServiceParam(self, 'server',
                                              u'The base address of the plugins repository')
-        cfg_service = BaseConfigureService({u'server': server_p})
+        http_proxy_p = DictConfigureServiceParam(proxies, 'http',
+                                                 u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"')
+        ftp_proxy_p = DictConfigureServiceParam(proxies, 'ftp',
+                                                u'The proxy for FTP requests. Format is "http://[user:password@]host:port"')
+        # syntax for specifying the HTTPS proxy is a bit different, don't ask me why
+        https_proxy_p = DictConfigureServiceParam(proxies, 'https',
+                                                  u'The proxy for HTTPS requests. Format is "host:port"')
+        cfg_service = BaseConfigureService({u'server': server_p,
+                                            u'http_proxy': http_proxy_p,
+                                            u'ftp_proxy': ftp_proxy_p,
+                                            u'https_proxy': https_proxy_p})
         persister = JsonConfigPersister(os.path.join(plugins_dir, 'config.json'))
         self._cfg_service = PersistentConfigureServiceDecorator(cfg_service, persister)
         self._in_update = False
         self._in_install = set()
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
-        self._downloader = DefaultDownloader(new_handlers(proxies))
+        self._downloader = DefaultDownloader(_new_handlers(proxies))
     
     def close(self):
         """Close the plugin manager.

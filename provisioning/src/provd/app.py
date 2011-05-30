@@ -20,7 +20,6 @@ __license__ = """
 
 # XXX right now, if we install a plugin that has a bug and can't be loaded,
 #     the only way to uninstall it is manually...
-# XXX incoherent handling of exceptions in ProvisioningApplication
 
 import copy
 import logging
@@ -186,13 +185,10 @@ class ProvisioningApplication(object):
         self._cfg_collection = cfg_collection
         self._dev_collection = dev_collection
         self._splitted_config = _split_config(config)
-        if 'proxy' not in self._splitted_config:
-            self._splitted_config['proxy'] = {}
-        logger.info('Using proxies %s' % self._splitted_config['proxy'])
+        self.proxies = self._splitted_config.get('proxy', {})
         self.pg_mgr = PluginManager(self,
                                     config['general.plugins_dir'],
-                                    config['general.cache_dir'],
-                                    self._splitted_config['proxy'])
+                                    config['general.cache_dir'])
         if 'general.plugin_server' in config and not self.pg_mgr.server:
             self.pg_mgr.server = config['general.plugin_server']
         self._base_raw_config = config['general.base_raw_config']
@@ -740,7 +736,7 @@ class ProvisioningApplication(object):
     def _pg_load(self, id):
         # Raise an exception if plugin loading or common configuration fail
         gen_cfg = dict(self._splitted_config['general'])
-        gen_cfg['proxies'] = dict(self._splitted_config['proxy'])
+        gen_cfg['proxies'] = self.proxies
         spec_cfg = dict(self._splitted_config.get('plugin_config', {}).get(id, {}))
         try:
             self.pg_mgr.load(id, gen_cfg, spec_cfg)
