@@ -5,6 +5,11 @@
 ; filename: FILENAME (opt: default=basename(URL))
 ; downloader: [auth | default] (opt: default=default)
 
+[file_digium-hx8fw]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-hx8-2.06.tar.gz
+size: 29252
+sha1sum: 56c59081b1bd29c97f352b62c9667c409ca99f69
+
 [file_digium-oct61114-128fw]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-128-1.05.01.tar.gz
 size: 165849

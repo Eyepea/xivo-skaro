@@ -6,6 +6,12 @@
 ; files: FILEDEFNAME (FILEDEFNAME)* (opt)
 ; install_proc: INSTDEFNAME (opt)
 
+[pkg_digium-hx8]
+desc: Firmware for Digium HX8.
+version: 2.06
+files: file_digium-hx8fw
+install_proc: install_digium-fw
+
 [pkg_digium-oct6114-128]
 desc: Firmware for Digium VPMOCT128M/VPM450M.
 version: 1.05.01
