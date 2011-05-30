@@ -102,4 +102,6 @@ sip line{{ line_no }} vmail: {{ line['voicemail'] }}
 directed call pickup prefix: {{ exten_pickup_call }}
 {% endif -%}
 
+{{ XX_parking }}
+
 {{ XX_fkeys }}

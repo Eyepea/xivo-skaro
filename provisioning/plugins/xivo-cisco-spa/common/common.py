@@ -366,9 +366,9 @@ class BaseCiscoPlugin(StandardPlugin):
             else:
                 raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
     
-    def _format_proxy(self, raw_config, line):
+    def _format_proxy(self, raw_config, line, line_no):
         proxy_ip = line.get(u'proxy_ip') or raw_config[u'sip_proxy_ip']
-        proxy_value = u'xivo_proxies:SRV=%s:5060:p=0' % proxy_ip
+        proxy_value = u'xivo_proxies%s:SRV=%s:5060:p=0' % (line_no, proxy_ip)
         backup_proxy_ip = line.get(u'backup_proxy_ip') or raw_config.get(u'sip_backup_proxy_ip')
         if backup_proxy_ip:
             proxy_value += u'|%s:5060:p=1' % backup_proxy_ip
@@ -377,7 +377,7 @@ class BaseCiscoPlugin(StandardPlugin):
     def _add_proxies(self, raw_config):
         proxies = {}
         for line_no, line in raw_config[u'sip_lines'].iteritems():
-            proxies[line_no] = self._format_proxy(raw_config, line)
+            proxies[line_no] = self._format_proxy(raw_config, line, line_no)
         raw_config[u'XX_proxies'] = proxies
     
     def _add_language(self, raw_config):

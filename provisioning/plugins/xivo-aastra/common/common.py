@@ -72,6 +72,7 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:3.2.0.70-SIP"
         #   "Aastra6731i MAC:00-08-5D-23-73-01 V:3.2.0.1011-SIP"
         #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.0.1.2024-SIP"
+        #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.2.1.1013-SIP"
         #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
         m = self._UA_REGEX.match(ua)
@@ -299,6 +300,7 @@ class BaseAastraPlugin(StandardPlugin):
                     value = funckey_dict[u'value']
                 elif funckey_type == u'park':
                     type_ = u'park'
+                    # note that value for park is ignored for firmware 3.x
                     value = 'asterisk;%s' % funckey_dict[u'value']
                 else:
                     logger.info('Unsupported funckey type: %s', funckey_type)
@@ -390,6 +392,10 @@ class BaseAastraPlugin(StandardPlugin):
             raw_config[u'XX_trusted_certificates'] = self._write_cert_or_key_file(pem_cert, device,
                                                                     self._TRUSTED_ROOT_CERTS_SUFFIX)
     
+    def _add_parking(self, raw_config):
+        # to be optionally overriden in derived class
+        pass
+    
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
@@ -417,6 +423,7 @@ class BaseAastraPlugin(StandardPlugin):
         self._add_transport_proto(raw_config)
         self._add_trusted_certificates(raw_config, device)
         self._update_sip_lines(raw_config)
+        self._add_parking(raw_config)
         raw_config[u'XX_dict'] = self._gen_xx_dict(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
