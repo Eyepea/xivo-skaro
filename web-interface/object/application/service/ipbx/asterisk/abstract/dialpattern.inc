@@ -98,12 +98,13 @@ class xivo_application_service_asterisk_dialpattern_abstract extends xivo_applic
 	{
 		$this->_cnt = 0;
 
-		if(dwho_has_len($outcallid) === false)
+		if(dwho_has_len($outcallid) === false
+		|| ($outcallid = (int) $outcallid) === 0)
 			return(false);
 
 		$where = array();
 		$where['type'] = $this->_param['type'];
-		$where['outcallid'] = $outcallid;
+		$where['typeid'] = $outcallid;
 
 		$rs = $this->_dialpattern->get_all_where($where);
 

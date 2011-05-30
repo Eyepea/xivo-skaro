@@ -21,8 +21,11 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['outcallid'] = array();
-$array['element']['outcallid']['default'] = '';
+$array['element']['type'] = array();
+$array['element']['type']['default'] = '';
+
+$array['element']['typeid'] = array();
+$array['element']['typeid']['default'] = '';
 
 $array['element']['prefix'] = array();
 $array['element']['prefix']['default'] = '';
@@ -37,9 +40,6 @@ $array['element']['setcallerid'] = array();
 $array['element']['setcallerid']['value'] = array(0,1);
 $array['element']['setcallerid']['default'] = 0;
 $array['element']['setcallerid']['set'] = true;
-
-$array['element']['type'] = array();
-$array['element']['type']['default'] = '';
 
 $array['element']['exten'] = array();
 $array['element']['exten']['default'] = '';
@@ -56,7 +56,7 @@ $array['element']['emergency']['set'] = true;
 
 
 $array['filter'] = array();
-$array['filter']['outcallid'] =  array('cast' => 'ulongint');
+$array['filter']['typeid'] =  array('cast' => 'ulongint');
 $array['filter']['prefix'] =  array('set' => false,'chk' => 2,'maxlen' => 10,'regexp' => '/^(?:\+|\+?[0-9#\*]+)$/');
 $array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^(?:\+|\+?[0-9#\*]+)$/');
 $array['filter']['setcallerid'] = array('bool' => true);

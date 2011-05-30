@@ -141,6 +141,8 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 			
 		if (is_int($arr['line_num']) === false)
 			$arr['line_num'] = (int) $arr['line_num'];
+			
+		$arr['ipfrom'] = $_SERVER['SERVER_ADDR'];
 
 		return(parent::add($arr,$id));
 	}
@@ -167,6 +169,8 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 			
 		if (is_int($arr['line_num']) === false)
 			$arr['line_num'] = (int) $arr['line_num'];
+			
+		$arr['ipfrom'] = $_SERVER['SERVER_ADDR'];
 
 		return(parent::edit($id,$arr,$disable));
 	}

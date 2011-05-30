@@ -273,6 +273,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		{
 			$ref = &$reslist[$i];
 		
+			$ref['type'] = 'outcall';
 			$ref['outcallid'] = 0;
 			$context = (string) $this->get_result_var('outcall','context');
 
@@ -556,7 +557,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		for($i = 0;$i < count($rs);$i++)
 		{
 			$ref = &$rs[$i];
-			$ref['outcallid'] = $outcallid;
+			$ref['type'] = 'outcall';
+			$ref['typeid'] = $outcallid;
 
 			if (isset($ref['id']) === true
 			&& (int) $ref['id'] !== 0)

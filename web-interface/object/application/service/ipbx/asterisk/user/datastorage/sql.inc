@@ -76,7 +76,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 					       $this->_table['linefeatures'].'.iduserfeatures = '. $this->_dso->cast($this->_table['userfeatures'].'.id', 'int'),
 					       null,
 					       'id');
-			$this->_dso->joinwherenot($this->_table['linefeatures'],array('line_num' => 0));
+			$this->_dso->andjoinwherenot($this->_table['linefeatures'],array('line_num' => 0));
 			$this->_dso->andjoinwherenot($this->_table['linefeatures'],array('rules_order' => 1));
 		}
 
@@ -109,14 +109,14 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		return($r);
 	}
 
-	function search($value,$disable=null,$initialized=null,$order=null,$limit=null,$mode=null)
+	function search($value,$disable=null,$initialized=null,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;
 
-		if(dwho_has_len($value) === false && $mode === null)
+		if(dwho_has_len($value) === false)
 			return(false);
 
-		return($this->get_all($disable,$initialized,$order,$limit,$value,$mode));
+		return($this->get_all($disable,$initialized,$order,$limit,$value));
 	}
 
 	function get_bsfilter($id,$bsfilter)
