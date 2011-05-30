@@ -61,7 +61,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from zope.interface import Interface, Attribute
+from zope.interface import Interface
 
 ID_KEY = u'id'
 
@@ -72,8 +72,6 @@ class InvalidIdError(Exception):
 
 class IDocumentCollection(Interface):
     """A collection of documents."""
-    
-    closed = Attribute("""True if the collection is closed, else False.""")
     
     def close():
         """Close the collection. This method may be called more than once, and

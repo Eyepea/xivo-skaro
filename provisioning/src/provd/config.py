@@ -42,6 +42,8 @@ The following parameters are defined:
         The kind of generator used to generate ID for devices and configs.
     database.ensure_common_indexes
         Make sure common indexes on the collections are present.
+    database.json_base_dir
+        For 'json' database, the base directory where collections are stored.
     database.shelve_dir
         For 'shelve' database, the directory where files are stored.
     database.mongo_uri
@@ -137,9 +139,10 @@ class DefaultConfigSource(object):
         ('general.rest_ssl_certfile', '/etc/pf-xivo/provd/keys/cert.pem'),
         ('general.rest_ssl_keyfile', '/etc/pf-xivo/provd/keys/key.pem'),
         ('general.verbose', 'False'),
-        ('database.type', 'shelve'),
+        ('database.type', 'json'),
         ('database.generator', 'default'),
         ('database.ensure_common_indexes', 'False'),
+        ('database.json_base_dir', '/var/lib/pf-xivo/provd/jsondb'),
         ('database.shelve_dir', '/var/lib/pf-xivo/provd/shelvedb'),
     ]
     

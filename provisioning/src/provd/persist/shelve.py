@@ -41,6 +41,7 @@ class ShelveSimpleBackend(object):
     
     def __init__(self, filename):
         self._shelve = shelve.open(filename)
+        self._closed = False
     
     def close(self):
         try:
@@ -48,6 +49,8 @@ class ShelveSimpleBackend(object):
         except Exception, e:
             logger.error('Error while closing shelve: %s', e)
             raise
+        else:
+            self._closed = True
     
     def __getitem__(self, id):
         real_id = _convert_to_backend(id)
@@ -100,7 +103,7 @@ class ShelveDatabase(object):
             raise ValueError(e)
     
     def collection(self, id):
-        if id not in self._collections or self._collections[id].closed: 
+        if id not in self._collections or self._collections[id]._closed: 
             self._collections[id] = self._new_collection(id)
         return self._collections[id]
 
