@@ -205,8 +205,9 @@ $array['element']['timeannounceclose']['default'] = '';
 $array['element']['timeannounceclose']['null'] = true;
 
 $array['element']['maxusers'] = array();
-$array['element']['maxusers']['default'] = '';
-$array['element']['maxusers']['null'] = true;
+$array['element']['maxusers']['default'] = 0;
+$array['element']['maxusers']['set'] = true;
+$array['element']['maxusers']['forcedef'] = true;
 
 $array['element']['startdate'] = array();
 $array['element']['startdate']['default'] = '';
@@ -283,7 +284,10 @@ $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 $array['element']['commented'] = array();
+$array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
+$array['element']['commented']['forcedef'] = true;
 
 dwho::load_class('dwho_network');
 
