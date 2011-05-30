@@ -34,6 +34,27 @@ if($search !== '')
 
 switch($act)
 {
+	case 'autoprov':
+		$param['page'] = $page;
+
+		if(($values = dwho_issa_val('devices',$_QR)) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+			
+		$appdevice = &$ipbx->get_application('device',null,false);
+		$modprovddevice = &$_XOBJ->get_module('provddevice');
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info = $appdevice->get($values[$i])) !== false)
+			{
+				if($modprovddevice->synchronize($info['devicefeatures']['deviceid']) === false)
+					dwho_report::push('error',$values[$i],'error_during_synchronize');
+			}
+		}
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+		break;
 	case 'synchronize':
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$modprovddevice = &$_XOBJ->get_module('provddevice');

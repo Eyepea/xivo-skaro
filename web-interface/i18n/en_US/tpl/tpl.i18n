@@ -19,6 +19,9 @@ Disable
 ; toolbar_adv_menu_delete
 Delete
 
+; toolbar_adv_menu_autoprov
+Synchronize
+
 ; toolbar_adv_menu_select-all
 Select all
 
