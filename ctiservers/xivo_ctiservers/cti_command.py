@@ -63,7 +63,8 @@ IPBXCOMMANDS = [
     'hangup',
     'sipnotify',
 
-    'record', 'listen',
+    'recordstart', 'recordstop',
+    'listenstart', 'listenstop',
 
     'agentlogin', 'agentlogout',
     'agentpausequeue', 'agentunpausequeue'
@@ -564,7 +565,11 @@ class Command:
 
     def regcommand_ipbxcommand(self):
         reply = {}
-        self.ipbxcommand = self.commanddict.pop('command')
+        self.ipbxcommand = self.commanddict.pop('command', None)
+        if not self.ipbxcommand:
+            log.warning('no command given')
+            return reply
+        reply['command'] = self.ipbxcommand # show the command issued in the reply
         if self.ipbxcommand not in IPBXCOMMANDS:
             log.warning('unknown ipbxcommand %s' % self.ipbxcommand)
             return reply
@@ -581,7 +586,11 @@ class Command:
 
         # check whether ipbxcommand is in the users's profile capabilities
         if hasattr(self, methodname):
-            z = getattr(self, methodname)()
+            try:
+                z = getattr(self, methodname)()
+            except Exception:
+                log.warning('exception when calling %s' % methodname)
+                z = {}
         else:
             log.warning('no such ipbx method %s' % methodname)
 
@@ -605,104 +614,118 @@ class Command:
 
 
 
+    # "any number" :
+    # - an explicit number
+    # - a phone line given by line:xivo/45
+    # - a user given by user:xivo/45 : attempted line will be the first one
 
+    # dial : the requester dials "any number" (originate with source = me)
+    # originate : the source will call destination
 
+    # intercept
+    # transfer
+    # transfercancel
+    # atxfer
+    # intercept
+    # park
 
+    # hangupme : the requester hangs up one of his channels
+    # answer : the requester answers one of its calls
+    # refuse : the requester refuses one of its calls
+
+    # hangup : any channel is hanged up
+
+    # for transfers, hangups, ...
 
     def ipbxcommand_hangupme(self):
         return
+
     def ipbxcommand_dial(self):
-        return
+        self.commanddict['source'] = 'user:%s/%s' % (self.ripbxid, self.ruserid)
+        reply = self.ipbxcommand_originate()
+        return reply
 
     # origination
     def ipbxcommand_originate(self):
-        src = self.commanddict.get('source')
-        dst = self.commanddict.get('destination')
-        srcsplit = src.split(':', 1)
-        dstsplit = dst.split(':', 1)
+        try:
+            src = self.commanddict.get('source')
+            [type_src, who_src] = src.split(':', 1)
+            [ipbxid_src, id_src] = who_src.split('/')
+        except Exception:
+            log.warning('cannot parse source field')
+            return
+        try:
+            dst = self.commanddict.get('destination')
+            [type_dst, who_dst] = dst.split(':', 1)
+            [ipbxid_dst, id_dst] = who_dst.split('/')
+        except Exception:
+            log.warning('cannot parse destination field')
+            return
+        if ipbxid_src != ipbxid_dst:
+            return
+        if ipbxid_src not in self.ctid.safe:
+            return
+        innerdata = self.ctid.safe.get(ipbxid_src)
 
-        [typesrc, whosrc] = srcsplit
-        [typedst, whodst] = dstsplit
+        orig_protocol = None
+        orig_name = None
+        orig_number = None
 
-        rep = {'comm' : 'originate', 'args' : ['SIP', 'bmwgsjrponciuj', '1177', 'Kr',
-                                                dstsplit[1], 'Wawa', 'from-sip']}
+        if type_src == 'user':
+            if id_src in innerdata.xod_config.get('users').keeplist:
+                useridstruct = innerdata.xod_config.get('users').keeplist.get(id_src)
+                # useridstruct, innerdata.xod_status.get('users').get(id_src)
+                # XXX lookup among phones the one(s) that belong to this user
+        elif type_src == 'phone':
+            if id_src in innerdata.xod_config.get('phones').keeplist:
+                phoneidstruct = innerdata.xod_config.get('phones').keeplist.get(id_src)
+                orig_protocol = phoneidstruct.get('protocol')
+                # XXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
+                orig_name = phoneidstruct.get('name')
+                orig_number = phoneidstruct.get('number')
+                orig_identity = phoneidstruct.get('useridentity')
+        elif type_src == 'ext':
+            # in android cases
+            # there was a warning back to revision 6095 - maybe to avoid making arbitrary calls on behalf
+            # of the local telephony system ?
+            pass
+
+        extentodial = None
+        dst_identity = None
+
+        if type_dst == 'user':
+            # if no phone, could default to agent and/or agent phone number ?
+            pass
+        elif type_dst == 'phone':
+            if id_dst in innerdata.xod_config.get('phones').keeplist:
+                phoneidstruct = innerdata.xod_config.get('phones').keeplist.get(id_dst)
+                extentodial = phoneidstruct.get('number')
+                dst_identity = phoneidstruct.get('useridentity')
+                dst_context = phoneidstruct.get('context')
+        elif type_dst == 'voicemail':
+            extentodial = '*98'
+            # XXX especially for the 'dial' command, actually
+            # XXX display password on phone in order for the user to know what to type
+        elif type_dst == 'ext':
+            # XXX how to define
+            extentodial = who_dst
+
+        rep = {}
+        if orig_protocol and orig_name and orig_number and extentodial:
+            rep = {'comm' : 'originate',
+                   'args' : [
+                       orig_protocol,
+                       orig_name,
+                       orig_number,
+                       orig_identity,
+                       extentodial,
+                       dst_identity,
+                       dst_context
+                       ]
+                   }
+            # {'XIVO_USERID' : userinfo.get('xivo_userid')})
         return rep
 
-        # others than 'user:special:me' should only be allowed to switchboard-like users
-        if typesrc == 'user':
-                if whosrc == 'special:me':
-                    srcuinfo = userinfo
-                else:
-                    srcuinfo = self.ulist_ng.keeplist.get(whosrc)
-                if srcuinfo is not None:
-                    astid_src = srcuinfo.get('astid')
-                    context_src = srcuinfo.get('context')
-                    techdetails = srcuinfo.get('techlist')[0]
-                    proto_src = techdetails.split('.')[0]
-                    # XXXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
-                    phonename_src = techdetails.split('.')[2]
-                    phonenum_src = techdetails.split('.')[3]
-                    ### srcuinfo.get('phonenum')
-                    # if termlist empty + agentphonenumber not empty => call this one
-                    cidname_src = srcuinfo.get('fullname')
-            # 'agent:', 'queue:', 'group:', 'meetme:' ?
-        elif typesrc == 'ext':
-                context_src = userinfo['context']
-                astid_src = userinfo['astid']
-                proto_src = 'local'
-                phonename_src = whosrc
-                phonenum_src = whosrc
-                cidname_src = whosrc
-        else:
-                log.warning('unknown typesrc <%s>' % typesrc)
-                return
-
-        # dst
-        if typedst == 'ext':
-                context_dst = context_src
-                # this string will appear on the caller's phone, before he calls someone
-                # for internal calls, one could solve the name of the called person,
-                # but it could be misleading with an incoming call from the given person
-                cidname_dst = whodst
-                exten_dst = whodst
-                # 'agent:', 'queue:', 'group:', 'meetme:' ?
-        elif typedst == 'user':
-                dstuinfo = None
-                if whodst == 'special:me':
-                    dstuinfo = userinfo
-                elif whodst == 'special:myvoicemail':
-                    context_dst = context_src
-                    cidname_dst = '*98 (%s)' % self.xod_config['voicemail'][astid_src].keeplist[userinfo["voicemailid"]]["password"]
-                    exten_dst = '*98'
-                else:
-                    dstuinfo = self.ulist_ng.keeplist[whodst]
-
-                if dstuinfo is not None:
-                    astid_dst = dstuinfo.get('astid')
-                    exten_dst = dstuinfo.get('phonenum')
-                    cidname_dst = dstuinfo.get('fullname')
-                    context_dst = dstuinfo.get('context')
-        else:
-                log.warning('unknown typedst <%s>' % typedst)
-                return
-
-        if typesrc == typedst and typedst == 'ext' and len(whosrc) > 8 and len(whodst) > 8:
-                log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s)'
-                            % (whosrc, whodst))
-                # this warning dates back to revision 6095 - maybe to avoid making arbitrary calls on behalf
-                # of the local telephony system ?
-                # let's keep the warning, without disabling the ability to do it ...
-
-        try:
-                if len(exten_dst) > 0:
-                    ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
-                                               proto_src, phonename_src, phonenum_src, cidname_src,
-                                               exten_dst, cidname_dst,  context_dst,
-                                               {'XIVO_USERID' : userinfo.get('xivo_userid')})
-        except Exception:
-                log.exception('unable to originate')
-
-        return
 
     def ipbxcommand_sipnotify(self):
         if 'variables' in self.commanddict:

@@ -474,41 +474,46 @@ class Safe:
         return
 
     def queuememberupdate(self, queuename, location, props = None):
-        qid = self.xod_config['queues'].idbyqueuename(queuename)
+        qgid = self.xod_config['queues'].idbyqueuename(queuename)
+        qgname = 'queues'
+        if not qgid:
+            qgid = self.xod_config['groups'].idbyqueuename(queuename)
+            qgname = 'groups'
+
         # send a notification event if no new member
-        self.handle_cti_stack('set', ('queues', 'updatestatus', qid))
+        self.handle_cti_stack('set', (qgname, 'updatestatus', qgid))
         midx = None
         if location.startswith('Agent/'):
             aid = self.xod_config['agents'].idbyagentnumber(location[6:])
             self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
-            midx = 'qa:%s-%s' % (qid, aid)
+            midx = 'qa:%s-%s' % (qgid, aid)
             # todo : group all this stuff, take care of relations
             if props:
-                if aid not in self.xod_status['queues'][qid]['agentmembers']:
-                    self.xod_status['queues'][qid]['agentmembers'].append(aid)
-                if qid not in self.xod_status['agents'][aid]['queues']:
-                    self.xod_status['agents'][aid]['queues'].append(qid)
+                if aid not in self.xod_status[qgname][qgid]['agentmembers']:
+                    self.xod_status[qgname][qgid]['agentmembers'].append(aid)
+                if qgid not in self.xod_status['agents'][aid][qgname]:
+                    self.xod_status['agents'][aid][qgname].append(qgid)
             else:
-                if aid in self.xod_status['queues'][qid]['agentmembers']:
-                    self.xod_status['queues'][qid]['agentmembers'].remove(aid)
-                if qid in self.xod_status['agents'][aid]['queues']:
-                    self.xod_status['agents'][aid]['queues'].remove(qid)
+                if aid in self.xod_status[qgname][qgid]['agentmembers']:
+                    self.xod_status[qgname][qgid]['agentmembers'].remove(aid)
+                if qgid in self.xod_status['agents'][aid][qgname]:
+                    self.xod_status['agents'][aid][qgname].remove(qgid)
         else:
             termination = self.ast_channel_to_termination(location)
             pid = self.zphones(termination.get('protocol'), termination.get('name'))
             if pid:
                 self.handle_cti_stack('set', ('phones', 'updatestatus', pid))
-                midx = 'qp:%s-%s' % (qid, pid)
+                midx = 'qp:%s-%s' % (qgid, pid)
                 if props:
-                    if pid not in self.xod_status['queues'][qid]['phonemembers']:
-                        self.xod_status['queues'][qid]['phonemembers'].append(pid)
-                    if qid not in self.xod_status['phones'][pid]['queues']:
-                        self.xod_status['phones'][pid]['queues'].append(qid)
+                    if pid not in self.xod_status[qgname][qgid]['phonemembers']:
+                        self.xod_status[qgname][qgid]['phonemembers'].append(pid)
+                    if qgid not in self.xod_status['phones'][pid][qgname]:
+                        self.xod_status['phones'][pid][qgname].append(qgid)
                 else:
-                    if pid in self.xod_status['queues'][qid]['phonemembers']:
-                        self.xod_status['queues'][qid]['phonemembers'].remove(pid)
-                    if qid in self.xod_status['phones'][pid]['queues']:
-                        self.xod_status['phones'][pid]['queues'].remove(qid)
+                    if pid in self.xod_status[qgname][qgid]['phonemembers']:
+                        self.xod_status[qgname][qgid]['phonemembers'].remove(pid)
+                    if qgid in self.xod_status['phones'][pid][qgname]:
+                        self.xod_status['phones'][pid][qgname].remove(qgid)
 
         if props:
             self.handle_cti_stack('set', ('queuemembers', 'updatestatus', midx))

@@ -1,0 +1,17 @@
+command=originate       source=phone:limonest/31        destination=phone:limonest/28
+command=originate       source=ext:124143124            destination=ext:5657567
+command=nosuchbloody    destination=ext:5657567
+command=dial            destination=ext:5657567
+command=dial            destination=phone:limonest/36
+command=recordstart     destination=phone:limonest/36
+command=recordstop      destination=phone:limonest/36
+command=listenstart     destination=phone:limonest/36
+command=listenstop      destination=phone:limonest/36
+command=intercept       destination=phone:limonest/36
+command=transfer        destination=phone:limonest/36
+command=atxfer          destination=phone:limonest/36
+command=park            destination=phone:limonest/36
+command=hangup          destination=phone:limonest/36
+command=hangupme        destination=phone:limonest/36
+command=agentpausequeue destination=phone:limonest/36
+command=agentlogout     destination=phone:limonest/36

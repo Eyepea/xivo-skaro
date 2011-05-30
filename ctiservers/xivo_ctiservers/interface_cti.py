@@ -36,7 +36,7 @@ class serialJson():
     def __init__(self):
         return
     def decode(self, linein):
-        v = cjson.decode(linein)
+        v = cjson.decode(linein.replace('\\/', '/'))
         return v
     def encode(self, obj):
         obj['timenow'] = time.time()
