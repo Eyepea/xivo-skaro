@@ -274,7 +274,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			$ref = &$reslist[$i];
 		
 			$ref['type'] = 'outcall';
-			$ref['outcallid'] = 0;
+			$ref['typeid'] = 0;
 			$context = (string) $this->get_result_var('outcall','context');
 
 			if (isset($ref['id']) === true
@@ -463,7 +463,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					$this->_dialpattern->reverse_add('add');
 					break;
 				case 'outcalltrunk':
-					$this->_outcalltrunk->delete_where(array('outcallid' => $outcallid));
+					$this->_outcalltrunk->delete_where(array('typeid' => $outcallid));
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
