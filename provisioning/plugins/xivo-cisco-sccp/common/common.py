@@ -32,7 +32,7 @@ import re
 import urllib
 import urllib2
 from fetchfw.download import DefaultDownloader, InvalidCredentialsError,\
-    DownloadError, new_handlers, new_downloaders
+    DownloadError, new_downloaders
 from fetchfw.storage import RemoteFileBuilder
 from provd import tzinform
 from provd.devices.config import RawConfigError
@@ -323,7 +323,7 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        handlers = new_handlers(gen_cfg.get('proxies'))
+        handlers = FetchfwPluginHelper.new_handlers(gen_cfg.get('proxies'))
         dlers = new_downloaders(handlers)
         cisco_dler = CiscoDownloader(handlers)
         dlers['x-cisco'] = cisco_dler

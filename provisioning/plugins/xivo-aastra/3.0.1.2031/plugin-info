@@ -1,5 +1,5 @@
 {
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Plugin for Aastra 6739i in version 3.0.1.2031.",
     "capabilities": {
         "Aastra, 6739i, 3.0.1.2031": {

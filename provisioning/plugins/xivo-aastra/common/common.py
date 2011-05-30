@@ -293,12 +293,16 @@ class BaseAastraPlugin(StandardPlugin):
                 funckey_type = funckey_dict[u'type']
                 if funckey_type == u'speeddial':
                     type_ = u'speeddial'
+                    value = funckey_dict[u'value']
                 elif funckey_type == u'blf':
                     type_ = u'blf'
+                    value = funckey_dict[u'value']
+                elif funckey_type == u'park':
+                    type_ = u'park'
+                    value = 'asterisk;%s' % funckey_dict[u'value']
                 else:
                     logger.info('Unsupported funckey type: %s', funckey_type)
                     continue
-                value = funckey_dict[u'value']
                 label = funckey_dict.get(u'label', value)
                 line = funckey_dict.get(u'line', u'1')
                 lines.append(u'%s type: %s' % (keytype, type_))

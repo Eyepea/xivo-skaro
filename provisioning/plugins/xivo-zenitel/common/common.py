@@ -27,7 +27,7 @@ import re
 import os.path
 import urllib2
 from operator import itemgetter
-from fetchfw.download import new_handlers, AuthenticatingDownloader
+from fetchfw.download import AuthenticatingDownloader
 from fetchfw.storage import RemoteFileBuilder
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import IMPROBABLE_SUPPORT, COMPLETE_SUPPORT, UNKNOWN_SUPPORT,\
@@ -121,7 +121,7 @@ class BaseZenitelPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        handlers = new_handlers(gen_cfg.get('proxies'))
+        handlers = FetchfwPluginHelper.new_handlers(gen_cfg.get('proxies'))
         auth_downloader = AuthenticatingDownloader(handlers)
         rfile_builder = RemoteFileBuilder({'auth': auth_downloader})
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
