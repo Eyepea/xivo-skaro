@@ -276,8 +276,8 @@ PCI_IDS = {
 
 	# XiVO IPBX OpenHardware (WARNING: Any device on the Tolapai's LEB/SSP
 	# controllers will be detected, including subsequent revisions)
-	'8086:503d'	: { 'driver' => 'xivoxhfc', 'description' => 'XiVO IPBX OpenHardware,	ISDN BRI interfaces (Cologne XHFC-4SU)' },
-	'8086:503b'	=> { 'driver' => 'xivovp', 'description' => 'XiVO IPBX OpenHardware, FXO/FXS interfaces (Zarlink Ve890)' },
+	'8086:503d'	: { 'driver': 'xivoxhfc', 'description': 'XiVO IPBX OpenHardware,	ISDN BRI interfaces (Cologne XHFC-4SU)' },
+	'8086:503b'	: { 'driver': 'xivovp', 'description': 'XiVO IPBX OpenHardware, FXO/FXS interfaces (Zarlink Ve890)' },
 }
 
 # //END-DEFINES//
