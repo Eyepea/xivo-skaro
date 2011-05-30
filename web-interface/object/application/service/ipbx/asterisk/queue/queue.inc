@@ -348,7 +348,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$arr['queuefeatures']['name'] = $name;
 			$arr['queue']['name'] = $name;
 		}
-		else 
+		else
 			$arr['queue']['name'] = $arr['queuefeatures']['name'];
 
 		$name = $arr['queue']['name'];
@@ -594,12 +594,22 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$tmp = $reslist = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{			
-			if(($uinfo = $module->get($list[$i])) === false)
+		{
+			if ($modulename === 'userfeatures')
+			{
+				if(($linefeatures = &$this->_service->get_module('linefeatures')) === false
+				|| ($uinfo = $linefeatures->get_user_masterline($list[$i])) === false)
+				{
+					$this->_set_error('line','invalid master line');
+					continue;
+				}
+			}
+			elseif(($uinfo = $module->get($list[$i])) === false)
 			{
 				$this->_set_error($type,'wrong '.$type);
 				continue;
 			}
+			
 			$where['userid'] = $uinfo['id'];
 
 			$info = $where;
@@ -632,7 +642,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 			$info['queue_name'] = $name;
 			$info['skills']	    = '';
-			// set user queueskill 
+			// set user queueskill
 			if($type === 'agent'      && $this->_agentskill->exists(array('agentid' => $uinfo['id'])) !== false
 			|| $type !== 'agentgroup' && $this->_userskill->exists(array('userid' => $uinfo['id'])) !== false)
 				$info['skills'] = $type . '-' . $uinfo['id'];
@@ -1308,7 +1318,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	}
 
 	function skills_count($search)
-	{ 
+	{
 		$res= $this->_dso->skills_count($search);
 		return($res[0]['count']);
 	}
@@ -1351,7 +1361,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		$this->_error['values'] = array();
 		for($i = count($values)-1; $i >= 0; $i--)
-		{			
+		{
 			$ret |= ($this->_skill->chk_values($values[$i]) === false);
 			$this->_error['values'][$i] = $this->_skill->get_filter_error();
 		}
@@ -1365,9 +1375,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		@verbatim
 			array
 			  'name' => string 'OS' (length=2)
-			  'values' => 
+			  'values' =>
 			    array
-			      0 => 
+			      0 =>
 			        array
 			          0 => string 'linux' (length=5)
 			          1 => string 'best' (length=4)
@@ -1401,9 +1411,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		@verbatim
 			array
 			  'name' => string 'OS' (length=2)
-			  'values' => 
+			  'values' =>
 			    array
-			      0 => 
+			      0 =>
 			        array
 				  'id'		=> string '4' (length=1)
 			          'name' 	=> string 'linux' (length=5)
@@ -1419,7 +1429,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_reset();
 
 		// update skill name
-		$ret =  $this->_skillcat->edit($id, array('name' => $name));		
+		$ret =  $this->_skillcat->edit($id, array('name' => $name));
 		if(is_null($ret) || $ret === false)
 		{ return(false); }
 
@@ -1427,7 +1437,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$stored_values = $this->_skill->get_list_where(array('catid' => $id));
 		if($stored_values === false)
 		{ $stored_values = array(); }
-		$update_values = array();	
+		$update_values = array();
 
 		// insert new values
 		// prepare skill save-array
@@ -1437,12 +1447,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		
 			// new skill value
 			if($value['id'] == -1)
-			{ 
+			{
 				unset($value['id']);
 				$valid = $this->_skill->add($value);
 			}
 			else
-			{ 
+			{
 				$ret = $this->_skill->edit($value['id'], $value);
 				$valid = $value['id'];
 			}
@@ -1456,10 +1466,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		//	- we also delete user skills
 		//	  (rule skills just be ignored)
 		foreach($delete_values as $id)
-		{ 
+		{
 			$this->_userskill->delete_where(array('skillid' => $id));
 			$this->_agentskill->delete_where(array('skillid' => $id));
-			$res = $this->_skill->delete($id); 
+			$res = $this->_skill->delete($id);
 		}
 
 		return(($this->get_errnb() < 1));
@@ -1521,7 +1531,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	/*** skill rules */
 
 	function skillrules_count($search)
-	{ 
+	{
 		$res= $this->_dso->skillrules_count($search);
 		return($res[0]['count']);
 	}
@@ -1604,7 +1614,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		{ return false; }
 
 		// update skill name
-		$ret =  $this->_skillrule->edit($item['id'], 
+		$ret =  $this->_skillrule->edit($item['id'],
 			array('name' => $name, 'rule' => substr($catrules, 1)));
 		return(!is_null($ret));
 	}
@@ -1632,7 +1642,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	    return (array('PLOP'));
 #	    if(!is_null($id))
 #	        return $this->_dso->skillrules_getone($id);
-#	        
+#
 #		return($this->_dso->skillrules_getall($filter));
 	}
 
@@ -1641,7 +1651,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 #		$data = $this->_get_data_from_json();
 #		if($data === false)
 #		    return false;
-#		    
+#
 #		// check fields
 #		// both name and category_name are REQUIRED fields (other are facultative)
 #		if(!array_key_exists('name', $data)
@@ -1661,11 +1671,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 #		}
 #		else
 #		{ $catid = $catid[0]; }
-#		
+#
 #		$data['id']     = null;
 #		$data['catid']  = $catid;
 #		unset($data['category_name']);
-#		
+#
 #		// create skill entry
 #		return $this->_skill->add($data);
 #	}
@@ -1690,26 +1700,26 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$err = true;
 
 		for($i = count($userskills) - 1; $i >= 0; $i--)
-		{	
+		{
 			$this->_errors[$i] = array();
 
 			if(strlen($userskills[$i]['weight']) == 0)
 			{ $err = false; $this->_errors[$i]['weight'] = 'empty'; }
 			else if(!(is_int($userskills[$i]['weight']) || ctype_digit($userskills[$i]['weight'])))
 			{ $err = false; $this->_errors[$i]['weight'] = 'notnumeric'; }
-			else if(((int)$userskills[$i]['weight']) < 0 
+			else if(((int)$userskills[$i]['weight']) < 0
 			|| ((int)$userskills[$i]['weight']) > 100)
-			{ $err = false; $this->_errors[$i]['weight'] = 'unbound'; } 
+			{ $err = false; $this->_errors[$i]['weight'] = 'unbound'; }
 
 			if(strlen($userskills[$i]['skillid']) == 0)
 			{ $err = false; $this->_errors[$i]['skillid'] = 'empty'; }
 			if(array_key_exists($userskills[$i]['skillid'], $skillids))
-			{ 
+			{
 				$err = false;
-				$this->_errors[$i]['skillid'] = 'doubloon'; 
+				$this->_errors[$i]['skillid'] = 'doubloon';
 				$this->_errors[$skillids[$userskills[$i]['skillid']]]['skillid'] = 'doubloon';
-			} 
-			else 
+			}
+			else
 			{ $skillids[$userskills[$i]['skillid']] = $i; }
 	
 		}
@@ -1722,7 +1732,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function userskills_add($userskills)
 	{
-		$count = count($userskills); 
+		$count = count($userskills);
 		for($i =  0; $i < $count; $i++)
 			$this->_userskill->add($userskills[$i]);
 
@@ -1733,7 +1743,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{ return $this->userskills_setadd($userskills); }
 
 	function userskills_edit($userid, $userskills)
-	{ 
+	{
 		$this->userskills_delete($userid);
 		return $this->userskills_add($userskills);
 	}
@@ -1742,7 +1752,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{ return $this->_userskill->delete_where(array('userid' => $userid)); }
 
 	function userskills_get($userid)
-	{ 
+	{
 		return $this->_dso->userskills_get(intval($userid));
 	}
 	
@@ -1755,26 +1765,26 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$err           = true;
 
 		for($i = count($agentskills) - 1; $i >= 0; $i--)
-		{	
+		{
 			$this->_errors[$i] = array();
 
 			if(strlen($agentskills[$i]['weight']) == 0)
 			{ $err = false; $this->_errors[$i]['weight'] = 'empty'; }
 			else if(!(is_int($agentskills[$i]['weight']) || ctype_digit($agentskills[$i]['weight'])))
 			{ $err = false; $this->_errors[$i]['weight'] = 'notnumeric'; }
-			else if(((int)$agentskills[$i]['weight']) < 0 
+			else if(((int)$agentskills[$i]['weight']) < 0
 			|| ((int)$agentskills[$i]['weight']) > 100)
-			{ $err = false; $this->_errors[$i]['weight'] = 'unbound'; } 
+			{ $err = false; $this->_errors[$i]['weight'] = 'unbound'; }
 
 			if(strlen($agentskills[$i]['skillid']) == 0)
 			{ $err = false; $this->_errors[$i]['skillid'] = 'empty'; }
 			if(array_key_exists($agentskills[$i]['skillid'], $skillids))
-			{ 
+			{
 				$err = false;
-				$this->_errors[$i]['skillid'] = 'doubloon'; 
+				$this->_errors[$i]['skillid'] = 'doubloon';
 				$this->_errors[$skillids[$agentskills[$i]['skillid']]]['skillid'] = 'doubloon';
-			} 
-			else 
+			}
+			else
 			{ $skillids[$agentskills[$i]['skillid']] = $i; }
 	
 		}
@@ -1787,7 +1797,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function agentskills_add($agentskills)
 	{
-		$count = count($agentskills); 
+		$count = count($agentskills);
 		for($i =  0; $i < $count; $i++)
 			$this->_agentskill->add($agentskills[$i]);
 
@@ -1798,7 +1808,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{ return $this->agentskills_setadd($agentskills); }
 
 	function agentskills_edit($userid, $agentskills)
-	{ 
+	{
 		$this->agentskills_delete($userid);
 		return $this->agentskills_add($agentskills);
 	}

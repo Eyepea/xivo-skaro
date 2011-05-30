@@ -606,19 +606,32 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 													$ref['typevalextenumbers'],
 													$ref['typeextenumbersright'],
 													$ref['typevalextenumbersright']);
+			
+			$conf[$ref['fknum']] = array();
+			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
+			$conf[$ref['fknum']]['line'] = 1;
 								
 			$exten = '';
 			if (empty($type) === false)
 			{
 				switch ($type['type'])
 				{
+					case 'generalfeatures':
+						if ($type['val'] === 'parkext')
+							$conf[$ref['fknum']]['type'] = 'park';
+						$exten = $ref['exten'];
+						break;
 					case 'user':
+					case 'queue':
+					case 'group':
+					case 'meetme':
 						$where = array();
 						$where['iduserfeatures'] = $type['val'];
 						if(($linefeatures = $this->_linefeatures->get_all_where($where)) !== false)
 							$exten = $linefeatures[0]['number'];
 						break;
-					default:
+					case 'featuremap':
+					case 'extenfeatures':
 						$where = array();
 						$where['type'] = $type['type'];
 						$where['typeval'] = $type['val'];
@@ -628,13 +641,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				}
 			}
 									
-			$conf[$ref['fknum']] = array();
-			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
 			$conf[$ref['fknum']]['value'] = $exten;
 			$conf[$ref['fknum']]['label'] = $ref['label'];
-			$conf[$ref['fknum']]['line'] = 1;
 		}
-		
 		return($conf);
 	}
 	

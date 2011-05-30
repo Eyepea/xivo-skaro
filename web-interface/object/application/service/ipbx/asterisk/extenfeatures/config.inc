@@ -56,7 +56,6 @@ $array['exten']['callgroup']['app'] = 'GoSub';
 $array['exten']['callgroup']['appdata'] = array();
 $array['exten']['callgroup']['appdata'][0] = 'group';
 $array['exten']['callgroup']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
-$array['exten']['callgroup']['appdata'][2] = '';
 
 $array['exten']['calllistening'] = array();
 $array['exten']['calllistening']['app'] = 'GoSub';
@@ -67,14 +66,12 @@ $array['exten']['callmeetme']['app'] = 'GoSub';
 $array['exten']['callmeetme']['appdata'] = array();
 $array['exten']['callmeetme']['appdata'][0] = 'meetme';
 $array['exten']['callmeetme']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
-$array['exten']['callmeetme']['appdata'][2] = '';
 
 $array['exten']['callqueue'] = array();
 $array['exten']['callqueue']['app'] = 'GoSub';
 $array['exten']['callqueue']['appdata'] = array();
 $array['exten']['callqueue']['appdata'][0] = 'queue';
 $array['exten']['callqueue']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
-$array['exten']['callqueue']['appdata'][2] = '';
 
 $array['exten']['callrecord'] = array();
 $array['exten']['callrecord']['app'] = 'GoSub';
@@ -85,7 +82,6 @@ $array['exten']['calluser']['app'] = 'GoSub';
 $array['exten']['calluser']['appdata'] = array();
 $array['exten']['calluser']['appdata'][0] = 'user';
 $array['exten']['calluser']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
-$array['exten']['calluser']['appdata'][2] = '';
 
 $array['exten']['directoryaccess'] = array();
 $array['exten']['directoryaccess']['app'] = 'Directory';
@@ -257,8 +253,7 @@ $array['exten']['paging'] = array();
 $array['exten']['paging']['app'] = 'GoSub';
 $array['exten']['paging']['appdata'] = array();
 $array['exten']['paging']['appdata'][0] = 'paging';
-$array['exten']['paging']['appdata'][1] = 's';
-$array['exten']['paging']['appdata'][2] = '1(${EXTEN:$<EXTNUMLEN>})';
+$array['exten']['paging']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['element'] = array();
 

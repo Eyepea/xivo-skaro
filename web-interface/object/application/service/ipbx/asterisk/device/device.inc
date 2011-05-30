@@ -226,7 +226,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	
 	public function get_capabilities_by_plugin($pluginid)
 	{
-		if ($this->_info['deviceprovd'] === false
+		if (isset($this->_info['deviceprovd']) === false
+		|| $this->_info['deviceprovd'] === false
 		|| ($rs = $this->_provdplugin->get($pluginid)) === false
 		|| ($info = $rs['info']) === null
 		|| isset($info['capabilities']) === false

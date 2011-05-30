@@ -225,7 +225,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					
 				$r['typeextenumbers'] = 'extenfeatures';
 				$r['typevalextenumbers'] = $type[1];
-				$r['typeextenumbersright'] = 'user';
+				$r['typeextenumbersright'] = 'paging';
 				$r['typevalextenumbersright'] = $arr['typeval'];
 				return($r);
 		}

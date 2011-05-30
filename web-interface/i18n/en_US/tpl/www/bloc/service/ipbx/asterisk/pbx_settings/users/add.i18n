@@ -481,6 +481,9 @@ Parking
 ; fm_phonefunckey_type-opt(generalfeatures-parkext)
 Parking
 
+; fm_phonefunckey_type-opt(generalfeatures-parkpos)
+Parking position
+
 ; fm_phonefunckey_type-optgroup(extension-paging)
 Paging
 

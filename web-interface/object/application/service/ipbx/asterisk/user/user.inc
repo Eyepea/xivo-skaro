@@ -114,7 +114,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function get($id,$disable=null,$where=false,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
-
+		
 		if((bool) $where === false)
 			$this->_info['userfeatures'] = $this->_userfeatures->get($id);
 		else
@@ -717,7 +717,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		    $this->_set_result_var('userfeatures','voicemailid',null);
 		    break;
 		}
-
+/*
 		if(dwho_issa('group',$arr) === true
 		&& dwho_issa('group-select',$arr) === true
 		&& $this->set_groupmember($arr['group'],
@@ -731,7 +731,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$callgroup = '';
 		}
-
+*/
 		if(dwho_issa('dialaction',$arr) === true)
 			$this->set_dialaction($arr['dialaction']);
 
@@ -1807,7 +1807,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$id['iduserfeatures'] = $ref['iduserfeatures'];
 			$id['fknum'] = $ref['fknum'];
-
+			
 			if($this->_phonefunckey->add($ref) === false)
 				return(false);
 

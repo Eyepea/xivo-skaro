@@ -43,7 +43,7 @@ class xivo_object_certificate extends xivo_object_abstract
 	 * We need to merge certificates and keys to display all at once
 	 **/
 	function get_all()
-	{	
+	{
 		function certs_sort($a, $b)
 		{
 			return strcmp($a['name'], $b['name']);
@@ -78,7 +78,6 @@ class xivo_object_certificate extends xivo_object_abstract
 		$certs = array_merge($certs, array_filter($keys, "merge_keys"));
 
 		usort($certs, "certs_sort");
-		var_dump($certs);
 
 		return $certs;
 	}

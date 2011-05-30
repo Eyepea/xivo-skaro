@@ -527,17 +527,25 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(dwho_issa('arg',$cfg) === false)
 			return($r);
 
-		$nbarg = count($cfg['arg']);
-
-		if(count($appdata) > $nbarg)
+		if($r['app'] === 'GoSub')
 		{
-			$apparg1 = array_slice($appdata,0,$nbarg);
-			$apparg2 = array_slice($appdata,$nbarg);
-
-			if(empty($apparg2) === false)
-				$apparg1[$nbarg-1] .= ','.implode(',',$apparg2);
-
-			$appdata = $apparg1;
+			$appdata = array_shift($appdata).',s,1('.implode(',',$appdata).')';
+		}
+		else
+		{
+			$nbarg = count($cfg['arg']);
+	
+			if(count($appdata) > $nbarg)
+			{
+				$apparg1 = array_slice($appdata,0,$nbarg);
+				$apparg2 = array_slice($appdata,$nbarg);
+	
+				if(empty($apparg2) === false)
+					$apparg1[$nbarg-1] .= ','.implode(',',$apparg2);
+	
+				$appdata = $apparg1;
+			}
+			
 		}
 
 		if($this->_load_filter_appdata() === false

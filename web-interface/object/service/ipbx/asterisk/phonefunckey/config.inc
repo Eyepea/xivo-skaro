@@ -256,7 +256,15 @@ $array['type']['extenfeatures-queueremovemember']['destination'] = true;
 $array['type']['generalfeatures-parkext'] = array();
 $array['type']['generalfeatures-parkext']['category'] = 'extension-parking';
 $array['type']['generalfeatures-parkext']['name'] = 'generalfeatures-parkext';
+$array['type']['generalfeatures-parkext']['destination'] = true;
 $array['type']['generalfeatures-parkext']['extension'] = true;
+
+$array['type']['generalfeatures-parkpos'] = array();
+$array['type']['generalfeatures-parkpos']['category'] = 'extension-parking';
+$array['type']['generalfeatures-parkpos']['name'] = 'generalfeatures-parkpos';
+$array['type']['generalfeatures-parkpos']['destination'] = true;
+$array['type']['generalfeatures-parkpos']['supervisable'] = true;
+$array['type']['generalfeatures-parkpos']['extension'] = true;
 
 $array['type']['extenfeatures-paging'] = array();
 $array['type']['extenfeatures-paging']['category'] = 'extension-paging';
@@ -292,7 +300,8 @@ $array['element']['typeextenumbersright']['value'] = array('agent',
 							   'group',
 							   'meetme',
 							   'queue',
-							   'user');
+							   'user',
+							   'paging');
 $array['element']['typeextenumbersright']['default'] = '';
 $array['element']['typeextenumbersright']['null'] = true;
 
@@ -323,11 +332,7 @@ $array['filter']['typevalextenumbers'] = array('set' => false,'chk' => 2,'maxlen
 $array['filter']['typeextenumbersright'] = array(
 				'set'	=> false,
 				'chk'	=> 2,
-				'key'	=> array('agent',
-						 'group',
-						 'meetme',
-						 'queue',
-						 'user'));
+				'key'	=> $array['element']['typeextenumbersright']['value']);
 $array['filter']['typevalextenumbersright'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['label'] = array('set' => false,'chk' => 2,'maxlen' => 32,'cast' => 'sgraph');
 $array['filter']['supervision'] = array('bool' => true);

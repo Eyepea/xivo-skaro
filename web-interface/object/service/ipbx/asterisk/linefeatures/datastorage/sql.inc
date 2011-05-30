@@ -78,12 +78,17 @@ class xivo_service_asterisk_linefeatures_sql extends xivo_service_asterisk_abstr
 	function user_masterline($userid=null,$deviceid=null)
 	{
 		$this->_dso->new_select($this->_table);
-		if(($userid = dwho_ulongint($userid)) !== 0)
+		if(((int) $userid = dwho_ulongint($userid)) !== 0)
+		{
 			$this->_dso->where(array('iduserfeatures' => $userid));
-		if(($deviceid = dwho_ulongint($deviceid)) !== 0)
+			$this->_dso->where(array('line_num' => 0));
+			$this->_dso->where(array('rules_order' => 1));
+		}
+		if(((int) $deviceid = dwho_ulongint($deviceid)) !== 0)
+		{
 			$this->_dso->where(array('device' => $deviceid));
-		$this->_dso->where(array('line_num' => 0));
-		$this->_dso->where(array('rules_order' => 1));
+			$this->_dso->where(array('num' => 1));
+		}
 		$r = $this->_dso->select_single();
 		return($r);
 	}

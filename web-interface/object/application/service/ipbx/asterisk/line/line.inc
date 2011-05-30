@@ -436,6 +436,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		}
 		else
 		{
+			$userfeatures = $arr['userfeatures'];
+			
 			if (isset($arr['userfeatures']['id']) === true)
 				$arr['linefeatures']['iduserfeatures'] = (int) $arr['userfeatures']['id'];
 
@@ -639,7 +641,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$arr['appdata'][1] = dwho_ulongint($iduserfeatures);
 		$arr['appdata'][2] = dwho_ulongint($idlinefeatures);
 		$arr['appdata'][3] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
-		$arr['appdata'][4] = $this->_result['protocol']['language'];
+		$arr['appdata'][4] = $this->get_result_var('protocol','language');
 
 		return($arr);
 	}
@@ -892,78 +894,81 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_status = '';
 			return(false);
 		}
-		else if($this->_info['linefeatures']['iduserfeatures'] === 0
-		&& (((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures'))) !== 0)
+		elseif($this->get_result('userfeatures') !== null)
 		{
-			if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
-			|| $this->add_extenumbers($linefeaturesid) === false
-			|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-			   && $this->add_hints() === false) === true)
+			if($this->_info['linefeatures']['iduserfeatures'] === 0
+			&& (((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures'))) !== 0)
 			{
-				$this->_reverse_edit($protocolret);
-				$this->_status = '';
-				return(false);
-			}
-		}
-		else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
-		{
-			if ($this->update_protocol_setvar($this->_info['protocol']['id'], $iduserfeatures) === false)
-			{
-				$this->_reverse_edit($protocolret);
-				$this->_status = '';
-				return(false);
-			}
-			else if($this->_info['linefeatures']['number'] !== '')
-			{
-				if($this->get_result('usermacro') === null
-				|| $this->get_result('extenumbers') === null)
-				{
-					$this->delete_macro('usermacro');
-					$this->delete_extenumbers();
-					$this->delete_hints();
-				}
-				else if ($this->edit_usermacro($iduserfeatures,$linefeaturesid) === false
-				|| $this->edit_extenumbers() === false)
+				if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
+				|| $this->add_extenumbers($linefeaturesid) === false
+				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+				   && $this->add_hints() === false) === true)
 				{
 					$this->_reverse_edit($protocolret);
 					$this->_status = '';
 					return(false);
 				}
-				else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-					$this->delete_hints();
-				else
+			}
+			else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
+			{
+				if ($this->update_protocol_setvar($this->_info['protocol']['id'], $iduserfeatures) === false)
 				{
-					if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-						$hints = $this->add_hints();
-					else
-						$hints = $this->edit_hints();
-
-					if($hints === false)
+					$this->_reverse_edit($protocolret);
+					$this->_status = '';
+					return(false);
+				}
+				else if($this->_info['linefeatures']['number'] !== '')
+				{
+					if($this->get_result('usermacro') === null
+					|| $this->get_result('extenumbers') === null)
+					{
+						$this->delete_macro('usermacro');
+						$this->delete_extenumbers();
+						$this->delete_hints();
+					}
+					else if ($this->edit_usermacro($iduserfeatures,$linefeaturesid) === false
+					|| $this->edit_extenumbers() === false)
 					{
 						$this->_reverse_edit($protocolret);
 						$this->_status = '';
 						return(false);
 					}
+					else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+						$this->delete_hints();
+					else
+					{
+						if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+							$hints = $this->add_hints();
+						else
+							$hints = $this->edit_hints();
+	
+						if($hints === false)
+						{
+							$this->_reverse_edit($protocolret);
+							$this->_status = '';
+							return(false);
+						}
+					}
+				}
+				else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
+				|| $this->add_extenumbers($linefeaturesid) === false
+				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+				   && $this->add_hints() === false) === true)
+				{
+					$this->_reverse_edit($protocolret);
+					$this->_status = '';
+					return(false);
 				}
 			}
-			else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
-			|| $this->add_extenumbers($linefeaturesid) === false
-			|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-			   && $this->add_hints() === false) === true)
+
+			if($this->edit_contextnummember() === false)
+			#|| $this->edit_groupmember() === false
+			#|| $this->edit_queuemember() === false)
 			{
 				$this->_reverse_edit($protocolret);
 				$this->_status = '';
 				return(false);
 			}
-		}
-
-		if($this->edit_contextnummember() === false)
-		#|| $this->edit_groupmember() === false
-		#|| $this->edit_queuemember() === false)
-		{
-			$this->_reverse_edit($protocolret);
-			$this->_status = '';
-			return(false);
 		}
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
