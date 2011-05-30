@@ -111,7 +111,7 @@ switch($act)
 
 		$appuser = &$ipbx->get_application('user',null,false);
 
-		if(($list = $appuser->get_users_list(null,null,null,null,false,null,true)) === false)
+		if(($list = $appuser->get_users_list()) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
