@@ -2825,6 +2825,54 @@ CREATE TABLE "dundi_peer" (
  PRIMARY KEY("id")
 );
 
+-- DAHDI
+DROP TABLE IF EXISTS "dahdi_general";
+CREATE TABLE "dahdi_general" (
+ "id"                  SERIAL,
+ "context"             VARCHAR(255) DEFAULT NULL,
+ "language"            VARCHAR(16) DEFAULT NULL,
+ "usecallerid"         INTEGER DEFAULT NULL, -- BOOLEAN
+ "hidecallerid"        INTEGER DEFAULT NULL, -- BOOLEAN
+ "callerid"            VARCHAR(64) DEFAULT NULL,
+ "restrictcid"         INTEGER DEFAULT NULL, -- BOOLEAN
+ "usecallingpres"      INTEGER DEFAULT NULL, -- BOOLEAN
+ "pridialplan"         VARCHAR(64) DEFAULT NULL,
+ "prilocaldialplan"    VARCHAR(64) DEFAULT NULL,
+ "priindication"       VARCHAR(64) DEFAULT NULL,
+ "nationalprefix"      VARCHAR(64) DEFAULT NULL,
+ "internationalprefix" VARCHAR(64) DEFAULT NULL,
+ "threewaycalling"     INTEGER DEFAULT NULL, -- BOOLEAN
+ "transfer"            INTEGER DEFAULT NULL, -- BOOLEAN
+ "echocancel"          INTEGER DEFAULT NULL, -- BOOLEAN
+ "echotraining"        INTEGER DEFAULT NULL, -- BOOLEAN
+ "relaxdtmf"           INTEGER DEFAULT NULL, -- BOOLEAN
+
+ PRIMARY KEY ("id")
+);
+
+INSERT INTO dahdi_general VALUES(1,'from-extern','fr_FR',1,0,'asreceived',0,1,'unknown','dynamic','outofband','0','00',1,1,1,NULL,1);
+
+
+DROP TABLE IF EXISTS "dahdi_group";
+CREATE TABLE "dahdi_group" (
+ "groupno"    INTEGER NOT NULL,
+ "context"    VARCHAR(255),
+ "signalling" VARCHAR(64),
+ "switchtype" VARCHAR(64),
+
+ "mailbox"    INTEGER,
+ "callerid"   VARCHAR(255),
+
+ "channels"   VARCHAR(255), -- comma separated channel numbers.ie: 64,65,68-70
+ "commented"  INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY ("groupno")
+);
+
+-- sample datas
+-- INSERT INTO dahdi_group VALUES (1,'from-extern','pri_cpe','euroisdn',NULL,NULL,'1-15,17-31');
+-- INSERT INTO dahdi_group VALUES (2,'from-extern','fxo_ks',NULL,'4032','bob sponge <4032>', '32');
+-- INSERT INTO dahdi_group VALUES (3,'from-extern','fxs_ks',NULL,NULL,NULL, '33');
+
 
 -- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text) 
