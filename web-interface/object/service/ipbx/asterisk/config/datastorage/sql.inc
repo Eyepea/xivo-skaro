@@ -180,6 +180,10 @@ $array['outcalltrunk'] = array();
 $array['outcalltrunk']['table'] = 'outcalltrunk';
 $array['outcalltrunk']['primary'] = array('outcallid' => '','trunkfeaturesid' => '');
 
+$array['outcalldundipeer'] = array();
+$array['outcalldundipeer']['table'] = 'outcalldundipeer';
+$array['outcalldundipeer']['primary'] = array('outcallid' => '','dundipeerid' => '');
+
 $array['paging'] = array();
 $array['paging']['table'] = 'paging';
 $array['paging']['primary'] = array('id' => '');

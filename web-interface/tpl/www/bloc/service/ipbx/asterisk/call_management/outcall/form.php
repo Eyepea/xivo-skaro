@@ -24,6 +24,7 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
 
+$dundipeer = $this->get_var('dundipeer');
 $outcalltrunk = $this->get_var('outcalltrunk');
 $rightcall    = $this->get_var('rightcall');
 $schedules    = $this->get_var('schedules');
@@ -67,18 +68,46 @@ endif;
 				      'name'	=> 'outcall[useenum]',
 				      'labelid'	=> 'useenum',
 				      'checked'	=> $this->get_var('info','outcall','useenum'),
-				      'default'	=> $element['outcall']['useenum']['default'])),
+				      'default'	=> $element['outcall']['useenum']['default']));
 
-		$form->text(array('desc'	=> $this->bbf('fm_outcall_routing'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_outcall_routing'),
 				  'name'	=> 'outcall[routing]',
 				  'labelid'	=> 'outcall-routing',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['routing']['default'],
 				  'value'	=> $this->get_var('info','outcall','routing'),
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'routing')) )),
+						   $this->get_var('error', 'outcall', 'routing')) ));
+?>
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_internal'),
+<?php
+if($dundipeer['list'] !== false):
+?>
+<div id="dundipeerlist" class="fm-paragraph fm-description">
+	<p>
+		<label id="lb-dundipeer" for="it-dundipeer"><?=$this->bbf('fm_dundipeer');?></label>
+	</p>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'outcalldundipeer[]',
+						'id' 		=> 'outcalldundipeer',
+						'key'		=> 'include',
+				       	'altkey'	=> 'id',
+            			'selected'  => $dundipeer['slt']),
+					$dundipeer['list']);?>
+</div>
+<div class="clearboth"></div>
+<?php
+else:
+	echo	'<div class="txt-center">',
+		$url->href_htmln($this->bbf('create_dundipeer'),
+				'service/ipbx/dundi/peers',
+				'act=add'),
+		'</div>';
+endif;
+?>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_internal'),
 				      'name'	=> 'outcall[internal]',
 				      'labelid'	=> 'internal',
 				      'checked'	=> $this->get_var('info','outcall','internal'),

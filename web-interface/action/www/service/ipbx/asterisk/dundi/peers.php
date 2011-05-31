@@ -45,10 +45,9 @@ switch($act)
 	case 'add':
 		$fm_save = true;
 
-		if(isset($_QR['fm_send']) 	 === true 
+		if(isset($_QR['fm_send']) 	 === true
 		&& dwho_issa('dundipeer', $_QR) === true)
-		{	
-			var_dump($_QR);
+		{
 			// save item
 			if($apppeer->set_add($_QR) === true
 			&& $apppeer->add() === true)
@@ -67,7 +66,6 @@ switch($act)
 		{	return $key['type'] == 'public';	}
 
 		$keys = $modcert->get_keys();
-		//var_dump($keys);
 		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
 		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 
@@ -102,7 +100,6 @@ switch($act)
 		{	return $key['type'] == 'public';	}
 
 		$keys = $modcert->get_keys();
-		//var_dump($keys);
 		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
 		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 

@@ -41,9 +41,8 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 		$result['schedule_id'] = false;
-
-		$outcalltrunk = $rightcall = array();
-		$outcalltrunk['slt'] = $rightcall['slt'] = array();
+		$outcalltrunk = $rightcall = $dundipeer = array();
+		$outcalltrunk['slt'] = $rightcall['slt'] = $dundipeer['slt'] = array();
 
 		dwho::load_class('dwho_sort');
 
@@ -53,6 +52,9 @@ switch($act)
 			$trunksort = new dwho_sort(array('key' => 'identity'));
 			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
 		}
+
+		$appdundi = &$ipbx->get_application('dundipeer');
+		$dundipeer['list'] = $appdundi->get_dundipeer_list(null,array('include' => SORT_ASC),null,true);
 		
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -74,6 +76,12 @@ switch($act)
 		{
 			$outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
+		}
+		
+		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$result) === true)
+		{
+			$dundipeer['slt'] = dwho_array_intersect_key($result['outcalldundipeer'],$dundipeer['list'],'dundipeerid');
+			$dundipeer['slt'] = array_keys($dundipeer['slt']);
 		}
 
 		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
@@ -101,6 +109,7 @@ switch($act)
 		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
 		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 
+		$_TPL->set_var('dundipeer',$dundipeer);
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
 		$_TPL->set_var('rightcall',$rightcall);
 		$_TPL->set_var('error',$error);
@@ -119,8 +128,8 @@ switch($act)
 		$result = $fm_save = $error = null;
 		$return = &$info;
 		$return['schedule_id'] = false;
-		$outcalltrunk = $rightcall = array();
-		$outcalltrunk['slt'] = $rightcall['slt'] = array();
+		$outcalltrunk = $rightcall = $dundipeer = array();
+		$outcalltrunk['slt'] = $rightcall['slt'] = $dundipeer['slt'] = array();
 
 		dwho::load_class('dwho_sort');
 
@@ -130,6 +139,9 @@ switch($act)
 			$trunksort = new dwho_sort(array('key' => 'identity'));
 			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
 		}
+
+		$appdundi = &$ipbx->get_application('dundipeer');
+		$dundipeer['list'] = $appdundi->get_dundipeer_list(null,array('include' => SORT_ASC),null,true);
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -152,6 +164,12 @@ switch($act)
 		{
 			$outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
+		}
+		
+		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$return) === true)
+		{
+			$dundipeer['slt'] = dwho_array_intersect_key($return['outcalldundipeer'],$dundipeer['list'],'dundipeerid');
+			$dundipeer['slt'] = array_keys($dundipeer['slt']);
 		}
 
 		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
@@ -180,6 +198,7 @@ switch($act)
 		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 
 		$_TPL->set_var('id',$info['outcall']['id']);
+		$_TPL->set_var('dundipeer',$dundipeer);
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
 		$_TPL->set_var('rightcall',$rightcall);
 		$_TPL->set_var('fm_save',$fm_save);

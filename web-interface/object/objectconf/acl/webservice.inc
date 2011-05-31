@@ -88,6 +88,10 @@ $array['tree']['service']['ipbx']['pbx_services']['parkinglot']    = true;
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['context'] = true;
 
+$array['tree']['service']['ipbx']['dundi'] = array();
+$array['tree']['service']['ipbx']['dundi']['peers'] = true;
+$array['tree']['service']['ipbx']['dundi']['mappings'] = true;
+
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;
 $array['tree']['service']['ipbx']['control_system']['restart'] = true;

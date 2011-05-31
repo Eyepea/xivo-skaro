@@ -101,6 +101,12 @@ $array['service/ipbx/asterisk/ui/pbx_settings/extension/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/extension',
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
 
+$array['service/ipbx/asterisk/ui/dundi/peers/'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/dundi/peers');
+
+$array['service/ipbx/asterisk/ui/dundi/mappings/'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/dundi/mappings');
+
 
 $array['statistics/ui/call_center/genercache'] = array(
 	'path'		=> 'statistics/ui/call_center/genercache',
@@ -194,6 +200,14 @@ $array['service/ipbx/asterisk/web_services/private/general_settings/outboundmwi'
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/call_center/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_center/agents',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['service/ipbx/asterisk/web_services/private/dundi/peers'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/dundi/peers',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['service/ipbx/asterisk/web_services/private/dundi/mappings'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/dundi/mappings',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/users'] = array(
@@ -333,8 +347,19 @@ $array['xivo/configuration/web_services/restricted/provisioning/general'] = arra
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
+
 $array['service/ipbx/asterisk/web_services/restricted/ctiserver/configuration'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['service/ipbx/asterisk/web_services/restricted/dundi/peers'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/dundi/peers',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['service/ipbx/asterisk/web_services/restricted/dundi/mappings'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/dundi/mappings',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 

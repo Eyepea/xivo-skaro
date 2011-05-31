@@ -188,6 +188,9 @@ $array['module']['outcall']['datastorage'] = true;
 $array['module']['outcalltrunk'] = array();
 $array['module']['outcalltrunk']['datastorage'] = true;
 
+$array['module']['outcalldundipeer'] = array();
+$array['module']['outcalldundipeer']['datastorage'] = true;
+
 $array['module']['paging'] = array();
 $array['module']['paging']['datastorage'] = true;
 
