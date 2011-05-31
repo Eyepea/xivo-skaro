@@ -86,7 +86,10 @@ switch($act)
 				$error = $appcontext->get_error();
 			}
 			else
+			{
+				$ipbx->discuss(array('dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
+			}
 		}
 
 		if($contextinc['list'] !== false && dwho_issa('contextinclude',$result) === true)
@@ -180,7 +183,10 @@ switch($act)
 				$error = $appcontext->get_error();
 			}
 			else
+			{
+				$ipbx->discuss(array('dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
+			}
 		}
 
 		if($contextinc['list'] !== false && dwho_issa('contextinclude',$return) === true)
@@ -219,7 +225,8 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext->delete();
-
+		
+		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;
 	case 'deletes':
@@ -238,6 +245,7 @@ switch($act)
 				$appcontext->delete();
 		}
 
+		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;
 	case 'disables':
@@ -261,6 +269,7 @@ switch($act)
 				$appcontext->enable();
 		}
 
+		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;
 	default:
