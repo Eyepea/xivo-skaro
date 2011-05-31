@@ -384,6 +384,8 @@ class QObject(object):
 		'dundimapping'  : ('dundi_mapping',),
 		'dundipeer'     : ('dundi_peer',),
 		'general'       : ('general',),
+		'dahdi'         : ('dahdi_general',),
+		'dahdigroup'    : ('dahdi_group',),
 	}
 
 	def __init__(self, db, name):
