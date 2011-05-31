@@ -40,8 +40,8 @@ class MeetmeList(AnyList):
         ret = AnyList.update(self)
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
-            if ag['number'] not in self.reverse_index:
-                self.reverse_index[ag['number']] = idx
+            if ag['confno'] not in self.reverse_index:
+                self.reverse_index[ag['confno']] = idx
             else:
                 log.warning('2 meetme have the same room number')
         return ret

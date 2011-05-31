@@ -238,8 +238,12 @@ class Safe:
         if listname not in self.xod_config:
             self.log.warning('no such listname %s' % listname)
         try:
-            deltas = self.xod_config[listname].update()
-            for k in deltas.get('add'):
+            try:
+                deltas = self.xod_config[listname].update()
+            except Exception:
+                self.log.exception('unable to update %s' % listname)
+                deltas = {}
+            for k in deltas.get('add', {}):
                 self.xod_status[listname][k] = {}
                 for prop, defaultvalue in self.props_status.get(listname, {}).iteritems():
                     self.xod_status[listname][k][prop] = copy.copy(defaultvalue)
@@ -250,7 +254,7 @@ class Safe:
                                        'tipbxid' : self.ipbxid,
                                        'list' : [k]
                                        } )
-            if deltas.get('del'):
+            if deltas.get('del', {}):
                 finaldels = list()
                 for k in deltas.get('del'):
                     if not k.startswith('cs:'):
@@ -477,7 +481,7 @@ class Safe:
         qgid = self.xod_config['queues'].idbyqueuename(queuename)
         qgname = 'queues'
         if not qgid:
-            qgid = self.xod_config['groups'].idbyqueuename(queuename)
+            qgid = self.xod_config['groups'].idbygroupname(queuename)
             qgname = 'groups'
 
         # send a notification event if no new member
