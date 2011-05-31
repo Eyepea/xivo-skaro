@@ -481,7 +481,7 @@ class Safe:
         qgid = self.xod_config['queues'].idbyqueuename(queuename)
         qgname = 'queues'
         if not qgid:
-            qgid = self.xod_config['groups'].idbygroupname(queuename)
+            qgid = self.xod_config['groups'].idbyqueuename(queuename)
             qgname = 'groups'
 
         # send a notification event if no new member

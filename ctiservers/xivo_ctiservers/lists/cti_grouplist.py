@@ -52,9 +52,16 @@ class GroupList(AnyList):
             else:
                 log.warning('2 groups have the same name')
         return ret
-    
+
     def hasqueue(self, queuename):
         return self.reverse_index.has_key(queuename)
+
+    def idbyqueuename(self, queuename):
+        if queuename in self.reverse_index:
+            idx = self.reverse_index[queuename]
+            if idx in self.keeplist:
+                return idx
+        return
 
     def getcontext(self, queueid):
         return self.keeplist[queueid]['context']

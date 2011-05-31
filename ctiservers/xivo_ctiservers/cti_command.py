@@ -51,20 +51,24 @@ REGCOMMANDS = [
     'callcampaign',
     'logfromclient',
     'getqueuesstats',
-    'parking', 'meetme',
-    'sheet', 'actionfiche',
+    'sheet',
+    'actionfiche',
+
     'ipbxcommand'
     ]
 
 IPBXCOMMANDS = [
-    'dial', 'autodial', 'hangupme', 'answer', 'refuse',
-    'originate', 'intercept', 'park',
+    'dial', 'hangupme',
+    'answer', 'refuse', 'cancel',
+    'originate', 'intercept',
+    'parking',
     'transfer', 'atxfer', 'transfercancel',
     'hangup',
     'sipnotify',
 
-    'recordstart', 'recordstop',
-    'listenstart', 'listenstop',
+    'meetme',
+    'record',
+    'listen',
 
     'agentlogin', 'agentlogout',
     'agentpausequeue', 'agentunpausequeue'
@@ -83,8 +87,8 @@ class Command:
         return
 
     def parse(self):
-        self.command = self.commanddict.pop('class', None)
-        self.commandid = self.commanddict.pop('commandid', None)
+        self.command = self.commanddict.get('class', None)
+        self.commandid = self.commanddict.get('commandid', None)
 
         self.ipbxid = self.connection.connection_details.get('ipbxid')
         self.userid = self.connection.connection_details.get('userid')
@@ -384,8 +388,8 @@ class Command:
                                                   'text' : chitchattext}} )
         return reply
 
-    def regcommand_meetme(self):
-        print 'regcommand_meetme', self.commanddict, self.userid, self.ruserid
+    def ipbxcommand_meetme(self):
+        print 'ipbxcommand_meetme', self.commanddict, self.userid, self.ruserid
         function = icommand.struct.get('function')
         argums = icommand.struct.get('functionargs')
         if function == 'record' and len(argums) == 3 and argums[2] in ['start' , 'stop']:
@@ -565,7 +569,7 @@ class Command:
 
     def regcommand_ipbxcommand(self):
         reply = {}
-        self.ipbxcommand = self.commanddict.pop('command', None)
+        self.ipbxcommand = self.commanddict.get('command', None)
         if not self.ipbxcommand:
             log.warning('no command given')
             return reply
@@ -585,12 +589,12 @@ class Command:
         methodname = 'ipbxcommand_%s' % self.ipbxcommand
 
         # check whether ipbxcommand is in the users's profile capabilities
+        z = {}
         if hasattr(self, methodname):
             try:
                 z = getattr(self, methodname)()
             except Exception:
                 log.warning('exception when calling %s' % methodname)
-                z = {}
         else:
             log.warning('no such ipbx method %s' % methodname)
 
@@ -652,14 +656,16 @@ class Command:
             [type_src, who_src] = src.split(':', 1)
             [ipbxid_src, id_src] = who_src.split('/')
         except Exception:
-            log.warning('cannot parse source field')
+            log.warning('(%s) cannot parse source field %s'
+                        % (self.commanddict.get('command'), src))
             return
         try:
             dst = self.commanddict.get('destination')
             [type_dst, who_dst] = dst.split(':', 1)
             [ipbxid_dst, id_dst] = who_dst.split('/')
         except Exception:
-            log.warning('cannot parse destination field')
+            log.warning('(%s) cannot parse destination field %s'
+                        % (self.commanddict.get('command'), dst))
             return
         if ipbxid_src != ipbxid_dst:
             return
@@ -684,7 +690,7 @@ class Command:
                 orig_name = phoneidstruct.get('name')
                 orig_number = phoneidstruct.get('number')
                 orig_identity = phoneidstruct.get('useridentity')
-        elif type_src == 'ext':
+        elif type_src == 'exten':
             # in android cases
             # there was a warning back to revision 6095 - maybe to avoid making arbitrary calls on behalf
             # of the local telephony system ?
@@ -706,7 +712,7 @@ class Command:
             extentodial = '*98'
             # XXX especially for the 'dial' command, actually
             # XXX display password on phone in order for the user to know what to type
-        elif type_dst == 'ext':
+        elif type_dst == 'exten':
             # XXX how to define
             extentodial = who_dst
 
@@ -817,7 +823,7 @@ class Command:
                 log.exception('unable to %s' % commname)
         return
 
-    def ipbxcommand_park(self):
+    def ipbxcommand_parking(self):
         rep = {}
         src = self.commanddict.get('source')
         srcsplit = src.split(':', 1)
@@ -973,29 +979,28 @@ class Command:
     def ipbxcommand_agentlogout(self):
         print self.ipbxcommand, self.commanddict
         return
+
     def ipbxcommand_agentjoinqueue(self):
         print self.ipbxcommand, self.commanddict
         return
+
     def ipbxcommand_agentleavequeue(self):
         print self.ipbxcommand, self.commanddict
         return
+
     def ipbxcommand_agentpausequeue(self):
         print self.ipbxcommand, self.commanddict
         return
+
     def ipbxcommand_agentunpausequeue(self):
         print self.ipbxcommand, self.commanddict
         return
 
     # record, listen actions
-    def ipbxcommand_recordstart(self):
+    def ipbxcommand_record(self):
         print self.ipbxcommand, self.commanddict
         return
-    def ipbxcommand_recordstop(self):
-        print self.ipbxcommand, self.commanddict
-        return
-    def ipbxcommand_listenstart(self):
-        print self.ipbxcommand, self.commanddict
-        return
-    def ipbxcommand_listenstop(self):
+
+    def ipbxcommand_listen(self):
         print self.ipbxcommand, self.commanddict
         return
