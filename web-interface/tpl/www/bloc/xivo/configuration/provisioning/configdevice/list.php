@@ -79,6 +79,9 @@ $page = $url->pager($pager['pages'],
 						      'id'	=> $ref['id']),
 						null,
 						$this->bbf('opt_modify'));
+			if (isset($ref['deletable']) === true
+			&& (bool) $ref['deletable'] === false):
+			else:
 				echo	$url->href_html($url->img_html('img/site/button/delete.gif',
 				 				       $this->bbf('opt_delete'),
 								       'border="0"'),
@@ -88,6 +91,7 @@ $page = $url->pager($pager['pages'],
 				      			      'page'	=> $pager['page']),
 							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 							$this->bbf('opt_delete'));
+			endif;
 ?>
 		</td>
 	</tr>

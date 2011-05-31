@@ -85,8 +85,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (is_array($this->_confdefault) === true)
 			return($this->_confdefault);
 		elseif ($this->_confdefault === false
-		&& ($confdefault = $this->get('default')) === false)
+		&& ($confdefault = $this->get('default')) === false
+		&& $this->eval_required_config(null,true) === false)
+		{
+			dwho_report::push('error', 'fatal error: config default not exist.');
 			return(false);
+		}
 		
 		return(($this->_confdefault = $confdefault));
 	}
@@ -173,13 +177,19 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{
 		if (is_array($arr) === false)
 			return(false);
+			
+		if (isset($arr['deletable']) === false)
+		    $arr['deletable'] = true;
 		
 		$uri = $this->_build_uri(array('configs'));
 		$data['config'] = $arr;
 		$rs = $this->request_post($uri,$data);
 		
 		if($this->_status_code !== 201)
+		{
+			dwho_report::push('error', 'fail to create config');
 			return(false);
+		}
 		
 		return($rs['id']);
 	}
@@ -189,13 +199,19 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (is_array($arr) === false
 		|| dwho_has_len($id) === false)
 			return(false);
+			
+		if (isset($arr['deletable']) === false)
+		    $arr['deletable'] = true;
 		
 		$uri = $this->_build_uri(array('configs',$id));
 		$data['config'] = $arr;
 		$rs = $this->request_put($uri,$data);
 		
 		if($this->_status_code !== 204)
+		{
+			dwho_report::push('error', 'fail to edit config: '.$id);
 			return(false);
+		}
 			
 		return(true);
 	}
@@ -277,6 +293,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$config = array();
 		$config['X_type'] = 'registrar';
 		$config['id'] = 'default';
+		$config['deletable'] = false;
 		$config['displayname'] = 'local';
 		$config['parent_ids'] = array();
 		// required raw_config dict by provd
@@ -306,6 +323,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			return(false);
 		
 		$base['X_type'] = 'internal';
+		$base['deletable'] = false;
 		
 		$base['raw_config']['ntp_enabled'] = true;
 		$base['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
@@ -339,6 +357,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			return(false);
 				
 		$autoprov['X_type'] = 'internal';
+		$autoprov['deletable'] = false;
 		$autoprov['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
 		$autoprov['raw_config']['sip_lines'][1]['registrar_ip'] = $confregistrar['registrar_main'];
 		
@@ -369,6 +388,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$conf = array();
 		$conf['X_type'] = 'device';
+		$conf['deletable'] = false;
 		$conf['id'] = 'defaultconfigdevice';
 		$conf['label'] = 'Default config';
 		$conf['parent_ids'] = array();

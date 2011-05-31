@@ -203,10 +203,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		{
 			if (($conf = $this->_provdconfig->build_raw_config($id)) === false
 			|| $this->_provdconfig->edit($id,$conf) === false)
-			{
-				dwho_report::push('error', 'fail to create config for this device: '.$id);
 				return(false);
-			}
 		}
 			
 		return(true);
@@ -226,10 +223,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 					
 		if (($conf = $this->_provdconfig->build_raw_config($deviceid,null,$rawconfig)) === false
 		|| $this->_provdconfig->edit($conf['id'],$conf) === false)
-		{
-			dwho_report::push('error', 'fail to create config for this device: '.$deviceid);
 			return(false);
-		}
 		
 		if ($synchronize === true
 		&& $this->synchronize($deviceid) === false)

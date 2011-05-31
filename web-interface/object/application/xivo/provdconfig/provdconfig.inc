@@ -320,7 +320,8 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 
 	public function delete_config()
 	{
-		if(dwho_issa('config',$this->_info) === false)
+		if(dwho_issa('config',$this->_info) === false
+		|| $this->_info['config']['deletable'] === false)
 			return(false);
 
 		$r = $this->_provdconfig->delete($this->_info['config']['id']);
