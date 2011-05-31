@@ -349,7 +349,15 @@ class Dahdi(object):
 			# span settings
 			isdigital = ret[_s.index('linecompat')] > 0
 			if isdigital:
-				span['type'] = ret[_s.index('spantype')].split('\x00')[0]
+				spantype = ret[_s.index('spantype')].split('\x00')[0]
+				if spantype in ('NT','TE'): # BRI
+					span['type']       = 'BRI'
+					span['signalling'] = spantype
+				elif spantype in ('E1','T1'):
+					span['type']       = 'PRI'
+					span['signalling'] = spantype
+				else:
+					span['type'] = spantype
 
 				span['config'] = {
 					'syncsrc'     : ret[_s.index('syncsrc')],
@@ -465,7 +473,7 @@ class Dahdi(object):
 	def setconfig(self, args, options):
 		usertmpl = self._loadtmpl(self.tmpl)
 
-		# which port is dchan depend on ISDN mode
+		# dchan port position. Depends on span type
 		DIGITAL_DCHAN = {
 			'E1' : 15,
 			'T1' : 23,
