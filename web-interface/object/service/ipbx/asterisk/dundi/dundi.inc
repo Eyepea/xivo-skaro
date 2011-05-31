@@ -27,17 +27,18 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'dundi';
-	var $_filter	= false;
-	var $_origin	= false;
-	var $_identity	= false;
-	var $_curl		= null;
-	var $_uri		= null;
-	var $_url		= array();
-	var $_status_code	= null;
+	var $_dso		        = null;
+	var $_name		        = 'dundi';
+	var $_filter	        = false;
+	var $_origin	        = false;
+	var $_identity	        = false;
+	private $_curl			= null;
+	private $_uri			= null;
+	private $_url			= array();
+	private $_dundi_type	= array('peers','mappings');
+	private $_status_code	= null;
 
-	function xivo_service_asterisk_dundi(&$sre,&$dso)
+	public function __construct(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -59,7 +60,7 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 		return(parent::edit($id, $rs));
 	}
 	
-	function list_server()
+	public function list_server()
 	{
 		xivo::load_class('xivo_server',XIVO_PATH_OBJECT,null,false);
 		$_SVR = new xivo_server();
@@ -70,8 +71,21 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 		return($list);
 	}
 	
-	function list_peers($serverid)
+	public function list_peers($serverid)
 	{
+		return($this->_remote_list('peers',$serverid));
+	}
+	
+	public function list_mappings($serverid)
+	{
+		return($this->_remote_list('mappings',$serverid));
+	}
+	
+	private function _remote_list($type,$serverid)
+	{
+	    if(in_array($type,$this->_dundi_type) === false)
+			return(false);
+			
 		xivo::load_class('xivo_server',XIVO_PATH_OBJECT,null,false);
 		$_SVR = new xivo_server();
 		
@@ -91,13 +105,13 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 		$this->_uri = new dwho_uri();
 		$this->_curl = new dwho_curl();
 		
-		if(($data = $this->request_get('/service/ipbx/json.php/'.$method.'/dundi/peers/')) === false)
+		if(($data = $this->request_get('/service/ipbx/json.php/'.$method.'/dundi/'.$type.'/')) === false)
 			return(false);
 			
 		return($data);
 	}
 
-	function _create()
+	private function _create()
 	{
 		return($this->_curl->load(null,
 					  array('connect_timeout'	=> 30,
@@ -106,7 +120,7 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 				          false));
 	}
 
-	function _connect($path,$query=null)
+	private function _connect($path,$query=null)
 	{
 		if(dwho_has_len($path) === false)
 			return(false);
@@ -124,12 +138,12 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 		return($this->_curl->connect());
 	}
 
-	function last_status_code()
+	public function last_status_code()
 	{
 		return($this->_status_code);
 	}
 
-	function request_get($path,$query=null,$decode_assoc=true)
+	private function request_get($path,$query=null,$decode_assoc=true)
 	{
 		$this->_status_code = null;
 
@@ -151,7 +165,7 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function request_post($path,$data,$query=null,$decode_assoc=true)
+	private function request_post($path,$data,$query=null,$decode_assoc=true)
 	{
 		$this->_status_code = null;
 
