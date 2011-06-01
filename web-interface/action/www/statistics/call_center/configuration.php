@@ -38,40 +38,41 @@ switch($act)
 {
 	case 'add':
 		$result = $fm_save = $error = null;
+		
+		$incall_sort = array('exten' => SORT_ASC);
+		$queue_sort = array('name' => SORT_ASC);
+		$group_sort = array('name' => SORT_ASC);
+		$agent_sort = array('name' => SORT_ASC);
+		$user_sort = array('firstname' => SORT_ASC,'lastname' => SORT_ASC);
 
 		$incall = array();
 		$incall['slt'] = array();
 		$appincall = &$ipbx->get_application('incall');
-		$incall['list'] = $appincall->get_incalls_list(null,'exten',null,true);
+		$incall['list'] = $appincall->get_incalls_list(null,$incall_sort,null,true);
 
 		$queue = array();
 		$queue['slt'] = array();
 		$appqueue = &$ipbx->get_application('queue');
-		$queue['list'] = $appqueue->get_queues_list(null,'name',null,true);
+		$queue['list'] = $appqueue->get_queues_list(null,$queue_sort,null,true);
 
 		$group = array();
 		$group['slt'] = array();
 		$appgroup = &$ipbx->get_application('group');
-		$group['list'] = $appgroup->get_groups_list(null,'name',null,true);
+		$group['list'] = $appgroup->get_groups_list(null,$group_sort,null,true);
 
 		$agent = array();
 		$agent['slt'] = array();
 		$appagent = &$ipbx->get_application('agent');
-		$agent['list'] = $appagent->get_agentfeatures(null,'name',null,true);
+		$agent['list'] = $appagent->get_agentfeatures(null,$agent_sort,null,true);
 
 		$user = array();
 		$user['slt'] = array();
 		$appuser = &$ipbx->get_application('user');
-		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
+		$user['list'] = $appuser->get_users_list(null,$user_sort,null,true,true);
 
 		$listqos = array();
-		$workhour_start = array();
-		$workhour_end = array();
-
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('stats_conf',$_QR) === true
-		&& dwho_issa('workhour_start',$_QR) === true
-		&& dwho_issa('workhour_end',$_QR) === true)
+		&& dwho_issa('stats_conf',$_QR) === true)
 		{
 			if($appstats_conf->set_add($_QR) === false
 			|| $appstats_conf->add() === false)
@@ -79,82 +80,51 @@ switch($act)
 				$fm_save = false;
 				$result = $appstats_conf->get_result();
 				$error  = $appstats_conf->get_error();
-
-				$info_hour_start = explode(':',$result['stats_conf']['hour_start']);
-				$workhour_start['h'] = $info_hour_start[0];
-				$workhour_start['m'] = $info_hour_start[1];
-				$info_hour_end = explode(':',$result['stats_conf']['hour_end']);
-				$workhour_end['h'] = $info_hour_end[0];
-				$workhour_end['m'] = $info_hour_end[1];
 				$listqos = $result['queue_qos'];
 			}
 			else
 				$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
 		}
-
+		
 		dwho::load_class('dwho_sort');
+		
+		if($incall['list'] !== false && dwho_issa('incall',$result) === true
+		&& ($incall['slt'] = dwho_array_intersect_key($result['incall'],$incall['list'],'id')) !== false)
+			$incall['slt'] = array_keys($incall['slt']);
+		
+		if($queue['list'] !== false && dwho_issa('queue',$result) === true
+		&& ($queue['slt'] = dwho_array_intersect_key($result['queue'],$queue['list'],'id')) !== false)
+			$queue['slt'] = array_keys($queue['slt']);
+		
+		if($group['list'] !== false && dwho_issa('group',$result) === true
+		&& ($group['slt'] = dwho_array_intersect_key($result['group'],$group['list'],'id')) !== false)
+			$group['slt'] = array_keys($group['slt']);
+		
+		if($agent['list'] !== false && dwho_issa('agent',$result) === true
+		&&($agent['slt'] = dwho_array_intersect_key($result['agent'],$agent['list'],'id')) !== false)
+		    $agent['slt'] = array_keys($agent['slt']);
+		
+		if($user['list'] !== false && dwho_issa('user',$result) === true
+		&&($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'id')) !== false)
+		    $user['slt'] = array_keys($user['slt']);
+		
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
 
-		if($incall['list'] !== false && dwho_ak('incall',$result) === true)
-		{
-			$incall['slt'] = dwho_array_intersect_key($result['incall'],$incall['list'],'id');
-			if($incall['slt'] !== false)
-			{
-				$incall['list'] = dwho_array_diff_key($incall['list'],$incall['slt']);
-				$incallsort = new dwho_sort(array('key' => 'identity'));
-				uasort($incall['slt'],array(&$incallsort,'str_usort'));
-			}
-		}
-
-		if($queue['list'] !== false && dwho_ak('queue',$result) === true)
-		{
-			$queue['slt'] = dwho_array_intersect_key($result['queue'],$queue['list'],'id');
-			if($queue['slt'] !== false)
-			{
-				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
-				$queuesort = new dwho_sort(array('key' => 'name'));
-				uasort($queue['slt'],array(&$queuesort,'str_usort'));
-			}
-		}
-
-		if($group['list'] !== false && dwho_ak('group',$result) === true)
-		{
-			$group['slt'] = dwho_array_intersect_key($result['group'],$group['list'],'id');
-			if($group['slt'] !== false)
-			{
-				$group['list'] = dwho_array_diff_key($group['list'],$group['slt']);
-				$queuesort = new dwho_sort(array('key' => 'name'));
-				uasort($group['slt'],array(&$queuesort,'str_usort'));
-			}
-		}
-
-		if($agent['list'] !== false && dwho_ak('agent',$result) === true)
-		{
-			$agent['slt'] = dwho_array_intersect_key($result['agent'],$agent['list'],'id');
-			if($agent['slt'] !== false)
-			{
-				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
-				$agentsort = new dwho_sort(array('key' => 'name'));
-				uasort($agent['slt'],array(&$agentsort,'str_usort'));
-			}
-		}
-
-		if($user['list'] !== false && dwho_ak('user',$result) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'id');
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-				$usersort = new dwho_sort(array('key' => 'name'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
-		}
+		$dhtml->set_js('js/statistics/call_center/configuration.js');
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		
+		// timepicker
+		$dhtml->set_css('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.css',true);
+		$dhtml->set_js('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.js',true);
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appstats_conf->get_elements());
-		$_TPL->set_var('workhour_start',$workhour_start);
-		$_TPL->set_var('workhour_end',$workhour_end);
 		$_TPL->set_var('listqos',$listqos);
 		$_TPL->set_var('incall',$incall);
 		$_TPL->set_var('queue',$queue);
@@ -169,51 +139,42 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
+		
+		$incall_sort = array('exten' => SORT_ASC);
+		$queue_sort = array('name' => SORT_ASC);
+		$group_sort = array('name' => SORT_ASC);
+		$agent_sort = array('name' => SORT_ASC);
+		$user_sort = array('firstname' => SORT_ASC,'lastname' => SORT_ASC);
 
 		$incall = array();
 		$incall['slt'] = array();
 		$appincall = &$ipbx->get_application('incall');
-		$incall['list'] = $appincall->get_incalls_list(null,'exten',null,true);
+		$incall['list'] = $appincall->get_incalls_list(null,$incall_sort,null,true);
 
 		$queue = array();
 		$queue['slt'] = array();
 		$appqueue = &$ipbx->get_application('queue');
-		$queue['list'] = $appqueue->get_queues_list(null,'name',null,true);
+		$queue['list'] = $appqueue->get_queues_list(null,$queue_sort,null,true);
 
 		$group = array();
 		$group['slt'] = array();
 		$appgroup = &$ipbx->get_application('group');
-		$group['list'] = $appgroup->get_groups_list(null,'name',null,true);
+		$group['list'] = $appgroup->get_groups_list(null,$group_sort,null,true);
 
 		$agent = array();
 		$agent['slt'] = array();
 		$appagent = &$ipbx->get_application('agent');
-		$agent['list'] = $appagent->get_agentfeatures(null,'name',null,true);
+		$agent['list'] = $appagent->get_agentfeatures(null,$agent_sort,null,true);
 
 		$user = array();
 		$user['slt'] = array();
 		$appuser = &$ipbx->get_application('user');
-		$user['list'] = $appuser->get_users_list(null,null,'name',null,true);
+		$user['list'] = $appuser->get_users_list(null,$user_sort,null,true,true);
 
-		$listqos = array();
-		$workhour_start = array();
-		$workhour_end = array();
-
-		$info_hour_start = explode(':',$info['stats_conf']['hour_start']);
-		$workhour_start['h'] = $info_hour_start[0];
-		$workhour_start['m'] = $info_hour_start[1];
-		$info_hour_end = explode(':',$info['stats_conf']['hour_end']);
-		$workhour_end['h'] = $info_hour_end[0];
-		$workhour_end['m'] = $info_hour_end[1];
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('stats_conf',$_QR) === true
-		&& dwho_issa('workhour_start',$_QR) === true
-		&& dwho_issa('workhour_end',$_QR) === true)
+		&& dwho_issa('stats_conf',$_QR) === true)
 		{
-			$workhour_start = $_QR['workhour_start'];
-			$workhour_end = $_QR['workhour_end'];
-
 			if($appstats_conf->set_edit($_QR) === false
 			|| $appstats_conf->edit() === false)
 			{
@@ -226,81 +187,65 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($incall['list'] !== false && dwho_ak('incall',$return) === true)
+		
+		if($incall['list'] !== false && dwho_issa('incall',$return) === true
+		&& ($incall['slt'] = dwho_array_intersect_key($return['incall'],$incall['list'],'id')) !== false)
+			$incall['slt'] = array_keys($incall['slt']);
+		
+		if($queue['list'] !== false && dwho_issa('queue',$return) === true
+		&& ($queue['slt'] = dwho_array_intersect_key($return['queue'],$queue['list'],'id')) !== false)
 		{
-			$incall['slt'] = dwho_array_intersect_key($return['incall'],$incall['list'],'id');
-			if($incall['slt'] !== false)
-			{
-				$incall['list'] = dwho_array_diff_key($incall['list'],$incall['slt']);
-				$incallsort = new dwho_sort(array('key' => 'name'));
-				uasort($incall['slt'],array(&$incallsort,'str_usort'));
-			}
+		    $queue_qos = $queue['slt'];
+			$queue['slt'] = array_keys($queue['slt']);
 		}
-
-		if($queue['list'] !== false && dwho_ak('queue',$return) === true)
+		
+		$listqos = array();
+		if($queue_qos !== false)
 		{
-			$queue['slt'] = dwho_array_intersect_key($return['queue'],$queue['list'],'id');
-			if($queue['slt'] !== false)
+			if (isset($return['queue_qos']) === true)
+				$listqos = $return['queue_qos'];
+			else
 			{
-				if (isset($return['queue_qos']) === true)
-					$listqos = $return['queue_qos'];
-				else
+				$listq = $return['queue'];
+				while($listq)
 				{
-					$listq = $return['queue'];
-					while($listq)
-					{
-						$q = array_shift($listq);
-						$queue['slt'][$q['id']]['stats_qos'] = $q['stats_qos'];
-						$listqos[$q['id']] = $q['stats_qos'];
-					}
+					$q = array_shift($listq);
+					$queue_qos[$q['id']]['stats_qos'] = $q['stats_qos'];
+					$listqos[$q['id']] = $q['stats_qos'];
 				}
-				$queue['list'] = dwho_array_diff_key($queue['list'],$queue['slt']);
-				$queuesort = new dwho_sort(array('key' => 'name'));
-				uasort($queue['slt'],array(&$queuesort,'str_usort'));
 			}
 		}
+		
+		if($group['list'] !== false && dwho_issa('group',$return) === true
+		&& ($group['slt'] = dwho_array_intersect_key($return['group'],$group['list'],'id')) !== false)
+			$group['slt'] = array_keys($group['slt']);
+		
+		if($agent['list'] !== false && dwho_issa('agent',$return) === true
+		&&($agent['slt'] = dwho_array_intersect_key($return['agent'],$agent['list'],'id')) !== false)
+		    $agent['slt'] = array_keys($agent['slt']);
+		
+		if($user['list'] !== false && dwho_issa('user',$return) === true
+		&&($user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'id')) !== false)
+		    $user['slt'] = array_keys($user['slt']);
+		
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
 
-		if($group['list'] !== false && dwho_ak('group',$return) === true)
-		{
-			$group['slt'] = dwho_array_intersect_key($return['group'],$group['list'],'id');
-			if($group['slt'] !== false)
-			{
-				$group['list'] = dwho_array_diff_key($group['list'],$group['slt']);
-				$groupsort = new dwho_sort(array('key' => 'name'));
-				uasort($group['slt'],array(&$groupsort,'str_usort'));
-			}
-		}
-
-		if($agent['list'] !== false && dwho_ak('agent',$return) === true)
-		{
-			$agent['slt'] = dwho_array_intersect_key($return['agent'],$agent['list'],'id');
-			if($agent['slt'] !== false)
-			{
-				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
-				$agentsort = new dwho_sort(array('key' => 'name'));
-				uasort($agent['slt'],array(&$agentsort,'str_usort'));
-			}
-		}
-
-		if($user['list'] !== false && dwho_ak('user',$return) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'id');
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-				$usersort = new dwho_sort(array('key' => 'name'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
-		}
+		$dhtml->set_js('js/statistics/call_center/configuration.js');
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		
+		// timepicker
+		$dhtml->set_css('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.css',true);
+		$dhtml->set_js('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.js',true);
 
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('id',$_QR['id']);
 		$_TPL->set_var('element',$appstats_conf->get_elements());
-		$_TPL->set_var('workhour_start',$workhour_start);
-		$_TPL->set_var('workhour_end',$workhour_end);
 		$_TPL->set_var('listqos',$listqos);
 		$_TPL->set_var('incall',$incall);
 		$_TPL->set_var('queue',$queue);

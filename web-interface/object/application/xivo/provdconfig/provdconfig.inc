@@ -142,6 +142,7 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 				$rs['X_type'] = 'device';
 				break;
 			default:
+				$rs['deletable'] = true;
 				if(($rs = $this->_provdconfig->chk_values($arr)) === false)
 				{
 					$this->_set_result('config',$this->_provdconfig->get_filter_result());

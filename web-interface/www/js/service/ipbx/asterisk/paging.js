@@ -19,7 +19,7 @@
 $(function() {
 
 	$.localise('ui-multiselect', {
-		language: 'fr',
+		language: dwho_i18n_lang,
 		path: '/extra-libs/multiselect/js/locale/'
 	});
 	$(".multiselect").multiselect();	

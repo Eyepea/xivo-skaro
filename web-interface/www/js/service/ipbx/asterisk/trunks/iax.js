@@ -62,6 +62,9 @@ xivo_ast_trunk_type_elt['user'] = {
 
 
 $(document).ready(function() {
-	//$.localise('ui-multiselect', {language: 'fr', path: 'js/tmp/multiselect/js/locale/'});
+	$.localise('ui-multiselect', {
+		language: dwho_i18n_lang, 
+		path: 'js/tmp/multiselect/js/locale/'
+	});
 	$('.multiselect').multiselect();
 })

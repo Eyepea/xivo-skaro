@@ -36,6 +36,19 @@ if($this->get_var('fm_save') === false)
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 
 ?>
+<script type="text/javascript">
+	var listqos = new Object();
+<?php
+if (is_null($listqos) === false
+&& empty($listqos) === false)
+	foreach($listqos as $k => $v)
+		echo "listqos[$k] = $v;\n";
+?>
+	var translation = new Object();
+	translation['queue'] = '<?=addslashes($this->bbf('queue'))?>';
+	translation['group'] = '<?=addslashes($this->bbf('group'))?>';
+</script>
+				
 	<div id="sb-part-first" class="b-nodisplay">
 		<p>
 			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_general');?></label>
@@ -63,7 +76,7 @@ if($this->get_var('fm_save') === false)
 						<p>
 							<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache');?></label>
 						</p>
-	<?php
+<?php
 		echo	$form->text(array('desc'	=> $this->bbf('fm_dbegcache'),
 					  'name'	=> 'stats_conf[dbegcache]',
 					  'labelid'	=> 'name',
@@ -80,62 +93,29 @@ if($this->get_var('fm_save') === false)
 					  'default'	=> $element['stats_conf']['dendcache']['default'],
 					  'value'	=> $info['stats_conf']['dendcache'],
 					  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','dendcache')) ));
-	?>
+?>
 			</fieldset>
 			<fieldset id="stats_conf_workhour">
 				<legend><?=$this->bbf('stats_conf_workhour');?></legend>
-				<div class="b-form">
-					<table>
-					<tr>
-						<td align="right"><?=$this->bbf('fm_hour_start')?></td>
-						<td>
 <?php
-	echo	$form->select(array('name'		=> 'workhour_start[h]',
-				    'labelid'	=> 'hour_start',
-				    'key'		=> false,
-				    'default'	=> $element['stats_conf']['workhour']['h']['default'],
-				    'selected'	=> $this->get_var('workhour_start','h'),
-				 	'error'		=> $this->bbf_args('error',$this->get_var('error','workhour_start','h'))),
-			      $element['stats_conf']['workhour']['h']);
+    echo $form->text(array('desc'	=> $this->bbf('fm_hour_start'),
+    				  'name'	    => 'stats_conf[hour_start]',
+    				  'labelid'	    => 'stats_conf-hour_start',
+    				  'size'	    => 5,
+    				  'readonly'	=> true,
+    				  'value'	    => $this->get_var('info','stats_conf','hour_start'),
+    				  'error'	    => $this->bbf_args('error',
+    				$this->get_var('error', 'stats_conf', 'hour_start'))));
+    				
+    echo $form->text(array('desc'	=> $this->bbf('fm_hour_end'),
+    				  'name'	    => 'stats_conf[hour_end]',
+    				  'labelid'	    => 'stats_conf-hour_end',
+    				  'size'	    => 5,
+    				  'readonly'	=> true,
+    				  'value'	    => $this->get_var('info','stats_conf','hour_end'),
+    				  'error'	    => $this->bbf_args('error',
+    				$this->get_var('error', 'stats_conf', 'hour_end'))));
 ?>
-						</td>
-						<td>
-<?php
-	echo	$form->select(array('name'		=> 'workhour_start[m]',
-				    'labelid'	=> 'hour_start',
-				    'key'		=> false,
-				    'default'	=> $element['stats_conf']['workhour']['m']['default'],
-				    'selected'	=> $this->get_var('workhour_start','m')),
-			      $element['stats_conf']['workhour']['m']);
-?>
-						</td>
-					</tr>
-					<tr>
-						<td align="right"><?=$this->bbf('fm_hour_end')?></td>
-						<td>
-<?php
-	echo	$form->select(array('name'		=> 'workhour_end[h]',
-				    'labelid'	=> 'workhour_end',
-				    'key'		=> false,
-				    'default'	=> $element['stats_conf']['workhour']['h']['default'],
-				    'selected'	=> $this->get_var('workhour_end','h'),
-				 	'error'		=> $this->bbf_args('error',$this->get_var('error','workhour_end','h'))),
-			      $element['stats_conf']['workhour']['h']);
-?>
-						</td>
-						<td>
-<?php
-	echo	$form->select(array('name'		=> 'workhour_end[m]',
-				    'labelid'	=> 'workhour_end',
-				    'key'		=> false,
-				    'default'	=> $element['stats_conf']['workhour']['m']['default'],
-				    'selected'	=> $this->get_var('workhour_end','m')),
-			      $element['stats_conf']['workhour']['m']);
-?>
-						</td>
-					</tr>
-					</table>
-				</div>
 			</fieldset>
 			<fieldset id="stats_conf_period">
 				<legend><?=$this->bbf('stats_conf_period');?></legend>
@@ -214,52 +194,17 @@ if($this->get_var('fm_save') === false)
 	if(isset($incall['list']) === true
 	&& $incall['list'] !== false):
 ?>
-				<div id="incalllist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('incalllist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'incalllist',
-								       'label'		=> false,
-								       'id'			=> 'it-incalllist',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-										$incall['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-incalllist','it-incall');
-							   populateqos('it-incall','incall');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_inincall');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_inincall'),
-									  'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-incall','it-incalllist');
-							   populateqos('it-incall','incall');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outincall');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outincall'),
-									  'class="bt-outlist" id="bt-outincall" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'incall[]',
-								       'label'		=> false,
-								       'id'			=> 'it-incall',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-									   $incall['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+        <div id="incalllist" class="fm-paragraph fm-description">
+        		<?=$form->jq_select(array('paragraph'	=> false,
+        					 	'label'		=> false,
+                    			'name'    	=> 'incall[]',
+        						'id' 		=> 'it-incall',
+        						'key'		=> 'identity',
+        				       	'altkey'	=> 'id',
+                    			'selected'  => $incall['slt']),
+        					$incall['list']);?>
+        </div>
+        <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -279,52 +224,17 @@ if($this->get_var('fm_save') === false)
 	if(isset($queue['list']) === true
 	&& $queue['list'] !== false):
 ?>
-				<div id="queuelist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('queuelist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'queuelist',
-								       'label'		=> false,
-								       'id'			=> 'it-queuelist',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'name',
-								       'altkey'		=> 'id'),
-										$queue['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-queuelist','it-queue');
-							   populateqos('it-queue','queue');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_inqueue');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_inqueue'),
-									  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-queue','it-queuelist');
-							   populateqos('it-queue','queue');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outqueue');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outqueue'),
-									  'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'queue[]',
-								       'label'		=> false,
-								       'id'			=> 'it-queue',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'name',
-								       'altkey'		=> 'id'),
-									   $queue['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+        <div id="queuelist" class="fm-paragraph fm-description">
+        		<?=$form->jq_select(array('paragraph'	=> false,
+        					 	'label'		=> false,
+                    			'name'    	=> 'queue[]',
+        						'id' 		=> 'it-queue',
+        						'key'		=> 'identity',
+        				       	'altkey'	=> 'id',
+                    			'selected'  => $queue['slt']),
+        					$queue['list']);?>
+        </div>
+        <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -341,52 +251,17 @@ if($this->get_var('fm_save') === false)
 	if(isset($group['list']) === true
 	&& $group['list'] !== false):
 ?>
-				<div id="grouplist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('grouplist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'grouplist',
-								       'label'		=> false,
-								       'id'			=> 'it-grouplist',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'name',
-								       'altkey'		=> 'id'),
-										$group['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-grouplist','it-group');
-							   populateqos('it-group','group');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_ingroup');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_ingroup'),
-									  'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-group','it-grouplist');
-							   populateqos('it-group','group');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outgroup');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outgroup'),
-									  'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'group[]',
-								       'label'		=> false,
-								       'id'			=> 'it-group',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'name',
-								       'altkey'		=> 'id'),
-									   $group['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+        <div id="grouplist" class="fm-paragraph fm-description">
+        		<?=$form->jq_select(array('paragraph'	=> false,
+        					 	'label'		=> false,
+                    			'name'    	=> 'group[]',
+        						'id' 		=> 'it-group',
+        						'key'		=> 'identity',
+        				       	'altkey'	=> 'id',
+                    			'selected'  => $group['slt']),
+        					$group['list']);?>
+        </div>
+        <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -405,48 +280,6 @@ if($this->get_var('fm_save') === false)
 				</p>
 				<div id="it-listqueueqos"></div>
 				<div id="it-listgroupqos"></div>
-				<script type="text/javascript">
-					var listqos = new Object();
-<?php
-					if (is_null($listqos) === false
-					&& empty($listqos) === false)
-						foreach($listqos as $k => $v)
-							echo "listqos[$k] = $v;\n";
-
-
-?>
-					var translation = new Object();
-					translation['queue'] = '<?=addslashes($this->bbf('queue'))?>';
-					translation['group'] = '<?=addslashes($this->bbf('group'))?>';
-					function populateqos(eid,type)
-					{
-						var to = dwho_eid('it-list'+type+'qos');
-						var box = dwho_eid(eid);
-						var nb = box.length;
-						var input = '';
-						if (nb > 0)
-						{
-							input += '<fieldset>'
-							input += '<legend>'+translation[type]+'</legend>';
-						}
-						for (var i = 0; i < nb; i++)
-						{
-							var qos = 0;
-							var option = box[i];
-							if( option.value in listqos )
-								qos = listqos[option.value];
-							input += '<p id="fd-qos" class="fm-paragraph">';
-							input += '<span class="fm-desc clearboth"><label id="lb-qos" for="it-qos">'+option.text+':</label></span>';
-							input += '<input type="text" name="'+type+'_qos['+option.value+']" value="'+qos+'" size="5" />';
-							input += '</p>';
-						}
-						if (nb > 0)
-							input += '</fieldset>';
-						to.innerHTML = input;
-					}
-					dwho.dom.set_onload(populateqos('it-queue','queue'));
-					dwho.dom.set_onload(populateqos('it-group','group'));
-				</script>
 			</div>
 
 			<div id="sb-part-last" class="b-nodisplay">
@@ -456,50 +289,17 @@ if($this->get_var('fm_save') === false)
 <?php
 	if($agent['list'] !== false):
 ?>
-				<div id="agentlist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('agentlist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'agentlist',
-								       'label'		=> false,
-								       'id'			=> 'it-agentlist',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'fullname',
-								       'altkey'		=> 'id'),
-										$agent['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-agentlist','it-agent');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_inagent');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_inagent'),
-									  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-agent','it-agentlist');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outagent');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outagent'),
-									  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'agent[]',
-								       'label'		=> false,
-								       'id'			=> 'it-agent',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'fullname',
-								       'altkey'		=> 'id'),
-									   $agent['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+        <div id="agentlist" class="fm-paragraph fm-description">
+        		<?=$form->jq_select(array('paragraph'	=> false,
+        					 	'label'		=> false,
+                    			'name'    	=> 'agent[]',
+        						'id' 		=> 'it-agent',
+        						'key'		=> 'identity',
+        				       	'altkey'	=> 'id',
+                    			'selected'  => $agent['slt']),
+        					$agent['list']);?>
+        </div>
+        <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -515,50 +315,17 @@ if($this->get_var('fm_save') === false)
 <?php
 	if($user['list'] !== false):
 ?>
-				<div id="queuelist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'userlist',
-								       'label'		=> false,
-								       'id'			=> 'it-userlist',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-										$user['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-userlist','it-user');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_inuser');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_inuser'),
-									  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-user','it-userlist');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outuser');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outuser'),
-									  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'user[]',
-								       'label'		=> false,
-								       'id'			=> 'it-user',
-								       'multiple'	=> true,
-								       'size'		=> 5,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-									   $user['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+        <div id="userlist" class="fm-paragraph fm-description">
+        		<?=$form->jq_select(array('paragraph'	=> false,
+        					 	'label'		=> false,
+                    			'name'    	=> 'user[]',
+        						'id' 		=> 'it-user',
+        						'key'		=> 'identity',
+        				       	'altkey'	=> 'id',
+                    			'selected'  => $user['slt']),
+        					$user['list']);?>
+        </div>
+        <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',

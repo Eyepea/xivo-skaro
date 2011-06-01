@@ -141,7 +141,7 @@
 				widget.onChange('monthdays');
 			}); 
 
-			var block = mdays.children().first()
+			var block = mdays.children().first();
 			for(var i = 1; i < 32; i++) {
 				var item = $('<div type="data">' + i + '</div>');
 				
@@ -173,7 +173,7 @@
 
 			var block = wdays.children().first();
 			for(var i = 0; i < 7; i++) {
-				item = $('<div type="data">' + this._i18n['dAbbr'][i] + '</div>')
+				item = $('<div type="data">' + this._i18n['dAbbr'][i] + '</div>');
 
 				item.click(function() { 
 					$(this).toggleClass('ui-state-highlight'); 
@@ -282,8 +282,8 @@
 				'months'   : "_clbk1(this.node.find('#months').children())",
 				'monthdays': "_clbk1(this.node.find('#monthdays').children())",
 				'weekdays' : "_clbk1(this.node.find('#weekdays').children())",
-				'hours'    : "_clbk2()",
-			}
+				'hours'    : "_clbk2()"
+			};
 
 			this.options['inputs'][item].attr('value', eval(clbks[item]));
 
@@ -301,10 +301,10 @@
 				for(var i in wd)
 				{
 					var elts = wd[i].split('-');
-					txt += this._i18n['dAbbr'][elts[0]-1]
+					txt += this._i18n['dAbbr'][elts[0]-1];
 					if(elts.length > 1)
 						txt += ' ' + this._i18n['fullText'][3] + ' ' + this._i18n['dAbbr'][elts[1]-1];
-					txt += ', '
+					txt += ', ';
 				}
 				txt = txt.substr(0, txt.length - 2);
 			} else {
@@ -366,7 +366,7 @@
 						{ $(elt).addClass('ui-state-highlight'); i++; }
 					else
 						{ $(elt).removeClass('ui-state-highlight'); wildcard = 'all'; }
-				})
+				});
 
 				this.node.find('#'+item).children('[type="wildcard"]').html(this._i18n[wildcard]).attr('state',wildcard);
 			}

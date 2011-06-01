@@ -214,12 +214,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		if(dwho_has_len($deviceid) === false
 		|| is_array($rawconfig) === false)
 			return(false);
-		
-		if (($device = $this->get($deviceid)) === false)
-		{
-			dwho_report::push('error', 'device not exist: '.$deviceid);
-			return(false);
-		}
 					
 		if (($conf = $this->_provdconfig->build_raw_config($deviceid,null,$rawconfig)) === false
 		|| $this->_provdconfig->edit($conf['id'],$conf) === false)

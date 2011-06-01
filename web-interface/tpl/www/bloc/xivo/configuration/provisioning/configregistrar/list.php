@@ -66,8 +66,8 @@ $page = $url->pager($pager['pages'],
 		<td class="td-left">
 			&nbsp;
 		</td>
-		<td class="txt-left" title="<?=dwho_alttitle($ref['id']);?>">
-			<?=dwho_htmlen(dwho_trunc($ref['id'],25,'...',false));?>
+		<td class="txt-left" title="<?=dwho_alttitle($ref['displayname']);?>">
+			<?=dwho_htmlen(dwho_trunc($ref['displayname'],25,'...',false));?> (<?=$ref['id']?>)
 		</td>
 		<td class="td-right" colspan="2">
 <?php

@@ -78,18 +78,11 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($user['list'] !== false && dwho_ak('user',$result) === true)
+		
+		if($user['list'] !== false && dwho_issa('user',$result) === true)
 		{
 			$user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'userid');
-
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
+			$user['slt'] = array_keys($user['slt']);
 		}
 
 		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)

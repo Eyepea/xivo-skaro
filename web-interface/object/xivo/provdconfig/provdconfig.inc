@@ -200,7 +200,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| dwho_has_len($id) === false)
 			return(false);
 			
-		if (isset($arr['deletable']) === false)
+		if ($id === 'default'
+		|| $id === 'defaultconfigdevice')
+		    $arr['deletable'] = false;
+		elseif (isset($arr['deletable']) === false)
 		    $arr['deletable'] = true;
 		
 		$uri = $this->_build_uri(array('configs',$id));
@@ -390,9 +393,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf['X_type'] = 'device';
 		$conf['deletable'] = false;
 		$conf['id'] = 'defaultconfigdevice';
-		$conf['label'] = 'Default config';
+		$conf['label'] = 'Default config device';
 		$conf['parent_ids'] = array();
-		$conf['raw_config'] = array('X_key' => 'xivo');
+		$conf['raw_config'] = array();
+		$conf['raw_config']['ntp_enabled'] = true;
+		$conf['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
 		
 		if ($this->add($conf) === false)
 		{
@@ -484,21 +489,18 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (in_array('base',$globalconfig['parent_ids']) === false)
 			array_push($globalconfig['parent_ids'],'base');
 			
-		if (is_null($raw) === false)
+		if (is_null($raw) === true)
 			$raw = array();
 		
 		$raw_config = &$globalconfig['raw_config'];
+		$raw_config = array_merge($raw_config,$this->build_raw_config_device($raw));
+		$raw_config = array_merge($raw_config,$this->_build_exten_config());
+		$raw_config = array_merge($raw_config,$this->_init_device_master_line($configid));
 		
 		switch ($protocolname)
 		{
 			case 'sip':
 			default:
-				$raw['ntp_enabled'] = true;
-				$raw['ntp_ip'] = $confdefault['proxy_main'];
-				
-				$raw_config = array_merge($raw_config,
-					$this->build_raw_config_device($raw));
-				
 				if (is_array($lines) === true)
 				{
 					$rslines = $this->_build_lines($lines);
@@ -507,8 +509,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 					else
 						$raw_config['sip_lines'] = $rslines;
 				}
-				$raw_config = array_merge($raw_config,$this->_init_device_master_line($configid));
-				$raw_config = array_merge($raw_config,$this->_build_exten_config());
 		}
 		
 		return($globalconfig);
@@ -707,6 +707,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$raw,'timezone');
 		$this->_set_config_var($conf,$raw,'locale');
 		$this->_set_config_var($conf,$raw,'protocol');
+		$this->_set_config_var($conf,$raw,'ntp_enabled');
+		$this->_set_config_var($conf,$raw,'ntp_ip');
 		$this->_set_config_var($conf,$raw,'vlan_enabled');
 		$this->_set_config_var($conf,$raw,'vlan_id');
 		$this->_set_config_var($conf,$raw,'vlan_priority');

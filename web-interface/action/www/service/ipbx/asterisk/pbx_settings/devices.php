@@ -131,9 +131,6 @@ switch($act)
 				$fm_save = false;
 				$result = $appdevice->get_result();
 				$error = $appdevice->get_error();
-		
-				dwho_var_dump($error);
-				dwho_var_dump($result);
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
