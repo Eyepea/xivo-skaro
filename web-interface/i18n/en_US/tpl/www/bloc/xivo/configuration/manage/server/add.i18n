@@ -7,6 +7,12 @@ Name:
 ; fm_host
 Host:
 
+; fm_ws_login
+WebServices login:
+
+; fm_ws_pass
+WebServices password:
+
 ; fm_port
 Port:
 

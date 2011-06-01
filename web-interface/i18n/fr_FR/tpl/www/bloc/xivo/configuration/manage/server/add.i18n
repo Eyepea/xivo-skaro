@@ -7,6 +7,12 @@ Nom :
 ; fm_host
 Hôte :
 
+; fm_ws_login
+Identifiant WebServices :
+
+; fm_ws_pass
+Mot de passe WebServices :
+
 ; fm_port
 Port :
 

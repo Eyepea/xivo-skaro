@@ -221,6 +221,8 @@ CREATE TABLE "server" (
  "name" varchar(64) NOT NULL DEFAULT '',
  "host" varchar(255) NOT NULL DEFAULT '',
  "port" INTEGER NOT NULL,
+ "ws_login" varchar(64) NOT NULL DEFAULT '',
+ "ws_pass" varchar(64) NOT NULL DEFAULT '',
  "ssl" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,

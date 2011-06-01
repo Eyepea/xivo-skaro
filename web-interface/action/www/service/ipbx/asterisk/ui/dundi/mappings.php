@@ -26,83 +26,23 @@ include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 $apppeer = &$ipbx->get_application('dundimapping');
 
 $act = $_QRY->get('act');
+$serverid = $_QRY->get('serverid');
 
 switch($act)
 {
-	case 'add':
-		if($apppeer->add_from_json() === true)
-			$status = 200;
-		else
-			$status = 400;
-
-		$http_response->set_status_line($status);
-		$http_response->send(true);
-
-		break;
-
-	case 'edit':
-		// TO DO
-		break;
-
-	case 'delete':
-		if(isset($_QR['id']))
-			$apppeer->delete($_QR['id']);
-		
-		$http_response->set_status_line(200);
-		$http_response->send(true);
-		
-		break;
-
-	case 'deletes':
-		// delete multiple items
-		$param['page'] = $page;
-
-		if(($values = dwho_issa_val('peers',$_QR)) === false)
-		{
-			$http_response->set_status_line(204);
-			$http_response->send(true);
-		}
-
-		$nb = count($values);
-		for($i = 0; $i < $nb; $i++)
-			$apppeer->delete($values[$i]);
-
-		
-		$http_response->set_status_line(200);
-		$http_response->send(true);
-		
-		break;
-
-	case 'enables':
-	case 'disables':
-		$param['page'] = $page;
-
-		if(($values = dwho_issa_val('peers',$_QR)) === false)
-		{
-			$http_response->set_status_line(204);
-			$http_response->send(true);
-		}
-
-		$nb = count($values);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($act === 'disables')
-				$apppeer->disable($values[$i]);
-			else
-				$apppeer->enable($values[$i]);
-		}
-		
-		$http_response->set_status_line(200);
-		$http_response->send(true);
-
-		break;
-
 	case 'list':
 	default:
 		$act = 'list';
+		
+		$moddundi = &$ipbx->get_module('dundi');
 
-		if(($list = $apppeer->get_dundimapping_list()) === false)
+		if($serverid === null)
+		{
+			$http_response->set_status_line(404);
+			$http_response->send(true);
+		}
+
+		if(($list = $moddundi->list_mappings($serverid)) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);

@@ -19,8 +19,6 @@
 #
 
 dwho::load_class('dwho_network');
-dwho::load_class('dwho_uri');
-dwho::load_class('dwho_curl');
 dwho::load_class('dwho_json');
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
@@ -32,11 +30,7 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 	var $_filter	        = false;
 	var $_origin	        = false;
 	var $_identity	        = false;
-	private $_curl			= null;
-	private $_uri			= null;
-	private $_url			= array();
 	private $_dundi_type	= array('peers','mappings');
-	private $_status_code	= null;
 
 	public function __construct(&$sre,&$dso)
 	{
@@ -83,106 +77,22 @@ class xivo_service_asterisk_dundi extends xivo_service_asterisk_abstract
 	
 	private function _remote_list($type,$serverid)
 	{
-	    if(in_array($type,$this->_dundi_type) === false)
+	    if(dwho_has_len($serverid) === false
+		|| in_array($type,$this->_dundi_type) === false)
 			return(false);
 			
 		xivo::load_class('xivo_server',XIVO_PATH_OBJECT,null,false);
 		$_SVR = new xivo_server();
 		
-		if(dwho_has_len($serverid) === false
-		|| ($info = $_SVR->get($serverid)) === false)
+		if($_SVR->get($serverid) === false)
 			return(false);
 		
-		$this->_url = $info['url'];
+		$method = $_SVR->method();
 		
-		$method = 'restricted';
-		if (isset($info['url']['authority']) === true
-		&& isset($info['url']['authority']['host']) === true
-		&& ($info['url']['authority']['host'] === '127.0.0.1'
-			|| $info['url']['authority']['host'] === 'localhost'))
-			$method = 'private';
-		
-		$this->_uri = new dwho_uri();
-		$this->_curl = new dwho_curl();
-		
-		if(($data = $this->request_get('/service/ipbx/json.php/'.$method.'/dundi/'.$type.'/')) === false)
+		if(($data = $_SVR->request_get('/service/ipbx/json.php/'.$method.'/dundi/'.$type.'/')) === false)
 			return(false);
 			
 		return($data);
-	}
-
-	private function _create()
-	{
-		return($this->_curl->load(null,
-					  array('connect_timeout'	=> 30,
-					        'timeout'			=> 60,
-					        'httpheader'		=> array(dwho_json::get_header())),
-				          false));
-	}
-
-	private function _connect($path,$query=null)
-	{
-		if(dwho_has_len($path) === false)
-			return(false);
-
-		$url = $this->_url;
-		$url['path'] = $path;
-
-		if(is_array($query) === true)
-			$url['query'] = $query;
-
-		if(($uri = $this->_uri->build_uri($url)) === false
-		|| $this->_curl->set_option('url',$uri) === false)
-			return(false);
-
-		return($this->_curl->connect());
-	}
-
-	public function last_status_code()
-	{
-		return($this->_status_code);
-	}
-
-	private function request_get($path,$query=null,$decode_assoc=true)
-	{
-		$this->_status_code = null;
-
-		if($this->_create() === false)
-			return(false);
-
-		$this->_curl->set_option('get',true);
-
-		if(($r = $this->_connect($path,$query)) !== false)
-		{
-			$decoded = dwho_json::decode(rtrim($r),$decode_assoc);
-			if(!is_null($decoded))
-			    $r = $decoded;
-		}
-
-		$this->_status_code = $this->_curl->get_info('http_code');
-		$this->_curl->close();
-
-		return($r);
-	}
-
-	private function request_post($path,$data,$query=null,$decode_assoc=true)
-	{
-		$this->_status_code = null;
-
-		if($this->_create() === false)
-			return(false);
-
-		$this->_curl->set_option('post',true);
-		$this->_curl->set_option('postfields',dwho_json::encode($data));
-
-		if(($r = $this->_connect($path,$query)) !== false)
-			$r = dwho_json::decode(rtrim($r),$decode_assoc);
-
-		$this->_status_code = $this->_curl->get_info('http_code');
-
-		$this->_curl->close();
-
-		return($r);
 	}
 }
 
