@@ -40,31 +40,34 @@ switch($act)
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
 		
-		$appcontext= &$ipbx->get_application('context');
-		$context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'intern');
+		$entity_list = false;
 		
-		$entity_list = array();
-		$nb = count($context_list);
-		for($i = 0;$i < $nb;$i++)
+		$appcontext= &$ipbx->get_application('context');
+		if(($context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'intern')) !== false)
 		{
-			$ref = &$context_list[$i];
-			
-			if (($contextnumbers = $ref['contextnumbers']) === false)
-				continue;
-				
-			if (is_array($contextnumbers) === true
-			&& ($nbct = count($contextnumbers)) === 0)
-				continue;
-				
-			for($k = 0;$k < $nbct;$k++)
-			{
-				$refct = &$contextnumbers[$k];
-				
-				if ($refct['type'] !== 'user')
-					continue;
-					
-				array_push($entity_list, $ref['entity']);
-			}
+    		$entity_list = array();
+    		$nb = count($context_list);
+    		for($i = 0;$i < $nb;$i++)
+    		{
+    			$ref = &$context_list[$i];
+    			
+    			if (($contextnumbers = $ref['contextnumbers']) === false)
+    				continue;
+    				
+    			if (is_array($contextnumbers) === true
+    			&& ($nbct = count($contextnumbers)) === 0)
+    				continue;
+    				
+    			for($k = 0;$k < $nbct;$k++)
+    			{
+    				$refct = &$contextnumbers[$k];
+    				
+    				if ($refct['type'] !== 'user')
+    					continue;
+    					
+    				array_push($entity_list, $ref['entity']);
+    			}
+    		}
 		}
 		
 		$appprovdconfig = &$_XOBJ->get_application('provdconfig');

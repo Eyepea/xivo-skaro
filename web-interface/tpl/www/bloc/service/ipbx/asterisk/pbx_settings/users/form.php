@@ -271,7 +271,10 @@ endif;
 	if($line_list !== false):
 		#echo $form->hidden(array('name' => 'userfeatures[entityid]','value' => $info['userfeatures']['entityid']));
 	endif;
-	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_entity'),
+	if ($this->get_var('entity_list') === false):
+	    echo $this->bbf('no_entity_with_intern_context_detected');
+	else:
+	    echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_entity'),
 				    'name'		=> 'userfeatures[entityid]',
 				    'labelid'	=> 'userfeatures-entityid',
 				    'help'		=> $this->bbf('hlp_fm_userfeatures_entity'),
@@ -289,6 +292,9 @@ endif;
 					  'list'	=> $line_list));
 ?>
 	</div>
+<?php
+	endif;
+?>
 </div>
 
 <div id="sb-part-voicemail" class="b-nodisplay">

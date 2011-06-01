@@ -168,7 +168,7 @@ function update_row_infos()
 {
 	if ((entityid_val = get_entityid_val()) === false)
 		return(false);
-	
+		
 	nb_row = $('#list_linefeatures > tbody > tr').length;
 	if (nb_row == 0) {
 		$('#box-entityid').text('');
