@@ -34,8 +34,12 @@ log = logging.getLogger('cti_command')
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
 
+LOGINCOMMANDS = [
+    'login_id', 'login_pass', 'login_capas'
+    ]
+
 REGCOMMANDS = [
-    'login_id', 'login_pass', 'login_capas', 'logout',
+    'logout',
     'getlist',
 
     'getipbxlist',
@@ -107,7 +111,10 @@ class Command:
         if self.commandid:
             messagebase['replyid'] = self.commandid
 
-        if self.command in REGCOMMANDS:
+        if self.command in REGCOMMANDS and not self.connection.connection_details.get('logged'):
+            messagebase['error_string'] = 'notloggedyet'
+
+        elif self.command in LOGINCOMMANDS or self.command in REGCOMMANDS:
             if self.ripbxid:
                 regcommands = self.rinnerdata.get_user_permissions('regcommands', self.ruserid)
                 if regcommands:
@@ -320,6 +327,7 @@ class Command:
                   'presence' : 'available',
                   }
 
+        self.connection.connection_details['logged'] = True
         self.connection.logintimer.cancel()
         return reply
 
