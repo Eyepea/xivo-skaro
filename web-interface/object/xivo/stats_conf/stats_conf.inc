@@ -41,7 +41,8 @@ class xivo_object_stats_conf extends xivo_object_abstract
 	public function _prepare($data)
 	{
 		$data['id'] = (int) $data['id'];
-		$data['disable'] = (bool) $data['disable'];
+		$data['hour_start'] = date('H:i',strtotime($data['hour_start']));
+		$data['hour_end'] = date('H:i',strtotime($data['hour_end']));
 		$data['monday'] = (bool) $data['monday'];
 		$data['tuesday'] = (bool) $data['tuesday'];
 		$data['wednesday'] = (bool) $data['wednesday'];
