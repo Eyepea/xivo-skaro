@@ -211,7 +211,7 @@ if __name__ == '__main__':
                 manage_service.initialize()
             csync2.initialize()
             if role == 'master':
-                print('start lighttpd on master')
+                print('starting nginx on master')
         elif options.node == 'update':
             raise NotImplementedError
         else:

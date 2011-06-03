@@ -1,0 +1,222 @@
+#!/bin/sh
+#
+#
+#	Asterisk OCF RA. 
+#
+# Copyright (c) 2011 Proformatique, Nicolas HICHER
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of version 3 of the GNU General Public License as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it would be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Further, this software is distributed without any warranty that it is
+# free of the rightful claim of any third person regarding infringement
+# or the like.  Any license provided herein, whether implied or
+# otherwise, applies only to this software file.  Patent licenses, if
+# any, provided herein do not apply to combinations of this program with
+# other software, or any other product whatsoever.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
+#
+
+#######################################################################
+# Initialization:
+
+# XXX only for dev purpose
+OCF_ROOT=/usr/lib/ocf
+: ${OCF_FUNCTIONS_DIR=${OCF_ROOT}/resource.d/heartbeat}
+. ${OCF_FUNCTIONS_DIR}/.ocf-shellfuncs
+
+#######################################################################
+
+meta_data() {
+	cat <<END
+<?xml version="1.0"?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
+<resource-agent name="Asterisk" version="0.1">
+<version>1.0</version>
+
+<longdesc lang="en">
+This is a Asterisk Resource Agent. 
+</longdesc>
+<shortdesc lang="en">Asterisk resource agent</shortdesc>
+
+<parameters>
+<parameter name="state" unique="1">
+<longdesc lang="en">
+Location to store the resource state in.
+</longdesc>
+<shortdesc lang="en">State file</shortdesc>
+<content type="string" default="${HA_RSCTMP}/Asterisk-{OCF_RESOURCE_INSTANCE}.state" />
+</parameter>
+
+</parameters>
+
+<actions>
+<action name="start"        timeout="20" />
+<action name="stop"         timeout="20" />
+<action name="monitor"      timeout="20" interval="10" depth="0" />
+<action name="reload"       timeout="20" />
+<action name="migrate_to"   timeout="20" />
+<action name="migrate_from" timeout="20" />
+<action name="meta-data"    timeout="5" />
+<action name="validate-all"   timeout="20" />
+</actions>
+</resource-agent>
+END
+}
+
+#######################################################################
+
+# Defaults
+OCF_RESKEY_asterisk_default=/usr/sbin/asterisk
+OCF_RESKEY_asterisk_args_default='-p -g -U asterisk -G asterisk'
+OCF_RESKEY_asterisk_pidfile_default=/var/run/asterisk/asterisk.pid
+
+: ${OCF_RESKEY_asterisk=${OCF_RESKEY_asterisk_default}}
+: ${OCF_RESKEY_asterisk_args=${OCF_RESKEY_asterisk_args_default}}
+: ${OCF_RESKEY_asterisk_pidfile=${OCF_RESKEY_asterisk_pidfile_default}}
+
+asterisk_usage() {
+	cat <<END
+usage: $0 {start|stop|monitor|migrate_to|migrate_from|validate-all|meta-data}
+
+Expects to have a fully populated OCF RA-compliant environment set.
+END
+}
+
+asterisk_start() {
+    # start-stop-daemon --start --group asterisk --pidfile /var/run/asterisk/asterisk.pid --chdir /var/spool/asterisk --exec /usr/sbin/asterisk -- -p -g -U asterisk
+    # 
+    if asterisk_monitor; then
+        ocf_log info "Resource is already running"
+	    return $OCF_SUCCESS
+    fi
+    rm -f $OCF_RESKEY_asterisk_pidfile
+    ocf_run $OCF_RESKEY_asterisk $OCF_RESKEY_asterisk_args
+    while ! asterisk_monitor; do
+        ocf_log debug "Resource has not started yet, waiting"
+        sleep 1
+    done
+    touch ${OCF_RESKEY_state}
+    return $OCF_SUCCESS
+}
+
+asterisk_stop() {
+    asterisk_validate || exit $?
+    asterisk_monitor
+    rc=$?
+    case "$rc" in
+        $OCF_SUCCESS)
+            ocf_log debug "Resource is currently running"
+            ;;
+        $OCF_NOT_RUNNING)
+            ocf_log info "Resource is already stopped"
+            return $OCF_SUCCESS
+            ;;
+    esac
+    PID=`cat $OCF_RESKEY_asterisk_pidfile`
+    kill -5 $PID
+	rm ${OCF_RESKEY_state}
+    rm $PIDFILE
+    return $OCF_SUCCESS
+}
+
+asterisk_cli(){
+    ocf_run -q /usr/sbin/asterisk -rx 'core show uptime' 
+    return $?
+}
+
+asterisk_check_pid() {
+    if [ -f $OCF_RESKEY_asterisk_pidfile ]; then
+        PID=`cat $OCF_RESKEY_asterisk_pidfile`
+        kill -0 $PID >/dev/null 2>&1
+        return $?
+    fi
+    false
+}
+
+asterisk_monitor() {
+    local rc
+	# Monitor _MUST!_ differentiate correctly between running
+	# (SUCCESS), failed (ERROR) or _cleanly_ stopped (NOT RUNNING).
+	# That is THREE states, not just yes/no.
+    #echo ${OCF_RESKEY_state}	
+    asterisk_cli
+    state=$?
+    asterisk_check_pid
+    pid=$?
+    if [ $pid -eq 0 ] && [ $state -eq 0 ]; then
+        run=0
+    elif [ $pid -eq 1 ] && [ $state -eq 1 ]; then
+        run=1
+    else
+        run=2
+    fi
+	case $run in
+        0)
+            ocf_log debug "Resource is running"
+	        rc=$OCF_SUCCESS
+            ;;
+        1)
+            ocf_log debug "Resource is not running"
+            rc=$OCF_NOT_RUNNING
+            ;;
+        *)
+            ocf_log err "Resource has failed"
+            exit $OCF_ERR_GENERIC
+            ;;
+    esac
+    return $rc
+
+}
+
+asterisk_validate() {
+    
+    # Is the state directory writable? 
+    state_dir=`dirname "$OCF_RESKEY_state"`
+    touch "$state_dir/$$"
+    if [ $? != 0 ]; then
+	return $OCF_ERR_ARGS
+    fi
+    rm "$state_dir/$$"
+
+    return $OCF_SUCCESS
+}
+
+: ${OCF_RESKEY_state=${HA_RSCTMP}/asterisk-${OCF_RESOURCE_INSTANCE}.state}
+
+case $__OCF_ACTION in
+meta-data)	meta_data
+		exit $OCF_SUCCESS
+		;;
+start)		asterisk_start;;
+stop)		asterisk_stop;;
+monitor)	asterisk_monitor;;
+migrate_to)	ocf_log info "Migrating ${OCF_RESOURCE_INSTANCE} to ${OCF_RESKEY_CRM_meta_migrate_to}."
+	        asterisk_stop
+		;;
+migrate_from)	ocf_log info "Migrating ${OCF_RESOURCE_INSTANCE} to ${OCF_RESKEY_CRM_meta_migrated_from}."
+	        asterisk_start
+		;;
+reload)		ocf_log err "Reloading..."
+	        asterisk_start
+		;;
+validate-all)	asterisk_validate;;
+usage|help)	asterisk_usage
+		exit $OCF_SUCCESS
+		;;
+*)		asterisk_usage
+		exit $OCF_ERR_UNIMPLEMENTED
+		;;
+esac
+rc=$?
+ocf_log debug "${OCF_RESOURCE_INSTANCE} $__OCF_ACTION : $rc"
+exit $rc
+

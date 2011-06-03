@@ -28,5 +28,6 @@ setup(
                 ('/usr/share/pf-xivo-ha/templates/csync2', [
                                                               'templates/csync2/csync2.cfg',
                                                              ]),
+                ('/usr/lib/ocf/resource.d/heartbeat', ['ocf/Asterisk']),
                ]
 )

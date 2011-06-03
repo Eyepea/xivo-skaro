@@ -29,7 +29,7 @@ from time import localtime, strftime
 class ClusterResourceManager(Tools):
     def __init__(self,
                  cluster_config   = {},
-                 backup_directory = "/var/backups/pf-xivo/pf-xivo-ha",
+                 backup_directory = "/var/backups/pf-xivo/xivo_ha",
                  cluster_cfg      = "/etc/pf-xivo/xivo_ha/cluster.cfg",
                 ):
         if cluster_config != {}:
@@ -56,6 +56,7 @@ class ClusterResourceManager(Tools):
         else:
             backup_file = "%s/%s" % (directory, filename)
         return backup_file
+
     # Cluster Management
     def _cluster_backup(self, directory = '', filename = ''):
         '''
@@ -63,7 +64,10 @@ class ClusterResourceManager(Tools):
         '''
         backup_file = self._filename(filename, directory)
         args        = ['crm', 'configure', 'save', backup_file]
-        if self._cluster_command(args)[1] is 0:
+        result, ret, err = self._cluster_command(args)
+        if ret is not 0:
+            raise IOError(result)
+        else:
             return True
 
     def _cluster_restore(self, directory = '', filename = ''):
@@ -115,9 +119,9 @@ class ClusterResourceManager(Tools):
         '''
         if self._cluster_check_if_configurable():
             args = ['crm', '-f', self.cluster_cfg]
-            data = self._cluster_command(args)
+            data, ret, error = self._cluster_command(args)
             if data == []:
-                return True
+                return 'ok'
             else:
                 return data
 
@@ -230,18 +234,9 @@ class ClusterResourceManager(Tools):
         if resources:
             for resource in resources:
                 self._cluster_stop_resource(resource)
-        #for res in data:
-        #    print(res)
-        #    if self._lsb_status(res, "stopped"):
-        #        state = self._lsb_status(res, "stopped")
-        #        while state != "stopped":
-        #            if self._cluster_resource_state(res) == 'running':
-        #                self._cluster_stop_resource(res)
-        #            state = self._lsb_status(res, "stopped")
-        #        print("done for %s" % res)
-        #    else:
-        #        self._cluster_stop_resource(res)
-        return True
+        time.sleep(2)
+        return True 
+        
 
     # Cluster configuration
     def _cluster_property(self, stonith = False, quorum_policy = 'ignore'):
@@ -365,10 +360,12 @@ class ClusterResourceManager(Tools):
                 file_.write(self._format_string(pingd_clone))
                 
             if self.cluster_group:
-                group = self._resource_group(group_srv_members, group_name = 'srv_xivo')
+                group_name = 'srv_%s' % self.cluster_name
+                group = self._resource_group(group_srv_members, group_name = group_name)
                 file_.write(self._format_string(group))
             if len(self.cluster_addr) > 1:
-                ip_group = self._resource_group(self._cluster_addr().keys(), group_name = 'ip_xivo')
+                ip_group_name = 'ip_%s' % self.cluster_name
+                ip_group = self._resource_group(self._cluster_addr().keys(), group_name = ip_group_name)
                 file_.write(self._format_string(ip_group))
 
 
@@ -571,7 +568,12 @@ class ClusterResourceManager(Tools):
         self._cluster_erase_configuration()
         print("configure cluster")
         self._cluster_configure()
-        return self._cluster_push_config()
+        result = self._cluster_push_config()
+        if result != 'ok':
+            for message in result:
+                data = message.split()
+                if data[0] != 'WARNING:':
+                    print(message)
 
     def status(self):
         '''
