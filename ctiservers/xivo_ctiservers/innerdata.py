@@ -106,6 +106,7 @@ class Safe:
                                  'availstate' : 'unknown'
                                  },
                      'phones' : { 'hintstatus' : '-4',
+                                  'reg' : '',
                                   'channels' : [],
                                   'queues' : [],
                                   'groups' : []
@@ -594,6 +595,8 @@ class Safe:
 
     def statusbylist(self, listname, id):
         status = None
+        if id is None:
+            return status
         if listname == 'channels':
             if id in self.channels:
                 status = self.channels.get(id).properties
@@ -613,7 +616,10 @@ class Safe:
 
     def appendcti(self, listname, which, id, status = None):
         if status is None:
-            status = self.statusbylist(listname, id)
+            if id is None:
+                log.warning('XXX id is None (why ?) %s %s' % (listname, which))
+            else:
+                status = self.statusbylist(listname, id)
         if status:
             evt = {
                 'class' : 'getlist',
@@ -636,6 +642,8 @@ class Safe:
         """
         if action == 'set':
             (x, y, z) = event
+            if z is None:
+                log.warning('XXX id is None %s' % event)
             thisstatus = copy.deepcopy(self.statusbylist(x, z))
             self.ctistack.append((event, thisstatus))
         elif action == 'setforce':
@@ -644,6 +652,8 @@ class Safe:
             while self.ctistack:
                 (oldevent, oldstatus) = self.ctistack.pop()
                 (x, y, z) = oldevent
+                if z is None:
+                    log.warning('XXX id is None 2 %s' % event)
                 newstatus = self.statusbylist(x, z)
                 if oldstatus != newstatus:
                     if oldstatus is None:
@@ -697,6 +707,23 @@ class Safe:
                                        'status' : {'hintstatus' : status}
                                        } )
         return
+
+    def updateregistration(self, peer, reg = ''):
+        termination = self.ast_channel_to_termination(peer)
+        p = self.zphones(termination.get('protocol'), termination.get('name'))
+        if p:
+            oldreg = self.xod_status['phones'][p]['reg']
+            self.xod_status['phones'][p]['reg'] = reg
+            if reg != oldreg:
+                self.log.info('registration for %s : <%s> => <%s>'
+                              % (peer, oldreg, reg))
+                self.events_cti.put( { 'class' : 'getlist',
+                                       'listname' : 'phones',
+                                       'function' : 'updatestatus',
+                                       'tipbxid' : self.ipbxid,
+                                       'tid' : p,
+                                       'status' : {'reg' : reg}
+                                       } )
 
     def updaterelations(self, channel):
         self.channels[channel].relations = []
@@ -877,8 +904,7 @@ class Safe:
             term = {'protocol' : protocol, 'name' : name}
             if len(cutchan2) > 1:
                 chanid = cutchan2[1]
-            else:
-                self.log.warning('%s is not a channel per-se' % cutchan2)
+            # else self.log.warning('%s is not a channel per-se' % cutchan2)
         elif len(cutchan1) < 2:
             self.log.warning('not enough /es in %s' % cutchan1)
         elif len(cutchan1) > 2:
@@ -913,10 +939,10 @@ class Safe:
         self.sheetconditions = bsheets.get('conditions')
 
         if where not in self.sheetevents:
-            self.log.warning('%s sheet event is not in %s' % (where, self.sheetevents.keys()))
+            self.log.warning('sheet event "%s" is not in %s' % (where, self.sheetevents.keys()))
             return
         if channel not in self.channels and not channel.startswith('special'):
-            self.log.warning('%s channel is not in %s' % (channel, self.channels.keys()))
+            self.log.warning('channel "%s" is not in %s' % (channel, self.channels.keys()))
             return
         for se in self.sheetevents[where]:
             display_id = se.get('display')
@@ -947,6 +973,7 @@ class Safe:
             sheet.buildpayload()
             # 5. sheet manager ?
             # 6. json message / zip or not / b64 / ...
+            # print sheet.internaldata
             self.events_cti.put( { 'class' : 'sheet',
                                    'channel' : channel,
                                    'compressed' : sheet.compressed,

@@ -348,7 +348,6 @@ class xivo_daemon:
                 break
 
         log.info('# STARTING %s # (1/3) Local AMI socket connection' % self.xdname)
-
         if self.myipbxid:
             ipbxconfig = self.cconf.getconfig('ipbxes').get(self.myipbxid)
             # interface : safe deposit
@@ -479,6 +478,18 @@ class xivo_daemon:
                 log.info('loop_over_cti_queue %s %d items' % (ipbxid, queuesize))
         return
 
+    def set_transfer_socket(self, socketref, direction):
+        for iconn, kind in self.fdlist_established.iteritems():
+            if kind.kind in ['CTI', 'CTIS']:
+                peername = '%s:%d' % iconn.getpeername()
+                if peername == socketref:
+                    kind.set_as_transfer(direction)
+                    if direction == 's2c':
+                        sendbuffer = ''
+                        kind.reply(sendbuffer)
+                    break
+        return
+
     def send_to_cti_client(self, who, what):
         (ipbxid, userid) = who.split('/')
         for k in self.fdlist_established.itervalues():
@@ -587,7 +598,7 @@ class xivo_daemon:
                             ipbxid = amiint.ipbxid
                             buf = sel_i.recv(200000)
                             if len(buf) == 0:
-                                log.warning('AMI %s : CLOSING' % ipbxid)
+                                log.warning('AMI %s : CLOSING (%s)' % (ipbxid, time.asctime()))
                                 del self.fdlist_ami[sel_i]
                                 sel_i.close()
                                 amiint.disconnect()
@@ -678,8 +689,9 @@ class xivo_daemon:
                                                 % (kind, sockparams[0]))
 
                             if kind in ['CTI', 'CTIS']:
-                                nc.logintimer = threading.Timer(int(self.cconf.getconfig('main').get('logintimeout', 5)),
-                                                                self.cb_timer,
+                                logintimeout = int(self.cconf.getconfig('main').get('logintimeout', 5))
+                                # logintimeout = 3600
+                                nc.logintimer = threading.Timer(logintimeout, self.cb_timer,
                                                                 ({'action' : 'ctilogin',
                                                                   'properties' : connc},))
                                 nc.logintimer.start()

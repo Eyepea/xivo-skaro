@@ -192,7 +192,7 @@ class AMI_1_8:
         context = event.pop('Context')
         hint = event.pop('Hint')
         status = event.pop('Status')
-        log.info('ami_extensionstatus : %s %s %s %s' % (exten, context, hint, status))
+        log.info('ami_extensionstatus : %s %s exten=%s %s' % (hint, context, exten, status))
         self.innerdata.updatehint(hint, status)
         return
 
@@ -487,9 +487,15 @@ class AMI_1_8:
     def ami_varset(self, event):
         # log.info('ami_varset %s' % (event))
         return
+
     def ami_peerstatus(self, event):
-        # log.info('ami_peerstatus %s' % (event))
+        channeltype = event.pop('ChannelType')
+        peer = event.pop('Peer')
+        peerstatus = event.pop('PeerStatus')
+        address = event.pop('Address', '')
+        self.innerdata.updateregistration(peer, address)
         return
+
     def ami_cdr(self, event):
         log.info('ami_cdr %s' % (event))
         return

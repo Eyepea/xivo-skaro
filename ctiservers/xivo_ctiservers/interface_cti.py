@@ -49,6 +49,7 @@ class CTI(Interfaces):
         Interfaces.__init__(self, ctid)
         self.connection_details = {}
         self.serial = serialJson()
+        self.transferconnection = None
         return
 
     def connected(self, connid):
@@ -56,14 +57,19 @@ class CTI(Interfaces):
         Send a banner at login time
         """
         Interfaces.connected(self, connid)
-        global log
-        log = logging.getLogger('interface_cti(%s:%d)' % self.requester)
+        self.log = logging.getLogger('interface_cti(%s:%d)' % self.requester)
         self.connid.sendall('XiVO CTI Server Version xx (on %s)\n'
                             % (' '.join(os.uname()[:3])))
         return
 
     def disconnected(self, msg):
-        # self.logintimer cancel() ?
+        self.log.info('disconnected')
+        self.logintimer.cancel()
+        if self.transferconnection and self.transferconnection == 'c2s':
+            self.log.info('got the file ...')
+##            z = open(tmpfilepath, 'w')
+##            z.write(buffer)
+##            z.close()
         # self.connid.sendall(msg)
         # tosend = { 'class' : 'serverdown',
         # 'mode' : mode }
@@ -74,21 +80,34 @@ class CTI(Interfaces):
         return
 
     def manage_connection(self, msg):
-        multimsg = msg.split(self.sep)
         z = list()
-        for usefulmsgpart in multimsg:
-            cmd = self.serial.decode(usefulmsgpart)
-            nc = cti_command.Command(self, cmd)
-            z.extend(nc.parse())
-            # print nc.commandid
+        if self.transferconnection:
+            if self.transferconnection == 'c2s':
+                self.log.info('transfer connection %d received' % len(msg))
+        else:
+            multimsg = msg.split(self.sep)
+            for usefulmsgpart in multimsg:
+                cmd = self.serial.decode(usefulmsgpart)
+                nc = cti_command.Command(self, cmd)
+                z.extend(nc.parse())
+                # print nc.commandid
         return z
 
+    def set_as_transfer(self, direction):
+        self.transferconnection = direction
+        return
+
     def reply(self, msg):
-        self.connid.sendall(self.serial.encode(msg) + '\n')
+        if self.transferconnection:
+            if self.transferconnection == 's2c':
+                self.connid.sendall(msg)
+                self.log.info('transfer connection %d sent' % len(msg))
+        else:
+            self.connid.sendall(self.serial.encode(msg) + '\n')
 
     def manage_logout(self, userinfo, when):
-        log.info('logout (%s) user:%s/%s'
-                 % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
+        self.log.info('logout (%s) user:%s/%s'
+                      % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
         userinfo['last-logouttimestamp'] = time.time()
         # XXX one could not always logout here + optionnally logout from the client side
         self.__logout_agent__(userinfo.get('astid'), userinfo.get('agentid'))
@@ -99,8 +118,8 @@ class CTI(Interfaces):
 
 
     def loginko(self, errorstring):
-        log.warning('user can not connect (%s) : sending %s'
-                    % (self.details, errorstring))
+        self.log.warning('user can not connect (%s) : sending %s'
+                         % (self.details, errorstring))
         # self.logintimer.cancel() + close
         tosend = { 'class' : 'loginko',
                    'error_string' : errorstring }
@@ -173,18 +192,8 @@ class CTIS(CTI):
 
 
 class OldLoginFromXivoCTIDummy:
-    def get_login_params(self, command, astid, connid):
-        return command.struct
-
     def manage_login(self, loginparams, phase, uinfo):
         if phase == xivo_commandsets.CMD_LOGIN_ID:
-            missings = []
-            for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
-                if argum not in loginparams:
-                    missings.append(argum)
-            if len(missings) > 0:
-                log.warning('missing args in loginparams : %s' % ','.join(missings))
-                return 'missing:%s' % ','.join(missings)
 
             # warns that the former session did not exit correctly (on a given computer)
             if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
@@ -194,74 +203,12 @@ class OldLoginFromXivoCTIDummy:
                                    loginparams['lastlogout-stopper'],
                                    loginparams['lastlogout-datetime']))
 
-            # trivial checks (version, client kind) dealing with the software used
-            xivoversion = loginparams.get('xivoversion')
-            if xivoversion != XIVOVERSION_NUM:
-                return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
-            if 'git_hash' in loginparams and 'git_date' in loginparams:
-                rcsversion = '%s-%s' % (loginparams.get('git_date'), loginparams.get('git_hash'))
-            else:
-                rcsversion = loginparams.get('version')
-
-            ident = loginparams.get('ident')
-            whatsmyos = ident.split('-')[0]
-            if whatsmyos.lower() not in ['x11', 'win', 'mac',
-                                         'web', 'android', 'ios']:
-                return 'wrong_client_os_identifier:%s' % whatsmyos
-
-            # user match
-            userinfo = None
-            if loginparams.get('userid'):
-                userinfo = self.ulist_ng.finduser(loginparams.get('userid'),
-                                                  loginparams.get('company'))
-            if userinfo == None:
-                return 'user_not_found'
-            userinfo['prelogin'] = {'cticlientos' : whatsmyos,
-                                    'version' : rcsversion,
-                                    'sessionid' : ''.join(random.sample(__alphanums__, 10))}
 
         elif phase == xivo_commandsets.CMD_LOGIN_PASS:
-            # user authentication
-            missings = []
-            for argum in ['hashedpassword']:
-                if argum not in loginparams:
-                    missings.append(argum)
-            if len(missings) > 0:
-                log.warning('missing args in loginparams : %s' % ','.join(missings))
-                return 'missing:%s' % ','.join(missings)
-
-            if uinfo is not None:
-                userinfo = uinfo
-            hashedpassword = loginparams.get('hashedpassword')
-            tohash = '%s:%s' % (userinfo['prelogin']['sessionid'], userinfo.get('password'))
-            sha1sum = hashlib.sha1(tohash).hexdigest()
-            if sha1sum != hashedpassword:
-                return 'login_password'
 
             iserr = self.__check_user_connection__(userinfo)
-            if iserr is not None:
-                return iserr
 
         elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
-            missings = []
-            for argum in ['state', 'capaid', 'lastconnwins', 'loginkind']:
-                if argum not in loginparams:
-                    missings.append(argum)
-            if len(missings) > 0:
-                log.warning('missing args in loginparams : %s' % ','.join(missings))
-                return 'missing:%s' % ','.join(missings)
-
-            if uinfo is not None:
-                userinfo = uinfo
-            # settings (in agent mode for instance)
-            # userinfo['agent']['phonenum'] = phonenum
-
-            state = loginparams.get('state')
-            capaid = loginparams.get('capaid')
-            subscribe = loginparams.get('subscribe')
-            lastconnwins = loginparams.get('lastconnwins')
-            loginkind = loginparams.get('loginkind')
-
             iserr = self.__check_capa_connection__(userinfo, capaid)
             if iserr is not None:
                 return iserr

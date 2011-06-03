@@ -531,6 +531,22 @@ class Command:
         self.rinnerdata.update_presence(self.ruserid, availstate)
         return reply
 
+    def regcommand_filetransfer(self):
+        reply = {}
+        function = self.commanddict.get('command')
+        if function == 'get_announce':
+            self.ctid.set_transfer_socket(self.commanddict.get('socketref'), 's2c')
+        elif function == 'put_announce':
+            self.ctid.set_transfer_socket(self.commanddict.get('socketref'), 'c2s')
+            # get size, filename
+            # reply with a token id
+        return reply
+
+    def regcommand_faxsend(self):
+        reply = {}
+        print 'regcommand_faxsend', self.commanddict
+        return reply
+
     def regcommand_getipbxlist(self):
         reply = { 'ipbxlist' : self.ctid.cconf.getconfig('ipbxes').keys() }
         return reply
@@ -678,6 +694,7 @@ class Command:
         if ipbxid_src != ipbxid_dst:
             return
         if ipbxid_src not in self.ctid.safe:
+            log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
             return
         innerdata = self.ctid.safe.get(ipbxid_src)
 
