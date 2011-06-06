@@ -78,39 +78,16 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	
 	function _set_check($conf)
 	{
-        if($this->_ha_svc->chk_values($conf['global']) === false)
-            $this->_set_errors($this->_ha_svc->get_filter_error());
-            
-        // uname_node array
-        for($i = 0; $i < count($conf['uname_node']); $i++)
-        {
-            if($this->_uname_svc->chk_values(array('uname_node' => $conf['uname_node'][$i])) === false)
-               $this->_set_errors('pf_ha_uname_node', $i, $this->_uname_svc->get_filter_error());
-        }
+		foreach($conf['service'] as $key => &$val) {
+			if (strlen($val['monitor']) == 0)
+				$val['monitor'] = null;
+			if (strlen($val['timeout']) == 0)
+				$val['timeout'] = null;
+		}
 
-         // ping_ipaddr
-        for($i = 0; $i < count($conf['ping_ipaddr']); $i++)
-        {
-            if($this->_ping_svc->chk_values(array('ping_ipaddr' => $conf['ping_ipaddr'][$i])) === false)
-               $this->_set_errors('pf_ha_ping_ipaddr', $i, $this->_ping_svc->get_filter_error());
-        }            
-
-        // virtnet
-        for($i = 0; $i < count($conf['virtnet']); $i++)
-        {
-            if($this->_virtnet_svc->chk_values($conf['virtnet'][$i]) === false)
-                $this->_set_errors("virtnet", $i, $this->_virtnet_svc->get_filter_error());
-        }
-
-        // peer
-        for($i = 0; $i < count($conf['peer']); $i++)
-        {
-            if($this->_peer_svc->chk_values($conf['peer'][$i]) === false)
-                $this->_set_errors("peer", $i, $this->_peer_svc->get_filter_error());
-        }
-
-        return ($this->get_errnb() == 0);
+		return true;
 	}
+
 	function _set_save($conf)
 	{
         // IF ALL IT'S OK, SAVE DATA
@@ -140,13 +117,10 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	{
 		$this->_reset();
 		$this->_set_result('ha', $arr);
-        
-		// 1. TEST DATA
-		/*
-		if(!$this->_set_check($conf))
+		
+		if(!$this->_set_check(&$arr))
 			return false;
-		*/
-            
+	
 		// IF ALL IT'S OK, SAVE DATA
 		if($this->_set_save($arr) === false)
 			return false;
