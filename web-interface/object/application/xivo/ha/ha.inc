@@ -142,10 +142,11 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 		foreach($arr['service'] as $name => $attrs)
 			if(intval($attrs['active']) === 1) {
-				$conf['services'][$name] = array(
-					'monitor' => intval($attrs['monitor']),
-					'timeout' => intval($attrs['timeout'])
-				);
+				$conf['services'][$name] = array();
+				if(!is_null($attrs['monitor']))
+					$conf['services'][$name]['monitor'] = intval($attrs['monitor']);
+				if(!is_null($attrs['timeout']))
+					$conf['services'][$name]['timeout'] = intval($attrs['timeout']);
 
 				if(array_key_exists($name, $rsc_classes) && !is_null($rsc_classes[$name]))
 					$conf['services'][$name]['rsc_class'] = $rsc_classes[$name];
