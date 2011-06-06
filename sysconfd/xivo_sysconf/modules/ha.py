@@ -94,6 +94,12 @@ class Ha(object):
 
           (generated file must be compatible with python module ConfigObj)
         """
+        try:
+            # create directory tree if not exists
+            os.makedirs(os.path.dirname(self.file))
+        except:
+            pass
+
         self.DEPTH=1
         self.OUT  = open(self.file, 'w')
 
