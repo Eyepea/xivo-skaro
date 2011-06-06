@@ -123,7 +123,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 
 				// cluster nodes
-        if($this->_cnodes_svc->delete_all() === false)
+        if($this->_cnodes_svc->delete_all(array()) === false)
             return false;
 
         foreach($conf['cnodes'] as $cnode)
@@ -161,19 +161,32 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 		$arr  = $this->get();
 		$conf = array('nodes' => array(), 'cluster' => array(), 'services' => array());
 
+		# we need to reread database to get services rsc_class
+		$rsc_classes = array();
+		foreach($this->_service_svc->get_all() as $k => $v)
+			$rsc_classes[$v['name']] = $v['rsc_class'];
+
 		foreach($arr['service'] as $name => $attrs)
-			if(intval($attrs['active']) === 1)
+			if(intval($attrs['active']) === 1) {
 				$conf['services'][$name] = array(
 					'monitor' => intval($attrs['monitor']),
 					'timeout' => intval($attrs['timeout'])
-			);
+				);
+
+				if(array_key_exists($name, $rsc_classes) && !is_null($rsc_classes[$name]))
+					$conf['services'][$name]['rsc_class'] = $rsc_classes[$name];
+			}
 
 		$conf['cluster']['cluster_addr'] = array();
 		foreach($arr['cnodes'] as $node)
 			$conf['cluster']['cluster_addr'][] = $node['device'].':'.$node['address'];
 
-		$conf['cluster']['cluster_name']  = $arr['ha']['cluster_name'];
+		foreach(array('name','itf_data','mailto','pingd') as $key)
+			if(strlen($arr['ha']['cluster_'.$key]) > 2)
+				$conf['cluster']['cluster_'.$key] = $arr['ha']['cluster_'.$key];
 		$conf['cluster']['cluster_group'] = $arr['ha']['cluster_group'] == '1';
+		$conf['cluster']['cluster_monitor']  = intval($arr['ha']['cluster_monitor']);
+		$conf['cluster']['cluster_timeout']  = intval($arr['ha']['cluster_timeout']);
 
 		$subnet = $this->_ip2subnet($arr['ha']['netaddr'], $arr['ha']['netmask']);
 		$conf['nodes'] = array(

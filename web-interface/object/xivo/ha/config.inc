@@ -43,7 +43,30 @@ $array['element']['node2_name'] = array();
 $array['element']['node2_name']['default'] = '';
 
 $array['element']['cluster_name'] = array();
-$array['element']['cluster_group']['default'] = '';
+$array['element']['cluster_name']['default'] = '';
+
+$array['element']['cluster_group'] = array();
+$array['element']['cluster_group']['value']   = array(0,1);
+$array['element']['cluster_group']['default'] = 0;
+$array['element']['cluster_group']['set']     = true;
+
+$array['element']['cluster_itf_data'] = array();
+$array['element']['cluster_itf_data']['default'] = '';
+
+$array['element']['cluster_monitor'] = array();
+$array['element']['cluster_monitor']['default'] = 0;
+
+$array['element']['cluster_timeout'] = array();
+$array['element']['cluster_timeout']['default'] = 0;
+
+$array['element']['cluster_mailto'] = array();
+$array['element']['cluster_mailto']['default'] = '';
+$array['element']['cluster_mailto']['null'] = true;
+
+$array['element']['cluster_pingd'] = array();
+$array['element']['cluster_pingd']['default'] = '';
+$array['element']['cluster_pingd']['null'] = true;
+
 
 /*
 $array['element']['alert_emails'] = array();

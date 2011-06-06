@@ -24,6 +24,7 @@ $dhtml   = &$this->get_module('dhtml');
 $info     = $this->get_var('info');
 //var_dump($info);
 $status   = $this->get_var('status');
+$netifaces = $this->get_var('netifaces');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\'' .$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -96,7 +97,7 @@ endif;
 				  'name'	=> 'ha[netaddr]',
 				  'labelid'	=> 'netaddr',
 				  'size'	=> 15,
-			    'help'    => $this->bbf('fm_help-ha_netaddr'),
+			    //'help'    => $this->bbf('fm_help-ha_netaddr'),
 				  'value'	=> $this->get_var('info', 'ha', 'netaddr'))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ha_netmask'),
@@ -280,7 +281,45 @@ endif;
 				      'name'		=> 'ha[cluster_group]',
 				      'labelid'		=> 'ha_cluster_group',
 				      'checked'		=> $info['ha']['cluster_group'],
-						));
+						)),
+		
+		$form->select(array(
+					'desc'    => $this->bbf('fm_ha_cluster_itf_data'),
+					'name'		=> 'ha[cluster_itf_data]',
+					'id'		  => "it-pf-ha-cluster_itf_data",
+					'help'    => $this->bbf('hlp_fm_cluster_itf_data'),
+					'empty'		=> true,
+					'key'  		=> false,
+					'selected'	=> $info['ha']['cluster_itf_data']),
+				$netifaces),
+
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_monitor'),
+					'name'		=> 'ha[cluster_monitor]',
+					'help'    => $this->bbf('hlp_fm_cluster_monitor'),
+//					'error'  	=> $this->bbf_args('error_pf_ha_com_mode', 
+					'size'	  => 5,
+					'value'   => $this->get_var('info','ha','cluster_monitor'))),
+
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_timeout'),
+					'name'		=> 'ha[cluster_timeout]',
+					'help'    => $this->bbf('hlp_fm_cluster_timeout'),
+					'size'	  => 5,
+					'value'   => $this->get_var('info','ha','cluster_timeout'))),
+
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_mailto'),
+					'name'		=> 'ha[cluster_mailto]',
+					'help'    => $this->bbf('hlp_fm_cluster_mailto'),
+					'size'	  => 25,
+					'value'   => $this->get_var('info','ha','cluster_mailto'))),
+
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_pingd'),
+					'name'		=> 'ha[cluster_pingd]',
+					'size'	  => 25,
+					'value'   => $this->get_var('info','ha','cluster_pingd')));
 
     $this->file_include('bloc/xivo/configuration/network/ha/peer');
 ?>

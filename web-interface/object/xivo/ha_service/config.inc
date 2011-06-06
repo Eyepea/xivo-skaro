@@ -29,6 +29,12 @@ $array['element']['active']['value']   = array(0,1);
 $array['element']['active']['default'] = 0;
 $array['element']['active']['set']     = true;
 
+$array['element']['rsc_class'] = array();
+$array['element']['rsc_class']['value']   = array('lsb','ocf');
+$array['element']['rsc_class']['default'] = '';
+$array['element']['rsc_class']['null'] = true;
+//$array['element']['rsc_class']['set']     = true;
+
 $array['element']['monitor'] = array();
 $array['element']['monitor']['default'] = '';
 $array['element']['monitor']['null'] = true;

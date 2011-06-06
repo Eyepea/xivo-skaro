@@ -191,3 +191,115 @@ you must set a value
 ; error_pf_ha_uname_node(regexp)
 contains invalid characters
 
+
+; fm_ha_netaddr
+Network address:
+
+; fm_ha_netmask
+Netmask:
+
+; fm_ha_mcast
+Multicast address:
+
+; fld-node1
+Master node
+
+; fm_ha_node1_name
+Name:
+
+; fm_ha_node1_ip
+IP adress: 
+
+; fld-node2
+Slave node
+
+; fm_ha_node2_name
+Name:
+
+; fm_ha_node2_ip
+IP adress:
+
+; fm_ha_service_asterisk
+Asterisk : 
+
+; fm_ha_service_asterisk_monitor
+Check frequency (seconds):
+
+; fm_ha_service_asterisk_timeout
+Switch delay (seconds):
+
+; fm_ha_service_lighttpd
+Lighttpd : 
+
+; fm_ha_service_lighttpd_monitor
+Check frequency (seconds):
+
+; fm_ha_service_lighttpd_timeout
+Switch delay (seconds):
+
+; fm_ha_service_dhcp
+DHCP : 
+
+; fm_ha_service_dhcp_monitor
+Check frequency (seconds):
+
+; fm_ha_service_dhcp_timeout
+Switch delay (seconds):
+
+; fm_ha_service_ntp
+NTP : 
+
+; fm_ha_service_ntp_monitor
+Check frequency (seconds):
+
+; fm_ha_service_ntp_timeout
+Switch delay (seconds):
+
+; fm_ha_service_csync
+Csync : 
+
+; fm_ha_service_csync_monitor
+Check frequency (seconds):
+
+; fm_ha_service_csync_timeout
+Switch delay (seconds):
+
+; fm_ha_cluster_name
+Cluster name:
+
+; fm_ha_cluster_group
+Group cluster:
+
+; fm_ha_cluster_itf_data
+DATA interface: 
+
+; hlp_fm_cluster_itf_data
+Network interface used to replicate datas (configuration, voicemails, ...)
+
+; fm_ha_cluster_monitor
+Check frequency (seconds):
+
+; hlp_fm_cluster_monitor
+Default value for all services
+
+; fm_ha_cluster_timeout
+Switch delay (seconds):
+
+; hlp_fm_cluster_timeout
+Default value for all services
+
+; fm_ha_cluster_mailto
+Email:
+
+; hlp_fm_cluster_mailto
+Email address HA alerts are sent to
+
+; fm_ha_cluster_pingd
+Network device to ping:
+
+; fm_help-ha_node1_name
+must be <b>uname</b> value
+
+; fm_help-ha_node2_name
+must be <b>uname</b> value
+

@@ -258,57 +258,90 @@ Adresse IP :
 Asterisk : 
 
 ; fm_ha_service_asterisk_monitor
-Intervalle entre 2 vérifications : 
+Fréquence de contrôle (secondes) : 
 
 
 ; fm_ha_service_asterisk_timeout
-Délai avant bascule : 
+Délai avant bascule (secondes) : 
 
 
 ; fm_ha_service_lighttpd
 Lighttpd : 
 
 ; fm_ha_service_lighttpd_monitor
-Intervalle entre 2 vérifications : 
+Fréquence de contrôle (secondes) : 
 
 
 ; fm_ha_service_lighttpd_timeout
-Délai avant bascule : 
+Délai avant bascule (secondes) : 
 
 
 ; fm_ha_service_dhcp
 DHCP : 
 
 ; fm_ha_service_dhcp_monitor
-Intervalle entre 2 vérifications : 
+Fréquence de contrôle (secondes) : 
 
 ; fm_ha_service_dhcp_timeout
-Délai avant bascule : 
+Délai avant bascule (secondes) : 
 
 
 ; fm_ha_service_ntp
 NTP : 
 
 ; fm_ha_service_ntp_monitor
-Intervalle entre 2 vérifications : 
+Fréquence de contrôle (secondes) : 
 
 ; fm_ha_service_ntp_timeout
-Délai avant bascule : 
+Délai avant bascule (secondes) : 
 
 
 ; fm_ha_service_csync
 Csync : 
 
 ; fm_ha_service_csync_monitor
-Intervalle entre 2 vérifications : 
+Fréquence de contrôle (secondes)  : 
 
 ; fm_ha_service_csync_timeout
-Délai avant bascule : 
+Délai avant bascule (secondes) : 
 
 ; fm_ha_cluster_name
 Nom du cluster : 
 
 ; fm_ha_cluster_group
 Grouper : 
+
+; fm_ha_cluster_itf_data
+Interface DATA : 
+
+; hlp_fm_cluster_itf_data
+C'est l'interface réseau utilisée pour la réplication des données (configuration, messages vocaux, ...)
+
+; fm_ha_cluster_monitor
+Fréquence de contrôle (secondes) : 
+
+; hlp_fm_cluster_monitor
+Valeur par défaut pour les services
+
+; fm_ha_cluster_timeout
+Délai avant bascule (secondes) : 
+
+; hlp_fm_cluster_timeout
+Valeur par défaut pour les services
+
+; fm_ha_cluster_mailto
+Adresse email : 
+
+; hlp_fm_cluster_mailto
+Les alertes HA seront envoyées à cette adresse
+
+; fm_ha_cluster_pingd
+Élément réseau à pinguer : 
+
+; fm_help-ha_node1_name
+Doit correspondre au résultat de la commande <b>uname</b>
+
+; fm_help-ha_node2_name
+Doit correspondre au résultat de la commande <b>uname</b>
 
 

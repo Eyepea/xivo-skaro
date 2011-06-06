@@ -366,6 +366,11 @@ CREATE TABLE "ha" (
  -- cluster
  "cluster_name"  VARCHAR(255) DEFAULT NULL,
  "cluster_group" INTEGER NOT NULL DEFAULT 1,
+ "cluster_itf_data" VARCHAR(255) DEFAULT NULL,
+ "cluster_monitor" INTEGER NOT NULL DEFAULT 20,
+ "cluster_timeout" INTEGER NOT NULL DEFAULT 60,
+ "cluster_mailto"  VARCHAR(255) DEFAULT NULL,
+ "cluster_pingd"   VARCHAR(255) DEFAULT NULL,
 
  --"alert_emails" varchar(1024) DEFAULT NULL,
  --"user" varchar(16) NOT NULL DEFAULT 'pf-replication',
@@ -387,18 +392,19 @@ CREATE TABLE "ha_cluster_node" (
 
 DROP TABLE IF EXISTS "ha_service";
 CREATE TABLE "ha_service" (
- "name"    VARCHAR(128) NOT NULL,
- "active"  INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "monitor" INTEGER DEFAULT NULL,
- "timeout" INTEGER DEFAULT NULL,
+ "name"      VARCHAR(128) NOT NULL,
+ "active"    INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "rsc_class" VARCHAR(8) DEFAULT NULL,  -- 'lsb' or 'ocf'
+ "monitor"   INTEGER DEFAULT NULL,
+ "timeout"   INTEGER DEFAULT NULL,
  PRIMARY KEY ("name")
 );
 
-INSERT INTO "ha_service" VALUES ('asterisk', 0, NULL, NULL);
-INSERT INTO "ha_service" VALUES ('lighttpd', 0, NULL, NULL);
-INSERT INTO "ha_service" VALUES ('dhcp'    , 0, NULL, NULL);
-INSERT INTO "ha_service" VALUES ('ntp'     , 0, NULL, NULL);
-INSERT INTO "ha_service" VALUES ('csync'   , 0, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('asterisk', 0, 'lsb', NULL, NULL);
+INSERT INTO "ha_service" VALUES ('lighttpd', 0, 'ocf', NULL, NULL);
+INSERT INTO "ha_service" VALUES ('dhcp'    , 0, NULL, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('ntp'     , 0, NULL, NULL, NULL);
+INSERT INTO "ha_service" VALUES ('csync'   , 0, NULL, NULL, NULL);
 
 --DROP TABLE IF EXISTS "ha_ping_ipaddr";
 --CREATE TABLE "ha_ping_ipaddr" (
