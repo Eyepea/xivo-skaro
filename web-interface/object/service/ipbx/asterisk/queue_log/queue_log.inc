@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'filter.inc'));
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
@@ -69,6 +70,27 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 			return(false);
 
 		$search = array();
+
+		if(dwho_has_len($arr,'dbeg') === true)
+		{
+			$date = array('dbeg' => null,'dend' => null);
+
+			if(dwho_has_len($arr,'dend') === true
+			&& ($date = dwho_filter::chk_between_date($arr['dbeg'],$arr['dend'])) === false)
+				return(false);
+			else if(($date['dbeg'] = dwho_filter::chk_date($arr['dbeg'])) === false)
+				return(false);
+
+			if($date['dbeg']['dateint'] > strftime($date['dbeg']['format']))
+				return(false);
+			else
+				$search['dbeg'] = $date['dbeg']['date'];
+
+			//if($date['dend'] !== null && $date['dend']['dateint'] > strftime($date['dend']['format']))
+			//	return(false);
+			//else
+				$search['dend'] = $date['dend']['date'];
+		}
 
 		if(($result = $this->_dso->search($search,$order,$limit)) === false)
 			return(null);

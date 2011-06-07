@@ -21,13 +21,13 @@
 class xivo_statistics
 {
 
-	private	$_xobj		 		= null;	
-	private	$_ipbx		 		= null;	
+	private	$_xobj		 		= null;
+	private	$_ipbx		 		= null;
 	private	$_cache_path 		= '';
 	private	$_regex		 		= array('datetime'	=> '/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
 										'unixtime'	=> '/^(\d{10})$/',
 										'date'		=> '/^(\d{4})-(\d{2})-(\d{2})$/',
-										'time'		=> '/^(\d{2}):(\d{2}):(\d{2})$/');	
+										'time'		=> '/^(\d{2}):(\d{2}):(\d{2})$/');
 	private	$_listday			= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 	private	$_listmonth			= array('january','february','march','april','may','june','july','august','september','october','november','december');
 	private	$_listaxetype		= array('type','day','week','month','year');
@@ -107,7 +107,7 @@ class xivo_statistics
 	
 	private function load_conf()
 	{
-		$this->push_debug("load_conf()");	
+		$this->push_debug("load_conf()");
 		if (($idconf = $this->get_idconf()) === false)
 			return(false);
 			
@@ -122,7 +122,7 @@ class xivo_statistics
 	}
 	
 	private function init_cal($conf)
-	{			
+	{
 		$dbeg = $this->all_to_unixtime($conf['dbegcache']);
 		$dend = $this->all_to_unixtime($conf['dendcache']);
 		
@@ -155,10 +155,10 @@ class xivo_statistics
 	}
 	
 	private function init_conf($conf)
-	{		
+	{
 		$this->push_debug("init_conf()");
-		$this->_conf = $conf;	
-		$this->_conf['stats_conf'] = $conf['stats_conf'];		
+		$this->_conf = $conf;
+		$this->_conf['stats_conf'] = $conf['stats_conf'];
 		$stats_conf = $conf['stats_conf'];
 		
 		$this->init_cal($stats_conf);
@@ -182,10 +182,10 @@ class xivo_statistics
 			}
 		}
 		return(true);
-	}	
+	}
 	
 	public function set_idconf($idconf,$reloadconf=false)
-	{	
+	{
 		$this->push_debug("set_idconf()",array($idconf,$reloadconf));
 		if (is_numeric($idconf) === false)
 			return(false);
@@ -198,7 +198,7 @@ class xivo_statistics
 	}
 		
 	public function get_idconf()
-	{	
+	{
 		$this->push_debug("get_idconf()");
 		if ($this->_idconf !== 0)
 			$idconf = $this->_idconf;
@@ -210,7 +210,7 @@ class xivo_statistics
 	}
 	
 	public function get_full_conf()
-	{			
+	{
 		if (($stats_conf = $this->get_conf()) === false)
 			return(false);
 			
@@ -220,8 +220,8 @@ class xivo_statistics
 	}
 	
 	public function get_conf()
-	{	
-		$this->push_debug("get_conf()");		
+	{
+		$this->push_debug("get_conf()");
 		if (empty($this->_conf['stats_conf']) === true)
 			return(false);
 		
@@ -246,7 +246,7 @@ class xivo_statistics
 		$loadconf['dupdate'] =  $statsconf['dupdate'];
 		$loadconf['dgenercache'] =  $statsconf['dgenercache'];
 		$loadconf['dbegcache'] = $statsconf['dbegcache'];
-		$loadconf['dendcache'] = $statsconf['dendcache'];		
+		$loadconf['dendcache'] = $statsconf['dendcache'];
 		$loadconf['workweek'] = $workweek;
 		$loadconf['periods'] = $this->_period;
 		$loadconf['objectkey'] = $this->_objectkey;
@@ -261,7 +261,7 @@ class xivo_statistics
 		if (isset($arr['confid']) === true)
 			$this->set_idconf($arr['confid'],true);
 		
-		$this->load_component();			
+		$this->load_component();
 			
 		$this->_objectkey = 0;
 		$this->set_axetype('type');
@@ -278,13 +278,13 @@ class xivo_statistics
 	}
 	
 	public function set_type($type)
-	{			
+	{
 		$this->push_debug("set_type()",$type);
 		$this->_type = $type;
 	}
 	
 	public function set_method($method)
-	{ 
+	{
 		$this->push_debug("set_method()",$method);
 		if (in_array($method,$this->_listmethod) === false)
 			return(false);
@@ -368,7 +368,7 @@ class xivo_statistics
 			$dip['beg'] = strtotime(date('Y-m-d',$day_process).' '.$hour_start);
 			$dip['end'] = strtotime(date('Y-m-d',$day_process).' '.$hour_end);
 			$rs[$key] = $dip;
-		}		
+		}
 		return($rs);
 	}
 		
@@ -428,7 +428,7 @@ class xivo_statistics
 				}
 				break;
 			case 'type':
-			default:		
+			default:
 				if (isset($arr['dbeg']) === true
 				&& isset($arr['dend']) === true)
 				{
@@ -442,7 +442,7 @@ class xivo_statistics
 	
 	public function all_to_unixtime($str)
 	{
-		$rs = time();	
+		$rs = time();
 		if (preg_match($this->_regex['datetime'],$str) === 1)
 			$rs = (int) strtotime($str);
 		elseif (preg_match($this->_regex['unixtime'],$str) === 1)
@@ -458,7 +458,7 @@ class xivo_statistics
 	}
 	
 	public function get_datecal()
-	{			
+	{
 		$this->push_debug("get_infocal()");
 		return($this->_date_process);
 	}
@@ -471,7 +471,7 @@ class xivo_statistics
 		$lastday = $this->get_lastday_for_month($year,12);
 		$rs = array();
 		$rs['beg'] = $firstday;
-		$rs['end'] = $lastday;		
+		$rs['end'] = $lastday;
 		return($rs);
 	}
 		
@@ -484,7 +484,7 @@ class xivo_statistics
 		$lastday = mktime(23, 59, 59, $month + 1, 0, $year);
 		$rs = array();
 		$rs['beg'] = $firstday;
-		$rs['end'] = $lastday;		
+		$rs['end'] = $lastday;
 		return($rs);
 	}
 		
@@ -495,12 +495,12 @@ class xivo_statistics
 		$year = date('Y',$date);
 		$rs = array();
 		$rs['beg'] = strtotime("{$year}-W{$week}-1");
-		$rs['end'] = strtotime("{$year}-W{$week}-7");		
+		$rs['end'] = strtotime("{$year}-W{$week}-7");
 		return($rs);
 	}
 	
 	public function get_listhour()
-	{	
+	{
 		$this->push_debug("get_listhour()");
 		if(($conf = $this->get_conf()) === false)
 			return(false);
@@ -526,7 +526,7 @@ class xivo_statistics
 	}
 	
 	public function get_listday_for_week()
-	{	
+	{
 		$this->push_debug("get_listday_for_week()");
 		if(($conf = $this->get_conf()) === false)
 			return(false);
@@ -551,7 +551,7 @@ class xivo_statistics
 	}
 	
 	public function get_lastday_for_month($year,$month)
-	{		
+	{
 		if (preg_match('/^(\d{4})-(\d{2})$/',"$year-$month") === 1)
 			return(mktime(23, 59, 59, $month+1, 0, $year));
 			
@@ -588,7 +588,7 @@ class xivo_statistics
 			$tmp['key'] = $daynumber;
 			$tmp['time'] = (int) $time;
 				
-			array_push($rs,$tmp);	
+			array_push($rs,$tmp);
 		}
 		return($rs);
 	}
@@ -607,7 +607,7 @@ class xivo_statistics
 		$listday = array();
 		while ($day_process < ((int) $dend))
 		{
-			$day_process = strtotime('+1 day',$day_process);	
+			$day_process = strtotime('+1 day',$day_process);
 			$dayname = strtolower(date('l',$day_process));
 			$daynumber = date('d',$day_process);
 			$month = date('m',$day_process);
@@ -624,7 +624,7 @@ class xivo_statistics
 			$tmp['dayname'] = $dayname;
 			$tmp['time'] = (int) $day_process;
 			$listday[$tmp['key']] = $tmp;
-		}		
+		}
 		return($listday);
 	}
 	
@@ -639,7 +639,7 @@ class xivo_statistics
 		#$month_process = strtotime('-1 month',$dbeg);
 		#$month_process = mktime(0, 0, 0, date('m',$month_process), 1, date('Y',$month_process));
 		$listmonth = array();
-		while ($month_process <= ((int) $dend))	
+		while ($month_process <= ((int) $dend))
 		{
 			$dayname = strtolower(date('l',$month_process));
 			$month = date('m',$month_process);
@@ -648,16 +648,16 @@ class xivo_statistics
 			$tmp = array();
 			$tmp['identity'] = dwho_i18n::babelfish($this->_listmonth[intval($month)-1]);
 			$tmp['key'] = (int) ($year.$month);
-			$tmp['time'] = (int) $month_process;					
+			$tmp['time'] = (int) $month_process;
 			array_push($listmonth,$tmp);
-			$month_process = strtotime('+1 month',$month_process);	
-		}		
+			$month_process = strtotime('+1 month',$month_process);
+		}
 		return($listmonth);
 	}
 	
 	public function get_listmonth()
 	{
-		$this->push_debug("get_listmonth()");		
+		$this->push_debug("get_listmonth()");
 		$rs = array();
 		for ($i=0;$i<=11;$i++)
 		{
@@ -667,7 +667,7 @@ class xivo_statistics
 			$tmp['key'] = $i+1;
 				
 			array_push($rs,$tmp);
-		}		
+		}
 		return($rs);
 	}
 	
@@ -757,14 +757,14 @@ class xivo_statistics
 				$rs['type'] = 'user';
 				break;
 			case 'agent':
-				$rs['key'] = 'agent/'.$arr['number'];	
-				$rs['keyfile'] = 'agent-'.$arr['id'];		
+				$rs['key'] = 'agent/'.$arr['number'];
+				$rs['keyfile'] = 'agent-'.$arr['id'];
 				$tmp = array();
 				array_push($tmp, $arr['number']);
 				array_push($tmp,'agent/'.$arr['number']);
 				array_push($tmp,'Agent/'.$arr['number']);
 				$rs['keydata'] = $tmp;
-				$rs['type'] = 'agent';	
+				$rs['type'] = 'agent';
 				break;
 			default:
 				return(false);
@@ -799,7 +799,10 @@ class xivo_statistics
 				$rs['type'] = 'queue';
 				break;
 			case 'group':
-				$rs['identity'] =  $arr['displayname'];
+				if (isset($arr['displayname']) === false)
+				    $rs['identity'] =  $arr['name'];
+				else
+				    $rs['identity'] =  $arr['displayname'];
 				if (isset($arr['group_qos']) === false)
 					return(false);
 				$rs['key'] = 'group/'.$arr['number'];
@@ -823,13 +826,14 @@ class xivo_statistics
 					return(false);
 				
 				if (empty($this->_objectkey) === true
-				|| $this->_objectkey === 0)
+				|| $this->_objectkey === 0
+				|| $this->_objectkey === null)
 				{
 					if($this->_conf['incall'] !== false)
 					{
 						asort($this->_conf['incall']);
-						$incall = array_values($this->_conf['incall']);						
-						$nb = count($incall);		
+						$incall = array_values($this->_conf['incall']);
+						$nb = count($incall);
 						for($i=0;$i<$nb;$i++)
 						{
 							$ref = &$incall[$i];
@@ -841,7 +845,7 @@ class xivo_statistics
 				}
 				elseif (empty($this->_objectkey) === false
 				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
-				{						
+				{
 					$key = $out[1];
 					$id = $out[2];
 					
@@ -865,24 +869,26 @@ class xivo_statistics
 							break;
 						default:
 							return($ls_incall);
-					}					
+					}
 				}
 				return($ls_incall);
 				break;
 			case 'agent':
 				$ls_agent = array();
+				
 				if ($this->_conf['agent'] === false
 				&& $this->_conf['user'] === false)
 					return(false);
 				
 				if (empty($this->_objectkey) === true
-				|| $this->_objectkey === 0)
+				|| $this->_objectkey === 0
+				|| $this->_objectkey === null)
 				{
 					if($this->_conf['agent'] !== false)
 					{
 						asort($this->_conf['agent']);
-						$agent = array_values($this->_conf['agent']);						
-						$nb = count($agent);		
+						$agent = array_values($this->_conf['agent']);
+						$nb = count($agent);
 						for($i=0;$i<$nb;$i++)
 						{
 							$ref = &$agent[$i];
@@ -908,7 +914,7 @@ class xivo_statistics
 				}
 				elseif (empty($this->_objectkey) === false
 				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
-				{						
+				{
 					$key = $out[1];
 					$id = $out[2];
 					
@@ -954,19 +960,20 @@ class xivo_statistics
 				break;
 			case 'period':
 			case 'queue':
-				$ls_queue = array();		
+				$ls_queue = array();
 				if ($this->_conf['queue'] === false
 				&& $this->_conf['group'] === false)
 					return(false);
 				
 				if (empty($this->_objectkey) === true
-				|| $this->_objectkey === 0)
+				|| $this->_objectkey === 0
+				|| $this->_objectkey === null)
 				{
 					if($this->_conf['queue'] !== false)
 					{
 						asort($this->_conf['queue']);
-						$queue = array_values($this->_conf['queue']);						
-						$nb = count($queue);		
+						$queue = array_values($this->_conf['queue']);
+						$nb = count($queue);
 						for($i=0;$i<$nb;$i++)
 						{
 							$ref = &$queue[$i];
@@ -979,8 +986,8 @@ class xivo_statistics
 					if($this->_conf['group'] !== false)
 					{
 						asort($this->_conf['group']);
-						$group = array_values($this->_conf['group']);						
-						$nb = count($group);		
+						$group = array_values($this->_conf['group']);
+						$nb = count($group);
 						for($i=0;$i<$nb;$i++)
 						{
 							$ref = &$group[$i];
@@ -992,7 +999,7 @@ class xivo_statistics
 				}
 				elseif (empty($this->_objectkey) === false
 				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
-				{						
+				{
 					$key = $out[1];
 					$id = $out[2];
 					
@@ -1032,7 +1039,7 @@ class xivo_statistics
 							break;
 						default:
 							return($ls_queue);
-					}					
+					}
 				}
 				return($ls_queue);
 				break;
@@ -1082,32 +1089,32 @@ class xivo_statistics
 	}
 	
 	public function get_incall_list()
-	{			
-		$this->push_debug("get_incall_list()");		
+	{
+		$this->push_debug("get_incall_list()");
 		if (($list = $this->get_list_by_type('incall')) === false)
 			return(false);
 			
-		asort($list);			
+		asort($list);
 		return($list);
 	}
 	
 	public function get_queue_list()
-	{			
-		$this->push_debug("get_queue_list()");		
+	{
+		$this->push_debug("get_queue_list()");
 		if (($list = $this->get_list_by_type('queue')) === false)
 			return(false);
 			
-		asort($list);			
+		asort($list);
 		return($list);
 	}
 	
 	public function get_agent_list()
-	{			
-		$this->push_debug("get_agent_list()");		
+	{
+		$this->push_debug("get_agent_list()");
 		if (($list = $this->get_list_by_type('agent')) === false)
 			return(false);
 			
-		asort($list);			
+		asort($list);
 		return($list);
 	}
 	
@@ -1117,10 +1124,10 @@ class xivo_statistics
 		$this->load_conf();
 		
 		if(($conf = $this->get_conf()) === false
-		|| (is_numeric($dbeg) === true
-			&& strlen($dbeg) === 10) === false
-		|| (is_numeric($dend) === true
-			&& strlen($dend) === 10) === false)
+		|| ((is_numeric($dbeg) === true
+			&& strlen($dbeg) === 10) === false)
+		|| ((is_numeric($dend) === true
+			&& strlen($dend) === 10) === false))
 				dwho_report::push('error','ERR: Invalid data for gener_cache()');
 			
 		if(is_null($idtype) === false)
@@ -1128,7 +1135,7 @@ class xivo_statistics
 		
 		if(($list = $this->get_list_by_type($type)) === false
 		|| empty($list) === true)
-			dwho_report::push('error','ERR: Invalid list for gener_cache()');	
+			dwho_report::push('error','ERR: Invalid list for gener_cache()');
 			
 		if (dwho_report::has('error') === true)
 			die(dwho_report::get_message('error'));
@@ -1138,7 +1145,7 @@ class xivo_statistics
 		$this->_interval['end'] = $dend;
 		
 		if (($rs = $this->generate_cache_for_type($type,$list)) === false)
-			dwho_report::push('error','ERR: Invalid type for gener_cache()');			
+			dwho_report::push('error','ERR: Invalid type for gener_cache()');
 			
 		if (dwho_report::has('error') === true)
 			die(dwho_report::get_message('error'));
@@ -1172,7 +1179,7 @@ class xivo_statistics
 	}
 	
 	private function generate_cache_for_incall($listincall)
-	{		
+	{
 		if(xivo::load_class('xivo_statistics_incall',
 			XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics',
 			'incall',false) === false)
@@ -1218,7 +1225,7 @@ class xivo_statistics
 	}
 	
 	private function generate_cache_for_queue($listqueue)
-	{		
+	{
 		if(xivo::load_class('xivo_statistics_queue',
 			XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics',
 			'queue',false) === false)
@@ -1270,7 +1277,7 @@ class xivo_statistics
 			'agent',false) === false)
 			die('Can\'t load xivo_statistics_agent object');
 				
-		$stats_agent = new xivo_statistics_agent(&$this);		
+		$stats_agent = new xivo_statistics_agent(&$this);
 	
 		$dbeg = $this->_interval['beg'];
 		$dend = $this->_interval['end'];
@@ -1301,7 +1308,7 @@ class xivo_statistics
 					$this->_interval_process = $full_interval[$year.$month.$day];
 					$stats_agent->parse_log($keydata,$day);
 				}
-				$this->save_cache($stats_agent->_result,$keyfile,$year,$month);				
+				$this->save_cache($stats_agent->_result,$keyfile,$year,$month);
 				$stats_agent->_result = array();
 			}
 		}
@@ -1326,7 +1333,7 @@ class xivo_statistics
 		
 		while($listqueue)
 		{
-			$queue = array_shift($listqueue);				
+			$queue = array_shift($listqueue);
 			$keyfile = $queue['keyfile'];
 			$keydata = $queue['keydata'];
 			$listmonth = $data_listmonth;
@@ -1388,7 +1395,7 @@ class xivo_statistics
 		if (($dir = $this->build_dir_for_cache($idconf,$type,$key)) === false)
 			return(false);
 		
-		$file = $dir.DWHO_SEP_DIR.$year.$month.'.db';		
+		$file = $dir.DWHO_SEP_DIR.$year.$month.'.db';
 		
 		if (dwho_file::is_r($file) === false
 		|| ($infos = dwho_file::get_info($file)) === false
@@ -1425,7 +1432,7 @@ class xivo_statistics
 	}
 	
 	private function build_dir_for_cache($idconf=null,$type=null,$key=null,$cachedir=null)
-	{		
+	{
 		if (is_null($cachedir) === true)
 			$cachedir = DWHO_PATH_CACHE_STATS;
 			
@@ -1472,7 +1479,7 @@ class xivo_statistics
 		}
 		
 		if (dwho_file::is_d_w($cachedir) === false)
-			dwho_report::push('error','ERR: Not writable cache dir: '.$cachedir);			
+			dwho_report::push('error','ERR: Not writable cache dir: '.$cachedir);
 			
 		if (dwho_report::has('error') === true)
 			die(dwho_report::get_message('error'));
@@ -1519,7 +1526,7 @@ class xivo_statistics
 	}
 	
 	public function update_cache($idconf,$type,$object,$erase=false,$dbeg=null,$dend=null)
-	{		
+	{
 		$keyfile = $object['keyfile'];
 		$objectkey = $object['keyfile'];
 		
@@ -1534,7 +1541,7 @@ class xivo_statistics
 			$confmonth = date('m');
 			$indexconf = (int) ($confyear.$confmonth);
 		}
-		else 
+		else
 		{
 			$indexconf = (int) str_replace('-','',$conf['dendcache']);
 			$confyear = substr($indexconf,0,4);
@@ -1570,7 +1577,7 @@ class xivo_statistics
 		while($listconfmonth)
 		{
 			$confmonth = array_shift($listconfmonth);
-			$index = (int) $confmonth['key'];			
+			$index = (int) $confmonth['key'];
 			$filemonth = $dirkey.DWHO_SEP_DIR.$index.'.db';
 			$year = substr($index,0,4);
 			$month = substr($index,4,2);
@@ -1704,7 +1711,7 @@ class xivo_statistics
 	}
 
 	public function eval_field_queue_log($event,$type)
-	{			
+	{
 		$this->push_debug("eval_field_queue_log()",array($event,$type));
 		$conf = $this->_queue_log_conf;
 		
@@ -1722,7 +1729,7 @@ class xivo_statistics
 	}
 
 	public function eval_pos_data_queue_log_conf($queue_log_entry,$event,$type)
-	{			
+	{
 		$this->push_debug("eval_field_queue_log_conf()",array($queue_log_entry,$event,$type));
 		if (($queue_log_conf = $this->_queue_log_conf) === false)
 			return(false);
@@ -1753,7 +1760,7 @@ class xivo_statistics
 	}
 
 	private function eval_during_time($key,$eventprocess,$eventstart,$eventend,$time)
-	{			
+	{
 		if (isset($this->_counter[$key]) === false)
 			$this->_counter[$key] = array();
 			
@@ -1779,14 +1786,14 @@ class xivo_statistics
 			case $eventstart:
 				if ($counter['token'] === 1
 				&& $counter['start'] !== 0)
-					$rs = ($timeprocess - $counter['start']);	
+					$rs = ($timeprocess - $counter['start']);
 				$counter['token'] = 1;
 				$counter['start'] = $timeprocess;
 				break;
 			case $eventend:
 				if ($counter['token'] === 0)
 					continue;
-				$rs = ($timeprocess - $counter['start']);					
+				$rs = ($timeprocess - $counter['start']);
 				$counter['token'] = 0;
 				$counter['start'] = 0;
 				break;
@@ -1806,7 +1813,7 @@ class xivo_statistics
 			$this->_debug[$key] = $var;
 	}
 
-	public function get_debug() 
+	public function get_debug()
 	{
 		return($this->_debug);
 	}

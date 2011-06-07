@@ -20,51 +20,91 @@
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 
-class xivo_statistics_general extends xivo_statistics_abstract
+class xivo_statistics_general
 {
 
-	public		$_table		= 'queue_log';
-	public		$_type		= '';
-	public		$_field	= array('logintime'			=> array('type' => 'time'),
-								'holdtime'			=> array('type' => 'time'),
-								'calltime'			=> array('type' => 'time'),
-								'ringtime'			=> array('type' => 'time'),
-								'pausetime'			=> array('type' => 'time'),
-								'connect'			=> array('type' => 'int'),
-								'enterqueue'		=> array('type' => 'int'),
-								'completeagent'		=> array('type' => 'int'),
-								'completecaller'	=> array('type' => 'int'),
-								'ringnoanswer'		=> array('type' => 'int'),
-								'transfer'			=> array('type' => 'int'),
-								'abandon'			=> array('type' => 'int'),
-								'traitmenttime'		=> array('type' => 'time')
-							);
+	public     $_table		= 'queue_log';
+	public     $_field	    = array();
+	private    $_ipbx		= false;
+	private    $_queue_log	= false;
+	private    $_result	    = array();
+	private    $_xs           = false;
 		
-	public function __construct(&$_XS)
+	public function __construct()
 	{
-		parent::__construct(&$_XS);
 		$this->_method = 'DB';
 	}
+	
+	public function set_xs(&$_XS)
+	{
+	    $this->_xs = $_XS;
+	}
 		
-	public function parse_log()
+	public function parse_log($type,$conf)
 	{
 		switch ($this->_method)
 		{
 			case 'DB':
-				$this->parse_log_db();
+				return($this->parse_log_db($type,$conf));
 				break;
 			case 'PHP':
-				$this->parse_log_php();
+				return($this->parse_log_php());
 				break;
 			default:
 				return(false);
 		}
-		return(true);
+	}
+
+	public function get_result()
+	{
+		return($this->_result);
 	}
 	
-	public function parse_log_db()
+	public function parse_log_db($type,$conf)
 	{
-	
+	    $result = &$this->_result;
+	    if (isset($result[$type]) === false)
+	        $result[$type] = array();
+	    $rest = &$result[$type];
+	    if (isset($rest[$conf]) === false)
+	        $rest[$conf] = array();
+	    $res = &$rest[$conf];
+	    
+		switch ($type)
+		{
+			case 'queue':
+                if(xivo::load_class('xivo_statistics_queue',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'queue',false) === false)
+                	die('Can\'t load xivo_statistics_queue object');
+                
+                $stats_queue = new xivo_statistics_queue(&$this->_xs);
+                $rs = $stats_queue->get_data();
+				break;
+			case 'agent':
+                if(xivo::load_class('xivo_statistics_agent',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'agent',false) === false)
+                	die('Can\'t load xivo_statistics_agent object');
+                
+                $stats_agent = new xivo_statistics_agent(&$this->_xs);
+                $rs = $stats_agent->get_data();
+				break;
+		}
+        while ($rs)
+        {
+             $l = array_shift($rs);
+             $lkey = array_keys($l);
+             while ($l)
+             {
+                 $datakey = array_shift($lkey);
+                 $data = array_shift($l);
+                 if (isset($data['type']) === false)
+                     continue;
+                 if (isset($res[$datakey]) === true)
+                     $res[$datakey] = ($res[$datakey] + $data);
+                 else
+                     $res[$datakey] = ($data);
+             }
+         }
+                
+         return($result);
 	}
 	
 	public function parse_log_php()
@@ -80,20 +120,20 @@ class xivo_statistics_general extends xivo_statistics_abstract
 				$queue_log[$k] = trim($clean);
 						
 			$time 		= $queue_log['time'];
-			$callid 	= $queue_log['callid']; 
-			$queuename 	= $queue_log['queuename']; 
+			$callid 	= $queue_log['callid'];
+			$queuename 	= $queue_log['queuename'];
 			$agent 		= strtolower($queue_log['agent']);
-			$event 		= $queue_log['event'];			
+			$event 		= $queue_log['event'];
 			
 			$this->init_result('total');
 			
 			switch ($event)
-			{			
+			{
 				# ENTERQUEUE(url|callerid)
 				case 'ENTERQUEUE':
 					$this->update_result(array('total','enterqueue'),1);
 					break;
-				# AGENTLOGIN(channel)				
+				# AGENTLOGIN(channel)
 				case 'AGENTLOGIN':
 				# AGENTLOGOFF(channel|logintime)
 				case 'AGENTLOGOFF':

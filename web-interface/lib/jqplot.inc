@@ -44,7 +44,7 @@ class xivo_jqplot
 		return(true);
 	}
 
-	public function write_js_loaded_plugin($dhtml)
+	public function write_js_loaded_plugin(&$dhtml)
 	{
 		foreach($this->_pluginloaded as $plugin)
 			$dhtml->set_js($plugin,true);
@@ -102,6 +102,9 @@ class xivo_jqplot
 			case 'cel':
 				$this->gener_graph_cel($box,$title);
 				break;
+			case 'index_general':
+				$this->gener_graph_index_general($box,$title);
+				break;
 			default:
 		}
 	}
@@ -110,9 +113,10 @@ class xivo_jqplot
 	{
 		$this->load_plugin('pieRenderer');
 
-		$listfield = array('presented','connected','connect','abandon','on_close','on_saturation','on_hungup','on_guide','on_number');
+		$listfield = array('connected','connect','abandon','on_close','on_saturation','on_hungup','on_guide','on_number');
 
 		$data = $this->_data_foot;
+		unset($data['presented']);
 		$pie = '[';
 		$datakey = array_keys($data);
 		while ($data)
@@ -956,7 +960,7 @@ class xivo_jqplot
 			        yaxis:
 			        {
 			        	autoscale: true,
-			        	tickOptions:{formatString: '%ds'},
+			        	tickOptions:{formatString: '%ds.'},
 			        	min: 0
 					},
 			        y2axis:
@@ -976,12 +980,143 @@ class xivo_jqplot
 			        	yaxis: 'y2axis'
 					},
 			        {
-			        	label: 'Duree',
+			        	label: '".$this->bbf('col_duration')."',
 	        			highlighter:{show: false},
 			        	pointLabels:{show: false}
 					},
 			        {
-			        	label: 'MTA',
+			        	label: '".$this->bbf('col_average_call_duration')."',
+			        	pointLabels:{show: false}
+					}
+			    ],
+	   			cursor:{show: false}
+			});
+			</script>\n\n";
+
+		$this->add_result($box, ob_get_contents());
+
+		ob_end_clean();
+	}
+
+	private function gener_graph_index_general($box,$title)
+	{
+		$this->load_plugin('barRenderer');
+		$this->load_plugin('categoryAxisRenderer');
+		$this->load_plugin('logAxisRenderer');
+		$this->load_plugin('canvasAxisTickRenderer');
+		$this->load_plugin('canvasTextRenderer');
+		$this->load_plugin('pointLabels');
+		$this->load_plugin('highlighter');
+		$this->load_plugin('cursor');
+
+		$data_table = $this->_data_table;
+		$listrow = $this->_data_row;
+		$listrow = array_shift($listrow);
+
+		# array for ticks label
+		$list_ticks = array();
+		foreach ($listrow as $row)
+			array_push($list_ticks,$row['name']);
+
+		$listpresented = array();
+		$listconnect = array();
+		$listhome_rated = array();
+		$listproductivity = array();
+		foreach ($data_table as $colname => $colvalue)
+		{
+			array_push($listhome_rated,$colvalue['home_rated']['result']);
+			array_push($listproductivity,$colvalue['productivity']['result']);
+			array_push($listpresented,$colvalue['presented']['result']);
+			array_push($listconnect,$colvalue['connect']['result']);
+		}
+
+		$axex = $this->build_js_list($listpresented,'value',true);
+		$axex2 = $this->build_js_list($listconnect,'value',true);
+		$axey1 = $this->build_js_list($listhome_rated,'value',true);
+		$axey2 = $this->build_js_list($listproductivity,'value',true);
+
+		ob_start();
+
+		echo '<div class="sb-graph">
+			<div class="jqPlot" id="'.$box.'" style="height:290px; width:640px;margin-left: 100px;"></div>
+		</div>';
+		echo "\n\n";
+
+		echo "<script type=\"text/javascript\">
+			$.jqplot.config.enablePlugins = true;
+			listpresented = $axex;
+			listconnect = $axex2;
+			listhome_rated = $axey1;
+			listproductivity = $axey2;
+
+			plot3 = $.jqplot('$box', [listpresented, listconnect, listhome_rated, listproductivity],
+			{
+				grid:
+				{
+		            drawGridlines: true,
+		            background: '#ffffff',
+		            borderWidth: 0,
+		            shadow: false
+		        },
+				legend:
+				{
+					show: true,
+					location: 'ne',
+					xoffset: 630 ,
+					yoffset: 0
+				},
+			    title: '".$this->bbf($title)."',
+			    axes:
+			    {
+			        xaxis:
+			        {
+			        	renderer: $.jqplot.CategoryAxisRenderer,
+			        	ticks: ['".implode('\', \'',$list_ticks)."'],
+						tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+						tickOptions:
+						{
+			                formatString: '%d',
+			                fontSize: '10pt',
+			                fontFamily: 'Arial',
+			                angle: -30
+			            }
+					},
+			        yaxis:
+			        {
+			        	autoscale: true,
+			        	tickOptions:{formatString: '%d%%'},
+			        	min: 0
+					},
+			        y2axis:
+			        {
+			        	autoscale: true,
+			        	tickOptions:{formatString: '%d.'},
+			        	min: 0
+					}
+				},
+			    series:
+			    [
+			        {
+			        	label: '".$this->bbf('col_presented')."',
+			        	renderer: $.jqplot.BarRenderer,
+			        	rendererOptions:{barMargin: 5},
+			        	xaxis: 'xaxis',
+			        	yaxis: 'y2axis'
+					},
+			        {
+			        	label: '".$this->bbf('col_connect')."',
+			        	renderer: $.jqplot.BarRenderer,
+			        	xaxis: 'xaxis',
+			        	yaxis: 'y2axis',
+			        	rendererOptions:{barMargin: 5},
+					},
+			        {
+			        	label: '".$this->bbf('col_home_rated')."',
+	        			highlighter:{show: false},
+			        	pointLabels:{show: false}
+					},
+			        {
+			        	label: '".$this->bbf('col_productivity')."',
 			        	pointLabels:{show: false}
 					}
 			    ],

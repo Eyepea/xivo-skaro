@@ -75,30 +75,17 @@ switch($act)
 			}
 		}
 		
-		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true)
-		{
-			$outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
+		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true
+		&& ($outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid')) !== false)
 			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
-		}
 		
-		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$result) === true)
-		{
-			$dundipeer['slt'] = dwho_array_intersect_key($result['outcalldundipeer'],$dundipeer['list'],'dundipeerid');
+		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$result) === true
+		&& ($dundipeer['slt'] = dwho_array_intersect_key($result['outcalldundipeer'],$dundipeer['list'],'dundipeerid')) !== false)
 			$dundipeer['slt'] = array_keys($dundipeer['slt']);
-		}
-
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
-		{
-			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
-
-			if($rightcall['slt'] !== false)
-			{
-				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
-				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-			}
-		}
+		
+		if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true
+		&& ($rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid')) !== false)
+			$rightcall['slt'] = array_keys($rightcall['slt']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
@@ -165,31 +152,18 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 			}
 		}
-
-		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true)
-		{
-			$outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
-			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
-		}
 		
-		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$return) === true)
-		{
-			$dundipeer['slt'] = dwho_array_intersect_key($return['outcalldundipeer'],$dundipeer['list'],'dundipeerid');
+		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true
+		&& ($outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid')) !== false)
+			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
+		
+		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$return) === true
+		&& ($dundipeer['slt'] = dwho_array_intersect_key($return['outcalldundipeer'],$dundipeer['list'],'dundipeerid')) !== false)
 			$dundipeer['slt'] = array_keys($dundipeer['slt']);
-		}
-
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
-		{
-			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
-
-			if($rightcall['slt'] !== false)
-			{
-				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
-				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-			}
-		}
+		
+		if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true
+		&& ($rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid')) !== false)
+			$rightcall['slt'] = array_keys($rightcall['slt']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');

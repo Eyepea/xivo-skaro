@@ -19,7 +19,7 @@
 #
 
 $url     = &$this->get_module('url');
-$basedir = $this->get_var('basedir');
+
 $table_trunk = $this->get_var('table_trunk');
 $table_intern = $this->get_var('table_intern');
 $top10_call_duration_intern = $this->get_var('top10_call_duration_intern');

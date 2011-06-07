@@ -19,13 +19,11 @@
 #
 
 $url = &$this->get_module('url');
+$form = &$this->get_module('form');
 
-$basedir = $this->get_var('basedir');
-$table_total = $this->get_var('table_total');
-$table_time = $this->get_var('table_time');
-$table_average = $this->get_var('table_average');
-$table_percent = $this->get_var('table_percent');
-$xivo_statistics = $this->get_var('xivo_statistics');
+$listconf = $this->get_var('listconf');
+$table_general = $this->get_var('table_general');
+$xivo_jqplot = $this->get_var('xivo_jqplot');
 
 ?>
 <div class="b-infos b-form">
@@ -35,39 +33,33 @@ $xivo_statistics = $this->get_var('xivo_statistics');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		<div class="sb-list">
-<?php 
+<?php
 /*
-			<p><?=$table_total?></p>
-			<!-- 
-			<p>&nbsp;</p>
-	 		<p class="stats-graph-img">
-	 			<?=$xivo_statistics->get_graph('stats_total')?>
-	  		</p>
-	  		-->
-			<p><?=$table_time?></p>
-			<!-- 
-			<p>&nbsp;</p>
-	 		<p class="stats-graph-img">
-	 			<?=$xivo_statistics->get_graph('stats_time')?>
-	  		</p>
-	  		-->
-			<p><?=$table_average?></p>
-			<!-- 
-			<p>&nbsp;</p>
-	 		<p class="stats-graph-img">
-	 			<?=$xivo_statistics->get_graph('stats_average')?>
-	  		</p>
-	  		-->
-			<p><?=$table_percent?></p>
-			<!-- 
-			<p>&nbsp;</p>
-	 		<p class="stats-graph-img">
-	 			<?=$xivo_statistics->get_graph('stats_percent')?>
-	  		</p>
-	  		-->
-*/ ?>
+		<form action="<?=$_SERVER['PHP_SELF']?>" method="get" accept-charset="utf-8">
+			<div id="d-conf-list" class="fm-paragraph">
+			<?=$this->bbf('fm_home_call_center_select_conf')?>
+<?php
+				echo	$form->select(array('name'	=> 'confid',
+							    'id'		=> 'it-confid',
+							    'paragraph'	=> false,
+							    'browse'	=> 'conf',
+							    'empty'		=> $this->bbf('toolbar_fm_conf'),
+							    'key'		=> 'name',
+							    'altkey'	=> 'id',
+							    'class'		=> 'fm-selected-conf',
+							    'selected'	=> $this->get_var('confid')),
+						      	$listconf);
+?>
+			</div>
+		</form>
+		
+			<h4>&nbsp;</h4>
+*/
+?>
+		<div class="sb-list">
+			<?=$table_general?>
    	 	</div>
+		<?=$xivo_jqplot->get_result('chart1');?>
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

@@ -22,7 +22,8 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_dundipeer extends xivo_application_asterisk_abstract
 {
-	var $_dundipeer		   = false;
+	var $_dso          = null;
+	var $_dundipeer    = false;
 
 	function xivo_application_service_asterisk_dundipeer(&$service,&$dso,$param=null,$components=true)
 	{
@@ -98,14 +99,7 @@ class xivo_application_service_asterisk_dundipeer extends xivo_application_aster
 			$r[$rs[$i]['id']] = $rs[$i];
 
 			$ref = &$r[$rs[$i]['id']];
-
-			$dundipeer = array();
-			$ref = array_merge($ref,$this->_dundipeer->_prepare($dundipeer));
-
-			$ref['description'] = $ref['description'];
-			$ref['commented']   = (bool) $ref['commented'];
-
-			$arr = array();
+			$ref = $this->_dundipeer->_prepare($ref);
 		}
 
 		if(empty($r) === true)

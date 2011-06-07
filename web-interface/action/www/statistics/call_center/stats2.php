@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_agent',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','agent',false) === false)
 	die('Can\'t load xivo_statistics_agent object');
@@ -142,7 +142,7 @@ switch ($axetype)
 		$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
 		break;
 	default:
-}		
+}
 
 $_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));

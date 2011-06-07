@@ -33,7 +33,6 @@ $listkey = $stats_cel->get_trunk_list(false);
 $tpl_statistics = &$_TPL->get_module('statistics');
 $tpl_statistics->set_baseurl('statistics/cdr/index');
 
-
 $tpl_statistics->set_name('cel');
 $tpl_statistics->set_data_custom('axetype','trunk');
 $tpl_statistics->set_rows('row',$listkey,'key');

@@ -2020,7 +2020,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$where = array();
 		$where['type'] = 'user';
-		$where['typeval'] = $this->_info['userfeatures']['id'];
+		$where['typeval'] = strval($this->_info['userfeatures']['id']);
 
 		$callfiltermember->delete_where($where);
 

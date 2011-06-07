@@ -40,6 +40,17 @@ class xivo_service_asterisk_dundipeer extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
+	}
+
+	function _prepare($data)
+	{
+		$this->_identity->_prepare_identity($data);
+
+		$data['id'] = (int) $data['id'];
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
 	}
 }
 

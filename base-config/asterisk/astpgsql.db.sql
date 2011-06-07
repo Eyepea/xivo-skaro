@@ -1002,6 +1002,7 @@ CREATE TABLE "linefeatures" (
  "rules_group" varchar(16),
  "num" INTEGER DEFAULT 0,
  "line_num" INTEGER DEFAULT 0,
+ "ipfrom" varchar(15),
  "internal" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0,
  "description" text,
@@ -1206,7 +1207,6 @@ CREATE TABLE "outcall" (
  "id" SERIAL,
  "name" varchar(128) NOT NULL,
  "context" varchar(39) NOT NULL,
- "routing" varchar(20) NOT NULL DEFAULT '',
  "useenum" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "internal" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "preprocess_subroutine" varchar(39),
@@ -1229,6 +1229,17 @@ CREATE TABLE "outcalltrunk" (
 );
 
 CREATE INDEX "outcalltrunk__idx__priority" ON "outcalltrunk"("priority");
+
+
+DROP TABLE IF EXISTS "outcalldundipeer";
+CREATE TABLE "outcalldundipeer" (
+ "outcallid" INTEGER NOT NULL DEFAULT 0,
+ "dundipeerid" INTEGER NOT NULL DEFAULT 0,
+ "priority" INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY("outcallid","dundipeerid")
+);
+
+CREATE INDEX "outcalldundipeer__idx__priority" ON "outcalldundipeer"("priority");
 
 
 DROP TABLE IF EXISTS "phonebook";

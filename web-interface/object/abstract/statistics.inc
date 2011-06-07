@@ -35,7 +35,7 @@ class xivo_statistics_abstract
 	}
 	
 	public function set_method($method)
-	{ 
+	{
 		$this->_xs->set_method($method);
 	}
 	
@@ -50,12 +50,12 @@ class xivo_statistics_abstract
 	}
 	
 	public function get_queue_list()
-	{			
+	{
 		return($this->_xs->get_queue_list());
 	}
 	
 	public function get_agent_list()
-	{			
+	{
 		return($this->_xs->get_agent_list());
 	}
 	
@@ -88,12 +88,12 @@ class xivo_statistics_abstract
 	}
 
 	public function eval_field_queue_log($event,$type)
-	{			
+	{
 		return($this->_xs->eval_field_queue_log($event,$type));
 	}
 
 	public function eval_data_queue_log($queue_log_entry,$event,$type)
-	{			
+	{
 		return($this->_xs->eval_pos_data_queue_log_conf($queue_log_entry,$event,$type));
 	}
 	
@@ -134,7 +134,7 @@ class xivo_statistics_abstract
 		
 		if (($full_list_day = $this->_xs->get_listday_for_interval($dbeg,$dend)) === false
 		|| ($data_listmonth = $this->_xs->get_listmonth_for_interval($dbeg,$dend)) === false)
-			return(false);		
+			return(false);
 		
 		$data = $this->get_list_by_type();
 
@@ -207,7 +207,7 @@ class xivo_statistics_abstract
 			case 'month':
 				$date = $this->_xs->all_to_unixtime($itl['dmonth']);
 				$year = date('Y',$date);
-				$month = date('m',$date);		
+				$month = date('m',$date);
 				
 				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
 				|| is_null($month_data) === true)
@@ -242,7 +242,7 @@ class xivo_statistics_abstract
 						$listdaynum = array_keys($month_data);
 						while($listdaynum)
 						{
-							$day = array_shift($listdaynum);						
+							$day = array_shift($listdaynum);
 							if (isset($full_list_day[$year.$month.$day]) === false)
 								continue;
 							
@@ -268,7 +268,7 @@ class xivo_statistics_abstract
 						$key = array_shift($listmonth);
 						$key = $key['key'];
 						$year = substr($key,0,4);
-						$month = substr($key,4,2);						
+						$month = substr($key,4,2);
 						
 						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
 						|| is_null($month_data) === true)
@@ -291,14 +291,14 @@ class xivo_statistics_abstract
 	}
 	
 	private function eval_update_result($data_to_eval,$key)
-	{							
+	{
 		$listfield = array_keys($data_to_eval);
 		while($listfield)
 		{
 			$field = array_shift($listfield);
 			if(isset($data_to_eval[$field]['result']) === true
 			&& $data_to_eval[$field]['result'] !== 0)
-				$this->update_result(array($key,$field),$data_to_eval[$field]['result']);						
+				$this->update_result(array($key,$field),$data_to_eval[$field]['result']);
 			elseif(isset($data_to_eval[$field]['result']) === false
 			&& count($data_to_eval[$field]) >> 2)
 			{
@@ -308,7 +308,7 @@ class xivo_statistics_abstract
 					$ssfield = array_shift($listssfield);
 					if($data_to_eval[$field][$ssfield]['result'] !== 0)
 						$this->update_result(array($key,$field,$ssfield),$data_to_eval[$field][$ssfield]['result']);
-				}	
+				}
 			}
 		}
 	}
@@ -338,7 +338,7 @@ class xivo_statistics_abstract
 	}
 	
 	private function set_result_var($result,$arr)
-	{	
+	{
 		$var = &$this->_result;
 		
 		for($i = 0;$i < count($arr);$i++)
@@ -348,11 +348,11 @@ class xivo_statistics_abstract
 				$var = &$var[$key];
 		}
 		
-		$var['result'] = $result;	
+		$var['result'] = $result;
 	}
 	
-	private function eval_result_var() 
-	{	
+	private function eval_result_var()
+	{
 		if(($argc = func_num_args()) === 0)
 			return(null);
 	
@@ -380,7 +380,7 @@ class xivo_statistics_abstract
 			$ref = $ref[$key];
 		}
 	
-		return($ref);	
+		return($ref);
 	}
 	
 }

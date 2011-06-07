@@ -69,42 +69,6 @@ endif;
 				      'labelid'	=> 'useenum',
 				      'checked'	=> $this->get_var('info','outcall','useenum'),
 				      'default'	=> $element['outcall']['useenum']['default']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_outcall_routing'),
-				  'name'	=> 'outcall[routing]',
-				  'labelid'	=> 'outcall-routing',
-				  'size'	=> 15,
-				  'default'	=> $element['outcall']['routing']['default'],
-				  'value'	=> $this->get_var('info','outcall','routing'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'outcall', 'routing')) ));
-?>
-
-<?php
-if($dundipeer['list'] !== false):
-?>
-<div id="dundipeerlist" class="fm-paragraph fm-description">
-	<p>
-		<label id="lb-dundipeer" for="it-dundipeer"><?=$this->bbf('fm_dundipeer');?></label>
-	</p>
-		<?=$form->jq_select(array('paragraph'	=> false,
-					 	'label'		=> false,
-            			'name'    	=> 'outcalldundipeer[]',
-						'id' 		=> 'outcalldundipeer',
-						'key'		=> 'include',
-				       	'altkey'	=> 'id',
-            			'selected'  => $dundipeer['slt']),
-					$dundipeer['list']);?>
-</div>
-<div class="clearboth"></div>
-<?php
-else:
-	echo	'<div class="txt-center">',
-		$url->href_htmln($this->bbf('create_dundipeer'),
-				'service/ipbx/dundi/peers',
-				'act=add'),
-		'</div>';
-endif;
 ?>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_internal'),
@@ -123,10 +87,10 @@ endif;
 						   $this->get_var('error', 'outcall', 'preprocess_subroutine')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_hangupringtime'),
-				    'name'	=> 'outcall[hangupringtime]',
+				    'name'	    => 'outcall[hangupringtime]',
 				    'labelid'	=> 'outcall-hangupringtime',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_outcall_hangupringtime-opt',
+				    'key'	    => false,
+				    'bbf'	    => 'fm_outcall_hangupringtime-opt',
 				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
@@ -134,7 +98,32 @@ endif;
 				    'default'	=> $element['outcall']['hangupringtime']['default'],
 				    'selected'	=> $this->get_var('info','outcall','hangupringtime')),
 			      $element['outcall']['hangupringtime']['value']);
-
+?>
+<?php
+if($dundipeer['list'] !== false):
+?>
+<div id="dundipeerlist" class="fm-paragraph fm-description">
+	<p>
+		<label id="lb-dundipeer" for="it-dundipeer"><?=$this->bbf('fm_dundipeer');?></label>
+	</p>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'outcalldundipeer[]',
+						'id' 		=> 'outcalldundipeer',
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => $dundipeer['slt']),
+					$dundipeer['list']);?>
+</div>
+<div class="clearboth"></div>
+<?php
+else:
+	echo	'<div class="txt-center">',
+		$url->href_htmln($this->bbf('create_dundipeer'),
+				'service/ipbx/dundi/peers',
+				'act=add'),
+		'</div>';
+endif;
 ?>
 <?php
 if($outcalltrunk['list'] !== false):
@@ -189,52 +178,17 @@ endif;
 <?php
 	if($rightcall['list'] !== false):
 ?>
-	<div id="rightcalllist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'rightcalllist',
-					       'label'		=> false,
-					       'id'		=> 'it-rightcalllist',
-					       'browse'		=> 'rightcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'paragraph'	=> false),
-					 $rightcall['list']);?>
-		</div>
-
-		<div class="inout-list">
-
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inrightcall');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inrightcall'),
-						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outrightcall');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outrightcall'),
-						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcall[]',
-					       'label'		=> false,
-					       'id'		=> 'it-rightcall',
-					       'browse'		=> 'rightcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rightcall['slt']);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
+<div id="rightcalllist" class="fm-paragraph fm-description">
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'rightcall[]',
+						'id' 		=> 'it-rightcall',
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => $rightcall['slt']),
+					$rightcall['list']);?>
+</div>
+<div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',

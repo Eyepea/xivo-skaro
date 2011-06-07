@@ -23,29 +23,39 @@ $(function() {
 		path: '/extra-libs/multiselect/js/locale/'
 	});
 	
-	$('.multiselect').multiselect();
+	$('.multiselect').multiselect({});
     $('#it-stats_conf-hour_start').timepicker({});
     $('#it-stats_conf-hour_end').timepicker({});
 
-	setInterval('populateqos(\'it-queue\',\'queue\')',1500);
-	setInterval('populateqos(\'it-group\',\'group\')',1500);
+    populateqos('it-queue','queue');
+    populateqos('it-group','group');
+	setInterval('populateqos(\'it-queue\',\'queue\')',2000);
+	setInterval('populateqos(\'it-group\',\'group\')',2000);
 	
 });
 
-function populateqos(selectid,type)
-{
+function populateqos(selectid,type) {
 	var input = '';
 	input += '<fieldset>';
 	input += '<legend>'+translation[type]+'</legend>';
-	nb = $('#'+selectid+' option:selected').each(function(){
+	nb = $('#'+selectid+' option:selected').each(function() {
+		
 		var val = $(this).val();
 		var text = $(this).text();
-		var qos = 0;
-		if( val in listqos )
-			qos = listqos[val];
+		var it_qos_obj = $('#it-'+type+'_qos-'+val);
+
+		if (it_qos_obj.val() === undefined) {
+			if(val in listqos)
+				qos = listqos[val];
+			else
+				qos = 0;
+		}
+		else
+			qos = it_qos_obj.val();
+		
 		input += '<p id="fd-qos" class="fm-paragraph">';
 		input += '<span class="fm-desc clearboth"><label id="lb-qos" for="it-qos">'+text+':</label></span>';
-		input += '<input type="text" name="'+type+'_qos['+val+']" value="'+qos+'" size="5" />';
+		input += '<input type="text" id="it-'+type+'_qos-'+val+'" name="'+type+'_qos['+val+']" value="'+qos+'" size="5" /> s';
 		input += '</p>';
 	}).length;
 	input += '</fieldset>';

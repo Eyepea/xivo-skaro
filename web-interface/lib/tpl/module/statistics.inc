@@ -75,6 +75,11 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$this->_data_custom[$key] = $arr;
 	}
 
+	public function get_result()
+	{
+		return($this->_result);
+	}
+
 	public function get_data_table()
 	{
 		return($this->_data_table);
@@ -291,8 +296,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 					case 'average':
 						$nb_row_with_value++;
 						$row_data_foot['counter'] += $rs;
-						$row_data_foot['result'] = $row_data_foot['counter']/$nb_row_with_value;
-						$row_data_foot['operation'] = $row_data_foot['counter'].'/'.$nb_row_with_value;
+						$row_data_foot['result'] = $row_data_foot['counter'] / $nb_row_with_value;
+						$row_data_foot['operation'] = $row_data_foot['counter'].' / '.$nb_row_with_value;
 						break;
 					case 'total':
 					default:
@@ -667,6 +672,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	public function render_html($chkbox=true,$rowname=true,$total=true,$colstruct=true)
 	{
 		$url = &$this->_tpl->get_module('url');
+		if (isset($this->_data_custom['axetype']) === false)
+		    return(false);
+		
 		$axetype = $this->_data_custom['axetype'];
 
 		if (is_object($this->_xs) === true)
@@ -758,10 +766,12 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		foreach ($this->_data_table as $row => $cols)
 		{
 			$coldata = $cols['rowdata'];
-			$identity = $type = '';
+			$identity = $type = 'unknown';
 
 			if (isset($coldata['identity']) === true)
 				$identity = $coldata['identity'];
+			elseif(isset($coldata[$this->_row_key]) === true)
+				$identity = $coldata[$this->_row_key];
 			if (isset($coldata['type']) === true)
 				$type = $coldata['type'];
 

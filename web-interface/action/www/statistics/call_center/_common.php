@@ -23,6 +23,7 @@ $base_memory = memory_get_usage();
 
 $_I18N->load_file('tpl/www/bloc/statistics/statistics');
 
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'date.inc'));
 include(dwho_file::joinpath(DWHO_PATH_ROOT,'jqplot.inc'));
 
 $xivo_jqplot = new xivo_jqplot;
@@ -51,6 +52,6 @@ $tpl_statistics = &$_TPL->get_module('statistics');
 $tpl_statistics->set_xs(&$_XS);
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/statistics/call_center/conf.js');
+$dhtml->set_js('js/statistics/common.js');
 
 ?>

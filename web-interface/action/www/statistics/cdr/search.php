@@ -43,17 +43,16 @@ switch ($axetype)
 		break;
 	case 'month':
 		$date = dwho_date::all_to_unixtime($infocal['dmonth']);
-		$year = date('Y',$date);
-		$month = date('m',$date);
-		$listkey = dwho_date::get_listday_for_month($year,$month);
+		$listkey = dwho_date::get_listday_for_month(date('Y',$date),date('m',$date));
 		break;
 	default:
+	    $listkey = array();
 }
 
 $tpl_statistics = &$_TPL->get_module('statistics');
 
 $tpl_statistics->set_name('cel');
-$tpl_statistics->set_data_custom('axetype','trunk');
+$tpl_statistics->set_data_custom('axetype',$axetype);
 $tpl_statistics->set_rows('row',$listkey,'key');
 
 $stats_cel->init_result_by_list($listkey);

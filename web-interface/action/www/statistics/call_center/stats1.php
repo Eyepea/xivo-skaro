@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_queue',dwho_file::joinpath(XIVO_PATH_OBJECT,'statistics'),'queue',false) === false)
 	die('Can\'t load xivo_statistics_queue object');
@@ -142,7 +142,7 @@ $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
 $_TPL->set_var('bench',(microtime(true) - $bench_start));
 
 $dhtml = &$_TPL->get_module('dhtml');
-$xivo_jqplot->write_js_loaded_plugin(&$dhtml);
+$xivo_jqplot->write_js_loaded_plugin($dhtml);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

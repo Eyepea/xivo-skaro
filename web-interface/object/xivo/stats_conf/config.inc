@@ -26,17 +26,17 @@ $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
 $array['element']['hour_start'] = array();
-$array['element']['hour_start']['default'] = 0;
+$array['element']['hour_start']['default'] = '00:00';
 
 $array['element']['hour_end'] = array();
-$array['element']['hour_end']['default'] = 0;
+$array['element']['hour_end']['default'] = '00:00';
 
 $_SRE = &dwho_gct::get('xivo_service');
 $ipbx = &$_SRE->get('ipbx');
 if (($appqueue_log = &$ipbx->get_application('queue_log')) === false
 || ($interval = $appqueue_log->get_min_and_max_time()) === false)
 	$dbegcachedefault = null;
-else 
+else
 	$dbegcachedefault = strtotime($interval['min']);
 
 $array['element']['dbegcache'] = array();
@@ -79,7 +79,7 @@ $array['element']['sunday'] = array();
 $array['element']['sunday']['default'] = 0;
 
 $array['element']['period1'] = array();
-$array['element']['period1']['default'] = '';
+$array['element']['period1']['default'] = '0-20';
 
 $array['element']['period2'] = array();
 $array['element']['period2']['default'] = '';
@@ -92,6 +92,11 @@ $array['element']['period4']['default'] = '';
 
 $array['element']['period5'] = array();
 $array['element']['period5']['default'] = '';
+
+$array['element']['homepage'] = array();
+$array['element']['homepage']['value'] = array(0,1);
+$array['element']['homepage']['default'] = 0;
+$array['element']['homepage']['set'] = true;
 
 $array['element']['disable'] = array();
 $array['element']['disable']['value'] = array(0,1);
@@ -121,6 +126,7 @@ $array['filter']['period2'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-
 $array['filter']['period3'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9_><-]+$/','minlen' => 1,'maxlen' => 16);
 $array['filter']['period4'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9_><-]+$/','minlen' => 1,'maxlen' => 16);
 $array['filter']['period5'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9_><-]+$/','minlen' => 1,'maxlen' => 16);
+$array['filter']['homepage'] = array('bool' => true);
 $array['filter']['disable'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

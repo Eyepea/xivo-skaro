@@ -70,6 +70,11 @@ if (is_null($listqos) === false
 				  'default'	=> $element['stats_conf']['default_delta']['default'],
 				  'value'	=> $info['stats_conf']['default_delta'],
 				  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','default_delta')) ));
+	
+	echo	$form->checkbox(array('desc' => $this->bbf('fm_conf_homepage'),
+				  'name'	=> 'stats_conf[homepage]',
+				  'labelid'	=> 'homepage',
+				  'checked'	=> $info['stats_conf']['homepage']));
 ?>
 			<fieldset id="stats_conf_cache_period">
 				<legend><?=$this->bbf('cache_during_period');?></legend>
@@ -275,7 +280,7 @@ if (is_null($listqos) === false
 			</div>
 
 			<div id="sb-part-qos" class="b-nodisplay">
-				<p>
+				<p class="txt-center">
 					<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_stats_queue_qos');?></label>
 				</p>
 				<div id="it-listqueueqos"></div>

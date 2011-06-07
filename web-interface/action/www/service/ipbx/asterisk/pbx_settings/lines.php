@@ -63,10 +63,7 @@ switch($act)
 				$error = $appline->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload','xivo[userlist,update]'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
-			}
 		}
 
 		$element = $appline->get_elements();
@@ -131,10 +128,7 @@ switch($act)
 				$error = $appline->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload','xivo[userlist,update]'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
-			}
 		}
 
 		$element = $appline->get_elements();
@@ -177,8 +171,6 @@ switch($act)
 
 		$appline->delete();
 
-		$ipbx->discuss(array('dialplan reload','xivo[userlist,update]'));
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 		break;
 	case 'deletes':
@@ -196,8 +188,6 @@ switch($act)
 			if($appline->get($values[$i]) !== false)
 				$appline->delete();
 		}
-
-		$ipbx->discuss(array('dialplan reload','xivo[userlist,update]'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 		break;
@@ -221,8 +211,6 @@ switch($act)
 			else
 				$appline->enable();
 		}
-
-		$ipbx->discuss(array('dialplan reload','xivo[userlist,update]'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 		break;

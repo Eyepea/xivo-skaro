@@ -2,14 +2,23 @@
 ; toolbar_fm_conf
 Choisir une configuration
 
+; no_conf_selected_for_homepage
+Aucune configuration séléctionnées pour la page d'accueil.
+
 ; no_queue
 Aucune file
 
 ; no_conf
 Aucune configuration
 
+; no_cache_generate
+Pas de cache généré pour cette configuration
+
 ; hlp_fm_conf_period_cache
 Période de cache: %s %s selon la configuration.
+
+; index_general
+Résumé
 
 ; conf_cache_period
 %s %s
@@ -106,6 +115,12 @@ Durée totale
 
 ; colstruct_average_time
 Duré moyenne
+
+; colstruct_queue
+File d'attente
+
+; colstruct_agent
+Agent
 
 ; col_productivity
 <acronym title="Productivité">Prod.</acronym>
@@ -241,6 +256,12 @@ Total
 
 ; trunk_intern
 Appel Interne
+
+; title_cel_calls_by_trunk
+Appel par trunk
+
+; title_cel_top10_calls
+TOP10 des appels
 
 ; top10_call_nb_intern
 TOP10 (Nb. Appel Interne)

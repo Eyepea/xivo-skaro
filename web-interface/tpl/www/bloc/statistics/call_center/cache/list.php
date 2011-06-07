@@ -30,7 +30,7 @@ $listtype = $this->get_var('listtype');
 $dbeg = $this->get_var('dbeg');
 $dend = $this->get_var('dend');
 
-$dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($dend)) : $this->bbf('fm_description_cache-without_end'); 
+$dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($dend)) : $this->bbf('fm_description_cache-without_end');
 
 ?>
 	
@@ -41,14 +41,14 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		<div class="sb-list">		
+		<div class="sb-list">
 		<p>
-<?php 
+<?php
 	if (is_null($dbeg) === false):
 ?>
 			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_cache',array($dbeg,$dencache));?></label>
-<?php 
-	endif; 
+<?php
+	endif;
 ?>
 		</p>
 		
@@ -85,7 +85,8 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			<p><h1 id="ressuccess-all"></h1></p>
 		</div>
 		
-<?php 
+<?php
+	$js_listkeyfile = array();
 	if (($type = $this->get_var('type')) === null):
 		echo null;
 	elseif(($list = $this->get_var('list'.$type)) === null
@@ -108,6 +109,8 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		for ($i=0;$i<$nb;$i++):
 			$ref = $list[$i];
 			$mod = ($i % 2) + 1;
+			
+			array_push($js_listkeyfile,$ref['keyfile']);
 				
 			$id = $ref['id'];
 			$keyfile = $ref['keyfile'];
@@ -124,9 +127,9 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			    $infoscache = $this->bbf('cache_noexist');
 			else:
 			    sort($r);
-			    $nbfile = count($r);		    
+			    $nbfile = count($r);
 			    $filefisrt = $r[0];
-			    $filelast = $r[$nbfile-1];			    
+			    $filelast = $r[$nbfile-1];
 			    $infoscache = $this->bbf('cache_exist-nbfile',array($nbfile));
 		    endif;
 ?>
@@ -136,12 +139,12 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			<td class="td-left"><?=$identity?></td>
 			<td class="td-center">&nbsp;<?=$infoscache?></td>
 			<td class="td-right">
-				<form action="#" method="post" accept-charset="utf-8" 
-					onsubmit="init_cache('<?=$keyfile?>');make_gener_cache('<?=$keyfile?>');return(false);">
-					<!-- 		
+				<form action="#" method="post" accept-charset="utf-8"
+					onsubmit="xivo_gc.init('<?=$keyfile?>');xivo_gc.make('<?=$keyfile?>');return(false);">
+					<!--
 					<input type="submit" name="genercache" id="bt-gcache-<?=$keyfile?>" value="<?=$this->bbf('bt-cache_generation',array($identity))?>" />
 					 -->
-					<div id="gcache-<?=$keyfile?>">					
+					<div id="gcache-<?=$keyfile?>">
 						<input type="image" src="/img/site/button/restart.gif" title="<?=$this->bbf('bt-cache_generation',array($identity))?>" id="bt-gcache-<?=$keyfile?>" />
 					</div>
 				</form>
@@ -166,7 +169,7 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			</dl>
 			</td>
 		</tr>
-<?php 
+<?php
 		endfor;
 ?>
 		</tbody>
@@ -174,13 +177,13 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		<tr>
 			<td class="td-left" colspan="2">&nbsp;<?=$this->bbf('cache_generation_all')?></td>
 			<td class="td-right">
-				<form action="#" method="post" accept-charset="utf-8" 
-					onsubmit="init_cache('all');make_gener_cache('all');return(false);">
+				<form action="#" method="post" accept-charset="utf-8"
+					onsubmit="xivo_gc.init('all');xivo_gc.make('all');return(false);">
 					<!--
-					<input type="submit" name="genercache" value="<?=$this->bbf('bt-cache_generation_all')?>" />	
+					<input type="submit" name="genercache" value="<?=$this->bbf('bt-cache_generation_all')?>" />
 					 -->
-					<div id="gcache-all">					
-						<input type="image" src="/img/site/button/restart.gif" title="<?=$this->bbf('bt-cache_generation_all')?>" id="bt-gcache-all" />				
+					<div id="gcache-all">
+						<input type="image" src="/img/site/button/restart.gif" title="<?=$this->bbf('bt-cache_generation_all')?>" id="bt-gcache-all" />
 					</div>
 				</form>
 			</td>
@@ -188,8 +191,8 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		</tfoot>
 		</table>
 		</div>
-<?php 
-	endif; 
+<?php
+	endif;
 ?>
 		</div>
 	</div>
@@ -199,13 +202,8 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
-<script type="text/javascript">	
-dwho.dom.set_onload(function() {
-	dwho.dom.add_event('change',
-			   dwho_eid('it-conf-type'),
-			   function(){this.form.submit();});
-});
-<?php 
+<script type="text/javascript">
+<?php
 if (($type = $this->get_var('type')) !== null
 && ($listmonth = $this->get_var('listmonth')) !== null) :
 	
@@ -224,160 +222,23 @@ if (($type = $this->get_var('type')) !== null
 var listmonthtimestamp = new Array('<?=implode('\',\'',$js_listmonth_timestamp)?>');
 var listmonthfirstday = new Array('<?=implode('\',\'',$js_listmonth_firstday)?>');
 var listmonthlastday = new Array('<?=implode('\',\'',$js_listmonth_lastday)?>');
-this.total = listmonthtimestamp.length;
+var listkeyfile = new Array('<?=implode('\',\'',$js_listkeyfile)?>');
 
-function init_cache(idtype)
-{
-	this.counter = 0;
-	this.start = this.start2 = (new Date).getTime();
-	this.avg = new Array();
-	
-	dwho_eid('it-cache-success-all').style.display = 'none';
-	
-	if (idtype == 'all')
-	{
-		dwho_eid('it-cache-generation-all').style.display = 'block';
-		dwho_eid('t-list-obj').style.display = 'none';
-	}
-	else
-	{
-		dwho_eid('it-cache-generation-'+idtype).style.display = 'block';
-	}
-}
+var jsvar_type = '<?=$type?>';
+var jsvar_idconf = '<?=$idconf?>';
 
-function xivo_gener_cache(idconf,dbeg,dend,type,idtype)
-{
-	var idt=idtype;
-	if (idtype == 'all') {idt = null;}
-	new dwho.http('/statistics/ui.php/call_center/genercache/',
-				{
-					'callbackcomplete': function(httpRequest) 
-						{
-							make_gener_cache(idtype,httpRequest);
-						},
-					'method': 'get',
-					'cache': false
-				},
-				{
-					'idconf': idconf,
-					'dbeg': dbeg,
-					'dend': dend,
-					'type': type,
-					'idtype': idt
-				},
-				true);
-	this.counter++;
-}
+var jstxt_object_all = '<?=$this->bbf("object_all")?>';
+var jstxt_in_progress = '<?=$this->bbf("in_progress")?>';
+var jstxt_process_last_time_traitment = '<?=$this->bbf("process_last_time_traitment")?>';
+var jstxt_process_total_time = '<?=$this->bbf("process_total_time")?>';
+var jstxt_process_remaining_time = '<?=$this->bbf("process_remaining_time")?>';
+var jstxt_object_processing = '<?=$this->bbf("object_processing")?>';
+var jstxt_bt_wait_submit = '<?=$this->bbf("bt-wait-submit")?>';
+var jstxt_bt_success_submit = '<?=$this->bbf("bt-success-submit")?>';
+var jstxt_img_success_submit = '<img  src="/img/site/button/ok.gif" alt="<?=$this->bbf('bt-success-submit')?>" />';
 
-function make_gener_cache(idtype,httpRequest)
-{	
-	var pct = ( (this.counter / this.total) * 100);
-	
-	if (this.counter >= this.total)
-		return gener_on_success(idtype);
-
-	var i = this.counter;
-	var dprocess = listmonthtimestamp[i];
-	var date = dprocess.split('-');
-	var year = date[0];
-	var day = date[2];
-	var month = date[1];
-	var humandate = year + '-' + month;// + '-' + day;	
-	var diff = (new Date).getTime() - this.start;
-	var diff2 = (new Date).getTime() - this.start2;
-	this.avg.push(diff2);
-	
-	var objectProcessing = (idtype == 'all') ? '<?=$this->bbf("object_all")?>' : idtype;	
-	var remaining_time = Math.round((average(this.avg) * (this.total - this.counter)) / 1000);
-	
-	infos = '';
-	infos += '<p>';
-	infos += '<b>' + humandate + '</b> <?=$this->bbf("in_progress")?>';
-	infos += '........... ';
-	infos += ' <?=$this->bbf("process_last_time_traitment")?> ' + Math.round(diff2 / 1000) + 's';
-	infos += '</p>';
-	infos += '<?=$this->bbf("process_total_time")?> ' + Math.round(diff / 1000) + 's';
-	infos += '<br>';
-	infos += '<?=$this->bbf("process_remaining_time")?> ' + remaining_time + 's';
-	
-	if (idtype == 'all')
-	{
-		if (httpRequest)
-			dwho_eid('reshttprequest-all').innerHTML = nl2br(httpRequest.responseText); 
-		dwho_eid('rescacheinfos-all').innerHTML = infos;
-		//dwho_eid('restitle-all').innerHTML = '<?=$this->bbf('object_processing')?> ' + objectProcessing;
-		$(function() {$("#resprogressbar-all").progressbar({value: pct});});
-	}
-	else
-	{
-		if (httpRequest)
-			dwho_eid('reshttprequest-'+idtype).innerHTML = nl2br(httpRequest.responseText); 
-	    dwho_eid('cache-infos-'+idtype).style.display = 'table-row';								   
-		dwho_eid('gcache-'+idtype).innerHTML = '<?=$this->bbf('bt-wait-submit')?>'					   
-		//dwho_eid('bt-gcache-'+idtype).disabled = true;
-		//dwho_eid('bt-gcache-'+idtype).value = '<?=$this->bbf('bt-wait-submit')?>';
-		dwho_eid('rescacheinfos-'+idtype).innerHTML = infos;
-		//dwho_eid('restitle-'+idtyp).innerHTML = '<?=$this->bbf('object_processing')?> ' + objectProcessing;
-		$(function() {$("#resprogressbar-"+idtype).progressbar({value: pct});});
-	}
-
-	xivo_gener_cache('<?=$idconf?>',listmonthfirstday[i],listmonthlastday[i],'<?=$type?>',idtype);
-
-	this.start2 = (new Date).getTime();
-}
-
-function average(arr)
-{
-   var items = arr.length
-   var sum = 0
-   for (var i = 0; i < items;i++)
-      sum += arr[i]
-   return (sum/items)
-}
-
-function nl2br (str) 
-{
-	return str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1 <br> $2');
-}
-
-function gener_on_success(idtype)
-{
-	if (idtype == 'all')
-	{
-<?php 
-		$nb = count($list);
-		for ($i=0;$i<$nb;$i++):
-			$ref = $list[$i];
-			$id = $ref['id'];
-			$keyfile = $ref['keyfile'];
-?>
-		var res = '<img  src="/img/site/button/ok.gif" alt="<?=$this->bbf('bt-success-submit')?>" />';
-		dwho_eid('gcache-<?=$keyfile?>').innerHTML = res;// + ' <?=$this->bbf('bt-success-submit')?>';
-		//dwho_eid('bt-gcache-<?=$keyfile?>').disabled = true;
-		//dwho_eid('bt-gcache-<?=$keyfile?>').value = '<?=$this->bbf('bt-success-submit')?>';
-<?php 
-		endfor;
-?>
-		var res = '<img  src="/img/site/button/ok.gif" alt="<?=$this->bbf('bt-success-submit')?>" />';
-		dwho_eid('gcache-all').innerHTML = res;// + ' <?=$this->bbf('bt-success-submit')?>';
-		//dwho_eid('bt-gcache-all').disabled = true;
-		//dwho_eid('bt-gcache-all').value = '<?=$this->bbf('bt-success-submit')?>';
-		dwho_eid('it-cache-generation-all').style.display = 'none'; 
-		dwho_eid('it-cache-success-all').style.display = 'block';
-		dwho_eid('t-list-obj').style.display = 'block';
-		dwho_eid('t-list-obj').style.width = '100%';
-	}
-	else
-	{
-		var res = '<img  src="/img/site/button/ok.gif" alt="<?=$this->bbf('bt-success-submit')?>" />';
-		dwho_eid('gcache-'+idtype).innerHTML = res;// + '<?=$this->bbf('bt-success-submit')?>';
-		//dwho_eid('bt-gcache-'+idtype).value = '<?=$this->bbf('bt-success-submit')?>';
-		dwho_eid('it-cache-generation-'+idtype).style.display = 'none';
-		dwho_eid('it-cache-success-'+idtype).style.display = 'block';	
-	    dwho_eid('cache-infos-'+idtype).style.display = 'none';	
-	}
-}
-<?php 
+var xivo_gc = new xivo_genercache();
+<?php
 endif;
 ?>
 </script>

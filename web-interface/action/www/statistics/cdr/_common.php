@@ -75,8 +75,6 @@ $_TPL->set_var('listop',$listop);
 $_TPL->set_var('listchannel',$listchannel);
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/dwho/uri.js');
-$dhtml->set_js('js/dwho/http.js');
-$dhtml->set_js('js/dwho/suggest.js');
+$dhtml->set_js('js/statistics/common.js');
 
 ?>

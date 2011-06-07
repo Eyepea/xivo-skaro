@@ -48,10 +48,10 @@ switch($act)
 {
 	case 'list':
 	default:
-		$act = 'list';		
+		$act = 'list';
 		if (isset($_QR['type']) === true)
 		{
-			$typeprocess = $_QR['type'];	
+			$typeprocess = $_QR['type'];
 			$listype = $_XS->get_listtype();
 			while ($listype)
 			{
@@ -86,9 +86,6 @@ $menu->set_left('left/statistics/statistics');
 #$menu->set_toolbar('toolbar/statistics/call_center/configuration');
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/dwho/submenu.js');
-$dhtml->set_js('js/dwho/uri.js');
-$dhtml->set_js('js/dwho/http.js');
 $dhtml->set_js('js/statistics/call_center/genercache.js');
 
 $_TPL->set_bloc('main','statistics/call_center/cache/'.$act);

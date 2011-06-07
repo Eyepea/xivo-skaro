@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_period',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','period',false) === false)
 	die('Can\'t load xivo_statistics_period object');

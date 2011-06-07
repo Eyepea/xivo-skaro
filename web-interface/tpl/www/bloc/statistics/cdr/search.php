@@ -38,12 +38,12 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		echo $this->bbf('no_conf_selected');
 	else :
 ?>
-		<div class="sb-list"> 
+		<div class="sb-list">
 <?php
-		echo $table1->render_html(false);
+		echo $table1->render_html(false,true,true,false);
 ?>
 		</div>
-<?php		
+<?php
 		$xivo_jqplot->get_result('chart1');
 	endif;
 ?>

@@ -689,7 +689,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$this->_service->discuss('sccp reload');
 		
-		$this->_service->discuss('dialplan reload');
+		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
 
 		$this->_status = '';
 
@@ -974,7 +974,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$this->_service->discuss('sccp reload');
 			
-		$this->_service->discuss('dialplan reload');
+		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
 
 		$this->_status = '';
 		return(true);
@@ -1285,6 +1285,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$this->_status = '';
 
+		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
+
 		return($r);
 	}
 
@@ -1443,6 +1445,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$this->_status = '';
 
+		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
+
 		return($r);
 	}
 
@@ -1463,6 +1467,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		}
 
 		$this->_status = '';
+		
+		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
 
 		return(true);
 	}

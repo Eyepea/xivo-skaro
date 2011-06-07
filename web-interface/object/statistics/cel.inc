@@ -21,6 +21,7 @@
 class xivo_statistics_cel
 {
 
+	public		$_type		=    '';
 	public		$_field		= array('duration_in'		=> array('type' => 'time'),
 									'duration_out'		=> array('type' => 'time'),
 									'duration_intern'	=> array('type' => 'time'),
@@ -54,7 +55,7 @@ class xivo_statistics_cel
 
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
 		|| ($this->_ipbx = &$_SRE->get('ipbx')) === false
-		|| ($this->_cel = &$_SRE->get_module('ipbx','cel')) === false
+		|| ($this->_cel = &$this->_ipbx->get_module('cel')) === false
 		|| ($this->_trunk = &$this->_ipbx->get_application('trunk')) === false
 		|| ($this->_operator = &$this->_ipbx->get_application('operator')) === false)
 			die('Can\'t load object for xivo_statistics_cel');
@@ -110,8 +111,7 @@ class xivo_statistics_cel
 			}
 		}
 
-		$this->_operatorlist = $rs;
-		return($rs);
+		return(($this->_operatorlist = $rs));
 	}
 
 	public function get_trunk_list($withintern=false)
@@ -154,8 +154,7 @@ class xivo_statistics_cel
 			$this->_init_result($trunkname);
 		}
 
-		$this->_trunklist = $rs;
-		return($rs);
+		return(($this->_trunklist = $rs));
 	}
 
 	public function get_list_call($arr=null)

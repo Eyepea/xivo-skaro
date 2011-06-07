@@ -25,7 +25,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	
 	public function get_min_time()
 	{
-		$field = array((object) ('MIN(time)'));		
+		$field = array((object) ('MIN(time)'));
 		$this->_dso->new_select($this->_table,$field);
 		
 		$r = $this->_dso->select_singlecolumn();
@@ -50,8 +50,8 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	}
 
 	public function stats_sum_by_type($type,$value,$event,$fieldsum,$interval=null,$addwhere=null)
-	{			
-		$this->_cnt = 0;		
+	{
+		$this->_cnt = 0;
 		
 		$s = microtime(true);
 
@@ -106,7 +106,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 					$this->_dso->orwherebetween('time',$itl['beg'],$itl['end'],$this->_table);
 				$this->_dso->aggregate_where(false,'AND');
 			}
-			else 
+			else
 				return(false);
 		}
 		
@@ -122,8 +122,8 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	}
 	
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
-	{			
-		$this->_cnt = 0;		
+	{
+		$this->_cnt = 0;
 		
 		$s = microtime(true);
 
@@ -173,7 +173,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				#$this->_dso->wheredatetime('time',$interval['beg'],$interval['end'],$this->_table,'datetime');
 			}
 			elseif (($nbinterval = count($interval)) > 2)
-			{				
+			{
 				$this->_dso->aggregate_where(false,'AND');
 				
 				foreach ($interval as $itl)
@@ -185,7 +185,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				
 				$this->_dso->aggregate_where(false,'AND');
 			}
-			else 
+			else
 				return(0);
 		}
 
@@ -204,7 +204,7 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 			return(false);
 			
 		$type = $addwhere[0];
-		$value = $addwhere[1];		
+		$value = $addwhere[1];
 		switch ($type)
 		{
 			case 'BETWEEN':
@@ -217,8 +217,8 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				}
 				$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
 				break;
-			case 'ISNOT':					
-				$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
+			case 'ISNOT':
+				$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);
 				break;
 			case '<':
 			case '>':
@@ -232,6 +232,62 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 				$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' '.$type.' '.$value[1]);
 				break;
 		}
+	}
+
+
+	public function search($arr,$order=null,$limit=null)
+	{
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_table);
+
+		if($this->_search_where($arr) === false)
+			return(false);
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	public function _search_where($arr)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		if(isset($arr['dbeg']) === true)
+		{
+			$dbeg = $arr['dbeg'];
+			$len = strlen($dbeg);
+
+			if($len === 4)
+				$format = '%Y';
+			else if($len === 7)
+				$format = '%Y-%m';
+			else if($len === 10)
+				$format = '%Y-%m-%d';
+			else
+				$format = '%Y-%m-%d %H:%i:%s';
+
+			if(isset($arr['dend']) === true)
+				$dend = $arr['dend'];
+			else
+				$dend = strftime($format,strtotime('+1 day',dwho_date::all_to_unixtime($dbeg)));
+
+			#$this->_dso->wheredate('time',$dbeg,$dend,null,$format);
+			$this->_dso->wherebetween('time',$dbeg,$dend);
+		}
+
+		return(true);
 	}
 }
 

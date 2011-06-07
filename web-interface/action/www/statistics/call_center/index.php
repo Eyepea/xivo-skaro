@@ -18,134 +18,95 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_general',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','general',false) === false)
 	die('Can\'t load xivo_statistics_general object');
 
-$stats_general = new xivo_statistics_general(&$_XS);
-$stats_general->parse_log();
+if (($listconf = $_TPL->get_var('listconf')) === null
+|| ($nb = count($listconf)) === 0)
+{
+    $table_queue = $_TPL->bbf('no_conf');
+    $table_agent = $_TPL->bbf('no_conf');
+}
+else
+{
+    $arr = array();
+    $arr['axetype'] = 'type';
+    $arr['dbeg'] = date('Y-m-d');
+    $arr['dend'] = date('Y-m-d');
+    $stats_general = false;
+    $rsconf = array();
+    $stats_general = new xivo_statistics_general();
+    for($i=0;$i<$nb;$i++)
+    {
+        $ref = &$listconf[$i];
+        if ($ref['homepage'] === false)
+            continue;
+        $arr['confid'] = $ref['id'];
+        $_XS->global_init($arr);
+        $stats_general->set_xs($_XS);
+        $stats_general->parse_log('queue',$ref['name']);
+        $stats_general->parse_log('agent',$ref['name']);
+        array_push($rsconf,$ref);
+    }
+        
+    if (($result = $stats_general->get_result()) === false
+    || empty($result) === true)
+        $table_general = $_TPL->bbf('no_conf_selected_for_homepage');
+    else
+    {
+        $resultqueue = $result['queue'];
+        $resultagent = $result['agent'];
+        
+        $tpl_statistics->set_name('queue');
+        $tpl_statistics->set_rows('confname',$rsconf,'name',true);
+        $tpl_statistics->set_data_custom('queue',$resultqueue);
+        $tpl_statistics->set_data_custom('agent',$resultagent);
+        $tpl_statistics->set_data_custom('axetype',$axetype);
+    
+        $tpl_statistics->set_col_struct('queue');
+        $tpl_statistics->add_col('presented',
+            					'direct',
+            					'custom:queue,[key],presented');
+        $tpl_statistics->add_col('connect',
+            					'direct',
+            					'custom:queue,[key],connect');
+        $tpl_statistics->add_col('average_time_waiting',
+            					'expression',
+            					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],connect}',
+            					'time');
+        $tpl_statistics->add_col('home_rated',
+            					'expression',
+            					'{custom:queue,[key],connect}/{custom:queue,[key],enterqueue}',
+            					'percent');
+        $tpl_statistics->add_col('qos',
+            					'expression',
+            					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
+            					'percent');
+            
+        $tpl_statistics->set_col_struct('agent');
+        $tpl_statistics->add_col('productivity',
+            					'expression',
+            					'{custom:agent,[key],calltime}/{custom:agent,[key],logintime}',
+            					'percent');
+            
+        $tpl_statistics->gener_table();
+        $table_general = $tpl_statistics->render_html(false,true);
 
-$tpl_statistics->set_data_custom('axetype',$axetype);
-$tpl_statistics->set_data_custom('listtype',$stats_general->get_list_by_type());
+        $xivo_jqplot->init_data_full($tpl_statistics);
+        $xivo_jqplot->gener_graph('index_general','chart1','index_general');
+    }
+}
 
-$tpl_statistics->set_name('general');
-
-$tpl_statistics->set_rows('total',array(array('name' => 'total')),'name');
-
-$tpl_statistics->set_data_custom('general',$stats_general->_result);
-
-$tpl_statistics->set_col_struct('total');
-$tpl_statistics->add_col('presented',
-					'direct',
-					'custom:general,total,enterqueue');
-$tpl_statistics->add_col('connect',
-					'direct',
-					'custom:general,total,connect');
-$tpl_statistics->add_col('ringnoanswer',
-					'direct',
-					'custom:general,total,ringnoanswer');
-$tpl_statistics->add_col('abandon',
-					'direct',
-					'custom:general,total,abandon');
-$tpl_statistics->add_col('connect',
-					'direct',
-					'custom:general,total,connect');
-$tpl_statistics->add_col('completeagent',
-					'direct',
-					'custom:general,total,completeagent');
-$tpl_statistics->add_col('completecaller',
-					'direct',
-					'custom:general,total,completecaller');
-$tpl_statistics->add_col('transfer',
-					'direct',
-					'custom:general,total,transfer');
-
-$tpl_statistics->gener_table();
-$table_total = $tpl_statistics->render_html(false,false);
-$tpl_statistics->reset_col();
-
-$tpl_statistics->set_col_struct('time');
-$tpl_statistics->add_col('holdtime',
-					'direct',
-					'custom:general,total,holdtime');
-$tpl_statistics->add_col('calltime',
-					'direct',
-					'custom:general,total,calltime');
-$tpl_statistics->add_col('ringtime',
-					'direct',
-					'custom:general,total,ringtime');
-$tpl_statistics->add_col('pausetime',
-					'direct',
-					'custom:general,total,pausetime');
-$tpl_statistics->add_col('traitmenttime',
-					'direct',
-					'custom:general,total,traitmenttime');
-
-$tpl_statistics->gener_table();
-$table_time = $tpl_statistics->render_html(false,false);
-$tpl_statistics->reset_col();
-
-$tpl_statistics->set_col_struct('average');
-$tpl_statistics->add_col('av-holdtime',
-					'expression',
-					'{custom:general,total,holdtime}/{custom:general,total,connect}',
-					'time');
-$tpl_statistics->add_col('av-calltime',
-					'expression',
-					'{custom:general,total,calltime}/{custom:general,total,connect}',
-					'time');
-$tpl_statistics->add_col('av-ringtime',
-					'expression',
-					'{custom:general,total,ringtime}/{custom:general,total,enterqueue}',
-					'time');
-$tpl_statistics->add_col('av-pausetime',
-					'expression',
-					'{custom:general,total,pausetime}/{custom:general,total,enterqueue}',
-					'time');
-$tpl_statistics->add_col('av-traitmenttime',
-					'expression',
-					'{custom:general,total,traitmenttime}/{custom:general,total,enterqueue}',
-					'time');
-
-$tpl_statistics->gener_table();
-$table_average = $tpl_statistics->render_html(false,false);
-$tpl_statistics->reset_col();
-
-$tpl_statistics->set_col_struct('percent');
-$tpl_statistics->add_col('answered_rated',
-					'expression',
-					'{custom:general,total,connect}/{custom:general,total,enterqueue}',
-					'percent');
-$tpl_statistics->add_col('abandon_rated',
-					'expression',
-					'{custom:general,total,abandon}/{custom:general,total,enterqueue}',
-					'percent');
-$tpl_statistics->add_col('ringnoanswer_rated',
-					'expression',
-					'{custom:general,total,ringnoanswer}/{custom:general,total,enterqueue}',
-					'percent');
-$tpl_statistics->add_col('completeagent_rated',
-					'expression',
-					'{custom:general,total,completeagent}/{custom:general,total,connect}',
-					'percent');
-$tpl_statistics->add_col('completecaller_rated',
-					'expression',
-					'{custom:general,total,completecaller}/{custom:general,total,connect}',
-					'percent');
-
-$tpl_statistics->gener_table();
-$table_percent = $tpl_statistics->render_html(false,false);
-$tpl_statistics->reset_col();
-
-$_TPL->set_var('table_total',$table_total);
-$_TPL->set_var('table_time',$table_time);
-$_TPL->set_var('table_average',$table_average);
-$_TPL->set_var('table_percent',$table_percent);
-$_TPL->set_var('xivo_statistics',$tpl_statistics);
+$_TPL->set_var('table_general',$table_general);
+$_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 
 $bench_end = microtime(true);
 $_TPL->set_var('bench',($bench_end - $bench_start));
+
+$dhtml = &$_TPL->get_module('dhtml');
+$xivo_jqplot->write_js_loaded_plugin($dhtml);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

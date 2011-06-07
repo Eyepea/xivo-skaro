@@ -35,6 +35,9 @@ e.g. [ -3 days ] [ -1 weeks ] [ -1 month ]<br>
 Valeur disponible: - [0-999] [day|weeks|month] s <br>
 Laisser 0 pour le jour en cours.
 
+; fm_conf_homepage
+Afficher sur la page d'accueil: 
+
 ; fm_description_cache
 Les dates pour le cache doivent être sous la forme AAAA-MM.
 
@@ -129,7 +132,7 @@ Groupes
 Créer un groupe
 
 ; fm_description_stats_queue_qos
-Configuration de la qualité de service pour les files d'attente
+Configuration de la qualité de service pour les files d'attente et groupe exprimées en secondes
 
 ; fm-queue_name-
 %s: 

@@ -49,6 +49,26 @@ class xivo_service_asterisk_callfiltermember extends xivo_service_asterisk_abstr
 		return($data);
 	}
 
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['typeval']) === true)
+			$arr['typeval'] = strval($arr['typeval']);
+
+		return(parent::add($arr,$id));
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['typeval']) === true)
+			$arr['typeval'] = strval($arr['typeval']);
+
+		return(parent::edit($id,$arr,$disable));
+	}
+	
 	function is_valid($type,$typeval,$disable=null)
 	{
 		$type = strval($type);

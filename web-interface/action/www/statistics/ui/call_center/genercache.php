@@ -32,8 +32,8 @@ if(isset($_QR['idconf']) === true
 && isset($_QR['dbeg']) === true
 && isset($_QR['dend']) === true
 && isset($_QR['type']) === true)
-{	
-	$idtype = (isset($_QR['idtype'])) ? $_QR['idtype'] : null;	
+{
+	$idtype = (isset($_QR['idtype']) && $_QR['idtype'] !== 'all') ? $_QR['idtype'] : null;
 	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);
 	return;
 }
