@@ -1,13 +1,13 @@
 [
 {
-"id":"m:quebec",
+"id":"cs:quebec",
 "loginclient":"xivoquebec",
 "passwdclient":"qpassonp",
 "profileclient":"ctiserver"
 }
 ,
 {
-"id":"m:limonest",
+"id":"cs:limonest",
 "loginclient":"xivolimonest",
 "passwdclient":"lpassonp",
 "profileclient":"ctiserver"

@@ -111,6 +111,9 @@ class INFO(Interfaces):
                 if usefulmsg == 'help':
                     clireply.extend(infohelptext)
 
+                elif usefulmsg == 'show_xivos':
+                    clireply.append('%s' % ','.join(self.ctid.safe.keys()))
+
                 elif usefulmsg == 'show_infos':
                     time_uptime = int(time.time() - time.mktime(self.ctid.time_start))
                     reply = 'infos=' \

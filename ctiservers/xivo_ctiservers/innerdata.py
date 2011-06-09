@@ -182,17 +182,10 @@ class Safe:
                 self.log.exception(listname)
         return
 
-    def make_ctiserver_account(self, ipbxid, username, password):
-        actualid = 'cs:%s' % ipbxid # prepend with letters in order to be sure it is not a number
-        self.xod_config['users'].keeplist[actualid] = { 'loginclient' : username,
-                                                        'id' : actualid,
-                                                        'profileclient' : 'ctiserver',
-                                                        'passwdclient' : password
-                                                        }
-        self.xod_status['users'][actualid] = {'connection' : None,
-                                              'availstate' : 'unknown'
-                                              }
-        return
+    # def make_ctiserver_account(self, ipbxid, username, password):
+    # self.xod_status['users'][actualid] = {'connection' : None,
+    # 'availstate' : 'unknown'
+    # }
 
     def update_config_list_all(self):
         for listname, urllistkey in self.urlvars.iteritems():
@@ -256,11 +249,7 @@ class Safe:
                                        'list' : [k]
                                        } )
             if deltas.get('del', {}):
-                finaldels = list()
-                for k in deltas.get('del'):
-                    if not k.startswith('cs:'):
-                        finaldels.append(k)
-                        del self.xod_status[listname][k]
+                finaldels = deltas.get('del').keys()
                 # tells clients about deleted objects
                 if finaldels:
                     self.events_cti.put( { 'class' : 'getlist',
@@ -729,7 +718,7 @@ class Safe:
         self.channels[channel].relations = []
         if channel.startswith('SIPPeer/'):
             return
-        if channel.startswith('Parking/'):
+        if channel.startswith('Parked/'):
             return
         try:
             termination = self.ast_channel_to_termination(channel)
@@ -776,7 +765,7 @@ class Safe:
             if oldchannel.startswith('SIPPeer'):
                 self.log.info('no peerchannel setting, since parking action (A) (%s %s)'
                          % (oldchannel, newchannel))
-            elif oldchannel.startswith('Parking'):
+            elif oldchannel.startswith('Parked'):
                 self.log.info('no peerchannel setting, since parking action (B) (%s %s)'
                          % (oldchannel, newchannel))
             else:
@@ -913,6 +902,8 @@ class Safe:
 
     def zphones(self, protocol, name):
         idfound = None
+        if not protocol:
+            return idfound
         for k, v in self.xod_config['phones'].keeplist.iteritems():
             if v.get('protocol') == protocol.lower() and v.get('name') == name:
                 idfound = k
@@ -922,6 +913,8 @@ class Safe:
 
     def ztrunks(self, protocol, name):
         idfound = None
+        if not protocol:
+            return idfound
         for k, v in self.xod_config['trunks'].keeplist.iteritems():
             if v.get('protocol') == protocol.lower() and v.get('name') == name:
                 idfound = k

@@ -439,9 +439,6 @@ class xivo_daemon:
                 (afinet, socktype, proto, dummy, bindtuple) = gai[0]
                 ctiup = socket.socket(afinet, socktype)
                 ctiup.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-                self.safe[self.myipbxid].make_ctiserver_account(ipbxid,
-                                                                cticonn.get('account'),
-                                                                cticonn.get('pwd'))
                 try:
                     ctiup.sendto(tosend, bindtuple)
                 except Exception:
