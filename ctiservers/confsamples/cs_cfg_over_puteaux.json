@@ -16,19 +16,20 @@
  "urllist_meetmes": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/meetme"],
  "urllist_devices": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/devices"],
  "urllist_voicemails": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/voicemail"],
- "urllist_users": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/users"],
+ "urllist_users": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_settings/users",
+        "file:///home/corentin/subversion/xivo/trunk/ctiservers/confsamples/extra_users_puteaux.json"],
  "urllist_phonebook": ["https://192.168.0.182/service/ipbx/json.php/restricted/pbx_services/phonebook"]},
  "cdr_db_uri": "postgresql://asterisk:proformatique@localhost/asterisk?charset=utf8"},
 
 
- "quebec": {"cti_connection": {"pwd": "qpassonp", "account": "xivoquebec",
+ "quebec": {"cti_connection": {
         "password": "ppassonq", "username": "xivoputeaux",
          "ipaddress": "192.168.0.146",
          "ipport": "7003",
          "encrypt": false,
          "announce_port": "7006"}},
 
- "limonest": {"cti_connection": {"pwd": "lpassonp", "account": "xivolimonest",
+ "limonest": {"cti_connection": {
         "password": "ppassonl", "username": "xivoputeaux",
          "ipaddress": "192.168.0.146",
          "ipport": "6013",

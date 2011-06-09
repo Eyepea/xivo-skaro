@@ -1,0 +1,15 @@
+[
+{
+"id":"m:quebec",
+"loginclient":"xivoquebec",
+"passwdclient":"qpassonp",
+"profileclient":"ctiserver"
+}
+,
+{
+"id":"m:limonest",
+"loginclient":"xivolimonest",
+"passwdclient":"lpassonp",
+"profileclient":"ctiserver"
+}
+]

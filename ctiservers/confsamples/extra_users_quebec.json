@@ -1,0 +1,15 @@
+[
+{
+"id":"m:puteaux",
+"loginclient":"xivoputeaux",
+"passwdclient":"ppassonq",
+"profileclient":"ctiserver"
+}
+,
+{
+"id":"m:limonest",
+"loginclient":"xivolimonest",
+"passwdclient":"lpassonq",
+"profileclient":"ctiserver"
+}
+]
