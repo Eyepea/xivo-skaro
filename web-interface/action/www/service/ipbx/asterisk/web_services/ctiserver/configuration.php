@@ -349,13 +349,22 @@ switch($act)
 			$out['phonestatus']['itm_phonestatus'] = $hintsout;
 		}
 
-		$out['regcommands']['itm_regcommands'] = array("login_pass", "login_capas",
-                                                               "getlist", "ipbxcommand",
-                                                               "availstate", "keepalive",
-                                                               "featuresput", "featuresget",
+                $out['regcommands']['itm_regcommands'] = array("login_id", "login_pass", "login_capas",
+                                                               "getipbxlist",
+                                                               "getlist", "ipbxcommand", "chitchat",
+                                                               "availstate", "keepalive", "filetransfer",
+                                                               "featuresput", "featuresget", "faxsend",
                                                                "history");
-		$out['ipbxcommands']['itm_ipbxcommands'] = array("originate", "agentlogin", "sipnotify",
-                                                                 "atxfer", "transfer", "dial", "park");
+
+                $out['ipbxcommands']['itm_ipbxcommands'] = array("originate",
+                                                                 "sipnotify",
+                                                                 "agentlogin", "agentpausequeue",
+                                                                 "listen", "record",
+                                                                 "parking", "meetme",
+                                                                 "intercept",
+                                                                 "cancel", "refuse", "answer",
+                                                                 "transfercancel", "hangup", "hangupme",
+                                                                 "atxfer", "transfer", "dial");
 
 		# PROFILES
 		if(isset($load_profiles))
