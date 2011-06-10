@@ -27,7 +27,7 @@ import hashlib
 from time import localtime, strftime
 from xivo_ha.tools import Tools
 
-class ClusterEngine(object):
+class ClusterEngine(Tools):
     def __init__(self, network_addr, multicast_addr, 
                     templates_path = '/usr/share/pf-xivo-ha/templates/corosync',
                     config_file    = "/etc/corosync/corosync.conf",
@@ -119,6 +119,7 @@ class ClusterEngine(object):
         return True
 
     def _manage_corosync(self, action, ret = 0):
+        # TODO use cluster command
         '''
         corosync service management : 
             start|stop|restart|force-reload|status
@@ -159,7 +160,7 @@ class ClusterEngine(object):
     def update(self):
         pass
 
-class ManageService(object):
+class ManageService(Tools):
     def __init__(self, service_name, init_path = "/etc/init.d", init_name = ''):
         self.service_name = service_name
         self.init_path = init_path
@@ -180,23 +181,29 @@ class ManageService(object):
             return False
 
     def _disable_service(self):
-        try:
-            args = ['insserv', '-r', self.service_name]
-            state = subprocess.Popen(args, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-            if state.wait() is 0:
-                return True
-            else:
-                return state.stderr.readline()
-        except:
-            raise IOError("impossible to disable service %s" % self.service_name)
+        args = ['insserv', '-r', self.service_name]
+        result, ret, error = self._cluster_command(args)
+        return result, ret, error
     
     def _stop_service(self):
-        raise NotImplementedError
+        args = ['/etc/init.d/%s' % self.service_name, 'stop']
+        result, ret, error = self._cluster_command(args)
+        return result, ret, error
+
 
     def initialize(self):
         if self._is_available():
-            self._disable_service()
             sys.stdout.write("disable %s autostart\n" % self.service_name)
+            try:
+                self._disable_service()
+            except:
+                raise IOError("impossible to disable service %s" % self.service_name)
+
+            sys.stdout.write("stopping %s \n" % self.service_name)
+            try:
+                self._stop_service()
+            except:
+                raise IOError("impossible to stop service %s" % self.service_name)
             return True
         else:
             return False
@@ -306,46 +313,6 @@ class FilesReplicationManagement(Tools):
         return config_file
 
 
-    def _clean_files_for_sync(self):
-        '''
-        clean files for csync2 :
-            theses files are the same on master/slave (same creation date)
-            we need to touch them from the slave to allow full sync
-            we use time information from /etc/fstab
-        '''
-        files_to_clean = ['/var/lib/asterisk/astsqlite',
-                        '/var/lib/pf-xivo-cti-server/sqlite/xivo.db',
-                        '/var/lib/pf-xivo-web-interface/sqlite/xivo.db',
-                        '/var/lib/pf-xivo/provd/shelvedb/configs',
-                        '/var/lib/pf-xivo/provd/shelvedb/devices',
-                        '/var/log/asterisk/fail2ban',
-                        '/var/log/asterisk/messages',
-                        '/var/log/asterisk/queue_log',
-                       ]
-        ref_file = '/etc/fstab'
-
-        for file_ in files_to_clean:
-            if os.path.isfile(file_):
-                if self.role == 'master':
-                    args = ['csync2', '-f', file_] 
-                else:
-                    args = ['touch', '-r', ref_file, file_] 
-                data, ret, error = self._cluster_command(args)
-
-        return True
-                    
-
-    def _deploy_crontab(self): 
-        '''
-        create crontab file for csync2
-        '''
-        sync_interval = 2
-        crontab_file = '/etc/cron.d/csync2'
-        string = '*/%s * * * * root /usr/sbin/csync2 -cr / ; /usr/sbin/csync2 -T ; /usr/sbin/csync2 -x\n' % sync_interval
-        with open(crontab_file, 'w') as file_:
-            file_.write(string)
-        return True
-
     def initialize(self):
         '''
         create /etc/csync2.cfg and /etc/csync2.key on master
@@ -356,8 +323,6 @@ class FilesReplicationManagement(Tools):
             key_file   = self._create_key_file()
             config_file = self._create_config_file()
             sys.stdout.write('you have to copy %s and %s on slave\n' % (config_file, key_file))
-        self._clean_files_for_sync()
-        self._deploy_crontab()
         sys.stdout.write('Done\n')
 
 

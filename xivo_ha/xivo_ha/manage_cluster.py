@@ -31,6 +31,7 @@ class ClusterResourceManager(Tools):
                  cluster_config   = {},
                  backup_directory = "/var/backups/pf-xivo/xivo_ha",
                  cluster_cfg      = "/etc/pf-xivo/xivo_ha/cluster.cfg",
+                 pf_scripts       = "/usr/share/pf-xivo-ha/bin",
                 ):
         if cluster_config != {}:
             self.services         = cluster_config['services'].keys()
@@ -46,6 +47,7 @@ class ClusterResourceManager(Tools):
             self.cluster_group    = cluster_config['cluster_group'] if cluster_config.has_key('cluster_group') else None
             self.backup_directory = backup_directory
             self.cluster_cfg      = cluster_cfg
+            self.pf_scripts       = pf_scripts
 
     def _filename(self, filename, directory):
         if not directory:
@@ -234,7 +236,7 @@ class ClusterResourceManager(Tools):
         if resources:
             for resource in resources:
                 self._cluster_stop_resource(resource)
-        time.sleep(2)
+        time.sleep(4)
         return True 
         
 
@@ -302,16 +304,10 @@ class ClusterResourceManager(Tools):
         result = "primitive " + rsc + rsc_class + rsc_provider + rsc_type + rsc_params + rsc_operation + rsc_op_result
         return result
 
-    def _resource_script(self, script):
-        script_name = os.path.basename(script)
-        name = 'script_%s_%s' % (self.cluster_name, script_name)
-        # ocf:heartbeat:anything params binfile="/root/script.sh"'
-        string = self._resource_primitive(name, rsc_class = 'ocf',
-                                          rsc_provider = 'heartbeat',
-                                          rsc_type = 'anything',
-                                          rsc_params = 'binfile="%s"' % script
-                                         )
-        return name, string
+    def _resource_pf_scripts(self):
+        name = "scripts_%s" % self.cluster_name
+        primitive = 'primitive %s ocf:heartbeat:pf-xivo-ha-scripts' % name
+        return name, primitive
 
     def _cluster_configure(self):
         '''
@@ -341,12 +337,11 @@ class ClusterResourceManager(Tools):
                 file_.write(self._format_string(self._resource_primitive(service, rsc_class = 'lsb')))
                 group_srv_members.append(service)
 
-            # TODO : write an ocf script to allow this usage, some pb on monitoring
-            #if self.extra_scripts:
-            #    for script in self.extra_scripts:
-            #        name, string = self._resource_script(script)
-            #        file_.write(self._format_string(string))
-            #        group_srv_members.append(name)
+            # add scripts
+            if os.listdir(self.pf_scripts) != '':
+                scripts_name, scripts_primitive = self._resource_pf_scripts()
+                file_.write(self._format_string(scripts_primitive))
+                group_srv_members.append(scripts_name)
 
             # configure mail
             if self.cluster_mailto:
@@ -385,10 +380,6 @@ class ClusterResourceManager(Tools):
     def _services_order(self, services):
         # TODO
         return services.sort()
-
-    def _launch_external_script(self):
-        # TODO
-        pass
 
     def _resources_location(self, prefered_node = None, score = None):
         '''
@@ -519,7 +510,8 @@ class ClusterResourceManager(Tools):
                                          rsc_class    = "ocf",
                                          rsc_provider = 'heartbeat',
                                          rsc_type     = "IPaddr2",
-                                         rsc_params   = ip_params
+                                         rsc_params   = ip_params,
+                                         rsc_op       = ['monitor interval="30s"']
                                          ))
         return result
 
@@ -552,6 +544,26 @@ class ClusterResourceManager(Tools):
         clone = 'clone pingdclone %s meta globally-unique=false' % res
         return [primitive, clone]
 
+    def create_config_file(self):
+        '''
+        create config file (cluster.cfg)
+        '''
+        return self._cluster_configure()
+        
+    def cluster_start_res(self):
+        '''
+        start cluster
+        '''
+        print('start all resources')
+        self._cluster_start_all_resources()
+
+    def cluster_stop_res(self):
+        '''
+        stop all resources
+        '''
+        print('stop all resources')
+        self._cluster_stop_all_resources()
+
     def manage(self):
         '''
         used to configure cluster :
@@ -562,10 +574,12 @@ class ClusterResourceManager(Tools):
         '''
         print("backup conf")
         self._cluster_backup()
-        print("stop all resource")
+        print("stop all resources")
         self._cluster_stop_all_resources()
         print("erase configuration")
-        self._cluster_erase_configuration()
+        er_data, er_res, er_error = self._cluster_erase_configuration()
+        if er_res is not 0:
+            raise IOError('impossible to erase configuration : %s', er_data)
         print("configure cluster")
         self._cluster_configure()
         result = self._cluster_push_config()
@@ -574,6 +588,7 @@ class ClusterResourceManager(Tools):
                 data = message.split()
                 if data[0] != 'WARNING:':
                     print(message)
+        return True
 
     def status(self):
         '''

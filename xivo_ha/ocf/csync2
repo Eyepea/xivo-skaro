@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #
-#	Asterisk OCF RA. 
+#	csync2 OCF RA. 
 #
 # Copyright (c) 2011 Proformatique, Nicolas HICHER
 #
@@ -39,13 +39,13 @@ meta_data() {
 	cat <<END
 <?xml version="1.0"?>
 <!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
-<resource-agent name="Asterisk" version="0.1">
+<resource-agent name="csync2" version="0.1">
 <version>1.0</version>
 
 <longdesc lang="en">
-This is a Asterisk Resource Agent. 
+This is a csync2 Resource Agent. 
 </longdesc>
-<shortdesc lang="en">Asterisk resource agent</shortdesc>
+<shortdesc lang="en">csync2 resource agent</shortdesc>
 
 <parameters>
 <parameter name="state" unique="1">
@@ -53,7 +53,7 @@ This is a Asterisk Resource Agent.
 Location to store the resource state in.
 </longdesc>
 <shortdesc lang="en">State file</shortdesc>
-<content type="string" default="${HA_RSCTMP}/Asterisk-{OCF_RESOURCE_INSTANCE}.state" />
+<content type="string" default="${HA_RSCTMP}/csync2-{OCF_RESOURCE_INSTANCE}.state" />
 </parameter>
 
 </parameters>
@@ -75,15 +75,11 @@ END
 #######################################################################
 
 # Defaults
-OCF_RESKEY_asterisk_default=/usr/sbin/asterisk
-OCF_RESKEY_asterisk_args_default='-p -g -U asterisk -G asterisk'
-OCF_RESKEY_asterisk_pidfile_default=/var/run/asterisk/asterisk.pid
+OCF_RESKEY_csync2_default=/usr/sbin/csync2
 
-: ${OCF_RESKEY_asterisk=${OCF_RESKEY_asterisk_default}}
-: ${OCF_RESKEY_asterisk_args=${OCF_RESKEY_asterisk_args_default}}
-: ${OCF_RESKEY_asterisk_pidfile=${OCF_RESKEY_asterisk_pidfile_default}}
+: ${OCF_RESKEY_csync2=${OCF_RESKEY_csync2_default}}
 
-asterisk_usage() {
+csync2_usage() {
 	cat <<END
 usage: $0 {start|stop|monitor|migrate_to|migrate_from|validate-all|meta-data}
 
@@ -91,93 +87,28 @@ Expects to have a fully populated OCF RA-compliant environment set.
 END
 }
 
-asterisk_start() {
-    # start-stop-daemon --start --group asterisk --pidfile /var/run/asterisk/asterisk.pid --chdir /var/spool/asterisk --exec /usr/sbin/asterisk -- -p -g -U asterisk
-    # 
-    if asterisk_monitor; then
-        ocf_log info "Resource is already running"
-	    return $OCF_SUCCESS
-    fi
-    rm -f $OCF_RESKEY_asterisk_pidfile
-    ocf_run $OCF_RESKEY_asterisk $OCF_RESKEY_asterisk_args
-    while ! asterisk_monitor; do
-        ocf_log debug "Resource has not started yet, waiting"
-        sleep 1
-    done
-    touch ${OCF_RESKEY_state}
+csync2_start() {
     return $OCF_SUCCESS
 }
 
-asterisk_stop() {
-    asterisk_validate || exit $?
-    asterisk_monitor
-    rc=$?
-    case "$rc" in
-        $OCF_SUCCESS)
-            ocf_log debug "Resource is currently running"
-            ;;
-        $OCF_NOT_RUNNING)
-            ocf_log info "Resource is already stopped"
-            return $OCF_SUCCESS
-            ;;
-    esac
-    PID=`cat $OCF_RESKEY_asterisk_pidfile`
-    kill -5 $PID
-	rm ${OCF_RESKEY_state}
-    rm $PIDFILE
+csync2_stop() {
     return $OCF_SUCCESS
 }
 
-asterisk_cli(){
-    ocf_run -q /usr/sbin/asterisk -rx 'core show uptime' 
-    return $?
-}
-
-asterisk_check_pid() {
-    if [ -f $OCF_RESKEY_asterisk_pidfile ]; then
-        PID=`cat $OCF_RESKEY_asterisk_pidfile`
-        kill -0 $PID >/dev/null 2>&1
-        return $?
-    fi
-    false
-}
-
-asterisk_monitor() {
-    local rc
-	# Monitor _MUST!_ differentiate correctly between running
-	# (SUCCESS), failed (ERROR) or _cleanly_ stopped (NOT RUNNING).
-	# That is THREE states, not just yes/no.
-    #echo ${OCF_RESKEY_state}	
-    asterisk_cli
+csync2_monitor() {
+    ps faux | grep 'csync2 -xv' | grep -v grep
     state=$?
-    asterisk_check_pid
-    pid=$?
-    if [ $pid -eq 0 ] && [ $state -eq 0 ]; then
-        run=0
-    elif [ $pid -eq 1 ] && [ $state -eq 1 ]; then
-        run=1
+    if [ $state -eq 0 ]; then
+        ocf_log debug "csync2 already running"
     else
-        run=2
+        ocf_log debug "launch csync2"
+        /usr/sbin/csync2 -x &
     fi
-	case $run in
-        0)
-            ocf_log debug "Resource is running"
-	        rc=$OCF_SUCCESS
-            ;;
-        1)
-            ocf_log debug "Resource is not running"
-            rc=$OCF_NOT_RUNNING
-            ;;
-        *)
-            ocf_log err "Resource has failed"
-            exit $OCF_ERR_GENERIC
-            ;;
-    esac
-    return $rc
 
+    return $OCF_SUCCESS
 }
 
-asterisk_validate() {
+csync2_validate() {
     
     # Is the state directory writable? 
     state_dir=`dirname "$OCF_RESKEY_state"`
@@ -190,29 +121,29 @@ asterisk_validate() {
     return $OCF_SUCCESS
 }
 
-: ${OCF_RESKEY_state=${HA_RSCTMP}/asterisk-${OCF_RESOURCE_INSTANCE}.state}
+: ${OCF_RESKEY_state=${HA_RSCTMP}/csync2-${OCF_RESOURCE_INSTANCE}.state}
 
 case $__OCF_ACTION in
 meta-data)	meta_data
 		exit $OCF_SUCCESS
 		;;
-start)		asterisk_start;;
-stop)		asterisk_stop;;
-monitor)	asterisk_monitor;;
+start)		csync2_start;;
+stop)		csync2_stop;;
+monitor)	csync2_monitor;;
 migrate_to)	ocf_log info "Migrating ${OCF_RESOURCE_INSTANCE} to ${OCF_RESKEY_CRM_meta_migrate_to}."
-	        asterisk_stop
+	        csync2_stop
 		;;
 migrate_from)	ocf_log info "Migrating ${OCF_RESOURCE_INSTANCE} to ${OCF_RESKEY_CRM_meta_migrated_from}."
-	        asterisk_start
+	        csync2_start
 		;;
 reload)		ocf_log err "Reloading..."
-	        asterisk_start
+	        csync2_start
 		;;
-validate-all)	asterisk_validate;;
-usage|help)	asterisk_usage
+validate-all)	csync2_validate;;
+usage|help)	csync2_usage
 		exit $OCF_SUCCESS
 		;;
-*)		asterisk_usage
+*)		csync2_usage
 		exit $OCF_ERR_UNIMPLEMENTED
 		;;
 esac

@@ -166,9 +166,6 @@ class FilesReplicationManagementTestCase(unittest.TestCase):
         result   = self.data._config_file_conflict_resolution()
         self.assertEqual(expected, result)
 
-    def test_clean_files_for_sync(self):
-        self.data._clean_files_for_sync()
-
     def test_create_config_file(self):
         expected = "tests/templates/csync2.cfg"
         result   = self.data._create_config_file()

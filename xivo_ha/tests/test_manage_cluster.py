@@ -21,14 +21,15 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         self.backup_file  = "pf-xivo-ha.bck"
         self.cluster_data = {'cluster_name': 'xivo',
                               'cluster_nodes': ['ha-xivo-1', 'ha-xivo-2'],
-                              'cluster_addr': ['eth0:192.168.1.34', 'eth0.10:192.168.2.34'],
+                              'cluster_addr': ['eth0:192.168.1.34', 'eth1:192.168.2.34'],
                               'cluster_monitor': '10s',
                               'cluster_timeout': '60s',
                               'cluster_group': 'yes',
                               'cluster_mailto': 'nhicher@proformatique.com',
                               'cluster_pingd': '192.168.1.254',
                               'services': {'asterisk': {'rsc_class': 'lsb', 'monitor': '30', 'timeout': '15'},
-                                           'nginx':    {'rsc_class': 'ocf'}
+                                           'nginx':    {'rsc_class': 'ocf'},
+                                           'csync2':   {'rsc_class': 'ocf', 'monitor': '120', 'timeout': '0'}
                               }
                             }
         self.data                = ClusterResourceManager(
@@ -125,13 +126,14 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
                                                        'monitor role=Slave interval=300s'])
         self.assertEqual(data, drbd_expected)
 
-    def test_resource_script(self):
-        expected = 'primitive script_xivo_script.sh ocf:heartbeat:anything params binfile="/root/script.sh"'
-        data = self.data._resource_script("/root/script.sh")
-        self.assertEqual(data[1], expected)
+    def test_resource_pf_scripts(self):
+        expected = 'primitive scripts_xivo ocf:heartbeat:pf-xivo-ha-scripts'
+        name, data = self.data._resource_pf_scripts()
+        self.assertEqual(data, expected)
 
     def test_configure_services(self):
         expected = [ 'primitive asterisk lsb:asterisk',
+                     'primitive csync2 ocf:heartbeat:csync2',
                      'primitive nginx ocf:heartbeat:nginx'
                    ]
         result = []
@@ -152,7 +154,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_resources_order_services(self):
         self.data.cluster_group = False
-        expected = 'order order_xivo inf: group_ip_xivo:start asterisk:start nginx:start'
+        expected = 'order order_xivo inf: group_ip_xivo:start asterisk:start csync2:start nginx:start'
         data = self.data._resources_order()
         self.assertEqual(expected, data)
 
@@ -163,7 +165,7 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_resources_colocation_services(self):
         self.data.cluster_group = False
-        expected = 'colocation colocation_xivo inf: group_ip_xivo asterisk nginx'
+        expected = 'colocation colocation_xivo inf: group_ip_xivo asterisk csync2 nginx'
         data = self.data._resources_colocation()
         self.assertEqual(expected, data)
 
@@ -196,13 +198,15 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
         pass
 
     def test_simple_addr(self):
-        expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"'}
+        expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0" op monitor interval="30s"'}
         data = self.data._cluster_addr(['eth0:192.168.1.34'])
         self.assertEqual(expected, data)
 
     def test_cluster_addr(self):
-        expected = {'ip_xivo_eth0':   'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0"',
-                    'ip_xivo_eth0.10': 'primitive ip_xivo_eth0.10 ocf:heartbeat:IPaddr2 params ip="192.168.2.34" nic="eth0.10"'}
+        expected = {'ip_xivo_eth0': 
+                        'primitive ip_xivo_eth0 ocf:heartbeat:IPaddr2 params ip="192.168.1.34" nic="eth0" op monitor interval="30s"',
+                    'ip_xivo_eth1': 
+                        'primitive ip_xivo_eth1 ocf:heartbeat:IPaddr2 params ip="192.168.2.34" nic="eth1" op monitor interval="30s"'}
         data = self.data._cluster_addr()
         self.assertEqual(expected, data)
 
@@ -240,8 +244,8 @@ class ClusterResourceManagerTestCase(unittest.TestCase):
 
     def test_get_group_members(self):
         self._reset_cluster()
-        ip = sorted(['ip_xivo_eth0.10', 'ip_xivo_eth0'])
-        srv = sorted(['nginx', 'asterisk', 'mailto_xivo'])
+        ip = sorted(['ip_xivo_eth0', 'ip_xivo_eth1'])
+        srv = sorted(['nginx', 'asterisk', 'mailto_xivo', 'csync2', 'scripts_xivo'])
         expected = {'group_ip_xivo': ip,
                     'group_srv_xivo': srv
                    }

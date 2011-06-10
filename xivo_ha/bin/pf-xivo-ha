@@ -210,8 +210,8 @@ if __name__ == '__main__':
                 manage_service = ManageService(service)
                 manage_service.initialize()
             csync2.initialize()
-            if role == 'master':
-                print('starting nginx on master')
+            #if role == 'master':
+            #    print('starting nginx on master')
         elif options.node == 'update':
             raise NotImplementedError
         else:
@@ -223,7 +223,11 @@ if __name__ == '__main__':
             cluster.manage() 
         elif option == 'status':
             cluster.status()
-        elif option == 'stop':
-            cluster.stop()
+        elif option == 'stop_res':
+            cluster.cluster_stop_res()
+        elif option == 'start_res':
+            cluster.cluster_start_res()
+        elif option == 'config_file':
+            cluster.create_config_file()
         else:
             parser.error("this option is not allowed")
