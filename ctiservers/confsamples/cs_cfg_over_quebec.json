@@ -26,10 +26,13 @@
         "password": "qpassonp", "username": "xivoquebec",
          "ipaddress": "192.168.0.146",
          "ipport": "5003",
-         "announce_port": "5006"}},
+         "encrypt": false
+        }},
 
  "limonest": {"cti_connection": {
         "password": "qpassonl", "username": "xivoquebec",
          "ipaddress": "192.168.0.146",
          "ipport": "6003",
-         "announce_port": "6006"}}}
+         "encrypt": false
+        }}
+}

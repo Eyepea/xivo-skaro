@@ -26,10 +26,13 @@
         "password": "lpassonq", "username": "xivolimonest",
          "ipaddress": "192.168.0.146",
          "ipport": "7003",
-         "announce_port": "7006"}},
+         "encrypt": false
+        }},
 
  "puteaux": {"cti_connection": {
         "password": "lpassonp", "username": "xivolimonest",
          "ipaddress": "192.168.0.146",
          "ipport": "5003",
-         "announce_port": "5006"}}}
+         "encrypt": false
+        }}
+}

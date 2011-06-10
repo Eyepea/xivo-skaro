@@ -26,12 +26,13 @@
         "password": "ppassonq", "username": "xivoputeaux",
          "ipaddress": "192.168.0.146",
          "ipport": "7003",
-         "encrypt": false,
-         "announce_port": "7006"}},
+         "encrypt": false
+        }},
 
  "limonest": {"cti_connection": {
         "password": "ppassonl", "username": "xivoputeaux",
          "ipaddress": "192.168.0.146",
          "ipport": "6003",
-         "encrypt": false,
-         "announce_port": "6006"}}}
+         "encrypt": false
+        }}
+}
