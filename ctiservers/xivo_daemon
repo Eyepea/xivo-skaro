@@ -265,12 +265,12 @@ class xivo_daemon:
                     else:
                         log.warning('did not found a matching ipbxid for the address %s'
                                     % got_ip_address)
-                elif data.startswith('ctiserver'):
-                    for k, v in self.mycti.iteritems():
-                        if not v.connected():
-                            z = v.connect()
-                            if z:
-                                self.fdlist_remote_cti[z] = v
+            elif action == 'xivoremote':
+                for k, v in self.mycti.iteritems():
+                    if not v.connected():
+                        z = v.connect()
+                        if z:
+                            self.fdlist_remote_cti[z] = v
             elif action == 'ctilogin':
                 connc = toload.get('properties')
                 connc.close()
@@ -278,6 +278,8 @@ class xivo_daemon:
                     del self.fdlist_established[connc]
                 else:
                     log.warning('could not remove connexion : already done ...')
+            else:
+                log.warning('checkqueue : unknown action received : %s' % action)
         return ncount
 
     def cb_timer(self, *args):
@@ -428,21 +430,6 @@ class xivo_daemon:
                 self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, 1)
             except Exception:
                 log.exception('udp %s %d' % (bind, trueport))
-
-        tosend = 'ctiserver-1.2'
-        for ipbxid, ipbxconfig in self.cconf.getconfig('ipbxes').iteritems():
-            if ipbxid != self.myipbxid:
-                cticonn = ipbxconfig.get('cti_connection')
-                cti_address = cticonn.get('ipaddress')
-                dport = int(cticonn.get('announce_port'))
-                gai = socket.getaddrinfo(cti_address, dport, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
-                (afinet, socktype, proto, dummy, bindtuple) = gai[0]
-                ctiup = socket.socket(afinet, socktype)
-                ctiup.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-                try:
-                    ctiup.sendto(tosend, bindtuple)
-                except Exception:
-                    log.exception('%s - sending to %s:%d' % (ipbxid, cti_address, dport))
 
         # Main select() loop - Receive messages
         if not self.cconf.getconfig():
@@ -764,11 +751,11 @@ class xivo_daemon:
                                     if not pb:
                                         continue
                                     [kind, where] = pb.split(':')
-                                    if kind in ['innerdata', 'main', 'ami']:
-                                        if kind == 'innerdata':
-                                            nactions = self.safe[where].checkqueue()
-                                        elif kind == 'main':
+                                    if kind in ['main', 'innerdata', 'ami']:
+                                        if kind == 'main':
                                             nactions = self.checkqueue()
+                                        elif kind == 'innerdata':
+                                            nactions = self.safe[where].checkqueue()
                                         elif kind == 'ami':
                                             nactions = self.myami[where].checkqueue()
                                         log.info('handled %d actions for %s' % (nactions, kind))

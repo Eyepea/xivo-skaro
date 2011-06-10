@@ -27,6 +27,8 @@ __author__    = 'Corentin Le Gall'
 import logging
 import random
 import string
+import threading
+import time
 from xivo_ctiservers import xivo_webservices
 
 log = logging.getLogger('cti_command')
@@ -286,6 +288,13 @@ class Command:
         self.__connect_user__(state, capaid)
         head = '%s:%d - LOGIN SUCCESSFUL' % (self.connection.requester)
         log.info('%s for %s' % (head, cdetails))
+
+        if self.userid.startswith('cs:'):
+            notifyremotelogin = threading.Timer(2, self.ctid.cb_timer,
+                                                ({'action' : 'xivoremote',
+                                                  'properties' : None },))
+            notifyremotelogin.setName('Thread-xivo-%s' % self.userid)
+            notifyremotelogin.start()
 
 ##            if loginkind == 'agent':
 ##                userinfo['agentphonenumber'] = self.commanddict.get('agentphonenumber')
