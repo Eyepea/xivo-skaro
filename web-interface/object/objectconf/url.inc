@@ -376,6 +376,17 @@ $array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_cen
 $array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';
 
 $array['statistics/json/private/call_center/queue'] 		= 'statistics/json.php/private/call_center/queue/';
+$array['statistics/json/private/call_center/stats1'] 		= 'statistics/json.php/private/call_center/stats1/';
+$array['statistics/json/private/call_center/stats2'] 		= 'statistics/json.php/private/call_center/stats2/';
+$array['statistics/json/private/call_center/stats3'] 		= 'statistics/json.php/private/call_center/stats3/';
+$array['statistics/json/private/call_center/stats4'] 		= 'statistics/json.php/private/call_center/stats4/';
+$array['statistics/json/private/call_center/stats5'] 		= 'statistics/json.php/private/call_center/stats5/';
+
 $array['statistics/json/restricted/call_center/queue'] 		= 'statistics/json.php/restricted/call_center/queue/';
+$array['statistics/json/restricted/call_center/stats1'] 	= 'statistics/json.php/restricted/call_center/stats1/';
+$array['statistics/json/restricted/call_center/stats2'] 	= 'statistics/json.php/restricted/call_center/stats2/';
+$array['statistics/json/restricted/call_center/stats3'] 	= 'statistics/json.php/restricted/call_center/stats3/';
+$array['statistics/json/restricted/call_center/stats4'] 	= 'statistics/json.php/restricted/call_center/stats4/';
+$array['statistics/json/restricted/call_center/stats5'] 	= 'statistics/json.php/restricted/call_center/stats5/';
 
 ?>

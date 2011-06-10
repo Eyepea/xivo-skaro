@@ -272,7 +272,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| dwho_issa('groupfeatures',$arr) === false
 		|| dwho_issa('queue',$arr) === false)
 			return(false);
-
+			
 		$this->set_groupfeatures($arr['groupfeatures']);
 
 		$name = strtolower($this->get_result_var('groupfeatures','name'));

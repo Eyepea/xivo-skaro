@@ -25,7 +25,7 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 	var $_agentfeatures	= false;
 	var $_agentgroup	= false;
 	var $_appagents		= false;
-	var $_agent		= false;
+	var $_agent		    = false;
 	var $_agentoptions	= false;
 	var $_contextmember	= false;
 	var $_userfeatures	= null;

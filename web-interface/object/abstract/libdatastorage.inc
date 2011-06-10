@@ -318,7 +318,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 	function get_where($arr,$disable=null,$id=null)
 	{
 		if(isset($this->_origin) === true)
-			$this->_origin = false;			
+			$this->_origin = false;
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false)

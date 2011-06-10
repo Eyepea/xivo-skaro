@@ -1,30 +1,24 @@
 
-; mn_left_name
+; mn_left_name_statistics
 Statistiques
-
-; mn_left_ti_home
-Résumé
 
 ; mn_left_home
 Global
 
-; mn_left_name_call_center
+; mn_left_ti_call_center
 Centre d'appels
 
-; mn_left_name_cdr
+; mn_left_ti_cel
 Journaux d'appels
 
 ; mn_left_home_call_center
-Accueil
+Résumé
 
 ; mn_left_configuration_call_center
 Configuration
 
 ; mn_left_configuration_call_center-qos
 Qualité de service
-
-; mn_left_ti_statistics_call_center
-Données
 
 ; mn_left_statistics_call_center-1
 Files d'attente
@@ -41,11 +35,11 @@ Détails par période
 ; mn_left_statistics_call_center-5
 Appels entrants
 
-; mn_left_home_cdr
-Accueil
+; mn_left_home_cel
+Résumé
 
-; mn_left_search_cdr
-Recherche 
+; mn_left_search_cel
+Filtres
 
 ; mn_left_advanced_search_cdr
 Recherche avancées

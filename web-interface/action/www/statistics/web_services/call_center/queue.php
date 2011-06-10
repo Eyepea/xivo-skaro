@@ -28,7 +28,6 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'listshowstatus':
-	default:
 		$act = 'listshowstatus';
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
@@ -54,6 +53,10 @@ switch($act)
 		}
 		
 		$_TPL->set_var('list',$list);
+	default:
+		$http_response->set_status_line(400);
+		$http_response->send(true);
+	    
 }
 
 $_TPL->set_var('act',$act);

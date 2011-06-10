@@ -304,6 +304,15 @@ Check
 ; acl(service-statistics)
 Statistiques
 
+; acl(statistics-statistics)
+Statistiques
+
+; acl(statistics-statistics-call_center)
+Centre d'appels
+
+; acl(statistics-statistics-cel)
+Journaux d'appels
+
 ; acl(statistics-call_center)
 Statistiques centre d'appel
 

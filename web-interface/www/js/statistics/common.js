@@ -55,7 +55,7 @@ $(function() {
 		altFormat: 'yy-mm-dd'
 	});
 	$("#it-dmonth").datepicker({
-		dateFormat: 'yy-mm',
+		dateFormat: 'yy-mm-dd',
 		altFormat: 'yy-mm'
 	});
 
@@ -80,7 +80,7 @@ $(function() {
 	$('#it-confid').change(function(){
 		$(this).parents('form').submit();
 	});
-	
+            
 });
 
 function fm_chk() {

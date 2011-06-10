@@ -41,7 +41,7 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 	</h3>
 	<div class="sb-content">
 		<div class="sb-list">
-			<h4><?=$this->bbf('title_cel_calls_by_trunk');?></h4>
+			<h4 class="txt-center"><?=$this->bbf('title_cel_calls_by_trunk');?></h4>
 
 				<?=$table_trunk?>
 
@@ -54,7 +54,7 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 				<div style="clear:both;"></div>
 
 			<hr><hr><hr>
-			<h4><?=$this->bbf('title_cel_top10_calls');?></h4>
+			<h4 class="txt-center"><?=$this->bbf('title_cel_top10_calls');?></h4>
 
 				<div style="width:240px; float:right;">
 					<?=$top10_call_nb_out?>

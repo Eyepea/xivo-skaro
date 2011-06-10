@@ -58,7 +58,7 @@ else
 				  'labelid'	=> 'groupfeatures-name',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['name']['default'],
-				  'value'	=> $info['groupfeatures']['name'],
+				  'value'	=> $this->get_var('info','groupfeatures','name'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','groupfeatures','name')))),
 					   		
@@ -67,17 +67,17 @@ else
 				  'labelid'	=> 'groupfeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['number']['default'],
-				  'value' 	=> $info['groupfeatures']['number'],
+				  'value'	=> $this->get_var('info','groupfeatures','number'),
 				  'error'	=> $this->bbf_args('error',$err_number))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_strategy'),
-				    'name'	=> 'queue[strategy]',
+				    'name'	    => 'queue[strategy]',
 				    'labelid'	=> 'queue-strategy',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_queue_strategy-opt',
+				    'key'	    => false,
+				    'bbf'	    => 'fm_queue_strategy-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['strategy']['default'],
-				    'selected'	=> $info['queue']['strategy']),
+				  	'selected'	=> $this->get_var('info','queue','strategy')),
 			      $element['queue']['strategy']['value']);
 
 if($context_list !== false):
@@ -87,7 +87,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['groupfeatures']['context']['default'],
-				    'selected'	=> $info['groupfeatures']['context']),
+				  	'selected'	=> $this->get_var('info','groupfeatures','context')),
 			      $context_list);
 else:
 	echo	'<div id="fd-groupfeatures-context" class="txt-center">',
@@ -104,7 +104,7 @@ endif;
 				    'bbf'	=> 'fm_groupfeatures_timeout-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['groupfeatures']['timeout']['default'],
-				    'selected'	=> $info['groupfeatures']['timeout']),
+				  	'selected'	=> $this->get_var('info','groupfeatures','timeout')),
 			      $element['groupfeatures']['timeout']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_timeout'),
@@ -118,10 +118,10 @@ endif;
 			      $element['queue']['timeout']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_ringinuse'),
-				      'name'	=> 'queue[ringinuse]',
-				      'labelid'	=> 'queue-ringinuse',
-				      'default'	=> $element['queue']['ringinuse']['default'],
-				      'checked'	=> $info['queue']['ringinuse']));
+				    'name'	=> 'queue[ringinuse]',
+				    'labelid'	=> 'queue-ringinuse',
+				    'default'	=> $element['queue']['ringinuse']['default'],
+					'checked'	=> $this->get_var('info','queue','ringinuse')));
 
 if($moh_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_musicclass'),
@@ -131,7 +131,7 @@ if($moh_list !== false):
 				    'key'	=> 'category',
 				    'invalid'	=> ($this->get_var('act') === 'edit'),
 				    'default'	=> ($this->get_var('act') === 'add' ? $element['queue']['musicclass']['default'] : null),
-				    'selected'	=> $info['queue']['musicclass']),
+				  	'selected'	=> $this->get_var('info','queue','musicclass')),
 			      $moh_list);
 endif;
 
@@ -153,7 +153,7 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $info['callerid']['callerdisplay'],
+				  'value'	=> $this->get_var('info','callerid','callerdisplay'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','callerid','callerdisplay')))),
 
@@ -162,7 +162,7 @@ endif;
 				  'labelid'	=> 'groupfeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['groupfeatures']['preprocess_subroutine'],
+				  'value'	=> $this->get_var('info','groupfeatures','preprocess_subroutine'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','groupfeatures','preprocess_subroutine'))));
 ?>
@@ -197,28 +197,28 @@ endif;
 <div id="sb-part-application" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_transfer-user'),
-				      'name'	=> 'groupfeatures[transfer_user]',
-				      'labelid'	=> 'groupfeatures-transfer-user',
-				      'default'	=> $element['groupfeatures']['transfer_user']['default'],
-				      'checked'	=> $info['groupfeatures']['transfer_user'])),
+				    'name'	    => 'groupfeatures[transfer_user]',
+				    'labelid'	=> 'groupfeatures-transfer-user',
+				    'default'	=> $element['groupfeatures']['transfer_user']['default'],
+					'checked'	=> $this->get_var('info','groupfeatures','transfer_user'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_transfer-call'),
-				      'name'	=> 'groupfeatures[transfer_call]',
-				      'labelid'	=> 'groupfeatures-transfer-call',
-				      'default'	=> $element['groupfeatures']['transfer_call']['default'],
-				      'checked'	=> $info['groupfeatures']['transfer_call'])),
+				    'name'	    => 'groupfeatures[transfer_call]',
+				    'labelid'	=> 'groupfeatures-transfer-call',
+				    'default'	=> $element['groupfeatures']['transfer_call']['default'],
+					'checked'	=> $this->get_var('info','groupfeatures','transfer_call'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_write-caller'),
-				      'name'	=> 'groupfeatures[write_caller]',
-				      'labelid'	=> 'groupfeatures-write-caller',
-				      'default'	=> $element['groupfeatures']['write_caller']['default'],
-				      'checked' => $info['groupfeatures']['write_caller'])),
+				    'name'	=> 'groupfeatures[write_caller]',
+				    'labelid'	=> 'groupfeatures-write-caller',
+				    'default'	=> $element['groupfeatures']['write_caller']['default'],
+					'checked'	=> $this->get_var('info','groupfeatures','write_caller'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_write-calling'),
-				      'name'	=> 'groupfeatures[write_calling]',
-				      'labelid'	=> 'groupfeatures-write-calling',
-				      'default'	=> $element['groupfeatures']['write_calling']['default'],
-				      'checked'	=> $info['groupfeatures']['write_calling']));
+				    'name'	    => 'groupfeatures[write_calling]',
+				    'labelid'	=> 'groupfeatures-write-calling',
+				    'default'	=> $element['groupfeatures']['write_calling']['default'],
+					'checked'	=> $this->get_var('info','groupfeatures','write_calling')));
 ?>
 </div>
 

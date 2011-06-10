@@ -298,6 +298,26 @@ $array['statistics/web_services/private/call_center/queue'] = array(
 	'path'		=> 'statistics/web_services/call_center/queue',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['statistics/web_services/private/call_center/stats1'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats1',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['statistics/web_services/private/call_center/stats2'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats2',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['statistics/web_services/private/call_center/stats3'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats3',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['statistics/web_services/private/call_center/stats4'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats4',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['statistics/web_services/private/call_center/stats5'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats5',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 /*
  * RESTRICTED SECTION
@@ -308,34 +328,67 @@ $array['statistics/web_services/restricted/call_center/queue'] = array(
 	'path'		=> 'statistics/web_services/call_center/queue',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['statistics/web_services/restricted/call_center/stats1'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats1',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['statistics/web_services/restricted/call_center/stats2'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats2',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['statistics/web_services/restricted/call_center/stats3'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats3',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['statistics/web_services/restricted/call_center/stats4'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats4',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['statistics/web_services/restricted/call_center/stats5'] = array(
+	'path'		=> 'statistics/web_services/call_center/stats5',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/check'] = array(
 	'path'		=> 'xivo/configuration/web_services/check',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/network/interface'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/interface',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/network/iproute'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/iproute',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/network/resolvconf'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/resolvconf',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/network/mail'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/mail',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/network/dhcp'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/dhcp',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['xivo/configuration/web_services/restricted/network/ha'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/ha',
 	'define'	=> array(

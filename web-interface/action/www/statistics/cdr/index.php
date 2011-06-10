@@ -31,9 +31,10 @@ $result = $stats_cel->parse_data('trunk');
 $listkey = $stats_cel->get_trunk_list(false);
 
 $tpl_statistics = &$_TPL->get_module('statistics');
+$tpl_statistics->set_csv('table');
 $tpl_statistics->set_baseurl('statistics/cdr/index');
 
-$tpl_statistics->set_name('cel');
+$tpl_statistics->set_name('table_trunk');
 $tpl_statistics->set_data_custom('axetype','trunk');
 $tpl_statistics->set_rows('row',$listkey,'key');
 
@@ -94,10 +95,11 @@ $tpl_statistics->add_col('max_concurrent_calls_total',
 
 $tpl_statistics->gener_table();
 $table_trunk = $tpl_statistics->render_html(false);
+$table_trunk_rendercsv = $tpl_statistics->render_csv();
 $tpl_statistics->reset_all();
 
 $listkey = $stats_cel->get_trunk_list('only');
-$tpl_statistics->set_name('cel');
+$tpl_statistics->set_name('table_intern');
 $tpl_statistics->set_data_custom('axetype','trunk');
 $tpl_statistics->set_rows('row',$listkey,'key');
 
@@ -122,6 +124,7 @@ $tpl_statistics->add_col('max_concurrent_calls',
 
 $tpl_statistics->gener_table();
 $table_intern = $tpl_statistics->render_html(false,true,false,false);
+$table_intern_rendercsv = $tpl_statistics->render_csv();
 $tpl_statistics->reset_all();
 
 $tpl_statistics->set_name('top10_call_duration_intern');
@@ -180,9 +183,11 @@ $data = $stats_cel->get_top10('call_price');
 $top10_call_price = $tpl_statistics->render_top10($data);
 $tpl_statistics->reset_all();
 
-if($act === 'exportcsv')
+if($act === 'exportcsv'
+&& isset($_GET['name']))
 {
-	$_TPL->set_var('result',$tpl_statistics->render_csv());
+    $varname = $_GET['name']."_rendercsv";
+	$_TPL->set_var('result',${$varname});
 	$_TPL->set_var('name','calls_summary_by_trunk');
 	$arr = array();
 	$arr['dbeg'] = date('Y-m-d').' 00:00:01';
@@ -201,7 +206,7 @@ $_TPL->set_var('top10_call_nb_out',$top10_call_nb_out);
 $_TPL->set_var('top10_call_price',$top10_call_price);
 $_TPL->set_var('table_trunk',$table_trunk);
 $_TPL->set_var('table_intern',$table_intern);
-$_TPL->set_var('showdashboard_cdr',true);
+$_TPL->set_var('showdashboard_cdr',false);
 $_TPL->set_var('xivo_jqplot',$xivo_jqplot);
 $_TPL->set_var('mem_info',(memory_get_usage() - $base_memory));
 $_TPL->set_var('bench',(microtime(true) - $bench_start));

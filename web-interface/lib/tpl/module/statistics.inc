@@ -25,6 +25,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	private	 $_xs			= null;
 	private  $_basedir		= '';
 	private  $_baseurl		= '';
+	private  $_csv			= '';
 	private  $_name			= '';
 	private  $_col_struct	= '';
 	private  $_row_key		= '';
@@ -43,6 +44,11 @@ class dwho_tpl_statistics extends dwho_tpl_module
 	public function __construct(&$tpl)
 	{
 		$this->_tpl = &$tpl;
+	}
+
+	public function set_csv($type)
+	{
+		$this->_csv = $type;
 	}
 
 	public function set_name($name)
@@ -594,7 +600,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		$format = $data['type'];
 
 		$return = '';
-		$return .= '<table>';
+		$return .= '<table id="'.$this->_name.'">';
 
 		$return .= '<thead>';
 		$return .= '<tr class="sb-top">';
@@ -656,13 +662,15 @@ class dwho_tpl_statistics extends dwho_tpl_module
 
 		$return .= '<tfoot>';
 		$return .= '<tr> ';
-		$return .= '<td class="td-left" colspan="2">&nbsp;'.$this->bbf('total').'</td>';
+		$return .= '<td class="td-left" colspan="2">'.$this->bbf('total').'</td>';
 		$eval = array('format' => $format,'result' => $total);
 		$return .= '<td class="td-right">'.$this->eval_result_data($eval).'</td>';
 		$return .= '</tr>';
 		$return .= '</tfoot>';
 
 		$return .= '</table>';
+		
+		$url = &$this->_tpl->get_module('url');
 
 		$return .= $divtoken;
 
@@ -694,7 +702,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		}
 
 		$return = '';
-		$return .= '<table>';
+		$return .= '<table id="'.$this->_name.'">';
 
 		if ($colstruct === true)
 		{
@@ -777,9 +785,11 @@ class dwho_tpl_statistics extends dwho_tpl_module
 
 			if ($axetype === 'month')
 			{
+				$time = strtotime($infocal['dmonth']);
 				$day_num = $coldata['day'];
-				$day_time = strtotime($infocal['dmonth'].'-'.$day_num);
-				$week_num = date('W',$day_time);
+				$year = date('Y',$time);
+				$month = date('m',$time);
+				$week_num = dwho_date::get_week_num("$year-$month-$day_num");
 				if ($week_num !== $week_process)
 				{
 					$week_process = $week_num;
@@ -790,7 +800,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 											array(	'axetype' => 'week',
 													'confid' => $idconf,
 													'key' => $objectkey,
-													'dweek' => date('Y-m-d',$day_time))));
+													'dweek' => "$year-$month-$day_num")));
 					$return .= '</th>';
 					$return .= '</tr>';
 				}
@@ -858,6 +868,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 														'dmonth' => date('Y-m',$month_time))));
 						break;
 					case 'type':
+            			$objectkey = $coldata['key'];
 						$return .= $url->href_html($this->bbf($identity,$bbf),
 												$this->_baseurl,array_merge($qry,
 												array(	'axetype' => 'day',
@@ -920,16 +931,34 @@ class dwho_tpl_statistics extends dwho_tpl_module
 
 		$return .= '</table>';
 
-		$get = $url->_query->raw;
-		$get = array_merge($get,array('act' => 'exportcsv'));
+		$query = array_merge($url->_query->raw,array('act' => 'exportcsv'));
 
-		$href = $url->href($this->_baseurl,$get);
-/*
-		$return .= '<p class="it-exportcsv">';
-		$return .= '<input type="button" name="exportcsv" value="'.$this->bbf('tbl-lnk-expotcsv').'" onclick="window.location.href=\''.$href.'\'" />';
-		#$return .= $url->href_html($this->bbf('tbl-lnk-expotcsv'),$this->_baseurl,$get);
+		$return .= '<p class="exportcsv">';
+		if($this->_csv === 'table')
+		{
+		    $query = array_merge($query,array('name' => $this->_name));
+		    $return .= $url->href_html($url->img_html('img/site/utils/app-csv.png',
+						       $this->bbf('tbl-lnk-expotcsv'),
+						       'border="0"'),
+					$this->_baseurl,
+					$query,
+					#'onclick="$(\'#'.$this->_name.'\').table2CSV();return(false);"',
+					#'onclick="exportToCSV(\''.$this->_name.'\');return(false);"',
+					$this->bbf('tbl-lnk-expotcsv'));
+		}
+		else
+		{
+		    $return .= $url->href_html($url->img_html('img/site/utils/app-csv.png',
+						       $this->bbf('tbl-lnk-expotcsv'),
+						       'border="0"'),
+					$this->_baseurl,
+					$query,
+					null,
+					$this->bbf('tbl-lnk-expotcsv'));
+		}
 		$return .= '</p>';
-*/
+		$return .= '<div class="clearboth"></div>';
+
 		return( $return );
 	}
 

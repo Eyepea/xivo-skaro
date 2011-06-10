@@ -55,17 +55,19 @@ $element = $this->get_var('element');
 <?php endif; ?>
 //-->
 </script>
+
 <dl>
-<?php
-	if(xivo_user::chk_acl_section('service/statistics/call_center') === true):
-?>
 	<dt>
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('mn_left_name_call_center');?></span>
+		<span class="span-center"><?=$this->bbf('mn_left_name_statistics');?></span>
 		<span class="span-right">&nbsp;</span>
 	</dt>
+<?php
+if(xivo_user::chk_acl_section('service/statistics/call_center') === true):
+?>
 	<dd>
 		<dl>
+			<dt><?=$this->bbf('mn_left_ti_call_center')?></dt>
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_home_call_center'),
 						   'statistics/call_center/index');?>
@@ -89,8 +91,7 @@ $element = $this->get_var('element');
 			$params['axetype'] = $axetype;
 		if (is_null($conf) === false)
 			$params['confid'] = $conf['id'];
-		if (is_null($infocal) === false)
-		{
+		if (is_null($infocal) === false):
 			$params['dbeg'] = $infocal['dbeg'];
 			$params['dend'] = $infocal['dend'];
 			if (isset($infocal['dday']) === true)
@@ -101,9 +102,8 @@ $element = $this->get_var('element');
 				$params['dmonth'] = $infocal['dmonth'];
 			if (isset($infocal['dyear']) === true)
 				$params['dyear'] = $infocal['dyear'];
-		}
+		endif;
 ?>
-			<!-- <dt><?=$this->bbf('mn_left_ti_statistics_call_center');?></dt> -->
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-1'),
 						   'statistics/call_center/stats1',(($pi == '/stats1') ? null : $params));?>
@@ -126,51 +126,32 @@ $element = $this->get_var('element');
 			</dd>
 <?php
 	endif;
+endif;
+    if(xivo_user::chk_acl_section('service/statistics/cdr') === true):
 ?>
-		</dl>
-	</dd>
-	<dd class="b-nosize">
-		<span class="span-left">&nbsp;</span>
-		<span class="span-center">&nbsp;</span>
-		<span class="span-right">&nbsp;</span>
-	</dd>
-<?php
-	endif;
-?>
-<?php
-	if(xivo_user::chk_acl_section('service/statistics/cdr') === true):
-?>
-	<dt>
-		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('mn_left_name_cdr');?></span>
-		<span class="span-right">&nbsp;</span>
-	</dt>
-	<dd>
-		<dl>
+			<dt><?=$this->bbf('mn_left_ti_cel')?></dt>
 			<dd id="mn-1">
-				<?=$url->href_html($this->bbf('mn_left_home_cdr'),
+				<?=$url->href_html($this->bbf('mn_left_home_cel'),
 						   'statistics/cdr/index');?>
 			</dd>
-			<!--
 			<dd id="mn-2">
-				<?=$url->href_html($this->bbf('mn_left_search_cdr'),
+				<?=$url->href_html($this->bbf('mn_left_search_cel'),
 						   'statistics/cdr/search');?>
 			</dd>
-			 -->
 			<dd id="mn-3">
 				<?=$url->href_html($this->bbf('mn_left_advanced_search_cdr'),
 						   'statistics/cdr/advanced_search');?>
 			</dd>
 		</dl>
 	</dd>
+<?php
+    endif;
+?>
 	<dd class="b-nosize">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center">&nbsp;</span>
 		<span class="span-right">&nbsp;</span>
 	</dd>
-<?php
-	endif;
-?>
 </dl>
 
 <?php

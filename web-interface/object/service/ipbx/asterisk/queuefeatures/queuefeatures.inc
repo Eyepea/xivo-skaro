@@ -51,7 +51,7 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function get_by_name($name)	
+	function get_by_name($name)
 	{
 		return($this->_dso->get_by_name($name));
 	}

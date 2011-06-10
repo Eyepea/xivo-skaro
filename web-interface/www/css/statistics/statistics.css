@@ -53,5 +53,4 @@
 
 .ui-progressbar-value {background-image: url(/img/pbar-ani.gif);}
 
-.it-exportcsv {margin: 4px;}
-.it-exportcsv a {font-style: bold;}
+.exportcsv {margin: 1px;float: right;}

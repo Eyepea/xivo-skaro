@@ -39,6 +39,7 @@
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/dwho/form.js'));?>"></script>
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/xivo.js'));?>"></script>
 
+<script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('js/utils/func.js'));?>"></script>
 
 <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$this->file_time($this->url('extra-libs/jquery-ui/css/ui-lightness/jquery-ui.css'));?>">
 <script type="text/javascript" charset="utf-8" src="<?=$this->file_time($this->url('extra-libs/jquery/jquery.min.js'));?>"></script>

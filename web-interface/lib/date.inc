@@ -209,6 +209,11 @@ abstract class dwho_date
 		$rs['end'] = strtotime("{$year}-W{$week}-7");
 		return($rs);
 	}
+		
+	public static function get_week_num($date)
+	{
+		return(date('W',self::all_to_unixtime($date)));
+	}
 	
 	public static function get_listhour($start=null,$end=null)
 	{
