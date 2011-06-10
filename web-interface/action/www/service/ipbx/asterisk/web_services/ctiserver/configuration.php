@@ -396,7 +396,8 @@ switch($act)
 					'userstatus' => $pf['presence'],
 					'phonestatus' => "itm_phonestatus",
 					'agentstatus' => "itm_agentstatus",
-					'channelstatus' => "itm_channelstatus"
+					'channelstatus' => "itm_channelstatus",
+					'callcenter_type' => $pf['callcenter_type']
 				);
                                 $out['functions']["itm_functions_".$pfid] = explode(',', $pf['funcs']);
                                 $out['services']["itm_services_".$pfid] = explode(',', $pf['services']);

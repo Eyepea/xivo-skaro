@@ -395,3 +395,12 @@ Configuration
 
 ; acl(service-statistics-call_center-data)
 Data
+
+; acl(service-callcenter-general)
+General
+
+; acl(service-callcenter-tags)
+Tags
+
+; acl(service-callcenter-campaigns)
+Campaigns

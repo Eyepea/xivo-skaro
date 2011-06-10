@@ -69,7 +69,10 @@ $funcsavail = array(
     'fax' => $_TPL->bbf('fax'),
     'features' => $_TPL->bbf('features'),
     'history' => $_TPL->bbf('history'),
-    'database' => $_TPL->bbf('database'),
+		'database' => $_TPL->bbf('database'),
+		// merge from callcenter campaigns. still exists ?
+    'supervisor' => $_TPL->bbf('func-supervisor'),
+    'administrator' => $_TPL->bbf('func-administrator'),
 );
 
 $ctixlets = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));

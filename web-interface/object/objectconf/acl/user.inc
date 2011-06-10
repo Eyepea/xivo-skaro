@@ -114,6 +114,12 @@ $array['tree']['service']['cti']['sheets']['sheetevents']             = true;
 $array['tree']['service']['cti']['control_system']                    = array();
 $array['tree']['service']['cti']['control_system']['restart']         = true;
 
+// callcenter
+$array['tree']['service']['callcenter'] = array();
+$array['tree']['service']['callcenter']['general']     = true;
+$array['tree']['service']['callcenter']['tags']        = true;
+$array['tree']['service']['callcenter']['campaigns']   = true;
+
 // monitoring
 $array['tree']['service']['monitoring'] = array();
 $array['tree']['service']['monitoring']['control_system'] = array();

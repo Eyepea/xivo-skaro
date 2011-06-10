@@ -362,6 +362,20 @@ $array['module']['dundipeer']['datastorage'] = true;
 $array['module']['dundimapping'] = array();
 $array['module']['dundimapping']['datastorage'] = true;
 
+$array['module']['campaign_general'] = array();
+$array['module']['campaign_general']['datastorage'] = true;
+
+$array['module']['campaign_tag'] = array();
+$array['module']['campaign_tag']['datastorage'] = true;
+
+$array['module']['campaign_campaign'] = array();
+$array['module']['campaign_campaign']['datastorage'] = true;
+
+$array['module']['campaign_campaign_filter'] = array();
+$array['module']['campaign_campaign_filter']['datastorage'] = true;
+
+
+
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX]    = array('module' => 'useriax');

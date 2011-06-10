@@ -262,6 +262,9 @@ Compétences
 ; acl(service-ipbx-call_center-queueskillrules)
 Règles
 
+; acl(service-ipbx-call_center-campaigns)
+Campagnes
+
 ; acl(service-graphs)
 Graphiques
 
@@ -333,3 +336,16 @@ Recherche
 
 ; acl(service-statistics-cdr-advanced_search)
 Recherche avancées
+
+; acl(service-callcenter)
+Centre d'appel
+
+; acl(service-callcenter-general)
+Général
+
+; acl(service-callcenter-tags)
+Étiquettes
+
+; acl(service-callcenter-campaigns)
+Campagnes
+

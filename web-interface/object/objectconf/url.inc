@@ -164,6 +164,14 @@ $array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.
 $array['service/ipbx/json/restricted/pbx_settings/meetme'] = 'service/ipbx/json.php/restricted/pbx_settings/meetme/';
 $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/json.php/restricted/pbx_settings/voicemail/';
 
+$array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
+$array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
+$array['service/ipbx/json/restricted/call_management/cdr'] = 'service/ipbx/json.php/restricted/call_management/cdr/';
+$array['service/ipbx/json/restricted/trunk_management/sip'] = 'service/ipbx/json.php/restricted/trunk_management/sip/';
+$array['service/ipbx/json/restricted/trunk_management/iax'] = 'service/ipbx/json.php/restricted/trunk_management/iax/';
+$array['service/ipbx/json/restricted/trunk_management/custom'] = 'service/ipbx/json.php/restricted/trunk_management/custom/';
+$array['service/ipbx/json/restricted/pbx_services/phonebook'] = 'service/ipbx/json.php/restricted/pbx_services/phonebook/';
+
 $array['service/ipbx/json/private/pbx_settings/users'] = 'service/ipbx/json.php/private/pbx_settings/users/';
 $array['service/ipbx/json/private/pbx_settings/lines'] = 'service/ipbx/json.php/private/pbx_settings/lines/';
 $array['service/ipbx/json/private/pbx_settings/devices'] = 'service/ipbx/json.php/private/pbx_settings/devices/';
@@ -246,13 +254,17 @@ $array['service/ipbx/call_center/queueskillrules'] = 'service/ipbx/index.php/cal
 
 $array['service/ipbx/json/restricted/call_center/agents'] = 'service/ipbx/json.php/restricted/call_center/agents/';
 $array['service/ipbx/json/restricted/call_center/queues'] = 'service/ipbx/json.php/restricted/call_center/queues/';
+
 $array['service/ipbx/json/restricted/call_center/queuepenalty'] = 'service/ipbx/json.php/restricted/call_center/queuepenalty/';
 $array['service/ipbx/json/restricted/call_center/queueskills'] = 'service/ipbx/json.php/restricted/call_center/queueskills/';
 $array['service/ipbx/json/restricted/call_center/queueskillrules'] = 'service/ipbx/json.php/restricted/call_center/queueskillrules/';
+$array['service/ipbx/json/restricted/call_center/campaigns'] = 'service/ipbx/json.php/restricted/call_center/campaigns/';
 
 $array['service/ipbx/json/private/call_center/agents'] = 'service/ipbx/json.php/private/call_center/agents/';
 $array['service/ipbx/json/private/call_center/queues'] = 'service/ipbx/json.php/private/call_center/queues/';
+
 $array['service/ipbx/json/private/call_center/queuepenalty'] = 'service/ipbx/json.php/private/call_center/queuepenalty/';
+$array['service/ipbx/json/private/call_center/campaigns'] = 'service/ipbx/json.php/private/call_center/campaigns/';
 
 $array['service/ipbx/ui/call_center/agents'] = 'service/ipbx/ui.php/call_center/agents/';
 $array['service/ipbx/ui/call_center/queues'] = 'service/ipbx/ui.php/call_center/queues/';
@@ -317,6 +329,11 @@ $array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/j
 $array['service/ipbx/json/private/ctiserver/configuration']    = 'service/ipbx/json.php/private/ctiserver/configuration/';
 $array['service/ipbx/json/private/queuelogger/configuration']  = 'service/ipbx/json.php/private/queuelogger/configuration';
 
+// callcenter
+$array['callcenter']                    = 'callcenter/index.php';
+$array['callcenter/general']            = 'callcenter/index.php/general';
+$array['callcenter/tags']               = 'callcenter/index.php/tags';
+$array['callcenter/campaigns']          = 'callcenter/index.php/campaigns';
 
 /*
  * MUNIN STATS SECTION

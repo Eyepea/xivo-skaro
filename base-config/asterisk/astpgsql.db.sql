@@ -2885,6 +2885,104 @@ CREATE TABLE "dahdi_group" (
 -- INSERT INTO dahdi_group VALUES (3,'from-extern','fxs_ks',NULL,NULL,NULL, '33');
 
 
+DROP TABLE IF EXISTS "callcenter_campaigns_general";
+CREATE TABLE "callcenter_campaigns_general" (
+	"id"                        SERIAL,
+	"records_path"              VARCHAR(2038) DEFAULT NULL,
+	"records_announce"          VARCHAR(255) DEFAULT NULL,
+
+	"purge_syst_tagged_delay"   INTEGER DEFAULT 15552000, -- 6 months
+	"purge_syst_tagged_at"      VARCHAR(5) DEFAULT '00:00',
+	"purge_syst_untagged_delay" INTEGER DEFAULT 2592000,  -- 30 days
+	"purge_syst_untagged_at"    VARCHAR(5) DEFAULT '00:00',
+	"purge_punct_delay"         INTEGER DEFAULT 15552000, -- 6 months
+	"purge_punct_at"            VARCHAR(5) DEFAULT '00:00',
+
+	-- SVI closed choices (press #1, #2, ...) VARIABLES
+	-- i.e: "lang=XIVO_LANG;os=XIVO_OS"
+	"svichoices"                TEXT,
+	-- SVI open entries
+	-- i.e: "creditcard=XIVO_CREDITCARDNO;password=XIVO_CREDITCARDPWD"
+	"svientries"                TEXT,
+	-- SVI extra defined variables (retrieved from ERP, ...)
+	-- i.e: "customer=CUSTOMERNO"
+	"svivariables"              TEXT,
+	PRIMARY KEY ("id")
+);
+
+INSERT INTO "callcenter_campaigns_general" VALUES(1,NULL,NULL,15552000,'00:00',2592000,'00:00',15552000,'00:00',NULL,NULL,NULL);
+
+
+DROP TABLE IF EXISTS "callcenter_campaigns_campaign";
+CREATE TABLE "callcenter_campaigns_campaign" (
+	"id"               SERIAL,
+	"name"             VARCHAR(255) UNIQUE NOT NULL,
+	"start"            VARCHAR(255) NOT NULL,
+	"end"              VARCHAR(255) DEFAULT NULL,
+	"created_at"       VARCHAR(255),
+	PRIMARY KEY ("id")
+);
+
+
+DROP TABLE IF EXISTS "callcenter_campaigns_campaign_filter";
+DROP TYPE  IF EXISTS "callcenter_campaigns_campaign_filter_type";
+
+CREATE TYPE "callcenter_campaigns_campaign_filter_type" AS ENUM ('agent','queue','skill','way');
+CREATE TABLE "callcenter_campaigns_campaign_filter" (
+	"campaign_id"      SERIAL,
+	"type"             callcenter_campaigns_campaign_filter_type NOT NULL,
+	"value"            VARCHAR(255) NOT NULL,
+	PRIMARY KEY ("campaign_id","type","value")
+);
+
+
+DROP TABLE IF EXISTS "callcenter_campaigns_tag";
+DROP TYPE  IF EXISTS "callcenter_campaigns_tag_action";
+
+CREATE TYPE "callcenter_campaigns_tag_action" AS ENUM ('removenow','keep','purge');
+CREATE TABLE "callcenter_campaigns_tag" (
+	"name"             VARCHAR(32),
+	"label"            VARCHAR(255) NOT NULL,
+	"action"           callcenter_campaigns_tag_action NOT NULL,
+	PRIMARY KEY ("name")
+);
+
+INSERT INTO "callcenter_campaigns_tag" VALUES('notag', 'no tag', 'purge');
+
+
+DROP TABLE IF EXISTS "callcenter_campaigns_records";
+CREATE TABLE "callcenter_campaigns_records" (
+	"id"                SERIAL,
+	"uniqueid"          VARCHAR(32) NOT NULL,
+	"channel"           VARCHAR(32) NOT NULL,
+	"filename"          VARCHAR(64) NOT NULL,
+	"campaignkind"      VARCHAR(1) NOT NULL,
+
+	"direction"         VARCHAR(1) NOT NULL,
+	"calleridnum"       VARCHAR(32) NOT NULL,
+
+	"callstart"         FLOAT NOT NULL,
+	"callstop"          FLOAT NULL,
+	"callduration"      INTEGER NULL,
+	"callstatus"        VARCHAR(16) NOT NULL,
+	"recordstatus"      VARCHAR(16) NOT NULL,
+
+	"skillrules"        VARCHAR(255) NOT NULL,
+	"queuenames"        VARCHAR(255) NOT NULL,
+	"agentnames"        VARCHAR(255) NOT NULL,
+	"agentnumbers"      VARCHAR(255) NOT NULL,
+	"agentrights"       VARCHAR(255) NOT NULL,
+
+	"callrecordtag"     VARCHAR(16) NULL,
+	"callrecordcomment" VARCHAR(255) NULL,
+
+	"svientries"        VARCHAR(255) NULL,
+	"svichoices"        VARCHAR(255) NULL,
+	"svivariables"      VARCHAR(255) NULL,
+	PRIMARY KEY ("id")
+);
+
+
 -- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '

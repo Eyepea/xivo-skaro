@@ -22,49 +22,58 @@ Transfer on busy
 ; fwdrna
 Transfer on no-answer
 
-; presence 
+
+
+; func-presence 
 Presence permission
 
-; switchboard 
+; func-switchboard 
 Switchboard
 
-; customerinfo 
+; func-customerinfo 
 Customer info permission
 
-; agents
+; func-agents
 Agents
 
-; search 
+; func-search 
 Search
 
-; dial 
+; func-dial 
 Dialing permission
 
-; chitchat
+; func-chitchat
 Instant messaging
 
-; conference
+; func-conference
 Conference room permission
 
-; directory
+; func-directory
 Directory
 
-; fax
+; func-fax
 Fax permission
 
-; features
+; func-features
 Features permission
 
-; history
+; func-history
 History permission
 
-; database
+; func-database
 Database write permission
 
+; func-supervisor
+Grant a supervisor right for records campaigns
 
+; func-administrator
+Grant an administrator right for records campaigns
 
 ; pref-logagent
 Agents (Dis)connection from "Identity" xlet
+
+; pref-loginwindow-url
+Url to send once connected
 
 ; pref-pauseagent
 Agents pause/unpause from "Identity" xlet
@@ -175,7 +184,10 @@ Operator
 MyDirectory
 
 ; xlet-callcampaign
-Call campaign
+Call campaigns
+
+; xlet-record
+Record campaigns
 
 ; xlet-tabber
 Tabber
