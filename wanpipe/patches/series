@@ -4,6 +4,5 @@ tools_fixes
 buildsys_wan_api_utils_fixes
 buildsys_bwm_fixes
 buildsys_wancfg_fixes
-buildsys_wan_aftup_fixes
 buildsys_setup_broken
 buildsys_setup_voiceonly
