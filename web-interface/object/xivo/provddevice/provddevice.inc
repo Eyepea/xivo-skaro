@@ -316,6 +316,15 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 	{
 		return($this->remove_config($deviceid));
 	}
+	
+	public function mode_autoprov($deviceid,$synchronize=false)
+	{
+		if (($confid = $this->_provdconfig->autocreate()) === false
+		|| $this->update_configid($deviceid,$confid,$synchronize) === false)
+			return(false);
+			
+		return(true);
+	}
 }
 
 ?>

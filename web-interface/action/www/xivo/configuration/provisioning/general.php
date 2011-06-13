@@ -23,12 +23,8 @@ $provdconfig = &$_XOBJ->get_module('provdconfig');
 $appprovisionning = &$_XOBJ->get_application('provisioning');
 
 $info = array();
-
-if (($download_server = $provdplugin->get_infos_server()) !== false)
-	$info['download_server'] = $download_server['value'];
-	
+$info['configure'] = $provdplugin->get_infos_server();
 $info['provd'] = $appprovisionning->get();
-
 
 if(isset($_QR['act']) === true
 && $_QR['act'] === 'reset')
@@ -40,7 +36,7 @@ if(isset($_QR['act']) === true
 }
 
 if(isset($_QR['fm_send']) === true
-&& isset($_QR['download_server']) === true
+&& isset($_QR['configure']) === true
 && isset($_QR['provd']) === true)
 {
 	if($appprovisionning->set($_QR['provd']) === false)
@@ -48,8 +44,8 @@ if(isset($_QR['fm_send']) === true
 	else
 	{
 		dwho_report::push('info','successfully_updated');
-		if($provdplugin->edit_infos_server($_QR['download_server']) === false)
-			dwho_report::push('error','can\'t update dowload server');
+		if($provdplugin->edit_infos_server($_QR['configure']) === false)
+			dwho_report::push('error','can\'t update configure server');
 				
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/general'));
 	}

@@ -233,6 +233,24 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return(true);
 	}
 	
+	public function autocreate()
+	{
+		if (is_array($arr) === false)
+			return(false);
+		
+		$uri = $this->_build_uri(array('autocreate'));
+		$data = array('' => '');
+		$rs = $this->request_post($uri,$data);
+		
+		if($this->_status_code !== 201)
+		{
+			dwho_report::push('error', 'fail to create autocreate config');
+			return(false);
+		}
+		
+		return($rs['id']);
+	}
+	
 	public function rebuild_required_config()
 	{
 		$this->delete('autoprov');

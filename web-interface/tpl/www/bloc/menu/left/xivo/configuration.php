@@ -66,13 +66,6 @@ $dhtml = &$this->get_module('dhtml');
 							      'xivo/configuration/manage/certificate',
 							      'act=list');?>
 			</dd>
-			<!--
-			<dd id="mn-manage--dahdihardware">
-				<?=$url->href_html($this->bbf('mn_left_manage-dahdihardware'),
-							      'xivo/configuration/manage/dahdihardware',
-							      'act=list');?>
-			</dd>
-			 -->
 		</dl>
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_network');?></dt>

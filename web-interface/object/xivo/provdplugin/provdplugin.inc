@@ -163,14 +163,38 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 	
 	public function get_infos_server()
 	{
-		$uri = $this->_build_uri(array('configure','server'));
-		return($this->get_params($uri));
+		$uri = $this->_build_uri(array('configure'));
+		if (($rs = $this->request_get($uri)) === false
+		|| isset($rs['params']) === false)
+		    return(false);
+		    
+		$params = $rs['params'];
+		$ret = array();
+		
+		foreach($params as $k => &$r)
+		{
+		    $ret[$k] = $r;
+		    $uri = $this->_build_uri(array('configure',$k));
+		    $ret[$k] = array_merge($ret[$k], $this->get_params($uri));
+		}
+		
+		return($ret);
 	}
 	
-	public function edit_infos_server($value)
+	public function edit_infos_server($arr)
 	{
-		$uri = $this->_build_uri(array('configure','server'));
-		return($this->edit_params($uri,$value));
+	    $err = 0;
+		foreach($arr as $k => &$value)
+		{
+    		$uri = $this->_build_uri(array('configure',$k));
+    		if ($this->edit_params($uri,$value) === false)
+    		    $err++;
+		}
+		
+		if ($err > 0)
+		    return(false);
+		    
+		return(true);
 	}
 	
 	public function install($name)

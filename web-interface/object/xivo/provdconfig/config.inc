@@ -34,7 +34,7 @@ $array['base']['raw_config']['sccp_call_managers'] = array();
 // Config autoprov
 $array['autoprov'] = array();
 $array['autoprov']['id'] = 'autoprov';
-$array['autoprov']['role'] = 'default';
+$array['autoprov']['role'] = 'autocreate';
 $array['autoprov']['parent_ids'] = array('base','defaultconfigdevice');
 
 $array['autoprov']['raw_config'] = array();

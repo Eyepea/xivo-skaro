@@ -2,14 +2,26 @@
 ; title_content_name
 Provisioning general settings
 
-; fld_download_server
-Download server
+; fld_provd_server
+General Configuration
 
 ; fm_download_server
-Server:  
+Url:  
 
-; fld_provd_server_configuration
-Server configuration
+; fm_ftp_proxy
+FTP Proxy:
+
+; fm_http_proxy
+HTTP Proxy:
+
+; fm_https_proxy
+HTTPS Proxy:
+
+; fld_provd_general_configuration
+Provd Configuration
+
+; fld_provd_rest_configuration
+API REST configuration
 
 ; fm_provd_net4_ip
 IP server:

@@ -57,8 +57,7 @@ switch($act)
 			$http_response->set_status_line(204);
 		elseif ($data['code'] === 'autoprov')
 		{
-			$provddevice->update_configid($devicefeatures['deviceid'],'autoprov');
-			$provddevice->synchronize($devicefeatures['deviceid']);
+			$provddevice->mode_autoprov($devicefeatures['deviceid'],true);
 			echo "Autoprov configured\n";
 			$http_response->set_status_line(200);
 		}

@@ -1,15 +1,27 @@
 
 ; title_content_name
-Approvisionnement: configuration général
+Approvisionnement: configuration
 
-; fld_download_server
-Serveur de téléchargement
+; fld_provd_server
+Configuration du serveur
 
 ; fm_download_server
 Url :  
 
-; fld_provd_server_configuration
-Configuration du serveur
+; fm_ftp_proxy
+Proxy FTP :
+
+; fm_http_proxy
+Proxy HTTP :
+
+; fm_https_proxy
+Proxy HTTPS :
+
+; fld_provd_general_configuration
+Configuration de provd
+
+; fld_provd_rest_configuration
+Configuration de l'API REST
 
 ; fm_provd_net4_ip
 Adresse IP:

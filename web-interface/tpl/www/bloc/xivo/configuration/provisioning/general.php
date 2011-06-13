@@ -38,19 +38,44 @@ $dhtml   = &$this->get_module('dhtml');
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 
 <fieldset id="fld-registrar">
-	<legend><?=$this->bbf('fld_download_server');?></legend>
+	<legend><?=$this->bbf('fld_provd_server');?></legend>
 <?php
 	echo $form->text(array('desc'	=> $this->bbf('fm_download_server'),
-				  'name'	  	=> 'download_server',
-				  'labelid'		=> 'download_server',
+				  'name'	  	=> 'configure[server]',
+				  'labelid'		=> 'server',
 				  'size'	  	=> 40,
-				  'value'	  	=> $this->get_var('info','download_server'),
-				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'download_server'))));
+	              'help'		=> $this->get_var('info','configure','server','description'),
+				  'value'	  	=> $this->get_var('info','configure','server','value'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'server'))));
+	
+	echo $form->text(array('desc'	=> $this->bbf('fm_ftp_proxy'),
+				  'name'	  	=> 'configure[ftp_proxy]',
+				  'labelid'		=> 'ftp_proxy',
+				  'size'	  	=> 40,
+	              'help'		=> $this->get_var('info','configure','ftp_proxy','description'),
+				  'value'	  	=> $this->get_var('info','configure','ftp_proxy','value'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'ftp_proxy'))));
+	
+	echo $form->text(array('desc'	=> $this->bbf('fm_http_proxy'),
+				  'name'	  	=> 'configure[http_proxy]',
+				  'labelid'		=> 'http_proxy',
+				  'size'	  	=> 40,
+	              'help'		=> $this->get_var('info','configure','http_proxy','description'),
+				  'value'	  	=> $this->get_var('info','configure','http_proxy','value'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'http_proxy'))));
+	
+	echo $form->text(array('desc'	=> $this->bbf('fm_https_proxy'),
+				  'name'	  	=> 'configure[https_proxy]',
+				  'labelid'		=> 'https_proxy',
+				  'size'	  	=> 40,
+	              'help'		=> $this->get_var('info','configure','https_proxy','description'),
+				  'value'	  	=> $this->get_var('info','configure','https_proxy','value'),
+				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'https_proxy'))));
 ?>
 </fieldset>
 
 <fieldset id="fld-registrar">
-	<legend><?=$this->bbf('fld_provd_server_configuration');?></legend>
+	<legend><?=$this->bbf('fld_provd_general_configuration');?></legend>
 <?php
 	echo $form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip'),
 				  'name'	=> 'provd[net4_ip]',
@@ -74,7 +99,7 @@ $dhtml   = &$this->get_module('dhtml');
 </fieldset>
 
 <fieldset id="fld-registrar">
-	<legend><?=$this->bbf('fld_provd_server_configuration');?></legend>
+	<legend><?=$this->bbf('fld_provd_rest_configuration');?></legend>
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_provd_net4_ip_rest'),
 				  'name'	=> 'provd[net4_ip_rest]',
