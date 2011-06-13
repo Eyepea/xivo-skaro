@@ -66,7 +66,7 @@ UPDATE_REQUESTS = [
 
 class WEBI(Interfaces):
     kind = 'WEBI'
-    sep = '\n'
+    sep = '\\n' # this instead of \n is done in order to match wrong WEBI implementation
     def __init__(self, ctid):
         Interfaces.__init__(self, ctid)
         return

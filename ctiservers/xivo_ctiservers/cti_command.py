@@ -31,8 +31,6 @@ import threading
 import time
 from xivo_ctiservers import xivo_webservices
 
-log = logging.getLogger('cti_command')
-
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
 
@@ -90,6 +88,7 @@ class Command:
         self.ctid = self.connection.ctid
         self.commanddict = thiscommand
         self.othermessages = list()
+        self.log = logging.getLogger('cti_command(%s:%d)' % self.connection.requester)
         return
 
     def parse(self):
@@ -121,11 +120,11 @@ class Command:
                 regcommands = self.rinnerdata.get_user_permissions('regcommands', self.ruserid)
                 if regcommands:
                     if self.command not in regcommands:
-                        log.warning('user %s/%s : unallowed command %s'
+                        self.log.warning('user %s/%s : unallowed command %s'
                                     % (self.ripbxid, self.ruserid, self.command))
                         messagebase['warning_string'] = 'unallowed'
                 else:
-                    log.warning('user %s/%s : unallowed command %s - empty regcommands'
+                    self.log.warning('user %s/%s : unallowed command %s - empty regcommands'
                                 % (self.ripbxid, self.ruserid, self.command))
                     messagebase['warning_string'] = 'no_regcommands'
 
@@ -140,13 +139,13 @@ class Command:
                     else:
                         messagebase.update(ztmp)
                 except Exception:
-                    log.exception('calling %s' % methodname)
+                    self.log.exception('calling %s' % methodname)
                     messagebase['warning_string'] = 'exception'
             else:
-                log.warning('no such method %s' % methodname)
+                self.log.warning('no such method %s' % methodname)
                 messagebase['warning_string'] = 'unimplemented'
         else:
-            log.warning('unknown command %s' % self.command)
+            self.log.warning('unknown command %s' % self.command)
             messagebase['warning_string'] = 'unknown'
 
         ackmessage = { 'message' : messagebase }
@@ -162,19 +161,19 @@ class Command:
         return z
 
     def regcommand_login_id(self):
-        head = '%s:%d - LOGINFAIL - login_id' % (self.connection.requester)
+        head = 'LOGINFAIL - login_id'
         missings = []
         for argum in COMPULSORY_LOGIN_ID:
             if argum not in self.commanddict:
                 missings.append(argum)
         if len(missings) > 0:
-            log.warning('%s - missing args - %s' % (head, missings))
+            self.log.warning('%s - missing args - %s' % (head, missings))
             return 'missing:%s' % ','.join(missings)
 
         # warns that the former session did not exit correctly (on a given computer)
         if 'lastlogout-stopper' in self.commanddict and 'lastlogout-datetime' in self.commanddict:
             if not self.commanddict['lastlogout-stopper'] or not self.commanddict['lastlogout-datetime']:
-                log.warning('lastlogout userlogin=%s stopper=%s datetime=%s'
+                self.log.warning('lastlogout userlogin=%s stopper=%s datetime=%s'
                             % (self.commanddict['userlogin'],
                                self.commanddict['lastlogout-stopper'],
                                self.commanddict['lastlogout-datetime']))
@@ -182,7 +181,7 @@ class Command:
         # trivial checks (version, client kind) dealing with the software used
         xivoversion = self.commanddict.get('xivoversion')
         if xivoversion != XIVOVERSION_NUM:
-            log.warning('%s - wrong XiVO major version : %s' % (head, xivoversion))
+            self.log.warning('%s - wrong XiVO major version : %s' % (head, xivoversion))
             return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
         rcsversion = '%s-%s' % (self.commanddict.get('git_date'), self.commanddict.get('git_hash'))
 
@@ -191,14 +190,14 @@ class Command:
         if whatsmyos.lower() not in ['x11', 'win', 'mac',
                                      'ctiserver',
                                      'web', 'android', 'ios']:
-            log.warning('%s - wrong OS identifier : %s' % (head, ident))
+            self.log.warning('%s - wrong OS identifier : %s' % (head, ident))
             return 'wrong_client_os_identifier:%s' % whatsmyos
 
         # user match
         if self.commanddict.get('userlogin'):
             ipbxid = self.ctid.myipbxid
             saferef = self.ctid.safe.get(ipbxid)
-            log.info('searching user %s in %s'
+            self.log.info('searching user %s in %s'
                      % (self.commanddict.get('userlogin'), ipbxid))
             userid = saferef.user_find(self.commanddict.get('userlogin'),
                                        self.commanddict.get('company'))
@@ -207,7 +206,7 @@ class Command:
                                                             'userid' : userid })
 
         if not self.connection.connection_details.get('userid'):
-            log.warning('%s - unknown login : %s' % (head, self.commanddict.get('userlogin')))
+            self.log.warning('%s - unknown login : %s' % (head, self.commanddict.get('userlogin')))
             # do not give a hint that the login might be good or wrong
             # since this is the first part of the handshake, we shall anyway proceed "as if"
             # until the password step, before sending a "wrong password" message ...
@@ -226,14 +225,14 @@ class Command:
 
 
     def regcommand_login_pass(self):
-        head = '%s:%d - LOGINFAIL - login_pass' % (self.connection.requester)
+        head = 'LOGINFAIL - login_pass'
         # user authentication
         missings = []
         for argum in ['hashedpassword']:
             if argum not in self.commanddict:
                 missings.append(argum)
         if len(missings) > 0:
-            log.warning('%s - missing args : %s' % (head, missings))
+            self.log.warning('%s - missing args : %s' % (head, missings))
             return 'missing:%s' % ','.join(missings)
 
         this_hashed_password = self.commanddict.get('hashedpassword')
@@ -246,23 +245,23 @@ class Command:
         if ipbxid and userid:
             ref_hashed_password = self.ctid.safe[ipbxid].user_get_hashed_password(userid, sessionid)
             if ref_hashed_password != this_hashed_password:
-                log.warning('%s - wrong hashed password' % head)
+                self.log.warning('%s - wrong hashed password' % head)
                 return 'login_password'
         else:
-            log.warning('%s - undefined user : probably the login_id step failed' % head)
+            self.log.warning('%s - undefined user : probably the login_id step failed' % head)
             return 'login_password'
 
         reply = { 'capalist' : [self.ctid.safe[ipbxid].user_get_ctiprofile(userid)] }
         return reply
 
     def regcommand_login_capas(self):
-        head = '%s:%d - LOGINFAIL - login_capas' % (self.connection.requester)
+        head = 'LOGINFAIL - login_capas'
         missings = []
         for argum in ['state', 'capaid', 'lastconnwins', 'loginkind']:
             if argum not in self.commanddict:
                 missings.append(argum)
         if len(missings) > 0:
-            log.warning('%s - missing args : %s' % (head, missings))
+            self.log.warning('%s - missing args : %s' % (head, missings))
             return 'missing:%s' % ','.join(missings)
 
         # settings (in agent mode for instance)
@@ -277,17 +276,17 @@ class Command:
 
         iserr = self.__check_capa_connection__(capaid)
         if iserr is not None:
-            log.warning('%s - wrong capaid : %s %s' % (head, iserr, capaid))
+            self.log.warning('%s - wrong capaid : %s %s' % (head, iserr, capaid))
             return iserr
 
         iserr = self.__check_user_connection__()
         if iserr is not None:
-            log.warning('%s - user connection : %s' % (head, iserr))
+            self.log.warning('%s - user connection : %s' % (head, iserr))
             return iserr
 
         self.__connect_user__(state, capaid)
-        head = '%s:%d - LOGIN SUCCESSFUL' % (self.connection.requester)
-        log.info('%s for %s' % (head, cdetails))
+        head = 'LOGIN SUCCESSFUL'
+        self.log.info('%s for %s' % (head, cdetails))
 
         if self.userid.startswith('cs:'):
             notifyremotelogin = threading.Timer(2, self.ctid.cb_timer,
@@ -323,9 +322,9 @@ class Command:
                         summarycapas[capakind] = tt
                 else:
                     capastruct[capakind] = {}
-                    # log.warning('no capakind %s in profilespecs %s' % (capakind, profilespecs.keys()))
+                    # self.log.warning('no capakind %s in profilespecs %s' % (capakind, profilespecs.keys()))
         else:
-            log.warning('empty profilespecs %s' % profilespecs)
+            self.log.warning('empty profilespecs %s' % profilespecs)
 
         reply = { 'ipbxid' : self.ipbxid,
                   'userid' : self.userid,
@@ -343,7 +342,7 @@ class Command:
     def regcommand_logout(self):
         reply = {}
 ##                        stopper = icommand.struct.get('stopper')
-##                        log.info('logout request from user:%s : stopper=%s' % (userid, stopper))
+##                        self.log.info('logout request from user:%s : stopper=%s' % (userid, stopper))
         return reply
 
 ## "capaxlets": ["customerinfo-dock-fcms", "dial-dock-fcms", "queues-dock-fcms"],
@@ -487,7 +486,10 @@ class Command:
 
     def regcommand_directory(self):
         reply = {}
-        result = self.rinnerdata.getcustomers('maqsmaop', self.commanddict.get('pattern'))
+        print self.commanddict
+        userprops = self.rinnerdata.xod_config['users'].keeplist.get(self.ruserid)
+        # userprops.get('entityid') => context ?
+        result = self.rinnerdata.getcustomers('mamaop', self.commanddict.get('pattern'))
         return reply
 
     def regcommand_history(self):
@@ -511,11 +513,15 @@ class Command:
         return reply
 
     def regcommand_logfromclient(self):
-        log.warning('logfromclient from user %s (level %s) : %s : %s'
+        self.log.warning('logfromclient from user %s (level %s) : %s : %s'
                     % (self.ruserid,
                        self.commanddict.get('level'),
                        self.commanddict.get('classmethod'),
                        self.commanddict.get('message')))
+        return
+
+    def regcommand_getqueuesstats(self):
+        self.log.warning('getqueuesstats %s' % self.commanddict)
         return
 
     def regcommand_keepalive(self):
@@ -525,10 +531,10 @@ class Command:
         if nbytes > 0:
             if nmsec > 0:
                 rate = float(nbytes) / nmsec
-                log.info('keepalive from user:%s (%d %d/%d = %.1f bytes/ms)'
+                self.log.info('keepalive from user:%s (%d %d/%d = %.1f bytes/ms)'
                          % (self.ruserid, nsamples, nbytes, nmsec, rate))
             else:
-                log.info('keepalive from user:%s (%d %d/0 > %.1f bytes/ms)'
+                self.log.info('keepalive from user:%s (%d %d/0 > %.1f bytes/ms)'
                          % (self.ruserid, nsamples, nbytes, float(nbytes)))
         return
 
@@ -578,7 +584,7 @@ class Command:
                           'tipbxid' : self.tipbxid,
                           'list' : g }
             else:
-                log.warning('no such list %s' % listname)
+                self.log.warning('no such list %s' % listname)
 
         elif function == 'updateconfig':
             tid = self.commanddict.get('tid')
@@ -604,18 +610,18 @@ class Command:
         reply = {}
         self.ipbxcommand = self.commanddict.get('command', None)
         if not self.ipbxcommand:
-            log.warning('no command given')
+            self.log.warning('no command given')
             return reply
         reply['command'] = self.ipbxcommand # show the command issued in the reply
         if self.ipbxcommand not in IPBXCOMMANDS:
-            log.warning('unknown ipbxcommand %s' % self.ipbxcommand)
+            self.log.warning('unknown ipbxcommand %s' % self.ipbxcommand)
             return reply
         profileclient = self.rinnerdata.xod_config['users'].keeplist[self.ruserid].get('profileclient')
         profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
         ipbxcommands_id = profilespecs.get('ipbxcommands')
         ipbxcommands = self.ctid.cconf.getconfig('ipbxcommands').get(ipbxcommands_id)
         if self.ipbxcommand not in ipbxcommands:
-            log.warning('profile %s : unallowed ipbxcommand %s (intermediate %s)'
+            self.log.warning('profile %s : unallowed ipbxcommand %s (intermediate %s)'
                         % (profileclient, self.ipbxcommand, ipbxcommands_id))
             return reply
 
@@ -627,9 +633,9 @@ class Command:
             try:
                 z = getattr(self, methodname)()
             except Exception:
-                log.warning('exception when calling %s' % methodname)
+                self.log.warning('exception when calling %s' % methodname)
         else:
-            log.warning('no such ipbx method %s' % methodname)
+            self.log.warning('no such ipbx method %s' % methodname)
 
         # if some actions have been requested ...
         if z:
@@ -637,11 +643,11 @@ class Command:
             ipbxcmd = z.get('comm')
             if hasattr(conn_ami, ipbxcmd):
                 conn_ami.actionid = ''.join(random.sample(__alphanums__, 10))
-                log.info('method %s : starting ipbxcommand %s with actionid %s'
+                self.log.info('method %s : starting ipbxcommand %s with actionid %s'
                          % (methodname, ipbxcmd, conn_ami.actionid))
                 r = getattr(conn_ami, ipbxcmd)(* z.get('args'))
             else:
-                log.warning('no such AMI command %s' % ipbxcmd)
+                self.log.warning('no such AMI command %s' % ipbxcmd)
         return reply
 
 
@@ -689,7 +695,7 @@ class Command:
             [type_src, who_src] = src.split(':', 1)
             [ipbxid_src, id_src] = who_src.split('/')
         except Exception:
-            log.warning('(%s) cannot parse source field %s'
+            self.log.warning('(%s) cannot parse source field %s'
                         % (self.commanddict.get('command'), src))
             return
         try:
@@ -697,13 +703,13 @@ class Command:
             [type_dst, who_dst] = dst.split(':', 1)
             [ipbxid_dst, id_dst] = who_dst.split('/')
         except Exception:
-            log.warning('(%s) cannot parse destination field %s'
+            self.log.warning('(%s) cannot parse destination field %s'
                         % (self.commanddict.get('command'), dst))
             return
         if ipbxid_src != ipbxid_dst:
             return
         if ipbxid_src not in self.ctid.safe:
-            log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
+            self.log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
             return
         innerdata = self.ctid.safe.get(ipbxid_src)
 
@@ -803,7 +809,7 @@ class Command:
                     # if termlist empty + agentphonenumber not empty => call this one
                     cidname_src = srcuinfo.get('fullname')
         else:
-                log.warning('unknown typesrc %s for %s' % (typesrc, commname))
+                self.log.warning('unknown typesrc %s for %s' % (typesrc, commname))
 
         if typedst == 'ext':
                 exten_dst = whodst
@@ -838,9 +844,9 @@ class Command:
                     exten_dst = 's'
                     context_src = 'macro-voicemail'
                 else:
-                    log.warning('no voicemail allowed or defined for %s' % dstuinfo)
+                    self.log.warning('no voicemail allowed or defined for %s' % dstuinfo)
         else:
-                log.warning('unknown typedst %s for %s' % (typedst, commname))
+                self.log.warning('unknown typedst %s for %s' % (typedst, commname))
 
         # print astid_src, commname, chan_src, exten_dst, context_src
         ret = False
@@ -854,7 +860,7 @@ class Command:
                                                    chan_src,
                                                    exten_dst, context_src)
         except Exception:
-                log.exception('unable to %s' % commname)
+                self.log.exception('unable to %s' % commname)
         return
 
     def ipbxcommand_parking(self):
@@ -863,7 +869,7 @@ class Command:
         srcsplit = src.split(':', 1)
         [typesrc, whosrc] = srcsplit
         if typesrc not in ['chan']:
-            log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
+            self.log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
             return
 
         [ipbxid, channel] = whosrc.split('/', 1)
@@ -881,10 +887,10 @@ class Command:
         [typesrc, whosrc] = srcsplit
         [typedst, whodst] = dstsplit
         if typesrc not in ['chan']:
-            log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
+            self.log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
             return
         if typedst not in ['user', 'ext', 'phone']:
-            log.warning('unallowed typedst %s for %s' % (typedst, self.ipbxcommand))
+            self.log.warning('unallowed typedst %s for %s' % (typedst, self.ipbxcommand))
             return
 
         [ipbxid, channel] = whosrc.split('/', 1)
@@ -901,10 +907,10 @@ class Command:
         [typesrc, whosrc] = srcsplit
         [typedst, whodst] = dstsplit
         if typesrc not in ['chan']:
-            log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
+            self.log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
             return
         if typedst not in ['user', 'ext', 'phone']:
-            log.warning('unallowed typedst %s for %s' % (typedst, self.ipbxcommand))
+            self.log.warning('unallowed typedst %s for %s' % (typedst, self.ipbxcommand))
             return
 
         [ipbxid, channel] = whosrc.split('/', 1)
@@ -930,7 +936,7 @@ class Command:
                     # if termlist empty + agentphonenumber not empty => call this one
                     cidname_src = srcuinfo.get('fullname')
             else:
-                log.warning('unknown typesrc %s for %s' % (typesrc, commname))
+                self.log.warning('unknown typesrc %s for %s' % (typesrc, commname))
 
         if typedst == 'ext':
                 exten_dst = whodst
@@ -965,9 +971,9 @@ class Command:
                     exten_dst = 's'
                     context_src = 'macro-voicemail'
                 else:
-                    log.warning('no voicemail allowed or defined for %s' % dstuinfo)
+                    self.log.warning('no voicemail allowed or defined for %s' % dstuinfo)
         else:
-                log.warning('unknown typedst %s for %s' % (typedst, commname))
+                self.log.warning('unknown typedst %s for %s' % (typedst, commname))
 
         # print astid_src, commname, chan_src, exten_dst, context_src
         ret = False
@@ -981,7 +987,7 @@ class Command:
                                                    chan_src,
                                                    exten_dst, context_src)
         except Exception:
-                log.exception('unable to %s' % commname)
+                self.log.exception('unable to %s' % commname)
         return
 
     def ipbxcommand_transfercancel(self):

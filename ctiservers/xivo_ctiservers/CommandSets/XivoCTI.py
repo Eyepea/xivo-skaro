@@ -2135,28 +2135,11 @@ class XivoCTICommand(BaseCommand):
                             event.get('AppData'),
                             event.get('Context'),
                             event.get('Extension')))
-            elif application == 'AGI':
-                # meeting point 2 : here we should be able to execute the actions we wanted in "meeting point 1"
-                # print astid, event.get('Channel'), time.time(), event.get('Context'), event.get('Priority'), event.get('AppData'), event.get('Uniqueid')
-                pass
+
             # elif application == 'Queue': # to know how much seconds were requested
             # log.info('%s ami_newexten %s : %s %s'
             # % (astid, application, uniqueid, event.get('AppData').split('|')))
             # set extension only if numeric
-
-            elif application == 'BackGround':
-                pass
-            elif application == 'WaitExten':
-                pass
-            elif application == 'Set':
-                # why "Newexten + Set" and not "UserEvent + dialplan2cti" ?
-                # - catched without need to add a dialplan line
-                # - convenient when one is sure the variable goes this way
-                # - channel and uniqueid already there
-
-                # (myvar, myval) = event.get('AppData').split('=')
-
-                pass
 
             if event.get('Extension').isdigit():
                 self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')

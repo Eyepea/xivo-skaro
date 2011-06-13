@@ -103,11 +103,12 @@ class AMI_1_8:
     def ami_newcallerid(self, event):
         # self.log.info('ami_newcallerid %s' % (event))
         return
+
     def ami_newexten(self, event):
         application = event.pop('Application')
+        appdata = event.pop('AppData')
+        channel = event.pop('Channel')
         if application == 'AGI':
-            appdata = event.pop('AppData')
-            channel = event.pop('Channel')
             if self.fagiportstring in appdata: # match against ~ ':5002/' in appdata
                 self.log.info('ami_newexten %s %s : %s %s' % (application, channel, appdata, event))
                 # warning : this might cause problems if AMI not connected
@@ -116,7 +117,19 @@ class AMI_1_8:
                     self.innerdata.fagi_handle(channel, 'AMI')
                 else:
                     self.innerdata.fagi_sync('set', channel, 'ami')
+        elif application == 'VoiceMail':
+            self.log.info('ami_newexten %s %s : %s' % (application, channel, appdata))
+        elif application in ['BackGround', 'WaitExten', 'Read']:
+            pass
+        elif application == 'Set':
+            # why "Newexten + Set" and not "UserEvent + dialplan2cti" ?
+            # - catched without need to add a dialplan line
+            # - convenient when one is sure the variable is set only with this method
+            # - channel and uniqueid already there
+            # (myvar, myval) = event.get('AppData').split('=')
+            pass
         return
+
     def ami_newaccountcode(self, event):
         # self.log.info('ami_newaccountcode %s' % (event))
         return

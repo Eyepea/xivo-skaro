@@ -38,8 +38,7 @@ class FAGI(Interfaces):
 
     def connected(self, connid):
         Interfaces.connected(self, connid)
-        global log
-        log = logging.getLogger('interface_fagi(%s:%d)' % self.requester)
+        self.log = logging.getLogger('interface_fagi(%s:%d)' % self.requester)
         return
 
     def disconnected(self, msg):
@@ -62,7 +61,7 @@ class FAGI(Interfaces):
                     self.agidetails[o[0]] = o[1]
             self.channel = self.agidetails.get('agi_channel')
             nscript = self.agidetails.get('agi_network_script')
-            log.info('%s %s' % (self.channel, nscript))
+            self.log.info('%s %s' % (self.channel, nscript))
             self.innerdata.fagi_setup(self)
             if self.innerdata.fagi_sync('get', self.channel, 'ami'):
                 self.innerdata.fagi_sync('clear', self.channel)
