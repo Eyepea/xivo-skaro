@@ -159,8 +159,10 @@ class AMI:
                                 # single line in RTCPSent events - ignoring it for the time being
                                 pass
                             else:
-                                self.log.warning('unable to parse <%s> : %s'
-                                            % (myline, evt.split('\r\n')))
+                                # comment these lines out, while RTCPSent and RTCPReceived events are crappy
+                                # self.log.warning('unable to parse <%s> : %s'
+                                # % (myline, evt.split('\r\n')))
+                                pass
                 else:
                     nocolon.append(myline)
 

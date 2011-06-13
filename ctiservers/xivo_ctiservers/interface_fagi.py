@@ -69,7 +69,7 @@ class FAGI(Interfaces):
                 self.innerdata.fagi_handle(self.channel, 'AGI')
             else:
                 self.innerdata.fagi_sync('set', self.channel, 'agi')
-        return
+        return []
 
     def reply(self, replylines):
         print 'FAGI reply', replylines

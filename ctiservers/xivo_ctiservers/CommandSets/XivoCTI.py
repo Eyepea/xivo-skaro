@@ -2189,8 +2189,7 @@ class XivoCTICommand(BaseCommand):
                                             'time-newchannel' : timenow,
                                             'dialplan_data' : { 'xivo-astid' : astid,
                                                                 'xivo-channel' : channel,
-                                                                'xivo-uniqueid' : uniqueid,
-                                                                'xivo-usereventstack' : []
+                                                                'xivo-uniqueid' : uniqueid
                                                                 } }
         self.channels[astid][channel] = uniqueid
         if channelstatedesc == 'Rsrvd':
@@ -2828,90 +2827,9 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('UNIQUEID')
 
         if eventname == 'MacroDid':
-            if uniqueid not in self.uniqueids[astid]:
-                log.warning('%s AMI UserEvent %s : uniqueid %s is undefined'
-                            % (astid, eventname, uniqueid))
-                return
-
-            calleridnum = event.get('XIVO_SRCNUM')
-            calleridname = event.get('XIVO_SRCNAME')
-            calleridton = event.get('XIVO_SRCTON')
-            calleridrdnis = event.get('XIVO_SRCRDNIS')
-            didnumber = event.get('XIVO_EXTENPATTERN')
-            context = None
-
-            log.info('%s AMI UserEvent %s %s %s' % (astid, uniqueid, eventname,
-                                                    self.uniqueids[astid][uniqueid]))
-            self.uniqueids[astid][uniqueid]['DID'] = True # XXX to merge with xivo-origin
-            dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
-            dialplan_data.update( { 'xivo-origin' : 'did',
-                                    'xivo-direction' : DIRECTIONS.get('incoming'),
-                                    'xivo-did' : didnumber,
-                                    'xivo-calleridnum' : calleridnum,
-                                    'xivo-calleridname' : calleridname,
-                                    'xivo-calleridrdnis' : calleridrdnis,
-                                    'xivo-calleridton' : calleridton
-                                    } )
-            self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
-            for v, vv in self.weblist['incomingcalls'][astid].keeplist.iteritems():
-                if vv['exten'] == didnumber:
-                    context_list = ['usercontext',
-                                    'groupcontext',
-                                    'queuecontext',
-                                    'meetmecontext',
-                                    'voicemailcontext',
-                                    'voicemenucontext']
-                    for ctxpart in context_list:
-                        if vv.get(ctxpart):
-                            context = vv.get(ctxpart)
-                            break
-                    log.info('%s ami_userevent %s' % (astid, vv))
-                    break
-
-            dialplan_data.update({'xivo-context' : context})
-            dialplan_data['xivo-usereventstack'].append(eventname)
-            self.__dialplan_fill_src__(dialplan_data)
-
-            # actions involving didnumber/callerid on channel could be carried out here
-            # did_takeovers = { '<incoming_callerid>' : { '<sda>' : {'number' : '<localnum>', 'context' : '<context>'} } }
-            did_takeovers = {}
-            if calleridnum in did_takeovers and didnumber in did_takeovers[calleridnum]:
-                destdetails = did_takeovers[calleridnum][didnumber]
-                # check channel !
-                self.__ami_execute__(astid, 'transfer', channel,
-                                     destdetails.get('number'),
-                                     destdetails.get('context'))
-            #self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
             self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
 
         elif eventname == 'LookupDirectory':
-            xivo_userid = event.get('XIVO_USERID')
-            xivo_dstid = event.get('XIVO_DSTID')
-            log.info('%s AMI UserEvent %s %s %s %s' % (astid, uniqueid, eventname, xivo_userid, xivo_dstid))
-            if uniqueid not in self.uniqueids[astid]:
-                log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
-                return
-            if 'dialplan_data' in self.uniqueids[astid][uniqueid]:
-                dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
-            else:
-                dialplan_data = {}
-                self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
-
-            calleridnum = event.get('XIVO_SRCNUM')
-            calleridname = event.get('XIVO_SRCNAME')
-            calleridton = event.get('XIVO_SRCTON')
-            calleridrdnis = event.get('XIVO_SRCRDNIS')
-            context = event.get('XIVO_CONTEXT')
-
-            dialplan_data.update( { 'xivo-origin' : 'forcelookup',
-                                    'xivo-calleridnum' : calleridnum,
-                                    'xivo-calleridname' : calleridname,
-                                    'xivo-calleridrdnis' : calleridrdnis,
-                                    'xivo-calleridton' : calleridton,
-                                    'xivo-context' : context
-                                    } )
-
-            self.__dialplan_fill_src__(dialplan_data)
 
         elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
             xivo_userid = event.get('XIVO_USERID')
@@ -2960,44 +2878,6 @@ class XivoCTICommand(BaseCommand):
                 self.__dialplan_fill_dst__(dialplan_data)
             else:
                 log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
-
-        elif eventname == 'LocalCall':
-            appli = event.get('XIVO_ORIGAPPLI')
-            actionid = event.get('XIVO_ORIGACTIONID')
-            if uniqueid in self.uniqueids[astid]:
-                if appli == 'ChanSpy':
-                    self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
-                                                            'actionid' : actionid})
-
-        elif eventname == 'Custom':
-            customname = event.get('NAME')
-            if self.uniqueids.has_key(astid):
-                if self.uniqueids[astid].has_key(uniqueid):
-                    if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
-                        dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
-                        context = dialplan_data.get('xivo-context', CONTEXT_UNKNOWN)
-                        self.__sheet_alert__('custom.%s' % customname,
-                                             astid, context, event,
-                                             dialplan_data, channel)
-
-        elif eventname == 'dialplan2cti':
-            # why "UserEvent + dialplan2cti" and not "Newexten + Set" ?
-            # - more selective
-            # - variables declarations are not always done with Set (Read(), AGI(), ...)
-            # - if there is a need for extra useful data (XIVO_USERID, ...)
-            # - (future ?) multiple settings at once
-
-            cti_varname = event.get('VARIABLE')
-            dp_value = event.get('VALUE')
-            log.info('%s AMI UserEvent %s %s %s' % (astid, uniqueid, eventname, channel))
-            if self.uniqueids.has_key(astid):
-                if self.uniqueids[astid].has_key(uniqueid):
-                    if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
-                        dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
-                        dialplan_data['dp-%s' % cti_varname] = dp_value
-                    else:
-                        log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)'
-                                    % (astid, eventname))
 
         elif eventname == 'Feature':
             function = event.get('Function')
