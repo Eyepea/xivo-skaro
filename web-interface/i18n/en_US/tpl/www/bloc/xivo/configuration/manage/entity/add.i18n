@@ -7,6 +7,9 @@ Name:
 ; fm_displayname
 Display name:
 
+; fm_contexttype 
+Context:
+
 ; fm_phonenumber
 Phone:
 
