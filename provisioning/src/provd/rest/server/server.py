@@ -735,8 +735,28 @@ class DeviceResource(Resource):
 
 
 def ConfigManagerResource(app):
-    links = [(u'cfg.configs', 'configs', ConfigsResource(app))]
+    links = [(u'cfg.configs', 'configs', ConfigsResource(app)),
+             (u'cfg.autocreate', 'autocreate', AutocreateConfigResource(app))]
     return IntermediaryResource(links)
+
+
+class AutocreateConfigResource(Resource):
+    def __init__(self, app):
+        Resource.__init__(self)
+        self._app = app
+    
+    @json_request_entity
+    def render_POST(self, request, content):
+        def on_callback(id):
+            location = uri_append_path(request.path, str(id))
+            request.setHeader('Location', location)
+            data = json.dumps({u'id': id})
+            deferred_respond_ok(request, data, http.CREATED)
+        def on_errback(failure):
+            deferred_respond_error(request, failure.value)
+        d = self._app.cfg_create_new()
+        d.addCallbacks(on_callback, on_errback)
+        return NOT_DONE_YET
 
 
 class ConfigsResource(Resource):
@@ -842,8 +862,6 @@ class RawConfigResource(Resource):
             if raw_config is None:
                 deferred_respond_no_resource(request)
             else:
-                # XXX one day... if we find this useful... add link to parents
-                #     configs
                 data = json.dumps({u'raw_config': raw_config})
                 deferred_respond_ok(request, data)
         def on_errback(failure):

@@ -289,6 +289,9 @@ class Configs(object):
         id = _get_id(id_or_config)
         self._cfg_mgr.remove(id)
     
+    def autocreate(self):
+        return self._cfg_mgr.autocreate()
+    
     def clone(self, id_or_config, new_id=None):
         old_id = _get_id(id_or_config)
         config = self._cfg_mgr.get(old_id)

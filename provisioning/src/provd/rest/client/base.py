@@ -489,9 +489,27 @@ class ConfigManagerResource(object):
     def _create_sub_resources(self, cfg_mgr_uri, broker):
         configs_uri = uri_append_path(cfg_mgr_uri, 'configs')
         self._configs_res = ConfigsResource(configs_uri, broker)
+        
+        autocreate_uri = uri_append_path(cfg_mgr_uri, 'autocreate')
+        self._autocreate_res = AutocreateConfigResource(autocreate_uri, broker)
     
     def configs_res(self):
         return self._configs_res
+    
+    def autocreate_res(self):
+        return self._autocreate_res
+
+
+class AutocreateConfigResource(object):
+    def __init__(self, autocreate_uri, broker):
+        self._autocreate_uri = autocreate_uri
+        self._broker = broker
+    
+    def autocreate(self):
+        """Create a new config and return its ID."""
+        request = new_post_request(self._autocreate_uri, {})
+        response, _ = self._broker.json_content(request)
+        return response[u'id']
 
 
 class ConfigsResource(object):

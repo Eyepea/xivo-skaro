@@ -36,6 +36,11 @@ The following parameters are defined:
     general.rest_ssl_certfile
     general.rest_ssl_keyfile
     general.verbose
+    general.sync_service_type
+        The sync service type.
+    general.asterisk_ami_servers
+        For 'asterisk_ami' sync service, a tuple describing how to connect
+        to the AMI.
     database.type
         The type of the 'database' used for storing devices and configs.
     database.generator
@@ -139,6 +144,8 @@ class DefaultConfigSource(object):
         ('general.rest_ssl_certfile', '/etc/pf-xivo/provd/keys/cert.pem'),
         ('general.rest_ssl_keyfile', '/etc/pf-xivo/provd/keys/key.pem'),
         ('general.verbose', 'False'),
+        ('general.sync_service_type', 'none'),
+        ('general.asterisk_ami_servers', '[("127.0.0.1", 5038, False, "provd", "provd")]'),
         ('database.type', 'json'),
         ('database.generator', 'default'),
         ('database.ensure_common_indexes', 'False'),
@@ -323,6 +330,23 @@ def _bool(raw_value):
         raise ValueError('invalid boolean raw value "%s"' % raw_value)
 
 
+def _ast_ami_server(raw_value):
+    try:
+        value = eval(raw_value)
+    except Exception, e:
+        raise ValueError(e)
+    else:
+        if isinstance(value, list):
+            for e in value:
+                if isinstance(e, tuple) and len(e) == 5:
+                    pass
+                else:
+                    break
+            else:
+                return value
+        raise ValueError('invalid asterisk ami server: %s' % value)
+
+
 def _load_json_file(raw_value):
     # Return a dictionary representing the JSON document contained in the
     # file pointed by raw value. The file must be encoded in UTF-8.
@@ -355,6 +379,8 @@ _PARAMS_DEFINITION = [
     ('general.rest_authentication', (_bool, True)),
     ('general.rest_ssl', (_bool, True)),
     ('general.verbose', (_bool, True)),
+    ('general.sync_service_type', (str, True)),
+    ('general.asterisk_ami_servers', (_ast_ami_server, False)),
     ('database.type', (str, True)),
     ('database.generator', (str, True)),
     ('database.ensure_common_indexes', (_bool, True))

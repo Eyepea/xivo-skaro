@@ -10,10 +10,17 @@ Config objects have the following standardized keys:
   parent_ids -- the IDs of parent config object (list of unicode) (mandatory)
   raw_config -- the configuration parameters of this config (dict) (mandatory)
   role -- the role of the config (unicode) (optional).
-    Right now, only the 'default' role has been standardized. A config with
-    such a role means that this config should be used for devices which have
-    no config associated. There should be zero or one config with such a role
-    in a collection.
+    Right now, two roles have been standardized:
+    - the 'default' role: a config with such a role means that this config should be used for devices which have
+      no config associated. There should be zero or one config with such a role
+      in a collection.
+    - the 'autocreate' role: a config with such a role means that this config is
+      used as a base config to create config with the autocreate config device
+      updater.
+  transient -- a boolean indicating if the config is transient (boolean).
+    A transient config will be automatically deleted if no device depends on
+    it. Note that you MUST not used a transient config as a parent of another
+    config or you'll get undefined behaviour.
 
 Config collection objects are used as a storage for config objects.
 
@@ -427,6 +434,7 @@ __license__ = """
 """
 
 import logging
+import time
 from copy import deepcopy
 from functools import wraps
 from provd.persist.common import ID_KEY
@@ -652,3 +660,28 @@ class ConfigCollection(ForwardingDocumentCollection):
         d = aux(id)
         d.addCallback(lambda _: flattened_raw_config[0])
         return d
+
+
+class DefaultConfigFactory(object):
+    """A default config factory.
+    
+    Config factories are used to create new config automatically.
+    
+    """
+    def __init__(self):
+        # since _n is not persisted, we use the current time as a seed
+        # to lessen the chance of having a username collision (which was
+        # why we introduced this whole thing)
+        self._n = int(time.time())
+    
+    def __call__(self, config):
+        try:
+            sip_line_1 = config[u'raw_config'][u'sip_lines'][u'1']
+        except KeyError:
+            return None
+        else:
+            sip_line_1[u'username'] = sip_line_1[u'username'] + unicode(self._n)
+            config[u'id'] = config[u'id'] + unicode(self._n)
+            config[u'transient'] = True
+            self._n += 1
+            return config

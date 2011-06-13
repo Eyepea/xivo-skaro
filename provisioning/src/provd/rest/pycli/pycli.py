@@ -70,6 +70,9 @@ credentials = (opts.user, password)
 
 ## create client object
 client = pyclient.new_pycli_provisioning_client(server_uri, credentials)
+configs = client.configs()
+devices = client.devices()
+plugins = client.plugins()
 
 ## test connectivity
 def prompt_continue(err_msg):
@@ -375,6 +378,11 @@ def dirr(obj):
     return list(name for name in dir(obj) if not name.startswith('_'))
 
 
+# import and initialize the helpers module
+import helpers
+helpers._init_module(configs, devices, plugins)
+
+
 # change interpreter prompt
 sys.ps1 = 'provpy> '
 sys.ps2 = '....... '
@@ -391,15 +399,16 @@ sys.displayhook = my_displayhook
 
 # define the CLI global names (without actually inserting them)
 cli_globals = {
-    'configs': client.configs(),
-    'devices': client.devices(),
-    'plugins': client.plugins(),
+    'configs': configs,
+    'devices': devices,
+    'plugins': plugins,
     
     'help': cli_help,
     'python_help': __builtin__.help,
 
     '__builtins__': __builtin__,
     'dirr': dirr,
+    'helpers': helpers,
     'options': pyclient.OPTIONS,
     'pprint': pprint
 }

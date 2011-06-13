@@ -24,7 +24,7 @@ __license__ = """
 import copy
 import logging
 import functools
-from provd.devices.config import RawConfigError
+from provd.devices.config import RawConfigError, DefaultConfigFactory
 from provd.operation import OIP_PROGRESS, OIP_FAIL, OIP_SUCCESS
 from provd.persist.common import ID_KEY, InvalidIdError as PersistInvalidIdError
 from provd.plugins import PluginManager
@@ -195,6 +195,7 @@ class ProvisioningApplication(object):
         logger.info('Using base raw config %s', self._base_raw_config)
         _check_common_raw_config_validity(self._base_raw_config)
         self._rw_lock = DeferredRWLock()
+        self._cfg_factory = DefaultConfigFactory()
         self._pg_load_all(True)
     
     @_wlock
@@ -409,6 +410,15 @@ class ProvisioningApplication(object):
                 # the old device
                 if device != old_device:
                     yield self._dev_collection.update(device)
+                    # check if old device was using a transient config that is
+                    # no more in use
+                    if u'config' in old_device and old_device[u'config'] != device.get(u'config'):
+                        old_device_cfg_id = old_device[u'config']
+                        old_device_cfg = yield self._cfg_collection.retrieve(old_device_cfg_id)
+                        if old_device_cfg and old_device_cfg.get(u'transient'):
+                            # if no devices are using this transient config, delete it
+                            if not (yield self._dev_collection.find_one({u'config': old_device_cfg_id})):
+                                self._cfg_collection.delete(old_device_cfg_id)
                 else:
                     logger.info('Not updating device %s: not changed', id)
         except Exception:
@@ -436,6 +446,14 @@ class ProvisioningApplication(object):
             # retrieve the device with the same id just before and we are
             # using the write lock
             yield self._dev_collection.delete(id)
+            # check if device was using a transient config that is no more in use
+            if u'config' in device:
+                device_cfg_id = device[u'config']
+                device_cfg = yield self._cfg_collection.retrieve(device_cfg_id)
+                if device_cfg and device_cfg.get(u'transient'):
+                    # if no devices are using this transient config, delete it
+                    if not (yield self._dev_collection.find_one({u'config': device_cfg_id})):
+                        self._cfg_collection.delete(device_cfg_id)
             if device[u'configured']:
                 self._dev_deconfigure_if_possible(device)
         except Exception:
@@ -705,6 +723,37 @@ class ProvisioningApplication(object):
     
     def cfg_find_one(self, selector, *args, **kwargs):
         return self._cfg_collection.find_one(selector, *args, **kwargs)
+    
+    @_wlock
+    @defer.inlineCallbacks
+    def cfg_create_new(self):
+        """Create a new config from the config with the autocreate role.
+        
+        Return a deferred that will fire with the ID of the newly created
+        config, or fire with None if there's no config with the autocreate
+        role or if the config factory returned None.
+        
+        """
+        logger.info('Creating new config')
+        try:
+            new_config_id = None
+            config = yield self._cfg_collection.find_one({u'role': u'autocreate'})
+            if config:
+                # remove the role of the config so we don't create new config
+                # with the autocreate role
+                del config[u'role']
+                new_config = self._cfg_factory(config)
+                if new_config:
+                    new_config_id = yield self._cfg_collection.insert(new_config)
+                else:
+                    logger.debug('Autocreate config factory returned null config')
+            else:
+                logger.debug('No config with the autocreate role found')
+            
+            defer.returnValue(new_config_id)
+        except Exception:
+            logger.error('Error while autocreating config', exc_info=True)
+            raise
     
     # plugin methods
     

@@ -7,6 +7,9 @@ deb_make-clean-fixes
 ## proformatique patches
 pf_profor-banner
 
+pf_sip_autocreate_options
+pf_sip_notify_provd
+
 #pf_manager_dtmf
 #pf_manager_atxfer
 #pf_manager_misc

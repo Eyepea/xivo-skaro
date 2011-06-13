@@ -677,7 +677,7 @@ class VersionDeviceUpdater(object):
 
 
 class DefaultConfigDeviceUpdater(object):
-    """Device updater that set a default config to the device if this device
+    """Device updater that set a default config to the device if the device
     has no config.
     
     The way it works is that when a device with no config is found, a search
@@ -697,6 +697,24 @@ class DefaultConfigDeviceUpdater(object):
                 device[u'config'] = config[ID_KEY]
             else:
                 logger.warning('No config with the default role found')
+        defer.returnValue(False)
+
+
+class AutocreateConfigDeviceUpdater(object):
+    """Device updater that set an autocreated config to the device if the
+    device has no config.
+    
+    """
+    def __init__(self, app):
+        self._app = app
+    
+    @defer.inlineCallbacks
+    def update(self, device, dev_info, request, request_type):
+        logger.debug('In %s', self.__class__.__name__)
+        if u'config' not in device:
+            new_config_id = yield self._app.cfg_create_new()
+            if new_config_id is not None:
+                device[u'config'] = new_config_id
         defer.returnValue(False)
 
 

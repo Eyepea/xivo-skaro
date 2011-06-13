@@ -110,6 +110,15 @@ class ConfigManager(object):
         config_res = self._get_config_res(id)
         config_res.delete()
     
+    @once_per_instance
+    def _get_autocreate_res(self):
+        return self._cfg_mgr_res.autocreate_res()
+    
+    def autocreate(self):
+        """Create a new config and return its ID."""
+        autocreate_res = self._get_autocreate_res()
+        return autocreate_res.autocreate()
+    
     def find(self, *args, **kwargs):
         """Return a list of configs ID that match the given selector.
         

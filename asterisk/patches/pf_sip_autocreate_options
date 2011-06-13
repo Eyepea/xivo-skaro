@@ -1,0 +1,141 @@
+diff --git a/channels/chan_sip.c b/channels/chan_sip.c
+index efa037a..ac2f74e 100644
+--- a/channels/chan_sip.c
++++ b/channels/chan_sip.c
+@@ -13232,11 +13232,19 @@ static enum parse_register_result parse_register_contact(struct sip_pvt *pvt, st
+ 		if (s) {
+ 			expires = strsep(&s, ";"); /* trim ; and beyond */
+ 			if (sscanf(expires + 9, "%30d", &expire) != 1) {
+-				expire = default_expiry;
++				if (peer->selfdestruct) {
++					expire = sip_cfg.autocreate_defaultexpiry;
++				} else {
++					expire = default_expiry;
++				}
+ 			}
+ 		} else {
+ 			/* Nothing has been specified */
+-			expire = default_expiry;
++			if (peer->selfdestruct) {
++				expire = sip_cfg.autocreate_defaultexpiry;
++			} else {
++				expire = default_expiry;
++			}
+ 		}
+ 	}
+ 
+@@ -13393,11 +13401,20 @@ static enum parse_register_result parse_register_contact(struct sip_pvt *pvt, st
+ 	AST_SCHED_DEL_UNREF(sched, peer->expire,
+ 			unref_peer(peer, "remove register expire ref"));
+ 
+-	if (expire > max_expiry) {
+-		expire = max_expiry;
+-	}
+-	if (expire < min_expiry) {
+-		expire = min_expiry;
++	if (peer->selfdestruct) {
++		if (expire > sip_cfg.autocreate_maxexpiry) {
++			expire = sip_cfg.autocreate_maxexpiry;
++		}
++		if (expire < sip_cfg.autocreate_minexpiry) {
++			expire = sip_cfg.autocreate_minexpiry;
++		}
++	} else {
++		if (expire > max_expiry) {
++			expire = max_expiry;
++		}
++		if (expire < min_expiry) {
++			expire = min_expiry;
++		}
+ 	}
+ 	if (peer->is_realtime && !ast_test_flag(&peer->flags[1], SIP_PAGE2_RTCACHEFRIENDS)) {
+ 		peer->expire = -1;
+@@ -17195,6 +17212,7 @@ static char *sip_show_settings(struct ast_cli_entry *e, int cmd, struct ast_cli_
+ 	ast_cli(a->fd, "  Textsupport:            %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_TEXTSUPPORT)));
+ 	ast_cli(a->fd, "  Ignore SDP sess. ver.:  %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_IGNORESDPVERSION)));
+ 	ast_cli(a->fd, "  AutoCreate Peer:        %s\n", AST_CLI_YESNO(sip_cfg.autocreatepeer));
++	ast_cli(a->fd, "  AutoCreate Context:     %s\n", sip_cfg.autocreate_context);
+ 	ast_cli(a->fd, "  Match Auth Username:    %s\n", AST_CLI_YESNO(global_match_auth_username));
+ 	ast_cli(a->fd, "  Allow unknown access:   %s\n", AST_CLI_YESNO(sip_cfg.allowguest));
+ 	ast_cli(a->fd, "  Allow subscriptions:    %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_ALLOWSUBSCRIBE)));
+@@ -25966,6 +25984,9 @@ static struct sip_peer *temp_peer(const char *name)
+ 
+ 	ast_copy_string(peer->name, name, sizeof(peer->name));
+ 
++	if (sip_cfg.autocreate_type)
++		peer->type = sip_cfg.autocreate_type;
++	ast_string_field_set(peer, context, sip_cfg.autocreate_context);
+ 	peer->selfdestruct = TRUE;
+ 	peer->host_dynamic = TRUE;
+ 	peer->prefs = default_prefs;
+@@ -26868,6 +26889,11 @@ static int reload_config(enum channelreloadreason reason)
+ 	global_regattempts_max = 0;
+ 	sip_cfg.pedanticsipchecking = DEFAULT_PEDANTIC;
+ 	sip_cfg.autocreatepeer = DEFAULT_AUTOCREATEPEER;
++	ast_copy_string(sip_cfg.autocreate_context, DEFAULT_AUTOCREATE_CONTEXT, sizeof(sip_cfg.autocreate_context));
++	sip_cfg.autocreate_minexpiry = DEFAULT_AUTOCREATE_MIN_EXPIRY;
++	sip_cfg.autocreate_maxexpiry = DEFAULT_AUTOCREATE_MAX_EXPIRY;
++	sip_cfg.autocreate_defaultexpiry = DEFAULT_AUTOCREATE_DEFAULT_EXPIRY;
++	sip_cfg.autocreate_type = 0;
+ 	global_autoframing = 0;
+ 	sip_cfg.allowguest = DEFAULT_ALLOWGUEST;
+ 	global_callcounter = DEFAULT_CALLCOUNTER;
+@@ -27163,6 +27189,31 @@ static int reload_config(enum channelreloadreason reason)
+ 			proxy_update(&sip_cfg.outboundproxy);
+ 		} else if (!strcasecmp(v->name, "autocreatepeer")) {
+ 			sip_cfg.autocreatepeer = ast_true(v->value);
++		} else if (!strcasecmp(v->name, "autocreate_context")) {
++			ast_copy_string(sip_cfg.autocreate_context, v->value, sizeof(sip_cfg.autocreate_context));
++		} else if (!strcasecmp(v->name, "autocreate_minexpiry")) {
++			sip_cfg.autocreate_minexpiry = atoi(v->value);
++			if (sip_cfg.autocreate_minexpiry < 1) {
++				sip_cfg.autocreate_minexpiry = DEFAULT_AUTOCREATE_MIN_EXPIRY;
++			}
++		} else if (!strcasecmp(v->name, "autocreate_maxexpiry")) {
++			sip_cfg.autocreate_maxexpiry = atoi(v->value);
++			if (sip_cfg.autocreate_maxexpiry < 1) {
++				sip_cfg.autocreate_maxexpiry = DEFAULT_AUTOCREATE_MAX_EXPIRY;
++			}
++		} else if (!strcasecmp(v->name, "autocreate_defaultexpiry")) {
++			sip_cfg.autocreate_defaultexpiry = atoi(v->value);
++			if (sip_cfg.autocreate_defaultexpiry < 1) {
++				sip_cfg.autocreate_defaultexpiry = DEFAULT_AUTOCREATE_DEFAULT_EXPIRY;
++			}
++		} else if (!strcasecmp(v->name, "autocreate_type")) {
++			if (!strcasecmp(v->value, "peer")) {
++				sip_cfg.autocreate_type = SIP_TYPE_PEER;
++			} else if (!strcasecmp(v->value, "user")) {
++				sip_cfg.autocreate_type = SIP_TYPE_USER;
++			} else if (!strcasecmp(v->value, "friend")) {
++				sip_cfg.autocreate_type = SIP_TYPE_USER | SIP_TYPE_PEER;
++			}
+ 		} else if (!strcasecmp(v->name, "match_auth_username")) {
+ 			global_match_auth_username = ast_true(v->value);
+ 		} else if (!strcasecmp(v->name, "srvlookup")) {
+diff --git a/channels/sip/include/sip.h b/channels/sip/include/sip.h
+index a6e69be..ac1b886 100644
+--- a/channels/sip/include/sip.h
++++ b/channels/sip/include/sip.h
+@@ -206,6 +206,10 @@
+ #define DEFAULT_NOTIFYCID      DISABLED	/*!< Include CID with ringing notifications */
+ #define DEFAULT_PEDANTIC       TRUE     /*!< Follow SIP standards for dialog matching */
+ #define DEFAULT_AUTOCREATEPEER FALSE    /*!< Don't create peers automagically */
++#define DEFAULT_AUTOCREATE_CONTEXT DEFAULT_CONTEXT
++#define DEFAULT_AUTOCREATE_DEFAULT_EXPIRY DEFAULT_DEFAULT_EXPIRY
++#define DEFAULT_AUTOCREATE_MIN_EXPIRY DEFAULT_MIN_EXPIRY
++#define DEFAULT_AUTOCREATE_MAX_EXPIRY DEFAULT_MAX_EXPIRY
+ #define	DEFAULT_MATCHEXTERNADDRLOCALLY FALSE /*!< Match extern IP locally default setting */
+ #define DEFAULT_QUALIFY        FALSE    /*!< Don't monitor devices */
+ #define DEFAULT_CALLEVENTS     FALSE    /*!< Extra manager SIP call events */
+@@ -675,6 +679,11 @@ struct sip_settings {
+ 	int directrtpsetup;         /*!< Enable support for Direct RTP setup (no re-invites) */
+ 	int pedanticsipchecking;    /*!< Extra checking ?  Default off */
+ 	int autocreatepeer;         /*!< Auto creation of peers at registration? Default off. */
++	char autocreate_context[AST_MAX_CONTEXT];
++	int autocreate_minexpiry;
++	int autocreate_maxexpiry;
++	int autocreate_defaultexpiry;
++	enum sip_peer_type autocreate_type;
+ 	int srvlookup;              /*!< SRV Lookup on or off. Default is on */
+ 	int allowguest;             /*!< allow unauthenticated peers to connect? */
+ 	int alwaysauthreject;       /*!< Send 401 Unauthorized for all failing requests */

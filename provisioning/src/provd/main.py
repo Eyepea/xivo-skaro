@@ -27,6 +27,7 @@ import os.path
 import provd.config
 import provd.devices.ident
 import provd.devices.pgasso
+import provd.synchronize
 from provd.app import ProvisioningApplication
 from provd.devices.config import ConfigCollection
 from provd.devices.device import DeviceCollection
@@ -258,6 +259,43 @@ class RemoteConfigurationService(Service):
         return self._tcp_server.stopService()
 
 
+class SynchronizeService(Service):
+    def __init__(self, config):
+        self._config = config
+    
+    def _new_sync_service_asterisk_ami(self):
+        server_list = self._config['general.asterisk_ami_servers']
+        servers = []
+        for server in server_list:
+            host, port, tls, user, pwd = server
+            servers.append({'host': host, 'port': port, 'enable_tls': tls,
+                            'username': user, 'password': pwd})
+        return provd.synchronize.AsteriskAMISynchronizeService(servers)
+    
+    def _new_sync_service_none(self):
+        return None
+    
+    def _new_sync_service(self, sync_service_type):
+        name = '_new_sync_service_' + sync_service_type
+        try:
+            fun = getattr(self, name)
+        except AttributeError:
+            raise ValueError('unknown sync_service_type: %s' %
+                             sync_service_type)
+        else:
+            return fun()
+    
+    def startService(self):
+        sync_service = self._new_sync_service(self._config['general.sync_service_type'])
+        if sync_service is not None:
+            provd.synchronize.register_sync_service(sync_service)
+        Service.startService(self)
+    
+    def stopService(self):
+        Service.stopService(self)
+        provd.synchronize.unregister_sync_service()
+
+
 class _CompositeConfigSource(object):
     def __init__(self, options):
         self._options = options
@@ -320,6 +358,9 @@ class ProvisioningServiceMaker(object):
         # check config for verbosity
         if config['general.verbose']:
             logging.getLogger().setLevel(logging.DEBUG)
+        
+        sync_service = SynchronizeService(config)
+        sync_service.setServiceParent(top_service)
         
         prov_service = ProvisioningService(config)
         prov_service.setServiceParent(top_service)
