@@ -1783,25 +1783,6 @@ class XivoCTICommand(BaseCommand):
                            'time-hangup' : time.time()})
             if 'context' in vv:
                 self.__sheet_alert__('hangup', astid, vv['context'], event)
-            if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
-                agent_id = vv['origapplication-data']['spied-agentid']
-                tosend = { 'class' : 'agentlisten',
-                           'astid' : astid,
-                           'agentid' : agent_id,
-                           'status' : 'stopped' }
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
-                del vv['origapplication']
-                del vv['origapplication-data']
-            if 'recorded' in vv:
-                agent_id = vv['recorded']
-                tosend = { 'class' : 'agentrecord',
-                           'astid' : astid,
-                           'agentid' : agent_id,
-                           'status' : 'stopped' }
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
-                del vv['recorded']
         else:
             log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
 
@@ -2045,19 +2026,6 @@ class XivoCTICommand(BaseCommand):
         if uniqueid in self.uniqueids[astid]:
             self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
                 'actionid' : actionid})
-            if actionid in self.origapplication[astid]:
-                self.uniqueids[astid][uniqueid].update(self.origapplication[astid][actionid])
-
-                if self.origapplication[astid][actionid]['origapplication'] == 'ChanSpy' and reason == '4':
-                    agent_id = self.origapplication[astid][actionid]['origapplication-data']['spied-agentid']
-                    tosend = { 'class' : 'agentlisten',
-                               'astid' : astid,
-                               'agentid' : agent_id,
-                               'status' : 'started' }
-                    agentfeatures = self.weblist['agents'][astid].keeplist[agent_id]
-                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                     agentfeatures.get('context'))
-                del self.origapplication[astid][actionid]
 
         # Response = Success <=> Reason = '4'
         # Response = Failure <=>
@@ -2591,8 +2559,6 @@ class XivoCTICommand(BaseCommand):
                 if 'agent_phone_context' not in thisagentstats:
                     thisagentstats['agent_phone_context'] = context
 
-                if 'Xivo-Agent-Status-Recorded' not in thisagentstats:
-                    thisagentstats['Xivo-Agent-Status-Recorded'] = False
                 if 'Xivo-Agent-Status-Link' not in thisagentstats:
                     thisagentstats['Xivo-Agent-Status-Link'] = {}
                 for xivofield in ['Xivo-NQJoined', 'Xivo-NQPaused', 'Xivo-NGJoined', 'Xivo-NGPaused']:
@@ -2833,11 +2799,6 @@ class XivoCTICommand(BaseCommand):
 ##                            log.info('%s %s %s %s' % (astid, xivo_dstid, phoneref, b))
 ##                elif eventname == 'MacroMeetme':
 ##                    log.info('%s %s %s' % (astid, xivo_dstid, self.weblist['meetme'][astid].keeplist[xivo_dstid]))
-
-            if eventname == 'MacroOutcall':
-                context = event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN)
-                self.uniqueids[astid][uniqueid]['OUTCALL'] = True
-                self.__sheet_alert__('outcall', astid, context, event)
 
             if xivo_userid or eventname == 'MacroUser':
                 # when DID goes to a User, xivo_userid is not set, but we need these data nonetheless
@@ -3762,8 +3723,7 @@ class XivoCTICommand(BaseCommand):
                                    'agentleavequeue',
                                    'agentpausequeue',
                                    'agentunpausequeue']
-            actions_transfer_list = ['record', 'stoprecord',
-                                     'listen', 'stoplisten',
+            actions_transfer_list = ['listen', 'stoplisten',
                                      'transfer']
             if actionname in actions_queues_list:
                 agentids = self.__mergelist__(userinfo, args.get('agentids').split(','))
@@ -3835,76 +3795,7 @@ class XivoCTICommand(BaseCommand):
                                 % (args.get('source'), args.get('destination')))
                     return
 
-                if actionname == 'listen':
-                    channels = destination.get('channels')
-                    if channels:
-                        aid = self.__ami_execute__(astid,
-                                                   'origapplication',
-                                                   'ChanSpy',
-                                                   '%s|q' % channels[0],
-                                                   'Local',
-                                                   source.get('userinfo').get('phoneid'),
-                                                   source.get('userinfo').get('phonenum'),
-                                                   source.get('userinfo').get('context'))
-                        log.info('started listening on %s %s (id %s) aid = %s'
-                                 % (astid, channels[0], args.get('destination'), aid))
-                        self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
-                                                             'origapplication-data' :
-                                                             { 'spied-channel' : channels[0],
-                                                               'spied-agentid' : args.get('destination') } }
-
-                elif actionname == 'stoplisten':
-                    channels = destination.get('channels')
-                    if channels:
-                        for uid, vv in self.uniqueids[astid].iteritems():
-                            if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
-                                if channels[0] == vv['origapplication-data']['spied-channel']:
-                                    self.__ami_execute__(astid, 'hangup', vv['channel'])
-                                    log.info('stopped listening on %s %s (agent %s)'
-                                             % (astid, channels[0], anum))
-
-                elif actionname == 'record':
-                    datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-                    channels = destination.get('channels')
-                    agent_id = destination.get('id')[0]
-                    for channel in channels:
-                        aid = self.__ami_execute__(astid,
-                                                   'monitor',
-                                                   channel,
-                                                   'cti-monitor-%s-%s-%s' % (destination.get('kind'),
-                                                                             datestring,
-                                                                             agent_id))
-                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
-                        log.info('started monitor on %s %s' % (astid, channel))
-                        tosend = { 'class' : 'agentrecord',
-                                   'astid' : astid,
-                                   'agentid' : agent_id,
-                                   'status' : 'started' }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
-                        if channel in self.channels[astid]:
-                            uniqueid = self.channels[astid][channel]
-                            self.uniqueids[astid][uniqueid].update({'recorded' : agent_id})
-
-                elif actionname == 'stoprecord':
-                    channels = destination.get('channels')
-                    agent_id = destination.get('id')[0]
-                    for channel in channels:
-                        self.__ami_execute__(astid,
-                                             'stopmonitor',
-                                             channel)
-                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : False})
-                        log.info('stopped monitor on %s %s' % (astid, channel))
-                        tosend = { 'class' : 'agentrecord',
-                                   'astid' : astid,
-                                   'agentid' : agent_id,
-                                   'status' : 'stopped' }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
-
-                        # monitor / record : meetme vs. agent
-
-                elif actionname == 'transfer':
+                if actionname == 'transfer':
                     channels = destination.get('channels')
                     # xfer to queue
                     agentid = commandargs[2]

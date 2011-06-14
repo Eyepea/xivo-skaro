@@ -1038,9 +1038,39 @@ class Command:
 
     # record, listen actions
     def ipbxcommand_record(self):
-        print self.ipbxcommand, self.commanddict
-        return
+        subcommand = self.commanddict.pop('subcommand')
+        channel = self.commanddict.pop('channel')
+        # XX take into account ipbxid
+        if subcommand == 'start':
+            datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
+            # kind agent => channel = logged-on channel
+            # other kind => according to what is provided
+            kind = 'phone'
+            id = '7'
+            filename = 'cti-monitor-%s-%s-%s' % (datestring, kind, id)
+            rep = { 'comm' : 'monitor',
+                    'args' : [ channel, filename, 'false' ] }
+            # wait the AMI event ack in order to fill status for channel
+        elif subcommand == 'stop':
+            rep = { 'comm' : 'stopmonitor',
+                    'args' : [ channel ] }
+        return rep
 
     def ipbxcommand_listen(self):
-        print self.ipbxcommand, self.commanddict
-        return
+        subcommand = self.commanddict.pop('subcommand')
+        channel = self.commanddict.pop('channel')
+        # channel might not exist any more
+        if subcommand == 'start':
+            listener = self.commanddict.pop('listener')
+            (listener_protocol, listener_id) = listener.split('/')
+            rep = { 'comm' : 'origapplication',
+                    'args' : [ 'ChanSpy',
+                               '%s,q' % channel,
+                               listener_protocol,
+                               listener_id,
+                               '000',
+                               'mamaop' ] }
+        elif subcommand == 'stop':
+            # XXX hangup appropriate channel
+            rep = {}
+        return rep

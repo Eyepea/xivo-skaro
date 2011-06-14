@@ -24,6 +24,7 @@ __author__    = 'Corentin Le Gall'
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import cjson
 import copy
 import hashlib
 import logging
@@ -318,6 +319,11 @@ class Safe:
 
     def user_get_ctiprofile(self, userid):
         return self.xod_config.get('users').keeplist.get(userid).get('profileclient')
+
+    def user_get_userstatuskind(self, userid):
+        profileclient = self.user_get_ctiprofile(userid)
+        zz = self.ctid.cconf.getconfig('profiles').get(profileclient)
+        return zz.get('userstatus')
 
     def user_get_all(self):
         return self.xod_config['users'].keeplist.keys()
@@ -1057,7 +1063,7 @@ class Safe:
         timer = self.fagichannels[channel]['timer']
         timer.cancel()
         agievent = fagistruct.agidetails
-        self.log.info('handle FAGI for channel %s : %s' % (channel, agievent))
+        # self.log.info('handle FAGI for channel %s : %s' % (channel, agievent))
 
         try:
             varstoset = self.fagi_handle_real(agievent)
@@ -1106,13 +1112,24 @@ class Safe:
         if function == 'presence':
             try:
                 if agiargs:
-                    # input : 'xivo', 'presencegroup-agents', ...
                     presenceid = agiargs.get('1')
-                    aststatus = []
-                    for var, val in self.__counts__(context, presenceid).iteritems():
-                        aststatus.append('%s:%d' % (var, val))
-                    varstoset['XIVO_PRESENCE'] = ','.join(aststatus)
-                    # XIVO_PRESENCE = available:37,onlineoutgoing:2,fastpickup:6
+                    presences = self.ctid.cconf.getconfig('userstatus')
+
+                    prescountdict = {}
+                    for k, v in presences.iteritems():
+                        if k not in prescountdict:
+                            prescountdict[k] = {}
+                        for kk in v.keys():
+                            prescountdict[k][kk] = 0
+
+                    for k, v in self.xod_status.get('users').iteritems():
+                        if v.get('connection'):
+                            availstate = v.get('availstate')
+                            availkind = self.user_get_userstatuskind(k)
+                            if availkind in prescountdict and availstate in prescountdict.get(availkind):
+                                prescountdict[availkind][availstate] += 1
+
+                    varstoset['XIVO_PRESENCE'] = cjson.encode(prescountdict)
             except Exception:
                 self.log.exception('handle_fagi %s : %s' % (function, agiargs))
 
@@ -1161,64 +1178,16 @@ class Safe:
             varstoset['CALLERID'] = calleridtoset
 
         elif function == 'queuestatus':
-            try:
-                if len(fastagi.args) > 0:
-                    queuename = fastagi.args[0]
-                    if self.xod_config['queues'].hasqueue(queuename):
-                        queueid = self.xod_config['queues'].reverse_index.get(queuename)
-                        qprops = self.xod_config['queues'].keeplist[queueid]['agents_in_queue']
-                        lst = []
-                        for ag, agc in qprops.iteritems():
-                            sstatus = 'unknown'
-                            status = agc.get('Status')
-                            if status == '1':
-                                if agc.get('Paused') == '1':
-                                    sstatus = 'paused'
-                                else:
-                                    sstatus = 'available'
-                            elif status == '3':
-                                sstatus = 'busy'
-                            elif status == '5':
-                                sstatus = 'away'
-                            lst.append('%s:%s' % (ag, sstatus))
-                        fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
-                        fastagi.set_variable('XIVO_QUEUEID', queueid)
-            except Exception:
-                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+            # used to set XIVO_QUEUESTATUS and XIVO_QUEUEID with a queue's status summary
+            pass
 
         elif function == 'queueentries':
-            try:
-                if len(fastagi.args) > 0:
-                    queuename = fastagi.args[0]
-                    if self.xod_config['queues'].hasqueue(queuename):
-                        queueid = self.xod_config['queues'].reverse_index.get(queuename)
-                        qentries = self.xod_config['queues'].keeplist[queueid]['channels']
-                        lst = []
-                        for chan, chanprops in qentries.iteritems():
-                            lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
-                        fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
-            except Exception:
-                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+            # used to set XIVO_QUEUEENTRIES with the time since a entry has been there
+            pass
 
         elif function == 'queueholdtime':
-            try:
-                if len(fastagi.args) > 0:
-                    queuename = fastagi.args[0]
-                    if self.xod_config['queues'].hasqueue(queuename):
-                        queueid = self.xod_config['queues'].reverse_index.get(queuename)
-                        fastagi.set_variable('XIVO_QUEUEHOLDTIME',
-                                             self.xod_config['queues'].keeplist[queueid]['queuestats']['Holdtime'])
-                else:
-                    lst = []
-                    for queuename, qprops in self.xod_config['queues'].keeplist.iteritems():
-                        if 'Holdtime' in qprops['queuestats']:
-                            lst.append('%s:%s' % (queuename, qprops['queuestats']['Holdtime']))
-                        else:
-                            self.log.warning('handle_fagi %s : no Holdtime defined in queuestats for %s'
-                                        % (function, queuename))
-                    fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
-            except Exception:
-                self.log.exception('handle_fagi %s : %s' % (function, fastagi.args))
+            # used to set XIVO_QUEUEHOLDTIME according to some previously fed statistics
+            pass
 
         elif function == 'cti2dialplan':
             if len(fastagi.args) > 1:
@@ -1376,7 +1345,7 @@ class Channel:
         # destlist to update along the incoming channel path
 
         self.properties = {
-            'monitor' : False, # for meetme as well as for regular calls ? agent calls ?
+            'monitored' : False, # for meetme as well as for regular calls ? agent calls ?
             'spy' : False, # spier or spied ?
             'holded' : False,
             'parked' : False,

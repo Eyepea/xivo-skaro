@@ -236,6 +236,7 @@ class AMI_1_8:
             self.innerdata.setpeerchannel(channel2, channel1)
             self.innerdata.update(channel2)
         return
+
     def ami_unlink(self, event):
         channel1 = event.pop('Channel1')
         channel2 = event.pop('Channel2')
@@ -243,7 +244,9 @@ class AMI_1_8:
         uniqueid2 = event.pop('Uniqueid2')
         self.log.info('ami_unlink %s %s : %s' % (channel1, channel2, event))
         # usefulness of the unlink event ?
+        self.innerdata.sheetsend('unlink', channel1)
         return
+
     def ami_inherit(self, event):
         self.log.info('ami_inherit %s' % (event))
         return
@@ -271,8 +274,14 @@ class AMI_1_8:
         return
 
     def ami_hold(self, event):
-        self.log.info('ami_hold %s' % (event))
+        channel = event.pop('Channel')
+        status = event.pop('Status')
+        if channel in self.innerdata.channels:
+            self.innerdata.channels.get(channel).properties['holded'] = (status == 'On')
+        else:
+            self.log.warning('ami_hold : unknown channel %s' % channel)
         return
+
     def ami_channelupdate(self, event):
         # called when there is a trunk : links callno-remote and callno-local
         self.log.info('ami_channelupdate %s' % (event))
@@ -470,7 +479,9 @@ class AMI_1_8:
 
     def ami_musiconhold(self, event):
         channel = event.pop('Channel')
-        self.log.info('ami_musiconhold %s : %s' % (channel, event))
+        state = event.pop('State')
+        classname = event.pop('Class', None)
+        self.log.info('ami_musiconhold %s %s %s' % (channel, state, classname))
         return
 
     # Parking events
@@ -522,31 +533,47 @@ class AMI_1_8:
         self.log.info('ami_dtmf %s' % (event))
         return
 
-
-    def userevent_user(self, channel, event):
+    def userevent_user(self, chanprops, event):
+        xivo_userid = event.get('XIVO_USERID')
+        xivo_dstid = event.get('XIVO_DSTID')
+        calleridnum = event.get('XIVO_SRCNUM')
+        calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'origin', 'internal')
+        chanprops.set_extra_data('xivo', 'direction', 'internal')
         return
 
-    def userevent_group(self, channel, event):
+    def userevent_group(self, chanprops, event):
+        xivo_userid = event.get('XIVO_USERID')
+        xivo_dstid = event.get('XIVO_DSTID')
+        calleridnum = event.get('XIVO_SRCNUM')
+        calledidnum = event.get('XIVO_DSTNUM')
         return
 
-    def userevent_queue(self, channel, event):
+    def userevent_queue(self, chanprops, event):
+        xivo_userid = event.get('XIVO_USERID')
+        xivo_dstid = event.get('XIVO_DSTID')
+        calleridnum = event.get('XIVO_SRCNUM')
+        calledidnum = event.get('XIVO_DSTNUM')
         return
 
-    def userevent_meetme(self, channel, event):
+    def userevent_meetme(self, chanprops, event):
+        xivo_userid = event.get('XIVO_USERID')
+        xivo_dstid = event.get('XIVO_DSTID')
+        calleridnum = event.get('XIVO_SRCNUM')
+        calledidnum = event.get('XIVO_DSTNUM')
         return
 
-    def userevent_outcall(self, channel, event):
-        chanprops = self.innerdata.channels.get(channel)
-        if not chanprops:
-            return
+    def userevent_outcall(self, chanprops, event):
+        xivo_userid = event.get('XIVO_USERID')
+        xivo_dstid = event.get('XIVO_DSTID')
+        calleridnum = event.get('XIVO_SRCNUM')
+        calledidnum = event.get('XIVO_DSTNUM')
         chanprops.set_extra_data('xivo', 'origin', 'outcall')
         chanprops.set_extra_data('xivo', 'direction', 'outgoing')
+        self.innerdata.sheetsend('outcall', chanprops.channel)
         return
 
-    def userevent_did(self, channel, event):
-        chanprops = self.innerdata.channels.get(channel)
-        if not chanprops:
-            return
+    def userevent_did(self, chanprops, event):
         calleridnum = event.get('XIVO_SRCNUM')
         calleridname = event.get('XIVO_SRCNAME')
         calleridton = event.get('XIVO_SRCTON')
@@ -567,13 +594,10 @@ class AMI_1_8:
                         chanprops.set_extra_data('xivo', 'context', vv)
                         # print didnumber, k, v.get('action'), kk, vv
         # directory lookup : update chanprops
-        # sheet alert
+        self.innerdata.sheetsend('incomingdid', chanprops.channel)
         return
 
-    def userevent_lookupdirectory(self, channel, event):
-        chanprops = self.innerdata.channels.get(channel)
-        if not chanprops:
-            return
+    def userevent_lookupdirectory(self, chanprops, event):
         calleridnum = event.get('XIVO_SRCNUM')
         calleridname = event.get('XIVO_SRCNAME')
         calleridton = event.get('XIVO_SRCTON')
@@ -589,23 +613,19 @@ class AMI_1_8:
         # directory lookup : update chanprops
         return
 
-    def userevent_localcall(self, channel, event):
+    def userevent_localcall(self, chanprops, event):
         # for ChanSpy + XIVO_ORIGAPPLI + XIVO_ORIGACTIONID
         return
 
-    def userevent_feature(self, channel, event):
-        self.log.info('userevent_feature %s : %s' % (channel, event))
+    def userevent_feature(self, chanprops, event):
         return
 
-    def userevent_custom(self, channel, event):
+    def userevent_custom(self, chanprops, event):
         customname = event.get('NAME')
-        chanprops = self.innerdata.channels.get(channel)
-        if not chanprops:
-            return
         # sheet alert
         return
 
-    def userevent_dialplan2cti(self, channel, event):
+    def userevent_dialplan2cti(self, chanprops, event):
         # why "UserEvent + dialplan2cti" and not "Newexten + Set" ?
         # - more selective
         # - variables declarations are not always done with Set (Read(), AGI(), ...)
@@ -613,10 +633,6 @@ class AMI_1_8:
         # - (future ?) multiple settings at once
         cti_varname = event.get('VARIABLE')
         dp_value = event.get('VALUE')
-        self.log.info('dialplan2cti %s' % (channel))
-        chanprops = self.innerdata.channels.get(channel)
-        if not chanprops:
-            return
         chanprops.set_extra_data('dp', cti_varname, dp_value)
         return
 
@@ -629,11 +645,14 @@ class AMI_1_8:
         eventname = event.pop('UserEvent')
         channel = event.pop('CHANNEL', None)
         # syntax in dialplan : exten = xx,n,UserEvent(myevent,var1: ${var1},var2: ${var2})
+        chanprops = self.innerdata.channels.get(channel)
+        if not chanprops:
+            return
         if eventname in self.userevents:
             methodname = 'userevent_%s' % eventname.lower()
             if hasattr(self, methodname):
                 self.log.info('ami_userevent %s %s : %s' % (eventname, channel, event))
-                getattr(self, methodname)(channel, event)
+                getattr(self, methodname)(chanprops, event)
         return
 
     def ami_agiexec(self, event):
@@ -851,16 +870,30 @@ class AMI_1_8:
 
     # Monitor, Spy
     def ami_monitorstart(self, event):
-        self.log.info('ami_monitorstart %s' % (event))
+        channel = event.pop('Channel')
+        if channel in self.innerdata.channels:
+            self.innerdata.channels.get(channel).properties['monitored'] = True
+        self.log.info('ami_monitorstart %s %s' % (channel, event))
         return
+
     def ami_monitorstop(self, event):
-        self.log.info('ami_monitorstop %s' % (event))
+        channel = event.pop('Channel')
+        if channel in self.innerdata.channels:
+            self.innerdata.channels.get(channel).properties['monitored'] = False
+        self.log.info('ami_monitorstop %s %s' % (channel, event))
         return
+
     def ami_chanspystart(self, event):
-        self.log.info('ami_chanspystart %s' % (event))
+        spyeechannel = event.pop('SpyeeChannel')
+        spyerchannel = event.pop('SpyerChannel')
+        # update spyer vs. spyee channels
+        self.log.info('ami_chanspystart : %s spied by %s' % (spyeechannel, spyerchannel))
         return
+
     def ami_chanspystop(self, event):
-        self.log.info('ami_chanspystop %s' % (event))
+        spyeechannel = event.pop('SpyeeChannel')
+        # actually, we get here only once the spied channel has hangup
+        self.log.info('ami_chanspystop %s spied by nobody' % spyeechannel)
         return
 
     # End of status requests

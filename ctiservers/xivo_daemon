@@ -666,6 +666,7 @@ class xivo_daemon:
                             nc.connected(connc)
                             if kind in ['WEBI', 'FAGI', 'INFO']:
                                 ipbxid = self.find_matching_ipbxid(sockparams[0])
+                                ipbxid = self.myipbxid
                                 if ipbxid:
                                     nc.set_ipbxid(ipbxid)
                                 else:
