@@ -211,8 +211,9 @@ class DictConfigureServiceParam(object):
     def set(self, value):
         if self._check_fun is not None:
             self._check_fun(value)
-        if value is None and self._key in self._dict:
-            del self._dict[self._key]
+        if value is None:
+            if self._key in self._dict:
+                del self._dict[self._key]
         else:
             self._dict[self._key] = value
 
@@ -255,6 +256,7 @@ class PersistentConfigureServiceDecorator(object):
     def _load_params(self):
         params = self._persister.params()
         for name, value in params.iteritems():
+            logger.debug('Setting configure param %s to %s', name, value)
             try:
                 self._cfg_service.set(name, value)
             except KeyError, e:

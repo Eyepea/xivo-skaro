@@ -1,5 +1,5 @@
 {
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Plugin for Cisco 7902G, 7905G, 7910G, 7912G, 7940G and 7960G in different versions of the SCCP software.",
     "capabilities": {
         "Cisco, 7902G, 8.0.2/SCCP": {

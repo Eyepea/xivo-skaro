@@ -284,6 +284,10 @@ class CiscoConfigureService(object):
         self._p_password = password
         self._update_dler()
     
+    def _update_dler(self):
+        if self._p_username is not None and self._p_password is not None:
+            self._cisco_dler.set_password(self._p_username, self._p_password)
+    
     def get(self, name):
         try:
             return getattr(self, '_p_' + name)
@@ -294,8 +298,7 @@ class CiscoConfigureService(object):
         attrname = '_p_' + name
         if hasattr(self, attrname):
             setattr(self, attrname, value)
-            if self._p_username is not None and self._p_password is not None:
-                self._cisco_dler.set_password(self._p_username, self._p_password)
+            self._update_dler()
         else:
             raise KeyError(name)
     

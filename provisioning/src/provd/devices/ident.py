@@ -590,8 +590,8 @@ class StaticDeviceUpdater(object):
 
 
 class DynamicDeviceUpdater(object):
-    """Device updater that updates one of the device key with the value of the
-    device info key.
+    """Device updater that updates zero or moes of the device key with the
+    value of the device info key.
     
     If the key is already present in the device, then the device will be
     updated only if force_update is true.
@@ -603,15 +603,20 @@ class DynamicDeviceUpdater(object):
     
     implements(IDeviceUpdater)
     
-    def __init__(self, key, force_update=False):
-        self._key = key
+    def __init__(self, keys, force_update=False):
+        # keys can either be a string (i.e. u'ip') or a list of string
+        #   (i.e. [u'ip', u'version'])
+        if isinstance(keys, basestring):
+            keys = [keys]
+        self._keys = list(keys)
         self._force_update = force_update
     
     def update(self, device, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
-        if self._key in dev_info:
-            if self._force_update or self._key not in device:
-                device[self._key] = dev_info[self._key]
+        for key in self._keys:
+            if key in dev_info:
+                if self._force_update or key not in device:
+                    device[key] = dev_info[key]
         return defer.succeed(False)
 
 

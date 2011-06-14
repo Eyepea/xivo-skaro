@@ -153,7 +153,8 @@ class IDocumentCollection(Interface):
         exist and return a deferred that fire with None once the index has
         been created.
         
-        complex_key has the same format as keys for selectors.
+        complex_key has the same format as keys for selectors, i.e. it
+        can be of the form 'a.b' for example.
         
         This is an optional operation, and some implementation might not
         implement it, i.e. you should be ready to catch an AttributeError

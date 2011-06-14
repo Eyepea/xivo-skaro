@@ -334,7 +334,7 @@ class AsteriskAMISynchronizeService(object):
 
 def register_sync_service(sync_service):
     """Register a synchronize service globally."""
-    logger.info('Registerting synchronize service: %s', sync_service)
+    logger.info('Registering synchronize service: %s', sync_service)
     global _SYNC_SERVICE
     _SYNC_SERVICE = sync_service
 
