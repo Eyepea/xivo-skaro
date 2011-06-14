@@ -27,6 +27,7 @@ import logging
 import os
 import shutil
 import tarfile
+import urlparse
 import weakref
 from binascii import a2b_hex
 from fetchfw.download import new_downloaders, DefaultDownloader, RemoteFile,\
@@ -641,6 +642,51 @@ class BasePluginManagerObserver(object):
             self._pg_unload(pg_id)
 
 
+def _check_is_server_url(value):
+    if value is None:
+        return
+    
+    try:
+        parse_result = urlparse.urlparse(value)
+    except Exception, e:
+        raise InvalidParameterError(e)
+    else:
+        if not parse_result.scheme:
+            raise InvalidParameterError('no scheme: %s' % value)
+        if not parse_result.hostname:
+            raise InvalidParameterError('no hostname: %s' % value)
+
+
+def _check_is_proxy(value):
+    if value is None:
+        return
+    
+    try:
+        parse_result = urlparse.urlparse(value)
+    except Exception, e:
+        raise InvalidParameterError(e)
+    else:
+        if not parse_result.scheme:
+            raise InvalidParameterError('no scheme: %s' % value)
+        if not parse_result.hostname:
+            raise InvalidParameterError('no hostname: %s' % value)
+        if parse_result.path:
+            raise InvalidParameterError('path: %s' % value)
+
+
+def _check_is_https_proxy(value):
+    if value is None:
+        return
+    
+    try:
+        parse_result = urlparse.urlparse(value)
+    except Exception, e:
+        raise InvalidParameterError(e)
+    else:
+        if parse_result.scheme and parse_result.hostname:
+            raise InvalidParameterError('scheme and hostname: %s' % value)
+
+
 class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
     
@@ -671,14 +717,18 @@ class PluginManager(object):
         self.server = None
         proxies = app.proxies
         server_p = AttrConfigureServiceParam(self, 'server',
-                                             u'The base address of the plugins repository')
+                                             u'The base address of the plugins repository',
+                                             _check_is_server_url)
         http_proxy_p = DictConfigureServiceParam(proxies, 'http',
-                                                 u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"')
+                                                 u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"',
+                                                 _check_is_proxy)
         ftp_proxy_p = DictConfigureServiceParam(proxies, 'ftp',
-                                                u'The proxy for FTP requests. Format is "http://[user:password@]host:port"')
+                                                u'The proxy for FTP requests. Format is "http://[user:password@]host:port"',
+                                                _check_is_proxy)
         # syntax for specifying the HTTPS proxy is a bit different, don't ask me why
         https_proxy_p = DictConfigureServiceParam(proxies, 'https',
-                                                  u'The proxy for HTTPS requests. Format is "host:port"')
+                                                  u'The proxy for HTTPS requests. Format is "host:port"',
+                                                  _check_is_https_proxy)
         cfg_service = BaseConfigureService({u'server': server_p,
                                             u'http_proxy': http_proxy_p,
                                             u'ftp_proxy': ftp_proxy_p,

@@ -179,15 +179,18 @@ class IConfigureServiceParam(Interface):
 class AttrConfigureServiceParam(object):
     implements(IConfigureServiceParam)
     
-    def __init__(self, obj, name, description=None):
+    def __init__(self, obj, name, description=None, check_fun=None):
         self._obj = obj
         self._name = name
         self.description = description
+        self._check_fun = check_fun
     
     def get(self):
         return getattr(self._obj, self._name)
     
     def set(self, value):
+        if self._check_fun is not None:
+            self._check_fun(value)
         setattr(self._obj, self._name, value)
 
 
@@ -196,15 +199,18 @@ class DictConfigureServiceParam(object):
     
     # Note that this delete the key from the dict when setting a None value
     
-    def __init__(self, dict_, key, description=None):
+    def __init__(self, dict_, key, description=None, check_fun=None):
         self._dict = dict_
         self._key = key
         self.description = description
+        self._check_fun = check_fun
     
     def get(self):
         return self._dict.get(self._key)
     
     def set(self, value):
+        if self._check_fun is not None:
+            self._check_fun(value)
         if value is None and self._key in self._dict:
             del self._dict[self._key]
         else:

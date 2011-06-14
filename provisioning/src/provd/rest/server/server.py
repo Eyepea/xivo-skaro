@@ -370,8 +370,10 @@ class ConfigureServiceResource(Resource):
     def render_GET(self, request):
         params = {}
         for key, description in self._cfg_srv.description.iteritems():
+            value = self._cfg_srv.get(key)
             href = uri_append_path(request.path, key)
             params[key] = {u'description': description,
+                           u'value': value,
                            u'links': [{u'rel': REL_CONFIGURE_PARAM,
                                        u'href': href}]}
         content = {u'params': params}

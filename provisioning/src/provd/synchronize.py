@@ -328,7 +328,7 @@ class AsteriskAMISynchronizeService(object):
         raise AMIInteractionError('all AMI server returned false')
     
     @_asterisk_ami_sync_lock
-    def sccp_reset(self, device_name, _recurse=False):
+    def sccp_reset(self, device_name):
         return self._do_sccp_reset(device_name, True)
 
 
