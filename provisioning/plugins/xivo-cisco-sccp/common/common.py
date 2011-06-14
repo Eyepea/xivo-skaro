@@ -35,6 +35,7 @@ from fetchfw.download import DefaultDownloader, InvalidCredentialsError,\
     DownloadError, new_downloaders
 from fetchfw.storage import RemoteFileBuilder
 from provd import tzinform
+from provd import synchronize
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT, \
@@ -45,7 +46,7 @@ from provd.servers.tftp.service import TFTPFileService
 from provd.services import PersistentConfigureServiceDecorator,\
     JsonConfigPersister
 from provd.util import norm_mac, format_mac
-from twisted.internet import defer
+from twisted.internet import defer, threads
 
 logger = logging.getLogger('plugin.xivo-cisco-sccp')
 
@@ -426,6 +427,9 @@ class BaseCiscoSccpPlugin(StandardPlugin):
             logger.info('error while removing file: %s', e)
     
     def synchronize(self, device, raw_config):
-        # The only known way to synchronize SCCP device is to do an
-        # 'sccp reload' or 'sccp restart' or similar from Asterisk
-        return defer.fail(Exception('Synchronization not supported for SCCP devices'))
+        device_name = 'SEP' + format_mac(device[u'mac'], separator='', uppercase=True).encode('ascii')
+        sync_service = synchronize.get_sync_service()
+        if sync_service is None or sync_service.TYPE != 'AsteriskAMI':
+            return defer.fail(Exception('Incompatible sync service: %s' % sync_service))
+        else:
+            return threads.deferToThread(sync_service.sccp_reset, device_name);

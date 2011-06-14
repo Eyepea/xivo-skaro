@@ -1,5 +1,5 @@
 {
-    "version": "0.1.7",
+    "version": "0.1.8",
     "description": "Plugin for Polycom IP301, IP501, IP600, IP601 and IP4000 in version 3.1.6.0017.",
     "capabilities": {
         "Polycom, SPIP301, 3.1.6.0017": {

@@ -28,8 +28,8 @@ import logging
 import os.path
 import re
 from operator import itemgetter
-from provd import sip
 from provd import tzinform
+from provd import synchronize
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT
@@ -37,8 +37,7 @@ from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
-from twisted.internet import defer
-from twisted.python import failure
+from twisted.internet import defer, threads
 
 logger = logging.getLogger('plugin.xivo-snom')
 
@@ -289,17 +288,12 @@ class BaseSnomPlugin(StandardPlugin):
     
     def synchronize(self, device, raw_config):
         try:
-            ip = device[u'ip']
+            ip = device[u'ip'].encode('ascii')
         except KeyError:
             return defer.fail(Exception('IP address needed for device synchronization'))
         else:
-            def callback(status_code):
-                if status_code == 200:
-                    return None
-                else:
-                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
-                    return failure.Failure(e)
-            uri = sip.URI('sip', ip, port=5060)
-            d = sip.send_notify(uri, 'check-sync')
-            d.addCallback(callback)
-            return d
+            sync_service = synchronize.get_sync_service()
+            if sync_service is None or sync_service.TYPE != 'AsteriskAMI':
+                return defer.fail(Exception('Incompatible sync service: %s' % sync_service))
+            else:
+                return threads.deferToThread(sync_service.sip_notify, ip, 'check-sync');

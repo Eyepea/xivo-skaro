@@ -1,5 +1,5 @@
 {
-    "version": "0.0.2",
+    "version": "0.1.0",
     "description": "Plugin for Technicolor (previously known as Thomson) ST2030 in version 2.74.",
     "capabilities": {
         "Technicolor, ST2030, 2.74": {

@@ -27,8 +27,8 @@ __license__ = """
 import re
 import os
 import logging
-from provd import sip
 from provd import tzinform
+from provd import synchronize
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, FULL_SUPPORT,\
     COMPLETE_SUPPORT, PROBABLE_SUPPORT, IMPROBABLE_SUPPORT
@@ -37,8 +37,7 @@ from provd.plugins import StandardPlugin, TemplatePluginHelper,\
 from provd.servers.http import HTTPNoListingFileService
 from provd.servers.tftp.service import TFTPFileService
 from provd.util import format_mac, norm_mac
-from twisted.internet import defer
-from twisted.python import failure
+from twisted.internet import defer, threads
 
 logger = logging.getLogger('plugin.xivo-avaya')
 
@@ -186,17 +185,12 @@ class BaseAvayaPlugin(StandardPlugin):
     
     def synchronize(self, device, raw_config):
         try:
-            ip = device[u'ip']
+            ip = device[u'ip'].encode('ascii')
         except KeyError:
             return defer.fail(Exception('IP address needed for device synchronization'))
         else:
-            def callback(status_code):
-                if status_code == 200:
-                    return None
-                else:
-                    e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
-                    return failure.Failure(e)
-            uri = sip.URI('sip', ip, port=5060)
-            d = sip.send_notify(uri, 'check-sync')
-            d.addCallback(callback)
-            return d
+            sync_service = synchronize.get_sync_service()
+            if sync_service is None or sync_service.TYPE != 'AsteriskAMI':
+                return defer.fail(Exception('Incompatible sync service: %s' % sync_service))
+            else:
+                return threads.deferToThread(sync_service.sip_notify, ip, 'check-sync');

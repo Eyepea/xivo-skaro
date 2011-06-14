@@ -1,5 +1,5 @@
 {
-    "version": "0.0.5",
+    "version": "0.1.0",
     "description": "Plugin for Technicolor (previously known as Thomson) TB30 in version 1.74.0.",
     "capabilities": {
         "Technicolor, TB30, 1.74.0": {

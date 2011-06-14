@@ -28,9 +28,8 @@ import logging
 import os.path
 import re
 import time
-from operator import itemgetter
-from provd import sip
 from provd import tzinform
+from provd import synchronize
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import BasePgAssociator, FULL_SUPPORT,\
     COMPLETE_SUPPORT, PROBABLE_SUPPORT, IMPROBABLE_SUPPORT
@@ -38,8 +37,7 @@ from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
     TemplatePluginHelper
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import format_mac, norm_mac
-from twisted.internet import defer
-from twisted.python import failure
+from twisted.internet import defer, threads
 
 logger = logging.getLogger('plugin.xivo-technicolor')
 
@@ -338,23 +336,12 @@ class BaseTechnicolorPlugin(StandardPlugin):
     
     def synchronize(self, device, raw_config):
         try:
-            ip = device[u'ip']
+            ip = device[u'ip'].encode('ascii')
         except KeyError:
             return defer.fail(Exception('IP address needed for device synchronization'))
         else:
-            if not raw_config[u'sip_lines']:
-                e = Exception('Need at least one configured line to resynchronize')
-                return failure.Failure(e)
+            sync_service = synchronize.get_sync_service()
+            if sync_service is None or sync_service.TYPE != 'AsteriskAMI':
+                return defer.fail(Exception('Incompatible sync service: %s' % sync_service))
             else:
-                def callback(status_code):
-                    if status_code == 200:
-                        return None
-                    else:
-                        e = Exception('SIP NOTIFY failed with status "%s"' % status_code)
-                        return failure.Failure(e)
-                line = min(raw_config[u'sip_lines'].iteritems(), key=itemgetter(0))[1]
-                username = line[u'username']
-                uri = sip.URI('sip', ip, user=username, port=5060)
-                d = sip.send_notify(uri, 'check-sync')
-                d.addCallback(callback)
-                return d
+                return threads.deferToThread(sync_service.sip_notify, ip, 'check-sync');

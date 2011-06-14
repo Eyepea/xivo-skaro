@@ -1,5 +1,5 @@
 {
-    "version": "0.0.2",
+    "version": "0.1.0",
     "description": "Plugin for Snom 300, 320, 360, 370, 820, 821 and 870 in version 8.4.31.",
     "capabilities": {
         "Snom, 300, 8.4.31": {
