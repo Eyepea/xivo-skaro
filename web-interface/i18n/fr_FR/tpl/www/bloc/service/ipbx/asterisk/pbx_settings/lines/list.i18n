@@ -51,3 +51,15 @@ Ajouter une ligne SCCP
 
 ; toolbar_menu_add_custom
 Ajouter une ligne personnalisé
+
+; toolbar_fm_free
+Ligne disponible
+
+; lines-list_legend
+Légende
+
+; line-list_legend-opt(line_assoc_device_exist)
+Ligne associées à une terminaison
+
+; line-list_legend-opt(line_assoc_device_not_exist)
+Ligne non associées à une terminaison

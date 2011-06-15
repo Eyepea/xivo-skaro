@@ -86,7 +86,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			
 			if((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
 			{
-				if(isset($ref['ip']) === true
+				if(isset($ref['mac']) === true
 				&& ($devicefeatures = $this->_devicefeatures->get_where(array('mac' => $ref['mac']))) !== false
 				&& $this->get_by_deviceid($devicefeatures['deviceid']) !== false)
 				{
@@ -125,6 +125,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				dwho_report::push('error',
 					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
 					'error_device_'.$act);
+				dwho_report::push('error',$this->get_error(),'error_device_'.$act);
 			}
 		}
 			
@@ -772,28 +773,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			return(false);
 
 		return(true);
-	}
-
-	function mass_provisioning($userids, $reboot=false)
-	{
-		foreach($userids as $userid)
-		{
-			//$this->_info['devicefeatures'] = array('id' => $userid);
-			$this->_info['devicefeatures'] = $this->_devicefeatures->get($userid);
-			$this->_get_autoprov();
-			if(is_null($this->_info['autoprov']['macaddr']))
-				continue;
-
-			$cmd = array(
-				'from'           => 'webi',
-				'iddevicefeatures' => $userid,
-				'proto'          => $this->_info['devicefeatures']['protocol'],
-				'macaddr'        => $this->_info['autoprov']['macaddr'],
-				'actions'        => $reboot?'yes':'no'
-			);
-
-			$this->_autoprov->notification($cmd, 'prov');
-		}
 	}
 }
 

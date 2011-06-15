@@ -129,7 +129,7 @@ $page = $url->pager($pager['pages'],
 			elseif($ref['configured'] === false):
 				$icon = 'red';
 			else:
-				if ($ref['config'] === 'autoprov')
+				if(strncmp($ref['config'],'autoprov',strlen('autoprov')) === 0)
 					$icon = 'yellow';
 				else
 					$icon = 'green';

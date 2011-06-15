@@ -34,6 +34,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_extensions  	= false;
 	protected $_linefeatures  	= false;
 	protected $_devicefeatures 	= false;
+	protected $_appsip 	        = false;
 	
 	public function __construct(&$xobj,$param=array())
 	{
@@ -44,7 +45,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($this->_extensions = &$ipbx->get_module('extensions')) === false
 		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
-		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false)
+		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false
+        || ($this->_appsip = &$ipbx->get_apprealstatic('sip')) === false)
 			return(false);
 		
 		$this->_load_config(true);
@@ -235,12 +237,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	
 	public function autocreate()
 	{
-		if (is_array($arr) === false)
-			return(false);
-		
 		$uri = $this->_build_uri(array('autocreate'));
-		$data = array('' => '');
-		$rs = $this->request_post($uri,$data);
+		$rs = $this->request_post($uri,array('' => ''));
 		
 		if($this->_status_code !== 201)
 		{
@@ -509,6 +507,18 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			
 		if (is_null($raw) === true)
 			$raw = array();
+			
+        $appgeneralsip = &$this->_appsip->get_module('general');
+        
+        $tlsenable = $appgeneralsip->get('tlsenable');
+        if ($raw['sip_transport'] === 'tls'
+		&& $tlsenable['general']['var_val'] === 'yes')
+        {
+           $tlscertfile = $appgeneralsip->get('tlscertfile');
+           $crt = str_replace('.pem', '.crt', $tlscertfile['general']['var_val']);
+           $raw['sip_servers_root_and_intermediate_certificates'] =
+               file_get_contents($crt);
+        }
 		
 		$raw_config = &$globalconfig['raw_config'];
 		$raw_config = array_merge($raw_config,$this->build_raw_config_device($raw));

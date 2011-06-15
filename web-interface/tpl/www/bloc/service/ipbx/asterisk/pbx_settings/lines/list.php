@@ -103,6 +103,10 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
+						
+			$phone = 'green';
+			if((int) ($ref['device']) === 0)
+			    $phone = 'red';
 
 			if($ref['commented'] === true):
 				$icon = 'disable';
@@ -126,14 +130,15 @@ $page = $url->pager($pager['pages'],
 		<td class="txt-left" title="<?=dwho_alttitle($ref['identity']);?>">
 			<label for="it-lines-<?=$i?>" id="lb-lines-<?=$i?>">
 <?php
-				echo	$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"'),
-					dwho_htmlen(dwho_trunc($ref['identity'],25,'...',false));
+                echo $url->img_html('img/site/utils/phone-'.$phone.'.png',null,'class="icons-list"');
+				#echo	$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');
+				echo dwho_htmlen(dwho_trunc($ref['identity'],25,'...',false));
 ?>
 			</label>
 		</td>
 		<td><?=$this->bbf('line_protocol-'.$ref['protocol']);?></td>
 		<td class="txt-center">
-			<?=empty($ref['provisioningid']) ? '-' : $ref['provisioningid']?>
+			<?=(empty($ref['provisioningid']) || ($ref['useridentity'] === '-')) ? '-' : $ref['provisioningid']?>
 		</td>
 		<td class="txt-center">
 			<?=dwho_htmlen(dwho_trunc($ref['useridentity'],25,'...',false))?>
@@ -184,3 +189,9 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 </div>
+
+<fieldset>
+	<legend><?=$this->bbf('lines-list_legend');?></legend>
+	<p><?=$url->img_html('img/site/utils/phone-green.png');?> <?=$this->bbf('line-list_legend-opt',array('line_assoc_device_exist'));?></p>
+	<p><?=$url->img_html('img/site/utils/phone-red.png');?> <?=$this->bbf('line-list_legend-opt',array('line_assoc_device_not_exist'));?></p>
+</fieldset>

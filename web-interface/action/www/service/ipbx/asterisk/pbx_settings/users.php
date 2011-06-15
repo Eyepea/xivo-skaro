@@ -86,8 +86,8 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		
 		// timepicker
-		$dhtml->set_css('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.css',true);
-		$dhtml->set_js('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.js',true);
+		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
+		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
 		
 		// autocomplete
 		$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);

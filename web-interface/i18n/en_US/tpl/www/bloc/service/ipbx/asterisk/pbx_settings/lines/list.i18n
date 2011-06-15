@@ -36,3 +36,12 @@ No line found
 
 ; opt_delete_confirm
 Are you sure you want to delete this line?
+
+; lines-list_legend
+Legend
+
+; line-list_legend-opt(line_assoc_device_exist)
+Line associated to a device
+
+; line-list_legend-opt(line_assoc_device_not_exist)
+Line not associated to a device

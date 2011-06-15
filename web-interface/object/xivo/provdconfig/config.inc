@@ -43,6 +43,7 @@ $array['autoprov']['raw_config']['sip_lines'][1] = array();
 $array['autoprov']['raw_config']['sip_lines'][1]['display_name'] = 'Autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['username'] ='autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['password'] ='autoprov';
+$array['autoprov']['raw_config']['sip_lines'][1]['number'] ='autoprov';
 $array['autoprov']['raw_config']['sccp_call_managers'] = array();
 
 

@@ -313,8 +313,6 @@ endif;
 <?php
 if($listline !== false
 && ($nb = count($listline)) !== 0):
-
-#dwho_var_dump($listline);
 	
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$listline[$i];
@@ -346,7 +344,7 @@ if($listline !== false
 			<?=$ref['number']?>
 		</td>
 		<td>
-			<?=$ref['configregistrar']?>
+			<?=$ref['configregistrar']?> (<?=$ref['ipfrom']?>)
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($ref['useridentity'],

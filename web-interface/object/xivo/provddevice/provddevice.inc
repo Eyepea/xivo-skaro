@@ -252,7 +252,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 	
-	public function update_config_from_line($arr,$deviceid)
+	public function update_config_from_line($arr,$deviceid,$synchronize=false)
 	{
 		if ($this->_provdconfig === false
 		|| dwho_has_len($deviceid) === false
@@ -284,6 +284,11 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			dwho_report::push('error', 'fail to edit config device: '.$deviceid);
 			return(false);
 		}
+		
+		if ($synchronize === true
+		&& $this->synchronize($deviceid) === false)
+			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
+		
 		return(true);
 	}
 	

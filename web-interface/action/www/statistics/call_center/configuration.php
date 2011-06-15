@@ -118,8 +118,8 @@ switch($act)
 		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 		
 		// timepicker
-		$dhtml->set_css('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.css',true);
-		$dhtml->set_js('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.js',true);
+		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
+		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -238,8 +238,8 @@ switch($act)
 		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 		
 		// timepicker
-		$dhtml->set_css('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.css',true);
-		$dhtml->set_js('extra-libs/jquery.timepicker/jquery-ui-timepicker-addon.js',true);
+		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
+		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
 
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);

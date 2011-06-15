@@ -29,7 +29,7 @@ $array['element']['displayname'] = array();
 $array['element']['displayname']['default'] = '';
 
 $array['element']['contexttype'] = array();
-$array['element']['contexttype']['default'] = 1;
+$array['element']['contexttype']['default'] = '';
 
 $array['element']['entity'] = array();
 $array['element']['entity']['default'] = '';

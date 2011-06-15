@@ -187,6 +187,8 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		foreach($arr as $k => &$value)
 		{
     		$uri = $this->_build_uri(array('configure',$k));
+    		if ($value === '')
+    		    $value = null;
     		if ($this->edit_params($uri,$value) === false)
     		    $err++;
 		}

@@ -54,26 +54,27 @@ switch($act)
 		
 		if(($device = $appdevice->get_by_ip($data['ip'])) === false
 		|| ($devicefeatures = $device['devicefeatures']) === false)
-			$http_response->set_status_line(204);
-		elseif ($data['code'] === 'autoprov')
+			$http_response->set_status_line(400);
+		elseif($data['code'] === 'autoprov')
 		{
 			$provddevice->mode_autoprov($devicefeatures['deviceid'],true);
-			echo "Autoprov configured\n";
 			$http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
 		|| ($rs = $appline->get($line['id'])) === false
 		|| ($rs['userfeatures'] = $userfeatures->get($line['iduserfeatures'])) === false
-		|| $provddevice->update_config_from_line($rs,$devicefeatures['deviceid']) === false
-		|| $provddevice->synchronize($devicefeatures['deviceid']) === false)
-			$http_response->set_status_line(204);
+		|| $provddevice->update_config_from_line($rs,$devicefeatures['deviceid'],true) === false)
+			$http_response->set_status_line(400);
 		else
+		{
+		    $linefeatures->edit($line['id'],array('device' => $devicefeatures['id']));
 			$http_response->set_status_line(200);
+		}
 		
 		$http_response->send(true);
 		break;
 	default:
-		$http_response->set_status_line(404);
+		$http_response->set_status_line(400);
 		$http_response->send(true);
 }
 
