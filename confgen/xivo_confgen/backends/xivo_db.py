@@ -276,27 +276,48 @@ class ProgfunckeysHintsHandler(SpecializedHandler):
 
 
 class PickupsHandler(SpecializedHandler):
+	"""
+
+		NOTE: all user lines can be intercepted/intercept calls
+	"""
 	def all(self, usertype, *args, **kwargs):
 		if usertype not in ('sip','iax','sccp'):
 			raise TypeError
 
-		(_p, _pm, _lf, _u) = [getattr(self.db, o)._table.c for o in
-				('pickup','pickupmember','linefeatures','user'+usertype)]
-		conds = [
-				_p.commented   == 0,
-				_p.id          == _pm.pickupid,
-				_pm.membertype == 'user',
-				_pm.memberid   == _lf.iduserfeatures,
-				_lf.protocol   == usertype,
-				_lf.protocolid == _u.id
-		]
+		(_p, _pm, _lf, _u, _g, _q) = [getattr(self.db, o)._table.c for o in
+				('pickup','pickupmember','linefeatures','user'+usertype, 'groupfeatures',
+				'queuemember')]
 
-		q = select(
-				[_u.name, _pm.category, _p.id],
-				and_(*conds)
-		).order_by(_u.name, _pm.category)
+		q1 = select([_u.name, _pm.category, _p.id],
+			and_(
+				_p.commented    == 0,
+				_p.id           == _pm.pickupid,
+				_pm.membertype  == 'user',
+				_pm.memberid    == _lf.iduserfeatures,
+				#_lf.line_num    == 0,
+				#_lf.rules_order == 0,
+				_lf.protocol    == usertype,
+				_lf.protocolid  == _u.id
+			)
+		)
 
-		return self.execute(q).fetchall()
+		q2 = select([_u.name, _pm.category, _p.id],
+			and_(
+				_p.commented    == 0,
+				_p.id           == _pm.pickupid,
+				_pm.membertype  == 'group',
+				_pm.memberid    == _g.id,
+				_g.name         == _q.queue_name,
+				_q.usertype     == 'user',
+				_q.userid       == _lf.iduserfeatures,
+				#_lf.line_num    == 0,
+				#_lf.rules_order == 0,
+				_lf.protocol    == usertype,
+				_lf.protocolid  == _u.id
+			)
+		)
+
+		return self.execute(q1.union(q2)).fetchall()
 
 class QueuePenaltiesHandler(SpecializedHandler):
 	def all(self, **kwargs):

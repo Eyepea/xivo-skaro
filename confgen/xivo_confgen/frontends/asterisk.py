@@ -80,7 +80,7 @@ class AsteriskFrontend(Frontend):
 					print >>o, k, '=', v
 
 
-		# section::users
+		# section::users (xivo lines)
 		pickups = {}
 		for p in self.backend.pickups.all(usertype='sip'):
 			user = pickups.setdefault(p[0], {})
@@ -842,7 +842,7 @@ class AsteriskFrontend(Frontend):
 			print >>o, k, "=", v
 
 		print >>o
-		for group in self.backend.dahdigroup.all():
+		for group in self.backend.dahdigroup.all(commented=False):
 			print >>o, "\ngroup=%d" % group['groupno']
 
 			for k in ('context','switchtype','signalling','callerid','mailbox'):
