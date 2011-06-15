@@ -39,9 +39,12 @@ $provdplugin = &$_XOBJ->get_module('provdplugin');
 switch($act)
 {
 	case 'update':
-		if ($provdplugin->update() === false)
+	    $sysconfd = &$_XOBJ->get_module('sysconfd');
+		if ($provdplugin->update() === false
+		|| $sysconfd->request_get('/dhcpd_update') === false
+		|| $sysconfd->request_post('/services', array('isc-dhcp-server' => 'restart')) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_update'));
-		else	
+		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_updated'));
 		$param['act'] = 'list';
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
@@ -59,7 +62,7 @@ switch($act)
 		if (isset($_QR['id']) === false
 		|| $provdplugin->install($_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_installation',array($_QR['id'])));
-		else	
+		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_installed',array($_QR['id'])));
 		$param['act'] = 'list';
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
@@ -68,7 +71,7 @@ switch($act)
 		if (isset($_QR['id']) === false
 		|| $provdplugin->uninstall($_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_uninstallation',array($_QR['id'])));
-		else	
+		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_uninstalled',array($_QR['id'])));
 		$param['act'] = 'list';
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
@@ -97,7 +100,7 @@ switch($act)
 		|| isset($_QR['plugin']) === false
 		|| $provdplugin->uninstall_pkgs($_QR['plugin'],$_QR['id']) === false)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_uninstallation',array($_QR['id'])));
-		else	
+		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_uninstalled',array($_QR['id'])));
 			
 		$param['act'] = 'edit';
