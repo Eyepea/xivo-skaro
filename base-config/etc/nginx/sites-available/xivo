@@ -15,19 +15,25 @@ server {
 
     location / {
         index index.php;
+        include /etc/nginx/xivo_params; 
     }
-    location ~ \.php {
-        #fastcgi_pass unix:/var/run/php-fastcgi/php-fastcgi.socket;
-        include /etc/nginx/fastcgi_params;
-        fastcgi_index index.php;
-        fastcgi_pass  127.0.0.1:9000;
-        fastcgi_read_timeout 120;
-        fastcgi_split_path_info ^(.+\.php)(.*)$;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param PATH_INFO $fastcgi_path_info;
-        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-        fastcgi_param HTTPS on;
-    }
+
+    location ^~ /extra-libs/jquery/        { alias /usr/share/javascript/jquery/; }
+    location ^~ /extra-libs/jquery-ui/     { alias /usr/share/javascript/jquery-ui/; }
+    location ^~ /extra-libs/mousewheel/    { alias /usr/share/javascript/jquery.mousewheel/; }
+    location ^~ /extra-libs/jqplot/        { alias /usr/share/javascript/jqplot/src/"; }
+    location ^~ /extra-libs/xivo.schedule/ { alias /usr/share/javascript/pf-xivo-schedule/src/; }
+    location ^~ /extra-libs/timepicker/    { alias /usr/share/javascript/jquery.timepicker/; }
+    location ^~ /extra-libs/multiselect/   { alias /usr/share/javascript/jquery.multiselect/; }
+    location ^~ /extra-libs/ui-timepicker/ { alias /usr/share/javascript/jquery-ui.timepicker/; }
+
+    # for debug purpose, not fonctionnal
+    #location ^~ /pgadmin {
+    #    alias /usr/share/phppgadmin/;
+    #    include /etc/nginx/xivo_params; 
+    #    index index.php;
+    #}
+
     location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
         expires max;
         add_header Pragma public;
