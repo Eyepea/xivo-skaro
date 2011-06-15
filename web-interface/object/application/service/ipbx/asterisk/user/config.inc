@@ -30,38 +30,40 @@ $array['import']['file'] = array();
 $array['import']['file']['mime'] = array('text/plain','text/csv');
 
 $array['import']['field'] = array();
+$array['import']['field']['entityid'] = array('userfeatures','entityid');
 $array['import']['field']['firstname'] = array('userfeatures','firstname');
 $array['import']['field']['lastname'] = array('userfeatures','lastname');
-$array['import']['field']['username'] = array('protocol','name');
-$array['import']['field']['interface'] = array('protocol','interface');
-$array['import']['field']['phonenumber'] = array('userfeatures','number');
-$array['import']['field']['password'] = array('protocol','secret');
-$array['import']['field']['protocol'] = array('protocol','protocol');
-$array['import']['field']['context'] = array('protocol','context');
-$array['import']['field']['callerid'] = array('protocol','callerid');
-$array['import']['field']['subscribemwi'] = array('protocol','subscribemwi');
-$array['import']['field']['voicemailname'] = array('voicemail','fullname');
-$array['import']['field']['voicemailmailbox'] = array('voicemail','mailbox');
-$array['import']['field']['voicemailpassword'] = array('voicemail','password');
-$array['import']['field']['voicemailemail'] = array('voicemail','email');
-$array['import']['field']['voicemailskippass'] = array('voicemailfeatures','skipcheckpass');
-$array['import']['field']['voicemailattach'] = array('voicemail','attach');
-$array['import']['field']['voicemaildelete'] = array('voicemail','deletevoicemail');
 $array['import']['field']['outcallerid'] = array('userfeatures','outcallerid');
 $array['import']['field']['enableclient'] = array('userfeatures','enableclient');
-$array['import']['field']['loginclient'] = array('userfeatures','loginclient');
-$array['import']['field']['passwdclient'] = array('userfeatures','passwdclient');
+$array['import']['field']['username'] = array('userfeatures','loginclient');
+$array['import']['field']['password'] = array('userfeatures','passwdclient');
 $array['import']['field']['profileclient'] = array('userfeatures','profileclient');
 $array['import']['field']['enablehint'] = array('userfeatures','enablehint');
 $array['import']['field']['agentnumber'] = array('userfeatures','agentnumber');
 $array['import']['field']['mobilephonenumber'] = array('userfeatures','mobilephonenumber');
 $array['import']['field']['bosssecretary'] = array('userfeatures','bsfilter');
+
+$array['import']['field']['phonenumber'] = array('linefeatures','number',0);
+$array['import']['field']['context'] = array('linefeatures','context',0);
+
+$array['import']['field']['interface'] = array('protocol','interface');
+$array['import']['field']['protocol'] = array('protocol','protocol');
+$array['import']['field']['context'] = array('protocol','context');
+$array['import']['field']['callerid'] = array('protocol','callerid');
+$array['import']['field']['subscribemwi'] = array('protocol','subscribemwi');
+$array['import']['field']['accountcode'] = array('protocol','accountcode');
+$array['import']['field']['amaflags'] = array('protocol','amaflags');
+
+$array['import']['field']['voicemailname'] = array('voicemail','fullname');
+$array['import']['field']['voicemailmailbox'] = array('voicemail','mailbox');
+$array['import']['field']['voicemailpassword'] = array('voicemail','password');
+$array['import']['field']['voicemailemail'] = array('voicemail','email');
+$array['import']['field']['voicemailattach'] = array('voicemail','attach');
+$array['import']['field']['voicemaildelete'] = array('voicemail','deletevoicemail');
+$array['import']['field']['voicemailskippass'] = array('voicemailfeatures','skipcheckpass');
+
 $array['import']['field']['incallexten'] = array('incall','exten');
 $array['import']['field']['incallcontext'] = array('incall','context');
 $array['import']['field']['incallringseconds'] = array('incall','ringseconds');
-$array['import']['field']['accountcode'] = array('protocol','accountcode');
-$array['import']['field']['amaflags'] = array('protocol','amaflags');
-$array['import']['field']['vendormodel']       = array('autoprov','vendormodel');
-$array['import']['field']['macaddr']           = array('autoprov','macaddr');
 
 ?>

@@ -29,6 +29,25 @@ $import_file = $this->get_var('import_file');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
+        <fieldset id="ipbximportuser-instruction">
+        	<?=nl2br($this->bbf('ipbximportuser_instruction'));?>
+        <div class="fm-paragraph fm-description">
+        	<p>
+        		<label id="lb-example" for="it-example"><?=$this->bbf('fm_example');?></label>
+        	</p>
+        <?php
+        echo	$form->textarea(array('paragraph'	=> false,
+        			      'label'		=> false,
+        			      'notag'		=> false,
+        			      'name'		=> 'example',
+        			      'id'		=> 'it-example',
+        			      'cols'		=> 60,
+        			      'rows'		=> 4,
+        			      'readonly'	=> true),
+        			$this->bbf('fm_example-content'));
+        ?>
+        </div>
+        </fieldset>
 		<form action="#" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 <?php
 		echo	$form->hidden(array('name'	=> 'max_file_size',

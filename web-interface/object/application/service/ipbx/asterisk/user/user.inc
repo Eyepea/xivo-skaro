@@ -1560,7 +1560,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$rs = array();
 
 		$res = array();
-		if (($info = $this->_info['linefeatures']) !== false
+		if (isset($this->_info['linefeatures']) === true
+		&& ($info = $this->_info['linefeatures']) !== false
 		&& ($nbinfo = count($info)) !== 0)
 		{
 			for($i = 0;$i < $nbinfo;$i++)
@@ -2196,6 +2197,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($issa_userfeatures === true)
 		{
 			$arr['userfeatures']['callerid'] = '';
+			
+			if (dwho_issa('entityid',$arr['userfeatures']) === false)
+			    $arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
 				$arr['userfeatures']['callerid'] = $arr['userfeatures']['firstname'].' ';
@@ -2216,7 +2220,28 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		unset($arr['userfeatures']['agentnumber']);
 		
 		if(dwho_issa('linefeatures',$arr) === true)
-			array_push($arr['linefeatures']['id'],0);
+		{
+		    $arr['linefeatures']['id'] = array();
+			array_push($arr['linefeatures']['id'], 0);
+			if (dwho_issa('context',$arr['linefeatures']) === false)
+			{
+			    $arr['linefeatures']['context'] = array();
+			    array_push($arr['linefeatures']['context'], 'default');
+			}
+			if (dwho_issa('configregistrar',$arr['linefeatures']) === false)
+			{
+			    $arr['linefeatures']['configregistrar'] = array();
+			    array_push($arr['linefeatures']['configregistrar'], 'default');
+			}
+			if (dwho_issa('protocol',$arr['linefeatures']) === false)
+			{
+			    $arr['linefeatures']['protocol'] = array();
+			    array_push($arr['linefeatures']['protocol'], 'sip');
+			}
+			
+			
+			array_push($arr['linefeatures']['id'], 0);
+		}
 
 		return($arr);
 	}
@@ -2246,13 +2271,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		for($i = 0,$row = 1;$i < $nb;$i++,$row++)
 		{
-			if(($arr = $this->_prepare_import($data[$i])) === false
+		    $ref = &$data[$i];
+		    
+			if(($arr = $this->_prepare_import($ref)) === false
 			|| $this->set_add($arr) === false)
 			{
-				$r['lines'][$row] = 'error';
+				$r['lines'][$row] = 'error_import';
 				$r['total']['error']++;
 
-				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
 
 				$err = array();
 				foreach($this->get_error() as $k => $v)
@@ -2267,21 +2294,24 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				if($save === true && $this->add() === false)
 				{
-					$r['lines'][$row] = 'error';
+					$r['lines'][$row] = 'error_user';
 					$r['total']['error']++;
+					
+					$this->_reverse_add();
 
-					dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+					dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
 					dwho_report::push('error', $this->get_error());
 				}
 				else
 				{
-					$r['lines'][$row] = 'success';
+					$r['lines'][$row] = 'success_incall';
 					$r['total']['success']++;
 				}
 				continue;
 			}
 
 			$incall['incall'] = $arr['incall'];
+			$incall['incall']['context'] = 'from-extern';
 
 			$incall['dialaction']['answer'] = array();
 			$incall['dialaction']['answer']['actiontype'] = 'user';
@@ -2293,13 +2323,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$incall['dialaction']['answer']['actionarg2'] = '';
 
 			unset($incall['incall']['ringseconds']);
-
 			if($appincall->set_add($incall) === false)
 			{
-				$r['lines'][$row] = 'error';
+				$r['lines'][$row] = 'error_incall';
 				$r['total']['error']++;
 
-				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
+				dwho_report::push('error', $appincall->get_error());
 				continue;
 			}
 			else if($save === false)
@@ -2312,8 +2342,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
+					
+				$this->_reverse_add();
 
-				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
 				dwho_report::push('error', $this->get_error());
 				continue;
 			}
@@ -2325,8 +2357,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
+					
+				$appincall->_reverse_add();
 
-				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
 				dwho_report::push('error', $this->get_error());
 			}
 			else
@@ -2335,7 +2369,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['success']++;
 			}
 		}
-
+		
 		return($r);
 	}
 
