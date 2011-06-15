@@ -557,18 +557,20 @@ class xivo_daemon:
                 return
         # }
         try:    # {
-            # connexions ready for sending(writing)
-            for sel_o in sels_o:
-                try:
-                    sel_o.process_sending()
-                except ClientConnection.CloseException, cexc:
-                    if sel_o in self.fdlist_established:
-                        kind = self.fdlist_established[sel_o]
-                        log.info('TCP socket %s closed(sending %s) on %s'
-                                 % (kind, cexc, sel_o.getpeername()))
-                        kind.disconnected('end_sending')
-                        sel_o.close()
-                        del self.fdlist_established[sel_o]
+            if sels_o:
+                log.warning('got some sels_o %s' % sels_o)
+                # connexions ready for sending(writing)
+                for sel_o in sels_o:
+                    try:
+                        sel_o.process_sending()
+                    except ClientConnection.CloseException, cexc:
+                        if sel_o in self.fdlist_established:
+                            kind = self.fdlist_established[sel_o]
+                            log.info('TCP socket %s closed(sending %s) on %s'
+                                     % (kind, cexc, sel_o.getpeername()))
+                            kind.disconnected('end_sending')
+                            sel_o.close()
+                            del self.fdlist_established[sel_o]
 
             if sels_e:
                 log.warning('got some sels_e %s' % sels_e)
@@ -797,9 +799,10 @@ class xivo_daemon:
                     # }
                 # }
             # }
-            else: # { when nothing happens on the sockets, we fall here sooner or later
-                log.info('[%s] updates (select timeout) %s'
-                          % (self.xdname, time.asctime()))
+
+            if not sels_i and not sels_o and not sels_e:
+                # when nothing happens on the sockets, we fall here
+                log.info('[%s] updates (select timeout) %s' % (self.xdname, time.asctime()))
                 for ipbxid, safe in self.safe.iteritems():
                   if ipbxid == self.myipbxid:
                     try:
