@@ -166,6 +166,38 @@ def format_mac(mac_string, separator=u':', uppercase=False):
     return from_mac(to_mac(mac_string), separator, uppercase)
 
 
+def norm_uuid(uuid_string):
+    """Return a lowercase, separated by hyphen, representation of a UUID
+    string.
+    
+    Raise a ValueError if the UUID is invalid.
+    
+    >>> norm_uuid(u'550E8400-E29B-41D4-A716-446655440000')
+    u'550e8400-e29b-41d4-a716-446655440000'
+    
+    """
+    lower_uuid_string = uuid_string.lower()
+    if is_normed_uuid(lower_uuid_string):
+        return lower_uuid_string
+    else:
+        raise ValueError('invalid uuid: %s' % uuid_string)
+
+
+_NORMED_UUID = re.compile(r'^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$')
+
+def is_normed_uuid(uuid_string):
+    """Return true if the given UUID string is in normalized format, else
+    false.
+    
+    >>> is_normed_uuid('550e8400-e29b-41d4-a716-446655440000')
+    True
+    >>> is_normed_uuid('foo')
+    False
+    
+    """
+    return bool(_NORMED_UUID.match(uuid_string))
+
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)
