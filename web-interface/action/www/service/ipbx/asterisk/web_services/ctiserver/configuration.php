@@ -354,6 +354,7 @@ switch($act)
                                                                "getlist", "ipbxcommand", "chitchat",
                                                                "availstate", "keepalive", "filetransfer",
                                                                "featuresput", "featuresget", "faxsend",
+                                                               "logfromclient", "getqueuesstats", "directory",
                                                                "history");
 
                 $out['ipbxcommands']['itm_ipbxcommands'] = array("originate",
