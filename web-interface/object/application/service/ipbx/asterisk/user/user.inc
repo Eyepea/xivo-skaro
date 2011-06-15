@@ -967,6 +967,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$ref['protocolid'] = 0;
 				$ref['name'] = $this->gen_password(6,true);
+				if (isset($ref['rules_order']) === false)
+				    $ref['rules_order'] = $i+1;
+				if (isset($ref['rules_group']) === false)
+				    $ref['rules_group'] = 'default';
 			}
 
 			$protocolname = $ref['protocol'];
@@ -1432,8 +1436,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function _reverse_add()
 	{
-		if($this->get_errnb() > 0
-		|| $this->_status !== 'add'
+		if($this->_status !== 'add'
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
