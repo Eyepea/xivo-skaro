@@ -1,4 +1,23 @@
 <?php
+
+#
+# XiVO Web-Interface
+# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
   $form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
@@ -22,56 +41,27 @@
 		'users'  => 'service/ipbx/pbx_settings/users'
 	);
 
-	if(count($datasource) > 0 || count($info[$category.'s'][$membertype])):
-?>
+	if(count($datasource) > 0 || (array_key_exists($category.'s',$info) && count($info[$category.'s'][$membertype]))) {
 
-<div id="<?=$type?>list" class="fm-paragraph fm-multilist">
-	<?=$form->input_for_ms($type.'list',$this->bbf('ms_seek'))?>
-	<div class="slt-outlist">
-		<?=$form->select(array('name'		=> $type.'list',
-				       'label'		=> false,
-				       'id'		=> 'it-'.$type.'list',
-				       'multiple'	=> true,
-				       'size'		=> 5,
-				       'paragraph'	=> false,
-				       'key'		=> 'identity',
-				       #'key'		=> 'name',
-				       'altkey'		=> 'id'),
-				 $datasource);?>
-	</div>
+     echo $form->jq_select(array(
+            'name'    => $type."[]",
+						'labelid' => $type,
+						'paragraph'   => false,
+						'class'   => 'multiselect',
+						'multiple' => true,
+						'key'   => 'identity',
+						'altkey'   => 'id',
+						//'jqmode'    => 'list',
+            'selected'  => $this->get_var('info',$category.'s', $membertype)),
+				$datasource);
 
-	<div class="inout-list">
-	<a href="#" onclick="dwho.form.move_selected('it-<?=$type?>list', 'it-<?=$type?>');
-		return(dwho.dom.free_focus());" title="<?=$this->bbf('bt_in');?>">
-		<?=$url->img_html('img/site/button/arrow-left.gif',  $this->bbf('bt_in'),
-		  'class="bt-inlist" id="bt-in" border="0"');?></a><br />
-			<a href="#" onclick="dwho.form.move_selected('it-<?=$type?>', 'it-<?=$type?>list');
-		     return(dwho.dom.free_focus());" title="<?=$this->bbf('bt_out');?>">
-			<?=$url->img_html('img/site/button/arrow-right.gif',
-						$this->bbf('bt_out'), 
-						"class=\"bt-outlist\" id=\"bt-out-$type\" border=\"0\"");?></a>
-	</div>
 
-	<div class="slt-inlist">
-		<?=$form->select(array('name'		=> $type.'[]',
-		       'label'		=> false,
-		       'id'		=> 'it-'.$type,
-		       'multiple'	=> true,
-		       'size'		=> 5,
-		       'paragraph'	=> false,
-		       'key'		=> 'identity',
-		       'altkey'		=> 'id'),
-				 $info[$category.'s'][$membertype]);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
-<?php
-	else:
+	} else {
 		echo    "<div id=\"fd-create-$type\" class=\"txt-center\">",
 			$url->href_htmln($this->bbf('create_'.$membertype),
 				$typeurl[$membertype],
 				'act=add'),
 			'</div>';
-
-	endif;
+	}
+//	endif;
 ?>

@@ -31,34 +31,37 @@ $param['act'] = 'list';
 switch($act)
 {
 case 'add':
-	$result = $fm_save = $error = null;
+	$fm_save = $error = null;
+	$result = array();
 
 	if(isset($_QR['fm_send']) === true && dwho_issa('pickup',$_QR) === true)
 	{
 		$_QR['pickup']['members'] = array();
 		foreach(array('group','queue','user') as $type)
-			foreach($_QR["member-".$type."s"] as $mbid)
-				$_QR['pickup']['members'][] = array(
-					'category'   => 'member', 
-					'membertype' => $type, 
-					'memberid'   => $mbid
-				);
+			if(array_key_exists("member-".$type."s", $_QR))
+				foreach($_QR["member-".$type."s"] as $mbid)
+					$_QR['pickup']['members'][] = array(
+						'category'   => 'member', 
+						'membertype' => $type, 
+						'memberid'   => $mbid
+					);
 
 		foreach(array('group','queue','user') as $type)
-			foreach($_QR["pickup-".$type."s"] as $mbid)
-				$_QR['pickup']['members'][] = array(
-					'category'   => 'pickup',
-					'membertype' => $type,
-					'memberid'   => $mbid
-				);
+			if(array_key_exists("pickup-".$type."s", $_QR))
+				foreach($_QR["pickup-".$type."s"] as $mbid)
+					$_QR['pickup']['members'][] = array(
+						'category'   => 'pickup',
+						'membertype' => $type,
+						'memberid'   => $mbid
+					);
 
-			if($apppickup->set_add($_QR) === false
-			|| $apppickup->add() === false)
-			{
-				$fm_save = false;
-				$result  = $apppickup->get_result_for_display();
-				$error   = $apppickup->get_error();
-			}
+		if($apppickup->set_add($_QR) === false
+		|| $apppickup->add() === false)
+		{
+			$fm_save = false;
+			$result  = $apppickup->get_result_for_display();
+			$error   = $apppickup->get_error();
+		}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		}
@@ -70,34 +73,43 @@ case 'add':
 		);
 
 		$appgroup = &$ipbx->get_application('group');
-		foreach($appgroup->get_groups_list() as $_grp)
-			$dtsource['groups'][$_grp['id']] = $_grp;
+		if(($groups = $appgroup->get_groups_list()) !== false)			
+			foreach($groups as $_grp)
+				$dtsource['groups'][$_grp['id']] = $_grp;
 
 		$appuser = &$ipbx->get_application('user');
-		foreach($appuser->get_users_list() as $_usr)
-			$dtsource['users'][$_usr['id']] = $_usr;
+		if(($users = $appuser->get_users_list()) !== false)
+			foreach($users as $_usr)
+				$dtsource['users'][$_usr['id']] = $_usr;
 
 		$appqueue = &$ipbx->get_application('queue');
-		foreach($appqueue->get_queues_list() as $_que)
-			$dtsource['queues'][$_que['id']] = $_que;
+		if(($queues = $appqueue->get_queues_list()) !== false)
+			foreach($queues as $_que)
+				$dtsource['queues'][$_que['id']] = $_que;
 
 		$mbsource = $dtsource;
 		$members  = array('groups' => array(), 'queues' => array(), 'users' => array());
-		foreach($return['members'] as $_mb)
+		if(array_key_exists('members',$result))
 		{
-			$members[$_mb['membertype'].'s'][] = $mbsource[$_mb['membertype'].'s'][$_mb['memberid']];
-			unset($mbsource[$_mb['membertype'].'s'][$_mb['memberid']]);
+			foreach($result['members'] as $_mb)
+			{
+				$members[$_mb['membertype'].'s'][] = $mbsource[$_mb['membertype'].'s'][$_mb['memberid']];
+				unset($mbsource[$_mb['membertype'].'s'][$_mb['memberid']]);
+			}
+			$result['members'] = $members;
 		}
-		$return['members'] = $members;
 
 		$pksource = $dtsource;
 		$pickups  = array('groups' => array(), 'queues' => array(), 'users' => array());
-		foreach($return['pickups'] as $_mb)
+		if(array_key_exists('pickups',$result))
 		{
-			$pickups[$_mb['membertype'].'s'][] = $pksource[$_mb['membertype'].'s'][$_mb['memberid']];
-			unset($pksource[$_mb['membertype'].'s'][$_mb['memberid']]);
+			foreach($result['pickups'] as $_mb)
+			{
+				$pickups[$_mb['membertype'].'s'][] = $pksource[$_mb['membertype'].'s'][$_mb['memberid']];
+				unset($pksource[$_mb['membertype'].'s'][$_mb['memberid']]);
+			}
+			$result['pickups'] = $pickups;
 		}
-		$return['pickups'] = $pickups;
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -107,9 +119,18 @@ case 'add':
 		$_TPL->set_var('pickup',$pksource);
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+
+		$dhtml->set_css('css/service/ipbx/pickup.css');
+
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/pickup.js');
 		break;
 
 	case 'edit':
@@ -160,33 +181,30 @@ case 'add':
 		);
 
 		$appgroup = &$ipbx->get_application('group');
-		foreach($appgroup->get_groups_list() as $_grp)
-			$dtsource['groups'][$_grp['id']] = $_grp;
+		if(($groups = $appgroup->get_groups_list()) !== false)
+			foreach($groups as $_grp)
+				$dtsource['groups'][$_grp['id']] = $_grp;
 
 		$appuser = &$ipbx->get_application('user');
-		foreach($appuser->get_users_list() as $_usr)
-			$dtsource['users'][$_usr['id']] = $_usr;
+		if(($users = $appuser->get_users_list()) !== false)
+			foreach($users as $_usr)
+				$dtsource['users'][$_usr['id']] = $_usr;
 
 		$appqueue = &$ipbx->get_application('queue');
-		foreach($appqueue->get_queues_list() as $_que)
-			$dtsource['queues'][$_que['id']] = $_que;
+		if(($queues = $appqueue->get_queues_list()) !== false)
+			foreach($queues as $_que)
+				$dtsource['queues'][$_que['id']] = $_que;
 
 		$mbsource = $dtsource;
 		$members  = array('groups' => array(), 'queues' => array(), 'users' => array());
 		foreach($return['members'] as $_mb)
-		{
-			$members[$_mb['membertype'].'s'][] = $mbsource[$_mb['membertype'].'s'][$_mb['memberid']];
-			unset($mbsource[$_mb['membertype'].'s'][$_mb['memberid']]);
-		}
+			$members[$_mb['membertype'].'s'][] = $_mb['memberid'];
 		$return['members'] = $members;
 
 		$pksource = $dtsource;
 		$pickups  = array('groups' => array(), 'queues' => array(), 'users' => array());
 		foreach($return['pickups'] as $_mb)
-		{
-			$pickups[$_mb['membertype'].'s'][] = $pksource[$_mb['membertype'].'s'][$_mb['memberid']];
-			unset($pksource[$_mb['membertype'].'s'][$_mb['memberid']]);
-		}
+			$pickups[$_mb['membertype'].'s'][] = $_mb['memberid'];
 		$return['pickups'] = $pickups;
 
 		$_TPL->set_var('id',$info['pickup']['id']);
@@ -198,9 +216,18 @@ case 'add':
 		$_TPL->set_var('pickup',$pksource);
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+
+		$dhtml->set_css('css/service/ipbx/pickup.css');
+
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/pickup.js');
 		break;
 
 	case 'delete':

@@ -32,7 +32,7 @@ $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('set' => false,'chk' => 2, 'maxlen'=>128);
+$array['filter']['name'] = array('set' => true,'chk' => 1, 'maxlen'=>128);
 $array['filter']['description'] = array('set' => false,'chk' => 2);
 $array['filter']['commented'] = array('bool' => true);
 

@@ -34,14 +34,7 @@ $info = $this->get_var('info');
 ?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="
-		dwho.form.select('it-member-groups');
-		dwho.form.select('it-member-queues');
-		dwho.form.select('it-member-users');
-		dwho.form.select('it-pickup-groups');
-		dwho.form.select('it-pickup-queues');
-		dwho.form.select('it-pickup-users');
-	">
+<form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>

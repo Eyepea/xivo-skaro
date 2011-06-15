@@ -40,7 +40,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 			  'labelid'	=> 'pickup-name',
 			  'size'	=> 15,
 			  'default'	=> $element['pickup']['name']['default'],
-			  'value'	=> $info['pickup']['name'],
+			  'value'	=> $this->get_var('info','pickup','name'),
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'pickup', 'name')) ));
 ?>
@@ -58,7 +58,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 					 'default'	=> $element['pickup']['description']['default'],
 					 'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'pickup', 'description')) ),
-				   $info['pickup']['description']);?>
+				   $this->get_var('info','pickup','description'));?>
 	</div>
 
 </div>
