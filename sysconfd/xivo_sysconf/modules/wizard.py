@@ -580,21 +580,21 @@ def exec_db_file(args, options):
                 subprocess.check_call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
             except (OSError, subprocess.CalledProcessError), e:
                 traceback.print_exc()
-                raise HttpReqError(500, '\n'.out)
+                raise HttpReqError(500, "Can't create xivo DB with postgresql")
     
     if args['backend'] == 'mysql':
         try:
             subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
-            raise HttpReqError(500, '\n'.out)
+                raise HttpReqError(500, "Can't create xivo DB with mysql")
 
     if args['backend'] == 'sqlite':
         try:
             subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
-            raise HttpReqError(500, '\n'.out)
+                raise HttpReqError(500, "Can't create xivo DB with sqlite")
 
     if 'ipbxscript' not in args:
         raise HttpReqError(415, "missing option 'ipbxscript'")
@@ -608,7 +608,7 @@ def exec_db_file(args, options):
                 subprocess.check_call(["sudo -u postgres psql -f /%s" % args['ipbxscript']], shell=True)
             except (OSError, subprocess.CalledProcessError), e:
                 traceback.print_exc()
-                raise HttpReqError(500, '\n'.out)
+                raise HttpReqError(500, "Can't create IPBX DB with postgresql")
         
         if args['backend'] == 'mysql':
             try:
@@ -616,7 +616,7 @@ def exec_db_file(args, options):
                 subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
             except (OSError, subprocess.CalledProcessError), e:
                 traceback.print_exc()
-                raise HttpReqError(500, '\n'.out)
+                raise HttpReqError(500, "Can't create IPBX DB with mysql")
 
         if args['backend'] == 'sqlite':
             try:
@@ -624,7 +624,7 @@ def exec_db_file(args, options):
                 subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
             except (OSError, subprocess.CalledProcessError), e:
                 traceback.print_exc()
-                raise HttpReqError(500, '\n'.out)
+                raise HttpReqError(500, "Can't create IPBX DB with sqlite")
 
 
 http_json_server.register(exec_db_file, CMD_RW, name="exec_db_file")
