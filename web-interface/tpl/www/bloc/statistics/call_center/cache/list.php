@@ -21,7 +21,6 @@
 $url = &$this->get_module('url');
 $form = &$this->get_module('form');
 $dhtml = &$this->get_module('dhtml');
-$dhtml->write_js('');
 
 $act = $this->get_var('act');
 $idconf = $this->get_var('ifconf');

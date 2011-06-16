@@ -181,6 +181,8 @@ function update_row_infos()
 		it_userfeatures_entityid.attr('disabled','disabled');
 		it_userfeatures_entityid.addClass('it-disabled');
 	}
+
+	$('#lol').html('');
 	
 	var groupval = '';
 	var grouporder = 0;
@@ -198,13 +200,16 @@ function update_row_infos()
 		} else
 			grouporder++;
 		
-		$(this).find('#box-grouporder').html(grouporder);
+		$(this).find('#box-grouporder').html(grouporder);		
 		
 		if(tr_group === false) {
+			
+			$('#lol').append(groupval+'-'+line_num+'-'+grouporder);		
+			
 			context = $(this).find("#linefeatures-context");
-			$(context).parents('tr').find('#linefeatures-rules_group').val(groupval);
-			$(context).parents('tr').find('#linefeatures-line_num').val(line_num);
-			$(context).parents('tr').find('#linefeatures-rules_order').val(grouporder);
+			$(this).find('#linefeatures-rules_group').val(groupval);
+			$(this).find('#linefeatures-line_num').val(line_num);
+			$(this).find('#linefeatures-rules_order').val(grouporder);
 
 			context_selected = context.parents('tr').find('#context-selected').val();
 			if (context_selected !== null)
@@ -259,6 +264,7 @@ function update_row_infos()
 				});
 			}
 		}
+		$('#lol').append('<br>');
 		idx++;
 	});
 }

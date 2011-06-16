@@ -453,6 +453,7 @@ CREATE TABLE "stats_conf" (
  "name" varchar(64) NOT NULL DEFAULT '',
  "hour_start" time NOT NULL,
  "hour_end" time NOT NULL,
+ "homepage" integer,
  "default_delta" varchar(16) NOT NULL DEFAULT 0,
  "monday" smallint NOT NULL DEFAULT 0, -- BOOLEAN
  "tuesday" smallint NOT NULL DEFAULT 0, -- BOOLEAN

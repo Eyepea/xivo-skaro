@@ -38,6 +38,8 @@ $err = $this->get_var('error','linefeatures');
 -->
 <span id="box-entityid"></span>
 
+<div id="lol"></div>
+
 <p id="box-lines_free" class="fm-paragraph b-nodisplay">
 	<span class="fm-desc clearboth">
 		<label id="lb-lines_free" for="it-lines_free"><?=$this->bbf('fm_lines_free');?></label>
@@ -176,7 +178,7 @@ if($list !== false):
 						'value' 	=> $ref['name']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_group][]',
 					    'id'		=> 'linefeatures-rules_group',
-					    'value'		=> $ref['rules_group'],));?>
+					    'value'		=> $ref['rules_group']));?>
 			<?=$form->hidden(array('name' => 'linefeatures[rules_order][]',
 					    'id'		=> 'linefeatures-rules_order',
 					    'value'		=> $ref['rules_order']));?>
@@ -312,10 +314,16 @@ endif;
 		<td class="td-left txt-center">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 			<span id="box-grouporder" style="float:left;font-weight:bold;"></span>
-			<?=$form->hidden(array('name' => 'linefeatures[line_num][]',
-						'value' 	=> 0,
-					    'id'		=> 'linefeatures-line_num'));?>
-			<?=$form->hidden(array('name' => 'linefeatures[id][]',
+			<?=$form->text(array('name' => 'linefeatures[rules_group][]',
+					    'id'		=> 'linefeatures-rules_group',
+					    'value'		=> 0));?>
+			<?=$form->text(array('name' => 'linefeatures[rules_order][]',
+					    'id'		=> 'linefeatures-rules_order',
+					    'value'		=> 0));?>
+			<?=$form->text(array('name' => 'linefeatures[line_num][]',
+					    'id'		=> 'linefeatures-line_num',
+					    'value'		=> 0));?>
+			<?=$form->text(array('name' => 'linefeatures[id][]',
 						'value' 	=> 0,
 					    'id'		=> 'linefeatures-id'));?>
 		</td>

@@ -20,10 +20,11 @@
 
 $_I18N->load_file('tpl/www/bloc/statistics/call_center/cache');
 
+dwho::load_class('dwho_date');
 dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('cache');
 
-$act     = isset($_QR['act']) === true ? $_QR['act'] : '';
+$act     = isset($_QR['act']) === true ? $_QR['act'] : 'list';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
 $sort    = $prefs->flipflop('sort', 'name');
@@ -91,5 +92,6 @@ $dhtml->set_js('js/statistics/call_center/genercache.js');
 $_TPL->set_bloc('main','statistics/call_center/cache/'.$act);
 $_TPL->set_struct('statistics/index');
 $_TPL->display('index');
+
 
 ?>

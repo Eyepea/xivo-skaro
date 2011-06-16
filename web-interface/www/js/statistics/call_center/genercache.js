@@ -86,9 +86,9 @@ function xivo_genercache() {
 		} else {
 			$('#reshttprequest-'+idtype).html(nl2br(data));
 		    $('#cache-infos-'+idtype).css('display', 'table-row');
-			$('#gcache-'+idtype).html(bt-wait-submit);
+			$('#gcache-'+idtype).html(jstxt_bt_wait_submit);
 			//$('#bt-gcache-'+idtype).attr('disabled','disabled');
-			//$('#bt-gcache-'+idtype).val(bt-wait-submit);
+			//$('#bt-gcache-'+idtype).val(jstxt_bt_wait_submit);
 			$('#rescacheinfos-'+idtype).html(infos);
 			//$('#restitle-'+idtyp).html(object_processing + ' ' + objectProcessing);
 			$(function() {$('#resprogressbar-'+idtype).progressbar({value: pct});});
