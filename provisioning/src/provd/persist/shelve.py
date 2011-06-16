@@ -113,9 +113,9 @@ class ShelveDatabaseFactory(object):
         if type != 'shelve':
             raise ValueError('unrecognised type "%s"' % type)
         try:
-            shelve_dir = kwargs['shelve_dir']
+            shelve_dir = kwargs['shelve_db_dir']
         except KeyError:
-            raise ValueError('missing "shelve_dir" arguments in "%s"' % kwargs)
+            raise ValueError('missing "shelve_db_dir" arguments in "%s"' % kwargs)
         else:
             generator_factory = get_id_generator_factory(generator)
             return ShelveDatabase(shelve_dir, generator_factory)

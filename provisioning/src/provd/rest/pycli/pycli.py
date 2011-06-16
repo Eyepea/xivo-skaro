@@ -73,6 +73,7 @@ client = pyclient.new_pycli_provisioning_client(server_uri, credentials)
 configs = client.configs()
 devices = client.devices()
 plugins = client.plugins()
+parameters = client.parameters()
 
 ## test connectivity
 def prompt_continue(err_msg):
@@ -402,6 +403,7 @@ cli_globals = {
     'configs': configs,
     'devices': devices,
     'plugins': plugins,
+    'parameters': parameters,
     
     'help': cli_help,
     'python_help': __builtin__.help,

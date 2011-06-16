@@ -1,5 +1,6 @@
 ; [pkg_PKGDEFNAME]
 ; desc: DESCRIPTION
+; desc_LOCALE: LOCALIZED_DESCRIPTION (opt)
 ; version: VERSION
 ; hidden: [yes | no] (opt: default=no)
 ; depends: DEPEND (DEPEND)* (opt)

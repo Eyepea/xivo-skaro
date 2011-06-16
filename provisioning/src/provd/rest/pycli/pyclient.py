@@ -226,6 +226,9 @@ class ProvisioningClient(object):
     def plugins(self):
         return Plugins(self._prov_client.plugin_manager())
     
+    def parameters(self):
+        return Parameters(self._prov_client.configure_service())
+    
     def test_connectivity(self):
         self._prov_client.test_connectivity()
 

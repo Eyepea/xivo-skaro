@@ -130,9 +130,9 @@ class JsonDatabaseFactory(object):
         if type != 'json':
             raise ValueError('unrecognised type "%s"' % type)
         try:
-            base_directory = kwargs['json_base_dir']
+            base_directory = kwargs['json_db_dir']
         except KeyError:
-            raise ValueError('missing "json_base_dir" arguments in "%s"' % kwargs)
+            raise ValueError('missing "json_db_dir" arguments in "%s"' % kwargs)
         else:
             generator_factory = get_id_generator_factory(generator)
             return JsonDatabase(base_directory, generator_factory)

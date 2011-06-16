@@ -37,6 +37,7 @@ import logging
 import json
 from binascii import a2b_hex, a2b_base64
 from provd.app import InvalidIdError
+from provd.localization import get_locale_and_language
 from provd.operation import format_oip, operation_in_progres_from_deferred
 from provd.persist.common import ID_KEY
 from provd.plugins import BasePluginManagerObserver
@@ -328,7 +329,8 @@ class IntermediaryResource(Resource):
 def ServerResource(app, dhcp_request_processing_service):
     links = [(u'dev', 'dev_mgr', DeviceManagerResource(app, dhcp_request_processing_service)),
              (u'cfg', 'cfg_mgr', ConfigManagerResource(app)),
-             (u'pg',  'pg_mgr',  PluginManagerResource(app))]
+             (u'pg',  'pg_mgr',  PluginManagerResource(app)),
+             (REL_CONFIGURE_SRV, 'configure', ConfigureServiceResource(app.configure_service))]
     return IntermediaryResource(links)
 
 
@@ -366,10 +368,28 @@ class ConfigureServiceResource(Resource):
     def getChild(self, path, request):
         return ConfigureParameterResource(self._cfg_srv, path)
     
+    def _get_localized_description_dict(self):
+        locale, lang = get_locale_and_language()
+        cfg_srv = self._cfg_srv
+        if locale is not None:
+            locale_name = 'description_%s' % locale
+            try:
+                return getattr(cfg_srv, locale_name)
+            except AttributeError:
+                if lang != locale:
+                    lang_name = 'description_%s' % lang
+                    try:
+                        return getattr(cfg_srv, lang_name)
+                    except AttributeError:
+                        pass
+        # in last case, return the non-localized description
+        return cfg_srv.description
+    
     @json_response_entity
     def render_GET(self, request):
+        description_dict = self._get_localized_description_dict()
         params = {}
-        for key, description in self._cfg_srv.description.iteritems():
+        for key, description in description_dict.iteritems():
             value = self._cfg_srv.get(key)
             href = uri_append_path(request.path, key)
             params[key] = {u'description': description,

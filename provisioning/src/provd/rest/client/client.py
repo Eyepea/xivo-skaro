@@ -58,6 +58,12 @@ class ProvisioningClient(object):
         pg_mgr_res = self._server_res.pg_mgr_res()
         return PluginManager(pg_mgr_res)
     
+    @once_per_instance
+    def configure_service(self):
+        """Return a configure object for the plugin manager."""
+        config_srv_res = self._server_res.config_srv_res()
+        return ConfigureService(config_srv_res)
+    
     def test_connectivity(self):
         # raise an exception if there seems to be connectivity issues
         self._server_res.test_connectivity()
@@ -283,7 +289,6 @@ class ConfigureService(object):
         config_param_res = self._get_config_param_res(key)
         config_param_res.set(value)
     
-    @once_per_instance
     def description(self):
         """Return a dictionary where keys are configuration key and values
         are short description of the configuration key.

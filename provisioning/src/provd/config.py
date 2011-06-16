@@ -15,8 +15,9 @@ The following parameters are defined:
         The directory where request processing configuration files can be found
     general.cache_dir
         The directory where downloaded plugins are cached.
-    general.plugins_dir
-        The directory where plugins live.
+    general.base_storage_dir
+        The directory where all variable, non-cached information is stored,
+        i.e. plugins, devices, configs, dynamic configuration, etc.
     general.plugin_server
         URL of the plugin server (where plugins are downloaded)
     general.info_extractor
@@ -47,9 +48,9 @@ The following parameters are defined:
         The kind of generator used to generate ID for devices and configs.
     database.ensure_common_indexes
         Make sure common indexes on the collections are present.
-    database.json_base_dir
+    database.json_db_dir
         For 'json' database, the base directory where collections are stored.
-    database.shelve_dir
+    database.shelve_db_dir
         For 'shelve' database, the directory where files are stored.
     database.mongo_uri
         For 'mongo' database, the URI of the database.
@@ -95,6 +96,7 @@ __license__ = """
 import ConfigParser
 import logging
 import json
+import os.path
 import socket
 from provd.util import norm_ip
 from twisted.python import usage
@@ -127,7 +129,7 @@ class DefaultConfigSource(object):
         ('general.base_raw_config_file', '/etc/pf-xivo/provd/base_raw_config.json'),
         ('general.request_config_dir', '/etc/pf-xivo/provd'),
         ('general.cache_dir', '/var/cache/pf-xivo/provd'),
-        ('general.plugins_dir', '/var/lib/pf-xivo/provd/plugins'),
+        ('general.base_storage_dir', '/var/lib/pf-xivo/provd'),
         ('general.plugin_server', 'http://provd.xivo.fr/plugins/1/stable/'),
         ('general.info_extractor', 'default'),
         ('general.retriever', 'default'),
@@ -149,8 +151,8 @@ class DefaultConfigSource(object):
         ('database.type', 'json'),
         ('database.generator', 'default'),
         ('database.ensure_common_indexes', 'False'),
-        ('database.json_base_dir', '/var/lib/pf-xivo/provd/jsondb'),
-        ('database.shelve_dir', '/var/lib/pf-xivo/provd/shelvedb'),
+        ('database.json_db_dir', 'jsondb'),
+        ('database.shelve_db_dir', 'shelvedb'),
     ]
     
     def pull(self):
@@ -364,7 +366,7 @@ _PARAMS_DEFINITION = [
     ('general.base_raw_config_file', (str, True)),
     ('general.request_config_dir', (str, True)),
     ('general.cache_dir', (str, True)),
-    ('general.plugins_dir', (str, True)),
+    ('general.base_storage_dir', (str, True)),
     ('general.info_extractor', (str, True)),
     ('general.retriever', (str, True)),
     ('general.updater', (str, True)),
@@ -443,6 +445,14 @@ def _update_general_base_raw_config(app_raw_config):
 def _post_update_raw_config(raw_config):
     # Update raw config after transformation/check
     _update_general_base_raw_config(raw_config)
+    # update json_db_dir to absolute dir
+    if 'database.json_db_dir' in raw_config:
+        raw_config['database.json_db_dir'] = os.path.join(raw_config['general.base_storage_dir'],
+                                                          raw_config['database.json_db_dir'])
+    # update json_db_dir to absolute dir
+    if 'database.shelve_db_dir' in raw_config:
+        raw_config['database.shelve_db_dir'] = os.path.join(raw_config['general.base_storage_dir'],
+                                                            raw_config['database.shelve_db_dir'])
 
 
 def get_config(config_sources):

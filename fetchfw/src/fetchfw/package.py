@@ -77,11 +77,18 @@ class ToInstallPackage(InstallablePackage):
         if self.install_manager:
             installed_files = self.install_manager.execute()
         else:
-            installed_files = () 
-        return InstalledPackage(self.name, self.version,
-                                self.description, self.hidden,
-                                self.dependencies, self.explicilt_install,
-                                installed_files)
+            installed_files = ()
+        pkg = InstalledPackage(self.name, self.version,
+                               self.description, self.hidden,
+                               self.dependencies, self.explicilt_install,
+                               installed_files)
+        # next few lines is a ugly hack, I didn't want to refactor all those
+        # poor Package/InstallablePackage/InstalledPackage/etc classes right
+        # now,so I'm just hacking the solution instead...
+        for name, value in self.__dict__.iteritems():
+            if name.startswith('description_'):
+                setattr(pkg, name, value)
+        return pkg
 
 
 class InstalledPackage(Package):

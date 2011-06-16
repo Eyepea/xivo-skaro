@@ -183,15 +183,15 @@ def norm_uuid(uuid_string):
         raise ValueError('invalid uuid: %s' % uuid_string)
 
 
-_NORMED_UUID = re.compile(r'^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$')
+_NORMED_UUID = re.compile(ur'^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$')
 
 def is_normed_uuid(uuid_string):
     """Return true if the given UUID string is in normalized format, else
     false.
     
-    >>> is_normed_uuid('550e8400-e29b-41d4-a716-446655440000')
+    >>> is_normed_uuid(u'550e8400-e29b-41d4-a716-446655440000')
     True
-    >>> is_normed_uuid('foo')
+    >>> is_normed_uuid(u'foo')
     False
     
     """

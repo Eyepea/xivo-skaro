@@ -215,8 +215,15 @@ class DefaultInstallablePkgStorage(util.ReadOnlyForwardingDictMixin('_pkgs')):
         for section in config.sections():
             if section.startswith('pkg_'):
                 assert section[:4] == 'pkg_'
-                name = section[4:]  # name of the package definition
-                desc = config.get(section, 'desc')
+                pkg_name = section[4:]
+                pkg_desc = config.get(section, 'desc')
+                # get localized descriptions
+                localized_desc = []
+                for name, value in config.items(section):
+                    if name.startswith('desc_'):
+                        # 5 == len('desc_')
+                        locale = name[5:]
+                        localized_desc.append((locale, value))
                 version = config.get(section, 'version')
                 if config.has_option(section, 'hidden'):
                     hidden_raw = config.get(section, 'hidden')
@@ -268,8 +275,12 @@ class DefaultInstallablePkgStorage(util.ReadOnlyForwardingDictMixin('_pkgs')):
                     for i, install_arg in enumerate(install_proc_tokens[1:]):
                         variables['ARG%d' % (i + 1)] = install_arg
                     install_mgr = self._install_mgr_builder.build_installation_mgr(config, install_proc_name, variables, self._cache_dir)
-                pkgs[name] = package.InstallablePackage(name, version, desc, hidden, depends,
-                                                        cur_remote_files, install_mgr)
+                pkg = package.InstallablePackage(pkg_name, version, pkg_desc, hidden, depends,
+                                                 cur_remote_files, install_mgr)
+                # add localized descriptions
+                for locale, description in localized_desc:
+                    pkg.__dict__['description_' + locale] = description
+                pkgs[pkg_name] = pkg
         return pkgs
     
     def reload(self):
@@ -321,13 +332,16 @@ class _SimpleFormatParser(object):
     
     def get_as_string(self, name, default=None):
         res = self._dict.get(name, default)
-        if id(res) == id(default) or not res:
+        if not res or res is default:
             # a section with no values
             return default
         return res[0]
     
     def __contains__(self, item):
         return item in self._dict
+    
+    def sections(self):
+        return self._dict.iterkeys()
 
 
 def _yes_no_to_bool(string):
@@ -365,16 +379,28 @@ class DefaultInstalledPkgStorage(util.ReadWriteForwardingDictMixin('_pkgs')):
         for section in ['name', 'desc', 'version']:
             if section not in parser:
                 raise ParsingError("no section '%s' in file '%s'" % (section, filename))
-        name = parser.get_as_string('name')
-        if name != os.path.basename(filename):
+        pkg_name = parser.get_as_string('name')
+        if pkg_name != os.path.basename(filename):
             raise ParsingError("the file name and the value of the name section must be the same")
         version = parser.get_as_string('version')
         description = parser.get_as_string('desc')
+        # get localized descriptions
+        localized_descriptions = []
+        for section in parser.sections():
+            if section.startswith('desc_'):
+                # 5 = len('desc_')
+                locale = section[5:]
+                localized_descriptions.append((locale, parser.get_as_string(section)))
         explicitly_installed = _yes_no_to_bool(parser.get_as_string('explicitly_installed', 'yes'))
         hidden = _yes_no_to_bool(parser.get_as_string('hidden', 'no'))
         depends = parser.get_as_list('depends', [])
         files = parser.get_as_list('files', [])
-        return package.InstalledPackage(name, version, description, hidden, depends, explicitly_installed, files)
+        pkg = package.InstalledPackage(pkg_name, version, description, hidden,
+                                       depends, explicitly_installed, files)
+        # add localized descriptions
+        for locale, description in localized_descriptions:
+            pkg.__dict__['description_' + locale] = description
+        return pkg
         
     def flush(self):
         for pkg_name in self._modified_pkgs:
@@ -386,6 +412,12 @@ class DefaultInstalledPkgStorage(util.ReadWriteForwardingDictMixin('_pkgs')):
         with open(os.path.join(self._directory, pkg.name), 'w') as f:
             f.write('[name]\n%s\n\n' % pkg.name)
             f.write('[desc]\n%s\n\n' % pkg.description)
+            # write localized description
+            for name, value in pkg.__dict__.iteritems():
+                if name.startswith('description_'):
+                    # 12 == len('description_')
+                    locale = name[12:]
+                    f.write('[desc_%s]\n%s\n\n' % (locale, value))
             f.write('[version]\n%s\n\n' % pkg.version)
             f.write('[hidden]\n%s\n\n' % _bool_to_yes_no(pkg.hidden))
             f.write('[explicitly_installed]\n%s\n\n' % _bool_to_yes_no(pkg.explicitly_installed))

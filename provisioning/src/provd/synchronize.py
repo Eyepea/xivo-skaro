@@ -358,5 +358,8 @@ def unregister_sync_service():
 
 
 def get_sync_service():
-    """Return the globally registered synchronize service."""
+    """Return the globally registered synchronize service or None if no
+    synchronize service has been registered.
+    
+    """
     return _SYNC_SERVICE

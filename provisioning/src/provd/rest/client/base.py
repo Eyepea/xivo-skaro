@@ -328,6 +328,9 @@ class ServerResource(object):
 
         pg_mgr_uri = uri_append_path(self._server_uri, 'pg_mgr')
         self._pg_mgr = PluginManagerResource(pg_mgr_uri, self._broker)
+        
+        config_uri = uri_append_path(self._server_uri, 'configure')
+        self._config_res = ConfigureServiceResource(config_uri, self._broker)
     
     def dev_mgr_res(self):
         return self._dev_mgr
@@ -337,6 +340,9 @@ class ServerResource(object):
     
     def pg_mgr_res(self):
         return self._pg_mgr
+    
+    def config_srv_res(self):
+        return self._config_res
     
     def test_connectivity(self):
         # raise an exception if there seems to be connectivity issues

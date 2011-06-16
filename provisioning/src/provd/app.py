@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from provd.services import InvalidParameterError, JsonConfigPersister,\
+    PersistentConfigureServiceDecorator
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -24,7 +26,9 @@ __license__ = """
 import copy
 import logging
 import functools
+import os.path
 from provd.devices.config import RawConfigError, DefaultConfigFactory
+from provd.localization import get_localization_service
 from provd.operation import OIP_PROGRESS, OIP_FAIL, OIP_SUCCESS
 from provd.persist.common import ID_KEY, InvalidIdError as PersistInvalidIdError
 from provd.plugins import PluginManager
@@ -185,9 +189,19 @@ class ProvisioningApplication(object):
         self._cfg_collection = cfg_collection
         self._dev_collection = dev_collection
         self._splitted_config = _split_config(config)
+        
+        base_storage_dir = config['general.base_storage_dir']
+        plugins_dir = os.path.join(base_storage_dir, 'plugins')
+        
+        cfg_service = ApplicationConfigureService()
+        persister = JsonConfigPersister(os.path.join(base_storage_dir,
+                                                     'app.json'))
+        self.configure_service = PersistentConfigureServiceDecorator(cfg_service, persister)
+        
         self.proxies = self._splitted_config.get('proxy', {})
+        
         self.pg_mgr = PluginManager(self,
-                                    config['general.plugins_dir'],
+                                    plugins_dir,
                                     config['general.cache_dir'])
         if 'general.plugin_server' in config and not self.pg_mgr.server:
             self.pg_mgr.server = config['general.plugin_server']
@@ -927,3 +941,54 @@ class ProvisioningApplication(object):
     
     def pg_retrieve(self, id):
         return self.pg_mgr[id]
+
+
+class ApplicationConfigureService(object):
+    # XXX possible move the stuff from the plugin manager to the application
+    #     configure service...
+    #     -proxy
+    #     -plugin server
+    def _get_locale(self):
+        l10n_service = get_localization_service()
+        if l10n_service is None:
+            logger.info('No localization service registered')
+            return None
+        else:
+            value = l10n_service.get_locale()
+            if value is None:
+                return None
+            else:
+                return value.decode('ascii')
+    
+    def _set_locale(self, value):
+        l10n_service = get_localization_service()
+        if l10n_service is None:
+            logger.info('No localization service registered')
+        else:
+            if value is None:
+                l10n_service.set_locale(None)
+            else:
+                try:
+                    l10n_service.set_locale(value.encode('ascii'))
+                except (UnicodeError, ValueError), e:
+                    raise InvalidParameterError(e)
+    
+    def get(self, name):
+        if name == u'locale':
+            return self._get_locale()
+        else:
+            raise KeyError(name)
+    
+    def set(self, name, value):
+        if name == u'locale':
+            self._set_locale(value)
+        else:
+            raise KeyError(name)
+    
+    description = {
+        u'locale': u'The current locale'
+    }
+    
+    description_fr = {
+        u'locale': u'La locale courante'
+    }

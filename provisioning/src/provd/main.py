@@ -27,6 +27,7 @@ import os.path
 import provd.config
 import provd.devices.ident
 import provd.devices.pgasso
+import provd.localization
 import provd.synchronize
 from provd.app import ProvisioningApplication
 from provd.devices.config import ConfigCollection
@@ -296,6 +297,20 @@ class SynchronizeService(Service):
         provd.synchronize.unregister_sync_service()
 
 
+class LocalizationService(Service):
+    def _new_l10n_service(self):
+        return provd.localization.LocalizationService()
+    
+    def startService(self):
+        l10n_service = self._new_l10n_service()
+        provd.localization.register_localization_service(l10n_service)
+        Service.startService(self)
+    
+    def stopService(self):
+        Service.stopService(self)
+        provd.localization.unregister_localization_service()
+
+
 class _CompositeConfigSource(object):
     def __init__(self, options):
         self._options = options
@@ -361,6 +376,9 @@ class ProvisioningServiceMaker(object):
         
         sync_service = SynchronizeService(config)
         sync_service.setServiceParent(top_service)
+        
+        l10n_service = LocalizationService()
+        l10n_service.setServiceParent(top_service)
         
         prov_service = ProvisioningService(config)
         prov_service.setServiceParent(top_service)

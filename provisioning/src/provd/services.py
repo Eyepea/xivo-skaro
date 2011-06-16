@@ -81,6 +81,10 @@ class IConfigureService(Interface):
         If a parameter has no description, the value for this key MUST be
         None.
         
+        Localized description can also be given, which has the same structure
+        as this attribute but with the name 'description_<locale>', i.e.
+        'description_fr' for example.
+        
         """)
 
 
@@ -179,11 +183,13 @@ class IConfigureServiceParam(Interface):
 class AttrConfigureServiceParam(object):
     implements(IConfigureServiceParam)
     
-    def __init__(self, obj, name, description=None, check_fun=None):
+    def __init__(self, obj, name, description=None, check_fun=None, **kwargs):
+        # kwargs is used to set localized description for example "description_fr='bonjour'"
         self._obj = obj
         self._name = name
         self.description = description
         self._check_fun = check_fun
+        self.__dict__.update(kwargs)
     
     def get(self):
         return getattr(self._obj, self._name)
@@ -199,11 +205,13 @@ class DictConfigureServiceParam(object):
     
     # Note that this delete the key from the dict when setting a None value
     
-    def __init__(self, dict_, key, description=None, check_fun=None):
+    def __init__(self, dict_, key, description=None, check_fun=None, **kwargs):
+        # kwargs is used to set localized description, for example "description_fr='bonjour'"
         self._dict = dict_
         self._key = key
         self.description = description
         self._check_fun = check_fun
+        self.__dict__.update(kwargs)
     
     def get(self):
         return self._dict.get(self._key)
@@ -241,6 +249,18 @@ class BaseConfigureService(object):
     def description(self):
         return dict((k, v.description) for k, v in
                     self._params.iteritems())
+    
+    def __getattr__(self, name):
+        # used to implement the localized description
+        if not name.startswith('description_'):
+            raise AttributeError(name)
+        description_dict = dict((k, getattr(v, name)) for k, v in
+                                self._params.iteritems() if
+                                hasattr(v, name))
+        if not description_dict:
+            raise AttributeError(name)
+        else:
+            return description_dict
 
 
 class PersistentConfigureServiceDecorator(object):
@@ -272,9 +292,9 @@ class PersistentConfigureServiceDecorator(object):
         self._cfg_service.set(name, value)
         self._persister.update(name, value)
     
-    @property
-    def description(self):
-        return self._cfg_service.description
+    def __getattr__(self, name):
+        # used for description and localized description 
+        return getattr(self._cfg_service, name)
 
 
 class JsonConfigPersister(object):

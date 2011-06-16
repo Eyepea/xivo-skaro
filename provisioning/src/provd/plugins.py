@@ -24,6 +24,7 @@ __license__ = """
 import contextlib
 import json
 import logging
+import operator
 import os
 import shutil
 import tarfile
@@ -38,6 +39,7 @@ from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
 from provd.download import async_download_multiseq_with_oip,\
     async_download_with_oip
 from provd.loaders import ProvdFileSystemLoader
+from provd.localization import get_locale_and_language
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
 from provd.proxy import DynProxyHandler
@@ -582,16 +584,42 @@ class FetchfwPluginHelper(object):
         """
         logger.info('Uninstalling plugin-package %s', pkg_id)
         self._async_pkg_manager.uninstall((pkg_id,))
-
+    
+    def _new_localize_description_fun(self):
+        locale, lang = get_locale_and_language()
+        if locale is None:
+            return operator.attrgetter('description')
+        else:
+            locale_name = 'description_%s' % locale
+            if locale == lang:
+                def aux(pkg):
+                    try:
+                        return getattr(pkg, locale_name)
+                    except AttributeError:
+                        return pkg.description
+                return aux
+            else:
+                lang_name = 'description_%s' % lang
+                def aux(pkg):
+                    try:
+                        return getattr(pkg, locale_name)
+                    except AttributeError:
+                        try:
+                            return getattr(pkg, lang_name)
+                        except AttributeError:
+                            return pkg.description
+                return aux
+    
     def list_installable(self):
         """Return a dictionary of installable packages.
         
         See IInstallService.list_installable.
         
         """
+        localize_desc_fun = self._new_localize_description_fun()
         installable_pkgs = self._async_pkg_manager.installable_pkgs
         return dict((pkg_id, {'version': pkg.version,
-                              'description': pkg.description,
+                              'description': localize_desc_fun(pkg),
                               'dsize': sum(rfile.size for rfile in pkg.remote_files)})
                     for pkg_id, pkg in installable_pkgs.iteritems())
     
@@ -601,10 +629,11 @@ class FetchfwPluginHelper(object):
         See IInstallService.list_installed.
         
         """
+        localize_desc_fun = self._new_localize_description_fun()
         installed_pkgs = self._async_pkg_manager.installed_pkgs
         installed_pkgs.reload()
         return dict((pkg_id, {'version': pkg.version,
-                              'description': pkg.description})
+                              'description': localize_desc_fun(pkg)})
                     for pkg_id, pkg in installed_pkgs.iteritems())
     
     def services(self):
@@ -712,23 +741,29 @@ class PluginManager(object):
         cache_dir -- a directory where plugin-package are downloaded
         """
         self._app = app
+        if not os.path.exists(plugins_dir):
+            os.mkdir(plugins_dir)
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
         self.server = None
         proxies = app.proxies
         server_p = AttrConfigureServiceParam(self, 'server',
-                                             u'The base address of the plugins repository',
-                                             _check_is_server_url)
+                                             u'The plugins repository URL',
+                                             _check_is_server_url,
+                                             description_fr=u"L'addresse (URL) du dépôt de plugins")
         http_proxy_p = DictConfigureServiceParam(proxies, 'http',
                                                  u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"',
-                                                 _check_is_proxy)
+                                                 _check_is_proxy,
+                                                 description_fr=u'Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"')
         ftp_proxy_p = DictConfigureServiceParam(proxies, 'ftp',
                                                 u'The proxy for FTP requests. Format is "http://[user:password@]host:port"',
-                                                _check_is_proxy)
+                                                _check_is_proxy,
+                                                description_fr=u'Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"')
         # syntax for specifying the HTTPS proxy is a bit different, don't ask me why
         https_proxy_p = DictConfigureServiceParam(proxies, 'https',
                                                   u'The proxy for HTTPS requests. Format is "host:port"',
-                                                  _check_is_https_proxy)
+                                                  _check_is_https_proxy,
+                                                  description_fr=u'Le proxy pour les requêtes HTTPS. Le format est "host:port"')
         cfg_service = BaseConfigureService({u'server': server_p,
                                             u'http_proxy': http_proxy_p,
                                             u'ftp_proxy': ftp_proxy_p,
@@ -929,6 +964,42 @@ class PluginManager(object):
         installable_plugins = self.list_installable()
         return installable_plugins[id]
     
+    @staticmethod
+    def _clean_localized_description(raw_plugin_info):
+        # remove every description_* key
+        for key in raw_plugin_info.keys():
+            if key.startswith('description_'):
+                del raw_plugin_info[key]
+    
+    def _new_localize_fun(self):
+        # Return a function that receive a raw plugin info and update
+        # it so it becomes localized
+        locale, lang = get_locale_and_language()
+        if locale is None:
+            return self._clean_localized_description
+        else:
+            locale_name = 'description_%s' % locale
+            if locale == lang:
+                def aux(raw_plugin_info):
+                    try:
+                        raw_plugin_info[u'description'] = raw_plugin_info[locale_name]
+                    except KeyError:
+                        pass
+                    self._clean_localized_description(raw_plugin_info)
+                return aux
+            else:
+                lang_name = 'description_%s' % lang
+                def aux(raw_plugin_info):
+                    try:
+                        raw_plugin_info[u'description'] = raw_plugin_info[locale_name]
+                    except KeyError:
+                        try:
+                            raw_plugin_info[u'description'] = raw_plugin_info[lang_name]
+                        except KeyError:
+                            pass
+                    self._clean_localized_description(raw_plugin_info)
+                return aux
+    
     def list_installable(self):
         """Return a dictionary of installable plugins, where keys are
         plugin identifier and values are dictionary of plugin information.
@@ -956,9 +1027,11 @@ class PluginManager(object):
         except IOError:
             return {}
         else:
+            localize_fun = self._new_localize_fun()
             for plugin_id, raw_plugin_info in raw_plugin_infos.iteritems():
                 _check_raw_plugin_info(raw_plugin_info, plugin_id,
                                        _PLUGIN_INFO_INSTALLABLE_KEYS)
+                localize_fun(raw_plugin_info)
             return raw_plugin_infos
     
     def is_installed(self, id):
@@ -980,6 +1053,7 @@ class PluginManager(object):
         #     because a plugin could be installed but not loaded (most common
         #     case is when loading the plugins at the start). We might want to
         #     rework a bit all this.
+        localize_fun = self._new_localize_fun()
         installed_plugins = {}
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
@@ -989,6 +1063,7 @@ class PluginManager(object):
                     raw_plugin_info = json.load(fobj)
                 _check_raw_plugin_info(raw_plugin_info, rel_plugin_dir,
                                        _PLUGIN_INFO_INSTALLED_KEYS)
+                localize_fun(raw_plugin_info)
                 installed_plugins[rel_plugin_dir] = raw_plugin_info
         return installed_plugins
     
@@ -1043,14 +1118,15 @@ class PluginManager(object):
     
     def _notify(self, id, action):
         # action is either 'load' or 'unload'
-        logger.debug('Notifying observers: %s %s', action, id)
+        logger.debug('Notifying plugin manager observers: %s %s', action, id)
         for observer in self._observers.keys():
             try:
-                logger.info('Notifying observer %s', observer)
+                logger.info('Notifying plugin manager observer %s', observer)
                 fun = getattr(observer, 'pg_' + action)
                 fun(id)
             except Exception:
-                logger.error('Error while notifying observer %s', observer, exc_info=True)
+                logger.error('Error while notifying plugin manager observer %s',
+                             observer, exc_info=True)
     
     def _load_and_notify(self, id, plugin):
         self._plugins[id] = plugin
