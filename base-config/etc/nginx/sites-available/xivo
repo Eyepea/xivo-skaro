@@ -12,9 +12,9 @@ server {
     access_log /var/log/nginx/xivo.access.log;
     error_log /var/log/nginx/xivo.error.log debug;
     root /usr/share/pf-xivo-web-interface/www;
-    index index.php;
 
     location / {
+        index index.php;
         include /etc/nginx/xivo_params; 
     }
 
@@ -27,25 +27,31 @@ server {
     location ^~ /extra-libs/multiselect/   { alias /usr/share/javascript/jquery.multiselect/; }
     location ^~ /extra-libs/ui-timepicker/ { alias /usr/share/javascript/jquery-ui.timepicker/; }
 
+    ## for debug purpose
+    #location /pgadmin {
+    #    alias /usr/share/phppgadmin;
+    #    if ($uri ~ "^/$") {
+    #        break;
+    #    }
+    #    index index.php;
+    #}
+
+    #location ~ ^/pgadmin/(.*\.php?)$ {
+    #    alias /usr/share/phppgadmin/$1;
+    #    include /etc/nginx/xivo_params; 
+    #}
+    #location ~ ^/pgadmin/((?:themes|images)/.*)$ {
+    #    alias /usr/share/phppgadmin/$1;
+    #}
+    
     location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
         expires max;
         add_header Pragma public;
         add_header Cache-Control "public, must-revalidate, proxy-revalidate";
     }
 
-    ## for debug purpose
-    #location /pgadmin {
-    #    alias /usr/share/phppgadmin;
-    #}
-
-    #location ~ /pgadmin/(.*\.php?)$ {
-    #    alias /usr/share/phppgadmin/$1;
-    #    include /etc/nginx/xivo_params; 
-    #}
-
     gzip  off; # gzipping SSL encripted data is a waste of time
     ssl  on;
     ssl_certificate /etc/nginx/ssl/server.crt;
     ssl_certificate_key /etc/nginx/ssl/server.key;
 }
-
