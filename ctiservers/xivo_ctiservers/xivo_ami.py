@@ -431,11 +431,17 @@ class AMIClass:
 
     # \brief Sends a sipnotify
     def sipnotify(self, *variables):
-        channel = variables[0]
-        arglist = [('Variable', '%s=%s' % (k, v.replace('"', '\\"')))
-            for k, v in variables[len(variables) - 1].iteritems()]
-        arglist.append(('Channel', channel))
-        return self.sendcommand('SIPNotify', arglist)
+        try:
+            channel = variables[0]
+            arglist = [('Variable', '%s=%s' % (k, v.replace('"', '\\"')))
+                for k, v in variables[len(variables) - 1].iteritems()]
+            arglist.append(('Channel', channel))
+            ret = self.sendcommand('SIPNotify', arglist)
+        except self.AMIError:
+            ret = False
+        except Exception:
+            ret = False
+        return ret
 
     # \brief Transfers a channel towards a new extension.
     def transfer(self, channel, extension, context):
