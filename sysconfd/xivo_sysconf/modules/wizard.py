@@ -587,14 +587,14 @@ def exec_db_file(args, options):
             subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
-                raise HttpReqError(500, "Can't create xivo DB with mysql")
+            raise HttpReqError(500, "Can't create xivo DB with mysql")
 
     if args['backend'] == 'sqlite':
         try:
             subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
-                raise HttpReqError(500, "Can't create xivo DB with sqlite")
+            raise HttpReqError(500, "Can't create xivo DB with sqlite")
 
     if 'ipbxscript' not in args:
         raise HttpReqError(415, "missing option 'ipbxscript'")
