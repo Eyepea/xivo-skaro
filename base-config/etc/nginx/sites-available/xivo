@@ -30,9 +30,6 @@ server {
     ## for debug purpose
     #location /pgadmin {
     #    alias /usr/share/phppgadmin;
-    #    if ($uri ~ "^/$") {
-    #        break;
-    #    }
     #    index index.php;
     #}
 
