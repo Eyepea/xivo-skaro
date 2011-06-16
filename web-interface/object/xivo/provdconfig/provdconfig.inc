@@ -507,28 +507,35 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			
 		if (is_null($raw) === true)
 			$raw = array();
-			
-        $appgeneralsip = &$this->_appsip->get_module('general');
-        
-        $tlsenable = $appgeneralsip->get('tlsenable');
-        if ($raw['sip_transport'] === 'tls'
-		&& $tlsenable['general']['var_val'] === 'yes')
-        {
-           $tlscertfile = $appgeneralsip->get('tlscertfile');
-           $crt = str_replace('.pem', '.crt', $tlscertfile['general']['var_val']);
-           $raw['sip_servers_root_and_intermediate_certificates'] =
-               file_get_contents($crt);
-        }
 		
 		$raw_config = &$globalconfig['raw_config'];
-		$raw_config = array_merge($raw_config,$this->build_raw_config_device($raw));
-		$raw_config = array_merge($raw_config,$this->_build_exten_config());
-		$raw_config = array_merge($raw_config,$this->_init_device_master_line($configid));
 		
 		switch ($protocolname)
 		{
 			case 'sip':
 			default:
+                $appgeneralsip = &$this->_appsip->get_module('general');
+                
+                $tlsenable = $appgeneralsip->get('tlsenable');
+                if (isset($raw['sip_transport']) === true
+                && $raw['sip_transport'] === 'tls'
+        		&& $tlsenable['general']['var_val'] === 'yes')
+                {
+                   $tlscertfile = $appgeneralsip->get('tlscertfile');
+                   $crt = str_replace('.pem', '.crt', $tlscertfile['general']['var_val']);
+                   $raw['sip_servers_root_and_intermediate_certificates'] =
+                       file_get_contents($crt);
+                }
+                else
+                {
+                    unset($raw['sip_transport'],
+                    $raw['sip_srtp_mode'],
+                    $raw['sip_servers_root_and_intermediate_certificates'],
+                    $raw_config['sip_transport'],
+                    $raw_config['sip_servers_root_and_intermediate_certificates'],
+                    $raw_config['sip_srtp_mode']);
+                }
+        
 				if (is_array($lines) === true)
 				{
 					$rslines = $this->_build_lines($lines);
@@ -538,6 +545,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 						$raw_config['sip_lines'] = $rslines;
 				}
 		}
+		
+		$raw_config = array_merge($raw_config,$this->build_raw_config_device($raw));
+		$raw_config = array_merge($raw_config,$this->_build_exten_config());
+		$raw_config = array_merge($raw_config,$this->_init_device_master_line($configid));
 		
 		return($globalconfig);
 	}

@@ -1097,6 +1097,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 			}
 		}
+		else
+		{
+			if(($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
+			{
+				dwho_report::push('error', 'device doesn\'t exist');
+				return(false);
+			}
+		    $this->_provdconfig->rebuild_device_config($device['id']);
+		}
+		
 		return(true);
 	}
 
