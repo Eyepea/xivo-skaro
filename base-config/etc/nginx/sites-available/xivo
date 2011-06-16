@@ -21,7 +21,7 @@ server {
     location ^~ /extra-libs/jquery/        { alias /usr/share/javascript/jquery/; }
     location ^~ /extra-libs/jquery-ui/     { alias /usr/share/javascript/jquery-ui/; }
     location ^~ /extra-libs/mousewheel/    { alias /usr/share/javascript/jquery.mousewheel/; }
-    location ^~ /extra-libs/jqplot/        { alias /usr/share/javascript/jqplot/src/"; }
+    location ^~ /extra-libs/jqplot/        { alias /usr/share/javascript/jqplot/"; }
     location ^~ /extra-libs/xivo.schedule/ { alias /usr/share/javascript/pf-xivo-schedule/src/; }
     location ^~ /extra-libs/timepicker/    { alias /usr/share/javascript/jquery.timepicker/; }
     location ^~ /extra-libs/multiselect/   { alias /usr/share/javascript/jquery.multiselect/; }
