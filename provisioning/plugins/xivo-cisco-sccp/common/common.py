@@ -71,13 +71,13 @@ class CiscoDownloader(DefaultDownloader):
         self._cookiejar.clear()
         self._form_params = {'USER': user, 'PASSWORD': passwd}
     
-    def _do_download(self, url):
+    def _do_download(self, url, timeout):
         if not self._form_params:
             raise InvalidCredentialsError('no Cisco username/password have been set')
         if not self._is_authenticated:
-            self._authenticate()
+            self._authenticate(timeout)
         assert self._is_authenticated
-        f = self._opener.open(url)
+        f = self._opener.open(url, timeout=timeout)
         # Cisco website is not using HTTP 4xx status code to signal that we can't access an URL, so...
         if f.info().type == 'text/html':
             f.close()
@@ -85,11 +85,11 @@ class CiscoDownloader(DefaultDownloader):
                                             'access to this URL (or this URL might be no longer valid)')
         return f
     
-    def _authenticate(self):
-        form_url = self._get_form_url()
+    def _authenticate(self, timeout):
+        form_url = self._get_form_url(timeout)
         data = urllib.urlencode(self._form_params)
         logger.debug('Trying to authenticate on Cisco website')
-        with contextlib.closing(self._opener.open(form_url, data)) as f:
+        with contextlib.closing(self._opener.open(form_url, data, timeout=timeout)) as f:
             logger.debug('Checking for authentication failure - url "%s"', f.geturl())
             for line in f:
                 if 'title' in line.lower():
@@ -105,15 +105,15 @@ class CiscoDownloader(DefaultDownloader):
         # - we don't understand the HTML <meta http⁻equiv"refresh"> tag neither
         # This is extremely flimsy, but since we have no control on how cisco
         # handle the whole login process, this is as good as it can get.
-        with contextlib.closing(self._opener.open(self._POST_LOGIN_URL)) as f:
+        with contextlib.closing(self._opener.open(self._POST_LOGIN_URL, timeout=timeout)) as f:
             f.read()
         self._is_authenticated = True
         
-    def _get_form_url(self):
+    def _get_form_url(self, timeout):
         # This step is not strictly required but this way we have less chance to be
         # affected by an URL modification
         logger.debug('Getting Cisco form URL from C14N URL')
-        with contextlib.closing(self._opener.open(self._C14N_LOGIN_URL)) as login:
+        with contextlib.closing(self._opener.open(self._C14N_LOGIN_URL, timeout=timeout)) as login:
             url = login.geturl()
             logger.debug('Form URL is "%s"', url)
             return url

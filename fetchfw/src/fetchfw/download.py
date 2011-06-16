@@ -46,13 +46,15 @@ class AbortedDownloadError(DownloadError):
 
 
 class DefaultDownloader(object):
+    _TIMEOUT = 15.0
+    
     def __init__(self, handlers=[]):
         self._opener = urllib2.build_opener(*handlers)
         
-    def download(self, url):
+    def download(self, url, timeout=_TIMEOUT):
         """Open the URL url and return a file-like object."""
         try:
-            return self._do_download(url)
+            return self._do_download(url, timeout)
         except urllib2.HTTPError, e:
             logger.warning("HTTPError while downloading '%s': %s", self._get_url(url), e)
             if e.code == 401:
@@ -71,14 +73,14 @@ class DefaultDownloader(object):
         else:
             return url
     
-    def _do_download(self, url):
+    def _do_download(self, url, timeout):
         """This method is called by the download method. Any urllib2-related exception
         raised in this method will be caught and wrapped around an exception who
         derives from DownloadError. Derived class may override this method if
         needed.
        
         """
-        return self._opener.open(url)
+        return self._opener.open(url, timeout=timeout)
 
 
 class AuthenticatingDownloader(DefaultDownloader):
