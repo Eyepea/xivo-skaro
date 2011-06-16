@@ -1,29 +1,34 @@
 [pkg_spa901-fw]
-desc: Firmware files for Cisco SPA901
+desc: Firmware for Cisco SPA901
+desc_fr: Micrologiciel pour Cisco SPA901
 version: 5.1.5
 files: file_spa901fw
 install_proc: install_cisco-zipfw
 
 [pkg_spa921-941-fw]
-desc: Firmware files for Cisco SPA921 and SPA941
+desc: Firmware for Cisco SPA921 and SPA941
+desc_fr: Micrologiciel pour Cisco SPA921 et SPA941
 version: 5.1.8
 files: file_spa921-941fw
 install_proc: install_cisco-zipfw
 
 [pkg_spa922-942-fw]
-desc: Firmware files for Cisco SPA922 and SPA942
+desc: Firmware for Cisco SPA922 and SPA942
+desc_fr: Micrologiciel pour Cisco SPA922 et SPA942
 version: 6.1.5a
 files: file_spa922-942fw
 install_proc: install_cisco-zipfw
 
 [pkg_spa962-fw]
-desc: Firmware files for Cisco SPA962
+desc: Firmware for Cisco SPA962
+desc_fr: Micrologiciel pour Cisco SPA962
 version: 6.1.5a
 files: file_spa962fw
 install_proc: install_cisco-zipfw
 
 [pkg_spa9x2-lang]
 desc: Language files for Cisco SPA9X2
+desc_fr: Fichiers de langue pour Cisco SPA9X2 
 version: 6.1.5
 files: file_spa9x2lang
 install_proc: install_cisco-spa9x2lang

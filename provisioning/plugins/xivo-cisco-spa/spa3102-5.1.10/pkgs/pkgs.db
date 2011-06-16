@@ -1,5 +1,6 @@
 [pkg_spa3102-fw]
-desc: Firmware files for Cisco SPA3102
+desc: Firmware for Cisco SPA3102
+desc_fr: Micrologiciel pour Cisco SPA3102
 version: 5.1.10
 files: file_spa3102fw
 install_proc: install_cisco-zipfw

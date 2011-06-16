@@ -1,5 +1,6 @@
 [pkg_ipstation-fw]
 desc: Firmware for Zenitel IP stations
+desc_fr: Micrologiciel pour Zenitel IP stations
 version: 01.11.3.2
 files: file_ipstation-fw
 install_proc: install_zenitel-ipstation-fw

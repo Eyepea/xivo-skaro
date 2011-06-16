@@ -1,29 +1,34 @@
 [pkg_cisco-7902-fw]
-desc: Firmware files for Cisco 7902G (SCCP)
+desc: Firmware for Cisco 7902G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7902G (SCCP)
 version: 8.0.2
 files: file_7902fw
 install_proc: install_cisco-7900fw
 
 [pkg_7905-fw]
-desc: Firmware files for Cisco 7905G (SCCP)
+desc: Firmware for Cisco 7905G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7905G (SCCP)
 version: 8.0.3
 files: file_7905fw
 install_proc: install_cisco-7900fw
 
 [pkg_7910-fw]
-desc: Firmware files for Cisco 7910G (SCCP)
+desc: Firmware for Cisco 7910G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7910G (SCCP)
 version: 5.0.7
 files: file_7910fw
 install_proc: install_cisco-7900fw
 
 [pkg_7912-fw]
-desc: Firmware and locale files for Cisco 7912G (SCCP)
+desc: Firmware for Cisco 7912G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7912G (SCCP)
 version: 8.0.4
 files: file_7912fw
 install_proc: install_cisco-7900fw
 
 [pkg_7940-7960-fw]
-desc: Firmware and locale files for Cisco 7940G and 7960G (SCCP)
+desc: Firmware for Cisco 7940G and 7960G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7940G et 7960G (SCCP)
 version: 8.1.2
 files: file_7940-7960fw
 install_proc: install_cisco-7900fw

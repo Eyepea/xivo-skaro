@@ -1,5 +1,6 @@
 [pkg_spa8800-fw]
-desc: Firmware files for Cisco SPA8800
+desc: Firmware for Cisco SPA8800
+desc_fr: Micrologiciel pour Cisco SPA8800
 version: 6.1.7
 files: file_spa8800fw
 install_proc: install_cisco-zipfw

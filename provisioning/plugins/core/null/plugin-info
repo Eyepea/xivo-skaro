@@ -1,6 +1,7 @@
 {
-    "version": "1.0-a",
+    "version": "1.0.1",
     "description": "Plugin that offers no configuration service and rejects TFTP/HTTP requests.",
+    "description_fr": "Greffon qui n'offre pas de service de configuration et qui rejette les requêtes TFTP/HTTPS.",
     "capabilities": {
         "*, *, *": {
             "sip.lines": 0

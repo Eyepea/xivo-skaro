@@ -1,5 +1,6 @@
 [pkg_TB30-fw]
-desc: Firmware files for Technicolor TB30
+desc: Firmware for Technicolor TB30
+desc_fr: Micrologiciel pour Technicolor TB30
 version: 1.74.0
 files: file_TB30-fw
 install_proc: install_technicolor-fw TB30S*.zz

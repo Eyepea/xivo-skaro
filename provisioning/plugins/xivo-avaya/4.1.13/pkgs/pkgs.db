@@ -1,5 +1,6 @@
 [pkg_12x0IP-fw]
 desc: Firmware for Avaya 1220/1230 IP Deskphone
+desc_fr: Micrologiciel pour Avaya 1220/1230 IP Deskphone
 version: 04.01.13.00
 files: file_12x0IP-fw
 install_proc: install_avaya-fw

@@ -107,8 +107,13 @@ class ZenitelConfigureService(object):
             raise KeyError(name)
     
     description = {
-        u'username': u'The username used to download files',
-        u'password': u'The password used to download files',
+        u'username': u'The username used to download files on the alphawiki',
+        u'password': u'The password used to download files on the alphawiki',
+    }
+    
+    description_fr = {
+        u'username': u"Le nom d'utilisateur pour télécharger les fichiers sur le alphawiki",
+        u'password': u'Le mot de passe pour télécharger les fichiers sur le alphawiki',
     }
 
 

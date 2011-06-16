@@ -1,6 +1,7 @@
 {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Plugin for Yealink T12P, T20P, T22P, T26P and T28P in version 60.0.110.",
+    "description_fr": "Greffon pour Yealink T12P, T20P, T22P, T26P et T28P en version 60.0.110.",
     "capabilities": {
         "Yealink, T12P, 5.60.0.110": {
             "sip.lines": 2

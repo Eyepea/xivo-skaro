@@ -1,5 +1,6 @@
 [pkg_ST2030-fw]
-desc: Firmware files for Technicolor ST2030
+desc: Firmware for Technicolor ST2030
+desc_fr: Micrologiciel pour Technicolor ST2030
 version: 2.74
 files: file_ST2030-fw
 install_proc: install_technicolor-fw v2030*.zz

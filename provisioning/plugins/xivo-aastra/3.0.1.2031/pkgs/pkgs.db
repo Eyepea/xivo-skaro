@@ -1,11 +1,13 @@
 [pkg_6739i-fw]
 desc: Firmware for Aastra 6739i
+desc_fr: Micrologiciel pour Aastra 6739i
 version: 3.0.1.2031
 files: file_6739i-fw
 install_proc: install_aastra-fw
 
 [pkg_lang]
-desc: Language files for Aastra
+desc: Language files
+desc_fr: Fichiers de langue
 version: 3.0.1.38.1002
 files: file_lang3
 install_proc: install_aastra-lang

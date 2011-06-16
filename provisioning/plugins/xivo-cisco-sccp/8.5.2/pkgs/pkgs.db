@@ -1,41 +1,48 @@
 [pkg_7906-7911-fw]
-desc: Firmware files for Cisco 7906G and 7911G (SCCP)
+desc: Firmware for Cisco 7906G and 7911G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7906G et 7911G (SCCP)
 version: 8.5.2
 files: file_7906-7911fw
 install_proc: install_cisco-7900fw
 
 [pkg_7931-fw]
-desc: Firmware files for Cisco 7931G (SCCP)
+desc: Firmware for Cisco 7931G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7931G (SCCP)
 version: 8.5.2
 files: file_7931fw
 install_proc: install_cisco-7900fw
 
 [pkg_7941-7961-fw]
-desc: Firmware files for Cisco 7941G/7941G-GE and 7961G/7961G-GE (SCCP)
+desc: Firmware for Cisco 7941G/7941G-GE and 7961G/7961G-GE (SCCP)
+desc_fr: Micrologiciel pour Cisco 7941G/7941G-GE et 7961G/7961G-GE (SCCP)
 version: 8.5.2
 files: file_7941-7961fw
 install_proc: install_cisco-7900fw
 
 [pkg_7942-7962-fw]
-desc: Firmware files for Cisco 7942G and 7962G (SCCP)
+desc: Firmware for Cisco 7942G and 7962G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7942G et 7962G (SCCP)
 version: 8.5.2
 files: file_7942-7962fw
 install_proc: install_cisco-7900fw
 
 [pkg_7945-7965-fw]
-desc: Firmware files for Cisco 7945G and 7965G (SCCP)
+desc: Firmware for Cisco 7945G and 7965G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7945G et 7965G (SCCP)
 version: 8.5.2
 files: file_7945-7965fw
 install_proc: install_cisco-7900fw
 
 [pkg_7970-7971-fw]
-desc: Firmware files for Cisco 7970G, 7971G and 7971GE (SCCP)
+desc: Firmware for Cisco 7970G, 7971G and 7971GE (SCCP)
+desc_fr: Micrologiciel pour Cisco 7970G, 7971G et 7971GE (SCCP)
 version: 8.5.2
 files: file_7970-7971fw
 install_proc: install_cisco-7900fw
 
 [pkg_7975-fw]
-desc: Firmware files for Cisco 7975G (SCCP)
+desc: Firmware for Cisco 7975G (SCCP)
+desc_fr: Micrologiciel pour Cisco 7975G (SCCP)
 version: 8.5.2
 files: file_7975fw
 install_proc: install_cisco-7900fw

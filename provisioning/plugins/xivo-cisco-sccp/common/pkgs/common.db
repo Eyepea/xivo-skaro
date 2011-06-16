@@ -7,42 +7,49 @@
 
 [pkg_7914]
 desc: Firmware for Cisco Expansion Module 7914G (SCCP)
+desc_fr: Micrologiciel pour module d'extension Cisco 7914G (SCCP)
 version: 5.0.4
 files: file_7914fw
 install_proc: install_cisco-7900fw
 
 [pkg_7915]
 desc: Firmware for Cisco Expansion Module 7915G (SCCP)
+desc_fr: Micrologiciel pour module d'extension Cisco 7915G (SCCP)
 version: 1.0.4
 files: file_7915fw
 install_proc: install_cisco-7900fw
 
 [pkg_7916]
 desc: Firmware for Cisco Expansion Module 7916G (SCCP)
+desc_fr: Micrologiciel pour module d'extension Cisco 7916G (SCCP)
 version: 1.0.4
 files: file_7916fw
 install_proc: install_cisco-7900fw
 
 [pkg_networklocale]
 desc: Network locale for Cisco 79xx (SCCP)
+desc_fr: Locale réseau pour Cisco 79xx (SCCP)
 version: 9.0.2
 files: file_networklocale
 install_proc: install_cisco-networklocale
 
 [pkg_userlocale_de_DE]
 desc: de_DE user locale for Cisco 79xx (SCCP)
+desc_fr: Locale utilisateur de_DE pour Cisco 79xx (SCCP)
 version: 9.0.2
 files: file_userlocale_de_DE
 install_proc: install_cisco-userlocale
 
 [pkg_userlocale_es_ES]
 desc: es_ES user locale for Cisco 79xx (SCCP)
+desc_fr: Locale utilisateur es_ES pour Cisco 79xx (SCCP)
 version: 9.0.2
 files: file_userlocale_es_ES
 install_proc: install_cisco-userlocale
 
 [pkg_userlocale_fr_FR]
 desc: fr_FR user locale for Cisco 79xx (SCCP)
+desc_fr: Locale utilisateur fr_FR pour Cisco 79xx (SCCP)
 version: 9.0.2
 files: file_userlocale_fr_FR
 install_proc: install_cisco-userlocale

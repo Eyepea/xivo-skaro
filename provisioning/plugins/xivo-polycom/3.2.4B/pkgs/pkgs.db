@@ -1,179 +1,209 @@
 [pkg_IP320-sipapp]
 desc: SIP application for Polycom IP320
+desc_fr: Application SIP pour Polycom IP320
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp_2x 2345-12200-002.sip.ld 2345-12200-005.sip.ld 
 
 [pkg_IP320-bootrom]
 desc: BootROM for Polycom IP320
+desc_fr: BootROM pour Polycom IP320
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom_2x 2345-12200-002.bootrom.ld 2345-12200-005.bootrom.ld
 
 [pkg_IP321-sipapp]
 desc: SIP application for Polycom IP321
+desc_fr: Application SIP pour Polycom IP321
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12360-001.sip.ld
 
 [pkg_IP321-bootrom]
 desc: BootROM for Polycom IP321
+desc_fr: BootROM pour Polycom IP321
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12360-001.bootrom.ld
 
 [pkg_IP330-sipapp]
 desc: SIP application for Polycom IP330
+desc_fr: Application SIP pour Polycom IP330
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp_2x 2345-12200-001.sip.ld 2345-12200-004.sip.ld
 
 [pkg_IP330-bootrom]
 desc: BootROM for Polycom IP330
+desc_fr: BootROM pour Polycom IP330
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom_2x 2345-12200-001.bootrom.ld 2345-12200-004.bootrom.ld
 
 [pkg_IP331-sipapp]
 desc: SIP application for Polycom IP331
+desc_fr: Application SIP pour Polycom IP331
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12365-001.sip.ld
 
 [pkg_IP331-bootrom]
 desc: BootROM for Polycom IP331
+desc_fr: BootROM pour Polycom IP331
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12365-001.bootrom.ld
 
 [pkg_IP335-sipapp]
 desc: SIP application for Polycom IP335
+desc_fr: Application SIP pour Polycom IP335
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12375-001.sip.ld
 
 [pkg_IP335-bootrom]
 desc: BootROM for Polycom IP335
+desc_fr: BootROM pour Polycom IP335
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12375-001.bootrom.ld
 
 [pkg_IP430-sipapp]
 desc: SIP application for Polycom IP430
+desc_fr: Application SIP pour Polycom IP430
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-11402-001.sip.ld
 
 [pkg_IP430-bootrom]
 desc: BootROM for Polycom IP430
+desc_fr: BootROM pour Polycom IP430
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-11402-001.bootrom.ld
 
 [pkg_IP450-sipapp]
 desc: SIP application for Polycom IP450
+desc_fr: Application SIP pour Polycom IP450
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12450-001.sip.ld
 
 [pkg_IP450-bootrom]
 desc: BootROM for Polycom IP450
+desc_fr: BootROM pour Polycom IP450
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12450-001.bootrom.ld
 
 [pkg_IP550-sipapp]
 desc: SIP application for Polycom IP550
+desc_fr: Application SIP pour Polycom IP550
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12500-001.sip.ld
 
 [pkg_IP550-bootrom]
 desc: BootROM for Polycom IP550
+desc_fr: BootROM pour Polycom IP550
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12500-001.bootrom.ld
 
 [pkg_IP560-sipapp]
 desc: SIP application for Polycom IP560
+desc_fr: Application SIP pour Polycom IP560
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12560-001.sip.ld
 
 [pkg_IP560-bootrom]
 desc: BootROM for Polycom IP560
+desc_fr: BootROM pour Polycom IP560
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12560-001.bootrom.ld
 
 [pkg_IP650-sipapp]
 desc: SIP application for Polycom IP650
+desc_fr: Application SIP pour Polycom IP650
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12600-001.sip.ld
 
 [pkg_IP650-bootrom]
 desc: BootROM for Polycom IP650
+desc_fr: BootROM pour Polycom IP650
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12600-001.bootrom.ld
 
 [pkg_IP670-sipapp]
 desc: SIP application for Polycom IP670
+desc_fr: Application SIP pour Polycom IP670
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 2345-12670-001.sip.ld
 
 [pkg_IP670-bootrom]
 desc: BootROM for Polycom IP670
+desc_fr: BootROM pour Polycom IP670
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 2345-12670-001.bootrom.ld
 
 [pkg_IP5000-sipapp]
 desc: SIP application for Polycom IP5000
+desc_fr: Application SIP pour Polycom IP5000
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 3111-30900-001.sip.ld
 
 [pkg_IP5000-bootrom]
 desc: BootROM for Polycom IP5000
+desc_fr: BootROM pour Polycom IP5000
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 3111-30900-001.bootrom.ld
 
 [pkg_IP6000-sipapp]
 desc: SIP application for Polycom IP6000
+desc_fr: Application SIP pour Polycom IP6000
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 3111-15600-001.sip.ld
 
 [pkg_IP6000-bootrom]
 desc: BootROM for Polycom IP6000
+desc_fr: BootROM pour Polycom IP6000
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 3111-15600-001.bootrom.ld
 
 [pkg_IP7000-sipapp]
 desc: SIP application for Polycom IP7000
+desc_fr: Application SIP pour Polycom IP7000
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_sipapp 3111-40000-001.sip.ld
 
 [pkg_IP7000-bootrom]
 desc: BootROM for Polycom IP7000
+desc_fr: BootROM pour Polycom IP7000
 version: 4.2.3.0003
 files: file_bootrom
 install_proc: install_bootrom 3111-40000-001.bootrom.ld
 
 [pkg_IPVVX1500-sipapp]
-desc: SIP application and BootROM for Polycom IPVVX1500
+desc: SIP application and BootROM for Polycom VVX1500
+desc_fr: Application SIP et BootROM pour Polycom VVX1500
 version: 3.2.4.0244
 files: file_sipapp_split
 install_proc: install_sipapp 2345-17960-001.sip.ld
 
 [pkg_lang]
 desc: Language files for Polycom
+desc_fr: Fichiers de langue pour Polycom
 version: 3.2.4.0267
 files: file_sipapp_split
 install_proc: install_lang

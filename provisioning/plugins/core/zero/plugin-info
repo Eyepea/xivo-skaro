@@ -1,6 +1,7 @@
 {
-    "version": "1.0-a",
+    "version": "1.0.1",
     "description": "Plugin that offers no configuration service and serves TFTP/HTTP requests in its var/tftpboot directory.",
+    "description_fr": "Greffon qui n'offre pas de service de configuration et qui sert les requêtes TFTP/HTTP dans son répertoire var/tftpboot.",
     "capabilities": {
         "*, *, *": {
             "sip.lines": 0

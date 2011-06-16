@@ -1,65 +1,76 @@
 [pkg_6730i-fw]
 desc: Firmware for Aastra 6730i
+desc_fr: Micrologiciel pour Aastra 6730i
 version: 2.6.0.2019
 files: file_6730i-fw
 install_proc: install_aastra-fw
 
 [pkg_6731i-fw]
 desc: Firmware for Aastra 6731i
+desc_fr: Micrologiciel pour Aastra 6731i
 version: 2.6.0.2019
 files: file_6731i-fw
 install_proc: install_aastra-fw
 
 [pkg_6751i-fw]
 desc: Firmware for Aastra 6751i
+desc_fr: Micrologiciel pour Aastra 6751i
 version: 2.6.0.2019
 files: file_6751i-fw
 install_proc: install_aastra-fw
 
 [pkg_6753i-fw]
 desc: Firmware for Aastra 6753i
+desc_fr: Micrologiciel pour Aastra 6753i
 version: 2.6.0.2019
 files: file_6753i-fw
 install_proc: install_aastra-fw
 
 [pkg_6755i-fw]
 desc: Firmware for Aastra 6755i
+desc_fr: Micrologiciel pour Aastra 6755i
 version: 2.6.0.2019
 files: file_6755i-fw
 install_proc: install_aastra-fw
 
 [pkg_6757i-fw]
 desc: Firmware for Aastra 6757i
+desc_fr: Micrologiciel pour Aastra 6757i
 version: 2.6.0.2019
 files: file_6757i-fw
 install_proc: install_aastra-fw
 
 [pkg_6757iCT-fw]
-desc: Firmware files for Aastra 6757i CT
+desc: Firmware for Aastra 6757i CT
+desc_fr: Micrologiciel pour Aastra 6757i CT
 version: 2.6.0.2019
 files: file_6757iCT-fw
 install_proc: install_aastra-fw
 
 [pkg_9143i-fw]
-desc: Firmware files for Aastra 9143i
+desc: Firmware for Aastra 9143i
+desc_fr: Micrologiciel pour Aastra 9143i
 version: 2.6.0.2019
 files: file_9143i-fw
 install_proc: install_aastra-fw
 
 [pkg_9480i-fw]
-desc: Firmware files for Aastra 9480i
+desc: Firmware for Aastra 9480i
+desc_fr: Micrologiciel pour Aastra 9480i
 version: 2.6.0.2019
 files: file_9480i-fw
 install_proc: install_aastra-fw
 
 [pkg_9480iCT-fw]
-desc: Firmware files for Aastra 9480i CT
+desc: Firmware for Aastra 9480i CT
+desc_fr: Micrologiciel pour Aastra 9480i CT
 version: 2.6.0.2019
 files: file_9480iCT-fw
 install_proc: install_aastra-fw
 
 [pkg_lang]
-desc: Language files for Aastra
+desc: Language files
+desc_fr: Fichiers de langue
 version: 2.6.0.1005
 files: file_lang2
 install_proc: install_aastra-lang

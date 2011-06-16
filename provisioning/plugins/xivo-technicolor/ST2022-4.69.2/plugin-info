@@ -1,5 +1,5 @@
 {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Plugin for Technicolor (previously known as Thomson) ST2022 in version 4.69.2.",
     "capabilities": {
         "Technicolor, ST2022, 4.69.2": {
