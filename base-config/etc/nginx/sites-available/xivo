@@ -27,6 +27,10 @@ server {
     location ^~ /extra-libs/multiselect/   { alias /usr/share/javascript/jquery.multiselect/; }
     location ^~ /extra-libs/ui-timepicker/ { alias /usr/share/javascript/jquery-ui.timepicker/; }
 
+    location ~ ^/monit {
+        rewrite ^/monit/(.*) /$1 break;
+        proxy_pass http://127.0.0.1:2812;
+ 
     ## for debug purpose
     #location /pgadmin {
     #    alias /usr/share/phppgadmin;
