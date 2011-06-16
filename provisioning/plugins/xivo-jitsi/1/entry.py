@@ -22,7 +22,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# provisioning url to use in Jitsi: http://<provd_ip>/jitsi?uuid=${uuid}
+# provisioning url to use in Jitsi: http://<provd_ip:provd_port>/jitsi?uuid=${uuid}
 
 import logging
 import os.path
