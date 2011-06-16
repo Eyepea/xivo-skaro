@@ -37,7 +37,7 @@ server {
     #    alias /usr/share/phppgadmin/$1;
     #    include /etc/nginx/xivo_params; 
     #}
-    #location ~ ^/pgadmin/((?:themes|images)/.*)$ {
+    #location ~ ^/pgadmin/((?:themes|images|xloadtree)/.*)$ {
     #    alias /usr/share/phppgadmin/$1;
     #}
     
