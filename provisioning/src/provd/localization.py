@@ -106,16 +106,6 @@ class LocalizationService(object):
         """
         return self._locale
     
-    # TODO unused, can remove
-    def get_language(self):
-        """Return the language part of the current locale."""
-        if self._locale is None:
-            return None
-        else:
-            return self._locale.split('_', 1)[0]
-    
-    # TODO make use of it ? so we could specify a locale 'fr_FR' and for those that doesn't
-    #      apply fallback on the 'fr' locale, which seems legetimate
     def get_locale_and_language(self):
         """Return a tuple (locale, language) of the current locale."""
         if self._locale is None:
