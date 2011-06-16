@@ -181,8 +181,6 @@ function update_row_infos()
 		it_userfeatures_entityid.attr('disabled','disabled');
 		it_userfeatures_entityid.addClass('it-disabled');
 	}
-
-	$('#lol').html('');
 	
 	var groupval = '';
 	var grouporder = 0;
@@ -203,8 +201,6 @@ function update_row_infos()
 		$(this).find('#box-grouporder').html(grouporder);		
 		
 		if(tr_group === false) {
-			
-			$('#lol').append(groupval+'-'+line_num+'-'+grouporder);		
 			
 			context = $(this).find("#linefeatures-context");
 			$(this).find('#linefeatures-rules_group').val(groupval);
@@ -264,7 +260,6 @@ function update_row_infos()
 				});
 			}
 		}
-		$('#lol').append('<br>');
 		idx++;
 	});
 }
