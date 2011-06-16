@@ -284,10 +284,11 @@ class PickupsHandler(SpecializedHandler):
 		if usertype not in ('sip','iax','sccp'):
 			raise TypeError
 
-		(_p, _pm, _lf, _u, _g, _q) = [getattr(self.db, o)._table.c for o in
+		(_p, _pm, _lf, _u, _g, _q, _qm) = [getattr(self.db, o)._table.c for o in
 				('pickup','pickupmember','linefeatures','user'+usertype, 'groupfeatures',
-				'queuemember')]
+				'queuefeatures', 'queuemember')]
 
+		# simple users
 		q1 = select([_u.name, _pm.category, _p.id],
 			and_(
 				_p.commented    == 0,
@@ -301,15 +302,16 @@ class PickupsHandler(SpecializedHandler):
 			)
 		)
 
+		# groups
 		q2 = select([_u.name, _pm.category, _p.id],
 			and_(
 				_p.commented    == 0,
 				_p.id           == _pm.pickupid,
 				_pm.membertype  == 'group',
 				_pm.memberid    == _g.id,
-				_g.name         == _q.queue_name,
-				_q.usertype     == 'user',
-				_q.userid       == _lf.iduserfeatures,
+				_g.name         == _qm.queue_name,
+				_qm.usertype    == 'user',
+				_qm.userid      == _lf.iduserfeatures,
 				#_lf.line_num    == 0,
 				#_lf.rules_order == 0,
 				_lf.protocol    == usertype,
@@ -317,7 +319,24 @@ class PickupsHandler(SpecializedHandler):
 			)
 		)
 
-		return self.execute(q1.union(q2)).fetchall()
+		# queues
+		q3 = select([_u.name, _pm.category, _p.id],
+			and_(
+				_p.commented    == 0,
+				_p.id           == _pm.pickupid,
+				_pm.membertype  == 'queue',
+				_pm.memberid    == _q.id,
+				_q.name         == _qm.queue_name,
+				_qm.usertype    == 'user',
+				_qm.userid      == _lf.iduserfeatures,
+				#_lf.line_num    == 0,
+				#_lf.rules_order == 0,
+				_lf.protocol    == usertype,
+				_lf.protocolid  == _u.id
+			)
+		)
+
+		return self.execute(q1.union(q2.union(q3))).fetchall()
 
 class QueuePenaltiesHandler(SpecializedHandler):
 	def all(self, **kwargs):
