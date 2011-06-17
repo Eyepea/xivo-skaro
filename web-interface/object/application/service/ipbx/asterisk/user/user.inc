@@ -1612,7 +1612,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($userfeaturesid !== 0)
 				$line['iduserfeatures'] = (int) $userfeaturesid;
 		
-			$this->_line->_reset_info();
+			$this->_line->_reset();
 
 			if (isset($line['id']) === true
 			&& (int) $line['id'] !== 0)

@@ -45,6 +45,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($this->_extensions = &$ipbx->get_module('extensions')) === false
 		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
+		|| ($this->_userfeatures = &$ipbx->get_module('userfeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false
         || ($this->_appsip = &$ipbx->get_apprealstatic('sip')) === false)
 			return(false);
@@ -510,6 +511,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		
 		$raw_config = &$globalconfig['raw_config'];
 		
+		if (is_array($raw_config['sip_lines']) === false)
+		    $raw_config['sip_lines'] = array();
+		
 		switch ($protocolname)
 		{
 			case 'sip':
@@ -555,21 +559,19 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	
 	public function rebuild_device_config($deviceid)
 	{
-		if (($_SRE = &dwho_gct::get('xivo_service')) === false
-		|| ($ipbx = &$_SRE->get('ipbx')) === false
-		|| ($appline = &$ipbx->get_application('line')) === false
-		|| ($moddf = &$ipbx->get_module('devicefeatures')) === false)
-			return(false);
-			
-		$listline = $appline->get_lines_device($deviceid);
-		$device = $moddf->get($deviceid);
-		
-		$rslines = array();
-		while($listline)
+    	$rslines = array();
+		if (($listline = $this->_linefeatures->get_all_where(array('device' => (string) $deviceid))) !== false
+		&& $device = $this->_devicefeatures->get($deviceid) !== false)
 		{
-			$line = array_shift($listline);
-			$line = $appline->get($line['id']);
-			$rslines[$line['linefeatures']['num']] = $line;
+    		$rs = array();
+    		while($listline)
+    		{
+    			$line = array_shift($listline);
+    			$rs['linefeatures'] = $line;
+        		$modprotocol = $this->_extenfeatures->_service->get_protocol_module($line['protocol']);
+        		$rs['protocol'] = $modprotocol->get($line['protocolid']);
+    			$rslines[$line['num']] = $rs;
+    		}
 		}
 		$conf = $this->build_raw_config($device['deviceid'],$rslines);
 		if ($this->edit($device['deviceid'],$conf) === false)
@@ -715,11 +717,14 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf = array();
 		$conf['proxy_ip'] = $confregistrar['proxy_main'];
 		
-		if(dwho_has_len($confregistrar['proxy_backup']) === true)
+		if(isset($confregistrar['proxy_backup']) === true
+		&& ($confregistrar['proxy_backup']) === true)
 			$conf['backup_proxy_ip'] = $confregistrar['proxy_backup'];
-		if(dwho_has_len($confregistrar['registrar_main']) === true)
+		if(isset($confregistrar['registrar_main']) === true
+		&& dwho_has_len($confregistrar['registrar_main']) === true)
 			$conf['registrar_ip'] = $confregistrar['registrar_main'];
-		if(dwho_has_len($confregistrar['registrar_backup']) === true)
+		if(isset($confregistrar['registrar_backup']) === true
+		&& dwho_has_len($confregistrar['registrar_backup']) === true)
 			$conf['backup_registrar_ip'] = $confregistrar['registrar_backup'];
 		
 		$conf['username'] = $arr['name'];

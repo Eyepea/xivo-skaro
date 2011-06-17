@@ -25,7 +25,8 @@ $info    = $this->get_var('info');
 $error   = $this->get_var('error');
 $plugininstalled = $this->get_var('plugininstalled');
 $listconfigdevice = $this->get_var('listconfigdevice');
-$listline = $this->get_var('listline');
+#$listline = $this->get_var('listline');
+$listline = $this->get_var('info','config','sip_lines');
 $element = $this->get_var('element');
 
 if($this->get_var('fm_save') === false):
@@ -284,12 +285,13 @@ endif;
 <div id="sb-part-last" class="b-nodisplay">
 <?php
 
-$nbcap = 0;
+$nbcap = $busy = 0;
 if (($capabilities = $info['capabilities']) !== false):
 
 	if(isset($capabilities['sip.lines']) === true
 	&& ($nbcap = (int) $capabilities['sip.lines']) !== 0):
-		$busy = count($listline);
+	    if (empty($listline) === false)
+	        $busy = count($listline);
 		echo $this->bbf('nb_line_busy-free',array($busy,$nbcap-$busy));
 	endif;
 
@@ -303,7 +305,6 @@ endif;
 		<th class="th-left"><?=$this->bbf('col_line-line');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-protocol');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-name');?></th>
-		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-config_registrar');?></th>
 		<th class="th-right"><?=$this->bbf('col_line-user');?></th>
@@ -313,47 +314,27 @@ endif;
 <?php
 if($listline !== false
 && ($nb = count($listline)) !== 0):
-	
-	for($i = 0;$i < $nb;$i++):
-		$ref = &$listline[$i];
-		
+	foreach($listline as $num => $line):
 		$secureclass = '';
 		if(isset($ref['encryption']) === true
 		&& $ref['encryption'] === true)
 			$secureclass = 'xivo-icon xivo-icon-secure';
 ?>
 	<tr class="fm-paragraph">
-		<td class="td-left">
-			<?=$ref['num']?>
-		</td>
+		<td class="td-left"><?=$num?></td>
 		<td class="txt-center">
 			<span>
 				<span class="<?=$secureclass?>">&nbsp;</span>
-				<?=$this->bbf('line_protocol-'.$ref['protocol'])?>
+				<?=$this->bbf('line_protocol-sip')?>
 			</span>
 		</td>
-		<td>
-			<?=$url->href_html($ref['name'],
-				'service/ipbx/pbx_settings/lines',
-				array('act' => 'edit', 'id' => $ref['id']));?>
-		</td>
-		<td>
-			<?=$ref['context']?>
-		</td>
-		<td>
-			<?=$ref['number']?>
-		</td>
-		<td>
-			<?=$ref['configregistrar']?> (<?=$ref['ipfrom']?>)
-		</td>
-		<td class="td-right">
-			<?=$url->href_html($ref['useridentity'],
-				'service/ipbx/pbx_settings/users',
-				array('act' => 'edit', 'id' => $ref['iduserfeatures']));?>
-		</td>
+		<td><?=$line['auth_username']?></td>
+		<td><?=$line['number']?></td>
+		<td><?=$line['proxy_ip']?></td>
+		<td class="td-right"><?=$line['display_name']?></td>
 	</tr>
 <?php
-	endfor;
+	endforeach;
 endif;
 ?>
 	</tbody>

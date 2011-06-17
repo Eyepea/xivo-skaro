@@ -198,7 +198,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			} else {
 				if (strpos($line,':'))
 				{
-					$item = explode(':',$line);
+					$item = explode(':',$line,2);
 					// Remove bad characters and normalize the key values
 					$item[0] = str_replace(array('.'),'',$item[0]);
 					$item[0] = trim(str_replace(array('*','=','->'),' ',$item[0]));
@@ -638,8 +638,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
-		$arr['appdata'][1] = dwho_ulongint($iduserfeatures);
-		$arr['appdata'][2] = dwho_ulongint($idlinefeatures);
+		$arr['appdata'][1] = (int) ($iduserfeatures);
+		$arr['appdata'][2] = (int) ($idlinefeatures);
 		$arr['appdata'][3] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
 		$arr['appdata'][4] = $this->get_result_var('protocol','language');
 
@@ -894,10 +894,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_status = '';
 			return(false);
 		}
-		elseif($this->get_result('userfeatures') !== null)
+		elseif($this->get_result('userfeatures') !== null
+		&& (((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures'))) !== 0)
 		{
-			if($this->_info['linefeatures']['iduserfeatures'] === 0
-			&& (((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures'))) !== 0)
+			if($this->_info['linefeatures']['iduserfeatures'] === 0)
 			{
 				if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
 				|| $this->add_extenumbers($linefeaturesid) === false
@@ -909,7 +909,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 				}
 			}
-			else if(((int) $iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
+			else
 			{
 				if ($this->update_protocol_setvar($this->_info['protocol']['id'], $iduserfeatures) === false)
 				{
@@ -1097,14 +1097,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 			}
 		}
-		else
+		elseif (empty($rs['device']) === false
+		&& empty($this->_info['linefeatures']['device']) === false)
 		{
-			if(($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
+			if (($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
 			{
 				dwho_report::push('error', 'device doesn\'t exist');
 				return(false);
 			}
-		    $this->_provdconfig->rebuild_device_config($device['id']);
+			else
+			    $this->_provdconfig->rebuild_device_config($device['id']);
 		}
 		
 		return(true);

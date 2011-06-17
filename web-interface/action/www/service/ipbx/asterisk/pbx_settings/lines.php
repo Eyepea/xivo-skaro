@@ -107,7 +107,7 @@ switch($act)
 		$appline = &$ipbx->get_application('line');
 		$modpark = &$ipbx->get_module('parkinglot');
 
-		if(isset($_QR['id']) === false || ($info = $appline->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false || ($info = $appline->get($_QR['id'],null,null,true)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 
 		$contexts = $appline->get_all_context();
