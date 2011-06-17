@@ -1,0 +1,143 @@
+[pkg_6730i-fw]
+desc: Firmware for Aastra 6730i
+desc_fr: Micrologiciel pour Aastra 6730i
+version: 3.2.1.1019
+files: file_6730i-fw
+install_proc: install_aastra-fw
+
+[pkg_6731i-fw]
+desc: Firmware for Aastra 6731i
+desc_fr: Micrologiciel pour Aastra 6731i
+version: 3.2.1.1019
+files: file_6731i-fw
+install_proc: install_aastra-fw
+
+[pkg_6739i-fw]
+desc: Firmware for Aastra 6739i
+desc_fr: Micrologiciel pour Aastra 6739i
+version: 3.2.1.1019
+files: file_6739i-fw
+install_proc: install_aastra-fw
+
+[pkg_6753i-fw]
+desc: Firmware for Aastra 6753i
+desc_fr: Micrologiciel pour Aastra 6753i
+version: 3.2.1.1019
+files: file_6753i-fw
+install_proc: install_aastra-fw
+
+[pkg_6755i-fw]
+desc: Firmware for Aastra 6755i
+desc_fr: Micrologiciel pour Aastra 6755i
+version: 3.2.1.1019
+files: file_6755i-fw
+install_proc: install_aastra-fw
+
+[pkg_6757i-fw]
+desc: Firmware for Aastra 6757i
+desc_fr: Micrologiciel pour Aastra 6757i
+version: 3.2.1.1019
+files: file_6757i-fw
+install_proc: install_aastra-fw
+
+[pkg_6757iCT-fw]
+desc: Firmware for Aastra 6757i CT
+desc_fr: Micrologiciel pour Aastra 6757i CT
+version: 3.2.1.1019
+files: file_6757iCT-fw
+install_proc: install_aastra-fw
+
+[pkg_9143i-fw]
+desc: Firmware for Aastra 9143i
+desc_fr: Micrologiciel pour Aastra 9143i
+version: 3.2.1.1019
+files: file_9143i-fw
+install_proc: install_aastra-fw
+
+[pkg_9480i-fw]
+desc: Firmware for Aastra 9480i
+desc_fr: Micrologiciel pour Aastra 9480i
+version: 3.2.1.1019
+files: file_9480i-fw
+install_proc: install_aastra-fw
+
+[pkg_9480iCT-fw]
+desc: Firmware for Aastra 9480i CT
+desc_fr: Micrologiciel pour Aastra 9480i CT
+version: 3.2.1.1019
+files: file_9480iCT-fw
+install_proc: install_aastra-fw
+
+[pkg_lang]
+desc: Language files
+desc_fr: Fichiers de langue
+version: 3.2.1
+files: file_lang
+install_proc: install_aastra-lang
+
+
+
+[install_aastra-fw]
+a-b: unzip $FILE1
+b-c: cp *.st $DOC_ROOT/
+
+[install_aastra-lang]
+a-b: unzip $FILE1
+b-c: cp * $DOC_ROOT/i18n/
+
+
+
+[file_6730i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6730i_FC-001319-01-REV04_3.2.1.1019_06_2011.zip
+size: 1899862
+sha1sum: 884cefa22c00d32261b7b08921cd3df363e16c5f
+
+[file_6731i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6731i_FC-001318-01-REV04_3.2.1.1019_06_2011.zip
+size: 1905812
+sha1sum: 0be572c2d34d1abfd8efbd2ed940721a5ace2e2a
+
+[file_6739i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6739i_FC-001317-01-REV04_3.2.1.1019_06_2011.zip
+size: 4770603
+sha1sum: a6de270f165d5e3c0a5f4a26f6f67b1de57872bf
+
+[file_6753i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6753i_FC-001321-01-REV04_3.2.1.1019_06_2011.zip
+size: 2646215
+sha1sum: f406ba867badf64e0238d32adf2e582870e12dc0
+
+[file_6755i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6755i_FC-001322-01-REV04_3.2.1.1019_06_2011.zip
+size: 2677059
+sha1sum: dd2af66191b625598848f2b336f1907895c36e81
+
+[file_6757i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6757i_FC-001323-01-REV04_3.2.1.1019_06_2011.zip
+size: 2675964
+sha1sum: 37e4710008d4a67a07cfb736d4945e1d84d98283
+
+[file_6757iCT-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/6757iCT_FC-001324-01-REV04_3.2.1.1019_06_2011.zip
+size: 2655419
+sha1sum: 0c73380dcb0de7932d29f9b9c40ab9605a0cb5be
+
+[file_9143i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/9143i_FC-001325-01-REV04_3.2.1.1019_06_2011.zip
+size: 2593365
+sha1sum: 06cfba809fb693612c2ec62c051e7f9cf310ff2a
+
+[file_9480i-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/9480i_FC-001326-01-REV04_3.2.1.1019_06_2011.zip
+size: 2619276
+sha1sum: f2389ab34346edc01bdecf75a6fcb5dd62ecff09
+
+[file_9480iCT-fw]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/9480iCT_FC-001327-01-REV04_3.2.1.1019_06_2011.zip
+size: 2598948
+sha1sum: e7a07fa26108e6673abe572d8f5c00894f0d6b2d
+
+[file_lang]
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-920746D6-5B1035FF/en-ca/LangPacks_PA-001006-07-REV01-LP_3.2.1_04_2011.zip
+size: 340089
+sha1sum: 7826127cc95f9e7cbd833ba7262fa90a2f9e7839
