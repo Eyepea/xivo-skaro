@@ -68,6 +68,43 @@ def _check_raw_plugin_info(raw_plugin_info, id, keys):
                              % (plugin_info_key, id))
 
 
+def _clean_localized_description(raw_plugin_info):
+    # remove every description_* key
+    for key in raw_plugin_info.keys():
+        if key.startswith('description_'):
+            del raw_plugin_info[key]
+    
+    
+def _new_localize_fun():
+    # Return a function that receive a raw plugin info and update
+    # it so it becomes localized
+    locale, lang = get_locale_and_language()
+    if locale is None:
+        return _clean_localized_description
+    else:
+        locale_name = 'description_%s' % locale
+        if locale == lang:
+            def aux(raw_plugin_info):
+                try:
+                    raw_plugin_info[u'description'] = raw_plugin_info[locale_name]
+                except KeyError:
+                    pass
+                _clean_localized_description(raw_plugin_info)
+            return aux
+        else:
+            lang_name = 'description_%s' % lang
+            def aux(raw_plugin_info):
+                try:
+                    raw_plugin_info[u'description'] = raw_plugin_info[locale_name]
+                except KeyError:
+                    try:
+                        raw_plugin_info[u'description'] = raw_plugin_info[lang_name]
+                    except KeyError:
+                        pass
+                _clean_localized_description(raw_plugin_info)
+            return aux
+
+
 class Plugin(object):
     """Base class and entry point of every plugin.
     
@@ -168,6 +205,8 @@ class Plugin(object):
         with open(plugin_info_path) as fobj:
             raw_plugin_info = json.load(fobj)
         _check_raw_plugin_info(raw_plugin_info, self.id, _PLUGIN_INFO_INSTALLED_KEYS)
+        localize_fun = _new_localize_fun()
+        localize_fun(raw_plugin_info)
         return raw_plugin_info
     
     # Methods for additional plugin services
@@ -964,42 +1003,6 @@ class PluginManager(object):
         installable_plugins = self.list_installable()
         return installable_plugins[id]
     
-    @staticmethod
-    def _clean_localized_description(raw_plugin_info):
-        # remove every description_* key
-        for key in raw_plugin_info.keys():
-            if key.startswith('description_'):
-                del raw_plugin_info[key]
-    
-    def _new_localize_fun(self):
-        # Return a function that receive a raw plugin info and update
-        # it so it becomes localized
-        locale, lang = get_locale_and_language()
-        if locale is None:
-            return self._clean_localized_description
-        else:
-            locale_name = 'description_%s' % locale
-            if locale == lang:
-                def aux(raw_plugin_info):
-                    try:
-                        raw_plugin_info[u'description'] = raw_plugin_info[locale_name]
-                    except KeyError:
-                        pass
-                    self._clean_localized_description(raw_plugin_info)
-                return aux
-            else:
-                lang_name = 'description_%s' % lang
-                def aux(raw_plugin_info):
-                    try:
-                        raw_plugin_info[u'description'] = raw_plugin_info[locale_name]
-                    except KeyError:
-                        try:
-                            raw_plugin_info[u'description'] = raw_plugin_info[lang_name]
-                        except KeyError:
-                            pass
-                    self._clean_localized_description(raw_plugin_info)
-                return aux
-    
     def list_installable(self):
         """Return a dictionary of installable plugins, where keys are
         plugin identifier and values are dictionary of plugin information.
@@ -1027,7 +1030,7 @@ class PluginManager(object):
         except IOError:
             return {}
         else:
-            localize_fun = self._new_localize_fun()
+            localize_fun = _new_localize_fun()
             for plugin_id, raw_plugin_info in raw_plugin_infos.iteritems():
                 _check_raw_plugin_info(raw_plugin_info, plugin_id,
                                        _PLUGIN_INFO_INSTALLABLE_KEYS)
@@ -1053,7 +1056,7 @@ class PluginManager(object):
         #     because a plugin could be installed but not loaded (most common
         #     case is when loading the plugins at the start). We might want to
         #     rework a bit all this.
-        localize_fun = self._new_localize_fun()
+        localize_fun = _new_localize_fun()
         installed_plugins = {}
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
