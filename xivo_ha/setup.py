@@ -28,6 +28,6 @@ setup(
                 ('/usr/share/pf-xivo-ha/templates/csync2', [
                                                               'templates/csync2/csync2.cfg',
                                                              ]),
-                ('/ocf', ['ocf/asterisk', 'ocf/csync2', 'pf-xivo-ha-scripts']),
+                ('/ocf', ['ocf/asterisk', 'ocf/csync2', 'ocf/pf-xivo-ha-scripts']),
                ]
 )
