@@ -116,7 +116,6 @@ class xivo_application_service_asterisk_pickup extends xivo_application_asterisk
 
 			$pickup = array();
 			$pickup['name'] = $ref['name'];
-			$ref = array_merge($ref,$this->_pickup->_prepare($pickup));
 
 			$ref['description'] = $ref['description'];
 			$ref['commented']   = (bool) $ref['commented'];
@@ -202,7 +201,6 @@ class xivo_application_service_asterisk_pickup extends xivo_application_asterisk
 			$members[] = $rs;
 		}
 
-		var_dump($errs);
 		$this->_set_result('members',$members);
 		return true;
 	}
@@ -506,7 +504,7 @@ class xivo_application_service_asterisk_pickup extends xivo_application_asterisk
 	function add_from_json()
 	{
 		if(($data = $this->_get_data_from_json()) === false
-		|| $this->set_add($data) === false
+		|| $this->set_add(array('pickup' => $data)) === false
 		|| $this->add() === false)
 			return(false);
 

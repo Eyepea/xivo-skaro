@@ -1,0 +1,46 @@
+{
+  "name": "unittest",
+	"description": "sample unittest pickup group",
+	"members": [
+		{
+			"category": "member",
+			"membertype": "group",
+			"memberid": 1
+		},
+		{
+			"category": "member",
+			"membertype": "queue",
+			"memberid": 1
+		},
+		{
+			"category": "member",
+			"membertype": "user",
+			"memberid": 1
+		},
+		{
+			"category": "member",
+			"membertype": "user",
+			"memberid": 3
+		},
+		{
+			"category": "pickup",
+			"membertype": "group",
+			"memberid": 1
+		},
+		{
+			"category": "member",
+			"membertype": "queue",
+			"memberid": 1
+		},
+		{
+			"category": "member",
+			"membertype": "user",
+			"memberid": 1
+		},
+		{
+			"category": "member",
+			"membertype": "user",
+			"memberid": 2
+		}
+	]
+}

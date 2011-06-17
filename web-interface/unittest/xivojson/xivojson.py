@@ -29,6 +29,7 @@ class JSONClient(object):
         'entity'        : ['xivo/configuration'      , 'manage'],
         'users'         : ['service/ipbx'            , 'pbx_settings'],
         'incall'        : ['service/ipbx'            , 'call_management'],
+        'pickup'        : ['service/ipbx'            , 'call_management'],
 
         'queueskill'    : ['service/ipbx'            , 'call_center'],
         'queueskillrules': ['service/ipbx'            , 'call_center'],
