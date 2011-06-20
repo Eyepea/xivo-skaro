@@ -30,40 +30,43 @@ $param['act'] = 'list';
 
 switch($act)
 {
-case 'add':
-	$fm_save = $error = null;
-	$result = array();
+	case 'add':
+		$fm_save = $error = null;
+		$result = array();
 
-	if(isset($_QR['fm_send']) === true && dwho_issa('pickup',$_QR) === true)
-	{
-		$_QR['pickup']['members'] = array();
-		foreach(array('group','queue','user') as $type)
-			if(array_key_exists("member-".$type."s", $_QR))
-				foreach($_QR["member-".$type."s"] as $mbid)
-					$_QR['pickup']['members'][] = array(
-						'category'   => 'member', 
-						'membertype' => $type, 
-						'memberid'   => $mbid
-					);
-
-		foreach(array('group','queue','user') as $type)
-			if(array_key_exists("pickup-".$type."s", $_QR))
-				foreach($_QR["pickup-".$type."s"] as $mbid)
-					$_QR['pickup']['members'][] = array(
-						'category'   => 'pickup',
-						'membertype' => $type,
-						'memberid'   => $mbid
-					);
-
-		if($apppickup->set_add($_QR) === false
-		|| $apppickup->add() === false)
+		if(isset($_QR['fm_send']) === true && dwho_issa('pickup',$_QR) === true)
 		{
-			$fm_save = false;
-			$result  = $apppickup->get_result_for_display();
-			$error   = $apppickup->get_error();
-		}
+			$_QR['pickup']['members'] = array();
+			foreach(array('group','queue','user') as $type)
+				if(array_key_exists("member-".$type."s", $_QR))
+					foreach($_QR["member-".$type."s"] as $mbid)
+						$_QR['pickup']['members'][] = array(
+							'category'   => 'member', 
+							'membertype' => $type, 
+							'memberid'   => $mbid
+						);
+
+			foreach(array('group','queue','user') as $type)
+				if(array_key_exists("pickup-".$type."s", $_QR))
+					foreach($_QR["pickup-".$type."s"] as $mbid)
+						$_QR['pickup']['members'][] = array(
+							'category'   => 'pickup',
+							'membertype' => $type,
+							'memberid'   => $mbid
+						);
+
+			if($apppickup->set_add($_QR) === false
+			|| $apppickup->add() === false)
+			{
+				$fm_save = false;
+				$result  = $apppickup->get_result_for_display();
+				$error   = $apppickup->get_error();
+			}
 			else
+			{
+				$ipbx->discuss(array('sip reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
+			}
 		}
 
 		$dtsource = array(
@@ -171,7 +174,10 @@ case 'add':
 				$result['dialaction'] = $apppickup->get_dialaction_result();
 			}
 			else
+			{
+				$ipbx->discuss(array('sip reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
+			}
 		}
 
 		$dtsource = array(
@@ -239,6 +245,7 @@ case 'add':
 			$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 
 		$apppickup->delete();
+		$ipbx->discuss(array('sip reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
@@ -258,7 +265,8 @@ case 'add':
 			if($apppickup->get($values[$i]) !== false)
 				$apppickup->delete();
 		}
-
+			
+		$ipbx->discuss(array('sip reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
 
@@ -283,6 +291,7 @@ case 'add':
 				$apppickup->enable();
 		}
 
+		$ipbx->discuss(array('sip reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
 

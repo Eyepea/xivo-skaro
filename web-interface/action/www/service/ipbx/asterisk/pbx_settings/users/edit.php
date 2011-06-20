@@ -96,7 +96,10 @@ if(isset($_QR['fm_send']) === true
 	{
 		// updating skills
 		$appqueue->userskills_edit($_QR['id'], $queueskills);
-		$ipbx->discuss(array('dialplan reload','xivo[userlist,update]'));
+		/**
+		 * sip reload: refresh pickup groups
+		 * */
+		$ipbx->discuss(array('dialplan reload','xivo[userlist,update]', 'sip reload'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 }

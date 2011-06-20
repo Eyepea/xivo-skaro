@@ -72,7 +72,8 @@ switch($act)
 			}
 			else
 			{
-				$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload'));
+				// sip reload:: refresh pickup groups
+				$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 			}
 		}
@@ -176,7 +177,8 @@ switch($act)
 			}
 			else
 			{
-				$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload'));
+				// sip reload:: refresh pickup groups
+				$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 			}
 		}
@@ -251,7 +253,8 @@ switch($act)
 
 		$appgroup->delete();
 
-		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload'));
+		// sip reload:: refresh pickup groups
+		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
@@ -271,7 +274,8 @@ switch($act)
 				$appgroup->delete();
 		}
 
-		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload'));
+		// sip reload:: refresh pickup groups
+		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
@@ -295,7 +299,8 @@ switch($act)
 				$queue->disable($info['name'],$disable);
 		}
 
-		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload'));
+		// sip reload:: refresh pickup groups
+		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
