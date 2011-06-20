@@ -561,7 +561,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{
     	$rslines = array();
 		if (($listline = $this->_linefeatures->get_all_where(array('device' => (string) $deviceid))) !== false
-		&& $device = $this->_devicefeatures->get($deviceid) !== false)
+		&& ($device = $this->_devicefeatures->get($deviceid)) !== false)
 		{
     		$rs = array();
     		while($listline)
@@ -573,7 +573,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
     			$rslines[$line['num']] = $rs;
     		}
 		}
+		
 		$conf = $this->build_raw_config($device['deviceid'],$rslines);
+	    
 		if ($this->edit($device['deviceid'],$conf) === false)
 		{
 			dwho_report::push('error', 'fail to edit config for this device: '.$device['deviceid']);

@@ -28,6 +28,15 @@ Provisioning
 ; smenu_advanced
 Advanced
 
+; smenu_ipbxinfos
+IPBX Infos 
+
+; col_line-key
+Key
+
+; col_line-value
+Value
+
 ; smenu_codecs
 Codecs
 

@@ -13,11 +13,20 @@ Services
 ; smenu_signalling
 Signalisation
 
+; smenu_t38
+T38
+
 ; smenu_advanced
 Avancé
 
-; smenu_t38
-T38
+; smenu_ipbxinfos
+Infos IPBX
+
+; col_line-key
+Clé
+
+; col_line-value
+Valeur
 
 ; fm_protocol_name
 Identifiant :

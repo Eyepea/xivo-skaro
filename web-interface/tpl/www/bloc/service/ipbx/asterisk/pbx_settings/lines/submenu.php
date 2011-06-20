@@ -66,13 +66,24 @@ $num = 4;
 endif;
 ?>
 		<li id="dwsm-tab-<?=$num?>"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-advanced');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#advanced"><?=$this->bbf('smenu_advanced');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-<?=$num+1?>"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-advanced',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-ipbxinfos',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#advanced"><?=$this->bbf('smenu_advanced');?></a></span>
+					<a href="#ipbxinfos"><?=$this->bbf('smenu_ipbxinfos');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>

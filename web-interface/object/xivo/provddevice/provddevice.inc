@@ -275,7 +275,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			
 		if ($this->_provdconfig->edit($deviceid,$conf) === false)
 		{
-			dwho_report::push('error', 'fail to edit config for this device: '.$deviceid);
+			dwho_report::push('error', 'fail to edit config for this device: " '.$deviceid.' "');
 			return(false);
 		}
 		

@@ -26,6 +26,7 @@ $info    = $this->get_var('info');
 $error   = $this->get_var('error');
 $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
+$ipbxinfos = $this->get_var('info','ipbx');
 
 if(isset($info['protocol']) === true):
 	if(dwho_issa('allow',$info['protocol']) === true):
@@ -66,3 +67,39 @@ $filename = dirname(__FILE__).'/protocol/'.$protocol.'.php';
 if (is_readable($filename) === true)
 	include($filename);
 ?>
+
+<div id="sb-part-ipbxinfos" class="b-nodisplay">
+<div class="sb-list">
+<table cellspacing="0" cellpadding="0" border="0">
+	<thead>
+	<tr class="sb-top">
+		<th class="th-left"><?=$this->bbf('col_line-key');?></th>
+		<th class="th-right"><?=$this->bbf('col_line-value');?></th>
+	</tr>
+	</thead>
+<?php
+if($ipbxinfos !== false
+&& ($nb = count($ipbxinfos)) !== 0):
+	foreach($ipbxinfos as $k => $v):
+?>
+	<tbody>
+	<tr class="fm-paragraph">
+		<td class="td-left"><?=$k?></td>
+		<td class="td-right"><?=$v?></td>
+	</tr>
+<?php
+	endforeach;
+else:
+?>
+	<tfoot>
+	<tr<?=($ipbxinfos !== false ? ' class="b-nodisplay"' : '')?>>
+		<td colspan="2" class="td-single"><?=$this->bbf('no_ipbxinfos_found');?></td>
+	</tr>
+	</tfoot>
+<?php
+endif;
+?>
+	</tbody>
+</table>
+</div>
+</div>
