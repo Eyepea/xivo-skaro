@@ -34,6 +34,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_extensions  	= false;
 	protected $_linefeatures  	= false;
 	protected $_devicefeatures 	= false;
+	protected $_callfiltermember    = false;
+	protected $_callfilter      = false;
 	protected $_appsip 	        = false;
 	
 	public function __construct(&$xobj,$param=array())
@@ -47,6 +49,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
 		|| ($this->_userfeatures = &$ipbx->get_module('userfeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false
+		|| ($this->_callfiltermember = &$ipbx->get_module('callfiltermember')) === false
+		|| ($this->_callfilter = &$ipbx->get_module('callfilter')) === false
         || ($this->_appsip = &$ipbx->get_apprealstatic('sip')) === false)
 			return(false);
 		
@@ -511,7 +515,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		
 		$raw_config = &$globalconfig['raw_config'];
 		
-		if (is_array($raw_config['sip_lines']) === false)
+		if (isset($raw_config['sip_lines']) === true
+		&& is_array($raw_config['sip_lines']) === false)
 		    $raw_config['sip_lines'] = array();
 		
 		switch ($protocolname)
@@ -698,9 +703,36 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 						$where = array();
 						$where['type'] = $type['type'];
 						$where['typeval'] = $type['val'];
-						if (($rsexten = $this->_extenumbers->get_where($where)) !== false)
-							$exten = $rsexten['exten'];
-						$exten = str_replace('.', $ref['typevalextenumbersright'], $exten);
+						if (($rsextenmbers = $this->_extenumbers->get_where($where)) !== false)
+							$rsexten = $rsextenmbers['exten'];
+        				switch($type['val'])
+        				{
+					    	case 'bsfilter':
+        						$whereright = array();
+        						$whereright['type'] = $ref['typeextenumbersright'];
+        						$whereright['typeval'] = $ref['typevalextenumbersright'];
+
+                        		switch($ref['typeextenumbersright'])
+                        		{
+                        			case 'user':
+                                		$masterline = $this->_linefeatures->get_user_masterline($ref['typevalextenumbersright']);
+                                		$callfiltermember = $this->_callfiltermember->get_where($whereright);
+                                		$wboss = array();
+                                		$wboss['bstype'] = 'boss';
+                                		$wboss['callfilterid'] = $callfiltermember['callfilterid'];
+                                		$callfilter = $this->_callfiltermember->get_where($wboss);
+                                		$bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+                        		}
+                        		
+                        		$exten .= $bossmasterline['number'];
+                        		$exten .= '*';
+                        		$exten .= $masterline['number'];
+					    	    $exten = str_replace('.', $exten, $rsexten);
+        						
+					    	    break;
+					    	default:
+					    	    $exten = str_replace('.', $ref['typevalextenumbersright'], $rsexten);
+        				}
 				}
 			}
 									

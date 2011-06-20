@@ -162,69 +162,17 @@ endif;
 <?php
 	if($secretary['list'] !== false):
 ?>
-	<div id="callfiltermember-secretarylist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('callfiltermember-secretarylist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'callfiltermember-secretarylist',
-					       'label'		=> false,
-					       'id'		=> 'it-callfiltermember-secretarylist',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'		=> false,
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id'),
-					 $secretary['list']);?>
-		</div>
-
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-callfiltermember-secretarylist',
-							  'it-callfiltermember-secretary');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_insecretary');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_insecretary'),
-						  'class="bt-inlist" id="bt-insecretary" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-callfiltermember-secretary',
-							  'it-callfiltermember-secretarylist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outsecretary');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outsecretary'),
-						  'class="bt-outlist" id="bt-outsecretary" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'callfiltermember[secretary][]',
-					       'label'		=> false,
-					       'id'		=> 'it-callfiltermember-secretary',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'		=> false,
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id'),
-					 $secretary['slt']);?>
-			<div class="bt-updown">
-				<a href="#"
-				   onclick="dwho.form.order_selected('it-callfiltermember-secretary',1);
-					    return(dwho.dom.free_focus());"
-				   title="<?=$this->bbf('bt_upsecretary');?>">
-					<?=$url->img_html('img/site/button/arrow-up.gif',
-							  $this->bbf('bt_upsecretary'),
-							  'class="bt-uplist" id="bt-upsecretary" border="0"');?></a><br />
-				<a href="#"
-				   onclick="dwho.form.order_selected('it-callfiltermember-secretary',-1);
-					    return(dwho.dom.free_focus());"
-				   title="<?=$this->bbf('bt_downsecretary');?>">
-					<?=$url->img_html('img/site/button/arrow-down.gif',
-							  $this->bbf('bt_downsecretary'),
-							  'class="bt-downlist" id="bt-downsecretary" border="0"');?></a>
-			</div>
-		</div>
-	</div>
-	<div class="clearboth"></div>
-
+    <div id="userlist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'callfiltermember[secretary][]',
+    						'id' 		=> 'it-callfiltermember-secretary',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $secretary['slt']),
+    					$secretary['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',

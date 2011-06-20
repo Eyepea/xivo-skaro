@@ -79,7 +79,7 @@ $array['filter']['ip'] = array('set' 		=> false,
 						    'chk'			=> 2,
 						    'callback'		=> 'dwho_network::valid_host',
 						    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['version'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9\-_\.]+$/');
+$array['filter']['version'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

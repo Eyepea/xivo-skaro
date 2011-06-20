@@ -52,17 +52,11 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		}
-
+		
 		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true)
 		{
-			dwho::load_class('dwho_sort');
-			$secretarysort = new dwho_sort(array('key' => 'priority'));
-			usort($callfiltermember['secretary'],array(&$secretarysort,'num_usort'));
-
 			$secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
-
-			if($secretary['slt'] !== false)
-				$secretary['list'] = dwho_array_diff_key($secretary['list'],$secretary['slt']);
+			$secretary['slt'] = array_keys($secretary['slt']);
 		}
 
 		if(empty($result) === false)
@@ -89,6 +83,13 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 		break;
 	case 'edit':
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
@@ -99,7 +100,7 @@ switch($act)
 		$result = $fm_save = $callfiltermember = $error = null;
 		$return = &$info;
 
-		$secretary['slt'] = $secretary = array();
+		$secretary = $secretary['slt'] = array();
 		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('callfilter',$_QR) === true)
@@ -120,17 +121,11 @@ switch($act)
 
 		if(dwho_issa('callfiltermember',$return) === true)
 			$callfiltermember = &$return['callfiltermember'];
-
+		
 		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true)
 		{
-			dwho::load_class('dwho_sort');
-			$secretarysort = new dwho_sort(array('key' => 'priority'));
-			usort($callfiltermember['secretary'],array(&$secretarysort,'num_usort'));
-
 			$secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
-
-			if($secretary['slt'] !== false)
-				$secretary['list'] = dwho_array_diff_key($secretary['list'],$secretary['slt']);
+			$secretary['slt'] = array_keys($secretary['slt']);
 		}
 
 		if(empty($return) === false)
@@ -158,6 +153,13 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		
+		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$dhtml->set_css('css/xivo.multiselect.css');
+
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
 		break;
 	case 'delete':
 		$param['page'] = $page;

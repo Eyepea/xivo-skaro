@@ -119,11 +119,11 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			$ref = &$rs[$i];
 
 			$user = array();
-			$user['context'] = $ref['member_context'];
+			#$user['context'] = $ref['member_context'];
 			$user['firstname'] = $ref['member_firstname'];
 			$user['lastname'] = $ref['member_lastname'];
-			$user['number'] = $ref['member_number'];
-			$user['name'] = $ref['member_name'];
+			#$user['number'] = $ref['member_number'];
+			#$user['name'] = $ref['member_name'];
 
 			unset($ref['member_context'],
 			      $ref['member_firstname'],
@@ -289,11 +289,11 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 				$ref['linked'] = (bool) $ref['linked'];
 
 				$member = array();
-				$member['context'] = $ref['member_context'];
+				#$member['context'] = $ref['member_context'];
 				$member['firstname'] = $ref['member_firstname'];
 				$member['lastname'] = $ref['member_lastname'];
-				$member['number'] = $ref['member_number'];
-				$member['name'] = $ref['member_name'];
+				#$member['number'] = $ref['member_number'];
+				#$member['name'] = $ref['member_name'];
 				$member['identity'] = $this->_userfeatures->mk_identity($member);
 				$ref['member_identity'] = $member['identity'];
 			}
@@ -436,7 +436,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$where = array();
 		$where['bsfilter'] = 'boss';
-		$where['context'] = (string) $this->get_result_var('callfilter','context');
+		#$where['context'] = (string) $this->get_result_var('callfilter','context');
 
 		if(($boss = $this->_userfeatures->get_where($where,true,null,$list['boss']['id'])) === false)
 		{
@@ -466,7 +466,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$where = array();
 		$where['bsfilter'] = 'secretary';
-		$where['context'] = $boss['context'];
+		#$where['context'] = $boss['context'];
 
 		for($i = 0;$i < $nb;$i++)
 		{

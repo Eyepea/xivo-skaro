@@ -125,7 +125,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				dwho_report::push('error',
 					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
 					'error_device_'.$act);
-				dwho_report::push('error',$this->get_error(),'error_device_'.$act);
+				foreach($this->get_error() as $k => $v)
+				    dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
 			}
 		}
 			
