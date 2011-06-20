@@ -41,6 +41,7 @@ AMI_REQUESTS = [
     'core show channels',
     'dialplan reload',
     'sccp reload',
+    'sip reload',
     'moh reload',
     'module reload',
     'module reload app_queue.so',
