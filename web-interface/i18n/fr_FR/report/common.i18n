@@ -1,0 +1,6 @@
+
+; success_during_synchronize
+Synchronisation des terminaisons reussies
+
+; error_during_synchronize
+Echec de la synchronisation des terminaisons

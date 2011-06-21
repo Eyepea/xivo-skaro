@@ -135,7 +135,7 @@ dwho.dom.set_onload(function()
 
 	dwho.dom.add_event('click', dwho_eid('toolbar-advanced-menu-autoprov'),
 		function(e) {
-			document.getElementById('autoprov_reboot').checked = false;
+			//document.getElementById('autoprov_reboot').checked = false;
 
 			dialog = document.getElementById('autoprov_dialog');
 			dialog.style.visibility= 'visible';
@@ -157,7 +157,7 @@ function autoprov_validate()
 	dialog.style.visibility= 'hidden';
 
 	dwho.fm[xivo_toolbar_form_name]['act'].value = 'autoprov';
-	dwho.fm[xivo_toolbar_form_name]['reboot'].value = document.getElementById('autoprov_reboot').checked;
+	//dwho.fm[xivo_toolbar_form_name]['reboot'].value = document.getElementById('autoprov_reboot').checked;
 	dwho.fm[xivo_toolbar_form_name].submit();
 
 	return false;
@@ -176,7 +176,7 @@ function autoprov_validate()
 				<th class="content-left"><span>&nbsp;</span></th>
 				<th class="content">
 					<form action="#">
-						<input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/>
+						<!--  <input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/> -->
 						<input type="submit" value="<?=$this->bbf('autoprov_cancel');?>" onclick="return autoprov_cancel();";/>
 						<input type="submit" value="<?=$this->bbf('autoprov_validate');?>" onclick="return autoprov_validate();" />
 					</form>

@@ -715,8 +715,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
                         		switch($ref['typeextenumbersright'])
                         		{
                         			case 'user':
-                                		$masterline = $this->_linefeatures->get_user_masterline($ref['typevalextenumbersright']);
-                                		$callfiltermember = $this->_callfiltermember->get_where($whereright);
+                                		if (($masterline = $this->_linefeatures->get_user_masterline($ref['typevalextenumbersright'])) === false
+                                		|| ($callfiltermember = $this->_callfiltermember->get_where($whereright)) === false)
+                                		{
+                                		    dwho_report::push('error', 'error during get master line of user or user not exist in callfitermember');
+                                		    break;
+                                		}
                                 		$wboss = array();
                                 		$wboss['bstype'] = 'boss';
                                 		$wboss['callfilterid'] = $callfiltermember['callfilterid'];

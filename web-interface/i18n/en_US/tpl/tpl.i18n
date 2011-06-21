@@ -40,6 +40,12 @@ Delete
 ; toolbar_opt_advanced
 Advanced mode
 
+; autoprov_validate
+Validate
+
+; autoprov_cancel
+Cancel
+
 ; col_action
 Action
 

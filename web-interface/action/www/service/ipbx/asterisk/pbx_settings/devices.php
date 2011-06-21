@@ -44,13 +44,17 @@ switch($act)
 		$modprovddevice = &$_XOBJ->get_module('provddevice');
 
 		$nb = count($values);
+		
+		$res = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($info = $appdevice->get($values[$i])) !== false)
 			{
 				if($modprovddevice->synchronize($info['devicefeatures']['deviceid']) === false)
-					dwho_report::push('error',$values[$i],'error_during_synchronize');
+					dwho_report::push('error',$info['devicefeatures']['ip'],'error_during_synchronize');
+				else
+					dwho_report::push('info',$info['devicefeatures']['ip'],'success_during_synchronize');
 			}
 		}
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
@@ -179,8 +183,6 @@ switch($act)
 				$appdevice->delete();
 		}
 
-		$ipbx->discuss('xivo[userlist,update]');
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		break;
 	case 'enables':
@@ -203,8 +205,6 @@ switch($act)
 			else
 				$appdevice->enable();
 		}
-
-		$ipbx->discuss('xivo[devicelist,update]');
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		break;
