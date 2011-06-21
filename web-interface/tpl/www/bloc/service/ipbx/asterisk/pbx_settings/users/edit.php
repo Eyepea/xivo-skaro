@@ -37,11 +37,10 @@ $import_file = $this->get_var('import_file');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/submenu');
 ?>
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" enctype="multipart/form-data" 
+		<form action="#" method="post" accept-charset="utf-8" enctype="multipart/form-data"
 			onsubmit="dwho.form.select('it-group');
 					dwho.form.select('it-queue');
-					dwho.form.select('it-codec');
-					dwho.form.select('it-rightcall');">
+					dwho.form.select('it-codec');">
 <?php
 		echo	$form->hidden(array('name'	=> 'max_file_size',
 					    'value'	=> $import_file['size'])),

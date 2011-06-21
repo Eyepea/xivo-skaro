@@ -22,15 +22,15 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_callfilter extends xivo_application_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_callfilter	= false;
-	var $_userfeatures	= false;
+	var $_dso		        = null;
+	var $_callfilter	    = false;
+	var $_userfeatures	    = false;
 	var $_callfiltermember	= false;
-	var $_dialaction	= false;
-	var $_contextmember	= false;
-	var $_callerid		= false;
-	var $_param		= array('type'	=> '');
-	var $_contextlist	= array();
+	var $_dialaction	    = false;
+	var $_contextmember	    = false;
+	var $_callerid		    = false;
+	var $_param		        = array('type'	=> '');
+	var $_contextlist	    = array();
 
 	function xivo_application_service_asterisk_callfilter(&$service,&$dso,$param=array(),$components=true)
 	{

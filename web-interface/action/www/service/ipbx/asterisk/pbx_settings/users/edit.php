@@ -142,20 +142,9 @@ if($qmember['list'] !== false && dwho_ak('queuemember',$return) === true)
 	}
 }
 
-if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
-{
-	$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],
-						     $rightcall['list'],
-						     'rightcallid');
-
-	if($rightcall['slt'] !== false)
-	{
-		$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
-		$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-		uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-	}
-}
+	if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true
+	&& ($rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid')) !== false)
+		$rightcall['slt'] = array_keys($rightcall['slt']);
 
 $element = $appuser->get_elements();
 
@@ -241,5 +230,6 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/lines.js');
 $dhtml->set_js('js/dwho/submenu.js');
 $dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');
+$dhtml->load_js_multiselect_files();
 
 ?>

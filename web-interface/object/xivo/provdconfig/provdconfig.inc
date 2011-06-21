@@ -721,10 +721,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
                                 		    dwho_report::push('error', 'error during get master line of user or user not exist in callfitermember');
                                 		    break;
                                 		}
-                                		$wboss = array();
-                                		$wboss['bstype'] = 'boss';
-                                		$wboss['callfilterid'] = $callfiltermember['callfilterid'];
-                                		$callfilter = $this->_callfiltermember->get_where($wboss);
+                                		$w = array();
+                                		$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
+                                		$w['callfilterid'] = $callfiltermember['callfilterid'];
+                                		$callfilter = $this->_callfiltermember->get_where($w);
                                 		$bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
                         		}
                         		
@@ -732,7 +732,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
                         		$exten .= '*';
                         		$exten .= $masterline['number'];
 					    	    $exten = str_replace('.', $exten, $rsexten);
-        						
 					    	    break;
 					    	default:
 					    	    $exten = str_replace('.', $ref['typevalextenumbersright'], $rsexten);
@@ -754,17 +753,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		
 		$conf = array();
 		$conf['proxy_ip'] = $confregistrar['proxy_main'];
-		
-		if(isset($confregistrar['proxy_backup']) === true
-		&& ($confregistrar['proxy_backup']) === true)
-			$conf['backup_proxy_ip'] = $confregistrar['proxy_backup'];
-		if(isset($confregistrar['registrar_main']) === true
-		&& dwho_has_len($confregistrar['registrar_main']) === true)
-			$conf['registrar_ip'] = $confregistrar['registrar_main'];
-		if(isset($confregistrar['registrar_backup']) === true
-		&& dwho_has_len($confregistrar['registrar_backup']) === true)
-			$conf['backup_registrar_ip'] = $confregistrar['registrar_backup'];
-		
 		$conf['username'] = $arr['name'];
 		$conf['auth_username'] = $arr['name'];
 		$conf['password'] = $arr['secret'];
@@ -773,7 +761,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$calleridname = str_replace('"','',str_replace('\"','"',$calleridname));
 		$conf['display_name'] = $calleridname;
 		
-		$conf['number'] = $arr['number'];
+		$this->_set_config_var($conf,$confregistrar,'proxy_backup');
+		$this->_set_config_var($conf,$confregistrar,'registrar_main');
+		$this->_set_config_var($conf,$confregistrar,'registrar_backup');
+		$this->_set_config_var($conf,$arr,'number');
 		$this->_set_config_var($conf,$arr,'dtmf_mode');
 		$this->_set_config_var($conf,$arr,'srtp_mode');
 		$this->_set_config_var($conf,$arr,'voicemail');

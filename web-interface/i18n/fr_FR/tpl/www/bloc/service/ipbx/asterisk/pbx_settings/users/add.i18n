@@ -169,6 +169,9 @@ Joindre le fichier audio :
 ; fm_voicemail_deletevoicemail
 Supprimer message après notification :
 
+; fld-rightcalls
+Droits d'appels
+
 ; fld-client
 XIVO Client
 
