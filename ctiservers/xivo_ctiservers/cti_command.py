@@ -581,7 +581,12 @@ class Command:
             conn_ami = self.ctid.myami.get(self.ripbxid).amicl
             ipbxcmd = z.get('comm')
             if hasattr(conn_ami, ipbxcmd):
-                conn_ami.actionid = 'ua:%s' % self.commandid
+                if self.commandid: # pass the commandid on the actionid
+                    # 'user action - forwarded'
+                    conn_ami.actionid = 'uaf:%s' % self.commandid
+                else:
+                    # 'user action - auto'
+                    conn_ami.actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
                 self.rinnerdata.actionids[conn_ami.actionid] = {
                     'mode' : 'useraction',
                     'action' : ipbxcmd,
