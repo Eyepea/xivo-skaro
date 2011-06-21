@@ -143,6 +143,51 @@ class TestOpenSSL(unittest.TestCase):
 
 
 	def test_20_listcerts(self):
+		"""
+			Example of resulting data:
+
+			[
+				 # private key
+				 {'filename': 'usercert6.key', 'name': 'usercert6', 'types': ['privkey']},
+				 # public key
+				 {'filename': 'usercert2.pub', 'name': 'usercert2', 'types': ['pubkey']},
+				 # autosigned certificate concatenated with private key
+				 {'CA': False,
+				  'autosigned': True,
+				  'filename': 'usercert1.pem',
+				  'fingerprint': 'md5:D23EE328AB37F7A5475FCCED32C3D92C',
+				  'length': 432,
+				  'name': 'usercert1',
+				  'types': ['certificate', 'privkey'],
+				  'validity-end': '2012/06/20 12:53:50 UTC'},
+				 {'CA': False,
+				  'autosigned': True,
+				  'filename': 'usercert1.crt',
+				  'fingerprint': 'md5:D23EE328AB37F7A5475FCCED32C3D92C',
+				  'length': 432,
+				  'name': 'usercert1',
+				  'types': ['certificate'],
+				  'validity-end': '2012/06/20 12:53:50 UTC'},
+				 # CA certificate
+				 {'CA': True,
+				  'autosigned': True,
+				  'filename': 'catest1.pem',
+				  'fingerprint': 'md5:D652B931E03FB10E097C05BEBBDB6805',
+				  'length': 1024,
+				  'name': 'catest1',
+				  'types': ['certificate'],
+				  'validity-end': '2012/06/20 12:53:50 UTC'},
+         # certificate signed with a CA
+				 {'CA': False,
+				  'autosigned': False,
+				  'filename': 'usercert4.crt',
+				  'fingerprint': 'md5:5FBE945BA50E87716A2647143FB2C392',
+				  'length': 1024,
+				  'name': 'usercert4',
+				  'types': ['certificate'],
+				  'validity-end': '2012/06/20 12:53:51 UTC'}
+			]
+		"""
 		(resp, data) = self.client.request('GET', '/openssl_listcertificates', {})
 		self.assertEqual(resp.status, 200)
 
@@ -151,47 +196,17 @@ class TestOpenSSL(unittest.TestCase):
 		except Exception:
 			fail('cannot decode json data')
 
-		# do we have our 6 certificates
-		self.assertEqual(len(data), 8)
+		# do we have our 32 certificates 
+		# (each certificate creation create 4 files (cert, privkey, pubkey, cert+privkey)
+		self.assertEqual(len(data), 32)
 		# whose 3 are CA certificates
-		self.assertEqual(len(filter(lambda c: c['CA'] == 1, data)), 3)
+		self.assertEqual(len(filter(lambda c: c.get('CA',0) == 1, data)), 6)
 
-	def test_21_listkeys(self):
-		(resp, data) = self.client.request('GET', '/openssl_listkeys', {})
-		self.assertEqual(resp.status, 200)
-
-		try:
-			data = cjson.decode(data)
-		except Exception:
-			fail('cannot decode json data')
-
-		allcount = len(data)
-
-		(resp, data) = self.client.request('GET', '/openssl_listkeys', {'type':'private'})
-		self.assertEqual(resp.status, 200)
-
-		try:
-			data = cjson.decode(data)
-		except Exception:
-			fail('cannot decode json data')
-
-		privcount = len(data)
-
-		(resp, data) = self.client.request('GET', '/openssl_listkeys', {'type':'public'})
-		self.assertEqual(resp.status, 200)
-
-		try:
-			data = cjson.decode(data)
-		except Exception:
-			fail('cannot decode json data')
-
-		pubcount = len(data)
-		self.assertEqual(allcount, pubcount+privcount)
 
 	def test_30_getinfos(self):
 		# CA
 		(resp, data) = self.client.request('GET',	'/openssl_certificateinfos',
-			{'name': 'catest1'})
+			{'name': 'catest1.crt'})
 		self.assertEqual(resp.status, 200)
 
 		try:
@@ -204,7 +219,7 @@ class TestOpenSSL(unittest.TestCase):
 
 		# self-signed certificate
 		(resp, data) = self.client.request('GET',	'/openssl_certificateinfos',
-			{'name': 'usercert1'})
+			{'name': 'usercert1.pem'})
 		self.assertEqual(resp.status, 200)
 
 		try:
@@ -225,7 +240,7 @@ class TestOpenSSL(unittest.TestCase):
 
 		# CA-signed certificat
 		(resp, data) = self.client.request('GET',	'/openssl_certificateinfos',
-			{'name': 'usercert4'})
+			{'name': 'usercert4.crt'})
 		self.assertEqual(resp.status, 200)
 
 		try:
@@ -236,8 +251,17 @@ class TestOpenSSL(unittest.TestCase):
 		self.assertEqual(data['CA']    , 0)
 		self.assertNotEqual(data['subject']['emailAddress'], data['issuer']['emailAddress'])
 
+
+		# limit cases
+		# 	. file do not exists
+		(resp, data) = self.client.request('GET',	'/openssl_certificateinfos',
+			{'name': 'foo'})
+		self.assertEqual(resp.status, 404)
+
+
 	def test_31_exports(self):
-		(resp, data) = self.client.request('GET', '/openssl_exportpubkey', {'name': 'usercert1'})
+		# public key
+		(resp, data) = self.client.request('GET', '/openssl_export', {'name': 'usercert1.pub'})
 		self.assertEqual(resp.status, 200)
 
 		try:
@@ -247,15 +271,36 @@ class TestOpenSSL(unittest.TestCase):
 
 		self.assertTrue(data.startswith('-----BEGIN PUBLIC KEY-----'))
 
+		# private key
+		(resp, data) = self.client.request('GET', '/openssl_export', {'name': 'usercert1.key'})
+		self.assertEqual(resp.status, 200)
+
+		try:
+			data = cjson.decode(data)
+		except Exception:
+			fail('cannot decode cjson data')
+
+		self.assertFalse(data.startswith('-----BEGIN PUBLIC KEY-----'))
+
+		# limit cases
+		#		. no name
+		(resp, data) = self.client.request('GET', '/openssl_export', {})
+		self.assertEqual(resp.status, 400)
+
+		# 	. file not found
+		(resp, data) = self.client.request('GET', '/openssl_export', {'name': 'foo.bar'})
+		self.assertEqual(resp.status, 404)
+
+
 	def test_40_delete(self):
-		(resp, data) = self.client.request('GET',	'/openssl_deletecertificate', {'name':'usercert4'})
+		(resp, data) = self.client.request('GET',	'/openssl_deletecertificate', {'name':'usercert4.pub'})
 		self.assertEqual(resp.status, 200)
 
 		# delete twice the same certificate
-		(resp, data) = self.client.request('GET',	'/openssl_deletecertificate', {'name':'usercert4'})
+		(resp, data) = self.client.request('GET',	'/openssl_deletecertificate', {'name':'usercert4.pub'})
 		self.assertEqual(resp.status, 404)
 	
-		# we must now only have 6 certificates	
+		# we must now only have 31 files	
 		(resp, data) = self.client.request('GET', '/openssl_listcertificates', {})
 		self.assertEqual(resp.status, 200)
 
@@ -264,28 +309,52 @@ class TestOpenSSL(unittest.TestCase):
 		except Exception:
 			fail('cannot decode json data')
 
-		# do we have our 6 certificates
-		self.assertEqual(len(data), 7)
+		self.assertEqual(len(data), 31)
+
 
 	def test_50_imports(self):
 		with open('./cert2.pub') as f:
 			pubkey = f.read()
 
-		(resp, data) = self.client.request('POST', '/openssl_import', {'name': 'importkey', 'type': 'pubkey', 'content': pubkey})
+		(resp, data) = self.client.request('POST', '/openssl_import', 
+				{'name': 'import1', 'content': pubkey})
 		self.assertEqual(resp.status, 200)
 
 		with open('./cert1.pem') as f:
 			cert = f.read()
 
-		(resp, data) = self.client.request('POST', '/openssl_import', {'name':
-			'importcert', 'type': 'cert', 'content': cert})
+		(resp, data) = self.client.request('POST', '/openssl_import', 
+			{'name': 'import2', 'content': cert})
 		self.assertEqual(resp.status, 200)
 
-	def xtest_99_cleanup(self):
+		## limit cases
+		#    . no name
+		(resp, data) = self.client.request('POST', '/openssl_import', {'content': cert})
+		self.assertEqual(resp.status, 400)
+
+		#    . no content
+		(resp, data) = self.client.request('POST', '/openssl_import', {'name': 'foo'})
+		self.assertEqual(resp.status, 400)
+
+		#    . file already found
+		(resp, data) = self.client.request('POST', '/openssl_import', 
+				{'name': 'import2', 'content': cert})
+		self.assertEqual(resp.status, 500)
+
+		#		. content is not a valid SSL certificate or key
+		with open('./test01_openssl.py') as f:
+			content = f.read()
+
+		(resp, data) = self.client.request('POST', '/openssl_import', 
+				{'name': 'foo', 'content': content})
+		self.assertEqual(resp.status, 500)
+
+
+	def test_99_cleanup(self):
 		#NOTE: this last test is only to do cleanup
 		(resp, data) = self.client.request('GET', '/openssl_listcertificates', {})
 		for cert in cjson.decode(data):
-			self.client.request('GET',	'/openssl_deletecertificate', {'name':cert['name']})
+			self.client.request('GET',	'/openssl_deletecertificate', {'name':cert['filename']})
 
 if __name__ == '__main__':
 	unittest.main()
