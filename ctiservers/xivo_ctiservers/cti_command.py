@@ -499,6 +499,7 @@ class Command:
     def regcommand_faxsend(self):
         reply = {}
         print 'regcommand_faxsend', self.commanddict
+        print reply
         return reply
 
     def regcommand_getipbxlist(self):
@@ -578,32 +579,17 @@ class Command:
 
         # if some actions have been requested ...
         if z:
-            conn_ami = self.ctid.myami.get(self.ripbxid).amicl
-            ipbxcmd = z.get('comm')
-            if hasattr(conn_ami, ipbxcmd):
-                if self.commandid: # pass the commandid on the actionid
-                    # 'user action - forwarded'
-                    conn_ami.actionid = 'uaf:%s' % self.commandid
-                else:
-                    # 'user action - auto'
-                    conn_ami.actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
-                self.rinnerdata.actionids[conn_ami.actionid] = {
-                    'mode' : 'useraction',
-                    'action' : ipbxcmd,
-                    'args' : z.get('args')
-                    }
-                self.log.info('method %s : starting ipbxcommand %s with actionid %s'
-                              % (methodname, ipbxcmd, conn_ami.actionid))
-                r = getattr(conn_ami, ipbxcmd)(* z.get('args'))
-            else:
-                self.log.warning('no such AMI command %s' % ipbxcmd)
+            if self.commandid: # pass the commandid on the actionid # 'user action - forwarded'
+                actionid = 'uaf:%s' % self.commandid
+            else: # 'user action - auto'
+                actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
+            params = {
+                'mode' : 'useraction',
+                'amicommand' : z.get('comm'),
+                'amiargs' : z.get('args')
+                }
+            self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
         return reply
-
-
-
-
-
-
 
 
     # "any number" :

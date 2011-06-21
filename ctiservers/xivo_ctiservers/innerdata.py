@@ -161,7 +161,6 @@ class Safe:
 
         self.channels = {}
         self.queuemembers = {}
-        self.actionids = {}
 
         self.ctistack = []
 
@@ -970,13 +969,13 @@ class Safe:
             # 3. build sheet items (according to values)
             sheet.setfields()
             # 4. sheet construct (according to serialization)
-            sheet.makexml()
-            sheet.buildpayload()
+            sheet.serialize()
             # 5. sheet manager ?
             # 6. json message / zip or not / b64 / ...
             # print sheet.internaldata
             self.events_cti.put( { 'class' : 'sheet',
                                    'channel' : channel,
+                                   'serial' : sheet.serial,
                                    'compressed' : sheet.compressed,
                                    'payload' : sheet.payload,
                                    } )

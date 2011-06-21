@@ -43,9 +43,11 @@ class AMI:
     def __init__(self, ctid, ipbxid, config):
         self.ctid = ctid
         self.ipbxid = ipbxid
+        self.innerdata = self.ctid.safe.get(self.ipbxid)
         self.log = logging.getLogger('interface_ami(%s)' % self.ipbxid)
         self.save_for_next_packet_events = ''
         self.waiting_actionid = {}
+        self.actionids = {}
         self.ipaddress = config.get('ipaddress', '127.0.0.1')
         self.ipport = int(config.get('ipport', 5038))
         self.ami_login = config.get('username', 'xivouser')
@@ -218,13 +220,13 @@ class AMI:
                             self.log.exception('(command reply)')
                             print e
                         try:
-                            self.ctid.commandclass.amiresponse_follows(this_event, nocolon)
+                            self.amiresponse_follows(this_event)
                         except Exception:
                             self.log.exception('response_follows (%s) (%s)' % (this_event, nocolon))
 
                     elif response == 'Success':
                         try:
-                            self.ctid.commandclass.amiresponse_success(this_event, nocolon)
+                            self.amiresponse_success(this_event)
                         except Exception:
                             self.log.exception('response_success (%s) (%s)' % (this_event, nocolon))
 
@@ -238,7 +240,7 @@ class AMI:
                                     connreply.makereply_close(actionid, 'KO')
                                 del self.waiting_actionid[actionid]
                         try:
-                            self.ctid.commandclass.amiresponse_error(this_event, nocolon)
+                            self.amiresponse_error(this_event)
                         except Exception:
                             self.log.exception('response_error (%s) (%s)' % (this_event, nocolon))
                     else:
@@ -278,21 +280,104 @@ class AMI:
         return
 
 
-##    def execute(self, ipbxid, command, *args):
-##        actionid = None
-##        if ipbxid in self.ami:
-##            conn_ami = self.ami.get(ipbxid)
-##            if conn_ami is None:
-##                self.log.warning('ami (command %s) : <%s> in list but not connected - wait for the next update ?'
-##                            % (command, ipbxid))
-##            else:
-##                try:
-##                    actionid = ''.join(random.sample(__alphanums__, 10))
-##                    conn_ami.setactionid(actionid)
-##                    ret = getattr(conn_ami, command)(*args)
-##                except Exception:
-##                    self.log.exception('command %s' % (command))
-##        else:
-##            self.log.warning('ami (command %s) : %s not in list - wait for the next update ?'
-##                        % (command, ipbxid))
-##        return actionid
+    def amiresponse_success(self, event):
+        if 'ActionID' in event:
+            actionid = event.pop('ActionID')
+        else:
+            self.log.info('amiresponse_success (no ActionID) %s' % event)
+            return
+
+        if actionid in self.actionids:
+            properties = self.actionids.pop(actionid)
+            mode = properties.pop('mode')
+            if mode == 'newchannel':
+                value = event.pop('Value')
+                if value:
+                    # self.log.info('amiresponse_success %s %s : %s %s : %s'
+                    # % (actionid, mode, value, properties, event))
+                    (channel, dummyvarname) = properties.get('amiargs')
+                    self.innerdata.autocall(channel, value)
+                    self.innerdata.events_cti.put( { 'class' : 'ipbcommand',
+                                                     'command' : properties.get('amicommand'),
+                                                     'step' : 'autocall',
+                                                     'actionid' : actionid
+                                                     } )
+            elif mode == 'useraction':
+                self.log.info('amiresponse_success %s %s : %s - %s'
+                              % (actionid, mode, event, properties))
+                self.innerdata.events_cti.put( { 'class' : 'ipbxcommand',
+                                                 'command' : properties.get('amicommand'),
+                                                 'step' : 'useraction',
+                                                 'actionid' : actionid
+                                                 } )
+            elif mode == 'extension':
+                # this is the reply to 'ExtensionState'
+                # too much verbose log output
+                # self.log.info('amiresponse_success %s %s : %s - %s' % (actionid, mode, event, properties))
+                msg = event.pop('Message')
+                if msg == 'Extension Status':
+                    self.ctid.commandclass.amiresponse_extensionstatus(event)
+                else:
+                    self.log.warning('amiresponse_success %s %s : %s - %s - unknown msg %s'
+                                     % (actionid, mode, event, properties, msg))
+            else:
+                self.log.info('amiresponse_success %s %s (?) : %s'
+                              % (actionid, mode, event))
+            # print 'actionids left', self.actionids.keys()
+        else:
+            self.log.warning('amiresponse_success %s (no record) : %s'
+                             % (actionid, event))
+        return
+
+    def amiresponse_error(self, event):
+        if 'ActionID' in event:
+            actionid = event.pop('ActionID')
+        else:
+            self.log.warning('amiresponse_error (no ActionID) %s' % event)
+            return
+
+        if actionid in self.actionids:
+            properties = self.actionids.pop(actionid)
+            mode = properties.pop('mode')
+            self.log.warning('amiresponse_error %s %s : %s - %s'
+                             % (actionid, mode, event, properties))
+            if mode == 'useraction':
+                self.innerdata.events_cti.put( { 'class' : 'ipbxcommand',
+                                                 'command' : properties.get('amicommand'),
+                                                 'step' : 'useraction_error',
+                                                 'actionid' : actionid
+                                                 } )
+            # print 'actionids left', self.actionids.keys()
+        else:
+            self.log.warning('amiresponse_error %s (no record) : %s'
+                             % (actionid, event))
+        return
+
+    def amiresponse_follows(self, event):
+        if 'ActionID' in event:
+            actionid = event.pop('ActionID')
+        else:
+            self.log.warning('amiresponse_follows (no ActionID) %s' % event)
+            return
+
+        if actionid in self.actionids:
+            properties = self.actionids.pop(actionid)
+            mode = properties.pop('mode')
+            self.log.info('amiresponse_follows %s %s : %s - %s'
+                          % (actionid, mode, event, properties))
+            # print 'actionids left', self.actionids.keys()
+        else:
+            self.log.warning('amiresponse_follows %s (no record) : %s'
+                             % (actionid, event))
+        return
+
+    def execute_and_track(self, actionid, params):
+        conn_ami = self.amicl
+        amicommand = params.get('amicommand')
+        if hasattr(conn_ami, amicommand):
+            conn_ami.actionid = actionid
+            self.actionids[actionid] = params
+            r = getattr(conn_ami, amicommand)(* params.get('amiargs'))
+        else:
+            self.log.warning('no such AMI command %s' % amicommand)
+        return

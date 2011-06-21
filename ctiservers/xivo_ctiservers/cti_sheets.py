@@ -47,7 +47,14 @@ class Sheet:
         return
 
 
+    def serialize(self):
+        if False:
+            self.makexml()
+        else:
+            self.makejson()
+
     def makexml(self):
+        self.serial = 'xml'
         self.linestosend = []
         self.linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                             '<profile>',
@@ -66,10 +73,7 @@ class Sheet:
                 self.linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
                                         % (sheetpart, order, title, ftype, contents, sheetpart))
         self.linestosend.extend(['</user>', '</profile>'])
-        return
 
-
-    def buildpayload(self):
         self.xmlstring = ''.join(self.linestosend).encode('utf8')
         if self.options.get('zip', True):
             ulen = len(self.xmlstring)
@@ -81,3 +85,11 @@ class Sheet:
         else:
             self.payload = base64.b64encode(self.xmlstring)
             self.compressed = False
+        return
+
+    def makejson(self):
+        self.serial = 'json'
+        self.compressed = False
+        self.payload = { 'internal' : self.internaldata,
+                         'fields' : self.fields }
+        return
