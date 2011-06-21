@@ -386,7 +386,9 @@ class Safe:
         return reply
 
     def autocall(self, channel, actionid):
-        self.log.info('autocall %s %s' % (channel, actionid))
+        self.handle_cti_stack('set', ('channels', 'updatestatus', channel))
+        self.channels[channel].properties['autocall'] = actionid
+        self.handle_cti_stack('empty_stack')
 
     def newstate(self, channel, state):
         self.channels[channel].update_state(state)
@@ -1360,6 +1362,7 @@ class Channel:
             'peerdisplay' : None,
             'talkingto_kind' : None,
             'talkingto_id' : None,
+            'autocall' : False,
             'history' : [],
             'extra' : None
             }
@@ -1392,6 +1395,10 @@ class Channel:
         return
 
     def update_state(self, state):
+        # values
+        # 0 Down (creation time)
+        # 5 Ringing
+        # 6 Up
         self.state = state
         return
 

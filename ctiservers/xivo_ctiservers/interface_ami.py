@@ -45,9 +45,11 @@ class AMI:
         self.ipbxid = ipbxid
         self.innerdata = self.ctid.safe.get(self.ipbxid)
         self.log = logging.getLogger('interface_ami(%s)' % self.ipbxid)
+
         self.save_for_next_packet_events = ''
         self.waiting_actionid = {}
         self.actionids = {}
+        self.originate_actionids = {}
         self.ipaddress = config.get('ipaddress', '127.0.0.1')
         self.ipport = int(config.get('ipport', 5038))
         self.ami_login = config.get('username', 'xivouser')
@@ -190,8 +192,7 @@ class AMI:
                     pass
                     # verboselog('%s %s' % (self.ipbxid, this_event), True, False)
             else: # {
-                response = this_event.get('Response')
-
+                response = this_event.pop('Response', None)
                 if response is not None:
                     if response == 'Follows' and this_event.get('Privilege') == 'Command':
                         reply = []
@@ -297,19 +298,26 @@ class AMI:
                     # % (actionid, mode, value, properties, event))
                     (channel, dummyvarname) = properties.get('amiargs')
                     self.innerdata.autocall(channel, value)
-                    self.innerdata.events_cti.put( { 'class' : 'ipbcommand',
-                                                     'command' : properties.get('amicommand'),
-                                                     'step' : 'autocall',
-                                                     'actionid' : actionid
-                                                     } )
+                    # we tell the original requester of the ipbxcommand action
+                    # about the channel he actually created
+                    if value in self.originate_actionids:
+                        request = self.originate_actionids.get(value).get('request')
+                        cn = request.get('requester')
+                        cn.reply( { 'class' : 'ipbxcommand',
+                                    'autocall_channel' : channel,
+                                    'command' : request.get('ipbxcommand'),
+                                    'replyid' : request.get('commandid') } )
             elif mode == 'useraction':
                 self.log.info('amiresponse_success %s %s : %s - %s'
                               % (actionid, mode, event, properties))
-                self.innerdata.events_cti.put( { 'class' : 'ipbxcommand',
-                                                 'command' : properties.get('amicommand'),
-                                                 'step' : 'useraction',
-                                                 'actionid' : actionid
-                                                 } )
+                request = properties.get('request')
+                cn = request.get('requester')
+                cn.reply( { 'class' : 'ipbxcommand',
+                            'response' : 'ok',
+                            'command' : request.get('ipbxcommand'),
+                            'replyid' : request.get('commandid') } )
+                if properties.get('amicommand') == 'originate':
+                    self.originate_actionids[actionid] = properties
             elif mode == 'extension':
                 # this is the reply to 'ExtensionState'
                 # too much verbose log output
@@ -342,11 +350,17 @@ class AMI:
             self.log.warning('amiresponse_error %s %s : %s - %s'
                              % (actionid, mode, event, properties))
             if mode == 'useraction':
-                self.innerdata.events_cti.put( { 'class' : 'ipbxcommand',
-                                                 'command' : properties.get('amicommand'),
-                                                 'step' : 'useraction_error',
-                                                 'actionid' : actionid
-                                                 } )
+                request = properties.get('request')
+                cn = request.get('requester')
+                cn.reply({'class' : 'ipbxcommand',
+                          'response' : 'ko',
+                          'command' : request.get('ipbxcommand'),
+                          'replyid' : request.get('commandid')})
+                # at this (time) point of code complexity, it does not make sense
+                # sending back the AMI event message 'as is', even if it is written
+                # 'no such channel', since maybe the asterisk command behind is not
+                # known ... for the time being, the best thing is to grep the commandid
+                # from the CTI server log file
             # print 'actionids left', self.actionids.keys()
         else:
             self.log.warning('amiresponse_error %s (no record) : %s'

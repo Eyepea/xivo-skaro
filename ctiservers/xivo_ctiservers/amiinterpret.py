@@ -73,19 +73,19 @@ class AMI_1_8:
 
     # NewXXX events
     def ami_newstate(self, event):
-        event.pop('ChannelStateDesc')
         event.pop('Uniqueid')
+        channelstatedesc = event.pop('ChannelStateDesc')
         channel = event.pop('Channel')
         channelstate = event.pop('ChannelState')
         self.innerdata.newstate(channel, channelstate)
-        # self.log.info('ami_newstate %s : %s' % (channel, event))
+        # self.log.info('ami_newstate %s %s %s : %s' % (channel, channelstate, channelstatedesc, event))
         return
 
     def ami_newchannel(self, event):
-        event.pop('ChannelStateDesc')
         event.pop('AccountCode')
+        event.pop('Uniqueid')
+        channelstatedesc = event.pop('ChannelStateDesc')
         channel = event.pop('Channel')
-        uniqueid = event.pop('Uniqueid')
         channelstate = event.pop('ChannelState')
         context = event.pop('Context')
 
@@ -97,7 +97,7 @@ class AMI_1_8:
             }
         self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
         self.innerdata.newchannel(channel, context, channelstate)
-        # self.log.info('ami_newchannel %s : %s' % (channel, event))
+        # self.log.info('ami_newchannel %s %s %s : %s' % (channel, channelstate, channelstatedesc, event))
         return
 
     def ami_newcallerid(self, event):
@@ -105,6 +105,7 @@ class AMI_1_8:
         return
 
     def ami_newexten(self, event):
+        event.pop('Uniqueid')
         application = event.pop('Application')
         appdata = event.pop('AppData')
         channel = event.pop('Channel')
@@ -164,8 +165,10 @@ class AMI_1_8:
         return
 
     def ami_dial(self, event):
+        event.pop('UniqueID')
+        if 'DestUniqueID' in event:
+            event.pop('DestUniqueID')
         channel = event.pop('Channel')
-        uniqueid = event.pop('UniqueID')
         subevent = event.pop('SubEvent')
         if subevent == 'Begin':
             destination = event.pop('Destination')
@@ -187,14 +190,14 @@ class AMI_1_8:
             # one receives this one just before the hangup (in regular calls)
             dialstatus = event.pop('DialStatus')
             if dialstatus in ['CONGESTION', 'CANCEL', 'BUSY', 'ANSWER']:
-                self.log.info('ami_dial %s %s %s %s'
-                         % (subevent, dialstatus, channel, uniqueid))
+                self.log.info('ami_dial %s %s %s'
+                              % (subevent, dialstatus, channel))
             else:
-                self.log.info('ami_dial %s %s %s %s - %s'
-                         % (subevent, dialstatus, channel, uniqueid, event))
+                self.log.info('ami_dial %s %s %s - %s'
+                         % (subevent, dialstatus, channel, event))
         else:
-            self.log.info('ami_dial %s %s %s - %s'
-                     % (subevent, channel, uniqueid, event))
+            self.log.info('ami_dial %s %s - %s'
+                     % (subevent, channel, event))
         return
 
 ##        INFO:xivocti1.8:xivomine ami_dial {u'Destination': u'SIP/zlosfbpeajsxrn-0000000e',
@@ -290,33 +293,37 @@ class AMI_1_8:
     def ami_pickup(self, event):
         self.log.info('ami_pickup %s' % (event))
         return
+
     def ami_rename(self, event):
         # it looks like we don't need this event and that Masquerade event already
         #    provides all the data for this, but this could happen to be wrong one day
         # self.log.info('ami_rename %s' % (event))
         return
+
     def ami_originateresponse(self, event):
+        event.pop('Uniqueid')
+        event.pop('Response') # response is included in reason (4 for Success)
         channel = event.pop('Channel')
         actionid = event.pop('ActionID')
-        response = event.pop('Response')
         reason = event.pop('Reason')
         # reasons ...
         # 4 : Success
         # 0 : 1st phone unregistered
         # 1 : CLI 'channel request hangup' on the 1st phone's channel
-        # 5 : 1st phone rejected the call
+        # 5 : 1st phone rejected the call (reject button or all lines busy)
         # 8 : 1st phone did not answer early enough
-        self.innerdata.events_cti.put( { 'class' : 'ipbxcommand',
-                                         'command' : 'originate',
-                                         'step' : 'originateresponse',
-                                         'channel' : channel,
-                                         'actionid' : actionid,
-                                         'response' : response,
-                                         'reason' : reason
-                                         } )
-        self.log.info('ami_originateresponse %s %s %s (%s) %s' % (actionid, channel, response, reason, event))
+        properties = self.ctid.myami.get(self.ipbxid).originate_actionids.pop(actionid)
+        request = properties.get('request')
+        cn = request.get('requester')
+        cn.reply( { 'class' : 'ipbxcommand',
+                    'command' : request.get('ipbxcommand'),
+                    'replyid' : request.get('commandid'),
+                    'channel' : channel,
+                    'originatereason' : reason
+                    } )
+        self.log.info('ami_originateresponse %s %s %s %s' % (actionid, channel, reason, event))
+        # print 'originate_actionids left', self.ctid.myami.get(self.ipbxid).originate_actionids.keys()
         return
-
 
     # Meetme events
     def ami_meetmejoin(self, event):
@@ -753,8 +760,8 @@ class AMI_1_8:
         return
 
     def ami_coreshowchannel(self, event):
+        event.pop('UniqueID')
         channel = event.pop('Channel')
-        uniqueid = event.pop('UniqueID')
         context = event.pop('Context')
         application = event.pop('Application')
         bridgedchannel = event.pop('BridgedChannel')

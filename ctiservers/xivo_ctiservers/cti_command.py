@@ -585,8 +585,13 @@ class Command:
                 actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
             params = {
                 'mode' : 'useraction',
-                'amicommand' : z.get('comm'),
-                'amiargs' : z.get('args')
+                'request' : {
+                    'requester' : self.connection,
+                    'ipbxcommand' : self.ipbxcommand,
+                    'commandid' : self.commandid
+                    },
+                'amicommand' : z.get('amicommand'),
+                'amiargs' : z.get('amiargs')
                 }
             self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
         return reply
@@ -693,16 +698,14 @@ class Command:
 
         rep = {}
         if orig_protocol and orig_name and orig_number and extentodial:
-            rep = {'comm' : 'originate',
-                   'args' : [
-                       orig_protocol,
-                       orig_name,
-                       orig_number,
-                       orig_identity,
-                       extentodial,
-                       dst_identity,
-                       dst_context
-                       ]
+            rep = {'amicommand' : 'originate',
+                   'amiargs' : (orig_protocol,
+                                orig_name,
+                                orig_number,
+                                orig_identity,
+                                extentodial,
+                                dst_identity,
+                                dst_context)
                    }
             # {'XIVO_USERID' : userinfo.get('xivo_userid')})
         return rep
@@ -779,7 +782,7 @@ class Command:
             # TODO: Choose the appropriate line if more than one                 
             line = self.rinnerdata.xod_config['phones'].keeplist[uinfo['linelist'][0]]              
             channel = line['identity'].replace('\\','')       
-        reply = {'comm': 'sipnotify', 'args': (channel, variables)}
+        reply = {'amicommand': 'sipnotify', 'amiargs': (channel, variables)}
         return reply
 
     # transfers
@@ -872,7 +875,7 @@ class Command:
         [ipbxid, channel] = whosrc.split('/', 1)
         print self.ctid.safe.get(ipbxid).channels.keys()
         peerchannel = self.ctid.safe.get(ipbxid).channels.get(channel).peerchannel
-        rep = {'comm' : 'park', 'args' : [channel, peerchannel]}
+        rep = {'amicommand' : 'park', 'amiargs' : (channel, peerchannel)}
         return rep
 
     def ipbxcommand_transfer(self):
@@ -892,7 +895,7 @@ class Command:
 
         [ipbxid, channel] = whosrc.split('/', 1)
         if typedst == 'user':
-            rep = {'comm' : 'transfer', 'args' : [channel, '1431', 'from-sip']}
+            rep = {'amicommand' : 'transfer', 'amiargs' : (channel, '1431', 'from-sip')}
         return rep
 
     def ipbxcommand_atxfer(self):
@@ -912,7 +915,7 @@ class Command:
 
         [ipbxid, channel] = whosrc.split('/', 1)
         if typedst == 'user':
-            rep = {'comm' : 'atxfer', 'args' : [channel, '1431', 'from-sip']}
+            rep = {'amicommand' : 'atxfer', 'amiargs' : (channel, '1431', 'from-sip')}
         return rep
 
 
@@ -1011,7 +1014,7 @@ class Command:
     # agents and queues
     def ipbxcommand_agentlogin(self):
         print self.ipbxcommand, self.commanddict
-        return {'comm' : 'agentlogin', 'args' : ['a', 'b', 'c']}
+        return {'amicommand' : 'agentlogin', 'amiargs' : ('a', 'b', 'c')}
 
     def ipbxcommand_agentlogout(self):
         print self.ipbxcommand, self.commanddict
@@ -1045,12 +1048,12 @@ class Command:
             kind = 'phone'
             id = '7'
             filename = 'cti-monitor-%s-%s-%s' % (datestring, kind, id)
-            rep = { 'comm' : 'monitor',
-                    'args' : [ channel, filename, 'false' ] }
+            rep = { 'amicommand' : 'monitor',
+                    'amiargs' : (channel, filename, 'false') }
             # wait the AMI event ack in order to fill status for channel
         elif subcommand == 'stop':
-            rep = { 'comm' : 'stopmonitor',
-                    'args' : [ channel ] }
+            rep = { 'amicommand' : 'stopmonitor',
+                    'amiargs' : (channel,) }
         return rep
 
     def ipbxcommand_listen(self):
@@ -1060,13 +1063,13 @@ class Command:
         if subcommand == 'start':
             listener = self.commanddict.pop('listener')
             (listener_protocol, listener_id) = listener.split('/')
-            rep = { 'comm' : 'origapplication',
-                    'args' : [ 'ChanSpy',
-                               '%s,q' % channel,
-                               listener_protocol,
-                               listener_id,
-                               '000',
-                               'mamaop' ] }
+            rep = { 'amicommand' : 'origapplication',
+                    'amiargs' : ('ChanSpy',
+                                 '%s,q' % channel,
+                                 listener_protocol,
+                                 listener_id,
+                                 '000',
+                                 'mamaop') }
         elif subcommand == 'stop':
             # XXX hangup appropriate channel
             rep = {}
