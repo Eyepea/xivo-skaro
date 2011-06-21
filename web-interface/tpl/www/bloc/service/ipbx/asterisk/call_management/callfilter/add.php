@@ -29,17 +29,11 @@
 
 	<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8">
-
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
-
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/call_management/callfilter/form');
-?>
-
+<?php $this->file_include('bloc/service/ipbx/asterisk/call_management/callfilter/form');?>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
-
 </form>
 	</div>
 	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>

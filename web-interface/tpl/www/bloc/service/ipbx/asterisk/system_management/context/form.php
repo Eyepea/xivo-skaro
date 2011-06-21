@@ -128,78 +128,22 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 
 	if($contextinc['list'] !== false):
 ?>
-
-<div id="contextlist" class="fm-paragraph fm-multilist">
-	<p>
-		<label id="lb-contextlist" for="it-contextlist" onclick="dwho_eid('it-contextlist').focus();">
-			<?=$this->bbf('fm_context_context-include');?>
-		</label>
-	</p>
-				<?=$form->input_for_ms('contextlist',$this->bbf('ms_seek'))?>
-	<div class="slt-outlist">
-<?php
-		echo	$form->select(array('name'	=> 'contextlist',
-					    'label'	=> false,
-					    'id'	=> 'it-contextlist',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false,
-					    'key'	=> 'identity',
-					    'altkey'	=> 'name'),
-				      $contextinc['list']);
-?>
-	</div>
-
-	<div class="inout-list">
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-contextlist',
-						  'it-context');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_incontext');?>">
-			<?=$url->img_html('img/site/button/arrow-left.gif',
-					  $this->bbf('bt_incontext'),
-					  'class="bt-inlist" id="bt-incontext" border="0"');?></a><br />
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-context',
-						  'it-contextlist');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_outcontext');?>">
-			<?=$url->img_html('img/site/button/arrow-right.gif',
-					  $this->bbf('bt_outcontext'),
-					  'class="bt-outlist" id="bt-outcontext" border="0"');?></a>
-	</div>
-
-	<div class="slt-inlist">
-<?php
-		echo	$form->select(array('name'	=> 'contextinclude[]',
-					    'label'	=> false,
-					    'id'	=> 'it-context',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false,
-					    'key'	=> 'identity',
-					    'altkey'	=> 'name'),
-				      $contextinc['slt']);
-?>
-		<div class="bt-updown">
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-context',1);
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_upcontext');?>">
-				<?=$url->img_html('img/site/button/arrow-up.gif',
-						  $this->bbf('bt_upcontext'),
-						  'class="bt-uplist" id="bt-upcontext" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-context',-1);
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_downcontext');?>">
-				<?=$url->img_html('img/site/button/arrow-down.gif',
-						  $this->bbf('bt_downcontext'),
-						  'class="bt-downlist" id="bt-downcontext" border="0"');?></a>
-		</div>
-	</div>
-</div>
-<div class="clearboth"></div>
+    <div id="contextlist" class="fm-paragraph fm-description">
+    	<p>
+    		<label id="lb-contextlist" for="it-contextlist" onclick="dwho_eid('it-contextlist').focus();">
+    			<?=$this->bbf('fm_context_context-include');?>
+    		</label>
+    	</p>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'contextinclude[]',
+						'id' 		=> 'it-contextinclude',
+						'key'		=> 'identity',
+				       	'altkey'	=> 'name',
+            			'selected'  => $contextinc['slt']),
+					$contextinc['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	endif;
 ?>

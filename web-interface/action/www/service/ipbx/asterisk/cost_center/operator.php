@@ -58,17 +58,10 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($trunk['list'] !== false && dwho_ak('trunk',$result) === true)
-		{
-			$trunk['slt'] = dwho_array_intersect_key($result['trunk'],$trunk['list'],'id');
-			if($trunk['slt'] !== false)
-			{
-				$trunk['list'] = dwho_array_diff_key($trunk['list'],$trunk['slt']);
-				$trunksort = new dwho_sort(array('key' => 'identity'));
-				uasort($trunk['slt'],array(&$trunksort,'str_usort'));
-			}
-		}
+		
+		if($trunk['list'] !== false && dwho_issa('trunk',$result) === true
+		&& ($trunk['slt'] = dwho_array_intersect_key($result['trunk'],$trunk['list'],'id')) !== false)
+			$trunk['slt'] = array_keys($trunk['slt']);
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -81,6 +74,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/operator.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 
 	case 'edit':
@@ -113,18 +107,10 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($trunk['list'] !== false && dwho_ak('trunk',$return) === true)
-		{
-			$trunk['slt'] = dwho_array_intersect_key($return['trunk'],$trunk['list'],'id');
-			if($trunk['slt'] !== false)
-			{
-				$trunk['list'] = dwho_array_diff_key($trunk['list'],$trunk['slt']);
-
-				$trunksort = new dwho_sort(array('key' => 'identity'));
-				uasort($trunk['slt'],array(&$trunksort,'str_usort'));
-			}
-		}
+		
+		if($trunk['list'] !== false && dwho_issa('trunk',$return) === true
+		&& ($trunk['slt'] = dwho_array_intersect_key($return['trunk'],$trunk['list'],'id')) !== false)
+			$trunk['slt'] = array_keys($trunk['slt']);
 
 		$_TPL->set_var('id',$info['operator']['id']);
 		$_TPL->set_var('info',$return);
@@ -132,6 +118,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appoperator->get_elements());
 		$_TPL->set_var('trunk',$trunk);
+		$dhtml->load_js_multiselect_files();
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');

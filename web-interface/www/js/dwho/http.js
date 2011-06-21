@@ -70,7 +70,7 @@ dwho.http = function(url,options,data,send)
 
 	if(Boolean(send) === true)
 		this.send();
-}
+};
 
 dwho.http.prototype.set_option = function(name,value)
 {
@@ -148,7 +148,7 @@ dwho.http.prototype.set_option = function(name,value)
 	this._options[name] = value;
 
 	return(true);
-}
+};
 
 dwho.http.prototype.get_option = function(name)
 {
@@ -156,12 +156,12 @@ dwho.http.prototype.get_option = function(name)
 		return(false);
 
 	return(this._options[name]);
-}
+};
 
 dwho.http.prototype.valid_type = function(type)
 {
 	return((dwho_is_undef(this._accepts_type[type]) === false));
-}
+};
 
 dwho.http.prototype.get_accept = function()
 {
@@ -169,12 +169,12 @@ dwho.http.prototype.get_accept = function()
 		return('*/*');
 
 	return(this._accepts_type[this._options.type].join(', ') + ', */*');
-}
+};
 
 dwho.http.prototype.get_request = function()
 {
 	return(this._request);
-}
+};
 
 dwho.http.prototype.get_transport = function()
 {
@@ -182,7 +182,7 @@ dwho.http.prototype.get_transport = function()
 		return(new ActiveXObject('Microsoft.XMLHTTP'));
 	else
 		return(new XMLHttpRequest());
-}
+};
 
 dwho.http.prototype._set_data = function(data)
 {
@@ -205,7 +205,7 @@ dwho.http.prototype._set_data = function(data)
 
 	this._data = [];
 	this._prepare_data(data,null);
-}
+};
 
 dwho.http.prototype._prepare_data = function(data,prevkey)
 {
@@ -226,7 +226,7 @@ dwho.http.prototype._prepare_data = function(data,prevkey)
 	}
 	else if(dwho_has_len(data) === true)
 		this._data.push([prevkey,data]);
-}
+};
 
 dwho.http.prototype.build_url = function()
 {
@@ -297,7 +297,7 @@ dwho.http.prototype.build_url = function()
 	}
 
 	return(this._uri.build(this._url));
-}
+};
 
 dwho.http.prototype._prepare_request = function()
 {
@@ -353,7 +353,7 @@ dwho.http.prototype._prepare_request = function()
 		this.startinterval();
 		this.starttimeout();
 	}
-}
+};
 
 dwho.http.prototype.startinterval = function()
 {
@@ -361,7 +361,7 @@ dwho.http.prototype.startinterval = function()
 
 	var xhptr = this;
 	this._intervalid = window.setInterval(function() { xhptr.onreadystatechange(); },10);
-}
+};
 
 dwho.http.prototype.deleteinterval = function()
 {
@@ -369,7 +369,7 @@ dwho.http.prototype.deleteinterval = function()
 		window.clearInterval(this._intervalid);
 
 	this._intervalid = null;
-}
+};
 
 dwho.http.prototype.starttimeout = function ()
 {
@@ -386,7 +386,7 @@ dwho.http.prototype.starttimeout = function ()
 						xhptr.onreadystatechange(true);
 				},
 				this._options.timeout);
-}
+};
 
 dwho.http.prototype.deletetimeout = function ()
 {
@@ -394,17 +394,17 @@ dwho.http.prototype.deletetimeout = function ()
 		window.clearTimeout(this._timeoutid);
 
 	this._timeoutid = null;
-}
+};
 
 dwho.http.prototype.iscompleted = function()
 {
 	return(Boolean(this._completed));
-}
+};
 
 dwho.http.prototype.get_status = function()
 {
 	return(this._status);
-}
+};
 
 dwho.http.prototype.success = function()
 {
@@ -425,7 +425,7 @@ dwho.http.prototype.success = function()
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.http.prototype.onreadystatechange = function(timeout)
 {
@@ -466,7 +466,7 @@ dwho.http.prototype.onreadystatechange = function(timeout)
 		this._request = null;
 
 	return(true);
-}
+};
 
 dwho.http.prototype.send = function(cache)
 {
@@ -495,7 +495,7 @@ dwho.http.prototype.send = function(cache)
 		this.onreadystatechange();
 
 	return(true);
-}
+};
 
 dwho.http.prototype.reload = function(cache)
 {
@@ -507,4 +507,4 @@ dwho.http.prototype.reload = function(cache)
 		this._prepare_request();
 
 	return(this.send(cache));
-}
+};

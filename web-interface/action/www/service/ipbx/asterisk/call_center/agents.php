@@ -80,23 +80,10 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($amember['list'] !== false && dwho_ak('agentmember',$result) === true)
-		{
-			$amember['slt'] = dwho_array_intersect_key($result['agentmember'],
-								   $amember['list'],
-								   'id');
-
-			if($amember['slt'] !== false)
-			{
-				$amember['list'] = dwho_array_diff_key($amember['list'],$amember['slt']);
-
-				$agentsort = new dwho_sort(array('browse'	=> 'agentfeatures',
-								 'key'		=> 'identity'));
-
-				uasort($amember['slt'],array(&$agentsort,'str_usort'));
-			}
-		}
+		
+		if($amember['list'] !== false && dwho_issa('agentmember',$result) === true
+		&& ($amember['slt'] = dwho_array_intersect_key($result['agentmember'],$amember['list'],'id')) !== false)
+			$amember['slt'] = array_keys($amember['slt']);
 
 		if($qmember['list'] !== false && dwho_ak('queuemember',$result) === true)
 		{
@@ -132,6 +119,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'edit':
 		$appagentgroup = &$ipbx->get_application('agentgroup');
@@ -182,23 +170,10 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($amember['list'] !== false && dwho_ak('agentmember',$return) === true)
-		{
-			$amember['slt'] = dwho_array_intersect_key($return['agentmember'],
-								   $amember['list'],
-								   'id');
-
-			if($amember['slt'] !== false)
-			{
-				$amember['list'] = dwho_array_diff_key($amember['list'],$amember['slt']);
-
-				$agentsort = new dwho_sort(array('browse'	=> 'agentfeatures',
-								 'key'		=> 'identity'));
-
-				uasort($amember['slt'],array(&$agentsort,'str_usort'));
-			}
-		}
+		
+		if($amember['list'] !== false && dwho_issa('agentmember',$return) === true
+		&& ($amember['slt'] = dwho_array_intersect_key($return['agentmember'],$amember['list'],'id')) !== false)
+			$amember['slt'] = array_keys($amember['slt']);
 
 		if($qmember['list'] !== false && dwho_ak('queuemember',$return) === true)
 		{
@@ -234,6 +209,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -371,22 +347,10 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($umember['list'] !== false && dwho_ak('usermember',$result) === true)
-		{
-			$umember['slt'] = dwho_array_intersect_key($result['usermember'],
-								   $umember['list'],
-								   'id');
-
-			if($umember['slt'] !== false)
-			{
-				$umember['list'] = dwho_array_diff_key($umember['list'],$umember['slt']);
-
-				$usersort = new dwho_sort(array('key'	=> 'identity'));
-
-				uasort($umember['slt'],array(&$usersort,'str_usort'));
-			}
-		}
+		
+		if($umember['list'] !== false && dwho_issa('usermember',$result) === true
+		&& ($umember['slt'] = dwho_array_intersect_key($result['usermember'],$umember['list'],'id')) !== false)
+			$umember['slt'] = array_keys($umember['slt']);
 
 		if($qmember['list'] !== false && dwho_ak('queuemember',$result) === true)
 		{
@@ -428,6 +392,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'editagent':
 		$appagent = &$ipbx->get_application('agent');
@@ -514,22 +479,10 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($umember['list'] !== false && dwho_ak('usermember',$return) === true)
-		{
-			$umember['slt'] = dwho_array_intersect_key($return['usermember'],
-								   $umember['list'],
-								   'id');
-
-			if($umember['slt'] !== false)
-			{
-				$umember['list'] = dwho_array_diff_key($umember['list'],$umember['slt']);
-
-				$usersort = new dwho_sort(array('key'	=> 'identity'));
-
-				uasort($umember['slt'],array(&$usersort,'str_usort'));
-			}
-		}
+		
+		if($umember['list'] !== false && dwho_issa('usermember',$return) === true
+		&& ($umember['slt'] = dwho_array_intersect_key($return['usermember'],$umember['list'],'id')) !== false)
+			$umember['slt'] = array_keys($umember['slt']);
 
 		if($qmember['list'] !== false && dwho_ak('queuemember',$return) === true)
 		{
@@ -575,6 +528,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'deleteagent':
 		$appagent = &$ipbx->get_application('agent');

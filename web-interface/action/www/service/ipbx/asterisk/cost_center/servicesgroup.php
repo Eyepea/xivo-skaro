@@ -57,19 +57,10 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/cost_center/servicesgroup'),$param);
 		}
-
-		dwho::load_class('dwho_sort');
-
-		if($user['list'] !== false && dwho_ak('user',$result) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'id');
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
-		}
+		
+		if($user['list'] !== false && dwho_issa('user',$result) === true
+		&& ($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'id')) !== false)
+			$user['slt'] = array_keys($user['slt']);
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -82,6 +73,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/servicesgroup.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 
 	case 'edit':
@@ -92,7 +84,6 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/cost_center/servicesgroup'),$param);
 
 		$fm_save = $error = null;
-		$return = &$info;
 
 		$user = array();
 		$user['slt'] = array();
@@ -107,26 +98,18 @@ switch($act)
 				$fm_save = false;
 				$result = $appservicesgroup->get_result();
 				$error = $appservicesgroup->get_error();
+				$info = array_merge($info,$result);
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/cost_center/servicesgroup'),$param);
 		}
-
-		dwho::load_class('dwho_sort');
-
-		if($user['list'] !== false && dwho_ak('user',$return) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'id');
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
-		}
+		
+		if($user['list'] !== false && dwho_issa('user',$info) === true
+		&& ($user['slt'] = dwho_array_intersect_key($info['user'],$user['list'],'id')) !== false)
+			$user['slt'] = array_keys($user['slt']);
 
 		$_TPL->set_var('id',$info['servicesgroup']['id']);
-		$_TPL->set_var('info',$return);
+		$_TPL->set_var('info',$info);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appservicesgroup->get_elements());
@@ -137,6 +120,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/servicesgroup.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;

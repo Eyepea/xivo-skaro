@@ -67,14 +67,3 @@ function xivo_callfilter_onload()
 }
 
 dwho.dom.set_onload(xivo_callfilter_onload);
-
-
-$(function() {
-
-	$.localise('ui-multiselect', {
-		language: dwho_i18n_lang,
-		path: '/extra-libs/multiselect/js/locale/'
-	});
-	$(".multiselect").multiselect();	
-	
-});

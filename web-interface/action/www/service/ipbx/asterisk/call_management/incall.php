@@ -68,17 +68,11 @@ switch($act)
 
 		if(dwho_issa('incall',$result) === false || empty($result['incall']) === true)
 			$result['incall'] = null;
-
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
+		
+		if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true)
 		{
 			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
-			if($rightcall['slt'] !== false)
-			{
-				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-				dwho::load_class('dwho_sort');
-				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-			}
+			$rightcall['slt'] = array_keys($rightcall['slt']);
 		}
 
 		if(empty($result) === false)
@@ -106,6 +100,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appincall->get($_QR['id'])) === false)
@@ -139,19 +134,11 @@ switch($act)
 
 		if(dwho_issa('incall',$return) === false || empty($return['incall']) === true)
 			$return['incall'] = null;
-
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
+		
+		if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true)
 		{
 			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
-
-			if($rightcall['slt'] !== false)
-			{
-				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
-				dwho::load_class('dwho_sort');
-				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-			}
+			$rightcall['slt'] = array_keys($rightcall['slt']);
 		}
 
 		if(empty($return) === false)
@@ -181,6 +168,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;

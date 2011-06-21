@@ -151,51 +151,17 @@ endif;
 <?php
 	if($rightcall['list'] !== false):
 ?>
-
-	<div id="rightcalllist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('rightcalllist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'rightcalllist',
-					       'label'		=> false,
-					       'id'		=> 'it-rightcalllist',
-					       'browse'		=> 'rightcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rightcall['list']);?>
-		</div>
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall'); return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inrightcall');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inrightcall'),
-						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
-
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist'); return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outrightcall');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outrightcall'),
-						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
-		</div>
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcall[]',
-					       'label'		=> false,
-					       'id'		=> 'it-rightcall',
-					       'browse'		=> 'rightcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rightcall['slt']);?>
-
-		</div>
-	</div>
-	<div class="clearboth"></div>
+    <div id="rightcalllist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'rightcall[]',
+    						'id' 		=> 'it-rightcall',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $rightcall['slt']),
+    					$rightcall['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',

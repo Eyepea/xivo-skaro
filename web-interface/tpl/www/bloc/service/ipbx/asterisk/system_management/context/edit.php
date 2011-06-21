@@ -33,8 +33,7 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-context');
-										dwho.form.select('it-contextnumbers-user');
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-contextnumbers-user');
 										dwho.form.select('it-contextnumbers-group');
 										dwho.form.select('it-contextnumbers-queue');
 										dwho.form.select('it-contextnumbers-meetme');">

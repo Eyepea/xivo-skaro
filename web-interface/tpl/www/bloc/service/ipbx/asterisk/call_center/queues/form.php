@@ -413,52 +413,17 @@ endif;
 <?php
 	if($user['list'] !== false):
 ?>
-	<div id="userlist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'userlist',
-					       'label'		=> false,
-					       'id'		=> 'it-userlist',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false,
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id'),
-					 $user['list']);?>
-		</div>
-
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-userlist',
-							  'it-user');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inuser');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inuser'),
-						  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-user',
-							  'it-userlist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outuser');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outuser'),
-						  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'user[]',
-					       'label'		=> false,
-					       'id'		=> 'it-user',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false,
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id'),
-					 $user['slt']);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
+    <div id="userlist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'user[]',
+    						'id' 		=> 'it-user',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $user['slt']),
+    					$user['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -474,115 +439,43 @@ endif;
 <?php
 	if($agentgroup['list'] !== false):
 ?>
-		<div id="agentgrouplist" class="fm-paragraph fm-multilist">
+    <div id="agentgrouplist" class="fm-paragraph fm-description">
 			<p>
-				<label id="lb-agentgrouplist" for="it-agentgrouplist">
+				<label id="lb-agentlist" for="it-agentlist">
 					<?=$this->bbf('fm_agentgroup');?>
 				</label>
 			</p>
-				<?=$form->input_for_ms('agentgrouplist',$this->bbf('ms_seek'))?>
-			<div class="slt-outlist">
-				<?=$form->select(array('name'		=> 'agentgrouplist',
-						       'label'		=> false,
-						       'id'		=> 'it-agentgrouplist',
-						       'multiple'	=> true,
-						       'size'		=> 5,
-						       'paragraph'	=> false,
-						       'browse'		=> 'agentgroup',
-						       'key'		=> 'name',
-						       'altkey'		=> 'id'),
-						 $agentgroup['list']);?>
-			</div>
-
-			<div class="inout-list">
-				<a href="#"
-				   onclick="dwho.form.move_selected('it-agentgrouplist',
-								  'it-agentgroup');
-					    return(dwho.dom.free_focus());"
-				   title="<?=$this->bbf('bt_inagentgroup');?>">
-					<?=$url->img_html('img/site/button/arrow-left.gif',
-							  $this->bbf('bt_inagentgroup'),
-							  'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
-				<a href="#"
-				   onclick="dwho.form.move_selected('it-agentgroup',
-								  'it-agentgrouplist');
-					    return(dwho.dom.free_focus());"
-				   title="<?=$this->bbf('bt_outagentgroup');?>">
-					<?=$url->img_html('img/site/button/arrow-right.gif',
-							  $this->bbf('bt_outagentgroup'),
-							  'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
-			</div>
-
-			<div class="slt-inlist">
-				<?=$form->select(array('name'		=> 'agentgroup[]',
-						       'label'		=> false,
-						       'id'		=> 'it-agentgroup',
-						       'multiple'	=> true,
-						       'size'		=> 5,
-						       'paragraph'	=> false,
-						       'browse'		=> 'agentgroup',
-						       'key'		=> 'name',
-						       'altkey'		=> 'id'),
-						 $agentgroup['slt']);?>
-			</div>
-		</div>
-		<div class="clearboth"></div>
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'agentgroup[]',
+    						'id' 		=> 'it-agentgroup',
+						    'browse'	=> 'agentgroup',
+    						'key'		=> 'name',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $agentgroup['slt']),
+    					$agentgroup['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 		if($agent['list'] !== false):
 ?>
-			<div id="agentlist" class="fm-paragraph fm-multilist">
-				<p>
-					<label id="lb-agentlist" for="it-agentlist">
-						<?=$this->bbf('fm_agent');?>
-					</label>
-				</p>
-				<?=$form->input_for_ms('agentlist',$this->bbf('ms_seek'))?>
-				<div class="slt-outlist">
-					<?=$form->select(array('name'		=> 'agentlist',
-							       'label'		=> false,
-							       'id'		=> 'it-agentlist',
-							       'multiple'	=> true,
-							       'size'		=> 5,
-							       'paragraph'	=> false,
-							       'browse'		=> 'agentfeatures',
-							       'key'		=> 'identity',
-							       'altkey'		=> 'id'),
-							 $agent['list']);?>
-				</div>
-
-				<div class="inout-list">
-					<a href="#"
-					   onclick="dwho.form.move_selected('it-agentlist',
-									  'it-agent');
-						    return(dwho.dom.free_focus());"
-					   title="<?=$this->bbf('bt_inagent');?>">
-						<?=$url->img_html('img/site/button/arrow-left.gif',
-								  $this->bbf('bt_inagent'),
-								  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
-					<a href="#"
-					   onclick="dwho.form.move_selected('it-agent',
-									  'it-agentlist');
-						    return(dwho.dom.free_focus());"
-					   title="<?=$this->bbf('bt_outagent');?>">
-						<?=$url->img_html('img/site/button/arrow-right.gif',
-								  $this->bbf('bt_outagent'),
-								  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
-				</div>
-
-				<div class="slt-inlist">
-					<?=$form->select(array('name'		=> 'agent[]',
-							       'label'		=> false,
-							       'id'		=> 'it-agent',
-							       'multiple'	=> true,
-							       'size'		=> 5,
-							       'paragraph'	=> false,
-							       'browse'		=> 'agentfeatures',
-							       'key'		=> 'identity',
-							       'altkey'		=> 'id'),
-							 $agent['slt']);?>
-				</div>
-			</div>
-			<div class="clearboth"></div>
+    <div id="agentlist" class="fm-paragraph fm-description">
+			<p>
+				<label id="lb-agentlist" for="it-agentlist">
+					<?=$this->bbf('fm_agent');?>
+				</label>
+			</p>
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'agent[]',
+    						'id' 		=> 'it-agent',
+						    'browse'	=> 'agentfeatures',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $agent['slt']),
+    					$agent['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 		else:
 			echo	'<div id="create-agent" class="txt-center">',

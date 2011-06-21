@@ -28,19 +28,13 @@ $form = &$this->get_module('form');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-user');">
-
+<form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'servicesgroup[accountcode]','value' => uniqid()));?>
-
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/cost_center/servicesgroup/form');
-?>
-
+<?php	$this->file_include('bloc/service/ipbx/asterisk/cost_center/servicesgroup/form');?>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
-
 </form>
 	</div>
 	<div class="sb-foot xspan">

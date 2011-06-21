@@ -33,8 +33,7 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-user');
-										dwho.form.select('it-queue');">
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue');">
 <?php
 		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 					    'value'	=> DWHO_SESS_ID)),

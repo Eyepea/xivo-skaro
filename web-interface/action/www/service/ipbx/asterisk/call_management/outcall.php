@@ -91,13 +91,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 		$dhtml->set_js('js/utils/dyntable.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('dundipeer',$dundipeer);
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
@@ -169,13 +163,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 		$dhtml->set_js('js/utils/dyntable.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('id',$info['outcall']['id']);
 		$_TPL->set_var('dundipeer',$dundipeer);

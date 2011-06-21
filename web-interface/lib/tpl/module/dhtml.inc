@@ -278,7 +278,12 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 			return(false);
 
 		for($i = 0;$i < $nb;$i++)
-			$r .= $this->_load_file($this->_inc['js'][$where][$i])."\n";
+		{
+		    if (($res = $this->_load_file($this->_inc['js'][$where][$i])) === '')
+		        $r = $this->_inc['js'][$where][$i];
+		    else
+		        $r .= $res."\n";
+		}
 
 		if($r !== '')
 			$this->write_js($r);
@@ -398,6 +403,25 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 			       $iconclass,
 			       $funcjsin,
 			       'dwho.form.destroy_help_div();'));
+	}
+	
+	function load_js_multiselect_files()
+	{
+		$this->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
+		$this->set_css('css/xivo.multiselect.css');
+		$this->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
+		$this->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
+		$this->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		
+		$str = "$(function() {
+            	$.localise('ui-multiselect', {
+            		language: dwho_i18n_lang,
+            		path: '/extra-libs/multiselect/js/locale/'
+            	});
+            	$(\".multiselect\").multiselect();
+            });";
+		
+		$this->_inc['js']['foot'][] = $str;
 	}
 }
 

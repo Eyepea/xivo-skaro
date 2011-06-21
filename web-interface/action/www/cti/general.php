@@ -80,7 +80,7 @@ if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
 		{
 			$selected[$k]['id'] = $k;
 		}
-		$info['xivoserver']['slt'] = 
+		$info['xivoserver']['slt'] =
 			dwho_array_intersect_key(
 				$selected,
 				$info['xivoserver']['list'],
@@ -98,6 +98,7 @@ $_TPL->set_var('info', $info);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
+$dhtml->load_js_multiselect_files();
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

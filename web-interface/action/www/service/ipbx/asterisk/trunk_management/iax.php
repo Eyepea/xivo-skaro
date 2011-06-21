@@ -82,15 +82,10 @@ switch($act)
 			$result['protocol']['allow'] = $allow;
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
-
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -164,15 +159,10 @@ switch($act)
 			$return['protocol']['allow'] = $allow;
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
-
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('id',$info['trunkfeatures']['id']);
 		$return['protocol']['inkeys'] = explode(',',$info['protocol']['inkeys']);

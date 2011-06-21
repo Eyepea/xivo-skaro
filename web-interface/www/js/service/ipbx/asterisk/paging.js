@@ -15,13 +15,3 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-$(function() {
-
-	$.localise('ui-multiselect', {
-		language: dwho_i18n_lang,
-		path: '/extra-libs/multiselect/js/locale/'
-	});
-	$(".multiselect").multiselect();	
-	
-});

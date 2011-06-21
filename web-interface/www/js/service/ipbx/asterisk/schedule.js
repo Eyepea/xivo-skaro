@@ -39,7 +39,7 @@ function xivo_ast_schedule_add_closed_action(name, obj)
 		{'callbackcomplete':	function(xhr) 
 			{ 
 				elt = dwho_eid('onclosed-time-dialaction');
-				elt.id = 'onclosed-time-dialaction-' + dialevent
+				elt.id = 'onclosed-time-dialaction-' + dialevent;
 				elt.innerHTML = xhr.responseText;
 
 				dwho.dom.make_table_list(name, obj);

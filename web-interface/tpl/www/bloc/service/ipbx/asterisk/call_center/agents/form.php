@@ -49,57 +49,19 @@ endif;
 
 	if($amember['list'] !== false):
 ?>
-<div id="agentlist" class="fm-paragraph fm-multilist">
-	<p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
-				<?=$form->input_for_ms('agentlist',$this->bbf('ms_seek'))?>
-	<div class="slt-outlist">
-<?php
-		echo	$form->select(array('name'	=> 'agentlist',
-					    'label'	=> false,
-					    'id'	=> 'it-agentlist',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false,
+    <div id="rightcalllist" class="fm-paragraph fm-description">
+		<p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
+		<?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'agent-select[]',
+						'id' 		=> 'it-agent',
 					    'browse'	=> 'agentfeatures',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'id'),
-				      $amember['list']);
-?>
-	</div>
-
-	<div class="inout-list">
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-agentlist','it-agent');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_inagent');?>">
-			<?=$url->img_html('img/site/button/arrow-left.gif',
-					  $this->bbf('bt_inagent'),
-					  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-agent','it-agentlist');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_outagent');?>">
-			<?=$url->img_html('img/site/button/arrow-right.gif',
-					  $this->bbf('bt_outagent'),
-					  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
-	</div>
-
-	<div class="slt-inlist">
-<?php
-		echo	$form->select(array('name'	=> 'agent-select[]',
-					    'label'	=> false,
-					    'id'	=> 'it-agent',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false,
-					    'browse'	=> 'agentfeatures',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'id'),
-				      $amember['slt']);
-?>
-	</div>
-</div>
-<div class="clearboth"></div>
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => $amember['slt']),
+					$amember['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	endif;
 ?>

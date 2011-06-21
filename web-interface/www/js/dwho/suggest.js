@@ -68,15 +68,15 @@ dwho.suggest = function(options,id)
 
 	var dwsptr = this;
 
-	this.fnkeypress	= function(e) { return(dwsptr.onkeypress(e)); }
-	this.fnkeyup	= function(e) { return(dwsptr.onkeyup(e)); }
-	this.fnfocus	= function() { dwsptr.fullsearch(); dwsptr.deletetimeout(); }
-	this.fnblur	= function() { dwsptr.onblur(); }
-	this.fnchange	= function() { dwsptr.onchange(); }
+	this.fnkeypress	= function(e) { return(dwsptr.onkeypress(e)); };
+	this.fnkeyup	= function(e) { return(dwsptr.onkeyup(e)); };
+	this.fnfocus	= function() { dwsptr.fullsearch(); dwsptr.deletetimeout(); };
+	this.fnblur	= function() { dwsptr.onblur(); };
+	this.fnchange	= function() { dwsptr.onchange(); };
 
 	if(dwho_is_string(id) === true)
 		this.set_field(id);
-}
+};
 
 dwho.suggest.prototype.set_field = function(id)
 {
@@ -151,7 +151,7 @@ dwho.suggest.prototype.set_field = function(id)
 	this._dwsrestitleid	= this._dwsresid + '-title-';
 	this._dwsresdescid	= this._dwsresid + '-desc-';
 	this._resfieldcleared	= false;
-}
+};
 
 dwho.suggest.prototype.set_option = function(name,value)
 {
@@ -217,7 +217,7 @@ dwho.suggest.prototype.set_option = function(name,value)
 	this._options[name] = value;
 
 	return(true);
-}
+};
 
 dwho.suggest.prototype.set_options = function(options)
 {
@@ -226,7 +226,7 @@ dwho.suggest.prototype.set_options = function(options)
 
 	for(var property in options)
 		this.set_option(property,options[property]);
-}
+};
 
 dwho.suggest.prototype.get_option = function(name)
 {
@@ -234,12 +234,12 @@ dwho.suggest.prototype.get_option = function(name)
 		return(false);
 
 	return(this._options[name]);
-}
+};
 
 dwho.suggest.prototype.get_search_value = function()
 {
 	return(dwho_string(this._searchval));
-}
+};
 
 dwho.suggest.prototype.set = function(request,value)
 {
@@ -260,7 +260,7 @@ dwho.suggest.prototype.set = function(request,value)
 	}
 
 	this.display_result();
-}
+};
 
 dwho.suggest.prototype.get = function(value)
 {
@@ -325,7 +325,7 @@ dwho.suggest.prototype.get = function(value)
 	}
 
 	return(true);
-}
+};
 
 dwho.suggest.prototype.clear = function()
 {
@@ -355,7 +355,7 @@ dwho.suggest.prototype.clear = function()
 	this._suggestid		= null;
 	dwho.dom.remove_element(dwho_eid(this._dwsid,true));
 
-}
+};
 
 dwho.suggest.prototype.display_result = function()
 {
@@ -400,8 +400,8 @@ dwho.suggest.prototype.display_result = function()
 						 {'id': dtid},
 						 this._suggests[i].value);
 
-		dt.onclick = function() { dwsptr.setselectedvalue(); return(false); }
-		dt.onmouseover = function() { dwsptr.sethighlight(this.id); }
+		dt.onclick = function() { dwsptr.setselectedvalue(); return(false); };
+		dt.onmouseover = function() { dwsptr.sethighlight(this.id); };
 		dl.appendChild(dt);
 
 		if(dwho_has_len(this._suggests[i].info) === true)
@@ -410,8 +410,8 @@ dwho.suggest.prototype.display_result = function()
 							 {'id': ddid},
 							 this._suggests[i].info);
 
-			dd.onclick = function() { dwsptr.setselectedvalue(); return(false); }
-			dd.onmouseover = function() { dwsptr.sethighlight(this.id); }
+			dd.onclick = function() { dwsptr.setselectedvalue(); return(false); };
+			dd.onmouseover = function() { dwsptr.sethighlight(this.id); };
 			dl.appendChild(dd);
 		}
 	}
@@ -424,8 +424,8 @@ dwho.suggest.prototype.display_result = function()
 	div.style.top	= (pos.y + this._field.offsetHeight + this._options.result_topoffset) + 'px';
 	div.style.width	= this._field.offsetWidth + 'px';
 
-	div.onmouseover	= function() { dwsptr.deletetimeout(); }
-	div.onmouseout	= function() { dwsptr.starttimeout(); }
+	div.onmouseover	= function() { dwsptr.deletetimeout(); };
+	div.onmouseout	= function() { dwsptr.starttimeout(); };
 
 	dwho.dom.remove_element(dwho_eid(this._dwsid,true));
 
@@ -442,7 +442,7 @@ dwho.suggest.prototype.display_result = function()
 	this.starttimeout();
 
 	return(true);
-}
+};
 
 dwho.suggest.prototype.onkeypress = function(e)
 {
@@ -465,7 +465,7 @@ dwho.suggest.prototype.onkeypress = function(e)
 	}
 
 	return(true);
-}
+};
 
 dwho.suggest.prototype.onkeyup = function(e)
 {
@@ -496,7 +496,7 @@ dwho.suggest.prototype.onkeyup = function(e)
 	}
 
 	return(true);
-}
+};
 
 dwho.suggest.prototype.onblur = function()
 {
@@ -510,7 +510,7 @@ dwho.suggest.prototype.onblur = function()
 	}
 
 	this.starttimeout();
-}
+};
 
 dwho.suggest.prototype.onchange = function()
 {
@@ -525,7 +525,7 @@ dwho.suggest.prototype.onchange = function()
 
 		this.clear();
 	}
-}
+};
 
 dwho.suggest.prototype.sethighlight = function(id)
 {
@@ -568,7 +568,7 @@ dwho.suggest.prototype.sethighlight = function(id)
 	}
 
 	return(false);
-}
+};
 
 dwho.suggest.prototype.changehighlight = function(key)
 {
@@ -591,7 +591,7 @@ dwho.suggest.prototype.changehighlight = function(key)
 		suggestid = this._suggests.length;
 
 	this.sethighlight(this._dwsrestitleid + suggestid);
-}
+};
 
 dwho.suggest.prototype.resethighlight = function()
 {
@@ -633,7 +633,7 @@ dwho.suggest.prototype.resethighlight = function()
 
 		return(true);
 	}
-}
+};
 
 dwho.suggest.prototype.setselectedvalue = function()
 {
@@ -668,7 +668,7 @@ dwho.suggest.prototype.setselectedvalue = function()
 
 	if(this._options.result_callback !== null)
 		this._options.result_callback(this._suggests[this._suggestid - 1]);
-}
+};
 
 dwho.suggest.prototype.starttimeout = function()
 {
@@ -676,7 +676,7 @@ dwho.suggest.prototype.starttimeout = function()
 
 	var dwsptr = this;
 	this._timeoutid = window.setTimeout(function() { dwsptr.clear(); },2000);
-}
+};
 
 dwho.suggest.prototype.deletetimeout = function()
 {
@@ -684,7 +684,7 @@ dwho.suggest.prototype.deletetimeout = function()
 		window.clearTimeout(this._timeoutid);
 
 	this._timeoutid = null;
-}
+};
 
 dwho.suggest.prototype.fullsearch = function()
 {
@@ -692,5 +692,5 @@ dwho.suggest.prototype.fullsearch = function()
 		return;
 
 	this.get(this._field.value);
-}
+};
 

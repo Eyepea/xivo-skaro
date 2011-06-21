@@ -68,28 +68,18 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/paging'),$param);
 		}
 		
-		if($paginguser['list'] !== false && dwho_issa('paginguser',$result) === true)
-		{
-			$paginguser['slt'] = dwho_array_intersect_key($result['paginguser'],$paginguser['list'],'userfeaturesid');
+		if($paginguser['list'] !== false && dwho_issa('paginguser',$result) === true
+		&& ($paginguser['slt'] = dwho_array_intersect_key($result['paginguser'],$paginguser['list'],'userfeaturesid')) !== false)
 			$paginguser['slt'] = array_keys($paginguser['slt']);
-		}
 		
-		if($pagingcaller['list'] !== false && dwho_issa('pagingcaller',$result) === true)
-		{
-			$pagingcaller['slt'] = dwho_array_intersect_key($result['pagingcaller'],$pagingcaller['list'],'userfeaturesid');
+		if($pagingcaller['list'] !== false && dwho_issa('pagingcaller',$result) === true
+		&& ($pagingcaller['slt'] = dwho_array_intersect_key($result['pagingcaller'],$pagingcaller['list'],'userfeaturesid')) !== false)
 			$pagingcaller['slt'] = array_keys($pagingcaller['slt']);
-		}
 		
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/paging.js');
 		$dhtml->set_js('js/dwho/submenu.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('paginguser',$paginguser);
 		$_TPL->set_var('fm_save', $fm_save);
@@ -140,28 +130,18 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/paging'),$param);
 		}
 		
-		if($paginguser['list'] !== false && dwho_issa('paginguser',$return) === true)
-		{
-			$paginguser['slt'] = dwho_array_intersect_key($return['paginguser'],$paginguser['list'],'userfeaturesid');
+		if($paginguser['list'] !== false && dwho_issa('paginguser',$return) === true
+		&& ($paginguser['slt'] = dwho_array_intersect_key($return['paginguser'],$paginguser['list'],'userfeaturesid')) !== false)
 			$paginguser['slt'] = array_keys($paginguser['slt']);
-		}
 		
-		if($pagingcaller['list'] !== false && dwho_issa('pagingcaller',$return) === true)
-		{
-			$pagingcaller['slt'] = dwho_array_intersect_key($return['pagingcaller'],$pagingcaller['list'],'userfeaturesid');
+		if($pagingcaller['list'] !== false && dwho_issa('pagingcaller',$return) === true
+		&& ($pagingcaller['slt'] = dwho_array_intersect_key($return['pagingcaller'],$pagingcaller['list'],'userfeaturesid')) !== false)
 			$pagingcaller['slt'] = array_keys($pagingcaller['slt']);
-		}
 		
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/paging.js');
 		$dhtml->set_js('js/dwho/submenu.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('id', $info['paging']['id']);
 		$_TPL->set_var('info', $info);

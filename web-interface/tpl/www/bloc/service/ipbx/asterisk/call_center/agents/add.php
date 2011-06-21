@@ -29,7 +29,7 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-agent'); dwho.form.select('it-queue');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue');">
 
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>

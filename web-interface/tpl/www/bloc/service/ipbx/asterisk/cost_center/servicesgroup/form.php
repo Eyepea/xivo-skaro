@@ -62,48 +62,17 @@ endif;
 	if(isset($user['list']) === true
 	&& $user['list'] !== false):
 ?>
-				<div id="userlist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'userlist',
-								       'label'		=> false,
-								       'id'			=> 'it-userlist',
-								       'multiple'	=> true,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-										$user['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-userlist','it-user');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_inuser');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_inuser'),
-									  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-user','it-userlist');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outuser');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outuser'),
-									  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'user[]',
-								       'label'		=> false,
-								       'id'			=> 'it-user',
-								       'multiple'	=> true,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-									   $user['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+    <div id="userlist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'user[]',
+    						'id' 		=> 'it-user',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $user['slt']),
+    					$user['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',$this->bbf('no_user'),'</div>';

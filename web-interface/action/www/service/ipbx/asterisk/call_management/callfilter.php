@@ -53,11 +53,9 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		}
 		
-		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true)
-		{
-			$secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
+		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true
+		&& ($secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval')) !== false)
 			$secretary['slt'] = array_keys($secretary['slt']);
-		}
 
 		if(empty($result) === false)
 		{
@@ -83,13 +81,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/dwho/submenu.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'edit':
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
@@ -122,11 +114,9 @@ switch($act)
 		if(dwho_issa('callfiltermember',$return) === true)
 			$callfiltermember = &$return['callfiltermember'];
 		
-		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true)
-		{
-			$secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
+		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true
+		&& ($secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval')) !== false)
 			$secretary['slt'] = array_keys($secretary['slt']);
-		}
 
 		if(empty($return) === false)
 		{
@@ -153,13 +143,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/dwho/submenu.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;

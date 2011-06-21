@@ -80,24 +80,13 @@ switch($act)
 
 		dwho::load_class('dwho_sort');
 		
-		if($user['list'] !== false && dwho_issa('user',$result) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'userid');
+		if($user['list'] !== false && dwho_issa('user',$result) === true
+		&& ($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'userid')) !== false)
 			$user['slt'] = array_keys($user['slt']);
-		}
-
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
-		{
-			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
-
-			if($rightcall['slt'] !== false)
-			{
-				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
-				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-			}
-		}
+		
+		if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true
+		&& ($rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid')) !== false)
+			$rightcall['slt'] = array_keys($rightcall['slt']);
 
 		if(empty($result) === false)
 		{
@@ -130,13 +119,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
 		$dhtml->set_js('js/dwho/submenu.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 		break;
 
 	case 'edit':
@@ -185,24 +168,13 @@ switch($act)
 
 		dwho::load_class('dwho_sort');
 		
-		if($user['list'] !== false && dwho_issa('user',$info) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($info['user'],$user['list'],'userid');
+		if($user['list'] !== false && dwho_issa('user',$info) === true
+		&& ($user['slt'] = dwho_array_intersect_key($info['user'],$user['list'],'userid')) !== false)
 			$user['slt'] = array_keys($user['slt']);
-		}
-
-		if($rightcall['list'] !== false && dwho_ak('rightcall',$info) === true)
-		{
-			$rightcall['slt'] = dwho_array_intersect_key($info['rightcall'],$rightcall['list'],'rightcallid');
-
-			if($rightcall['slt'] !== false)
-			{
-				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
-
-				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
-				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
-			}
-		}
+		
+		if($rightcall['list'] !== false && dwho_issa('rightcall',$info) === true
+		&& ($rightcall['slt'] = dwho_array_intersect_key($info['rightcall'],$rightcall['list'],'rightcallid')) !== false)
+			$rightcall['slt'] = array_keys($rightcall['slt']);
 
 		if(empty($info) === false)
 		{
@@ -235,13 +207,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
 		$dhtml->set_js('js/dwho/submenu.js');
-		
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;

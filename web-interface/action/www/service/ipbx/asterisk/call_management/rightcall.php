@@ -80,58 +80,22 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($rcalluser['list'] !== false && dwho_ak('rightcalluser',$result) === true)
-		{
-			$rcalluser['slt'] = dwho_array_intersect_key($result['rightcalluser'],$rcalluser['list'],'typeval');
-
-			if($rcalluser['slt'] !== false)
-			{
-				$rcalluser['list'] = dwho_array_diff_key($rcalluser['list'],$rcalluser['slt']);
-
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
-			}
-		}
-
-		if($rcallgroup['list'] !== false && dwho_ak('rightcallgroup',$result) === true)
-		{
-			$rcallgroup['slt'] = dwho_array_intersect_key($result['rightcallgroup'],$rcallgroup['list'],'typeval');
-
-			if($rcallgroup['slt'] !== false)
-			{
-				$rcallgroup['list'] = dwho_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
-
-				$groupsort = new dwho_sort(array('key' => 'name'));
-				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
-			}
-		}
-
-		if($rcallincall['list'] !== false && dwho_ak('rightcallincall',$result) === true)
-		{
-			$rcallincall['slt'] = dwho_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval');
-
-			if($rcallincall['slt'] !== false)
-			{
-				$rcallincall['list'] = dwho_array_diff_key($rcallincall['list'],$rcallincall['slt']);
-
-				$incallsort = new dwho_sort(array('key' => 'exten'));
-				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
-			}
-		}
-
-		if($rcalloutcall['list'] !== false && dwho_ak('rightcalloutcall',$result) === true)
-		{
-			$rcalloutcall['slt'] = dwho_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval');
-
-			if($rcalloutcall['slt'] !== false)
-			{
-				$rcalloutcall['list'] = dwho_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
-
-				$outcallsort = new dwho_sort(array('key' => 'name'));
-				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
-			}
-		}
+		
+		if($rcalluser['list'] !== false && dwho_issa('rightcalluser',$result) === true
+		&& ($rcalluser['slt'] = dwho_array_intersect_key($result['rightcalluser'],$rcalluser['list'],'typeval')) !== false)
+			$rcalluser['slt'] = array_keys($rcalluser['slt']);
+		
+		if($rcallgroup['list'] !== false && dwho_issa('rightcallgroup',$result) === true
+		&& ($rcallgroup['slt'] = dwho_array_intersect_key($result['rightcallgroup'],$rcallgroup['list'],'typeval')) !== false)
+			$rcallgroup['slt'] = array_keys($rcallgroup['slt']);
+		
+		if($rcallincall['list'] !== false && dwho_issa('rightcallincall',$result) === true
+		&& ($rcallincall['slt'] = dwho_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval')) !== false)
+			$rcallincall['slt'] = array_keys($rcallincall['slt']);
+		
+		if($rcalloutcall['list'] !== false && dwho_issa('rightcalloutcall',$result) === true
+		&& ($rcalloutcall['slt'] = dwho_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval')) !== false)
+			$rcalloutcall['slt'] = array_keys($rcalloutcall['slt']);
 
 		if(dwho_issa('rcallexten',$result) === true)
 			$rcallexten = $result['rcallexten'];
@@ -140,6 +104,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('rcalluser',$rcalluser);
 		$_TPL->set_var('rcallgroup',$rcallgroup);
@@ -212,58 +177,22 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($rcalluser['list'] !== false && dwho_ak('rightcalluser',$return) === true)
-		{
-			$rcalluser['slt'] = dwho_array_intersect_key($return['rightcalluser'],$rcalluser['list'],'typeval');
-
-			if($rcalluser['slt'] !== false)
-			{
-				$rcalluser['list'] = dwho_array_diff_key($rcalluser['list'],$rcalluser['slt']);
-
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
-			}
-		}
-
-		if($rcallgroup['list'] !== false && dwho_ak('rightcallgroup',$return) === true)
-		{
-			$rcallgroup['slt'] = dwho_array_intersect_key($return['rightcallgroup'],$rcallgroup['list'],'typeval');
-
-			if($rcallgroup['slt'] !== false)
-			{
-				$rcallgroup['list'] = dwho_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
-
-				$groupsort = new dwho_sort(array('key' => 'name'));
-				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
-			}
-		}
-
-		if($rcallincall['list'] !== false && dwho_ak('rightcallincall',$return) === true)
-		{
-			$rcallincall['slt'] = dwho_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval');
-
-			if($rcallincall['slt'] !== false)
-			{
-				$rcallincall['list'] = dwho_array_diff_key($rcallincall['list'],$rcallincall['slt']);
-
-				$incallsort = new dwho_sort(array('key' => 'exten'));
-				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
-			}
-		}
-
-		if($rcalloutcall['list'] !== false && dwho_ak('rightcalloutcall',$return) === true)
-		{
-			$rcalloutcall['slt'] = dwho_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval');
-
-			if($rcalloutcall['slt'] !== false)
-			{
-				$rcalloutcall['list'] = dwho_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
-
-				$outcallsort = new dwho_sort(array('key' => 'name'));
-				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
-			}
-		}
+		
+		if($rcalluser['list'] !== false && dwho_issa('rightcalluser',$return) === true
+		&& ($rcalluser['slt'] = dwho_array_intersect_key($return['rightcalluser'],$rcalluser['list'],'typeval')) !== false)
+			$rcalluser['slt'] = array_keys($rcalluser['slt']);
+		
+		if($rcallgroup['list'] !== false && dwho_issa('rightcallgroup',$return) === true
+		&& ($rcallgroup['slt'] = dwho_array_intersect_key($return['rightcallgroup'],$rcallgroup['list'],'typeval')) !== false)
+			$rcallgroup['slt'] = array_keys($rcallgroup['slt']);
+		
+		if($rcallincall['list'] !== false && dwho_issa('rightcallincall',$return) === true
+		&& ($rcallincall['slt'] = dwho_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval')) !== false)
+			$rcallincall['slt'] = array_keys($rcallincall['slt']);
+		
+		if($rcalloutcall['list'] !== false && dwho_issa('rightcalloutcall',$return) === true
+		&& ($rcalloutcall['slt'] = dwho_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval')) !== false)
+			$rcalloutcall['slt'] = array_keys($rcalloutcall['slt']);
 
 		if(dwho_issa('rightcallexten',$return) === false)
 			$rcallexten = null;
@@ -277,6 +206,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('id',$info['rightcall']['id']);
 		$_TPL->set_var('rcalluser',$rcalluser);

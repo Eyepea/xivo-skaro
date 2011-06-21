@@ -111,48 +111,16 @@ endif;
 	if(isset($trunk['list']) === true
 	&& $trunk['list'] !== false):
 ?>
-				<div id="trunklist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('trunklist',$this->bbf('ms_seek'))?>
-					<div class="slt-outlist">
-						<?=$form->select(array('name'	=> 'trunklist',
-								       'label'		=> false,
-								       'id'			=> 'it-trunklist',
-								       'multiple'	=> true,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-										$trunk['list']);?>
-					</div>
-
-					<div class="inout-list">
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-trunklist','it-trunk');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_intrunk');?>">
-							<?=$url->img_html('img/site/button/arrow-left.gif',
-									  $this->bbf('bt_intrunk'),
-									  'class="bt-inlist" id="bt-intrunk" border="0"');?></a><br />
-						<a href="#"
-						   onclick="dwho.form.move_selected('it-trunk','it-trunklist');
-							    return(dwho.dom.free_focus());"
-						   title="<?=$this->bbf('bt_outtrunk');?>">
-							<?=$url->img_html('img/site/button/arrow-right.gif',
-									  $this->bbf('bt_outtrunk'),
-									  'class="bt-outlist" id="bt-outtrunk" border="0"');?></a>
-					</div>
-
-					<div class="slt-inlist">
-						<?=$form->select(array('name'	=> 'trunk[]',
-								       'label'		=> false,
-								       'id'			=> 'it-trunk',
-								       'multiple'	=> true,
-								       'paragraph'	=> false,
-								       'key'		=> 'identity',
-								       'altkey'		=> 'id'),
-									   $trunk['slt']);?>
-					</div>
-				</div>
-				<div class="clearboth"></div>
+    <div id="trunklist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'trunk[]',
+    						'id' 		=> 'it-trunk',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $trunk['slt']),
+    					$trunk['list']);?>
+    </div>
 <?php
 	else:
 		echo	'<div class="txt-center">',$this->bbf('no_trunk'),'</div>';

@@ -34,26 +34,13 @@ $info = array('incall'=>$this->get_var('incall'));
 ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-rightcall');">
-<?php
-		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
-					    'value'	=> DWHO_SESS_ID)),
-
-			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1)),
-
-			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'edit')),
-
-			$form->hidden(array('name'	=> 'id',
-					    'value'	=> $this->get_var('id')));
-
-		$this->file_include('bloc/service/ipbx/asterisk/call_management/incall/form');
-
-		echo	$form->submit(array('name'	=> 'submit',
-					    'id'	=> 'it-submit',
-					    'value'	=> $this->bbf('fm_bt-save')));
-?>
+		<form action="#" method="post" accept-charset="utf-8">
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
+<?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
+<?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
+<?php $this->file_include('bloc/service/ipbx/asterisk/call_management/incall/form');?>
+<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 		</form>
 	</div>
 	<div class="sb-foot xspan">

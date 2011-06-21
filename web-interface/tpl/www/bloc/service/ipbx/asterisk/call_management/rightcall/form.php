@@ -141,50 +141,17 @@ endif;
 <?php
 	if($rcalluser['list'] !== false):
 ?>
-	<div id="userlist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('userlist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'userlist',
-					       'label'		=> false,
-					       'id'		=> 'it-userlist',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcalluser['list']);?>
-		</div>
-
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-userlist','it-user');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inuser');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inuser'),
-						  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-user','it-userlist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outuser');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outuser'),
-						  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcalluser[]',
-					       'label'		=> false,
-					       'id'		=> 'it-user',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcalluser['slt']);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
+    <div id="rightcalllist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'rightcalluser[]',
+    						'id' 		=> 'it-rightcalluser',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $rcalluser['slt']),
+    					$rcalluser['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -200,49 +167,16 @@ endif;
 <?php
 	if($rcallgroup['list'] !== false):
 ?>
-	<div id="grouplist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('grouplist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'grouplist',
-					       'label'		=> false,
-					       'id'		=> 'it-grouplist',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcallgroup['list']);?>
-		</div>
-
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-grouplist','it-group');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_ingroup');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_ingroup'),
-						  'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-group','it-grouplist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outgroup');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outgroup'),
-						  'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcallgroup[]',
-					       'label'		=> false,
-					       'id'		=> 'it-group',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcallgroup['slt']);?>
-		</div>
-	</div>
+    <div id="grouplist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'rightcallgroup[]',
+    						'id' 		=> 'it-rightcallgroup',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $rcallgroup['slt']),
+    					$rcallgroup['list']);?>
+    </div>
 	<div class="clearboth"></div>
 <?php
 	else:
@@ -258,50 +192,17 @@ endif;
 <?php
 	if($rcallincall['list'] !== false):
 ?>
-	<div id="incalllist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('incalllist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'incalllist',
-					       'label'		=> false,
-					       'id'		=> 'it-incalllist',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcallincall['list']);?>
-		</div>
-
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-incalllist','it-incall');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inincall');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inincall'),
-						  'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-incall','it-incalllist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outincall');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outincall'),
-						  'class="bt-outlist" id="bt-outincall" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcallincall[]',
-					       'label'		=> false,
-					       'id'		=> 'it-incall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcallincall['slt']);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
+    <div id="incalllist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'rightcallincall[]',
+    						'id' 		=> 'it-rightcallincall',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $rcallincall['slt']),
+    					$rcallincall['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',
@@ -317,50 +218,17 @@ endif;
 <?php
 	if($rcalloutcall['list'] !== false):
 ?>
-	<div id="outcalllist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('outcalllist',$this->bbf('ms_seek'))?>
-		<div class="slt-outlist">
-			<?=$form->select(array('name'		=> 'outcalllist',
-					       'label'		=> false,
-					       'id'		=> 'it-outcalllist',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcalloutcall['list']);?>
-		</div>
-
-		<div class="inout-list">
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-outcalllist','it-outcall');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_inoutcall');?>">
-				<?=$url->img_html('img/site/button/arrow-left.gif',
-						  $this->bbf('bt_inoutcall'),
-						  'class="bt-inlist" id="bt-inoutcall" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.move_selected('it-outcall','it-outcalllist');
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_outoutcall');?>">
-				<?=$url->img_html('img/site/button/arrow-right.gif',
-						  $this->bbf('bt_outoutcall'),
-						  'class="bt-outlist" id="bt-outoutcall" border="0"');?></a>
-		</div>
-
-		<div class="slt-inlist">
-			<?=$form->select(array('name'		=> 'rightcalloutcall[]',
-					       'label'		=> false,
-					       'id'		=> 'it-outcall',
-					       'key'		=> 'identity',
-					       'altkey'		=> 'id',
-					       'multiple'	=> true,
-					       'size'		=> 5,
-					       'paragraph'	=> false),
-					 $rcalloutcall['slt']);?>
-		</div>
-	</div>
-	<div class="clearboth"></div>
+    <div id="incalllist" class="fm-paragraph fm-description">
+    		<?=$form->jq_select(array('paragraph'	=> false,
+    					 	'label'		=> false,
+                			'name'    	=> 'rightcalloutcall[]',
+    						'id' 		=> 'it-rightcalloutcall',
+    						'key'		=> 'identity',
+    				       	'altkey'	=> 'id',
+                			'selected'  => $rcalloutcall['slt']),
+    					$rcalloutcall['list']);?>
+    </div>
+    <div class="clearboth"></div>
 <?php
 	else:
 		echo	'<div class="txt-center">',

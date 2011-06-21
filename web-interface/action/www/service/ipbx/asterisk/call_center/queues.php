@@ -159,53 +159,18 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($user['list'] !== false && dwho_ak('user',$result) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($result['user'],
-								$user['list'],
-								'userid');
-
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
-		}
-
-		if($agentgroup['list'] !== false && dwho_ak('agentgroup',$result) === true)
-		{
-			$agentgroup['slt'] = dwho_array_intersect_key($result['agentgroup'],
-								      $agentgroup['list'],
-								      'userid');
-
-			if($agentgroup['slt'] !== false)
-			{
-				$agentgroupsort = new dwho_sort(array('browse'	=> 'agentgroup',
-								      'key'	=> 'name'));
-
-				$agentgroup['list'] = dwho_array_diff_key($agentgroup['list'],$agentgroup['slt']);
-				uasort($agentgroup['slt'],array(&$agentgroupsort,'str_usort'));
-			}
-		}
-
-		if($agent['list'] !== false && dwho_ak('agent',$result) === true)
-		{
-			$agent['slt'] = dwho_array_intersect_key($result['agent'],
-								 $agent['list'],
-								 'userid');
-
-			if($agent['slt'] !== false)
-			{
-				$agentsort = new dwho_sort(array('browse'	=> 'agentfeatures',
-								 'key'		=> 'identity'));
-
-				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
-				uasort($agent['slt'],array(&$agentsort,'str_usort'));
-			}
-		}
+		
+		if($user['list'] !== false && dwho_issa('user',$result) === true
+		&& ($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'userid')) !== false)
+			$user['slt'] = array_keys($user['slt']);
+		
+		if($agentgroup['list'] !== false && dwho_issa('agentgroup',$result) === true
+		&& ($agentgroup['slt'] = dwho_array_intersect_key($result['agentgroup'],$agentgroup['list'],'userid')) !== false)
+			$agentgroup['slt'] = array_keys($agentgroup['slt']);
+		
+		if($agent['list'] !== false && dwho_issa('agent',$result) === true
+		&& ($agent['slt'] = dwho_array_intersect_key($result['agent'],$agent['list'],'userid')) !== false)
+			$agent['slt'] = array_keys($agent['slt']);
 
 		if(empty($result) === false)
 		{
@@ -252,14 +217,6 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/locale/ui-multiselect-fr.js', true);
-
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/suggest.js');
@@ -267,6 +224,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -410,53 +368,18 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
-		if($user['list'] !== false && dwho_ak('user',$return) === true)
-		{
-			$user['slt'] = dwho_array_intersect_key($return['user'],
-								$user['list'],
-								'userid');
-
-			if($user['slt'] !== false)
-			{
-				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
-
-				$usersort = new dwho_sort(array('key' => 'identity'));
-				uasort($user['slt'],array(&$usersort,'str_usort'));
-			}
-		}
-
-		if($agentgroup['list'] !== false && dwho_ak('agentgroup',$return) === true)
-		{
-			$agentgroup['slt'] = dwho_array_intersect_key($return['agentgroup'],
-								      $agentgroup['list'],
-								      'userid');
-
-			if($agentgroup['slt'] !== false)
-			{
-				$agentgroupsort = new dwho_sort(array('browse'	=> 'agentgroup',
-								      'key'	=> 'name'));
-
-				$agentgroup['list'] = dwho_array_diff_key($agentgroup['list'],$agentgroup['slt']);
-				uasort($agentgroup['slt'],array(&$agentgroupsort,'str_usort'));
-			}
-		}
-
-		if($agent['list'] !== false && dwho_ak('agent',$return) === true)
-		{
-			$agent['slt'] = dwho_array_intersect_key($return['agent'],
-								 $agent['list'],
-								 'userid');
-
-			if($agent['slt'] !== false)
-			{
-				$agentsort = new dwho_sort(array('browse'	=> 'agentfeatures',
-								 'key'		=> 'identity'));
-
-				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
-				uasort($agent['slt'],array(&$agentsort,'str_usort'));
-			}
-		}
+		
+		if($user['list'] !== false && dwho_issa('user',$return) === true
+		&& ($user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'userid')) !== false)
+			$user['slt'] = array_keys($user['slt']);
+		
+		if($agentgroup['list'] !== false && dwho_issa('agentgroup',$return) === true
+		&& ($agentgroup['slt'] = dwho_array_intersect_key($return['agentgroup'],$agentgroup['list'],'userid')) !== false)
+			$agentgroup['slt'] = array_keys($agentgroup['slt']);
+		
+		if($agent['list'] !== false && dwho_issa('agent',$return) === true
+		&& ($agent['slt'] = dwho_array_intersect_key($return['agent'],$agent['list'],'userid')) !== false)
+			$agent['slt'] = array_keys($agent['slt']);
 
 		if(empty($return) === false)
 		{
@@ -497,13 +420,6 @@ switch($act)
 			$return['queue']['leavewhenempty'] = explode(',', $return['queue']['leavewhenempty']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('/extra-libs//multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
-
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
-
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/suggest.js');
@@ -511,6 +427,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->load_js_multiselect_files();
 
 		$_TPL->set_var('id',$info['queuefeatures']['id']);
 		$_TPL->set_var('info',$return);

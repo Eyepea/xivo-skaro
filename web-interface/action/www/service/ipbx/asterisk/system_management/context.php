@@ -91,20 +91,10 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 			}
 		}
-
-		if($contextinc['list'] !== false && dwho_issa('contextinclude',$result) === true)
-		{
-			dwho::load_class('dwho_sort');
-			$contextincsort = new dwho_sort(array('key' => 'priority'));
-			usort($result['contextinclude'],array(&$contextincsort,'num_usort'));
-
-			$contextinc['slt'] = dwho_array_intersect_key($result['contextinclude'],
-								      $contextinc['list'],
-								      'include');
-
-			if($contextinc['slt'] !== false)
-				$contextinc['list'] = dwho_array_diff_key($contextinc['list'],$contextinc['slt']);
-		}
+		
+		if($contextinc['list'] !== false && dwho_issa('contextinclude',$result) === true
+		&& ($contextinc['slt'] = dwho_array_intersect_key($result['contextinclude'],$contextinc['list'],'include')) !== false)
+			$contextinc['slt'] = array_keys($contextinc['slt']);
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -117,6 +107,7 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/context.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'edit':
 		$appcontext = &$ipbx->get_application('context');
@@ -188,20 +179,10 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 			}
 		}
-
-		if($contextinc['list'] !== false && dwho_issa('contextinclude',$return) === true)
-		{
-			dwho::load_class('dwho_sort');
-			$contextincsort = new dwho_sort(array('key' => 'priority'));
-			usort($return['contextinclude'],array(&$contextincsort,'num_usort'));
-
-			$contextinc['slt'] = dwho_array_intersect_key($return['contextinclude'],
-								      $contextinc['list'],
-								      'include');
-
-			if($contextinc['slt'] !== false)
-				$contextinc['list'] = dwho_array_diff_key($contextinc['list'],$contextinc['slt']);
-		}
+		
+		if($contextinc['list'] !== false && dwho_issa('contextinclude',$return) === true
+		&& ($contextinc['slt'] = dwho_array_intersect_key($return['contextinclude'],$contextinc['list'],'include')) !== false)
+			$contextinc['slt'] = array_keys($contextinc['slt']);
 
 		$_TPL->set_var('id',$info['context']['name']);
 		$_TPL->set_var('info',$return);
@@ -215,6 +196,7 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/context.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;

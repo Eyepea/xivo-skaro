@@ -74,3 +74,4 @@ function xivo_ast_incall_onload()
 }
 
 dwho.dom.set_onload(xivo_ast_incall_onload);
+

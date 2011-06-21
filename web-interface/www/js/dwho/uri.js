@@ -33,7 +33,7 @@ dwho.uri = function()
 	var unreserved	= 'a-zA-Z0-9-\\._~';
 	var ipvfuture	= 'v[\\da-fA-F]+\\.[' + unreserved + sub_delims + ':]+';
 	var port	= '[0-9]{0,5}';
-	var fnescaped	= function(chr) { return('%' + chr.charCodeAt(0).toString(16).toUpperCase()); }
+	var fnescaped	= function(chr) { return('%' + chr.charCodeAt(0).toString(16).toUpperCase()); };
 
 	this._encode		= {};
 	this._encode.user	= new RegExp('([^' + unreserved + sub_delims + ']+)');
@@ -58,12 +58,11 @@ dwho.uri = function()
 	this._reipvfutureport	= new RegExp('^\\[([\\da-fA-F:\\.]+|' + ipvfuture + ')\\]' +
 					     '(\\:' + port + ')?$');
 
-	this._fnencodeuri	= function(str)
-				  {
+	this._fnencodeuri	= function(str)  {
 					return(encodeURIComponent(dwho_string(str)).
 					       replace(/[!'\(\)\*~]/g,fnescaped));
-				  }
-}
+				  };
+};
 
 dwho.uri.prototype.build = function(obj,encode,type_host)
 {
@@ -207,7 +206,7 @@ dwho.uri.prototype.build = function(obj,encode,type_host)
 		r += '#' + fragment;
 
 	return(r);
-}
+};
 
 dwho.uri.prototype.parse = function(uri,decode)
 {
@@ -309,7 +308,7 @@ dwho.uri.prototype.parse = function(uri,decode)
 	}
 
 	return(uri);
-}
+};
 
 dwho.uri.prototype.split = function(uri)
 {
@@ -335,7 +334,7 @@ dwho.uri.prototype.split = function(uri)
 		r.fragment	= rs[9];
 
 	return(r);
-}
+};
 
 dwho.uri.prototype.split_authority = function(authority)
 {
@@ -391,7 +390,7 @@ dwho.uri.prototype.split_authority = function(authority)
 		r.host = hostport;
 
 	return(r);
-}
+};
 
 dwho.uri.prototype.split_query = function(query)
 {
@@ -423,7 +422,7 @@ dwho.uri.prototype.split_query = function(query)
 		return(false);
 
 	return(r);
-}
+};
 
 dwho.uri.prototype.build_query = function(query,encode)
 {
@@ -472,7 +471,7 @@ dwho.uri.prototype.build_query = function(query,encode)
 	}
 
 	return(r.join('&'));
-}
+};
 
 dwho.uri.prototype.get_host_type = function(host)
 {
@@ -487,7 +486,7 @@ dwho.uri.prototype.get_host_type = function(host)
 		return(this._host.ipv4);
 	else
 		return(this._host.reg_name);
-}
+};
 
 dwho.uri.prototype.encode = function(str,type)
 {
@@ -521,7 +520,7 @@ dwho.uri.prototype.encode = function(str,type)
 		return(r.replace(/ /g,'+'));
 
 	return(r);
-}
+};
 
 dwho.uri.prototype.valid_scheme = function(scheme)
 {
@@ -529,12 +528,12 @@ dwho.uri.prototype.valid_scheme = function(scheme)
 		return(false);
 
 	return((dwho_string(scheme).match(this._regexp.scheme) !== null));
-}
+};
 
 dwho.uri.prototype.valid_ipv4 = function(ip)
 {
 	return((dwho_ip2long(ip) !== false));
-}
+};
 
 dwho.uri.prototype.valid_ipv6 = function(ip)
 {
@@ -551,7 +550,7 @@ dwho.uri.prototype.valid_ipv6 = function(ip)
 		return(false);
 
 	return((right + left < 8));
-}
+};
 
 dwho.uri.prototype._valid_h16 = function(h16)
 {
@@ -563,7 +562,7 @@ dwho.uri.prototype._valid_h16 = function(h16)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype._valid_rightipv6 = function(ip)
 {
@@ -607,7 +606,7 @@ dwho.uri.prototype._valid_rightipv6 = function(ip)
 	}
 
 	return(h16_cnt + nb);
-}
+};
 
 dwho.uri.prototype._valid_leftipv6 = function(ip)
 {
@@ -634,7 +633,7 @@ dwho.uri.prototype._valid_leftipv6 = function(ip)
 	}
 
 	return(nb);
-}
+};
 
 dwho.uri.prototype.valid_ipvfuture = function(ip)
 {
@@ -643,7 +642,7 @@ dwho.uri.prototype.valid_ipvfuture = function(ip)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_ipliteral = function(ip)
 {
@@ -663,7 +662,7 @@ dwho.uri.prototype.valid_ipliteral = function(ip)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_host = function(host)
 {
@@ -683,7 +682,7 @@ dwho.uri.prototype.valid_host = function(host)
 	}
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_authority = function(host,user,password,port)
 {
@@ -727,7 +726,7 @@ dwho.uri.prototype.valid_authority = function(host,user,password,port)
 		return(false);
 
 	return(true);
-}
+};
 
 dwho.uri.prototype.valid_user = function(user)
 {
@@ -736,7 +735,7 @@ dwho.uri.prototype.valid_user = function(user)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_password = function(password)
 {
@@ -745,7 +744,7 @@ dwho.uri.prototype.valid_password = function(password)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_port = function(port)
 {
@@ -754,7 +753,7 @@ dwho.uri.prototype.valid_port = function(port)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_path = function(path)
 {
@@ -763,7 +762,7 @@ dwho.uri.prototype.valid_path = function(path)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_query = function(query)
 {
@@ -772,9 +771,9 @@ dwho.uri.prototype.valid_query = function(query)
 		return(true);
 
 	return(false);
-}
+};
 
 dwho.uri.prototype.valid_fragment = function(fragment)
 {
 	return(this.valid_query(fragment));
-}
+};
