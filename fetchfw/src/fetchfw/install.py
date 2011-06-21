@@ -331,11 +331,12 @@ class TarFilter(object):
 
 
 class RarFilter(object):
-    """A filter who transform a directory containing rar files to a directory containing
-    the content of these rar files.
+    """A filter who transform a directory containing rar files to a directory
+    containing the content of these rar files.
     
     Note that it depends on the "unrar" executable to be present on the host
-    system.
+    system. On Debian squeeze, this executable is found in the "unrar"
+    package (non-free version).
     
     """
     _CMD_PREFIX = ['unrar', 'e', '-idq', '-y']
@@ -354,6 +355,36 @@ class RarFilter(object):
             else:
                 if retcode:
                     raise InstallationError('unrar returned status code %s' % retcode)
+
+
+class Filter7z(object):
+    """A filter who transform a directory containing 7z files to a directory
+    containing the content of these 7z files.
+    
+    Note that it depends on the "7zr" executable to be present on the host
+    system. On Debian squeeze, this executable is found in the "p7zip" package.
+    
+    Also, note that the 7zr has a somehow weird behaviour when specifying an
+    output directory, files inside directory of the archive will be all
+    extracted in the same base directory.
+    
+    """
+    _CMD_PREFIX = ['7zr', 'e', '-bd']
+    
+    def __init__(self, pathnames):
+        self._glob_helper = _GlobHelper(pathnames)
+    
+    def apply(self, src_directory, dst_directory):
+        for pathname in self._glob_helper.iglob_in_dir(src_directory):
+            try:
+                cmd = self._CMD_PREFIX + ['-o%s' % dst_directory, pathname]
+                logger.debug('Executing external command: %s', cmd)
+                retcode = subprocess.call(cmd)
+            except OSError, e:
+                raise InstallationError('7zr executable probably missing: %s' % e)
+            else:
+                if retcode:
+                    raise InstallationError('7zr returned status code %s' % retcode)
 
 
 class CiscoUnsignFilter(object):
