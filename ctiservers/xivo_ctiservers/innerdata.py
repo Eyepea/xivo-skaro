@@ -460,16 +460,11 @@ class Safe:
     def voicemailupdate(self, mailbox, new, old = None, waiting = None):
         for k, v in self.xod_config['voicemails'].keeplist.iteritems():
             if mailbox == v.get('fullmailbox'):
+                self.handle_cti_stack('set', ('voicemails', 'updatestatus', k))
                 self.xod_status['voicemails'][k].update({'old' : old,
                                                          'new' : new,
                                                          'waiting' : waiting})
-                self.events_cti.put( { 'class' : 'getlist',
-                                       'listname' : 'voicemails',
-                                       'function' : 'updatestatus',
-                                       'tipbxid' : self.ipbxid,
-                                       'tid' : k,
-                                       'status' : self.xod_status['voicemails'][k]
-                                       } )
+                self.handle_cti_stack('empty_stack')
                 break
         return
 
