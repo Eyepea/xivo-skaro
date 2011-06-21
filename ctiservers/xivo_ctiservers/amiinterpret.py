@@ -49,9 +49,6 @@ class AMI_1_8:
         self.log = logging.getLogger('AMI_1.8(%s)' % self.ipbxid)
         fagiport = self.ctid.cconf.getconfig('main').get('incoming_tcp').get('FAGI')[1]
         self.fagiportstring = ':%s/' % fagiport
-
-        self.getvar_requests = {}
-        self.a2c = {}
         return
 
     def ami_fullybooted(self, event):
@@ -92,8 +89,12 @@ class AMI_1_8:
         channelstate = event.pop('ChannelState')
         context = event.pop('Context')
 
-        actionid = ''.join(random.sample(__alphanums__, 10))
-        self.a2c[actionid] = channel
+        actionid = 'nc:%s' % ''.join(random.sample(__alphanums__, 10))
+        self.innerdata.actionids[actionid] = {
+            'mode' : 'newchannel',
+            'action' : 'getvar',
+            'args' : [channel, 'XIVO_ORIGACTIONID']
+            }
         self.ctid.myami[self.ipbxid].amicl.actionid = actionid
         self.ctid.myami[self.ipbxid].amicl.getvar(channel, 'XIVO_ORIGACTIONID')
         self.innerdata.newchannel(channel, context, channelstate)
@@ -208,7 +209,7 @@ class AMI_1_8:
         context = event.pop('Context')
         hint = event.pop('Hint')
         status = event.pop('Status')
-        self.log.info('ami_extensionstatus : %s %s exten=%s %s' % (hint, context, exten, status))
+        # self.log.info('ami_extensionstatus : %s %s exten=%s %s' % (hint, context, exten, status))
         self.innerdata.updatehint(hint, status)
         return
 
@@ -283,9 +284,10 @@ class AMI_1_8:
         return
 
     def ami_channelupdate(self, event):
-        # called when there is a trunk : links callno-remote and callno-local
-        self.log.info('ami_channelupdate %s' % (event))
+        # could be especially useful when there is a trunk : links callno-remote and callno-local
+        # self.log.info('ami_channelupdate %s' % (event))
         return
+
     def ami_pickup(self, event):
         self.log.info('ami_pickup %s' % (event))
         return
@@ -524,11 +526,13 @@ class AMI_1_8:
         return
 
     def ami_cdr(self, event):
-        self.log.info('ami_cdr %s' % (event))
+        #self.log.info('ami_cdr %s' % (event))
         return
+
     def ami_cel(self, event):
         # self.log.info('ami_cel %s' % (event))
         return
+
     def ami_dtmf(self, event):
         self.log.info('ami_dtmf %s' % (event))
         return
@@ -848,9 +852,12 @@ class AMI_1_8:
                 conn_ami = self.ctid.myami.get(self.ipbxid).amicl
                 ipbxcmd = 'sendextensionstate'
                 if hasattr(conn_ami, ipbxcmd):
-                    conn_ami.actionid = ''.join(random.sample(__alphanums__, 10))
-                    self.log.info('starting ipbxcommand %s with actionid %s'
-                             % (ipbxcmd, conn_ami.actionid))
+                    conn_ami.actionid = 'exten:%s' % ''.join(random.sample(__alphanums__, 10))
+                    self.innerdata.actionids[conn_ami.actionid] = {
+                        'mode' : 'extension',
+                        'action' : ipbxcmd,
+                        'args' : (extension, context)
+                        }
                     r = getattr(conn_ami, ipbxcmd)(* (extension, context))
                 else:
                     self.log.warning('no such AMI command %s' % ipbxcmd)
@@ -1014,43 +1021,81 @@ class AMI_1_8:
         hint = event.pop('Hint')
         status = event.pop('Status')
         if hint:
-            self.log.info('amiresponse_extensionstatus : %s %s %s %s' % (exten, context, hint, status))
+            # self.log.info('amiresponse_extensionstatus : %s %s %s %s' % (exten, context, hint, status))
             self.innerdata.updatehint(hint, status)
         return
 
     def amiresponse_success(self, event, nocolon):
-        msg = event.get('Message')
-        actionid = event.get('ActionID')
-        self.log.info('amiresponse_success %s' % event)
+        if 'ActionID' in event:
+            actionid = event.pop('ActionID')
+        else:
+            self.log.info('amiresponse_success (no ActionID) %s' % event)
+            return
 
-        if actionid in self.getvar_requests:
-            del self.getvar_requests[actionid]
-        if actionid in self.a2c: # created at newchannel event
-            value = event.get('Value')
-            if value:
-                channel = self.a2c.get(actionid)
-                self.innerdata.autocall(channel, value)
-            del self.a2c[actionid]
-
-        if msg == 'Extension Status':
-            # this is the reply to 'ExtensionState'
-            self.amiresponse_extensionstatus(event)
+        if actionid in self.innerdata.actionids:
+            properties = self.innerdata.actionids.pop(actionid)
+            mode = properties.pop('mode')
+            if mode == 'newchannel':
+                value = event.pop('Value')
+                if value:
+                    self.log.info('amiresponse_success %s %s : %s %s : %s'
+                                  % (actionid, mode, value, properties, event))
+                    # channel = self.a2c.get(actionid)
+                    # self.innerdata.autocall(channel, value)
+            elif mode == 'useraction':
+                self.log.info('amiresponse_success %s %s : %s - %s'
+                              % (actionid, mode, event, properties))
+            elif mode == 'extension':
+                # this is the reply to 'ExtensionState'
+                # too much verbose log output
+                # self.log.info('amiresponse_success %s %s : %s - %s' % (actionid, mode, event, properties))
+                msg = event.pop('Message')
+                if msg == 'Extension Status':
+                    self.amiresponse_extensionstatus(event)
+                else:
+                    self.log.warning('amiresponse_success %s %s : %s - %s - unknown msg %s'
+                                     % (actionid, mode, event, properties, msg))
+            else:
+                self.log.info('amiresponse_success %s %s (?) : %s'
+                              % (actionid, mode, event))
+            # print 'actionids left', self.innerdata.actionids.keys()
+        else:
+            self.log.warning('amiresponse_success %s (no record) : %s'
+                             % (actionid, event))
         return
 
     def amiresponse_error(self, event, nocolon):
-        self.log.info('amiresponse_error %s' % event)
-        actionid = event.get('ActionID')
-        if actionid in self.getvar_requests:
-            print actionid, 'was in getvar_requests'
-            del self.getvar_requests[actionid]
-        if actionid in self.a2c: # created at newchannel event
-            print actionid, 'was in a2c', self.a2c.get(actionid)
-            del self.a2c[actionid]
+        if 'ActionID' in event:
+            actionid = event.pop('ActionID')
+        else:
+            self.log.warning('amiresponse_error (no ActionID) %s' % event)
+            return
+
+        if actionid in self.innerdata.actionids:
+            properties = self.innerdata.actionids.pop(actionid)
+            mode = properties.pop('mode')
+            self.log.warning('amiresponse_error %s %s : %s - %s'
+                             % (actionid, mode, event, properties))
+            # print 'actionids left', self.innerdata.actionids.keys()
+        else:
+            self.log.warning('amiresponse_error %s (no record) : %s'
+                             % (actionid, event))
         return
 
     def amiresponse_follows(self, event, nocolon):
-        self.log.info('amiresponse_follows %s' % event)
-        actionid = event.get('ActionID')
-        if actionid in self.getvar_requests:
-            del self.getvar_requests[actionid]
+        if 'ActionID' in event:
+            actionid = event.pop('ActionID')
+        else:
+            self.log.warning('amiresponse_follows (no ActionID) %s' % event)
+            return
+
+        if actionid in self.innerdata.actionids:
+            properties = self.innerdata.actionids.pop(actionid)
+            mode = properties.pop('mode')
+            self.log.info('amiresponse_follows %s %s : %s - %s'
+                          % (actionid, mode, event, properties))
+            # print 'actionids left', self.innerdata.actionids.keys()
+        else:
+            self.log.warning('amiresponse_follows %s (no record) : %s'
+                             % (actionid, event))
         return

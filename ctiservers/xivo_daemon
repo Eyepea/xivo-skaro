@@ -458,8 +458,8 @@ class xivo_daemon:
     def loop_over_cti_queues(self):
         for ipbxid, innerdata in self.safe.iteritems():
             queuesize = self.loop_over_cti_queue(innerdata)
-            if queuesize > 0:
-                log.info('loop_over_cti_queue %s %d items' % (ipbxid, queuesize))
+##            if queuesize > 0:
+##                log.info('loop_over_cti_queue %s %d items' % (ipbxid, queuesize))
         return
 
     def set_transfer_socket(self, socketref, direction):
@@ -557,20 +557,20 @@ class xivo_daemon:
                 return
         # }
         try:    # {
+            # connexions ready for sending(writing)
             if sels_o:
                 log.warning('got some sels_o %s' % sels_o)
-                # connexions ready for sending(writing)
-                for sel_o in sels_o:
-                    try:
-                        sel_o.process_sending()
-                    except ClientConnection.CloseException, cexc:
-                        if sel_o in self.fdlist_established:
-                            kind = self.fdlist_established[sel_o]
-                            log.info('TCP socket %s closed(sending %s) on %s'
-                                     % (kind, cexc, sel_o.getpeername()))
-                            kind.disconnected('end_sending')
-                            sel_o.close()
-                            del self.fdlist_established[sel_o]
+            for sel_o in sels_o:
+                try:
+                    sel_o.process_sending()
+                except ClientConnection.CloseException, cexc:
+                    if sel_o in self.fdlist_established:
+                        kind = self.fdlist_established[sel_o]
+                        log.info('TCP socket %s closed(sending %s) on %s'
+                                 % (kind, cexc, sel_o.getpeername()))
+                        kind.disconnected('end_sending')
+                        sel_o.close()
+                        del self.fdlist_established[sel_o]
 
             if sels_e:
                 log.warning('got some sels_e %s' % sels_e)
@@ -820,7 +820,6 @@ class xivo_daemon:
                         log.exception('%s : failed while updating lists and sockets (select timeout)' % ipbxid)
                   else:
                       pass
-                # }
             # }
         # }
         except Exception:

@@ -75,6 +75,7 @@ IPBXCOMMANDS = [
     'listen',
 
     'agentlogin', 'agentlogout',
+    'agentjoinqueue', 'agentleavequeue',
     'agentpausequeue', 'agentunpausequeue'
     ]
 
@@ -121,11 +122,11 @@ class Command:
                 if regcommands:
                     if self.command not in regcommands:
                         self.log.warning('user %s/%s : unallowed command %s'
-                                    % (self.ripbxid, self.ruserid, self.command))
+                                         % (self.ripbxid, self.ruserid, self.command))
                         messagebase['warning_string'] = 'unallowed'
                 else:
                     self.log.warning('user %s/%s : unallowed command %s - empty regcommands'
-                                % (self.ripbxid, self.ruserid, self.command))
+                                     % (self.ripbxid, self.ruserid, self.command))
                     messagebase['warning_string'] = 'no_regcommands'
 
             methodname = 'regcommand_%s' % self.command
@@ -404,68 +405,6 @@ class Command:
                                                   'text' : chitchattext}} )
         return reply
 
-    def ipbxcommand_meetme(self):
-        print 'ipbxcommand_meetme', self.commanddict, self.userid, self.ruserid
-        function = icommand.struct.get('function')
-        argums = icommand.struct.get('functionargs')
-        if function == 'record' and len(argums) == 3 and argums[2] in ['start' , 'stop']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                command = argums[2]
-                                chan = ''
-                                validuid = ''
-                                for uid, info in self.xod_config['meetme'][astid]. \
-                                                 keeplist[confno]['uniqueids'].iteritems():
-                                    if info['usernum'] == castid:
-                                        chan = info['channel']
-                                        validuid = uid
-                                        break
-
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-                                if argums[1] == "start":
-                                    self.__ami_execute__(astid, "monitor", chan,
-                                                         'cti-meetme-%s-%s' % (roomname, datestring))
-                                else:
-                                    self.__ami_execute__(astid, "stopmonitor", chan)
-
-        elif function in ['MeetmePause']:
-                                confno = argums[0]
-                                status = argums[1]
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
-                                                                ('status', '%s' % (status))])
-
-        elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                adminnum = self.xod_config['meetme'][astid].keeplist[confno]['adminnum']
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
-                                                                ('Usernum', '%s' % (castid)),
-                                                                ('Adminnum', '%s' % (adminnum[0]))])
-
-        elif function in ['kick', 'mute', 'unmute']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                self.__ami_execute__(astid, 'sendcommand',
-                                                            'Command', [('Command', 'meetme %s %s %s' %
-                                                                        (function, roomname, castid))])
-
-        elif function == 'getlist':
-                                fullstat = {}
-                                for iastid, v in self.xod_config['meetme'].iteritems():
-                                    fullstat[iastid] = v.keeplist
-                                tosend = { 'class' : 'meetme',
-                                           'function' : 'sendlist',
-                                           'payload' : fullstat }
-                                repstr = self.__cjson_encode__(tosend)
-
-        return
-
     def regcommand_featuresget(self):
         reply = {}
         z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
@@ -642,9 +581,14 @@ class Command:
             conn_ami = self.ctid.myami.get(self.ripbxid).amicl
             ipbxcmd = z.get('comm')
             if hasattr(conn_ami, ipbxcmd):
-                conn_ami.actionid = ''.join(random.sample(__alphanums__, 10))
+                conn_ami.actionid = 'ua:%s' % self.commandid
+                self.rinnerdata.actionids[conn_ami.actionid] = {
+                    'mode' : 'useraction',
+                    'action' : ipbxcmd,
+                    'args' : z.get('args')
+                    }
                 self.log.info('method %s : starting ipbxcommand %s with actionid %s'
-                         % (methodname, ipbxcmd, conn_ami.actionid))
+                              % (methodname, ipbxcmd, conn_ami.actionid))
                 r = getattr(conn_ami, ipbxcmd)(* z.get('args'))
             else:
                 self.log.warning('no such AMI command %s' % ipbxcmd)
@@ -772,6 +716,68 @@ class Command:
             # {'XIVO_USERID' : userinfo.get('xivo_userid')})
         return rep
 
+
+    def ipbxcommand_meetme(self):
+        print 'ipbxcommand_meetme', self.commanddict, self.userid, self.ruserid
+        function = icommand.struct.get('function')
+        argums = icommand.struct.get('functionargs')
+        if function == 'record' and len(argums) == 3 and argums[2] in ['start' , 'stop']:
+                                castid = argums[0]
+                                confno = argums[1]
+                                command = argums[2]
+                                chan = ''
+                                validuid = ''
+                                for uid, info in self.xod_config['meetme'][astid]. \
+                                                 keeplist[confno]['uniqueids'].iteritems():
+                                    if info['usernum'] == castid:
+                                        chan = info['channel']
+                                        validuid = uid
+                                        break
+
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
+                                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
+                                if argums[1] == "start":
+                                    self.__ami_execute__(astid, "monitor", chan,
+                                                         'cti-meetme-%s-%s' % (roomname, datestring))
+                                else:
+                                    self.__ami_execute__(astid, "stopmonitor", chan)
+
+        elif function in ['MeetmePause']:
+                                confno = argums[0]
+                                status = argums[1]
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
+                                self.__ami_execute__(astid, 'sendcommand',
+                                                     function, [('Meetme', '%s' % (roomname)),
+                                                                ('status', '%s' % (status))])
+
+        elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
+                                castid = argums[0]
+                                confno = argums[1]
+                                adminnum = self.xod_config['meetme'][astid].keeplist[confno]['adminnum']
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
+                                self.__ami_execute__(astid, 'sendcommand',
+                                                     function, [('Meetme', '%s' % (roomname)),
+                                                                ('Usernum', '%s' % (castid)),
+                                                                ('Adminnum', '%s' % (adminnum[0]))])
+
+        elif function in ['kick', 'mute', 'unmute']:
+                                castid = argums[0]
+                                confno = argums[1]
+                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
+                                self.__ami_execute__(astid, 'sendcommand',
+                                                            'Command', [('Command', 'meetme %s %s %s' %
+                                                                        (function, roomname, castid))])
+
+        elif function == 'getlist':
+                                fullstat = {}
+                                for iastid, v in self.xod_config['meetme'].iteritems():
+                                    fullstat[iastid] = v.keeplist
+                                tosend = { 'class' : 'meetme',
+                                           'function' : 'sendlist',
+                                           'payload' : fullstat }
+                                repstr = self.__cjson_encode__(tosend)
+
+        return
 
     def ipbxcommand_sipnotify(self):
         if 'variables' in self.commanddict:

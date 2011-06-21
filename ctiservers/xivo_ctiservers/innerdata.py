@@ -161,6 +161,7 @@ class Safe:
 
         self.channels = {}
         self.queuemembers = {}
+        self.actionids = {}
 
         self.ctistack = []
 
@@ -249,8 +250,8 @@ class Safe:
                                        'tipbxid' : self.ipbxid,
                                        'list' : [k]
                                        } )
-            if deltas.get('del', {}):
-                finaldels = deltas.get('del').keys()
+            if deltas.get('del'):
+                finaldels = deltas.get('del', [])
                 # tells clients about deleted objects
                 if finaldels:
                     self.events_cti.put( { 'class' : 'getlist',
@@ -694,6 +695,7 @@ class Safe:
             oldstatus = self.xod_status['phones'][p]['hintstatus']
             self.xod_status['phones'][p]['hintstatus'] = status
             if status != oldstatus:
+                self.log.info('updatehint %s : %s => %s', hint, oldstatus, status)
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : 'phones',
                                        'function' : 'updatestatus',
