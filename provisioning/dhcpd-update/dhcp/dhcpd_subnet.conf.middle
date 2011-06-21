@@ -11,6 +11,9 @@
         allow members of "Aastra6757i";
         allow members of "Aastra9143i";
         allow members of "Aastra9480i";
+        # Alcatel
+        allow members of "Alcatel-NOE";
+        allow members of "Alcatel-SIP";
         # Cisco
         allow members of "CiscoCP-unknown";
         allow members of "CiscoCP-7902G";
