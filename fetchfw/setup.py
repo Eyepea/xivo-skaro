@@ -18,7 +18,7 @@ setup(
     package_dir={'': 'src'},
     scripts=['scripts/xivo_fetchfw'],
     data_files=[('/etc/pf-xivo', ['resources/etc/fetchfw.conf']),
-                ('/var/lib/pf-xivo/fetchfw/installable',
+                ('/var/lib/pf-xivo-fetchfw/installable',
                       ['resources/data/files.db',
                        'resources/data/install.db',
                        'resources/data/packages.db'])]
