@@ -57,8 +57,6 @@ class OpenSSL(object):
 
 		http_json_server.register(self.listCertificates, CMD_R,
 						name='openssl_listcertificates', safe_init=self.safe_init)
-		http_json_server.register(self.listKeys, CMD_R,
-						name='openssl_listkeys')
 		http_json_server.register(self.getCertificateInfos, CMD_R,
 						name='openssl_certificateinfos')
 		http_json_server.register(self.getPubKey, CMD_R,
@@ -110,6 +108,7 @@ class OpenSSL(object):
 					'name'      : fname.split('.',2)[0],
 					'types'     : [],
 					'filename'  : fname,
+					'path'      : os.path.join(self.certsdir, fname)
 			}
 
 			# guess what filetype is it, reading content, 
@@ -135,34 +134,6 @@ class OpenSSL(object):
 			certs.append(cert)
 		
 		return certs
-
-	def listKeys(self, args, options):
-		"""Return list of available keys
-
-					arguments:
-						type (str, optional): 'both','private' or 'public', depending on wether
-						you want to get all, private only or public only keys
-		"""
-		keys = []; index = {}
-
-		type = options.get('type','both')
-		if type in ('both','private'):
-			for fname in glob.iglob(os.path.join(self.certsdir, '*.key')):
-			    keys.append({
-			      'name'             : os.path.basename(fname).rsplit('.',2)[0],
-			      'path'             : fname,
-			      'type'             : 'privkey',
-			    })
-
-		if type in ('both','public'):
-			for fname in glob.iglob(os.path.join(self.certsdir, '*.pub')):
-			    keys.append({
-			      'name'             : os.path.basename(fname).rsplit('.',2)[0],
-			      'path'             : fname,
-			      'type'             : 'pubkey',
-			    })
-
-		return keys
 
 
 	def getCertificateInfos(self, args, options):
@@ -555,10 +526,12 @@ class OpenSSL(object):
 			raise HttpReqError(404, "'%s' certificat not found" % options['name'], json=True)
 
 		os.remove(os.path.join(self.certsdir, options['name']))
-		try:		
-			os.remove(os.path.join('/var/lib/asterisk/keys', options['name']))	
-		except: 
-			pass
+
+		# deleting symlinks if exists
+		for name in (options['name'], options['name']+'.pub', options['name']+'.key'):
+			path = os.path.join('/var/lib/asterisk/keys', name)
+			if os.path.lexists(path) and os.path.islink(path) and os.readlink(path) == os.path.join(self.certsdir, options['name']):
+				os.remove(path)
 
 		return True
 
@@ -581,9 +554,12 @@ class OpenSSL(object):
 		with open(os.path.join(self.certsdir, args['name']), 'w') as f:
 			f.write(args['content'])
 
-		print args['name'], types
-		if 'pubkey' in types or 'privkey' in types:
-			os.symlink(os.path.join(self.certsdir, args['name']),	os.path.join('/var/lib/asterisk/keys', args['name']))
+		# symlinks for IAX keys
+		if len(types) == 1:
+			if   types[0] == 'pubkey':
+				os.symlink(os.path.join(self.certsdir, args['name']),	os.path.join('/var/lib/asterisk/keys', args['name']+('' if args['name'].endswith('.pub') else '.pub')))
+			elif types[0] == 'privkey':
+				os.symlink(os.path.join(self.certsdir, args['name']),	os.path.join('/var/lib/asterisk/keys', args['name']+('' if args['name'].endswith('.key') else '.key')))
 
 		return True
 
