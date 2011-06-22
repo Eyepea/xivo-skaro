@@ -5,27 +5,22 @@
 Read raw parameter values from different sources and return a dictionary
 with well defined values.
 
-The following parameters are defined:
+The following parameters are defined (parameters that can be set in the
+configuration file are documented in provd.conf):
     general.config_file
     general.base_raw_config_file
-        The file containing a JSON document representing the base raw config.
     general.base_raw_config
         The dictionary holding the base raw config.
     general.request_config_dir 
-        The directory where request processing configuration files can be found
     general.cache_dir
-        The directory where downloaded plugins are cached.
+    general.cache_plugin
     general.base_storage_dir
-        The directory where all variable, non-cached information is stored,
-        i.e. plugins, devices, configs, dynamic configuration, etc.
     general.plugin_server
-        URL of the plugin server (where plugins are downloaded)
     general.info_extractor
     general.retriever
     general.updater
     general.router
     general.ip
-        The IP address to bind to, or '*' to bind on all local IP.
     general.http_port
     general.tftp_port
     general.rest_port
@@ -38,31 +33,18 @@ The following parameters are defined:
     general.rest_ssl_keyfile
     general.verbose
     general.sync_service_type
-        The sync service type.
     general.asterisk_ami_servers
-        For 'asterisk_ami' sync service, a tuple describing how to connect
-        to the AMI.
     database.type
-        The type of the 'database' used for storing devices and configs.
     database.generator
-        The kind of generator used to generate ID for devices and configs.
     database.ensure_common_indexes
-        Make sure common indexes on the collections are present.
     database.json_db_dir
-        For 'json' database, the base directory where collections are stored.
     database.shelve_db_dir
-        For 'shelve' database, the directory where files are stored.
-    database.mongo_uri
-        For 'mongo' database, the URI of the database.
     plugin_config.*.*
         where the first * is a plugin ID and the second * is a parameter
         name for the plugin with the given ID
     proxy.http
-        The proxy for HTTP requests.
     proxy.ftp
-        The proxy for FTP requests.
     proxy.https
-        The proxy for HTTPS requests.
     proxy.*
         The proxy for * protocol requests.
 
@@ -129,6 +111,7 @@ class DefaultConfigSource(object):
         ('general.base_raw_config_file', '/etc/pf-xivo/provd/base_raw_config.json'),
         ('general.request_config_dir', '/etc/pf-xivo/provd'),
         ('general.cache_dir', '/var/cache/pf-xivo-provd'),
+        ('general.cache_plugin', 'True'),
         ('general.base_storage_dir', '/var/lib/pf-xivo-provd'),
         ('general.plugin_server', 'http://provd.xivo.fr/plugins/1/stable/'),
         ('general.info_extractor', 'default'),
@@ -366,6 +349,7 @@ _PARAMS_DEFINITION = [
     ('general.base_raw_config_file', (str, True)),
     ('general.request_config_dir', (str, True)),
     ('general.cache_dir', (str, True)),
+    ('general.cache_plugin', (_bool, True)),
     ('general.base_storage_dir', (str, True)),
     ('general.info_extractor', (str, True)),
     ('general.retriever', (str, True)),

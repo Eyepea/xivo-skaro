@@ -202,7 +202,8 @@ class ProvisioningApplication(object):
         
         self.pg_mgr = PluginManager(self,
                                     plugins_dir,
-                                    config['general.cache_dir'])
+                                    config['general.cache_dir'],
+                                    config['general.cache_plugin'])
         if 'general.plugin_server' in config and not self.pg_mgr.server:
             self.pg_mgr.server = config['general.plugin_server']
         self._base_raw_config = config['general.base_raw_config']

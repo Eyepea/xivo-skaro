@@ -773,17 +773,19 @@ class PluginManager(object):
     _DOWNLOAD_LABEL = 'download'
     _UPDATE_LABEL = 'update'
     
-    def __init__(self, app, plugins_dir, cache_dir):
+    def __init__(self, app, plugins_dir, cache_dir, cache_plugin=True):
         """
         app -- a provisioning application object
         plugins_dir -- the directory where plugins are installed
         cache_dir -- a directory where plugin-package are downloaded
+        cache_plugin -- should we cache the plugin package or not
         """
         self._app = app
         if not os.path.exists(plugins_dir):
             os.mkdir(plugins_dir)
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
+        self._cache_plugin = cache_plugin
         self.server = None
         proxies = app.proxies
         server_p = AttrConfigureServiceParam(self, 'server',
@@ -914,6 +916,9 @@ class PluginManager(object):
                 else:
                     top_oip.state = OIP_SUCCESS
                     top_deferred.callback(None)
+                finally:
+                    if not self._cache_plugin:
+                        os.remove(cache_filename)
             def dl_errback(err):
                 self._in_install.remove(id)
                 top_oip.state = OIP_FAIL
