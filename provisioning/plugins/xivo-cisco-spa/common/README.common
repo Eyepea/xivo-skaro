@@ -1,0 +1,2 @@
+If you want to use the configuration file encryption facility of this plugin,
+you must have the 'openssl' executable installed on your system.

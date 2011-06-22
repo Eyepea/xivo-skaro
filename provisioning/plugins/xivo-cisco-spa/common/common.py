@@ -22,10 +22,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO extract MAC address in the HTTP device info extractor
-# XXX right now, config file encryption depends on the presence of the
-#     openssl application
-
 import errno
 import logging
 import os
@@ -91,6 +87,7 @@ class BaseCiscoDHCPDeviceInfoExtractor(object):
 class BaseCiscoHTTPDeviceInfoExtractor(object):
     _LINKSYS_UA_REGEX = re.compile(r'^Linksys/([\w\-]+)-([^\s\-]+) \((\w+)\)$')
     _CISCO_UA_REGEX = re.compile(r'^Cisco/(\w+)-(\S+) (?:\(([\dA-F]{12})\))?\((\w+)\)$')
+    _PATH_REGEX = re.compile(r'\b([\da-f]{12})\.xml$')
     
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
@@ -102,6 +99,8 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
             self._extract_from_ua(ua, dev_info)
             if dev_info:
                 dev_info[u'vendor'] = u'Cisco'
+                if u'mac' not in dev_info:
+                    self._extract_from_path(request.path, dev_info)
                 return dev_info
         return None
     
@@ -140,6 +139,18 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
             if raw_mac:
                 dev_info[u'mac'] = norm_mac(raw_mac.decode('ascii'))
             dev_info[u'sn'] = sn.decode('ascii')
+    
+    def _extract_from_path(self, path, dev_info):
+        # try to extract MAC address from path
+        m = self._PATH_REGEX.search(path)
+        if m:
+            raw_mac = m.group(1)
+            try:
+                mac = norm_mac(raw_mac.decode('ascii'))
+            except ValueError, e:
+                logger.warning('Could not normalize MAC address: %s', e)
+            else:
+                dev_info[u'mac'] = mac
 
 
 class BaseCiscoTFTPDeviceInfoExtractor(object):
@@ -368,10 +379,11 @@ class BaseCiscoPlugin(StandardPlugin):
     
     def _format_proxy(self, raw_config, line, line_no):
         proxy_ip = line.get(u'proxy_ip') or raw_config[u'sip_proxy_ip']
-        proxy_value = u'xivo_proxies%s:SRV=%s:5060:p=0' % (line_no, proxy_ip)
         backup_proxy_ip = line.get(u'backup_proxy_ip') or raw_config.get(u'sip_backup_proxy_ip')
         if backup_proxy_ip:
-            proxy_value += u'|%s:5060:p=1' % backup_proxy_ip
+            proxy_value = u'xivo_proxies%s:SRV=%s:5060:p=0|%s:5060:p=1' % (line_no, proxy_ip, backup_proxy_ip)
+        else:
+            proxy_value = u'%s:5060' % proxy_ip
         return proxy_value
     
     def _add_proxies(self, raw_config):
@@ -397,8 +409,13 @@ class BaseCiscoPlugin(StandardPlugin):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
     
+    def _check_device(self, device):
+        if u'mac' not in device:
+            raise Exception('MAC address needed for device configuration')
+    
     def configure(self, device, raw_config):
         self._check_config(raw_config)
+        self._check_device(device)
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
         

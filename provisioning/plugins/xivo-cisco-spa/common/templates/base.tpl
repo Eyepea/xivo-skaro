@@ -6,7 +6,7 @@
      are defined in another file (spa.xml, spa$PSN.cfg common file). -->
 
 {% if XX_key -%}
-<Profile_Rule_B>[--key {{ XX_key }}] http://{{ ip }}:{{ http_port }}/$MA.xml.encrypted</Profile_Rule_B>
+<Profile_Rule_C>[--key {{ XX_key }}] http://{{ ip }}:{{ http_port }}/$MA.xml.encrypted</Profile_Rule_C>
 {% endif -%}
 
 {% if admin_password is defined -%}
@@ -75,7 +75,7 @@
 {% endfor -%}
 
 <!-- Function keys definition SHOULD go before the line key definition if we
-     want to line key def to override the func key def (is it what we want ?) -->
+     want the line key def to override the func key def (is it what we want ?) -->
 {{ XX_fkeys }}
 
 {% for line_no, line in sip_lines.iteritems() %}

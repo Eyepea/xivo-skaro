@@ -26,6 +26,7 @@ usefulness/applicability.
 <Enable_PC_Port_VLAN_Tagging>No</Enable_PC_Port_VLAN_Tagging>
 
 <Provision_Enable>Yes</Provision_Enable>
+<Resync_Random_Delay>1</Resync_Random_Delay>
 <Resync_On_Reset>Yes</Resync_On_Reset>
 <Resync_Periodic>0</Resync_Periodic>
 <Resync_From_SIP>Yes</Resync_From_SIP>
@@ -142,6 +143,7 @@ usefulness/applicability.
 <!-- Disable all lines and make sure all credentials are promptly removed -->
 
 <Line_Enable_1_>No</Line_Enable_1_>
+<Auth_Resync-Reboot_1_>No</Auth_Resync-Reboot_1_>
 <User_ID_1_></User_ID_1_>
 <Password_1_></Password_1_>
 <Use_Auth_ID_1_>Yes</Use_Auth_ID_1_>
@@ -149,6 +151,7 @@ usefulness/applicability.
 <Dial_Plan_1_>([x*#].)</Dial_Plan_1_>
 
 <Line_Enable_2_>No</Line_Enable_2_>
+<Auth_Resync-Reboot_2_>No</Auth_Resync-Reboot_2_>
 <User_ID_2_></User_ID_2_>
 <Password_2_></Password_2_>
 <Use_Auth_ID_2_>Yes</Use_Auth_ID_2_>
@@ -156,6 +159,7 @@ usefulness/applicability.
 <Dial_Plan_2_>([x*#].)</Dial_Plan_2_>
 
 <Line_Enable_3_>No</Line_Enable_3_>
+<Auth_Resync-Reboot_3_>No</Auth_Resync-Reboot_3_>
 <User_ID_3_></User_ID_3_>
 <Password_3_></Password_3_>
 <Use_Auth_ID_3_>Yes</Use_Auth_ID_3_>
@@ -163,6 +167,7 @@ usefulness/applicability.
 <Dial_Plan_3_>([x*#].)</Dial_Plan_3_>
 
 <Line_Enable_4_>No</Line_Enable_4_>
+<Auth_Resync-Reboot_4_>No</Auth_Resync-Reboot_4_>
 <User_ID_4_></User_ID_4_>
 <Password_4_></Password_4_>
 <Use_Auth_ID_4_>Yes</Use_Auth_ID_4_>
@@ -170,6 +175,7 @@ usefulness/applicability.
 <Dial_Plan_4_>([x*#].)</Dial_Plan_4_>
 
 <Line_Enable_5_>No</Line_Enable_5_>
+<Auth_Resync-Reboot_5_>No</Auth_Resync-Reboot_5_>
 <User_ID_5_></User_ID_5_>
 <Password_5_></Password_5_>
 <Use_Auth_ID_5_>Yes</Use_Auth_ID_5_>
@@ -177,6 +183,7 @@ usefulness/applicability.
 <Dial_Plan_5_>([x*#].)</Dial_Plan_5_>
 
 <Line_Enable_6_>No</Line_Enable_6_>
+<Auth_Resync-Reboot_6_>No</Auth_Resync-Reboot_6_>
 <User_ID_6_></User_ID_6_>
 <Password_6_></Password_6_>
 <Use_Auth_ID_6_>Yes</Use_Auth_ID_6_>
@@ -184,6 +191,7 @@ usefulness/applicability.
 <Dial_Plan_6_>([x*#].)</Dial_Plan_6_>
 
 <Line_Enable_7_>No</Line_Enable_7_>
+<Auth_Resync-Reboot_7_>No</Auth_Resync-Reboot_7_>
 <User_ID_7_></User_ID_7_>
 <Password_7_></Password_7_>
 <Use_Auth_ID_7_>Yes</Use_Auth_ID_7_>
@@ -191,6 +199,7 @@ usefulness/applicability.
 <Dial_Plan_7_>([x*#].)</Dial_Plan_7_>
 
 <Line_Enable_8_>No</Line_Enable_8_>
+<Auth_Resync-Reboot_8_>No</Auth_Resync-Reboot_8_>
 <User_ID_8_></User_ID_8_>
 <Password_8_></Password_8_>
 <Use_Auth_ID_8_>Yes</Use_Auth_ID_8_>
@@ -198,6 +207,7 @@ usefulness/applicability.
 <Dial_Plan_8_>([x*#].)</Dial_Plan_8_>
 
 <Line_Enable_9_>No</Line_Enable_9_>
+<Auth_Resync-Reboot_9_>No</Auth_Resync-Reboot_9_>
 <User_ID_9_></User_ID_9_>
 <Password_9_></Password_9_>
 <Use_Auth_ID_9_>Yes</Use_Auth_ID_9_>
@@ -205,6 +215,7 @@ usefulness/applicability.
 <Dial_Plan_9_>([x*#].)</Dial_Plan_9_>
 
 <Line_Enable_10_>No</Line_Enable_10_>
+<Auth_Resync-Reboot_10_>No</Auth_Resync-Reboot_10_>
 <User_ID_10_></User_ID_10_>
 <Password_10_></Password_10_>
 <Use_Auth_ID_10_>Yes</Use_Auth_ID_10_>
@@ -212,6 +223,7 @@ usefulness/applicability.
 <Dial_Plan_10_>([x*#].)</Dial_Plan_10_>
 
 <Line_Enable_11_>No</Line_Enable_11_>
+<Auth_Resync-Reboot_11_>No</Auth_Resync-Reboot_11_>
 <User_ID_11_></User_ID_11_>
 <Password_11_></Password_11_>
 <Use_Auth_ID_11_>Yes</Use_Auth_ID_11_>
@@ -219,6 +231,7 @@ usefulness/applicability.
 <Dial_Plan_11_>([x*#].)</Dial_Plan_11_>
 
 <Line_Enable_12_>No</Line_Enable_12_>
+<Auth_Resync-Reboot_12_>No</Auth_Resync-Reboot_12_>
 <User_ID_12_></User_ID_12_>
 <Password_12_></Password_12_>
 <Use_Auth_ID_12_>Yes</Use_Auth_ID_12_>
