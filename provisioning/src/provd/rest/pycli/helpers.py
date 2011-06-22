@@ -20,6 +20,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# importing <module> as _<module> so that import are not autocompleted in the CLI
 import operator as _operator
 
 
@@ -34,7 +35,67 @@ def _init_module(configs, devices, plugins):
     _plugins = plugins
 
 
+def _itemgetter_default(item, default):
+    def aux(obj):
+        try:
+            return obj[item]
+        except KeyError:
+            return default
+    return aux
+
+
+def used_plugins():
+    """Return a list of plugins used by devices."""
+    s = set(map(_itemgetter_default(u'plugin', None), _devices.find(fields=[u'plugin'])))
+    # None might be present if at least one device had no plugins
+    s.discard(None)
+    return sorted(s)
+
+
+def installed_plugins():
+    """Return a list of all installed plugins."""
+    return sorted(_plugins.installed().iterkeys())
+
+
+def unused_plugins():
+    """Return the list of unused plugins, i.e. installed plugins that no devices are using."""
+    return list(set(installed_plugins()) - set(used_plugins()))
+
+
+def missing_plugins():
+    """Return the list of plugins used by devices that are not installed."""
+    return list(set(used_plugins()) - set(installed_plugins()))
+
+
+def mass_update_devices_plugin(old_plugin, new_plugin, synchronize=False):
+    """Update all devices using plugin old_plugin to plugin new_plugin, and
+    optionally synchronize the affected devices.
+    
+    """ 
+    if not isinstance(old_plugin, basestring):
+        raise ValueError(old_plugin)
+    if not isinstance(new_plugin, basestring):
+        raise ValueError(new_plugin)
+    
+    for device in _devices.find({u'plugin': old_plugin}):
+        device[u'plugin'] = new_plugin
+        print "Updating device %s" % device[u'id']
+        _devices.update(device)
+        if synchronize:
+            print "Synchronizing device %s" % device[u'id']
+            _devices.synchronize(device)
+        print
+
+
+def mass_synchronize():
+    for device in _devices.find(fields=[u'id']):
+        print "Synchronizing device %s" % device[u'id']
+        _devices.synchronize(device)
+        print
+
+
 def clean_transient_config():
+    """Remove any unused transient config. Mostly useful for debugging purpose."""
     n = 0
     for config in map(_operator.itemgetter('id'), _configs.find({u'transient': True}, fields=['id'])):
         if not _devices.find({u'config': config}, fields=['id']):
