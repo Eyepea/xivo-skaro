@@ -321,7 +321,7 @@ class AMI:
                             'response' : 'ok',
                             'command' : request.get('ipbxcommand'),
                             'replyid' : request.get('commandid') } )
-                if properties.get('amicommand') == 'originate':
+                if properties.get('amicommand') in ['originate', 'origapplication', 'txfax']:
                     self.originate_actionids[actionid] = properties
             elif mode == 'extension':
                 # this is the reply to 'ExtensionState'

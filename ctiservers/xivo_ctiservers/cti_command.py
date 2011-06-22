@@ -66,7 +66,7 @@ IPBXCOMMANDS = [
     'answer', 'refuse', 'cancel',
     'originate', 'intercept',
     'parking',
-    'transfer', 'atxfer', 'transfercancel',
+    'transfer', 'transfercancel', 'atxfer',
     'hangup',
     'sipnotify',
 
@@ -612,7 +612,6 @@ class Command:
     # transfer
     # transfercancel
     # atxfer
-    # intercept
     # park
 
     # hangupme : the requester hangs up one of his channels
@@ -636,7 +635,7 @@ class Command:
         try:
             src = self.commanddict.get('source')
             [type_src, who_src] = src.split(':', 1)
-            [ipbxid_src, id_src] = who_src.split('/')
+            [ipbxid_src, id_src] = who_src.split('/', 1)
         except Exception:
             self.log.warning('(%s) cannot parse source field %s'
                         % (self.commanddict.get('command'), src))
@@ -644,7 +643,7 @@ class Command:
         try:
             dst = self.commanddict.get('destination')
             [type_dst, who_dst] = dst.split(':', 1)
-            [ipbxid_dst, id_dst] = who_dst.split('/')
+            [ipbxid_dst, id_dst] = who_dst.split('/', 1)
         except Exception:
             self.log.warning('(%s) cannot parse destination field %s'
                         % (self.commanddict.get('command'), dst))
@@ -659,45 +658,61 @@ class Command:
         orig_protocol = None
         orig_name = None
         orig_number = None
+        orig_context = None
+        phoneidstruct_src = {}
+        phoneidstruct_dst = {}
 
         if type_src == 'user':
             if id_src in innerdata.xod_config.get('users').keeplist:
-                useridstruct = innerdata.xod_config.get('users').keeplist.get(id_src)
-                # useridstruct, innerdata.xod_status.get('users').get(id_src)
-                # XXX lookup among phones the one(s) that belong to this user
+                for k, v in innerdata.xod_config.get('phones').keeplist.iteritems():
+                    if id_src == str(v.get('iduserfeatures')):
+                        phoneidstruct_src = innerdata.xod_config.get('phones').keeplist.get(k)
+                        break
+                # if not phoneidstruct_src: lookup over agents ?
         elif type_src == 'phone':
             if id_src in innerdata.xod_config.get('phones').keeplist:
-                phoneidstruct = innerdata.xod_config.get('phones').keeplist.get(id_src)
-                orig_protocol = phoneidstruct.get('protocol')
-                # XXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
-                orig_name = phoneidstruct.get('name')
-                orig_number = phoneidstruct.get('number')
-                orig_identity = phoneidstruct.get('useridentity')
+                phoneidstruct_src = innerdata.xod_config.get('phones').keeplist.get(id_src)
         elif type_src == 'exten':
             # in android cases
             # there was a warning back to revision 6095 - maybe to avoid making arbitrary calls on behalf
             # of the local telephony system ?
             pass
 
+        if phoneidstruct_src:
+            orig_protocol = phoneidstruct_src.get('protocol')
+            # XXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
+            orig_name = phoneidstruct_src.get('name')
+            orig_number = phoneidstruct_src.get('number')
+            orig_identity = phoneidstruct_src.get('useridentity')
+            orig_context = phoneidstruct_src.get('context')
+
         extentodial = None
         dst_identity = None
 
         if type_dst == 'user':
-            # if no phone, could default to agent and/or agent phone number ?
-            pass
+            if id_dst in innerdata.xod_config.get('users').keeplist:
+                for k, v in innerdata.xod_config.get('phones').keeplist.iteritems():
+                    if id_dst == str(v.get('iduserfeatures')):
+                        phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(k)
+                        break
+                # if not phoneidstruct_dst: lookup over agents ?
         elif type_dst == 'phone':
             if id_dst in innerdata.xod_config.get('phones').keeplist:
-                phoneidstruct = innerdata.xod_config.get('phones').keeplist.get(id_dst)
-                extentodial = phoneidstruct.get('number')
-                dst_identity = phoneidstruct.get('useridentity')
-                dst_context = phoneidstruct.get('context')
+                phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(id_dst)
         elif type_dst == 'voicemail':
             extentodial = '*98'
             # XXX especially for the 'dial' command, actually
             # XXX display password on phone in order for the user to know what to type
         elif type_dst == 'exten':
             # XXX how to define
-            extentodial = who_dst
+            extentodial = id_dst
+            dst_identity = extentodial
+            dst_context = orig_context
+
+        if phoneidstruct_dst:
+            extentodial = phoneidstruct_dst.get('number')
+            dst_identity = phoneidstruct_dst.get('useridentity')
+            dst_context = phoneidstruct_dst.get('context')
 
         rep = {}
         if orig_protocol and orig_name and orig_number and extentodial:
@@ -781,91 +796,14 @@ class Command:
             variables = self.commanddict.get('variables')
         channel = self.commanddict.get('channel')
         if channel == 'user:special:me':
-            uinfo = self.rinnerdata.xod_config['users'].keeplist[self.userid] 
-            # TODO: Choose the appropriate line if more than one                 
-            line = self.rinnerdata.xod_config['phones'].keeplist[uinfo['linelist'][0]]              
-            channel = line['identity'].replace('\\','')       
+            uinfo = self.rinnerdata.xod_config['users'].keeplist[self.userid]
+            # TODO: Choose the appropriate line if more than one
+            line = self.rinnerdata.xod_config['phones'].keeplist[uinfo['linelist'][0]]
+            channel = line['identity'].replace('\\','')
         reply = {'amicommand': 'sipnotify', 'amiargs': (channel, variables)}
         return reply
 
     # transfers
-    def ipbxcommand_transferold(self):
-        print self.ipbxcommand, self.commanddict
-        srcsplit = src.split(':', 1)
-        dstsplit = dst.split(':', 1)
-        [typesrc, whosrc] = srcsplit
-        [typedst, whodst] = dstsplit
-
-        if typesrc == 'chan':
-                if whosrc.startswith('special:me:'):
-                    srcuinfo = userinfo
-                    chan_src = whosrc[len('special:me:'):]
-                else:
-                    [uid, chan_src] = whosrc.split(':')
-                    srcuinfo = self.ulist_ng.keeplist[uid]
-                if srcuinfo is not None:
-                    astid_src = srcuinfo.get('astid')
-                    context_src = srcuinfo.get('context')
-                    proto_src = 'local'
-                    # phonename_src = srcuinfo.get('phonenum')
-                    phonenum_src = srcuinfo.get('phonenum')
-                    # if termlist empty + agentphonenumber not empty => call this one
-                    cidname_src = srcuinfo.get('fullname')
-        else:
-                self.log.warning('unknown typesrc %s for %s' % (typesrc, commname))
-
-        if typedst == 'ext':
-                exten_dst = whodst
-                if whodst == 'special:parkthecall':
-                    for uid, vuid in self.uniqueids[astid_src].iteritems():
-                        if 'dial' in vuid and vuid['dial'] == chan_src and 'channel' in vuid:
-                            nchan = vuid['channel']
-                        if 'link' in vuid and vuid['link'] == chan_src and 'channel' in vuid:
-                            nchan = vuid['channel']
-                    chan_park = nchan
-                    #exten_dst = '700'   # cheat code !
-                    #chan_src = nchan    # cheat code !
-        elif typedst == 'user':
-                if whodst == 'special:me':
-                    dstuinfo = userinfo
-                else:
-                    dstuinfo = self.ulist_ng.keeplist[whodst]
-                if dstuinfo is not None:
-                    astid_dst = dstuinfo.get('astid')
-                    exten_dst = dstuinfo.get('phonenum')
-                    cidname_dst = dstuinfo.get('fullname')
-                    context_dst = dstuinfo.get('context')
-        elif typedst == 'voicemail':
-                if whodst == 'special:me':
-                    dstuinfo = userinfo
-                else:
-                    dstuinfo = self.ulist_ng.keeplist[whodst]
-
-                if dstuinfo.get('voicemailid'):
-                    voicemail_id = dstuinfo['voicemailid']
-                    self.__ami_execute__(astid_src, 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
-                    exten_dst = 's'
-                    context_src = 'macro-voicemail'
-                else:
-                    self.log.warning('no voicemail allowed or defined for %s' % dstuinfo)
-        else:
-                self.log.warning('unknown typedst %s for %s' % (typedst, commname))
-
-        # print astid_src, commname, chan_src, exten_dst, context_src
-        ret = False
-        try:
-                # cheat code !
-                if whodst == 'special:parkthecall':
-                    ret = self.__ami_execute__(astid_src, 'park', chan_park, chan_src)
-                else:
-                    if exten_dst:
-                        ret = self.__ami_execute__(astid_src, commname,
-                                                   chan_src,
-                                                   exten_dst, context_src)
-        except Exception:
-                self.log.exception('unable to %s' % commname)
-        return
-
     def ipbxcommand_parking(self):
         rep = {}
         src = self.commanddict.get('source')
@@ -876,129 +814,99 @@ class Command:
             return
 
         [ipbxid, channel] = whosrc.split('/', 1)
-        print self.ctid.safe.get(ipbxid).channels.keys()
+        # print self.ctid.safe.get(ipbxid).channels.keys()
         peerchannel = self.ctid.safe.get(ipbxid).channels.get(channel).peerchannel
         rep = {'amicommand' : 'park', 'amiargs' : (channel, peerchannel)}
         return rep
 
+    # direct transfers
     def ipbxcommand_transfer(self):
-        rep = {}
-        src = self.commanddict.get('source')
-        dst = self.commanddict.get('destination')
-        srcsplit = src.split(':', 1)
-        dstsplit = dst.split(':', 1)
-        [typesrc, whosrc] = srcsplit
-        [typedst, whodst] = dstsplit
-        if typesrc not in ['chan']:
-            self.log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
+        try:
+            src = self.commanddict.get('source')
+            [type_src, who_src] = src.split(':', 1)
+            [ipbxid_src, id_src] = who_src.split('/', 1)
+        except Exception:
+            self.log.warning('(%s) cannot parse source field %s'
+                             % (self.commanddict.get('command'), src))
             return
-        if typedst not in ['user', 'ext', 'phone']:
-            self.log.warning('unallowed typedst %s for %s' % (typedst, self.ipbxcommand))
+        try:
+            dst = self.commanddict.get('destination')
+            [type_dst, who_dst] = dst.split(':', 1)
+            [ipbxid_dst, id_dst] = who_dst.split('/', 1)
+        except Exception:
+            self.log.warning('(%s) cannot parse destination field %s'
+                        % (self.commanddict.get('command'), dst))
             return
+        if ipbxid_src != ipbxid_dst:
+            return
+        if ipbxid_src not in self.ctid.safe:
+            self.log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
+            return
+        innerdata = self.ctid.safe.get(ipbxid_src)
 
-        [ipbxid, channel] = whosrc.split('/', 1)
-        if typedst == 'user':
-            rep = {'amicommand' : 'transfer', 'amiargs' : (channel, '1431', 'from-sip')}
+        if type_src == 'channel':
+            if id_src in innerdata.channels:
+                channel = id_src
+                src_context = innerdata.channels.get(channel).context
+                # phone relations ('phone:24') innerdata.channels.get(channel).relations
+        else:
+            pass
+
+        dst_context = src_context
+        phoneidstruct_dst = {}
+
+        if type_dst == 'user':
+            if id_dst in innerdata.xod_config.get('users').keeplist:
+                for k, v in innerdata.xod_config.get('phones').keeplist.iteritems():
+                    if id_dst == str(v.get('iduserfeatures')):
+                        phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(k)
+                        break
+                # if not phoneidstruct_dst: lookup over agents ?
+        elif type_dst == 'phone':
+            if id_dst in innerdata.xod_config.get('phones').keeplist:
+                phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(id_dst)
+        elif type_dst == 'exten':
+            extentodial = id_dst
+        elif type_dst == 'parking':
+            extentodial = id_dst
+            # XXX extension or parking lot number ?
+        elif type_dst == 'voicemail':
+            # 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
+            # exten_dst = 's'
+            # context_src = 'macro-voicemail'
+            pass
+        else:
+            pass
+
+        if phoneidstruct_dst:
+            extentodial = phoneidstruct_dst.get('number')
+
+        rep = {'amicommand' : 'transfer',
+               'amiargs' : (channel,
+                            extentodial,
+                            dst_context)
+               }
         return rep
 
     def ipbxcommand_atxfer(self):
+        # no reply was received from this :
+        # http://lists.digium.com/pipermail/asterisk-users/2011-March/260508.html
+        # however some clues could be found here :
+        # https://issues.asterisk.org/view.php?id=12158
         rep = {}
-        src = self.commanddict.get('source')
-        dst = self.commanddict.get('destination')
-        srcsplit = src.split(':', 1)
-        dstsplit = dst.split(':', 1)
-        [typesrc, whosrc] = srcsplit
-        [typedst, whodst] = dstsplit
-        if typesrc not in ['chan']:
-            self.log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
-            return
-        if typedst not in ['user', 'ext', 'phone']:
-            self.log.warning('unallowed typedst %s for %s' % (typedst, self.ipbxcommand))
-            return
-
-        [ipbxid, channel] = whosrc.split('/', 1)
-        if typedst == 'user':
-            rep = {'amicommand' : 'atxfer', 'amiargs' : (channel, '1431', 'from-sip')}
         return rep
-
-
-    # old stuff, kept there for record XXXX
-    def tt():
-        if whosrc.startswith('special:me:'):
-            srcuinfo = userinfo
-            chan_src = whosrc[len('special:me:'):]
-        else:
-            [uid, chan_src] = whosrc.split(':')
-            srcuinfo = self.ulist_ng.keeplist[uid]
-            if srcuinfo is not None:
-                    astid_src = srcuinfo.get('astid')
-                    context_src = srcuinfo.get('context')
-                    proto_src = 'local'
-                    # phonename_src = srcuinfo.get('phonenum')
-                    phonenum_src = srcuinfo.get('phonenum')
-                    # if termlist empty + agentphonenumber not empty => call this one
-                    cidname_src = srcuinfo.get('fullname')
-            else:
-                self.log.warning('unknown typesrc %s for %s' % (typesrc, commname))
-
-        if typedst == 'ext':
-                exten_dst = whodst
-                if whodst == 'special:parkthecall':
-                    for uid, vuid in self.uniqueids[astid_src].iteritems():
-                        if 'dial' in vuid and vuid['dial'] == chan_src and 'channel' in vuid:
-                            nchan = vuid['channel']
-                        if 'link' in vuid and vuid['link'] == chan_src and 'channel' in vuid:
-                            nchan = vuid['channel']
-                    chan_park = nchan
-                    #exten_dst = '700'   # cheat code !
-                    #chan_src = nchan    # cheat code !
-        elif typedst == 'user':
-                if whodst == 'special:me':
-                    dstuinfo = userinfo
-                else:
-                    dstuinfo = self.ulist_ng.keeplist[whodst]
-                if dstuinfo is not None:
-                    astid_dst = dstuinfo.get('astid')
-                    exten_dst = dstuinfo.get('phonenum')
-                    cidname_dst = dstuinfo.get('fullname')
-                    context_dst = dstuinfo.get('context')
-        elif typedst == 'voicemail':
-                if whodst == 'special:me':
-                    dstuinfo = userinfo
-                else:
-                    dstuinfo = self.ulist_ng.keeplist[whodst]
-
-                if dstuinfo.get('voicemailid'):
-                    voicemail_id = dstuinfo['voicemailid']
-                    self.__ami_execute__(astid_src, 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
-                    exten_dst = 's'
-                    context_src = 'macro-voicemail'
-                else:
-                    self.log.warning('no voicemail allowed or defined for %s' % dstuinfo)
-        else:
-                self.log.warning('unknown typedst %s for %s' % (typedst, commname))
-
-        # print astid_src, commname, chan_src, exten_dst, context_src
-        ret = False
-        try:
-                # cheat code !
-                if whodst == 'special:parkthecall':
-                    ret = self.__ami_execute__(astid_src, 'park', chan_park, chan_src)
-                else:
-                    if exten_dst:
-                        ret = self.__ami_execute__(astid_src, commname,
-                                                   chan_src,
-                                                   exten_dst, context_src)
-        except Exception:
-                self.log.exception('unable to %s' % commname)
-        return
 
     def ipbxcommand_transfercancel(self):
         print self.ipbxcommand, self.commanddict
         return
+
     def ipbxcommand_intercept(self):
-        print self.ipbxcommand, self.commanddict
-        return
+        self.commanddict['source'] = self.commanddict.pop('tointercept')
+        self.commanddict['destination'] = self.commanddict.pop('catcher')
+        # ami transfer mode
+        rep = self.ipbxcommand_transfer()
+        # what about origination with '*8' ?
+        return rep
 
     # hangup and one's own line management
     def ipbxcommand_hangup(self):
@@ -1016,11 +924,15 @@ class Command:
 
     # agents and queues
     def ipbxcommand_agentlogin(self):
-        print self.ipbxcommand, self.commanddict
-        return {'amicommand' : 'agentlogin', 'amiargs' : ('a', 'b', 'c')}
+        rep = { 'amicommand' : 'agentcallbacklogin',
+                'amiargs' : ('a', 'b', 'c', 'd')
+                }
+        return rep
 
     def ipbxcommand_agentlogout(self):
-        print self.ipbxcommand, self.commanddict
+        rep = { 'amicommand' : 'agentlogoff',
+                'amiargs' : ('a', 'b', 'c')
+                }
         return
 
     def ipbxcommand_agentjoinqueue(self):
