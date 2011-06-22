@@ -62,12 +62,15 @@ REGCOMMANDS = [
     ]
 
 IPBXCOMMANDS = [
-    'dial', 'hangupme',
-    'answer', 'refuse', 'cancel',
-    'originate', 'intercept',
-    'parking',
-    'transfer', 'transfercancel', 'atxfer',
-    'hangup',
+    'answer', 'refuse',
+    # originate-like commands
+    'dial', 'originate',
+    # transfer-like commands
+    'intercept', 'parking',
+    'transfer', 'atxfer',
+    # hangup-like commands
+    'hangup', 'hangupme', 'cancel', 'transfercancel',
+
     'sipnotify',
 
     'meetme',
@@ -805,18 +808,42 @@ class Command:
 
     # transfers
     def ipbxcommand_parking(self):
-        rep = {}
-        src = self.commanddict.get('source')
-        srcsplit = src.split(':', 1)
-        [typesrc, whosrc] = srcsplit
-        if typesrc not in ['chan']:
-            self.log.warning('unallowed typesrc %s for %s' % (typesrc, self.ipbxcommand))
+        try:
+            src = self.commanddict.get('source')
+            [type_src, who_src] = src.split(':', 1)
+            [ipbxid_src, id_src] = who_src.split('/', 1)
+        except Exception:
+            self.log.warning('(%s) cannot parse source field %s'
+                             % (self.commanddict.get('command'), src))
             return
+        try:
+            dst = self.commanddict.get('destination')
+            [type_dst, who_dst] = dst.split(':', 1)
+            [ipbxid_dst, id_dst] = who_dst.split('/', 1)
+        except Exception:
+            self.log.warning('(%s) cannot parse destination field %s'
+                        % (self.commanddict.get('command'), dst))
+            return
+        if ipbxid_src != ipbxid_dst:
+            return
+        if ipbxid_src not in self.ctid.safe:
+            self.log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
+            return
+        innerdata = self.ctid.safe.get(ipbxid_src)
 
-        [ipbxid, channel] = whosrc.split('/', 1)
-        # print self.ctid.safe.get(ipbxid).channels.keys()
-        peerchannel = self.ctid.safe.get(ipbxid).channels.get(channel).peerchannel
-        rep = {'amicommand' : 'park', 'amiargs' : (channel, peerchannel)}
+        if type_src == 'channel':
+            if id_src in innerdata.channels:
+                channel = id_src
+                peerchannel = innerdata.channels.get(channel).peerchannel
+        else:
+            pass
+
+        if type_dst == 'parking':
+            parkinglot = id_dst
+
+        rep = {'amicommand' : 'park',
+               'amiargs' : (channel, peerchannel, parkinglot, 120000)
+               }
         return rep
 
     # direct transfers
@@ -867,9 +894,6 @@ class Command:
                 phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(id_dst)
         elif type_dst == 'exten':
             extentodial = id_dst
-        elif type_dst == 'parking':
-            extentodial = id_dst
-            # XXX extension or parking lot number ?
         elif type_dst == 'voicemail':
             # 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
             # exten_dst = 's'

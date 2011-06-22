@@ -228,11 +228,14 @@ class AMIClass:
             ret = False
         return ret
 
-    # Asterisk >= 1.4
-    def park(self, channel, channel_timeout):
+    def park(self, channel, channel_timeout, parkinglot, timeout = 45000):
         try:
-            ret = self.sendcommand('Park', [('Channel', channel),
-                                            ('Channel2', channel_timeout)])
+            ret = self.sendcommand('Park',
+                                   [('Channel', channel),
+                                    ('Channel2', channel_timeout),
+                                    ('Parkinglot', parkinglot),
+                                    ('Timeout', timeout)
+                                    ])
             return ret
         except self.AMIError:
             ret = False
