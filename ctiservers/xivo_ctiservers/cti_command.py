@@ -593,7 +593,10 @@ class Command:
                 'amicommand' : z.get('amicommand'),
                 'amiargs' : z.get('amiargs')
                 }
-            self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
+            ipbxreply = self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
+        else:
+            ipbxreply = ''
+        reply['ipbxreply'] = ipbxreply
         return reply
 
 

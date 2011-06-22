@@ -88,11 +88,16 @@ class AMI:
 
     def initrequest(self, phaseid):
         # 'CoreSettings', 'CoreStatus', 'ListCommands',
-        for initrequest in asterisk_ami_definitions.manager_commands['fetchstatuses']:
-            self.amicl.setactionid('init-%s-%s-%d' % (initrequest.lower(),
-                                                      phaseid,
-                                                      int(time.time())))
-            self.amicl.sendcommand(initrequest, [])
+        for initrequest in asterisk_ami_definitions.manager_commands.get('fetchstatuses'):
+            actionid = 'init_%s:%s-%d' % (initrequest.lower(),
+                                          phaseid,
+                                          int(time.time()))
+            params = {
+                'mode' : 'init',
+                'amicommand' : 'sendcommand',
+                'amiargs' : (initrequest.lower(), [])
+                }
+            ipbxreply = self.execute_and_track(actionid, params)
         self.amicl.setactionid('init_close_%s' % phaseid)
         return
 
@@ -328,6 +333,9 @@ class AMI:
                 else:
                     self.log.warning('amiresponse_success %s %s : %s - %s - unknown msg %s'
                                      % (actionid, mode, event, properties, msg))
+            elif mode == 'init':
+                self.log.info('amiresponse_success %s %s : %s'
+                              % (actionid, mode, event))
             else:
                 self.log.info('amiresponse_success %s %s (?) : %s'
                               % (actionid, mode, event))
@@ -388,10 +396,17 @@ class AMI:
     def execute_and_track(self, actionid, params):
         conn_ami = self.amicl
         amicommand = params.get('amicommand')
-        if hasattr(conn_ami, amicommand):
-            conn_ami.actionid = actionid
-            self.actionids[actionid] = params
-            r = getattr(conn_ami, amicommand)(* params.get('amiargs'))
+        amiargs = params.get('amiargs')
+        mode = params.get('mode')
+        if conn_ami:
+            if hasattr(conn_ami, amicommand):
+                conn_ami.actionid = actionid
+                self.actionids[actionid] = params
+                ret = getattr(conn_ami, amicommand)(* amiargs)
+            else:
+                self.log.warning('mode %s : no such AMI command %s' % (mode, amicommand))
+                ret = 'unknown'
         else:
-            self.log.warning('no such AMI command %s' % amicommand)
-        return
+            self.log.warning('mode %s : no AMI connection' % mode)
+            ret = 'noconn'
+        return ret

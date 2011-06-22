@@ -312,16 +312,21 @@ class AMI_1_8:
         # 1 : CLI 'channel request hangup' on the 1st phone's channel
         # 5 : 1st phone rejected the call (reject button or all lines busy)
         # 8 : 1st phone did not answer early enough
-        properties = self.ctid.myami.get(self.ipbxid).originate_actionids.pop(actionid)
-        request = properties.get('request')
-        cn = request.get('requester')
-        cn.reply( { 'class' : 'ipbxcommand',
-                    'command' : request.get('ipbxcommand'),
-                    'replyid' : request.get('commandid'),
-                    'channel' : channel,
-                    'originatereason' : reason
-                    } )
-        self.log.info('ami_originateresponse %s %s %s %s' % (actionid, channel, reason, event))
+        if actionid in self.ctid.myami.get(self.ipbxid).originate_actionids:
+            properties = self.ctid.myami.get(self.ipbxid).originate_actionids.pop(actionid)
+            request = properties.get('request')
+            cn = request.get('requester')
+            cn.reply( { 'class' : 'ipbxcommand',
+                        'command' : request.get('ipbxcommand'),
+                        'replyid' : request.get('commandid'),
+                        'channel' : channel,
+                        'originatereason' : reason
+                        } )
+            self.log.info('ami_originateresponse %s %s %s %s'
+                          % (actionid, channel, reason, event))
+        else:
+            self.log.warning('ami_originateresponse %s %s %s %s (not in list)'
+                             % (actionid, channel, reason, event))
         # print 'originate_actionids left', self.ctid.myami.get(self.ipbxid).originate_actionids.keys()
         return
 
