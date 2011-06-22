@@ -113,7 +113,6 @@ function certfilter($cert)
 {	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && in_array('CA', $cert) && !$cert['CA'];	}
 
 $allcerts = $modcert->get_all();
-var_dump(array_filter($allcerts, "certfilter"));
 $_TPL->set_var('tlscertfiles', array_filter($allcerts, "certfilter"));
 $_TPL->set_var('tlscafiles'  , array_filter($allcerts, "cafilter"));
 
