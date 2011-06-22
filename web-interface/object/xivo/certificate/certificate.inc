@@ -39,47 +39,43 @@ class xivo_object_certificate extends xivo_object_abstract
 		return $this->_sysconfd !== false;
 	}
 
-	/**
-	 * We need to merge certificates and keys to display all at once
-	 **/
-	function get_all()
+	function get_all($none, $order, $limit, &$total)
 	{
 		function certs_sort($a, $b)
 		{
-			return strcmp($a['name'], $b['name']);
+			if($a['name'] != $b['name'])
+				return strcmp($a['name'], $b['name']);
+
+			$aweight = $bweight = 0;
+			if(in_array('privkey', $a['types']))
+				$aweight += 1;
+			if(in_array('certificate', $a['types'])) {
+				$aweight += 2;
+
+				if(count($a['types']) == 1)
+					$aweight += 1;
+			}
+
+			if(in_array('privkey', $b['types']))
+				$bweight += 1;
+			if(in_array('certificate', $b['types'])) {
+				$bweight += 2;
+
+				if(count($b['types']) == 1)
+					$bweight += 1;
+			}
+
+			return $bweight - $aweight;
 		}
 		
 		$certs = $this->get_certs();
 		if($certs === false)
 			return false;
 
-		$keys = $this->get_keys();
-		if($keys === false)
-		{
-			usort($certs, "certs_sort");
-			return $certs;
-		}
-
-		$certnames = array();
-		function xtract_names(&$item)
-		{
-			global $certnames;
-
-			$certnames[] = $item['name'];
-			$item['type'] = 'certificate';
-		}
-		array_walk($certs, "xtract_names");
-
-		function merge_keys($key)
-		{
-			global $certnames;
-			return !in_array($key['name'], $certnames);
-		}
-		$certs = array_merge($certs, array_filter($keys, "merge_keys"));
-
 		usort($certs, "certs_sort");
 
-		return $certs;
+		$total = count($certs);
+		return array_slice($certs, $limit[0], $limit[1]);
 	}
 
 	function get($id)
@@ -119,17 +115,37 @@ class xivo_object_certificate extends xivo_object_abstract
 
 	function delete($name)
 	{
-		$this->_sysconfd->request_get('/openssl_deletecertificate', array(array('name',$name)));
+		$ret = $this->_sysconfd->request_get('/openssl_deletecertificate', array(array('name',$name)));
+		if($this->_sysconfd->_status_code != 200) {
+			dwho_report::push('error', $ret['message'].' (errno='.$ret['code'].')');
+			return false;
+		}
+
+		return true;
 	}
 
-	function get_pubkey($name)
+	function export($name)
 	{
-		return $this->_sysconfd->request_get('/openssl_exportpubkey', array(array('name',$name)));
+		$ret = $this->_sysconfd->request_get('/openssl_export', 
+			array(array('name',$name)));
+
+		if($this->_sysconfd->_status_code != 200) {
+			dwho_report::push('error', $ret['message'].' (errno='.$ret['code'].')');
+			return false;
+		}
+
+		return $ret;
 	}
 
 	function import($arr)
 	{
-		return $this->_sysconfd->request_post('/openssl_import', $arr);
+		$ret = $this->_sysconfd->request_post('/openssl_import', $arr);
+		if($this->_sysconfd->_status_code != 200) {
+			dwho_report::push('error', $ret['message'].' (errno='.$ret['code'].')');
+			return false;
+		}
+
+		return true;
 	}
 }
 

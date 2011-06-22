@@ -31,9 +31,9 @@ $form = &$this->get_module('form');
 		<form action="#" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 <?php
 	echo
-/*$form->hidden(array('name'	=> 'max_file_size',
-					    'value'	=> $import_file['size'])),
- */
+			$form->hidden(array('name'	=> 'max_file_size',
+				    'value'	=> $import_file['size'])),
+ 
 			$form->hidden(array('name'	=> DWHO_SESS_NAME,
 					    'value'	=> DWHO_SESS_ID)),
 
@@ -42,13 +42,6 @@ $form = &$this->get_module('form');
 
 			$form->hidden(array('name'	=> 'act',
 						'value'	=> 'import')),
-
-		$form->select(array('desc'	=> $this->bbf('fm_type'),
-				    'name'	    => 'type',
-				    'labelid'	  => 'type',
-						'key'	      => false,
-						'bbf'       => 'fm_import'),
-			      array('pubkey','cert')),
 
 			$form->file(array('desc'	=> $this->bbf('fm_import'),
 					  'name'	=> 'import',

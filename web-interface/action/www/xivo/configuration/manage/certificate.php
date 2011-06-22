@@ -135,11 +135,13 @@ switch($act)
 		break;
 
 	case 'export':
-		$pubkey = $modcert->get_pubkey($_QR['id']);
+		$content = $modcert->export($_QR['id']);
+		if($content === false)
+			$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 
 		$_TPL->set_var('name', $_QR['id']);
-		$_TPL->set_var('pubkey',$pubkey);
-		$_TPL->display('/bloc/xivo/configuration/manage/certificate/pubkey');
+		$_TPL->set_var('content',$content);
+		$_TPL->display('/bloc/xivo/configuration/manage/certificate/export');
 
 		$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 		break;
@@ -153,12 +155,11 @@ switch($act)
 			$fileinfo = $http_response->upload_file('import');
 
 			$import = array(
-				'type'    => $_QR['type'],
-				'name'    => substr($fileinfo['name'], 0, strpos($fileinfo['name'],'.')),
+				'name'    => $fileinfo['name'],
 				'content' => file_get_contents($fileinfo['tmp_name'])
 			);
-			//var_dump($import); die(1);
-			$modcert->import($import);
+
+			$ret = $modcert->import($import);
 			$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'),$param);
 		}
 
@@ -171,14 +172,13 @@ switch($act)
 		$nbbypage = 20;
 
 		$order = array();
-		$order['macaddr'] = SORT_ASC;
+		$order['name'] = SORT_ASC;
 
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list  = $modcert->get_all(null,$order,$limit);
-		$total = count($list);
+		$list  = $modcert->get_all(null,$order,$limit, &$total);
 
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
@@ -189,6 +189,9 @@ switch($act)
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search'	, $search);
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/xivo/configuration/manager/certificate.js');
 }
 
 $_TPL->set_var('act'      , $act);

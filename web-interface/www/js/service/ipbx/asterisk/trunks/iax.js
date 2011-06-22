@@ -59,3 +59,12 @@ xivo_ast_trunk_type_elt['user'] = {
 						  className: 'it-readonly',
 						  value: 'dynamic'}},
 				  fd: true}};
+
+
+$(document).ready(function() {
+	$.localise('ui-multiselect', {
+		language: dwho_i18n_lang, 
+		path: '/extra-libs/multiselect/js/locale/'
+	});
+	$('.multiselect').multiselect();
+})

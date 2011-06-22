@@ -1,53 +1,53 @@
 ; title_content_name
-Certificats > Ajouter
+Certificats > Add
 
 ; smenu_general
-Général
+General
 
 ; smenu_issuers
-Émetteur
+Issuer
 
 ; fm_name
-Nom : 
+Name:
 
 ; fm_CA
-Autorité de Certification : 
+Certification authority:
 
 ; fm_autosigned
-Autosigné : 
+Autosigned:
 
 ; fm_fingerprint
-Empreinte : 
+Fingerprint:
 
 ; fm_validity-start
-Début de validité : 
+Validity start date:
 
 ; fm_validity-end
-Fin de validité : 
+Validity end date:
 
 ; fm_subject_CN
-Nom commun : 
+Common name:
 
 ; hlp_fm_CN
-CommonName (CN)
+CN
 
 ; fm_subject_emailAddress
 Email : 
 
 ; fm_subject_OU
-Département : 
+Unit:
 
 ; fm_subject_O
-Société : 
+Organization:
 
 ; fm_subject_L
-Ville : 
+City:
 
 ; fm_subject_ST
-État : 
+State:
 
 ; fm_subject_C
-Pays : 
+Country:
 
 
 ; fm_issuer_CN
@@ -57,31 +57,31 @@ CommonName :
 Email : 
 
 ; fm_issuer_OU
-Département : 
+Unit:
 
 ; fm_issuer_O
-Société : 
+Organization:
 
 ; fm_issuer_L
-Ville : 
+City:
 
 ; fm_issuer_ST
-État : 
+State:
 
 ; fm_issuer_C
-Pays : 
+Country:
 
 ; fm_ca_authority
-Autorité de certification : 
+Certification authority:
 
 ; fm_ca_password
-Mot de passe du CA : 
+CA password:
 
 ; fm_password
-Mot de passe : 
+Password:
 
 ; fm_length
-Longueur de la clé : 
+Key length:
 
 ; fm_cipher
-Cipher
+Cipher:

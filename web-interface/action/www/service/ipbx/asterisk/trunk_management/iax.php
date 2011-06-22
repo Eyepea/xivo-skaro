@@ -95,12 +95,12 @@ switch($act)
 		$_TPL->set_var('timezone_list',$apptrunk->get_timezones());
 
 		function pkfilter($key)
-		{ return $key['type'] == 'private'; }
+		{ return count($key['types']) == 1 && $key['types'][0] == 'privkey'; }
 
 		function pubkfilter($key)
-		{	return $key['type'] == 'public';	}
+		{	return count($key['types']) == 1 && $key['types'][0] == 'pubkey';	}
 
-		$keys = $modcert->get_keys();
+		$keys = $modcert->get_certs();
 		$_TPL->set_var('privkeys', array_filter($keys, "pkfilter"));
 		$_TPL->set_var('pubkeys' , array_filter($keys, "pubkfilter"));
 		break;
@@ -175,12 +175,12 @@ switch($act)
 		$_TPL->set_var('timezone_list',$apptrunk->get_timezones());
 		
 		function pkfilter($key)
-		{ return $key['type'] == 'private'; }
+		{ return count($key['types']) == 1 && $key['types'][0] == 'privkey'; }
 
 		function pubkfilter($key)
-		{	return $key['type'] == 'public';	}
+		{	return count($key['types']) == 1 && $key['types'][0] == 'pubkey';	}
 
-		$keys = $modcert->get_keys();
+		$keys = $modcert->get_certs();
 
 		$pubkeys = array();
 		function arr2dict(&$item, $key)

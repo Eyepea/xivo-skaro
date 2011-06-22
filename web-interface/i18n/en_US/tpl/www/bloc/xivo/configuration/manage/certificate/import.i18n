@@ -1,15 +1,7 @@
 
 ; title_content_name
-Import de Certificat SSL
-
-; fm_type
-Type : 
+SSL certificat import
 
 ; fm_import
-Fichier : 
+File : 
 
-; fm_import(pubkey)
-Clé publique
-
-; fm_import(cert)
-Certificat (format PEM)

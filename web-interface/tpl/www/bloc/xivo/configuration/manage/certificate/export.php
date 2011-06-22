@@ -37,5 +37,6 @@ echo $content;
 
 header('Content-Length: '.ob_get_length());
 ob_end_flush();
+die();
 
 ?>

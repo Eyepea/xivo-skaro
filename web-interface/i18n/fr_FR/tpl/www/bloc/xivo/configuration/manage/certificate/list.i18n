@@ -13,8 +13,11 @@ Date d'expiration
 ; no_certificate
 Aucun certificat trouvé
 
+; opt_view
+Voir
+
 ; opt_export
-Exporter la clé publique
+Exporter
 
 ; opt_delete_confirm
 Êtes-vous certain de vouloir supprimer ce certificat ?

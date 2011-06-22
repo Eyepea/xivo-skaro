@@ -50,7 +50,8 @@ function certinit(mode) {
 		if ($('#it-autosigned').attr('checked'))
 		{
 			$('#dwsm-tab-2').css('display','none');
-			$('#dwsm-tab-1').addClass('dwsm-blur-last').removeClass('dwsm-blur').unbind('click');
+			console.log('plop');
+			$('#dwsm-tab-1').unbind('click').removeClass('dwsm-blur').removeClass('dwsm-select').addClass('dwsm-select-last');
 		}
 
 		if ($('#it-CA').attr('checked'))

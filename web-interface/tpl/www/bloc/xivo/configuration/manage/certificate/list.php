@@ -76,7 +76,7 @@ $page = $url->pager($pager['pages'],
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
 			<?=$form->checkbox(array('name'		=> 'certificates[]',
-						 'value'	=> $ref['name'],
+						 'value'	=> $ref['filename'],
 						 'label'	=> false,
 						 'id'		=> 'it-certificate-'.$i,
 						 'checked'	=> false,
@@ -85,45 +85,54 @@ $page = $url->pager($pager['pages'],
 		<td class="txt-left">
 			<label for="it-certificate-<?=$i?>" id="lb-certificate-<?=$i?>">
 <?php
-			if(array_key_exists('CA', $ref) && $ref['CA'] == 1)
-				echo '<img title="'.$this->bbf('ca_authority').'" src="/img/site/utils/cacert.png" />';
-			else if(array_key_exists('autosigned',$ref) && $ref['autosigned'])
-				echo '<img title="'.$this->bbf('autosigned').'" src="/img/site/utils/autosigned.png" />';
-			else
-				echo '<img title="'.$this->bbf('certificate').'" src="/img/site/utils/stock_lock.png" />';
+			// keys
+			// certificates
+			if(in_array('certificate', $ref['types'])) {
+				if(array_key_exists('CA', $ref) && $ref['CA'] == 1)
+					echo '<img title="'.$this->bbf('ca_authority').'" src="/img/site/utils/cacert.png" />';
+				else if(array_key_exists('autosigned',$ref) && $ref['autosigned'])
+					echo '<img title="'.$this->bbf('autosigned').'" src="/img/site/utils/autosigned.png" />';
+				else
+					echo '<img title="'.$this->bbf('certificate').'" src="/img/site/utils/stock_lock.png" />';
+			}
+			if(in_array('privkey', $ref['types']))
+				echo '<img title="'.$this->bbf('private_key').'" src="/img/site/utils/privkey.png" />';
+			if(in_array('pubkey', $ref['types']))
+				echo '<img title="'.$this->bbf('public_key').'" src="/img/site/utils/pubkey.png" />';
 ?>
 			</label>
 		</td>
 
 		<td><?=$ref['name'];?></td>
-		<td><?=$ref['length']?></td>
-		<td><?=$ref['validity-end']?></td>
+		<td><?=in_array('certificate', $ref['types'])?$ref['length']:'&nbsp;'?></td>
+		<td><?=in_array('certificate', $ref['types'])?$ref['validity-end']:'&nbsp;'?></td>
 		<td class="td-right" colspan="2">
-<?php
-			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+<?
+		if(in_array('certificate', $ref['types']))
+			echo	$url->href_html($url->img_html('img/site/button/monitor.gif',
 							       $this->bbf('opt_modify'),
 							       'border="0"'),
 						'xivo/configuration/manage/certificate',
 						array('act'	=> 'edit',
-						      'id'	=> $ref['name']),
+						      'id'	=> $ref['filename']),
 						null,
-						$this->bbf('opt_modify')),
+						$this->bbf('opt_view'));
 
-				$url->href_html($url->img_html('img/site/button/key.gif',
+		echo $url->href_html($url->img_html('img/site/button/key.gif',
 								       $this->bbf('opt_acl'),
 								       'border="0"'),
-							'xivo/configuration/manage/certificate',
-							array('act'	=> 'export',
-							      'id'	=> $ref['name']),
-							null,
-							$this->bbf('opt_export')),
+						'xivo/configuration/manage/certificate',
+						array('act'	=> 'export',
+						      'id'	=> $ref['filename']),
+						null,
+						$this->bbf('opt_export'));
 
-				$url->href_html($url->img_html('img/site/button/delete.gif',
+		echo $url->href_html($url->img_html('img/site/button/delete.gif',
 							       $this->bbf('opt_delete'),
-							       'border="0"'),
+						       'border="0"'),
 						'xivo/configuration/manage/certificate',
 						array('act'	=> 'delete',
-						      'id'	=> $ref['name'],
+									'id'	=> $ref['filename'],
 						      'page'	=> $pager['page']),
 						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 						$this->bbf('opt_delete'));
