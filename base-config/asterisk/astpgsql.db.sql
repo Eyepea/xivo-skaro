@@ -352,9 +352,9 @@ CREATE INDEX "contexttype__idx__commented" ON "contexttype"("commented");
 CREATE INDEX "contexttype__idx__deletable" ON "contexttype"("deletable");
 CREATE UNIQUE INDEX "contexttype__uidx__name" ON "contexttype"("name");
 
-INSERT INTO "contexttype" VALUES(1, 'intern', 'Interne', 0, 0, '');
-INSERT INTO "contexttype" VALUES(2, 'from-extern', 'Entrant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(3, 'to-extern', 'Sortant', 0, 0, '');
+INSERT INTO "contexttype" VALUES(1, 'internal', 'Interne', 0, 0, '');
+INSERT INTO "contexttype" VALUES(2, 'incall', 'Entrant', 0, 0, '');
+INSERT INTO "contexttype" VALUES(3, 'outcall', 'Sortant', 0, 0, '');
 INSERT INTO "contexttype" VALUES(4, 'services', 'Services', 0, 0, '');
 INSERT INTO "contexttype" VALUES(5, 'others', 'Autres', 0, 0, '');
 SELECT setval('contexttype_id_seq', 6);

@@ -37,6 +37,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 					'foot'	=> array()),
 				'css'	=> array(
 					'head' => array()));
+	var $_custom_scripts	= array();
 	var $_tpl	= null;
 	var $_query	= null;
 
@@ -407,6 +408,12 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 	
 	function load_js_multiselect_files()
 	{
+	    # script already loaded
+	    if (isset($this->_custom_scripts['multiselect_files']) === true)
+	        return(true);
+	    
+	    $this->_custom_scripts['multiselect_files'] = true;
+	    
 		$this->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
 		$this->set_css('css/xivo.multiselect.css');
 		$this->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);

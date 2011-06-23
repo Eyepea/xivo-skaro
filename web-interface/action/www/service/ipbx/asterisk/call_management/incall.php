@@ -93,7 +93,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
-		$_TPL->set_var('context_list',$appincall->get_context_list(null,null,null,false,'from-extern'));
+		$_TPL->set_var('context_list',$appincall->get_context_list(null,null,null,false,'incall'));
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
@@ -160,7 +160,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
-		$_TPL->set_var('context_list',$appincall->get_context_list(null,null,null,false,'from-extern'));
+		$_TPL->set_var('context_list',$appincall->get_context_list(null,null,null,false,'incall'));
 		$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');

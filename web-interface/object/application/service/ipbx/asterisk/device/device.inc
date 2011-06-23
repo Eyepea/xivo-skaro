@@ -310,8 +310,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			$devicefeatures['capabilities'] = $this->get_capabilities_by_plugin($devicefeatures['plugin']);
 			if (isset($listupdate[$devicefeatures['deviceid']]) === true)
 				$devicefeatures['provdexist'] = true;
-			else
-				continue;
 			$r[$devicefeatures['id']] = $devicefeatures;
 		}
 

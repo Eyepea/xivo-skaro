@@ -43,8 +43,9 @@ switch($act)
 		$entity_list = false;
 		
 		$appcontext= &$ipbx->get_application('context');
-		if(($context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'intern')) !== false)
+		if(($context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'internal')) !== false)
 		{
+    		$idx = array();
     		$entity_list = array();
     		$nb = count($context_list);
     		for($i = 0;$i < $nb;$i++)
@@ -62,9 +63,11 @@ switch($act)
     			{
     				$refct = &$contextnumbers[$k];
     				
-    				if ($refct['type'] !== 'user')
+    				if ($refct['type'] !== 'user'
+    				|| isset($idx[$ref['entity']['id']]) === true)
     					continue;
-    					
+    				
+    				$idx[$ref['entity']['id']] = true;
     				array_push($entity_list, $ref['entity']);
     			}
     		}

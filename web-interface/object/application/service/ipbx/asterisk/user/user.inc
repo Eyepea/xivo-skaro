@@ -223,7 +223,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(is_object($this->_appentity) === false)
 			return(false);
 
-		$this->_info['entity']  = $this->_appentity->get($this->_info['userfeatures']['entityid'],null,'intern');
+		$this->_info['entity']  = $this->_appentity->get($this->_info['userfeatures']['entityid'],null,'internal');
 
 		return($this->_info['entity']);
 	}
@@ -2312,7 +2312,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 
 			$incall['incall'] = $arr['incall'];
-			$incall['incall']['context'] = 'from-extern';
+			$incall['incall']['context'] = 'incall';
 
 			$incall['dialaction']['answer'] = array();
 			$incall['dialaction']['answer']['actiontype'] = 'user';

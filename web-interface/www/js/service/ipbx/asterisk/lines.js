@@ -71,7 +71,7 @@ function xivo_http_search_numpool(context,helper)
 //get list context available for a entity
 function xivo_http_search_context_from_entity(entityid)
 {
-	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=intern', function(data) {
+	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=internal', function(data) {
 		if (data === null || (nb = data.length) === 0) {
 			$('#box-lines_free').hide('slow');
 			$('#list_linefeatures').hide();
@@ -99,7 +99,7 @@ function xivo_http_search_context_from_entity(entityid)
 //get list line free available for a entity
 function xivo_http_search_linefree_by_entity(entityid)
 {
-	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=intern&free=1', function(data) {
+	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=internal&free=1', function(data) {
 		if (data === null || data.length === 0){
 			$('#box-lines_free').hide('slow');
 			return false;

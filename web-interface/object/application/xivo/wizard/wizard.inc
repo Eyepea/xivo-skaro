@@ -1025,7 +1025,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_outcall','missing_context');
 		else
 		{
-			$data['context']['outcall']['contexttype'] = 'to-extern';
+			$data['context']['outcall']['contexttype'] = 'outcall';
 			$outcall = $this->_prepare_context($data['context']['outcall'],null,$entity);
 
 			if(($resoutcall = (bool) $appcontext->set_add($outcall)) === false)
@@ -1041,7 +1041,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_internal','missing_context');
 		else
 		{
-			$data['context']['internal']['contexttype'] = 'intern';
+			$data['context']['internal']['contexttype'] = 'internal';
 			$internal = $this->_prepare_context($data['context']['internal'],'user',$entity);
 
 			if(isset($outcall['context']['name']) === true)
@@ -1065,7 +1065,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_incall','name','missing');
 		else
 		{
-			$data['context']['incall']['contexttype'] = 'from-extern';
+			$data['context']['incall']['contexttype'] = 'incall';
 			$incall = $this->_prepare_context($data['context']['incall'],'incall',$entity);
 
 			if(dwho_has_len($incall['contextnumbers']['incall'][0]['numberbeg']) === false
@@ -1098,7 +1098,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->save_entity($data);
 		$rescontext = $this->save_context($data);
 
-		if($this->get_errnb() > 0 | is_array($rescontext) === false)
+		if($this->get_errnb() > 0 || is_array($rescontext) === false)
 			return(false);
 
 		$this->_wizsess['entity'] = $this->get_result('entity');
