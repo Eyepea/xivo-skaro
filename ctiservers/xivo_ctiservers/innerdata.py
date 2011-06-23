@@ -259,10 +259,10 @@ class Safe:
                                            'tipbxid' : self.ipbxid,
                                            'list' : finaldels
                                            } )
-            for id, v in deltas.get('change').iteritems():
+            for tid, v in deltas.get('change').iteritems():
                 if not v:
                     continue
-                props = self.xod_config[listname].keeplist[id]
+                props = self.xod_config[listname].keeplist[tid]
                 newc = {}
                 for p in v:
                     if p in self.props_config.get(listname):
@@ -273,7 +273,7 @@ class Safe:
                                            'listname' : listname,
                                            'function' : 'updateconfig',
                                            'tipbxid' : self.ipbxid,
-                                           'tid' : id,
+                                           'tid' : tid,
                                            'config' : newc
                                            } )
         except Exception:
@@ -514,6 +514,7 @@ class Safe:
 
         if props:
             self.handle_cti_stack('set', ('queuemembers', 'updatestatus', midx))
+            snew = {}
             if len(props) == 6:
                 (status, paused, membership, callstaken, penalty, lastcall) = props
                 snew = {
@@ -635,7 +636,7 @@ class Safe:
         if action == 'set':
             (x, y, z) = event
             if z is None:
-                log.warning('XXX id is None %s' % event)
+                self.log.warning('XXX id is None %s' % event)
             thisstatus = copy.deepcopy(self.statusbylist(x, z))
             self.ctistack.append((event, thisstatus))
         elif action == 'setforce':
@@ -645,7 +646,7 @@ class Safe:
                 (oldevent, oldstatus) = self.ctistack.pop()
                 (x, y, z) = oldevent
                 if z is None:
-                    log.warning('XXX id is None 2 %s' % event)
+                    self.log.warning('XXX id is None 2 %s' % event)
                 newstatus = self.statusbylist(x, z)
                 if oldstatus != newstatus:
                     if oldstatus is None:

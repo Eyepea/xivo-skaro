@@ -582,21 +582,24 @@ class Command:
 
         # if some actions have been requested ...
         if z:
-            if self.commandid: # pass the commandid on the actionid # 'user action - forwarded'
-                actionid = 'uaf:%s' % self.commandid
-            else: # 'user action - auto'
-                actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
-            params = {
-                'mode' : 'useraction',
-                'request' : {
-                    'requester' : self.connection,
-                    'ipbxcommand' : self.ipbxcommand,
-                    'commandid' : self.commandid
-                    },
-                'amicommand' : z.get('amicommand'),
-                'amiargs' : z.get('amiargs')
-                }
-            ipbxreply = self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
+            if 'amicommand' in z:
+                if self.commandid: # pass the commandid on the actionid # 'user action - forwarded'
+                    actionid = 'uaf:%s' % self.commandid
+                else: # 'user action - auto'
+                    actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
+                params = {
+                    'mode' : 'useraction',
+                    'request' : {
+                        'requester' : self.connection,
+                        'ipbxcommand' : self.ipbxcommand,
+                        'commandid' : self.commandid
+                        },
+                    'amicommand' : z.get('amicommand'),
+                    'amiargs' : z.get('amiargs')
+                    }
+                ipbxreply = self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
+            else:
+                ipbxreply = z.get('error')
         else:
             ipbxreply = ''
         reply['ipbxreply'] = ipbxreply
@@ -633,30 +636,33 @@ class Command:
         reply = self.ipbxcommand_originate()
         return reply
 
+    def parseid(self, item):
+        id_as_obj = {}
+        try:
+            [typev, who] = item.split(':', 1)
+            [ipbxid, idv] = who.split('/', 1)
+            id_as_obj = { 'type' : typev,
+                          'ipbxid' : ipbxid,
+                          'id' : idv }
+        except Exception:
+            pass
+        return id_as_obj
+
     # origination
     def ipbxcommand_originate(self):
-        try:
-            src = self.commanddict.get('source')
-            [type_src, who_src] = src.split(':', 1)
-            [ipbxid_src, id_src] = who_src.split('/', 1)
-        except Exception:
-            self.log.warning('(%s) cannot parse source field %s'
-                        % (self.commanddict.get('command'), src))
-            return
-        try:
-            dst = self.commanddict.get('destination')
-            [type_dst, who_dst] = dst.split(':', 1)
-            [ipbxid_dst, id_dst] = who_dst.split('/', 1)
-        except Exception:
-            self.log.warning('(%s) cannot parse destination field %s'
-                        % (self.commanddict.get('command'), dst))
-            return
-        if ipbxid_src != ipbxid_dst:
-            return
-        if ipbxid_src not in self.ctid.safe:
-            self.log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
-            return
-        innerdata = self.ctid.safe.get(ipbxid_src)
+        src = self.parseid(self.commanddict.get('source'))
+        if not src:
+            return {'error' : 'source'}
+        dst = self.parseid(self.commanddict.get('destination'))
+        if not dst:
+            return {'error' : 'destination'}
+
+        if src.get('ipbxid') != dst.get('ipbxid'):
+            return {'error' : 'ipbxids'}
+        if src.get('ipbxid') not in self.ctid.safe:
+            return {'error' : 'ipbxid'}
+
+        innerdata = self.ctid.safe.get(src.get('ipbxid'))
 
         orig_protocol = None
         orig_name = None
@@ -665,17 +671,17 @@ class Command:
         phoneidstruct_src = {}
         phoneidstruct_dst = {}
 
-        if type_src == 'user':
-            if id_src in innerdata.xod_config.get('users').keeplist:
+        if src.get('type') == 'user':
+            if src.get('id') in innerdata.xod_config.get('users').keeplist:
                 for k, v in innerdata.xod_config.get('phones').keeplist.iteritems():
-                    if id_src == str(v.get('iduserfeatures')):
+                    if src.get('id') == str(v.get('iduserfeatures')):
                         phoneidstruct_src = innerdata.xod_config.get('phones').keeplist.get(k)
                         break
                 # if not phoneidstruct_src: lookup over agents ?
-        elif type_src == 'phone':
-            if id_src in innerdata.xod_config.get('phones').keeplist:
-                phoneidstruct_src = innerdata.xod_config.get('phones').keeplist.get(id_src)
-        elif type_src == 'exten':
+        elif src.get('type') == 'phone':
+            if src.get('id') in innerdata.xod_config.get('phones').keeplist:
+                phoneidstruct_src = innerdata.xod_config.get('phones').keeplist.get(src.get('id'))
+        elif src.get('type') == 'exten':
             # in android cases
             # there was a warning back to revision 6095 - maybe to avoid making arbitrary calls on behalf
             # of the local telephony system ?
@@ -692,23 +698,23 @@ class Command:
         extentodial = None
         dst_identity = None
 
-        if type_dst == 'user':
-            if id_dst in innerdata.xod_config.get('users').keeplist:
+        if dst.get('type') == 'user':
+            if dst.get('id') in innerdata.xod_config.get('users').keeplist:
                 for k, v in innerdata.xod_config.get('phones').keeplist.iteritems():
-                    if id_dst == str(v.get('iduserfeatures')):
+                    if dst.get('id') == str(v.get('iduserfeatures')):
                         phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(k)
                         break
                 # if not phoneidstruct_dst: lookup over agents ?
-        elif type_dst == 'phone':
-            if id_dst in innerdata.xod_config.get('phones').keeplist:
-                phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(id_dst)
-        elif type_dst == 'voicemail':
+        elif dst.get('type') == 'phone':
+            if dst.get('id') in innerdata.xod_config.get('phones').keeplist:
+                phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(dst.get('id'))
+        elif dst.get('type') == 'voicemail':
             extentodial = '*98'
             # XXX especially for the 'dial' command, actually
             # XXX display password on phone in order for the user to know what to type
-        elif type_dst == 'exten':
+        elif dst.get('type') == 'exten':
             # XXX how to define
-            extentodial = id_dst
+            extentodial = dst.get('id')
             dst_identity = extentodial
             dst_context = orig_context
 
@@ -808,38 +814,29 @@ class Command:
 
     # transfers
     def ipbxcommand_parking(self):
-        try:
-            src = self.commanddict.get('source')
-            [type_src, who_src] = src.split(':', 1)
-            [ipbxid_src, id_src] = who_src.split('/', 1)
-        except Exception:
-            self.log.warning('(%s) cannot parse source field %s'
-                             % (self.commanddict.get('command'), src))
-            return
-        try:
-            dst = self.commanddict.get('destination')
-            [type_dst, who_dst] = dst.split(':', 1)
-            [ipbxid_dst, id_dst] = who_dst.split('/', 1)
-        except Exception:
-            self.log.warning('(%s) cannot parse destination field %s'
-                        % (self.commanddict.get('command'), dst))
-            return
-        if ipbxid_src != ipbxid_dst:
-            return
-        if ipbxid_src not in self.ctid.safe:
-            self.log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
-            return
-        innerdata = self.ctid.safe.get(ipbxid_src)
+        src = self.parseid(self.commanddict.get('source'))
+        if not src:
+            return {'error' : 'source'}
+        dst = self.parseid(self.commanddict.get('destination'))
+        if not dst:
+            return {'error' : 'destination'}
 
-        if type_src == 'channel':
-            if id_src in innerdata.channels:
-                channel = id_src
+        if src.get('ipbxid') != dst.get('ipbxid'):
+            return {'error' : 'ipbxids'}
+        if src.get('ipbxid') not in self.ctid.safe:
+            return {'error' : 'ipbxid'}
+
+        innerdata = self.ctid.safe.get(src.get('ipbxid'))
+
+        if src.get('type') == 'channel':
+            if src.get('id') in innerdata.channels:
+                channel = src.get('id')
                 peerchannel = innerdata.channels.get(channel).peerchannel
         else:
             pass
 
-        if type_dst == 'parking':
-            parkinglot = id_dst
+        if dst.get('type') == 'parking':
+            parkinglot = dst.get('id')
 
         rep = {'amicommand' : 'park',
                'amiargs' : (channel, peerchannel, parkinglot, 120000)
@@ -848,32 +845,23 @@ class Command:
 
     # direct transfers
     def ipbxcommand_transfer(self):
-        try:
-            src = self.commanddict.get('source')
-            [type_src, who_src] = src.split(':', 1)
-            [ipbxid_src, id_src] = who_src.split('/', 1)
-        except Exception:
-            self.log.warning('(%s) cannot parse source field %s'
-                             % (self.commanddict.get('command'), src))
-            return
-        try:
-            dst = self.commanddict.get('destination')
-            [type_dst, who_dst] = dst.split(':', 1)
-            [ipbxid_dst, id_dst] = who_dst.split('/', 1)
-        except Exception:
-            self.log.warning('(%s) cannot parse destination field %s'
-                        % (self.commanddict.get('command'), dst))
-            return
-        if ipbxid_src != ipbxid_dst:
-            return
-        if ipbxid_src not in self.ctid.safe:
-            self.log.warning('%s not in %s' % (ipbxid_src, self.ctid.safe.keys()))
-            return
-        innerdata = self.ctid.safe.get(ipbxid_src)
+        src = self.parseid(self.commanddict.get('source'))
+        if not src:
+            return {'error' : 'source'}
+        dst = self.parseid(self.commanddict.get('destination'))
+        if not dst:
+            return {'error' : 'destination'}
 
-        if type_src == 'channel':
-            if id_src in innerdata.channels:
-                channel = id_src
+        if src.get('ipbxid') != dst.get('ipbxid'):
+            return {'error' : 'ipbxids'}
+        if src.get('ipbxid') not in self.ctid.safe:
+            return {'error' : 'ipbxid'}
+
+        innerdata = self.ctid.safe.get(src.get('ipbxid'))
+
+        if src.get('type') == 'channel':
+            if src.get('id') in innerdata.channels:
+                channel = src.get('id')
                 src_context = innerdata.channels.get(channel).context
                 # phone relations ('phone:24') innerdata.channels.get(channel).relations
         else:
@@ -882,19 +870,19 @@ class Command:
         dst_context = src_context
         phoneidstruct_dst = {}
 
-        if type_dst == 'user':
-            if id_dst in innerdata.xod_config.get('users').keeplist:
+        if dst.get('type') == 'user':
+            if dst.get('id') in innerdata.xod_config.get('users').keeplist:
                 for k, v in innerdata.xod_config.get('phones').keeplist.iteritems():
-                    if id_dst == str(v.get('iduserfeatures')):
+                    if dst.get('id') == str(v.get('iduserfeatures')):
                         phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(k)
                         break
                 # if not phoneidstruct_dst: lookup over agents ?
-        elif type_dst == 'phone':
-            if id_dst in innerdata.xod_config.get('phones').keeplist:
-                phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(id_dst)
-        elif type_dst == 'exten':
-            extentodial = id_dst
-        elif type_dst == 'voicemail':
+        elif dst.get('type') == 'phone':
+            if dst.get('id') in innerdata.xod_config.get('phones').keeplist:
+                phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(dst.get('id'))
+        elif dst.get('type') == 'exten':
+            extentodial = dst.get('id')
+        elif dst.get('type') == 'voicemail':
             # 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
             # exten_dst = 's'
             # context_src = 'macro-voicemail'
@@ -985,8 +973,8 @@ class Command:
             # kind agent => channel = logged-on channel
             # other kind => according to what is provided
             kind = 'phone'
-            id = '7'
-            filename = 'cti-monitor-%s-%s-%s' % (datestring, kind, id)
+            idv = '7'
+            filename = 'cti-monitor-%s-%s-%s' % (datestring, kind, idv)
             rep = { 'amicommand' : 'monitor',
                     'amiargs' : (channel, filename, 'false') }
             # wait the AMI event ack in order to fill status for channel

@@ -76,8 +76,7 @@ class INFO(Interfaces):
 
     def connected(self, connid):
         Interfaces.connected(self, connid)
-        global log
-        log = logging.getLogger('interface_info(%s:%d)' % self.requester)
+        self.log = logging.getLogger('interface_info(%s:%d)' % self.requester)
         return
 
     def disconnected(self, msg):
@@ -175,9 +174,9 @@ class INFO(Interfaces):
                         if action == 'set':
                             if levelname in levels:
                                 newlevel = levels[levelname]
-                                log.setLevel(logging.INFO)
-                                log.info('=== setting loglevel to %s (%s) ===' % (levelname, newlevel))
-                                log.setLevel(newlevel)
+                                self.log.setLevel(logging.INFO)
+                                self.log.info('=== setting loglevel to %s (%s) ===' % (levelname, newlevel))
+                                self.log.setLevel(newlevel)
                                 logging.getLogger('xivocti').setLevel(newlevel)
                                 logging.getLogger('xivo_ami').setLevel(newlevel)
                                 logging.getLogger('urllist').setLevel(newlevel)
@@ -201,7 +200,7 @@ class INFO(Interfaces):
 ##                        try:
 ##                            clireply.append('%s %s' % (user.encode('latin1'), info))
 ##                        except Exception:
-##                            log.exception('INFO %s' % usefulmsg)
+##                            self.log.exception('INFO %s' % usefulmsg)
 
                 elif usefulmsg in show_command_list:
                     itemname = usefulmsg[5:]
@@ -211,7 +210,7 @@ class INFO(Interfaces):
                             for id, idv in itm.keeplist.iteritems():
                                 clireply.append('%s %s' % (id, idv))
                         except Exception:
-                            log.exception('INFO %s' % usefulmsg)
+                            self.log.exception('INFO %s' % usefulmsg)
 
                 elif usefulmsg.startswith('show_var '):
                     command_args = usefulmsg.split()
@@ -254,7 +253,7 @@ class INFO(Interfaces):
                             try:
                                 [ipaddr, ipport] = info['login']['connection'].getpeername()
                             except Exception:
-                                log.exception('INFO %s' % usefulmsg)
+                                self.log.exception('INFO %s' % usefulmsg)
                                 [ipaddr, ipport] = ['err_addr', 'err_port']
                             clireply.append('user %s : ip:port = %s:%s'
                                             % (user.encode('latin1'), ipaddr, ipport))
@@ -264,7 +263,7 @@ class INFO(Interfaces):
                         try:
                             clireply.append('%s %s' % (user.encode('latin1'), info))
                         except Exception:
-                            log.exception('INFO %s' % usefulmsg)
+                            self.log.exception('INFO %s' % usefulmsg)
 
                 elif usefulmsg.startswith('sheet '):
                     k = usefulmsg.split(' ')
@@ -362,7 +361,7 @@ class INFO(Interfaces):
                         else:
                             clireply.append('nobody to kick')
                     except Exception:
-                        log.exception('INFO %s' % usefulmsg)
+                        self.log.exception('INFO %s' % usefulmsg)
                         clireply.append('(exception when trying to kick - see server log)')
 
                 elif usefulmsg.startswith('%s:' % self.ctid.commandset):
@@ -373,8 +372,8 @@ class INFO(Interfaces):
 
                 clireply.append('XIVO-INFO:%s' % retstr)
             except Exception:
-                log.exception('INFO connection [%s] : KO when defining for %s'
-                              % (usefulmsg, self.requester))
+                self.log.exception('INFO connection [%s] : KO when defining for %s'
+                                   % (usefulmsg, self.requester))
 
         freply = [ { 'message' : clireply } ]
         return freply
@@ -384,6 +383,6 @@ class INFO(Interfaces):
             for replyline in replylines:
                 self.connid.sendall('%s\n' % replyline)
         except Exception:
-            log.exception('INFO connection [%s] : KO when sending to %s'
-                          % (replylines, self.requester))
+            self.log.exception('INFO connection [%s] : KO when sending to %s'
+                               % (replylines, self.requester))
         return
