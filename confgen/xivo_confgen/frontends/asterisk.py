@@ -588,7 +588,7 @@ class AsteriskFrontend(Frontend):
                 print >>o, "include = %s" % row['include']
 
             if conf.has_section(ctx['name']):
-                section = ctx['context']
+                section = ctx['name']
             elif conf.has_section('type:%s' % ctx['contexttype']):
                 section = 'type:%s' % ctx['contexttype']
             else:
