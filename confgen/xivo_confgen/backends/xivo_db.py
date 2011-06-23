@@ -229,15 +229,18 @@ class BSFilterHintsHandler(SpecializedHandler):
 		(_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
 				('userfeatures','phonefunckey','extenumbers','linefeatures')]
 
+		_l2 = alias(_l)
+
 		conds = [
-			_l.c.iduserfeatures       == _p.c.iduserfeatures, 
-			_p.c.typeextenumbers      == 'extenfeatures',
-			_p.c.typevalextenumbers   == 'bsfilter', 
-			_p.c.typeextenumbersright == 'user',
-			_p.c.supervision == 1, 
-			cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)),
-			_p.c.typevalextenumbersright == _e.c.typeval, 
-			coalesce(_l.c.number,'') != ''
+			_l.c.iduserfeatures                          == _p.c.iduserfeatures, 
+			_p.c.typeextenumbers                         == 'extenfeatures',
+			_p.c.typevalextenumbers                      == 'bsfilter', 
+			_p.c.typeextenumbersright                    == 'user',
+			_p.c.supervision                             == 1, 
+			cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)), # 'user'
+			_p.c.typevalextenumbersright                 == cast(_l2.c.iduserfeatures,VARCHAR(255)),
+			_e.c.typeval                                 == cast(_l2.c.id,VARCHAR(255)),
+			coalesce(_l.c.number,'')                     != ''
 		]
 		if 'context' in kwargs:
 			conds.append(_l.c.context == kwargs['context'])
