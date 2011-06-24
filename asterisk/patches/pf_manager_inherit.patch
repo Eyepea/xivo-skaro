@@ -1,0 +1,18 @@
+Index: asterisk-1.8.4.1/main/channel.c
+===================================================================
+--- asterisk-1.8.4.1.orig/main/channel.c	2011-06-24 17:04:21.000000000 +0200
++++ asterisk-1.8.4.1/main/channel.c	2011-06-24 17:04:55.000000000 +0200
+@@ -5898,6 +5898,13 @@
+ 	struct ast_var_t *current, *newvar;
+ 	const char *varname;
+ 
++        if ((parent != NULL) && (child != NULL))
++                manager_event(EVENT_FLAG_CALL, "Inherit",
++                              "Parent: %s\r\n"
++                              "Child: %s\r\n",
++                              parent->name,
++                              child->name);
++
+ 	AST_LIST_TRAVERSE(&parent->varshead, current, entries) {
+ 		int vartype = 0;
+ 
