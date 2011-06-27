@@ -722,10 +722,17 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
                                 		    break;
                                 		}
                                 		$w = array();
-                                		$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
                                 		$w['callfilterid'] = $callfiltermember['callfilterid'];
+                                		$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
                                 		$callfilter = $this->_callfiltermember->get_where($w);
-                                		$bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+                                		
+                                		if($w['bstype'] === 'boss')
+                                		    $bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+                                		else
+                                		{
+                                		    $bossmasterline = $masterline;
+                                		    $masterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+                                		}
                         		}
                         		
                         		$exten .= $bossmasterline['number'];

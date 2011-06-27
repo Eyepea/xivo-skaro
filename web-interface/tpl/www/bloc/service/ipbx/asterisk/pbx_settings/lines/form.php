@@ -78,12 +78,15 @@ if (is_readable($filename) === true)
 	</tr>
 	</thead>
 <?php
+$i = 0;
 if($ipbxinfos !== false
 && ($nb = count($ipbxinfos)) !== 0):
 	foreach($ipbxinfos as $k => $v):
 ?>
 	<tbody>
-	<tr class="fm-paragraph">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="fm-paragraph l-infos-<?=(($i++ % 2) + 1)?>on2">
 		<td class="td-left"><?=$k?></td>
 		<td class="td-right"><?=$v?></td>
 	</tr>
