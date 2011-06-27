@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$userstat = $groupstat = $queuestat = $meetmestat = $agentstat = $sipstat = $iaxstat = array();
+$userstat = $groupstat = $queuestat = $meetmestat = $agentstat = $sipstat = $iaxstat = $live = array();
 $userstat['enable'] = $userstat['disable'] = $userstat['initialized'] = $userstat['total'] = 0;
 $groupstat['enable'] = $groupstat['disable'] = $groupstat['total'] = 0;
 $queuestat['enable'] = $queuestat['disable'] = $queuestat['total'] = 0;
@@ -27,14 +27,38 @@ $voicemailstat['enable'] = $voicemailstat['disable'] = $voicemailstat['total'] =
 $agentstat['enable'] = $agentstat['disable'] = $agentstat['total'] = 0;
 $sipstat['enable'] = $sipstat['disable'] = $sipstat['total'] = 0;
 $iaxstat['enable'] = $iaxstat['disable'] = $iaxstat['total'] = 0;
-
-$activecalls = 0;
+$live['activecalls'] = $live['activechannels'] = $live['callsprocessed'] = 0;
 
 if(($recvactivecalls = $ipbx->discuss('core show channels',true)) !== false
-&& ($nb = count($recvactivecalls) - 1) > 0
-&& ($pos = strpos($recvactivecalls[$nb],' ')) !== false
-&& $pos !== 0)
-	$activecalls = substr($recvactivecalls[$nb],0,$pos);
+&& ($nb = count($recvactivecalls)) > 0)
+{
+    for ($i=0;$i<$nb;$i++)
+    {
+        $ref = &$recvactivecalls[$i];
+        if(preg_match('/^([0-9]+) ([a-z ]+)$/i',$ref,$out) === 0)
+            continue;
+        
+        $count = (int) $out[1];
+        $text = str_replace(' ','',$out[2]);
+        
+        switch ($text)
+        {
+            case 'activechannel':
+            case 'activechannels':
+                $live['activechannels'] = $count;
+                break;
+            case 'activecall';
+            case 'activecalls';
+                $live['activecalls'] = $count;
+                break;
+            case 'callprocessed':
+            case 'callsprocessed':
+                $live['callsprocessed'] = $count;
+                break;
+            default:
+        }
+    }
+}
 
 $appsip = &$ipbx->get_application('trunk',array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
 
@@ -131,7 +155,7 @@ $_TPL->set_var('agentstat',$agentstat);
 $_TPL->set_var('voicemailstat',$voicemailstat);
 $_TPL->set_var('sipstat',$sipstat);
 $_TPL->set_var('iaxstat',$iaxstat);
-$_TPL->set_var('activecalls',$activecalls);
+$_TPL->set_var('live',$live);
 
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/index');
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());

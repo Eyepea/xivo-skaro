@@ -28,6 +28,7 @@ $agentstat = $this->get_var('agentstat');
 $sipstat = $this->get_var('sipstat');
 $iaxstat = $this->get_var('iaxstat');
 $voicemailstat = $this->get_var('voicemailstat');
+$live = $this->get_var('live');
 
 ?>
 <div id="index" class="b-infos">
@@ -295,7 +296,7 @@ $voicemailstat = $this->get_var('voicemailstat');
 					</td>
 				</tr>
 			</table>
-
+<!--
 			<table border="0" cellpadding="0" cellspacing="0">
 				<tr class="sb-top">
 					<th class="th-left"><?=$this->bbf('stats_col_status');?></th>
@@ -308,12 +309,23 @@ $voicemailstat = $this->get_var('voicemailstat');
 					<td class="td-right"><?=$userstat['total']?></td>
 				</tr>
 			</table>
-
+-->
 			<table border="0" cellpadding="0" cellspacing="0">
+				<tr class="sb-top">
+					<th class="th-left"><?=$this->bbf('stats_col_status');?></th>
+					<th class="th-right"><?=$this->bbf('stats_col_total');?></th>
+				</tr>
 				<tr class="l-infos-1on2">
-					<td class="td-singlenotop">
-						<?=$this->bbf('stats_calls-active',$this->get_var('activecalls'));?>
-					</td>
+					<td class="td-left"><?=$this->bbf('stats_calls-activechannels');?></td>
+					<td class="td-right"><?=$this->get_var('live','activechannels')?></td>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td class="td-left"><?=$this->bbf('stats_calls-activecalls');?></td>
+					<td class="td-right"><?=$this->get_var('live','activecalls')?></td>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td class="td-left"><?=$this->bbf('stats_calls-callsprocessed');?></td>
+					<td class="td-right"><?=$this->get_var('live','callsprocessed')?></td>
 				</tr>
 			</table>
 		</div>

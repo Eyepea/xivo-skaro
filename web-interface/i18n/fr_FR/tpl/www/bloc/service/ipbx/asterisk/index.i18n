@@ -73,14 +73,14 @@ Ajouter un trunk IAX
 ; stats_status-initialized
 Initialisé
 
-; stats_calls-active(0)
-Aucun appel en cours
+; stats_calls-activechannels
+Channel en cours
 
-; stats_calls-active(1)
-Appel en cours : %s
+; stats_calls-activecalls
+Appel en cours
 
-; stats_calls-active
-Appels en cours : %s
+; stats_calls-callsprocessed
+Appels traités
 
 ; info_service_label
 Logiciel :
