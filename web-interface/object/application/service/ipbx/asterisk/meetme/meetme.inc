@@ -22,7 +22,7 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_meetme extends xivo_application_asterisk_abstract
 {
-	var $_dso		= null;
+	var $_dso		    = null;
 	var $_appmeetme		= false;
 	var $_meetmefeatures	= false;
 	var $_meetmeroom	= false;

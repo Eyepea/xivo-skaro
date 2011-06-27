@@ -207,7 +207,6 @@ $array['element']['timeannounceclose']['null'] = true;
 $array['element']['maxusers'] = array();
 $array['element']['maxusers']['default'] = 0;
 $array['element']['maxusers']['set'] = true;
-$array['element']['maxusers']['forcedef'] = true;
 
 $array['element']['startdate'] = array();
 $array['element']['startdate']['default'] = '';
