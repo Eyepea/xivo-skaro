@@ -153,7 +153,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 
         for($i = 0; $i < count($list); $i++)
         {
-            $item = $list[$i];
+            $item = &$list[$i];
             if(!$item['actionable']
             || $item['netiface']['disable']
             || strcmp($item['netiface']['networktype'], 'voip') != 0)
@@ -170,7 +170,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 
 		// no VOIP netiface defined
         if($cidr_id < 0)
-					return false;
+            return false;
 
         $net = array(
             'ipaddr'    => $list[$cidr_id]['netiface']['address'],

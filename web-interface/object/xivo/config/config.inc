@@ -79,6 +79,9 @@ $array['module']['provdplugin']['datastorage'] = false;
 $array['module']['provddevice'] = array();
 $array['module']['provddevice']['datastorage'] = false;
 
+$array['module']['provdconfigure'] = array();
+$array['module']['provdconfigure']['datastorage'] = false;
+
 $array['module']['stats_conf'] = array();
 $array['module']['stats_conf']['datastorage'] = true;
 

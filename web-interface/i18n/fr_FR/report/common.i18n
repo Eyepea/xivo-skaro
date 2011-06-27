@@ -4,3 +4,12 @@ Synchronisation des terminaisons reussies
 
 ; error_during_synchronize
 Echec de la synchronisation des terminaisons
+
+; params_successfully_updated
+Mise à jour réussi
+
+; error_during_get_params
+Erreur durant la récuperation
+
+; error_during_edit_params
+Erreur durant la mise à jour

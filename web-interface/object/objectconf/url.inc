@@ -107,6 +107,7 @@ $array['xivo/configuration/json/private/provisioning/autoprov'] = 'xivo/configur
 
 $array['xivo/configuration/ui/provisioning/plugin'] = 'xivo/configuration/ui.php/provisioning/plugin';
 $array['xivo/configuration/ui/provisioning/config'] = 'xivo/configuration/ui.php/provisioning/config';
+$array['xivo/configuration/ui/provisioning/configure'] = 'xivo/configuration/ui.php/provisioning/configure';
 
 // controlsystem
 $array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';

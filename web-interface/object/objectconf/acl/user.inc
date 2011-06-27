@@ -161,6 +161,7 @@ $array['tree']['xivo']['configuration']['provisioning']['configregistrar'] = tru
 $array['tree']['xivo']['configuration']['provisioning']['confignetwork'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['config'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['configure'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

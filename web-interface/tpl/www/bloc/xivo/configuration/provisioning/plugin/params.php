@@ -36,7 +36,7 @@ if (($params = $info['params']) !== false
 
 ?>
 <div id="res-<?=$k?>"></div>
-<?php 
+<?php
 	echo	$form->text(array('desc' => $this->bbf('fm_'.$k),
 			  'name'	=> $k,
 			  'labelid'	=> $k,
@@ -45,8 +45,8 @@ if (($params = $info['params']) !== false
 ?>
 	<script type="text/javascript">
 		$(function(){
-			$.post('/xivo/configuration/ui.php/provisioning/plugin', 
-				{ 
+			$.post('/xivo/configuration/ui.php/provisioning/plugin',
+				{
 					act: 'getparams',
 					uri: '<?=$href?>'
 				},
@@ -56,8 +56,8 @@ if (($params = $info['params']) !== false
 			);
 			$('#it-<?=$k?>').keyup(function(){
 				delay(function(){
-					$.post('/xivo/configuration/ui.php/provisioning/plugin',						
-						{ 
+					$.post('/xivo/configuration/ui.php/provisioning/plugin',
+						{
 							act: 'editparams',
 							uri: '<?=$href?>',
 							value: $('#it-<?=$k?>').val()
@@ -66,11 +66,11 @@ if (($params = $info['params']) !== false
 							$('#res-<?=$k?>').show().html(data).delay(1000).hide('slow');
 						}
 					);
-			    }, 600 );
+			    }, 900 );
 			});
 		});
 	</script>
-<?php 
+<?php
 
 	endforeach;
 endif;

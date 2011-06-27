@@ -565,7 +565,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 				$ref['actionable'] = $this->is_valid_interface_method($val['method']);
 
-				if(isset($netinfo[$val['ifname']]) === true
+				if(is_array($netinfo) === true
+				&& ($netinfo[$val['ifname']]) === true
 				&& (int) $val['hwtypeid'] === dwho_uint($netinfo[$val['ifname']]['hwtypeid']))
 				{
 					$ref['netinfo'] = $netinfo[$val['ifname']];
@@ -583,7 +584,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			}
 		}
 
-		if(empty($netinfo) === false)
+		if(is_array($netinfo) === true
+		&& empty($netinfo) === false)
 		{
 			foreach($netinfo as $val)
 			{
@@ -606,7 +608,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 				$key = $val['name'].'-'.$val['name'];
 
 				$r[$key] = array('netinfo'	=> $val,
-						 'netiface'	=> false,
+						 'netiface'	    => isset($r[$key]) ? $r[$key]['netiface'] : false,
 						 'deletable'	=> false,
 						 'actionable'	=> $actionable);
 				$this->_cnt++;

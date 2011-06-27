@@ -5,16 +5,19 @@ Approvisionnement: configuration
 ; fld_provd_server
 Configuration du serveur
 
-; fm_download_server
-Url :  
+; fm_configure_locale
+Locale: 
 
-; fm_ftp_proxy
+; fm_configure_plugin_server
+Url:  
+
+; fm_configure_ftp_proxy
 Proxy FTP :
 
-; fm_http_proxy
+; fm_configure_http_proxy
 Proxy HTTP :
 
-; fm_https_proxy
+; fm_configure_https_proxy
 Proxy HTTPS :
 
 ; fld_provd_general_configuration

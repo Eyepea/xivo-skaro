@@ -18,17 +18,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$provdplugin = &$_XOBJ->get_module('provdplugin');
-$provdconfig = &$_XOBJ->get_module('provdconfig');
+$provdconfigure = &$_XOBJ->get_module('provdconfigure');
 $appprovisionning = &$_XOBJ->get_application('provisioning');
 
 $info = array();
-$info['configure'] = $provdplugin->get_infos_server();
+$info['configure'] = $provdconfigure->get_configures('',true);
 $info['provd'] = $appprovisionning->get();
 
 if(isset($_QR['act']) === true
 && $_QR['act'] === 'reset')
 {
+    $provdconfig = &$_XOBJ->get_module('provdconfig');
 	if ($provdconfig->eval_required_config(null,true) === false)
 		dwho_report::push('error','error_during_update');
 	else
@@ -36,7 +36,6 @@ if(isset($_QR['act']) === true
 }
 
 if(isset($_QR['fm_send']) === true
-&& isset($_QR['configure']) === true
 && isset($_QR['provd']) === true)
 {
 	if($appprovisionning->set($_QR['provd']) === false)
@@ -44,17 +43,16 @@ if(isset($_QR['fm_send']) === true
 	else
 	{
 		dwho_report::push('info','successfully_updated');
-		if($provdplugin->edit_infos_server($_QR['configure']) === false)
-			dwho_report::push('error','can\'t update configure server');
-				
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/general'));
 	}
 	 			
 	$info = array_merge($info,$_QR);
 }
 
-
 $_TPL->set_var('info', $info);
+
+$dhtml = &$_TPL->get_module('dhtml');
+$dhtml->set_js('js/xivo/configuration/provisioning/configure.js');
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

@@ -38,6 +38,9 @@ $array['xivo/configuration/ui/provisioning/plugin'] = array(
 $array['xivo/configuration/ui/provisioning/config'] = array(
 	'path'		=> 'xivo/configuration/ui/provisioning/config');
 
+$array['xivo/configuration/ui/provisioning/configure'] = array(
+	'path'		=> 'xivo/configuration/ui/provisioning/configure');
+
 $array['service/ipbx/asterisk/ui/pbx_settings/users/agents/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/call_center/agents',
 	'define'	=> array(

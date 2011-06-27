@@ -31,49 +31,49 @@ $dhtml   = &$this->get_module('dhtml');
 </h3>
 
 <div class="sb-content">
+
+<fieldset id="fld-registrar">
+	<legend><?=$this->bbf('fld_provd_server');?></legend>
+	
+<?php
+if (($params = $this->get_var('info','configure')) !== false
+&& is_array($params) === true):
+
+    $uri = '/xivo/configuration/ui.php/provisioning/configure';
+
+	foreach($params as $k => $v):
+
+		if (isset($v['links'][0]) === false
+		|| isset($v['links'][0]['href']) === false
+		|| ($href = $v['links'][0]['href']) === '')
+			continue;
+?>
+<div id="res-<?=$k?>"></div>
+<?php
+	echo	$form->hidden(array('name'	=> 'href',
+			  'id'	    => 'href-'.$k,
+			  'value'	=> $href));
+	echo	$form->hidden(array('name'	=> 'uri',
+			  'id'	    => 'uri-'.$k,
+			  'value'	=> $uri));
+	echo	$form->text(array('desc' => $this->bbf('fm_configure_'.$k),
+			  'name'	=> $k,
+			  'id'		=> 'configure-ajax',
+			  'size'	=> strlen($v['value']),
+			  'value'	=> $v['value'],
+			  'help'	=> $v['description']));
+?>
+<?php
+	endforeach;
+endif;
+?>
+</fieldset>
+
 <form action="#" method="post" accept-charset="utf-8">
 
 <div id="sb-part-first">
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
-
-<fieldset id="fld-registrar">
-	<legend><?=$this->bbf('fld_provd_server');?></legend>
-<?php
-	echo $form->text(array('desc'	=> $this->bbf('fm_download_server'),
-				  'name'	  	=> 'configure[server]',
-				  'labelid'		=> 'server',
-				  'size'	  	=> 40,
-	              'help'		=> $this->get_var('info','configure','server','description'),
-				  'value'	  	=> $this->get_var('info','configure','server','value'),
-				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'server'))));
-	
-	echo $form->text(array('desc'	=> $this->bbf('fm_ftp_proxy'),
-				  'name'	  	=> 'configure[ftp_proxy]',
-				  'labelid'		=> 'ftp_proxy',
-				  'size'	  	=> 40,
-	              'help'		=> $this->get_var('info','configure','ftp_proxy','description'),
-				  'value'	  	=> $this->get_var('info','configure','ftp_proxy','value'),
-				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'ftp_proxy'))));
-	
-	echo $form->text(array('desc'	=> $this->bbf('fm_http_proxy'),
-				  'name'	  	=> 'configure[http_proxy]',
-				  'labelid'		=> 'http_proxy',
-				  'size'	  	=> 40,
-	              'help'		=> $this->get_var('info','configure','http_proxy','description'),
-				  'value'	  	=> $this->get_var('info','configure','http_proxy','value'),
-				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'http_proxy'))));
-	
-	echo $form->text(array('desc'	=> $this->bbf('fm_https_proxy'),
-				  'name'	  	=> 'configure[https_proxy]',
-				  'labelid'		=> 'https_proxy',
-				  'size'	  	=> 40,
-	              'help'		=> $this->get_var('info','configure','https_proxy','description'),
-				  'value'	  	=> $this->get_var('info','configure','https_proxy','value'),
-				  'error'   	=> $this->bbf_args('error', $this->get_var('error', 'https_proxy'))));
-?>
-</fieldset>
-
 <fieldset id="fld-registrar">
 	<legend><?=$this->bbf('fld_provd_general_configuration');?></legend>
 <?php

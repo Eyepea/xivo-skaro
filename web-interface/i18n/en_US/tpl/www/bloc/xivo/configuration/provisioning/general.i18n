@@ -5,16 +5,19 @@ Provisioning general settings
 ; fld_provd_server
 General Configuration
 
-; fm_download_server
+; fm_configure_locale
+Locale: 
+
+; fm_configure_plugin_server
 Url:  
 
-; fm_ftp_proxy
+; fm_configure_ftp_proxy
 FTP Proxy:
 
-; fm_http_proxy
+; fm_configure_http_proxy
 HTTP Proxy:
 
-; fm_https_proxy
+; fm_configure_https_proxy
 HTTPS Proxy:
 
 ; fld_provd_general_configuration
