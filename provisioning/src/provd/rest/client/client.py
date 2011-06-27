@@ -219,12 +219,6 @@ class PluginManager(object):
         self._pg_mgr_res = pg_mgr_res
 
     @once_per_instance
-    def configure_service(self):
-        """Return a configure object for the plugin manager."""
-        config_srv_res = self._pg_mgr_res.config_srv_res()
-        return ConfigureService(config_srv_res)
-    
-    @once_per_instance
     def install_service(self):
         """Return an install object for the plugin manager."""
         install_srv_res = self._pg_mgr_res.install_srv_res()

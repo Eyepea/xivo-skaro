@@ -495,9 +495,6 @@ class Plugins(object):
         install_srv = self._pg_mgr.install_service()
         return _search_in_pkgs(install_srv.installable(), search)
     
-    def parameters(self):
-        return Parameters(self._pg_mgr.configure_service())
-    
     def __getitem__(self, id):
         # return the plugin with id id
         return Plugin(self._pg_mgr.plugin(id))

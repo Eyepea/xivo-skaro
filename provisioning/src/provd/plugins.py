@@ -28,7 +28,6 @@ import operator
 import os
 import shutil
 import tarfile
-import urlparse
 import weakref
 from binascii import a2b_hex
 from fetchfw.download import new_downloaders, DefaultDownloader, RemoteFile,\
@@ -43,9 +42,7 @@ from provd.localization import get_locale_and_language
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
     OIP_FAIL
 from provd.proxy import DynProxyHandler
-from provd.services import AttrConfigureServiceParam, BaseConfigureService,\
-    IInstallService, InvalidParameterError, JsonConfigPersister,\
-    PersistentConfigureServiceDecorator, DictConfigureServiceParam
+from provd.services import IInstallService, InvalidParameterError
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
 from twisted.internet import defer
@@ -710,51 +707,6 @@ class BasePluginManagerObserver(object):
             self._pg_unload(pg_id)
 
 
-def _check_is_server_url(value):
-    if value is None:
-        return
-    
-    try:
-        parse_result = urlparse.urlparse(value)
-    except Exception, e:
-        raise InvalidParameterError(e)
-    else:
-        if not parse_result.scheme:
-            raise InvalidParameterError('no scheme: %s' % value)
-        if not parse_result.hostname:
-            raise InvalidParameterError('no hostname: %s' % value)
-
-
-def _check_is_proxy(value):
-    if value is None:
-        return
-    
-    try:
-        parse_result = urlparse.urlparse(value)
-    except Exception, e:
-        raise InvalidParameterError(e)
-    else:
-        if not parse_result.scheme:
-            raise InvalidParameterError('no scheme: %s' % value)
-        if not parse_result.hostname:
-            raise InvalidParameterError('no hostname: %s' % value)
-        if parse_result.path:
-            raise InvalidParameterError('path: %s' % value)
-
-
-def _check_is_https_proxy(value):
-    if value is None:
-        return
-    
-    try:
-        parse_result = urlparse.urlparse(value)
-    except Exception, e:
-        raise InvalidParameterError(e)
-    else:
-        if parse_result.scheme and parse_result.hostname:
-            raise InvalidParameterError('scheme and hostname: %s' % value)
-
-
 class PluginManager(object):
     """Manage the life cycle of plugins in the plugin ecosystem.
     
@@ -787,35 +739,11 @@ class PluginManager(object):
         self._cache_dir = cache_dir
         self._cache_plugin = cache_plugin
         self.server = None
-        proxies = app.proxies
-        server_p = AttrConfigureServiceParam(self, 'server',
-                                             u'The plugins repository URL',
-                                             _check_is_server_url,
-                                             description_fr=u"L'addresse (URL) du dépôt de plugins")
-        http_proxy_p = DictConfigureServiceParam(proxies, 'http',
-                                                 u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"',
-                                                 _check_is_proxy,
-                                                 description_fr=u'Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"')
-        ftp_proxy_p = DictConfigureServiceParam(proxies, 'ftp',
-                                                u'The proxy for FTP requests. Format is "http://[user:password@]host:port"',
-                                                _check_is_proxy,
-                                                description_fr=u'Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"')
-        # syntax for specifying the HTTPS proxy is a bit different, don't ask me why
-        https_proxy_p = DictConfigureServiceParam(proxies, 'https',
-                                                  u'The proxy for HTTPS requests. Format is "host:port"',
-                                                  _check_is_https_proxy,
-                                                  description_fr=u'Le proxy pour les requêtes HTTPS. Le format est "host:port"')
-        cfg_service = BaseConfigureService({u'server': server_p,
-                                            u'http_proxy': http_proxy_p,
-                                            u'ftp_proxy': ftp_proxy_p,
-                                            u'https_proxy': https_proxy_p})
-        persister = JsonConfigPersister(os.path.join(plugins_dir, 'config.json'))
-        self._cfg_service = PersistentConfigureServiceDecorator(cfg_service, persister)
         self._in_update = False
         self._in_install = set()
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
-        self._downloader = DefaultDownloader(_new_handlers(proxies))
+        self._downloader = DefaultDownloader(_new_handlers(app.proxies))
     
     def close(self):
         """Close the plugin manager.
@@ -829,15 +757,6 @@ class PluginManager(object):
         for id in self._plugins.keys():
             self._unload_and_notify(id)
         logger.info('Plugin manager closed')
-    
-    def configure_service(self):
-        """Return an object providing the IConfigureService interface.
-        
-        You can then configure certain aspect of the plugin manager via this
-        object.
-        
-        """
-        return self._cfg_service
     
     def _db_pathname(self):
         return os.path.join(self._plugins_dir, self._DB_FILENAME)

@@ -1,6 +1,4 @@
 # -*- coding: UTF-8 -*-
-from provd.services import InvalidParameterError, JsonConfigPersister,\
-    PersistentConfigureServiceDecorator
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -27,11 +25,14 @@ import copy
 import logging
 import functools
 import os.path
+import urlparse
 from provd.devices.config import RawConfigError, DefaultConfigFactory
 from provd.localization import get_localization_service
 from provd.operation import OIP_PROGRESS, OIP_FAIL, OIP_SUCCESS
 from provd.persist.common import ID_KEY, InvalidIdError as PersistInvalidIdError
 from provd.plugins import PluginManager
+from provd.services import InvalidParameterError, JsonConfigPersister,\
+    PersistentConfigureServiceDecorator
 from provd.synchro import DeferredRWLock
 from twisted.internet import defer
 
@@ -193,19 +194,21 @@ class ProvisioningApplication(object):
         base_storage_dir = config['general.base_storage_dir']
         plugins_dir = os.path.join(base_storage_dir, 'plugins')
         
-        cfg_service = ApplicationConfigureService()
-        persister = JsonConfigPersister(os.path.join(base_storage_dir,
-                                                     'app.json'))
-        self.configure_service = PersistentConfigureServiceDecorator(cfg_service, persister)
-        
         self.proxies = self._splitted_config.get('proxy', {})
         
         self.pg_mgr = PluginManager(self,
                                     plugins_dir,
                                     config['general.cache_dir'],
                                     config['general.cache_plugin'])
-        if 'general.plugin_server' in config and not self.pg_mgr.server:
+        if 'general.plugin_server' in config:
             self.pg_mgr.server = config['general.plugin_server']
+        
+        # Do not move this line up unless you know what you are doing...
+        cfg_service = ApplicationConfigureService(self.pg_mgr, self.proxies)
+        persister = JsonConfigPersister(os.path.join(base_storage_dir,
+                                                     'app.json'))
+        self.configure_service = PersistentConfigureServiceDecorator(cfg_service, persister)
+        
         self._base_raw_config = config['general.base_raw_config']
         logger.info('Using base raw config %s', self._base_raw_config)
         _check_common_raw_config_validity(self._base_raw_config)
@@ -944,12 +947,57 @@ class ProvisioningApplication(object):
         return self.pg_mgr[id]
 
 
+def _check_is_server_url(value):
+    if value is None:
+        return
+    
+    try:
+        parse_result = urlparse.urlparse(value)
+    except Exception, e:
+        raise InvalidParameterError(e)
+    else:
+        if not parse_result.scheme:
+            raise InvalidParameterError('no scheme: %s' % value)
+        if not parse_result.hostname:
+            raise InvalidParameterError('no hostname: %s' % value)
+
+
+def _check_is_proxy(value):
+    if value is None:
+        return
+    
+    try:
+        parse_result = urlparse.urlparse(value)
+    except Exception, e:
+        raise InvalidParameterError(e)
+    else:
+        if not parse_result.scheme:
+            raise InvalidParameterError('no scheme: %s' % value)
+        if not parse_result.hostname:
+            raise InvalidParameterError('no hostname: %s' % value)
+        if parse_result.path:
+            raise InvalidParameterError('path: %s' % value)
+
+
+def _check_is_https_proxy(value):
+    if value is None:
+        return
+    
+    try:
+        parse_result = urlparse.urlparse(value)
+    except Exception, e:
+        raise InvalidParameterError(e)
+    else:
+        if parse_result.scheme and parse_result.hostname:
+            raise InvalidParameterError('scheme and hostname: %s' % value)
+
+
 class ApplicationConfigureService(object):
-    # XXX possible move the stuff from the plugin manager to the application
-    #     configure service...
-    #     -proxy
-    #     -plugin server
-    def _get_locale(self):
+    def __init__(self, pg_mgr, proxies):
+        self._pg_mgr = pg_mgr
+        self._proxies = proxies
+    
+    def _get_param_locale(self):
         l10n_service = get_localization_service()
         if l10n_service is None:
             logger.info('No localization service registered')
@@ -961,7 +1009,7 @@ class ApplicationConfigureService(object):
             else:
                 return value.decode('ascii')
     
-    def _set_locale(self, value):
+    def _set_param_locale(self, value):
         l10n_service = get_localization_service()
         if l10n_service is None:
             logger.info('No localization service registered')
@@ -974,22 +1022,71 @@ class ApplicationConfigureService(object):
                 except (UnicodeError, ValueError), e:
                     raise InvalidParameterError(e)
     
-    def get(self, name):
-        if name == u'locale':
-            return self._get_locale()
+    def _generic_set_proxy(self, key, value):
+        if value is None:
+            if key in self._proxies:
+                del self._proxies[key]
         else:
+            self._proxies[key] = value
+    
+    def _get_param_http_proxy(self):
+        return self._proxies['http']
+    
+    def _set_param_http_proxy(self, value):
+        _check_is_proxy(value)
+        self._generic_set_proxy('http', value)
+    
+    def _get_param_ftp_proxy(self):
+        return self._proxies['ftp']
+    
+    def _set_param_ftp_proxy(self, value):
+        _check_is_proxy(value)
+        self._generic_set_proxy('ftp', value)
+    
+    def _get_param_https_proxy(self):
+        return self._proxies['https']
+    
+    def _set_param_https_proxy(self, value):
+        _check_is_https_proxy(value)
+        self._generic_set_proxy('https', value)
+    
+    def _get_param_plugin_server(self):
+        return self._pg_mgr.server
+    
+    def _set_param_plugin_server(self, value):
+        _check_is_server_url(value)
+        self._pg_mgr.server = value
+    
+    def get(self, name):
+        get_fun_name = '_get_param_%s' % name
+        try:
+            get_fun = getattr(self, get_fun_name)
+        except AttributeError:
             raise KeyError(name)
+        else:
+            return get_fun()
     
     def set(self, name, value):
-        if name == u'locale':
-            self._set_locale(value)
-        else:
+        set_fun_name = '_set_param_%s' % name
+        try:
+            set_fun = getattr(self, set_fun_name)
+        except AttributeError:
             raise KeyError(name)
+        else:
+            set_fun(value)
     
     description = {
-        u'locale': u'The current locale'
+        u'locale': u'The current locale. Example: fr_FR',
+        u'http_proxy': u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"',
+        u'ftp_proxy': u'The proxy for FTP requests. Format is "http://[user:password@]host:port"',
+        u'https_proxy': u'The proxy for HTTPS requests. Format is "host:port"',
+        u'plugin_server': u'The plugins repository URL',
     }
     
     description_fr = {
-        u'locale': u'La locale courante'
+        u'locale': u'La locale courante. Exemple: en_CA',
+        u'http_proxy': u'Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"',
+        u'ftp_proxy': u'Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"',
+        u'https_proxy': u'Le proxy pour les requêtes HTTPS. Le format est "host:port"',
+        u'plugin_server': u"L'addresse (URL) du dépôt de plugins",
     }

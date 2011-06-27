@@ -896,7 +896,6 @@ class RawConfigResource(Resource):
 
 def PluginManagerResource(app):
     links = [(REL_INSTALL_SRV, 'install', PluginManagerInstallServiceResource(app)),
-             (REL_CONFIGURE_SRV, 'configure', ConfigureServiceResource(app.pg_mgr.configure_service())),
              (u'pg.plugins', 'plugins', PluginsResource(app.pg_mgr))]
     return IntermediaryResource(links)
 

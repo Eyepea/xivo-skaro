@@ -622,14 +622,8 @@ class PluginManagerResource(object):
         install_uri = uri_append_path(pg_mgr_uri, 'install')
         self._install_res = InstallServiceResource(install_uri, broker)
         
-        config_uri = uri_append_path(pg_mgr_uri, 'configure')
-        self._config_res = ConfigureServiceResource(config_uri, broker)
-        
         plugins_uri = uri_append_path(pg_mgr_uri, 'plugins')
         self._plugins_res = PluginsResource(plugins_uri, broker)
-    
-    def config_srv_res(self):
-        return self._config_res
     
     def install_srv_res(self):
         return self._install_res
