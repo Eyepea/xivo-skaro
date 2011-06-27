@@ -19,16 +19,16 @@ install_proc: install_cisco-spa500fw
 [pkg_spa50x-30x-lang]
 desc: Language files for Cisco SPA50XG and SPA30XG
 desc_fr: Fichiers de langue pour Cisco SPA50XG et SPA30XG
-version: 7.4.6
+version: 7.4.8
 files: file_spa50x-30xlang
 install_proc: install_cisco-spa50x-30xlang
 
 [pkg_spa525-lang]
 desc: Language files for Cisco SPA525G and SPA525G2
 desc_fr: Fichiers de langue pour Cisco SPA525G et SPA525G2
-version: 7.4.6
+version: 7.4.8
 files: file_spa525lang
-install_proc: install_cisco-spa525lang _v746.xml
+install_proc: install_cisco-spa525lang
 
 
 
@@ -38,17 +38,17 @@ b-c: cp *.bin $DOC_ROOT/firmware/
 
 [install_cisco-spa50x-30xlang]
 a-b: unzip $FILE1
-b-c: cp */spa50x_30x_de_v746.xml $DOC_ROOT/i18n/spa50x_30x_de.xml
-b-d: cp */spa50x_30x_en_v746.xml $DOC_ROOT/i18n/spa50x_30x_en.xml
-b-e: cp */spa50x_30x_es_v746.xml $DOC_ROOT/i18n/spa50x_30x_es.xml
-b-f: cp */spa50x_30x_fr_v746.xml $DOC_ROOT/i18n/spa50x_30x_fr.xml
+b-c: cp spa50x_30x_de_* $DOC_ROOT/i18n/spa50x_30x_de.xml
+b-d: cp spa50x_30x_en_* $DOC_ROOT/i18n/spa50x_30x_en.xml
+b-e: cp spa50x_30x_es_* $DOC_ROOT/i18n/spa50x_30x_es.xml
+b-f: cp spa50x_30x_fr_* $DOC_ROOT/i18n/spa50x_30x_fr.xml
 
 [install_cisco-spa525lang]
 a-b: unzip $FILE1
-b-c: cp */spa525_de_v746.xml $DOC_ROOT/i18n/spa525_de.xml
-b-d: cp */spa525_en_v746.xml $DOC_ROOT/i18n/spa525_en.xml
-b-e: cp */spa525_es_v746.xml $DOC_ROOT/i18n/spa525_es.xml
-b-f: cp */spa525_fr_v746.xml $DOC_ROOT/i18n/spa525_fr.xml
+b-c: cp spa525_de_* $DOC_ROOT/i18n/spa525_de.xml
+b-d: cp spa525_en_* $DOC_ROOT/i18n/spa525_en.xml
+b-e: cp spa525_es_* $DOC_ROOT/i18n/spa525_es.xml
+b-f: cp spa525_fr_* $DOC_ROOT/i18n/spa525_fr.xml
 
 
 
@@ -63,11 +63,11 @@ size: 10078621
 sha1sum: 47d9f36e8375af17806f94a88cc9a580671978b7
 
 [file_spa50x-30xlang]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-8-71741/spa50x_30x_v746.zip
-size: 127995
-sha1sum: e681bd835d154cf849ea21468a00a88996a7c0fe
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/17008-2-101639/spa50x_30x_v748.zip
+size: 140876
+sha1sum: 060b64d974f8241875354cffa3888d92ade3d2ab
 
 [file_spa525lang]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-3-71742/spa525_v746.zip
-size: 223906
-sha1sum: 0b442d71304599d69774607b6462acde0a4b1cc8
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/17008-2-101638/spa525_v748.zip
+size: 235213
+sha1sum: 6af4e33754b8d5033a9edc4c7662ae0b9cd41938
