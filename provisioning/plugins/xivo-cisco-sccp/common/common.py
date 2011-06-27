@@ -302,15 +302,15 @@ class CiscoConfigureService(object):
         else:
             raise KeyError(name)
     
-    description = {
-        u'username': u'The username used to download files from cisco.com website',
-        u'password': u'The password used to download files from cisco.com website',
-    }
+    description = [
+        (u'username', u'The username used to download files from cisco.com website'),
+        (u'password', u'The password used to download files from cisco.com website'),
+    ]
     
-    description_fr = {
-        u'username': u"Le nom d'utilisateur pour télécharger les fichiers sur le site cisco.com",
-        u'password': u'Le mot de passe pour télécharger les fichiers sur le site cisco.com',
-    }
+    description_fr = [
+        (u'username', u"Le nom d'utilisateur pour télécharger les fichiers sur le site cisco.com"),
+        (u'password', u'Le mot de passe pour télécharger les fichiers sur le site cisco.com'),
+    ]
 
 
 class BaseCiscoSccpPlugin(StandardPlugin):

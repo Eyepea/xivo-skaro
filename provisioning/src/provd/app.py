@@ -1030,21 +1030,21 @@ class ApplicationConfigureService(object):
             self._proxies[key] = value
     
     def _get_param_http_proxy(self):
-        return self._proxies['http']
+        return self._proxies.get('http')
     
     def _set_param_http_proxy(self, value):
         _check_is_proxy(value)
         self._generic_set_proxy('http', value)
     
     def _get_param_ftp_proxy(self):
-        return self._proxies['ftp']
+        return self._proxies.get('ftp')
     
     def _set_param_ftp_proxy(self, value):
         _check_is_proxy(value)
         self._generic_set_proxy('ftp', value)
     
     def _get_param_https_proxy(self):
-        return self._proxies['https']
+        return self._proxies.get('https')
     
     def _set_param_https_proxy(self, value):
         _check_is_https_proxy(value)
@@ -1075,18 +1075,18 @@ class ApplicationConfigureService(object):
         else:
             set_fun(value)
     
-    description = {
-        u'locale': u'The current locale. Example: fr_FR',
-        u'http_proxy': u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"',
-        u'ftp_proxy': u'The proxy for FTP requests. Format is "http://[user:password@]host:port"',
-        u'https_proxy': u'The proxy for HTTPS requests. Format is "host:port"',
-        u'plugin_server': u'The plugins repository URL',
-    }
+    description = [
+        (u'plugin_server', u'The plugins repository URL'),
+        (u'http_proxy', u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"'),
+        (u'ftp_proxy', u'The proxy for FTP requests. Format is "http://[user:password@]host:port"'),
+        (u'https_proxy', u'The proxy for HTTPS requests. Format is "host:port"'),
+        (u'locale', u'The current locale. Example: fr_FR'),
+    ]
     
-    description_fr = {
-        u'locale': u'La locale courante. Exemple: en_CA',
-        u'http_proxy': u'Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"',
-        u'ftp_proxy': u'Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"',
-        u'https_proxy': u'Le proxy pour les requêtes HTTPS. Le format est "host:port"',
-        u'plugin_server': u"L'addresse (URL) du dépôt de plugins",
-    }
+    description_fr = [
+        (u'plugin_server', u"L'addresse (URL) du dépôt de plugins"),
+        (u'http_proxy', u'Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"'),
+        (u'ftp_proxy', u'Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"'),
+        (u'https_proxy', u'Le proxy pour les requêtes HTTPS. Le format est "host:port"'),
+        (u'locale', u'La locale courante. Exemple: en_CA'),
+    ]

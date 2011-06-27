@@ -504,8 +504,8 @@ class Parameters(object):
     def __init__(self, config_srv):
         self._config_srv = config_srv
     
-    def show(self):
-        return self._config_srv.description()
+    def infos(self):
+        return self._config_srv.infos()
     
     def get(self, key):
         return self._config_srv.get(key)

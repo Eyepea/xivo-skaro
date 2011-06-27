@@ -151,16 +151,14 @@ class ConfigureServiceResource(object):
         param_uri = uri_append_path(self._config_uri, id)
         return ConfigureParameterResource(param_uri, self._broker)
     
-    def parameters(self):
-        """Return a dictionary where each keys are parameter name and values
-        are description of the parameter.
-        
-         """
+    def infos(self):
+        """Return the list of parameters, i.e. a list of dictionaries."""
         request = new_get_request(self._config_uri)
         response, _ = self._broker.json_content(request)
-        result = {}
-        for param_id, param_info in response[u'params'].iteritems():
-            result[param_id] = param_info[u'description']
+        result = []
+        for param_info in response[u'params']:
+            param_info.pop(u'links')
+            result.append(param_info)
         return result
 
 

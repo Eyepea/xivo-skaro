@@ -71,15 +71,14 @@ class IConfigureService(Interface):
         valid/acceptable. This means None has a special meaning and can't
         be used as a value.
         
-        
         """
     
     description = Attribute(
-        """A read-only dictionary where keys are the parameters that can be
-        set, and values are short descriptions of the parameters.
+        """A read-only list of tuple where the first element is the name of
+        the parameter that can be set and the second element is a short
+        description of the parameter.
         
-        If a parameter has no description, the value for this key MUST be
-        None.
+        If a parameter has no description, the second element MUST be None.
         
         Localized description can also be given, which has the same structure
         as this attribute but with the name 'description_<locale>', i.e.
@@ -233,7 +232,11 @@ class BaseConfigureService(object):
         """
         params -- a dictionary object where keys are parameter names and
           values are IConfigureServiceParam objects. After a call to this
-          method, the params object belong to this object. 
+          method, the params object belong to this object.
+        
+        Note that right now if you want a specific order in the description,
+        you need to pass an ordered dict...
+        
         """
         self._params = params
 
@@ -247,16 +250,14 @@ class BaseConfigureService(object):
     
     @property
     def description(self):
-        return dict((k, v.description) for k, v in
-                    self._params.iteritems())
+        return [(k, v.description) for k, v in self._params.iteritems()]
     
     def __getattr__(self, name):
         # used to implement the localized description
         if not name.startswith('description_'):
             raise AttributeError(name)
-        description_dict = dict((k, getattr(v, name)) for k, v in
-                                self._params.iteritems() if
-                                hasattr(v, name))
+        description_dict = [(k, getattr(v, name)) for k, v in
+                            self._params.iteritems() if hasattr(v, name)]
         if not description_dict:
             raise AttributeError(name)
         else:

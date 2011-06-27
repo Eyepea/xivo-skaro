@@ -266,7 +266,7 @@ class Plugin(object):
             raise ServiceNotAvailableError('no install service')
         else:
             return InstallService(install_srv_res)
-    
+
 
 class ConfigureService(object):
     def __init__(self, config_srv_res):
@@ -283,12 +283,9 @@ class ConfigureService(object):
         config_param_res = self._get_config_param_res(key)
         config_param_res.set(value)
     
-    def description(self):
-        """Return a dictionary where keys are configuration key and values
-        are short description of the configuration key.
-        
-        """
-        return self._config_srv_res.parameters()
+    def infos(self):
+        """Return the list of parameters, i.e. a list of dictionaries."""
+        return self._config_srv_res.infos()
 
 
 class InstallService(object):

@@ -368,7 +368,7 @@ class ConfigureServiceResource(Resource):
     def getChild(self, path, request):
         return ConfigureParameterResource(self._cfg_srv, path)
     
-    def _get_localized_description_dict(self):
+    def _get_localized_description_list(self):
         locale, lang = get_locale_and_language()
         cfg_srv = self._cfg_srv
         if locale is not None:
@@ -387,15 +387,16 @@ class ConfigureServiceResource(Resource):
     
     @json_response_entity
     def render_GET(self, request):
-        description_dict = self._get_localized_description_dict()
-        params = {}
-        for key, description in description_dict.iteritems():
-            value = self._cfg_srv.get(key)
-            href = uri_append_path(request.path, key)
-            params[key] = {u'description': description,
+        description_list = self._get_localized_description_list()
+        params = []
+        for id_, description in description_list:
+            value = self._cfg_srv.get(id_)
+            href = uri_append_path(request.path, id_)
+            params.append({u'id': id_,
+                           u'description': description,
                            u'value': value,
                            u'links': [{u'rel': REL_CONFIGURE_PARAM,
-                                       u'href': href}]}
+                                       u'href': href}]})
         content = {u'params': params}
         return json.dumps(content)
 
