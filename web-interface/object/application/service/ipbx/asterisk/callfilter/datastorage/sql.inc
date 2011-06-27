@@ -133,6 +133,9 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 			$this->_dso->andjoinwherein($this->_table['userfeatures'],array('boss','secretary'));
 
 		$this->_cnt = 0;
+		
+		$order = array('priority' => SORT_ASC);
+		$this->_dso->new_order($order,$this->_table['callfiltermember']);
 
 		if(($r = $this->_dso->select_all(null,false)) === false
 		|| isset($r[0]) === false)
@@ -149,14 +152,24 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 		return($this->_get_boss_secretary_users(true,$disable,$order,$limit));
 	}
 
-	function get_secretary_users($disable=null,$order=null,$limit=null)
+	function get_secretary_users($disable=null,$order=null,$limit=null,$callfilterid=null)
 	{
-		return($this->_get_boss_secretary_users(false,$disable,$order,$limit));
+		return($this->_get_boss_secretary_users(false,$disable,$order,$limit,$callfilterid));
 	}
 
-	function _get_boss_secretary_users($boss=true,$disable=null,$order=null,$limit=null)
+	function _get_boss_secretary_users($boss=true,$disable=null,$order=null,$limit=null,$callfilterid=null)
 	{
 		$this->_dso->new_select($this->_table['userfeatures']);
+			
+		if($callfilterid !== null)
+		{
+    		$this->_dso->leftjoin(array('cfilterm' => $this->_table['callfiltermember']),
+    				      'cfilterm.callfilterid = '.$callfilterid);
+			$this->_dso->joinwhere('cfilterm',array('bstype' => 'secretary'));
+			$this->_dso->joinwhere('cfilterm',array('type' => 'user'));
+			$this->_dso->joinwhere('cfilterm',array('typeval' => $this->_table['userfeatures'].'.id'));
+			$this->_dso->new_order(array('priority' => SORT_ASC),'cfilterm');
+		}
 
 		$where = array();
 		#$where['internal'] = 0;
@@ -168,7 +181,8 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 		$this->_dso->where($where);
 		#$this->_dso->andwherenot('COALESCE(number,\'\') = \'\'');
 
-		$this->_dso->new_order($order);
+		if($callfilterid === null)
+		    $this->_dso->new_order($order,$this->_table['userfeatures']);
 		$this->_dso->limit($limit);
 
 		if(($r = $this->_dso->select_all()) !== false && isset($r[0]) === false)

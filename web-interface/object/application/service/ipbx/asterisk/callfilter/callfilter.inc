@@ -174,8 +174,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			$this->_origin['callfiltermember'][] = $this->_callfiltermember->get_origin();
 
 		$where['bstype'] = 'secretary';
-
-		if(($this->_info['callfiltermember']['secretary'] = $this->_callfiltermember->get_all_where($where)) === false)
+		$order = array('priority' => SORT_ASC);
+		
+		if(($this->_info['callfiltermember']['secretary'] = $this->_callfiltermember->get_all_where($where,null,true,$order)) === false)
 		{
 			$this->_info['callfiltermember']['secretary'] = null;
 			$this->_origin['callfiltermember'] = false;
@@ -222,13 +223,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		return($rs);
 	}
 
-	function get_secretary_users($disable=null,$assoc=false)
+	function get_secretary_users($disable=null,$assoc=false,$callfilterid=null)
 	{
 		$order = array();
 		$order['firstname'] = SORT_ASC;
 		$order['lastname'] = SORT_ASC;
 
-		if(($rs = $this->_dso->get_secretary_users($disable,$order)) == false
+		if(($rs = $this->_dso->get_secretary_users($disable,$order,null,$callfilterid)) == false
 		|| ($nb = count($rs)) === false)
 			return(false);
 

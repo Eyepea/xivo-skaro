@@ -93,7 +93,7 @@ switch($act)
 		$return = &$info;
 
 		$secretary = $secretary['slt'] = array();
-		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
+		$secretary['list'] = $appcallfilter->get_secretary_users(null,true,$_QR['id']);
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('callfilter',$_QR) === true)
 		{
