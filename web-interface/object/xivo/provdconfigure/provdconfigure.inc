@@ -50,10 +50,11 @@ class xivo_object_provdconfigure extends xivo_object_provd_abstract
 		|| ($rs = $rs['params']) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
-		
-		foreach($rs as $k => &$r)
+			
+		for($i=0;$i<$nb;$i++)
 		{
-			$r['name'] = $k;
+		    $r = &$rs[$i];
+			$r['name'] = $r['id'];
 			if ($search !== ''
 			&& preg_match('/'.$search.'/', $r['name']) === 0
 			&& preg_match('/'.$search.'/', $r['value']) === 0

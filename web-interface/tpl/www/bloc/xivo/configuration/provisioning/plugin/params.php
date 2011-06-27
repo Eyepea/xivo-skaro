@@ -25,10 +25,13 @@ $dhtml = &$this->get_module('dhtml');
 $info = $this->get_var('info');
 
 if (($params = $info['params']) !== false
-&& is_array($params) === true):
+&& is_array($params) === true
+&& ($nb = count($params)) > 0):
 
-	foreach($params as $k => $v):
-
+	for($i=0;$i<$nb;$i++):
+		
+	    $v = &$params[$i];
+	    $k = $v['id'];
 		if (isset($v['links'][0]) === false
 		|| isset($v['links'][0]['href']) === false
 		|| ($href = $v['links'][0]['href']) === '')
@@ -72,7 +75,7 @@ if (($params = $info['params']) !== false
 	</script>
 <?php
 
-	endforeach;
+	endfor;
 endif;
 
 ?>

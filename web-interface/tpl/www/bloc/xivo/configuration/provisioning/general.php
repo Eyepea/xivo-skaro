@@ -37,11 +37,15 @@ $dhtml   = &$this->get_module('dhtml');
 	
 <?php
 if (($params = $this->get_var('info','configure')) !== false
-&& is_array($params) === true):
+&& is_array($params) === true
+&& ($nb = count($params)) > 0):
 
     $uri = '/xivo/configuration/ui.php/provisioning/configure';
 
-	foreach($params as $k => $v):
+	for($i=0;$i<$nb;$i++):
+		
+	    $v = &$params[$i];
+	    $k = $v['id'];
 
 		if (isset($v['links'][0]) === false
 		|| isset($v['links'][0]['href']) === false
@@ -64,7 +68,7 @@ if (($params = $this->get_var('info','configure')) !== false
 			  'help'	=> $v['description']));
 ?>
 <?php
-	endforeach;
+	endfor;
 endif;
 ?>
 </fieldset>
