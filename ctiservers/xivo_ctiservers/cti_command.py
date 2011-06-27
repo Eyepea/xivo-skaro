@@ -685,7 +685,11 @@ class Command:
             # in android cases
             # there was a warning back to revision 6095 - maybe to avoid making arbitrary calls on behalf
             # of the local telephony system ?
-            pass
+            orig_context = 'mamaop' # XXX how should we define or guess the proper context here ?
+            orig_protocol = 'local'
+            orig_name = '%s@%s' % (src.get('id'), orig_context) # this is the number actually dialed, in local channel mode
+            orig_number = src.get('id') # this is the number that will be displayed as ~ callerid
+            orig_identity = '' # how would we know the identity there ?
 
         if phoneidstruct_src:
             orig_protocol = phoneidstruct_src.get('protocol')

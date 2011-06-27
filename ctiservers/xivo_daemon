@@ -56,7 +56,6 @@ __author__    = 'Corentin Le Gall'
 import getopt
 from optparse import OptionParser
 import os
-import pickle
 import select
 import signal
 import ssl
@@ -69,7 +68,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 import Queue
 import urllib
-import urllib2
 import cjson
 
 # XIVO lib-python modules initialization
@@ -133,7 +131,7 @@ def parse_command_line():
             PORTDELTA = int(arg)
 
 
-class xivo_daemon:
+class ctiserver:
     xivoversion = '1.2'
     revision = 'githash'
     xdname = 'XiVO CTI Server'
@@ -826,7 +824,8 @@ class xivo_daemon:
             log.exception('select step')
     # }
 
-parse_command_line()
-if XIVOIP != 'localhost':
-    XIVO_CONF_FILE = 'https://%s/service/ipbx/json.php/restricted/ctiserver/configuration' % XIVOIP
-main = xivo_daemon()
+if __name__ == '__main__':
+    parse_command_line()
+    if XIVOIP != 'localhost':
+        XIVO_CONF_FILE = 'https://%s/service/ipbx/json.php/restricted/ctiserver/configuration' % XIVOIP
+    main = ctiserver()

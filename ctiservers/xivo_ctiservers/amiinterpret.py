@@ -251,7 +251,13 @@ class AMI_1_8:
         return
 
     def ami_inherit(self, event):
-        self.log.info('ami_inherit %s' % (event))
+        parentchannel = event.pop('Parent')
+        childchannel = event.pop('Child')
+        self.log.info('ami_inherit %s => %s' % (parentchannel, childchannel))
+        if parentchannel.startswith('Local/') and parentchannel.endswith(';2'):
+            # print 'ZZZZ', self.innerdata.channels.get(childchannel).properties
+            # the key use case was especially in meetme
+            pass
         return
 
     def ami_transfer(self, event):
@@ -287,7 +293,16 @@ class AMI_1_8:
 
     def ami_channelupdate(self, event):
         # could be especially useful when there is a trunk : links callno-remote and callno-local
-        # self.log.info('ami_channelupdate %s' % (event))
+        channeltype = event.pop('Channeltype')
+        if channeltype == 'IAX2':
+            cnlocal = event.pop('IAX2-callno-local')
+            cnremote = event.pop('IAX2-callno-remote')
+            # cnremote : first step, when remote not joined yet
+            self.log.info('ami_channelupdate %s : %s - %s : %s'
+                          % (channeltype, cnlocal, cnremote, event))
+        else:
+            # self.log.info('ami_channelupdate %s : %s' % (channeltype, event))
+            pass
         return
 
     def ami_pickup(self, event):
@@ -538,6 +553,10 @@ class AMI_1_8:
         self.log.info('ami_parkedcallgiveup %s %s' % (channel, event))
         return
 
+    def ami_jitterbufstats(self, event):
+        owner = event.pop('Owner')
+        # self.log.info('ami_jitterbufstats %s : %s' % (owner, event))
+        return
 
     def ami_varset(self, event):
         # self.log.info('ami_varset %s' % (event))
@@ -1012,7 +1031,6 @@ class AMI_1_8:
 ##    def ami_ccrecallcomplete(self, event): return
 ##    def ami_ccrequestacknowledged(self, event): return
 ##    def ami_ccrequested(self, event): return
-##    def ami_channelupdate(self, event): return
 ##    def ami_dahdishowchannels(self, event): return
 ##    def ami_dataget_tree(self, event): return
 ##    def ami_dbgetcomplete(self, event): return
@@ -1021,7 +1039,6 @@ class AMI_1_8:
 ##    def ami_devicelistcomplete(self, event): return
 ##    def ami_jabberevent(self, event): return
 ##    def ami_jabberstatus(self, event): return
-##    def ami_jitterbufstats(self, event): return
 ##    def ami_lineentry(self, event): return
 ##    def ami_linelistcomplete(self, event): return
 ##    def ami_logchannel(self, event): return
