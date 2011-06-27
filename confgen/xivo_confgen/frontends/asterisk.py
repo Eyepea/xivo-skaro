@@ -444,8 +444,9 @@ class AsteriskFrontend(Frontend):
             print >>o, "%s = %s" % (c['var_name'], c['var_val'])
 
         print >>o, '\n[rooms]'
-        #TODO: list meetmes
-            
+        for r in self.backend.meetme.all(commented=False, category='rooms'):
+            print >>o, "%s = %s" % (r['var_name'], r['var_val'])
+
         return o.getvalue()
 
     def musiconhold_conf(self):
