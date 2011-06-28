@@ -31,10 +31,10 @@ $(function(){
 						value: val
 					},
 					function(data){
-						$('#res-'+name).show().html(data).delay(1500).hide();
+						$('#res-'+name).show().html(data).delay(1500).hide('slow');
 					}
 				);
-		    }, 900 );
+		    }, 900);
 		});
 	});
 });

@@ -22,6 +22,29 @@ $(function(){
 	$('#box_installer').css('width',$('#tb-list-pkgs').width()+'px');	
 	$('#box_installer').find('div').css('margin-top',mt+'px');
 	$('#box_installer').hide();
+
+	$('input[id="configure-ajax"]').each(function(){
+		$(this).keyup(function(){
+			name = $(this).attr('name');
+			val = $(this).val();
+			href = $('#href-'+name).val();
+			uri = $('#uri-'+name).val();
+			act = $('#act-'+name).val();
+			delay(function(){
+				$.post(uri,
+					{
+						act: act,
+						uri: href,
+						value: val
+					},
+					function(data){
+						$('#res-'+name).show().html(data).delay(1500).hide('slow');
+					}
+				);
+		    }, 900);
+		});
+	});
+
 });
 
 function init_install(plugin,id)

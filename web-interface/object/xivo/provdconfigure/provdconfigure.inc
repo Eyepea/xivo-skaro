@@ -51,6 +51,7 @@ class xivo_object_provdconfigure extends xivo_object_provd_abstract
 		|| ($nb = count($rs)) === 0)
 			return(false);
 			
+		$res = array();
 		for($i=0;$i<$nb;$i++)
 		{
 		    $r = &$rs[$i];

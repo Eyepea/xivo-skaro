@@ -28,54 +28,34 @@ if (($params = $info['params']) !== false
 && is_array($params) === true
 && ($nb = count($params)) > 0):
 
+    $uri = '/xivo/configuration/ui.php/provisioning/plugin';
+
 	for($i=0;$i<$nb;$i++):
-		
-	    $v = &$params[$i];
-	    $k = $v['id'];
-		if (isset($v['links'][0]) === false
-		|| isset($v['links'][0]['href']) === false
-		|| ($href = $v['links'][0]['href']) === '')
+	    $ref = &$params[$i];
+		if (isset($ref['links'][0]) === false
+		|| isset($ref['links'][0]['href']) === false
+		|| ($href = $ref['links'][0]['href']) === '')
 			continue;
-
 ?>
-<div id="res-<?=$k?>"></div>
+<div id="res-<?=$ref['id']?>"></div>
 <?php
-	echo	$form->text(array('desc' => $this->bbf('fm_'.$k),
-			  'name'	=> $k,
-			  'labelid'	=> $k,
-			  'size'	=> 15,
-			  'help'	=> $v['description']));
+	echo	$form->hidden(array('name'	=> 'href',
+			  'id'	    => 'href-'.$ref['id'],
+			  'value'	=> $href));
+	echo	$form->hidden(array('name'	=> 'uri',
+			  'id'	    => 'uri-'.$ref['id'],
+			  'value'	=> $uri));
+	echo	$form->hidden(array('name'	=> 'act',
+			  'id'	    => 'act-'.$ref['id'],
+			  'value'	=> 'editparams'));
+	echo	$form->text(array('desc' => $this->bbf('fm_configure_'.$ref['id']),
+			  'name'	=> $ref['id'],
+			  'id'		=> 'configure-ajax',
+			  'size'	=> strlen($ref['value']),
+			  'value'	=> $ref['value'],
+			  'help'	=> $ref['description']));
 ?>
-	<script type="text/javascript">
-		$(function(){
-			$.post('/xivo/configuration/ui.php/provisioning/plugin',
-				{
-					act: 'getparams',
-					uri: '<?=$href?>'
-				},
-				function(data){
-					$('#it-<?=$k?>').val(data);
-				}
-			);
-			$('#it-<?=$k?>').keyup(function(){
-				delay(function(){
-					$.post('/xivo/configuration/ui.php/provisioning/plugin',
-						{
-							act: 'editparams',
-							uri: '<?=$href?>',
-							value: $('#it-<?=$k?>').val()
-						},
-						function(data){
-							$('#res-<?=$k?>').show().html(data).delay(1000).hide('slow');
-						}
-					);
-			    }, 900 );
-			});
-		});
-	</script>
 <?php
-
 	endfor;
 endif;
-
 ?>

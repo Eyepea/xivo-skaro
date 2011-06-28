@@ -17,10 +17,10 @@ Size
 ; col_version
 Version
 
-; fm_username
+; fm_configure_username
 Username:
 
-; fm_password
+; fm_configure_password
 Password: 
 
 ; no_package

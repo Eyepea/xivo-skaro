@@ -1893,9 +1893,9 @@ INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','ge
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','trustrpid','no');
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','sendrpid','no');
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','insecure','no');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtcachefriends','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtupdate','yes');
-INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','ignoreregexpire','yes');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtcachefriends','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtupdate','no');
+INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','ignoreregexpire','no');
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,0,'sip.conf','general','rtautoclear','no');
 INSERT INTO "staticsip" VALUES (nextval('staticsip_id_seq'),0,0,1,'sip.conf','general','subscribecontext',NULL);
