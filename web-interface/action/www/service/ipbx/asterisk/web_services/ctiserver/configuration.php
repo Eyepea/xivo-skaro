@@ -353,13 +353,17 @@ switch($act)
                                                                "getipbxlist",
                                                                "getlist", "ipbxcommand", "chitchat",
                                                                "availstate", "keepalive", "filetransfer",
+                                                               "getqueuesstats", "logfromclient",
                                                                "featuresput", "featuresget", "faxsend",
                                                                "logfromclient", "getqueuesstats", "directory",
                                                                "history");
 
                 $out['ipbxcommands']['itm_ipbxcommands'] = array("originate",
                                                                  "sipnotify",
-                                                                 "agentlogin", "agentpausequeue",
+                                                                 "agentlogin", "agentlogout",
+                                                                 "queueadd",
+                                                                 "queueremove", "queuepause", "queueunpause",
+                                                                 "queueremove_all", "queuepause_all", "queueunpause_all",
                                                                  "listen", "record",
                                                                  "parking", "meetme",
                                                                  "intercept",
