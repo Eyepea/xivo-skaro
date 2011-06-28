@@ -109,22 +109,22 @@ Lines list:
 Busy: %d
 Free: %d
 
-; col_line-line	
+; col_line-line    
 Line
 
-; col_line-protocol	
+; col_line-protocol    
 Protocol
 
-; col_line-name	
+; col_line-name    
 Name
 
 ; col_line-context
 Context
-	
+    
 ; col_line-number
 Number
 
-; col_line-config_registrar	
+; col_line-config_registrar    
 Site
 
 ; col_line-user

@@ -155,7 +155,7 @@ DROP TYPE  IF EXISTS "netiface_type";
 DROP TYPE  IF EXISTS "netiface_family";
 DROP TYPE  IF EXISTS "netiface_method";
 
-CREATE TYPE	"netiface_networktype" AS ENUM ('data','voip');
+CREATE TYPE    "netiface_networktype" AS ENUM ('data','voip');
 CREATE TYPE "netiface_type" AS ENUM ('iface');
 CREATE TYPE "netiface_family" AS ENUM ('inet','inet6');
 CREATE TYPE "netiface_method" AS ENUM ('static','dhcp');
@@ -519,7 +519,7 @@ CREATE UNIQUE INDEX "stats_conf_group_index" ON "stats_conf_group" USING btree (
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
 BEGIN
-	execute $1;
+    execute $1;
 END;
 ' LANGUAGE plpgsql;
 SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO xivo;') FROM pg_tables WHERE schemaname = 'public';

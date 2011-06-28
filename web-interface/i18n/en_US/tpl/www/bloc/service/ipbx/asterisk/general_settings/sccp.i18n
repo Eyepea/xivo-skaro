@@ -186,7 +186,7 @@ Asterisk config: deny
 Address permit:
 
 ; hlp_fm_address-permit
-Accept class C 192.168.1.0	; You may have multiple rules for masking traffic. Rules are processed from the first to the last. This General rule is valid for all incoming connections. It's the 1st filter. (192.168.0.0/255.255.255.0)
+Accept class C 192.168.1.0    ; You may have multiple rules for masking traffic. Rules are processed from the first to the last. This General rule is valid for all incoming connections. It's the 1st filter. (192.168.0.0/255.255.255.0)
 
 ; cmt_fm_address-permit
 Asterisk config: permit
