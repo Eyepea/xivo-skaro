@@ -34,7 +34,6 @@ else if(($nb = count($list)) === 0)
 	$http_response->send(true);
 }
 
-
 $data = dwho_json::encode($list);
 
 if($data === false)

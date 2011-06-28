@@ -2725,17 +2725,17 @@ CREATE TABLE "iaxcallnumberlimits" (
 
 DROP TABLE IF EXISTS "queue_log" ;
 CREATE TABLE "queue_log" (
- "time" varchar(30) DEFAULT ''::varchar NOT NULL,
+ "time" varchar(26) DEFAULT ''::varchar NOT NULL,
  "callid" varchar(32) DEFAULT ''::varchar NOT NULL,
  "queuename" varchar(50) DEFAULT ''::varchar NOT NULL,
  "agent" varchar(50) DEFAULT ''::varchar NOT NULL,
  "event" varchar(20) DEFAULT ''::varchar NOT NULL,
- "data1" varchar(50),
- "data2" varchar(50),
- "data3" varchar(50),
- "data4" varchar(50),
- "data5" varchar(50)
-);
+ "data1" varchar(30) DEFAULT ''::varchar NOT NULL,
+ "data2" varchar(30) DEFAULT ''::varchar NOT NULL,
+ "data3" varchar(30) DEFAULT ''::varchar NOT NULL,
+ "data4" varchar(30) DEFAULT ''::varchar NOT NULL,
+ "data5" varchar(30) DEFAULT ''::varchar NOT NULL
+ );
 
 CREATE INDEX queue_log__idx_time ON queue_log USING btree ("time");
 CREATE INDEX queue_log__idx_queuename ON queue_log USING btree ("queuename");

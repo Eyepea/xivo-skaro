@@ -2491,16 +2491,16 @@ CREATE TABLE `iaxcallnumberlimits`
 
 DROP TABLE IF EXISTS `queue_log`;
 CREATE TABLE `queue_log` (
-  `time` char(30),
+  `time` char(26),
   `callid` char(50),
   `queuename` char(50),
   `agent` char(50),
   `event` char(20),
-  `data1` char(255),
-  `data2` char(255),
-  `data3` char(255),
-  `data4` char(255),
-  `data5` char(255)
+  `data1` char(30),
+  `data2` char(30),
+  `data3` char(30),
+  `data4` char(30),
+  `data5` char(30)
 );
 CREATE INDEX `queue_log__idx_time` ON `queue_log`(`time`);
 CREATE INDEX `queue_log__idx_queuename` ON `queue_log`(`queuename`);
