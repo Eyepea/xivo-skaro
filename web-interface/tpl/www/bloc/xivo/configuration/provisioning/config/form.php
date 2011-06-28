@@ -24,8 +24,6 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $info = $this->get_var('info');
 
-#dwho_var_dump($info);
-
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -73,7 +71,6 @@ $info = $this->get_var('info');
 <div id="sb-part-lines" class="b-nodisplay">
 <?php
 	if(isset($info['config']['sip']) === true):
-		dwho_var_dump($info['config']['sip']);
 		
 		if(isset($info['config']['sip']['lines']) === true):
 			foreach ($info['config']['sip']['lines'] as $k => $v):

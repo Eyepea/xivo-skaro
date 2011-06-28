@@ -365,7 +365,7 @@ endif;
 				    'label'		=> false,
 				    'key'		=> 'displayname',
 				    'altkey'	=> 'id',
-				    #'empty'		=> true,
+				    #'empty'	=> true,
 				    'default'	=> $element['linefeatures']['configregistrar']['default']),
 			      $list_configregistrar);?>
 		</td>

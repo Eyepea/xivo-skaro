@@ -49,8 +49,6 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $axetype = isset($_QR['axetype']) === false ? 'day' : $_QR['axetype'];
 $axetype = empty($axetype) === true ? 'day' : $axetype;
 
-dwho_var_dump($_QR);
-
 if (in_array($axetype,$listaxetype) === false)
 	$axetype = 'day';
 
