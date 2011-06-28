@@ -95,9 +95,23 @@ CREATE TABLE `agentqueueskill` (
  `skillid` int(10) unsigned,
  `weight` int(3) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`agentid`, `skillid`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `agentqueueskill__idx__agentid` ON `agentqueueskill`(`agentid`);
+
+
+DROP TABLE IF EXISTS `attachment`;
+CREATE TABLE `attachment` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(64) NOT NULL,
+ `object_type` varchar(16) NOT NULL,
+ `object_id` INTEGER NOT NULL,
+ `file` BLOB,
+ `size` INTEGER NOT NULL,
+ `mime` varchar(64) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE UNIQUE INDEX `attachment__uidx__object_type__object_id` ON `attachment`(`object_type`,`object_id`);
 
 
 DROP TABLE IF EXISTS `callerid`;
@@ -143,7 +157,7 @@ CREATE TABLE `callfiltermember` (
  `bstype` enum('boss','secretary'),
  `active` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `callfiltermember__idx__priority` ON `callfiltermember`(`priority`);
 CREATE INDEX `callfiltermember__idx__bstype` ON `callfiltermember`(`bstype`);
@@ -219,8 +233,8 @@ DROP TABLE IF EXISTS `context`;
 CREATE TABLE `context` (
  `name` varchar(39) NOT NULL,
  `displayname` varchar(128) NOT NULL DEFAULT '',
- `contexttype` varchar(40) NOT NULL DEFAULT 'intern',
  `entity` varchar(64),
+ `contexttype` varchar(40) NOT NULL DEFAULT 'internal',
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`name`)
@@ -238,7 +252,7 @@ CREATE TABLE `contextinclude` (
  `include` varchar(39) NOT NULL,
  `priority` tinyint(2) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`context`,`include`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `contextinclude__idx__context` ON `contextinclude`(`context`);
 CREATE INDEX `contextinclude__idx__include` ON `contextinclude`(`include`);
@@ -252,7 +266,7 @@ CREATE TABLE `contextmember` (
  `typeval` varchar(128) NOT NULL DEFAULT '',
  `varname` varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(`context`,`type`,`typeval`,`varname`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `contextmember__idx__context` ON `contextmember`(`context`);
 CREATE INDEX `contextmember__idx__context_type` ON `contextmember`(`context`,`type`);
@@ -266,7 +280,7 @@ CREATE TABLE `contextnumbers` (
  `numberend` varchar(16) NOT NULL DEFAULT '',
  `didlength` tinyint(2) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`context`,`type`,`numberbeg`,`numberend`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `contextnumbers__idx__context_type` ON `contextnumbers`(`context`,`type`);
 
@@ -278,7 +292,7 @@ CREATE TABLE `contextnummember` (
  `typeval` varchar(128) NOT NULL DEFAULT 0,
  `number` varchar(40) NOT NULL DEFAULT '',
  PRIMARY KEY(`context`,`type`,`typeval`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `contextnummember__idx__context` ON `contextnummember`(`context`);
 CREATE INDEX `contextnummember__idx__context_type` ON `contextnummember`(`context`,`type`);
@@ -294,15 +308,15 @@ CREATE TABLE `contexttype` (
  `deletable` tinyint(1) unsigned,
  `description` text,
  PRIMARY KEY(`id`)
-);
+) ENFINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `contexttype__idx__commented` ON `contexttype`(`commented`);
 CREATE INDEX `contexttype__idx__deletable` ON `contexttype`(`deletable`);
 CREATE UNIQUE INDEX `contexttype__uidx__name` ON `contexttype`(`name`);
 
-INSERT INTO `contexttype` VALUES(1, 'intern', 'Interne', 0, 0, '');
-INSERT INTO `contexttype` VALUES(2, 'from-extern', 'Entrant', 0, 0, '');
-INSERT INTO `contexttype` VALUES(3, 'to-extern', 'Sortant', 0, 0, '');
+INSERT INTO `contexttype` VALUES(1, 'internal', 'Interne', 0, 0, '');
+INSERT INTO `contexttype` VALUES(2, 'incall', 'Entrant', 0, 0, '');
+INSERT INTO `contexttype` VALUES(3, 'outcall', 'Sortant', 0, 0, '');
 INSERT INTO `contexttype` VALUES(4, 'services', 'Services', 0, 0, '');
 INSERT INTO `contexttype` VALUES(5, 'others', 'Autres', 0, 0, '');
 
@@ -335,7 +349,7 @@ CREATE TABLE `ctidirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectories` VALUES(1,'xivodir', 'phonebook', '', '[`phonebook.firstname`,`phonebook.lastname`,`phonebook.displayname`,`phonebook.society`,`phonebooknumber.office.number`]','[`phonebooknumber.office.number`,`phonebooknumber.mobile.number`]','[`{db-fullname}`]','Répertoire XiVO Externe',1);
+INSERT INTO `ctidirectories` VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
 INSERT INTO `ctidirectories` VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
 
 DROP TABLE IF EXISTS `ctidirectoryfields`;
@@ -365,7 +379,7 @@ CREATE TABLE `ctidisplays` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidisplays` VALUES(4,'Display','{`10`: [ `Numéro`,`phone`,``,`{db-phone}` ],`20`: [ `Nom`,``,``,`{db-fullname}` ],`30`: [ `Entreprise`,``,`Inconnue`,`{db-company}` ],`40`: [ `E-mail`,``,``,`{db-mail} ({xivo-directory})` ]}',1,'Affichage par défaut');
+INSERT INTO `ctidisplays` VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}',1,'Affichage par défaut');
 
 
 DROP TABLE IF EXISTS `ctimain`;
@@ -534,16 +548,22 @@ CREATE TABLE `devicefeatures` (
  `sn` varchar(128),
  `ip` varchar(39),
  `version` varchar(128),
- `isinalan` int(10) unsigned,
- `provid` int(10) unsigned,
- `pluginid` int(10) unsigned,
- `configid` int(10) unsigned,
+ `plugin` varchar(128),
+ `config` varchar(64),
+ `deviceid` varchar(32) NOT NULL,
  `internal` int(10) unsigned,
  `configured` int(10) unsigned,
  `commented` int(10) unsigned,
  `description` text,
  PRIMARY KEY(`id`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `devicefeatures__idx__mac` ON `devicefeatures`(`mac`);
+CREATE INDEX `devicefeatures__idx__ip` ON `devicefeatures`(`ip`);
+CREATE INDEX `devicefeatures__idx__plugin` ON `devicefeatures`(`plugin`);
+CREATE INDEX `devicefeatures__idx__config` ON `devicefeatures`(`config`);
+CREATE INDEX `devicefeatures__idx__deviceid` ON `devicefeatures`(`deviceid`);
+
 
 DROP TABLE IF EXISTS `dialaction`;
 CREATE TABLE `dialaction` (
@@ -553,8 +573,13 @@ CREATE TABLE `dialaction` (
               'busy',
               'chanunavail',
               'inschedule',
-              'outschedule') NOT NULL,
- `category` enum('callfilter','group','incall','queue','schedule','user') NOT NULL,
+              'outschedule',
+							'qctipresence',
+							'qnonctipresence',
+							'qwaittime',
+							'qwaitratio'						
+						) NOT NULL,
+ `category` enum('callfilter','group','incall','queue','schedule','user','outcall') NOT NULL,
  `categoryval` varchar(128) NOT NULL DEFAULT '',
  `action` enum('none',
                'endcall:busy',
@@ -565,14 +590,17 @@ CREATE TABLE `dialaction` (
                'queue',
                'meetme',
                'voicemail',
+							 'trunk',
                'schedule',
                'voicemenu',
                'extension',
+							 'outcall',
                'application:callbackdisa',
                'application:disa',
                'application:directory',
                'application:faxtomail',
                'application:voicemailmain',
+							 'application:password',
                'sound',
                'custom') NOT NULL,
  `actionarg1` varchar(255) DEFAULT NULL,
@@ -584,6 +612,24 @@ CREATE TABLE `dialaction` (
 CREATE INDEX `dialaction__idx__action_actionarg1` ON `dialaction`(`action`,`actionarg1`);
 CREATE INDEX `dialaction__idx__actionarg2` ON `dialaction`(`actionarg2`);
 CREATE INDEX `dialaction__idx__linked` ON `dialaction`(`linked`);
+
+
+DROP TABLE IF EXISTS `dialpattern`;
+CREATE TABLE `dialpattern` (
+ `id` int(10) unsigned auto_increment,
+ `type` varchar(32) NOT NULL,
+ `typeid` integer NOT NULL,
+ `externprefix` varchar(64),
+ `prefix` varchar(32),
+ `exten` varchar(40) NOT NULL,
+ `stripnum` integer,
+ `emergency` integer,
+ `setcallerid` integer NOT NULL DEFAULT 0,
+ `callerid` varchar(80),
+ PRIMARY KEY(`id`)
+);
+
+CREATE INDEX `dialpattern__idx__type_typeid` ON `dialpattern`(`type`,`typeid`);
 
 
 DROP TABLE IF EXISTS `extensions`;
@@ -603,46 +649,47 @@ CREATE INDEX `extensions__idx__commented` ON `extensions`(`commented`);
 CREATE INDEX `extensions__idx__context_exten_priority` ON `extensions`(`context`,`exten`,`priority`);
 CREATE INDEX `extensions__idx__name` ON `extensions`(`name`);
 
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*33.',1,'Macro','agentdynamiclogin|${EXTEN:3}','agentdynamiclogin');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*30.',1,'Macro','agentstaticlogtoggle|${EXTEN:3}','agentstaticlogtoggle');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*667.',1,'Macro','meetme|${EXTEN:4}|','callmeetme');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*665.',1,'Macro','queue|${EXTEN:4}|','callqueue');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*26',1,'Macro','callrecord','callrecord');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*666.',1,'Macro','user|${EXTEN:4}|','calluser');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*33.',1,'GoSub','agentdynamiclogin|${EXTEN:3}','agentdynamiclogin');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*31.',1,'GoSub','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*32.',1,'GoSub','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*30.',1,'GoSub','agentstaticlogtoggle|${EXTEN:3}','agentstaticlogtoggle');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*37.',1,'GoSub','bsfilter|${EXTEN:3}','bsfilter');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*664.',1,'GoSub','group|${EXTEN:4}|','callgroup');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*34',1,'GoSub','calllistening','calllistening');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*667.',1,'GoSub','meetme|${EXTEN:4}|','callmeetme');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*665.',1,'GoSub','queue|${EXTEN:4}|','callqueue');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*26',1,'GoSub','callrecord','callrecord');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*666.',1,'GoSub','user|${EXTEN:4}|','calluser');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*25',1,'Macro','enablednd','enablednd');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*90',1,'Macro','enablevm','enablevm');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*91',1,'Macro','enablevmbox','enablevmbox');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*91.',1,'Macro','enablevmbox|${EXTEN:3}','enablevmboxslt');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*90.',1,'Macro','enablevm|${EXTEN:3}','enablevmslt');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*23.',1,'Macro','feature_forward|busy|${EXTEN:3}','fwdbusy');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*22.',1,'Macro','feature_forward|rna|${EXTEN:3}','fwdrna');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*21.',1,'Macro','feature_forward|unc|${EXTEN:3}','fwdunc');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundoall','fwdundoall');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*48378',1,'Macro','autoprovprov','autoprovprov');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*25',1,'GoSub','enablednd','enablednd');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*90',1,'GoSub','enablevm','enablevm');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*91',1,'GoSub','enablevmbox','enablevmbox');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*91.',1,'GoSub','enablevmbox|${EXTEN:3}','enablevmboxslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*90.',1,'GoSub','enablevm|${EXTEN:3}','enablevmslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*23.',1,'GoSub','feature_forward|busy|${EXTEN:3}','fwdbusy');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*22.',1,'GoSub','feature_forward|rna|${EXTEN:3}','fwdrna');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*21.',1,'GoSub','feature_forward|unc|${EXTEN:3}','fwdunc');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*20',1,'GoSub','fwdundoall','fwdundoall');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*51.',1,'GoSub','groupmember|group|add|${EXTEN:3}','groupaddmember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*52.',1,'GoSub','groupmember|group|remove|${EXTEN:3}','groupremovemember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*50.',1,'GoSub','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*48378',1,'GoSub','autoprovprov','autoprovprov');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*27',1,'GoSub','incallfilter','incallfilter');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*10',1,'GoSub','phonestatus','phonestatus');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*735.',1,'GoSub','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}%${CONTEXT}@PICKUPMARK','pickup');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*56.',1,'Macro','groupmember|queue|add|${EXTEN:3}','queueaddmember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*57.',1,'Macro','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*55.',1,'Macro','groupmember|queue|toggle|${EXTEN:3}','queuetogglemember');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*99.',1,'Macro','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*93.',1,'Macro','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*97.',1,'Macro','vmbox|${EXTEN:3}','vmboxslt');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*98',1,'Macro','vmusermsg','vmusermsg');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*92',1,'Macro','vmuserpurge','vmuserpurge');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*92.',1,'Macro','vmuserpurge|${EXTEN:3}','vmuserpurgeslt');
-INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*96.',1,'Macro','vmuser|${EXTEN:3}','vmuserslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*56.',1,'GoSub','groupmember|queue|add|${EXTEN:3}','queueaddmember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*57.',1,'GoSub','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*55.',1,'GoSub','groupmember|queue|toggle|${EXTEN:3}','queuetogglemember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*9',1,'GoSub','recsnd|wav','recsnd');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*99.',1,'GoSub','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*93.',1,'GoSub','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*97.',1,'GoSub','vmbox|${EXTEN:3}','vmboxslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*98',1,'GoSub','vmusermsg','vmusermsg');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*92',1,'GoSub','vmuserpurge','vmuserpurge');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*92.',1,'GoSub','vmuserpurge|${EXTEN:3}','vmuserpurgeslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*96.',1,'Gosub','vmuser|${EXTEN:3}','vmuserslt');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*11.',1,'GoSub','paging,s,1(${EXTEN:3})','paging');
 
 
 DROP TABLE IF EXISTS `extenumbers`;
@@ -655,7 +702,6 @@ CREATE TABLE `extenumbers` (
              'featuremap',
              'generalfeatures',
              'group',
-             'handynumbers',
              'incall',
              'meetme',
              'outcall',
@@ -664,7 +710,7 @@ CREATE TABLE `extenumbers` (
              'voicemenu') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `extenumbers__idx__exten` ON `extenumbers`(`exten`);
 CREATE INDEX `extenumbers__idx__extenhash` ON `extenumbers`(`extenhash`);
@@ -731,7 +777,7 @@ CREATE TABLE `features` (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(255),
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `features__idx__commented` ON `features`(`commented`);
 CREATE INDEX `features__idx__filename` ON `features`(`filename`);
@@ -739,21 +785,97 @@ CREATE INDEX `features__idx__category` ON `features`(`category`);
 CREATE INDEX `features__idx__var_name` ON `features`(`var_name`);
 
 INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkext','700');
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','context','parkedcalls');
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkingtime','45');
 INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkpos','701-750');
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkfindnext','no');
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','adsipark','no');
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','transferdigittimeout','3');
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','featuredigittimeout','500');
-INSERT INTO `features` VALUES (NULL,0,0,1,'features.conf','general','courtesytone',NULL);
-INSERT INTO `features` VALUES (NULL,0,0,1,'features.conf','general','xfersound',NULL);
-INSERT INTO `features` VALUES (NULL,0,0,1,'features.conf','general','xferfailsound',NULL);
-INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','pickupexten','*8');
-INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','*1');
-INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
-INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','automon','*3');
-INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','disconnect','*0');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','context','parkedcalls');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkinghints','no');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkingtime','45');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','comebacktoorigin','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','courtesytone',NULL);
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkedplay','caller');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkedcalltransfers','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkedcallreparking','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkedcallhangup','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkedcallrecording','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkeddynamic','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','adsipark','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','findslot','next');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','parkedmusicclass','default');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','transferdigittimeout','3');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','xfersound',NULL);
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','xferfailsound',NULL);
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','pickupexten','*8');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','pickupsound','');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','pickupfailsound','');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','featuredigittimeout','500');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','atxfernoanswertimeout','15');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','atxferdropcall','no');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','atxferloopdelay','10');
+INSERT INTO ̀ features̀  VALUES (NULL,0,0,1,'features.conf','general','atxfercallbackretries','2');
+INSERT INTO ̀ features̀  VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','#1');
+INSERT INTO ̀ features̀  VALUES (NULL,1,0,0,'features.conf','featuremap','disconnect','*0');
+INSERT INTO ̀ features̀  VALUES (NULL,1,0,0,'features.conf','featuremap','automon','*1');
+INSERT INTO ̀ features̀  VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
+INSERT INTO ̀ features̀  VALUES (NULL,1,0,0,'features.conf','featuremap','parkcall','#72');
+INSERT INTO ̀ features̀  VALUES (NULL,1,0,0,'features.conf','featuremap','automixmon','*3');
+
+
+DROP TABLE IF EXISTS ̀ paging̀ ;
+CREATE TABLE ̀ paging̀  (
+ ̀ id̀ 		 		int(10) unsigned auto_increment,
+ ̀ number̀  			VARCHAR(32),
+ ̀ duplex̀  			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ ignorè  			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ record̀  			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ quiet̀  			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ callnotbusỳ  		INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ timeout̀  			INTEGER NOT NULL,
+ ̀ announcement_filè  VARCHAR(64),
+ ̀ announcement_plaỳ  INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ announcement_caller̀  INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ commented̀  		INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ̀ descriptioǹ  		text,
+ PRIMARY KEY(̀ id̀ )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE UNIQUE INDEX ̀ paging__uidx__number̀  ON ̀ paging̀ (̀ number̀ );
+
+
+DROP TABLE IF EXISTS ̀ paginguser̀ ;
+CREATE TABLE ̀ paginguser̀  (
+ ̀ pagingid̀  		int(10) unsigned auto_increment,
+ ̀ userfeaturesid̀  	INTEGER NOT NULL,
+ ̀ caller̀  			INTEGER NOT NULL, -- BOOLEAN
+ PRIMARY KEY(̀ pagingid̀ ,̀ userfeaturesid̀ ,̀ caller̀ )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX ̀ paginguser__idx__pagingid̀  ON ̀ paginguser̀ (̀ pagingid̀ );
+CREATE INDEX ̀ paginguser__idx__userfeaturesid̀  ON ̀ paginguser̀ (̀ userfeaturesid̀ );
+CREATE INDEX ̀ paginguser__idx__caller̀  ON ̀ paginguser̀ (̀ caller̀ );
+
+
+DROP TABLE IF EXISTS ̀ parkinglot̀ ;
+CREATE TABLE ̀ parkinglot̀  (
+ ̀ id̀             INT(10) UNSIGNED AUTO_INCREMENT,
+ ̀ namè           VARCHAR(255) NOT NULL,
+ ̀ context̀        VARCHAR(39) NOT NULL,       -- SHOULD BE A REF TO CONTEXT TABLE IN 2.0
+ ̀ extensioǹ      VARCHAR(40) NOT NULL,
+ ̀ positions̀      INTEGER NOT NULL,           -- NUMBER OF POSITIONS, (positions starts at extension + 1)
+ ̀ next̀           INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ ̀ duratioǹ       INTEGER DEFAULT NULL,
+ 
+ ̀ calltransfers̀  VARCHAR(8) DEFAULT NULL,
+ ̀ callreparking̀  VARCHAR(8) DEFAULT NULL,
+ ̀ callhangup̀     VARCHAR(8) DEFAULT NULL,
+ ̀ callrecording̀  VARCHAR(8) DEFAULT NULL,
+ ̀ musicclass̀     VARCHAR(255) DEFAULT NULL,
+ ̀ hints̀          INTEGER    NOT NULL DEFAULT 0, -- BOOLEAN
+
+ ̀ commented̀      INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ ̀ descriptioǹ    TEXT NOT NULL DEFAULT '',
+ PRIMARY KEY(̀ id̀ )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE UNIQUE INDEX ̀ parkinglot__idx__namè  ON ̀ parkinglot̀ (̀ namè );
 
 
 DROP TABLE IF EXISTS `groupfeatures`;
@@ -770,28 +892,12 @@ CREATE TABLE `groupfeatures` (
  `preprocess_subroutine` varchar(39),
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `groupfeatures__idx__name` ON `groupfeatures`(`name`);
 CREATE INDEX `groupfeatures__idx__number` ON `groupfeatures`(`number`);
 CREATE INDEX `groupfeatures__idx__context` ON `groupfeatures`(`context`);
 CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
-
-
-DROP TABLE IF EXISTS `handynumbers`;
-CREATE TABLE `handynumbers` (
- `id` int(10) unsigned auto_increment,
- `exten` varchar(40) NOT NULL DEFAULT '',
- `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
- `type` enum('emergency','special') NOT NULL,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
-CREATE INDEX `handynumbers__idx__trunkfeaturesid` ON `handynumbers`(`trunkfeaturesid`);
-CREATE INDEX `handynumbers__idx__type` ON `handynumbers`(`type`);
-CREATE INDEX `handynumbers__idx__commented` ON `handynumbers`(`commented`);
-CREATE UNIQUE INDEX `handynumbers__uidx__exten` ON `handynumbers`(`exten`);
 
 
 DROP TABLE IF EXISTS `incall`;
@@ -806,7 +912,7 @@ CREATE TABLE `incall` (
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `incall__idx__exten` ON `incall`(`exten`);
 CREATE INDEX `incall__idx__context` ON `incall`(`context`);
@@ -820,6 +926,9 @@ CREATE TABLE `linefeatures` (
  `protocol` varchar(50) NOT NULL,
  `protocolid` int(10) unsigned NOT NULL,
  `iduserfeatures` int(10) unsigned DEFAULT 0,
+ ̀ config̀  varchar(128),
+ ̀ devicè  varchar(32),
+ ̀ configregistrar̀  varchar(128),
  `name` varchar(20) NOT NULL,
  `number` varchar(40),
  `context` varchar(39) NOT NULL,
@@ -828,13 +937,19 @@ CREATE TABLE `linefeatures` (
  `rules_time` varchar(8),
  `rules_order` tinyint(3) NOT NULL DEFAULT 0,
  `rules_group` varchar(16),
+ ̀ num̀  INTEGER DEFAULT 0,
+ ̀ line_num̀  INTEGER DEFAULT 0,
+ ̀ ipfrom̀  varchar(15),
  `internal` int(10) unsigned NOT NULL DEFAULT 0,
  `commented` int(10) unsigned NOT NULL DEFAULT 0,
  `description` text,
  PRIMARY KEY(`id`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `linefeatures__idx__iduserfeatures` ON `linefeatures`(`iduserfeatures`);
+CREATE INDEX "linefeatures__idx__line_num" ON "linefeatures"("line_num");
+CREATE INDEX "linefeatures__idx__config" ON "linefeatures"("config");
+CREATE INDEX "linefeatures__idx__device" ON "linefeatures"("device");
 CREATE INDEX `linefeatures__idx__number` ON `linefeatures`(`number`);
 CREATE INDEX `linefeatures__idx__context` ON `linefeatures`(`context`);
 CREATE INDEX `linefeatures__idx__commented` ON `linefeatures`(`commented`);
@@ -842,6 +957,9 @@ CREATE INDEX `linefeatures__idx__internal` ON `linefeatures`(`internal`);
 CREATE UNIQUE INDEX `linefeatures__uidx__provisioningid` ON `linefeatures`(`provisioningid`);
 CREATE UNIQUE INDEX `linefeatures__uidx__name` ON `linefeatures`(`name`);
 CREATE UNIQUE INDEX `linefeatures__uidx__protocol_protocolid` ON `linefeatures`(`protocol`,`protocolid`);
+
+INSERT INTO `linefeatures` VALUES (1,'sip',1,0,'autoprov','','default','autoprov','','xivo-initconfig',0,'','',0,'',0,0,1,0);
+
 
 DROP TABLE IF EXISTS `ldapfilter`;
 CREATE TABLE `ldapfilter` (

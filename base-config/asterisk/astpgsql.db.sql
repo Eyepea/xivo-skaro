@@ -267,7 +267,7 @@ CREATE TABLE "context" (
  "name" varchar(39) NOT NULL,
  "displayname" varchar(128) NOT NULL DEFAULT '',
  "entity" varchar(64),
- "contexttype" varchar(40) NOT NULL DEFAULT 'intern',
+ "contexttype" varchar(40) NOT NULL DEFAULT 'internal',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("name")
@@ -847,7 +847,6 @@ CREATE INDEX "features__idx__filename" ON "features"("filename");
 CREATE INDEX "features__idx__category" ON "features"("category");
 CREATE INDEX "features__idx__var_name" ON "features"("var_name");
 
-INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','','');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkext','700');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','parkpos','701-750');
 INSERT INTO "features" VALUES (nextval('features_id_seq'),0,0,0,'features.conf','general','context','parkedcalls');
