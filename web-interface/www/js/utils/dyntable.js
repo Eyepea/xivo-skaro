@@ -18,55 +18,55 @@
 
 function dyntable(name) {
 
-	var name 		= name;
-	var count_row 	= 0;
-	
-    this.__init 	= __init;
-    this.addrow 	= addrow;
-    this.delrow 	= delrow;
-    this.update 	= update;
+    var name         = name;
+    var count_row     = 0;
+    
+    this.__init     = __init;
+    this.addrow     = addrow;
+    this.delrow     = delrow;
+    this.update     = update;
     
     function __init() {
-    	$('#list_'+name).find('a:#lnk-add-row').click(addrow);
-    	$('#list_'+name).find('#lnk-del-row').click(delrow);
-    	$('#list_'+name+' > tbody').sortable({
-    		helper: fixHelper,
-    		cursor: 'crosshair',
-    		update: update
-    	});
-		update();
+        $('#list_'+name).find('a:#lnk-add-row').click(addrow);
+        $('#list_'+name).find('#lnk-del-row').click(delrow);
+        $('#list_'+name+' > tbody').sortable({
+            helper: fixHelper,
+            cursor: 'crosshair',
+            update: update
+        });
+        update();
     }
-	
-	function addrow() {
-		$(this).parents('table').find('tbody:last').
-		fadeIn(400, function() {
-	        $(this).append( $('#ex-row').html() );
-	        $(this).find('#lnk-del-row').click(delrow);
-	    });
-		update();
-	}
+    
+    function addrow() {
+        $(this).parents('table').find('tbody:last').
+        fadeIn(400, function() {
+            $(this).append( $('#ex-row').html() );
+            $(this).find('#lnk-del-row').click(delrow);
+        });
+        update();
+    }
 
-	function delrow() {
-	    $(this).parents('tr').
-	    fadeTo(400, 0, function() {
-	        $(this).remove();
-	    });
-	    setTimeout(update, 420);
-	}
+    function delrow() {
+        $(this).parents('tr').
+        fadeTo(400, 0, function() {
+            $(this).remove();
+        });
+        setTimeout(update, 420);
+    }
     
     function update() {
-    	count_row = 0;
-    	$('#list_'+name).find('tbody > tr').
-		each(function() {
-			count_row++;
-			$(this).find('#box-order').text(count_row);
-		});
+        count_row = 0;
+        $('#list_'+name).find('tbody > tr').
+        each(function() {
+            count_row++;
+            $(this).find('#box-order').text(count_row);
+        });
 
-		if (count_row > 0)
-			$('#no-row').hide('fast');
-		else
-			$('#no-row').show('fast');
-	}
+        if (count_row > 0)
+            $('#no-row').hide('fast');
+        else
+            $('#no-row').show('fast');
+    }
 
-	__init();
+    __init();
 }

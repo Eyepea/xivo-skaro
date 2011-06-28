@@ -17,74 +17,74 @@
  */
 
 $(function() {
-	
-	$.datepicker.setDefaults({
-		currentText: 'Now',
-		changeYear: true,
-		firstDay: 1,
-		selectOtherMonths: true,
-		dayNamesMin: xivo_date_day_min,
-		ayNamesShort: xivo_date_day_short,
-		dayNames: xivo_date_day,
-		monthNames: xivo_date_month,
-		monthNamesShort: xivo_date_month_short,
-		nextText: xivo_date_next,
-		prevText: xivo_date_prev,
-		showAnim: 'fold',
-		showMonthAfterYear: true,
-		showWeek: true,
-		weekHeader: 'W',
-		minDate: dp_min_date,
-		maxDate: dp_max_date
-	});
+    
+    $.datepicker.setDefaults({
+        currentText: 'Now',
+        changeYear: true,
+        firstDay: 1,
+        selectOtherMonths: true,
+        dayNamesMin: xivo_date_day_min,
+        ayNamesShort: xivo_date_day_short,
+        dayNames: xivo_date_day,
+        monthNames: xivo_date_month,
+        monthNamesShort: xivo_date_month_short,
+        nextText: xivo_date_next,
+        prevText: xivo_date_prev,
+        showAnim: 'fold',
+        showMonthAfterYear: true,
+        showWeek: true,
+        weekHeader: 'W',
+        minDate: dp_min_date,
+        maxDate: dp_max_date
+    });
 
-	$("#it-dbeg").datepicker({
-		dateFormat: 'yy-mm-dd',
-		altFormat: 'yy-mm-dd'
-	});
-	$("#it-dend").datepicker({
-		dateFormat: 'yy-mm-dd',
-		altFormat: 'yy-mm-dd'
-	});
-	$("#it-dday").datepicker({
-		dateFormat: 'yy-mm-dd',
-		altFormat: 'yy-mm-dd'
-	});
-	$("#it-dweek").datepicker({
-		dateFormat: 'yy-mm-dd',
-		altFormat: 'yy-mm-dd'
-	});
-	$("#it-dmonth").datepicker({
-		dateFormat: 'yy-mm-dd',
-		altFormat: 'yy-mm'
-	});
+    $("#it-dbeg").datepicker({
+        dateFormat: 'yy-mm-dd',
+        altFormat: 'yy-mm-dd'
+    });
+    $("#it-dend").datepicker({
+        dateFormat: 'yy-mm-dd',
+        altFormat: 'yy-mm-dd'
+    });
+    $("#it-dday").datepicker({
+        dateFormat: 'yy-mm-dd',
+        altFormat: 'yy-mm-dd'
+    });
+    $("#it-dweek").datepicker({
+        dateFormat: 'yy-mm-dd',
+        altFormat: 'yy-mm-dd'
+    });
+    $("#it-dmonth").datepicker({
+        dateFormat: 'yy-mm-dd',
+        altFormat: 'yy-mm'
+    });
 
-	$('#it-axetype').change(function() {
-		type = $(this).val();
-   		for(var u=0;u<lsaxetype.length;u++)
-   		{
-	   		$('#it-cal-'+lsaxetype[u]).hide();
-			if (lsaxetype[u] == 'type')
-				$('#it-cal-object').hide();
-   		}
-   		$('#it-cal-'+type).show();
-	   	if (type != 'type')
-	   		$('#it-cal-object').show();
-	});
+    $('#it-axetype').change(function() {
+        type = $(this).val();
+           for(var u=0;u<lsaxetype.length;u++)
+           {
+               $('#it-cal-'+lsaxetype[u]).hide();
+            if (lsaxetype[u] == 'type')
+                $('#it-cal-object').hide();
+           }
+           $('#it-cal-'+type).show();
+           if (type != 'type')
+               $('#it-cal-object').show();
+    });
 
-	for(var u=0;u<lsaxetype.length;u++)	{
-		if (lsaxetype[u] == axetype)
-			$('#it-cal-'+lsaxetype[u]).show();
-	}
+    for(var u=0;u<lsaxetype.length;u++)    {
+        if (lsaxetype[u] == axetype)
+            $('#it-cal-'+lsaxetype[u]).show();
+    }
 
-	$('#it-confid').change(function(){
-		$(this).parents('form').submit();
-	});
+    $('#it-confid').change(function(){
+        $(this).parents('form').submit();
+    });
             
 });
 
 function fm_chk() {
-	$('#it-submit').attr('disabled', 'disabled');
-	$('#it-submit').val(fm_bt_wait_sb);
-	$('#it-loading').show();
+    $('#it-submit').attr('disabled', 'disabled');
+    $('#it-submit').val(fm_bt_wait_sb);
+    $('#it-loading').show();
 };

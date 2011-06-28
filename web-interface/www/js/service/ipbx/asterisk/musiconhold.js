@@ -17,16 +17,16 @@
  */
 
 var xivo_fm_musiconhold = {
-	'fd-application':	{'style':	[{display: 'none'},{display: 'block'}],
-				 'link':	'it-application'},
-	'it-application':	{'property':	[{disabled: true},{disabled: false}]}};
+    'fd-application':    {'style':    [{display: 'none'},{display: 'block'}],
+                 'link':    'it-application'},
+    'it-application':    {'property':    [{disabled: true},{disabled: false}]}};
 
 xivo_attrib_register('fm_musiconhold',xivo_fm_musiconhold);
 
 function xivo_moh_onload()
 {
-	if((mode = dwho_eid('it-mode')) !== false)
-		xivo_chg_attrib('fm_musiconhold','fd-application',Number(mode.value === 'custom'));
+    if((mode = dwho_eid('it-mode')) !== false)
+        xivo_chg_attrib('fm_musiconhold','fd-application',Number(mode.value === 'custom'));
 }
 
 dwho.dom.set_onload(xivo_moh_onload);

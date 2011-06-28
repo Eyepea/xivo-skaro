@@ -17,24 +17,24 @@
  */
 
 $(function(){
-	$('input[id="configure-ajax"]').each(function(){
-		$(this).keyup(function(){
-			name = $(this).attr('name');
-			val = $(this).val();
-			href = $('#href-'+name).val();
-			uri = $('#uri-'+name).val();
-			delay(function(){
-				$.post(uri,
-					{
-						act: 'edit',
-						uri: href,
-						value: val
-					},
-					function(data){
-						$('#res-'+name).show().html(data).delay(1500).hide('slow');
-					}
-				);
-		    }, 900);
-		});
-	});
+    $('input[id="configure-ajax"]').each(function(){
+        $(this).keyup(function(){
+            name = $(this).attr('name');
+            val = $(this).val();
+            href = $('#href-'+name).val();
+            uri = $('#uri-'+name).val();
+            delay(function(){
+                $.post(uri,
+                    {
+                        act: 'edit',
+                        uri: href,
+                        value: val
+                    },
+                    function(data){
+                        $('#res-'+name).show().html(data).delay(1500).hide('slow');
+                    }
+                );
+            }, 900);
+        });
+    });
 });

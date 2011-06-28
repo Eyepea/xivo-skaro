@@ -18,128 +18,128 @@
 
 function xivo_ast_inqueue()
 {
-	dwho.form.move_selected('it-queuelist','it-queue');
+    dwho.form.move_selected('it-queuelist','it-queue');
 
-	if((queuelist = dwho_eid('it-queue')) === false
-	|| (len = queuelist.length) < 1)
-		return(false);
+    if((queuelist = dwho_eid('it-queue')) === false
+    || (len = queuelist.length) < 1)
+        return(false);
 
-	for(i = 0;i < len;i++)
-	{
-		if((queue = dwho_eid('queue-'+queuelist[i].value)) !== false)
-			queue.style.display = 'table-row';
-	}
+    for(i = 0;i < len;i++)
+    {
+        if((queue = dwho_eid('queue-'+queuelist[i].value)) !== false)
+            queue.style.display = 'table-row';
+    }
 
-	if(dwho_eid('it-queue').length > 0)
-		dwho_eid('no-queue').style.display = 'none';
+    if(dwho_eid('it-queue').length > 0)
+        dwho_eid('no-queue').style.display = 'none';
 
-	return(true);
+    return(true);
 }
 
 function xivo_ast_outqueue()
 {
-	dwho.form.move_selected('it-queue','it-queuelist');
+    dwho.form.move_selected('it-queue','it-queuelist');
 
-	if((queuelist = dwho_eid('it-queuelist')) === false
-	|| (len = queuelist.length) < 1)
-		return(false);
+    if((queuelist = dwho_eid('it-queuelist')) === false
+    || (len = queuelist.length) < 1)
+        return(false);
 
-	for(i = 0;i < len;i++)
-	{
-		if((queue = dwho_eid('queue-'+queuelist[i].value)) !== false)
-			queue.style.display = 'none';
-	}
+    for(i = 0;i < len;i++)
+    {
+        if((queue = dwho_eid('queue-'+queuelist[i].value)) !== false)
+            queue.style.display = 'none';
+    }
 
-	if(dwho_eid('it-queue').length === 0)
-		dwho_eid('no-queue').style.display = 'table-row';
+    if(dwho_eid('it-queue').length === 0)
+        dwho_eid('no-queue').style.display = 'table-row';
 
-	return(true);
+    return(true);
 }
 
 function xivo_exten_pattern(id,option)
 {
-	if((id = dwho_eid(id)) === false || dwho_is_undef(id.value) === true)
-		return(false);
+    if((id = dwho_eid(id)) === false || dwho_is_undef(id.value) === true)
+        return(false);
 
-	var value = id.value;
+    var value = id.value;
 
-	if(value.charAt(0) === '_')
-		value = dwho_substr(value,1);
+    if(value.charAt(0) === '_')
+        value = dwho_substr(value,1);
 
-	value = value.replace(/[X\.]/gi,'');
+    value = value.replace(/[X\.]/gi,'');
 
-	if(option === '*')
-	{
-		id.value = value + '.';
-		return(true);
-	}
+    if(option === '*')
+    {
+        id.value = value + '.';
+        return(true);
+    }
 
-	option = Number(option);
+    option = Number(option);
 
-	if(option > 0 && option < 40)
-	{
-		id.value = value + dwho_str_repeat('X',option);
-		return(true);
-	}
+    if(option > 0 && option < 40)
+    {
+        id.value = value + dwho_str_repeat('X',option);
+        return(true);
+    }
 
-	return(false);
+    return(false);
 }
 
 function xivo_get_exten_buffer(letter,value)
 {
-	if(dwho_substr(value,-1) === '.')
-		return('*');
+    if(dwho_substr(value,-1) === '.')
+        return('*');
 
-	var chr = '';
+    var chr = '';
 
-	if(letter.indexOf('N') > -1)
-		chr += 'N';
+    if(letter.indexOf('N') > -1)
+        chr += 'N';
 
-	if(letter.indexOf('X') > -1)
-		chr += 'X';
+    if(letter.indexOf('X') > -1)
+        chr += 'X';
 
-	if(letter.indexOf('Z') > -1)
-		chr += 'Z';
+    if(letter.indexOf('Z') > -1)
+        chr += 'Z';
 
-	if(chr.length === 0)
-		return(false);
+    if(chr.length === 0)
+        return(false);
 
-	var regstr = new RegExp('['+chr+']*$','i');
+    var regstr = new RegExp('['+chr+']*$','i');
 
-	if((buffer = value.match(regstr)) === null)
-		return(false);
+    if((buffer = value.match(regstr)) === null)
+        return(false);
 
-	return(buffer[0].length);
+    return(buffer[0].length);
 }
 
 function xivo_chk_exten_pattern(value)
 {
-	if(dwho_is_undef(value) === true || dwho_is_string(value) === false)
-		return(false);
+    if(dwho_is_undef(value) === true || dwho_is_string(value) === false)
+        return(false);
 
-	var len = value.length;
+    var len = value.length;
 
-	if(len === 0 || len > 40)
-		return(false);
+    if(len === 0 || len > 40)
+        return(false);
 
-	if(value.charAt(0) === '_')
-		value = dwho_substr(value,1);
+    if(value.charAt(0) === '_')
+        value = dwho_substr(value,1);
 
-	if(value.match(/^[0-9NXZ\*#\-\[\]]+[\.\!]?$/) === null)
-		return(false);
+    if(value.match(/^[0-9NXZ\*#\-\[\]]+[\.\!]?$/) === null)
+        return(false);
 
-	return(value);
+    return(value);
 }
 
 function xivo_fm_select_add_exten(id,value)
 {
-	if((pattern = xivo_chk_exten_pattern(value)) === false)
-		return(false);
+    if((pattern = xivo_chk_exten_pattern(value)) === false)
+        return(false);
 
-	return(dwho.form.select_add_entry(id,pattern,pattern));
+    return(dwho.form.select_add_entry(id,pattern,pattern));
 }
 
 dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,
-		    'mn-control-system--reload');
+            'mn-control-system--reload');
 dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,
-		    'mn-control-system--restart');
+            'mn-control-system--restart');

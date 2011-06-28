@@ -18,25 +18,25 @@
 
 function xivo_ast_campaign_chg_occasional(evt)
 {
-	end = dwho_eid('it-campaign-end');
+    end = dwho_eid('it-campaign-end');
 
-	end.setAttribute('class', 'it-' + (evt.target.checked?'enabled':'disabled'));
-	end.disabled = !evt.target.checked;
+    end.setAttribute('class', 'it-' + (evt.target.checked?'enabled':'disabled'));
+    end.disabled = !evt.target.checked;
 }
 
 function xivo_ast_campaign_onload()
 {
-	if((occasional = dwho_eid('it-campaign_occasional')) !== false)
-	{
-		dwho.dom.add_event('change',occasional,xivo_ast_campaign_chg_occasional);
-		
-		if(!occasional.checked)
-		{
-			end = dwho_eid('it-campaign-end');
-			end.setAttribute('class', 'it-disabled');
-			end.disabled = true;
-		}
-	}
+    if((occasional = dwho_eid('it-campaign_occasional')) !== false)
+    {
+        dwho.dom.add_event('change',occasional,xivo_ast_campaign_chg_occasional);
+        
+        if(!occasional.checked)
+        {
+            end = dwho_eid('it-campaign-end');
+            end.setAttribute('class', 'it-disabled');
+            end.disabled = true;
+        }
+    }
 }
 
 dwho.dom.set_onload(xivo_ast_campaign_onload);

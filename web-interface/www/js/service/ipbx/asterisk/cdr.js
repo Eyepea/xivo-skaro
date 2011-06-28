@@ -17,16 +17,16 @@
  */
 
 var xivo_fm_dcontext = {
-	'fd-dcontext-custom':	{'style':	[{display: 'none'},{display: 'block'}],
-				 'link':	'it-dcontext-custom'},
-	'it-dcontext-custom':	{'property':	[{disabled: true},{disabled: false}]}};
+    'fd-dcontext-custom':    {'style':    [{display: 'none'},{display: 'block'}],
+                 'link':    'it-dcontext-custom'},
+    'it-dcontext-custom':    {'property':    [{disabled: true},{disabled: false}]}};
 
 xivo_attrib_register('fm_dcontext',xivo_fm_dcontext);
 
 function xivo_cdr_onload()
 {
-	if((dcontext = dwho_eid('it-dcontext')) !== false)
-		xivo_chg_attrib('fm_dcontext','fd-dcontext-custom',Number(dcontext.value === 'custom'));
+    if((dcontext = dwho_eid('it-dcontext')) !== false)
+        xivo_chg_attrib('fm_dcontext','fd-dcontext-custom',Number(dcontext.value === 'custom'));
 }
 
 dwho.dom.set_onload(xivo_cdr_onload);

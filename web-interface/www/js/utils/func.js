@@ -26,82 +26,82 @@ function average(arr) {
 }
 
 function nl2br (str) {
-	if(!str) return null;
-	return str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1 <br> $2');
+    if(!str) return null;
+    return str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1 <br> $2');
 }
 
 //Return a helper with preserved width of cells
 var fixHelper = function(e, ui) {
-	ui.children().each(function() {
-		$(this).width($(this).width());
-	});
-	return ui;
+    ui.children().each(function() {
+        $(this).width($(this).width());
+    });
+    return ui;
 };
 
 var delay = (function(){
-	var timer = 0;
-	return function(callback, ms){
-		clearTimeout (timer);
-		timer = setTimeout(callback, ms);
-	};
+    var timer = 0;
+    return function(callback, ms){
+        clearTimeout (timer);
+        timer = setTimeout(callback, ms);
+    };
 })();
 
 //object for manage multiselect filter
 function clean_ms(input_id,select_from,select_to) {
-	
-	var box = dwho_eid(input_id);
-	var select = dwho_eid(select_from);
-	var select2 = dwho_eid(select_to);
-	var select_cache = new Array();
-	
-	this.__init = __init;
-	this.reset = reset;
-	this.build_cache = build_cache;
-	this.populate = populate;
+    
+    var box = dwho_eid(input_id);
+    var select = dwho_eid(select_from);
+    var select2 = dwho_eid(select_to);
+    var select_cache = new Array();
+    
+    this.__init = __init;
+    this.reset = reset;
+    this.build_cache = build_cache;
+    this.populate = populate;
   
-	function __init() {
-		if (!box || !select || !select2)
-			return false;
-		box.addEventListener("keyup", populate, false);		
-		build_cache(select,select_cache);
-	}
-	
-	function reset() {
-		while (select.hasChildNodes()) {
+    function __init() {
+        if (!box || !select || !select2)
+            return false;
+        box.addEventListener("keyup", populate, false);        
+        build_cache(select,select_cache);
+    }
+    
+    function reset() {
+        while (select.hasChildNodes()) {
           select.removeChild(select.firstChild);
-		}
-	}
+        }
+    }
   
-	function build_cache(arr,to) {
-		var nb = arr.length;
-		for (var i = 0; i < nb; i++) {
-			var option = arr.options[i];
-			to.push(new Option(option.text, option.value));
-		}
-	}		
-	
-	function populate(e) {
-		update_cache();
-		reset();
-		var nb = select_cache.length;
-		for (var i = 0; i < nb; i++) {
-			var option = select_cache[i];
-			var expression = new RegExp(this.value.toLowerCase());
-			if (expression.exec(option.text.toLowerCase()))
-				select.add(option, null);
-		}
-	}
-	
-	function update_cache() {
-		var nb = select2.length;
-		for (var i = 0; i < nb; i++) {
-			var option2 = select2.options[i];
-			var l = select_cache.length;
-			for(var c = 0; c < l; c++) {
-		        if(select_cache[c]
-		        && select_cache[c].value == option2.value)
-					select_cache.splice(c,1);
-		    }
-		}
-	}
+    function build_cache(arr,to) {
+        var nb = arr.length;
+        for (var i = 0; i < nb; i++) {
+            var option = arr.options[i];
+            to.push(new Option(option.text, option.value));
+        }
+    }        
+    
+    function populate(e) {
+        update_cache();
+        reset();
+        var nb = select_cache.length;
+        for (var i = 0; i < nb; i++) {
+            var option = select_cache[i];
+            var expression = new RegExp(this.value.toLowerCase());
+            if (expression.exec(option.text.toLowerCase()))
+                select.add(option, null);
+        }
+    }
+    
+    function update_cache() {
+        var nb = select2.length;
+        for (var i = 0; i < nb; i++) {
+            var option2 = select2.options[i];
+            var l = select_cache.length;
+            for(var c = 0; c < l; c++) {
+                if(select_cache[c]
+                && select_cache[c].value == option2.value)
+                    select_cache.splice(c,1);
+            }
+        }
+    }
 }

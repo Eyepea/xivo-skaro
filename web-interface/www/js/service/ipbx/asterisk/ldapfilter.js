@@ -18,40 +18,40 @@
 
 function xivo_fm_select_add_attrldap(id,value)
 {
-	if(xivo_chk_attrldap(value) === false)
-		return(false);
+    if(xivo_chk_attrldap(value) === false)
+        return(false);
 
-	return(dwho.form.select_add_entry(id,value,value));
+    return(dwho.form.select_add_entry(id,value,value));
 }
 
 function xivo_chk_attrldap(value)
 {
-	if(dwho_is_string(value) === false
-	|| value.match(/^(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)$/) === null)
-		return(false);
+    if(dwho_is_string(value) === false
+    || value.match(/^(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)$/) === null)
+        return(false);
 
-	return(value);
+    return(value);
 }
 
 function xivo_chg_additionaltype(type)
 {
-	var display = 'none';
-	var disabled = true;
+    var display = 'none';
+    var disabled = true;
 
-	if(type === 'custom')
-	{
-		display = 'block';
-		disabled = false;
-	}
+    if(type === 'custom')
+    {
+        display = 'block';
+        disabled = false;
+    }
 
-	dwho_eid('fd-ldapfilter-additionaltext').style.display = display;
-	dwho_eid('it-ldapfilter-additionaltext').disabled = disabled;
+    dwho_eid('fd-ldapfilter-additionaltext').style.display = display;
+    dwho_eid('it-ldapfilter-additionaltext').disabled = disabled;
 }
 
 function xivo_ldapfilter_onload()
 {
-	if(dwho_eid('it-ldapfilter-additionaltype') !== false)
-		xivo_chg_additionaltype(dwho_eid('it-ldapfilter-additionaltype').value);
+    if(dwho_eid('it-ldapfilter-additionaltype') !== false)
+        xivo_chg_additionaltype(dwho_eid('it-ldapfilter-additionaltype').value);
 }
 
 dwho.dom.set_onload(xivo_ldapfilter_onload);

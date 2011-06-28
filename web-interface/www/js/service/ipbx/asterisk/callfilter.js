@@ -17,19 +17,19 @@
  */
 
 var xivo_ast_callfilter_mode_elt = {
-	'fd-callfilter-ringseconds':	{style:		{display: 'block'}},
-	'it-callfilter-ringseconds':	{property:	{disabled: false}},
-	'links':
-		{link:	[['fd-callfilter-ringseconds',0,1],
-			 ['it-callfilter-ringseconds',0,1]]}};
+    'fd-callfilter-ringseconds':    {style:        {display: 'block'}},
+    'it-callfilter-ringseconds':    {property:    {disabled: false}},
+    'links':
+        {link:    [['fd-callfilter-ringseconds',0,1],
+             ['it-callfilter-ringseconds',0,1]]}};
 
 var xivo_ast_fm_callfilter_mode = {
-	'bosssecretary':
-		{'bossfirst-serial':	dwho_clone(xivo_ast_callfilter_mode_elt),
-		 'bossfirst-simult':	dwho_clone(xivo_ast_callfilter_mode_elt),
-		 'secretary-serial':	dwho_clone(xivo_ast_callfilter_mode_elt),
-		 'secretary-simult':	dwho_clone(xivo_ast_callfilter_mode_elt),
-		 'secretary-all':	dwho_clone(xivo_ast_callfilter_mode_elt)}};
+    'bosssecretary':
+        {'bossfirst-serial':    dwho_clone(xivo_ast_callfilter_mode_elt),
+         'bossfirst-simult':    dwho_clone(xivo_ast_callfilter_mode_elt),
+         'secretary-serial':    dwho_clone(xivo_ast_callfilter_mode_elt),
+         'secretary-simult':    dwho_clone(xivo_ast_callfilter_mode_elt),
+         'secretary-all':    dwho_clone(xivo_ast_callfilter_mode_elt)}};
 
 xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-serial']['fd-callfilter-ringseconds']['style'] = {display: 'none'};
 xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-serial']['it-callfilter-ringseconds']['property'] = {disabled: false};
@@ -38,32 +38,32 @@ xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-serial']['fd-callfilter-
 xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-serial']['it-callfilter-ringseconds']['property'] = {disabled: false};
 
 xivo_attrib_register('fm_callfilter_mode-bosssecretary-bossfirst-serial',
-		     xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-serial']);
+             xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-serial']);
 xivo_attrib_register('fm_callfilter_mode-bosssecretary-bossfirst-simult',
-		     xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-simult']);
+             xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-simult']);
 xivo_attrib_register('fm_callfilter_mode-bosssecretary-secretary-serial',
-		     xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-serial']);
+             xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-serial']);
 xivo_attrib_register('fm_callfilter_mode-bosssecretary-secretary-simult',
-		     xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-simult']);
+             xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-simult']);
 xivo_attrib_register('fm_callfilter_mode-bosssecretary-secretary-all',
-		     xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-all']);
+             xivo_ast_fm_callfilter_mode['bosssecretary']['secretary-all']);
 
 function xivo_callfilter_chg_mode(modename,mode)
 {
-	if(dwho_is_object(mode) === false
-	|| dwho_is_undef(mode.value) === true
-	|| dwho_is_undef(xivo_ast_fm_callfilter_mode[modename]) === true
-	|| dwho_is_undef(xivo_ast_fm_callfilter_mode[modename][mode.value]) === true)
-		return(false);
+    if(dwho_is_object(mode) === false
+    || dwho_is_undef(mode.value) === true
+    || dwho_is_undef(xivo_ast_fm_callfilter_mode[modename]) === true
+    || dwho_is_undef(xivo_ast_fm_callfilter_mode[modename][mode.value]) === true)
+        return(false);
 
-	xivo_chg_attrib('fm_callfilter_mode-' + modename + '-' + mode.value,'links',0,1);
+    xivo_chg_attrib('fm_callfilter_mode-' + modename + '-' + mode.value,'links',0,1);
 }
 
 function xivo_callfilter_onload()
 {
-	xivo_callfilter_chg_mode('bosssecretary',dwho_eid('it-callfilter-bosssecretary'));
-	xivo_ast_build_dialaction_array('noanswer');
-	xivo_ast_dialaction_onload();
+    xivo_callfilter_chg_mode('bosssecretary',dwho_eid('it-callfilter-bosssecretary'));
+    xivo_ast_build_dialaction_array('noanswer');
+    xivo_ast_dialaction_onload();
 }
 
 dwho.dom.set_onload(xivo_callfilter_onload);

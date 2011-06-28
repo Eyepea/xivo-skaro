@@ -17,31 +17,31 @@
  */
 
 xivo_fm_voicemail_format = {
-		'it-voicemail-attachformat':
-			{property:	[{disabled: false, className: 'it-enabled'},
-					 {disabled: true, className: 'it-disabled'}]}};
+        'it-voicemail-attachformat':
+            {property:    [{disabled: false, className: 'it-enabled'},
+                     {disabled: true, className: 'it-disabled'}]}};
 
 xivo_attrib_register('fm_voicemail_format',xivo_fm_voicemail_format);
 
 function xivo_voicemail_format(action)
 {
-	if(action === 'out')
-	{
-		dwho.form.move_selected('it-voicemail-format','it-voicemail-formatlist');
-		dwho.form.copy_select('it-voicemail-format','it-voicemail-attachformat');
-	}
-	else
-	{
-		dwho.form.move_selected('it-voicemail-formatlist','it-voicemail-format');
-		dwho.form.copy_select('it-voicemail-format','it-voicemail-attachformat');
-	}
+    if(action === 'out')
+    {
+        dwho.form.move_selected('it-voicemail-format','it-voicemail-formatlist');
+        dwho.form.copy_select('it-voicemail-format','it-voicemail-attachformat');
+    }
+    else
+    {
+        dwho.form.move_selected('it-voicemail-formatlist','it-voicemail-format');
+        dwho.form.copy_select('it-voicemail-format','it-voicemail-attachformat');
+    }
 
-	if(dwho_eid('it-voicemail-attachformat') === false)
-		return(false);
+    if(dwho_eid('it-voicemail-attachformat') === false)
+        return(false);
 
-	xivo_chg_attrib('fm_voicemail_format',
-			'it-voicemail-attachformat',
-			Number((dwho_eid('it-voicemail-attachformat').length === 0)));
+    xivo_chg_attrib('fm_voicemail_format',
+            'it-voicemail-attachformat',
+            Number((dwho_eid('it-voicemail-attachformat').length === 0)));
 
-	return(true);
+    return(true);
 }

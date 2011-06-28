@@ -18,36 +18,36 @@
 
 function xivo_context_entity_enable_add(type,table)
 {
-	if(dwho_is_string(type) === false
-	|| dwho_is_object(table) === false
-	|| (entity = dwho_eid('it-context-entity')) === false
-	|| entity.value === '')
-		return(false);
+    if(dwho_is_string(type) === false
+    || dwho_is_object(table) === false
+    || (entity = dwho_eid('it-context-entity')) === false
+    || entity.value === '')
+        return(false);
 
-	return(dwho.dom.make_table_list('contextnumbers-'+type,table));
+    return(dwho.dom.make_table_list('contextnumbers-'+type,table));
 }
 
 function xivo_context_entity_status(form,disable)
 {
-	var arr = {
-		'user':		['numberbeg','numberend'],
-		'group':	['numberbeg','numberend'],
-		'queue':	['numberbeg','numberend'],
-		'meetme':	['numberbeg','numberend'],
-		'incall':	['numberbeg','numberend','didlength']};
+    var arr = {
+        'user':        ['numberbeg','numberend'],
+        'group':    ['numberbeg','numberend'],
+        'queue':    ['numberbeg','numberend'],
+        'meetme':    ['numberbeg','numberend'],
+        'incall':    ['numberbeg','numberend','didlength']};
 
-	for(var key in arr)
-	{
-		ref = arr[key];
-		nb = ref.length;
+    for(var key in arr)
+    {
+        ref = arr[key];
+        nb = ref.length;
 
-		for(i = 0;i < nb;i++)
-		{
-			dwho.form.toggle_enable_field(form,
-						    'contextnumbers['+key+']['+ref[i]+'][]',
-						    disable,
-						    'ex-contextnumbers-'+key,
-						    'tbody');
-		}
-	}
+        for(i = 0;i < nb;i++)
+        {
+            dwho.form.toggle_enable_field(form,
+                            'contextnumbers['+key+']['+ref[i]+'][]',
+                            disable,
+                            'ex-contextnumbers-'+key,
+                            'tbody');
+        }
+    }
 }

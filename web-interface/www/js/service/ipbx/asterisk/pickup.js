@@ -17,9 +17,9 @@
  */
 
 $(document).ready(function() {
-	$.localise('ui-multiselect', {
-		language: dwho_i18n_lang,
-		path: '/extra-libs/multiselect/js/locale/'
-	});
-	$('.multiselect').multiselect();
+    $.localise('ui-multiselect', {
+        language: dwho_i18n_lang,
+        path: '/extra-libs/multiselect/js/locale/'
+    });
+    $('.multiselect').multiselect();
 })

@@ -17,47 +17,47 @@
  */
 
 var xivo_ast_fm_tcpbindaddr = {
-	'it-tcpbindaddr':
-		{property: [{disabled: false, className: 'it-enabled'},
-			    {disabled: true, className: 'it-disabled'}]}};
+    'it-tcpbindaddr':
+        {property: [{disabled: false, className: 'it-enabled'},
+                {disabled: true, className: 'it-disabled'}]}};
 
 xivo_attrib_register('ast_fm_tcpbindaddr',xivo_ast_fm_tcpbindaddr);
 
 var xivo_ast_fm_tlsbindaddr = {
-	'it-tlsbindaddr':
-		{property: [{disabled: false, className: 'it-enabled'},
-			    {disabled: true, className: 'it-disabled'}],
-		 link: 'it-tlscertfile'},
-	'it-tlscertfile':
-		{property: [{disabled: false, className: 'it-enabled'},
-			    {disabled: true, className: 'it-disabled'}],
-		 link: 'it-tlscafile'},
-	'it-tlscafile':
-		{property: [{disabled: false, className: 'it-enabled'},
-			    {disabled: true, className: 'it-disabled'}],
-		 link: 'it-tlsdontverifyserver'},
-	'it-tlsdontverifyserver':
-		{property: [{disabled: false, className: 'it-enabled'},
-			    {disabled: true, className: 'it-disabled'}],
-		 link: 'it-tlscipher'},
-	'it-tlscipher':
-		{property: [{disabled: false, className: 'it-enabled'},
-			    {disabled: true, className: 'it-disabled'}]},
-	};
+    'it-tlsbindaddr':
+        {property: [{disabled: false, className: 'it-enabled'},
+                {disabled: true, className: 'it-disabled'}],
+         link: 'it-tlscertfile'},
+    'it-tlscertfile':
+        {property: [{disabled: false, className: 'it-enabled'},
+                {disabled: true, className: 'it-disabled'}],
+         link: 'it-tlscafile'},
+    'it-tlscafile':
+        {property: [{disabled: false, className: 'it-enabled'},
+                {disabled: true, className: 'it-disabled'}],
+         link: 'it-tlsdontverifyserver'},
+    'it-tlsdontverifyserver':
+        {property: [{disabled: false, className: 'it-enabled'},
+                {disabled: true, className: 'it-disabled'}],
+         link: 'it-tlscipher'},
+    'it-tlscipher':
+        {property: [{disabled: false, className: 'it-enabled'},
+                {disabled: true, className: 'it-disabled'}]},
+    };
 
 xivo_attrib_register('ast_fm_tlsbindaddr',xivo_ast_fm_tlsbindaddr);
 
 function xivo_general_sip_onload()
 {
-	if((tcpenable = dwho_eid('it-tcpenable')) !== false)
-		xivo_chg_attrib('ast_fm_tcpbindaddr',
-				'it-tcpbindaddr',
-				Number(tcpenable.checked === false));
+    if((tcpenable = dwho_eid('it-tcpenable')) !== false)
+        xivo_chg_attrib('ast_fm_tcpbindaddr',
+                'it-tcpbindaddr',
+                Number(tcpenable.checked === false));
 
-	if((tlsenable = dwho_eid('it-tlsenable')) !== false)
-		xivo_chg_attrib('ast_fm_tlsbindaddr',
-				'it-tlsbindaddr',
-				Number(tlsenable.checked === false));
+    if((tlsenable = dwho_eid('it-tlsenable')) !== false)
+        xivo_chg_attrib('ast_fm_tlsbindaddr',
+                'it-tlsbindaddr',
+                Number(tlsenable.checked === false));
 }
 
 dwho.dom.set_onload(xivo_general_sip_onload);

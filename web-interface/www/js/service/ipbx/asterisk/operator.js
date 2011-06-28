@@ -18,9 +18,9 @@
 
 function xivo_operator_destination_enable_add(type,table)
 {
-	if(dwho_is_string(type) === false
-	|| dwho_is_object(table) === false)
-		return(false);
+    if(dwho_is_string(type) === false
+    || dwho_is_object(table) === false)
+        return(false);
 
-	return(dwho.dom.make_table_list('operator-'+type,table));
+    return(dwho.dom.make_table_list('operator-'+type,table));
 }

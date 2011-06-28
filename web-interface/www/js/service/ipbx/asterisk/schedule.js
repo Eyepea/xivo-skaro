@@ -18,85 +18,85 @@
 
 var dialevent = 0;
 
-function xivo_ast_schedule_add_dyn_dialaction(dialname)	
+function xivo_ast_schedule_add_dyn_dialaction(dialname)    
 {
-	dialevent += 1;
+    dialevent += 1;
 
-	xivo_elt_dialaction[dialname] = {};
-	xivo_fm_dialaction[dialname]  = {};
+    xivo_elt_dialaction[dialname] = {};
+    xivo_fm_dialaction[dialname]  = {};
 
-	xivo_ast_build_dialaction_array(dialname);
-	if((action = dwho_eid('it-dialaction-'+dialname+'-actiontype')) !== false)
-		xivo_ast_chg_dialaction(dialname,action);
+    xivo_ast_build_dialaction_array(dialname);
+    if((action = dwho_eid('it-dialaction-'+dialname+'-actiontype')) !== false)
+        xivo_ast_chg_dialaction(dialname,action);
 }
 
 function xivo_ast_schedule_add_closed_action(name, obj)
 {
 
-	dialevent  += 1;
+    dialevent  += 1;
 
-	new dwho.http('/service/ipbx/ui.php/call_management/schedule?act=dialaction&event=' + dialevent,
-		{'callbackcomplete':	function(xhr) 
-			{ 
-				elt = dwho_eid('onclosed-time-dialaction');
-				elt.id = 'onclosed-time-dialaction-' + dialevent;
-				elt.innerHTML = xhr.responseText;
+    new dwho.http('/service/ipbx/ui.php/call_management/schedule?act=dialaction&event=' + dialevent,
+        {'callbackcomplete':    function(xhr) 
+            { 
+                elt = dwho_eid('onclosed-time-dialaction');
+                elt.id = 'onclosed-time-dialaction-' + dialevent;
+                elt.innerHTML = xhr.responseText;
 
-				dwho.dom.make_table_list(name, obj);
+                dwho.dom.make_table_list(name, obj);
 
-				xivo_elt_dialaction[dialevent] = {};
-				xivo_fm_dialaction[dialevent]  = {};
+                xivo_elt_dialaction[dialevent] = {};
+                xivo_fm_dialaction[dialevent]  = {};
 
-				xivo_ast_build_dialaction_array(dialevent);
-				if((action = dwho_eid('it-dialaction-'+dialevent+'-actiontype')) !== false)
-					xivo_ast_chg_dialaction(dialevent,action);
+                xivo_ast_build_dialaction_array(dialevent);
+                if((action = dwho_eid('it-dialaction-'+dialevent+'-actiontype')) !== false)
+                    xivo_ast_chg_dialaction(dialevent,action);
 
-				// restore model attributes after clone
-				elt.id = 'onclosed-time-dialaction';
-				elt.innerHTML = '';
+                // restore model attributes after clone
+                elt.id = 'onclosed-time-dialaction';
+                elt.innerHTML = '';
 
-				xivo_schedule_init_schedule(name, true);
-			},
-      'method':		'post',
-      'cache':			false
-		},
+                xivo_schedule_init_schedule(name, true);
+            },
+      'method':        'post',
+      'cache':            false
+        },
     {},
-		true);
+        true);
 
 }
 
 function xivo_schedule_init_schedule(parentid, last)
 {
-	var td = $('#'+parentid + ' td.td-left');
-	if(last)
-		td = td.last();
-	td.each(function(idx, elt) {
-		var hides =  $(elt).find('input[type=hidden]');
+    var td = $('#'+parentid + ' td.td-left');
+    if(last)
+        td = td.last();
+    td.each(function(idx, elt) {
+        var hides =  $(elt).find('input[type=hidden]');
 
-		$(elt).find('input[type=text]').show().schedule({
-			'language': $('#'+parentid).attr('lang'),
-			'inputs': {
-				'months'   : $(hides[3]),
-				'monthdays': $(hides[2]),
-				'weekdays' : $(hides[1]),
-				'hours'    : $(hides[0])
-			}
-		});
-	});
+        $(elt).find('input[type=text]').show().schedule({
+            'language': $('#'+parentid).attr('lang'),
+            'inputs': {
+                'months'   : $(hides[3]),
+                'monthdays': $(hides[2]),
+                'weekdays' : $(hides[1]),
+                'hours'    : $(hides[0])
+            }
+        });
+    });
 }
 
 function xivo_schedule_hideall()
 {
-	$('.ui-datepicker').hide();
+    $('.ui-datepicker').hide();
 }
 
 function xivo_ast_schedule_onload()
 {
-	xivo_ast_build_dialaction_array('schedule_fallback');
-	xivo_ast_dialaction_onload();
+    xivo_ast_build_dialaction_array('schedule_fallback');
+    xivo_ast_dialaction_onload();
 
-	xivo_schedule_init_schedule('disp', false);  // opened schedules
-	xivo_schedule_init_schedule('disp2', false); // closed schedules
+    xivo_schedule_init_schedule('disp', false);  // opened schedules
+    xivo_schedule_init_schedule('disp2', false); // closed schedules
 }
 
 dwho.dom.set_onload(xivo_ast_schedule_onload);

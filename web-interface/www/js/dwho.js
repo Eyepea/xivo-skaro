@@ -18,245 +18,245 @@
 
 function dwho_trunc(str,nb,end,chr)
 {
-	var r = dwho_string(str);
-	nb = Number(nb);
-	end = dwho_string(end);
-	chr = chr === null || dwho_is_undef(chr) === true ? ' ' : dwho_string(chr);
+    var r = dwho_string(str);
+    nb = Number(nb);
+    end = dwho_string(end);
+    chr = chr === null || dwho_is_undef(chr) === true ? ' ' : dwho_string(chr);
 
-	if(nb < 1 || nb > r.length || (sub = dwho_substr(r,0,nb)) === '')
-		return(r);
+    if(nb < 1 || nb > r.length || (sub = dwho_substr(r,0,nb)) === '')
+        return(r);
 
-	r = sub;
+    r = sub;
 
-	if(chr !== '' && (spos = sub.lastIndexOf(chr)) > -1)
-		r = dwho_substr(r,0,spos);
+    if(chr !== '' && (spos = sub.lastIndexOf(chr)) > -1)
+        r = dwho_substr(r,0,spos);
 
-	if(end.length > 0)
-		r += end;
+    if(end.length > 0)
+        r += end;
 
-	return(r);
+    return(r);
 }
 
 function dwho_str_repeat(str,len)
 {
-	var r = '';
-	str = dwho_string(str);
-	len = Number(len);
+    var r = '';
+    str = dwho_string(str);
+    len = Number(len);
 
-	if(len < 1)
-		return(r);
+    if(len < 1)
+        return(r);
 
-	for(var i = 0;i < len;i++)
-		r += str;
+    for(var i = 0;i < len;i++)
+        r += str;
 
-	return(r);
+    return(r);
 }
 
 function dwho_htmlen(str,quote_style)
 {
-	var span = document.createElement('span');
-	span.appendChild(document.createTextNode(str));
+    var span = document.createElement('span');
+    span.appendChild(document.createTextNode(str));
 
-	return(dwho_htmlsc(span.innerHTML,quote_style));
+    return(dwho_htmlsc(span.innerHTML,quote_style));
 }
 
 function dwho_htmlsc(str,quote_style)
 {
-	str = dwho_string(str);
-	quote_style = dwho_string(quote_style);
+    str = dwho_string(str);
+    quote_style = dwho_string(quote_style);
 
-	str = str.replace(/</g,'&lt;');
-	str = str.replace(/>/g,'&gt;');
+    str = str.replace(/</g,'&lt;');
+    str = str.replace(/>/g,'&gt;');
 
-	switch(quote_style.toUpperCase())
-	{
-		default:
-			str = str.replace(/'/g,'&#039;');
-		case '2':
-		case 'ENT_COMPAT':
-			str = str.replace(/"/g,'&quot;');
-		case '0':
-		case 'ENT_NOQUOTES':
-	}
+    switch(quote_style.toUpperCase())
+    {
+        default:
+            str = str.replace(/'/g,'&#039;');
+        case '2':
+        case 'ENT_COMPAT':
+            str = str.replace(/"/g,'&quot;');
+        case '0':
+        case 'ENT_NOQUOTES':
+    }
 
-	return(str);
+    return(str);
 }
 
 function dwho_bool(bool)
 {
-	if(bool === null)
-		return(false);
+    if(bool === null)
+        return(false);
 
-	switch(typeof(bool))
-	{
-		case 'object':
-			return(true);
-		case 'undefined':
-			return(false);
-	}
+    switch(typeof(bool))
+    {
+        case 'object':
+            return(true);
+        case 'undefined':
+            return(false);
+    }
 
-	switch(bool.toString().toLowerCase())
-	{
-		case 'y':
-		case '1':
-		case 'on':
-		case 'yes':
-		case 'true':
-			return(true);
-		case 'n':
-		case '0':
-		case 'off':
-		case 'no':
-		case 'false':
-			return(false);
-	}
+    switch(bool.toString().toLowerCase())
+    {
+        case 'y':
+        case '1':
+        case 'on':
+        case 'yes':
+        case 'true':
+            return(true);
+        case 'n':
+        case '0':
+        case 'off':
+        case 'no':
+        case 'false':
+            return(false);
+    }
 
-	return(Boolean(bool));
+    return(Boolean(bool));
 }
 
 function dwho_string(str)
 {
-	var r = '';
+    var r = '';
 
-	if(dwho_is_undef(str) === true)
-		return(r);
+    if(dwho_is_undef(str) === true)
+        return(r);
 
-	switch(str)
-	{
-		case null:
-		case false:
-			return(r);
-		case true:
-			r = 1;
-			break;
-		default:
-			r = str;
-	}
+    switch(str)
+    {
+        case null:
+        case false:
+            return(r);
+        case true:
+            r = 1;
+            break;
+        default:
+            r = str;
+    }
 
-	return(String(str));
+    return(String(str));
 }
 
 function dwho_is_boolean(b)
 {
-	return((typeof(b) === 'boolean'));
+    return((typeof(b) === 'boolean'));
 }
 
 function dwho_is_string(s)
 {
-	return((typeof(s) === 'string'));
+    return((typeof(s) === 'string'));
 }
 
 function dwho_is_array(a)
 {
-	return((a instanceof Array));
+    return((a instanceof Array));
 }
 
 function dwho_is_function(f)
 {
-	return((typeof(f) === 'function'));
+    return((typeof(f) === 'function'));
 }
 
 function dwho_type_object(o)
 {
-	return((o !== null && typeof(o) === 'object'));
+    return((o !== null && typeof(o) === 'object'));
 }
 
 function dwho_is_object(o)
 {
-	return((dwho_type_object(o) === true && dwho_is_array(o) === false));
+    return((dwho_type_object(o) === true && dwho_is_array(o) === false));
 }
 
 function dwho_is_undef(v)
 {
-	return((typeof(v) === 'undefined'));
+    return((typeof(v) === 'undefined'));
 }
 
 function dwho_is_number(n)
 {
-	return((dwho_is_undef(Number(n))));
+    return((dwho_is_undef(Number(n))));
 }
 
 function dwho_is_int(i)
 {
-	var y = parseInt(i);
+    var y = parseInt(i);
 
-	if(isNaN(y) === true)
-		return(false);
+    if(isNaN(y) === true)
+        return(false);
 
-	return((i == y && i.toString() === y.toString()));
+    return((i == y && i.toString() === y.toString()));
 }
 
 function dwho_is_float(i)
 {
-	var y = parseFloat(i);
+    var y = parseFloat(i);
 
-	if(isNaN(y) === true || i != y)
-		return(false);
+    if(isNaN(y) === true || i != y)
+        return(false);
 
-	return((i.toString().replace(/\.00*$/,'') === y.toString()));
+    return((i.toString().replace(/\.00*$/,'') === y.toString()));
 }
 
 function dwho_is_uint(i)
 {
-	return(((dwho_is_int(i) === true && i >= 0)));
+    return(((dwho_is_int(i) === true && i >= 0)));
 }
 
 function dwho_is_ufloat(i)
 {
-	return(((dwho_is_float(i) === true && i >= 0)));
+    return(((dwho_is_float(i) === true && i >= 0)));
 }
 
 function dwho_is_scalar(val)
 {
-	switch(typeof(val))
-	{
-		case 'object':
-		case 'undefined':
-			return(false);
-	}
+    switch(typeof(val))
+    {
+        case 'object':
+        case 'undefined':
+            return(false);
+    }
 
-	return(true);
+    return(true);
 }
 
 function dwho_is_empty(val)
 {
-	if(dwho_is_undef(val) === true)
-		return(true);
-	else if(dwho_is_array(val) === true)
-		return((val.length === 0));
-	else if(dwho_is_object(val) === true)
-	{
-		for(var property in val)
-			return(false);
-		return(true);
-	}
+    if(dwho_is_undef(val) === true)
+        return(true);
+    else if(dwho_is_array(val) === true)
+        return((val.length === 0));
+    else if(dwho_is_object(val) === true)
+    {
+        for(var property in val)
+            return(false);
+        return(true);
+    }
 
-	switch(val)
-	{
-		case 0:
-		case '0':
-		case null:
-		case false:
-		case '':
-			return(true);
-	}
+    switch(val)
+    {
+        case 0:
+        case '0':
+        case null:
+        case false:
+        case '':
+            return(true);
+    }
 
-	return(false);
+    return(false);
 }
 
 function dwho_has_len(val,key)
 {
-	if(dwho_is_undef(key) === false
-	&& dwho_type_object(val) === true
-	&& dwho_is_undef(val[key]) === false)
-		val = val[key];
+    if(dwho_is_undef(key) === false
+    && dwho_type_object(val) === true
+    && dwho_is_undef(val[key]) === false)
+        val = val[key];
 
-	if(dwho_is_scalar(val) === false)
-		return(false);
+    if(dwho_is_scalar(val) === false)
+        return(false);
 
-	val = dwho_string(val);
+    val = dwho_string(val);
 
-	return((val.length > 0));
+    return((val.length > 0));
 }
 
 function dwho_in_array(needle,haystack,argStrict) 
@@ -267,13 +267,13 @@ function dwho_in_array(needle,haystack,argStrict)
     {
         for (key in haystack) {
             if (haystack[key] === needle)            
-            	return(true);
+                return(true);
         }
     } 
     else 
     {
         for (key in haystack) {            
-        	if (haystack[key] == needle)
+            if (haystack[key] == needle)
                 return(true);
         }
     } 
@@ -282,268 +282,268 @@ function dwho_in_array(needle,haystack,argStrict)
 
 function dwho_chk_ipv4_strict(value)
 {
-	if(dwho_is_string(value) === false
-	|| value !== dwho_long2ip(dwho_ip2long(value)))
-		return(false);
+    if(dwho_is_string(value) === false
+    || value !== dwho_long2ip(dwho_ip2long(value)))
+        return(false);
 
-	return(value);
+    return(value);
 }
 
 function dwho_long2ip(value)
 {
-	if(dwho_is_int(value) === false || value > 0xFFFFFFFF)
-		value = 0xFFFFFFFF;
+    if(dwho_is_int(value) === false || value > 0xFFFFFFFF)
+        value = 0xFFFFFFFF;
 
-	var r	= ((value >> 24) & 0xFF) + '.'
-		+ ((value >> 16) & 0xFF) + '.'
-		+ ((value >> 8) & 0xFF) + '.'
-		+ ((value & 0xFF));
+    var r    = ((value >> 24) & 0xFF) + '.'
+        + ((value >> 16) & 0xFF) + '.'
+        + ((value >> 8) & 0xFF) + '.'
+        + ((value & 0xFF));
 
-	return(r);
+    return(r);
 }
 
 function dwho_ip2long(value)
 {
-	if(dwho_is_scalar(value) === false)
-		return(false);
+    if(dwho_is_scalar(value) === false)
+        return(false);
 
-	var split = dwho_string(value).split('.');
+    var split = dwho_string(value).split('.');
 
-	if((len = split.length) > 4)
-		return(false);
+    if((len = split.length) > 4)
+        return(false);
 
-	var rs = 0;
+    var rs = 0;
 
-	for(var i = 0;i < len;i++)
-	{
-		if(split[i].match(/^(?:[1-9][0-9]*|0[0-7]*|0x[0-9A-F]*)$/i) === null)
-			return(false);
+    for(var i = 0;i < len;i++)
+    {
+        if(split[i].match(/^(?:[1-9][0-9]*|0[0-7]*|0x[0-9A-F]*)$/i) === null)
+            return(false);
 
-		var lsn = parseInt(split[i]);
+        var lsn = parseInt(split[i]);
 
-		if(len === 1)
-		{
-			if (lsn <= 0xFFFFFFFF)
-				return(lsn | 0);
-			else
-				return(false);
-		}
-		else if(i < len-1)
-			mul = 1 << 8;
-		else
-			mul = 1 << (8 * (4-i));
+        if(len === 1)
+        {
+            if (lsn <= 0xFFFFFFFF)
+                return(lsn | 0);
+            else
+                return(false);
+        }
+        else if(i < len-1)
+            mul = 1 << 8;
+        else
+            mul = 1 << (8 * (4-i));
 
-		if (lsn >= mul)
-			return(false);
+        if (lsn >= mul)
+            return(false);
 
-		rs = rs * mul + lsn;
-	}
+        rs = rs * mul + lsn;
+    }
 
-	return(rs | 0);
+    return(rs | 0);
 }
 
 function dwho_chk_host(value)
 {
-	if(dwho_is_string(value) === false
-	|| value.length < 4
-	|| value.length > 255)
-		return(false);
+    if(dwho_is_string(value) === false
+    || value.length < 4
+    || value.length > 255)
+        return(false);
 
-	if(value.match(/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/i) === null)
-		return(false);
+    if(value.match(/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/i) === null)
+        return(false);
 
-	return(value);
+    return(value);
 }
 
 function dwho_chk_ipv4_subnet(value)
 {
-	if(dwho_is_string(value) === false
-	|| (pos = value.indexOf('/')) < 7)
-		return(false);
+    if(dwho_is_string(value) === false
+    || (pos = value.indexOf('/')) < 7)
+        return(false);
 
-	var mask = dwho_substr(value,pos+1);
-	var ip = dwho_substr(value,0,pos);
+    var mask = dwho_substr(value,pos+1);
+    var ip = dwho_substr(value,0,pos);
 
-	if(dwho_chk_ipv4_netmask(mask) === false
-	|| dwho_chk_ipv4_strict(ip) === false)
-		return(false);
+    if(dwho_chk_ipv4_netmask(mask) === false
+    || dwho_chk_ipv4_strict(ip) === false)
+        return(false);
 
-	return(true);
+    return(true);
 }
 
 function dwho_chk_ipv4_netmask(nm)
 {
-	if(dwho_chk_ipv4_netmask_bit(nm) === false
-	&& dwho_chk_ipv4_netmask_dotdec(nm) === false)
-		return(false);
+    if(dwho_chk_ipv4_netmask_bit(nm) === false
+    && dwho_chk_ipv4_netmask_dotdec(nm) === false)
+        return(false);
 
-	return(true);
+    return(true);
 }
 
 function dwho_chk_ipv4_netmask_bit(bit)
 {
-	if(dwho_is_uint(bit) === false
-	|| bit > 32)
-		return(false);
+    if(dwho_is_uint(bit) === false
+    || bit > 32)
+        return(false);
 
-	return(true);
+    return(true);
 }
 
 function dwho_chk_ipv4_netmask_dotdec(nm)
 {
-	if((nm = dwho_ip2long(nm)) === 0)
-		return(0);
-	else if(nm === -1)
-		return(32);
-	else if(nm === false
-	|| (inv = (nm ^ 0xFFFFFFFF)) === 0
-	|| (inv & (inv + 1)) !== 0)
-		return(false);
+    if((nm = dwho_ip2long(nm)) === 0)
+        return(0);
+    else if(nm === -1)
+        return(32);
+    else if(nm === false
+    || (inv = (nm ^ 0xFFFFFFFF)) === 0
+    || (inv & (inv + 1)) !== 0)
+        return(false);
 
-	return((32 - parseInt(Math.log(inv + 1,2))));
+    return((32 - parseInt(Math.log(inv + 1,2))));
 }
 
 function dwho_strcmp(str1,str2,len)
 {
-	if(dwho_is_scalar(str1) === false
-	|| dwho_is_scalar(str2) === false)
-		return(false);
+    if(dwho_is_scalar(str1) === false
+    || dwho_is_scalar(str2) === false)
+        return(false);
 
-	str1 = dwho_string(str1);
-	str2 = dwho_string(str2);
+    str1 = dwho_string(str1);
+    str2 = dwho_string(str2);
 
-	if(dwho_is_uint(len) === true)
-	{
-		str1 = str1.substring(0,len);
-		str2 = str2.substring(0,len);
-	}
+    if(dwho_is_uint(len) === true)
+    {
+        str1 = str1.substring(0,len);
+        str2 = str2.substring(0,len);
+    }
 
-	if(str1 > str2)
-		return(1);
-	else if(str1 === str2)
-		return(0);
+    if(str1 > str2)
+        return(1);
+    else if(str1 === str2)
+        return(0);
 
-	return(-1);
+    return(-1);
 }
 
 function dwho_strcasecmp(str1,str2,len)
 {
-	if(dwho_is_scalar(str1) === false
-	|| dwho_is_scalar(str2) === false)
-		return(false);
+    if(dwho_is_scalar(str1) === false
+    || dwho_is_scalar(str2) === false)
+        return(false);
 
-	str1 = dwho_string(str1).toLowerCase();
-	str2 = dwho_string(str2).toLowerCase();
+    str1 = dwho_string(str1).toLowerCase();
+    str2 = dwho_string(str2).toLowerCase();
 
-	if(dwho_is_uint(len) === true)
-	{
-		str1 = str1.substring(0,len);
-		str2 = str2.substring(0,len);
-	}
+    if(dwho_is_uint(len) === true)
+    {
+        str1 = str1.substring(0,len);
+        str2 = str2.substring(0,len);
+    }
 
-	if(str1 > str2)
-		return(1);
-	else if(str1 === str2)
-		return(0);
+    if(str1 > str2)
+        return(1);
+    else if(str1 === str2)
+        return(0);
 
-	return(-1);
+    return(-1);
 }
 
 function dwho_substr(str,beg,end)
 {
-	var r = '';
+    var r = '';
 
-	if(dwho_is_scalar(str) === false)
-		return(r);
+    if(dwho_is_scalar(str) === false)
+        return(r);
 
-	var len = str.length;
+    var len = str.length;
 
-	if(len === 0 || isNaN(beg) === true)
-		return(r);
+    if(len === 0 || isNaN(beg) === true)
+        return(r);
 
-	if(isNaN(end) === true)
-		end = len;
+    if(isNaN(end) === true)
+        end = len;
 
-	beg = Number(beg);
-	end = Number(end);
+    beg = Number(beg);
+    end = Number(end);
 
-	if(beg < 0 || end < 0)
-	{
-		if(beg < 0)
-			beg = len + beg;
+    if(beg < 0 || end < 0)
+    {
+        if(beg < 0)
+            beg = len + beg;
 
-		if(end < 0)
-		{
-			end = len + end;
+        if(end < 0)
+        {
+            end = len + end;
 
-			if(beg !== 0 && str.substr(beg,len).length > end)
-				return(r);
-		}
+            if(beg !== 0 && str.substr(beg,len).length > end)
+                return(r);
+        }
 
-		return(str.substring(beg,end));
-	}
+        return(str.substring(beg,end));
+    }
 
-	return(str.substr(beg,end));
+    return(str.substr(beg,end));
 }
 
 function dwho_object_flip(obj)
 {
-	var r = {};
+    var r = {};
 
-	for(var property in obj)
-	{
-		if(dwho_is_scalar(obj[property]) === true)
-			r[obj[property]] = property;
-	}
+    for(var property in obj)
+    {
+        if(dwho_is_scalar(obj[property]) === true)
+            r[obj[property]] = property;
+    }
 
-	return(r);
+    return(r);
 }
 
 function dwho_clone(obj)
 {
-	if(dwho_is_array(obj) === true)
-		var r = [];
-	else if(dwho_is_object(obj) === true)
-		var r = {};
-	else
-		return(obj);
+    if(dwho_is_array(obj) === true)
+        var r = [];
+    else if(dwho_is_object(obj) === true)
+        var r = {};
+    else
+        return(obj);
 
-	for(var property in obj)
-		r[property] = dwho_clone(obj[property]);
+    for(var property in obj)
+        r[property] = dwho_clone(obj[property]);
 
-	return(r);
+    return(r);
 }
 
 function dwho_debug(obj)
 {
-	if(typeof(obj) !== 'object')
-		return(false);
+    if(typeof(obj) !== 'object')
+        return(false);
 
-	var r = '';
+    var r = '';
 
-	for(var property in obj)
-	{
-		if(property === 'selectionStart' || property === 'selectionEnd')
-			continue;
+    for(var property in obj)
+    {
+        if(property === 'selectionStart' || property === 'selectionEnd')
+            continue;
 
-		if(typeof(obj[property]) !== 'object')
-		{
-			if(typeof(obj[property]) !== 'function')
-				r += property+':'+obj[property]+'\n';
-			else
-				r += 'function::'+property+'\n';
-		}
-		else
-			r += dwho_debug(obj[property]);
-	}
+        if(typeof(obj[property]) !== 'object')
+        {
+            if(typeof(obj[property]) !== 'function')
+                r += property+':'+obj[property]+'\n';
+            else
+                r += 'function::'+property+'\n';
+        }
+        else
+            r += dwho_debug(obj[property]);
+    }
 
-	return(r);
+    return(r);
 }
 
 function dwho_leadzero(n)
 {
-	if (n < 10)
-		n = '0' + n;
+    if (n < 10)
+        n = '0' + n;
 
-	return(n);
+    return(n);
 }
