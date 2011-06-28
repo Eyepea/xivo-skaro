@@ -38,8 +38,13 @@ function xivo_http_search_line_from_provd(obj,config,exept)
 		obj.hide();
 		return;
 	}
-	$.getJSON('/xivo/configuration/ui.php/provisioning/config?act=getbydeviceid&id='+config, function(data) {
-		map_autocomplete_line_free_to(obj,data,exept);
+	$.ajax({
+		url: '/xivo/configuration/ui.php/provisioning/config?act=getbydeviceid&id='+config,
+		async: false,
+		dataType: 'json',
+		success: function(data) {
+			map_autocomplete_line_free_to(obj,data,exept);
+		}
 	});
 }
 
@@ -59,57 +64,72 @@ function map_autocomplete_extension_to(obj,context)
 function xivo_http_search_numpool(context,helper)
 {
 	var rs = '';
-	$.getJSON('/service/ipbx/ui.php/pbx_settings/extension/search/?context='+context+'&obj=user&getnumpool=1', function(data) {
-		if (data === null || (nb = data.length) === 0)
-			return false;
-	    for (var i = 0; i< nb; i++)
-	    	rs += data[i]['numberbeg']+' - '+data[i]['numberend']+'<br>';
-	    $(helper).html(rs);
+	$.ajax({
+		url: '/service/ipbx/ui.php/pbx_settings/extension/search/?context='+context+'&obj=user&getnumpool=1',
+		async: false,
+		dataType: 'json',
+		success: function(data) {
+			if (data === null || (nb = data.length) === 0)
+				return false;
+		    for (var i = 0; i< nb; i++)
+		    	rs += data[i]['numberbeg']+' - '+data[i]['numberend']+'<br>';
+		    $(helper).html(rs);
+		}
 	});
 }
 
 //get list context available for a entity
 function xivo_http_search_context_from_entity(entityid)
 {
-	$.getJSON('/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=internal', function(data) {
-		if (data === null || (nb = data.length) === 0) {
-			$('#box-lines_free').hide('slow');
-			$('#list_linefeatures').hide();
-			$('#box-no_context').show();
-			return false;
+	$.ajax({
+		url: '/xivo/configuration/ui.php/manage/entity?act=get&id='+entityid+'&contexttype=internal',
+		async: false,
+		dataType: 'json',
+		success: function(data) {
+			if (data === null || (nb = data.length) === 0) {
+				$('#box-lines_free').hide('slow');
+				$('#list_linefeatures').hide();
+				$('#box-no_context').show();
+				return false;
+			}
+			$('#box-no_context').hide();
+			//$('#box-lines_free').show();
+			$('#list_linefeatures').show();
+			$('#list_linefeatures').find("#linefeatures-context").each(function(){
+				$(this).find('option').remove();
+			    for (var i = 0; i< nb; i++)
+			    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
+		    });
+			$('#ex-linefeatures').find("#linefeatures-context").each(function(){
+				$(this).find('option').remove();
+			    for (var i = 0; i< nb; i++)
+			    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
+		    });
+			update_row_infos();
+			xivo_http_search_linefree_by_entity(entityid);
 		}
-		$('#box-no_context').hide();
-		//$('#box-lines_free').show();
-		$('#list_linefeatures').show();
-		$('#list_linefeatures').find("#linefeatures-context").each(function(){
-			$(this).find('option').remove();
-		    for (var i = 0; i< nb; i++)
-		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
-	    });
-		$('#ex-linefeatures').find("#linefeatures-context").each(function(){
-			$(this).find('option').remove();
-		    for (var i = 0; i< nb; i++)
-		    	$(this).append("<option value=" + data[i]['name'] + ">" + data[i]['displayname'] + "</option>");
-	    });
-		update_row_infos();
-		xivo_http_search_linefree_by_entity(entityid);
 	});		
 }
 
 //get list line free available for a entity
 function xivo_http_search_linefree_by_entity(entityid)
 {
-	$.getJSON('/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=internal&free=1', function(data) {
-		if (data === null || data.length === 0){
-			$('#box-lines_free').hide('slow');
-			return false;
+	$.ajax({
+		url: '/service/ipbx/ui.php/pbx_settings/lines/?act=contexts&entityid='+entityid+'&contexttype=internal&free=1',
+		async: false,
+		dataType: 'json',
+		success: function(data) {
+			if (data === null || data.length === 0){
+				$('#box-lines_free').hide('slow');
+				return false;
+			}
+			$('#box-lines_free').show();
+		    $("#list_lines_free").each(function(){
+				$(this).find('option').remove();
+			    for (var i = 0; i< data.length; i++)
+			    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
+		    });
 		}
-		$('#box-lines_free').show();
-	    $("#list_lines_free").each(function(){
-			$(this).find('option').remove();
-		    for (var i = 0; i< data.length; i++)
-		    	$(this).append("<option value=" + data[i]['id'] + ">" + data[i]['identity'] + "</option>");
-	    });
 	});
 }
 

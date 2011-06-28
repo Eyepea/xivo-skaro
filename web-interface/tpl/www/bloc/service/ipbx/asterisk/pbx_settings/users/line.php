@@ -210,7 +210,8 @@ if($list !== false):
 					     'label'	=> false,
 					     'size'		=> 5,
 					     'value'	=> $ref['number'],
-					     'default'	=> $element['linefeatures']['number']['default']));?>
+					     'default'	=> $element['linefeatures']['number']['default']),
+			            'autocomplete="off"');?>
 			<div class="dialog-helper" id="numberpool_helper"></div>
 		</td>
 		<td>
@@ -353,7 +354,8 @@ endif;
 					     'id'		=> 'linefeatures-number',
 					     'label'	=> false,
 					     'size'		=> 5,
-					     'default'	=> $element['linefeatures']['number']['default']));?>
+					     'default'	=> $element['linefeatures']['number']['default']),
+			            'autocomplete="off"');?>
 			<div class="dialog-helper" id="numberpool_helper"></div>
 		</td>
 		<td id="td_ex-linefeatures-configregistrar">
