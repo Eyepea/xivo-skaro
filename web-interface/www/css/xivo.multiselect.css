@@ -7,32 +7,32 @@
 .ui-multiselect li a {font-size: 10px;}
 
 .multiselect {
-	width: 500px;
-	height: 151px;
-	margin-bottom: 5px;
+    width: 500px;
+    height: 151px;
+    margin-bottom: 5px;
 }
 
 .ui-multiselect {
-	margin: auto;
-	padding: 0px;
-	text-align: left;
-	border: 1px solid #7F99B1;
+    margin: auto;
+    padding: 0px;
+    text-align: left;
+    border: 1px solid #7F99B1;
 }
 
 .ui-multiselect .selected {
-	margin: -10px;
-	top: 0px;
-	border: 2px solid red;
+    margin: -10px;
+    top: 0px;
+    border: 2px solid red;
 }
 
 .ui-multiselect .ui-widget-header {
-	border-bottom: 1px solid #7F99B1;
-	background: #BEDDFB;
-	color: black;
-	font-size: 10px;
+    border-bottom: 1px solid #7F99B1;
+    background: #BEDDFB;
+    color: black;
+    font-size: 10px;
 }
 
 .ui-multiselect .ui-widget-header a {
-	color: grey;
-	font-size: 10px;
+    color: grey;
+    font-size: 10px;
 }

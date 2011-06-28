@@ -397,8 +397,8 @@ input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
 .xivo-debug {border-color: black;background: #ccc;}
 .xivo-warning, .xivo-error, .xivo-info, .xivo-notice, .xivo-debug {padding: 3px;margin: 4px;line-height: 1em;}
 
-.logo_proto	{height: 28px;outline: none;padding: 0 .85em;margin: auto;display: inline;float: left;}
-.logo_proto	a {display: block;text-decoration: none;direction: ltr;text-shadow: #eee 0 -1px 0;font: bold 12px/28px Arial, Helvetica, sans-serif;letter-spacing: 1px;}
+.logo_proto    {height: 28px;outline: none;padding: 0 .85em;margin: auto;display: inline;float: left;}
+.logo_proto    a {display: block;text-decoration: none;direction: ltr;text-shadow: #eee 0 -1px 0;font: bold 12px/28px Arial, Helvetica, sans-serif;letter-spacing: 1px;}
 
 .box_userfeatures_picture {width: 150px;height: 150px;position: absolute;background: #ddd;border: 1px solid #bbb;text-align: center;padding: 2px;margin: 10px;}
  

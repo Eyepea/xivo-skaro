@@ -60,80 +60,80 @@
 #s-asterisk #sr-voicemenu #voicemenu-event table td a:hover {text-decoration: none;color: #ff9d03;}
 
 .title {
-	margin-right: 5px;
+    margin-right: 5px;
 }
 
 .underline {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .dialog {
-	position: fixed;
-	/* centrage */
-	left: 50%;
-	margin-left: -100px;
-	top: 20%;
+    position: fixed;
+    /* centrage */
+    left: 50%;
+    margin-left: -100px;
+    top: 20%;
 
-	margin: 5px:
-	text-align: left;
+    margin: 5px:
+    text-align: left;
 
-	visibility: hidden;
+    visibility: hidden;
 }
 
 .dialog .sb-bottom {
-	padding: 0px;
-	margin: 0px;
+    padding: 0px;
+    margin: 0px;
 }
 
 .dialog .l-infos-2on2 {
-	background-color: #fee6c1;
+    background-color: #fee6c1;
 }
 
 .dialog .content {
-	padding-top: 5px;
-	padding-bottom: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .dialog .sb-top span {
-	height: 18px;
-	padding: 2px;
+    height: 18px;
+    padding: 2px;
 }
 
 .dialog .sb-bottom span {
-	height: 10px;
-	padding: 2px;
+    height: 10px;
+    padding: 2px;
 }
 
 .dialog .sb-top th {
-	background-image:	url(/img/content/t-bg.gif);
-	background-repeat: repeat-x;
+    background-image:    url(/img/content/t-bg.gif);
+    background-repeat: repeat-x;
 }
 
 .dialog .sb-top .th-left {
-	background-image:	url(/img/content/t-left-trans.gif);
+    background-image:    url(/img/content/t-left-trans.gif);
 }
 
 .dialog .sb-top .th-right {
-	background-image:	url(/img/content/t-right-trans.gif);
+    background-image:    url(/img/content/t-right-trans.gif);
 }
 
 .dialog .sb-bottom th {
-	background-image:	url(/img/content/f-bg.gif);
-	background-repeat: repeat-x;
+    background-image:    url(/img/content/f-bg.gif);
+    background-repeat: repeat-x;
 }
 
 .dialog .sb-bottom .th-left {
-	background-image:	url(/img/content/f-left-trans.gif);
+    background-image:    url(/img/content/f-left-trans.gif);
 }
 
 .dialog .sb-bottom .th-right {
-	background-image:	url(/img/content/f-right-trans.gif);
+    background-image:    url(/img/content/f-right-trans.gif);
 }
 
 .dialog .content-left {
-	border-left: 1px solid #adadad;
+    border-left: 1px solid #adadad;
 }
 
 .dialog .content-right {
-	border-right: 1px solid #adadad;
+    border-right: 1px solid #adadad;
 }
