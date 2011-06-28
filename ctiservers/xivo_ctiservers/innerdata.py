@@ -96,7 +96,7 @@ class Safe:
         'groups': ['context', 'name', 'number'],
         'trunks': ['context', 'protocol', 'name', 'host', 'type'],
         'voicemails' : ['context', 'fullname', 'mailbox', 'email'], # password
-        'meetmes' : ['context', 'number', 'name', 'admin_moderationmode',
+        'meetmes' : ['context', 'confno', 'name', 'admin_moderationmode',
                      'pin_needed'], # 'pin', 'pinadmin' should not be transmitted
         'incalls' : ['context', 'exten', 'destidentity', 'action'],
         'outcalls' : [],
