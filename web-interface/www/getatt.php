@@ -33,39 +33,39 @@ $id = isset($_QR['id']) === false ? null : (int) $_QR['id'];
 
 switch ($obj)
 {
-	case null:
-		if(($rs = $modattachment->get($id)) === false)
-		{
-			$http_response->set_status_line(400);
-			$http_response->send(true);
-		}
-		break;
-	default:
-		$arr = array();
-		$arr['object_type'] = $obj;
-		$arr['object_id'] = $id;
-		if(($rs = $modattachment->get_where($arr)) === false)
-		{
-			$http_response->set_status_line(400);
-			$http_response->send(true);
-		}
+    case null:
+        if(($rs = $modattachment->get($id)) === false)
+        {
+            $http_response->set_status_line(400);
+            $http_response->send(true);
+        }
+        break;
+    default:
+        $arr = array();
+        $arr['object_type'] = $obj;
+        $arr['object_id'] = $id;
+        if(($rs = $modattachment->get_where($arr)) === false)
+        {
+            $http_response->set_status_line(400);
+            $http_response->send(true);
+        }
 }
 
 switch ($act)
 {
-	case 'download':
-		header("Pragma: public"); // required 
-		header("Expires: 0"); 
-		header("Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
-		header("Cache-Control: private",false); // required for certain browsers 
-		header("Content-Type: ".$rs['mime']); 
-		header("Content-Disposition: attachment; filename=\"".$rs['name']."\";" ); 
-		header("Content-Transfer-Encoding: binary"); 
-		header("Content-Length: ".$rs['size']);
-		break;
-	case null:
-	default: 
-		header("Content-Type: ".$rs['mime']); 
+    case 'download':
+        header("Pragma: public"); // required 
+        header("Expires: 0"); 
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
+        header("Cache-Control: private",false); // required for certain browsers 
+        header("Content-Type: ".$rs['mime']); 
+        header("Content-Disposition: attachment; filename=\"".$rs['name']."\";" ); 
+        header("Content-Transfer-Encoding: binary"); 
+        header("Content-Length: ".$rs['size']);
+        break;
+    case null:
+    default: 
+        header("Content-Type: ".$rs['mime']); 
 }
 
 ob_clean(); 

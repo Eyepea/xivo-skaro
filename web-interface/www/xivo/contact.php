@@ -21,7 +21,7 @@
 require_once('xivo.php');
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+    $_QRY->go($_TPL->url('xivo/logoff'));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

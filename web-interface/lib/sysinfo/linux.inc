@@ -20,90 +20,90 @@
 
 class dwho_sysinfo_linux
 {
-	function net()
-	{
-		if(dwho::load_class('dwho::sysinfo::linux::net') === false)
-			trigger_error('Failed to load SysInfo Net class for Linux',E_USER_ERROR);
+    function net()
+    {
+        if(dwho::load_class('dwho::sysinfo::linux::net') === false)
+            trigger_error('Failed to load SysInfo Net class for Linux',E_USER_ERROR);
 
-		$name = 'dwho_sysinfo_linux_net';
+        $name = 'dwho_sysinfo_linux_net';
 
-		return(new $name());
-	}
+        return(new $name());
+    }
 
-	function cpustats()
-	{
-		$path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','cpuinfo');
+    function cpustats()
+    {
+        $path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','cpuinfo');
 
-		if(dwho_file::is_f_r($path) === false
-		|| ($content = file($path)) === false
-		|| ($nb = count($content)) === 0)
-			return(false);
+        if(dwho_file::is_f_r($path) === false
+        || ($content = file($path)) === false
+        || ($nb = count($content)) === 0)
+            return(false);
 
-		$r = array();
+        $r = array();
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(preg_match('/^([^:]+):\s+(.+)$/',$content[$i],$match) === 1)
-				$r[str_replace(' ','_',trim(strtolower($match[1])))] = trim($match[2]);
-		}
+        for($i = 0;$i < $nb;$i++)
+        {
+            if(preg_match('/^([^:]+):\s+(.+)$/',$content[$i],$match) === 1)
+                $r[str_replace(' ','_',trim(strtolower($match[1])))] = trim($match[2]);
+        }
 
-		if(empty($r) === true)
-			return(null);
+        if(empty($r) === true)
+            return(null);
 
-		return($r);
-	}
+        return($r);
+    }
 
-	function memstats($byte=false)
-	{
-		$path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','meminfo');
+    function memstats($byte=false)
+    {
+        $path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','meminfo');
 
-		if(dwho_file::is_f_r($path) === false
-		|| ($content = file($path)) === false
-		|| ($nb = count($content)) === 0)
-			return(false);
+        if(dwho_file::is_f_r($path) === false
+        || ($content = file($path)) === false
+        || ($nb = count($content)) === 0)
+            return(false);
 
-		$byte = (bool) $byte;
+        $byte = (bool) $byte;
 
-		$r = array();
+        $r = array();
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(preg_match('/^([^:]+):\s+(\d+)\s*((?i:[KMGTPEZY])B)?$/',$content[$i],$match) !== 1)
-				continue;
+        for($i = 0;$i < $nb;$i++)
+        {
+            if(preg_match('/^([^:]+):\s+(\d+)\s*((?i:[KMGTPEZY])B)?$/',$content[$i],$match) !== 1)
+                continue;
 
-			$key = trim(strtolower($match[1]));
-			$value = trim($match[2]);
+            $key = trim(strtolower($match[1]));
+            $value = trim($match[2]);
 
-			if($byte === true && isset($match[3]) === true)
-				$r[$key] = dwho_size_si_to_byte($match[3],$value);
-			else
-				$r[$key] = $value;
-		}
+            if($byte === true && isset($match[3]) === true)
+                $r[$key] = dwho_size_si_to_byte($match[3],$value);
+            else
+                $r[$key] = $value;
+        }
 
-		if(empty($r) === true)
-			return(null);
+        if(empty($r) === true)
+            return(null);
 
-		if(isset($r['memtotal'],$r['memfree']) === true)
-			$r['memused'] = $r['memtotal'] - $r['memfree'];
+        if(isset($r['memtotal'],$r['memfree']) === true)
+            $r['memused'] = $r['memtotal'] - $r['memfree'];
 
-		if(isset($r['swaptotal'],$r['swapfree']) === true)
-			$r['swapused'] = $r['swaptotal'] - $r['swapfree'];
+        if(isset($r['swaptotal'],$r['swapfree']) === true)
+            $r['swapused'] = $r['swaptotal'] - $r['swapfree'];
 
-		return($r);
-	}
+        return($r);
+    }
 
-	function uptime()
-	{
-		$path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','uptime');
+    function uptime()
+    {
+        $path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','uptime');
 
-		if(dwho_file::is_f_r($path) === false
-		|| ($content = file($path)) === false
-		|| isset($content[0]) === false
-		|| ($exp = explode('.',$content[0],2)) === false)
-			return(false);
+        if(dwho_file::is_f_r($path) === false
+        || ($content = file($path)) === false
+        || isset($content[0]) === false
+        || ($exp = explode('.',$content[0],2)) === false)
+            return(false);
 
-		return($exp[0]);
-	}
+        return($exp[0]);
+    }
 }
 
 ?>

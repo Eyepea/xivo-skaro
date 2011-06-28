@@ -23,12 +23,12 @@ require_once('xivo.php');
 $go = array_key_exists('go', $_GET)?$_GET['go']:null;
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
-	
+    $_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
+    
 $location = str_replace('/index.php','',$_LOC->get_current_location());
 
 if(xivo_user::chk_acl('','','service'.$location) === false)
-	$_QRY->go($_TPL->url('xivo'));
+    $_QRY->go($_TPL->url('xivo'));
 
 $ipbx = &$_SRE->get('ipbx');
 
@@ -42,7 +42,7 @@ $dhtml->add_js('/struct/js/date.js.php');
 $action_path = $_LOC->get_action_path('statistics/cdr',4);
 
 if($action_path === false)
-	$_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
+    $_QRY->go($_TPL->url('xivo/logoff'), is_null($go)?null:array('go' => $go));
 
 die(include($action_path));
 

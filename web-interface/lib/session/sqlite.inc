@@ -22,10 +22,10 @@ dwho_file::required(array(DWHO_PATH_ROOT,'session','abstract','sql.inc'),true);
 
 class dwho_session_sqlite extends dwho_session_abstract_sql
 {
-	function dwho_session_sqlite(&$dso,$param=array())
-	{
-		$this->_init(&$dso,$param);
-	}
+    function dwho_session_sqlite(&$dso,$param=array())
+    {
+        $this->_init(&$dso,$param);
+    }
 }
 
 ?>

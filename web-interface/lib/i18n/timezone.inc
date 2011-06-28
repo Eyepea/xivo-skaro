@@ -20,67 +20,67 @@
 
 class dwho_i18n_timezone
 {
-	var $_attrib	= array();
-	var $_conf	= array();
+    var $_attrib    = array();
+    var $_conf    = array();
 
-	function dwho_i18n_timezone()
-	{
-		$file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','timezones','timezones');
+    function dwho_i18n_timezone()
+    {
+        $file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','timezones','timezones');
 
-		if(($this->_conf = dwho_gat::get_file($file)) === false)
-			trigger_error('Failed to load timezones listing',E_USER_ERROR);
-	}
+        if(($this->_conf = dwho_gat::get_file($file)) === false)
+            trigger_error('Failed to load timezones listing',E_USER_ERROR);
+    }
 
-	function set_attrib($name,$value)
-	{
-		$name = (string) $name;
+    function set_attrib($name,$value)
+    {
+        $name = (string) $name;
 
-		$this->_attrib[$name] = $value;
-	}
+        $this->_attrib[$name] = $value;
+    }
 
-	function get_attrib($name)
-	{
-		$name = (string) $name;
+    function get_attrib($name)
+    {
+        $name = (string) $name;
 
-		if(isset($this->_attrib[$name]) === true)
-			return($this->_attrib[$name]);
-		else
-			return(null);
-	}
+        if(isset($this->_attrib[$name]) === true)
+            return($this->_attrib[$name]);
+        else
+            return(null);
+    }
 
-	function is_valid($tz)
-	{
-		$tz = (string) $tz;
+    function is_valid($tz)
+    {
+        $tz = (string) $tz;
 
-		if(dwho_issa($tz,$this->_conf) === false)
-			return(false);
+        if(dwho_issa($tz,$this->_conf) === false)
+            return(false);
 
-		return($tz);
-	}
+        return($tz);
+    }
 
-	function get_info($tz)
-	{
-		if(($tz = $this->is_valid($tz)) === false)
-			return(false);
+    function get_info($tz)
+    {
+        if(($tz = $this->is_valid($tz)) === false)
+            return(false);
 
-		$r = $this->_conf[$tz];
-		$r['tz'] = $tz;
+        $r = $this->_conf[$tz];
+        $r['tz'] = $tz;
 
-		return($r);
-	}
+        return($r);
+    }
 
-	function get_territory($tz)
-	{
-		if($this->is_valid($tz) === false)
-			return(false);
+    function get_territory($tz)
+    {
+        if($this->is_valid($tz) === false)
+            return(false);
 
-		return($this->_conf[$tz]['territo']);
-	}
+        return($this->_conf[$tz]['territo']);
+    }
 
-	function get_list()
-	{
-		return($this->_conf);
-	}
+    function get_list()
+    {
+        return($this->_conf);
+    }
 }
 
 ?>

@@ -22,10 +22,10 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'http','1.0','abstract.inc'));
 
 class dwho_http_1_0_request extends dwho_http_1_0_abstract
 {
-	function dwho_http_1_0_request()
-	{
-		$this->dwho_http_1_0_abstract();
-	}
+    function dwho_http_1_0_request()
+    {
+        $this->dwho_http_1_0_abstract();
+    }
 }
 
 ?>

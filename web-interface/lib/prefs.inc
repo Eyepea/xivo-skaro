@@ -20,58 +20,58 @@
 
 class dwho_prefs
 {
-	var $_section = null;
-	var $_QR      = null;
+    var $_section = null;
+    var $_QR      = null;
 
-	function dwho_prefs($section)
-	{
-		if(!array_key_exists('_WEBI', $_SESSION))
-			$_SESSION['_WEBI'] = array();
-		if(!array_key_exists($section, $_SESSION['_WEBI']))
-			$_SESSION['_WEBI'][$section] = array();
+    function dwho_prefs($section)
+    {
+        if(!array_key_exists('_WEBI', $_SESSION))
+            $_SESSION['_WEBI'] = array();
+        if(!array_key_exists($section, $_SESSION['_WEBI']))
+            $_SESSION['_WEBI'][$section] = array();
 
-		$this->_section = &$_SESSION['_WEBI'][$section];
-		$this->_QR      = &dwho_gat::get('_QR');
-	}
+        $this->_section = &$_SESSION['_WEBI'][$section];
+        $this->_QR      = &dwho_gat::get('_QR');
+    }
 
-	function get($name, $default)
-	{
-		if(isset($this->_QR[$name]))
-			$this->_section[$name] = $this->_QR[$name];
+    function get($name, $default)
+    {
+        if(isset($this->_QR[$name]))
+            $this->_section[$name] = $this->_QR[$name];
 
-		if(isset($this->_section[$name]))
-			return $this->_section[$name];
+        if(isset($this->_section[$name]))
+            return $this->_section[$name];
 
-		return $default;
-	}
+        return $default;
+    }
 
-	function set($name, $value)
-	{
-		$this->_section[$name] = $value;
-	}
+    function set($name, $value)
+    {
+        $this->_section[$name] = $value;
+    }
 
-	function del($name)
-	{
-		unset($this->_section[$name]);	
-	}
+    function del($name)
+    {
+        unset($this->_section[$name]);    
+    }
 
-	function flipflop($name, $default)
-	{
-		if(isset($this->_QR[$name]))
-		{
-			$new = array(SORT_ASC, $this->_QR[$name]);
+    function flipflop($name, $default)
+    {
+        if(isset($this->_QR[$name]))
+        {
+            $new = array(SORT_ASC, $this->_QR[$name]);
 
-			if(isset($this->_section[$name]) &&	$this->_section[$name][1] == $new[1])
-				$new[0] = $this->_section[$name][0] == SORT_ASC?SORT_DESC:SORT_ASC;
-		}
-		else if(isset($this->_section[$name]))
-		{ $new = $this->_section[$name]; }
-		else
-		{ $new = array(SORT_ASC, $default); }
+            if(isset($this->_section[$name]) &&    $this->_section[$name][1] == $new[1])
+                $new[0] = $this->_section[$name][0] == SORT_ASC?SORT_DESC:SORT_ASC;
+        }
+        else if(isset($this->_section[$name]))
+        { $new = $this->_section[$name]; }
+        else
+        { $new = array(SORT_ASC, $default); }
 
-		$this->_section[$name] = $new;
-		return $new;
-	}
+        $this->_section[$name] = $new;
+        return $new;
+    }
 }
 
 ?>

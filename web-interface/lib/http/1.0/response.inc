@@ -22,51 +22,51 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'http','1.0','abstract.inc'));
 
 class dwho_http_1_0_response extends dwho_http_1_0_abstract
 {
-	var $_status_line	= null;
+    var $_status_line    = null;
 
-	function dwho_http_1_0_response()
-	{
-		$this->dwho_http_1_0_abstract();
-	}
+    function dwho_http_1_0_response()
+    {
+        $this->dwho_http_1_0_abstract();
+    }
 
-	function set_status_line($code)
-	{
-		$code = intval($code);
+    function set_status_line($code)
+    {
+        $code = intval($code);
 
-		if(isset($this->_status_code[$code]) === false)
-			return(false);
+        if(isset($this->_status_code[$code]) === false)
+            return(false);
 
-		$this->_code = $code;
-		$this->_status_line = sprintf('HTTP/%s %d %s',
-					      $this->_version,
-					      $this->_code,
-					      $this->_status_code[$code]);
+        $this->_code = $code;
+        $this->_status_line = sprintf('HTTP/%s %d %s',
+                          $this->_version,
+                          $this->_code,
+                          $this->_status_code[$code]);
 
-		return(true);
-	}
+        return(true);
+    }
 
-	function authent_basic($realm)
-	{
-		if(($realm = $this->quote_word($realm)) === false)
-			return(false);
+    function authent_basic($realm)
+    {
+        if(($realm = $this->quote_word($realm)) === false)
+            return(false);
 
-		$this->_headers['www-authenticate'] = sprintf('WWW-Authenticate: Basic realm=%s',
-							      $realm);
+        $this->_headers['www-authenticate'] = sprintf('WWW-Authenticate: Basic realm=%s',
+                                  $realm);
 
-		return(true);
-	}
+        return(true);
+    }
 
-	function send($die=false)
-	{
-		if(isset($this->_status_line) === true)
-			header($this->_status_line);
+    function send($die=false)
+    {
+        if(isset($this->_status_line) === true)
+            header($this->_status_line);
 
-		foreach($this->_headers as $value)
-			header($value);
+        foreach($this->_headers as $value)
+            header($value);
 
-		if((bool) $die === true)
-			die();
-	}
+        if((bool) $die === true)
+            die();
+    }
 }
 
 ?>

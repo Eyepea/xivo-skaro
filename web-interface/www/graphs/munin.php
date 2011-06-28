@@ -21,12 +21,12 @@
 require_once('xivo.php');
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+    $_QRY->go($_TPL->url('xivo/logoff'));
 
 $action_path = $_LOC->get_action_path('graphs/munin',0);
 
 if($action_path === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+    $_QRY->go($_TPL->url('xivo/logoff'));
 
 die(include($action_path));
 

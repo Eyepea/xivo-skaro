@@ -22,50 +22,50 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
 class dwho_tpl_xmlphone extends dwho_tpl_module
 {
-	var $_vendor	= null;
+    var $_vendor    = null;
 
-	function dwho_tpl_xmlphone(&$tpl)
-	{
-		$this->_tpl = &$tpl;
-	}
+    function dwho_tpl_xmlphone(&$tpl)
+    {
+        $this->_tpl = &$tpl;
+    }
 
-	function normalize_vendor_name($vendor)
-	{
-		if(is_scalar($vendor) === false
-		|| preg_match('/^[a-zA-Z0-9_-]+$/',$vendor) === 0)
-			return(false);
+    function normalize_vendor_name($vendor)
+    {
+        if(is_scalar($vendor) === false
+        || preg_match('/^[a-zA-Z0-9_-]+$/',$vendor) === 0)
+            return(false);
 
-		return(strtolower($vendor));
-	}
+        return(strtolower($vendor));
+    }
 
-	function factory($vendor)
-	{
-		$this->_vendor = null;
+    function factory($vendor)
+    {
+        $this->_vendor = null;
 
-		if(($vendor = $this->normalize_vendor_name($vendor)) === false)
-			return(false);
+        if(($vendor = $this->normalize_vendor_name($vendor)) === false)
+            return(false);
 
-		$dir = array('tpl',
-			     'module',
-			     'xmlphone');
+        $dir = array('tpl',
+                 'module',
+                 'xmlphone');
 
-		$classname = 'dwho_tpl_xmlphone_'.$vendor;
+        $classname = 'dwho_tpl_xmlphone_'.$vendor;
 
-		if(dwho::load_class($classname,$dir,$vendor) === false)
-			return(false);
+        if(dwho::load_class($classname,$dir,$vendor) === false)
+            return(false);
 
-		$this->_vendor = $vendor;
+        $this->_vendor = $vendor;
 
-		return(new $classname());
-	}
+        return(new $classname());
+    }
 
-	function get_vendor()
-	{
-		if($this->_vendor === null)
-			return(false);
+    function get_vendor()
+    {
+        if($this->_vendor === null)
+            return(false);
 
-		return($this->_vendor);
-	}
+        return($this->_vendor);
+    }
 }
 
 ?>

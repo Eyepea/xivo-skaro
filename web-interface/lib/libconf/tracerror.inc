@@ -40,9 +40,9 @@ define('DWHO_TE_RFUNC_VARDUMP',2);
 define('DWHO_TE_CONTEXT','Global');
 
 if(defined('DWHO_LABEL_CUSTOM') === true)
-	define('DWHO_TE_LABEL',DWHO_LABEL_CUSTOM);
+    define('DWHO_TE_LABEL',DWHO_LABEL_CUSTOM);
 else
-	define('DWHO_TE_LABEL',DWHO_LABEL);
+    define('DWHO_TE_LABEL',DWHO_LABEL);
 
 define('DWHO_TE_TRAC_LABEL',DWHO_TE_LABEL.' Trace');
 define('DWHO_TE_ERROR_LABEL',DWHO_TE_LABEL.' Error');
@@ -53,42 +53,42 @@ define('DWHO_TE_PARSE_LABEL',DWHO_TE_LABEL.' Parse');
 $array = array();
 
 $array['level'] = array(
-		DWHO_TE_ERR_TRAC	=> array('label' => DWHO_TE_TRAC_LABEL,
-						 'color' => 'black'),
-		DWHO_TE_ERR_ERROR	=> array('label' => DWHO_TE_ERROR_LABEL,
-						 'color' => 'red'),
-		DWHO_TE_ERR_WARNING	=> array('label' => DWHO_TE_WARNING_LABEL,
-						 'color' => 'purple'),
-		DWHO_TE_ERR_NOTICE	=> array('label' => DWHO_TE_NOTICE_LABEL,
-						 'color' => 'blue'),
-		DWHO_TE_ERR_PARSE	=> array('label' => DWHO_TE_PARSE_LABEL,
-						 'color' => 'grey'));
+        DWHO_TE_ERR_TRAC    => array('label' => DWHO_TE_TRAC_LABEL,
+                         'color' => 'black'),
+        DWHO_TE_ERR_ERROR    => array('label' => DWHO_TE_ERROR_LABEL,
+                         'color' => 'red'),
+        DWHO_TE_ERR_WARNING    => array('label' => DWHO_TE_WARNING_LABEL,
+                         'color' => 'purple'),
+        DWHO_TE_ERR_NOTICE    => array('label' => DWHO_TE_NOTICE_LABEL,
+                         'color' => 'blue'),
+        DWHO_TE_ERR_PARSE    => array('label' => DWHO_TE_PARSE_LABEL,
+                         'color' => 'grey'));
 
 $array['rtype'] = array(
-		DWHO_TE_RTYPE_NONE	=> 'DWHO_TE_RTYPE_NONE',
-		DWHO_TE_RTYPE_LOG	=> 'DWHO_TE_RTYPE_LOG',
-		DWHO_TE_RTYPE_SCREEN	=> 'DWHO_TE_RTYPE_SCREEN',
-		DWHO_TE_RTYPE_MAIL	=> 'DWHO_TE_RTYPE_MAIL');
+        DWHO_TE_RTYPE_NONE    => 'DWHO_TE_RTYPE_NONE',
+        DWHO_TE_RTYPE_LOG    => 'DWHO_TE_RTYPE_LOG',
+        DWHO_TE_RTYPE_SCREEN    => 'DWHO_TE_RTYPE_SCREEN',
+        DWHO_TE_RTYPE_MAIL    => 'DWHO_TE_RTYPE_MAIL');
 
 $array['rmode'] = array(
-		DWHO_TE_RMODE_REALTIME	=> 'DWHO_TE_RMODE_REALTIME',
-		DWHO_TE_RMODE_DELAYED	=> 'DWHO_TE_RMODE_DELAYED');
+        DWHO_TE_RMODE_REALTIME    => 'DWHO_TE_RMODE_REALTIME',
+        DWHO_TE_RMODE_DELAYED    => 'DWHO_TE_RMODE_DELAYED');
 
 $array['rfunc'] = array(
-		DWHO_TE_RFUNC_PRINTR	=> 'DWHO_TE_RFUNC_PRINTR',
-		DWHO_TE_RFUNC_VARDUMP	=> 'DWHO_TE_RFUNC_VARDUMP');
+        DWHO_TE_RFUNC_PRINTR    => 'DWHO_TE_RFUNC_PRINTR',
+        DWHO_TE_RFUNC_VARDUMP    => 'DWHO_TE_RFUNC_VARDUMP');
 
 $array['e_context'] = array(
-		E_ERROR			=> 'E_ERROR',
-		E_CORE_ERROR		=> 'E_CORE_ERROR',
-		E_COMPILE_ERROR		=> 'E_COMPILE_ERROR',
-		E_USER_ERROR		=> 'E_USER_ERROR',
-		E_WARNING		=> 'E_WARNING',
-		E_CORE_WARNING		=> 'E_CORE_WARNING',
-		E_COMPILE_WARNING	=> 'E_COMPILE_ERROR',
-		E_USER_WARNING		=> 'E_USER_WARNING',
-		E_NOTICE		=> 'E_NOTICE',
-		E_USER_NOTICE		=> 'E_USER_NOTICE',
-		E_PARSE			=> 'E_PARSE');
+        E_ERROR            => 'E_ERROR',
+        E_CORE_ERROR        => 'E_CORE_ERROR',
+        E_COMPILE_ERROR        => 'E_COMPILE_ERROR',
+        E_USER_ERROR        => 'E_USER_ERROR',
+        E_WARNING        => 'E_WARNING',
+        E_CORE_WARNING        => 'E_CORE_WARNING',
+        E_COMPILE_WARNING    => 'E_COMPILE_ERROR',
+        E_USER_WARNING        => 'E_USER_WARNING',
+        E_NOTICE        => 'E_NOTICE',
+        E_USER_NOTICE        => 'E_USER_NOTICE',
+        E_PARSE            => 'E_PARSE');
 
 ?>

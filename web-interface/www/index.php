@@ -22,29 +22,29 @@ require_once('xivo.php');
 
 if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
 {
-	$action_path = $_LOC->get_action_path('xivo/wizard',0);
+    $action_path = $_LOC->get_action_path('xivo/wizard',0);
 
-	if($action_path === false)
-		dwho_die('XIVO is not configured');
+    if($action_path === false)
+        dwho_die('XIVO is not configured');
 
-	die(include($action_path));
+    die(include($action_path));
 }
 
 $go = array_key_exists('go', $_GET)?$_GET['go']:null;
 
 if(xivo_user::is_valid() === true)
-	$_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
+    $_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
 
 $_LANG = &dwho_gat::load_get('language',XIVO_PATH_OBJECTCONF);
 
 if(isset($_QR['language'],$_LANG[$_QR['language']]) === true)
-	$language = $_QR['language'];
+    $language = $_QR['language'];
 else
-	$language = '';
+    $language = '';
 
 if(isset($_QR['login'],$_QR['password']) === true
 && $_USR->load_by_authent($_QR['login'],$_QR['password'],$language) === true)
-	$_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
+    $_QRY->go($_TPL->url(is_null($go)?'xivo':rawurldecode($go)));
 
 $_TPL->set_var('language',dwho_array_intersect_key($_LANG,dwho_i18n::get_language_translated_list()));
 $_TPL->set_struct('home/login');

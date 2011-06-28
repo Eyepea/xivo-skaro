@@ -20,189 +20,189 @@
 
 class dwho_gatearray
 {
-	var $_array = array();
+    var $_array = array();
 
-	function &getinstance()
-	{
-		static $instance = null;
+    function &getinstance()
+    {
+        static $instance = null;
 
-		if($instance === null)
-			$instance = new dwho_gatearray();
+        if($instance === null)
+            $instance = new dwho_gatearray();
 
-		return(($ref = &$instance));
-	}
+        return(($ref = &$instance));
+    }
 
-	function set($name,&$array)
-	{
-		$name = (string) $name;
+    function set($name,&$array)
+    {
+        $name = (string) $name;
 
-		if(is_array($array) === false || $name === '')
-			return(false);
-		else if(isset($this->_array[$name]) === false)
-			$this->_array[$name] = &$array;
+        if(is_array($array) === false || $name === '')
+            return(false);
+        else if(isset($this->_array[$name]) === false)
+            $this->_array[$name] = &$array;
 
-		return(true);
-	}
+        return(true);
+    }
 
-	function load($file,$path='',$name='',$includable=false)
-	{
-		$file = (string) $file;
-		$name = (string) $name;
+    function load($file,$path='',$name='',$includable=false)
+    {
+        $file = (string) $file;
+        $name = (string) $name;
 
-		if(($pos = strrpos($file,'.')) !== false)
-		{
-			$file = substr($file,0,$pos);
+        if(($pos = strrpos($file,'.')) !== false)
+        {
+            $file = substr($file,0,$pos);
 
-			if(preg_match('/^[a-z0-9\-_]+$/i',$file) !== 1)
-				return(false);
-		}
+            if(preg_match('/^[a-z0-9\-_]+$/i',$file) !== 1)
+                return(false);
+        }
 
-		if($name === '')
-			$name = $file;
+        if($name === '')
+            $name = $file;
 
-		if($path === '')
-			$path = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
-		else if(is_array($path) === true)
-			$path = implode(DIRECTORY_SEPARATOR,$path).DIRECTORY_SEPARATOR.$file.'.inc';
-		else
-			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
+        if($path === '')
+            $path = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
+        else if(is_array($path) === true)
+            $path = implode(DIRECTORY_SEPARATOR,$path).DIRECTORY_SEPARATOR.$file.'.inc';
+        else
+            $path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 
-		if((bool) $includable === false)
-		{
-			if(dwho_file::is_f_r($path) === false)
-				return(false);
-		}
-		else if(dwho_file::is_includable($path) === false)
-			return(false);
+        if((bool) $includable === false)
+        {
+            if(dwho_file::is_f_r($path) === false)
+                return(false);
+        }
+        else if(dwho_file::is_includable($path) === false)
+            return(false);
 
-		if(isset($this->_array[$name]) === false)
-		{
-			require_once($path);
+        if(isset($this->_array[$name]) === false)
+        {
+            require_once($path);
 
-			if(isset($array) === false || is_array($array) === false)
-				return(false);
+            if(isset($array) === false || is_array($array) === false)
+                return(false);
 
-			$this->_array[$name] = &$array;
-		}
+            $this->_array[$name] = &$array;
+        }
 
-		return($name);
-	}
+        return($name);
+    }
 
-	function get_file($path,$once=false,$includable=false)
-	{
-		if(is_array($path) === true)
-			$path = implode(DIRECTORY_SEPARATOR,$path);
+    function get_file($path,$once=false,$includable=false)
+    {
+        if(is_array($path) === true)
+            $path = implode(DIRECTORY_SEPARATOR,$path);
 
-		$path = (string) $path.'.inc';
+        $path = (string) $path.'.inc';
 
-		if((bool) $includable === false)
-		{
-			if(dwho_file::is_f_r($path) === false)
-				return(false);
-		}
-		else if(dwho_file::is_includable($path) === false)
-			return(false);
+        if((bool) $includable === false)
+        {
+            if(dwho_file::is_f_r($path) === false)
+                return(false);
+        }
+        else if(dwho_file::is_includable($path) === false)
+            return(false);
 
-		if((bool) $once === false)
-			require($path);
-		else
-			require_once($path);
+        if((bool) $once === false)
+            require($path);
+        else
+            require_once($path);
 
-		if(isset($array) === true && is_array($array) === true)
-			$r = &$array;
-		else
-			$r = false;
+        if(isset($array) === true && is_array($array) === true)
+            $r = &$array;
+        else
+            $r = false;
 
-		return($r);
-	}
+        return($r);
+    }
 
-	function &get($name='')
-	{
-		$name = (string) $name;
+    function &get($name='')
+    {
+        $name = (string) $name;
 
-		if($name === '')
-			$r = &$this->_array;
-		else if(dwho_issa($name,$this->_array) === true)
-			$r = &$this->_array[$name];
-		else
-			$r = false;
+        if($name === '')
+            $r = &$this->_array;
+        else if(dwho_issa($name,$this->_array) === true)
+            $r = &$this->_array[$name];
+        else
+            $r = false;
 
-		return(($ref = &$r));
-	}
+        return(($ref = &$r));
+    }
 
-	function &load_get($file,$path='',$name='')
-	{
-		$r = false;
+    function &load_get($file,$path='',$name='')
+    {
+        $r = false;
 
-		if(($name = $this->load($file,$path,$name)) !== false)
-			$r = &$this->get($name);
+        if(($name = $this->load($file,$path,$name)) !== false)
+            $r = &$this->get($name);
 
-		return(($ref = &$r));
-	}
+        return(($ref = &$r));
+    }
 
-	function &set_get($name,&$array)
-	{
-		$r = false;
+    function &set_get($name,&$array)
+    {
+        $r = false;
 
-		if($this->set($name,$array) === true)
-			$r = &$this->get($name);
+        if($this->set($name,$array) === true)
+            $r = &$this->get($name);
 
-		return(($ref = &$r));
-	}
+        return(($ref = &$r));
+    }
 
-	function is_valid($name)
-	{
-		$name = (string) $name;
+    function is_valid($name)
+    {
+        $name = (string) $name;
 
-		if(dwho_issa($name,$this->_array) === true)
-			return(true);
+        if(dwho_issa($name,$this->_array) === true)
+            return(true);
 
-		return(false);
-	}
+        return(false);
+    }
 }
 
 class dwho_gat
 {
-	function set($name,&$array)
-	{
-		$aga = &dwho_gatearray::getinstance();
-		return($aga->set($name,$array));
-	}
+    function set($name,&$array)
+    {
+        $aga = &dwho_gatearray::getinstance();
+        return($aga->set($name,$array));
+    }
 
-	function load($file,$path='',$name='')
-	{
-		$aga = &dwho_gatearray::getinstance();
-		return($aga->load($file,$path,$name));
-	}
+    function load($file,$path='',$name='')
+    {
+        $aga = &dwho_gatearray::getinstance();
+        return($aga->load($file,$path,$name));
+    }
 
-	function &get($name='')
-	{
-		$aga = &dwho_gatearray::getinstance();
-		return(($ref = &$aga->get($name)));
-	}
+    function &get($name='')
+    {
+        $aga = &dwho_gatearray::getinstance();
+        return(($ref = &$aga->get($name)));
+    }
 
-	function get_file($path,$once=false)
-	{
-		return(dwho_gatearray::get_file($path,$once));
-	}
+    function get_file($path,$once=false)
+    {
+        return(dwho_gatearray::get_file($path,$once));
+    }
 
-	function &load_get($file,$path='',$name='')
-	{
-		$aga = &dwho_gatearray::getinstance();
-		return(($ref = &$aga->load_get($file,$path,$name)));
-	}
+    function &load_get($file,$path='',$name='')
+    {
+        $aga = &dwho_gatearray::getinstance();
+        return(($ref = &$aga->load_get($file,$path,$name)));
+    }
 
-	function &set_get($name,&$array)
-	{
-		$aga = &dwho_gatearray::getinstance();
-		return(($ref = &$aga->set_get($name,$array)));
-	}
+    function &set_get($name,&$array)
+    {
+        $aga = &dwho_gatearray::getinstance();
+        return(($ref = &$aga->set_get($name,$array)));
+    }
 
-	function is_valid($name)
-	{
-		$aga = &dwho_gatearray::getinstance();
-		return($aga->is_valid($name));
-	}
+    function is_valid($name)
+    {
+        $aga = &dwho_gatearray::getinstance();
+        return($aga->is_valid($name));
+    }
 }
 
 ?>

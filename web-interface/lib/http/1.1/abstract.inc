@@ -22,79 +22,79 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'http','abstract.inc'));
 
 class dwho_http_1_1_abstract extends dwho_http_abstract
 {
-	var $_version		= '1.1';
-	var $_status_code	= array(
-					100	=> 'Continue',
-					101	=> 'Switching Protocols',
-					200	=> 'OK',
-					201	=> 'Created',
-					202	=> 'Accepted',
-					203	=> 'Non-Authoritative Information',
-					204	=> 'No Content',
-					205	=> 'Reset Content',
-					206	=> 'Partial Content',
-					300	=> 'Multiple Choices',
-					301	=> 'Moved Permanently',
-					302	=> 'Found',
-					303	=> 'See Other',
-					304	=> 'Not Modified',
-					305	=> 'Use Proxy',
-					307	=> 'Temporary Redirect',
-					400	=> 'Bad Request',
-					401	=> 'Unauthorized',
-					402	=> 'Payment Required',
-					403	=> 'Forbidden',
-					404	=> 'Not Found',
-					405	=> 'Method Not Allowed',
-					406	=> 'Not Acceptable',
-					407	=> 'Proxy Authentication Required',
-					408	=> 'Request Time-out',
-					409	=> 'Conflict',
-					410	=> 'Gone',
-					411	=> 'Length Required',
-					412	=> 'Precondition Failed',
-					413	=> 'Request Entity Too Large',
-					414	=> 'Request-URI Too Large',
-					415	=> 'Unsupported Media Type',
-					416	=> 'Requested range not satisfiable',
-					417	=> 'Expectation Failed',
-					500	=> 'Internal Server Error',
-					501	=> 'Not Implemented',
-					502	=> 'Bad Gateway',
-					503	=> 'Service Unavailable',
-					504	=> 'Gateway Time-out',
-					505	=> 'HTTP Version not supported');
+    var $_version        = '1.1';
+    var $_status_code    = array(
+                    100    => 'Continue',
+                    101    => 'Switching Protocols',
+                    200    => 'OK',
+                    201    => 'Created',
+                    202    => 'Accepted',
+                    203    => 'Non-Authoritative Information',
+                    204    => 'No Content',
+                    205    => 'Reset Content',
+                    206    => 'Partial Content',
+                    300    => 'Multiple Choices',
+                    301    => 'Moved Permanently',
+                    302    => 'Found',
+                    303    => 'See Other',
+                    304    => 'Not Modified',
+                    305    => 'Use Proxy',
+                    307    => 'Temporary Redirect',
+                    400    => 'Bad Request',
+                    401    => 'Unauthorized',
+                    402    => 'Payment Required',
+                    403    => 'Forbidden',
+                    404    => 'Not Found',
+                    405    => 'Method Not Allowed',
+                    406    => 'Not Acceptable',
+                    407    => 'Proxy Authentication Required',
+                    408    => 'Request Time-out',
+                    409    => 'Conflict',
+                    410    => 'Gone',
+                    411    => 'Length Required',
+                    412    => 'Precondition Failed',
+                    413    => 'Request Entity Too Large',
+                    414    => 'Request-URI Too Large',
+                    415    => 'Unsupported Media Type',
+                    416    => 'Requested range not satisfiable',
+                    417    => 'Expectation Failed',
+                    500    => 'Internal Server Error',
+                    501    => 'Not Implemented',
+                    502    => 'Bad Gateway',
+                    503    => 'Service Unavailable',
+                    504    => 'Gateway Time-out',
+                    505    => 'HTTP Version not supported');
 
-	function dwho_http_1_1_abstract()
-	{
-		$this->dwho_http_abstract();
+    function dwho_http_1_1_abstract()
+    {
+        $this->dwho_http_abstract();
 
-		$this->_rule['qtext']		= $this->_rule['crlf'].
-						  $this->_rule['wsp'].
-						  '\x21\x23-\x5B\x5D-\x7E\x80-\xFF';
-		$this->_rule['quoted-pair']	= '\x01-\x09\x0B\x0C\x0E-\xFF';
+        $this->_rule['qtext']        = $this->_rule['crlf'].
+                          $this->_rule['wsp'].
+                          '\x21\x23-\x5B\x5D-\x7E\x80-\xFF';
+        $this->_rule['quoted-pair']    = '\x01-\x09\x0B\x0C\x0E-\xFF';
 
-		$this->_regexp['word']		= '(?:['.$this->_rule['token'].']+|'.
-						     '"(?:['.$this->_rule['qtext'].']|'.
-							 '\\\['.$this->_rule['quoted-pair'].'])+")';
+        $this->_regexp['word']        = '(?:['.$this->_rule['token'].']+|'.
+                             '"(?:['.$this->_rule['qtext'].']|'.
+                             '\\\['.$this->_rule['quoted-pair'].'])+")';
 
-		$this->_regexp['parameter']	= '(['.$this->_rule['token'].']+)\s*=\s*'.
-						  '(?:(['.$this->_rule['token'].']+)|'.
-						      '"((?:['.$this->_rule['qtext'].']|'.
-							   '\\\['.$this->_rule['quoted-pair'].'])+)")';
-	}
+        $this->_regexp['parameter']    = '(['.$this->_rule['token'].']+)\s*=\s*'.
+                          '(?:(['.$this->_rule['token'].']+)|'.
+                              '"((?:['.$this->_rule['qtext'].']|'.
+                               '\\\['.$this->_rule['quoted-pair'].'])+)")';
+    }
 
-	function quote_word($str)
-	{
-		$str = strval($str);
+    function quote_word($str)
+    {
+        $str = strval($str);
 
-		if(preg_match('/^'.$this->_regexp['token'].'$/',$str) === 1)
-			return('"'.$str.'"');
-		else if(preg_match('/^'.$this->_regexp['word'].'$/',$str) === 1)
-			return($str);
+        if(preg_match('/^'.$this->_regexp['token'].'$/',$str) === 1)
+            return('"'.$str.'"');
+        else if(preg_match('/^'.$this->_regexp['word'].'$/',$str) === 1)
+            return($str);
 
-		return('"'.preg_replace('/(?<!\\\)"/','\"',$str).'"');
-	}
+        return('"'.preg_replace('/(?<!\\\)"/','\"',$str).'"');
+    }
 }
 
 ?>

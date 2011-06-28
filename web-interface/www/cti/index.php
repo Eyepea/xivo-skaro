@@ -21,17 +21,17 @@
 require_once('xivo.php');
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+    $_QRY->go($_TPL->url('xivo/logoff'));
 
 // search leaf full path (inverse resolution)
 $leaf = trim($_SERVER['PATH_INFO'], '/');
 $tree = xivo_user_acl::get_full_tree();
 foreach($tree['service']['child']['cti']['child'] as $k => $node)
-	if(array_key_exists($leaf, $node['child']))
-		$leaf = $node['child'][$leaf]['path'];
+    if(array_key_exists($leaf, $node['child']))
+        $leaf = $node['child'][$leaf]['path'];
 
 if(xivo_user::chk_acl('','',$leaf) === false)
-	$_QRY->go($_TPL->url('xivo'));
+    $_QRY->go($_TPL->url('xivo'));
 
 $ipbx = &$_SRE->get('ipbx');
 
@@ -46,7 +46,7 @@ $action_path = $_LOC->get_action_path('cti',0);
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 
 if($action_path === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
+    $_QRY->go($_TPL->url('xivo/logoff'));
 
 die(include($action_path));
 

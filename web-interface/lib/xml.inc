@@ -20,25 +20,25 @@
 
 class dwho_xml
 {
-	function get_header()
-	{
-		return('Content-Type: application/xml');
-	}
+    function get_header()
+    {
+        return('Content-Type: application/xml');
+    }
 
-	function encode($data)
-	{
-		return($data);
-	}
+    function encode($data)
+    {
+        return($data);
+    }
 
-	function decode($data,$assoc=false)
-	{
-		if(dwho_has_len($data) === false)
-			return(false);
-			
-		$data = (array) simplexml_load_string($data);
-		
-		return(json_decode(json_encode($data),1));
-	}
+    function decode($data,$assoc=false)
+    {
+        if(dwho_has_len($data) === false)
+            return(false);
+            
+        $data = (array) simplexml_load_string($data);
+        
+        return(json_decode(json_encode($data),1));
+    }
 }
 
 ?>

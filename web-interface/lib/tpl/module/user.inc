@@ -22,18 +22,18 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
 class dwho_tpl_user extends dwho_tpl_module
 {
-	var $_tpl	= null;
+    var $_tpl    = null;
 
-	function dwho_tpl_user(&$tpl)
-	{
-		$this->_tpl = &$tpl;
-		$this->_usr = dwho_gct::get('_USR');
-	}
+    function dwho_tpl_user(&$tpl)
+    {
+        $this->_tpl = &$tpl;
+        $this->_usr = dwho_gct::get('_USR');
+    }
 
-	function get_info($name)
-	{
-		return($this->_usr->get_info($name));
-	}
+    function get_info($name)
+    {
+        return($this->_usr->get_info($name));
+    }
 }
 
 ?>

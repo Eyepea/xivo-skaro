@@ -20,88 +20,88 @@
 
 class dwho_i18n_territory
 {
-	var $_attrib	= array();
-	var $_conf	= array();
+    var $_attrib    = array();
+    var $_conf    = array();
 
-	function dwho_i18n_territory()
-	{
-		$file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','territories','territories');
+    function dwho_i18n_territory()
+    {
+        $file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','territories','territories');
 
-		if(($this->_conf = dwho_gat::get_file($file)) === false)
-			trigger_error('Failed to load territories listing',E_USER_ERROR);
-	}
+        if(($this->_conf = dwho_gat::get_file($file)) === false)
+            trigger_error('Failed to load territories listing',E_USER_ERROR);
+    }
 
-	function set_attrib($name,$value)
-	{
-		$name = (string) $name;
+    function set_attrib($name,$value)
+    {
+        $name = (string) $name;
 
-		$this->_attrib[$name] = $value;
-	}
+        $this->_attrib[$name] = $value;
+    }
 
-	function get_attrib($name)
-	{
-		$name = (string) $name;
+    function get_attrib($name)
+    {
+        $name = (string) $name;
 
-		if(isset($this->_attrib[$name]) === true)
-			return($this->_attrib[$name]);
-		else
-			return(null);
-	}
+        if(isset($this->_attrib[$name]) === true)
+            return($this->_attrib[$name]);
+        else
+            return(null);
+    }
 
-	function is_valid($territo)
-	{
-		$territo = strtoupper($territo);
+    function is_valid($territo)
+    {
+        $territo = strtoupper($territo);
 
-		if(dwho_issa($territo,$this->_conf) === false)
-			return(false);
+        if(dwho_issa($territo,$this->_conf) === false)
+            return(false);
 
-		return($territo);
-	}
+        return($territo);
+    }
 
-	function get_info($territo)
-	{
-		if(($territo = $this->is_valid($territo)) === false)
-			return(false);
+    function get_info($territo)
+    {
+        if(($territo = $this->is_valid($territo)) === false)
+            return(false);
 
-		$r = $this->_conf[$territo];
-		$r['territo'] = $territo;
+        $r = $this->_conf[$territo];
+        $r['territo'] = $territo;
 
-		return($r);
-	}
+        return($r);
+    }
 
-	function get_timezone($territo)
-	{
-		if(($territo = $this->is_valid($territo)) === false
-		|| dwho_issa('tz',$this->_conf[$territo]) === false
-		|| count($this->_conf[$territo]['tz']) !== 1)
-			return(false);
+    function get_timezone($territo)
+    {
+        if(($territo = $this->is_valid($territo)) === false
+        || dwho_issa('tz',$this->_conf[$territo]) === false
+        || count($this->_conf[$territo]['tz']) !== 1)
+            return(false);
 
-		reset($this->_conf[$territo]['tz']);
+        reset($this->_conf[$territo]['tz']);
 
-		return(key($this->_conf[$territo]['tz']));
-	}
+        return(key($this->_conf[$territo]['tz']));
+    }
 
-	function get_timezone_list($territo)
-	{
-		if(($territo = $this->is_valid($territo)) === false
-		|| dwho_issa('tz',$this->_conf[$territo]) === false)
-			return(false);
+    function get_timezone_list($territo)
+    {
+        if(($territo = $this->is_valid($territo)) === false
+        || dwho_issa('tz',$this->_conf[$territo]) === false)
+            return(false);
 
-		return($this->_conf[$territo]['tz']);
-	}
+        return($this->_conf[$territo]['tz']);
+    }
 
-	function exists_default($territo)
-	{
-		if(($territo = $this->is_valid($territo)) === false)
-			return(false);
+    function exists_default($territo)
+    {
+        if(($territo = $this->is_valid($territo)) === false)
+            return(false);
 
-		return(dwho_ak('default',$this->_conf[$territo],true));
-	}
+        return(dwho_ak('default',$this->_conf[$territo],true));
+    }
 
-	function get_list()
-	{
-		return($this->_conf);
-	}
+    function get_list()
+    {
+        return($this->_conf);
+    }
 }
 
 ?>

@@ -20,97 +20,97 @@
 
 class dwho_tpl_module
 {
-	function load_init($param=null)
-	{
-		return(null);
-	}
+    function load_init($param=null)
+    {
+        return(null);
+    }
 
-	function bbf_args($name,$args,$namespace='')
-	{
-		return($this->_tpl->bbf_args($name,$args,$namespace));
-	}
+    function bbf_args($name,$args,$namespace='')
+    {
+        return($this->_tpl->bbf_args($name,$args,$namespace));
+    }
 
-	function bbf($name,$args=array(),$namespace='')
-	{
-		return($this->_tpl->bbf($name,$args,$namespace));
-	}
+    function bbf($name,$args=array(),$namespace='')
+    {
+        return($this->_tpl->bbf($name,$args,$namespace));
+    }
 
-	function load_i18n_file($file,$namespace='')
-	{
-		return($this->_tpl->load_i18n_file($file,$namespace));
-	}
+    function load_i18n_file($file,$namespace='')
+    {
+        return($this->_tpl->load_i18n_file($file,$namespace));
+    }
 
-	function get_path()
-	{
-		return($this->_tpl->get_path());
-	}
+    function get_path()
+    {
+        return($this->_tpl->get_path());
+    }
 
-	function set_option($name,$value)
-	{
-		return($this->_tpl->set_option($name,$value));
-	}
+    function set_option($name,$value)
+    {
+        return($this->_tpl->set_option($name,$value));
+    }
 
-	function get_option($name)
-	{
-		return($this->_tpl->get_option($name));
-	}
+    function get_option($name)
+    {
+        return($this->_tpl->get_option($name));
+    }
 
-	function get_file_extension($ext)
-	{
-		return($this->_tpl->get_file_extension($ext));
-	}
+    function get_file_extension($ext)
+    {
+        return($this->_tpl->get_file_extension($ext));
+    }
 
-	function set_var($name,$value)
-	{
-		return($this->_tpl->set_var($name,$value));
-	}
+    function set_var($name,$value)
+    {
+        return($this->_tpl->set_var($name,$value));
+    }
 
-	function set_vars(&$a)
-	{
-		return($this->_tpl->set_vars(&$a));
-	}
+    function set_vars(&$a)
+    {
+        return($this->_tpl->set_vars(&$a));
+    }
 
-	function get_var()
-	{
-		$args = func_get_args();
-		return(call_user_func_array(array(&$this->_tpl,'get_var'),$args));
-	}
+    function get_var()
+    {
+        $args = func_get_args();
+        return(call_user_func_array(array(&$this->_tpl,'get_var'),$args));
+    }
 
-	function get_var_default()
-	{
-		$args = func_get_args();
-		return(call_user_func_array(array(&$this->_tpl,'get_var_default'),$args));
-	}
+    function get_var_default()
+    {
+        $args = func_get_args();
+        return(call_user_func_array(array(&$this->_tpl,'get_var_default'),$args));
+    }
 
-	function set_file($name,$value,$preload_i18n=false)
-	{
-		return($this->_tpl->set_file($name,$value,$preload_i18n));
-	}
+    function set_file($name,$value,$preload_i18n=false)
+    {
+        return($this->_tpl->set_file($name,$value,$preload_i18n));
+    }
 
-	function get_file($name)
-	{
-		return($this->_tpl->get_file($name));
-	}
+    function get_file($name)
+    {
+        return($this->_tpl->get_file($name));
+    }
 
-	function file_include($file,$arr=array(),$preload_i18n=false,$ext='')
-	{
-		return($this->_tpl->file_include($file,$arr,$preload_i18n,$ext));
-	}
+    function file_include($file,$arr=array(),$preload_i18n=false,$ext='')
+    {
+        return($this->_tpl->file_include($file,$arr,$preload_i18n,$ext));
+    }
 
-	function file_time($file)
-	{
-		return($this->_tpl->file_time($file));
-	}
+    function file_time($file)
+    {
+        return($this->_tpl->file_time($file));
+    }
 
-	function url($url,$absolute=false,$internal=true)
-	{
-		return($this->_tpl->url($url,$absolute,$internal));
-	}
+    function url($url,$absolute=false,$internal=true)
+    {
+        return($this->_tpl->url($url,$absolute,$internal));
+    }
 
-	function &_get_module($name)
-	{
-		return(($ref = &$this->_tpl->get_module($name)));
-	}
+    function &_get_module($name)
+    {
+        return(($ref = &$this->_tpl->get_module($name)));
+    }
 }
 
 ?>

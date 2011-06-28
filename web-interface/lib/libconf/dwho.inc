@@ -23,22 +23,22 @@ $array = array();
 $array['ini'] = array();
 
 $array['ini']['error'] = array(
-				'level'		=> 2047,
-				'report_type'	=> 7,
-				'report_mode'	=> 1,
-				'report_func'	=> 1,
-				'email'		=> null,
-				'file'		=> null);
+                'level'        => 2047,
+                'report_type'    => 7,
+                'report_mode'    => 1,
+                'report_func'    => 1,
+                'email'        => null,
+                'file'        => null);
 
 $array['ini']['locale'] = array(
-				'language'	=> 'fr',
-				'territory'	=> 'FR',
-				'charset'	=> 'UTF-8');
+                'language'    => 'fr',
+                'territory'    => 'FR',
+                'charset'    => 'UTF-8');
 
 $array['ini']['session'] = array(
-				'name'		=> '_eid',
-				'time'		=> 7200,
-				'path'		=> '/',
-				'save_path'	=> null);
+                'name'        => '_eid',
+                'time'        => 7200,
+                'path'        => '/',
+                'save_path'    => null);
 
 ?>

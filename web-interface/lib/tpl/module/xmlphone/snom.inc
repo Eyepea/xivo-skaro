@@ -22,31 +22,31 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','abstr
 
 class dwho_tpl_xmlphone_snom extends dwho_tpl_xmlphone_abstract
 {
-	var $_vendor		= 'snom';
-	var $_model		= null;
-	var $_argseparator	= '&';
-	var $_cdata		= false;
-	var $_escape		= false;
-	var $_utf8		= true;
-	var $_tags		= array('directory'	=> 'SnomIPPhoneDirectory',
-					'menu'		=> 'SnomIPPhoneMenu',
-					'input'		=> 'SnomIPPhoneInput');
+    var $_vendor        = 'snom';
+    var $_model        = null;
+    var $_argseparator    = '&';
+    var $_cdata        = false;
+    var $_escape        = false;
+    var $_utf8        = true;
+    var $_tags        = array('directory'    => 'SnomIPPhoneDirectory',
+                    'menu'        => 'SnomIPPhoneMenu',
+                    'input'        => 'SnomIPPhoneInput');
 
-	function dwho_tpl_xmlphone_snom()
-	{
-		$this->_model = $this->get_model();
-	}
+    function dwho_tpl_xmlphone_snom()
+    {
+        $this->_model = $this->get_model();
+    }
 
-	function get_model()
-	{
-		if(isset($_SERVER['HTTP_USER_AGENT']) === false
-		|| preg_match('/(snom3[026]0)-/',
-			      $_SERVER['HTTP_USER_AGENT'],
-			      $match) !== 1)
-			return(null);
+    function get_model()
+    {
+        if(isset($_SERVER['HTTP_USER_AGENT']) === false
+        || preg_match('/(snom3[026]0)-/',
+                  $_SERVER['HTTP_USER_AGENT'],
+                  $match) !== 1)
+            return(null);
 
-		return($match[1]);
-	}
+        return($match[1]);
+    }
 }
 
 ?>

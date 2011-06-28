@@ -25,141 +25,141 @@ define('DWHO_PHP_VER_MAX','5.4');
 
 class dwho_sysinfo
 {
-	var $_sysinfo	= null;
-	var $_net	= null;
+    var $_sysinfo    = null;
+    var $_net    = null;
 
-	function dwho_sysinfo()
-	{
-		$os = strtolower(PHP_OS);
+    function dwho_sysinfo()
+    {
+        $os = strtolower(PHP_OS);
 
-		if(dwho::load_class('dwho::sysinfo::'.$os) === false)
-			trigger_error('Failed to load SysInfo class for '.PHP_OS,E_USER_ERROR);
+        if(dwho::load_class('dwho::sysinfo::'.$os) === false)
+            trigger_error('Failed to load SysInfo class for '.PHP_OS,E_USER_ERROR);
 
-		$name = 'dwho_sysinfo_'.$os;
+        $name = 'dwho_sysinfo_'.$os;
 
-		$this->_sysinfo = new $name();
-	}
+        $this->_sysinfo = new $name();
+    }
 
-	function os_name()
-	{
-		return(PHP_OS);
-	}
+    function os_name()
+    {
+        return(PHP_OS);
+    }
 
-	function os_meta()
-	{
-		return(strtolower(substr(PHP_OS,0,3)));
-	}
+    function os_meta()
+    {
+        return(strtolower(substr(PHP_OS,0,3)));
+    }
 
-	function php_version()
-	{
-		return(PHP_VERSION);
-	}
+    function php_version()
+    {
+        return(PHP_VERSION);
+    }
 
-	function argin_separator()
-	{
-		if(($sep = ini_get('arg_separator.input')) !== false
-		&& dwho_has_len($sep) === true
-		&& $sep !== '&amp;')
-			return($sep);
+    function argin_separator()
+    {
+        if(($sep = ini_get('arg_separator.input')) !== false
+        && dwho_has_len($sep) === true
+        && $sep !== '&amp;')
+            return($sep);
 
-		return(ARGIN_SEPARATOR);
-	}
+        return(ARGIN_SEPARATOR);
+    }
 
-	function argout_separator()
-	{
-		if(($sep = ini_get('arg_separator.output')) !== false
-		&& dwho_has_len($sep) === true
-		&& $sep !== '&amp;')
-			return($sep);
+    function argout_separator()
+    {
+        if(($sep = ini_get('arg_separator.output')) !== false
+        && dwho_has_len($sep) === true
+        && $sep !== '&amp;')
+            return($sep);
 
-		return(ARGOUT_SEPARATOR);
-	}
+        return(ARGOUT_SEPARATOR);
+    }
 
-	function directory_separator()
-	{
-		return(DIRECTORY_SEPARATOR);
-	}
+    function directory_separator()
+    {
+        return(DIRECTORY_SEPARATOR);
+    }
 
-	function path_separator()
-	{
-		return(PATH_SEPARATOR);
-	}
+    function path_separator()
+    {
+        return(PATH_SEPARATOR);
+    }
 
-	function eol()
-	{
-		return(PHP_EOL);
-	}
+    function eol()
+    {
+        return(PHP_EOL);
+    }
 
-	function sapi_name()
-	{
-		return(PHP_SAPI);
-	}
+    function sapi_name()
+    {
+        return(PHP_SAPI);
+    }
 
-	function sapi_mode()
-	{
-		switch(PHP_SAPI)
-		{
-			case 'cli':
-				return(PHP_SAPI);
-		}
+    function sapi_mode()
+    {
+        switch(PHP_SAPI)
+        {
+            case 'cli':
+                return(PHP_SAPI);
+        }
 
-		return('default');
-	}
+        return('default');
+    }
 
-	function uptime()
-	{
-		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
-			return($this->_sysinfo->uptime());
+    function uptime()
+    {
+        if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
+            return($this->_sysinfo->uptime());
 
-		return(false);
-	}
+        return(false);
+    }
 
-	function cpustats()
-	{
-		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
-			return($this->_sysinfo->cpustats());
+    function cpustats()
+    {
+        if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
+            return($this->_sysinfo->cpustats());
 
-		return(false);
-	}
+        return(false);
+    }
 
-	function memstats($byte=false)
-	{
-		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
-			return($this->_sysinfo->memstats($byte));
+    function memstats($byte=false)
+    {
+        if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
+            return($this->_sysinfo->memstats($byte));
 
-		return(false);
-	}
+        return(false);
+    }
 
-	function net()
-	{
-		if(isset($this->_sysinfo) === false
-		|| is_object($this->_sysinfo) === false)
-			return(false);
+    function net()
+    {
+        if(isset($this->_sysinfo) === false
+        || is_object($this->_sysinfo) === false)
+            return(false);
 
-		if(isset($this->_net) === false)
-			$this->_net = $this->_sysinfo->net();
+        if(isset($this->_net) === false)
+            $this->_net = $this->_sysinfo->net();
 
-		if(is_object($this->_net) === true)
-			return($this->_net);
+        if(is_object($this->_net) === true)
+            return($this->_net);
 
-		return(false);
-	}
+        return(false);
+    }
 
-	function netinfo()
-	{
-		if($this->net() !== false)
-			return($this->_net->netinfo());
+    function netinfo()
+    {
+        if($this->net() !== false)
+            return($this->_net->netinfo());
 
-		return(false);
-	}
+        return(false);
+    }
 
-	function netstats()
-	{
-		if($this->net() !== false)
-			return($this->_net->netstats());
+    function netstats()
+    {
+        if($this->net() !== false)
+            return($this->_net->netstats());
 
-		return(false);
-	}
+        return(false);
+    }
 }
 
 ?>

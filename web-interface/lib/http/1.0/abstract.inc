@@ -22,28 +22,28 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'http','abstract.inc'));
 
 class dwho_http_1_0_abstract extends dwho_http_abstract
 {
-	var $_version		= '1.0';
-	var $_status_code	= array(
-					200	=> 'OK',
-					201	=> 'Created',
-					202	=> 'Accepted',
-					204	=> 'No Content',
-					301	=> 'Moved Permanently',
-					302	=> 'Found',
-					304	=> 'Not Modified',
-					400	=> 'Bad Request',
-					401	=> 'Unauthorized',
-					403	=> 'Forbidden',
-					404	=> 'Not Found',
-					500	=> 'Internal Server Error',
-					501	=> 'Not Implemented',
-					502	=> 'Bad Gateway',
-					503	=> 'Service Unavailable');
+    var $_version        = '1.0';
+    var $_status_code    = array(
+                    200    => 'OK',
+                    201    => 'Created',
+                    202    => 'Accepted',
+                    204    => 'No Content',
+                    301    => 'Moved Permanently',
+                    302    => 'Found',
+                    304    => 'Not Modified',
+                    400    => 'Bad Request',
+                    401    => 'Unauthorized',
+                    403    => 'Forbidden',
+                    404    => 'Not Found',
+                    500    => 'Internal Server Error',
+                    501    => 'Not Implemented',
+                    502    => 'Bad Gateway',
+                    503    => 'Service Unavailable');
 
-	function dwho_http_1_0_abstract()
-	{
-		$this->dwho_http_abstract();
-	}
+    function dwho_http_1_0_abstract()
+    {
+        $this->dwho_http_abstract();
+    }
 }
 
 ?>

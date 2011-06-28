@@ -20,29 +20,29 @@
 
 class dwho_http
 {
-	function factory($mode,$version='1.1')
-	{
-		if(($httparr = &dwho_gat::load_get('http',DWHO_PATH_CONF)) === false)
-			trigger_error('Failed to load HTTP configuration',E_USER_ERROR);
+    function factory($mode,$version='1.1')
+    {
+        if(($httparr = &dwho_gat::load_get('http',DWHO_PATH_CONF)) === false)
+            trigger_error('Failed to load HTTP configuration',E_USER_ERROR);
 
-		$version = strval($version);
+        $version = strval($version);
 
-		if(isset($httparr['version'][$version]) === false)
-			$version = '1.1';
+        if(isset($httparr['version'][$version]) === false)
+            $version = '1.1';
 
-		if(isset($httparr['version'][$version]['mode'][$mode]) === false)
-			return(false);
+        if(isset($httparr['version'][$version]['mode'][$mode]) === false)
+            return(false);
 
-		$version_name = $httparr['version'][$version]['name'];
-		$name = 'dwho_http_'.$version_name.'_'.$mode;
+        $version_name = $httparr['version'][$version]['name'];
+        $name = 'dwho_http_'.$version_name.'_'.$mode;
 
-		if(dwho::load_class($name,
-				    array('http',$version),
-				    $mode) === false)
-			return(false);
+        if(dwho::load_class($name,
+                    array('http',$version),
+                    $mode) === false)
+            return(false);
 
-		return(new $name());
-	}
+        return(new $name());
+    }
 }
 
 ?>

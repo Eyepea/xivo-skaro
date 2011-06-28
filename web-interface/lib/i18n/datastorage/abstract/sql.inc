@@ -20,74 +20,74 @@
 
 class dwho_i18n_abstract_sql
 {
-	var $_param	= array('table'	=> 'i18ncache');
-	var $_dso	= null;
+    var $_param    = array('table'    => 'i18ncache');
+    var $_dso    = null;
 
-	function _init(&$dso,$param=array())
-	{
-		if(is_object($dso) === false)
-			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+    function _init(&$dso,$param=array())
+    {
+        if(is_object($dso) === false)
+            trigger_error('Invalid Datastorage object',E_USER_ERROR);
 
-		$this->_dso = &$dso;
+        $this->_dso = &$dso;
 
-		$param = (array) $param;
+        $param = (array) $param;
 
-		if(isset($param['table']) === true)
-			$this->_param['table'] = (string) $param['table'];
-	}
+        if(isset($param['table']) === true)
+            $this->_param['table'] = (string) $param['table'];
+    }
 
-	function save_cache($arr)
-	{
-		if(is_array($arr) === false)
-			return(false);
-		else if(($arr['dcreate'] = dwho_uint($arr['dcreate'])) === 0)
-			$arr['dcreate'] = time();
+    function save_cache($arr)
+    {
+        if(is_array($arr) === false)
+            return(false);
+        else if(($arr['dcreate'] = dwho_uint($arr['dcreate'])) === 0)
+            $arr['dcreate'] = time();
 
-		if(($arr['dupdate'] = dwho_uint($arr['dupdate'])) === 0)
-			$arr['dupdate'] = time();
+        if(($arr['dupdate'] = dwho_uint($arr['dupdate'])) === 0)
+            $arr['dupdate'] = time();
 
-		$arr['obj'] = serialize($arr['obj']);
+        $arr['obj'] = serialize($arr['obj']);
 
-		/* REPLACE is not a standard SQL statement */
-		$this->_dso->new_select($this->_param['table']);
-		$this->_dso->where(array('locale' => $arr['locale'], 'path' => $arr['path']));
+        /* REPLACE is not a standard SQL statement */
+        $this->_dso->new_select($this->_param['table']);
+        $this->_dso->where(array('locale' => $arr['locale'], 'path' => $arr['path']));
 
-		$ret = false;
-		if(($r = $this->_dso->select_count()) !== false)
-		{
-			if($r > 0) {
-					$ret = $this->_dso->update($this->_param['table'], $arr, null, null, true);
-				}	else	{
-					$ret = $this->_dso->insert($this->_param['table'], $arr);
-				}
-		}
+        $ret = false;
+        if(($r = $this->_dso->select_count()) !== false)
+        {
+            if($r > 0) {
+                    $ret = $this->_dso->update($this->_param['table'], $arr, null, null, true);
+                }    else    {
+                    $ret = $this->_dso->insert($this->_param['table'], $arr);
+                }
+        }
 
-		return($ret);
-	}
+        return($ret);
+    }
 
-	function get_cache($arr)
-	{
-		if(is_array($arr) === false)
-			return(false);
+    function get_cache($arr)
+    {
+        if(is_array($arr) === false)
+            return(false);
 
-		$this->_dso->new_select($this->_param['table'],array('locale',
-								     'path',
-								     'dcreate',
-								     'dupdate',
-								     'obj'));
-		$this->_dso->where(array('locale' => $arr['locale'],
-					 'path'	=> $arr['path']));
+        $this->_dso->new_select($this->_param['table'],array('locale',
+                                     'path',
+                                     'dcreate',
+                                     'dupdate',
+                                     'obj'));
+        $this->_dso->where(array('locale' => $arr['locale'],
+                     'path'    => $arr['path']));
 
-		if(($r = $this->_dso->select_single()) !== false)
-		{
-			$r['filectime'] = $r['dcreate'];
+        if(($r = $this->_dso->select_single()) !== false)
+        {
+            $r['filectime'] = $r['dcreate'];
 
-			if((int) $r['dupdate'] === (int) $arr['filemtime'])
-				$r['obj'] = dwho_unserialize($r['obj']);
-		}
+            if((int) $r['dupdate'] === (int) $arr['filemtime'])
+                $r['obj'] = dwho_unserialize($r['obj']);
+        }
 
-		return($r);
-	}
+        return($r);
+    }
 }
 
 ?>

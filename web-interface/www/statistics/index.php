@@ -21,7 +21,7 @@
 require_once('xivo.php');
 
 if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
+    $_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
 
 $_QRY->go($_TPL->url('statistics/call_center/index'));
 

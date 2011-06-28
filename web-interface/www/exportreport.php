@@ -24,7 +24,7 @@ $bloc = isset($_QR['bloc']) === false ? '' : $_QR['bloc'];
 $type = isset($_QR['type']) === false ? '' : $_QR['type'];
 
 if(($result = dwho_report::get_bloc($type,$bloc)) === false)
-	die;
+    die;
 
 $title = str_replace(' ','_',html_entity_decode(base64_decode($bloc)));
 
@@ -37,7 +37,7 @@ header('Content-Type: text/plain; charset=UTF-8');
 ob_start();
 
 while($result)
-	echo html_entity_decode(array_shift($result),ENT_QUOTES,'UTF-8'),"\n";
+    echo html_entity_decode(array_shift($result),ENT_QUOTES,'UTF-8'),"\n";
 
 header('Content-Length: '.ob_get_length());
 ob_end_flush();

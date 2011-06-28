@@ -22,26 +22,26 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','abstr
 
 class dwho_tpl_xmlphone_yealink extends dwho_tpl_xmlphone_abstract
 {
-	var $_vendor		= 'yealink';
-	var $_model		= null;
-	var $_argseparator	= '&';
-	var $_cdata		= false;
-	var $_escape		= false;
-	var $_utf8		= true;
-	var $_nbbypage		= 64;
-	var $_tags		= array('directory'	=> 'YealinkIPPhoneDirectory',
-					'menu'		=> null,
-					'input'		=> null);
+    var $_vendor        = 'yealink';
+    var $_model        = null;
+    var $_argseparator    = '&';
+    var $_cdata        = false;
+    var $_escape        = false;
+    var $_utf8        = true;
+    var $_nbbypage        = 64;
+    var $_tags        = array('directory'    => 'YealinkIPPhoneDirectory',
+                    'menu'        => null,
+                    'input'        => null);
 
-	function dwho_tpl_xmlphone_yealink()
-	{
-		$this->_model = $this->get_model();
-	}
+    function dwho_tpl_xmlphone_yealink()
+    {
+        $this->_model = $this->get_model();
+    }
 
-	function get_model()
-	{
-		return(null);
-	}
+    function get_model()
+    {
+        return(null);
+    }
 }
 
 ?>

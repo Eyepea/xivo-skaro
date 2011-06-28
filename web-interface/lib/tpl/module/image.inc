@@ -20,37 +20,37 @@
 
 class dwho_tpl_image
 {
-	function make($url,$alt='',$opt='')
-	{
-		$r = '';
+    function make($url,$alt='',$opt='')
+    {
+        $r = '';
 
-		$url = (string) $url;
-		$alt = (string) $alt;
-		$opt = (string) $opt;
+        $url = (string) $url;
+        $alt = (string) $alt;
+        $opt = (string) $opt;
 
-		if(isset($url{0}) === false)
-			return($r);
+        if(isset($url{0}) === false)
+            return($r);
 
-		$url = $url{0} !== '/' ? '/i/i18n/'.DWHO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
+        $url = $url{0} !== '/' ? '/i/i18n/'.DWHO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
 
-		$r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.dwho_alttitle($alt).'" />';
+        $r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.dwho_alttitle($alt).'" />';
 
-		return($r);
-	}
+        return($r);
+    }
 
-	function get($url)
-	{
-		$r = '';
+    function get($url)
+    {
+        $r = '';
 
-		$url = (string) $url;
+        $url = (string) $url;
 
-		if(isset($url{0}) === false)
-			return($r);
+        if(isset($url{0}) === false)
+            return($r);
 
-		$r = $url{0} !== '/' ? '/i/i18n/'.DWHO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
+        $r = $url{0} !== '/' ? '/i/i18n/'.DWHO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
 
-		return($r);
-	}
+        return($r);
+    }
 }
 
 ?>

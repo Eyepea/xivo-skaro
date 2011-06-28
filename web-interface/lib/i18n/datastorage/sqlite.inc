@@ -22,10 +22,10 @@ dwho_file::required(array(DWHO_PATH_ROOT,'i18n','datastorage','abstract','sql.in
 
 class dwho_i18n_sqlite extends dwho_i18n_abstract_sql
 {
-	function dwho_i18n_sqlite(&$dso,$param=array())
-	{
-		$this->_init(&$dso,$param);
-	}
+    function dwho_i18n_sqlite(&$dso,$param=array())
+    {
+        $this->_init(&$dso,$param);
+    }
 }
 
 ?>

@@ -22,32 +22,32 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','abstr
 
 class dwho_tpl_xmlphone_cisco extends dwho_tpl_xmlphone_abstract
 {
-	var $_vendor		= 'cisco';
-	var $_model		    = null;
-	var $_argseparator	= '&';
-	var $_cdata		    = false;
-	var $_escape		= false;
-	var $_utf8		    = true;
-	var $_noaccents		= false;
-	var $_tags		= array('directory'	=> 'CiscoIPPhoneDirectory',
-					'menu'		=> 'CiscoIPPhoneMenu',
-					'input'		=> 'CiscoIPPhoneInput');
+    var $_vendor        = 'cisco';
+    var $_model            = null;
+    var $_argseparator    = '&';
+    var $_cdata            = false;
+    var $_escape        = false;
+    var $_utf8            = true;
+    var $_noaccents        = false;
+    var $_tags        = array('directory'    => 'CiscoIPPhoneDirectory',
+                    'menu'        => 'CiscoIPPhoneMenu',
+                    'input'        => 'CiscoIPPhoneInput');
 
 
-	function dwho_tpl_xmlphone_cisco()
-	{
-		$this->_model = $this->get_model();
-	}
+    function dwho_tpl_xmlphone_cisco()
+    {
+        $this->_model = $this->get_model();
+    }
 
-	function get_model()
-	{
-		if(isset($_SERVER['HTTP_USER_AGENT']) === false
-		|| preg_match('/Allegro-/i',
-			      $_SERVER['HTTP_USER_AGENT']) !== 1)
-			return(null);
+    function get_model()
+    {
+        if(isset($_SERVER['HTTP_USER_AGENT']) === false
+        || preg_match('/Allegro-/i',
+                  $_SERVER['HTTP_USER_AGENT']) !== 1)
+            return(null);
 
-		return('cisco7960');
-	}
+        return('cisco7960');
+    }
 }
 
 ?>
