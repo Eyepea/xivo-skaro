@@ -189,7 +189,7 @@ CREATE TABLE `resolvconf` (
  `search` varchar(255),
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE UNIQUE INDEX `resolvconf__uidx__hostname` ON `resolvconf`(`hostname`);
 INSERT INTO `resolvconf` VALUES(1, '', '', NULL, NULL, NULL, NULL, '');
@@ -200,6 +200,8 @@ CREATE TABLE `server` (
  `name` varchar(64) NOT NULL DEFAULT '',
  `host` varchar(255) NOT NULL DEFAULT '',
  `port` smallint unsigned NOT NULL,
+ `ws_login` varchar(64) NOT NULL DEFAULT '',
+ `ws_pass` varchar(64) NOT NULL DEFAULT '',
  `ssl` tinyint(1) NOT NULL DEFAULT 0,
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
@@ -217,7 +219,7 @@ CREATE INDEX `server__idx__disable` ON `server`(`disable`);
 CREATE UNIQUE INDEX `server__uidx__name` ON `server`(`name`);
 CREATE UNIQUE INDEX `server__uidx__host_port` ON `server`(`host`,`port`);
 
-INSERT INTO `server` VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
+INSERT INTO `server` VALUES(1,'xivo','localhost',443,'','',1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
 
 
 DROP TABLE IF EXISTS `session`;
@@ -256,7 +258,6 @@ CREATE INDEX `user__idx__time` ON `user`(`time`);
 CREATE UNIQUE INDEX `user__uidx__login_meta` ON `user`(`login`,`meta`);
 
 INSERT INTO `user` VALUES (1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
-# INSERT INTO `user` VALUES (2,'admin','proformatique','admin',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
 
 
 DROP TABLE IF EXISTS `dhcp`;
@@ -270,6 +271,7 @@ CREATE TABLE `dhcp` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 INSERT INTO `dhcp` VALUES (1,0,'','','');
+
 
 DROP TABLE IF EXISTS `mail`;
 CREATE TABLE `mail` (
@@ -320,56 +322,76 @@ CREATE INDEX `queue_info_queue_name_index` ON `queue_info`(`queue_name`);
 -- HA
 DROP TABLE IF EXISTS `ha`;
 CREATE TABLE `ha` (
- `id` int(10) unsigned auto_increment,
- `apache2` int(1) unsigned NOT NULL DEFAULT 0,
- `asterisk` int(1) unsigned NOT NULL DEFAULT 0,
- `dhcp` int(1) unsigned NOT NULL DEFAULT 0,
- `monit` int(1) unsigned NOT NULL DEFAULT 0,
- `mysql` int(1) unsigned NOT NULL DEFAULT 0,
- `ntp` int(1) unsigned NOT NULL DEFAULT 0,
- `rsync` int(1) unsigned NOT NULL DEFAULT 0,
- `smokeping` int(1) unsigned NOT NULL DEFAULT 0,
- `mailto` int(1) unsigned NOT NULL DEFAULT 0,
- `alert_emails` varchar(1024) DEFAULT NULL,
- `serial` varchar(16) NOT NULL DEFAULT '',
- `authkeys` varchar(128) NOT NULL DEFAULT '',
- `com_mode` varchar(8) NOT NULL DEFAULT 'ucast',
- `user` varchar(16) NOT NULL DEFAULT 'pf-replication',
- `password` varchar(16) NOT NULL DEFAULT 'proformatique',
- `dest_user` varchar(16) NOT NULL DEFAULT 'pf-replication',
- `dest_password` varchar(16) NOT NULL DEFAULT 'proformatique',
+ `id`          INT(10) unsigned auto_increment,
+ `netaddr`     VARCHAR(255) DEFAULT NULL,
+ `netmask`     VARCHAR(255) DEFAULT NULL,
+ `mcast`       VARCHAR(255) DEFAULT NULL,
+
+ -- node 1
+ `node1_ip`    VARCHAR(255) DEFAULT NULL,
+ `node1_name`  VARCHAR(255) DEFAULT NULL,
+ -- node 2
+ `node2_ip`    VARCHAR(255) DEFAULT NULL,
+ `node2_name`  VARCHAR(255) DEFAULT NULL,
+
+ -- cluster
+ `cluster_name`  VARCHAR(255) DEFAULT NULL,
+ `cluster_group` INTEGER NOT NULL DEFAULT 1,
+ `cluster_itf_data` VARCHAR(255) DEFAULT NULL,
+ `cluster_monitor` INTEGER NOT NULL DEFAULT 20,
+ `cluster_timeout` INTEGER NOT NULL DEFAULT 60,
+ `cluster_mailto`  VARCHAR(255) DEFAULT NULL,
+ `cluster_pingd`   VARCHAR(255) DEFAULT NULL,
+
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ha` VALUES (1,0,0,0,0,0,0,0,0,0,NULL,'','','ucast','pf-replication','proformatique','pf-replication','proformatique');
+INSERT INTO `ha` VALUES (1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,20,60,NULL,NULL);
 
-DROP TABLE IF EXISTS `ha_uname_node`;
-CREATE TABLE `ha_uname_node` (
- `uname_node` varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY (`uname_node`)
+
+DROP TABLE IF EXISTS `ha_cluster_node`;
+CREATE TABLE `ha_cluster_node` (
+ -- primary key must not exceed 1000 butes
+ -- 1 utf8 char == 3 bytes
+ `device`  VARCHAR(128) NOT NULL DEFAULT '',
+ `address` VARCHAR(128) NOT NULL DEFAULT '',
+ PRIMARY KEY (`device`, `address`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `ha_ping_ipaddr`;
-CREATE TABLE `ha_ping_ipaddr` (
- `ping_ipaddr` varchar(39) NOT NULL DEFAULT '',
- PRIMARY KEY (`ping_ipaddr`)
+
+DROP TABLE IF EXISTS `ha_service`;
+CREATE TABLE `ha_service` (
+ `name`      VARCHAR(128) NOT NULL,
+ `active`    INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ `rsc_class` VARCHAR(8) DEFAULT NULL,  -- 'lsb' or 'ocf'
+ `monitor`   INTEGER DEFAULT NULL,
+ `timeout`   INTEGER DEFAULT NULL,
+ PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `ha_virtual_network`;
-CREATE TABLE `ha_virtual_network` (
- `ipaddr` varchar(39) NOT NULL DEFAULT '',
- `netmask` varchar(39) NOT NULL DEFAULT '',
- `broadcast` varchar(39) NOT NULL DEFAULT '',
- PRIMARY KEY (`ipaddr`)
+INSERT INTO `ha_service` VALUES ('asterisk', 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('lighttpd', 0, 'ocf', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('dhcp'    , 0, NULL, NULL, NULL);
+INSERT INTO `ha_service` VALUES ('ntp'     , 0, NULL, NULL, NULL);
+INSERT INTO `ha_service` VALUES ('csync'   , 0, NULL, NULL, NULL);
+
+
+DROP TABLE IF EXISTS `provisioning`;
+CREATE TABLE `provisioning` (
+ `id` int(10) unsigned auto_increment,
+ `net4_ip` varchar(39) NOT NULL,
+ `net4_ip_rest` varchar(39) NOT NULL,
+ `username` varchar(32) NOT NULL,
+ `password` varchar(32) NOT NULL,
+ `dhcp_integration` INTEGER NOT NULL DEFAULT 0,
+ `rest_port` integer NOT NULL,
+ `http_port` integer NOT NULL,
+ `private` INTEGER NOT NULL DEFAULT 0,
+ `secure` INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `ha_peer`;
-CREATE TABLE `ha_peer` (
- `iface` varchar(64) NOT NULL DEFAULT '',
- `host` varchar(128) NOT NULL DEFAULT '',
- `transfer` int(1) unsigned NOT NULL DEFAULT 0,
- PRIMARY KEY (`iface`, `host`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+INSERT INTO `provisioning` VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0, 0);
 
 
 DROP TABLE IF EXISTS `stats_conf`;
@@ -378,6 +400,7 @@ CREATE TABLE `stats_conf` (
  `name` varchar(64) NOT NULL DEFAULT '',
  `hour_start` time NOT NULL,
  `hour_end` time NOT NULL,
+ `homepage` integer,
  `default_delta` varchar(16) NOT NULL DEFAULT 0,
  `monday` tinyint(1) NOT NULL DEFAULT 0,
  `tuesday` tinyint(1) NOT NULL DEFAULT 0,
@@ -399,46 +422,55 @@ CREATE TABLE `stats_conf` (
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `stats_conf__idx__id` ON `stats_conf`(`id`);
 CREATE INDEX `stats_conf__idx__disable` ON `stats_conf`(`disable`);
 CREATE UNIQUE INDEX `stats_conf__uidx__name` ON `stats_conf`(`name`);
 
-DROP TABLE IF EXISTS `stats_conf_incall`;
-CREATE TABLE `stats_conf_incall` (
-    `stats_conf_id` int(10) NOT NULL,
-    `incall_id` int(10) NOT NULL
-);
-CREATE UNIQUE INDEX `stats_conf_incall_index` ON `stats_conf_incall`(`stats_conf_id`,`incall_id`);
 
 DROP TABLE IF EXISTS `stats_conf_agent`;
 CREATE TABLE `stats_conf_agent` (
     `stats_conf_id` int(10) NOT NULL,
     `agentfeatures_id` int(10) NOT NULL
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 CREATE UNIQUE INDEX `stats_conf_agent_index` ON `stats_conf_agent`(`stats_conf_id`,`agentfeatures_id`);
+
 
 DROP TABLE IF EXISTS `stats_conf_user`;
 CREATE TABLE `stats_conf_user` (
     `stats_conf_id` int(10) NOT NULL,
     `userfeatures_id` int(10) NOT NULL
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 CREATE UNIQUE INDEX `stats_conf_user_index` ON `stats_conf_user`(`stats_conf_id`,`userfeatures_id`);
+
+
+DROP TABLE IF EXISTS `stats_conf_incall`;
+CREATE TABLE `stats_conf_incall` (
+    `stats_conf_id` int(10) NOT NULL,
+    `incall_id` int(10) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE UNIQUE INDEX `stats_conf_incall_index` ON `stats_conf_incall`(`stats_conf_id`,`incall_id`);
+
 
 DROP TABLE IF EXISTS `stats_conf_queue`;
 CREATE TABLE `stats_conf_queue` (
     `stats_conf_id` int(10) NOT NULL,
     `queuefeatures_id` int(10) NOT NULL,
     `qos` smallint(4) NOT NULL DEFAULT 0
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 CREATE UNIQUE INDEX `stats_conf_queue_index` ON `stats_conf_queue`(`stats_conf_id`,`queuefeatures_id`);
+
 
 DROP TABLE IF EXISTS `stats_conf_group`;
 CREATE TABLE `stats_conf_group` (
     `stats_conf_id` int(10) NOT NULL,
     `groupfeatures_id` int(10) NOT NULL
-);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 CREATE UNIQUE INDEX `stats_conf_group_index` ON `stats_conf_group`(`stats_conf_id`,`groupfeatures_id`);
 
 COMMIT;

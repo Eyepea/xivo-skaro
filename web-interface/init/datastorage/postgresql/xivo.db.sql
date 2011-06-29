@@ -385,8 +385,8 @@ SELECT setval('ha_id_seq', 2);
 
 DROP TABLE IF EXISTS "ha_cluster_node";
 CREATE TABLE "ha_cluster_node" (
- "device"  VARCHAR(255) NOT NULL DEFAULT '',
- "address" VARCHAR(255) NOT NULL DEFAULT '',
+ "device"  VARCHAR(128) NOT NULL DEFAULT '',
+ "address" VARCHAR(128) NOT NULL DEFAULT '',
  PRIMARY KEY ("device", "address")
 );
 
@@ -406,27 +406,6 @@ INSERT INTO "ha_service" VALUES ('dhcp'    , 0, NULL, NULL, NULL);
 INSERT INTO "ha_service" VALUES ('ntp'     , 0, NULL, NULL, NULL);
 INSERT INTO "ha_service" VALUES ('csync'   , 0, NULL, NULL, NULL);
 
---DROP TABLE IF EXISTS "ha_ping_ipaddr";
---CREATE TABLE "ha_ping_ipaddr" (
--- "ping_ipaddr" varchar(39) NOT NULL DEFAULT '',
--- PRIMARY KEY ("ping_ipaddr")
---);
-
---DROP TABLE IF EXISTS "ha_virtual_network";
---CREATE TABLE "ha_virtual_network" (
--- "ipaddr" varchar(39) NOT NULL DEFAULT '',
--- "netmask" varchar(39) NOT NULL DEFAULT '',
--- "broadcast" varchar(39) NOT NULL DEFAULT '',
--- PRIMARY KEY ("ipaddr")
---);
-
---DROP TABLE IF EXISTS "ha_peer";
---CREATE TABLE "ha_peer" (
--- "iface" varchar(64) NOT NULL DEFAULT '',
--- "host" varchar(128) NOT NULL DEFAULT '',
--- "transfer" INTEGER NOT NULL DEFAULT 0,
--- PRIMARY KEY ("iface", "host")
---);
 
 DROP TABLE IF EXISTS "provisioning";
 CREATE TABLE "provisioning" (
@@ -479,12 +458,14 @@ CREATE TABLE "stats_conf" (
 CREATE INDEX "stats_conf__idx__disable" ON "stats_conf"("disable");
 CREATE UNIQUE INDEX "stats_conf__uidx__name" ON "stats_conf"("name");
 
+
 DROP TABLE IF EXISTS "stats_conf_agent";
 CREATE TABLE "stats_conf_agent" (
     "stats_conf_id" integer NOT NULL,
     "agentfeatures_id" integer NOT NULL
 );
 CREATE UNIQUE INDEX "stats_conf_agent_index" ON "stats_conf_agent" USING btree ("stats_conf_id","agentfeatures_id");
+
 
 DROP TABLE IF EXISTS "stats_conf_user";
 CREATE TABLE "stats_conf_user" (
@@ -493,12 +474,14 @@ CREATE TABLE "stats_conf_user" (
 );
 CREATE UNIQUE INDEX "stats_conf_user_index" ON "stats_conf_user" USING btree ("stats_conf_id","userfeatures_id");
 
+
 DROP TABLE IF EXISTS "stats_conf_incall";
 CREATE TABLE "stats_conf_incall" (
     "stats_conf_id" integer NOT NULL,
     "incall_id" integer NOT NULL
 );
 CREATE UNIQUE INDEX "stats_conf_incall_index" ON "stats_conf_incall" USING btree ("stats_conf_id","incall_id");
+
 
 DROP TABLE IF EXISTS "stats_conf_queue";
 CREATE TABLE "stats_conf_queue" (
@@ -507,6 +490,7 @@ CREATE TABLE "stats_conf_queue" (
     "qos" smallint NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX "stats_conf_queue_index" ON "stats_conf_queue" USING btree ("stats_conf_id","queuefeatures_id");
+
 
 DROP TABLE IF EXISTS "stats_conf_group";
 CREATE TABLE "stats_conf_group" (
@@ -519,7 +503,7 @@ CREATE UNIQUE INDEX "stats_conf_group_index" ON "stats_conf_group" USING btree (
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
 BEGIN
-    execute $1;
+	execute $1;
 END;
 ' LANGUAGE plpgsql;
 SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO xivo;') FROM pg_tables WHERE schemaname = 'public';
