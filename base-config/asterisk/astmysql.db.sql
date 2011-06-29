@@ -959,7 +959,7 @@ CREATE UNIQUE INDEX `linefeatures__uidx__provisioningid` ON `linefeatures`(`prov
 CREATE UNIQUE INDEX `linefeatures__uidx__name` ON `linefeatures`(`name`);
 CREATE UNIQUE INDEX `linefeatures__uidx__protocol_protocolid` ON `linefeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `linefeatures` VALUES (1,'sip',1,0,'','','','autoprov','','default',0,'','','','',0,0,'',0,0,'');
+INSERT INTO `linefeatures` VALUES (1,'sip',1,0,'','','','autoprov','','default',0,'','','','',0,0,'',1,0,'');
 
 
 DROP TABLE IF EXISTS `ldapfilter`;
