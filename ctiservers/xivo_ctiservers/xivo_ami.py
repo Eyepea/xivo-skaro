@@ -327,7 +327,7 @@ class AMIClass:
             return False
 
     # \brief Adds an Interface into a Queue
-    def queueadd(self, queuename, interface, paused, skills):
+    def queueadd(self, queuename, interface, paused, skills = ''):
         try:
             # it looks like not specifying Paused is the same as setting it to false
             ret = self.sendcommand('QueueAdd', [('Queue', queuename),

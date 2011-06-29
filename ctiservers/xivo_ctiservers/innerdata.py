@@ -29,13 +29,17 @@ import copy
 import hashlib
 import logging
 import os
+import random
 import sys
+import string
 import threading
 import time
 import Queue
 from xivo_ctiservers import lists
 from xivo_ctiservers.lists import *
 from xivo_ctiservers import cti_sheets
+
+__alphanums__ = string.uppercase + string.lowercase + string.digits
 
 class Safe:
     # matches between CTI lists and WEBI-given fields
@@ -483,7 +487,7 @@ class Safe:
         if location.startswith('Agent/'):
             aid = self.xod_config['agents'].idbyagentnumber(location[6:])
             self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
-            midx = 'qa:%s-%s' % (qgid, aid)
+            midx = '%sa:%s-%s' % (qgname[0], qgid, aid)
             # todo : group all this stuff, take care of relations
             if props:
                 if aid not in self.xod_status[qgname][qgid]['agentmembers']:
@@ -500,7 +504,7 @@ class Safe:
             pid = self.zphones(termination.get('protocol'), termination.get('name'))
             if pid:
                 self.handle_cti_stack('set', ('phones', 'updatestatus', pid))
-                midx = 'qp:%s-%s' % (qgid, pid)
+                midx = '%sp:%s-%s' % (qgname[0], qgid, pid)
                 if props:
                     if pid not in self.xod_status[qgname][qgid]['phonemembers']:
                         self.xod_status[qgname][qgid]['phonemembers'].append(pid)
@@ -836,6 +840,19 @@ class Safe:
         truestate = newstate
         if truestate != oldstate:
             self.xod_status.get('users').get(userid)['availstate'] = truestate
+            agentid = self.xod_config.get('users').keeplist.get(userid).get('agentid')
+            if agentid:
+                agentnumber = self.xod_config.get('agents').keeplist.get(agentid).get('number')
+                actionid = ''.join(random.sample(__alphanums__, 10))
+                params = {
+                    'mode' : 'presence',
+                    'amicommand' : 'queuelog',
+                    'amiargs' : ('NONE', 'Presence', 'NONE',
+                                 'Agent/%s' % agentnumber,
+                                 '%s|agent:%s/%s|user:%s/%s'
+                                 % (truestate, self.ipbxid, agentid, self.ipbxid, userid))
+                    }
+                self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
             # XXX log to ctilog self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
             self.appendcti('users', 'updatestatus', userid)
             self.presence_action(userid)

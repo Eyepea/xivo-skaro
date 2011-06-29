@@ -336,6 +336,10 @@ class AMI:
             elif mode == 'init':
                 self.log.info('amiresponse_success %s %s : %s'
                               % (actionid, mode, event))
+            elif mode == 'presence':
+                # self.log.info('amiresponse_success %s %s : %s' % (actionid, mode, event))
+                # too verbose, since occurs each time a user changes its presence
+                pass
             else:
                 self.log.info('amiresponse_success %s %s (?) : %s'
                               % (actionid, mode, event))
