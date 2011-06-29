@@ -1396,8 +1396,10 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         $context_incall = true;
         $context_outcall = true;
 
-        $appcontext = &$this->_ipbx->get_application('context');
+        $listcontext = $this->_wizsess['context'];
 
+        $appcontext = &$this->_ipbx->get_application('context');
+        
         // allow to reexecute the process several times
         foreach($appcontext->get_contexts_list() as $context)
         {
@@ -1411,21 +1413,21 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
             }
         }
 
-        if($appcontext->set_add($this->_wizsess['context']['internal']) === false
+        if($appcontext->set_add($listcontext['internal']) === false
         || $appcontext->add() === false)
         {
             $context_internal = false;
             $this->_set_error('context_internal','save');
         }
 
-        if($appcontext->set_add($this->_wizsess['context']['incall']) === false
+        if($appcontext->set_add($listcontext['incall']) === false
         || $appcontext->add() === false)
         {
             $context_incall = false;
             $this->_set_error('context_incall','save');
         }
 
-        if($appcontext->set_add($this->_wizsess['context']['outcall']) === false
+        if($appcontext->set_add($listcontext['outcall']) === false
         || $appcontext->add() === false)
         {
             $context_outcall = false;
@@ -1558,7 +1560,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         // save to database
         $this->_load_xivo_dso();
         $this->_load_ipbx_service();
-        
+
         $modprov = &$this->_xobj->get_module('provisioning');
         $modprov->edit(1, array('net4_ip' => $netiface['address']));
 
@@ -1567,7 +1569,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         
         if ($provdconfig->eval_required_config($netiface['address'],true) === false)
             return false;
-            
+
         return(true);
     }
 

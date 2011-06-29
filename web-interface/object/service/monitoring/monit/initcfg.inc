@@ -21,6 +21,6 @@
 $array = array();
 
 $array['stoppable'] = array();
-$array['stoppable']['apache2'] = false;
+$array['stoppable']['nginx'] = false;
 
 ?>

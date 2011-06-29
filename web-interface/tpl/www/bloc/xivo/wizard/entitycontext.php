@@ -78,7 +78,7 @@ echo	$form->hidden(array('name'	=> 'context[internal][name]',
 
 		$form->hidden(array('name'	=> 'context[internal][contexttype]',
 			  'id'		=> 'it-context-internal-contexttype',
-			  'value'	=> 'intern')),
+			  'value'	=> 'internal')),
 /*
 	$form->text(array('desc'	=> $this->bbf('fm_context_internal-name'),
 			  'name'	=> 'context[internal][name]',
