@@ -1021,8 +1021,7 @@ CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
 CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
 
 
-INSERT INTO "linefeatures" VALUES (1,'sip',1,0,'autoprov','','default','autoprov','','xivo-initconfig',0,'','',0,'',0,0,1,0);
-
+INSERT INTO `linefeatures` VALUES (1,'sip',1,0,'','','','autoprov','','default',0,'','','','',0,0,'',0,0,'');
 SELECT setval('linefeatures_id_seq', 2);
 
 
@@ -1299,7 +1298,7 @@ CREATE UNIQUE INDEX "phonebookaddress__uidx__phonebookid_type" ON "phonebookaddr
 DROP TABLE IF EXISTS "phonebooknumber";
 DROP TYPE  IF EXISTS "phonebooknumber_type";
 
-CREATE TYPE "phonebooknumber_type" AS ENUM ('home', 'office', 'fax', 'other');
+CREATE TYPE "phonebooknumber_type" AS ENUM ('home', 'office', 'mobile', 'fax', 'other');
 
 CREATE TABLE "phonebooknumber" (
  "id" SERIAL,
@@ -2064,6 +2063,7 @@ INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'v
 INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','listen-control-stop-key',NULL);
 INSERT INTO "staticvoicemail" VALUES (nextval('staticvoicemail_id_seq'),0,0,1,'voicemail.conf','general','backupdeleted',NULL);
 
+
 DROP TABLE IF EXISTS "staticsccp";
 CREATE TABLE "staticsccp" (
  "id" SERIAL,
@@ -2131,10 +2131,8 @@ CREATE UNIQUE INDEX "trunkfeatures__uidx__protocol_protocolid" ON "trunkfeatures
 
 
 DROP TABLE IF EXISTS "usercustom";
-DROP TYPE  IF EXISTS "usercustom_protocol";
 DROP TYPE  IF EXISTS "usercustom_category";
 
-CREATE TYPE "usercustom_protocol" AS ENUM ('custom');
 CREATE TYPE "usercustom_category" AS ENUM ('user', 'trunk');
 
 CREATE TABLE "usercustom" (
@@ -2555,6 +2553,7 @@ CREATE TABLE "queueskillcat" (
 
 CREATE UNIQUE INDEX "queueskillcat__uidx__name" ON "queueskillcat"("name");
 
+
 -- queueskill values
 DROP TABLE IF EXISTS "queueskill";
 CREATE TABLE "queueskill" (
@@ -2569,6 +2568,7 @@ CREATE TABLE "queueskill" (
 CREATE INDEX "queueskill__idx__catid" ON "queueskill"("catid");
 CREATE UNIQUE INDEX "queueskill__uidx__name" ON "queueskill"("name");
 
+
 -- queueskill rules;
 DROP TABLE IF EXISTS "queueskillrule";
 CREATE TABLE "queueskillrule" (
@@ -2577,6 +2577,7 @@ CREATE TABLE "queueskillrule" (
  "rule" text,
  PRIMARY KEY("id")
 );
+
 
 -- user queueskills
 DROP TABLE IF EXISTS "userqueueskill";
@@ -2589,9 +2590,9 @@ CREATE TABLE "userqueueskill" (
 
 CREATE INDEX "userqueueskill__idx__userid" ON "userqueueskill"("userid");
 
+
 DROP TABLE IF EXISTS "usersccp";
-CREATE TABLE "usersccp"
-(
+CREATE TABLE "usersccp" (
  "id" SERIAL,
  "name" varchar(128),
  "devicetype" varchar(64), -- phone model, ie 7960
@@ -2643,8 +2644,7 @@ CREATE UNIQUE INDEX "usersccp__uidx__name" ON "usersccp"("name");
 
 
 DROP TABLE IF EXISTS "sccpline";
-CREATE TABLE "sccpline"
-(
+CREATE TABLE "sccpline" (
  "id" SERIAL,
  "name" varchar(80) NOT NULL,
  "pin" varchar(8) NOT NULL DEFAULT '',
@@ -2681,6 +2681,7 @@ CREATE TABLE "sccpline"
 
 CREATE UNIQUE INDEX "sccpline__uidx__name" ON "sccpline"("name");
 
+
 DROP TABLE IF EXISTS "general";
 CREATE TABLE "general"
 (
@@ -2692,7 +2693,7 @@ CREATE TABLE "general"
  PRIMARY KEY("id")
 );
 
-INSERT INTO "general" VALUES (1, 'Europe/Paris', NULL, NULL);
+INSERT INTO "general" VALUES (1, 'Europe/Paris', NULL, NULL, 0);
 SELECT setval('general_id_seq', 2);
 
 
