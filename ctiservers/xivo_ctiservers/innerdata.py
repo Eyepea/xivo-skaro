@@ -847,7 +847,7 @@ class Safe:
                 params = {
                     'mode' : 'presence',
                     'amicommand' : 'queuelog',
-                    'amiargs' : ('NONE', 'Presence', 'NONE',
+                    'amiargs' : ('NONE', 'PRESENCE', 'NONE',
                                  'Agent/%s' % agentnumber,
                                  '%s|agent:%s/%s|user:%s/%s'
                                  % (truestate, self.ipbxid, agentid, self.ipbxid, userid))
