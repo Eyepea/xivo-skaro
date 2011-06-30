@@ -56,7 +56,7 @@ class Safe:
         'voicemails' : 'urllist_voicemails',
         'incalls' : 'urllist_incalls',
         # 'outcalls' : 'urllist_outcalls',
-        # 'contexts' : 'urllist_contexts',
+        'contexts' : 'urllist_contexts',
         # 'entities' : 'urllist_entities',
 
         'phonebooks' : 'urllist_phonebook'
@@ -104,7 +104,13 @@ class Safe:
                      'pin_needed'], # 'pin', 'pinadmin' should not be transmitted
         'incalls' : ['context', 'exten', 'destidentity', 'action'],
         'outcalls' : [],
-        'contexts' : [],
+        'contexts' : [
+            'context',
+            'contextnumbers',
+            'contexttype',
+            'deletable',
+            'contextinclude'
+            ],
         }
 
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
@@ -146,7 +152,13 @@ class Safe:
                                       },
                      'incalls' : {},
                      'outcalls' : {},
-                     'contexts' : {},
+                     'contexts' : {'context': {},
+                                   'contextnumbers': [],
+                                   'contexttype': None,
+                                   'deletable': False,
+                                   'contextinclude': False
+                                   },
+                     'parkings' : {},
                      }
 
     user_props_send_extra = ['mailbox', 'subscribemwi', 'pickupgroup', 'callgroup', 'callerid']
@@ -245,7 +257,10 @@ class Safe:
             for k in deltas.get('add', {}):
                 self.xod_status[listname][k] = {}
                 for prop, defaultvalue in self.props_status.get(listname, {}).iteritems():
-                    self.xod_status[listname][k][prop] = copy.copy(defaultvalue)
+                    if prop in self.xod_config[listname].keeplist[k]:
+                        self.xod_status[listname][k][prop] = self.xod_config[listname].keeplist[k][prop]
+                    else:
+                        self.xod_status[listname][k][prop] = copy.copy(defaultvalue)
                 # tells clients about new object XXX
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : listname,
@@ -292,6 +307,9 @@ class Safe:
                     # XXX to work over once redmine#2169 will be solved
                     if 'id' in xitem:
                         key = str(xitem.get('id'))
+                    elif 'contextnumbers' in xitem:
+                        # For contexts
+                        key = xitem['context']['name']
                     else:
                         # for voicemail case
                         key = str(xitem.get('uniqueid'))
