@@ -73,8 +73,8 @@ endif;
 				  'labelid'	=> 'parkinglot-positions',
 				  'size'	=> 15,
 				  'default'	=> $element['parkinglot']['positions']['default'],
-					'value'	=> $info['positions'],
-					'help'  => $this->bbf('hlp_fm_positions'),
+				  'value'	=> $info['positions'],
+				  #'help'  => $this->bbf('hlp_fm_positions'),
 				  'error'	=> $this->bbf_args('error',
 					$this->get_var('error', 'parkinglot', 'positions')) )),
 

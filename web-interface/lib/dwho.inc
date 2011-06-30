@@ -298,7 +298,7 @@ class dwho
             $rp = array_shift($listreport);
             if(isset($report['general'][$rp]) === false)
                 die('ERR: Missing '.$rp.' option in general for report configuration');
-            else        
+            else
                 define('REPORT_'.strtoupper($rp),(bool) $report['general'][$rp]);
         }
     }
@@ -331,7 +331,7 @@ class dwho
                 $this->_conf['location']['root_url'] = rtrim($location['general']['root_url'],'/');
             else
                 die('ERR: Invalid root_url option in general for location configuration');
-        }        
+        }
     
         if(is_array($location['cache']) === false)
             die('ERR: Missing cache section for location configuration');
@@ -342,7 +342,7 @@ class dwho
         if (dwho_file::is_d_w($location['cache']['statistics']) === false
         && mkdir($location['cache']['statistics'],0775) === false)
             die('ERR: Invalid statistics option in cache for location configuration');
-        else     
+        else
             define('DWHO_PATH_CACHE_STATS',$location['cache']['statistics']);
     
         if(isset($location['cache']['pchart']) === false)
@@ -351,8 +351,8 @@ class dwho
         if (dwho_file::is_d_w($location['cache']['pchart']) === false
         && mkdir($location['cache']['pchart'],0775) === false)
             die('ERR: Invalid pchart option in cache for location configuration');
-        else 
-            define('DWHO_PATH_CACHE_PCHART',$location['cache']['pchart']);        
+        else
+            define('DWHO_PATH_CACHE_PCHART',$location['cache']['pchart']);
 
         return(true);
     }
@@ -402,7 +402,7 @@ class dwho
             return(false);
 
         dl($file);
-
+        
         return(extension_loaded($ext));
     }
 

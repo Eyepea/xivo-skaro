@@ -79,18 +79,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-ipbxdb'),
 			  'default'	=> $element['sqlite']['ipbxdb']['default'],
 			  'value'	=> $this->get_var('info','sqlite','ipbxdb'),
 			  'error'	=> $this->bbf_args('error_generic',
-							   $this->get_var('error','dbconfig','sqlite','ipbxdb')))),
-
-	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-qldb'),
-			  'name'	=> 'dbconfig[sqlite][qldb]',
-			  'labelid'	=> 'dbconfig-sqlite-qldb',
-			  'size'	=> 40,
-#			  'help'	=> $this->bbf('hlp_fm_dbconfig_sqlite-ipbxdb'),
-			  'comment'	=> $this->bbf('cmt_fm_dbconfig_sqlite-qldb'),
-			  'default'	=> $element['sqlite']['qldb']['default'],
-			  'value'	=> $this->get_var('info','sqlite','qldb'),
-			  'error'	=> $this->bbf_args('error_generic',
-							   $this->get_var('error','dbconfig','sqlite','qldb'))));
+							   $this->get_var('error','dbconfig','sqlite','ipbxdb'))));
 ?>
 </div>
 <div id="sb-part_dbconfig_mysql">

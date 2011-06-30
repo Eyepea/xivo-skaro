@@ -656,6 +656,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
              $data['dbconfig'][$backend]) === false)
             $this->_set_error('dbconfig','backend','invalid');
 
+        $create_auto = false;
         if (isset($data['dbconfig']['create_auto']) === true)
         {
             $this->_filter->set_validator(array('create_auto' => $this->_conf['filter']['dbconfig']['create_auto']));
@@ -794,20 +795,20 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         if(($xivoparamdso = dwho_datastorage::get_param_from_uri($xivodburistr)) === false
         || ($xivodso = @dwho_datastorage::factory($xivoparamdso['type'],$xivoparamdso)) === false)
-            $this->_set_error('dbconfig',$backend,'xivodb','invalid');
+            $this->_set_error('dbconfig',$xivoparamdso['type'],'xivodb','invalid');
 
         if(($ipbxparamdso = dwho_datastorage::get_param_from_uri($ipbxdburistr)) === false
         || ($ipbxdso = @dwho_datastorage::factory($ipbxparamdso['type'],$ipbxparamdso)) === false)
-            $this->_set_error('dbconfig',$backend,'ipbxdb','invalid');
+            $this->_set_error('dbconfig',$xivoparamdso['type'],'ipbxdb','invalid');
 
         if($this->get_errnb() > 0)
             return(false);
 
         if($xivodso->is_open() === false)
-            $this->_set_error('dbconfig',$backend,'xivodb','connection');
+            $this->_set_error('dbconfig',$xivoparamdso['type'],'xivodb','connection');
 
         if($ipbxdso->is_open() === false)
-            $this->_set_error('dbconfig',$backend,'ipbxdb','connection');
+            $this->_set_error('dbconfig',$xivoparamdso['type'],'ipbxdb','connection');
 
         $xivodso->close();
         $ipbxdso->close();

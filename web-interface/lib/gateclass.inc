@@ -87,16 +87,16 @@ class dwho_gct
         return($agc->set($obj,$name));
     }
 
-    function &get($name)
+    function get($name)
     {
         $agc = &dwho_gateclass::getinstance();
-        return(($ref = &$agc->get($name)));
+        return(($ref = $agc->get($name)));
     }
 
-    function &set_get(&$obj,$name='')
+    function set_get(&$obj,$name='')
     {
         $agc = &dwho_gateclass::getinstance();
-        return(($ref = &$agc->set_get($obj,$name)));
+        return(($ref = $agc->set_get($obj,$name)));
     }
 
     function is_valid($name)

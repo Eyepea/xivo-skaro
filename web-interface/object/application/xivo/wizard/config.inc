@@ -46,13 +46,15 @@ $array['ipbximportuser']['field']['incallexten'] = array('incall','exten');
 
 $array['element'] = array();
 
+$array['element']['dbconfig'] = array();
+
 $array['element']['dbconfig']['create_auto'] = array();
 $array['element']['dbconfig']['create_auto']['value'] = array(1,0);
 $array['element']['dbconfig']['create_auto']['default'] = 1;
 $array['element']['dbconfig']['create_auto']['checked'] = true;
 $array['element']['dbconfig']['create_auto']['null'] = true;
 
-$array['element']['dbconfig'] = array();
+$array['element']['dbconfig']['backend'] = array();
 $array['element']['dbconfig']['backend']['value'] = array('mysql','postgresql','sqlite');
 $array['element']['dbconfig']['backend']['default'] = 'postgresql';
 

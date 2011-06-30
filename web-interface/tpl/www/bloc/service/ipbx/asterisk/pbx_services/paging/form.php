@@ -77,7 +77,7 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_paging_timeout'),
 					    'name'		=> 'paging[timeout]',
 					    'labelid'	=> 'paging-timeout',
-						'help'		=> $this->bbf('hlp_fm_paging_timetout'),
+						'help'		=> $this->bbf('hlp_fm_paging_timeout'),
 					    'key'		=> false,
 					    'default'	=> $element['paging']['timeout']['default'],
 					    'selected'	=> $this->get_var('info','paging','timeout')),
