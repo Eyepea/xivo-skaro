@@ -34,6 +34,12 @@ Terminaison non configurée (verifié si le greffon est bien installé pour cett
 ; no_device
 Aucune terminaison trouvée
 
+; opt_reset-autoprov
+Initialiser en mode autoprov
+
+; opt_modeautoprov_confirm
+Etes-vous certain de vouloir initialiser cette terminaison ?
+
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cette terminaison ?
 

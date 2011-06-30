@@ -34,6 +34,19 @@ if($search !== '')
 
 switch($act)
 {
+	case 'modeautoprov':
+	    $param['act'] = 'list';
+		$appdevice = &$ipbx->get_application('device',null,false);
+		$modprovddevice = &$_XOBJ->get_module('provddevice');
+
+		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+		elseif ($modprovddevice->mode_autoprov($info['devicefeatures']['deviceid'],true) === false)
+			dwho_report::push('error','error_during_reset');
+		else
+			dwho_report::push('info','successfully_reset');
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
+	    break;
 	case 'autoprov':
 		$param['page'] = $page;
 

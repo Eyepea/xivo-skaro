@@ -34,6 +34,12 @@ Device not configured (verified if the plugin is installed for this device)
 ; no_device
 No device found
 
+; opt_reset-autoprov
+Reset to autoprov mode
+
+; opt_modeautoprov_confirm
+Are you sure you want to reset this device?
+
 ; opt_delete_confirm
 Are you sure you want to delete this device?
 
