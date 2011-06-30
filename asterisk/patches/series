@@ -38,8 +38,7 @@ pf_sip_notify_provd
 #pf_file_copy_keeps_modes
 #pf_manager_rename
 
-# digium patches
 pf_skill_queues
-pf_parkinghint_music_fix
-
 pf_manager_inherit.patch
+
+# digium patches

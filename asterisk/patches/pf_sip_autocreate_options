@@ -1,8 +1,8 @@
-diff --git a/channels/chan_sip.c b/channels/chan_sip.c
-index efa037a..ac2f74e 100644
---- a/channels/chan_sip.c
-+++ b/channels/chan_sip.c
-@@ -13232,11 +13232,19 @@ static enum parse_register_result parse_register_contact(struct sip_pvt *pvt, st
+Index: asterisk-1.8.5-rc1/channels/chan_sip.c
+===================================================================
+--- asterisk-1.8.5-rc1.orig/channels/chan_sip.c	2011-06-30 15:38:30.435708648 -0400
++++ asterisk-1.8.5-rc1/channels/chan_sip.c	2011-06-30 15:38:43.035710153 -0400
+@@ -13439,11 +13439,19 @@
  		if (s) {
  			expires = strsep(&s, ";"); /* trim ; and beyond */
  			if (sscanf(expires + 9, "%30d", &expire) != 1) {
@@ -24,7 +24,7 @@ index efa037a..ac2f74e 100644
  		}
  	}
  
-@@ -13393,11 +13401,20 @@ static enum parse_register_result parse_register_contact(struct sip_pvt *pvt, st
+@@ -13587,11 +13595,20 @@
  	AST_SCHED_DEL_UNREF(sched, peer->expire,
  			unref_peer(peer, "remove register expire ref"));
  
@@ -50,7 +50,7 @@ index efa037a..ac2f74e 100644
  	}
  	if (peer->is_realtime && !ast_test_flag(&peer->flags[1], SIP_PAGE2_RTCACHEFRIENDS)) {
  		peer->expire = -1;
-@@ -17195,6 +17212,7 @@ static char *sip_show_settings(struct ast_cli_entry *e, int cmd, struct ast_cli_
+@@ -17401,6 +17418,7 @@
  	ast_cli(a->fd, "  Textsupport:            %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_TEXTSUPPORT)));
  	ast_cli(a->fd, "  Ignore SDP sess. ver.:  %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_IGNORESDPVERSION)));
  	ast_cli(a->fd, "  AutoCreate Peer:        %s\n", AST_CLI_YESNO(sip_cfg.autocreatepeer));
@@ -58,7 +58,7 @@ index efa037a..ac2f74e 100644
  	ast_cli(a->fd, "  Match Auth Username:    %s\n", AST_CLI_YESNO(global_match_auth_username));
  	ast_cli(a->fd, "  Allow unknown access:   %s\n", AST_CLI_YESNO(sip_cfg.allowguest));
  	ast_cli(a->fd, "  Allow subscriptions:    %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_ALLOWSUBSCRIBE)));
-@@ -25966,6 +25984,9 @@ static struct sip_peer *temp_peer(const char *name)
+@@ -26265,6 +26283,9 @@
  
  	ast_copy_string(peer->name, name, sizeof(peer->name));
  
@@ -68,7 +68,7 @@ index efa037a..ac2f74e 100644
  	peer->selfdestruct = TRUE;
  	peer->host_dynamic = TRUE;
  	peer->prefs = default_prefs;
-@@ -26868,6 +26889,11 @@ static int reload_config(enum channelreloadreason reason)
+@@ -27168,6 +27189,11 @@
  	global_regattempts_max = 0;
  	sip_cfg.pedanticsipchecking = DEFAULT_PEDANTIC;
  	sip_cfg.autocreatepeer = DEFAULT_AUTOCREATEPEER;
@@ -80,7 +80,7 @@ index efa037a..ac2f74e 100644
  	global_autoframing = 0;
  	sip_cfg.allowguest = DEFAULT_ALLOWGUEST;
  	global_callcounter = DEFAULT_CALLCOUNTER;
-@@ -27163,6 +27189,31 @@ static int reload_config(enum channelreloadreason reason)
+@@ -27465,6 +27491,31 @@
  			proxy_update(&sip_cfg.outboundproxy);
  		} else if (!strcasecmp(v->name, "autocreatepeer")) {
  			sip_cfg.autocreatepeer = ast_true(v->value);
@@ -112,10 +112,10 @@ index efa037a..ac2f74e 100644
  		} else if (!strcasecmp(v->name, "match_auth_username")) {
  			global_match_auth_username = ast_true(v->value);
  		} else if (!strcasecmp(v->name, "srvlookup")) {
-diff --git a/channels/sip/include/sip.h b/channels/sip/include/sip.h
-index a6e69be..ac1b886 100644
---- a/channels/sip/include/sip.h
-+++ b/channels/sip/include/sip.h
+Index: asterisk-1.8.5-rc1/channels/sip/include/sip.h
+===================================================================
+--- asterisk-1.8.5-rc1.orig/channels/sip/include/sip.h	2011-06-30 15:38:30.445708757 -0400
++++ asterisk-1.8.5-rc1/channels/sip/include/sip.h	2011-06-30 15:38:43.035710153 -0400
 @@ -206,6 +206,10 @@
  #define DEFAULT_NOTIFYCID      DISABLED	/*!< Include CID with ringing notifications */
  #define DEFAULT_PEDANTIC       TRUE     /*!< Follow SIP standards for dialog matching */
@@ -127,7 +127,7 @@ index a6e69be..ac1b886 100644
  #define	DEFAULT_MATCHEXTERNADDRLOCALLY FALSE /*!< Match extern IP locally default setting */
  #define DEFAULT_QUALIFY        FALSE    /*!< Don't monitor devices */
  #define DEFAULT_CALLEVENTS     FALSE    /*!< Extra manager SIP call events */
-@@ -675,6 +679,11 @@ struct sip_settings {
+@@ -676,6 +680,11 @@
  	int directrtpsetup;         /*!< Enable support for Direct RTP setup (no re-invites) */
  	int pedanticsipchecking;    /*!< Extra checking ?  Default off */
  	int autocreatepeer;         /*!< Auto creation of peers at registration? Default off. */
