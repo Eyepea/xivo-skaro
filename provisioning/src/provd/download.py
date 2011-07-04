@@ -39,7 +39,7 @@ def async_download(remote_file, supp_hooks=[]):
     return threads.deferToThread(remote_file.download, supp_hooks)
 
 
-class _OperationInProgressHook(download.DownloadHook):
+class OperationInProgressHook(download.DownloadHook):
     def __init__(self, oip):
         self._oip = oip
         self._oip.current = 0
@@ -49,6 +49,15 @@ class _OperationInProgressHook(download.DownloadHook):
     
     def update(self, arg):
         self._oip.current += len(arg)
+    
+    def complete(self):
+        self._oip.state = OIP_SUCCESS
+    
+    def fail(self, exc_value):
+        # fail will never be called if start is not called, which could
+        # happens in the rare case where one hook factory raise an error,
+        # i.e. if there's a bug in a hook factory
+        self._oip.state = OIP_FAIL
 
 
 def async_download_with_oip(remote_file, supp_hooks=[]):
@@ -60,15 +69,8 @@ def async_download_with_oip(remote_file, supp_hooks=[]):
     
     """
     oip = OperationInProgress(end=remote_file.size)
-    oip_hook = _OperationInProgressHook(oip)
+    oip_hook = OperationInProgressHook(oip)
     deferred = async_download(remote_file, [oip_hook] + supp_hooks)
-    def callback(res):
-        oip.state = OIP_SUCCESS
-        return res
-    def errback(err):
-        oip.state = OIP_FAIL
-        return err
-    deferred.addCallbacks(callback, errback)
     return (deferred, oip)
 
 
@@ -105,43 +107,3 @@ def async_download_multiseq_with_oip(remote_files):
         top_deferred.errback(err)
     download_next_file()
     return (top_deferred, top_oip)
-
-
-if __name__ == '__main__':
-    import logging
-    root_logger = logging.getLogger()
-    root_logger.addHandler(logging.StreamHandler())
-    root_logger.setLevel(logging.INFO)
-    from provd.operation import format_oip
-    
-    from twisted.internet import reactor
-    def main():
-        dler = download.DefaultDownloader([])
-        rfile1 = download.RemoteFile('/tmp/pytest/test-dl1',
-                                     'http://localhost:8000/fich.bin',
-                                     dler,
-                                     100000)
-        rfile2 = download.RemoteFile('/tmp/pytest/test-dl2',
-                                     'http://localhost:8000/fich2.bin',
-                                     dler,
-                                     100000)
-        abort_hook = download.AbortHook()
-        #d, oip = async_download_with_oip(rfile1, [abort_hook])
-        d, oip = async_download_multiseq_with_oip([rfile1, rfile2])
-        def on_succes(v):
-            print_oip()
-            print "success", v
-            reactor.stop()
-        def on_failure(e):
-            print_oip()
-            print "fail", e
-            reactor.stop()
-        def print_oip():
-            print format_oip(oip)
-            reactor.callLater(0.5, print_oip)
-        d.addCallbacks(on_succes, on_failure)
-        print_oip()
-#        reactor.callLater(0.5, abort_hook.abort_download)
-    
-    reactor.callLater(0, main)
-    reactor.run()

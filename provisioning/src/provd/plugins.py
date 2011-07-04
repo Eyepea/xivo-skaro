@@ -18,8 +18,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO support plugin package signing... this will be important for safety
-#      since plugin aren't sandboxed
+# TODO add support for plugin-package signing...
 
 import contextlib
 import json
@@ -30,13 +29,14 @@ import shutil
 import tarfile
 import weakref
 from binascii import a2b_hex
-from fetchfw.download import new_downloaders, DefaultDownloader, RemoteFile,\
-    SHA1Hook
-from fetchfw.package import DefaultInstaller, PackageManager
-from fetchfw.storage import RemoteFileBuilder, InstallationMgrBuilder,\
-    DefaultPackageStorage
-from provd.download import async_download_multiseq_with_oip,\
-    async_download_with_oip
+from fetchfw.download import DefaultDownloader, RemoteFile, SHA1Hook,\
+    new_downloaders_from_handlers
+from fetchfw.package import PackageManager, InstallerController,\
+    UninstallerController
+from fetchfw.storage import DefaultRemoteFileBuilder, DefaultFilterBuilder,\
+    DefaultInstallablePkgStorage, DefaultInstallMgrFactoryBuilder,\
+    DefaultPkgBuilder, DefaultInstalledPkgStorage
+from provd.download import async_download_with_oip, OperationInProgressHook
 from provd.loaders import ProvdFileSystemLoader
 from provd.localization import get_locale_and_language
 from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
@@ -45,7 +45,7 @@ from provd.proxy import DynProxyHandler
 from provd.services import IInstallService, InvalidParameterError
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateNotFound
-from twisted.internet import defer
+from twisted.internet import defer, threads
 from zope.interface import implements, Interface
 
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ class Plugin(object):
     real job, and not superclass that helps it) must have an attribute
     'IS_PLUGIN' that evaluates to true in a boolean context or it won't be
     loaded. This is necessary to distinguish real plugin class from
-    'helper' plugin superclasses. XXX This is ugly tough
+    'helper' plugin superclasses.
     
     At load time, the 'execfile_' name is available in the global namespace
     of the entry file. It can be used to 'import' other files in the same or
@@ -464,75 +464,36 @@ class TemplatePluginHelper(object):
     def render(self, template, context, encoding='UTF-8', errors='strict'):
         return template.render(context).encode(encoding, errors)
 
-        
-class _AsyncPackageManager(PackageManager):
-    """Custom async package manager. The interface of the install and upgrade
-    method is a bit different from the standard PackageManager.
-    
-    """
-    
-    def __init__(self, pkg_storage):
-        PackageManager.__init__(self, pkg_storage)
-    
-    def install(self, pkg_id):
-        """Install a package and return a tuple (deferred, operation in progress)."""
-        return _async_install([pkg_id], self._installable_pkgs,
-                              self._installed_pkgs)
-    
-    def upgrade(self, pkg_id):
-        raise NotImplementedError('async version not implemented because not needed')
 
-
-def _async_install(pkg_ids, installable_pkgs, installed_pkgs):
-    # XXX DefaultInstaller doesn't play nice with async code. In fact, we
-    #     would like to review it, but there's higher priority...
-    installer = DefaultInstaller()
-    clean_pkg_names = installer._clean_pkg_names(pkg_ids, installable_pkgs, installed_pkgs)
-    to_install_pkgs = installer._get_pkgs_to_install(clean_pkg_names, installable_pkgs, installed_pkgs)
-    installer._pre_download(to_install_pkgs)
-    # download the files
-    # take extra step to make sure we won't download the same file twice
-    rfiles = []
-    rfiles_path = set()
-    for to_install_pkg in to_install_pkgs:
-        for rfile in to_install_pkg.remote_files:
-            if not rfile.exists() and rfile.path not in rfiles_path:
-                rfiles.append(rfile)
-                rfiles_path.add(rfile.path)
-    dl_deferred, dl_oip = async_download_multiseq_with_oip(rfiles)
-    dl_oip.label = 'download'
-    # create operation in progress objects
-    # Note: important to create it these objects else the callback might
-    # fire and the name not set
-    install_oip = OperationInProgress('install')
-    oip = OperationInProgress('install_pkg', OIP_PROGRESS,
-                              sub_oips=[dl_oip, install_oip])
-    deferred = defer.Deferred()
-    def dl_success(_):
-        install_oip.state = OIP_PROGRESS
-        try:
-            installer._pre_install(to_install_pkgs)
-            new_pkgs = installer._install(to_install_pkgs)
-            installer._post_install(new_pkgs)
-            # step normally done in package manager -- update installed_pkgs
-            for new_pkg in new_pkgs:
-                installed_pkgs[new_pkg.name] = new_pkg
-            installed_pkgs.flush()
-        except Exception, e:
-            install_oip.state = OIP_FAIL
-            oip.state = OIP_FAIL
-            deferred.errback(e)
-        else:
-            # fire callback
-            install_oip.state = OIP_SUCCESS
-            oip.state = OIP_SUCCESS
-            deferred.callback(None)
-    def dl_fail(err):
-        install_oip.state = OIP_FAIL
-        oip.state = OIP_FAIL
-        deferred.errback(err)
-    dl_deferred.addCallbacks(dl_success, dl_fail)
-    return (deferred, oip)
+class AsyncInstallerController(InstallerController):
+    def __init__(self, installable_pkg_sto, installed_pkg_sto, dl_oip, install_oip):
+        self._dl_oip = dl_oip
+        self._install_oip = install_oip
+    
+    def pre_download(self, remote_files):
+        self._dl_oip.state = OIP_PROGRESS
+    
+    def download_file(self, remote_file):
+        oip = OperationInProgress(end=remote_file.size)
+        oip_hook = OperationInProgressHook(oip)
+        self._dl_oip.sub_oips.append(oip)
+        remote_file.download([oip_hook])
+    
+    def post_download(self, remote_files):
+        self._dl_oip.state = OIP_SUCCESS
+    
+    def pre_install(self, installable_pkgs):
+        self._install_oip.state = OIP_PROGRESS
+    
+    def post_install(self, installable_pkgs):
+        self._install_oip.state = OIP_SUCCESS
+    
+    def post_installation(self, exc_value):
+        if exc_value is not None:
+            if self._dl_oip.state != OIP_SUCCESS:
+                self._dl_oip.state = OIP_FAIL
+            if self._install_oip.state != OIP_SUCCESS:
+                self._install_oip.state = OIP_FAIL
 
 
 def _new_handlers(proxies=None):
@@ -565,26 +526,38 @@ class FetchfwPluginHelper(object):
         return _new_handlers(proxies)
     
     @classmethod
-    def new_rfile_builder(cls, proxies=None):
-        downloaders = new_downloaders(_new_handlers(proxies))
-        return RemoteFileBuilder(downloaders)
+    def new_downloaders_from_handlers(cls, handlers=None):
+        return new_downloaders_from_handlers(handlers)
     
-    def __init__(self, plugin_dir, rfile_builder=None, installation_mgr_builder=None):
+    @classmethod
+    def new_downloaders(cls, proxies=None):
+        handlers = _new_handlers(proxies)
+        return new_downloaders_from_handlers(handlers)
+    
+    def __init__(self, plugin_dir, downloaders=None, filter_builder=None):
         self._plugin_dir = plugin_dir
-        if rfile_builder is None:
-            rfile_builder = self.new_rfile_builder()
-        if installation_mgr_builder is None:
-            installation_mgr_builder = InstallationMgrBuilder()
-
-        pkg_dir = os.path.join(plugin_dir, self.PKG_DIR)
-        cache_dir = os.path.join(plugin_dir, self.CACHE_DIR)        
-        installed_dir = os.path.join(plugin_dir, self.INSTALLED_DIR)
-        doc_root = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
-        storage = DefaultPackageStorage(cache_dir, pkg_dir, installed_dir,
-                                        rfile_builder, installation_mgr_builder,
-                                        {'DOC_ROOT': doc_root})
-        self._async_pkg_manager = _AsyncPackageManager(storage)
         self._in_install_set = set()
+        self._root_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
+        self._pkg_mgr = self._new_pkg_mgr(downloaders, filter_builder)
+    
+    def _new_pkg_mgr(self, downloaders, filter_builder):
+        # downloaders and filter_builder can be None
+        pkg_db_dir = os.path.join(self._plugin_dir, self.PKG_DIR)
+        cache_dir = os.path.join(self._plugin_dir, self.CACHE_DIR)        
+        installed_db_dir = os.path.join(self._plugin_dir, self.INSTALLED_DIR)
+        
+        if downloaders is None:
+            downloaders = self.new_downloaders()
+        if filter_builder is None:
+            filter_builder = DefaultFilterBuilder()
+        rfile_builder = DefaultRemoteFileBuilder(cache_dir, downloaders)
+        install_mgr_factory_builder = DefaultInstallMgrFactoryBuilder(filter_builder, {})
+        pkg_builder = DefaultPkgBuilder()
+        able_sto = DefaultInstallablePkgStorage(pkg_db_dir, rfile_builder,
+                                                install_mgr_factory_builder,
+                                                pkg_builder)
+        ed_sto = DefaultInstalledPkgStorage(installed_db_dir)
+        return PackageManager(able_sto, ed_sto)
     
     def install(self, pkg_id):
         """Install a package.
@@ -595,21 +568,29 @@ class FetchfwPluginHelper(object):
         logger.info('Installing plugin-package %s', pkg_id)
         if pkg_id in self._in_install_set:
             raise Exception('an install operation for pkg %s is already in progress' % pkg_id)
-        if pkg_id not in self._async_pkg_manager.installable_pkgs:
+        if pkg_id not in self._pkg_mgr.installable_pkg_sto:
             raise Exception('package not found')
-
-        # FIXME right now, it's possible to have 2 download for the same
-        #       file at the same time, which would lead to some bad things
-        #       We could mitigate this by using a remote file object that
-        #       download to an arbitrarly name file before renaming, so we
-        #       could have 2 download of the same file at the same time with
-        #       I believe no consequence
-        deferred, oip = self._async_pkg_manager.install(pkg_id)
+        
+        dl_oip = OperationInProgress('download')
+        install_oip = OperationInProgress('install')
+        oip = OperationInProgress('install_pkg', OIP_PROGRESS,
+                                  sub_oips=[dl_oip, install_oip])
+        ctrl_factory = AsyncInstallerController.new_factory(dl_oip, install_oip)
+        deferred = threads.deferToThread(self._pkg_mgr.install, [pkg_id],
+                                         self._root_dir, ctrl_factory)
         self._in_install_set.add(pkg_id)
-        def on_success_or_error(v):
+        def callback(res):
+            logger.info('Plugin-package %s installed', pkg_id)
             self._in_install_set.remove(pkg_id)
-            return v
-        deferred.addBoth(on_success_or_error)
+            oip.state = OIP_SUCCESS
+            return res
+        def errback(err):
+            logger.info('Error while installating plugin-package %s: %s',
+                        pkg_id, err.value)
+            self._in_install_set.remove(pkg_id)
+            oip.state = OIP_FAIL
+            return err
+        deferred.addCallbacks(callback, errback)
         return deferred, oip
     
     def uninstall(self, pkg_id):
@@ -619,31 +600,32 @@ class FetchfwPluginHelper(object):
         
         """
         logger.info('Uninstalling plugin-package %s', pkg_id)
-        self._async_pkg_manager.uninstall((pkg_id,))
+        ctrl_factory = UninstallerController.new_factory()
+        self._pkg_mgr.uninstall([pkg_id], self._root_dir, ctrl_factory)
     
     def _new_localize_description_fun(self):
         locale, lang = get_locale_and_language()
         if locale is None:
-            return operator.attrgetter('description')
+            return operator.itemgetter('description')
         else:
             locale_name = 'description_%s' % locale
             if locale == lang:
-                def aux(pkg):
+                def aux(pkg_info):
                     try:
-                        return getattr(pkg, locale_name)
-                    except AttributeError:
-                        return pkg.description
+                        return pkg_info[locale_name]
+                    except KeyError:
+                        return pkg_info['description']
                 return aux
             else:
                 lang_name = 'description_%s' % lang
-                def aux(pkg):
+                def aux(pkg_info):
                     try:
-                        return getattr(pkg, locale_name)
-                    except AttributeError:
+                        return pkg_info[locale_name]
+                    except KeyError:
                         try:
-                            return getattr(pkg, lang_name)
-                        except AttributeError:
-                            return pkg.description
+                            return pkg_info[lang_name]
+                        except KeyError:
+                            return pkg_info['description']
                 return aux
     
     def list_installable(self):
@@ -653,11 +635,11 @@ class FetchfwPluginHelper(object):
         
         """
         localize_desc_fun = self._new_localize_description_fun()
-        installable_pkgs = self._async_pkg_manager.installable_pkgs
-        return dict((pkg_id, {'version': pkg.version,
-                              'description': localize_desc_fun(pkg),
+        installable_pkg_sto = self._pkg_mgr.installable_pkg_sto
+        return dict((pkg_id, {'version': pkg.pkg_info['version'],
+                              'description': localize_desc_fun(pkg.pkg_info),
                               'dsize': sum(rfile.size for rfile in pkg.remote_files)})
-                    for pkg_id, pkg in installable_pkgs.iteritems())
+                    for pkg_id, pkg in installable_pkg_sto.iteritems())
     
     def list_installed(self):
         """Return a dictionary of installed packages.
@@ -666,11 +648,10 @@ class FetchfwPluginHelper(object):
         
         """
         localize_desc_fun = self._new_localize_description_fun()
-        installed_pkgs = self._async_pkg_manager.installed_pkgs
-        installed_pkgs.reload()
-        return dict((pkg_id, {'version': pkg.version,
-                              'description': localize_desc_fun(pkg)})
-                    for pkg_id, pkg in installed_pkgs.iteritems())
+        installed_pkg_sto = self._pkg_mgr.installed_pkg_sto
+        return dict((pkg_id, {'version': pkg.pkg_info['version'],
+                              'description': localize_desc_fun(pkg.pkg_info)})
+                    for pkg_id, pkg in installed_pkg_sto.iteritems())
     
     def services(self):
         """Return the following dictionary: {'install': self}."""
@@ -818,7 +799,7 @@ class PluginManager(object):
                 top_oip = OperationInProgress(self._INSTALL_LABEL, OIP_SUCCESS)
         else:
             url = self._join_server_url(filename)
-            rfile = RemoteFile(cache_filename, url, self._downloader, pg_info['dsize'])
+            rfile = RemoteFile.new_remote_file(cache_filename, pg_info['dsize'], url, self._downloader)
             sha1hook = SHA1Hook(a2b_hex(pg_info['sha1sum']))
             dl_deferred, dl_oip = async_download_with_oip(rfile, [sha1hook])
             dl_oip.label = self._DOWNLOAD_LABEL
@@ -904,7 +885,7 @@ class PluginManager(object):
 
         url = self._join_server_url(self._DB_FILENAME)
         db_pathname = self._db_pathname()
-        rfile = RemoteFile(db_pathname, url, self._downloader, None)
+        rfile = RemoteFile.new_remote_file(db_pathname, None, url, self._downloader)
         dl_deferred, dl_oip = async_download_with_oip(rfile)
         dl_oip.label = self._UPDATE_LABEL
         self._in_update = True
