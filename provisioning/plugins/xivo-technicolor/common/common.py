@@ -204,8 +204,8 @@ class BaseTechnicolorPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
-        fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
+        downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
+        fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
         
         self.services = fetchfw_helper.services() 
         self.http_service = HTTPNoListingFileService(self._tftpboot_dir)

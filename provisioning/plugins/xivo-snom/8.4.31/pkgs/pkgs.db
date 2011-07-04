@@ -1,67 +1,67 @@
 [pkg_300-fw]
-desc: Firmware for Snom 300
-desc_fr: Micrologiciel pour Snom 300
+description: Firmware for Snom 300
+description_fr: Micrologiciel pour Snom 300
 version: 8.4.31
-files: file_300-fw
-install_proc: install_snom-fw
+files: 300-fw
+install: snom-fw
 
 [pkg_320-fw]
-desc: Firmware for Snom 320
-desc_fr: Micrologiciel pour Snom 320
+description: Firmware for Snom 320
+description_fr: Micrologiciel pour Snom 320
 version: 8.4.31
-files: file_320-fw
-install_proc: install_snom-fw
+files: 320-fw
+install: snom-fw
 
 [pkg_360-fw]
-desc: Firmware for Snom 360
-desc_fr: Micrologiciel pour Snom 360
+description: Firmware for Snom 360
+description_fr: Micrologiciel pour Snom 360
 version: 8.4.31
-files: file_360-fw
-install_proc: install_snom-fw
+files: 360-fw
+install: snom-fw
 
 [pkg_370-fw]
-desc: Firmware for Snom 370
-desc_fr: Micrologiciel pour Snom 370
+description: Firmware for Snom 370
+description_fr: Micrologiciel pour Snom 370
 version: 8.4.31
-files: file_370-fw
-install_proc: install_snom-fw
+files: 370-fw
+install: snom-fw
 
 [pkg_820-fw]
-desc: Firmware for Snom 820
-desc_fr: Micrologiciel pour Snom 820
+description: Firmware for Snom 820
+description_fr: Micrologiciel pour Snom 820
 version: 8.4.31
-files: file_820-fw
-install_proc: install_snom-fw
+files: 820-fw
+install: snom-fw
 
 [pkg_821-fw]
-desc: Firmware for Snom 821
-desc_fr: Micrologiciel pour Snom 821
+description: Firmware for Snom 821
+description_fr: Micrologiciel pour Snom 821
 version: 8.4.31
-files: file_821-fw
-install_proc: install_snom-fw
+files: 821-fw
+install: snom-fw
 
 [pkg_870-fw]
-desc: Firmware for Snom 870
-desc_fr: Micrologiciel pour Snom 870
+description: Firmware for Snom 870
+description_fr: Micrologiciel pour Snom 870
 version: 8.4.31
-files: file_870-fw
-install_proc: install_snom-fw
+files: 870-fw
+install: snom-fw
 
 [pkg_lang]
-desc: Language files for Snom 3x0
-desc_fr: Fichiers de langue pour Snom 3x0
+description: Language files for Snom 3x0
+description_fr: Fichiers de langue pour Snom 3x0
 version: 8.4.31
-files: file_lang
-install_proc: install_snom-lang
+files: lang
+install: snom-lang
 
 
 
 [install_snom-lang]
 a-b: unzip $FILE1
-b-c: cp * $DOC_ROOT/i18n/
+b-c: cp * i18n/
 
 [install_snom-fw]
-a-b: cp $FILE1 $DOC_ROOT/firmware/
+a-b: cp $FILE1 firmware/
 
 
 

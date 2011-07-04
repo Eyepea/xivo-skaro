@@ -1,54 +1,50 @@
-; Latest french dictionary are for firmware 7.4.6 while we are targeting
-; 7.4.8. Also, it's not possible to create a custom dictionary for this
-; firmware yet since the english dictionary is not even available. 
-
 [pkg_spa50x-30x-fw]
-desc: Firmware for Cisco SPA50XG and SPA30XG
-desc_fr: Micrologiciel pour Cisco SPA50XG et SPA30XG
+description: Firmware for Cisco SPA50XG and SPA30XG
+description_fr: Micrologiciel pour Cisco SPA50XG et SPA30XG
 version: 7.4.8a
-files: file_spa50x-30xfw
-install_proc: install_cisco-spa500fw
+files: spa50x-30xfw
+install: cisco-spa500fw
 
 [pkg_spa525-fw]
-desc: Firmware for Cisco SPA525G and SPA525G2
-desc_fr: Micrologiciel pour Cisco SPA525G et SPA525G2
+description: Firmware for Cisco SPA525G and SPA525G2
+description_fr: Micrologiciel pour Cisco SPA525G et SPA525G2
 version: 7.4.8
-files: file_spa525fw
-install_proc: install_cisco-spa500fw
+files: spa525fw
+install: cisco-spa500fw
 
 [pkg_spa50x-30x-lang]
-desc: Language files for Cisco SPA50XG and SPA30XG
-desc_fr: Fichiers de langue pour Cisco SPA50XG et SPA30XG
+description: Language files for Cisco SPA50XG and SPA30XG
+description_fr: Fichiers de langue pour Cisco SPA50XG et SPA30XG
 version: 7.4.8
-files: file_spa50x-30xlang
-install_proc: install_cisco-spa50x-30xlang
+files: spa50x-30xlang
+install: cisco-spa50x-30xlang
 
 [pkg_spa525-lang]
-desc: Language files for Cisco SPA525G and SPA525G2
-desc_fr: Fichiers de langue pour Cisco SPA525G et SPA525G2
+description: Language files for Cisco SPA525G and SPA525G2
+description_fr: Fichiers de langue pour Cisco SPA525G et SPA525G2
 version: 7.4.8
-files: file_spa525lang
-install_proc: install_cisco-spa525lang
+files: spa525lang
+install: cisco-spa525lang
 
 
 
 [install_cisco-spa500fw]
 a-b: unzip $FILE1
-b-c: cp *.bin $DOC_ROOT/firmware/
+b-c: cp *.bin firmware/
 
 [install_cisco-spa50x-30xlang]
 a-b: unzip $FILE1
-b-c: cp spa50x_30x_de_* $DOC_ROOT/i18n/spa50x_30x_de.xml
-b-d: cp spa50x_30x_en_* $DOC_ROOT/i18n/spa50x_30x_en.xml
-b-e: cp spa50x_30x_es_* $DOC_ROOT/i18n/spa50x_30x_es.xml
-b-f: cp spa50x_30x_fr_* $DOC_ROOT/i18n/spa50x_30x_fr.xml
+b-c: cp spa50x_30x_de_* i18n/spa50x_30x_de.xml
+b-d: cp spa50x_30x_en_* i18n/spa50x_30x_en.xml
+b-e: cp spa50x_30x_es_* i18n/spa50x_30x_es.xml
+b-f: cp spa50x_30x_fr_* i18n/spa50x_30x_fr.xml
 
 [install_cisco-spa525lang]
 a-b: unzip $FILE1
-b-c: cp spa525_de_* $DOC_ROOT/i18n/spa525_de.xml
-b-d: cp spa525_en_* $DOC_ROOT/i18n/spa525_en.xml
-b-e: cp spa525_es_* $DOC_ROOT/i18n/spa525_es.xml
-b-f: cp spa525_fr_* $DOC_ROOT/i18n/spa525_fr.xml
+b-c: cp spa525_de_* i18n/spa525_de.xml
+b-d: cp spa525_en_* i18n/spa525_en.xml
+b-e: cp spa525_es_* i18n/spa525_es.xml
+b-f: cp spa525_fr_* i18n/spa525_fr.xml
 
 
 

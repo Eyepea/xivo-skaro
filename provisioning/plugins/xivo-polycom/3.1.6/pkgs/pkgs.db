@@ -1,102 +1,26 @@
-[pkg_IP301-sipapp]
-desc: SIP application for Polycom IP301
-desc_fr: Application SIP pour Polycom IP301
+[pkg_sipapp]
+description: SIP application and language files
+description_fr: Application SIP et fichiers de langue
 version: 3.1.6.0017
-files: file_sipapp_split
-install_proc: install_sipapp 2345-11300-010.sip-316.ld
+files: sipapp_split
+install: polycom-sipapp
 
-[pkg_IP301-bootrom]
-desc: BootROM for Polycom IP301
-desc_fr: BootROM pour Polycom IP301
+[pkg_bootrom]
+description: BootROM
+description_fr: BootROM
 version: 4.1.4.0122
-files: file_bootrom
-install_proc: install_bootrom 2345-11300-010.bootrom.ld
-
-[pkg_IP501-sipapp]
-desc: SIP application for Polycom IP501
-desc_fr: Application SIP pour Polycom IP501
-version: 3.1.6.0017
-files: file_sipapp_split
-install_proc: install_sipapp_2x 2345-11500-030.sip-316.ld 2345-11500-040.sip-316.ld 
-
-[pkg_IP501-bootrom]
-desc: BootROM for Polycom IP501
-desc_fr: BootROM pour Polycom IP501
-version: 4.1.4.0122
-files: file_bootrom
-install_proc: install_bootrom_2x 2345-11500-030.bootrom.ld 2345-11500-040.bootrom.ld
-
-[pkg_IP600-sipapp]
-desc: SIP application for Polycom IP600
-desc_fr: Application SIP pour Polycom IP600
-version: 3.1.6.0017
-files: file_sipapp_split
-install_proc: install_sipapp 2345-11600-001.sip-316.ld
-
-[pkg_IP600-bootrom]
-desc: BootROM for Polycom IP600
-desc_fr: BootROM pour Polycom IP600
-version: 4.1.4.0122
-files: file_bootrom
-install_proc: install_bootrom 2345-11600-001.bootrom.ld
-
-[pkg_IP601-sipapp]
-desc: SIP application for Polycom IP601
-desc_fr: Application SIP pour Polycom IP601
-version: 3.1.6.0017
-files: file_sipapp_split
-install_proc: install_sipapp 2345-11605-001.sip-316.ld
-
-[pkg_IP601-bootrom]
-desc: BootROM for Polycom IP601
-desc_fr: BootROM pour Polycom IP601
-version: 4.1.4.0122
-files: file_bootrom
-install_proc: install_bootrom 2345-11605-001.bootrom.ld
-
-[pkg_IP4000-sipapp]
-desc: SIP application for Polycom IP4000
-desc_fr: Application SIP pour Polycom IP4000
-version: 3.1.6.0017
-files: file_sipapp_split
-install_proc: install_sipapp 2201-06642-001.sip-316.ld
-
-[pkg_IP4000-bootrom]
-desc: BootROM for Polycom IP4000
-desc_fr: BootROM pour Polycom IP4000
-version: 4.1.4.0122
-files: file_bootrom
-install_proc: install_bootrom 2201-06642-001.bootrom.ld
-
-[pkg_lang]
-desc: Language files for Polycom
-desc_fr: Fichiers de langue pour Polycom
-version: 3.1.6.0017
-files: file_sipapp_split
-install_proc: install_lang
+files: bootrom
+install: polycom-bootrom
 
 
-[install_sipapp]
+
+[install_polycom-sipapp]
 a-b: unzip $FILE1
-b-c: cp $ARG1 $DOC_ROOT/
+b-c: include *.ld SoundPointIPLocalization
 
-[install_sipapp_2x]
+[install_polycom-bootrom]
 a-b: unzip $FILE1
-b-c: cp $ARG1 $DOC_ROOT/
-b-d: cp $ARG2 $DOC_ROOT/
-
-[install_bootrom]
-a-b: unzip $FILE1
-b-c: cp $ARG1 $DOC_ROOT/
-
-[install_bootrom_2x]
-a-b: unzip $FILE1
-b-c: cp $ARG1 $DOC_ROOT/
-b-d: cp $ARG2 $DOC_ROOT/
-
-[install_lang]
-a-b: unzip $FILE1
-b-c: cp SoundPointIPLocalization/ $DOC_ROOT/
+b-c: exclude bootrom.ld
 
 
 

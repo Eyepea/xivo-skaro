@@ -278,10 +278,10 @@ class BaseCiscoPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        rfile_builder = FetchfwPluginHelper.new_rfile_builder(gen_cfg.get('proxies'))
-        fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
-        self.services = fetchfw_helper.services()
+        downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
+        fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
         
+        self.services = fetchfw_helper.services()
         self.http_service = BaseCiscoHTTPHookService(HTTPNoListingFileService(self._tftpboot_dir), self)
         self.tftp_service = TFTPFileService(self._tftpboot_dir)
     

@@ -1,58 +1,51 @@
-; XXX as of 20101217, we do not support updating the firmware of expansion
-;     modules, so these packages are kinda useless... and might be a source
-;     of confusion for some...
-; XXX and it's probably a bad idea to have pkg definitions shared by more
-;     then one plugin, even for language files, we'll have to rethink of
-;     that
-
-[pkg_7914]
-desc: Firmware for Cisco Expansion Module 7914G (SCCP)
-desc_fr: Micrologiciel pour module d'extension Cisco 7914G (SCCP)
+[pkg_7914-fw]
+description: Firmware for Cisco Expansion Module 7914G (SCCP)
+description_fr: Micrologiciel pour module d'extension Cisco 7914G (SCCP)
 version: 5.0.4
-files: file_7914fw
-install_proc: install_cisco-7900fw
+files: 7914-fw
+install: cisco-7900-fw
 
-[pkg_7915]
-desc: Firmware for Cisco Expansion Module 7915G (SCCP)
-desc_fr: Micrologiciel pour module d'extension Cisco 7915G (SCCP)
+[pkg_7915-fw]
+description: Firmware for Cisco Expansion Module 7915G (SCCP)
+description_fr: Micrologiciel pour module d'extension Cisco 7915G (SCCP)
 version: 1.0.4
-files: file_7915fw
-install_proc: install_cisco-7900fw
+files: 7915-fw
+install: cisco-7900-fw
 
-[pkg_7916]
-desc: Firmware for Cisco Expansion Module 7916G (SCCP)
-desc_fr: Micrologiciel pour module d'extension Cisco 7916G (SCCP)
+[pkg_7916-fw]
+description: Firmware for Cisco Expansion Module 7916G (SCCP)
+description_fr: Micrologiciel pour module d'extension Cisco 7916G (SCCP)
 version: 1.0.4
-files: file_7916fw
-install_proc: install_cisco-7900fw
+files: 7916-fw
+install: cisco-7900-fw
 
 [pkg_networklocale]
-desc: Network locale for Cisco 79xx (SCCP)
-desc_fr: Locale réseau pour Cisco 79xx (SCCP)
+description: Network locale for Cisco 79xx (SCCP)
+description_fr: Locale réseau pour Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_networklocale
-install_proc: install_cisco-networklocale
+files: networklocale
+install: cisco-networklocale
 
 [pkg_userlocale_de_DE]
-desc: de_DE user locale for Cisco 79xx (SCCP)
-desc_fr: Locale utilisateur de_DE pour Cisco 79xx (SCCP)
+description: de_DE user locale for Cisco 79xx (SCCP)
+description_fr: Locale utilisateur de_DE pour Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_userlocale_de_DE
-install_proc: install_cisco-userlocale
+files: userlocale_de_DE
+install: cisco-userlocale
 
 [pkg_userlocale_es_ES]
-desc: es_ES user locale for Cisco 79xx (SCCP)
-desc_fr: Locale utilisateur es_ES pour Cisco 79xx (SCCP)
+description: es_ES user locale for Cisco 79xx (SCCP)
+description_fr: Locale utilisateur es_ES pour Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_userlocale_es_ES
-install_proc: install_cisco-userlocale
+files: userlocale_es_ES
+install: cisco-userlocale
 
 [pkg_userlocale_fr_FR]
-desc: fr_FR user locale for Cisco 79xx (SCCP)
-desc_fr: Locale utilisateur fr_FR pour Cisco 79xx (SCCP)
+description: fr_FR user locale for Cisco 79xx (SCCP)
+description_fr: Locale utilisateur fr_FR pour Cisco 79xx (SCCP)
 version: 9.0.2
-files: file_userlocale_fr_FR
-install_proc: install_cisco-userlocale
+files: userlocale_fr_FR
+install: cisco-userlocale
 
 
 
@@ -64,29 +57,29 @@ d-e: cp usr/local/cm/tftp/canada
         usr/local/cm/tftp/france
         usr/local/cm/tftp/germany
         usr/local/cm/tftp/spain
-        $DOC_ROOT/i18n/
+        i18n/
 
 [install_cisco-userlocale]
 a-b: unsign $FILE1 f.tgz
 b-c: untar f.tgz
 c-d: untar *.tar
-d-e: cp usr/local/cm/tftp/* $DOC_ROOT/i18n/
+d-e: cp usr/local/cm/tftp/* i18n/
 
 
 
-[file_7914fw]
+[file_7914-fw]
 url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp.5-0-4.zip
 size: 26206
 sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 downloader: x-cisco
 
-[file_7915fw]
+[file_7915-fw]
 url: http://download-sj.cisco.com/swc/esd/03/282159701/contract/cmterm-7915.1-0-4.zip
 size: 64899
 sha1sum: 3897cb03c3cd76e031375b52a2275aa5d82a1674
 downloader: x-cisco
 
-[file_7916fw]
+[file_7916-fw]
 url: http://download-sj.cisco.com/swc/esd/03/282159702/contract/cmterm-7916.1-0-4.zip
 size: 76859
 sha1sum: 4643db66e2c8b1800eee1ca110297b01c481bbcc

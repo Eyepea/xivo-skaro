@@ -1,51 +1,51 @@
 [pkg_spa901-fw]
-desc: Firmware for Cisco SPA901
-desc_fr: Micrologiciel pour Cisco SPA901
+description: Firmware for Cisco SPA901
+description_fr: Micrologiciel pour Cisco SPA901
 version: 5.1.5
-files: file_spa901fw
-install_proc: install_cisco-zipfw
+files: spa901fw
+install: cisco-zipfw
 
 [pkg_spa921-941-fw]
-desc: Firmware for Cisco SPA921 and SPA941
-desc_fr: Micrologiciel pour Cisco SPA921 et SPA941
+description: Firmware for Cisco SPA921 and SPA941
+description_fr: Micrologiciel pour Cisco SPA921 et SPA941
 version: 5.1.8
-files: file_spa921-941fw
-install_proc: install_cisco-zipfw
+files: spa921-941fw
+install: cisco-zipfw
 
 [pkg_spa922-942-fw]
-desc: Firmware for Cisco SPA922 and SPA942
-desc_fr: Micrologiciel pour Cisco SPA922 et SPA942
+description: Firmware for Cisco SPA922 and SPA942
+description_fr: Micrologiciel pour Cisco SPA922 et SPA942
 version: 6.1.5a
-files: file_spa922-942fw
-install_proc: install_cisco-zipfw
+files: spa922-942fw
+install: cisco-zipfw
 
 [pkg_spa962-fw]
-desc: Firmware for Cisco SPA962
-desc_fr: Micrologiciel pour Cisco SPA962
+description: Firmware for Cisco SPA962
+description_fr: Micrologiciel pour Cisco SPA962
 version: 6.1.5a
-files: file_spa962fw
-install_proc: install_cisco-zipfw
+files: spa962fw
+install: cisco-zipfw
 
 [pkg_spa9x2-lang]
-desc: Language files for Cisco SPA9X2
-desc_fr: Fichiers de langue pour Cisco SPA9X2 
+description: Language files for Cisco SPA9X2
+description_fr: Fichiers de langue pour Cisco SPA9X2
 version: 6.1.5
-files: file_spa9x2lang
-install_proc: install_cisco-spa9x2lang
+files: spa9x2lang
+install: cisco-spa9x2lang
 
 
 
 
 [install_cisco-zipfw]
 a-b: unzip $FILE1
-b-c: cp *.bin $DOC_ROOT/firmware/
+b-c: cp *.bin firmware/
 
 [install_cisco-spa9x2lang]
 a-b: unzip $FILE1
-b-c: cp de*.xml $DOC_ROOT/i18n/deS.xml
-b-d: cp en*.xml $DOC_ROOT/i18n/enS.xml
-b-e: cp es*.xml $DOC_ROOT/i18n/esS.xml
-b-f: cp fr*.xml $DOC_ROOT/i18n/frS.xml
+b-c: cp de*.xml i18n/deS.xml
+b-d: cp en*.xml i18n/enS.xml
+b-e: cp es*.xml i18n/esS.xml
+b-f: cp fr*.xml i18n/frS.xml
 
 
 

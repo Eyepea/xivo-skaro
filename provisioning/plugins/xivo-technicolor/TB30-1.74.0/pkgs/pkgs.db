@@ -1,15 +1,15 @@
 [pkg_TB30-fw]
-desc: Firmware for Technicolor TB30
-desc_fr: Micrologiciel pour Technicolor TB30
+description: Firmware for Technicolor TB30
+description_fr: Micrologiciel pour Technicolor TB30
 version: 1.74.0
-files: file_TB30-fw
-install_proc: install_technicolor-fw TB30S*.zz
+files: TB30-fw
+install: technicolor-fw TB30S*.zz
 
 
 
 [install_technicolor-fw]
 a-b: unzip $FILE1
-b-c: cp */Binary/$ARG1 $DOC_ROOT/binary/
+b-c: cp */Binary/$ARG1 binary/
 
 
 

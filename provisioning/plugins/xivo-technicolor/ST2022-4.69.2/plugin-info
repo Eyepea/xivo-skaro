@@ -1,5 +1,5 @@
 {
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Plugin for Technicolor (previously known as Thomson) ST2022 in version 4.69.2.",
     "description_fr": "Greffon pour Technicolor (auparavant connu comme Thomson) ST2022 en version 4.69.2.",
     "capabilities": {

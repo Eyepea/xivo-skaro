@@ -3,20 +3,20 @@
 #     some forum...
 
 [pkg_4008-4018-fw]
-desc: Firmware for Alcatel 4008EE and 4018EE
-desc_fr: Micrologiciel pour Alcatel 4008EE et 4018EE
+description: Firmware for Alcatel 4008EE and 4018EE
+description_fr: Micrologiciel pour Alcatel 4008EE et 4018EE
 version: 2.01.10
-files: file_4008-4018-fw
-install_proc: install_alcatel-fw
+files: 4008-4018-fw
+install: alcatel-fw
 
 
 
 [install_alcatel-fw]
 a-b: 7z $FILE1
-b-c: cp datsip4018 $DOC_ROOT/datsip4008
-b-d: cp datsip4018 $DOC_ROOT/datsip4018
-b-e: cp noesip4018 $DOC_ROOT/noesip4008
-b-f: cp noesip4018 $DOC_ROOT/noesip4018
+b-c: cp datsip4018 datsip4008
+b-d: cp datsip4018 datsip4018
+b-e: cp noesip4018 noesip4008
+b-f: cp noesip4018 noesip4018
 
 
 

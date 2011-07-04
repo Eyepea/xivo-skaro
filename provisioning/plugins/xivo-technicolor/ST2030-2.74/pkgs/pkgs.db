@@ -1,15 +1,15 @@
 [pkg_ST2030-fw]
-desc: Firmware for Technicolor ST2030
-desc_fr: Micrologiciel pour Technicolor ST2030
+description: Firmware for Technicolor ST2030
+description_fr: Micrologiciel pour Technicolor ST2030
 version: 2.74
-files: file_ST2030-fw
-install_proc: install_technicolor-fw v2030*.zz
+files: ST2030-fw
+install: technicolor-fw v2030*.zz
 
 
 
 [install_technicolor-fw]
 a-b: unzip $FILE1
-b-c: cp */Binary/$ARG1 $DOC_ROOT/binary/
+b-c: cp */Binary/$ARG1 binary/
 
 
 

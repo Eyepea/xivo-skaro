@@ -1,43 +1,43 @@
 [pkg_T12P-fw]
-desc: Firmware for Yealink T12P
-desc_fr: Micrologiciel pour Yealink T12P
+description: Firmware for Yealink T12P
+description_fr: Micrologiciel pour Yealink T12P
 version: 5.60.0.110
-files: file_T12P-fw
-install_proc: install_yealink-fw
+files: T12P-fw
+install: yealink-fw
 
 [pkg_T20P-fw]
-desc: Firmware for Yealink T20P
-desc_fr: Micrologiciel pour Yealink T20P
+description: Firmware for Yealink T20P
+description_fr: Micrologiciel pour Yealink T20P
 version: 9.60.0.110
-files: file_T20P-fw
-install_proc: install_yealink-fw
+files: T20P-fw
+install: yealink-fw
 
 [pkg_T22P-fw]
-desc: Firmware for Yealink T22P
-desc_fr: Micrologiciel pour Yealink T22P
+description: Firmware for Yealink T22P
+description_fr: Micrologiciel pour Yealink T22P
 version: 7.60.0.110
-files: file_T22P-fw
-install_proc: install_yealink-fw
+files: T22P-fw
+install: yealink-fw
 
 [pkg_T26P-fw]
-desc: Firmware for Yealink T26P
-desc_fr: Micrologiciel pour Yealink T26P
+description: Firmware for Yealink T26P
+description_fr: Micrologiciel pour Yealink T26P
 version: 6.60.0.110
-files: file_T26P-fw
-install_proc: install_yealink-fw
+files: T26P-fw
+install: yealink-fw
 
 [pkg_T28P-fw]
-desc: Firmware for Yealink T28P
-desc_fr: Micrologiciel pour Yealink T28P
+description: Firmware for Yealink T28P
+description_fr: Micrologiciel pour Yealink T28P
 version: 2.60.0.110
-files: file_T28P-fw
-install_proc: install_yealink-fw
+files: T28P-fw
+install: yealink-fw
 
 
 
 [install_yealink-fw]
-a-b: unrar $FILE1 
-b-c: cp *.rom $DOC_ROOT/firmware/
+a-b: unrar $FILE1
+b-c: cp *.rom firmware/
 
 
 

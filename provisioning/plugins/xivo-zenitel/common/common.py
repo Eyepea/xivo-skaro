@@ -28,7 +28,6 @@ import os.path
 import urllib2
 from operator import itemgetter
 from fetchfw.download import AuthenticatingDownloader
-from fetchfw.storage import RemoteFileBuilder
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import IMPROBABLE_SUPPORT, COMPLETE_SUPPORT, UNKNOWN_SUPPORT,\
     BasePgAssociator
@@ -126,12 +125,10 @@ class BaseZenitelPlugin(StandardPlugin):
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
-        handlers = FetchfwPluginHelper.new_handlers(gen_cfg.get('proxies'))
-        auth_downloader = AuthenticatingDownloader(handlers)
-        rfile_builder = RemoteFileBuilder({'auth': auth_downloader})
-        fetchfw_helper = FetchfwPluginHelper(plugin_dir, rfile_builder)
+        downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
+        fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
         
-        cfg_service = ZenitelConfigureService(auth_downloader,
+        cfg_service = ZenitelConfigureService(downloaders['auth'],
                                               spec_cfg.get('username'),
                                               spec_cfg.get('password'))
         persister = JsonConfigPersister(os.path.join(self._plugin_dir, 'var',

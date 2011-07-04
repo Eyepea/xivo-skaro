@@ -1,15 +1,15 @@
 [pkg_pap2t-fw]
-desc: Firmware for Cisco PAP2T
-desc_fr: Micrologiciel pour Cisco PAP2T
+description: Firmware for Cisco PAP2T
+description_fr: Micrologiciel pour Cisco PAP2T
 version: 5.1.6
-files: file_pap2tfw
-install_proc: install_cisco-zipfw
+files: pap2tfw
+install: cisco-zipfw
 
 
 
 [install_cisco-zipfw]
 a-b: unzip $FILE1
-b-c: cp *.bin $DOC_ROOT/firmware/
+b-c: cp *.bin firmware/
 
 
 
