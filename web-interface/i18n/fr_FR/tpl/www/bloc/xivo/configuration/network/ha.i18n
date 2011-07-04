@@ -19,26 +19,6 @@ Apache2 :
 ; fm_ha_asterisk
 Asterisk : 
 
-; fm_ha_dhcp
-Dhcp : 
-
-; fm_ha_monit
-Monit : 
-
-; fm_ha_mysql
-MySQL : 
-
-; fm_ha_ntp
-Ntp : 
-
-; fm_ha_rsync
-Rsync : 
-
-; fm_ha_smokeping
-Smokeping : 
-
-; fm_ha_mailto
-Mailto : 
 
 ; fm_ha_ping_ipaddr0
 Adresse IP à monitorer : 
@@ -257,53 +237,48 @@ Adresse IP :
 ; fm_ha_service_asterisk
 Asterisk : 
 
-; fm_ha_service_asterisk_monitor
+; fm_ha_service_monitor
 Fréquence de contrôle (secondes) : 
 
-
-; fm_ha_service_asterisk_timeout
+; fm_ha_service_timeout
 Délai avant bascule (secondes) : 
 
+; fm_ha_service_nginx
+Nginx : 
 
-; fm_ha_service_lighttpd
-Lighttpd : 
-
-; fm_ha_service_lighttpd_monitor
-Fréquence de contrôle (secondes) : 
-
-
-; fm_ha_service_lighttpd_timeout
-Délai avant bascule (secondes) : 
-
-
-; fm_ha_service_dhcp
+; fm_ha_service_isc-dhcp-server
 DHCP : 
-
-; fm_ha_service_dhcp_monitor
-Fréquence de contrôle (secondes) : 
-
-; fm_ha_service_dhcp_timeout
-Délai avant bascule (secondes) : 
-
 
 ; fm_ha_service_ntp
 NTP : 
 
-; fm_ha_service_ntp_monitor
-Fréquence de contrôle (secondes) : 
+; fm_ha_service_csync2
+Csync2 : 
 
-; fm_ha_service_ntp_timeout
-Délai avant bascule (secondes) : 
+; fm_ha_service_postgresql
+Postgresql : 
 
+; fm_ha_service_pf-xivo-agid
+XiVO Agid : 
 
-; fm_ha_service_csync
-Csync : 
+; fm_ha_service_pf-xivo-confgend
+XiVO Confgend : 
 
-; fm_ha_service_csync_monitor
-Fréquence de contrôle (secondes)  : 
+; fm_ha_service_pf-xivo-cti-server
+XiVO CTI : 
 
-; fm_ha_service_csync_timeout
-Délai avant bascule (secondes) : 
+; fm_ha_service_pf-xivo-dxtora
+XiVO Dxtora : 
+
+; fm_ha_service_pf-xivo-provd
+XiVO Provd : 
+
+; fm_ha_service_pf-xivo-sysconfd
+XiVO Sysconfd : 
+
+; fm_ha_service_pf-xivo-ha-scripts
+XiVO HA scripts : 
+
 
 ; fm_ha_cluster_name
 Nom du cluster : 

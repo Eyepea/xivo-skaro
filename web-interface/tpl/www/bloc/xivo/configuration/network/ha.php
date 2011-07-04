@@ -72,19 +72,6 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-<?php /*
-		<li id="dwsm-tab-4"
-		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
-		    onmouseout="dwho_submenu.blur(this,1);"
-		    onmouseover="dwho_submenu.focus(this,1);">
-			<div class="tab">
-				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_params');?></a></span>
-			</div>
-			<span class="span-right">&nbsp;</span>
-			</li>
- */
-?>
 	</ul>
 </div>
 
@@ -169,103 +156,30 @@ endif;
 				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'fm_send',
-				    'value'	=> 1)),
+				    'value'	=> 1));
 
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_asterisk'),
-				      'name'		=> 'service[asterisk][active]',
-				      'labelid'		=> 'ha_asterisk',
-				      'checked'		=> $info['service']['asterisk']['active'],
+
+		foreach($info['service'] as $k => $svc) {
+			//var_dump($svc);
+			echo $form->checkbox(array('desc'		=> $this->bbf("fm_ha_service_$k"),
+				      'name'		=> "service[$k][active]",
+							'labelid'		=> "ha_$k",
+				      'checked'		=> $svc['active'],
 						)),
-	
-		'<fieldset id="fld-svc-asterisk">',
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_asterisk_monitor'),
-					'name'		=> 'service[asterisk][monitor]',
+			"<fieldset id=\"fld-svc-$k\">",
+			$form->text(array(
+	        'desc'    => $this->bbf("fm_ha_service_monitor"),
+					'name'		=> "service[$k][monitor]",
 					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','asterisk','monitor'))),
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_asterisk_timeout'),
-					'name'		=> 'service[asterisk][timeout]',
+					'value'   => $this->get_var('info', 'service',$k,'monitor'))),
+			$form->text(array(
+	        'desc'    => $this->bbf("fm_ha_service_timeout"),
+					'name'		=> "service[$k][timeout]",
 					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','asterisk','timeout'))),
-		'</fieldset>',
+					'value'   => $this->get_var('info', 'service',$k,'timeout'))),
+			'</fieldset>';
+		}
 
-
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_lighttpd'),
-				      'name'		=> 'service[lighttpd][active]',
-				      'labelid'		=> 'ha_lighttpd',
-				      'checked'		=> $info['service']['lighttpd']['active'],
-						)),
-	
-		'<fieldset id="fld-svc-lighttpd">',
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_lighttpd_monitor'),
-					'name'		=> 'service[lighttpd][monitor]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','lighttpd','monitor'))),
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_lighttpd_timeout'),
-					'name'		=> 'service[lighttpd][timeout]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','lighttpd','timeout'))),
-		'</fieldset>',
-
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_dhcp'),
-				      'name'		=> 'service[dhcp][active]',
-				      'labelid'		=> 'ha_dhcp',
-				      'checked'		=> $info['service']['dhcp']['active'],
-						)),
-	
-		'<fieldset id="fld-svc-dhcp">',
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_dhcp_monitor'),
-					'name'		=> 'service[dhcp][monitor]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','dhcp','monitor'))),
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_dhcp_timeout'),
-					'name'		=> 'service[dhcp][timeout]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','dhcp','timeout'))),
-		'</fieldset>',
-
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_ntp'),
-				      'name'		=> 'service[ntp][active]',
-				      'labelid'		=> 'ha_ntp',
-				      'checked'		=> $info['service']['ntp']['active'],
-						)),
-	
-		'<fieldset id="fld-svc-ntp">',
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_ntp_monitor'),
-					'name'		=> 'service[ntp][monitor]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','ntp','monitor'))),
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_ntp_timeout'),
-					'name'		=> 'service[ntp][timeout]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','ntp','timeout'))),
-		'</fieldset>',
-
-		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_service_csync'),
-				      'name'		=> 'service[csync][active]',
-				      'labelid'		=> 'ha_csync',
-				      'checked'		=> $info['service']['csync']['active'],
-						)),
-	
-		'<fieldset id="fld-svc-csync">',
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_csync_monitor'),
-					'name'		=> 'service[csync][monitor]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','csync','monitor'))),
-		$form->text(array(
-	        'desc'    => $this->bbf('fm_ha_service_csync_timeout'),
-					'name'		=> 'service[csync][timeout]',
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service','csync','timeout'))),
-		'</fieldset>';
 ?>
 </div>
 

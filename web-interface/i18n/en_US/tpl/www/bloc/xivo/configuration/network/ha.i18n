@@ -222,47 +222,47 @@ IP adress:
 ; fm_ha_service_asterisk
 Asterisk : 
 
-; fm_ha_service_asterisk_monitor
+; fm_ha_service_monitor
 Check frequency (seconds):
 
-; fm_ha_service_asterisk_timeout
+; fm_ha_service_timeout
 Switch delay (seconds):
 
-; fm_ha_service_lighttpd
-Lighttpd : 
+; fm_ha_service_nginx
+Nginx : 
 
-; fm_ha_service_lighttpd_monitor
-Check frequency (seconds):
-
-; fm_ha_service_lighttpd_timeout
-Switch delay (seconds):
-
-; fm_ha_service_dhcp
+; fm_ha_service_isc-dhcp-server
 DHCP : 
-
-; fm_ha_service_dhcp_monitor
-Check frequency (seconds):
-
-; fm_ha_service_dhcp_timeout
-Switch delay (seconds):
 
 ; fm_ha_service_ntp
 NTP : 
 
-; fm_ha_service_ntp_monitor
-Check frequency (seconds):
+; fm_ha_service_csync2
+Csync2 : 
 
-; fm_ha_service_ntp_timeout
-Switch delay (seconds):
+; fm_ha_service_postgresql
+Postgresql : 
 
-; fm_ha_service_csync
-Csync : 
+; fm_ha_service_pf-xivo-agid
+XiVO Agid : 
 
-; fm_ha_service_csync_monitor
-Check frequency (seconds):
+; fm_ha_service_pf-xivo-confgend
+XiVO Confgend : 
 
-; fm_ha_service_csync_timeout
-Switch delay (seconds):
+; fm_ha_service_pf-xivo-cti-server
+XiVO CTI : 
+
+; fm_ha_service_pf-xivo-dxtora
+XiVO Dxtora : 
+
+; fm_ha_service_pf-xivo-provd
+XiVO Provd : 
+
+; fm_ha_service_pf-xivo-sysconfd
+XiVO Sysconfd : 
+
+; fm_ha_service_pf-xivo-ha-scripts
+XiVO HA scripts : 
 
 ; fm_ha_cluster_name
 Cluster name:

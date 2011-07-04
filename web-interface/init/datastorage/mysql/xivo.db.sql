@@ -369,11 +369,19 @@ CREATE TABLE `ha_service` (
  PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ha_service` VALUES ('asterisk', 0, 'lsb', NULL, NULL);
-INSERT INTO `ha_service` VALUES ('lighttpd', 0, 'ocf', NULL, NULL);
-INSERT INTO `ha_service` VALUES ('dhcp'    , 0, NULL, NULL, NULL);
-INSERT INTO `ha_service` VALUES ('ntp'     , 0, NULL, NULL, NULL);
-INSERT INTO `ha_service` VALUES ('csync'   , 0, NULL, NULL, NULL);
+INSERT INTO `ha_service` VALUES ('asterisk'           , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('nginx'              , 0, 'ocf', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('isc-dhcp-server'    , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('ntp'                , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('csync2'             , 0, 'ocf', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('postgresql'         , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-agid'       , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-confgend'   , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-cti-server' , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-dxtora'     , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-provd'      , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-sysconfd'   , 0, 'lsb', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('pf-xivo-ha-scripts' , 0, 'lsb', NULL, NULL);
 
 
 DROP TABLE IF EXISTS `provisioning`;
