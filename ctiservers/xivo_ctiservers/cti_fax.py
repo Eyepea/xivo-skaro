@@ -28,7 +28,6 @@ import commands
 import logging
 import os
 import random
-import SocketServer
 import string
 import threading
 import time
@@ -42,13 +41,119 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 
 log = logging.getLogger('fax')
 
+class asyncActionsThread(threading.Thread):
+    def __init__(self, name, params):
+        threading.Thread.__init__(self)
+        self.setName(name)
+        self.params = params
+        return
+
+    def converttotiff(self):
+##        reply = 'ko;unknown'
+##        comm = commands.getoutput('file -b %s' % tmpfilepath)
+##        brieffile = ' '.join(comm.split()[0:2])
+
+##        reply = 'ko;unknown'
+##        comm = commands.getoutput('file -b %s' % tmpfilepath)
+##        brieffile = ' '.join(comm.split()[0:2])
+##        if brieffile == 'PDF document,':
+##            pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
+##            log.info('(ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
+##            reply = 'ko;convert-pdftif'
+##            sysret = os.system(pdf2fax_command)
+##            ret = os.WEXITSTATUS(sysret)
+##            if ret != 0:
+##                log.warning('(ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
+##                            % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
+##        else:
+##            reply = 'ko;filetype'
+##            log.warning('(ref %s) the file received is a <%s> one : format not supported'
+##                        % (self.reference, brieffile))
+##            ret = -1
+        return
+        
+
+
+    def run(self):
+        pipefd = self.params.get('ctid').pipe_queued_threads[1]
+        innerdata = self.params.get('innerdata')
+        fileid = self.params.get('fileid')
+
+        self.converttotiff()
+        time.sleep(3)
+        innerdata.timeout_queue.put(({'action' : 'fax',
+                                      'properties' : {'step' : 'a',
+                                                      'fileid' : fileid}},))
+        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
+        time.sleep(3)
+        innerdata.timeout_queue.put(({'action' : 'fax',
+                                      'properties' : {'step' : 'b',
+                                                      'fileid' : fileid}},))
+        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
+        time.sleep(3)
+        innerdata.timeout_queue.put(({'action' : 'fax',
+                                      'properties' : {'step' : 'c',
+                                                      'fileid' : fileid}},))
+        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
+        time.sleep(3)
+        innerdata.timeout_queue.put(({'action' : 'fax',
+                                      'properties' : {'step' : 'd',
+                                                      'fileid' : fileid}},))
+        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
+        print self.getName(), 'thread should be over ...'
+
+##        decodedfile = base64.b64decode(self.rawfile.strip())
+##        z = open('/tmp/kjgh', 'w')
+##        z.write(decodedfile)
+##        z.close()
+##        print 'zfax'
+##        return
+        return
+
 class Fax:
-    def __init__(self, uinfo, size, number, hide):
+    def __init__(self, ctid, innerdata, uinfo, fileid, size, number, hide):
+        self.ctid = ctid
+        self.innerdata = innerdata
+        self.fileid = fileid
+
         self.reference = ''.join(random.sample(__alphanums__, 10)) + '-' + hex(int(time.time()))
         self.size = size
         self.number = number.replace('.', '').replace(' ', '')
         self.hide = hide
         self.uinfo = uinfo
+        return
+
+    def setsocketref(self, socketref):
+        self.socketref = socketref
+        return
+
+    def setrequester(self, requester):
+        self.requester = requester
+        return
+
+    def setbuffer(self, rawfile):
+        self.rawfile = rawfile
+        return
+
+    def launchasyncs(self):
+        sthread = asyncActionsThread('fax-%s' % self.fileid,
+                                     {'ctid' : self.ctid,
+                                      'innerdata' : self.innerdata,
+                                      'fileid' : self.fileid})
+        sthread.start()
+        return
+
+    def step(self, stepname):
+        print 'step', stepname, self.requester
+        return
+
+    def finished(self):
+        print 'fff'
+        # question : how to remove the class when over
+        self.ipbxcommand()
+        return
+
+    def ipbxcommand(self):
         return
 
     def sendfax(self, b64buffer, callerid, ami):
@@ -59,28 +164,11 @@ class Fax:
         z = open(tmpfilepath, 'w')
         z.write(buffer)
         z.close()
+
         log.info('(ref %s) size = %s (%d), number = %s, hide = %s'
                  % (self.reference, self.size, len(buffer), self.number, self.hide))
         if self.hide != '0':
             callerid = 'anonymous'
-
-        reply = 'ko;unknown'
-        comm = commands.getoutput('file -b %s' % tmpfilepath)
-        brieffile = ' '.join(comm.split()[0:2])
-        if brieffile == 'PDF document,':
-            pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
-            log.info('(ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
-            reply = 'ko;convert-pdftif'
-            sysret = os.system(pdf2fax_command)
-            ret = os.WEXITSTATUS(sysret)
-            if ret != 0:
-                log.warning('(ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
-                            % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
-        else:
-            reply = 'ko;filetype'
-            log.warning('(ref %s) the file received is a <%s> one : format not supported'
-                        % (self.reference, brieffile))
-            ret = -1
 
         if ret == 0:
             if os.path.exists(PATH_SPOOL_ASTERISK_FAX):

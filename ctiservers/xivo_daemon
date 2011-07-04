@@ -107,8 +107,7 @@ GETOPT_SHORTOPTS   = 'dc:C:p:l:i:P:'
 GETOPT_LONGOPTS    = ['debug', 'config=', 'confoverride=', 'pidfile=',
                       'logfile=', 'ip=', 'portdelta=']
 
-BUFSIZE_LARGE = 8192
-BUFSIZE_ANY = 512
+BUFSIZE_LARGE = 262144
 
 SSLPROTO = ssl.PROTOCOL_TLSv1
 
@@ -460,12 +459,12 @@ class ctiserver:
 ##                log.info('loop_over_cti_queue %s %d items' % (ipbxid, queuesize))
         return
 
-    def set_transfer_socket(self, socketref, direction):
+    def set_transfer_socket(self, faxobj, direction):
         for iconn, kind in self.fdlist_established.iteritems():
             if kind.kind in ['CTI', 'CTIS']:
                 peername = '%s:%d' % iconn.getpeername()
-                if peername == socketref:
-                    kind.set_as_transfer(direction)
+                if peername == faxobj.socketref:
+                    kind.set_as_transfer(direction, faxobj)
                     if direction == 's2c':
                         sendbuffer = ''
                         kind.reply(sendbuffer)
@@ -580,7 +579,7 @@ class ctiserver:
                         try:
                             amiint = self.fdlist_ami.get(sel_i)
                             ipbxid = amiint.ipbxid
-                            buf = sel_i.recv(200000)
+                            buf = sel_i.recv(BUFSIZE_LARGE)
                             if len(buf) == 0:
                                 log.warning('AMI %s : CLOSING (%s)' % (ipbxid, time.asctime()))
                                 del self.fdlist_ami[sel_i]
@@ -598,7 +597,7 @@ class ctiserver:
                         try:
                             cticonn = self.fdlist_remote_cti.get(sel_i)
                             ipbxid = cticonn.ipbxid
-                            buf = sel_i.recv(200000)
+                            buf = sel_i.recv(BUFSIZE_LARGE)
                             if len(buf) == 0:
                                 log.warning('RCTI %s : CLOSING' % ipbxid)
                                 del self.fdlist_remote_cti[sel_i]
@@ -616,7 +615,7 @@ class ctiserver:
                     elif sel_i in self.fdlist_udp_cti: # {
                         [kind, nmax] = self.fdlist_udp_cti[sel_i].split(':')
                         if kind == 'ANNOUNCE':
-                            [data, sockparams] = sel_i.recvfrom(32768)
+                            [data, sockparams] = sel_i.recvfrom(BUFSIZE_LARGE)
                             log.info('UDP %s <%s> %s' % (kind, data.strip(), sockparams))
                             # scheduling AMI reconnection
                             k = threading.Timer(1, self.cb_timer,
@@ -761,7 +760,7 @@ class ctiserver:
                                             nactions = self.myami[where].checkqueue()
                                         log.info('handled %d actions for %s' % (nactions, kind))
                                     else:
-                                        log.warning('unknown kind %s' % kind)
+                                        log.warning('unknown kind for %s' % pb)
                         except Exception:
                             log.exception('[pipe_queued_threads]')
 

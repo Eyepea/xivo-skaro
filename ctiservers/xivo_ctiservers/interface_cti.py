@@ -49,7 +49,7 @@ class CTI(Interfaces):
         Interfaces.__init__(self, ctid)
         self.connection_details = {}
         self.serial = serialJson()
-        self.transferconnection = None
+        self.transferconnection = {}
         return
 
     def connected(self, connid):
@@ -63,13 +63,10 @@ class CTI(Interfaces):
         return
 
     def disconnected(self, msg):
-        self.log.info('disconnected')
+        self.log.info('disconnected %s' % msg)
         self.logintimer.cancel()
-        if self.transferconnection and self.transferconnection == 'c2s':
-            self.log.info('got the file ...')
-##            z = open(tmpfilepath, 'w')
-##            z.write(buffer)
-##            z.close()
+        if self.transferconnection and self.transferconnection.get('direction') == 'c2s':
+            self.log.info('%s got the file ...' % self.transferconnection.get('faxobj').fileid)
         # self.connid.sendall(msg)
         # tosend = { 'class' : 'serverdown',
         # 'mode' : mode }
@@ -82,8 +79,12 @@ class CTI(Interfaces):
     def manage_connection(self, msg):
         z = list()
         if self.transferconnection:
-            if self.transferconnection == 'c2s':
-                self.log.info('transfer connection %d received' % len(msg))
+            if self.transferconnection.get('direction') == 'c2s':
+                faxobj = self.transferconnection.get('faxobj')
+                self.logintimer.cancel()
+                self.log.info('%s transfer connection : %d received' % (faxobj.fileid, len(msg)))
+                faxobj.setbuffer(msg)
+                faxobj.launchasyncs()
         else:
             multimsg = msg.split(self.sep)
             for usefulmsgpart in multimsg:
@@ -93,13 +94,15 @@ class CTI(Interfaces):
                 # print nc.commandid
         return z
 
-    def set_as_transfer(self, direction):
-        self.transferconnection = direction
+    def set_as_transfer(self, direction, faxobj):
+        self.log.info('%s set_as_transfer %s' % (faxobj.fileid, direction))
+        self.transferconnection = { 'direction' : direction,
+                                    'faxobj' : faxobj }
         return
 
     def reply(self, msg):
         if self.transferconnection:
-            if self.transferconnection == 's2c':
+            if self.transferconnection.get('direction') == 's2c':
                 self.connid.sendall(msg)
                 self.log.info('transfer connection %d sent' % len(msg))
         else:

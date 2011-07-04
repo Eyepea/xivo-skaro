@@ -27,6 +27,8 @@ import socket
 import errno
 from collections import deque
 
+BUFSIZE_LARGE = 262144
+
 class ClientConnection:
     class CloseException(Exception):
         def __init__(self, errno = -1):
@@ -95,7 +97,7 @@ class ClientConnection:
     # to be called when the socked is ready for reading
     def recv(self):
         try:
-            s = self.socket.recv(4096)
+            s = self.socket.recv(BUFSIZE_LARGE)
             if len(s) > 0:
                 self.readbuff += s
             else:

@@ -130,7 +130,7 @@ class Safe:
 
                      'agents' : { 'phonenumber' : '',
                                   # channel for static login cases
-                                  'status' : '', # statuses are AGENT_LOGGEDOFF, _ONCALL, _IDLE and '' (undefined)
+                                  'status' : 'undefined', # statuses are AGENT_LOGGEDOFF, _ONCALL, _IDLE and '' (undefined)
                                   'queues' : [],
                                   'groups' : []
                                   },
@@ -177,6 +177,7 @@ class Safe:
 
         self.channels = {}
         self.queuemembers = {}
+        self.faxes = {}
 
         self.ctistack = []
 
@@ -502,7 +503,7 @@ class Safe:
         # send a notification event if no new member
         self.handle_cti_stack('set', (qgname, 'updatestatus', qgid))
         midx = None
-        if location.startswith('Agent/'):
+        if location.lower().startswith('agent/'):
             aid = self.xod_config['agents'].idbyagentnumber(location[6:])
             self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
             midx = '%sa:%s-%s' % (qgname[0], qgid, aid)
@@ -556,13 +557,16 @@ class Safe:
                 self.queuemembers[midx][k] = v
 
         else:
-            del self.queuemembers[midx]
-            self.events_cti.put({'class' : 'getlist',
-                                 'listname' : 'queuemembers',
-                                 'function' : 'delconfig',
-                                 'tipbxid' : self.ipbxid,
-                                 'list' : [midx]
-                                 })
+            if midx in self.queuemembers:
+                del self.queuemembers[midx]
+                self.events_cti.put({'class' : 'getlist',
+                                     'listname' : 'queuemembers',
+                                     'function' : 'delconfig',
+                                     'tipbxid' : self.ipbxid,
+                                     'list' : [midx]
+                                     })
+            else:
+                self.log.warning('%s no more in queuemembers' % midx)
 
         # send cti events in reverse order in order for the queuemember details to be received first
         self.handle_cti_stack('empty_stack')
@@ -1027,6 +1031,16 @@ class Safe:
                 fagistruct = toload.get('properties')
                 # XXX maybe we could handle the AGI data nevertheless ?
                 self.fagi_close(fagistruct, {'XIVO_CTI_AGI' : 'FAIL'})
+            elif action == 'fax':
+                properties = toload.get('properties')
+                step = properties.get('step')
+                fileid = properties.get('fileid')
+                print 'checkqueue', action, fileid, step
+                # send status to requester
+                self.faxes[fileid].step(step)
+                if step == 'd':
+                    self.faxes[fileid].finished()
+                    del self.faxes[fileid]
             # other cases to handle : login, agentlogoff (would that still be true ?)
         return ncount
 

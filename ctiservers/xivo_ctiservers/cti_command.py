@@ -30,6 +30,7 @@ import string
 import threading
 import time
 from xivo_ctiservers import xivo_webservices
+from xivo_ctiservers import cti_fax
 
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
@@ -78,8 +79,10 @@ IPBXCOMMANDS = [
     'listen',
 
     'agentlogin', 'agentlogout',
-    'agentjoinqueue', 'agentleavequeue',
-    'agentpausequeue', 'agentunpausequeue'
+    'queueadd', 'queueremove',
+    'queuepause', 'queueunpause',
+    'queueremove_all',
+    'queuepause_all', 'queueunpause_all',
     ]
 
 XIVOVERSION_NUM = '1.2'
@@ -436,10 +439,10 @@ class Command:
 
     def regcommand_history(self):
         reply = {}
-        repstr = self.innerdata.gethistory(self.ruserid,
-                                           self.commanddict.get('size'),
-                                           self.commanddict.get('mode'),
-                                           self.commanddict.get('morerecentthan'))
+        repstr = self.rinnerdata.gethistory(self.ruserid,
+                                            self.commanddict.get('size'),
+                                            self.commanddict.get('mode'),
+                                            self.commanddict.get('morerecentthan'))
         return reply
 
     def regcommand_parking(self):
@@ -490,19 +493,26 @@ class Command:
 
     def regcommand_filetransfer(self):
         reply = {}
+        print 'regcommand_filetransfer', self.commanddict
         function = self.commanddict.get('command')
+        socketref = self.commanddict.get('socketref')
+        fileid = self.commanddict.get('fileid')
+        self.rinnerdata.faxes[fileid].setsocketref(socketref)
+        self.rinnerdata.faxes[fileid].setrequester(self.connection)
         if function == 'get_announce':
-            self.ctid.set_transfer_socket(self.commanddict.get('socketref'), 's2c')
+            self.ctid.set_transfer_socket(self.rinnerdata.faxes[fileid], 's2c')
         elif function == 'put_announce':
-            self.ctid.set_transfer_socket(self.commanddict.get('socketref'), 'c2s')
+            self.ctid.set_transfer_socket(self.rinnerdata.faxes[fileid], 'c2s')
             # get size, filename
             # reply with a token id
         return reply
 
     def regcommand_faxsend(self):
-        reply = {}
         print 'regcommand_faxsend', self.commanddict
-        print reply
+        fileid = ''.join(random.sample(__alphanums__, 10))
+        reply = {'fileid' : fileid}
+        self.rinnerdata.faxes[fileid] = cti_fax.Fax(self.ctid, self.rinnerdata, self.ruserid,
+                                                    fileid, 45, '345345', '1')
         return reply
 
     def regcommand_getipbxlist(self):
@@ -571,22 +581,24 @@ class Command:
         methodname = 'ipbxcommand_%s' % self.ipbxcommand
 
         # check whether ipbxcommand is in the users's profile capabilities
-        z = {}
+        zs = []
         if hasattr(self, methodname):
             try:
-                z = getattr(self, methodname)()
+                zs = getattr(self, methodname)()
             except Exception:
                 self.log.warning('exception when calling %s' % methodname)
         else:
             self.log.warning('no such ipbx method %s' % methodname)
 
         # if some actions have been requested ...
-        if z:
+        if self.commandid: # pass the commandid on the actionid # 'user action - forwarded'
+            baseactionid = 'uaf:%s' % self.commandid
+        else: # 'user action - auto'
+            baseactionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
+        ipbxreply = 'noaction'
+        idz = 0
+        for z in zs:
             if 'amicommand' in z:
-                if self.commandid: # pass the commandid on the actionid # 'user action - forwarded'
-                    actionid = 'uaf:%s' % self.commandid
-                else: # 'user action - auto'
-                    actionid = 'uaa:%s' % ''.join(random.sample(__alphanums__, 10))
                 params = {
                     'mode' : 'useraction',
                     'request' : {
@@ -597,11 +609,12 @@ class Command:
                     'amicommand' : z.get('amicommand'),
                     'amiargs' : z.get('amiargs')
                     }
+                actionid = '%s-%03d' % (baseactionid, idz)
                 ipbxreply = self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
             else:
                 ipbxreply = z.get('error')
-        else:
-            ipbxreply = ''
+            idz += 1
+
         reply['ipbxreply'] = ipbxreply
         return reply
 
@@ -629,7 +642,7 @@ class Command:
     # for transfers, hangups, ...
 
     def ipbxcommand_hangupme(self):
-        return
+        return []
 
     def ipbxcommand_dial(self):
         self.commanddict['source'] = 'user:%s/%s' % (self.ripbxid, self.ruserid)
@@ -652,15 +665,15 @@ class Command:
     def ipbxcommand_originate(self):
         src = self.parseid(self.commanddict.get('source'))
         if not src:
-            return {'error' : 'source'}
+            return [{'error' : 'source'}]
         dst = self.parseid(self.commanddict.get('destination'))
         if not dst:
-            return {'error' : 'destination'}
+            return [{'error' : 'destination'}]
 
         if src.get('ipbxid') != dst.get('ipbxid'):
-            return {'error' : 'ipbxids'}
+            return [{'error' : 'ipbxids'}]
         if src.get('ipbxid') not in self.ctid.safe:
-            return {'error' : 'ipbxid'}
+            return [{'error' : 'ipbxid'}]
 
         innerdata = self.ctid.safe.get(src.get('ipbxid'))
 
@@ -716,6 +729,14 @@ class Command:
             extentodial = '*98'
             # XXX especially for the 'dial' command, actually
             # XXX display password on phone in order for the user to know what to type
+        elif dst.get('type') == 'meetme':
+            if dst.get('id') in innerdata.xod_config.get('meetmes').keeplist:
+                meetmestruct = innerdata.xod_config.get('meetmes').keeplist.get(dst.get('id'))
+                extentodial = meetmestruct.get('confno')
+                dst_identity = 'meetme %s' % meetmestruct.get('name')
+                dst_context = meetmestruct.get('context')
+            else:
+                extentodial = None
         elif dst.get('type') == 'exten':
             # XXX how to define
             extentodial = dst.get('id')
@@ -739,7 +760,7 @@ class Command:
                                 dst_context)
                    }
             # {'XIVO_USERID' : userinfo.get('xivo_userid')})
-        return rep
+        return [rep]
 
 
     def ipbxcommand_meetme(self):
@@ -814,13 +835,13 @@ class Command:
             line = self.rinnerdata.xod_config['phones'].keeplist[uinfo['linelist'][0]]
             channel = line['identity'].replace('\\','')
         reply = {'amicommand': 'sipnotify', 'amiargs': (channel, variables)}
-        return reply
+        return [reply]
 
     # transfers
     def ipbxcommand_parking(self):
         src = self.parseid(self.commanddict.get('source'))
         if not src:
-            return {'error' : 'source'}
+            return [{'error' : 'source'}]
         dst = self.parseid(self.commanddict.get('destination'))
         if not dst:
             return {'error' : 'destination'}
@@ -851,15 +872,15 @@ class Command:
     def ipbxcommand_transfer(self):
         src = self.parseid(self.commanddict.get('source'))
         if not src:
-            return {'error' : 'source'}
+            return [{'error' : 'source'}]
         dst = self.parseid(self.commanddict.get('destination'))
         if not dst:
-            return {'error' : 'destination'}
+            return [{'error' : 'destination'}]
 
         if src.get('ipbxid') != dst.get('ipbxid'):
-            return {'error' : 'ipbxids'}
+            return [{'error' : 'ipbxids'}]
         if src.get('ipbxid') not in self.ctid.safe:
-            return {'error' : 'ipbxid'}
+            return [{'error' : 'ipbxid'}]
 
         innerdata = self.ctid.safe.get(src.get('ipbxid'))
 
@@ -873,6 +894,7 @@ class Command:
 
         dst_context = src_context
         phoneidstruct_dst = {}
+        extentodial = None
 
         if dst.get('type') == 'user':
             if dst.get('id') in innerdata.xod_config.get('users').keeplist:
@@ -891,81 +913,223 @@ class Command:
             # exten_dst = 's'
             # context_src = 'macro-voicemail'
             pass
+        elif dst.get('type') == 'meetme':
+            if dst.get('id') in innerdata.xod_config.get('meetmes').keeplist:
+                meetmestruct = innerdata.xod_config.get('meetmes').keeplist.get(dst.get('id'))
+                extentodial = meetmestruct.get('confno')
         else:
             pass
 
         if phoneidstruct_dst:
             extentodial = phoneidstruct_dst.get('number')
 
-        rep = {'amicommand' : 'transfer',
-               'amiargs' : (channel,
-                            extentodial,
-                            dst_context)
-               }
-        return rep
+        rep = {}
+        if extentodial:
+            rep = {'amicommand' : 'transfer',
+                   'amiargs' : (channel,
+                                extentodial,
+                                dst_context)
+                   }
+        return [rep]
 
     def ipbxcommand_atxfer(self):
         # no reply was received from this :
         # http://lists.digium.com/pipermail/asterisk-users/2011-March/260508.html
         # however some clues could be found here :
         # https://issues.asterisk.org/view.php?id=12158
-        rep = {}
+        rep = [{}]
         return rep
 
     def ipbxcommand_transfercancel(self):
         print self.ipbxcommand, self.commanddict
-        return
+        return []
 
     def ipbxcommand_intercept(self):
         self.commanddict['source'] = self.commanddict.pop('tointercept')
         self.commanddict['destination'] = self.commanddict.pop('catcher')
         # ami transfer mode
-        rep = self.ipbxcommand_transfer()
+        reps = self.ipbxcommand_transfer()
         # what about origination with '*8' ?
-        return rep
+        return reps
 
     # hangup and one's own line management
     def ipbxcommand_hangup(self):
         print self.ipbxcommand, self.commanddict
-        return
+        return []
     def ipbxcommand_answer(self):
         print self.ipbxcommand, self.commanddict
-        return
+        return []
     def ipbxcommand_cancel(self):
         print self.ipbxcommand, self.commanddict
-        return
+        return []
     def ipbxcommand_refuse(self):
         print self.ipbxcommand, self.commanddict
-        return
+        return []
 
     # agents and queues
     def ipbxcommand_agentlogin(self):
-        rep = { 'amicommand' : 'agentcallbacklogin',
+##        rep = { 'amicommand' : 'agentcallbacklogin',
+##                'amiargs' : ('a', 'b', 'c', 'd')
+##                }
+        rep = { 'amicommand' : 'agentlogin',
                 'amiargs' : ('a', 'b', 'c', 'd')
                 }
-        return rep
+        return [rep]
 
     def ipbxcommand_agentlogout(self):
-        rep = { 'amicommand' : 'agentlogoff',
-                'amiargs' : ('a', 'b', 'c')
-                }
-        return
+        member = self.parseid(self.commanddict.get('member'))
+        if not member:
+            return [{'error' : 'member'}]
 
-    def ipbxcommand_agentjoinqueue(self):
-        print self.ipbxcommand, self.commanddict
-        return
+        innerdata = self.ctid.safe.get(member.get('ipbxid'))
+        rep = {}
+        if member.get('id') in innerdata.xod_config.get('agents').keeplist:
+            memberstruct = innerdata.xod_config.get('agents').keeplist.get(member.get('id'))
+            memberstatus = innerdata.xod_status.get('agents').get(member.get('id'))
+            if memberstatus.get('status') != 'AGENT_LOGGEDOFF':
+                rep = { 'amicommand' : 'agentlogoff',
+                        'amiargs' : (memberstruct.get('number'),)
+                        }
+        return [rep]
 
-    def ipbxcommand_agentleavequeue(self):
-        print self.ipbxcommand, self.commanddict
-        return
 
-    def ipbxcommand_agentpausequeue(self):
-        print self.ipbxcommand, self.commanddict
-        return
+    def whenmember(self, innerdata, command, dopause, listname, k, member):
+        memberlist = []
+        midx = '%s%s:%s-%s' % (listname[0], member.get('type')[0], k, member.get('id'))
+        membership = innerdata.queuemembers.get(midx).get('membership')
+        paused = innerdata.queuemembers.get(midx).get('paused')
+        doit = False
+        if command == 'remove' and membership != 'static':
+            doit = True
+        if command == 'pause':
+            if dopause == 'true' and paused == '0':
+                doit = True
+            if dopause == 'false' and paused == '1':
+                doit = True
+        if doit:
+            memberlist.append(member)
+        return memberlist
 
-    def ipbxcommand_agentunpausequeue(self):
-        print self.ipbxcommand, self.commanddict
-        return
+    def defmemberlist(self, innerdata, command, dopause, listname, k, member):
+        memberlist = []
+        if member.get('type') in ['phone', 'agent']:
+            membersname = member.get('type') + 'members'
+            lname = member.get('type') + 's'
+            any_members = innerdata.xod_status.get(listname).get(k).get(membersname)
+            if member.get('id') in innerdata.xod_config.get(lname).keeplist:
+                if command == 'add':
+                    if member.get('id') not in any_members:
+                        memberlist = [member]
+                else:
+                    if member.get('id') in any_members:
+                        memberlist = self.whenmember(innerdata, command, dopause, listname, k, member)
+            elif member.get('id') == 'all':
+                if command != 'add':
+                    for any_id in any_members:
+                        member = {'type' : member.get('type'), 'id' : any_id}
+                        memberlist = self.whenmember(innerdata, command, dopause, listname, k, member)
+        return memberlist
+
+    def makeinterfaces(self, innerdata, memberlist):
+        interfaces = []
+        for member in memberlist:
+            interface = None
+            if member.get('type') == 'phone':
+                memberstruct = innerdata.xod_config.get('phones').keeplist.get(member.get('id'))
+                interface = '%s/%s' % (memberstruct.get('protocol'), memberstruct.get('name'))
+            elif member.get('type') == 'agent':
+                memberstruct = innerdata.xod_config.get('agents').keeplist.get(member.get('id'))
+                interface = 'Agent/%s' % memberstruct.get('number')
+
+            if interface and interface not in interfaces:
+                interfaces.append(interface)
+        return interfaces
+
+    def queue_generic(self, command, dopause = None):
+        member = self.parseid(self.commanddict.get('member'))
+        if not member:
+            return [{'error' : 'member'}]
+        queue = self.parseid(self.commanddict.get('queue'))
+        if not queue:
+            return [{'error' : 'queue'}]
+
+        innerdata = self.ctid.safe.get(queue.get('ipbxid'))
+
+        listname = None
+        if queue.get('type') == 'queue':
+            listname = 'queues'
+        elif queue.get('type') == 'group':
+            listname = 'groups'
+
+        queuenames = []
+        interfaces = []
+
+        if listname:
+            if queue.get('id') in innerdata.xod_config.get(listname).keeplist:
+                lst = self.defmemberlist(innerdata, command, dopause, listname, queue.get('id'), member)
+                if lst:
+                    interfaces = self.makeinterfaces(innerdata, lst)
+                    queuestruct = innerdata.xod_config.get(listname).keeplist.get(queue.get('id'))
+                    queuename = queuestruct.get('name')
+                    if queuename not in queuenames:
+                        queuenames.append(queuename)
+            elif queue.get('id') == 'all':
+                for k, queuestruct in innerdata.xod_config.get(listname).keeplist.iteritems():
+                    lst = self.defmemberlist(innerdata, command, dopause, listname, k, member)
+                    if lst:
+                        interfaces = self.makeinterfaces(innerdata, lst)
+                        queuename = queuestruct.get('name')
+                        print queuename, interfaces
+                        if queuename not in queuenames:
+                            queuenames.append(queuename)
+
+        reps = []
+        amicommand = 'queue%s' % command
+        for queuename in queuenames:
+            for interface in interfaces:
+                if command == 'remove':
+                    amiargs = (queuename, interface)
+                elif command == 'add':
+                    amiargs = (queuename, interface, dopause)
+                elif command == 'pause':
+                    amiargs = (queuename, interface, dopause)
+                rep = {
+                    'amicommand' : amicommand,
+                    'amiargs' : amiargs
+                    }
+                reps.append(rep)
+        print reps
+        return reps
+
+    def ipbxcommand_queueadd(self):
+        return self.queue_generic('add', self.commanddict.get('paused'))
+
+    def ipbxcommand_queueremove(self):
+        return self.queue_generic('remove')
+
+    def ipbxcommand_queuepause(self):
+        return self.queue_generic('pause', 'true')
+
+    def ipbxcommand_queueunpause(self):
+        return self.queue_generic('pause', 'false')
+
+    # 'all' can mean :
+    # - all members (phones, agents, ...) of a queue or a group
+    # - all queues or groups a member belongs to
+    # the one that is most useful is the second case
+
+    def ipbxcommand_queuepause_all(self):
+        self.commanddict['queue'] = 'queue:xivo/all'
+        return self.queue_generic('pause', 'true')
+
+    def ipbxcommand_queueunpause_all(self):
+        self.commanddict['queue'] = 'queue:xivo/all'
+        return self.queue_generic('pause', 'false')
+
+    def ipbxcommand_queueremove_all(self):
+        self.commanddict['queue'] = 'queue:xivo/all'
+        return self.queue_generic('remove')
+
 
     # record, listen actions
     def ipbxcommand_record(self):
@@ -985,7 +1149,7 @@ class Command:
         elif subcommand == 'stop':
             rep = { 'amicommand' : 'stopmonitor',
                     'amiargs' : (channel,) }
-        return rep
+        return [rep]
 
     def ipbxcommand_listen(self):
         subcommand = self.commanddict.pop('subcommand')
@@ -1004,4 +1168,4 @@ class Command:
         elif subcommand == 'stop':
             # XXX hangup appropriate channel
             rep = {}
-        return rep
+        return [rep]
