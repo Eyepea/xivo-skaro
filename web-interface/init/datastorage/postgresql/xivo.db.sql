@@ -220,28 +220,25 @@ CREATE TABLE "server" (
  "id" SERIAL,
  "name" varchar(64) NOT NULL DEFAULT '',
  "host" varchar(255) NOT NULL DEFAULT '',
- "port" INTEGER NOT NULL,
  "ws_login" varchar(64) NOT NULL DEFAULT '',
  "ws_pass" varchar(64) NOT NULL DEFAULT '',
- "ssl" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "ws_port" INTEGER NOT NULL,
+ "ws_ssl" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ "cti_port" INTEGER NOT NULL,
+ "cti_login" varchar(64) NOT NULL DEFAULT '',
+ "cti_pass" varchar(64) NOT NULL DEFAULT '',
+ "cti_ssl" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
+ "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
- "webi" varchar(255) NOT NULL DEFAULT '',
- "ami_port" INTEGER NOT NULL,
- "ami_login" varchar(64) NOT NULL DEFAULT '',
- "ami_pass" varchar(64) NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
 
 CREATE INDEX "server__idx__host" ON "server"("host");
-CREATE INDEX "server__idx__port" ON "server"("port");
 CREATE INDEX "server__idx__disable" ON "server"("disable");
 CREATE UNIQUE INDEX "server__uidx__name" ON "server"("name");
-CREATE UNIQUE INDEX "server__uidx__host_port" ON "server"("host","port");
-
-INSERT INTO "server" VALUES(1,'xivo','localhost',443,'','',1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
-SELECT setval('server_id_seq', 2);
+CREATE UNIQUE INDEX "server__uidx__host_wsport" ON "server"("host","ws_port");
+CREATE UNIQUE INDEX "server__uidx__host_ctiport" ON "server"("host","cti_port");
 
 
 DROP TABLE IF EXISTS "session";

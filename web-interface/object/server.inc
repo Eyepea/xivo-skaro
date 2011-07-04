@@ -48,19 +48,20 @@ class xivo_server extends xivo_libdatastorage_abstract
 
 	function _prepare($data)
 	{
-		$data['ssl'] = (bool) $data['ssl'];
+		$data['ws_ssl'] = (bool) $data['ws_ssl'];
+		$data['cti_ssl'] = (bool) $data['cti_ssl'];
 		$data['disable'] = (bool) $data['disable'];
 		$data['identity'] = $data['name'].' ('.$data['host'].')';
 
 		$data['url'] = array();
 
-		if($data['ssl'] === true)
+		if($data['ws_ssl'] === true)
 			$data['url']['scheme'] = 'https';
 		else
 			$data['url']['scheme'] = 'http';
 
 		$data['url']['authority'] = array('host'	=> $data['host'],
-						  'port'	=> $data['port']);
+						  'port'	=> $data['ws_port']);
 		
 		$this->init_url($data);
 

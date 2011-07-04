@@ -18,19 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
+$array = array();
+$array['element'] = array();
 
-class xivo_server_abstract_sql extends dwho_datastorage_helper_table
-{
-	var $_table      = 'server';
-	var $_primary    = array('id' => 0);
-	var $_disable    = 'disable';
-	var $_unique     = array('name',array('host'));
+$array['element'] = array();
+$array['element']['default'] = '';
 
-	function xivo_server_abstract_sql(&$dso,$param=array())
-	{
-	    parent::_init(&$dso,$param);
-	}
-}
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
 
+
+$array['filter'] = array();
+$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
+#$array['filter']['description'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 ?>

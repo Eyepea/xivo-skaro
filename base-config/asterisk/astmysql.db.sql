@@ -350,7 +350,7 @@ CREATE TABLE `ctidirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectories` VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
+INSERT INTO `ctidirectories` VALUES(1,'xivodir', 'phonebook', '', '[ `phonebook.firstname `, `phonebook.lastname `, `phonebook.displayname `, `phonebook.society `, `phonebooknumber.office.number `]','[ `phonebooknumber.office.number `, `phonebooknumber.mobile.number `]','[ `{db-fullname} `]','Répertoire XiVO Externe',1);
 INSERT INTO `ctidirectories` VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
 
 DROP TABLE IF EXISTS `ctidirectoryfields`;
@@ -380,7 +380,7 @@ CREATE TABLE `ctidisplays` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidisplays` VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}',1,'Affichage par défaut');
+INSERT INTO `ctidisplays` VALUES(4,'Display','{ `10 `: [  `Numéro `, `phone `, ` `, `{db-phone} ` ], `20 `: [  `Nom `, ` `, ` `, `{db-fullname} ` ], `30 `: [  `Entreprise `, ` `, `Inconnue `, `{db-company} ` ], `40 `: [  `E-mail `, ` `, ` `, `{db-mail} ({xivo-directory}) ` ]}',1,'Affichage par défaut');
 
 
 DROP TABLE IF EXISTS `ctimain`;
@@ -443,6 +443,7 @@ INSERT INTO `ctipresences` VALUES(1,'xivo','De base non supprimable',0);
 DROP TABLE IF EXISTS `ctiprofiles`;
 CREATE TABLE `ctiprofiles` (
  `id` int(10) unsigned auto_increment,
+ `idgroup` int(10) unsigned,
  `xlets` text,
  `funcs` varchar(255),
  `maxgui` int(10) unsigned,
@@ -455,14 +456,25 @@ CREATE TABLE `ctiprofiles` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctiprofiles` VALUES(9,'[[ `queues`, `dock`, `fms`, `N/A` ],[ `queuedetails`, `dock`, `fms`, `N/A` ],[ `queueentrydetails`, `dock`, `fcms`, `N/A` ],[ `agents`, `dock`, `fcms`, `N/A` ],[ `agentdetails`, `dock`, `fcms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `conference`, `dock`, `fcm`, `N/A` ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(10,'[[ `queues`, `dock`, `ms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `customerinfo`, `dock`, `cms`, `N/A` ],[ `agentdetails`, `dock`, `cms`, `N/A` ]]','presence',-1,'Agent','agent','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(11,'[[ `tabber`, `grid`, `fcms`, `1` ],[ `dial`, `grid`, `fcms`, `2` ],[ `search`, `tab`, `fcms`, `0` ],[ `customerinfo`, `tab`, `fcms`, `4` ],[ `identity`, `grid`, `fcms`, `0` ],[ `fax`, `tab`, `fcms`, `N/A` ],[ `history`, `tab`, `fcms`, `N/A` ],[ `directory`, `tab`, `fcms`, `N/A` ],[ `features`, `tab`, `fcms`, `N/A` ],[ `mylocaldir`, `tab`, `fcms`, `N/A` ],[ `conference`, `tab`, `fcms`, `N/A` ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(12,'[[ `tabber`, `grid`, `fcms`, `1` ],[ `dial`, `grid`, `fcms`, `2` ],[ `search`, `tab`, `fcms`, `0` ],[ `customerinfo`, `tab`, `fcms`, `4` ],[ `identity`, `grid`, `fcms`, `0` ],[ `fax`, `tab`, `fcms`, `N/A` ],[ `history`, `tab`, `fcms`, `N/A` ],[ `directory`, `tab`, `fcms`, `N/A` ],[ `features`, `tab`, `fcms`, `N/A` ],[ `mylocaldir`, `tab`, `fcms`, `N/A` ],[ `conference`, `tab`, `fcms`, `N/A` ],[ `outlook`, `tab`, `fcms`, `N/A` ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(13,'[[ `datetime`, `dock`, `fm`, `N/A` ]]','',-1,'Horloge','clock','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(14,'[[ `dial`, `dock`, `fm`, `N/A` ],[ `operator`, `dock`, `fcm`, `N/A` ],[ `datetime`, `dock`, `fcm`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `calls`, `dock`, `fcm`, `N/A` ],[ `parking`, `dock`, `fcm`, `N/A` ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
-INSERT INTO `ctiprofiles` VALUES(15,'[[ `parking`, `dock`, `fcms`, `N/A` ],[ `search`, `dock`, `fcms`, `N/A` ],[ `calls`, `dock`, `fcms`, `N/A` ],[ `switchboard`, `dock`, `fcms`, `N/A` ],[ `customerinfo`, `dock`, `fcms`, `N/A` ],[ `datetime`, `dock`, `fcms`, `N/A` ],[ `dial`, `dock`, `fcms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `messages`, `dock`, `fcms`, `N/A` ],[ `operator`, `dock`, `fcms`, `N/A` ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(9,1,'[[ `queues`, `dock`, `fms`, `N/A` ],[ `queuedetails`, `dock`, `fms`, `N/A` ],[ `queueentrydetails`, `dock`, `fcms`, `N/A` ],[ `agents`, `dock`, `fcms`, `N/A` ],[ `agentdetails`, `dock`, `fcms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `conference`, `dock`, `fcm`, `N/A` ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(10,1,'[[ `queues`, `dock`, `ms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `customerinfo`, `dock`, `cms`, `N/A` ],[ `agentdetails`, `dock`, `cms`, `N/A` ]]','presence',-1,'Agent','agent','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(11,1,'[[ `tabber`, `grid`, `fcms`, `1` ],[ `dial`, `grid`, `fcms`, `2` ],[ `search`, `tab`, `fcms`, `0` ],[ `customerinfo`, `tab`, `fcms`, `4` ],[ `identity`, `grid`, `fcms`, `0` ],[ `fax`, `tab`, `fcms`, `N/A` ],[ `history`, `tab`, `fcms`, `N/A` ],[ `directory`, `tab`, `fcms`, `N/A` ],[ `features`, `tab`, `fcms`, `N/A` ],[ `mylocaldir`, `tab`, `fcms`, `N/A` ],[ `conference`, `tab`, `fcms`, `N/A` ]]','presence,customerinfo',-1,'Client','client','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(12,1,'[[ `tabber`, `grid`, `fcms`, `1` ],[ `dial`, `grid`, `fcms`, `2` ],[ `search`, `tab`, `fcms`, `0` ],[ `customerinfo`, `tab`, `fcms`, `4` ],[ `identity`, `grid`, `fcms`, `0` ],[ `fax`, `tab`, `fcms`, `N/A` ],[ `history`, `tab`, `fcms`, `N/A` ],[ `directory`, `tab`, `fcms`, `N/A` ],[ `features`, `tab`, `fcms`, `N/A` ],[ `mylocaldir`, `tab`, `fcms`, `N/A` ],[ `conference`, `tab`, `fcms`, `N/A` ],[ `outlook`, `tab`, `fcms`, `N/A` ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(13,1,'[[ `datetime`, `dock`, `fm`, `N/A` ]]','',-1,'Horloge','clock','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(14,1,'[[ `dial`, `dock`, `fm`, `N/A` ],[ `operator`, `dock`, `fcm`, `N/A` ],[ `datetime`, `dock`, `fcm`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `calls`, `dock`, `fcm`, `N/A` ],[ `parking`, `dock`, `fcm`, `N/A` ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
+INSERT INTO `ctiprofiles` VALUES(15,1,'[[ `parking`, `dock`, `fcms`, `N/A` ],[ `search`, `dock`, `fcms`, `N/A` ],[ `calls`, `dock`, `fcms`, `N/A` ],[ `switchboard`, `dock`, `fcms`, `N/A` ],[ `customerinfo`, `dock`, `fcms`, `N/A` ],[ `datetime`, `dock`, `fcms`, `N/A` ],[ `dial`, `dock`, `fcms`, `N/A` ],[ `identity`, `grid`, `fcms`, `0` ],[ `messages`, `dock`, `fcms`, `N/A` ],[ `operator`, `dock`, `fcms`, `N/A` ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
 
+
+DROP TABLE IF EXISTS  `ctiprofilesgroup `;
+CREATE TABLE  `ctiprofilesgroup ` (
+  `id` SERIAL,
+  `name` varchar(255),
+  `description` varchar(255),
+  `deletable` tinyint(1),
+ PRIMARY KEY( `id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO  `ctiprofilesgroup` VALUES(1,'xivo','De base non supprimable',0);
 
 DROP TABLE IF EXISTS `ctireversedirectories`;
 CREATE TABLE `ctireversedirectories` (
@@ -2759,13 +2771,13 @@ CREATE TABLE `callcenter_campaigns_general` (
 	`purge_punct_at`            TIME DEFAULT '00:00',
 
 	-- SVI closed choices (press #1, #2, ...) VARIABLES
-	-- i.e: "lang=XIVO_LANG;os=XIVO_OS"
+	-- i.e:  `lang=XIVO_LANG;os=XIVO_OS `
 	`svichoices`                TEXT,
 	-- SVI open entries
-	-- i.e: "creditcard=XIVO_CREDITCARDNO;password=XIVO_CREDITCARDPWD"
+	-- i.e:  `creditcard=XIVO_CREDITCARDNO;password=XIVO_CREDITCARDPWD `
 	`svientries`                TEXT,
 	-- SVI extra defined variables (retrieved from ERP, ...)
-	-- i.e: "customer=CUSTOMERNO"
+	-- i.e:  `customer=CUSTOMERNO `
 	`svivariables`              TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

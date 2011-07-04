@@ -194,30 +194,31 @@ CREATE TABLE `resolvconf` (
 CREATE UNIQUE INDEX `resolvconf__uidx__hostname` ON `resolvconf`(`hostname`);
 INSERT INTO `resolvconf` VALUES(1, '', '', NULL, NULL, NULL, NULL, '');
 
+
 DROP TABLE IF EXISTS `server`;
 CREATE TABLE `server` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(64) NOT NULL DEFAULT '',
  `host` varchar(255) NOT NULL DEFAULT '',
- `port` smallint unsigned NOT NULL,
  `ws_login` varchar(64) NOT NULL DEFAULT '',
  `ws_pass` varchar(64) NOT NULL DEFAULT '',
- `ssl` tinyint(1) NOT NULL DEFAULT 0,
+ `ws_port` smallint unsigned NOT NULL,
+ `ws_ssl` tinyint(1) NOT NULL DEFAULT 0,
+ `cti_login` varchar(64) NOT NULL DEFAULT '',
+ `cti_pass` varchar(64) NOT NULL DEFAULT '',
+ `cti_port` smallint unsigned NOT NULL,
+ `cti_ssl` tinyint(1) NOT NULL DEFAULT 0,
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
  `description` text NOT NULL,
- `webi` varchar(255) NOT NULL DEFAULT '',
- `ami_port` smallint unsigned NOT NULL,
- `ami_login` varchar(64) NOT NULL DEFAULT '',
- `ami_pass` varchar(64) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `server__idx__host` ON `server`(`host`);
-CREATE INDEX `server__idx__port` ON `server`(`port`);
 CREATE INDEX `server__idx__disable` ON `server`(`disable`);
 CREATE UNIQUE INDEX `server__uidx__name` ON `server`(`name`);
-CREATE UNIQUE INDEX `server__uidx__host_port` ON `server`(`host`,`port`);
+CREATE UNIQUE INDEX `server__uidx__host_wsport` ON `server`(`host`,`ws_port`);
+CREATE UNIQUE INDEX `server__uidx__host_ctiport` ON `server`(`host`,`cti_port`);
 
 INSERT INTO `server` VALUES(1,'xivo','localhost',443,'','',1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
 

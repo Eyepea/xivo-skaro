@@ -25,6 +25,7 @@ $dhtml = &$this->get_module('dhtml');
 $info = $this->get_var('info');
 $element = $this->get_var('element');
 $error = $this->get_var('error');
+$listaccount = $this->get_var('listaccount');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -50,7 +51,7 @@ if(isset($error_js[0]) === true)
 	<span class="span-right">&nbsp;</span>
 </h3>
 <div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-xivoserver');">
+<form action="#" method="post" accept-charset="utf-8">
 <?php
 	echo
 		$form->hidden(array('name'	=> DWHO_SESS_NAME,
@@ -69,6 +70,137 @@ if(isset($error_js[0]) === true)
 				    'selected'	=> $this->get_var('ctimain','commandset','var_val')),
 			      $element['ctimain']['commandset']['value']);
 	?>
+<fieldset id="cti-accounts">
+	<legend><?=$this->bbf('cti-accounts');?></legend>
+<div class="sb-list">
+<table cellspacing="0" cellpadding="0" border="0" id="list_exten">
+	<thead>
+	<tr class="sb-top">
+		<th class="th-left th-rule">&nbsp;</th>
+		<th class="th-center"><?=$this->bbf('col_ctiaccounts_label');?></th>
+		<th class="th-center"><?=$this->bbf('col_ctiaccounts_login');?></th>
+		<th class="th-center"><?=$this->bbf('col_ctiaccounts_password');?></th>
+		<th class="th-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+								$this->bbf('col_row-add'),
+								'border="0"'),
+							'#',
+							null,
+							'id="lnk-add-row"',
+							$this->bbf('col_row-add'));?>
+		</th>
+	</tr>
+	</thead>
+	<tbody>
+<?php
+$nbla = 0;
+if($listaccount !== false
+&& ((int) $nbla = count($listaccount)) > 0):
+    	for($i = 0;$i < $nbla;$i++):
+    		$ref = &$listaccount[$i];
+    
+    		if(isset($err[$i]) === true):
+    			$errdisplay = ' l-infos-error';
+    		else:
+    			$errdisplay = '';
+    		endif;
+?>
+	<tr class="fm-paragraph<?=$errdisplay?>">
+		<td class="td-left txt-center">
+			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+			<span id="box-order" style="float:left;font-weight:bold;"></span>
+		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+					      'label'	=> false,
+						  'name'	=> 'ctiaccounts[label][]',
+						  'labelid'	=> 'ctiaccounts-label',
+						  'size'	=> 15,
+						  'default'	=> $element['ctiaccounts']['label']['default'],
+						  'value'	=> $ref['label']))?>
+		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+					      'label'	=> false,
+						  'name'	=> 'ctiaccounts[login][]',
+						  'labelid'	=> 'ctiaccounts-login',
+						  'size'	=> 15,
+						  'default'	=> $element['ctiaccounts']['login']['default'],
+						  'value'	=> $ref['login']))?>
+		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+					      'label'	=> false,
+						  'name'	=> 'ctiaccounts[password][]',
+						  'labelid'	=> 'ctiaccounts-password',
+						  'size'	=> 15,
+						  'default'	=> $element['ctiaccounts']['password']['default'],
+						  'value'	=> $ref['password']))?>
+		</td>
+		<td class="td-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+						       $this->bbf('opt_row-delete'),
+						       'border="0"'),
+							'#exten',
+							null,
+							'id="lnk-del-row"',
+							$this->bbf('opt_row-delete'));?>
+		</td>
+	</tr>
+<?php
+	endfor;
+endif;
+?>
+	</tbody>
+	<tfoot>
+	<tr id="no-row"<?=(($nbla === 0) ? '' : ' class="b-nodisplay"')?>>
+		<td colspan="8" class="td-single"><?=$this->bbf('no_row');?></td>
+	</tr>
+	</tfoot>
+</table>
+</div>
+
+<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+	<tbody id="ex-row">
+	<tr class="fm-paragraph">
+		<td class="td-left txt-center">
+			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
+			<span id="box-order" style="float:left;font-weight:bold;"></span>
+		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+					     'name'			=> 'ctiaccounts[label][]',
+					     'id'			=> false,
+					     'label'		=> false,
+					     'size'			=> 15));?>
+		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+					     'name'			=> 'ctiaccounts[login][]',
+					     'id'			=> false,
+					     'label'		=> false,
+					     'size'			=> 15));?>
+		</td>
+		<td>
+			<?=$form->text(array('paragraph'	=> false,
+					     'name'			=> 'ctiaccounts[password][]',
+					     'id'			=> false,
+					     'label'		=> false,
+					     'size'			=> 15));?>
+		</td>
+		<td class="td-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+						       $this->bbf('opt_row-delete'),
+						       'border="0"'),
+							'#exten',
+							null,
+							'id="lnk-del-row"',
+							$this->bbf('opt_row-delete'));?>
+		</td>
+	</tr>
+	</tbody>
+</table>
+</fieldset>
 	<fieldset id="cti-servers">
 		<legend><?=$this->bbf('cti-servers');?></legend>
 		<div class="sb-list">
@@ -80,7 +212,7 @@ if(isset($error_js[0]) === true)
 			<tr>
 				<td>
 				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_fagi_ip'),
-					'name'	=> 'cti[fagi_ip]',
+					'name'	    => 'cti[fagi_ip]',
 					'labelid'	=> 'cti_fagi_ip',
 					'required'	=> 1,
 					'regexp'	=> '[[:ipv4:]]',
@@ -127,7 +259,31 @@ if(isset($error_js[0]) === true)
 				?>
 				</td>
 			</tr>
-
+			<tr>
+				<td>
+				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_ctis_ip'),
+					'name'		=> 'cti[ctis_ip]',
+					'labelid'	=> 'cti_ctis_ip',
+					'value'		=> $info['ctimain']['ctis_ip'],
+					'required'	=> 1,
+					'regexp'	=> '[[:ipv4:]]',
+					'default'	=> $element['ctimain']['ctis_ip']['default'] //,
+					/* 'help'		=> $this->bbf('hlp_fm_ctis_cti_ip') */ ))
+				?>
+				</td>
+				<td class="td-right">
+				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_ctis_port'),
+					'name'		=> 'cti[ctis_port]',
+					'labelid'	=> 'cti_ctis_port',
+					'value'		=> $info['ctimain']['ctis_port'],
+					'required'	=> 1,
+					'regexp'	=> '[[:port:]]',
+					'default'	=> $element['ctimain']['ctis_port']['default'],
+#					'help'		=> $this->bbf('hlp_fm_cti_ctis_port')
+					))
+				?>
+				</td>
+			</tr>
 			<tr class="sb-content">
 				<td>
 				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_webi_ip'),
@@ -257,57 +413,20 @@ if(isset($error_js[0]) === true)
 							'checked' => in_array('astid', $parting)));
 ?>
 	<br />
-
 	<fieldset id="cti-xivo_servers">
 		<legend><?=$this->bbf('cti-xivo_servers');?></legend>
-		<div id="xivoserverlist" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('xivoserverlist',$this->bbf('ms_seek'))?>
-			<div class="slt-outlist">
-<?php
-		echo	$form->select(array('name'	=> 'xivoserverlist',
-					    'label'	=> false,
-					    'id'	=> 'it-xivoserverlist',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'id',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false),
-				      $info['xivoserver']['list']);
-?>
-			</div>
-			<div class="inout-list">
-				<a href="#"
-				   onclick="dwho.form.move_selected('it-xivoserverlist','it-xivoserver');
-					    return(dwho.dom.free_focus());"
-				   title="<?=$this->bbf('bt_inxivoserver');?>">
-					<?=$url->img_html('img/site/button/arrow-left.gif',
-							  $this->bbf('bt_inxivoserver'),
-							  'class="bt-inlist" id="bt-inxivoserver" border="0"');?></a><br />
-
-				<a href="#"
-				   onclick="dwho.form.move_selected('it-xivoserver','it-xivoserverlist');
-					    return(dwho.dom.free_focus());"
-				   title="<?=$this->bbf('bt_outxivoserver');?>">
-					<?=$url->img_html('img/site/button/arrow-right.gif',
-							  $this->bbf('bt_outxivoserver'),
-							  'class="bt-outlist" id="bt-outxivoserver" border="0"');?></a>
-			</div>
-			<div class="slt-inlist">
-<?php
-		echo	$form->select(array('name'	=> 'xivoserver[]',
-					    'label'	=> false,
-					    'id'	=> 'it-xivoserver',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'id',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false),
-				      $info['xivoserver']['slt']);
-?>
-			</div>
+		<div id="xivoserver" class="fm-paragraph">
+		    <?=$form->jq_select(array('paragraph'	=> false,
+					 	'label'		=> false,
+            			'name'    	=> 'xivoserver[]',
+						'id' 		=> 'it-xivoserver',
+						'key'		=> 'identity',
+				       	'altkey'	=> 'id',
+            			'selected'  => $info['xivoserver']['slt']),
+					$info['xivoserver']['list']);?>
 		</div>
+		<div class="clearboth"></div>
 	</fieldset>
-	<div class="clearboth"></div>
 </div>
 
 <?php

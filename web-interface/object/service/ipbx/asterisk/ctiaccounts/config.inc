@@ -18,19 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
+$array = array();
+$array['element'] = array();
 
-class xivo_server_abstract_sql extends dwho_datastorage_helper_table
-{
-	var $_table      = 'server';
-	var $_primary    = array('id' => 0);
-	var $_disable    = 'disable';
-	var $_unique     = array('name',array('host'));
+$array['element']['label'] = array();
+$array['element']['label']['default'] = '';
 
-	function xivo_server_abstract_sql(&$dso,$param=array())
-	{
-	    parent::_init(&$dso,$param);
-	}
-}
+$array['element']['login'] = array();
+$array['element']['login']['default'] = '';
+
+$array['element']['password'] = array();
+$array['element']['password']['default'] = '';
+
+$array['filter'] = array();
+$array['filter']['label'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
+$array['filter']['login'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
+$array['filter']['password'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
 
 ?>

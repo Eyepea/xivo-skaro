@@ -29,17 +29,17 @@ $page = $url->pager($pager['pages'],
 		    $pager['page'],
 		    $pager['prev'],
 		    $pager['next'],
-		    'xivo/configuration/manage/server',
+		    'cti/profiles',
 		    array('act' => $act));
 
 ?>
-<div class="b-list">
+<div id="sr-ctiprofilesgroup" class="b-list">
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-server-list" method="post" accept-charset="utf-8">
+<form action="#" name="fm-ctiprofilesgroup-list" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
@@ -53,8 +53,8 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_host');?></th>
+		<th class="th-center"><?=$this->bbf('col_profilesgroup');?></th>
+		<th class="th-center"><?=$this->bbf('col_description');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -62,59 +62,59 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_server');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_profilesgroup');?></td>
 	</tr>
 <?php
 	else:
 		for($i = 0;$i < $nb;$i++):
-
 			$ref = &$list[$i];
-
-			if($ref['disable'] === true):
-				$icon = 'disable';
-			else:
-				$icon = 'enable';
-			endif;
+			$icon = 'enable';
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
-			<?=$form->checkbox(array('name'		=> 'server[]',
-						 'value'	=> $ref['id'],
+			<?=$form->checkbox(array('name'		=> 'profilesgroups[]',
+						 'value'	=> $ref['ctiprofilesgroup']['id'],
 						 'label'	=> false,
-						 'id'		=> 'it-server-'.$i,
+						 'id'		=> 'it-profilesgroups-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
-			<label for="it-server-<?=$i?>" id="lb-server-<?=$i?>">
+		<td class="txt-left curpointer"
+		    title="<?=dwho_alttitle($ref['ctiprofilesgroup']['name']);?>"
+		    onclick="location.href = dwho.dom.node.lastchild(this);">
 <?php
-				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					$ref['name'];
+			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+				$url->href_html(dwho_trunc($ref['ctiprofilesgroup']['name'],40,'...',false),
+						'cti/profiles',
+						array('act'	=> 'list',
+						      'idgroup'	=> $ref['ctiprofilesgroup']['id']));
 ?>
-			</label>
 		</td>
-		<td><?=$ref['host']?></td>
+		<td align="left"><?=$ref['ctiprofilesgroup']['description']?></td>
 		<td class="td-right" colspan="2">
 <?php
-			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
-							       $this->bbf('opt_modify'),
-							       'border="0"'),
-						'xivo/configuration/manage/server',
-						array('act'	=> 'edit',
-						      'id'	=> $ref['id']),
-						null,
-						$this->bbf('opt_modify')),"\n",
-				$url->href_html($url->img_html('img/site/button/delete.gif',
+		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+						       $this->bbf('opt_modify'),
+						       'border="0"'),
+					'cti/profiles',
+					array('act'	=> 'editgroup',
+					      'idgroup'	=> $ref['ctiprofilesgroup']['id']),
+					null,
+					$this->bbf('opt_modify')),"\n";
+
+		if($ref['ctiprofilesgroup']['deletable'] == 1):
+			echo	$url->href_html($url->img_html('img/site/button/delete.gif',
 							       $this->bbf('opt_delete'),
 							       'border="0"'),
-						'xivo/configuration/manage/server',
-						array('act'	=> 'delete',
-						      'id'	=> $ref['id'],
+						'cti/profiles',
+						array('act'	=> 'deletegroup',
+						      'idgroup'	=> $ref['ctiprofilesgroup']['id'],
 						      'page'	=> $pager['page']),
 						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 						$this->bbf('opt_delete'));
+		endif;
 ?>
 		</td>
 	</tr>

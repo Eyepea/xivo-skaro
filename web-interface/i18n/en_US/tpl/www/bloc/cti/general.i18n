@@ -37,6 +37,9 @@ port fast agi help
 ; fm_cti_cti_ip
 CTI:
 
+; fm_cti_ctis_ip
+CTIS: 
+
 ; hlp_fm_cti_cti_ip
 IP cti help
 
@@ -124,4 +127,14 @@ Add
 ; bt_outxivoserver
 Remove
 
+; cti-accounts
+Local accounts
 
+; col_ctiaccounts_label
+Label
+
+; col_ctiaccounts_login
+Login
+
+; col_ctiaccounts_password
+Password

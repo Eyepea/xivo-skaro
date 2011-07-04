@@ -28,31 +28,33 @@ $array['element']['name']['default'] = '';
 $array['element']['host'] = array();
 $array['element']['host']['default'] = '';
 
-$array['element']['webi'] = array();
-$array['element']['webi']['default'] = '127.0.0.1';
-
-$array['element']['port'] = array();
-$array['element']['port']['default'] = 443;
-
-$array['element']['ami_port'] = array();
-$array['element']['ami_port']['default'] = 5038;
-
-$array['element']['ami_login'] = array();
-$array['element']['ami_login']['default'] = 'xivo_cti_user';
-
-$array['element']['ami_pass'] = array();
-$array['element']['ami_pass']['default'] = 'phaickbebs9';
-
 $array['element']['ws_login'] = array();
 $array['element']['ws_login']['default'] = '';
 
 $array['element']['ws_pass'] = array();
 $array['element']['ws_pass']['default'] = '';
 
-$array['element']['ssl'] = array();
-$array['element']['ssl']['value'] = array(0,1);
-$array['element']['ssl']['default'] = 1;
-$array['element']['ssl']['set'] = true;
+$array['element']['ws_port'] = array();
+$array['element']['ws_port']['default'] = 443;
+
+$array['element']['ws_ssl'] = array();
+$array['element']['ws_ssl']['value'] = array(0,1);
+$array['element']['ws_ssl']['default'] = 1;
+$array['element']['ws_ssl']['set'] = true;
+
+$array['element']['cti_login'] = array();
+$array['element']['cti_login']['default'] = '';
+
+$array['element']['cti_pass'] = array();
+$array['element']['cti_pass']['default'] = '';
+
+$array['element']['cti_port'] = array();
+$array['element']['cti_port']['default'] = 5004;
+
+$array['element']['cti_ssl'] = array();
+$array['element']['cti_ssl']['value'] = array(0,1);
+$array['element']['cti_ssl']['default'] = 1;
+$array['element']['cti_ssl']['set'] = true;
 
 $array['element']['disable'] = array();
 $array['element']['disable']['value'] = array(0,1);
@@ -67,15 +69,15 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
-$array['filter']['ami_login'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
-$array['filter']['ami_pass'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['host'] = array('callback' => 'dwho_network::valid_host');
 $array['filter']['ws_login'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
 $array['filter']['ws_pass'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
-$array['filter']['host'] = array('callback' => 'dwho_network::valid_host');
-$array['filter']['webi'] = array('callback' => 'dwho_network::valid_host');
-$array['filter']['port'] = array('cast' => 'uint','between' => array(1,65535));
-$array['filter']['ami_port'] = array('cast' => 'uint','between' => array(1,65535));
-$array['filter']['ssl'] = array('bool' => true);
+$array['filter']['ws_port'] = array('cast' => 'uint','between' => array(1,65535));
+$array['filter']['ws_ssl'] = array('bool' => true);
+$array['filter']['cti_login'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['cti_pass'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['cti_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
+$array['filter']['cti_ssl'] = array('bool' => true);
 $array['filter']['disable'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

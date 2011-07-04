@@ -28,6 +28,11 @@ $array['element']['commandset'] = array();
 $array['element']['commandset']['value'] = array('xivocti');
 $array['element']['commandset']['default'] = 'xivocti';
 
+$array['element']['login'] = array();
+$array['element']['login']['default'] = '';
+$array['element']['password'] = array();
+$array['element']['password']['default'] = '';
+
 $array['element']['fagi_ip'] = array();
 $array['element']['fagi_ip']['default'] = '127.0.0.1';
 $array['element']['fagi_port'] = array();
@@ -37,6 +42,11 @@ $array['element']['cti_ip'] = array();
 $array['element']['cti_ip']['default'] = '0.0.0.0';
 $array['element']['cti_port'] = array();
 $array['element']['cti_port']['default'] = 5003;
+
+$array['element']['ctis_ip'] = array();
+$array['element']['ctis_ip']['default'] = '0.0.0.0';
+$array['element']['ctis_port'] = array();
+$array['element']['ctis_port']['default'] = 5013;
 
 $array['element']['webi_ip'] = array();
 $array['element']['webi_ip']['default'] = '127.0.0.1';
@@ -58,7 +68,7 @@ $array['element']['asterisklist']['default'] = 'xivo';
 $array['element']['asterisklist']['value'] = array('xivo');
 
 $array['element']['updates_period'] = array();
-$array['element']['updates_period']['default'] = 60;
+$array['element']['updates_period']['default'] = 3600;
 
 $array['element']['socket_timeout'] = array();
 $array['element']['socket_timeout']['default'] = 10;
@@ -81,9 +91,9 @@ $array['filter']['info_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'u
 $array['filter']['announce_ip'] 	= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['announce_port'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['asterisklist'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
-$array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,120));
+$array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(60,86400));
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['login_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
-$array['filter']['parting_astid_context'] 
+$array['filter']['parting_astid_context']
 									= array('set' => false, 'chk' => 2, 'key' => array('astid', 'context', 'context,astid'));
 ?>

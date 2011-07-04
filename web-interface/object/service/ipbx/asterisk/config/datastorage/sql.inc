@@ -80,6 +80,10 @@ $array['contextnummember'] = array();
 $array['contextnummember']['table'] = 'contextnummember';
 $array['contextnummember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
+$array['ctiaccounts'] = array();
+$array['ctiaccounts']['table'] = 'ctiaccounts';
+$array['ctiaccounts']['primary'] = array('label' => '');
+
 $array['cticontexts'] = array();
 $array['cticontexts']['table'] = 'cticontexts';
 $array['cticontexts']['primary'] = array('id' => '');
@@ -111,6 +115,10 @@ $array['ctipresences']['primary'] = array('id' => '');
 $array['ctiprofiles'] = array();
 $array['ctiprofiles']['table'] = 'ctiprofiles';
 $array['ctiprofiles']['primary'] = array('id' => '');
+
+$array['ctiprofilesgroup'] = array();
+$array['ctiprofilesgroup']['table'] = 'ctiprofilesgroup';
+$array['ctiprofilesgroup']['primary'] = array('id' => '');
 
 $array['ctireversedirectories'] = array();
 $array['ctireversedirectories']['table'] = 'ctireversedirectories';

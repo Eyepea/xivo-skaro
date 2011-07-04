@@ -1,6 +1,15 @@
 ; title_content_name
 Serveurs XIVO > Ajouter
 
+; fld_general
+Général
+
+; fld_webservices
+WebServices
+
+; fld_cti
+Serveur CTI
+
 ; fm_name
 Nom :
 
@@ -8,28 +17,28 @@ Nom :
 Hôte :
 
 ; fm_ws_login
-Identifiant WebServices :
+Identifiant :
 
 ; fm_ws_pass
-Mot de passe WebServices :
+Mot de passe :
 
-; fm_port
+; fm_ws_port
 Port :
 
-; fm_ssl
+; fm_ws_ssl
 SSL :
 
-; fm_webi_addr
-Adresse interface Web : 
+; fm_cti_port
+Port :
 
-; fm_ami_port
-Port AMI :
+; fm_cti_login
+Identifiant :
 
-; fm_ami_login
-Compte AMI :
+; fm_cti_pass
+Mot de passe :
 
-; fm_ami_pass
-Mot de passe AMI :
+; fm_cti_ssl
+SSL :
 
 ; fm_description
 Description :

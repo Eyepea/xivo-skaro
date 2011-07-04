@@ -398,7 +398,7 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
         return($this->_dso->delete($this->_table,$arr));
     }
 
-    function delete_all($arr)
+    function delete_all()
     {
         return($this->_dso->delete_all($this->_table));
     }

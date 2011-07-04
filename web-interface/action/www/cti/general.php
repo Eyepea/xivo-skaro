@@ -20,6 +20,7 @@
 
 $ctimain = &$ipbx->get_module('ctimain');
 $ctipresences = &$ipbx->get_module('ctipresences');
+$ctiaccounts = &$ipbx->get_module('ctiaccounts');
 
 $appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 
@@ -31,11 +32,12 @@ $info['xivoserver']['info'] = $appxivoserver->get();
 $info['xivoserver']['slt'] = array();
 $element = array();
 $element['ctimain'] = $ctimain->get_element();
+$element['ctiaccounts'] = $ctiaccounts->get_element();
 
 $error = array();
 $error['ctimain'] = array();
 $fm_save = null;
-	
+
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
@@ -62,8 +64,12 @@ if(isset($_QR['fm_send']) === true)
 			$ret = $ctimain->add($rs);
 	}
 
-	if($ret == 1)
+	if($ret == 1
+	&& $ctiaccounts->set($_QR['ctiaccounts']) === true)
+	{
 		$fm_save = true;
+		$ipbx->discuss('xivo[cticonfig,update]');
+	}
 	$load_inf = $ctimain->get_all();
 	$info['ctimain'] = $load_inf[0];
 }
@@ -77,28 +83,22 @@ if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
 		$sel = explode(',', $info['ctimain']['asterisklist']);
 		$selected = array();
 		foreach($sel as $s => $k)
-		{
 			$selected[$k]['id'] = $k;
-		}
-		$info['xivoserver']['slt'] =
-			dwho_array_intersect_key(
-				$selected,
-				$info['xivoserver']['list'],
-				'id');
-		$info['xivoserver']['list'] =
-			dwho_array_diff_key(
-				$info['xivoserver']['list'],
-				$info['xivoserver']['slt']);
+		if(($info['xivoserver']['slt'] = dwho_array_intersect_key($selected,$info['xivoserver']['list'],'id')) !== false)
+			$info['xivoserver']['slt'] = array_keys($info['xivoserver']['slt']);
 	}
 }
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('info', $info);
+$_TPL->set_var('listaccount', $ctiaccounts->get_all());
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
 $dhtml->load_js_multiselect_files();
+$dhtml->set_js('js/utils/dyntable.js');
+$dhtml->set_js('js/cti/general.js');
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

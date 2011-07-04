@@ -18,18 +18,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_server_abstract_sql extends dwho_datastorage_helper_table
+class xivo_service_asterisk_ctiprofilesgroup extends xivo_service_asterisk_abstract
 {
-	var $_table      = 'server';
-	var $_primary    = array('id' => 0);
-	var $_disable    = 'disable';
-	var $_unique     = array('name',array('host'));
+	var $_dso		= null;
+	var $_name		= 'ctiprofilesgroup';
+	var $_filter		= false;
+	var $_origin		= false;
+	var $_origin_list	= false;
 
-	function xivo_server_abstract_sql(&$dso,$param=array())
+	function xivo_service_asterisk_ctiprofilesgroup(&$sre,&$dso)
 	{
-	    parent::_init(&$dso,$param);
+		if(is_object($sre) === false)
+			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+
+		$this->_sre = &$sre;
+		$this->_dso = &$dso;
+
+		$this->_load_config();
 	}
 }
 

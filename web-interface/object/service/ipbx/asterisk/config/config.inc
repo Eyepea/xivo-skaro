@@ -110,6 +110,9 @@ $array['module']['contextnumbers']['datastorage'] = true;
 $array['module']['contextnummember'] = array();
 $array['module']['contextnummember']['datastorage'] = true;
 
+$array['module']['ctiaccounts'] = array();
+$array['module']['ctiaccounts']['datastorage'] = true;
+
 $array['module']['ctidirectories'] = array();
 $array['module']['ctidirectories']['datastorage'] = true;
 
@@ -136,6 +139,9 @@ $array['module']['ctipresences']['datastorage'] = true;
 
 $array['module']['ctiprofiles'] = array();
 $array['module']['ctiprofiles']['datastorage'] = true;
+
+$array['module']['ctiprofilesgroup'] = array();
+$array['module']['ctiprofilesgroup']['datastorage'] = true;
 
 $array['module']['ctireversedirectories'] = array();
 $array['module']['ctireversedirectories']['datastorage'] = true;

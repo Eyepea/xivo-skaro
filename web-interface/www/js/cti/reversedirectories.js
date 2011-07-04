@@ -26,7 +26,7 @@ function xivo_cti_rdid_oncontextchange()
 
 function xivo_cti_rdid_oncontextchange_sub(list, scontext, display)
 {
-    context        = scontext.replace("-", "__", "g");
+    context = scontext.replace("-", "__", "g");
 
     // fill list with context extens
     var table = eval('context_' + context + '_extens');

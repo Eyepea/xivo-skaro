@@ -181,7 +181,7 @@ endif;
 	$count = count($info['preferences']['slt']);
 ?>
 </div>
-<div id="sb-part-prefs" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 	<div class="sb-list">
 		<table cellspacing="0" cellpadding="0" border="0">
 			<thead>
@@ -302,7 +302,7 @@ endif;
 		</table>
 	</div>
 </div>
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-xlets" class="b-nodisplay">
 <?php
 	$type = 'xlets';
 	$count = count($info['xlets']['slt']);

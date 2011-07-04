@@ -18,19 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-class xivo_server_abstract_sql extends dwho_datastorage_helper_table
+class xivo_service_asterisk_ctiaccounts_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_table      = 'server';
-	var $_primary    = array('id' => 0);
-	var $_disable    = 'disable';
-	var $_unique     = array('name',array('host'));
-
-	function xivo_server_abstract_sql(&$dso,$param=array())
-	{
-	    parent::_init(&$dso,$param);
-	}
+	var $_autoincrement	= false;
 }
 
 ?>
