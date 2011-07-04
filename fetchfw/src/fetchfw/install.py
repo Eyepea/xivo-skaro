@@ -18,6 +18,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import collections
 import contextlib
 import glob
 import itertools
@@ -28,7 +29,8 @@ import subprocess
 import tarfile
 import tempfile
 import zipfile
-from fetchfw.util import FetchfwError, explode_path, wrap_exception, ends_with, remove_paths
+from fnmatch import fnmatch
+from fetchfw.util import FetchfwError
 
 logger = logging.getLogger(__name__)
 
@@ -37,170 +39,207 @@ class InstallationError(FetchfwError):
     pass
 
 
-class InvalidInstallationGraphError(InstallationError):
+class InstallationGraphError(InstallationError):
     pass
 
 
-class InstallationManager(object):
-    """An installation manager.
+class _InstallationProcess(object):
+    def __init__(self, sources, filters, dir=None):
+        self._sources = sources
+        self._filters = filters
+        self._dir = dir
+        self._executed = False
+        self._need_cleanup = False
+        self._base_dir = None
     
-    Has the following attributes:
-      init_directory -- the directory in which nodes that doesn't depend on
-        previous node will be run into
-    """
-    
-    def __init__(self, installation_graph, init_directory=None):
-        """Build an InstallationManager. installation_graph is a dictionary, for example:
-             {'installers':
-                 {'Installer1': (<StandardInstaller object>, 'ZipFilter1'),
-                 },
-              'filters':
-                 {'ZipFilter1': (<ZipFilter object>, 'TarFilter1'),
-                  'TarFilter1': (<TarFilter object>, None),
-                 },
-             }
-             
-           Raise an InvalidInstallationGraphError if the installation graph is invalid.
-        """
-        self._installation_graph = installation_graph
-        self.init_directory = init_directory
-        self._check_installation_graph_validity()
-
     def execute(self):
-        """Launch the installation process and return a list of files and folders that have been
-           installed.
+        """Execute the installation.
         
-        Raise an Exception if init_directory is not defined.
+        Return the directory (subdirectory of dir) which contains the result
+        of the installation process.
         
         """
-        if self.init_directory is None:
-            raise Exception('init_directory is not defined')
-        installers = self._installation_graph['installers']
-        filters = self._installation_graph['filters']
-        input_dirs, output_dirs = self._create_directories_map()
-        installed_files = set()
+        if self._executed:
+            raise Exception('Installation process already executed')
+        self._base_dir = tempfile.mkdtemp(dir=self._dir)
+        req_map = self._build_requirement_map()
+        
+        sources = self._sources
+        filters = self._filters
+        result_dir, input_dirs, output_dirs = self._create_directories_map(req_map)
         try:
-            for node_id in self._create_execution_plan():
-                if node_id in filters:
-                    filter = filters[node_id][0]
+            for node_id in self._create_execution_plan(req_map):
+                if node_id in sources:
+                    source_obj = sources[node_id]
+                    output_dir = output_dirs[node_id]
+                    logger.debug("Executing source node %s", node_id)
+                    source_obj.pull(output_dir)
+                else:
+                    assert node_id in filters
+                    filter_obj = filters[node_id][0]
                     input_dir = input_dirs[node_id]
                     output_dir = output_dirs[node_id]
-                    logger.debug("Executing filter '%s' - input '%s' - ouput '%s'",
-                                 node_id, input_dir, output_dir)
-                    filter.apply(input_dir, output_dir)
-                else:
-                    assert node_id in installers
-                    installer = installers[node_id][0]
-                    input_dir = input_dirs[node_id]
-                    logger.debug("Executing installer '%s' - input '%s'", node_id, input_dir)
-                    installed_files.update(installer.install(input_dir))
-        except:
-            logger.exception("Error during execution of installation manager")
+                    logger.debug("Executing filter node %s", node_id)
+                    filter_obj.apply(input_dir, output_dir)
+        except Exception:
+            logger.error("Error during execution of installation manager", exc_info=True)
             try:
                 raise
             finally:
-                remove_paths(installed_files)
-        finally:
-            logger.debug('Executing installation cleanup')
-            for temp_dir in output_dirs.itervalues():
-                logger.debug("Deleting temp directory '%s'" % temp_dir)
-                shutil.rmtree(temp_dir, True)
-        return sorted(installed_files)
+                shutil.rmtree(self._base_dir, True)
+        else:
+            self._executed = True
+            self._need_cleanup = True
+            return result_dir
     
+    def _build_requirement_map(self):
+        # Return a 'requirement map', i.e. a dictionary which keys are node id
+        # and values are node id that depends on the key
+        req_map = dict((node_id, []) for node_id in itertools.chain(self._sources, self._filters))
+        for filter_id, (_, filter_dependency) in self._filters.iteritems():
+            req_map[filter_dependency].append(filter_id)
+        return req_map
+    
+    def _create_directories_map(self, req_map):
+        # note that self._base_dir must have been set
+        result_dir = os.path.join(self._base_dir, 'result')
+        os.mkdir(result_dir)
+        input_dirs = {}
+        output_dirs = {}
+        for node_id, requirements in req_map.iteritems():
+            if not requirements:
+                # terminal node
+                output_dirs[node_id] = result_dir
+            else:
+                # non-terminal node
+                cur_dir = os.path.join(self._base_dir, 'node_' + node_id)
+                os.mkdir(cur_dir)
+                output_dirs[node_id] = cur_dir
+                for requirement in requirements:
+                    input_dirs[requirement] = cur_dir
+        return result_dir, input_dirs, output_dirs
+    
+    def _create_execution_plan(self, req_map):
+        # Return a iterator which gives a valid order of execution of nodes
+        # The algorithm is correct since each filter has 1 and exactly 1 dependency
+        deque = collections.deque(self._sources)
+        while deque:
+            node_id = deque.popleft()
+            yield node_id
+            for requirement in req_map[node_id]:
+                if requirement not in deque:
+                    deque.append(requirement)
+    
+    def cleanup(self):
+        """Remove all files and directory created during the installation.
+        
+        Note that this includes the files in the result directory.
+        
+        It is safe to call this method even if the install process has not
+        been executed or to call this method more than once.
+        
+        """
+        if self._need_cleanup:
+            shutil.rmtree(self._base_dir, True)
+            self._need_cleanup = False
+
+
+class InstallationManager(object):
+    """An installation manager..."""
+    def __init__(self, installation_graph):
+        """Build an InstallationManager.
+        
+        Installation_graph is a dictionary, for example:
+          {'filters':
+              {'ZipFilter1': (<ZipFilter object>, 'TarFilter1'),
+               'TarFilter1': (<TarFilter object>, 'FilesystemLinkSource'),
+              },
+           'sources':
+              {'FilesystemLinkSource1': <FilesystemLinkSource object>}
+          }
+        
+        Note that node id MUST match the regex \w+.
+        
+        A filter is an object with a 'apply(src_directory, dst_directory)' method.
+        A source is an object with a 'pull(dst_directory)' method.
+        
+        Raise an InstallationGraphError if the installation graph is invalid.
+        
+        """
+        self._sources = installation_graph['sources']
+        self._filters = installation_graph['filters']
+        self._check_installation_graph_validity()
+
     def _check_installation_graph_validity(self):
-        """Check if the installation graph is valid, if not, raise an InstallationError."""
+        # Check if the installation graph is valid, if not, raise an InstallationError.
         self._check_nodes_id_are_unique()
-        self._check_nodes_depend_on_filters_or_none()
+        self._check_filters_depend_on_valid_node()
+        self._check_no_useless_source()
         self._check_is_acyclic()
-        self._check_no_useless_filter()
     
     def _check_nodes_id_are_unique(self):
-        installer_ids = set(self._installation_graph['installers'])
-        common_ids = installer_ids.intersection(self._installation_graph['filters'])
+        common_ids = set(self._sources).intersection(self._filters)
         if common_ids:
-            raise InvalidInstallationGraphError("these IDs are shared by both an installer and a filter: %s" % common_ids)
+            raise InstallationGraphError("these IDs are shared by both a source and a filter: %s" %
+                                         common_ids)
         
-    def _check_nodes_depend_on_filters_or_none(self):
-        """Check that there's no unknown identifier in the installation graph, i.e. raise an
-           exception if there's a node such that it depends on an unknown node.
-        """
-        installers = self._installation_graph['installers']
-        filters = self._installation_graph['filters']
-        for node_id, node_value in itertools.chain(installers.iteritems(), filters.iteritems()):
-            node_dependency = node_value[1]
-            if node_dependency is not None and node_dependency not in filters:
-                raise InvalidInstallationGraphError("node '%s' depends on unknown filter '%s'" %
-                                                    (node_id, node_dependency))
+    def _check_filters_depend_on_valid_node(self):
+        # Check that there's no unknown identifier in the installation graph, i.e. raise an
+        # exception if there's a filter such that it depends on an unknown node.
+        sources = self._sources
+        filters = self._filters
+        for filter_id, filter_value in filters.iteritems():
+            node_dependency = filter_value[1]
+            if node_dependency not in filters and node_dependency not in sources:
+                raise InstallationGraphError("filter '%s' depends on unknown filter/source '%s'" %
+                                             (filter_id, node_dependency))
     
-    def _check_no_useless_filter(self):
-        """Check if every filters participate in the installation process, i.e. raise an exception
-           if there's a filter such that no other filter or installer depend on it.
-        """
-        installers = self._installation_graph['installers']
-        filters = self._installation_graph['filters']
-        dependencies = set(v[1] for v in itertools.chain(installers.itervalues(), filters.itervalues()) if v is not None)
-        for filter_id in filters:
-            if filter_id not in dependencies:
-                raise InvalidInstallationGraphError("filter '%s' is used by no filters nor installers" % filter_id)
+    def _check_no_useless_source(self):
+        # Check if every sources participate in the installation process, i.e. raise an exception
+        # if there's a source such that no other filter depend on it.
+        dependencies = (v[1] for v in self._filters.itervalues())
+        unused_sources = set(self._sources).difference(dependencies)
+        if unused_sources:
+            raise InstallationGraphError("these sources doesn't participate in the installation: %s" %
+                                         unused_sources)
     
     def _check_is_acyclic(self):
-        """Check that the installation graph is acyclic."""
-        filters = self._installation_graph['filters']
+        # Check that the installation graph is acyclic
+        sources = self._sources
+        filters = self._filters
         visited = set()
         for node_id in filters:
             if node_id not in visited:
                 currently_visited = set((node_id,))
                 while True:
                     next_node_id = filters[node_id][1]
-                    if next_node_id is None:
+                    if next_node_id in sources:
                         break
                     if next_node_id in currently_visited:
-                        raise InvalidInstallationGraphError("a cycle in the installation graph has been detected")
+                        raise InstallationGraphError("a cycle in the installation graph has been detected")
                     currently_visited.add(next_node_id)
                     node_id = next_node_id
                 visited.update(currently_visited)
     
-    def _create_execution_plan(self):
-        installers = self._installation_graph['installers']
-        filters = self._installation_graph['filters']
-        executed = set()
-        def create_subplan(filter_id):
-            if filter_id in executed:
-                return ()
-            # We can add filter_id to the executed set here since we suppose we have no cycle,
-            # i.e. that means the subplan will never visit a node twice
-            executed.add(filter_id)
-            next_filter_id = filters[filter_id][1]
-            if next_filter_id is None:
-                return (filter_id,)
-            else:
-                return create_subplan(next_filter_id) + (filter_id,)
-        result = []
-        for installer_id, installer_val in installers.iteritems():
-            filter_id = installer_val[1]
-            if filter_id is not None:
-                result.extend(create_subplan(filter_id))
-            result.append(installer_id)
-        return result 
-    
-    def _create_directories_map(self):
-        installers = self._installation_graph['installers']
-        filters = self._installation_graph['filters']
-        output_map = dict((filter_id, tempfile.mkdtemp()) for filter_id in filters)
-        input_map = {}
-        for node_id, node_val in itertools.chain(filters.iteritems(), installers.iteritems()):
-            dependency_id = node_val[1]
-            if dependency_id is None:
-                input_map[node_id] = self.init_directory
-            else:
-                input_map[node_id] = output_map[dependency_id]
-        return input_map, output_map
+    def new_installation_process(self, dir=None):
+        """Return an installation process instance, i.e. an object with an
+        "execute" and "cleanup" method.
+        
+        See _InstallationProcess for more info on these methods.
+        
+        Temporaries directory and files will be created in subdirectories of
+        dir, which can be None, in the case the default system temporary
+        directory will be used.
+        
+        """
+        return _InstallationProcess(self._sources, self._filters, dir)
 
 
 class _GlobHelper(object):
     """The python glob module works only with the notion of the current directory.
-       This class is used to facilitate the application of one or more glob patterns
-       inside arbitrary directories.
+    This class is used to facilitate the application of one or more glob patterns
+    inside arbitrary directories.
+    
     """
     def __init__(self, pathnames, error_on_no_matches=True):
         """pathnames can be either a single path name or an iterable of path names.
@@ -209,21 +248,21 @@ class _GlobHelper(object):
             self._pathnames = [os.path.normpath(pathnames)]
         else:
             self._pathnames = [os.path.normpath(pathname) for pathname in pathnames]
-        if not self._pathnames:
-            # XXX should we accept the case where self._pathnames is empty ?
-            raise ValueError("no path names")
         for pathname in self._pathnames:
             if os.path.isabs(pathname):
                 raise ValueError("path name '%s' is an absolute path" % pathname)
             if pathname.startswith(os.pardir):
                 raise ValueError("path name '%s' makes reference to the parent directory" % pathname)
         self._error_on_no_matches = error_on_no_matches
-
+    
     def glob_in_dir(self, src_directory):
         return list(self.iglob_in_dir(src_directory))
     
     def iglob_in_dir(self, src_directory):
-        """Apply the glob patterns in src_directory and return each file matched."""
+        """Apply the glob patterns in src_directory and return an iterator over
+        each file matched.
+        
+        """
         no_matches = True
         for rel_pathname in self._pathnames:
             abs_pathname = os.path.join(src_directory, rel_pathname)
@@ -235,80 +274,102 @@ class _GlobHelper(object):
                                     % (self._pathnames, src_directory))
 
 
-class StandardInstaller(object):
-    """An installer instance if an object taking a source directory containing files
-       and folders and copying the ones it's interested in into a destination
-       directory (or sub-directory), returning the list of files it has added to the
-       destination directory. 
+class FilesystemLinkSource(object):
+    """A source which create symlink of existing files to the destination
+    directory.
+    
+    You should be careful if you plan on using this source with directories,
+    i.e. you might be looking for trouble if you are creating links to parent
+    directories of the destination directory.
+    
     """
-    
-    def __init__(self, pathnames, dst, error_handler=None):
-        """-pathnames can be either a single glob pattern or an iterator over multiple
-            glob patterns.
-           -dst is either a directory name, if it ends with '/', or else a file name.
-            This must be explicit because the installer create any missing directory
-            when copying files.
+    def __init__(self, pathnames):
         """
-        self._glob_helper = _GlobHelper(pathnames)
-        self._dst = dst
-        self._error_handler = error_handler
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
         
-    def install(self, src_directory):
-        dst_is_dir = self._dst.endswith('/')
-        installed_files = set()
-        try:
-            if os.path.exists(self._dst):
-                if os.path.isdir(self._dst) != dst_is_dir:
-                    if dst_is_dir:
-                        raise InstallationError("destination exists and is a file but should be a directory")
-                    else:
-                        raise InstallationError("destination exists and is a directory but should be a file")
-            else:
-                dirname = os.path.dirname(self._dst)
-                if not os.path.exists(dirname):
-                    os.makedirs(dirname)
-            installed_files.update(ends_with(path, '/') for path in explode_path(os.path.dirname(self._dst)) if path != '/')
-            if dst_is_dir:
-                self._install_dir(src_directory, installed_files)
-            else:
-                self._install_file(src_directory, installed_files)
-            return installed_files
-        except EnvironmentError, e:
-            logger.exception("Error during execution of installer")
-            remove_paths(installed_files)
-            raise InstallationError(e)
+        """
+        if isinstance(pathnames, basestring):
+            self._pathnames = [pathnames]
+        else:
+            self._pathnames = list(pathnames)
+    
+    def pull(self, dst_directory):
+        for pathname in self._pathnames:
+            for globbed_pathname in glob.iglob(pathname):
+                os.symlink(globbed_pathname, os.path.join(dst_directory, os.path.basename(globbed_pathname)))
+
+
+class NonGlobbingFilesystemLinkSource(object):
+    def __init__(self, pathnames):
+        """
+        pathnames -- a single pathname or an iterator over multiple pathnames
         
-    def _install_dir(self, src_directory, installed_files):
-        for pathname in self._glob_helper.iglob_in_dir(src_directory):
-            if os.path.isdir(pathname):
-                src_dir_name = os.path.basename(pathname)
-                shutil.copytree(pathname, os.path.join(self._dst, src_dir_name), True)
-                for root, _, files in os.walk(os.path.join(self._dst, src_dir_name)):
-                    installed_files.add(ends_with(root, '/'))
-                    for file in files:
-                        installed_files.add(os.path.join(root, file))
-            else:
-                shutil.copy(pathname, self._dst)
-                installed_files.add(os.path.join(self._dst, os.path.basename(pathname)))
+        """
+        if isinstance(pathnames, basestring):
+            self._pathnames = [pathnames]
+        else:
+            self._pathnames = list(pathnames)
     
-    def _install_file(self, src_directory, installed_files):
-        pathnames = self._glob_helper.glob_in_dir(src_directory)
-        if len(pathnames) > 1:
-            raise InstallationError("glob pattern matched %d files" % len(pathnames))
-        pathname = pathnames[0]
-        shutil.copy(pathname, self._dst)
-        installed_files.add(self._dst)
+    def pull(self, dst_directory):
+        for pathname in self._pathnames:
+            # note that we check if pathname really exist so we can easily
+            # detect human error, that said it's still possible that the file
+            # be removed during execution
+            if not os.path.exists(pathname):
+                raise InstallationError('path doesn\'t exist: %s' % pathname)
+            os.symlink(pathname, os.path.join(dst_directory, os.path.basename(pathname)))
+
+
+class FilesystemCopySource(object):
+    """A cleaner alternative to FilesystemLinkSource if you are worried about
+    race condition, side effects, etc.
     
+    """
+    def __init__(self, pathnames):
+        """
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
+        
+        """
+        if isinstance(pathnames, basestring):
+            self._pathnames = [pathnames]
+        else:
+            self._pathnames = list(pathnames)
+    
+    def pull(self, dst_directory):
+        for pathname in self._pathnames:
+            for globbed_pathname in glob.iglob(pathname):
+                dst_pathname = os.path.join(dst_directory, os.path.basename(globbed_pathname))
+                if os.path.isdir(globbed_pathname):
+                    shutil.copytree(globbed_pathname, dst_pathname)
+                else:
+                    shutil.copy(globbed_pathname, dst_pathname)
+
+
+class NullSource(object):
+    """A source that add nothing to the destination directory.
+    
+    Mostly useful for testing purposes.
+    
+    """
+    def pull(self, dst_directory):
+        pass
 
 
 class ZipFilter(object):
     """A filter who transform a directory containing zip files to a directory containing
-       the content of these zip files.
+    the content of these zip files.
+    
     """
     def __init__(self, pathnames):
+        """
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
+        
+        """
         self._glob_helper = _GlobHelper(pathnames)
         
-    @wrap_exception((EnvironmentError, zipfile.BadZipfile), InstallationError, logger)
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             with contextlib.closing(zipfile.ZipFile(pathname, 'r')) as zf:
@@ -317,13 +378,18 @@ class ZipFilter(object):
 
 class TarFilter(object):
     """A filter who transform a directory containing tar files to a directory containing
-       the content of these tar files. The tar files can be either uncompressed, gzipped
-       or bz2-ipped.
+    the content of these tar files. The tar files can be either uncompressed, gzipped
+    or bz2-ipped.
+    
     """
     def __init__(self, pathnames):
+        """
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
+        
+        """
         self._glob_helper = _GlobHelper(pathnames)
     
-    @wrap_exception((EnvironmentError, tarfile.TarError), InstallationError, logger)
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             with contextlib.closing(tarfile.open(pathname)) as tf:
@@ -342,19 +408,20 @@ class RarFilter(object):
     _CMD_PREFIX = ['unrar', 'e', '-idq', '-y']
     
     def __init__(self, pathnames):
+        """
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
+        
+        """
         self._glob_helper = _GlobHelper(pathnames)
     
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
-            try:
-                cmd = self._CMD_PREFIX + [pathname, dst_directory]
-                logger.debug('Executing external command: %s', cmd)
-                retcode = subprocess.call(cmd)
-            except OSError, e:
-                raise InstallationError('unrar executable probably missing: %s' % e)
-            else:
-                if retcode:
-                    raise InstallationError('unrar returned status code %s' % retcode)
+            cmd = self._CMD_PREFIX + [pathname, dst_directory]
+            logger.debug('Executing external command: %s', cmd)
+            retcode = subprocess.call(cmd)
+            if retcode:
+                raise InstallationError('unrar returned status code %s' % retcode)
 
 
 class Filter7z(object):
@@ -368,37 +435,45 @@ class Filter7z(object):
     output directory, files inside directory of the archive will be all
     extracted in the same base directory.
     
+    This class is not named '7zFilter' because this is an invalid python
+    identifier.
+    
     """
     _CMD_PREFIX = ['7zr', 'e', '-bd']
     
     def __init__(self, pathnames):
+        """
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
+        
+        """
         self._glob_helper = _GlobHelper(pathnames)
     
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
-            try:
-                cmd = self._CMD_PREFIX + ['-o%s' % dst_directory, pathname]
+            cmd = self._CMD_PREFIX + ['-o%s' % dst_directory, pathname]
+            # there's no "quiet" option for 7zr, so we redirect stdout to /dev/null
+            with open(os.devnull, 'wb') as devnull_fobj:
                 logger.debug('Executing external command: %s', cmd)
-                retcode = subprocess.call(cmd)
-            except OSError, e:
-                raise InstallationError('7zr executable probably missing: %s' % e)
-            else:
-                if retcode:
-                    raise InstallationError('7zr returned status code %s' % retcode)
+                retcode = subprocess.call(cmd, stdout=devnull_fobj)
+            if retcode:
+                raise InstallationError('7zr returned status code %s' % retcode)
 
 
 class CiscoUnsignFilter(object):
     """A filter who transform a directory containing a Cisco-signed gzip file to a directory
-       containing the gzipped file inside the signed file.
+    containing the gzipped file inside the signed file.
+    
     """
     _BUF_SIZE = 512
     _GZIP_MAGIC_NUMBER = '\x1f\x8b'  # see http://www.gzip.org/zlib/rfc-gzip.html#file-format
     
     def __init__(self, signed_pathname, unsigned_pathname):
         """Note: signed_pathname can be a glob pattern, but when the pattern is expanded,
-           it must match only ONE file or an error will be raised. This is for convenience, so
-           that if you don't know the exact name of a file, you can still use a glob pattern to
-           match it.
+        it must match only ONE file or an error will be raised. This is for convenience, so
+        that if you don't know the exact name of a file, you can still use a glob pattern to
+        match it.
+        
         """
         self._glob_helper = _GlobHelper(signed_pathname)
         self._unsigned_pathname = os.path.normpath(unsigned_pathname)
@@ -407,7 +482,6 @@ class CiscoUnsignFilter(object):
         if self._unsigned_pathname.startswith(os.pardir):
             raise ValueError("unsigned path name '%s' makes reference to the parent directory" % self._unsigned_pathname)
     
-    @wrap_exception(EnvironmentError, InstallationError, logger)
     def apply(self, src_directory, dst_directory):
         signed_pathnames = self._glob_helper.glob_in_dir(src_directory)
         if len(signed_pathnames) > 1:
@@ -424,26 +498,135 @@ class CiscoUnsignFilter(object):
                 shutil.copyfileobj(sf, f)
 
 
-class ExcludeFilter(object):
-    """A filter who excludes some files of the source directory from the destination
-       directory. Excluded files can be either files, directories or both.
-    """
-    def __init__(self, pathnames):
-        self._glob_helper = _GlobHelper(pathnames, False)
-        
-    @wrap_exception(EnvironmentError, InstallationError, logger)
+class IncludeExcludeFilter(object):
+    def __init__(self, filter_fun):
+        self._filter_fun = filter_fun
+    
     def apply(self, src_directory, dst_directory):
-        abs_excluded_paths = set(self._glob_helper.iglob_in_dir(src_directory))
         rel_dir_stack = [os.curdir]
         while rel_dir_stack:
             rel_current_dir = rel_dir_stack.pop()
             abs_current_dir = os.path.join(src_directory, rel_current_dir)
             for file in os.listdir(abs_current_dir):
-                rel_file = os.path.normpath(os.path.join(rel_current_dir, file))
-                abs_file = os.path.join(src_directory, rel_file)
-                if abs_file not in abs_excluded_paths:
-                    if os.path.isdir(abs_file):
-                        os.mkdir(os.path.join(dst_directory, rel_file))
+                if rel_current_dir == os.curdir:
+                    rel_file = file
+                else:
+                    rel_file = os.path.join(rel_current_dir, file)
+                if self._filter_fun(rel_file):
+                    src_abs_file = os.path.join(src_directory, rel_file)
+                    dst_abs_file = os.path.join(dst_directory, rel_file)
+                    if os.path.isdir(src_abs_file):
+                        os.mkdir(dst_abs_file)
                         rel_dir_stack.append(rel_file)
-                    elif os.path.isfile(abs_file):
-                        shutil.copy(abs_file, os.path.join(dst_directory, rel_file))
+                    elif os.path.isfile(src_abs_file):
+                        shutil.copy(src_abs_file, dst_abs_file)
+
+
+def ExcludeFilter(pathnames):
+    """A filter which excludes some files of the source directory from the destination
+    directory. Excluded files can be either files, directories or both.
+    
+    Takes the following arguments:
+      pathnames -- a single glob pattern or an iterator over multiple glob
+        patterns
+    
+    """
+    if isinstance(pathnames, basestring):
+        pathnames = [pathnames]
+    else:
+        pathnames = list(pathnames)
+    
+    def filter_fun(rel_file):
+        for pathname in pathnames:
+            if fnmatch(rel_file, pathname):
+                return False
+        return True
+    return IncludeExcludeFilter(filter_fun)
+
+
+def IncludeFilter(pathnames):
+    """A filter which includes some files of the source directory from the destination
+    directory. Included files can be either files, directories or both.
+    
+    Takes the following arguments:
+      pathnames -- a single glob pattern or an iterator over multiple glob
+        patterns
+    
+    """
+    if isinstance(pathnames, basestring):
+        pathnames = [pathnames]
+    else:
+        pathnames = list(pathnames)
+    
+    def filter_fun(rel_file):
+        for pathname in pathnames:
+            if fnmatch(rel_file, pathname):
+                return True
+        return False
+    return IncludeExcludeFilter(filter_fun)
+
+
+class CopyFilter(object):
+    """A filter which copy one or more files or directories to a certain path
+    in the destination directory.
+    
+    """
+    
+    def __init__(self, pathnames, dst):
+        """
+        pathnames -- a single glob pattern or an iterator over multiple glob
+          patterns
+        dst -- either a directory name, if it ends with '/', or else a file name.
+          This must be explicit because the installer create any missing directory
+          when copying files. This is a relative destination.
+        
+        """
+        self._glob_helper = _GlobHelper(pathnames)
+        self._dst = dst
+        
+    def apply(self, src_directory, dst_directory):
+        dst_is_dir = self._dst.endswith('/')
+        abs_dst = os.path.join(dst_directory, self._dst)
+        try:
+            if os.path.exists(abs_dst):
+                if os.path.isdir(abs_dst) != dst_is_dir:
+                    if dst_is_dir:
+                        raise InstallationError("destination exists and is a file but should be a directory")
+                    else:
+                        raise InstallationError("destination exists and is a directory but should be a file")
+            else:
+                dirname = os.path.dirname(abs_dst)
+                if not os.path.exists(dirname):
+                    os.makedirs(dirname)
+            if dst_is_dir:
+                self._apply_dir(src_directory, abs_dst)
+            else:
+                self._apply_file(src_directory, abs_dst)
+        except EnvironmentError, e:
+            logger.error("Error during execution of copy filter", exc_info=True)
+            raise InstallationError(e)
+        
+    def _apply_dir(self, src_directory, abs_dst):
+        for pathname in self._glob_helper.iglob_in_dir(src_directory):
+            if os.path.isdir(pathname):
+                src_dir_name = os.path.basename(pathname)
+                shutil.copytree(pathname, os.path.join(abs_dst, src_dir_name), True)
+            else:
+                shutil.copy(pathname, abs_dst)
+    
+    def _apply_file(self, src_directory, abs_dst):
+        pathnames = self._glob_helper.glob_in_dir(src_directory)
+        if len(pathnames) > 1:
+            raise InstallationError("glob pattern matched %d files" % len(pathnames))
+        pathname = pathnames[0]
+        shutil.copy(pathname, abs_dst)
+
+
+class NullFilter(object):
+    """A filter that add nothing to the destination directory.
+    
+    Mostly useful for testing purposes.
+    
+    """
+    def apply(self, src_directory, dst_directory):
+        pass

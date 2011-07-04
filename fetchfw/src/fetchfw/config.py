@@ -18,84 +18,48 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import ConfigParser
-import logging
-import re
-from fetchfw import download, package, storage, util
-
-logger = logging.getLogger(__name__)
-
-DEF_CFG_FILENAME = '/etc/pf-xivo/fetchfw.conf'
-DEF_CFG = {
-   'cache_dir': '/var/cache/pf-xivo-fetchfw',
-   'storage_dir': '/var/lib/pf-xivo-fetchfw',
-   'auth_sections': [],
-}
+from ConfigParser import RawConfigParser
+from fetchfw.params import ConfigSpec
 
 
-class ConfigError(util.FetchfwError):
-    pass
+def _new_config_spec():
+    cfg_spec = ConfigSpec()
+    
+    # [general] section definition
+    cfg_spec.add_param('general.root_dir', default='/')
+    cfg_spec.add_param('general.db_dir', default='/var/lib/pf-xivo-fetchfw')
+    cfg_spec.add_param('general.cache_dir', default='/var/cache/pf-xivo-fetchfw')
+    
+    @cfg_spec.add_param_decorator('general.auth_sections', default=[])
+    def _auth_sections_fun(raw_value):
+        return raw_value.split()
+    
+    # [global_vars] section definition
+    cfg_spec.add_section('global_vars')
+    
+    # [proxy] section definition
+    cfg_spec.add_section('proxy')
+    
+    # dynamic [auth-section] definition (referenced by general.auth_sections)
+    cfg_spec.add_dyn_param('auth-section', 'uri', default=ConfigSpec.MANDATORY)
+    cfg_spec.add_dyn_param('auth-section', 'username', default=ConfigSpec.MANDATORY)
+    cfg_spec.add_dyn_param('auth-section', 'password', default=ConfigSpec.MANDATORY)
+    
+    # unknown section hook for dynamic auth sections
+    @cfg_spec.set_unknown_section_hook_decorator
+    def _unknown_section_hook(config_dict, section_id, section_dict):
+        if section_id in config_dict['general.auth_sections']:
+            return 'auth-section'
+    
+    return cfg_spec
+
+_CONFIG_SPEC = _new_config_spec()
 
 
-def new_package_manager(config_filename=DEF_CFG_FILENAME):
-    cfg_dict = dict(DEF_CFG)
-    cfg_parser = ConfigParser.RawConfigParser()
-    cfg_parser.optionxform=str
-    with open(config_filename, 'r') as f:
-        try:
-            cfg_parser.readfp(f)
-        except ConfigParser.ParsingError:
-            logger.exception("error while parsing configuration file")
-            raise ConfigError('error while parsing configuration file')
-    def set_if(section, option, fun=lambda x: x):
-        if cfg_parser.has_option(section, option):
-            cfg_dict[option] = fun(cfg_parser.get(section, option))
-    def ret_or_raise(section, option, fun=lambda x: x):
-        if cfg_parser.has_option(section, option):
-            return fun(cfg_parser.get(section, option))
-        else:
-            raise ConfigError("missing mandatory option '%s' in section '%s'"
-                              % (option, section))
-    if cfg_parser.has_section('general'):
-        set_if('general', 'cache_dir')
-        set_if('general', 'storage_dir')
-        set_if('general', 'auth_sections', lambda x: x.split())
-    if cfg_parser.has_section('proxy'):
-        proxies = dict(cfg_parser.items('proxy'))
-    else:
-        proxies = None
-    downloaders = _create_downloaders(proxies)
-    # add credentials to auth downloader
-    for section in cfg_dict['auth_sections']:
-        if not cfg_parser.has_section(section):
-            raise ConfigError("auth_sections line makes reference to inexistant section '%s'"
-                              % section)
-        uri = ret_or_raise(section, 'uri')
-        user = ret_or_raise(section, 'username')
-        pwd = ret_or_raise(section, 'password')
-        if cfg_parser.has_option(section, 'realm'):
-            realm = cfg_parser.get(section, 'realm')
-        else:
-            realm = None
-        downloaders['auth'].add_password(realm, uri, user, pwd)
-    # read variables definition
-    variables = {}
-    if cfg_parser.has_section('variables'):
-        for name, value in cfg_parser.items('variables'):
-            if re.match(r'\W|^(?:FILE|ARG)\d+$', name):
-                raise ConfigError("'%s' is not a valid variable name" % name)
-            variables[name] = value
-    rfile_builder = storage.RemoteFileBuilder(downloaders)
-    installation_mgr_builder = storage.InstallationMgrBuilder()
-    res_storage = storage.DefaultPackageStorage.new_storage(cfg_dict['cache_dir'],
-                                                            cfg_dict['storage_dir'],
-                                                            rfile_builder,
-                                                            installation_mgr_builder,
-                                                            variables)
-    manager = package.PackageManager(res_storage)
-    return manager
-
-
-def _create_downloaders(proxies):
-    handlers = download.new_handlers(proxies)
-    return download.new_downloaders(handlers)
+def read_config(filename):
+    config_parser = RawConfigParser()
+    # case sensitive options (used for section 'global_vars')
+    config_parser.optionxform=str
+    with open(filename) as fobj:
+        config_parser.readfp(fobj)
+    return _CONFIG_SPEC.read_config(config_parser)

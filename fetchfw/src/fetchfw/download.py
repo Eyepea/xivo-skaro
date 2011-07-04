@@ -65,9 +65,8 @@ class DefaultDownloader(object):
             logger.warning("URLError while downloading '%s': %s", self._get_url(url), e)
             raise DownloadError(e)
         
-    @staticmethod
-    def _get_url(url):
-        """Return the URL from either a urllib2.Request or string instance."""
+    def _get_url(self, url):
+        # Return the URL from either a urllib2.Request or string instance
         if hasattr(url, 'get_full_url'):
             return url.get_full_url()
         else:
@@ -96,54 +95,41 @@ class AuthenticatingDownloader(DefaultDownloader):
         self._pwd_manager.add_password(realm, uri, user, passwd)
 
 
-class RemoteFile(object):
-    """A downloadable remote file."""
+class BaseRemoteFile(object):
+    """A remote file that can be downloaded."""
     _BLOCK_SIZE = 4096
     
-    def __init__(self, path, url, downloader, size, hook_factories=[]):
+    def __init__(self, url, downloader, hook_factories=[]):
         """
-        path -- the destination path (file name) of the file to download
         url -- the URL/object to pass to the downloader
         downloader -- the file downloader
-        size -- the size of the file, or None
-        """
-        # XXX size is not needed in instance of this class, it's just there
-        #   for convenience, I wonder if there's a pratical way to get this
-        #   information without using the file attribute for remote file....
-        self.path = path
-        self.url = url
-        self.downloader = downloader
-        self.size = size
-        self.hook_factories = list(hook_factories)
-        
-    @property
-    def filename(self):
-        return os.path.basename(self.path)
-    
-    def exists(self):
-        """Return True if the destination path of the file to download refers to
-        an existing path.
+        hook_factories -- a list of callable objects that return download hook
         
         """
-        return os.path.isfile(self.path)
+        self._url = url
+        self._downloader = downloader
+        self._hook_factories = list(hook_factories)
     
-    def _download_to_fobj(self, fobj, supp_hooks):
-        # fobj is a file-object and is guaranteed NOT to be closed after this
-        # method returns.
-        hooks = supp_hooks + [factory() for factory in self.hook_factories]
+    def download(self, supp_hooks=[]):
+        """Download the file and run it through the hooks.
+        
+        Download hooks are stopped in the reverse order they are started.
+        
+        """
+        logger.debug('Downloading %s', self._url)
+        hooks = supp_hooks + [factory() for factory in self._hook_factories]
         last_started_idx = 0
         try:
             while last_started_idx < len(hooks):
                 hooks[last_started_idx].start()
                 last_started_idx += 1
-            with contextlib.closing(self.downloader.download(self.url)) as dlfile:
+            with contextlib.closing(self._downloader.download(self._url)) as dlfile:
                 while True:
                     bytes = dlfile.read(self._BLOCK_SIZE)
                     if not bytes:
                         break
                     for hook in hooks:
                         hook.update(bytes)
-                    fobj.write(bytes)
             for hook in reversed(hooks):
                 hook.complete()
         except Exception, e:
@@ -155,13 +141,12 @@ class RemoteFile(object):
                 while hook_idx:
                     # Although hook.fail MUST NOT raise an exception, catch
                     # any exception that could be raised from badly implemented
-                    # hook so that the contract for the other hooks is not
-                    # breached
+                    # hook so that the contract for the other hooks is respected
                     hook_idx -= 1
                     try:
                         hooks[hook_idx].fail(e)
                     except Exception:
-                        logger.exception('hook.fail raised an exception')
+                        logger.error('hook.fail raised an exception', exc_info=True)
         finally:
             hook_idx = last_started_idx
             while hook_idx:
@@ -169,50 +154,49 @@ class RemoteFile(object):
                 try:
                     hooks[hook_idx].stop()
                 except Exception:
-                    logger.exception('hook.stop raised an exception')
+                    logger.error('hook.stop raised an exception', exc_info=True)
+
+
+class RemoteFile(object):
+    """A BaseRemoteFile with a few extra attributes:
+    
+    size -- the size of the remote file
+    filename -- the filename of the file that will be written to the filesystem
+    path -- the complete path of the file that will be written to the filesystem
+    exists -- a method that returns true if the remote file exists on the filesystem
+    
+    """
+    def __init__(self, path, size, base_remote_file):
+        """
+        path -- the path where the file will be written
+        
+        Note that you probably want to use the "new_remote_file" function
+        instead of directly using this constructor.
+        
+        """
+        self.path = path
+        self.size = size
+        self._base_remote_file = base_remote_file
+    
+    @property
+    def filename(self):
+        return os.path.basename(self.path)
+    
+    def exists(self):
+        """Return True if the destination path of the file to download refers to
+        an existing path.
+        
+        """
+        return os.path.isfile(self.path)
     
     def download(self, supp_hooks=[]):
-        """Download the file.
-        
-        Note that it doesn't check if the file already exist or not on the
-        filesystem, i.e. it will overwrite the file if it's already there.
-        
-        Download hooks are stopped in the reverse order they are started.
-       
-        """
-        # XXX usage of a fixed suffix might not be the best idea since we could
-        #   overwrite a 'valid' file with this name
-        pathname_tmp = self.path + '.tmp'
-        try:
-            logger.debug('opening temp file')
-            outfile = open(pathname_tmp, 'wb')
-        except EnvironmentError, e:
-            logger.error("error while opening '%s' for write: %s", pathname_tmp, e)
-            raise
-        else:
-            try:
-                try:
-                    self._download_to_fobj(outfile, supp_hooks)
-                finally:
-                    logger.debug('closing temp file')
-                    outfile.close()
-                try:
-                    logger.debug('renaming temp file')
-                    os.rename(pathname_tmp, self.path)
-                except OSError, e:
-                    logger.error("error while renaming '%s' to '%s': %s", pathname_tmp, self.path, e)
-                    raise
-            except Exception:
-                logger.debug('error during download')
-                # remove temporary download file without modifying the stack trace
-                try:
-                    raise
-                finally:
-                    try:
-                        logger.debug('removing temp file')
-                        os.remove(pathname_tmp)
-                    except OSError, e:
-                        logger.error("error while removing '%s': %s", pathname_tmp, e)
+        self._base_remote_file.download(supp_hooks)
+    
+    @classmethod
+    def new_remote_file(cls, path, size, url, downloader, hook_factories=[]):
+        hook_factories = hook_factories + [WriteToFileHook.create_factory(path)] 
+        base_remote_file = BaseRemoteFile(url, downloader, hook_factories)
+        return cls(path, size, base_remote_file)
 
 
 class DownloadHook(object):
@@ -261,10 +245,59 @@ class DownloadHook(object):
         """Called just after the download is stopped, either because the
         download completed succesfully or failed.
         
+        This method is always called if the method 
+        
         This method MUST NOT raise an exception.
         
         """
         pass
+
+
+class WriteToFileHook(DownloadHook):
+    """Write a download to a file."""
+    def __init__(self, filename):
+        self._filename = filename
+        # XXX usage of a fixed suffix might not be the best idea since we could
+        #     overwrite a 'valid' file with this name, that said we want both files
+        #     to be on the same filesystem so that rename are atomic...
+        self._tmp_filename = filename + '.tmp'
+        self._fobj = None
+        self._renamed = False
+    
+    def start(self):
+        self._fobj = open(self._tmp_filename, 'wb')
+    
+    def update(self, arg):
+        self._fobj.write(arg)
+    
+    def complete(self):
+        self._fobj.close()
+        os.rename(self._tmp_filename, self._filename)
+        self._renamed = True
+    
+    def fail(self, exc_value):
+        # note that self._fobj.close() might have already been called since
+        # fail can sometimes be called after complete, but this is not a problem
+        self._fobj.close()
+        # remove temporary file without modifying the stack trace
+        try:
+            pass
+        finally:
+            try:
+                if self._renamed:
+                    filename = self._filename
+                else:
+                    filename = self._tmp_filename
+                os.remove(filename)
+            except OSError, e:
+                logger.error("error while removing '%s': %s", filename, e)
+    
+    @classmethod
+    def create_factory(cls, filename):
+        """Create a hook factory that will return WriteToFileHook instances."""
+        def aux():
+            return cls(filename)
+        return aux
 
 
 class SHA1Hook(DownloadHook):
@@ -274,6 +307,7 @@ class SHA1Hook(DownloadHook):
         sha1sum -- the raw sha1 sum (NOT an hex representation).
         """
         self._sha1sum = sha1sum
+        self._hash = None
         
     def start(self):
         self._hash = hashlib.sha1()
@@ -286,7 +320,7 @@ class SHA1Hook(DownloadHook):
         if sha1sum != self._sha1sum:
             raise CorruptedFileError("sha1sum mismatch: %s instead of %s" %
                                      (b2a_hex(sha1sum), b2a_hex(self._sha1sum)))
-        
+    
     @classmethod
     def create_factory(cls, sha1sum):
         """Create a hook factory that will return SHA1Hook instances."""
@@ -319,7 +353,7 @@ class AbortHook(DownloadHook):
     
     def update(self, arg):
         if self._abort:
-            logger.info('aborting download')
+            logger.info('explicitly aborting download')
             raise AbortedDownloadError()
     
     def abort_download(self):
@@ -327,20 +361,8 @@ class AbortHook(DownloadHook):
         self._abort = True
 
 
-def new_downloaders(handlers=[]):
-    """Return a 2-items dictionary ret, for which:
-    
-    ret['default'] is a DefaultDownloader
-    ret['auth'] is an AuthenticatingDownloader
-    
-    """
-    auth = AuthenticatingDownloader(handlers)
-    default = DefaultDownloader(handlers)
-    return {'auth': auth, 'default': default}
-
-
 def new_handlers(proxies=None):
-    """Return a list of additional handlers to be used by downloaders.
+    """Return a list of standard handlers to be used by downloaders.
     
     proxies -- a dictionary mapping protocol names to URLs of proxies, or
       None
@@ -350,3 +372,28 @@ def new_handlers(proxies=None):
         return [urllib2.ProxyHandler(proxies)]
     else:
         return []
+
+
+def new_downloaders_from_handlers(handlers=None):
+    """Return a 2-items dictionary ret, for which:
+    
+    ret['default'] is a DefaultDownloader
+    ret['auth'] is an AuthenticatingDownloader
+    
+    """
+    if handlers is None:
+        handlers = []
+    auth = AuthenticatingDownloader(handlers)
+    default = DefaultDownloader(handlers)
+    return {'auth': auth, 'default': default}
+
+
+def new_downloaders(proxies=None):
+    """Create standard handlers and downloaders and return a 2-items
+    dictionary ret, for which:
+    
+    ret['default'] is a DefaultDownloader
+    ret['auth'] is an AuthenticatingDownloader
+    
+    """
+    return new_downloaders_from_handlers(new_handlers(proxies))

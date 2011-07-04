@@ -1,21 +1,8 @@
-[name]
-simple1
-
-[desc]
-Simple package definition 1
-
-[version]
-20100920-1
-
-[hidden]
-yes
-
-[explicitly_installed]
-yes
-
-[files]
-/tmp/
-/tmp/test-fetchfw2/
-/tmp/test-fetchfw2/dir0/
-/tmp/test-fetchfw2/dir0/file1.txt
-/tmp/test-fetchfw2/file0.txt
+{"id": "simple1",
+ "description": "Simple package.",
+ "version": "1",
+ 
+ "depends": [],
+ "explicit_install": true,
+ "files": ["file0.txt", "dir0/"]
+}

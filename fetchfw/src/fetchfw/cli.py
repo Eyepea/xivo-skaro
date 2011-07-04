@@ -20,115 +20,122 @@ __license__ = """
 
 import logging
 import progressbar
-from fetchfw import package
+from fetchfw.package import DefaultInstallerController, DefaultUninstallerController,\
+    PackageError, DefaultUpgraderController
 from fetchfw.download import ProgressBarHook
 
 logger = logging.getLogger(__name__)
 
 
-class UserCancellationError(package.PackageError):
-    # XXX not an error per se, but raised when the user didn't want to proceed
+class UserCancellationError(PackageError):
+    # Not an error per se, but raised when the user don't want to proceed
     pass
 
 
-class CliInstaller(package.DefaultInstaller):
-    # TODO better formatting, etc
-    def __init__(self, **kwargs):
-        # XXX don't know if it's a good idea to use **kwargs
-        package.DefaultInstaller.__init__(self, **kwargs)
-        #self._verbose = kwargs.get('verbose', False)
-    
-    def _get_pkgs_to_install(self, pkg_names, installable_pkgs, installed_pkgs):
+class CliInstallerController(DefaultInstallerController):
+    def preprocess_raw_pkgs(self, raw_installable_pkgs):
         if not self._nodeps:
             print "resolving dependencies..."
-        return package.DefaultInstaller._get_pkgs_to_install(self, pkg_names, installable_pkgs, installed_pkgs)
-    
-    def _pre_download(self, to_install_pkgs):
-        print "Targets (%d):" % len(to_install_pkgs)
-        for pkg in to_install_pkgs:
+        installable_pkgs = DefaultInstallerController.preprocess_raw_pkgs(
+                self, raw_installable_pkgs)
+        print "Targets (%d):" % len(installable_pkgs)
+        for pkg in installable_pkgs:
             print "    ", pkg
         print
-        total_dl_size = sum(remote_file.size
-                            for pkg in to_install_pkgs
-                            for remote_file in pkg.remote_files if not remote_file.exists())
+        return installable_pkgs
+    
+    def pre_download(self, remote_files):
+        total_dl_size = sum(remote_file.size for remote_file in remote_files)
         print "Total Download Size:    %.2f MB" % (float(total_dl_size) / 1000 ** 2)
         print
         rep = raw_input("Proceed with installation? [Y/n] ")
-        if rep and rep not in ('Y', 'y'):
-            raise UserCancellationError() 
-        
-    def _download(self, to_install_pkgs):
-        for to_install_pkg in to_install_pkgs:
-            for remote_file in to_install_pkg.remote_files:
-                if not remote_file.exists():
-                    widgets = [remote_file.filename,
-                               ':    ',
-                               progressbar.FileTransferSpeed(),
-                               ' ',
-                               progressbar.ETA(),
-                               ' ',
-                               progressbar.Bar(),
-                               ' ',
-                               progressbar.Percentage(),
-                               ]
-                    # XXX some widgets would look better with customisation
-                    remote_file.download([ProgressBarHook(progressbar.ProgressBar(widgets=widgets, maxval=remote_file.size))])
-
-    def _pre_install(self, to_install_pkgs):
-        print "Installing... "
+        if rep and rep.lower() != 'y':
+            raise UserCancellationError()
     
-    def _post_install(self, new_pkgs):
-        print "Installation done."
+    def download_file(self, remote_file):
+        widgets = [remote_file.filename,
+                   ':    ',
+                   progressbar.FileTransferSpeed(),
+                   ' ',
+                   progressbar.ETA(),
+                   ' ',
+                   progressbar.Bar(),
+                   ' ',
+                   progressbar.Percentage(),
+                   ]
+        pbar = progressbar.ProgressBar(widgets=widgets, maxval=remote_file.size)
+        remote_file.download([ProgressBarHook(pbar)])
+
+    def pre_install_pkg(self, installable_pkg):
+        print "Installing %s..." % installable_pkg.pkg_info['id']
 
 
-class CliUninstaller(package.DefaultUninstaller):
-    def _pre_uninstall(self, to_uninstall_pkgs):
-        print "Remove (%d):" % len(to_uninstall_pkgs)
-        for pkg in to_uninstall_pkgs:
+class CliUninstallerController(DefaultUninstallerController):
+    def pre_uninstall(self, installed_pkgs):
+        print "Remove (%d):" % len(installed_pkgs)
+        for pkg in installed_pkgs:
             print "    ", pkg
         print
         rep = raw_input("Do you want to remove these packages? [Y/n] ")
-        if rep and rep not in ('Y', 'y'):
-            raise UserCancellationError() 
+        if rep and rep.lower() != 'y':
+            raise UserCancellationError()
+    
+    def pre_uninstall_pkg(self, installed_pkg):
+        print "Removing %s..." % installed_pkg.pkg_info['id']
 
 
-class CliUpgrader(package.DefaultUpgrader):
-    def _get_pkgs_to_upgrade(self, installable_pkgs, installed_pkgs):
+class CliUpgraderController(DefaultUpgraderController):
+    _nothing_to_do = False
+    
+    def preprocess_upgrade_list(self, upgrade_list):
         if not self._nodeps:
             print "resolving dependencies..."
-        return package.DefaultUpgrader._get_pkgs_to_upgrade(self, installable_pkgs, installed_pkgs)
-    
-    def _pre_download(self, upgrade_list):
-        if not upgrade_list:
+        installed_specs = DefaultUpgraderController.preprocess_upgrade_list(
+                self, upgrade_list)
+        if not installed_specs:
             print " there is nothing to do"
+            self._nothing_to_do = True
         else:
-            to_install_pkgs = [to_install_pkg for elem in upgrade_list for to_install_pkg in elem[1]]
-            print "Targets (%d):" % len(to_install_pkgs)
-            for pkg in to_install_pkgs:
+            installable_pkgs = []
+            for installed_spec in installed_specs:
+                installable_pkgs.append(installed_spec[1])
+                installable_pkgs.extend(installed_spec[2])
+            print "Targets (%d):" % len(installable_pkgs)
+            for pkg in installable_pkgs:
                 print "    ", pkg
             print
-            total_dl_size = sum(remote_file.size
-                                for pkg in to_install_pkgs
-                                for remote_file in pkg.remote_files if not remote_file.exists())
-            print "Total Download Size:    %.2f MB" % (float(total_dl_size) / 1000 ** 2)
-            print
-            rep = raw_input("Proceed with installation? [Y/n] ")
-            if rep and rep not in ('Y', 'y'):
-                raise UserCancellationError() 
+        return installed_specs
+    
+    def pre_download(self, remote_files):
+        if self._nothing_to_do:
+            return
+        
+        total_dl_size = sum(remote_file.size for remote_file in remote_files)
+        print "Total Download Size:    %.2f MB" % (float(total_dl_size) / 1000 ** 2)
+        print
+        rep = raw_input("Proceed with upgrade? [Y/n] ")
+        if rep and rep.lower() != 'y':
+            raise UserCancellationError()
 
-    def _download(self, upgrade_list):
-        for to_install_pkg in (to_install_pkg for elem in upgrade_list for to_install_pkg in elem[1]):
-            for remote_file in to_install_pkg.remote_files:
-                if not remote_file.exists():
-                    widgets = [remote_file.filename,
-                               ':    ',
-                               progressbar.FileTransferSpeed(),
-                               ' ',
-                               progressbar.ETA(),
-                               ' ',
-                               progressbar.Bar(),
-                               ' ',
-                               progressbar.Percentage(),
-                               ]
-                    # XXX some widgets would look better with customisation
-                    remote_file.download([ProgressBarHook(progressbar.ProgressBar(widgets=widgets, maxval=remote_file.size))])
+    def download_file(self, remote_file):
+        widgets = [remote_file.filename,
+                   ':    ',
+                   progressbar.FileTransferSpeed(),
+                   ' ',
+                   progressbar.ETA(),
+                   ' ',
+                   progressbar.Bar(),
+                   ' ',
+                   progressbar.Percentage(),
+                   ]
+        pbar = progressbar.ProgressBar(widgets=widgets, maxval=remote_file.size)
+        remote_file.download([ProgressBarHook(pbar)])
+    
+    def pre_upgrade_uninstall_pkg(self, installed_pkg):
+        print "Removing %s..." % installed_pkg.pkg_info['id']
+    
+    def pre_upgrade_install_pkg(self, installable_pkg):
+        print "Installing %s..." % installable_pkg.pkg_info['id']
+    
+    def pre_upgrade_pkg(self, installed_pkg):
+        print "Upgrading %s..." % installed_pkg.pkg_info['id']
