@@ -293,11 +293,12 @@ class AMI_1_8:
 
     def ami_channelupdate(self, event):
         # could be especially useful when there is a trunk : links callno-remote and callno-local
+        # when the call is outgoing, one never receives the callno-remote
         channeltype = event.pop('Channeltype')
         if channeltype == 'IAX2':
             cnlocal = event.pop('IAX2-callno-local')
             cnremote = event.pop('IAX2-callno-remote')
-            # cnremote : first step, when remote not joined yet
+            # cnremote = 0 : first step, when remote not joined yet
             self.log.info('ami_channelupdate %s : %s - %s : %s'
                           % (channeltype, cnlocal, cnremote, event))
         else:
@@ -331,12 +332,16 @@ class AMI_1_8:
             properties = self.ctid.myami.get(self.ipbxid).originate_actionids.pop(actionid)
             request = properties.get('request')
             cn = request.get('requester')
-            cn.reply( { 'class' : 'ipbxcommand',
-                        'command' : request.get('ipbxcommand'),
-                        'replyid' : request.get('commandid'),
-                        'channel' : channel,
-                        'originatereason' : reason
-                        } )
+            try:
+                cn.reply( { 'class' : 'ipbxcommand',
+                            'command' : request.get('ipbxcommand'),
+                            'replyid' : request.get('commandid'),
+                            'channel' : channel,
+                            'originatereason' : reason
+                            } )
+            except Exception:
+                # when requester is not connected any more ...
+                pass
             self.log.info('ami_originateresponse %s %s %s %s'
                           % (actionid, channel, reason, event))
         else:
@@ -610,6 +615,7 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        # chanprops.set_extra_data('xivo', 'calledidname', xivo_dstid)
         return
 
     def userevent_outcall(self, chanprops, event):

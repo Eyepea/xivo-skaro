@@ -27,8 +27,6 @@ import base64
 import commands
 import logging
 import os
-import random
-import string
 import threading
 import time
 
@@ -37,90 +35,89 @@ PATH_SPOOL_ASTERISK_FAX = PATH_SPOOL_ASTERISK + '/fax'
 PATH_SPOOL_ASTERISK_TMP = PATH_SPOOL_ASTERISK + '/tmp'
 PDF2FAX = '/usr/bin/xivo_pdf2fax'
 
-__alphanums__ = string.uppercase + string.lowercase + string.digits
-
-log = logging.getLogger('fax')
-
 class asyncActionsThread(threading.Thread):
     def __init__(self, name, params):
         threading.Thread.__init__(self)
         self.setName(name)
         self.params = params
+        fileid = self.params.get('fileid')
+        self.log = logging.getLogger('async(%s)' % fileid)
+        return
+
+    def decodefile(self):
+        decodedfile = base64.b64decode(self.params.get('rawfile').strip())
+        filename = 'astsendfax-%s' % self.params.get('fileid')
+        self.tmpfilepath = '%s/%s' % (PATH_SPOOL_ASTERISK_TMP, filename)
+        z = open(self.tmpfilepath, 'w')
+        z.write(decodedfile)
+        z.close()
         return
 
     def converttotiff(self):
-##        reply = 'ko;unknown'
-##        comm = commands.getoutput('file -b %s' % tmpfilepath)
-##        brieffile = ' '.join(comm.split()[0:2])
-
-##        reply = 'ko;unknown'
-##        comm = commands.getoutput('file -b %s' % tmpfilepath)
-##        brieffile = ' '.join(comm.split()[0:2])
-##        if brieffile == 'PDF document,':
-##            pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
-##            log.info('(ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
-##            reply = 'ko;convert-pdftif'
-##            sysret = os.system(pdf2fax_command)
-##            ret = os.WEXITSTATUS(sysret)
-##            if ret != 0:
-##                log.warning('(ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
-##                            % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
-##        else:
-##            reply = 'ko;filetype'
-##            log.warning('(ref %s) the file received is a <%s> one : format not supported'
-##                        % (self.reference, brieffile))
-##            ret = -1
+        reply = 'ko;unknown'
+        comm = commands.getoutput('file -b %s' % self.tmpfilepath)
+        brieffile = ' '.join(comm.split()[0:2])
+        if brieffile == 'PDF document,':
+            self.faxfilepath = self.tmpfilepath + '.tif'
+            pdf2fax_command = '%s -o %s %s' % (PDF2FAX, self.faxfilepath, self.tmpfilepath)
+            self.log.info('(ref %s) PDF to TIF(F) : %s' % (self.tmpfilepath, pdf2fax_command))
+            reply = 'ko;convert-pdftif'
+            sysret = os.system(pdf2fax_command)
+            ret = os.WEXITSTATUS(sysret)
+            if ret:
+                self.log.warning('(ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
+                                 % (self.tmpfilepath, sysret, ret, os.WSTOPSIG(sysret)))
+            else:
+                reply = 'ok;'
+        else:
+            reply = 'ko;filetype'
+            self.log.warning('(ref %s) the file received is a <%s> one : format not supported'
+                             % (self.reference, brieffile))
+            ret = -1
+        print reply
+        os.unlink(self.tmpfilepath)
         return
-        
 
-
-    def run(self):
-        pipefd = self.params.get('ctid').pipe_queued_threads[1]
+    def notify_step(self, stepname):
         innerdata = self.params.get('innerdata')
         fileid = self.params.get('fileid')
-
-        self.converttotiff()
-        time.sleep(3)
-        innerdata.timeout_queue.put(({'action' : 'fax',
-                                      'properties' : {'step' : 'a',
-                                                      'fileid' : fileid}},))
-        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
-        time.sleep(3)
-        innerdata.timeout_queue.put(({'action' : 'fax',
-                                      'properties' : {'step' : 'b',
-                                                      'fileid' : fileid}},))
-        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
-        time.sleep(3)
-        innerdata.timeout_queue.put(({'action' : 'fax',
-                                      'properties' : {'step' : 'c',
-                                                      'fileid' : fileid}},))
-        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
-        time.sleep(3)
-        innerdata.timeout_queue.put(({'action' : 'fax',
-                                      'properties' : {'step' : 'd',
-                                                      'fileid' : fileid}},))
-        os.write(pipefd, 'innerdata:%s\n' % innerdata.ipbxid)
-        print self.getName(), 'thread should be over ...'
-
-##        decodedfile = base64.b64decode(self.rawfile.strip())
-##        z = open('/tmp/kjgh', 'w')
-##        z.write(decodedfile)
-##        z.close()
-##        print 'zfax'
-##        return
+        innerdata.cb_timer({'action' : 'fax',
+                            'properties' : {'step' : stepname,
+                                            'fileid' : fileid}},)
         return
 
+    def run(self):
+        self.decodefile()
+        self.notify_step('file_decoded')
+        self.converttotiff()
+        self.notify_step('file_converted')
+        self.log.info('%s thread is over' % self.getName())
+        return
+
+
+
 class Fax:
-    def __init__(self, ctid, innerdata, uinfo, fileid, size, number, hide):
-        self.ctid = ctid
+    def __init__(self, innerdata, fileid):
         self.innerdata = innerdata
         self.fileid = fileid
+        self.log = logging.getLogger('fax(%s)' % self.fileid)
 
-        self.reference = ''.join(random.sample(__alphanums__, 10)) + '-' + hex(int(time.time()))
-        self.size = size
+        filename = 'astsendfax-%s' % self.fileid
+        self.faxfilepath = '%s/%s.tif' % (PATH_SPOOL_ASTERISK_TMP, filename)
+        return
+
+    def setfaxparameters(self, userid, context, number, hide):
+        self.userid = userid
+        self.context = context
         self.number = number.replace('.', '').replace(' ', '')
-        self.hide = hide
-        self.uinfo = uinfo
+        if hide != '0':
+            self.callerid = 'anonymous'
+        else:
+            self.callerid = '010101'
+        return
+
+    def setfileparameters(self, size):
+        self.size = size
         return
 
     def setsocketref(self, socketref):
@@ -132,66 +129,49 @@ class Fax:
         return
 
     def setbuffer(self, rawfile):
+        """Set on the 2nd opened soocket"""
         self.rawfile = rawfile
         return
 
     def launchasyncs(self):
         sthread = asyncActionsThread('fax-%s' % self.fileid,
-                                     {'ctid' : self.ctid,
-                                      'innerdata' : self.innerdata,
-                                      'fileid' : self.fileid})
+                                     { 'innerdata' : self.innerdata,
+                                       'fileid' : self.fileid,
+                                       'rawfile' : self.rawfile
+                                       } )
         sthread.start()
         return
 
     def step(self, stepname):
-        print 'step', stepname, self.requester
-        return
+        removeme = False
+        try:
+            self.requester.reply( { 'class' : 'faxsend',
+                                    'fileid' : self.fileid,
+                                    'step' : stepname
+                                    } )
+        except Exception:
+            # when requester is not connected any more ...
+            pass
 
-    def finished(self):
-        print 'fff'
-        # question : how to remove the class when over
-        self.ipbxcommand()
-        return
+        if stepname == 'file_converted':
+            removeme = True
 
-    def ipbxcommand(self):
-        return
+        return removeme
 
-    def sendfax(self, b64buffer, callerid, ami):
-        filename = 'astfaxsend-' + self.reference
-        tmpfilepath = PATH_SPOOL_ASTERISK_TMP + '/' + filename
-        faxfilepath = PATH_SPOOL_ASTERISK_FAX + '/' + filename + '.tif'
-        buffer = base64.b64decode(b64buffer.strip())
-        z = open(tmpfilepath, 'w')
-        z.write(buffer)
-        z.close()
-
-        log.info('(ref %s) size = %s (%d), number = %s, hide = %s'
-                 % (self.reference, self.size, len(buffer), self.number, self.hide))
-        if self.hide != '0':
-            callerid = 'anonymous'
-
-        if ret == 0:
-            if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
-                try:
-                    reply = 'ko;AMI'
-                    ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
-                                    self.uinfo.get('xivo_userid'),
-                                    callerid, self.number,
-                                    self.uinfo.get('context'),
-                                    self.reference)
-                    if ret:
-                        reply = 'queued;'
-                except Exception:
-                    log.exception('(ref %s) (fax handler - AMI)' % (self.reference))
-            else:
-                reply = 'ko;exists-pathspool'
-                log.warning('(ref %s) directory %s does not exist - could not send fax'
-                            % (self.reference, PATH_SPOOL_ASTERISK_FAX))
-
-        # BUGFIX: myconn is undefined
-        # filename is actually an identifier.
-        # faxclients[filename] = myconn
-
-        os.unlink(tmpfilepath)
-        log.info('(ref %s) removed %s (reply will be %s)' % (self.reference, tmpfilepath, reply))
-        return reply
+    def getparams(self):
+        params = {
+            'mode' : 'useraction',
+            'request' : {
+                'requester' : self.requester,
+                'ipbxcommand' : 'sendfax',
+                'commandid' : self.fileid
+                },
+            'amicommand' : 'txfax',
+            'amiargs' : (self.faxfilepath,
+                         self.fileid,
+                         self.userid,
+                         self.callerid,
+                         self.number,
+                         self.context)
+            }
+        return params

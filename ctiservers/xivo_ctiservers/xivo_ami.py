@@ -479,7 +479,7 @@ class AMIClass:
         except Exception:
             return False
 
-    def txfax(self, faxdir, faxid, userid, callerid, number, context, reference):
+    def txfax(self, faxdir, faxid, userid, callerid, number, context):
         # originate a call btw src and dst
         # src will ring first, and dst will ring when src responds
         try:
@@ -491,7 +491,6 @@ class AMIClass:
                                                  ('Context', 'macro-txfax'),
                                                  ('Exten', 's'),
                                                  ('Async', 'true'),
-                                                 ('ActionID', reference),
                                                  ('Priority', '1')])
             return ret
         except self.AMIError:

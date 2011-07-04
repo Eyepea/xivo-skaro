@@ -1035,12 +1035,13 @@ class Safe:
                 properties = toload.get('properties')
                 step = properties.get('step')
                 fileid = properties.get('fileid')
-                print 'checkqueue', action, fileid, step
-                # send status to requester
-                self.faxes[fileid].step(step)
-                if step == 'd':
-                    self.faxes[fileid].finished()
+                removeme = self.faxes[fileid].step(step)
+                if removeme:
+                    params = self.faxes[fileid].getparams()
+                    actionid = fileid
+                    self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
                     del self.faxes[fileid]
+
             # other cases to handle : login, agentlogoff (would that still be true ?)
         return ncount
 

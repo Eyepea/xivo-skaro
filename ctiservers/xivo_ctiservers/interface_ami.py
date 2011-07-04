@@ -317,10 +317,14 @@ class AMI:
                               % (actionid, mode, event, properties))
                 request = properties.get('request')
                 cn = request.get('requester')
-                cn.reply( { 'class' : 'ipbxcommand',
-                            'response' : 'ok',
-                            'command' : request.get('ipbxcommand'),
-                            'replyid' : request.get('commandid') } )
+                try:
+                    cn.reply( { 'class' : 'ipbxcommand',
+                                'response' : 'ok',
+                                'command' : request.get('ipbxcommand'),
+                                'replyid' : request.get('commandid') } )
+                except Exception:
+                    # when requester is not connected any more ...
+                    pass
                 if properties.get('amicommand') in ['originate', 'origapplication', 'txfax']:
                     self.originate_actionids[actionid] = properties
             elif mode == 'extension':
