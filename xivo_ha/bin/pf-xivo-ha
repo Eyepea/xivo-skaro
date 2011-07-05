@@ -80,7 +80,7 @@ if __name__ == '__main__':
         '''
         itfs =  cluster_config['cluster_addr']
         if not isinstance(itfs, collections.Iterable):
-					itfs = [itfs]
+            itfs = [itfs]
 
         for itf in itfs:
             itf = itf.split(':')[0]
