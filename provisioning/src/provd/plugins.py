@@ -51,6 +51,10 @@ from zope.interface import implements, Interface
 logger = logging.getLogger(__name__)
 
 
+class PluginNotLoadedError(Exception):
+    pass
+
+
 _PLUGIN_INFO_FILENAME = 'plugin-info'
 # plugin information filename in each plugin directory.
 _PLUGIN_INFO_KEYS = [u'capabilities', u'description', u'version']
@@ -957,10 +961,10 @@ class PluginManager(object):
         dictionary.
         
         """
-        # XXX can't iterate over loaded plugins (i.e. self._plugins) here
-        #     because a plugin could be installed but not loaded (most common
-        #     case is when loading the plugins at the start). We might want to
-        #     rework a bit all this.
+        # we can't iterate over loaded plugins (i.e. self._plugins) here
+        # because a plugin could be installed but not loaded (most common
+        # case is when loading the plugins at the start). We might want to
+        # rework a bit all this.
         localize_fun = _new_localize_fun()
         installed_plugins = {}
         for rel_plugin_dir in os.listdir(self._plugins_dir):
@@ -1041,17 +1045,19 @@ class PluginManager(object):
         self._notify(id, 'load')
     
     def _unload_and_notify(self, id):
-        # next line will raise a KeyError if the plugin is not loaded, which
-        # is what we want and it must be done before notifying the observers
-        plugin = self._plugins[id]
-        self._notify(id, 'unload')
-        logger.info('Closing plugin %s', id)
         try:
-            plugin.close()
-        except Exception:
-            logger.error('Error while closing plugin %s', id, exc_info=True)
-        finally:
-            del self._plugins[id]
+            plugin = self._plugins[id]
+        except KeyError:
+            raise PluginNotLoadedError(id)
+        else:
+            self._notify(id, 'unload')
+            logger.info('Closing plugin %s', id)
+            try:
+                plugin.close()
+            except Exception:
+                logger.error('Error while closing plugin %s', id, exc_info=True)
+            finally:
+                del self._plugins[id]
     
     @staticmethod
     def _is_plugin_class(obj):
@@ -1095,7 +1101,7 @@ class PluginManager(object):
     def unload(self, id):
         """Unload a plugin.
         
-        Raise an Exception if the plugin is not loaded.
+        Raise a PluginNotLoadedError if the plugin is not loaded.
         
         """
         logger.info('Unloading plugin %s', id)

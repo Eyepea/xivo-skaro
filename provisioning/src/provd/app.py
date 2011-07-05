@@ -18,9 +18,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# XXX right now, if we install a plugin that has a bug and can't be loaded,
-#     the only way to uninstall it is manually...
-
 import copy
 import logging
 import functools
@@ -30,7 +27,7 @@ from provd.devices.config import RawConfigError, DefaultConfigFactory
 from provd.localization import get_localization_service
 from provd.operation import OIP_PROGRESS, OIP_FAIL, OIP_SUCCESS
 from provd.persist.common import ID_KEY, InvalidIdError as PersistInvalidIdError
-from provd.plugins import PluginManager
+from provd.plugins import PluginManager, PluginNotLoadedError
 from provd.services import InvalidParameterError, JsonConfigPersister,\
     PersistentConfigureServiceDecorator
 from provd.synchro import DeferredRWLock
@@ -816,6 +813,10 @@ class ProvisioningApplication(object):
     def _pg_unload(self, id):
         try:
             self.pg_mgr.unload(id)
+        except PluginNotLoadedError:
+            # this is the case were an incompatible/bogus plugin has been
+            # installed succesfully but the plugin was not loadable
+            logger.info('Plugin %s was not loaded ', id)
         except Exception:
             logger.error('Error while unloading plugin %s', id, exc_info=True)
             raise
@@ -983,6 +984,8 @@ def _check_is_https_proxy(value):
     if value is None:
         return
     
+    if not value:
+        raise InvalidParameterError('zero-length value')
     try:
         parse_result = urlparse.urlparse(value)
     except Exception, e:
