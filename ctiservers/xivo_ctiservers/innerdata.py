@@ -421,7 +421,7 @@ class Safe:
             usernum = opts.get('usernum')
             pseudochan = opts.get('pseudochan')
             admin = opts.get('admin')
-            if pseudochan:
+            if 'pseudochan' in opts:
                 # (join)
                 self.xod_status['meetmes'][mid]['pseudochan'] = pseudochan
                 if channel not in self.xod_status['meetmes'][mid]['channels']:
