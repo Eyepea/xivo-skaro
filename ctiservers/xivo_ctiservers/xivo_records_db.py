@@ -34,6 +34,8 @@ import time
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
+from xivo.BackSQL import backsqlite3
+from xivo.BackSQL import backpostgresql
 
 log = logging.getLogger('records_db')
 

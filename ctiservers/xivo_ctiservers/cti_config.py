@@ -2,7 +2,7 @@
 # vim: set fileencoding=utf-8
 
 __version__   = '$Revision$'
-__date__      = '$Date: 2011-04-11 16:29:12 +0200 (Mon, 11 Apr 2011) $'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 

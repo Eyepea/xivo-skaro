@@ -2,7 +2,7 @@
 # XiVO CTI Server
 
 __version__   = '$Revision$'
-__date__      = '$Date: 2011-02-09 16:12:04 +0100 (Wed, 09 Feb 2011) $'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -1298,7 +1298,6 @@ class Safe:
         return
 
     def gethistory(self, userid, s, m, r):
-        print 'gethistory', userid, s, m, r
         return
 
     # directory lookups entry points - START
