@@ -18,29 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-class xivo_service_asterisk_ctiphonehints extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_ctiphonehintsgroup_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_dso		    = null;
-	var $_name		    = 'ctiphonehints';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
-
-	function xivo_service_asterisk_ctiphonehints(&$sre,&$dso)
-	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-		$this->_sre = &$sre;
-		$this->_dso = &$dso;
-
-		$this->_load_config();
-	}
+	var $_unique	= array('name');
 }
+
 
 ?>

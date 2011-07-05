@@ -7,6 +7,21 @@ Options générales
 ; fm_bt-save
 Enregistrer
 
+; cti-ami
+Informations AMI
+
+; fm_cti_ami_login
+Identifiant: 
+
+; fm_cti_ami_password
+Mot de passe: 
+
+; fm_cti_ami_ip
+Adresse IP:
+
+; fm_cti_ami_port
+Port:
+
 ; fm_cti_list_ip
 Adresses IP
 

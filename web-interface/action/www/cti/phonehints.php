@@ -18,13 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
+$act = isset($_QR['act']) === true ? $_QR['act'] : 'listgroup';
 $idphonehints = isset($_QR['idphonehints']) === true ? dwho_uint($_QR['idphonehints'],1) : 1;
+$idgroup = isset($_QR['idgroup']) === true ? dwho_uint($_QR['idgroup'],1) : 1;
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
-$param['act'] = 'list';
+$param['act'] = 'listgroup';
 $param['idphonehints'] = $idphonehints;
+$param['idgroup'] = $idgroup;
 
 $info = $result = array();
 $info['access_status'] = array();
@@ -33,6 +35,74 @@ $info['access_status']['slt'] = array();
 
 switch($act)
 {
+	case 'addgroup':
+		$app = &$ipbx->get_application('ctiphonehintsgroup');
+
+		$result = $fm_save = null;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('phonehintsgroup',$_QR) === true)
+		{
+			if($app->set_add($_QR) === false
+			|| $app->add() === false)
+			{
+				$fm_save = false;
+				$result = $app->get_result();
+			}
+			else
+				$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		}
+
+		dwho::load_class('dwho_sort');
+
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		break;
+
+	case 'editgroup':
+		$app = &$ipbx->get_application('ctiphonehintsgroup');
+
+		if(isset($_QR['idgroup']) === false
+		|| ($info = $app->get($_QR['idgroup'])) === false)
+			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+
+		$result = $fm_save = null;
+		$return = &$info;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('phonehintsgroup',$_QR) === true)
+		{
+			$return = &$result;
+			if($app->set_edit($_QR) === false
+			|| $app->edit() === false)
+			{
+				$fm_save = false;
+				$result = $app->get_result();
+			}
+			else
+				$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		}
+
+		dwho::load_class('dwho_sort');
+
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		break;
+
+	case 'deletegroup':
+		$param['page'] = $page;
+
+		$app = &$ipbx->get_application('ctiphonehintsgroup');
+
+		if(isset($_QR['idgroup']) === false
+		|| ($info = $app->get($_QR['idgroup'])) === false)
+			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+
+		$app->delete();
+
+		$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		break;
+
 	case 'add':
 		$app = &$ipbx->get_application('ctiphonehints');
 
@@ -111,94 +181,7 @@ switch($act)
 		$_QRY->go($_TPL->url('cti/phonehints'),$param);
 		break;
 
-	case 'liststatus':
-		$prevpage = $page - 1;
-		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
-
-		$app = &$ipbx->get_application('ctistatus',null,false);
-
-		$order = array();
-		$order['name'] = SORT_ASC;
-
-		$limit = array();
-		$limit[0] = $prevpage * $nbbypage;
-		$limit[1] = $nbbypage;
-
-		$list = $app->get_status_list($idphonehints);
-		$total = $app->get_cnt();
-
-		if($list === false && $total > 0 && $prevpage > 0)
-		{
-			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
-		}
-
-		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
-		$_TPL->set_var('list',$list);
-		break;
-
-	case 'editstatus':
-		$param['act'] = 'editstatus';
-		$param['idstatus'] = $_QR['idstatus'];
-		$app = &$ipbx->get_application('ctistatus');
-		if(isset($_QR['idstatus']) === false
-		|| ($info = $app->getstatus($_QR['idstatus'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
-
-		$result = $fm_save = null;
-		$return = &$info;
-
-		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('status',$_QR) === true)
-		{
-			$return = &$result;
-
-			if($app->set_edit($_QR) === false
-			|| $app->edit() === false)
-			{
-				$fm_save = false;
-				$result = $app->get_result();
-			}
-			else
-				$_QRY->go($_TPL->url('cti/phonehints'),$param);
-		}
-
-		$info['access_status']['slt'] = array();
-		if(($info['access_status']['list'] = $app->get_status_list()) !== false)
-		{
-			if(dwho_has_len($info['access_status']['list']))
-				uasort($info['access_status']['list'],array(&$serversort,'str_usort'));
-			if(isset($info['ctistatus']['access_status']) && dwho_has_len($info['ctistatus']['access_status']))
-			{
-				$sel = explode(',', $info['ctistatus']['access_status']);
-				$selected = array();
-				foreach($sel as $s => $k)
-				{
-					$selected[$k]['id'] = $k;
-				}
-				$info['access_status']['slt'] = 
-					dwho_array_intersect_key(
-						$selected,
-						$info['access_status']['list'],
-						'id');
-				$info['access_status']['list'] =
-					dwho_array_diff_key(
-						$info['access_status']['list'],
-						$info['access_status']['slt']);
-			}
-		}
-
-		dwho::load_class('dwho_sort');
-
-		$_TPL->set_var('idstatus',$info['status']['id']);
-		$_TPL->set_var('info',$return);
-		$_TPL->set_var('fm_save',$fm_save);
-
-		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/dwho/submenu.js');
-		break;
-
-	default:
+	case 'list':
 		$act = 'list';
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
@@ -212,7 +195,35 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $app->get_phonehints_list();
+		$list = $app->get_phonehints_list($order,$limit,false,$idgroup);
+		$total = $app->get_cnt();
+
+		if($list === false && $total > 0 && $prevpage > 0)
+		{
+			$param['page'] = $prevpage;
+			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		}
+
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		break;
+
+	default:
+	case 'listgroup':
+		$act = 'listgroup';
+		$prevpage = $page - 1;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
+
+		$app = &$ipbx->get_application('ctiphonehintsgroup',null,false);
+
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = $prevpage * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $app->get_phonehintsgroup_list($order);
 		$total = $app->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)
@@ -226,7 +237,7 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
-#$_TPL->set_var('group',$group);
+$_TPL->set_var('idgroup',$idgroup);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

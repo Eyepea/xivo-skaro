@@ -18,29 +18,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
-
-class xivo_service_asterisk_ctiphonehints extends xivo_service_asterisk_abstract
+if(isset($access_category,$access_subcategory) === false)
 {
-	var $_dso		    = null;
-	var $_name		    = 'ctiphonehints';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
+	$http_response->set_status_line(403);
+	$http_response->send(true);
+}
 
-	function xivo_service_asterisk_ctiphonehints(&$sre,&$dso)
-	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
+xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
+$_AWS = new xivo_accesswebservice();
 
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+$http_access = $_AWS->chk_http_access($access_category,$access_subcategory,$section);
 
-		$this->_sre = &$sre;
-		$this->_dso = &$dso;
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 
-		$this->_load_config();
-	}
+if($http_access === null)
+{
+	$http_response->authent_basic('Access Restricted');
+	$http_response->set_status_line(401);
+	$http_response->send(true);
+}
+else if(empty($http_access) === true)
+{
+	$http_response->set_status_line(403);
+	$http_response->send(true);
 }
 
 ?>

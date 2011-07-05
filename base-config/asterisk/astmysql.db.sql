@@ -387,6 +387,10 @@ DROP TABLE IF EXISTS `ctimain`;
 CREATE TABLE `ctimain` (
  `id` int(10) unsigned auto_increment,
  `commandset` varchar(20),
+ `ami_ip` varchar(16),
+ `ami_port` int(10) unsigned,
+ `ami_login` varchar(64),
+ `ami_passorwd` varchar(64),
  `fagi_ip` varchar(255),
  `fagi_port` int(10) unsigned,
  `cti_ip` varchar(255),
@@ -405,7 +409,7 @@ CREATE TABLE `ctimain` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctimain` VALUES(1, 'xivocti', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
+INSERT INTO `ctimain` VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
 
 
 DROP TABLE IF EXISTS `ctiphonehints`;

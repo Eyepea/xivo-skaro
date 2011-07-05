@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$starttime = microtime(true);
-
-$access_category = 'ctiserver';
+$access_category = 'cti';
 $access_subcategory = 'configuration';
 
-include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+
+$starttime = microtime(true);
 
 $act = $_QRY->get('act');
 
@@ -296,7 +296,8 @@ switch($act)
                 $id = $pres['id'];
                 $where = array();
                 $where['presence_id'] = $id;
-                $load_status = $ctistatus->get_all_where($where);
+                if(($load_status = $ctistatus->get_all_where($where)) === false)
+                    continue;
 
                 $statref = array();
                 foreach($load_status as $stat)
@@ -396,7 +397,7 @@ switch($act)
                     'phonestatus' => "itm_phonestatus",
                     'agentstatus' => "itm_agentstatus",
                     'channelstatus' => "itm_channelstatus",
-                    'callcenter_type' => $pf['callcenter_type']
+                    #'callcenter_type' => $pf['callcenter_type']
                 );
                 $out['functions']["itm_functions_".$pfid] = explode(',', $pf['funcs']);
                 $out['services']["itm_services_".$pfid] = explode(',', $pf['services']);
@@ -417,14 +418,21 @@ switch($act)
 
                 if((preg_match('/^127\./', $url_auth_host) > 0)
                 || (preg_match('/^localhost/', $url_auth_host) > 0))
+                {
+                    $type = 'private';
                     $json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/private/';
+                }
                 else
+                {
+                    $type = 'restricted';
                     $json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/restricted/';
+                }
 
                 $out['main']['ctilog_db_uri'] = $db_cti;
                 $out['ipbxes'][$hostname] = array();
                 $urllists = array(
-                    'urllist_users' => array($json . 'pbx_settings/users'),
+                    'urllist_users' => array($json . 'pbx_settings/users',
+                                             $url_scheme.'://'.$url_auth_host.'/cti/json.php/'.$type.'/accounts'),
                     'urllist_lines' => array($json . 'pbx_settings/lines'),
                     'urllist_devices' => array($json . 'pbx_settings/devices'),
                     'urllist_agents' => array($json . 'call_center/agents'),
@@ -463,6 +471,6 @@ switch($act)
 
 $_TPL->set_var('act',$act);
 $_TPL->set_var('sum',$_QRY->get('sum'));
-$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/generic');
+$_TPL->display('/genericjson');
 
 ?>

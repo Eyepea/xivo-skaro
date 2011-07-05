@@ -18,29 +18,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
+define('DWHO_SESS_ENABLE',false);
+define('XIVO_TPL_AREA','json');
 
-class xivo_service_asterisk_ctiphonehints extends xivo_service_asterisk_abstract
+require_once('xivo.php');
+
+$ipbx = &$_SRE->get('ipbx');
+
+$action_path = $_LOC->get_action_path('cti/web_services/',3);
+
+if($action_path === false)
 {
-	var $_dso		    = null;
-	var $_name		    = 'ctiphonehints';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
-
-	function xivo_service_asterisk_ctiphonehints(&$sre,&$dso)
-	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-		$this->_sre = &$sre;
-		$this->_dso = &$dso;
-
-		$this->_load_config();
-	}
+    dwho::load_class('dwho_http');
+    $http_response = dwho_http::factory('response');
+    $http_response->set_status_line(404);
+    $http_response->send(true);
 }
+
+die(include($action_path));
 
 ?>

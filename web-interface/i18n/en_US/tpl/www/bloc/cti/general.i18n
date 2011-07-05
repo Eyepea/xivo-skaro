@@ -13,6 +13,21 @@ Command set:
 ; hlp_fm_cti_commandset
 Command set help
 
+; cti-ami
+AMI Informations 
+
+; fm_cti_ami_login
+Login: 
+
+; fm_cti_ami_password
+Password: 
+
+; fm_cti_ami_ip
+IP Address:
+
+; fm_cti_ami_port
+Port:
+
 ; cti-servers
 CTI server
 

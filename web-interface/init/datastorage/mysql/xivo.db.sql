@@ -220,8 +220,6 @@ CREATE UNIQUE INDEX `server__uidx__name` ON `server`(`name`);
 CREATE UNIQUE INDEX `server__uidx__host_wsport` ON `server`(`host`,`ws_port`);
 CREATE UNIQUE INDEX `server__uidx__host_ctiport` ON `server`(`host`,`cti_port`);
 
-INSERT INTO `server` VALUES(1,'xivo','localhost',443,'','',1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
-
 
 DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (

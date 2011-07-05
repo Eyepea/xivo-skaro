@@ -330,10 +330,10 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
             return(true);
         else if(is_array($primary) === true)
             $this->_dso->andwherenot($primary,null,false);
-            
+
         if($this->_dso->select_single() === false)
             return(true);
-        
+
         dwho_report::push('debug', 'unique key already exist on table '.$this->_table.' File: '.__FILE__.' Line: '.__LINE__);
         return(false);
     }

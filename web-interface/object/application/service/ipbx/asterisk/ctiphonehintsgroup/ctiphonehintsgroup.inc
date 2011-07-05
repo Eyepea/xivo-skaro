@@ -20,14 +20,15 @@
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_ctiphonehints extends xivo_application_asterisk_abstract
+class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_application_asterisk_abstract
 {
-	var $_ctiphonehints = false;
+	var $_ctiphonehintsgroup = false;
+	var $_ctistatus = false;
 
-	function xivo_application_service_asterisk_ctiphonehints(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_ctiphonehintsgroup(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
-		if(($this->_ctiphonehints = &$this->_service->get_module('ctiphonehints')) === false)
+		if(($this->_ctiphonehintsgroup = &$this->_service->get_module('ctiphonehintsgroup')) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
@@ -35,23 +36,20 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return(true);
 	}
 
-	function get_phonehints_list($order=null,$limit=null,$assoc=false,$idgroup=1)
+	function get_phonehintsgroup_list($order=null,$limit=null,$assoc=false)
 	{
-	    $w = array();
-	    $w['idgroup'] = (int) $idgroup;
-
-		if(($rs = $this->_ctiphonehints->get_all_where($w,null,true,$order,$limit)) === false
+		if(($rs = $this->_ctiphonehintsgroup->get_all(null,true,$order,$limit)) === false
 		|| ($nb = count($rs)) === 0)
 		{
-			$this->_cnt = $this->_ctiphonehints->get_cnt();
+			$this->_cnt = $this->_ctiphonehintsgroup->get_cnt();
 			return(false);
 		}
 
 		$r = $info = array();
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['ctiphonehints'] = $rs[$i];
-			$r[$info['ctiphonehints']['id']] = $info;
+			$info['ctiphonehintsgroup'] = $rs[$i];
+			$r[$info['ctiphonehintsgroup']['id']] = $info;
 		}
 
 		if(empty($r) === true)
@@ -62,7 +60,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return($r);
 	}
 
-	function get_phonehints_edit()
+	function get_phonehintsgroup_edit()
 	{
 		return(false);
 	}
@@ -71,7 +69,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_info['phonehints'] = $this->_ctiphonehints->get($id);
+		$this->_info['phonehintsgroup'] = $this->_ctiphonehintsgroup->get($id);
 
 		if($this->_components === false)
 			return($this->_info);
@@ -81,13 +79,13 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 	function get_nb($arr=null,$disable=null)
 	{
-		return($this->_ctiphonehints->get_nb($arr,$disable));
+		return($this->_ctiphonehintsgroup->get_nb($arr,$disable));
 	}
 
 	function get_elements()
 	{
 		$r = array();
-		$r['phonehints'] = $this->_ctiphonehints->get_element();
+		$r['phonehintsgroup'] = $this->_ctiphonehintsgroup->get_element();
 
 		return($r);
 	}
@@ -110,30 +108,30 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| dwho_issa('phonehints',$arr) === false)
+		|| dwho_issa('phonehintsgroup',$arr) === false)
 			return(false);
 
-		$this->set_phonehints($arr['phonehints']);
+		$this->set_phonehintsgroup($arr['phonehintsgroup']);
 
 		return(($this->get_errnb() < 1));
 	}
 
-	function set_phonehints($arr)
+	function set_phonehintsgroup($arr)
 	{
 		if(is_array($arr) === false)
 		{
-			$this->_set_result('phonehints',null);
-			$this->_set_error('phonehints','invalid data');
+			$this->_set_result('phonehintsgroup',null);
+			$this->_set_error('phonehintsgroup','invalid data');
 			return(false);
 		}
-		else if(($rs = $this->_ctiphonehints->chk_values($arr)) === false)
+		else if(($rs = $this->_ctiphonehintsgroup->chk_values($arr)) === false)
 		{
-			$this->_set_result('phonehints',$this->_ctiphonehints->get_filter_result());
-			$this->_set_error('phonehints',$this->_ctiphonehints->get_filter_error());
+			$this->_set_result('phonehintsgroup',$this->_ctiphonehintsgroup->get_filter_result());
+			$this->_set_error('phonehintsgroup',$this->_ctiphonehintsgroup->get_filter_error());
 			return(false);
 		}
 
-		$this->_set_result('phonehints',$rs);
+		$this->_set_result('phonehintsgroup',$rs);
 
 		return(true);
 	}
@@ -146,10 +144,10 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| ($phonehintsid = $this->add_phonehints()) === false)
+		|| ($phonehintsgroupid = $this->add_phonehintsgroup()) === false)
 		{
 			$r = false;
-			if($phonehintsid !== null)
+			if($phonehintsgroupid !== null)
 				$this->_reverse_add();
 		}
 
@@ -158,14 +156,15 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return($r);
 	}
 
-	function add_phonehints()
+	function add_phonehintsgroup()
 	{
-		if(($rs = $this->get_result('phonehints')) === null
+		if(($rs = $this->get_result('phonehintsgroup')) === null
 		|| $rs === false)
 			return(false);
 
-		$this->_return['phonehints'] = $this->_ctiphonehints->add($rs);
-		return($this->_return['phonehints']);
+		$rs['deletable'] = 1;
+		$this->_return['phonehintsgroup'] = $this->_ctiphonehintsgroup->add($rs);
+		return($this->_return['phonehintsgroup']);
 	}
 
 	function _reverse_add()
@@ -183,8 +182,8 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 			switch($key)
 			{
-				case 'phonehints':
-					$this->_ctiphonehints->delete($val);
+				case 'phonehintsgroup':
+					$this->_ctiphonehintsgroup->delete($val);
 					break;
 			}
 		}
@@ -200,7 +199,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->edit_phonehints() === false)
+		|| $this->edit_phonehintsgroup() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -211,14 +210,14 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return($r);
 	}
 
-    function edit_phonehints()
+    function edit_phonehintsgroup()
     {
-        if(dwho_issa('phonehints',$this->_info) === false
-        || ($rs = $this->get_result('phonehints')) === null
+        if(dwho_issa('phonehintsgroup',$this->_info) === false
+        || ($rs = $this->get_result('phonehintsgroup')) === null
         || $rs === false)
             return(false);
 
-        return(($this->_return['phonehints'] = $this->_ctiphonehints->edit($this->_info['phonehints']['id'],$rs)));
+        return(($this->_return['phonehintsgroup'] = $this->_ctiphonehintsgroup->edit($this->_info['phonehintsgroup']['id'],$rs)));
     }
 
 	function _reverse_edit()
@@ -236,12 +235,12 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 			switch($key)
 			{
-				case 'phonehints':
-					if(isset($this->_origin['phonehints']) === false
-					|| $this->_origin['phonehints'] === false)
-						$this->delete_phonehints();
+				case 'phonehintsgroup':
+					if(isset($this->_origin['phonehintsgroup']) === false
+					|| $this->_origin['phonehintsgroup'] === false)
+						$this->delete_phonehintsgroup();
 					else
-						$this->_ctiphonehints->edit_origin($this->_origin['phonehints']);
+						$this->_ctiphonehintsgroup->edit_origin($this->_origin['phonehintsgroup']);
 					break;
 			}
 		}
@@ -257,7 +256,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->delete_phonehints() === false)
+		|| $this->delete_phonehintsgroup() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -268,15 +267,16 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return($r);
 	}
 
-	function delete_phonehints()
+	function delete_phonehintsgroup()
 	{
-		if(dwho_issa('phonehints',$this->_info) === false)
+		if(dwho_issa('phonehintsgroup',$this->_info) === false
+		|| (string) $this->_info['phonehintsgroup']['id'] === '1')
 			return(false);
 
-		$r = $this->_ctiphonehints->delete($this->_info['phonehints']['id']);
+		$r = $this->_ctiphonehintsgroup->delete($this->_info['phonehintsgroup']['id']);
 
 		if($this->_status === 'delete')
-			$this->_return['phonehints'] = $r;
+			$this->_return['phonehintsgroup'] = $r;
 
 		return($r);
 	}
@@ -295,10 +295,10 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 			switch($key)
 			{
-				case 'phonehints':
-                    if(isset($this->_origin['phonehints']) === true
-                    && $this->_origin['phonehints'] !== false)
-                        $this->_ctiphonehints->add_origin($this->_origin['phonehints']);
+				case 'phonehintsgroup':
+                    if(isset($this->_origin['phonehintsgroup']) === true
+                    && $this->_origin['phonehintsgroup'] !== false)
+                        $this->_ctiphonehintsgroup->add_origin($this->_origin['phonehintsgroup']);
 					break;
 			}
 		}
@@ -313,7 +313,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		$this->_status = 'enable';
 		$this->_return = array();
 
-		if($this->enable_phonehints() === false)
+		if($this->enable_phonehintsgroup() === false)
 		{
 			$r = false;
 			$this->_reverse_enable_disable();
@@ -331,7 +331,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		$this->_status = 'disable';
 		$this->_return = array();
 
-		if($this->disable_phonehints() === false)
+		if($this->disable_phonehintsgroup() === false)
 		{
 			$r = false;
 			$this->_reverse_enable_disable();
@@ -342,27 +342,27 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return(true);
 	}
 
-	function enable_phonehints()
+	function enable_phonehintsgroup()
 	{
-		return($this->_enable_disable_phonehints(false));
+		return($this->_enable_disable_phonehintsgroup(false));
 	}
 
-	function disable_phonehints()
+	function disable_phonehintsgroup()
 	{
-		return($this->_enable_disable_phonehints(true));
+		return($this->_enable_disable_phonehintsgroup(true));
 	}
 
-	function _enable_disable_phonehints($disable=false)
+	function _enable_disable_phonehintsgroup($disable=false)
 	{
-		if(dwho_issa('phonehints',$this->_info) === false)
+		if(dwho_issa('phonehintsgroup',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
-			$r = $this->_ctiphonehints->enable($this->_info['phonehints']['id']);
+			$r = $this->_ctiphonehintsgroup->enable($this->_info['phonehintsgroup']['id']);
 		else
-			$r = $this->_ctiphonehints->disable($this->_info['phonehints']['id']);
+			$r = $this->_ctiphonehintsgroup->disable($this->_info['phonehintsgroup']['id']);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['phonehints'] = $r;
+			$this->_return['phonehintsgroup'] = $r;
 
 		return($r);
 	}
@@ -385,8 +385,8 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 			switch($key)
 			{
-				case 'phonehints':
-					$this->_enable_disable_phonehints($disable);
+				case 'phonehintsgroup':
+					$this->_enable_disable_phonehintsgroup($disable);
 					break;
 			}
 		}

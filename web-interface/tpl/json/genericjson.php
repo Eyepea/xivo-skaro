@@ -18,29 +18,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
+dwho::load_class('dwho_http');
+$http_response = dwho_http::factory('response');
 
-class xivo_service_asterisk_ctiphonehints extends xivo_service_asterisk_abstract
+if(($list = $this->get_var('list')) === null
+&& ($list = $this->get_var('info')) === null)
+    $list = false;
+
+if(is_array($list) === false)
 {
-	var $_dso		    = null;
-	var $_name		    = 'ctiphonehints';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
-
-	function xivo_service_asterisk_ctiphonehints(&$sre,&$dso)
-	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-		$this->_sre = &$sre;
-		$this->_dso = &$dso;
-
-		$this->_load_config();
-	}
+	$http_response->set_status_line(500);
+	$http_response->send(true);
 }
+else if(($nb = count($list)) === 0)
+{
+	$http_response->set_status_line(204);
+	$http_response->send(true);
+}
+
+$data = dwho_json::encode($list);
+
+if($data === false)
+{
+	$http_response->set_status_line(500);
+	$http_response->send(true);
+}
+
+header(dwho_json::get_header());
+die($data);
 
 ?>

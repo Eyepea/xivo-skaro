@@ -28,6 +28,20 @@ $array['element']['commandset'] = array();
 $array['element']['commandset']['value'] = array('xivocti');
 $array['element']['commandset']['default'] = 'xivocti';
 
+$array['element']['ami_login'] = array();
+$array['element']['ami_login']['default'] = 'xivo_cti_user';
+$array['element']['ami_password'] = array();
+$array['element']['ami_password']['default'] = 'phaickbebs9';
+$array['element']['ami_ip'] = array();
+$array['element']['ami_ip']['default'] = '127.0.0.1';
+$array['element']['ami_port'] = array();
+$array['element']['ami_port']['default'] = 5038;
+
+$array['element']['login'] = array();
+$array['element']['login']['default'] = '';
+$array['element']['password'] = array();
+$array['element']['password']['default'] = '';
+
 $array['element']['login'] = array();
 $array['element']['login']['default'] = '';
 $array['element']['password'] = array();
@@ -80,10 +94,16 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['commandset'] 		= array('key' => array('xivocti'));
+$array['filter']['ami_ip']          = array('callback' => 'dwho_network::valid_host_subnet_ipv4');
+$array['filter']['ami_port']        = array('cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['ami_login']       = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
+$array['filter']['ami_password']    = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
 $array['filter']['fagi_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['fagi_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['cti_ip'] 			= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['cti_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['ctis_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
+$array['filter']['ctis_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['webi_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['webi_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['info_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');

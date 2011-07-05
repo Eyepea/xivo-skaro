@@ -427,17 +427,21 @@ DROP TABLE IF EXISTS "ctimain";
 CREATE TABLE "ctimain" (
  "id" SERIAL, 
  "commandset" varchar(20),
- "fagi_ip" varchar(255),
+ "ami_ip" varchar(16),
+ "ami_port" INTEGER,
+ "ami_login" varchar(64),
+ "ami_passorwd" varchar(64),
+ "fagi_ip" varchar(16),
  "fagi_port" INTEGER,
- "cti_ip" varchar(255),
+ "cti_ip" varchar(16),
  "cti_port" INTEGER,
- "webi_ip" varchar(255),
+ "webi_ip" varchar(16),
  "webi_port" INTEGER,
- "info_ip" varchar(255),
+ "info_ip" varchar(16),
  "info_port" INTEGER,
- "announce_ip" varchar(255),
+ "announce_ip" varchar(16),
  "announce_port" INTEGER,
- "asterisklist" varchar(255),
+ "asterisklist" varchar(128),
  "updates_period" INTEGER,
  "socket_timeout" INTEGER,
  "login_timeout" INTEGER,
@@ -445,29 +449,43 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
 SELECT setval('ctimain_id_seq', 2);
 
 
 DROP TABLE IF EXISTS "ctiphonehints";
 CREATE TABLE "ctiphonehints" (
  "id" SERIAL,
+ "idgroup" integer,
  "number" integer,
  "name" varchar(255),
  "color" varchar(128),
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiphonehints" VALUES(1,-2,'Inexistant','#030303');
-INSERT INTO "ctiphonehints" VALUES(2,-1,'Désactivé','#000000');
-INSERT INTO "ctiphonehints" VALUES(3,0,'Disponible','#0DFF25');
-INSERT INTO "ctiphonehints" VALUES(4,1,'En ligne OU appelle','#FF032D');
-INSERT INTO "ctiphonehints" VALUES(5,2,'Occupé','#FF0008');
-INSERT INTO "ctiphonehints" VALUES(6,4,'Indisponible','#FFFFFF');
-INSERT INTO "ctiphonehints" VALUES(7,8,'Sonne','#1B0AFF');
-INSERT INTO "ctiphonehints" VALUES(8,9,'(En Ligne OU Appelle) ET Sonne','#FF0526');
-INSERT INTO "ctiphonehints" VALUES(9,16,'En Attente','#F7FF05');
+INSERT INTO "ctiphonehints" VALUES(1,1,-2,'Inexistant','#030303');
+INSERT INTO "ctiphonehints" VALUES(2,1,-1,'Désactivé','#000000');
+INSERT INTO "ctiphonehints" VALUES(3,1,0,'Disponible','#0DFF25');
+INSERT INTO "ctiphonehints" VALUES(4,1,1,'En ligne OU appelle','#FF032D');
+INSERT INTO "ctiphonehints" VALUES(5,1,2,'Occupé','#FF0008');
+INSERT INTO "ctiphonehints" VALUES(6,1,4,'Indisponible','#FFFFFF');
+INSERT INTO "ctiphonehints" VALUES(7,1,8,'Sonne','#1B0AFF');
+INSERT INTO "ctiphonehints" VALUES(8,1,9,'(En Ligne OU Appelle) ET Sonne','#FF0526');
+INSERT INTO "ctiphonehints" VALUES(9,1,16,'En Attente','#F7FF05');
 SELECT setval('ctiphonehints_id_seq', 10);
+
+
+DROP TABLE IF EXISTS "ctiphonehintsgroup";
+CREATE TABLE "ctiphonehintsgroup" (
+ "id" SERIAL,
+ "name" varchar(255),
+ "description" varchar(255),
+ "deletable" INTEGER, -- BOOLEAN
+ PRIMARY KEY("id")
+);
+
+INSERT INTO "ctiphonehintsgroup" VALUES(1,'xivo','De base non supprimable',0);
+SELECT setval('ctiphonehintsgroup_id_seq', 2);
 
 
 DROP TABLE IF EXISTS "ctipresences";

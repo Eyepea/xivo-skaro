@@ -32,6 +32,7 @@ $form = &$this->get_module('form');
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'idphonehints','value' => $this->get_var('idphonehints')));?>
+<?=$form->hidden(array('name' => 'idgroup','value' => $this->get_var('idgroup')));?>
 
 <?php
 	$this->file_include('bloc/cti/phonehints/form');

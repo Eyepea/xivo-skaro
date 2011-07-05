@@ -40,6 +40,10 @@ $array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['autoprov'] = true;
 
+$array['tree']['xivo']['configuration']['cti'] = array();
+$array['tree']['xivo']['configuration']['cti']['configuration'] = true;
+$array['tree']['xivo']['configuration']['cti']['accounts'] = true;
+
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();
 $array['tree']['service']['ipbx']['ctiserver'] = array();

@@ -18,29 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
+dwho::load_class('dwho_http');
+$http_response = dwho_http::factory('response');
 
-class xivo_service_asterisk_ctiphonehints extends xivo_service_asterisk_abstract
+header(XIVO_WS_HEADER_NAME_VERSION.': '.XIVO_WS_VERSION);
+
+if(defined('XIVO_LOC_WEBSERVICES_MODE') === false
+|| (XIVO_LOC_WEBSERVICES_MODE !== 'private'
+   && XIVO_LOC_WEBSERVICES_MODE !== 'restricted') === true)
 {
-	var $_dso		    = null;
-	var $_name		    = 'ctiphonehints';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
-
-	function xivo_service_asterisk_ctiphonehints(&$sre,&$dso)
-	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-		$this->_sre = &$sre;
-		$this->_dso = &$dso;
-
-		$this->_load_config();
-	}
+	$http_response->set_status_line(403);
+	$http_response->send(true);
 }
+
+$section = 'xivo/configuration';
+
+include(dwho_file::joinpath(dirname(__FILE__),'_'.XIVO_LOC_WEBSERVICES_MODE.'.php'));
 
 ?>

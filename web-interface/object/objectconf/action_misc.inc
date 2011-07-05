@@ -140,6 +140,15 @@ $array['service/ipbx/asterisk/ui/call_management/schedule'] = array(
  * PRIVATE SECTION
  *
  */
+$array['cti/web_services/private/configuration'] = array(
+	'path'		=> 'cti/web_services/configuration',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+
+$array['cti/web_services/private/accounts'] = array(
+	'path'		=> 'cti/web_services/accounts',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
@@ -330,6 +339,15 @@ $array['statistics/web_services/private/call_center/stats5'] = array(
  * RESTRICTED SECTION
  *
  */
+$array['cti/web_services/restricted/configuration'] = array(
+	'path'		=> 'cti/web_services/configuration',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['cti/web_services/restricted/accounts'] = array(
+	'path'		=> 'cti/web_services/accounts',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 $array['statistics/web_services/restricted/call_center/queue'] = array(
 	'path'		=> 'statistics/web_services/call_center/queue',

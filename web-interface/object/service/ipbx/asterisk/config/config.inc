@@ -134,6 +134,9 @@ $array['module']['cticontexts']['datastorage'] = true;
 $array['module']['ctiphonehints'] = array();
 $array['module']['ctiphonehints']['datastorage'] = true;
 
+$array['module']['ctiphonehintsgroup'] = array();
+$array['module']['ctiphonehintsgroup']['datastorage'] = true;
+
 $array['module']['ctipresences'] = array();
 $array['module']['ctipresences']['datastorage'] = true;
 

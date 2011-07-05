@@ -108,6 +108,10 @@ $array['ctiphonehints'] = array();
 $array['ctiphonehints']['table'] = 'ctiphonehints';
 $array['ctiphonehints']['primary'] = array('id' => '');
 
+$array['ctiphonehintsgroup'] = array();
+$array['ctiphonehintsgroup']['table'] = 'ctiphonehintsgroup';
+$array['ctiphonehintsgroup']['primary'] = array('id' => '');
+
 $array['ctipresences'] = array();
 $array['ctipresences']['table'] = 'ctipresences';
 $array['ctipresences']['primary'] = array('id' => '');

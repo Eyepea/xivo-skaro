@@ -28,12 +28,12 @@ $form = &$this->get_module('form');
 <form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'act','value' => 'add'));?>
+<?=$form->hidden(array('name' => 'act','value' => 'editgroup'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'idgroup','value' => $this->get_var('idgroup')));?>
 
 <?php
-	$this->file_include('bloc/cti/phonehints/form');
+	$this->file_include('bloc/cti/phonehints/formgroup');
 ?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
