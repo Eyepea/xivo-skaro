@@ -22,6 +22,7 @@ import os
 import socket
 import sys
 import subprocess
+import collections
 from configobj import ConfigObj
 from optparse import OptionParser
 from xivo_ha.manage_nodes import ClusterEngine
@@ -78,6 +79,9 @@ if __name__ == '__main__':
         check if interfaces specified in pf-xivo-ha.conf exist
         '''
         itfs =  cluster_config['cluster_addr']
+        if not isinstance(itfs, collections.Iterable):
+					itfs = [itfs]
+
         for itf in itfs:
             itf = itf.split(':')[0]
             args = ['ip', 'a', 's', itf]
