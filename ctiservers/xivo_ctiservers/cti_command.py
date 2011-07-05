@@ -423,7 +423,6 @@ class Command:
 
     def regcommand_featuresput(self):
         reply = {}
-        print 'regcommand_featuresput', self.commanddict, self.userid, self.ruserid
         z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
         z.connect()
         z.serviceput(self.ruserid, self.commanddict.get('function'), self.commanddict.get('value'))
@@ -467,7 +466,12 @@ class Command:
                 r = {}
                 r['calldate'] = p.get('calldate').isoformat()
                 r['duration'] = p.get('duration')
-                # r['fullname']
+                if mode == 0:
+                    r['fullname'] = p.get('dst')
+                else:
+                    r['fullname'] = p.get('clid')
+                # todo : transmit a name + a number if possible ...
+                # r['number'] = p.get('src')
                 rs.append(r)
             reply = {'mode' : mode, 'history' : rs}
         else:
