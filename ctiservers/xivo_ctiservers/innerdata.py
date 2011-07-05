@@ -104,13 +104,7 @@ class Safe:
                      'pin_needed'], # 'pin', 'pinadmin' should not be transmitted
         'incalls' : ['context', 'exten', 'destidentity', 'action'],
         'outcalls' : [],
-        'contexts' : [
-            'context',
-            'contextnumbers',
-            'contexttype',
-            'deletable',
-            'contextinclude'
-            ],
+        'contexts' : ['context', 'contextnumbers', 'contexttype', 'deletable', 'contextinclude'],
         }
 
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
@@ -152,13 +146,7 @@ class Safe:
                                       },
                      'incalls' : {},
                      'outcalls' : {},
-                     'contexts' : {'context': {},
-                                   'contextnumbers': [],
-                                   'contexttype': None,
-                                   'deletable': False,
-                                   'contextinclude': False
-                                   },
-                     'parkings' : {},
+                     'contexts' : {},
                      }
 
     user_props_send_extra = ['mailbox', 'subscribemwi', 'pickupgroup', 'callgroup', 'callerid']
@@ -258,10 +246,7 @@ class Safe:
             for k in deltas.get('add', {}):
                 self.xod_status[listname][k] = {}
                 for prop, defaultvalue in self.props_status.get(listname, {}).iteritems():
-                    if prop in self.xod_config[listname].keeplist[k]:
-                        self.xod_status[listname][k][prop] = self.xod_config[listname].keeplist[k][prop]
-                    else:
-                        self.xod_status[listname][k][prop] = copy.copy(defaultvalue)
+                    self.xod_status[listname][k][prop] = copy.copy(defaultvalue)
                 # tells clients about new object XXX
                 self.events_cti.put( { 'class' : 'getlist',
                                        'listname' : listname,
