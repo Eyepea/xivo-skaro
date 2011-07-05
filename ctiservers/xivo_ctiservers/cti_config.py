@@ -113,6 +113,8 @@ class Config:
                 v['urllists'][kk] = nl
             if 'ipbx_connection' in v:
                 v.get('ipbx_connection')['ipaddress'] = self.ipwebs
+            cdruri = v.get('cdr_db_uri')
+            v['cdr_db_uri'] = cdruri.replace('@localhost/', '@%s/' % self.ipwebs)
         return
 
     def setdirconfigs(self):

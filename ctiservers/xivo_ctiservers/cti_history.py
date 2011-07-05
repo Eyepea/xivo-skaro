@@ -35,6 +35,10 @@ class History:
 
     def __init__(self, uri):
         self.uri = uri.replace('\/', '/')
+        self.nlimit = 1
+        self.desclimit = 'DESC LIMIT %d' % self.nlimit
+        self.lastdate = None
+        self.likestring = ''
         return
 
     def fetch(self, request):
@@ -66,10 +70,9 @@ class History:
         return results
 
     def fetch_outgoing_calls(self):
-        conditions = [
-            "calldate > '%s'" % self.lastdate,
-            "channel LIKE %s"
-            ]
+        conditions = [ "channel LIKE %s" ]
+        if self.lastdate:
+            conditions.append("calldate > '%s'" % self.lastdate)
         condstring = 'WHERE %s' % (' AND '.join(conditions))
         requestbase = '%s %s %s %s' % (self.selectbase, condstring, self.orderstring, self.desclimit)
         dresults = self.fetch(requestbase)
@@ -77,10 +80,11 @@ class History:
 
     def fetch_answered_calls(self):
         conditions = [
-            "calldate > '%s'" % self.lastdate,
             "disposition = 'ANSWERED'",
             "dstchannel LIKE %s"
             ]
+        if self.lastdate:
+            conditions.append("calldate > '%s'" % self.lastdate)
         condstring = 'WHERE %s' % (' AND '.join(conditions))
         requestbase = '%s %s %s %s' % (self.selectbase, condstring, self.orderstring, self.desclimit)
         dresults = self.fetch(requestbase)
@@ -88,10 +92,11 @@ class History:
 
     def fetch_missed_calls(self):
         conditions = [
-            "calldate > '%s'" % self.lastdate,
             "disposition != 'ANSWERED'",
             "dstchannel LIKE %s"
             ]
+        if self.lastdate:
+            conditions.append("calldate > '%s'" % self.lastdate)
         condstring = 'WHERE %s' % (' AND '.join(conditions))
         requestbase = '%s %s %s %s' % (self.selectbase, condstring, self.orderstring, self.desclimit)
         dresults = self.fetch(requestbase)

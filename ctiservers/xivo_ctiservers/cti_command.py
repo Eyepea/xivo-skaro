@@ -31,6 +31,7 @@ import threading
 import time
 from xivo_ctiservers import xivo_webservices
 from xivo_ctiservers import cti_fax
+from xivo_ctiservers import cti_history
 
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
@@ -439,10 +440,39 @@ class Command:
 
     def regcommand_history(self):
         reply = {}
-        repstr = self.rinnerdata.gethistory(self.ruserid,
-                                            self.commanddict.get('size'),
-                                            self.commanddict.get('mode'),
-                                            self.commanddict.get('morerecentthan'))
+        phoneidstruct = None
+        if self.ruserid in self.rinnerdata.xod_config.get('users').keeplist:
+            for k, v in self.rinnerdata.xod_config.get('phones').keeplist.iteritems():
+                if self.ruserid == str(v.get('iduserfeatures')):
+                    phoneidstruct = self.rinnerdata.xod_config.get('phones').keeplist.get(k)
+                    break
+
+        if phoneidstruct:
+            mode = int(self.commanddict.get('mode'))
+            size = int(self.commanddict.get('size'))
+            uri = self.ctid.cconf.getconfig('ipbxes').get(self.ripbxid).get('cdr_db_uri')
+            history = cti_history.History(uri)
+            history.setlimit(size)
+            if 'morerecentthan' in self.commanddict:
+                history.setlastdate(self.commanddict.get('morerecentthan'))
+            history.setlikestring(phoneidstruct.get('protocol').upper(), phoneidstruct.get('name'))
+            if mode == 0:
+                pp = history.fetch_outgoing_calls()
+            elif mode == 1:
+                pp = history.fetch_answered_calls()
+            elif mode == 2:
+                pp = history.fetch_missed_calls()
+            rs = []
+            for p in pp:
+                r = {}
+                r['calldate'] = p.get('calldate').isoformat()
+                r['duration'] = p.get('duration')
+                # r['fullname']
+                rs.append(r)
+            reply = {'mode' : mode, 'history' : rs}
+        else:
+            # no phone for user
+            reply = {}
         return reply
 
     def regcommand_parking(self):
