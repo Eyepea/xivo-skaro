@@ -197,10 +197,10 @@ switch($act)
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		break;
-		
+
 	case 'add':
-		$idgroup = $param['idgroup'] = $_QR['idgroup'];
-		
+		$param['idgroup'] = $idgroup;
+
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
@@ -312,8 +312,8 @@ switch($act)
 		break;
 
 	case 'edit':
-		$idgroup = $param['idgroup'] = $_QR['idgroup'];
-		
+		$param['idgroup'] = $idgroup;
+
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
@@ -444,7 +444,7 @@ switch($act)
 
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
-		
+
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
 			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);

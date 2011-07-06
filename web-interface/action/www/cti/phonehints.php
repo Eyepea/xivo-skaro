@@ -105,17 +105,21 @@ switch($act)
 
 	case 'add':
 		$app = &$ipbx->get_application('ctiphonehints');
+		$param['idgroup'] = $idgroup;
 
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('phonehints',$_QR) === true)
 		{
+		    $_QR['phonehints']['idgroup'] = $idgroup;
 			if($app->set_add($_QR) === false
 			|| $app->add() === false)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
+				$error = $app->get_error();
+				dwho_var_dump($error);
 			}
 			else
 				$_QRY->go($_TPL->url('cti/phonehints'),$param);
@@ -133,6 +137,7 @@ switch($act)
 
 	case 'edit':
 		$app = &$ipbx->get_application('ctiphonehints');
+		$param['idgroup'] = $idgroup;
 
 		if(isset($_QR['idphonehints']) === false
 		|| ($info = $app->get($_QR['idphonehints'])) === false)
@@ -145,6 +150,8 @@ switch($act)
 		&& dwho_issa('phonehints',$_QR) === true)
 		{
 			$return = &$result;
+
+			$_QR['phonehints']['idgroup'] = $idgroup;
 
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)
