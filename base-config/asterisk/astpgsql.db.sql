@@ -430,7 +430,7 @@ CREATE TABLE "ctimain" (
  "ami_ip" varchar(16),
  "ami_port" INTEGER,
  "ami_login" varchar(64),
- "ami_passorwd" varchar(64),
+ "ami_password" varchar(64),
  "fagi_ip" varchar(16),
  "fagi_port" INTEGER,
  "cti_ip" varchar(16),

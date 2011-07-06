@@ -390,7 +390,7 @@ CREATE TABLE `ctimain` (
  `ami_ip` varchar(16),
  `ami_port` int(10) unsigned,
  `ami_login` varchar(64),
- `ami_passorwd` varchar(64),
+ `ami_password` varchar(64),
  `fagi_ip` varchar(255),
  `fagi_port` int(10) unsigned,
  `cti_ip` varchar(255),
