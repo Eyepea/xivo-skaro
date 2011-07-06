@@ -134,7 +134,7 @@ $page = $url->pager($pager['pages'],
 				else
 					$icon = 'green';
 			endif;
-			
+
 			if($ref['provdexist'] === true):
 				$provdexist = 'stock_link';
 			else:
@@ -175,7 +175,7 @@ $page = $url->pager($pager['pages'],
 					      'id'	=> $ref['id']),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_synchronize_confirm')).'\'));"',
 					$this->bbf('opt_synchronize')),"\n";
-		echo	$url->href_html($url->img_html('img/site/utils/reset.jpg',
+		echo	$url->href_html($url->img_html('img/site/utils/reset.png',
 						       $this->bbf('opt_reset-autoprov'),
 						       'border="0" width="16" height="16"'),
 					'service/ipbx/pbx_settings/devices',
