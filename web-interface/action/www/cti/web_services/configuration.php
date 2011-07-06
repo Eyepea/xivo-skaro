@@ -456,7 +456,8 @@ switch($act)
             'urllist_contexts' => array($ipbxuri.'system_management/context'),
             'urllist_trunks' => array($ipbxuri.'trunk_management/sip',$ipbxuri.'trunk_management/iax'),
             'urllist_phonebook' => array($ipbxuri.'pbx_services/phonebook'),
-            'urllist_extenfeatures' => array($ipbxuri.'pbx_services/extenfeatures')
+            'urllist_extenfeatures' => array($ipbxuri.'pbx_services/extenfeatures'),
+            'urllist_parkinglot' => array($ipbxuri.'pbx_services/parkinglot')
         );
         $outlocalserver['urllists'] = $urllists;
         $outlocalserver['cdr_db_uri'] = $db_ast;
