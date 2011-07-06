@@ -164,11 +164,17 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if (is_int($arr['num']) === false)
+		if (isset($arr['num']) === true
+		&& ($arr['num']) === false)
 			$arr['num'] = (int) $arr['num'];
+		else
+			$arr['num'] = 1;
 
-		if (is_int($arr['line_num']) === false)
+		if (isset($arr['line_num']) === true
+		&& is_int($arr['line_num']) === false)
 			$arr['line_num'] = (int) $arr['line_num'];
+		else
+			$arr['num'] = 0;
 
 		$arr['ipfrom'] = $_SERVER['SERVER_ADDR'];
 

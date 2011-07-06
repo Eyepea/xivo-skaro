@@ -44,31 +44,26 @@ switch($act)
 			$http_response->send(true);
 		}
 
-		$provddevice = &$_XOBJ->get_module('provddevice');
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$linefeatures = &$ipbx->get_module('linefeatures');
-		$userfeatures = &$ipbx->get_module('userfeatures');
-		$appline = &$ipbx->get_application('line');
 
 		$appdevice->update();
 
-		if($appdevice->get_by_ip($data['ip']) === false)
+		if(($device = $appdevice->get_by_ip($data['ip'])) === false
+		|| ($devicefeatures = $device['devicefeatures']) === false)
 			$http_response->set_status_line(400);
 		elseif($data['code'] === 'autoprov')
 		{
-			$appdevice->mode_autoprov(true);
-			$http_response->set_status_line(200);
+			if ($appdevice->mode_autoprov(true) === false)
+			    $http_response->set_status_line(400);
+			else
+			    $http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
-		|| ($rs = $appline->get($line['id'])) === false
-		|| ($rs['userfeatures'] = $userfeatures->get($line['iduserfeatures'])) === false
-		|| $provddevice->update_config_from_line($rs,$devicefeatures['deviceid'],true) === false)
+		|| $appdevice->update_config($line['id'],true) === false)
 			$http_response->set_status_line(400);
 		else
-		{
-		    $linefeatures->edit($line['id'],array('device' => $devicefeatures['id']));
 			$http_response->set_status_line(200);
-		}
 
 		$http_response->send(true);
 		break;

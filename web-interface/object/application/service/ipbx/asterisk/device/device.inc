@@ -277,6 +277,27 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return(true);
 	}
 
+	public function update_config($idlinefeatures,$synchronize=false)
+	{
+		if(dwho_issa('devicefeatures',$this->_info) === false)
+			return(false);
+
+		$appline = &$this->_service->get_application('line');
+		$userfeatures = &$this->_service->get_module('userfeatures');
+
+	    $id = $this->_info['devicefeatures']['id'];
+	    $deviceid = $this->_info['devicefeatures']['deviceid'];
+
+		if(($rs = $appline->get($idlinefeatures)) === false
+		|| ($rs['userfeatures'] = $userfeatures->get($rs['linefeatures']['iduserfeatures'])) === false
+		|| $this->_provddevice->update_config_from_line($rs,$deviceid,$synchronize) === false)
+			return(false);
+
+		$this->_linefeatures->edit($idlinefeatures,array('device' => $id));
+
+		return(true);
+	}
+
 	public function get_elements()
 	{
 		$r = array();

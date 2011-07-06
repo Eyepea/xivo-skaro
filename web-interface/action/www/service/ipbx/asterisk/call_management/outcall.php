@@ -55,7 +55,7 @@ switch($act)
 
 		$appdundi = &$ipbx->get_application('dundipeer');
 		$dundipeer['list'] = $appdundi->get_dundipeer_list(null,array('include' => SORT_ASC),null,true);
-		
+
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
@@ -74,15 +74,15 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 			}
 		}
-		
+
 		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true
 		&& ($outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid')) !== false)
 			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
-		
+
 		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$result) === true
 		&& ($dundipeer['slt'] = dwho_array_intersect_key($result['outcalldundipeer'],$dundipeer['list'],'dundipeerid')) !== false)
 			$dundipeer['slt'] = array_keys($dundipeer['slt']);
-		
+
 		if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true
 		&& ($rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid')) !== false)
 			$rightcall['slt'] = array_keys($rightcall['slt']);
@@ -146,15 +146,15 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 			}
 		}
-		
+
 		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true
 		&& ($outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid')) !== false)
 			$outcalltrunk['slt'] = array_keys($outcalltrunk['slt']);
-		
+
 		if($dundipeer['list'] !== false && dwho_issa('outcalldundipeer',$return) === true
 		&& ($dundipeer['slt'] = dwho_array_intersect_key($return['outcalldundipeer'],$dundipeer['list'],'dundipeerid')) !== false)
 			$dundipeer['slt'] = array_keys($dundipeer['slt']);
-		
+
 		if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true
 		&& ($rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid')) !== false)
 			$rightcall['slt'] = array_keys($rightcall['slt']);
@@ -185,7 +185,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$appoutcall->delete();
-		
+
 		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
@@ -204,7 +204,7 @@ switch($act)
 			if($appoutcall->get($values[$i]) !== false)
 				$appoutcall->delete();
 		}
-		
+
 		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
@@ -228,7 +228,7 @@ switch($act)
 			else
 				$appoutcall->enable();
 		}
-		
+
 		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
