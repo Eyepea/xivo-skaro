@@ -16,16 +16,16 @@ Result(s): %s
 ; bt_showcalendar
 Calendar
 
-; fm_search-size (exact)
+; fm_search-size(exact)
 Exact
 
-; fm_search-format (begin)
+; fm_search-format(begin)
 Begins
 
-; fm_search-format (container)
+; fm_search-format(container)
 Contains
 
-; fm_search-format (end)
+; fm_search-format(end)
 Eventually
 
 ; fm_dbeg
@@ -37,10 +37,10 @@ End date:
 ; fm_channel
 Channel:
 
-; fm_channel-opt (others)
+; fm_channel-opt(others)
 Other
 
-; fm_channel-opt (unknown)
+; fm_channel-opt(unknown)
 Unknown
 
 ; fm_channel-opt
@@ -49,19 +49,19 @@ Unknown
 ; fm_disposition
 Call status:
 
-; fm_disposition-opt (ANSWERED)
+; fm_disposition-opt(ANSWERED)
 Answered
 
-; fm_disposition-opt (NO ANSWER)
+; fm_disposition-opt(NO ANSWER)
 No answer
 
-; fm_disposition-opt (BUSY)
+; fm_disposition-opt(BUSY)
 Busy
 
-; fm_disposition-opt (FAILED)
+; fm_disposition-opt(FAILED)
 Failed
 
-; fm_disposition-opt (UNKNOWN)
+; fm_disposition-opt(UNKNOWN)
 Unknown
 
 ; fm_amaflags
@@ -70,7 +70,7 @@ Flag billing:
 ; fm_dcontext
 Background:
 
-; fm_dcontext-opt (custom)
+; fm_dcontext-opt(custom)
 Custom
 
 ; fm_dcontext-opt
@@ -94,19 +94,19 @@ User Field:
 ; fm_dubeg
 Beginning of the term:
 
-; fm_dubegunit-opt (seconds)
+; fm_dubegunit-opt(seconds)
 Seconds
 
-; fm_dubegunit-opt (minutes)
+; fm_dubegunit-opt(minutes)
 Minutes
 
 ; fm_duend
 End time:
 
-; fm_duendunit-opt (seconds)
+; fm_duendunit-opt(seconds)
 Seconds
 
-; fm_duendunit-opt (minutes)
+; fm_duendunit-opt(minutes)
 Minutes
 
 ; fm_bt-search
@@ -145,19 +145,19 @@ Unknown
 ; entry_disposition
 Call status:
 
-; entry_disposition (ANSWERED)
+; entry_disposition(ANSWERED)
 Answered
 
-; entry_disposition (NO ANSWER)
+; entry_disposition(NO ANSWER)
 No answer
 
-; entry_disposition (BUSY)
+; entry_disposition(BUSY)
 Busy
 
-; entry_disposition (FAILED)
+; entry_disposition(FAILED)
 Failed
 
-; entry_disposition (UNKNOWN)
+; entry_disposition(UNKNOWN)
 Unknown
 
 ; entry_amaflagsmeta

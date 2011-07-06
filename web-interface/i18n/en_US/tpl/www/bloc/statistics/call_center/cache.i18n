@@ -13,16 +13,16 @@ End date:
 ; Fm_type-default
 
 
-; Fm_type-opt (tail)
+; Fm_type-opt(tail)
 Queue
 
-; Fm_type-opt (agent)
+; Fm_type-opt(agent)
 agent
 
-; Fm_type-opt (period)
+; Fm_type-opt(period)
 period
 
-; Fm_type-opt (incall)
+; Fm_type-opt(incall)
 incoming call
 
 ; fm_description_cache

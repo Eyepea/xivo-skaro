@@ -394,34 +394,34 @@ Axis of analysis:
 ; fm_stats_cdr_default
 
 
-; fm_stats_cdr_by-opt (period)
+; fm_stats_cdr_by-opt(period)
 Period
 
-; fm_stats_cdr_by-opt (day)
+; fm_stats_cdr_by-opt(day)
 Day
 
-; fm_stats_cdr_by-opt (week)
+; fm_stats_cdr_by-opt(week)
 Week
 
-; fm_stats_cdr_by-opt (month)
+; fm_stats_cdr_by-opt(month)
 Month
 
 ; fm_axetype-default
 Axis analysis
 
-; fm_axetype-opt (type)
+; fm_axetype-opt(type)
 Type
 
-; fm_axetype-opt (day)
+; fm_axetype-opt(day)
 Day
 
-; fm_axetype-opt (week)
+; fm_axetype-opt(week)
 Week
 
-; fm_axetype-opt (month)
+; fm_axetype-opt(month)
 Month
 
-; fm_axetype-opt (year)
+; fm_axetype-opt(year)
 Year
 
 ; week_number-opt
