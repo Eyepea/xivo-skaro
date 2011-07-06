@@ -34,13 +34,15 @@ class Sheet:
     def setfields(self):
         for sheetpart, v in self.displays.iteritems():
             self.fields[sheetpart] = {}
-            if sheetpart in ['sheet_info', 'systray_info' 'action_info']:
+            if sheetpart in ['sheet_info', 'systray_info', 'action_info']:
                 if not isinstance(v, dict):
                     continue
                 for order, vv in v.iteritems():
                     [title, ftype, defaultval, sformat] = vv
                     ## XXX TODO : replace sformat/defaultval with variables stuff
-                    self.fields[sheetpart][order] = {'name' : title, 'type': ftype, 'contents' : sformat}
+                    self.fields[sheetpart][order] = { 'name' : title,
+                                                      'type': ftype,
+                                                      'contents' : sformat }
             else:
                 print sheetpart, v
 ##        linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
@@ -48,7 +50,7 @@ class Sheet:
 
 
     def serialize(self):
-        if False:
+        if True:
             self.makexml()
         else:
             self.makejson()
