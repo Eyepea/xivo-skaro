@@ -58,7 +58,7 @@ class Safe:
         # 'outcalls' : 'urllist_outcalls',
         'contexts' : 'urllist_contexts',
         # 'entities' : 'urllist_entities',
-
+        'parkinglots' : 'urllist_parkinglot',
         'phonebooks' : 'urllist_phonebook'
         }
 
@@ -105,6 +105,7 @@ class Safe:
         'incalls' : ['context', 'exten', 'destidentity', 'action'],
         'outcalls' : [],
         'contexts' : ['context', 'contextnumbers', 'contexttype', 'deletable', 'contextinclude'],
+        'parkinglots' : ['context', 'name', 'extension', 'positions', 'description'],
         }
 
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
@@ -147,6 +148,7 @@ class Safe:
                      'incalls' : {},
                      'outcalls' : {},
                      'contexts' : {},
+                     'parkinglots' : {},
                      }
 
     user_props_send_extra = ['mailbox', 'subscribemwi', 'pickupgroup', 'callgroup', 'callerid']
