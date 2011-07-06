@@ -21,6 +21,8 @@
 $access_category = 'cti';
 $access_subcategory = 'configuration';
 
+$_XOBJ = &dwho_gct::get('xivo_object');
+
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 $starttime = microtime(true);
@@ -46,6 +48,10 @@ switch($act)
         $ctipresences = &$ipbx->get_module('ctipresences');
         $ctiphonehints = &$ipbx->get_module('ctiphonehints');
         $ctirdid = &$ipbx->get_module('ctireversedirectories');
+        $ctiaccounts = &$ipbx->get_module('ctiaccounts');
+
+        $modresolvconf = &$_XOBJ->get_module('resolvconf');
+        $infolocalserver = $modresolvconf->get(1);
 
         $ldapfilter = &$ipbx->get_module('ldapfilter');
         xivo::load_class('xivo_ldapserver',XIVO_PATH_OBJECT,null,false);
@@ -73,6 +79,7 @@ switch($act)
         $load_presences = $ctipresences->get_all();
         $load_phonehints = $ctiphonehints->get_all();
         $load_rdid = $ctirdid->get_all();
+        $load_accounts = $ctiaccounts->get_all();
         $list = $app->get_server_list();
 
         $ctxlist = array();
@@ -275,14 +282,15 @@ switch($act)
         $tcpdefs['INFO'] = array($load_ctimain['info_ip'], $load_ctimain['info_port']);
         $udpdefs = array();
         $udpdefs['ANNOUNCE'] = array($load_ctimain['announce_ip'], $load_ctimain['announce_port']);
+
         $out['main']['incoming_tcp'] = $tcpdefs;
         $out['main']['incoming_udp'] = $udpdefs;
-
         $out['main']['sockettimeout'] = $load_ctimain['socket_timeout'];
         $out['main']['updates_period'] = $load_ctimain['updates_period'];
         $out['main']['logintimeout'] = $load_ctimain['login_timeout'];
         $out['main']['asterisk_queuestat_db'] = $db_queuelogger;
         $out['main']['parting_astid_context'] = array();
+
         if($load_ctimain['parting_astid_context'] != "")
             $out['main']['parting_astid_context'] = explode(",", $load_ctimain['parting_astid_context']);
 
@@ -405,53 +413,11 @@ switch($act)
             }
         }
 
-        # XiVO SERVERS
-        if(isset($load_ctimain['asterisklist'])
-        && dwho_has_len($load_ctimain['asterisklist']))
-        {
-            $ipbxlist = explode(',', $load_ctimain['asterisklist']);
-            foreach($ipbxlist as $k => $v)
-            {
-                $hostname = $list[$v]['name'];
-                $url_scheme = $list[$v]['url']['scheme'];
-                $url_auth_host = $list[$v]['url']['authority']['host'];
+        $hostname = $infolocalserver['hostname'];
 
-                if((preg_match('/^127\./', $url_auth_host) > 0)
-                || (preg_match('/^localhost/', $url_auth_host) > 0))
-                {
-                    $type = 'private';
-                    $json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/private/';
-                }
-                else
-                {
-                    $type = 'restricted';
-                    $json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/restricted/';
-                }
-
-                $out['main']['ctilog_db_uri'] = $db_cti;
-                $out['ipbxes'][$hostname] = array();
-                $urllists = array(
-                    'urllist_users' => array($json . 'pbx_settings/users',
-                                             $url_scheme.'://'.$url_auth_host.'/cti/json.php/'.$type.'/accounts'),
-                    'urllist_lines' => array($json . 'pbx_settings/lines'),
-                    'urllist_devices' => array($json . 'pbx_settings/devices'),
-                    'urllist_agents' => array($json . 'call_center/agents'),
-                    'urllist_queues' => array($json . 'call_center/queues'),
-                    'urllist_groups' => array($json . 'pbx_settings/groups'),
-                    'urllist_meetmes' => array($json . 'pbx_settings/meetme'),
-                    'urllist_voicemails' => array($json . 'pbx_settings/voicemail'),
-                    'urllist_incalls' => array($json . 'call_management/incall'),
-                    'urllist_outcalls' => array($json . 'call_management/outcall'),
-                    'urllist_contexts' => array($json . 'system_management/context'),
-                    'urllist_trunks' => array($json . 'trunk_management/sip',$json . 'trunk_management/iax'),
-                    'urllist_phonebook' => array($json . 'pbx_services/phonebook'),
-                    'urllist_extenfeatures' => array($json . 'pbx_services/extenfeatures')
-                );
-                $out['ipbxes'][$hostname]['urllists'] = $urllists;
-                $out['ipbxes'][$hostname]['cdr_db_uri'] = $db_ast;
-                $out['ipbxes'][$hostname]['userfeatures_db_uri'] = $db_ast;
-            }
-        }
+        # XiVO LOCAL SERVER
+        $out['ipbxes'][$hostname] = array();
+        $outlocalserver = &$out['ipbxes'][$hostname];
 
         # ASTERISK AMI
         $ami_infos = array(
@@ -461,7 +427,65 @@ switch($act)
             'password'  => $load_ctimain['ami_password']
         );
 
-        $out['ipbx_connection'] = $ami_infos;
+        $outlocalserver['ipbx_connection'] = $ami_infos;
+
+        if(isset($_SERVER['REMOTE_ADDR']) === false
+        || ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1'
+            && $_SERVER['REMOTE_ADDR'] !== '::1'))
+        {
+            $ipbxuri = 'https://'.$_SERVER['SERVER_ADDR'].'/service/ipbx/json.php/restricted/';
+            $ctiuri = 'https://'.$_SERVER['SERVER_ADDR'].'/cti/json.php/restricted/';
+        }
+        else
+        {
+            $ipbxuri = 'https://127.0.0.1/service/ipbx/json.php/private/';
+            $ctiuri = 'https://127.0.0.1/cti/json.php/private/';
+        }
+
+        $urllists = array(
+            'urllist_users' => array($ipbxuri.'pbx_settings/users',$ctiuri.'accounts'),
+            'urllist_lines' => array($ipbxuri.'pbx_settings/lines'),
+            'urllist_devices' => array($ipbxuri.'pbx_settings/devices'),
+            'urllist_agents' => array($ipbxuri.'call_center/agents'),
+            'urllist_queues' => array($ipbxuri.'call_center/queues'),
+            'urllist_groups' => array($ipbxuri.'pbx_settings/groups'),
+            'urllist_meetmes' => array($ipbxuri.'pbx_settings/meetme'),
+            'urllist_voicemails' => array($ipbxuri.'pbx_settings/voicemail'),
+            'urllist_incalls' => array($ipbxuri.'call_management/incall'),
+            'urllist_outcalls' => array($ipbxuri.'call_management/outcall'),
+            'urllist_contexts' => array($ipbxuri.'system_management/context'),
+            'urllist_trunks' => array($ipbxuri.'trunk_management/sip',$ipbxuri.'trunk_management/iax'),
+            'urllist_phonebook' => array($ipbxuri.'pbx_services/phonebook'),
+            'urllist_extenfeatures' => array($ipbxuri.'pbx_services/extenfeatures')
+        );
+        $outlocalserver['urllists'] = $urllists;
+        $outlocalserver['cdr_db_uri'] = $db_ast;
+        $outlocalserver['userfeatures_db_uri'] = $db_ast;
+
+        # XiVO SERVERS
+        if(isset($load_ctimain['asterisklist'])
+        && dwho_has_len($load_ctimain['asterisklist']))
+        {
+            $ipbxlist = explode(',', $load_ctimain['asterisklist']);
+            while($ipbxlist)
+            {
+                $ipbx = array_shift($ipbxlist);
+                if (isset($list[$ipbx]) === false)
+                    continue;
+
+                $ref = &$list[$ipbx];
+
+                $hostname = $ref['name'];
+                $cti_connection = array();
+                $cti_connection['username'] = $ref['cti_login'];
+                $cti_connection['password'] = $ref['cti_pass'];
+                $cti_connection['ipaddress'] = $ref['host'];
+                $cti_connection['ipport'] = $ref['cti_port'];
+                $cti_connection['encrypt'] = (bool) $ref['cti_ssl'];
+                $out['ipbxes'][$hostname] = array();
+                $out['ipbxes'][$hostname]['cti_connection'] = $cti_connection;
+            }
+        }
 
         $out['bench'] = (microtime(true) - $starttime);
 

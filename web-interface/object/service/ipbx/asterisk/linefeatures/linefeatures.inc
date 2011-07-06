@@ -55,16 +55,16 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
-	
+
 	function get_user_masterline($userid=null,$deviceid=null)
 	{
 		if ($userid === null
 		&& $deviceid === null)
 			return(false);
-			
+
 		if(($rs = $this->_dso->user_masterline($userid,$deviceid)) === false)
 			return(false);
-		
+
 		return($this->_prepare($rs));
 	}
 
@@ -135,13 +135,13 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 			return(false);
 		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
-			
+
 		if (is_int($arr['num']) === false)
 			$arr['num'] = (int) $arr['num'];
-			
+
 		if (is_int($arr['line_num']) === false)
 			$arr['line_num'] = (int) $arr['line_num'];
-			
+
 		$arr['ipfrom'] = $_SERVER['SERVER_ADDR'];
 
 		return(parent::add($arr,$id));
@@ -163,13 +163,13 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 			if($this->_sre->chk_protocol($arr['protocol']) === false)
 				return(false);
 		}
-			
+
 		if (is_int($arr['num']) === false)
 			$arr['num'] = (int) $arr['num'];
-			
+
 		if (is_int($arr['line_num']) === false)
 			$arr['line_num'] = (int) $arr['line_num'];
-			
+
 		$arr['ipfrom'] = $_SERVER['SERVER_ADDR'];
 
 		return(parent::edit($id,$arr,$disable));
@@ -269,6 +269,14 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
+	}
+
+	function reset_device($iddevice)
+	{
+		$arr['device'] = 0;
+		$where = array('device' => (string) $iddevice);
+
+		return(parent::edit_where($where,$arr));
 	}
 }
 

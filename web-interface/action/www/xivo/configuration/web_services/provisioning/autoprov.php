@@ -27,7 +27,7 @@ if(defined('XIVO_LOC_UI_ACTION') === true)
 	$act = XIVO_LOC_UI_ACTION;
 else
 	$act = $_QRY->get('act');
-	
+
 $ipbx = &$_SRE->get('ipbx');
 
 switch($act)
@@ -43,21 +43,20 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
-		
+
 		$provddevice = &$_XOBJ->get_module('provddevice');
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$linefeatures = &$ipbx->get_module('linefeatures');
 		$userfeatures = &$ipbx->get_module('userfeatures');
 		$appline = &$ipbx->get_application('line');
-		
+
 		$appdevice->update();
-		
-		if(($device = $appdevice->get_by_ip($data['ip'])) === false
-		|| ($devicefeatures = $device['devicefeatures']) === false)
+
+		if($appdevice->get_by_ip($data['ip']) === false)
 			$http_response->set_status_line(400);
 		elseif($data['code'] === 'autoprov')
 		{
-			$provddevice->mode_autoprov($devicefeatures['deviceid'],true);
+			$appdevice->mode_autoprov(true);
 			$http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
@@ -70,7 +69,7 @@ switch($act)
 		    $linefeatures->edit($line['id'],array('device' => $devicefeatures['id']));
 			$http_response->set_status_line(200);
 		}
-		
+
 		$http_response->send(true);
 		break;
 	default:

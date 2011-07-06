@@ -175,7 +175,7 @@ $array['xivo/configuration/web_services/private/provisioning/autoprov'] = array(
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/ctiserver/configuration'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
+	'path'		=> 'cti/web_services/configuration',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/queuelogger/configuration'] = array(
@@ -435,7 +435,7 @@ $array['xivo/configuration/web_services/restricted/provisioning/autoprov'] = arr
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 $array['service/ipbx/asterisk/web_services/restricted/ctiserver/configuration'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
+	'path'		=> 'cti/web_services/configuration',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 

@@ -37,11 +37,10 @@ switch($act)
 	case 'modeautoprov':
 	    $param['act'] = 'list';
 		$appdevice = &$ipbx->get_application('device',null,false);
-		$modprovddevice = &$_XOBJ->get_module('provddevice');
 
 		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-		elseif ($modprovddevice->mode_autoprov($info['devicefeatures']['deviceid'],true) === false)
+		elseif ($appdevice->mode_autoprov(true) === false)
 			dwho_report::push('error','error_during_reset');
 		else
 			dwho_report::push('info','successfully_reset');
@@ -52,12 +51,12 @@ switch($act)
 
 		if(($values = dwho_issa_val('devices',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-			
+
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$modprovddevice = &$_XOBJ->get_module('provddevice');
 
 		$nb = count($values);
-		
+
 		$res = array();
 
 		for($i = 0;$i < $nb;$i++)
@@ -87,9 +86,9 @@ switch($act)
 	case 'add':
 		$appdevice = &$ipbx->get_application('device');
 		$modprovdplugin = &$_XOBJ->get_module('provdplugin');
-		
+
 		$plugininstalled = $modprovdplugin->get_plugin_installed();
-		
+
 		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
 		$order = array('label' => SORT_ASC);
 		$listconfigdevice = $appprovdconfig->get_config_list('',$order,null,false,false,'device');
@@ -124,24 +123,24 @@ switch($act)
 
 		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-		
+
 		$modprovdplugin = &$_XOBJ->get_module('provdplugin');
 		$plugininstalled = $modprovdplugin->get_plugin_installed();
-		
+
 		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
 		$order = array('label' => SORT_ASC);
 		$listconfigdevice = $appprovdconfig->get_config_list('',$order,null,false,false,'device');
-		
+
 		$appline = &$ipbx->get_application('line');
 		$order = array('num' => SORT_ASC);
 		$listline = $appline->get_lines_device((int) $_QR['id'],'',null,$order);
-		
+
 		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('devicefeatures',$_QR) === true)
 		{
-			
+
 			if($appdevice->set_edit($_QR) === false
 			|| $appdevice->edit('provd') === false)
 			{
@@ -152,9 +151,9 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		}
-		
+
 		$element = $appdevice->get_elements();
-		
+
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 
