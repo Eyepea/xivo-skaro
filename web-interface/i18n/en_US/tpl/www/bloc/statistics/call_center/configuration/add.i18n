@@ -1,0 +1,140 @@
+; title_content_name
+Panel> Add
+
+; smenu_general
+general
+
+; smenu_workweek
+Work Week
+
+; smenu_incall
+incoming
+
+; smenu_queue
+Queues
+
+; smenu_qos
+Quality of Service
+
+; smenu_agents
+agents
+
+; fm_description_general
+
+; fm_name
+name:
+
+; fm_default_delta
+interval:
+
+; hlp_fm_default_delta
+Sets the time interval for the default view type. <br>
+eg [day -1] means that we take the current date -1 to a delta of 1 day. <br>
+e.g. [-3 days] [weeks -1] [-1 month] <br>
+Available value: - [0-999] [day | week | month] s <br>
+Leave 0 for the current day.
+
+; fm_conf_homepage
+Show on page:
+
+; fm_description_cache
+The dates for the cache should be in the form YYYY-MM.
+
+; cache_during_period
+Period cache
+
+; fm_dbegcache
+start:
+
+; fm_dendcache
+end:
+
+; hlp_fm_dendcache
+Let 0 for the cache continues on a daily ...
+
+; stats_conf_workhour
+Working hour
+
+; fm_hour_start
+start:
+
+; fm_hour_end
+end:
+
+; stats_conf_period
+periods
+
+; fm_period1
+Period 1:
+
+; fm_period2
+Period 2:
+
+; fm_period3
+Period 3:
+
+; fm_period4
+Period 4:
+
+; fm_period5
+Period 5:
+
+; hlp_fm_period
+eg. 0-20 (for periods from 0 to 20 seconds)
+
+; fm_description
+Description:
+
+; fm_workweek_monday
+Monday:
+
+; fm_workweek_tuesday
+Tuesday:
+
+; fm_workweek_wednesday
+Wednesday:
+
+; fm_workweek_thursday
+Thursday:
+
+; fm_workweek_friday
+Friday:
+
+; fm_workweek_saturday
+Saturday:
+
+; fm_workweek_sunday
+Sunday:
+
+; agent
+agents
+
+; create_agent
+Create an Agent
+
+; user
+users
+
+; create_user
+Create User
+
+; tail
+Queues
+
+; create_queue
+Create a queue
+
+; group
+groups
+
+; create_group
+Create a group
+
+; fm_description_stats_queue_qos
+Configuring QoS for queues and group in seconds
+
+;-Fm-queue_name
+%s:
+
+; no_queue
+No queues

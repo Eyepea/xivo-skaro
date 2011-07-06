@@ -1,0 +1,45 @@
+
+; mn_left_name_statistics
+Statistics
+
+; mn_left_home
+Summary
+
+; mn_left_ti_call_center
+Call Center
+
+; mn_left_ti_cel
+Call Logs
+
+; mn_left_home_call_center
+Summary
+
+; mn_left_configuration_call_center
+Configuration
+
+; mn_left_configuration_call_center-qos
+Quality of service
+
+; mn_left_statistics_call_center-1
+Queue
+
+; mn_left_statistics_call_center-2
+Performance agents
+
+; mn_left_statistics_call_center-3
+Agents details / times
+
+; mn_left_statistics_call_center-4
+Period details
+
+; mn_left_statistics_call_center-5
+Incall
+
+; mn_left_home_cel
+Summary
+
+; mn_left_search_cel
+Filters
+
+; mn_left_advanced_search_cdr
+Advanced search

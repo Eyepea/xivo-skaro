@@ -1,0 +1,85 @@
+; load. /search
+
+; fm_dbeg
+Start date
+
+; fm_dend
+End Date
+
+; fm_channel
+channel
+
+; fm_disposition
+Call status
+
+; fm_amaflags
+Flag billing
+
+; fm_src
+appellant
+
+; fm_dst
+called
+
+; fm_clid
+Name calling
+
+; fm_accountcode
+Number deposit
+
+; fm_userfield
+user Field
+
+; fm_dubeg
+Beginning of the term
+
+; Fm_dubeg-seconds
+%s second(s)
+
+; Fm_dubeg-minutes
+%s minute(s)
+
+; fm_duend
+End of the term
+
+; Fm_duend-seconds
+%s second(s)
+
+; Fm_duend-minutes
+%s minute(s)
+
+; col_channel
+channel
+
+; col_disposition
+Call status
+
+; col_amaflags
+Flag billing
+
+; col_clid
+Name calling
+
+; col_accountcode
+Number deposit
+
+; col_userfield
+user Field
+
+; col_dcontext
+context
+
+; col_dstchannel
+Destination channel
+
+; col_billsec
+actual duration
+
+; col_lastapp
+last application
+
+; col_lastdata
+last data
+
+; col_uniqueid
+unique identifier

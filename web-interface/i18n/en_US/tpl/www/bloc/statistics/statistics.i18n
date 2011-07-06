@@ -1,0 +1,491 @@
+; toolbar_fm_conf
+Choose a configuration
+
+; no_conf_selected_for_homepage
+No configuration selected for the home page.
+
+; no_queue
+No file
+
+; no_conf
+No configuration
+
+; no_cache_generate
+No cache generated for this configuration
+
+; hlp_fm_conf_period_cache
+Period cache: %s %s depending on configuration.
+
+; index_general
+Summary
+
+; conf_cache_period
+% S %s
+
+; hlp_fm_conf_period_cache-with_end
+  %s
+ 
+; hlp_fm_conf_period_cache-without_end
+to date
+
+; toolbar_fm_select_conf
+Choisisser configuration to apply:
+
+; colstruct_traitment
+Treaties
+
+; colstruct_abandon
+Abandoned calls
+
+; colstruct_withdrawal
+Withdrawal
+
+; colstruct_connect
+Calls handled
+
+; col_nb
+<acronym title="Nombre"> Nb. </acronym>
+
+; col_average_call_duration
+<acronym title="Moyenne Time d'Appels"> MTA </acronym>
+
+; col_presented
+Pre <acronym title="Présenté">. </acronym>
+
+; col_connected
+<acronym title="Connécté"> Con. </acronym>
+
+; col_connect
+Rep. <acronym title="Répondu">. </acronym>
+
+; col_abandon
+<acronym title="Abandoné"> Aba. </acronym>
+
+; col_ringnoanswer
+Not <acronym title="NON répondu"> R. </acronym>
+
+; col_outgoing
+Sort <acronym title="Sortants">. </acronym>
+
+; col_completeagent
+<acronym title="Raccrochés l'agent"> by RPA </acronym>
+
+; col_completecaller
+<acronym title="Raccrochés by l'appelant"> PPIP </acronym>
+
+; col_transfer
+<acronym title="Transféré"> Trans. </acronym>
+
+; colstruct_deterred
+Deterred
+
+; col_on_close
+<acronym title="Dissuadés on fermeture"> DF </acronym>
+
+; col_on_saturation
+<acronym title="Dissuadés saturation"> on DS </acronym>
+
+; colstruct_rerouted
+Rerouted
+
+; col_on_hungup
+<acronym title="Reroutés a raccrocheś"> RR </acronym>
+
+; col_on_guide
+<acronym title="Reroutés on guide"> RG </acronym>
+
+; col_on_number
+<acronym title="Reroutés on numéro"> RN </acronym>
+
+; col_average_time_waiting
+<acronym title="Temps means d'attente"> TMA </acronym>
+
+; col_home_rated
+<acronym title="Taux d'accueil"> TA </acronym>
+
+; col_qos
+<acronym title="Qualité of service"> QOS </acronym>
+
+; colstruct_call_counter
+Call Number
+
+; colstruct_total_time
+Total time
+
+; colstruct_average_time
+Average length
+
+; colstruct_queue
+Queue
+
+; colstruct_agent
+Agent
+
+; col_productivity
+<acronym title="Productivité"> Prod. </acronym>
+
+; col_login
+<acronym title="Login"> Login </acronym>
+
+; col_available
+<acronym title="Dispo"> Available </acronym>
+
+; col_pause
+<acronym title="Retrait"> Withdrawal </acronym>
+
+; col_traitment
+<acronym title="Traitement"> Trait. </acronym>
+
+; col_dmt
+<acronym title="Durée average traitement"> DMT </acronym>
+
+; col_dmmeg
+<acronym title="Durée means for garde"> DMMEG </acronym>
+
+; col_dmwu
+<acronym title="Durée average WRAPUP"> DMWU </acronym>
+
+; col_total
+<acronym title="Total"> Total </acronym>
+
+; col_duration
+Period
+
+; col_max_concurrent_calls
+Peak call
+
+; col_totalwithdrawal
+<acronym title="Total retraits"> of Total </acronym>
+
+; col_total_with_talk
+<acronym title="Dont conversation"> Conv. </acronym>
+
+; col_total_with_wup
+<acronym title="Dont WRAPUP"> WUP. </acronym>
+
+; col_tperiod1
+<acronym title="Période 1"> P1 </acronym>
+
+; col_tperiod2
+<acronym title="Période 2"> P2 </acronym>
+
+; col_tperiod3
+<acronym title="Période 3"> P3 </acronym>
+
+; col_tperiod4
+<acronym title="Période 4"> P4 </acronym>
+
+; col_tperiod5
+<acronym title="Période 5"> P5 </acronym>
+
+; col_aperiod1
+<acronym title="Période 1"> P1 </acronym>
+
+; col_aperiod2
+<acronym title="Période 2"> P2 </acronym>
+
+; col_aperiod3
+<acronym title="Période 3"> P3 </acronym>
+
+; col_aperiod4
+<acronym title="Période 4"> P4 </acronym>
+
+; col_aperiod5
+<acronym title="Période 5"> P5 </acronym>
+
+; colstruct_nb
+Number
+
+; col_nb_intern
+Internal
+
+; col_nb_in
+Incoming
+
+; col_nb_out
+Outgoing
+
+; col_nb_total
+Total
+
+; colstruct_max_concurrent_calls
+Peak call
+
+; col_max_concurrent_calls_intern
+Internal
+
+; col_max_concurrent_calls_in
+Incoming
+
+; col_max_concurrent_calls_out
+Outgoing
+
+; col_max_concurrent_calls_total
+Total
+
+; colstruct_duration
+Period
+
+; col_duration_intern
+Internal
+
+; col_duration_in
+Incoming
+
+; col_duration_out
+Outgoing
+
+; col_duration_total
+Total
+
+; colstruct_average_call_duration
+<acronym title="Moyenne Time d'Appels"> MTA </acronym>
+
+; col_average_call_duration_intern
+Internal
+
+; col_average_call_duration_in
+Incoming
+
+; col_average_call_duration_out
+Outgoing
+
+; col_average_call_duration_total
+Total
+
+; trunk_intern
+Internal Call
+
+; title_cel_calls_by_trunk
+Call for trunk
+
+; title_cel_top10_calls
+TOP10 calls
+
+; top10_call_nb_intern
+TOP10 (Num. calls)
+
+; top10_call_nb_in
+TOP10 (Num. incoming call)
+
+; top10_call_nb_out
+TOP10 (Num. outgoing call)
+
+; top10_call_duration_intern
+TOP10 (Internal Call Duration)
+
+; top10_call_duration_in
+TOP10 (Incoming Call Duration)
+
+; top10_call_duration_out
+TOP10 (Time Out Call)
+
+; top10_call_price
+TOP10 (Cost of Appeals)
+
+; no_conf_selected
+Please select a configuration to apply.
+
+; conf_axetype
+Axis of analysis:
+
+; fm_dbeg
+Start:
+
+; fm_dend
+End:
+
+; fm_dday
+Day:
+
+; fm_dweek
+Week:
+
+; fm_dmonth
+Month:
+
+; fm_dyear
+Year:
+
+; fm_bt-cal
+Apply
+
+; fm-submit-wait
+Processing
+
+; bt-success-submit
+Completed successfully
+
+; Mn_left_name_dashboard
+Dashboard
+
+; title_conf_cache_period
+Period of cache
+
+; bench_dashboard
+Performance
+
+; conf_time_range
+Slot
+
+; conf_workweek
+Working days
+
+; monday
+Monday
+
+; tuesday
+Tuesday
+
+; wednesday
+Wednesday
+
+; thursday
+Thursday
+
+; friday
+Friday
+
+; saturday
+Saturday
+
+; sunday
+Sunday
+
+; january
+January
+
+; February
+February
+
+; march
+March
+
+; april
+April
+
+; may
+May
+
+; june
+June
+
+; july
+July
+
+; august
+August
+
+; september
+September
+
+; october
+October
+
+; november
+November
+
+; december
+December
+
+; cdr_axetype
+Axis of analysis:
+
+; fm_stats_cdr_default
+
+
+; fm_stats_cdr_by-opt (period)
+Period
+
+; fm_stats_cdr_by-opt (day)
+Day
+
+; fm_stats_cdr_by-opt (week)
+Week
+
+; fm_stats_cdr_by-opt (month)
+Month
+
+; fm_axetype-default
+Axis analysis
+
+; fm_axetype-opt (type)
+Type
+
+; fm_axetype-opt (day)
+Day
+
+; fm_axetype-opt (week)
+Week
+
+; fm_axetype-opt (month)
+Month
+
+; fm_axetype-opt (year)
+Year
+
+; week_number-opt
+Week No. %d
+
+; Month_number-opt
+Month %s %d
+
+; hour-opt
+ hours %d
+
+; Monday-opt
+Monday %d
+
+; tuesday-opt
+Tuesday %d
+
+; wednesday-opt
+Wednesday %d
+
+; thursday-opt
+Thursday %d
+
+; Friday-opt
+Friday %d
+
+; Saturday-opt
+Saturday %d
+
+; Sunday-opt
+Sunday %d
+
+; week
+% D week
+
+; no_cache_generated_for
+Cache %s is not generated
+
+; no_type_in_conf
+No entries in the configuration
+
+; tbl-lnk-expotcsv
+CSV Export
+
+; total_call_repartition_by_event
+Distribution of calls per event
+
+; queue_performance
+Performance queues
+
+; productivity_by_agent
+Productivity per agent
+
+; agent_total_time_for_login
+Allocation of time connected
+
+; agent_performance
+Performance agent
+
+; total_call_connect_by_period
+Total calls handled
+
+; total_call_abandon_by_period
+Total abandoned calls
+
+; cel_performance
+Perfomance calls
