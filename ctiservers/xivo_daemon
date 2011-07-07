@@ -322,7 +322,6 @@ class ctiserver:
 
         # loads the general configuration
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
-        self.updates_period = 3600
         ctilog = xivoconf_general.get('ctilog_db_uri')
         socktimeout = float(xivoconf_general.get('sockettimeout', '2'))
         prefixfile = xivoconf_general.get('prefixfile')

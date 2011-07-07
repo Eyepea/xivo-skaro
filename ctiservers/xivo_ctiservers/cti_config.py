@@ -93,7 +93,6 @@ class Config:
         # temporarily forced configuration items
         self.xc_json['certfile'] = '/usr/share/doc/libssl-dev/demos/sign/cert.pem'
         self.xc_json['keyfile'] = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
-        self.xc_json['main']['incoming_tcp']['CTIS'] = ['0.0.0.0', '5013']
         return
 
     def translate(self):
