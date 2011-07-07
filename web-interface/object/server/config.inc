@@ -49,7 +49,7 @@ $array['element']['cti_pass'] = array();
 $array['element']['cti_pass']['default'] = '';
 
 $array['element']['cti_port'] = array();
-$array['element']['cti_port']['default'] = 5004;
+$array['element']['cti_port']['default'] = 5003;
 
 $array['element']['cti_ssl'] = array();
 $array['element']['cti_ssl']['value'] = array(0,1);
