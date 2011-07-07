@@ -22,12 +22,12 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_abstract_sql
 {
-	
+
 	public function get_min_time()
 	{
 		$field = array((object) ('MIN(time)'));
 		$this->_dso->new_select($this->_table,$field);
-		
+
 		$r = $this->_dso->select_singlecolumn();
 
 		if(isset($r[0]) === false)
@@ -35,12 +35,12 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 
 		return($r[0]);
 	}
-	
+
 	public function get_max_time()
 	{
 		$field = array((object) ('MAX(time)'));
 		$this->_dso->new_select($this->_table,$field);
-		
+
 		$r = $this->_dso->select_singlecolumn();
 
 		if(isset($r[0]) === false)
@@ -52,13 +52,13 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	public function stats_sum_by_type($type,$value,$event,$fieldsum,$interval=null,$addwhere=null)
 	{
 		$this->_cnt = 0;
-		
+
 		$s = microtime(true);
 
 		$field = array((object) ('SUM(cast("'.$fieldsum.'" as int))'));
-		
+
 		$this->_dso->new_select($this->_table,$field);
-	
+
 		switch ($type)
 		{
 			case 'agent':
@@ -87,13 +87,13 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('event' => $event));
 		$this->_dso->andwhere('"'.$fieldsum.'" ~ \'^[0-9]+$\'');
-		
+
 		if (is_null($addwhere) === false)
 			$this->search_add_where($addwhere);
-	
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
@@ -109,9 +109,9 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 			else
 				return(false);
 		}
-		
+
 		$r = $this->_dso->select_singlecolumn();
-		
+
 		#print ($this->_dso->get_select().'<br>');
 		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
@@ -120,15 +120,15 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 
 		return((int) $r[0]);
 	}
-	
+
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
 	{
 		$this->_cnt = 0;
-		
+
 		$s = microtime(true);
 
 		$this->_dso->new_select($this->_table,array('event'));
-		
+
 		switch ($type)
 		{
 			case 'agent':
@@ -157,12 +157,12 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('event' => $event));
-		
+
 		if (is_null($addwhere) === false)
 			$this->search_add_where($addwhere);
-		
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
@@ -175,14 +175,14 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 			elseif (($nbinterval = count($interval)) > 2)
 			{
 				$this->_dso->aggregate_where(false,'AND');
-				
+
 				foreach ($interval as $itl)
 				{
 					#$this->_dso->orwhere('"'.$this->_table.'"."time"::timestamp BETWEEN \''.$itl['beg'].'\'::timestamp AND \''.$itl['end'].'\'::timestamp');
 					$this->_dso->orwherebetween('time',$itl['beg'],$itl['end'],$this->_table);
 					#$this->_dso->orwheredatetime('time',$itl['beg'],$itl['end'],$this->_table,'datetime');
 				}
-				
+
 				$this->_dso->aggregate_where(false,'AND');
 			}
 			else
@@ -191,18 +191,18 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
-		
+
 		#print ($this->_dso->get_select().'<br>');
 		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
 		return($this->_cnt);
 	}
-	
+
 	private function search_add_where($addwhere)
 	{
 		if(is_array($addwhere) === false)
 			return(false);
-			
+
 		$type = $addwhere[0];
 		$value = $addwhere[1];
 		switch ($type)

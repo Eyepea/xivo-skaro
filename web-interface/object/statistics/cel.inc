@@ -100,6 +100,8 @@ class xivo_statistics_cel
 			for($u=0;$u<$nbt;$u++)
 			{
 				$reft = &$listtrunk[$u];
+				if (isset($reft['protocol']) === false)
+				    continue;
 				$protocol = $reft['protocol'];
 				if (($trunkname = $this->_build_trunkname_from_identity($protocol['identity'])) === false)
 					continue;

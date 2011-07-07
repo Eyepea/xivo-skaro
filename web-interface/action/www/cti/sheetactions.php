@@ -124,7 +124,7 @@ switch($act)
 			}
 			$str .= "]";
 			$_QR['sheetactions']['capaids'] = $str;
-			
+
 			$str = "[";
 			if(isset($_QR['context']))
 			{

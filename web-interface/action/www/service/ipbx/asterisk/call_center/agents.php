@@ -80,7 +80,7 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($amember['list'] !== false && dwho_issa('agentmember',$result) === true
 		&& ($amember['slt'] = dwho_array_intersect_key($result['agentmember'],$amember['list'],'id')) !== false)
 			$amember['slt'] = array_keys($amember['slt']);
@@ -170,7 +170,7 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($amember['list'] !== false && dwho_issa('agentmember',$return) === true
 		&& ($amember['slt'] = dwho_array_intersect_key($return['agentmember'],$amember['list'],'id')) !== false)
 			$amember['slt'] = array_keys($amember['slt']);
@@ -335,11 +335,9 @@ switch($act)
 			}
 			else
 			{
-				$ipbx->discuss('module reload chan_agent.so');
-				// must reload app_queue (propagate skills)
-				$ipbx->discuss('module reload app_queue.so');
-
-				$ipbx->discuss('xivo[agentlist,update]');
+				$ipbx->discuss(array('module reload chan_agent.so',
+    				                 'module reload app_queue.so',  // must reload app_queue (propagate skills)
+    				                 'xivo[agentlist,update]'));
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('service/ipbx/call_center/agents'),$param);
@@ -347,7 +345,7 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($umember['list'] !== false && dwho_issa('usermember',$result) === true
 		&& ($umember['slt'] = dwho_array_intersect_key($result['usermember'],$umember['list'],'id')) !== false)
 			$umember['slt'] = array_keys($umember['slt']);
@@ -467,19 +465,16 @@ switch($act)
 				// updating skills
 				$appqueue->agentskills_edit($_QR['id'], $queueskills);
 
-				$ipbx->discuss('module reload chan_agent.so');
-				// must reload app_queue (propagate skills)
-				$ipbx->discuss('module reload app_queue.so');
-
-				$ipbx->discuss('xivo[agentlist,update]');
-
+				$ipbx->discuss(array('module reload chan_agent.so',
+    				                 'module reload app_queue.so',  // must reload app_queue (propagate skills)
+    				                 'xivo[agentlist,update]'));
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('service/ipbx/call_center/agents'),$param);
 			}
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($umember['list'] !== false && dwho_issa('usermember',$return) === true
 		&& ($umember['slt'] = dwho_array_intersect_key($return['usermember'],$umember['list'],'id')) !== false)
 			$umember['slt'] = array_keys($umember['slt']);

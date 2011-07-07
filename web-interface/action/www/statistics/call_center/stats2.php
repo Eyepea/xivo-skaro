@@ -82,17 +82,20 @@ $tpl_statistics->add_col('outgoing',
 $tpl_statistics->set_col_struct('total_time');
 $tpl_statistics->add_col('login',
 					'direct',
-					'custom:agent,[key],logintime');
+					'custom:agent,[key],logintime',
+					'time');
 $tpl_statistics->add_col('available',
 					'expression',
 					'{custom:agent,[key],logintime}-{custom:agent,[key],calltime}',
 					'time');
 $tpl_statistics->add_col('pause',
 					'direct',
-					'custom:agent,[key],pausetime');
+					'custom:agent,[key],pausetime',
+					'time');
 $tpl_statistics->add_col('traitment',
 					'direct',
-					'custom:agent,[key],traitmenttime');
+					'custom:agent,[key],traitmenttime',
+					'time');
 
 $tpl_statistics->set_col_struct('average_time');
 $tpl_statistics->add_col('dmt',

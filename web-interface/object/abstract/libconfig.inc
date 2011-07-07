@@ -82,9 +82,10 @@ abstract class xivo_libconfig_abstract
 		|| isset($this->_conf) === false
 		|| dwho_issa('element',$this->_conf) === false
 		|| empty($this->_conf['element']) === true)
+		{
+		    dwho_report::push('error', 'Can\'t get element for module '.$this->_name.' on('.__FILE__.' line '.__LINE__.')');
 			return(false);
-
-		$r = array();
+		}
 
 		reset($this->_conf['element']);
 

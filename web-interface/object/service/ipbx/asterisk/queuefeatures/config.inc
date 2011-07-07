@@ -20,6 +20,9 @@
 
 $array['element'] = array();
 
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
+
 $array['element']['number'] = array();
 $array['element']['number']['default'] = '';
 
