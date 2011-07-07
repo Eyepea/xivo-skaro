@@ -758,8 +758,12 @@ class AsteriskFrontend(Frontend):
         for x in ('busy', 'rna', 'unc'):
             fwdtype = "fwd%s" % x
             if not xfeatures[fwdtype].get('commented', 1):
-                cfeatures.append("%s,1,Macro(feature_forward,%s,)"
-                    % (xivo_helpers.clean_extension(xfeatures[fwdtype]['exten']), x))
+                exten = xivo_helpers.clean_extension(xfeatures[fwdtype]['exten'])
+                cfeatures.extend([
+                    "%s,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})" % exten,
+                    "%s,n,Set(XIVO_BASE_EXTEN=${EXTEN})"     % exten,
+                    "%s,n,Gosub(feature_forward,s,1(%s))\n"    % (exten, x),
+                ])
 
         if cfeatures:
             print >>o, "exten = " + "\nexten = ".join(cfeatures)
