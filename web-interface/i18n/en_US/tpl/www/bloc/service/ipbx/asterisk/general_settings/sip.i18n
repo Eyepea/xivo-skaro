@@ -1150,7 +1150,7 @@ Listening address:
 Config asterisk: tlsbindaddr
 
 ; fm_tlsdontverifyserver
-Don't verify server certificat:
+Don't verify server certificate:
 
 ; hlp_fm_tlsdontverifyserver
 Config asterisk: tlsdontverifyserver
