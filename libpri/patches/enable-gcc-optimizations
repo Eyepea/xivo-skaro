@@ -1,0 +1,14 @@
+nicolas HICHER (atarakt) <nhicher@proformatique.com>
+Index: libpri-1.4.12/Makefile
+===================================================================
+--- libpri-1.4.12.orig/Makefile	2011-07-07 10:24:07.000000000 +0200
++++ libpri-1.4.12/Makefile	2011-07-07 10:24:21.000000000 +0200
+@@ -90,7 +90,7 @@
+ 	rose_qsig_mwi.lo \
+ 	rose_qsig_name.lo \
+ 	version.lo
+-CFLAGS=-Wall -Werror -Wstrict-prototypes -Wmissing-prototypes -g -fPIC $(ALERTING) $(LIBPRI_OPT) $(COVERAGE_CFLAGS)
++CFLAGS+=-Wall -Werror -Wstrict-prototypes -Wmissing-prototypes -g -fPIC $(ALERTING) $(LIBPRI_OPT) $(COVERAGE_CFLAGS)
+ INSTALL_PREFIX=$(DESTDIR)
+ INSTALL_BASE=/usr
+ libdir?=$(INSTALL_BASE)/lib

@@ -1,0 +1,85 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## libname.dpatch by  <tzafrir@>
+## libname.dpatch updated for 1.4.11 by Marc Dequènes (Duck) <mdequenes@proformatique.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: allows using a different name for the library rather than libpri
+## DP: if LIB_SUF is set in the environment/makefile params it will install
+## DP: the headers under /usr/include/$(LIB_SUF)/libpri.h and call the library 
+## DP: libpri-$(LIB_SUF).so.1
+
+@DPATCH@
+Index: libpri-1.4.11/Makefile
+===================================================================
+--- libpri-1.4.11.orig/Makefile	2010-05-27 12:15:34.000000000 +0200
++++ libpri-1.4.11/Makefile	2010-05-27 12:15:47.000000000 +0200
+@@ -39,8 +39,13 @@
+ # of 1.2 and a version of 1.4.x
+ SONAME:=1.4
+ 
+-STATIC_LIBRARY=libpri.a
+-DYNAMIC_LIBRARY:=libpri.so.$(SONAME)
++ifdef LIB_SUF
++LIBNAME=pri-$(LIB_SUF)
++else
++LIBNAME=pri
++endif
++STATIC_LIBRARY=lib$(LIBNAME).a
++DYNAMIC_LIBRARY=lib$(LIBNAME).so.$(SONAME)
+ STATIC_OBJS= \
+ 	copy_string.o \
+ 	pri.o \
+@@ -86,6 +91,7 @@
+ CFLAGS+=-Wall -Werror -Wstrict-prototypes -Wmissing-prototypes -g -fPIC $(ALERTING) $(LIBPRI_COUNTERS) $(LIBPRI_OPT)
+ INSTALL_PREFIX=$(DESTDIR)
+ INSTALL_BASE=/usr
++INCLUDE_DIR=$(INSTALL_PREFIX)$(INSTALL_BASE)/include/$(LIB_SUF)
+ libdir?=$(INSTALL_BASE)/lib
+ SOFLAGS:=-Wl,-h$(DYNAMIC_LIBRARY)
+ LDCONFIG = /sbin/ldconfig
+@@ -145,27 +151,27 @@
+ 
+ install: $(STATIC_LIBRARY) $(DYNAMIC_LIBRARY)
+ 	mkdir -p $(INSTALL_PREFIX)$(libdir)
+-	mkdir -p $(INSTALL_PREFIX)$(INSTALL_BASE)/include
++	mkdir -p $(INCLUDE_DIR)
+ ifneq (${OSARCH},SunOS)
+-	install -m 644 libpri.h $(INSTALL_PREFIX)$(INSTALL_BASE)/include
++	install -m 644 libpri.h $(INCLUDE_DIR)
+ 	install -m 755 $(DYNAMIC_LIBRARY) $(INSTALL_PREFIX)$(libdir)
+ 	#if [ -x /usr/sbin/sestatus ] && ( /usr/sbin/sestatus | grep "SELinux status:" | grep -q "enabled"); then /sbin/restorecon -v $(INSTALL_PREFIX)$(libdir)/$(DYNAMIC_LIBRARY); fi
+-	( cd $(INSTALL_PREFIX)$(libdir) ; ln -sf libpri.so.$(SONAME) libpri.so)
++	( cd $(INSTALL_PREFIX)$(INSTALL_BASE)/lib ; ln -sf lib$(LIBNAME).so.$(SONAME) lib$(LIBNAME).so)
+ 	install -m 644 $(STATIC_LIBRARY) $(INSTALL_PREFIX)$(libdir)
+ 	if test $$(id -u) = 0; then $(LDCONFIG) $(LDCONFIG_FLAGS) $(INSTALL_PREFIX)$(libdir); fi
+ else
+-	install -f $(INSTALL_PREFIX)$(INSTALL_BASE)/include -m 644 libpri.h
++ 	install -f $(INCLUDE_DIR) -m 644 libpri.h
+ 	install -f $(INSTALL_PREFIX)$(libdir) -m 755 $(DYNAMIC_LIBRARY)
+-	( cd $(INSTALL_PREFIX)$(libdir) ; ln -sf libpri.so.$(SONAME) libpri.so)
++ 	( cd $(INSTALL_PREFIX)$(INSTALL_BASE)/lib ; ln -sf lib$(LIBNAME).so.$(SONAME) lib$(LIBNAME).so)
+ 	install -f $(INSTALL_PREFIX)$(libdir) -m 644 $(STATIC_LIBRARY)
+ endif
+ 
+ uninstall:
+ 	@echo "Removing Libpri"
+-	rm -f $(INSTALL_PREFIX)$(libdir)/libpri.so.$(SONAME)
+-	rm -f $(INSTALL_PREFIX)$(libdir)/libpri.so
+-	rm -f $(INSTALL_PREFIX)$(libdir)/libpri.a
+-	rm -f $(INSTALL_PREFIX)$(INSTALL_BASE)/include/libpri.h
++	rm -f $(INSTALL_PREFIX)$(INSTALL_BASE)/lib/lib$(LIBNAME).so.$(SONAME)
++	rm -f $(INSTALL_PREFIX)$(INSTALL_BASE)/lib/lib$(LIBNAME).so
++	rm -f $(INSTALL_PREFIX)$(INSTALL_BASE)/lib/lib$(LIBNAME).a
++	rm -f $(INCLUDE_DIR)/libpri.h
+ 
+ pritest: pritest.o
+ 	$(CC) -o pritest pritest.o -L. -lpri -lzap $(CFLAGS)
+@@ -197,7 +203,7 @@
+ $(DYNAMIC_LIBRARY): $(DYNAMIC_OBJS)
+ 	$(CC) -shared $(SOFLAGS) -o $@ $(DYNAMIC_OBJS)
+ 	$(LDCONFIG) $(LDCONFIG_FLAGS) .
+-	ln -sf libpri.so.$(SONAME) libpri.so
++	ln -sf lib$(LIBNAME).so.$(SONAME) lib$(LIBNAME).so
+ 
+ version.c: FORCE
+ 	@build_tools/make_version_c > $@.tmp

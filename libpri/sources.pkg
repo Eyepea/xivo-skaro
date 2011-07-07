@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://downloads.asterisk.org/pub/telephony/libpri"
+TARBALL_PREFIX="libpri-"
+SRC_DIR_PREFIX="libpri-"
+PKG_NAME="libpri"
+DFSG_EXCLUDE_PATTERNS=
