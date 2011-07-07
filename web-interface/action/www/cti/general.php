@@ -56,6 +56,9 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
 	{
+	    $err = $ctimain->get_filter_error();
+	    foreach ($err as $k => $v)
+	        dwho_report::push('error', $k.'=> '.$v);
 		$ret = 0;
 	} else {
 		if($ctimain->exists(null,null,1) === true)

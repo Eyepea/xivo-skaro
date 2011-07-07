@@ -37,16 +37,6 @@ $array['element']['ami_ip']['default'] = '127.0.0.1';
 $array['element']['ami_port'] = array();
 $array['element']['ami_port']['default'] = 5038;
 
-$array['element']['login'] = array();
-$array['element']['login']['default'] = '';
-$array['element']['password'] = array();
-$array['element']['password']['default'] = '';
-
-$array['element']['login'] = array();
-$array['element']['login']['default'] = '';
-$array['element']['password'] = array();
-$array['element']['password']['default'] = '';
-
 $array['element']['fagi_ip'] = array();
 $array['element']['fagi_ip']['default'] = '127.0.0.1';
 $array['element']['fagi_port'] = array();

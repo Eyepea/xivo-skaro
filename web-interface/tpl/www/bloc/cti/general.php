@@ -73,21 +73,21 @@ if(isset($error_js[0]) === true)
 <fieldset id="cti-ami">
 	<legend><?=$this->bbf('cti-ami');?></legend>
 			<?=$form->text(array('desc'	=> $this->bbf('fm_cti_ami_login'),
-						  'name'	=> 'cti[ami_login][]',
+						  'name'	=> 'cti[ami_login]',
 						  'labelid'	=> 'cti-ami_login',
 						  'required'	=> 1,
 						  'size'	=> 15,
 						  'default'	=> $element['ctimain']['ami_login']['default'],
 						  'value'	=> $info['ctimain']['ami_login']))?>
 			<?=$form->text(array('desc'	=> $this->bbf('fm_cti_ami_password'),
-						  'name'	=> 'cti[ami_password][]',
+						  'name'	=> 'cti[ami_password]',
 						  'labelid'	=> 'cti-ami_password',
 						  'required'	=> 1,
 						  'size'	=> 15,
 						  'default'	=> $element['ctimain']['ami_password']['default'],
 						  'value'	=> $info['ctimain']['ami_password']))?>
 			<?=$form->text(array('desc'	=> $this->bbf('fm_cti_ami_ip'),
-						  'name'	=> 'cti[ami_ip][]',
+						  'name'	=> 'cti[ami_ip]',
 						  'labelid'	=> 'cti-ami_ip',
 						  'required'	=> 1,
 						  'regexp'	=> '[[:ipv4:]]',
@@ -95,7 +95,7 @@ if(isset($error_js[0]) === true)
 						  'default'	=> $element['ctimain']['ami_ip']['default'],
 						  'value'	=> $info['ctimain']['ami_ip']))?>
 			<?=$form->text(array('desc'	=> $this->bbf('fm_cti_ami_port'),
-						  'name'	=> 'cti[ami_port][]',
+						  'name'	=> 'cti[ami_port]',
 						  'labelid'	=> 'cti-ami_port',
 						  'required'	=> 1,
 						  'regexp'	=> '[[:port:]]',
