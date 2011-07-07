@@ -403,6 +403,8 @@ CREATE TABLE `ctimain` (
  `fagi_port` int(10) unsigned,
  `cti_ip` varchar(255),
  `cti_port` int(10) unsigned,
+ `ctis_ip` varchar(255),
+ `ctis_port` int(10) unsigned,
  `webi_ip` varchar(255),
  `webi_port` int(10) unsigned,
  `info_ip` varchar(255),
@@ -417,7 +419,7 @@ CREATE TABLE `ctimain` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctimain` VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
+INSERT INTO `ctimain` VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
 
 
 DROP TABLE IF EXISTS `ctiphonehints`;

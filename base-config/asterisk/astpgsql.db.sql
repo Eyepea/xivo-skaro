@@ -443,6 +443,8 @@ CREATE TABLE "ctimain" (
  "fagi_port" INTEGER,
  "cti_ip" varchar(16),
  "cti_port" INTEGER,
+ "ctis_ip" varchar(16),
+ "ctis_port" INTEGER,
  "webi_ip" varchar(16),
  "webi_port" INTEGER,
  "info_ip" varchar(16),
@@ -457,7 +459,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
 SELECT setval('ctimain_id_seq', 2);
 
 
