@@ -95,3 +95,26 @@ class Sheet:
         self.payload = { 'internal' : self.internaldata,
                          'fields' : self.fields }
         return
+
+    def setconditions(self, conditions):
+        self.conditions = conditions
+
+    def checkdest(self, channelprops):
+        whom = self.conditions.get('whom')
+        entities = self.conditions.get('entities')
+        contexts = self.conditions.get('contexts')
+        profileids = self.conditions.get('profileids')
+
+        tomatch = dict()
+        if profileids:
+            tomatch['profileids'] = profileids
+        if contexts:
+            tomatch['contexts'] = contexts
+        if entities:
+            tomatch['entities'] = entities
+
+        if whom == 'dest':
+            tomatch['desttype'] = channelprops.extra_data.get('xivo').get('desttype')
+            tomatch['destid'] = channelprops.extra_data.get('xivo').get('destid')
+
+        return tomatch

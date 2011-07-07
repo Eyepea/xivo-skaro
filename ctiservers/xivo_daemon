@@ -97,6 +97,7 @@ except:
 XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
 
 DEBUG_MODE         = False
+# XIVO_CONF_FILE     = 'https://localhost/cti/json.php/restricted/configuration' # future value, keeping the old a little while ...
 XIVO_CONF_FILE     = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
 XIVO_CONF_OVER     = None
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
@@ -452,6 +453,21 @@ class ctiserver:
                     k.reply(it)
         return queuesize
 
+    def get_connected(self, tomatch):
+        clist = list()
+        for k in self.fdlist_established.itervalues():
+            if not isinstance(k, str) and k.kind in ['CTI', 'CTIS']:
+                ipbxid = k.connection_details.get('ipbxid')
+                userid = k.connection_details.get('userid')
+                if self.safe.get(ipbxid).user_match(userid, tomatch):
+                    clist.append(k)
+        return clist
+
+    def sendsheettolist(self, tsl, payload):
+        for k in tsl:
+            k.reply(payload)
+        return
+
     def loop_over_cti_queues(self):
         for ipbxid, innerdata in self.safe.iteritems():
             queuesize = self.loop_over_cti_queue(innerdata)
@@ -785,8 +801,9 @@ class ctiserver:
                                 if self.update_userlist[ipbxid]:
                                     while self.update_userlist[ipbxid]:
                                         tmp_ltr = self.update_userlist[ipbxid].pop()
-                                        listtorequest = tmp_ltr[5:-12] + 's'
-                                        safe.update_config_list(listtorequest)
+                                        if tmp_ltr != 'xivo[cticonfig,update]':
+                                            listtorequest = tmp_ltr[5:-12] + 's'
+                                            safe.update_config_list(listtorequest)
                                 else:
                                     safe.update_config_list_all()
                             except Exception:

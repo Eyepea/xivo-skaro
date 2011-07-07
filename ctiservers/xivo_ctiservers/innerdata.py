@@ -308,7 +308,44 @@ class Safe:
                 self.log.exception('(get_x_list : %s)' % xitem)
         return lxlist
 
+    def user_match(self, userid, tomatch):
+        domatch = False
 
+        # does the user fullfil the destination criteria ?
+        if 'desttype' in tomatch:
+            if tomatch.get('desttype') == 'user':
+                if userid == tomatch.get('destid'):
+                    domatch = True
+            else:
+                print 'desttype', tomatch.get('desttype')
+        else:
+            # 'all' case
+            domatch = True
+
+        if domatch and 'profileids' in tomatch:
+            user_cfg = self.xod_config.get('users').keeplist.get(userid)
+            if user_cfg.get('profileclient') not in tomatch.get('profileids'):
+                domatch = False
+        if domatch and 'entities' in tomatch:
+            pass
+            # print 'e', user_cfg.get('entityid'), tomatch.get('entities')
+        if domatch and 'contexts' in tomatch:
+            domatch = False
+            for ctx in self.user_getcontexts(userid):
+                if ctx in tomatch.get('contexts'):
+                    domatch = True
+                    break
+
+        return domatch
+
+    def user_getcontexts(self, userid):
+        user_cfg = self.xod_config.get('users').keeplist.get(userid)
+        entityid = user_cfg.get('entityid')
+        contexts = list()
+        for k, v in self.xod_config.get('contexts').keeplist.iteritems():
+            if v.get('context').get('entityid') == str(user_cfg.get('entityid')):
+                contexts.append(k)
+        return contexts
 
     def user_find(self, ctilogin, company):
         uinfo = self.xod_config['users'].finduser(ctilogin, company)
@@ -965,9 +1002,11 @@ class Safe:
         if where not in self.sheetevents:
             self.log.warning('sheet event "%s" is not in %s' % (where, self.sheetevents.keys()))
             return
+
         if channel not in self.channels and not channel.startswith('special'):
             self.log.warning('channel "%s" is not in %s' % (channel, self.channels.keys()))
             return
+
         for se in self.sheetevents[where]:
             display_id = se.get('display')
             condition_id = se.get('condition')
@@ -976,17 +1015,17 @@ class Safe:
             if not self.sheetdisplays.get(display_id):
                 continue
 
-            c = self.channels.get(channel)
+            channelprops = self.channels.get(channel)
             sheet = cti_sheets.Sheet(where, self.ipbxid, channel)
             sheet.setoptions(self.sheetoptions.get(option_id))
             sheet.setdisplays(self.sheetdisplays.get(display_id))
+            sheet.setconditions(self.sheetconditions.get(condition_id))
 
             # 1. whom / userinfos : according to outdest or destlist to update in Channel structure
             #    + according to conditions
             #    final 'whom' description should be clearly written in order to send across 'any path'
-            whom = self.sheetconditions.get(condition_id).get('whom')
-            contexts = self.sheetconditions.get(condition_id).get('contexts')
-            profileids = self.sheetconditions.get(condition_id).get('profileids')
+            tomatch = sheet.checkdest(channelprops)
+            tosendlist = self.ctid.get_connected(tomatch)
 
             # 2. make an extra call to a db if requested ? could be done elsewhere (before) also ...
 
@@ -997,13 +1036,15 @@ class Safe:
             # 5. sheet manager ?
             # 6. json message / zip or not / b64 / ...
             # print sheet.internaldata
-            self.events_cti.put( { 'class' : 'sheet',
-                                   'channel' : channel,
-                                   'serial' : sheet.serial,
-                                   'compressed' : sheet.compressed,
-                                   'payload' : sheet.payload,
-                                   } )
+
             # 7. send the payload
+            self.ctid.sendsheettolist(tosendlist,
+                                      { 'class' : 'sheet',
+                                        'channel' : channel,
+                                        'serial' : sheet.serial,
+                                        'compressed' : sheet.compressed,
+                                        'payload' : sheet.payload,
+                                        })
 
     # Timers/Synchro stuff - begin
 
@@ -1146,6 +1187,7 @@ class Safe:
                 agiargs[k[8:]] = v
 
         if function == 'presence':
+            # see https://projects.xivo.fr/issues/1995
             try:
                 if agiargs:
                     presenceid = agiargs.get('1')
@@ -1377,7 +1419,8 @@ class Channel:
         self.channel = channel
         self.peerchannel = None
         self.context = context
-        # destlist to update along the incoming channel path
+        # destlist to update along the incoming channel path, in order
+        # to be ready when a sheet will be sent to the 'destination'
 
         self.properties = {
             'monitored' : False, # for meetme as well as for regular calls ? agent calls ?
@@ -1451,7 +1494,8 @@ class Channel:
             'origin', 'direction', 'context',
             'did',
             'calleridnum', 'calleridname', 'calleridrdnis', 'calleridton',
-            'queuename', 'agentnumber'
+            'queuename', 'agentnumber',
+            'desttype', 'destid'
             ],
         'dp' : [],
         'db' : []

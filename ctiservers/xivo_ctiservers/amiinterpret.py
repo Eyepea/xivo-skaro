@@ -592,6 +592,8 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'desttype', 'user')
+        chanprops.set_extra_data('xivo', 'destid', xivo_dstid)
         chanprops.set_extra_data('xivo', 'origin', 'internal')
         chanprops.set_extra_data('xivo', 'direction', 'internal')
         return
