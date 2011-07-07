@@ -360,6 +360,14 @@ INSERT INTO "contexttype" VALUES(5, 'others', 'Autres', 0, 0, '');
 SELECT setval('contexttype_id_seq', 6);
 
 
+DROP TABLE IF EXISTS "ctiaccounts";
+CREATE TABLE "ctiaccounts" (
+ "login" varchar(64) NOT NULL,
+ "password" varchar(64) NOT NULL,
+ "label" varchar(128) NOT NULL
+);
+
+
 DROP TABLE IF EXISTS "cticontexts";
 CREATE TABLE "cticontexts" (
  "id" SERIAL,

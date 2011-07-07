@@ -322,6 +322,14 @@ INSERT INTO `contexttype` VALUES(4, 'services', 'Services', 0, 0, '');
 INSERT INTO `contexttype` VALUES(5, 'others', 'Autres', 0, 0, '');
 
 
+DROP TABLE IF EXISTS `ctiaccounts`;
+CREATE TABLE `ctiaccounts` (
+ `login` varchar(64) NOT NULL,
+ `password` varchar(64) NOT NULL,
+ `label` varchar(128) NOT NULL
+);
+
+
 DROP TABLE IF EXISTS `cticontexts`;
 CREATE TABLE `cticontexts` (
  `id` int(10) unsigned auto_increment,
