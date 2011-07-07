@@ -176,7 +176,7 @@ Management
 Entities
 
 ; acl(xivo-configuration-manage-server)
-XIVO servers
+XiVO servers
 
 ; acl(xivo-configuration-manage-ldapserver)
 LDAP servers
@@ -384,11 +384,14 @@ Provisioning
 ; acl(xivo-configuration-provisioning-general)
 General 
 
+; acl(xivo-configuration-check)
+Check
+
 ; acl(service-statistics)
 Statistics
 
 ; acl(service-statistics-call_center)
-Statistics call center
+Call Center Statistics
 
 ; acl(service-statistics-call_center-configuration)
 Configuration

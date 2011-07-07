@@ -131,10 +131,10 @@ Login timeout:
 Login timeout help
 
 ; fm_cti_parting_astid_context
-Separation context:
+Contexts Separation:
 
 ; fm_cti_parting_astid_ipbx
-Separation IPBX:
+IPBXes Separation:
 
 ; bt_inxivoserver
 Add
