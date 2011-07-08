@@ -23,7 +23,6 @@ $array['element'] = array();
 
 $array['element'] = array();
 $array['element']['default'] = '';
-$array['element']['idgroup'] = array();
 
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
@@ -50,7 +49,6 @@ $array['element']['deletable']['default'] = 1;
 
 
 $array['filter'] = array();
-$array['filter']['idgroup'] 	= array('cast' => 'ulongint');
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['appliname'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['xlets'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
