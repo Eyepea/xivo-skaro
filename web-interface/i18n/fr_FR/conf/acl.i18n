@@ -1,5 +1,5 @@
 ; acl(xivo)
-XIVO
+XiVO
 
 ; acl(service)
 Services
@@ -17,7 +17,7 @@ Utilisateurs
 Entités
 
 ; acl(xivo-configuration-manage-server)
-Serveurs XIVO
+Serveurs XiVO
 
 ; acl(xivo-configuration-manage-ldapserver)
 Serveurs LDAP

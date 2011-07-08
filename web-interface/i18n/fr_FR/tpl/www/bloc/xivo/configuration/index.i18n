@@ -1,5 +1,5 @@
 ; title_content_name
-XIVO
+XiVO
 
 ; stats_col_type
 Type
@@ -17,7 +17,7 @@ Total
 Utilisateur
 
 ; stats_type-server
-Serveur XIVO
+Serveur XiVO
 
 ; stats_type-ldapserver
 Serveur LDAP

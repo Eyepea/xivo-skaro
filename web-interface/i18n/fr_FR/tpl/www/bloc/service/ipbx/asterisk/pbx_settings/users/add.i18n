@@ -173,10 +173,10 @@ Supprimer message après notification :
 Droits d'appels
 
 ; fld-client
-XIVO Client
+XiVO Client
 
 ; fm_userfeatures_enableclient
-Activer XIVO Client:
+Activer XiVO Client:
 
 ; fm_userfeatures_loginclient
 Identifiant :

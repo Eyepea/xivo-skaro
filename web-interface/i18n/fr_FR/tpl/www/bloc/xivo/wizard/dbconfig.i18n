@@ -2,10 +2,10 @@
 Type de base de données :
 
 ; error_dbconfig_xivo(invalid)
-Paramètres de connexion invalides pour la base de données XIVO
+Paramètres de connexion invalides pour la base de données XiVO
 
 ; error_dbconfig_xivo(connection)
-Connexion impossible à la base de données XIVO
+Connexion impossible à la base de données XiVO
 
 ; error_dbconfig_ipbx(invalid)
 Paramètres de connexion invalides pour la base de données IPBX
@@ -17,7 +17,7 @@ Connexion impossible à la base de données IPBX
 Création des bases automatiquement :
 
 ; fm_dbconfig_sqlite-xivodb
-Fichier de données XIVO :
+Fichier de données XiVO :
 
 ; fm_dbconfig_sqlite-ipbxdb
 Fichier de données IPBX :
@@ -34,13 +34,13 @@ Hôte :
 Port :
 
 ; fm_dbconfig_mysql-xivodbname
-Nom de la base de données XIVO :
+Nom de la base de données XiVO :
 
 ; fm_dbconfig_mysql-xivouser
-Nom d'utilisateur pour la base de données XIVO :
+Nom d'utilisateur pour la base de données XiVO :
 
 ; fm_dbconfig_mysql-xivopass
-Mot de passe pour la base de données XIVO :
+Mot de passe pour la base de données XiVO :
 
 ; fm_dbconfig_mysql-ipbxdbname
 Nom de la base de données IPBX :
@@ -58,13 +58,13 @@ Hôte :
 Port :
 
 ; fm_dbconfig_postgresql-xivodbname
-Nom de la base de données XIVO :
+Nom de la base de données XiVO :
 
 ; fm_dbconfig_postgresql-xivouser
-Nom d'utilisateur pour la base de données XIVO :
+Nom d'utilisateur pour la base de données XiVO :
 
 ; fm_dbconfig_postgresql-xivopass
-Mot de passe pour la base de données XIVO :
+Mot de passe pour la base de données XiVO :
 
 ; fm_dbconfig_postgresql-ipbxdbname
 Nom de la base de données IPBX :

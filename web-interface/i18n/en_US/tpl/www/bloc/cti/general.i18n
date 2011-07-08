@@ -110,7 +110,7 @@ aide choix serveur asterisk
 Timeouts
 
 ; cti-xivo_servers
-XIVO server
+XiVO server
 
 ; fm_cti_updates_period
 Update period:

@@ -61,7 +61,7 @@ IPBX
 Base de données
 
 ; package_category(xivo)
-XIVO
+XiVO
 
 ; package_status(installed)
 Installé

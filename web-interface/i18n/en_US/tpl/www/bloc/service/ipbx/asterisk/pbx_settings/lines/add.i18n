@@ -245,7 +245,7 @@ Simultaneous calls:
 On-Hold Music:
 
 ; fm_linefeatures_enableclient
-Enable XIVO Client:
+Enable XiVO Client:
 
 ; fm_linefeatures_enablehint
 Enable supervision:
