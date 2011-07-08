@@ -1,5 +1,5 @@
 ; title_content_name
-Configuration CTI
+Configuration du serveur CTI
 
 ; smenu_cti_general
 Options générales
@@ -8,7 +8,7 @@ Options générales
 Enregistrer
 
 ; cti-ami
-Informations AMI
+Connexion à l'AMI
 
 ; fm_cti_ami_login
 Identifiant: 
@@ -35,7 +35,7 @@ Jeu de commandes:
 aide jeu de commandes
 
 ; cti-servers
-Serveurs CTI
+Ports en écoute
 
 ; fm_cti_fagi_ip
 Fast AGI:
@@ -107,7 +107,7 @@ Choix du serveur Asterisk:
 aide choix serveur asterisk
 
 ; cti-intervals
-Intervalles
+Echéances
 
 ; cti-xivo_servers
 Serveurs XIVO
@@ -143,7 +143,7 @@ Ajouter
 Enlever
 
 ; cti-accounts
-Comptes local
+Comptes des serveurs CTI externes
 
 ; col_ctiaccounts_label
 Label

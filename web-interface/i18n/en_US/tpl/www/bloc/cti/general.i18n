@@ -1,5 +1,5 @@
 ; title_content_name
-CTI Configuration
+CTI Server Configuration
 
 ; smenu_cti_general
 General Settings
@@ -14,7 +14,7 @@ Command set:
 Command set help
 
 ; cti-ami
-AMI Informations 
+AMI Connection 
 
 ; fm_cti_ami_login
 Login: 
@@ -29,7 +29,7 @@ IP Address:
 Port:
 
 ; cti-servers
-CTI server
+Listening ports
 
 ; fm_cti_list_ip
 IP address
@@ -107,7 +107,7 @@ Choix du serveur Asterisk:
 aide choix serveur asterisk
 
 ; cti-intervals
-Intervals
+Timeouts
 
 ; cti-xivo_servers
 XIVO server
@@ -143,7 +143,7 @@ Add
 Remove
 
 ; cti-accounts
-Local accounts
+External CTI servers' accounts
 
 ; col_ctiaccounts_label
 Label

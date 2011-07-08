@@ -5,7 +5,7 @@ Phonebook properties
 Hosts
 
 ; smenu_xivoservers
-XIVO servers
+XiVO servers
 
 ; smenu_ldapfilters
 LDAP filters
@@ -23,13 +23,13 @@ Add an host
 Delete one or more hosts
 
 ; bt_inxivoserver
-Add one or more XIVO servers ->
+Add one or more XiVO servers ->
 
 ; bt_outxivoserver
-<- Remove one or more XIVO servers
+<- Remove one or more XiVO servers
 
 ; create_xivoserver
-Create a XIVO server
+Create a XiVO server
 
 ; bt_inldapfilter
 Add one or more LDAP filters ->
