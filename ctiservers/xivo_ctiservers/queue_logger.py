@@ -35,27 +35,21 @@ class queue_logger:
     cache = None
     cache_threshold = 10    # Time to wait in sec before removing from the
                             # from the cache when a call is not answered
-    DEFAULT_URI = 'sqlite3:/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db'
-    
+
     @staticmethod
     def init(uri):
         global log
         log = logging.getLogger('XiVO queue logger')
-        log.info('Initializing the queue logger, uri = %s' % uri)
-        if not uri:
-            log.info('Null uri, using default')
-            queue_logger._uri = queue_logger.DEFAULT_URI
-        else:
-            queue_logger._uri = uri
+        queue_logger._uri = uri
         queue_logger.last_transaction = time.time()
         queue_logger.cache = {}
-    
+
     @staticmethod
     def _store_in_db(sql):
         with db_connection_manager.DbConnectionPool(queue_logger._uri) as connection:
             connection['cur'].query(str(sql))
             connection['conn'].commit()
-    
+
     @staticmethod
     def _trace_event(ev):
         if not queue_logger.cache.has_key(ev['Queue']):
@@ -92,7 +86,7 @@ class queue_logger:
                 if 'Member' not in values and leave_time < max_time:
                     to_delete.append((queue, event))
         for queue, event in to_delete:
-            del queue_logger.cache[queue][event] 
+            del queue_logger.cache[queue][event]
 
     @staticmethod
     def Join(ev):
@@ -113,7 +107,7 @@ class queue_logger:
             return ""
 
         ct = queue_logger.cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
-        
+
         sql = '''UPDATE "queue_info" '''\
               '''SET "call_picker" = "%s", "hold_time" = %s '''\
               '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' %\
