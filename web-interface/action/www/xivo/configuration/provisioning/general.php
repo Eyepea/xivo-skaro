@@ -42,10 +42,13 @@ if(isset($_QR['fm_send']) === true
 		dwho_report::push('error','error_during_update');
 	else
 	{
+	    $commonconf    = &$_XOBJ->get_module('commonconf');
+        $commonconf->generate();
+        $content     = $commonconf->apply();
 		dwho_report::push('info','successfully_updated');
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/general'));
 	}
-	 			
+
 	$info = array_merge($info,$_QR);
 }
 

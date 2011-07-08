@@ -31,7 +31,6 @@ $form = &$this->get_module('form');
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'idprofiles','value' => $this->get_var('idprofiles')));?>
-<?=$form->hidden(array('name' => 'idgroup','value' => $this->get_var('idgroup')));?>
 
 <?php
 	$this->file_include('bloc/cti/profiles/form');

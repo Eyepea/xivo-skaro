@@ -20,11 +20,8 @@
 dwho::load_class('dwho_json');
 
 $ctiprofiles = &$ipbx->get_module('ctiprofiles');
-$ctiprofilesgroup = &$ipbx->get_module('ctiprofilesgroup');
-
-$act = isset($_QR['act']) === true ? $_QR['act'] : 'listgroup';
+$act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $idprofiles = isset($_QR['idprofiles']) === true ? dwho_uint($_QR['idprofiles'],1) : 1;
-$idgroup = isset($_QR['idgroup']) === true ? dwho_uint($_QR['idgroup'],1) : 1;
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 # for ce loading translation file
@@ -43,14 +40,14 @@ $servicesavail = array(
 );
 
 $preferencesavail = array(
-    'logagent' => $_TPL->bbf('pref-logagent'),
-    'pauseagent' => $_TPL->bbf('pref-pauseagent'),
-    'blinktime' => $_TPL->bbf('pref-blinktime'),
-    'fontsize' => $_TPL->bbf('pref-fontsize'),
-    'fontname' => $_TPL->bbf('pref-fontname'),
-    'iconsize' => $_TPL->bbf('pref-iconsize'),
-    'supervisor' => $_TPL->bbf('pref-supervisor'),
-    'queues-showqueuenames' => $_TPL->bbf('pref-queues-showqueuenames'),
+    'logagent' => $_TPL->bbf('pref-logagent'), 
+    'pauseagent' => $_TPL->bbf('pref-pauseagent'), 
+    'blinktime' => $_TPL->bbf('pref-blinktime'), 
+    'fontsize' => $_TPL->bbf('pref-fontsize'), 
+    'fontname' => $_TPL->bbf('pref-fontname'), 
+    'iconsize' => $_TPL->bbf('pref-iconsize'), 
+    'supervisor' => $_TPL->bbf('pref-supervisor'), 
+    'queues-showqueuenames' => $_TPL->bbf('pref-queues-showqueuenames'), 
     'queues-showqueues' => $_TPL->bbf('pref-queues-showqueues'),
     'queues-statscolumns' => $_TPL->bbf('pref-queues-statscolumns'),
     'queues-shortlegends' => $_TPL->bbf('pref-queues-shortlegends'),
@@ -60,20 +57,20 @@ $preferencesavail = array(
 );
 
 $funcsavail = array(
-    'agents' => $_TPL->bbf('agents'),
-    'presence' => $_TPL->bbf('presence'),
-    'switchboard' => $_TPL->bbf('switchboard'),
-    'customerinfo' => $_TPL->bbf('customerinfo'),
-    'search' => $_TPL->bbf('search'),
-    'dial' => $_TPL->bbf('dial'),
+    'agents' => $_TPL->bbf('agents'), 
+    'presence' => $_TPL->bbf('presence'), 
+    'switchboard' => $_TPL->bbf('switchboard'), 
+    'customerinfo' => $_TPL->bbf('customerinfo'), 
+    'search' => $_TPL->bbf('search'), 
+    'dial' => $_TPL->bbf('dial'), 
     'chitchat' => $_TPL->bbf('chitchat'),
     'conference' => $_TPL->bbf('conference'),
     'directory' => $_TPL->bbf('directory'),
     'fax' => $_TPL->bbf('fax'),
     'features' => $_TPL->bbf('features'),
     'history' => $_TPL->bbf('history'),
-	'database' => $_TPL->bbf('database'),
-    // merge from callcenter campaigns. still exists ?
+		'database' => $_TPL->bbf('database'),
+		// merge from callcenter campaigns. still exists ?
     'supervisor' => $_TPL->bbf('func-supervisor'),
     'administrator' => $_TPL->bbf('func-administrator'),
 );
@@ -92,115 +89,17 @@ $xletslocavail = array(
 
 
 $param = array();
-$param['act'] = 'listgroup';
+$param['act'] = 'list';
 $param['idprofiles'] = $idprofiles;
-$param['idgroup'] = $idgroup;
 
 $info = $result = array();
 
 $element = array();
 $element['ctiprofiles'] = $ctiprofiles->get_element();
-$element['profilesgroup'] = $ctiprofilesgroup->get_element();
 
 switch($act)
 {
-	case 'addgroup':
-		$app = &$ipbx->get_application('ctiprofilesgroup');
-
-		$result = $fm_save = null;
-
-		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('profilesgroup',$_QR) === true)
-		{
-			if($app->set_add($_QR) === false
-			|| $app->add() === false)
-			{
-				$fm_save = false;
-				$result = $app->get_result();
-			}
-			else
-				$_QRY->go($_TPL->url('cti/profiles'),$param);
-		}
-
-		dwho::load_class('dwho_sort');
-
-		$_TPL->set_var('info',$result);
-		$_TPL->set_var('fm_save',$fm_save);
-		break;
-
-	case 'editgroup':
-		$app = &$ipbx->get_application('ctiprofilesgroup');
-
-		if(isset($_QR['idgroup']) === false
-		|| ($info = $app->get($_QR['idgroup'])) === false)
-			$_QRY->go($_TPL->url('cti/profiles'),$param);
-
-		$result = $fm_save = null;
-		$return = &$info;
-
-		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('profilesgroup',$_QR) === true)
-		{
-			$return = &$result;
-			if($app->set_edit($_QR) === false
-			|| $app->edit() === false)
-			{
-				$fm_save = false;
-				$result = $app->get_result();
-			}
-			else
-				$_QRY->go($_TPL->url('cti/profiles'),$param);
-		}
-
-		dwho::load_class('dwho_sort');
-
-		$_TPL->set_var('info',$return);
-		$_TPL->set_var('fm_save',$fm_save);
-		break;
-
-	case 'deletegroup':
-		$param['page'] = $page;
-
-		$app = &$ipbx->get_application('ctiprofilesgroup');
-
-		if(isset($_QR['idgroup']) === false
-		|| ($info = $app->get($_QR['idgroup'])) === false)
-			$_QRY->go($_TPL->url('cti/profiles'),$param);
-
-		$app->delete();
-
-		$_QRY->go($_TPL->url('cti/profiles'),$param);
-		break;
-
-	case 'listgroup':
-		$prevpage = $page - 1;
-		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
-
-		$app = &$ipbx->get_application('ctiprofilesgroup',null,false);
-
-		$order = array();
-		$order['name'] = SORT_ASC;
-
-		$limit = array();
-		$limit[0] = $prevpage * $nbbypage;
-		$limit[1] = $nbbypage;
-
-		$list = $app->get_profilesgroup_list($order);
-		$total = $app->get_cnt();
-
-		if($list === false && $total > 0 && $prevpage > 0)
-		{
-			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('cti/profiles'),$param);
-		}
-
-		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
-		$_TPL->set_var('list',$list);
-		break;
-
 	case 'add':
-		$param['idgroup'] = $idgroup;
-
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
@@ -217,7 +116,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('profiles',$_QR) === true)
 		{
-			$_QR['profiles']['idgroup'] = $idgroup;
 			$_QR['profiles']['deletable'] = 1;
 			$_QR['profiles']['presence'] = $_QR['presence'];
 
@@ -283,10 +181,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $param['act'] = 'list';
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -312,8 +207,6 @@ switch($act)
 		break;
 
 	case 'edit':
-		$param['idgroup'] = $idgroup;
-
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
@@ -334,7 +227,7 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('profiles',$_QR) === true)
 		{
-			$_QR['profiles']['idgroup'] = $idgroup;
+
 			$_QR['profiles']['deletable'] = 1;
 			$_QR['profiles']['presence'] = $_QR['presence'];
 
@@ -402,10 +295,7 @@ switch($act)
 				$info['ctiprofiles'] = $result['profiles'];
 			}
 			else
-			{
-			    $param['act'] = 'list';
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
-			}
 		}
 
 
@@ -444,7 +334,7 @@ switch($act)
 
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
-
+		
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
 			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);
@@ -475,7 +365,6 @@ switch($act)
 
 	case 'delete':
 		$param['page'] = $page;
-		$param['act'] = 'list';
 
 		$app = &$ipbx->get_application('ctiprofiles');
 
@@ -490,7 +379,6 @@ switch($act)
 
 	default:
 		$act = 'list';
-		$param['act'] = $act;
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
@@ -519,7 +407,7 @@ switch($act)
 $_TPL->set_var('act',$act);
 $_TPL->set_var('idprofiles',$idprofiles);
 $_TPL->set_var('element',$element);
-$_TPL->set_var('idgroup',$idgroup);
+#$_TPL->set_var('group',$group);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

@@ -30,7 +30,6 @@ $form = &$this->get_module('form');
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
-<?=$form->hidden(array('name' => 'idgroup','value' => $this->get_var('idgroup')));?>
 
 <?php
 	$this->file_include('bloc/cti/profiles/form');

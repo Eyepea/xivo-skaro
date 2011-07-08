@@ -21,9 +21,6 @@
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$act = $this->get_var('act');
-$idgroup = $this->get_var('idgroup');
-
 $toolbar_js = array();
 $toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-profiles-list\';';
 $toolbar_js[] = 'var xivo_toolbar_form_list = \'profiles[]\';';
@@ -35,30 +32,20 @@ $dhtml->write_js($toolbar_js);
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
 <?php
 
-if($act == 'list')
-{
-	echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
-						   $this->bbf('toolbar_opt_add'),
-						   'id="toolbar-bt-add"
-						border="0"'),
-				'cti/profiles',
-				array('act' => 'add',
-				'idgroup' => $idgroup),
-				null,
-				$this->bbf('toolbar_opt_add'));
-}
+echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
+				       $this->bbf('toolbar_opt_add'),
+				       'id="toolbar-bt-add"
+					border="0"'),
+			'cti/profiles',
+			'act=add',
+			null,
+			$this->bbf('toolbar_opt_add'));
 
-if($act == 'listgroup')
-{
-	echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
-						   $this->bbf('toolbar_opt_add'),
-						   'id="toolbar-bt-add"
-						border="0"'),
-				'cti/profiles',
-				array('act'   => 'addgroup'),
-				null,
-				$this->bbf('toolbar_opt_add'));
-}
+/*if($this->get_var('act') === 'list'):
+	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
+			       $this->bbf('toolbar_opt_advanced'),
+			       'id="toolbar-bt-advanced"
+				border="0"');*/
 ?>
 <div class="sb-advanced-menu">
 	<ul id="toolbar-advanced-menu">
