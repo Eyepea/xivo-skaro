@@ -1447,6 +1447,23 @@ CREATE INDEX "queue__idx__commented" ON "queue"("commented");
 CREATE INDEX "queue__idx__category" ON "queue"("category");
 
 
+DROP TABLE IF EXISTS "queue_info";
+CREATE TABLE "queue_info" (
+ "id" SERIAL,
+ "call_time_t" INTEGER,
+ "queue_name" VARCHAR(128) NOT NULL DEFAULT '',
+ "caller" VARCHAR(80) NOT NULL DEFAULT '',
+ "caller_uniqueid" VARCHAR(32) NOT NULL DEFAULT '',
+ "call_picker" VARCHAR(80),
+ "hold_time" INTEGER,
+ "talk_time" INTEGER,
+ PRIMARY KEY("id")
+);
+
+CREATE INDEX queue_info_call_time_t_index ON "queue_info" ("call_time_t");
+CREATE INDEX queue_info_queue_name_index ON "queue_info" ("queue_name");
+
+
 DROP TABLE IF EXISTS "queuefeatures";
 CREATE TABLE "queuefeatures" (
  "id" SERIAL,
