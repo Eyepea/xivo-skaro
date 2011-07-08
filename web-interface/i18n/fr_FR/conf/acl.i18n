@@ -202,6 +202,15 @@ Carnet d'adresses
 ; acl(service-ipbx-system_management)
 Configuration IPBX
 
+; acl(service-ipbx-dundi)
+Dundi (Routage dynamique)
+
+; acl(service-ipbx-dundi-peers)
+Pairs
+
+; acl(service-ipbx-dundi-mappings)
+Mappings
+
 ; acl(service-ipbx-system_management-backupfiles)
 Fichiers de sauvegarde
 
@@ -349,6 +358,12 @@ Recherche avancées
 ; acl(service-callcenter)
 Centre d'appel
 
+; acl(service-callcenter-settings)
+Configuration
+
+; acl(service-callcenter-registrationcampaign)
+Campage d'enregistrement
+
 ; acl(service-callcenter-general)
 Général
 
@@ -357,3 +372,24 @@ Général
 
 ; acl(service-callcenter-campaigns)
 Campagnes
+
+; acl(xivo-configuration-cti)
+Serveur CTI
+
+; acl(xivo-configuration-cti-configuration)
+Configuration
+
+; acl(xivo-configuration-cti-accounts)
+Compte
+
+; acl(service-ipbx-cost_center)
+Centre de cout
+
+; acl(service-ipbx-cost_center-operator)
+Operateur
+
+; acl(service-ipbx-cost_center-servicesgroup)
+Groupe de services
+
+; acl(xivo-monit)
+Monit

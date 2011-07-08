@@ -68,14 +68,6 @@ $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 
-$array['tree']['service']['ipbx']['call_center'] = array();
-$array['tree']['service']['ipbx']['call_center']['agents'] = true;
-$array['tree']['service']['ipbx']['call_center']['queues'] = true;
-$array['tree']['service']['ipbx']['call_center']['queuepenalties'] = true;
-$array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
-$array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
-$array['tree']['service']['ipbx']['call_center']['campaigns'] = true;
-
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 $array['tree']['service']['ipbx']['call_management']['outcall'] = true;
@@ -106,5 +98,13 @@ $array['tree']['statistics'] = array();
 $array['tree']['statistics']['statistics'] = array();
 $array['tree']['statistics']['statistics']['call_center'] = true;
 $array['tree']['statistics']['statistics']['cel'] = true;
+
+$array['tree']['callcenter'] = array();
+$array['tree']['callcenter']['agents'] = true;
+$array['tree']['callcenter']['queues'] = true;
+$array['tree']['callcenter']['queuepenalties'] = true;
+$array['tree']['callcenter']['queueskills'] = true;
+$array['tree']['callcenter']['queueskillrules'] = true;
+$array['tree']['callcenter']['campaigns'] = true;
 
 ?>

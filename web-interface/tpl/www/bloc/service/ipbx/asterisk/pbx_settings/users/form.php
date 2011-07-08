@@ -584,7 +584,7 @@ endif;
 	else:
 		echo	'<div id="fd-userfeatures-agentid" class="txt-center">',
 			$url->href_htmln($this->bbf('create_agent'),
-					'service/ipbx/call_center/agents',
+					'callcenter/settings/agents',
 					array('act'	=> 'addagent',
 					      'group'	=> 1)),
 			'</div>';

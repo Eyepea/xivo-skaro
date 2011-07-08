@@ -13,3 +13,24 @@ Campagnes
 
 ; mn_left_callcenter-tags
 Étiquettes
+
+; mn_left_ti_callcenter-settings
+Configuration
+
+; mn_left_ti_callcenter
+Centre de contacts
+
+; mn_left_callcenter-queues
+Files d'attente
+
+; mn_left_callcenter-queues-penalties
+Pénalitées
+
+; mn_left_callcenter-agents
+Agents
+
+; mn_left_callcenter-queueskills
+Compétences
+
+; mn_left_callcenter-queueskillrules
+Règles

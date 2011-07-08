@@ -36,7 +36,7 @@ $action_path = $_LOC->get_action_path('callcenter',0);
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 
 if($action_path === false)
-    echo "err"; //$_QRY->go($_TPL->url('xivo/logoff'));
+    $_QRY->go($_TPL->url('xivo/logoff'));
 
 die(include($action_path));
 

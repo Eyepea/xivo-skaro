@@ -36,13 +36,6 @@ $array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
 $array['tree']['service']['ipbx']['general_settings']['dundi'] = true;
 $array['tree']['service']['ipbx']['general_settings']['dahdi'] = true;
 
-$array['tree']['service']['ipbx']['call_center'] = array();
-$array['tree']['service']['ipbx']['call_center']['agents'] = true;
-$array['tree']['service']['ipbx']['call_center']['queues'] = true;
-$array['tree']['service']['ipbx']['call_center']['queuepenalty'] = true;
-$array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
-$array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
-
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
@@ -114,12 +107,6 @@ $array['tree']['service']['cti']['sheets']['sheetevents']             = true;
 $array['tree']['service']['cti']['control_system']                    = array();
 $array['tree']['service']['cti']['control_system']['restart']         = true;
 
-// callcenter
-$array['tree']['service']['callcenter'] = array();
-$array['tree']['service']['callcenter']['general']     = true;
-$array['tree']['service']['callcenter']['tags']        = true;
-$array['tree']['service']['callcenter']['campaigns']   = true;
-
 // monitoring
 $array['tree']['service']['monitoring'] = array();
 $array['tree']['service']['monitoring']['control_system'] = array();
@@ -143,6 +130,19 @@ $array['tree']['service']['statistics']['call_center']['queue'] = true;
 $array['tree']['service']['statistics']['cdr'] = array();
 $array['tree']['service']['statistics']['cdr']['search'] = true;
 $array['tree']['service']['statistics']['cdr']['advanced_search'] = true;
+
+// callcenter
+$array['tree']['service']['callcenter'] = array();
+$array['tree']['service']['callcenter']['settings'] = array();
+$array['tree']['service']['callcenter']['settings']['agents'] = true;
+$array['tree']['service']['callcenter']['settings']['queues'] = true;
+$array['tree']['service']['callcenter']['settings']['queuepenalty'] = true;
+$array['tree']['service']['callcenter']['settings']['queueskills'] = true;
+$array['tree']['service']['callcenter']['settings']['queueskillrules'] = true;
+$array['tree']['service']['callcenter']['registrationcampaign'] = array();
+$array['tree']['service']['callcenter']['registrationcampaign']['general']     = true;
+$array['tree']['service']['callcenter']['registrationcampaign']['tags']        = true;
+$array['tree']['service']['callcenter']['registrationcampaign']['campaigns']   = true;
 
 
 $array['tree']['xivo'] = array();

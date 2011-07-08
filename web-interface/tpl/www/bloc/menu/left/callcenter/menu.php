@@ -30,24 +30,83 @@ $dhtml = &$this->get_module('dhtml');
 	</dt>
 	<dd>
 <?php
-	if(xivo_user::chk_acl_section('service/cti') === true):
-		echo '<dl>';
-		echo '<dt>',$this->bbf('mn_left_ti_callcenter-campaigns'),'</dt>';
+	if(xivo_user::chk_acl_section('service/callcenter') === true):
 
-		echo	'<dd id="mn-general">',
-			$url->href_html($this->bbf('mn_left_callcenter-general'),
-				'callcenter/general'),
-			'</dd>';
-		echo	'<dd id="mn-campaigns">',
-			$url->href_html($this->bbf('mn_left_callcenter-campaigns'),
-				'callcenter/campaigns'),
-			'</dd>';
-		echo	'<dd id="mn-tags">',
-			$url->href_html($this->bbf('mn_left_callcenter-tags'),
-				'callcenter/tags'),
-			'</dd>';
+		echo '<dl>';
+
+    	if(xivo_user::chk_acl('settings','','service/callcenter') === true):
+
+    		echo	'<dl><dt>',$this->bbf('mn_left_ti_callcenter-settings'),'</dt>';
+
+        	if(xivo_user::chk_acl('settings','agents','service/callcenter') === true):
+        		echo	'<dd id="mn-call-center--agents">',
+        			$url->href_html($this->bbf('mn_left_callcenter-agents'),
+        					'callcenter/settings/agents',
+        					'act=list'),
+        			'</dd>';
+        	endif;
+
+        	if(xivo_user::chk_acl('settings','queues','service/callcenter') === true):
+        		echo	'<dd id="mn-call-center--queues">',
+        			$url->href_html($this->bbf('mn_left_callcenter-queues'),
+        					'callcenter/settings/queues',
+        					'act=list'),
+        			'</dd>';
+        	endif;
+
+        	if(xivo_user::chk_acl('settings','queuepenalty','service/callcenter') === true):
+        		echo	'<dd id="mn-call-center--queues-penalties">',
+        			$url->href_html($this->bbf('mn_left_callcenter-queues-penalties'),
+        					'callcenter/settings/queuepenalty',
+        					'act=list'),
+        			'</dd>';
+        	endif;
+
+        	if(xivo_user::chk_acl('settings','queueskills','service/callcenter') === true):
+        		echo	'<dd id="mn-call-center--queueskills">',
+        			$url->href_html($this->bbf('mn_left_callcenter-queueskills'),
+        					'callcenter/settings/queueskills',
+        					'act=list'),
+    					'</dd>';
+        	endif;
+
+        	if(xivo_user::chk_acl('settings','queueskillrules','service/callcenter') === true):
+        		echo	'<dd id="mn-call-center--queueskillrules">',
+        			$url->href_html($this->bbf('mn_left_callcenter-queueskillrules'),
+        					'callcenter/settings/queueskillrules',
+        					'act=list'),
+        					'</dd>';
+        	endif;
+
+    	endif;
+
+    	if(xivo_user::chk_acl('registrationcampaign','','service/callcenter') === true):
+
+    		echo '<dt>',$this->bbf('mn_left_ti_callcenter-campaigns'),'</dt>';
+
+        	if(xivo_user::chk_acl('registrationcampaign','general','service/callcenter') === true):
+        		echo	'<dd id="mn-general">',
+        			$url->href_html($this->bbf('mn_left_callcenter-general'),
+        				'callcenter/registrationcampaign/general'),
+        			'</dd>';
+        	endif;
+        	if(xivo_user::chk_acl('registrationcampaign','campaigns','service/callcenter') === true):
+        		echo	'<dd id="mn-campaigns">',
+        			$url->href_html($this->bbf('mn_left_callcenter-campaigns'),
+        				'callcenter/registrationcampaign/campaigns'),
+        			'</dd>';
+        	endif;
+        	if(xivo_user::chk_acl('registrationcampaign','tags','service/callcenter') === true):
+        		echo	'<dd id="mn-tags">',
+        			$url->href_html($this->bbf('mn_left_callcenter-tags'),
+        				'callcenter/registrationcampaign/tags'),
+        			'</dd>';
+        	endif;
+
+    	endif;
+
+		echo	'</dl>';
 	endif;
-	echo	'</dl>';
 
 ?>
 	</dd>

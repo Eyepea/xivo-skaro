@@ -50,9 +50,9 @@ $live = $this->get_var('live');
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left">
 <?php
-	if(xivo_user::chk_acl('call_center','agents') === true):
+	if(xivo_user::chk_acl('settings','agents','service/callcenter') === true):
 		echo	$url->href_html($this->bbf('stats_type-agent'),
-					'service/ipbx/call_center/agents',
+					'callcenter/settings/agents',
 					'act=list');
 	else:
 		echo $this->bbf('stats_type-agents');
@@ -64,11 +64,11 @@ $live = $this->get_var('live');
 					<td class="td-center"><?=$agentstat['total']?></td>
 					<td class="td-right txt-center">
 <?php
-	if(xivo_user::chk_acl('call_center','agents') === true):
+	if(xivo_user::chk_acl('settings','agents','service/callcenter') === true):
 		echo	$url->href_html($url->img_html('img/site/button/mini/blue/add.gif',
 						       $this->bbf('opt_add'),
 						       'border="0"'),
-					'service/ipbx/call_center/agents',
+					'callcenter/settings/agents',
 					array('act'	=> 'add'),
 					null,
 					$this->bbf('opt_add_agent'));
@@ -143,9 +143,9 @@ $live = $this->get_var('live');
 				<tr class="l-infos-2on2">
 					<td class="td-left txt-left">
 <?php
-	if(xivo_user::chk_acl('call_center','queues') === true):
+	if(xivo_user::chk_acl('settings','queues','service/callcenter') === true):
 		echo	$url->href_html($this->bbf('stats_type-queue'),
-					'service/ipbx/call_center/queues',
+					'callcenter/settings/queues',
 					'act=list');
 	else:
 		echo	$this->bbf('stats_type-queue');
@@ -157,11 +157,11 @@ $live = $this->get_var('live');
 					<td class="td-center"><?=$queuestat['total']?></td>
 					<td class="td-right txt-center">
 <?php
-	if(xivo_user::chk_acl('call_center','queues') === true):
+	if(xivo_user::chk_acl('settings','queues','service/callcenter') === true):
 		echo	$url->href_html($url->img_html('img/site/button/mini/blue/add.gif',
 						       $this->bbf('opt_add'),
 						       'border="0"'),
-					'service/ipbx/call_center/queues',
+					'callcenter/settings/queues',
 					array('act'	=> 'add'),
 					null,
 					$this->bbf('opt_add_queue'));

@@ -13,3 +13,24 @@ Campaigns
 
 ; mn_left_callcenter-tags
 Tags
+
+; mn_left_ti_callcenter-settings
+Configuration
+
+; mn_left_ti_callcenter
+Call Center
+
+; mn_left_callcenter-agents
+Agents
+
+; mn_left_callcenter-queues
+Queues
+
+; mn_left_callcenter-queues-penalties
+Queues penalties
+
+; mn_left_callcenter-queueskills
+Skills
+
+; mn_left_callcenter-queueskillrules
+Skill Rules

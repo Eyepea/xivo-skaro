@@ -99,53 +99,6 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
-
-	if(xivo_user::chk_acl('call_center') === true):
-		echo	'<dl><dt>',$this->bbf('mn_left_ti_callcenter'),'</dt>';
-
-		if(xivo_user::chk_acl('call_center','agents') === true):
-			echo	'<dd id="mn-call-center--agents">',
-				$url->href_html($this->bbf('mn_left_callcenter-agents'),
-						'service/ipbx/call_center/agents',
-						'act=list'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('call_center','queues') === true):
-			echo	'<dd id="mn-call-center--queues">',
-				$url->href_html($this->bbf('mn_left_callcenter-queues'),
-						'service/ipbx/call_center/queues',
-						'act=list'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('call_center','queuepenalty') === true):
-			echo	'<dd id="mn-call-center--queues-penalties">',
-				$url->href_html($this->bbf('mn_left_callcenter-queues-penalties'),
-						'service/ipbx/call_center/queuepenalty',
-						'act=list'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('call_center','queueskills') === true):
-			echo	'<dd id="mn-call-center--queueskills">',
-				$url->href_html($this->bbf('mn_left_callcenter-queueskills'),
-						'service/ipbx/call_center/queueskills',
-						'act=list'),
-						'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('call_center','queueskillrules') === true):
-			echo	'<dd id="mn-call-center--queueskillrules">',
-				$url->href_html($this->bbf('mn_left_callcenter-queueskillrules'),
-						'service/ipbx/call_center/queueskillrules',
-						'act=list'),
-						'</dd>';
-		endif;
-
-		echo	'</dl>';
-	endif;
-
 	if(xivo_user::chk_acl('pbx_settings') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxsettings'),'</dt>';
 

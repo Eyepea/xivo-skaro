@@ -28,24 +28,6 @@ Abonnements MWI
 ; mn_left_generalsettings-dundi
 Protocole DUNDi
 
-; mn_left_ti_callcenter
-Centre de contacts
-
-; mn_left_callcenter-queues
-Files d'attente
-
-; mn_left_callcenter-queues-penalties
-Pénalitées
-
-; mn_left_callcenter-agents
-Agents
-
-; mn_left_callcenter-queueskills
-Compétences
-
-; mn_left_callcenter-queueskillrules
-Règles
-
 ; mn_left_ti_pbxsettings
 Paramètres IPBX
 

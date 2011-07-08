@@ -37,7 +37,7 @@
 
 	$typeurl      = array(
 		'groups' => 'service/ipbx/pbx_settings/groups',
-		'queues' => 'service/ipbx/call_center/queues',
+		'queues' => 'callcenter/settings/queues',
 		'users'  => 'service/ipbx/pbx_settings/users'
 	);
 

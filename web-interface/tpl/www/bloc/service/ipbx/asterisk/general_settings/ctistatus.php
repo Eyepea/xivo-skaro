@@ -20,7 +20,7 @@
                     '<td>',$url->href_html($url->img_html('img/site/button/edit.gif',
                                 $this->bbf('opt_modify'),
                                 'border="0"'),
-                            'service/ipbx/call_center/agents',
+                            'callcenter/settings/agents',
                             array('act' => 'edit',
                                     'group'   => $ref['agentgroup']['id']),
                             null,

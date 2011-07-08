@@ -113,7 +113,6 @@ class dwho_location
         $filepath = trim($section.DWHO_SEP_DIR.$path,DWHO_SEP_DIR);
         $newpath = $this->_apply_action_misc($filepath);
 
-
         if(is_string($newpath) === true)
             $filepath = $newpath;
 

@@ -250,31 +250,6 @@ $array['service/ipbx/web_services/phonebook/menu'] = 'service/ipbx/web_services.
 $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/local/';
 
 
-//call_center
-$array['service/ipbx/call_center/queues'] = 'service/ipbx/index.php/call_center/queues/';
-$array['service/ipbx/call_center/queuepenalty'] = 'service/ipbx/index.php/call_center/queuepenalty/';
-$array['service/ipbx/call_center/agents'] = 'service/ipbx/index.php/call_center/agents/';
-$array['service/ipbx/call_center/queueskills'] = 'service/ipbx/index.php/call_center/queueskills/';
-$array['service/ipbx/call_center/queueskillrules'] = 'service/ipbx/index.php/call_center/queueskillrules/';
-
-$array['service/ipbx/json/restricted/call_center/agents'] = 'service/ipbx/json.php/restricted/call_center/agents/';
-$array['service/ipbx/json/restricted/call_center/queues'] = 'service/ipbx/json.php/restricted/call_center/queues/';
-
-$array['service/ipbx/json/restricted/call_center/queuepenalty'] = 'service/ipbx/json.php/restricted/call_center/queuepenalty/';
-$array['service/ipbx/json/restricted/call_center/queueskills'] = 'service/ipbx/json.php/restricted/call_center/queueskills/';
-$array['service/ipbx/json/restricted/call_center/queueskillrules'] = 'service/ipbx/json.php/restricted/call_center/queueskillrules/';
-$array['service/ipbx/json/restricted/call_center/campaigns'] = 'service/ipbx/json.php/restricted/call_center/campaigns/';
-
-$array['service/ipbx/json/private/call_center/agents'] = 'service/ipbx/json.php/private/call_center/agents/';
-$array['service/ipbx/json/private/call_center/queues'] = 'service/ipbx/json.php/private/call_center/queues/';
-
-$array['service/ipbx/json/private/call_center/queuepenalty'] = 'service/ipbx/json.php/private/call_center/queuepenalty/';
-$array['service/ipbx/json/private/call_center/campaigns'] = 'service/ipbx/json.php/private/call_center/campaigns/';
-
-$array['service/ipbx/ui/call_center/agents'] = 'service/ipbx/ui.php/call_center/agents/';
-$array['service/ipbx/ui/call_center/queues'] = 'service/ipbx/ui.php/call_center/queues/';
-
-
 // system_management
 $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/system_management/backupfiles/';
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
@@ -340,11 +315,49 @@ $array['cti/json/private/configuration'] = 'cti/json.php/private/configuration';
 $array['cti/json/private/accounts'] = 'cti/json.php/private/accounts';
 
 
-// callcenter
+/*
+ * CALLCENTER SECTION
+ *
+ */
+
 $array['callcenter']                    = 'callcenter/index.php';
-$array['callcenter/general']            = 'callcenter/index.php/general';
-$array['callcenter/tags']               = 'callcenter/index.php/tags';
-$array['callcenter/campaigns']          = 'callcenter/index.php/campaigns';
+$array['callcenter/settings/queues']             = 'callcenter/index.php/settings/queues/';
+$array['callcenter/settings/queuepenalty']       = 'callcenter/index.php/settings/queuepenalty/';
+$array['callcenter/settings/agents']             = 'callcenter/index.php/settings/agents/';
+$array['callcenter/settings/queueskills']        = 'callcenter/index.php/settings/queueskills/';
+$array['callcenter/settings/queueskillrules']    = 'callcenter/index.php/settings/queueskillrules/';
+$array['callcenter/registrationcampaign/general']            = 'callcenter/index.php/registrationcampaign/general/';
+$array['callcenter/registrationcampaign/tags']               = 'callcenter/index.php/registrationcampaign/tags/';
+$array['callcenter/registrationcampaign/campaigns']          = 'callcenter/index.php/registrationcampaign/campaigns/';
+
+$array['service/ipbx/json/restricted/call_center/agents'] =
+$array['callcenter/json/restricted/settings/agents']          = 'callcenter/json.php/restricted/settings/agents/';
+$array['service/ipbx/json/restricted/call_center/queues'] =
+$array['callcenter/json/restricted/settings/queues']          = 'callcenter/json.php/restricted/settings/queues/';
+$array['service/ipbx/json/restricted/call_center/queuepenalty'] =
+$array['callcenter/json/restricted/settings/queuepenalty']    = 'callcenter/json.php/restricted/settings/queuepenalty/';
+$array['service/ipbx/json/restricted/call_center/queueskills'] =
+$array['callcenter/json/restricted/settings/queueskills']     = 'callcenter/json.php/restricted/settings/queueskills/';
+$array['service/ipbx/json/restricted/call_center/queueskillrules'] =
+$array['callcenter/json/restricted/settings/queueskillrules'] = 'callcenter/json.php/restricted/settings/queueskillrules/';
+$array['service/ipbx/json/restricted/call_center/campaigns'] =
+$array['callcenter/json/restricted/registrationcampaign/campaigns']       = 'callcenter/json.php/restricted/registrationcampaign/campaigns/';
+
+$array['service/ipbx/json/private/call_center/agents'] =
+$array['callcenter/json/private/settings/agents']          = 'callcenter/json.php/private/settings/agents/';
+$array['service/ipbx/json/private/call_center/queues'] =
+$array['callcenter/json/private/settings/queues']          = 'callcenter/json.php/private/settings/queues/';
+$array['service/ipbx/json/private/call_center/queuepenalty'] =
+$array['callcenter/json/private/settings/queuepenalty']    = 'callcenter/json.php/private/settings/queuepenalty/';
+$array['callcenter/json/private/settings/queueskills']     = 'callcenter/json.php/private/settings/queueskills/';
+$array['callcenter/json/private/settings/queueskillrules'] = 'callcenter/json.php/private/settings/queueskillrules/';
+$array['service/ipbx/json/private/call_center/campaigns'] =
+$array['callcenter/json/private/registrationcampaign/campaigns']      = 'callcenter/json.php/private/registrationcampaign/campaigns/';
+
+$array['service/ipbx/ui/call_center/agents'] =
+$array['callcenter/ui/settings/agents'] = 'callcenter/ui.php/settings/agents/';
+$array['service/ipbx/ui/call_center/queues'] =
+$array['callcenter/ui/settings/queues'] = 'callcenter/ui.php/settings/queues/';
 
 /*
  * MUNIN STATS SECTION

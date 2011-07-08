@@ -118,6 +118,15 @@ Phonebook
 ; acl(service-ipbx-system_management)
 IPBX configuration
 
+; acl(service-ipbx-dundi)
+Dundi
+
+; acl(service-ipbx-dundi-peers)
+Peers
+
+; acl(service-ipbx-dundi-mappings)
+Mappings
+
 ; acl(service-ipbx-system_management-configfiles)
 Configuration files
 
@@ -399,6 +408,15 @@ Configuration
 ; acl(service-statistics-call_center-data)
 Data
 
+; acl(service-callcenter)
+Call Center
+
+; acl(service-callcenter-settings)
+Configuration
+
+; acl(service-callcenter-registrationcampaign)
+Campage d'enregistrement
+
 ; acl(service-callcenter-general)
 General
 
@@ -407,3 +425,6 @@ Tags
 
 ; acl(service-callcenter-campaigns)
 Campaigns
+
+; acl(xivo-monit)
+Monit

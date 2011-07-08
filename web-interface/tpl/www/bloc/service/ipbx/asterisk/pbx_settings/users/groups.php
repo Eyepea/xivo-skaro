@@ -267,7 +267,7 @@ $qmember = $this->get_var('qmember');
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_queue'),
-					'service/ipbx/call_center/queues',
+					'callcenter/settings/queues',
 					'act=add'),
 			'</div>';
 	endif;

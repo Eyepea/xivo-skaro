@@ -214,7 +214,7 @@ if (is_null($listqos) === false
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_incall'),
-					'service/ipbx/call_center/incalls',
+					'service/ipbx/call_management/incall',
 					'act=add'),
 			'</div>';
 	endif;
@@ -244,7 +244,7 @@ if (is_null($listqos) === false
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_queue'),
-					'service/ipbx/call_center/queues',
+					'callcenter/settings/queues',
 					'act=add'),
 			'</div>';
 	endif;
@@ -309,7 +309,7 @@ if (is_null($listqos) === false
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_agent'),
-					'service/ipbx/call_center/agents',
+					'callcenter/settings/agents',
 					'act=add'),
 			'</div>';
 	endif;

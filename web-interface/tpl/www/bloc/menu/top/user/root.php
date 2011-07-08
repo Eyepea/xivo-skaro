@@ -45,7 +45,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					</li>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_callcenter'),
-								   'callcenter/general');?>
+								   'callcenter');?>
 					</li>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
