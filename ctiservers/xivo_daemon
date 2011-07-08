@@ -291,6 +291,9 @@ class ctiserver:
             log.exception('cb_timer %s' % args)
         return
 
+    def updates_period(self):
+        return int(self.cconf.getconfig('main').get('updates_period', '3600'))
+
     def main_loop(self):    # {
         self.askedtoquit = False
 
@@ -321,7 +324,6 @@ class ctiserver:
         xivoconf_general = self.cconf.getconfig('main')
 
         # loads the general configuration
-        self.updates_period = int(xivoconf_general.get('updates_period', '60'))
         ctilog = xivoconf_general.get('ctilog_db_uri')
         socktimeout = float(xivoconf_general.get('sockettimeout', '2'))
         prefixfile = xivoconf_general.get('prefixfile')
@@ -526,7 +528,7 @@ class ctiserver:
                 if kind in ['CTI', 'CTIS'] and iconn.need_sending():
                     writefds.append(iconn)
             [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [],
-                                                     self.updates_period)
+                                                     self.updates_period())
         # }
         except Exception:  # {
             log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
@@ -785,7 +787,7 @@ class ctiserver:
 
                     for ipbxid, safe in self.safe.iteritems():
                       if ipbxid == self.myipbxid:
-                        if (time.time() - self.lastrequest_time[ipbxid]) > self.updates_period or self.update_userlist[ipbxid]:
+                        if (time.time() - self.lastrequest_time[ipbxid]) > self.updates_period() or self.update_userlist[ipbxid]:
                             self.lastrequest_time[ipbxid] = time.time()
                             log.info('[%s] %s : updates (computed timeout) %s (%s)'
                                      % (self.xdname, ipbxid, time.asctime(), self.update_userlist[ipbxid]))
