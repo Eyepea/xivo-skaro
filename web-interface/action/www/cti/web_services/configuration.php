@@ -435,19 +435,19 @@ switch($act)
         {
             $ipbxuri = 'https://'.$_SERVER['SERVER_ADDR'].'/service/ipbx/json.php/restricted/';
             $ctiuri = 'https://'.$_SERVER['SERVER_ADDR'].'/cti/json.php/restricted/';
+            $callcenteruri = 'https://'.$_SERVER['SERVER_ADDR'].'/callcenter/json.php/restricted/';
         }
         else
         {
             $ipbxuri = 'https://127.0.0.1/service/ipbx/json.php/private/';
             $ctiuri = 'https://127.0.0.1/cti/json.php/private/';
+            $callcenteruri = 'https://127.0.0.1/callcenter/json.php/private/';
         }
 
         $urllists = array(
             'urllist_users' => array($ipbxuri.'pbx_settings/users',$ctiuri.'accounts'),
             'urllist_lines' => array($ipbxuri.'pbx_settings/lines'),
             'urllist_devices' => array($ipbxuri.'pbx_settings/devices'),
-            'urllist_agents' => array($ipbxuri.'call_center/agents'),
-            'urllist_queues' => array($ipbxuri.'call_center/queues'),
             'urllist_groups' => array($ipbxuri.'pbx_settings/groups'),
             'urllist_meetmes' => array($ipbxuri.'pbx_settings/meetme'),
             'urllist_voicemails' => array($ipbxuri.'pbx_settings/voicemail'),
@@ -457,7 +457,10 @@ switch($act)
             'urllist_trunks' => array($ipbxuri.'trunk_management/sip',$ipbxuri.'trunk_management/iax'),
             'urllist_phonebook' => array($ipbxuri.'pbx_services/phonebook'),
             'urllist_extenfeatures' => array($ipbxuri.'pbx_services/extenfeatures'),
-            'urllist_parkinglot' => array($ipbxuri.'pbx_services/parkinglot')
+            'urllist_parkinglot' => array($ipbxuri.'pbx_services/parkinglot'),
+
+            'urllist_agents' => array($callcenteruri.'settings/agents'),
+            'urllist_queues' => array($callcenteruri.'settings/queues')
         );
         $outlocalserver['urllists'] = $urllists;
         $outlocalserver['cdr_db_uri'] = $db_ast;
