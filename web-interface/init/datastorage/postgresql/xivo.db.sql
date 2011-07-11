@@ -352,16 +352,12 @@ CREATE TABLE "ha" (
  "cluster_mailto"  VARCHAR(255) DEFAULT NULL,
  "cluster_pingd"   VARCHAR(255) DEFAULT NULL,
 
- --"alert_emails" varchar(1024) DEFAULT NULL,
- --"user" varchar(16) NOT NULL DEFAULT 'pf-replication',
- --"password" varchar(16) NOT NULL DEFAULT 'proformatique',
- --"dest_user" varchar(16) NOT NULL DEFAULT 'pf-replication',
- --"dest_password" varchar(16) NOT NULL DEFAULT 'proformatique',
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ha" VALUES (1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1);
+INSERT INTO "ha" VALUES (1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,20,60,NULL,NULL);
 SELECT setval('ha_id_seq', 2);
+
 
 DROP TABLE IF EXISTS "ha_cluster_node";
 CREATE TABLE "ha_cluster_node" (
@@ -369,6 +365,7 @@ CREATE TABLE "ha_cluster_node" (
  "address" VARCHAR(128) NOT NULL DEFAULT '',
  PRIMARY KEY ("device", "address")
 );
+
 
 DROP TABLE IF EXISTS "ha_service";
 CREATE TABLE "ha_service" (
@@ -412,6 +409,7 @@ CREATE TABLE "provisioning" (
 
 INSERT INTO "provisioning" VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0, 0);
 SELECT setval('provisioning_id_seq', 2);
+
 
 --- STATS ---
 DROP TABLE IF EXISTS "stats_conf";

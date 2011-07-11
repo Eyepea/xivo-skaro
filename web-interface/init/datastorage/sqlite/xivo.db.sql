@@ -49,8 +49,8 @@ CREATE TABLE directories (
  PRIMARY KEY(id)
 );
 
-INSERT INTO directories VALUES (1,'internal' , NULL, 'internal' , '', '');
-INSERT INTO directories VALUES (2,'phonebook', NULL, 'phonebook', '', '');
+INSERT INTO directories VALUES (1,'internal' , NULL, 'internal' , '', 'XiVO internal users');
+INSERT INTO directories VALUES (2,'phonebook', NULL, 'phonebook', '', 'XiBO phonebook');
 
 
 DROP TABLE entity;
@@ -194,25 +194,26 @@ CREATE TABLE server (
  id integer unsigned,
  name varchar(64) NOT NULL DEFAULT '',
  host varchar(255) NOT NULL DEFAULT '',
- port smallint unsigned NOT NULL,
- ssl tinyint(1) NOT NULL DEFAULT 0,
- disable tinyint(1) NOT NULL DEFAULT 0,
+ ws_login varchar(64) NOT NULL DEFAULT '',
+ ws_pass varchar(64) NOT NULL DEFAULT '',
+ ws_port INTEGER NOT NULL,
+ ws_ssl INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ cti_port INTEGER NOT NULL,
+ cti_login varchar(64) NOT NULL DEFAULT '',
+ cti_pass varchar(64) NOT NULL DEFAULT '',
+ cti_ssl INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  dcreate integer unsigned NOT NULL DEFAULT 0,
+ disable tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
- webi varchar(255) NOT NULL DEFAULT '',
- ami_port smallint unsigned NOT NULL,
- ami_login varchar(64) NOT NULL DEFAULT '',
- ami_pass varchar(64) NOT NULL DEFAULT '',
  PRIMARY KEY(id)
 );
 
-INSERT INTO server VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivo_cti_user','phaickbebs9');
 
 CREATE INDEX server__idx__host ON server(host);
-CREATE INDEX server__idx__port ON server(port);
 CREATE INDEX server__idx__disable ON server(disable);
 CREATE UNIQUE INDEX server__uidx__name ON server(name);
-CREATE UNIQUE INDEX server__uidx__host_port ON server(host,port);
+CREATE UNIQUE INDEX server__uidx__host_wsport ON server(host,ws_port);
+CREATE UNIQUE INDEX server__uidx__host_ctiport ON server(host,cti_port);
 
 
 DROP TABLE session;
@@ -252,6 +253,7 @@ CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
 INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datetime('now','utc')),0,'');
 --INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
+
 
 DROP TABLE dhcp;
 CREATE TABLE dhcp (
@@ -297,60 +299,86 @@ INSERT INTO monitoring VALUES (1,0,NULL,NULL,NULL);
 DROP TABLE ha;
 CREATE TABLE ha (
  id integer unsigned,
- apache2 tinyint(1) NOT NULL DEFAULT 0,
- asterisk tinyint(1) NOT NULL DEFAULT 0,
- dhcp tinyint(1) NOT NULL DEFAULT 0,
- monit tinyint(1) NOT NULL DEFAULT 0,
- mysql tinyint(1) NOT NULL DEFAULT 0,
- ntp tinyint(1) NOT NULL DEFAULT 0,
- rsync tinyint(1) NOT NULL DEFAULT 0,
- smokeping tinyint(1) NOT NULL DEFAULT 0,
- mailto tinyint(1) NOT NULL DEFAULT 0,
- alert_emails varchar(1024) DEFAULT NULL,
- serial varchar(16) NOT NULL DEFAULT '',
- authkeys varchar(128) NOT NULL DEFAULT '',
- com_mode varchar(8) NOT NULL DEFAULT 'ucast',
- user varchar(16) NOT NULL DEFAULT 'pf-replication',
- password varchar(16) NOT NULL DEFAULT 'proformatique',
- dest_user varchar(16) NOT NULL DEFAULT 'pf-replication',
- dest_password varchar(16) NOT NULL DEFAULT 'proformatique',
+ netaddr     VARCHAR(255) DEFAULT NULL,
+ netmask     VARCHAR(255) DEFAULT NULL,
+ mcast       VARCHAR(255) DEFAULT NULL,
+
+ -- node 1
+ node1_ip    VARCHAR(255) DEFAULT NULL,
+ node1_name  VARCHAR(255) DEFAULT NULL,
+ -- node 2
+ node2_ip    VARCHAR(255) DEFAULT NULL,
+ node2_name  VARCHAR(255) DEFAULT NULL,
+
+ -- cluster
+ cluster_name  VARCHAR(255) DEFAULT NULL,
+ cluster_group INTEGER NOT NULL DEFAULT 1,
+ cluster_itf_data VARCHAR(255) DEFAULT NULL,
+ cluster_monitor INTEGER NOT NULL DEFAULT 20,
+ cluster_timeout INTEGER NOT NULL DEFAULT 60,
+ cluster_mailto  VARCHAR(255) DEFAULT NULL,
+ cluster_pingd   VARCHAR(255) DEFAULT NULL,
  PRIMARY KEY(id)
 );
 
-INSERT INTO ha VALUES (1,0,0,0,0,0,0,0,0,0,NULL,'','','ucast','pf-replication','proformatique','pf-replication','proformatique');
+INSERT INTO ha VALUES (1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,20,60,NULL,NULL);
 
-DROP TABLE ha_uname_node;
-CREATE TABLE ha_uname_node (
- uname_node varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY (uname_node)
+
+DROP TABLE ha_cluster_node;
+CREATE TABLE ha_cluster_node (
+ device  VARCHAR(128) NOT NULL DEFAULT '',
+ address VARCHAR(128) NOT NULL DEFAULT '',
+ PRIMARY KEY (device, address)
 );
 
-DROP TABLE ha_ping_ipaddr;
-CREATE TABLE ha_ping_ipaddr (
- ping_ipaddr varchar(39) NOT NULL DEFAULT '',
- PRIMARY KEY (ping_ipaddr)
+
+DROP TABLE ha_service;
+CREATE TABLE ha_service (
+ name      VARCHAR(128) NOT NULL,
+ active    INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ rsc_class VARCHAR(8) DEFAULT NULL,  -- 'lsb' or 'ocf'
+ monitor   INTEGER DEFAULT NULL,
+ timeout   INTEGER DEFAULT NULL,
+ PRIMARY KEY (name)
 );
 
-DROP TABLE ha_virtual_network;
-CREATE TABLE ha_virtual_network(
- ipaddr varchar(39) NOT NULL DEFAULT '',
- netmask varchar(39) NOT NULL DEFAULT '',
- broadcast varchar(39) NOT NULL DEFAULT '',
- PRIMARY KEY (ipaddr)
+INSERT INTO ha_service VALUES ('asterisk'           , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('nginx'              , 0, 'ocf', NULL, NULL);
+INSERT INTO ha_service VALUES ('isc-dhcp-server'    , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('ntp'                , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('csync2'             , 0, 'ocf', NULL, NULL);
+INSERT INTO ha_service VALUES ('postgresql'         , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-agid'       , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-confgend'   , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-cti-server' , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-dxtora'     , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-provd'      , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-sysconfd'   , 0, 'lsb', NULL, NULL);
+INSERT INTO ha_service VALUES ('pf-xivo-ha-scripts' , 0, 'lsb', NULL, NULL);
+
+
+DROP TABLE provisioning;
+CREATE TABLE provisioning (
+ id INTEGER UNSIGNED,
+ net4_ip varchar(39) NOT NULL,
+ net4_ip_rest varchar(39) NOT NULL,
+ username varchar(32) NOT NULL,
+ password varchar(32) NOT NULL,
+ dhcp_integration INTEGER NOT NULL DEFAULT 0,
+ rest_port integer NOT NULL,
+ http_port integer NOT NULL,
+ private INTEGER NOT NULL DEFAULT 0,
+ secure INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY (id)
 );
 
-DROP TABLE ha_peer;
-CREATE TABLE ha_peer (
- iface varchar(64) NOT NULL DEFAULT '',
- host varchar(128) NOT NULL DEFAULT '',
- transfer tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY (iface, host)
-);
+INSERT INTO provisioning VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0, 0);
+
 
 --- STATS ---
 DROP TABLE stats_conf;
 CREATE TABLE stats_conf (
- id int(10) unsigned,
+ id integer unsigned,
  name varchar(64) NOT NULL DEFAULT '',
  hour_start time NOT NULL,
  hour_end time NOT NULL,
@@ -369,17 +397,17 @@ CREATE TABLE stats_conf (
  period5 varchar(16) NOT NULL DEFAULT 0,
  dbegcache int(10) NOT NULL DEFAULT 0, 
  dendcache int(10) NOT NULL DEFAULT 0, 
- dgenercache int(10) unsigned, 
- dcreate int(10) unsigned, 
- dupdate int(10) unsigned, 
+ dgenercache integer unsigned, 
+ dcreate integer unsigned, 
+ dupdate integer unsigned, 
  disable tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
 );
 
-CREATE INDEX stats_conf__idx__id ON stats_conf(id);
 CREATE INDEX stats_conf__idx__disable ON stats_conf(disable);
 CREATE UNIQUE INDEX stats_conf__uidx__name ON stats_conf(name);
+
 
 DROP TABLE stats_conf_agent;
 CREATE TABLE stats_conf_agent (
@@ -388,6 +416,15 @@ CREATE TABLE stats_conf_agent (
 );
 CREATE UNIQUE INDEX stats_conf_agent_index ON stats_conf_agent(stats_conf_id,agentfeatures_id);
 
+
+DROP TABLE stats_conf_user;
+CREATE TABLE stats_conf_user (
+    stats_conf_id int(10) NOT NULL,
+    userfeatures_id int(10) NOT NULL
+);
+CREATE UNIQUE INDEX stats_conf_user_index ON stats_conf_user(stats_conf_id,userfeatures_id);
+
+
 DROP TABLE stats_conf_incall;
 CREATE TABLE stats_conf_incall (
     stats_conf_id int(10) NOT NULL,
@@ -395,20 +432,15 @@ CREATE TABLE stats_conf_incall (
 );
 CREATE UNIQUE INDEX stats_conf_incall_index ON stats_conf_incall(stats_conf_id,incall_id);
 
-DROP TABLE stats_conf_user;
-CREATE TABLE stats_conf_user (
-    stats_conf_id int(10) NOT NULL,
-    userfeatures_id int(10) NOT NULL,
-    qos smallint(4) NOT NULL DEFAULT 0
-);
-CREATE UNIQUE INDEX stats_conf_user_index ON stats_conf_user(stats_conf_id,userfeatures_id);
 
 DROP TABLE stats_conf_queue;
 CREATE TABLE stats_conf_queue (
     stats_conf_id int(10) NOT NULL,
-    queuefeatures_id int(10) NOT NULL
+    queuefeatures_id int(10) NOT NULL,
+    "qos" integer NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX stats_conf_queue_index ON stats_conf_queue(stats_conf_id,queuefeatures_id);
+
 
 DROP TABLE stats_conf_group;
 CREATE TABLE stats_conf_group (
