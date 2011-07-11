@@ -96,6 +96,21 @@ CREATE TABLE agentqueueskill
 CREATE INDEX agentqueueskill__idx__agentid ON agentqueueskill(agentid);
 
 
+DROP TABLE attachment;
+CREATE TABLE attachment (
+ id INTEGER UNSIGNED,
+ name varchar(64) NOT NULL,
+ object_type varchar(16) NOT NULL,
+ object_id INTEGER NOT NULL,
+ file BINARY,
+ size INTEGER NOT NULL,
+ mime varchar(64) NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX attachment__uidx__object_type__object_id ON attachment(object_type,object_id);
+
+
 DROP TABLE callerid;
 CREATE TABLE callerid (
  mode varchar(9),
@@ -215,8 +230,8 @@ DROP TABLE context;
 CREATE TABLE context (
  name varchar(39) NOT NULL,
  displayname varchar(128) NOT NULL DEFAULT '',
- contexttype varchar(40) NOT NULL DEFAULT 'intern',
  entity varchar(64),
+ contexttype varchar(40) NOT NULL DEFAULT 'internal',
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(name)
@@ -239,20 +254,6 @@ CREATE TABLE contextinclude (
 CREATE INDEX contextinclude__idx__context ON contextinclude(context);
 CREATE INDEX contextinclude__idx__include ON contextinclude(include);
 CREATE INDEX contextinclude__idx__priority ON contextinclude(priority);
-
-
-DROP TABLE contextnummember;
-CREATE TABLE contextnummember (
- context varchar(39) NOT NULL,
- type varchar(6) NOT NULL,
- typeval varchar(128) NOT NULL DEFAULT 0,
- number varchar(40) NOT NULL DEFAULT '',
- PRIMARY KEY(context,type,typeval)
-);
-
-CREATE INDEX contextnummember__idx__context ON contextnummember(context);
-CREATE INDEX contextnummember__idx__context_type ON contextnummember(context,type);
-CREATE INDEX contextnummember__idx__number ON contextnummember(number);
 
 
 DROP TABLE contextmember;
@@ -281,6 +282,20 @@ CREATE TABLE contextnumbers (
 CREATE INDEX contextnumbers__idx__context_type ON contextnumbers(context,type);
 
 
+DROP TABLE contextnummember;
+CREATE TABLE contextnummember (
+ context varchar(39) NOT NULL,
+ type varchar(6) NOT NULL,
+ typeval varchar(128) NOT NULL DEFAULT 0,
+ number varchar(40) NOT NULL DEFAULT '',
+ PRIMARY KEY(context,type,typeval)
+);
+
+CREATE INDEX contextnummember__idx__context ON contextnummember(context);
+CREATE INDEX contextnummember__idx__context_type ON contextnummember(context,type);
+CREATE INDEX contextnummember__idx__number ON contextnummember(number);
+
+
 DROP TABLE contexttype;
 CREATE TABLE contexttype (
  id integer unsigned,
@@ -296,11 +311,20 @@ CREATE INDEX contexttype__idx__commented ON contexttype(commented);
 CREATE INDEX contexttype__idx__deletable ON contexttype(deletable);
 CREATE UNIQUE INDEX contexttype__uidx__name ON contexttype(name);
 
-INSERT INTO contexttype VALUES(1, 'intern', 'Interne', 0, 0, '');
-INSERT INTO contexttype VALUES(2, 'from-extern', 'Entrant', 0, 0, '');
-INSERT INTO contexttype VALUES(3, 'to-extern', 'Sortant', 0, 0, '');
+INSERT INTO contexttype VALUES(1, 'internal', 'Interne', 0, 0, '');
+INSERT INTO contexttype VALUES(2, 'incall', 'Entrant', 0, 0, '');
+INSERT INTO contexttype VALUES(3, 'outcall', 'Sortant', 0, 0, '');
 INSERT INTO contexttype VALUES(4, 'services', 'Services', 0, 0, '');
 INSERT INTO contexttype VALUES(5, 'others', 'Autres', 0, 0, '');
+
+
+DROP TABLE ctiaccounts;
+CREATE TABLE ctiaccounts (
+ login varchar(64) NOT NULL,
+ password varchar(64) NOT NULL,
+ label varchar(128) NOT NULL,
+ PRIMARY KEY(login)
+);
 
 
 DROP TABLE cticontexts;
@@ -325,20 +349,31 @@ CREATE TABLE ctidirectories (
  delimiter varchar(20),
  match_direct text NOT NULL,
  match_reverse text NOT NULL,
- field_phone text NOT NULL,
- field_fullname varchar(255),
- field_company varchar(255),
- field_mail varchar(255),
- field_firstname varchar(255),
- field_lastname varchar(255),
  display_reverse varchar(255),
  description varchar(255),
  deletable tinyint(1),
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctidirectories VALUES(1,'xivodir','phonebook','','[phonebook.firstname,phonebook.lastname,phonebook.displayname,phonebook.society,phonebooknumber.office.number]','[phonebooknumber.office.number,phonebooknumber.mobile.number]','[phonebooknumber.office.number]','[phonebook.fullname]','[phonebook.society]','[phonebook.email]','[phonebook.firstname]','[phonebook.lastname]','[{db-fullname}]','Répertoire XiVO Externe',1);
-INSERT INTO ctidirectories VALUES(2,'internal','internal','','','','','[{internal-fullname}]','','','','','','Répertoire XiVO Interne',1);
+INSERT INTO ctidirectories VALUES(1,'xivodir', 'phonebook', '', '[phonebook.firstname,phonebook.lastname,phonebook.displayname,phonebook.society,phonebooknumber.office.number]','[phonebooknumber.office.number,phonebooknumber.mobile.number]','[{db-fullname}]','Répertoire XiVO Externe',1);
+INSERT INTO ctidirectories VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
+
+
+DROP TABLE ctidirectoryfields;
+CREATE TABLE ctidirectoryfields (
+ dir_id INTEGER,
+ fieldname varchar(255),
+ value varchar(255),
+ PRIMARY KEY(dir_id, fieldname)
+);
+
+INSERT INTO ctidirectoryfields VALUES(1, 'phone', 'phonebooknumber.office.number');
+INSERT INTO ctidirectoryfields VALUES(1, 'firstname', 'phonebook.firsname');
+INSERT INTO ctidirectoryfields VALUES(1, 'lastname' , 'phonebook.lastname');
+INSERT INTO ctidirectoryfields VALUES(1, 'fullname' , 'phonebook.fullname');
+INSERT INTO ctidirectoryfields VALUES(1, 'company'  , 'phonebook.company');
+INSERT INTO ctidirectoryfields VALUES(1, 'mail', 'phonebook.email');
+INSERT INTO ctidirectoryfields VALUES(2, 'fullname' , '{internal-fullname}');
 
 
 DROP TABLE ctidisplays;
@@ -358,10 +393,16 @@ DROP TABLE ctimain;
 CREATE TABLE ctimain (
  id integer unsigned,
  commandset varchar(20),
+ ami_ip varchar(16),
+ ami_port INTEGER,
+ ami_login varchar(64),
+ ami_password varchar(64),
  fagi_ip varchar(255),
  fagi_port integer unsigned,
  cti_ip varchar(255),
  cti_port integer unsigned,
+ ctis_ip varchar(16),
+ ctis_port INTEGER,
  webi_ip varchar(255),
  webi_port integer unsigned,
  info_ip varchar(255),
@@ -376,27 +417,40 @@ CREATE TABLE ctimain (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctimain VALUES(1, 'xivocti', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 3600, 10, 5, 'context');
+INSERT INTO ctimain VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 3600, 10, 5, 'context');
 
 
 DROP TABLE ctiphonehints;
 CREATE TABLE ctiphonehints (
  id integer unsigned,
+ idgroup integer,
  number integer,
  name varchar(255),
  color varchar(128),
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctiphonehints VALUES(1,-2,'Inexistant','#030303');
-INSERT INTO ctiphonehints VALUES(2,-1,'Désactivé','#000000');
-INSERT INTO ctiphonehints VALUES(3,0,'Disponible','#0DFF25');
-INSERT INTO ctiphonehints VALUES(4,1,'En ligne OU appelle','#FF032D');
-INSERT INTO ctiphonehints VALUES(5,2,'Occupé','#FF0008');
-INSERT INTO ctiphonehints VALUES(6,4,'Indisponible','#FFFFFF');
-INSERT INTO ctiphonehints VALUES(7,8,'Sonne','#1B0AFF');
-INSERT INTO ctiphonehints VALUES(8,9,'(En Ligne OU Appelle) ET Sonne','#FF0526');
-INSERT INTO ctiphonehints VALUES(9,16,'En Attente','#F7FF05');
+INSERT INTO ctiphonehints VALUES(1,1,-2,'Inexistant','#030303');
+INSERT INTO ctiphonehints VALUES(2,1,-1,'Désactivé','#000000');
+INSERT INTO ctiphonehints VALUES(3,1,0,'Disponible','#0DFF25');
+INSERT INTO ctiphonehints VALUES(4,1,1,'En ligne OU appelle','#FF032D');
+INSERT INTO ctiphonehints VALUES(5,1,2,'Occupé','#FF0008');
+INSERT INTO ctiphonehints VALUES(6,1,4,'Indisponible','#FFFFFF');
+INSERT INTO ctiphonehints VALUES(7,1,8,'Sonne','#1B0AFF');
+INSERT INTO ctiphonehints VALUES(8,1,9,'(En Ligne OU Appelle) ET Sonne','#FF0526');
+INSERT INTO ctiphonehints VALUES(9,1,16,'En Attente','#F7FF05');
+
+
+DROP TABLE ctiphonehintsgroup;
+CREATE TABLE ctiphonehintsgroup (
+ id INTEGER UNSIGNED,
+ name varchar(255),
+ description varchar(255),
+ deletable INTEGER, -- BOOLEAN
+ PRIMARY KEY(id)
+);
+
+INSERT INTO ctiphonehintsgroup VALUES(1,'xivo','De base non supprimable',0);
 
 
 DROP TABLE ctipresences;
@@ -433,6 +487,7 @@ INSERT INTO ctiprofiles VALUES(12,'[[ tabber, grid, fcms, 1 ],[ dial, grid, fcms
 INSERT INTO ctiprofiles VALUES(13,'[[ datetime, dock, fm, N/A ]]','',-1,'Horloge','clock','xivo','','',1);
 INSERT INTO ctiprofiles VALUES(14,'[[ dial, dock, fm, N/A ],[ operator, dock, fcm, N/A ],[ datetime, dock, fcm, N/A ],[ identity, grid, fcms, 0 ],[ calls, dock, fcm, N/A ],[ parking, dock, fcm, N/A ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','','',1);
 INSERT INTO ctiprofiles VALUES(15,'[[ parking, dock, fcms, N/A ],[ search, dock, fcms, N/A ],[ calls, dock, fcms, N/A ],[ switchboard, dock, fcms, N/A ],[ customerinfo, dock, fcms, N/A ],[ datetime, dock, fcms, N/A ],[ dial, dock, fcms, N/A ],[ identity, grid, fcms, 0 ],[ operator, dock, fcms, N/A ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database','','Switchboard','switchboard','xivo','','',1);
+
 
 
 DROP TABLE ctireversedirectories;
@@ -513,23 +568,29 @@ INSERT INTO ctistatus VALUES(5,1,'berightback','Bientôt de retour','enablednd(t
 DROP TABLE devicefeatures;
 CREATE TABLE devicefeatures (
  id integer unsigned,
- macaddr varchar(17) NOT NULL,
+ mac varchar(17) NOT NULL,
  vendor varchar(16) NOT NULL,
  model varchar(16) NOT NULL,
  proto varchar(50) NOT NULL,
  sn varchar(128),
  ip varchar(39),
  version varchar(128),
- isinalan integer DEFAULT 0 NOT NULL,
- provid integer DEFAULT 0 NOT NULL,
- pluginid integer DEFAULT 0 NOT NULL,
- configid integer DEFAULT 0 NOT NULL,
+ plugin varchar(128),
+ config varchar(64),
+ deviceid varchar(32) NOT NULL,
  internal integer DEFAULT 0 NOT NULL,
  configured integer DEFAULT 0 NOT NULL,
  commented integer DEFAULT 0 NOT NULL,
  description text,
  PRIMARY KEY(id)
 );
+
+CREATE INDEX devicefeatures__idx__mac ON devicefeatures(mac);
+CREATE INDEX devicefeatures__idx__ip ON devicefeatures(ip);
+CREATE INDEX devicefeatures__idx__plugin ON devicefeatures(plugin);
+CREATE INDEX devicefeatures__idx__config ON devicefeatures(config);
+CREATE INDEX devicefeatures__idx__deviceid ON devicefeatures(deviceid);
+
 
 DROP TABLE dialaction;
 CREATE TABLE dialaction (
@@ -546,6 +607,24 @@ CREATE TABLE dialaction (
 CREATE INDEX dialaction__idx__action_actionarg1 ON dialaction(action,actionarg1);
 CREATE INDEX dialaction__idx__actionarg2 ON dialaction(actionarg2);
 CREATE INDEX dialaction__idx__linked ON dialaction(linked);
+
+
+DROP TABLE dialpattern;
+CREATE TABLE dialpattern (
+ id INTEGER UNSIGNED,
+ type varchar(32) NOT NULL,
+ typeid integer NOT NULL,
+ externprefix varchar(64),
+ prefix varchar(32),
+ exten varchar(40) NOT NULL,
+ stripnum integer,
+ emergency integer,
+ setcallerid integer NOT NULL DEFAULT 0,
+ callerid varchar(80),
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX dialpattern__idx__type_typeid ON dialpattern(type,typeid);
 
 
 DROP TABLE extensions;
@@ -565,46 +644,47 @@ CREATE INDEX extensions__idx__commented ON extensions(commented);
 CREATE INDEX extensions__idx__context_exten_priority ON extensions(context,exten,priority);
 CREATE INDEX extensions__idx__name ON extensions(name);
 
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*33.',1,'Macro','agentdynamiclogin|${EXTEN:3}','agentdynamiclogin');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*30.',1,'Macro','agentstaticlogtoggle|${EXTEN:3}','agentstaticlogtoggle');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*667.',1,'Macro','meetme|${EXTEN:4}|','callmeetme');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*665.',1,'Macro','queue|${EXTEN:4}|','callqueue');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','*26',1,'Macro','callrecord','callrecord');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*666.',1,'Macro','user|${EXTEN:4}|','calluser');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*33.',1,'GoSub','agentdynamiclogin,s,1(${EXTEN:3})','agentdynamiclogin');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*31.',1,'GoSub','agentstaticlogin,s,1(${EXTEN:3})','agentstaticlogin');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*32.',1,'GoSub','agentstaticlogoff,s,1(${EXTEN:3})','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*30.',1,'GoSub','agentstaticlogtoggle,s,1(${EXTEN:3})','agentstaticlogtoggle');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*37.',1,'GoSub','bsfilter,s,1(${EXTEN:3})','bsfilter');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*664.',1,'GoSub','group,s,1(${EXTEN:4})','callgroup');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','*34',1,'GoSub','calllistening,s,1','calllistening');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*667.',1,'GoSub','meetme,s,1(${EXTEN:4})','callmeetme');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*665.',1,'GoSub','queue,s,1(${EXTEN:4})','callqueue');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','*26',1,'GoSub','callrecord,s,1','callrecord');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*666.',1,'GoSub','user,s,1(${EXTEN:4})','calluser');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*25',1,'Macro','enablednd','enablednd');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*90',1,'Macro','enablevm','enablevm');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*91',1,'Macro','enablevmbox','enablevmbox');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*91.',1,'Macro','enablevmbox|${EXTEN:3}','enablevmboxslt');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*90.',1,'Macro','enablevm|${EXTEN:3}','enablevmslt');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*23.',1,'Macro','feature_forward|busy|${EXTEN:3}','fwdbusy');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*22.',1,'Macro','feature_forward|rna|${EXTEN:3}','fwdrna');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*21.',1,'Macro','feature_forward|unc|${EXTEN:3}','fwdunc');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundoall','fwdundoall');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*48378',1,'Macro','autoprovprov','autoprovprov');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*25',1,'GoSub','enablednd,s,1','enablednd');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*90',1,'GoSub','enablevm,s,1','enablevm');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*91',1,'GoSub','enablevmbox,s,1','enablevmbox');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*91.',1,'GoSub','enablevmbox,s,1(${EXTEN:3})','enablevmboxslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*90.',1,'GoSub','enablevm,s,1(${EXTEN:3})','enablevmslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*23.',1,'GoSub','feature_forward,s,1(busy,${EXTEN:3})','fwdbusy');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*22.',1,'GoSub','feature_forward,s,1(rna,${EXTEN:3})','fwdrna');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*21.',1,'GoSub','feature_forward,s,1(unc,${EXTEN:3})','fwdunc');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*20',1,'GoSub','fwdundoall,s,1','fwdundoall');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*51.',1,'GoSub','groupmember,s,1(group,add,${EXTEN:3})','groupaddmember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*52.',1,'GoSub','groupmember,s,1(group,remove,${EXTEN:3})','groupremovemember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*50.',1,'GoSub','groupmember,s,1(group,toggle,${EXTEN:3})','grouptogglemember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*48378',1,'GoSub','autoprovprov,s,1','autoprovprov');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*27',1,'GoSub','incallfilter,s,1','incallfilter');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*10',1,'GoSub','phonestatus,s,1','phonestatus');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*735.',1,'GoSub','phoneprogfunckey,s,1(${EXTEN:0:4},${EXTEN:4})','phoneprogfunckey');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}%${CONTEXT}@PICKUPMARK','pickup');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*56.',1,'Macro','groupmember|queue|add|${EXTEN:3}','queueaddmember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*57.',1,'Macro','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*55.',1,'Macro','groupmember|queue|toggle|${EXTEN:3}','queuetogglemember');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*99.',1,'Macro','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*93.',1,'Macro','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*97.',1,'Macro','vmbox|${EXTEN:3}','vmboxslt');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*98',1,'Macro','vmusermsg','vmusermsg');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','*92',1,'Macro','vmuserpurge','vmuserpurge');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*92.',1,'Macro','vmuserpurge|${EXTEN:3}','vmuserpurgeslt');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*96.',1,'Macro','vmuser|${EXTEN:3}','vmuserslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*56.',1,'GoSub','groupmember,s,1(queue,add,${EXTEN:3})','queueaddmember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*57.',1,'GoSub','groupmember,s,1(queue,remove,${EXTEN:3})','queueremovemember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*55.',1,'GoSub','groupmember,s,1(queue,toggle,${EXTEN:3})','queuetogglemember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*9',1,'GoSub','recsnd,s,1(wav)','recsnd');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*99.',1,'GoSub','vmboxmsg,s,1(${EXTEN:3})','vmboxmsgslt');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*93.',1,'GoSub','vmboxpurge,s,1(${EXTEN:3})','vmboxpurgeslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*97.',1,'GoSub','vmbox,s,1(${EXTEN:3})','vmboxslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*98',1,'GoSub','vmusermsg,s,1','vmusermsg');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','*92',1,'GoSub','vmuserpurge,s,1','vmuserpurge');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*92.',1,'GoSub','vmuserpurge,s,1(${EXTEN:3})','vmuserpurgeslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*96.',1,'GoSub','vmuser,s,1(${EXTEN:3})','vmuserslt');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*11.',1,'GoSub','paging,s,1(${EXTEN:3})','paging');
 
 
 DROP TABLE extenumbers;
@@ -670,6 +750,7 @@ INSERT INTO extenumbers VALUES (NULL,'*98','6fb653e9eaf6f4d9c8d2cb48d1a6e3f4d408
 INSERT INTO extenumbers VALUES (NULL,'*92','97f991a4ffd7fa843bc0ca3bdc730851382c5cdf','','extenfeatures','vmuserpurge');
 INSERT INTO extenumbers VALUES (NULL,'_*92.','36711086667cbfc27488236e0e0fdd2d7f896f6b','','extenfeatures','vmuserpurgeslt');
 INSERT INTO extenumbers VALUES (NULL,'_*96.','ac6c7ac899867fe0120fe20120fae163012615f2','','extenfeatures','vmuserslt');
+INSERT INTO extenumbers VALUES (NULL,'_*11.','0a038e5c4e6e33baee9f210b9a4f7e313f3e79fa','','extenfeatures','paging');
 
 
 DROP TABLE features;
@@ -691,21 +772,96 @@ CREATE INDEX features__idx__category ON features(category);
 CREATE INDEX features__idx__var_name ON features(var_name);
 
 INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkext','700');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','context','parkedcalls');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkingtime','45');
 INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkpos','701-750');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkfindnext','no');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','adsipark','no');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','transferdigittimeout','3');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','featuredigittimeout','500');
+INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','context','parkedcalls');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkinghints','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkingtime','45');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','comebacktoorigin','no');
 INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','courtesytone',NULL);
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkedplay','caller');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkedcalltransfers','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkedcallreparking','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkedcallhangup','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkedcallrecording','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkeddynamic','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','adsipark','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','findslot','next');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','parkedmusicclass','default');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','transferdigittimeout','3');
 INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','xfersound',NULL);
 INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','xferfailsound',NULL);
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','pickupexten','*8');
-INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','*1');
-INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
-INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','automon','*3');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','pickupexten','*8');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','pickupsound','');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','pickupfailsound','');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','featuredigittimeout','500');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','atxfernoanswertimeout','15');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','atxferdropcall','no');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','atxferloopdelay','10');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','atxfercallbackretries','2');
+INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','#1');
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','disconnect','*0');
+INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','automon','*1');
+INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
+INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','parkcall','#72');
+INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','automixmon','*3');
+
+
+DROP TABLE paging;
+CREATE TABLE paging (
+ id		 		INTEGER UNSIGNED,
+ number 			VARCHAR(32),
+ duplex 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ ignore 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ record 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ quiet 			INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ callnotbusy 		INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ timeout 			INTEGER NOT NULL,
+ announcement_file VARCHAR(64),
+ announcement_play INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ announcement_caller INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ commented 		INTEGER NOT NULL DEFAULT 0, -- BOOLEAN,
+ description 		text,
+ PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX paging__uidx__number ON paging(number);
+
+DROP TABLE paginguser;
+CREATE TABLE paginguser (
+ pagingid 		INTEGER NOT NULL,
+ userfeaturesid 	INTEGER NOT NULL,
+ caller 			INTEGER NOT NULL, -- BOOLEAN
+ PRIMARY KEY(pagingid,userfeaturesid,caller)
+);
+
+CREATE INDEX paginguser__idx__pagingid ON paginguser(pagingid);
+CREATE INDEX paginguser__idx__userfeaturesid ON paginguser(userfeaturesid);
+CREATE INDEX paginguser__idx__caller ON paginguser(caller);
+
+
+DROP TABLE parkinglot;
+CREATE TABLE parkinglot (
+ id            INTEGER UNSIGNED,
+ name          VARCHAR(255) NOT NULL,
+ context       VARCHAR(39) NOT NULL,       -- SHOULD BE A REF TO CONTEXT TABLE IN 2.0
+ extension     VARCHAR(40) NOT NULL,
+ positions     INTEGER NOT NULL,           -- NUMBER OF POSITIONS, (positions starts at extension + 1)
+ next          INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ duration      INTEGER DEFAULT NULL,
+ 
+ calltransfers VARCHAR(8) DEFAULT NULL,
+ callreparking VARCHAR(8) DEFAULT NULL,
+ callhangup    VARCHAR(8) DEFAULT NULL,
+ callrecording VARCHAR(8) DEFAULT NULL,
+ musicclass    VARCHAR(255) DEFAULT NULL,
+ hints         INTEGER    NOT NULL DEFAULT 0, -- BOOLEAN
+
+ commented     INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ description   TEXT NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX parkinglot__idx__name ON parkinglot(name);
 
 
 DROP TABLE groupfeatures;
@@ -728,22 +884,6 @@ CREATE INDEX groupfeatures__idx__name ON groupfeatures(name);
 CREATE INDEX groupfeatures__idx__number ON groupfeatures(number);
 CREATE INDEX groupfeatures__idx__context ON groupfeatures(context);
 CREATE INDEX groupfeatures__idx__deleted ON groupfeatures(deleted);
-
-
-DROP TABLE handynumbers;
-CREATE TABLE handynumbers (
- id integer unsigned,
- exten varchar(40) NOT NULL DEFAULT '',
- trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
- type varchar(9) NOT NULL,
- commented tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
-);
-
-CREATE INDEX handynumbers__idx__trunkfeaturesid ON handynumbers(trunkfeaturesid);
-CREATE INDEX handynumbers__idx__type ON handynumbers(type);
-CREATE INDEX handynumbers__idx__commented ON handynumbers(commented);
-CREATE UNIQUE INDEX handynumbers__uidx__exten ON handynumbers(exten);
 
 
 DROP TABLE incall;
@@ -772,6 +912,9 @@ CREATE TABLE linefeatures (
  protocol varchar(50) NOT NULL,
  protocolid integer unsigned NOT NULL,
  iduserfeatures integer unsigned DEFAULT 0,
+ config varchar(128),
+ device varchar(32),
+ configregistrar varchar(128),
  name varchar(20) NOT NULL,
  number varchar(40),
  context varchar(39) NOT NULL,
@@ -780,6 +923,9 @@ CREATE TABLE linefeatures (
  rules_time varchar(8),
  rules_order tinyint(3) DEFAULT 0,
  rules_group varchar(16),
+ num INTEGER DEFAULT 0,
+ line_num INTEGER DEFAULT 0,
+ ipfrom varchar(15),
  internal tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text,
@@ -787,6 +933,9 @@ CREATE TABLE linefeatures (
 );
 
 CREATE INDEX linefeatures__idx__iduserfeatures ON linefeatures(iduserfeatures);
+CREATE INDEX linefeatures__idx__line_num ON linefeatures(line_num);
+CREATE INDEX linefeatures__idx__config ON linefeatures(config);
+CREATE INDEX linefeatures__idx__device ON linefeatures(device);
 CREATE INDEX linefeatures__idx__number ON linefeatures(number);
 CREATE INDEX linefeatures__idx__context ON linefeatures(context);
 CREATE INDEX linefeatures__idx__commented ON linefeatures(commented);
@@ -794,6 +943,9 @@ CREATE INDEX linefeatures__idx__internal ON linefeatures(internal);
 CREATE UNIQUE INDEX linefeatures__uidx__provisioningid ON linefeatures(provisioningid);
 CREATE UNIQUE INDEX linefeatures__uidx__name ON linefeatures(name);
 CREATE UNIQUE INDEX linefeatures__uidx__protocol_protocolid ON linefeatures(protocol,protocolid);
+
+INSERT INTO linefeatures VALUES (1,'sip',1,0,'','','','autoprov','','default',0,'','',0,'',0,0,'',1,0,'');
+
 
 DROP TABLE ldapfilter;
 CREATE TABLE ldapfilter (
@@ -823,7 +975,7 @@ CREATE TABLE meetmefeatures (
  id integer unsigned,
  meetmeid integer unsigned NOT NULL,
  name varchar(80) NOT NULL,
- number varchar(40) NOT NULL,
+ confno varchar(40) NOT NULL,
  context varchar(39) NOT NULL,
  admin_typefrom varchar(9),
  admin_internalid integer unsigned,
@@ -868,10 +1020,11 @@ CREATE TABLE meetmefeatures (
  emailbody text NOT NULL,
  preprocess_subroutine varchar(39),
  description text NOT NULL,
+ commented INTEGER DEFAULT 0, -- BOOLEAN
  PRIMARY KEY(id)
 );
 
-CREATE INDEX meetmefeatures__idx__number ON meetmefeatures(number);
+CREATE INDEX meetmefeatures__idx__number ON meetmefeatures(confno);
 CREATE INDEX meetmefeatures__idx__context ON meetmefeatures(context);
 CREATE UNIQUE INDEX meetmefeatures__uidx__meetmeid ON meetmefeatures(meetmeid);
 CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
@@ -958,12 +1111,7 @@ DROP TABLE outcall;
 CREATE TABLE outcall (
  id integer unsigned,
  name varchar(128) NOT NULL,
- exten varchar(40) NOT NULL,
  context varchar(39) NOT NULL,
- externprefix varchar(20) NOT NULL DEFAULT '',
- stripnum tinyint unsigned NOT NULL DEFAULT 0,
- setcallerid tinyint(1) NOT NULL DEFAULT 0,
- callerid varchar(80) NOT NULL DEFAULT '',
  useenum tinyint(1) NOT NULL DEFAULT 0,
  internal tinyint(1) NOT NULL DEFAULT 0,
  preprocess_subroutine varchar(39),
@@ -973,10 +1121,8 @@ CREATE TABLE outcall (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX outcall__idx__exten ON outcall(exten);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
-CREATE UNIQUE INDEX outcall__uidx__exten_context ON outcall(exten,context);
 
 
 DROP TABLE outcalltrunk;
@@ -988,6 +1134,17 @@ CREATE TABLE outcalltrunk (
 );
 
 CREATE INDEX outcalltrunk__idx__priority ON outcalltrunk(priority);
+
+
+DROP TABLE outcalldundipeer;
+CREATE TABLE outcalldundipeer (
+ outcallid INTEGER NOT NULL DEFAULT 0,
+ dundipeerid INTEGER NOT NULL DEFAULT 0,
+ priority INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY(outcallid,dundipeerid)
+);
+
+CREATE INDEX outcalldundipeer__idx__priority ON outcalldundipeer(priority);
 
 
 DROP TABLE phonebook;
@@ -1087,7 +1244,6 @@ CREATE TABLE queue (
  'queue-holdtime' varchar(128),
  'queue-minutes' varchar(128),
  'queue-seconds' varchar(128),
- 'queue-lessthan' varchar(128),
  'queue-thankyou' varchar(128),
  'queue-reporthold' varchar(128),
  'periodic-announce' text,
@@ -1111,8 +1267,18 @@ CREATE TABLE queue (
  timeoutrestart tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  category char(5) NOT NULL,
- autopause tinyint(1) NOT NULL DEFAULT 0,
- setinterfacevar tinyint(1) NOT NULL DEFAULT 0,
+ timeoutpriority varchar(10) NOT NULL DEFAULT 'app',
+ autofill INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ autopause INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ setinterfacevar INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ setqueueentryvar INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ setqueuevar INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ membermacro varchar(1024),
+ 'min-announce-frequency' integer NOT NULL DEFAULT 60,
+ 'random-periodic-announce' INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ 'announce-position' varchar(1024) NOT NULL DEFAULT 'yes',
+ 'announce-position-limit' integer NOT NULL DEFAULT 5,
+ defaultrule varchar(1024) DEFAULT NULL,
  PRIMARY KEY(name)
 );
 
@@ -1120,25 +1286,49 @@ CREATE INDEX queue__idx__commented ON queue(commented);
 CREATE INDEX queue__idx__category ON queue(category);
 
 
+DROP TABLE queue_info;
+CREATE TABLE queue_info (
+ id INTEGER UNSIGNED,
+ call_time_t INTEGER,
+ queue_name VARCHAR(128) NOT NULL DEFAULT '',
+ caller VARCHAR(80) NOT NULL DEFAULT '',
+ caller_uniqueid VARCHAR(32) NOT NULL DEFAULT '',
+ call_picker VARCHAR(80),
+ hold_time INTEGER,
+ talk_time INTEGER,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX queue_info_call_time_t_index ON queue_info (call_time_t);
+CREATE INDEX queue_info_queue_name_index ON queue_info (queue_name);
+
+
 DROP TABLE queuefeatures;
 CREATE TABLE queuefeatures (
  id integer unsigned,
  name varchar(128) NOT NULL,
- number varchar(40) DEFAULT '',
+ displayname varchar(128) NOT NULL,
+ number varchar(40) NOT NULL DEFAULT '',
  context varchar(39),
- data_quality tinyint(1) NOT NULL DEFAULT 0,
- hitting_callee tinyint(1) NOT NULL DEFAULT 0,
- hitting_caller tinyint(1) NOT NULL DEFAULT 0,
- retries tinyint(1) NOT NULL DEFAULT 0,
- ring tinyint(1) NOT NULL DEFAULT 0,
- transfer_user tinyint(1) NOT NULL DEFAULT 0,
- transfer_call tinyint(1) NOT NULL DEFAULT 0,
- write_caller tinyint(1) NOT NULL DEFAULT 0,
- write_calling tinyint(1) NOT NULL DEFAULT 0,
+ data_quality INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ hitting_callee INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ hitting_caller INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ retries INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ ring INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ transfer_user INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ transfer_call INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ write_caller INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ write_calling INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  url varchar(255) NOT NULL DEFAULT '',
  announceoverride varchar(128) NOT NULL DEFAULT '',
- timeout smallint unsigned NOT NULL DEFAULT 0,
+ timeout INTEGER NOT NULL DEFAULT 0,
  preprocess_subroutine varchar(39),
+ announce_holdtime INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ -- DIVERSIONS
+ ctipresence VARCHAR(1024) DEFAULT NULL,
+ nonctipresence VARCHAR(1024) DEFAULT NULL,
+ waittime    INTEGER  DEFAULT NULL,
+ waitratio   FLOAT DEFAULT NULL,
  PRIMARY KEY(id)
 );
 
@@ -1170,6 +1360,28 @@ CREATE INDEX queuemember__idx__userid ON queuemember(userid);
 CREATE INDEX queuemember__idx__channel ON queuemember(channel);
 CREATE INDEX queuemember__idx__category ON queuemember(category);
 CREATE UNIQUE INDEX queuemember__uidx__queue_name_channel_usertype_userid_category ON queuemember(queue_name,channel,usertype,userid,category);
+
+
+DROP TABLE queuepenalty;
+CREATE TABLE queuepenalty (
+ id INTEGER UNSIGNED,
+ name VARCHAR(255) NOT NULL UNIQUE,
+ commented INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ description TEXT NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE queuepenaltychange;
+CREATE TABLE queuepenaltychange (
+ queuepenalty_id INTEGER NOT NULL,
+ seconds    INTEGER NOT NULL DEFAULT 0,
+ maxp_sign  VARCHAR(1) DEFAULT NULL,
+ maxp_value INTEGER DEFAULT NULL,
+ minp_sign  VARCHAR(1) DEFAULT NULL,
+ minp_value INTEGER DEFAULT NULL,
+ PRIMARY KEY(queuepenalty_id, seconds)
+);
 
 
 DROP TABLE rightcall;
@@ -1218,25 +1430,52 @@ CREATE UNIQUE INDEX rightcallmember__uidx__rightcallid_type_typeval ON rightcall
 DROP TABLE schedule;
 CREATE TABLE schedule (
  id integer unsigned,
- name varchar(128) NOT NULL DEFAULT '',
- context varchar(39) NOT NULL,
- timebeg varchar(5) NOT NULL DEFAULT '*',
- timeend varchar(5),
- daynamebeg varchar(3) NOT NULL DEFAULT '*',
- daynameend varchar(3),
- daynumbeg varchar(2) NOT NULL DEFAULT '*',
- daynumend varchar(2),
- monthbeg varchar(3) NOT NULL DEFAULT '*',
- monthend varchar(3),
- publicholiday tinyint(1) NOT NULL DEFAULT 0,
+ name VARCHAR(255) NOT NULL DEFAULT '',
+ timezone VARCHAR(128) DEFAULT NULL, 
+ fallback_action     VARCHAR(64)  NOT NULL DEFAULT 'none',
+ fallback_actionid   VARCHAR(255) DEFAULT NULL,
+ fallback_actionargs VARCHAR(255) DEFAULT NULL,
+ description TEXT DEFAULT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
-CREATE INDEX schedule__idx__context ON schedule(context);
-CREATE INDEX schedule__idx__publicholiday ON schedule(publicholiday);
 CREATE INDEX schedule__idx__commented ON schedule(commented);
-CREATE UNIQUE INDEX schedule__uidx__name ON schedule(name);
+
+
+DROP TABLE schedule_path;
+CREATE TABLE schedule_path (
+ schedule_id   INTEGER NOT NULL,
+
+ path   VARCHAR(16) NOT NULL,
+ pathid INTEGER DEFAULT NULL, 
+ 'order' INTEGER NOT NULL,
+ PRIMARY KEY(schedule_id,path,pathid)
+);
+
+CREATE INDEX schedule_path_path ON schedule_path(path,pathid);
+
+
+DROP TABLE schedule_time;
+CREATE TABLE schedule_time (
+ id SERIAL,
+ schedule_id INTEGER,
+ mode        VARCHAR(8) NOT NULL DEFAULT 'opened',
+ hours       VARCHAR(512) DEFAULT NULL,
+ weekdays    VARCHAR(512) DEFAULT NULL,
+ monthdays   VARCHAR(512) DEFAULT NULL,
+ months      VARCHAR(512) DEFAULT NULL,
+ -- only when mode == 'closed'
+ action      VARCHAR(64) DEFAULT NULL,
+ actionid    VARCHAR(255) DEFAULT NULL,
+ actionargs  VARCHAR(255) DEFAULT NULL,
+
+ commented   INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ PRIMARY KEY(id)
+);
+
+--CREATE INDEX schedule__idx__commented ON schedule(commented);
+CREATE INDEX schedule_time__idx__scheduleid_commented ON schedule_time(schedule_id,commented);
 
 
 DROP TABLE serverfeatures;
@@ -1302,9 +1541,10 @@ CREATE INDEX staticagent__idx__category ON staticagent(category);
 CREATE INDEX staticagent__idx__var_name ON staticagent(var_name);
 CREATE INDEX staticagent__idx__var_val ON staticagent(var_val);
 
-INSERT INTO staticagent VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
 INSERT INTO staticagent VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
-INSERT INTO staticagent VALUES (3,1,1000000,0,'agents.conf','agents','group',1);
+INSERT INTO staticagent VALUES (3,1,0,0,'agents.conf','agents','recordagentcalls','no');
+INSERT INTO staticagent VALUES (4,1,0,0,'agents.conf','agents','recordformat','wav');
+INSERT INTO staticagent VALUES (5,1,1000000,0,'agents.conf','agents','group',1);
 
 
 DROP TABLE staticiax;
@@ -1364,8 +1604,18 @@ INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','pingtime',20);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime',10);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
--- warning: asterisk crash if set to NULL value
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','0.0.0.0');
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','srvlookup',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','jittertargetextra',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','forceencryption',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','trunkmaxsize',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','trunkmtu',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','cos',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','allowfwdownload',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','parkinglot',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','maxcallnumbers',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','maxcallnumbers_nonvalidated',NULL);
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','shrinkcallerid',NULL);
 
 
 DROP TABLE staticmeetme;
@@ -1387,6 +1637,11 @@ CREATE INDEX staticmeetme__idx__category ON staticmeetme(category);
 CREATE INDEX staticmeetme__idx__var_name ON staticmeetme(var_name);
 
 INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','audiobuffers',32);
+INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','schedule','yes');
+INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','logmembercount','yes');
+INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','fuzzystart',300);
+INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','earlyalert',3600);
+INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','endalert',120);
 
 
 DROP TABLE staticqueue;
@@ -1410,6 +1665,8 @@ CREATE INDEX staticqueue__idx__var_name ON staticqueue(var_name);
 INSERT INTO staticqueue VALUES (NULL,0,0,0,'queues.conf','general','persistentmembers','yes');
 INSERT INTO staticqueue VALUES (NULL,0,0,0,'queues.conf','general','autofill','no');
 INSERT INTO staticqueue VALUES (NULL,0,0,0,'queues.conf','general','monitor-type','no');
+INSERT INTO staticqueue VALUES (NULL,0,0,0,'queues.conf','general','updatecdr','no');
+INSERT INTO staticqueue VALUES (NULL,0,0,0,'queues.conf','general','shared_lastcall','no');
 
 
 DROP TABLE staticsip;
@@ -1431,9 +1688,12 @@ CREATE INDEX staticsip__idx__category ON staticsip(category);
 CREATE INDEX staticsip__idx__var_name ON staticsip(var_name);
 
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','bindport',5060);
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','videosupport','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','yes');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreate_context','xivo-initconfig');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreate_maxexpiry','300');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreate_defaultexpiry','180');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','autocreate_type','friend');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowautoprov','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowsubscribe','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowoverlap','yes');
@@ -1444,9 +1704,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowexternaldoma
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','limitonpeer','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','useragent','XiVO PBX');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','buggymwi','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','regcontext',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','callerid','xivo');
@@ -1459,8 +1717,6 @@ INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','tos_sip',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','tos_audio',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','tos_video',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_udptl','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_rtp','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_tcp','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_usertpsource','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','localnet',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','externip',NULL);
@@ -1468,7 +1724,6 @@ INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','externhost',NULL)
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','externrefresh',10);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','matchexterniplocally','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','outboundproxy',NULL);
-INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','outboundproxyport',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','g726nonstandard','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
@@ -1511,15 +1766,72 @@ INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','mohsuggest',NULL)
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','trustrpid','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','no');
-INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','insecure','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','yes');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','insecure','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','assertedidentity','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','match_auth_username','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','udpbindaddr','0.0.0.0');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tcpenable','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tcpbindaddr',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlsenable','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlsbindaddr',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlscertfile',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlscafile',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlscadir','/var/lib/asterisk/certs/cadir');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlsdontverifyserver','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tlscipher',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','tos_text',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','cos_sip',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','cos_audio',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','cos_video',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','cos_text',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','mwiexpiry',3600);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','qualifyfreq',60);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','qualifygap',100);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','qualifypeers',1);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','parkinglot',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','permaturemedia',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','sdpsession',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','sdpowner',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','authfailureevents','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','dynamic_exclude_static','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','contactdeny',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','contactpermit',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','shrinkcallerid','yes');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','regextenonqualify','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','timer1',500);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','timerb',32000);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','session-timers',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','session-expires',600);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','session-minse',90);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','session-refresher','uas');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','hash_users',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','hash_peers',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','hash_dialogs',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','notifycid','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','callcounter','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','faxdetect','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','stunaddr',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','directmedia','yes');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoresdpversion','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','jbtargetextra',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','srtp','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','externtcpport',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','externtlsport',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','media_address',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','use_q850_reason','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','snom_aoc_enabled','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','subscribe_network_change_event','yes');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','maxforwards',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','disallow_methods',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','domainsasrealm',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','textsupport',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','auth_options_requests','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','transport','udp');
 
 
 DROP TABLE staticvoicemail;
@@ -1542,8 +1854,8 @@ CREATE INDEX staticvoicemail__idx__var_name ON staticvoicemail(var_name);
 
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxmsg',100);
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','silencethreshold',256);
-INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','minmessage',0);
-INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxmessage',0);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','minsecs',0);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxsecs',0);
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence',15);
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
@@ -1572,7 +1884,6 @@ INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','serve
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','charset','UTF-8');
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','fromstring','XiVO PBX');
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A %d %B %Y à %H:%M:%S %Z');
-INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emaildatelocale','fr_FR.UTF-8');
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','pbxskip','no');
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XiVO');
 INSERT INTO staticvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
@@ -1597,6 +1908,36 @@ INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','smdip
 INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','odbcstorage',NULL);
 INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','odbctable',NULL);
 INSERT INTO staticvoicemail VALUES (NULL,1,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','moveheard',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','forward_urgent_auto',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','userscontext',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','smdienable',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','externpassnotify',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','externpasscheck',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','directoryinfo',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','pollmailboxes',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','pollfreq',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','imapgreetings',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','greetingsfolder',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','imapparentfolder',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','tz',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','hidefromdir',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','messagewrap',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','minpassword',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-password',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-newpassword',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-passchanged',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-reenterpassword',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-mismatch',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-invalid-password',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','vm-pls-try-again',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','listen-control-forward-key',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','listen-control-reverse-key',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','listen-control-pause-key',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','listen-control-restart-key',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','listen-control-stop-key',NULL);
+INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','backupdeleted',NULL);
+
 
 DROP TABLE staticsccp;
 CREATE TABLE staticsccp (
@@ -1689,33 +2030,35 @@ CREATE TABLE userfeatures (
  id integer unsigned,
  firstname varchar(128) NOT NULL DEFAULT '',
  lastname varchar(128) NOT NULL DEFAULT '',
- voicemailid integer unsigned,
- agentid integer unsigned,
- entityid integer unsigned,
+ voicemailtype VARCHAR(8),
+ voicemailid INTEGER,
+ agentid INTEGER,
+ pictureid INTEGER,
+ entityid integer,
  callerid varchar(160),
- ringseconds tinyint unsigned NOT NULL DEFAULT 30,
- simultcalls tinyint unsigned NOT NULL DEFAULT 5,
- enableclient tinyint(1) NOT NULL DEFAULT 1,
+ ringseconds INTEGER NOT NULL DEFAULT 30,
+ simultcalls INTEGER NOT NULL DEFAULT 5,
+ enableclient INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  loginclient varchar(64) NOT NULL DEFAULT '',
  passwdclient varchar(64) NOT NULL DEFAULT '',
  profileclient varchar(64) NOT NULL DEFAULT '',
- enablehint tinyint(1) NOT NULL DEFAULT 1,
- enablevoicemail tinyint(1) NOT NULL DEFAULT 0,
- enablexfer tinyint(1) NOT NULL DEFAULT 0,
- enableautomon tinyint(1) NOT NULL DEFAULT 0,
- callrecord tinyint(1) NOT NULL DEFAULT 0,
- incallfilter tinyint(1) NOT NULL DEFAULT 0,
- enablednd tinyint(1) NOT NULL DEFAULT 0,
- enableunc tinyint(1) NOT NULL DEFAULT 0,
+ enablehint INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
+ enablevoicemail INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ enablexfer INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ enableautomon INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ callrecord INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ incallfilter INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ enablednd INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ enableunc INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  destunc varchar(128) NOT NULL DEFAULT '',
- enablerna tinyint(1) NOT NULL DEFAULT 0,
+ enablerna INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  destrna varchar(128) NOT NULL DEFAULT '',
- enablebusy tinyint(1) NOT NULL DEFAULT 0,
+ enablebusy INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  destbusy varchar(128) NOT NULL DEFAULT '',
  musiconhold varchar(128) NOT NULL DEFAULT '',
  outcallerid varchar(80) NOT NULL DEFAULT '',
  mobilephonenumber varchar(128) NOT NULL DEFAULT '',
- bsfilter varchar(9) NOT NULL DEFAULT 'no',
+ bsfilter VARCHAR(16) NOT NULL DEFAULT 'no',
  preprocess_subroutine varchar(39),
  timezone varchar(128),
  language varchar(20),
@@ -1727,7 +2070,7 @@ CREATE TABLE userfeatures (
  alarmclock varchar(5) DEFAULT '00:00' NOT NULL,
  pitch varchar(16),
  pitchdirection varchar(16),
- commented tinyint(1) NOT NULL DEFAULT 0,
+ commented INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  description text NOT NULL,
  PRIMARY KEY(id)
 );
@@ -1740,59 +2083,63 @@ CREATE INDEX userfeatures__idx__loginclient ON userfeatures(loginclient);
 CREATE INDEX userfeatures__idx__musiconhold ON userfeatures(musiconhold);
 CREATE INDEX userfeatures__idx__commented ON userfeatures(commented);
 
+
 DROP TABLE useriax;
 CREATE TABLE useriax (
  id integer unsigned,
- name varchar(40) NOT NULL,
- type varchar(6) NOT NULL,
- username varchar(80),
- secret varchar(80) NOT NULL DEFAULT '',
- dbsecret varchar(255) NOT NULL DEFAULT '',
- context varchar(39),
- language varchar(20),
- accountcode varchar(20),
- amaflags varchar(13) DEFAULT 'default',
- mailbox varchar(80),
- callerid varchar(160),
- fullname varchar(80),
- cid_number varchar(80),
- trunk tinyint(1) NOT NULL DEFAULT 0,
- auth varchar(17) NOT NULL DEFAULT 'plaintext,md5',
- encryption varchar(6),
- maxauthreq tinyint unsigned,
- inkeys varchar(80),
- outkey varchar(80),
- adsi tinyint(1),
- transfer varchar(9),
- codecpriority varchar(8),
- jitterbuffer tinyint(1),
- forcejitterbuffer tinyint(1),
- sendani tinyint(1) NOT NULL DEFAULT 0,
- qualify varchar(4) NOT NULL DEFAULT 'no',
- qualifysmoothing tinyint(1) NOT NULL DEFAULT 0,
- qualifyfreqok integer unsigned NOT NULL DEFAULT 60000,
- qualifyfreqnotok integer unsigned NOT NULL DEFAULT 10000,
- timezone varchar(80),
- disallow varchar(100),
- allow varchar(100),
- mohinterpret varchar(80),
- mohsuggest varchar(80),
- deny varchar(31),
- permit varchar(31),
- defaultip varchar(255),
- sourceaddress varchar(255),
- setvar varchar(100) NOT NULL DEFAULT '',
- host varchar(255) NOT NULL DEFAULT 'dynamic',
- port smallint unsigned,
- mask varchar(15),
- regexten varchar(80),
- peercontext varchar(80),
+ name varchar(40) NOT NULL, -- user / peer --
+ type VARCHAR(8) NOT NULL, -- user / peer --
+ username varchar(80), -- peer --
+ secret varchar(80) NOT NULL DEFAULT '', -- peer / user --
+ dbsecret varchar(255) NOT NULL DEFAULT '', -- peer / user --
+ context varchar(39), -- peer / user --
+ language varchar(20), -- general / user --
+ accountcode varchar(20), -- general / user --
+ amaflags VARCHAR(16) DEFAULT 'default', -- general / user --
+ mailbox varchar(80), -- peer --
+ callerid varchar(160), -- user / peer --
+ fullname varchar(80), -- user / peer --
+ cid_number varchar(80), -- user / peer --
+ trunk INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
+ auth VARCHAR(32) NOT NULL DEFAULT 'plaintext,md5', -- user / peer --
+ encryption VARCHAR(8) DEFAULT NULL, -- user / peer --
+ forceencryption VARCHAR(8) DEFAULT NULL,
+ maxauthreq INTEGER, -- general / user --
+ inkeys varchar(80), -- user / peer --
+ outkey varchar(80), -- peer --
+ adsi INTEGER, -- BOOLEAN -- general / user / peer --
+ transfer VARCHAR(16), -- general / user / peer --
+ codecpriority VARCHAR(8), -- general / user --
+ jitterbuffer INTEGER, -- BOOLEAN -- general / user / peer --
+ forcejitterbuffer INTEGER, -- BOOLEAN -- general / user / peer --
+ sendani INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
+ qualify varchar(4) NOT NULL DEFAULT 'no', -- peer --
+ qualifysmoothing INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
+ qualifyfreqok INTEGER NOT NULL DEFAULT 60000, -- peer --
+ qualifyfreqnotok INTEGER NOT NULL DEFAULT 10000, -- peer --
+ timezone varchar(80), -- peer --
+ disallow varchar(100), -- general / user / peer --
+ allow varchar(100), -- general / user / peer --
+ mohinterpret varchar(80), -- general / user / peer --
+ mohsuggest varchar(80), -- general / user / peer --
+ deny varchar(31), -- user / peer --
+ permit varchar(31), -- user / peer --
+ defaultip varchar(255), -- peer --
+ sourceaddress varchar(255), -- peer --
+ setvar varchar(100) NOT NULL DEFAULT '', -- user --
+ host varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
+ port INTEGER, -- peer --
+ mask varchar(15), -- peer --
+ regexten varchar(80), -- peer --
+ peercontext varchar(80), -- peer --
  ipaddr varchar(255) NOT NULL DEFAULT '',
- regseconds integer unsigned NOT NULL DEFAULT 0,
- protocol char(3) NOT NULL DEFAULT 'iax',
- category varchar(5) NOT NULL,
- commented tinyint(1) NOT NULL DEFAULT 0,
- requirecalltoken char(4) NOT NULL DEFAULT 'no',
+ regseconds INTEGER NOT NULL DEFAULT 0,
+ immediate INTEGER DEFAULT NULL, -- BOOLEAN
+ parkinglot INTEGER DEFAULT NULL,
+ protocol varchar(15) NOT NULL DEFAULT 'iax' CHECK (protocol = 'iax'), -- ENUM
+ category VARCHAR(8) NOT NULL,
+ commented INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ requirecalltoken varchar(4) NOT NULL DEFAULT 'no', -- peer--
  PRIMARY KEY(id)
 );
 
@@ -1810,76 +2157,104 @@ CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
 DROP TABLE usersip;
 CREATE TABLE usersip (
  id integer unsigned,
- name varchar(40) NOT NULL,
- type varchar(6) NOT NULL,
- username varchar(80),
- secret varchar(80) NOT NULL DEFAULT '',
- md5secret varchar(32) NOT NULL DEFAULT '',
- context varchar(39),
- language varchar(20),
- accountcode varchar(20),
- amaflags varchar(13) NOT NULL DEFAULT 'default',
- allowtransfer tinyint(1),
- fromuser varchar(80),
- fromdomain varchar(255),
- mailbox varchar(80),
- subscribemwi tinyint(1) NOT NULL DEFAULT 1,
- buggymwi tinyint(1),
- 'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
- callerid varchar(160),
- fullname varchar(80),
- cid_number varchar(80),
- maxcallbitrate smallint unsigned,
- insecure varchar(11),
- nat varchar(5),
- canreinvite varchar(12),
- promiscredir tinyint(1),
- usereqphone tinyint(1),
- videosupport tinyint(1),
- trustrpid tinyint(1),
- sendrpid tinyint(1),
- allowsubscribe tinyint(1),
- allowoverlap tinyint(1),
- dtmfmode varchar(7),
- rfc2833compensate tinyint(1),
- qualify varchar(4),
- g726nonstandard tinyint(1),
- disallow varchar(100),
- allow varchar(100),
- autoframing tinyint(1),
- mohinterpret varchar(80),
- mohsuggest varchar(80),
- useclientcode tinyint(1),
- progressinband varchar(5),
- t38pt_udptl tinyint(1),
- t38pt_rtp tinyint(1),
- t38pt_tcp tinyint(1),
- t38pt_usertpsource tinyint(1),
- rtptimeout tinyint unsigned,
- rtpholdtimeout tinyint unsigned,
- rtpkeepalive tinyint unsigned,
- deny varchar(31),
- permit varchar(31),
- defaultip varchar(255),
- callgroup varchar(180),
- pickupgroup varchar(180),
- setvar varchar(100) NOT NULL DEFAULT '',
- host varchar(255) NOT NULL DEFAULT 'dynamic',
- port smallint unsigned,
- regexten varchar(80),
- subscribecontext varchar(80),
- fullcontact varchar(255),
- vmexten varchar(40),
- callingpres tinyint(1),
+ name varchar(40) NOT NULL, -- user / peer --
+ type VARCHAR(8) NOT NULL, -- user / peer --
+ username varchar(80), -- peer --
+ secret varchar(80) NOT NULL DEFAULT '', -- user / peer --
+ md5secret varchar(32) NOT NULL DEFAULT '', -- user / peer --
+ context varchar(39), -- general / user / peer --
+ language varchar(20), -- general / user / peer --
+ accountcode varchar(20), -- user / peer --
+ amaflags VARCHAR(16) NOT NULL DEFAULT 'default', -- user / peer --
+
+ allowtransfer INTEGER, -- BOOLEAN -- general / user / peer --
+ fromuser varchar(80), -- peer --
+ fromdomain varchar(255), -- general / peer --
+ mailbox varchar(80), -- peer --
+ subscribemwi INTEGER NOT NULL DEFAULT 1, -- BOOLEAN -- peer --
+ buggymwi INTEGER, -- BOOLEAN -- general / user / peer --
+ 'call-limit' INTEGER NOT NULL DEFAULT 0, -- user / peer --
+ callerid varchar(160), -- general / user / peer --
+ fullname varchar(80), -- user / peer --
+ cid_number varchar(80), -- user / peer --
+ maxcallbitrate INTEGER, -- general / user / peer --
+ insecure VARCHAR(16), -- general / user / peer --
+ nat VARCHAR(8), -- general / user / peer --
+ promiscredir INTEGER, -- BOOLEAN -- general / user / peer --
+ usereqphone INTEGER, -- BOOLEAN -- general / peer --
+ videosupport VARCHAR(8) DEFAULT NULL, -- general / user / peer --
+ trustrpid INTEGER, -- BOOLEAN -- general / user / peer --
+ sendrpid INTEGER, -- BOOLEAN -- general / user / peer --
+
+ allowsubscribe INTEGER, -- BOOLEAN -- general / user / peer --
+ allowoverlap INTEGER, -- BOOLEAN -- general / user / peer --
+ dtmfmode VARCHAR(8), -- general / user / peer --
+ rfc2833compensate INTEGER, -- BOOLEAN -- general / user / peer --
+ qualify varchar(4), -- general / peer --
+ g726nonstandard INTEGER, -- BOOLEAN -- general / user / peer --
+ disallow varchar(100), -- general / user / peer --
+ allow varchar(100), -- general / user / peer --
+ autoframing INTEGER, -- BOOLEAN -- general / user / peer --
+ mohinterpret varchar(80), -- general / user / peer --
+ mohsuggest varchar(80), -- general / user / peer --
+ useclientcode INTEGER, -- BOOLEAN -- general / user / peer --
+ progressinband VARCHAR(8), -- general / user / peer --
+
+ t38pt_udptl INTEGER, -- BOOLEAN -- general / user / peer --
+ t38pt_usertpsource INTEGER, -- BOOLEAN -- general / user / peer --
+ rtptimeout INTEGER, -- general / peer --
+ rtpholdtimeout INTEGER, -- general / peer --
+ rtpkeepalive INTEGER, -- general / peer --
+ deny varchar(31), -- user / peer --
+ permit varchar(31), -- user / peer --
+ defaultip varchar(255), -- peer --
+
+ setvar varchar(100) NOT NULL DEFAULT '', -- user / peer --
+ host varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
+ port INTEGER, -- peer --
+ regexten varchar(80), -- peer --
+ subscribecontext varchar(80), -- general / user / peer --
+ fullcontact varchar(255), -- peer --
+ vmexten varchar(40), -- general / peer --
+ callingpres INTEGER, -- BOOLEAN -- user / peer --
  ipaddr varchar(255) NOT NULL DEFAULT '',
- regseconds integer unsigned NOT NULL DEFAULT 0,
+ regseconds INTEGER NOT NULL DEFAULT 0,
  regserver varchar(20),
  lastms varchar(15) NOT NULL DEFAULT '',
- parkinglot int(10) DEFAULT NULL,
- protocol char(3) NOT NULL DEFAULT 'sip',
- category varchar(5) NOT NULL,
+ parkinglot INTEGER DEFAULT NULL,
+ protocol varchar(15) NOT NULL DEFAULT 'sip' CHECK (protocol = 'sip'), -- ENUM
+ category VARCHAR(8) NOT NULL,
+
  outboundproxy varchar(1024),
- commented tinyint(1) NOT NULL DEFAULT 0,
+	-- asterisk 1.8 new values
+ transport varchar(255) DEFAULT NULL,
+ remotesecret varchar(255) DEFAULT NULL,
+ directmedia VARCHAR(16) DEFAULT NULL,
+ callcounter INTEGER DEFAULT NULL, -- BOOLEAN
+ busylevel integer DEFAULT NULL,
+ ignoresdpversion INTEGER DEFAULT NULL, -- BOOLEAN
+ 'session-timers' VARCHAR(16) DEFAULT NULL,
+ 'session-expires' integer DEFAULT NULL,
+ 'session-minse' integer DEFAULT NULL,
+ 'session-refresher' VARCHAR(8) DEFAULT NULL,
+ callbackextension varchar(255) DEFAULT NULL,
+ registertrying INTEGER DEFAULT NULL, -- BOOLEAN
+ timert1 integer DEFAULT NULL,
+ timerb integer DEFAULT NULL,
+ 
+ qualifyfreq integer DEFAULT NULL,
+ contactpermit varchar(1024) DEFAULT NULL,
+ contactdeny varchar(1024) DEFAULT NULL,
+ unsolicited_mailbox varchar(1024) DEFAULT NULL,
+ use_q850_reason INTEGER DEFAULT NULL, -- BOOLEAN
+ encryption INTEGER DEFAULT NULL, -- BOOLEAN
+ snom_aoc_enabled INTEGER DEFAULT NULL, -- BOOLEAN
+ maxforwards integer DEFAULT NULL,
+ disallowed_methods varchar(1024) DEFAULT NULL,
+ textsupport INTEGER DEFAULT NULL, -- BOOLEAN
+ callgroup varchar(64) DEFAULT '', -- i.e: 3,4-9
+ pickupgroup varchar(64) DEFAULT '',   -- i.e: 1,3-9
+ commented INTEGER NOT NULL DEFAULT 2, -- BOOLEAN -- user / peer --
  PRIMARY KEY(id)
 );
 
@@ -1891,6 +2266,14 @@ CREATE INDEX usersip__idx__host_port ON usersip(host,port);
 CREATE INDEX usersip__idx__ipaddr_port ON usersip(ipaddr,port);
 CREATE INDEX usersip__idx__lastms ON usersip(lastms);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
+
+INSERT INTO "usersip" VALUES (1, 'autoprov','friend','autoprov','autoprov','','xivo-initconfig',NULL,NULL,'default',
+NULL,NULL,NULL,NULL,0,NULL,0,'Autoprov Mode',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+'XIVO_USERID=1','dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'',NULL,'sip','user',
+NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','',0);
+
 
 DROP TABLE voicemail;
 CREATE TABLE voicemail (
@@ -1906,20 +2289,38 @@ CREATE TABLE voicemail (
  exitcontext varchar(39),
  language varchar(20),
  tz varchar(80),
- attach tinyint(1),
- saycid tinyint(1),
- review tinyint(1),
- operator tinyint(1),
- envelope tinyint(1),
- sayduration tinyint(1),
- saydurationm tinyint unsigned,
- sendvoicemail tinyint(1),
- deletevoicemail tinyint(1) NOT NULL DEFAULT 0,
- forcename tinyint(1),
- forcegreetings tinyint(1),
- hidefromdir varchar(3) NOT NULL DEFAULT 'no',
- maxmsg smallint unsigned,
- commented tinyint(1) NOT NULL DEFAULT 0,
+ attach INTEGER, -- BOOLEAN
+ saycid INTEGER, -- BOOLEAN
+ review INTEGER, -- BOOLEAN
+ operator INTEGER, -- BOOLEAN
+ envelope INTEGER, -- BOOLEAN
+ sayduration INTEGER, -- BOOLEAN
+ saydurationm INTEGER,
+ sendvoicemail INTEGER, -- BOOLEAN
+ deletevoicemail INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
+ forcename INTEGER, -- BOOLEAN
+ forcegreetings INTEGER, -- BOOLEAN
+ hidefromdir VARCHAR(8) NOT NULL DEFAULT 'no',
+ maxmsg INTEGER,
+ emailsubject varchar(1024),
+ emailbody text,
+ imapuser varchar(1024),
+ imappassword varchar(1024),
+ imapfolder varchar(1024),
+ imapvmsharedid varchar(1024),
+ attachfmt varchar(1024),
+ serveremail varchar(1024),
+ locale varchar(1024),
+ tempgreetwarn INTEGER DEFAULT NULL, -- BOOLEAN
+ messagewrap INTEGER DEFAULT NULL, -- BOOLEAN
+ moveheard INTEGER DEFAULT NULL, -- BOOLEAN
+ minsecs integer DEFAULT NULL,
+ maxsecs integer DEFAULT NULL,
+ nextaftercmd INTEGER DEFAULT NULL, -- BOOLEAN
+ backupdeleted integer DEFAULT NULL,
+ volgain float DEFAULT NULL,
+ passwordlocation VARCHAR(16) DEFAULT NULL,
+ commented INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY(uniqueid)
 );
 
@@ -2104,10 +2505,13 @@ CREATE TABLE general
 (
  id       integer unsigned,
  timezone varchar(128),
+ exchange_trunkid INTEGER DEFAULT NULL,
+ exchange_exten   varchar(128) DEFAULT NULL,
+ dundi            INTEGER NOT NULL DEFAULT 0, -- boolean
  PRIMARY KEY(id)
 );
 
-INSERT INTO general VALUES (1, 'Europe/Paris');
+INSERT INTO general VALUES (1, 'Europe/Paris', NULL, NULL, 0);
 
 
 DROP TABLE sipauthentication;
@@ -2152,6 +2556,147 @@ CREATE INDEX queue_log__idx_time ON queue_log(time);
 CREATE INDEX queue_log__idx_queuename ON queue_log(queuename);
 CREATE INDEX queue_log__idx_agent ON queue_log(agent);
 CREATE INDEX queue_log__idx_event ON queue_log(event);
+CREATE INDEX queue_log__idx_data1 ON queue_log(data1);
+CREATE INDEX queue_log__idx_data2 ON queue_log(data2);
+
+
+DROP TABLE pickup;
+CREATE TABLE pickup (
+ -- id is not an autoincrement number, because pickups are between 0 and 63 only
+ id INTEGER NOT NULL,
+ name VARCHAR(128) UNIQUE NOT NULL,
+ commented INTEGER NOT NULL DEFAULT 0,
+ description TEXT NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE  pickupmember;
+CREATE TABLE pickupmember (
+ pickupid INTEGER NOT NULL,
+ category VARCHAR(8) NOT NULL,
+ membertype VARCHAR(8) NOT NULL,
+ memberid INTEGER NOT NULL,
+ PRIMARY KEY(pickupid,category,membertype,memberid)
+);
+
+
+DROP TABLE  dundi;
+CREATE TABLE dundi (
+ id            INTEGER UNSIGNED,
+ department    VARCHAR(255) DEFAULT NULL,
+ organization  VARCHAR(255) DEFAULT NULL,
+ locality      VARCHAR(255) DEFAULT NULL,
+ stateprov     VARCHAR(255) DEFAULT NULL,
+ country       VARCHAR(3)   DEFAULT NULL,
+ email         VARCHAR(255) DEFAULT NULL,
+ phone         VARCHAR(40)  DEFAULT NULL,
+
+ bindaddr      VARCHAR(40)  DEFAULT '0.0.0.0',
+ port          INTEGER      DEFAULT 4520,
+ tos           VARCHAR(4)   DEFAULT NULL,
+ entityid      VARCHAR(20)  DEFAULT NULL,
+ cachetime     INTEGER      DEFAULT 5,
+ ttl           INTEGER      DEFAULT 2,
+ autokill      VARCHAR(16)  NOT NULL DEFAULT 'yes',
+ secretpath    VARCHAR(64)  DEFAULT NULL,
+ storehistory  INTEGER      DEFAULT 0, -- boolean
+ PRIMARY KEY(id)
+);
+
+INSERT INTO dundi VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0.0.0.0', 4520, NULL, NULL, 5, 2, 'yes', NULL, 0);
+
+
+DROP TABLE  dundi_mapping;
+CREATE TABLE dundi_mapping (
+ id              INTEGER UNSIGNED,
+ name            VARCHAR(255) NOT NULL,
+ context         VARCHAR(39)  NOT NULL,
+ weight          VARCHAR(64)  NOT NULL DEFAULT '0',
+ trunk           INTEGER      DEFAULT NULL, 
+ number          VARCHAR(64)  DEFAULT NULL,
+
+ -- options
+ nounsolicited   INTEGER      NOT NULL DEFAULT 0, -- boolean
+ nocomunsolicit  INTEGER      NOT NULL DEFAULT 0, -- boolean
+ residential     INTEGER      NOT NULL DEFAULT 0, -- boolean
+ commercial      INTEGER      NOT NULL DEFAULT 0, -- boolean
+ mobile          INTEGER      NOT NULL DEFAULT 0, -- boolean
+ nopartial       INTEGER      NOT NULL DEFAULT 0, -- boolean
+
+ commented       INTEGER      NOT NULL DEFAULT 0, -- boolean
+ description     TEXT         NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE  dundi_peer;
+CREATE TABLE dundi_peer (
+ id            INTEGER UNSIGNED,
+ macaddr       VARCHAR(64)  NOT NULL,
+ model         VARCHAR(16)  NOT NULL,
+ host          VARCHAR(256) NOT NULL,
+ inkey         VARCHAR(64)  DEFAULT NULL,
+ outkey        VARCHAR(64)  DEFAULT NULL,
+ include       VARCHAR(64)  DEFAULT NULL,
+ noinclude     VARCHAR(64)  DEFAULT NULL,
+ permit        VARCHAR(64)  DEFAULT NULL,
+ deny          VARCHAR(64)  DEFAULT NULL,
+ qualify       VARCHAR(16)  NOT NULL DEFAULT 'yes',
+ 'order'         VARCHAR(16)  DEFAULT NULL,
+ precache      VARCHAR(16)  DEFAULT NULL,
+ commented     INTEGER      NOT NULL DEFAULT 0, -- boolean
+ description   TEXT         NOT NULL,
+ PRIMARY KEY(id)
+);
+
+-- DAHDI
+DROP TABLE  dahdi_general;
+CREATE TABLE dahdi_general (
+ id                  INTEGER UNSIGNED,
+ context             VARCHAR(255) DEFAULT NULL,
+ language            VARCHAR(16) DEFAULT NULL,
+ usecallerid         INTEGER DEFAULT NULL, -- BOOLEAN
+ hidecallerid        INTEGER DEFAULT NULL, -- BOOLEAN
+ callerid            VARCHAR(64) DEFAULT NULL,
+ restrictcid         INTEGER DEFAULT NULL, -- BOOLEAN
+ usecallingpres      INTEGER DEFAULT NULL, -- BOOLEAN
+ pridialplan         VARCHAR(64) DEFAULT NULL,
+ prilocaldialplan    VARCHAR(64) DEFAULT NULL,
+ priindication       VARCHAR(64) DEFAULT NULL,
+ nationalprefix      VARCHAR(64) DEFAULT NULL,
+ internationalprefix VARCHAR(64) DEFAULT NULL,
+ threewaycalling     INTEGER DEFAULT NULL, -- BOOLEAN
+ transfer            INTEGER DEFAULT NULL, -- BOOLEAN
+ echocancel          INTEGER DEFAULT NULL, -- BOOLEAN
+ echotraining        INTEGER DEFAULT NULL, -- BOOLEAN
+ relaxdtmf           INTEGER DEFAULT NULL, -- BOOLEAN
+
+ PRIMARY KEY (id)
+);
+
+INSERT INTO dahdi_general VALUES(1,'from-extern','fr_FR',1,0,'asreceived',0,1,'unknown','dynamic','outofband','0','00',1,1,1,NULL,1);
+
+
+DROP TABLE  dahdi_group;
+CREATE TABLE dahdi_group (
+ groupno    INTEGER NOT NULL,
+ context    VARCHAR(255),
+ signalling VARCHAR(64),
+ switchtype VARCHAR(64),
+
+ mailbox    INTEGER,
+ callerid   VARCHAR(255),
+
+ channels   VARCHAR(255), -- comma separated channel numbers.ie: 64,65,68-70
+ commented  INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY (groupno)
+);
+
+-- sample datas
+-- INSERT INTO dahdi_group VALUES (1,'from-extern','pri_cpe','euroisdn',NULL,NULL,'1-15,17-31');
+-- INSERT INTO dahdi_group VALUES (2,'from-extern','fxo_ks',NULL,'4032','bob sponge <4032>', '32');
+-- INSERT INTO dahdi_group VALUES (3,'from-extern','fxs_ks',NULL,NULL,NULL, '33');
 
 
 DROP TABLE callcenter_campaigns_general;

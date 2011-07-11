@@ -364,7 +364,8 @@ DROP TABLE IF EXISTS "ctiaccounts";
 CREATE TABLE "ctiaccounts" (
  "login" varchar(64) NOT NULL,
  "password" varchar(64) NOT NULL,
- "label" varchar(128) NOT NULL
+ "label" varchar(128) NOT NULL,
+ PRIMARY KEY("login")
 );
 
 
@@ -401,6 +402,7 @@ INSERT INTO "ctidirectories" VALUES(1,'xivodir', 'phonebook', '', '["phonebook.f
 INSERT INTO "ctidirectories" VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
 SELECT setval('ctidirectories_id_seq', 3);
 
+
 DROP TABLE IF EXISTS "ctidirectoryfields";
 CREATE TABLE "ctidirectoryfields" (
  "dir_id" INTEGER,
@@ -430,6 +432,7 @@ CREATE TABLE "ctidisplays" (
 
 INSERT INTO "ctidisplays" VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail} ({xivo-directory})" ]}',1,'Affichage par défaut');
 SELECT setval('ctidisplays_id_seq', 5);
+
 
 DROP TABLE IF EXISTS "ctimain";
 CREATE TABLE "ctimain" (
@@ -2796,11 +2799,12 @@ DROP TABLE IF EXISTS "pickup";
 CREATE TABLE "pickup" (
  -- id is not an autoincrement number, because pickups are between 0 and 63 only
  "id" INTEGER NOT NULL,
- "name"VARCHAR(128) UNIQUE NOT NULL,
+ "name" VARCHAR(128) UNIQUE NOT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0,
  "description" TEXT NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
+
 
 DROP TABLE IF EXISTS "pickupmember";
 DROP TYPE  IF EXISTS "pickup_category";

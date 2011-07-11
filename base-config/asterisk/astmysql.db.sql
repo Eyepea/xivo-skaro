@@ -326,8 +326,9 @@ DROP TABLE IF EXISTS `ctiaccounts`;
 CREATE TABLE `ctiaccounts` (
  `login` varchar(64) NOT NULL,
  `password` varchar(64) NOT NULL,
- `label` varchar(128) NOT NULL
-);
+ `label` varchar(128) NOT NULL,
+ PRIMARY KEY(`login`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `cticontexts`;
