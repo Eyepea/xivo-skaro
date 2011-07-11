@@ -328,23 +328,6 @@ INSERT INTO monitoring VALUES (1,0,NULL,NULL,NULL);
 SELECT setval('monitoring_id_seq', 2);
 
 
-DROP TABLE IF EXISTS "queue_info";
-CREATE TABLE "queue_info" (
- "id" SERIAL,
- "call_time_t" INTEGER,
- "queue_name" varchar(255) NOT NULL,
- "caller" varchar(255) NOT NULL,
- "caller_uniqueid" varchar(255) NOT NULL,
- "call_picker" varchar(255),
- "hold_time" INTEGER,
- "talk_time" INTEGER,
- PRIMARY KEY("id")
-);
-
-CREATE INDEX "queue_info_call_time_t_index" ON "queue_info"("call_time_t");
-CREATE INDEX "queue_info_queue_name_index" ON "queue_info"("queue_name");
-
-
 -- HA
 DROP TABLE IF EXISTS "ha";
 CREATE TABLE "ha" (
