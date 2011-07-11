@@ -1447,8 +1447,8 @@ CREATE TABLE "queue_info" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX queue_info_call_time_t_index ON "queue_info" ("call_time_t");
-CREATE INDEX queue_info_queue_name_index ON "queue_info" ("queue_name");
+CREATE INDEX "queue_info_call_time_t_index" ON "queue_info" ("call_time_t");
+CREATE INDEX "queue_info_queue_name_index" ON "queue_info" ("queue_name");
 
 
 DROP TABLE IF EXISTS "queuefeatures";

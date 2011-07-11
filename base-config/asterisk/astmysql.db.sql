@@ -1319,6 +1319,23 @@ CREATE INDEX `queue__idx__commented` ON `queue`(`commented`);
 CREATE INDEX `queue__idx__category` ON `queue`(`category`);
 
 
+DROP TABLE IF EXISTS `queue_info`;
+CREATE TABLE `queue_info` (
+ `id` int(10) unsigned auto_increment,
+ `call_time_t` INTEGER,
+ `queue_name` varchar(128) NOT NULL DEFAULT '',
+ `caller` varchar(80) NOT NULL DEFAULT '',
+ `caller_uniqueid` varchar(32) NOT NULL DEFAULT '',
+ `call_picker` varchar(80),
+ `hold_time` INTEGER,
+ `talk_time` INTEGER,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `queue_info_call_time_t_index` ON `queue_info` (`call_time_t`);
+CREATE INDEX `queue_info_queue_name_index` ON `queue_info` (`queue_name`);
+
+
 DROP TABLE IF EXISTS `queuefeatures`;
 CREATE TABLE `queuefeatures` (
  `id` int(10) unsigned auto_increment,
