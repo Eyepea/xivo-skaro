@@ -31,42 +31,44 @@ $array['service/ipbx/asterisk/web_services/private/queuelogger/configuration'] =
 $array['callcenter'] = array(
 	'path'		=> 'callcenter/index');
 
-$array['callcenter/web_services/restricted/agents'] = array(
-	'path'		=> 'callcenter/web_services/agents',
+$array['callcenter/web_services/restricted/settings/agents'] = array(
+	'path'		=> 'callcenter/web_services/settings/agents',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['callcenter/web_services/restricted/campaigns'] = array(
-	'path'		=> 'callcenter/web_services/campaigns',
+$array['callcenter/web_services/restricted/settings/queues'] = array(
+	'path'		=> 'callcenter/web_services/settings/queues',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['callcenter/web_services/restricted/queues'] = array(
-	'path'		=> 'callcenter/web_services/queues',
+$array['callcenter/web_services/restricted/settings/queuepenalty'] = array(
+	'path'		=> 'callcenter/web_services/settings/queuepenalty',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['callcenter/web_services/restricted/queuepenalty'] = array(
-	'path'		=> 'callcenter/web_services/queuepenalty',
+$array['callcenter/web_services/restricted/settings/queueskills'] = array(
+	'path'		=> 'callcenter/web_services/settings/queueskills',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['callcenter/web_services/restricted/queueskills'] = array(
-	'path'		=> 'callcenter/web_services/queueskills',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['callcenter/web_services/restricted/queueskillrules'] = array(
-	'path'		=> 'callcenter/web_services/queueskillrules',
+$array['callcenter/web_services/restricted/settings/queueskillrules'] = array(
+	'path'		=> 'callcenter/web_services/settings/queueskillrules',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
-$array['callcenter/web_services/private/agents'] = array(
-	'path'		=> 'callcenter/web_services/agents',
+$array['callcenter/web_services/restricted/registrationcampaign/campaigns'] = array(
+	'path'		=> 'callcenter/web_services/registrationcampaign/campaigns',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['callcenter/web_services/private/settings/agents'] = array(
+	'path'		=> 'callcenter/web_services/settings/agents',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['callcenter/web_services/private/campaigns'] = array(
-	'path'		=> 'callcenter/web_services/campaigns',
+$array['callcenter/web_services/private/settings/queues'] = array(
+	'path'		=> 'callcenter/web_services/settings/queues',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['callcenter/web_services/private/queues'] = array(
-	'path'		=> 'callcenter/web_services/queues',
+$array['callcenter/web_services/private/settings/queuepenalty'] = array(
+	'path'		=> 'callcenter/web_services/settings/queuepenalty',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['callcenter/web_services/private/queuepenalty'] = array(
-	'path'		=> 'callcenter/web_services/queuepenalty',
+$array['callcenter/web_services/private/settings/queueskills'] = array(
+	'path'		=> 'callcenter/web_services/settings/queueskills',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['callcenter/web_services/private/queueskills'] = array(
-	'path'		=> 'callcenter/web_services/queueskills',
+$array['callcenter/web_services/private/settings/queueskillrules'] = array(
+	'path'		=> 'callcenter/web_services/settings/queueskillrules',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['callcenter/web_services/private/queueskillrules'] = array(
-	'path'		=> 'callcenter/web_services/queueskillrules',
+
+$array['callcenter/web_services/private/registrationcampaign/campaigns'] = array(
+	'path'		=> 'callcenter/web_services/registrationcampaign/campaigns',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 ###################################################################

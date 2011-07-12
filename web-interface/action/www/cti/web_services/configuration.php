@@ -105,7 +105,8 @@ switch($act)
         );
 
         # CONTEXTS
-        if(isset($load_contexts))
+        if(isset($load_contexts) === true
+        && is_array($load_contexts) === true)
         {
             $ctxout = array();
             foreach($load_contexts as $context)
@@ -127,7 +128,8 @@ switch($act)
         }
 
         # DISPLAYS
-        if(isset($load_displays))
+        if(isset($load_displays) === true
+        && is_array($load_displays) === true)
         {
             $dspout = array();
 
@@ -141,7 +143,8 @@ switch($act)
         }
 
         # DIRECTORIES
-        if(isset($load_directories))
+        if(isset($load_directories) === true
+        && is_array($load_directories) === true)
         {
             $dirout = array();
 
@@ -184,7 +187,8 @@ switch($act)
         }
 
         # REVERSEDID
-        if(isset($load_rdid))
+        if(isset($load_rdid) === true
+        && is_array($load_rdid) === true)
         {
             $rdidout = array();
             $curctx  = null;
@@ -219,7 +223,7 @@ switch($act)
 
         # SHEETS
         $sheetsout = array();
-        if(isset($load_sheetevents))
+        if(isset($load_sheetevents,$load_sheetevents[0]))
         {
             $evtout = array();
             foreach(array_keys($load_sheetevents[0]) as $k)
@@ -234,10 +238,12 @@ switch($act)
                 $eventdef["condition"] = $load_sheetevents[0][$k];
                 $evtout[$k][] = $eventdef;
             }
-            $evtout['custom'] = dwho_json::decode($evtout['custom'], true) == false ? array() : dwho_json::decode($evtout['custom'], true);
+            if (isset($evtout['custom']) === true)
+                $evtout['custom'] = dwho_json::decode($evtout['custom'], true) == false ? array() : dwho_json::decode($evtout['custom'], true);
             $out['sheets']['events'] = $evtout;
         }
-        if(isset($load_sheetactions))
+        if(isset($load_sheetactions) === true
+        && is_array($load_sheetactions) === true)
         {
             $optout = array();
             $dispout = array();
@@ -257,11 +263,15 @@ switch($act)
                 $arr = array();
                 $arr = dwho_json::decode($action['sheet_info'], true);
                 $qtui = "null";
-                foreach($arr as $k=>$v)
+
+                if(is_array($arr) === true)
                 {
-                    $a1 = $arr[$k];
-                    if($a1[1] == 'form')
-                        $qtui = $a1[3];
+                    foreach($arr as $k=>$v)
+                    {
+                        $a1 = $arr[$k];
+                        if($a1[1] == 'form')
+                            $qtui = $a1[3];
+                    }
                 }
                 $dispout[$actid]['systray_info'] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
                 $dispout[$actid]['sheet_info'] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
@@ -295,7 +305,8 @@ switch($act)
             $out['main']['parting_astid_context'] = explode(",", $load_ctimain['parting_astid_context']);
 
         # PRESENCES (USER STATUSES)
-        if(isset($load_presences))
+        if(isset($load_presences) === true
+        && is_array($load_presences) === true)
         {
             $presout = array();
             foreach($load_presences as $pres)
@@ -339,7 +350,8 @@ switch($act)
         }
 
         # PHONEHINTS (LINE STATUSES)
-        if(isset($load_phonehints))
+        if(isset($load_phonehints) === true
+        && is_array($load_phonehints) === true)
         {
             $hintsout = array();
             foreach($load_phonehints as $ph)
@@ -375,7 +387,8 @@ switch($act)
                                                          "atxfer", "transfer", "dial");
 
         # PROFILES
-        if(isset($load_profiles))
+        if(isset($load_profiles) === true
+        && is_array($load_profiles) === true)
         {
             foreach($load_profiles as $pf)
             {

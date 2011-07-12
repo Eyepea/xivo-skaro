@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'call_center';
+$access_category = 'settings';
 $access_subcategory = 'queues';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));

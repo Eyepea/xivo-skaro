@@ -27,7 +27,7 @@ if(isset($access_category,$access_subcategory) === false)
 xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
 $_AWS = new xivo_accesswebservice();
 
-$http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
+$http_access = $_AWS->chk_http_access($access_category,$access_subcategory,'service/callcenter');
 
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 

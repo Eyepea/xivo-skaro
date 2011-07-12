@@ -38,7 +38,7 @@ switch($act)
 {
 	case 'add':
 		$result = $fm_save = $error = null;
-		
+
 		$incall_sort = array('exten' => SORT_ASC);
 		$queue_sort = array('name' => SORT_ASC);
 		$group_sort = array('name' => SORT_ASC);
@@ -85,38 +85,33 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('statistics/call_center/configuration'),$param);
 		}
-		
+
 		dwho::load_class('dwho_sort');
-		
+
 		if($incall['list'] !== false && dwho_issa('incall',$result) === true
 		&& ($incall['slt'] = dwho_array_intersect_key($result['incall'],$incall['list'],'id')) !== false)
 			$incall['slt'] = array_keys($incall['slt']);
-		
+
 		if($queue['list'] !== false && dwho_issa('queue',$result) === true
 		&& ($queue['slt'] = dwho_array_intersect_key($result['queue'],$queue['list'],'id')) !== false)
 			$queue['slt'] = array_keys($queue['slt']);
-		
+
 		if($group['list'] !== false && dwho_issa('group',$result) === true
 		&& ($group['slt'] = dwho_array_intersect_key($result['group'],$group['list'],'id')) !== false)
 			$group['slt'] = array_keys($group['slt']);
-		
+
 		if($agent['list'] !== false && dwho_issa('agent',$result) === true
 		&&($agent['slt'] = dwho_array_intersect_key($result['agent'],$agent['list'],'id')) !== false)
 		    $agent['slt'] = array_keys($agent['slt']);
-		
+
 		if($user['list'] !== false && dwho_issa('user',$result) === true
 		&&($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'id')) !== false)
 		    $user['slt'] = array_keys($user['slt']);
-		
-		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
 
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/statistics/call_center/configuration.js');
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
-		
+		$dhtml->load_js_multiselect_files();
+
 		// timepicker
 		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
 		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
@@ -139,7 +134,7 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
-		
+
 		$incall_sort = array('exten' => SORT_ASC);
 		$queue_sort = array('name' => SORT_ASC);
 		$group_sort = array('name' => SORT_ASC);
@@ -187,18 +182,18 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($incall['list'] !== false && dwho_issa('incall',$return) === true
 		&& ($incall['slt'] = dwho_array_intersect_key($return['incall'],$incall['list'],'id')) !== false)
 			$incall['slt'] = array_keys($incall['slt']);
-		
+
 		if($queue['list'] !== false && dwho_issa('queue',$return) === true
 		&& ($queue['slt'] = dwho_array_intersect_key($return['queue'],$queue['list'],'id')) !== false)
 		{
 		    $queue_qos = $queue['slt'];
 			$queue['slt'] = array_keys($queue['slt']);
 		}
-		
+
 		$listqos = array();
 		if($queue_qos !== false)
 		{
@@ -215,28 +210,23 @@ switch($act)
 				}
 			}
 		}
-		
+
 		if($group['list'] !== false && dwho_issa('group',$return) === true
 		&& ($group['slt'] = dwho_array_intersect_key($return['group'],$group['list'],'id')) !== false)
 			$group['slt'] = array_keys($group['slt']);
-		
+
 		if($agent['list'] !== false && dwho_issa('agent',$return) === true
 		&&($agent['slt'] = dwho_array_intersect_key($return['agent'],$agent['list'],'id')) !== false)
 		    $agent['slt'] = array_keys($agent['slt']);
-		
+
 		if($user['list'] !== false && dwho_issa('user',$return) === true
 		&&($user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'id')) !== false)
 		    $user['slt'] = array_keys($user['slt']);
-		
-		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_css('/extra-libs/multiselect/css/ui.multiselect.css', true);
-		$dhtml->set_css('css/xivo.multiselect.css');
 
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/statistics/call_center/configuration.js');
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/localisation/jquery.localisation-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/plugins/scrollTo/jquery.scrollTo-min.js', true);
-		$dhtml->set_js('/extra-libs/multiselect/js/ui.multiselect.js', true);
-		
+		$dhtml->load_js_multiselect_files();
+
 		// timepicker
 		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
 		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);

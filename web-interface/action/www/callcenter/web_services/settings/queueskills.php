@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'call_center';
+$access_category = 'settings';
 $access_subcategory = 'queueskills';
 
 $appqueue = &$ipbx->get_application('queue',null,false);
@@ -52,7 +52,7 @@ switch($act)
 #		$http_response->send(true);
 		$_TPL->set_var('list',$id);
 		break;
-	
+
 	case 'view':
 		if(dwho_is_uint($_QRY->get('id')) === false
 		|| ($info = $appqueue->skills_json_get($_QRY->get('id'))) === false)
@@ -82,7 +82,7 @@ switch($act)
 			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
- 
+
 		$_TPL->set_var('list',$list);
 }
 

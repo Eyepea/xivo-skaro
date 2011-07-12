@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category    = 'call_center';
+$access_category    = 'registrationcampaign';
 $access_subcategory = 'campaigns';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
@@ -87,7 +87,7 @@ switch($act)
 			$campaign['filters'] = array('agents' => array(), 'queues' => array(), 'skills' => array(), 'directions' => null);
 			foreach($filters as $filter)
 			{
-				switch($filter['type']) 
+				switch($filter['type'])
 				{
 				case 'agent':
 				case 'queue':

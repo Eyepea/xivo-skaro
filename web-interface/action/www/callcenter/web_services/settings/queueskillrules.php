@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'call_center';
+$access_category = 'settings';
 $access_subcategory = 'queueskillrules';
 
 $appqueue = &$ipbx->get_application('queue',null,false);
@@ -47,7 +47,7 @@ switch($act)
 	    $id     = false;
 	    $data = $appqueue->_get_data_from_json();
 
-		if($data === false 
+		if($data === false
 		|| !array_key_exists('name', $data)
 		|| !array_key_exists('rule', $data)
 		|| ($id = $appqueue->skillrules_save($data['name'], $data['rule'])) === false)
@@ -55,7 +55,7 @@ switch($act)
     		$http_response->set_status_line(500);
     		$http_response->send(true);
     	}
-    	
+
 		$_TPL->set_var('list',$appqueue->get_result('id'));
 		break;
 

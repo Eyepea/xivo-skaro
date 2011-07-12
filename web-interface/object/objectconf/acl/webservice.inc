@@ -99,12 +99,12 @@ $array['tree']['statistics']['statistics'] = array();
 $array['tree']['statistics']['statistics']['call_center'] = true;
 $array['tree']['statistics']['statistics']['cel'] = true;
 
-$array['tree']['callcenter'] = array();
-$array['tree']['callcenter']['agents'] = true;
-$array['tree']['callcenter']['queues'] = true;
-$array['tree']['callcenter']['queuepenalties'] = true;
-$array['tree']['callcenter']['queueskills'] = true;
-$array['tree']['callcenter']['queueskillrules'] = true;
-$array['tree']['callcenter']['campaigns'] = true;
+$array['tree']['service']['callcenter'] = array();
+$array['tree']['service']['callcenter']['settings']['agents'] = true;
+$array['tree']['service']['callcenter']['settings']['queues'] = true;
+$array['tree']['service']['callcenter']['settings']['queuepenalties'] = true;
+$array['tree']['service']['callcenter']['settings']['queueskills'] = true;
+$array['tree']['service']['callcenter']['settings']['queueskillrules'] = true;
+$array['tree']['service']['callcenter']['registrationcampaign']['campaigns'] = true;
 
 ?>

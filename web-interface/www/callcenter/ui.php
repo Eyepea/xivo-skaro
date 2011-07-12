@@ -24,7 +24,7 @@ require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
-$action_path = $_LOC->get_action_path('callcenter/ui/',2);
+$action_path = $_LOC->get_action_path('callcenter/ui/',3);
 
 if($action_path === false)
 {
