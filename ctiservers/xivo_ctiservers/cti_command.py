@@ -418,6 +418,8 @@ class Command:
         z.connect()
         services = z.serviceget(self.ruserid)
         z.close()
+        # looks like this nice information is in userfeatures
+        services.get('userfeatures').pop('passwdclient')
         reply = { 'userfeatures' : services.get('userfeatures') }
         return reply
 
