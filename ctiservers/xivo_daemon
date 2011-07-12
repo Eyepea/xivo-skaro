@@ -843,5 +843,5 @@ class ctiserver:
 if __name__ == '__main__':
     parse_command_line()
     if XIVOIP != 'localhost':
-        XIVO_CONF_FILE = 'https://%s/service/ipbx/json.php/restricted/ctiserver/configuration' % XIVOIP
+        XIVO_CONF_FILE = 'https://%s/cti/json.php/restricted/configuration' % XIVOIP
     main = ctiserver()

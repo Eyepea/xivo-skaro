@@ -61,7 +61,7 @@ class Config:
             return
 
         # web-interface/tpl/www/bloc/cti/general.php
-        # web-interface/action/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
+        # web-interface/action/www/cti/web_services/configuration.php
 
         try:
             response = urllib2.urlopen(uri)
