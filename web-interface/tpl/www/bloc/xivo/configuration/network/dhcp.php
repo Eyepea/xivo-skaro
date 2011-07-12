@@ -75,15 +75,6 @@ endif;
                     $this->get_var('error', 'pool_end'))
 				  )),
 
-		$form->select(array('desc' => $this->bbf('fm_main_iface'),
-					'name'		  => 'main_iface',
-					'empty'		  => true,
-					'key'		    => false,
-					'selected'	=> $this->get_var('info', 'main_iface'),
-					'error'    	=> $this->bbf_args('dhcp', $this->get_var('error', "main_iface"))
-				),
-				$netifaces),
-
 		$form->text(array('desc'	=> $this->bbf('fm_interfaces'),
 				  'name'    => 'extra_ifaces',
 				  'labelid' => 'extra_ifaces',
