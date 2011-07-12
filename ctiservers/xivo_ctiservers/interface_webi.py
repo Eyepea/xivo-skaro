@@ -44,6 +44,7 @@ AMI_REQUESTS = [
     'module reload',
     'module reload app_queue.so',
     'module reload chan_agent.so',
+    'features reload',
     ]
 
 UPDATE_REQUESTS = [
