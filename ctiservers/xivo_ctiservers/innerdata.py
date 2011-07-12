@@ -36,6 +36,7 @@ import threading
 import time
 import Queue
 from xivo_ctiservers import lists
+import cti_urllist
 from xivo_ctiservers.lists import *
 from xivo_ctiservers import cti_sheets
 
@@ -174,6 +175,9 @@ class Safe:
         self.fagisync = {}
         self.fagichannels = {}
 
+        self.extenfeatures = {}
+        self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
+
         for listname, urllistkey in self.urlvars.iteritems():
             try:
                 cf = eval('lists.cti_%slist' % listname[:-1])
@@ -190,6 +194,15 @@ class Safe:
                 self.log.exception(listname)
         return
 
+    def set_extenfeatures(self, urls):
+        '''Retrieve and assign extenfeatures from a url list'''
+        if urls is None or len(urls) < 1:
+            self.extenfeatures = {}
+            return
+        extenfeatures = cti_urllist.UrlList(urls[0])
+        extenfeatures.getlist(0,0,False)
+        self.extenfeatures = extenfeatures.jsonreply
+
     # def make_ctiserver_account(self, ipbxid, username, password):
     # self.xod_status['users'][actualid] = {'connection' : None,
     # 'availstate' : 'unknown'
@@ -200,7 +213,34 @@ class Safe:
             self.update_config_list(listname)
 
         self.fill_lines_into_users()
+        self.add_default_parking()
         return
+
+    def add_default_parking(self):
+        '''Add the default parking from extenfeatures to
+        xod_config['parkinglots']'''
+        name_map = {'context': 'context',
+                    'extension': 'parkext',
+                    'positions': 'parkpos',
+                    'duration': 'parkingtime',
+                    'hints': 'parkinghints',
+                    'calltransfers' : 'parkedcalltransfers',
+                    'callparking': 'parkedcallreparking',
+                    'callhangup': 'parkedcallhangup',
+                    'callrecording': 'parkedcallrecording',
+                    'musicclass': 'parkedmusicclass', }
+        default_parking = {}
+        default_parking['name'] = 'default'
+        default_parking['id'] = 'default'
+        gf = self.extenfeatures['generalfeatures']
+        if gf['findslot']['var_val'] is 'next':
+            default_parking['next'] = '1'
+        else:
+            default_parking['next'] = '0'
+        for pkey, ekey in name_map.iteritems():
+            if not gf[ekey]['commented']:
+                default_parking[pkey] = gf[ekey]['var_val']
+        self.xod_config['parkinglots'].keeplist['default'] = default_parking
 
     def fill_lines_into_users(self):
         user2phone = {}
