@@ -31,6 +31,18 @@ class Sheet:
                                 % (varname, varvalue))
         return
 
+    def buildresult(self, lineprops):
+        [title, ftype, defaultval, sformat] = lineprops
+        finalstring = sformat
+        for k, v in self.channelprops.extra_data.iteritems():
+            for kk, vv in v.iteritems():
+                variablename = '{%s-%s}' % (k, kk)
+                finalstring = finalstring.replace(variablename, vv)
+        result = { 'name' : title,
+                   'type': ftype,
+                   'contents' : finalstring }
+        return result
+
     def setfields(self):
         for sheetpart, v in self.displays.iteritems():
             self.fields[sheetpart] = {}
@@ -38,14 +50,11 @@ class Sheet:
                 if not isinstance(v, dict):
                     continue
                 for order, vv in v.iteritems():
-                    [title, ftype, defaultval, sformat] = vv
-                    ## XXX TODO : replace sformat/defaultval with variables stuff
-                    self.fields[sheetpart][order] = { 'name' : title,
-                                                      'type': ftype,
-                                                      'contents' : sformat }
+                    self.fields[sheetpart][order] = self.buildresult(vv)
             else:
                 print sheetpart, v
-##        linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
+        # print self.fields
+        # linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
         return
 
 
@@ -100,6 +109,7 @@ class Sheet:
         self.conditions = conditions
 
     def checkdest(self, channelprops):
+        self.channelprops = channelprops
         whom = self.conditions.get('whom')
         entities = self.conditions.get('entities')
         contexts = self.conditions.get('contexts')

@@ -1056,6 +1056,8 @@ class Safe:
                 continue
 
             channelprops = self.channels.get(channel)
+            channelprops.set_extra_data('xivo', 'time', time.strftime('%H:%M:%S', time.localtime()))
+            channelprops.set_extra_data('xivo', 'date', time.strftime('%Y-%m-%d', time.localtime()))
             sheet = cti_sheets.Sheet(where, self.ipbxid, channel)
             sheet.setoptions(self.sheetoptions.get(option_id))
             sheet.setdisplays(self.sheetdisplays.get(display_id))
@@ -1531,6 +1533,7 @@ class Channel:
 
     extra_vars = {
         'xivo' : [
+            'time', 'date',
             'origin', 'direction', 'context',
             'did',
             'calleridnum', 'calleridname', 'calleridrdnis', 'calleridton',
