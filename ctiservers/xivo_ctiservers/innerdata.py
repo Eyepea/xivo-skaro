@@ -231,7 +231,7 @@ class Safe:
                     'musicclass': 'parkedmusicclass', }
         default_parking = {}
         default_parking['name'] = 'default'
-        default_parking['id'] = 'default'
+        default_parking['id'] = '0'
         gf = self.extenfeatures['generalfeatures']
         if gf['findslot']['var_val'] is 'next':
             default_parking['next'] = '1'
@@ -240,7 +240,7 @@ class Safe:
         for pkey, ekey in name_map.iteritems():
             if not gf[ekey]['commented']:
                 default_parking[pkey] = gf[ekey]['var_val']
-        self.xod_config['parkinglots'].keeplist['default'] = default_parking
+        self.xod_config['parkinglots'].keeplist['0'] = default_parking
 
     def fill_lines_into_users(self):
         user2phone = {}
