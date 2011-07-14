@@ -538,8 +538,16 @@ class AMI_1_8:
         exten = event.pop('Exten')
         parkinglot = event.pop('Parkinglot')
         self.log.info('ami_parkedcall %s %s %s %s' % (channel, parkinglot, exten, event))
-        if channel in self.innerdata.channels:
-            self.innerdata.channels[channel].setparking(exten, parkinglot)
+        parkingevent = {
+            'parker': event.pop('From'),
+            'parked': channel,
+            'exten': exten,
+            'cid_name': event.pop('CallerIDName'),
+            'cid_num': event.pop('CallerIDNum'),
+            }
+        self.innerdata.update_parking(parkinglot, exten, parkingevent)
+        # if channel in self.innerdata.channels:
+        #     self.innerdata.channels[channel].setparking(exten, parkinglot)
         return
     def ami_unparkedcall(self, event):
         channel = event.pop('Channel')

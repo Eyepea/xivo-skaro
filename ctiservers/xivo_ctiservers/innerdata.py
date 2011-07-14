@@ -242,6 +242,22 @@ class Safe:
                 default_parking[pkey] = gf[ekey]['var_val']
         self.xod_config['parkinglots'].keeplist['0'] = default_parking
 
+    def update_parking(self, parkinglot, exten, info):
+        '''Update the status of the parkinglot and sends an event to the
+        clients'''
+        def get_parking_id(name):
+            for id in self.xod_config['parkinglots'].keeplist:
+                if name is self.xod_config['parkinglots'].keeplist[id]['name']:
+                    return id
+            return '0'
+
+        parkingid = get_parking_id(parkinglot)
+        if not parkingid in self.xod_status['parkinglots']:
+            self.xod_status['parkinglots'][parkingid] = {}
+        self.handle_cti_stack('set', ('parkinglots', 'updatestatus', parkingid))
+        self.xod_status['parkinglots'][parkingid] = { exten: info, }
+        self.handle_cti_stack('empty_stack')
+
     def fill_lines_into_users(self):
         user2phone = {}
         for idphone, v in self.xod_config['phones'].keeplist.iteritems():
