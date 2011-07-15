@@ -1,15 +1,15 @@
 Index: asterisk-1.8.5.0/include/asterisk/devicestate.h
 ===================================================================
---- asterisk-1.8.5.0.orig/include/asterisk/devicestate.h	2011-07-15 14:05:46.307905514 -0400
-+++ asterisk-1.8.5.0/include/asterisk/devicestate.h	2011-07-15 14:05:48.638526111 -0400
+--- asterisk-1.8.5.0.orig/include/asterisk/devicestate.h	2011-07-15 14:12:19.448206338 -0400
++++ asterisk-1.8.5.0/include/asterisk/devicestate.h	2011-07-15 14:12:31.648523327 -0400
 @@ -171,8 +171,8 @@
   * \note This is deprecated in favor of ast_devstate_changed()
   * \version 1.6.1 deprecated
   */
--int ast_device_state_changed(const char *fmt, ...);
--//	__attribute__((deprecated,format(printf, 1, 2)));
-+int ast_device_state_changed(const char *fmt, ...)
-+	__attribute__((deprecated,format(printf, 1, 2)));
++int ast_device_state_changed(const char *fmt, ...);
++//	__attribute__((deprecated,format(printf, 1, 2)));
+-int ast_device_state_changed(const char *fmt, ...)
+-	__attribute__((deprecated,format(printf, 1, 2)));
  
  /*!
   * \brief Tells Asterisk the State for Device is changed
