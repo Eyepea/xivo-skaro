@@ -16,29 +16,23 @@ pf_sip_notify_provd
 
 #pf_macro_loop_verbose
 
-#pf_sip_mwi_for_thomson_st20XXs
-
 #pf_chan_dahdi_pripreferred
 #pf_atxfer_cid_display
 
 #pf_agentcalled_event
 #pf_magic_pickupmark
 #pf_astdevmode
-#pf_atxfer_ami_event
-#pf_sip_fix_masquerade
-#pf_sip_fix_local_attended
 #pf_voicemail_date_language
 
 #pf_queue_incoming_limit
 #pf_meetme_moderation
 #pf_queue_has_member_function
-#pf_skill_queues
-#pf_queue_penalty_rules
 #pf_ftbfs_configure_PTHREAD_ONCE_INIT_test_fix
 #pf_file_copy_keeps_modes
 #pf_manager_rename
 
 pf_skill_queues
 pf_manager_inherit.patch
-#pf_AgentCallbackLogin
+pf_AgentCallbackLogin
+
 # digium patches
