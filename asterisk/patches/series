@@ -40,5 +40,5 @@ pf_sip_notify_provd
 
 pf_skill_queues
 pf_manager_inherit.patch
-
+#pf_AgentCallbackLogin
 # digium patches
