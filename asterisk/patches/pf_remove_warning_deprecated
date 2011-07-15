@@ -1,5 +1,7 @@
---- asterisk-1.8.5-rc1/include/asterisk/devicestate.h	2011-07-15 13:48:58.606185806 -0400
-+++ asterisk-1.8.5-rc1.orig/include/asterisk/devicestate.h	2011-07-15 07:50:46.610541996 -0400
+Index: asterisk-1.8.5.0/include/asterisk/devicestate.h
+===================================================================
+--- asterisk-1.8.5.0.orig/include/asterisk/devicestate.h	2011-07-15 14:05:46.307905514 -0400
++++ asterisk-1.8.5.0/include/asterisk/devicestate.h	2011-07-15 14:05:48.638526111 -0400
 @@ -171,8 +171,8 @@
   * \note This is deprecated in favor of ast_devstate_changed()
   * \version 1.6.1 deprecated
