@@ -106,7 +106,7 @@ class Safe:
         'incalls' : ['context', 'exten', 'destidentity', 'action'],
         'outcalls' : [],
         'contexts' : ['context', 'contextnumbers', 'contexttype', 'deletable', 'contextinclude'],
-        'parkinglots' : ['context', 'name', 'extension', 'positions', 'description'],
+        'parkinglots' : ['context', 'name', 'extension', 'positions', 'description', 'duration'],
         }
 
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
@@ -256,6 +256,33 @@ class Safe:
             self.xod_status['parkinglots'][parkingid] = {}
         self.handle_cti_stack('set', ('parkinglots', 'updatestatus', parkingid))
         self.xod_status['parkinglots'][parkingid] = { exten: info, }
+        self.handle_cti_stack('empty_stack')
+
+    def get_parking_name_exten(self, channel):
+        '''Search for a parking who's parked channel is channel and return
+        the parking name and parking bar'''
+        for parking_id in self.xod_status['parkinglots']:
+            for exten in self.xod_status['parkinglots'][parking_id]:
+                if channel in self.xod_status['parkinglots'][parking_id][exten]['parked']:
+                    return (parking_id, exten)
+        return (None, None)
+
+    def update_parking_parked(self, old, new):
+        '''Update parkinglots status after a masquerade
+        No events are sent to the clients at this point since the callerid will
+        be changed next'''
+        parking, exten = self.get_parking_name_exten(old)
+        if parking:
+            self.xod_status['parkinglots'][parking][exten]['parked'] = new
+
+    def update_parking_cid(self, channel, name, number):
+        '''Update the parkinglot status when a caller id change occurs'''
+        parking, exten = self.get_parking_name_exten(channel)
+        if not parking:
+            return
+        self.handle_cti_stack('set', ('parkinglots', 'updatestatus', parking))
+        self.xod_status['parkinglots'][parking][exten]['cid_name'] = name
+        self.xod_status['parkinglots'][parking][exten]['cid_num'] = number
         self.handle_cti_stack('empty_stack')
 
     def fill_lines_into_users(self):

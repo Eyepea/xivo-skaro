@@ -102,6 +102,7 @@ class AMI_1_8:
 
     def ami_newcallerid(self, event):
         # self.log.info('ami_newcallerid %s' % (event))
+        self.innerdata.update_parking_cid(event['Channel'], event['CallerIDName'], event['CallerIDNum'])
         return
 
     def ami_newexten(self, event):
@@ -279,6 +280,7 @@ class AMI_1_8:
             self.log.info('ami_masquerade %s %s (Regular Transfer ?) %s %s'
                      % (original, clone, originalstate, clonestate))
         self.innerdata.masquerade(original, clone)
+        self.innerdata.update_parking_parked(original, clone)
         # handle sheet transfer if appropriate
         return
 
@@ -544,10 +546,11 @@ class AMI_1_8:
             'exten': exten,
             'cid_name': event.pop('CallerIDName'),
             'cid_num': event.pop('CallerIDNum'),
+            'parktime': time.time(),
             }
         self.innerdata.update_parking(parkinglot, exten, parkingevent)
-        # if channel in self.innerdata.channels:
-        #     self.innerdata.channels[channel].setparking(exten, parkinglot)
+        if channel in self.innerdata.channels:
+            self.innerdata.channels[channel].setparking(exten, parkinglot)
         return
     def ami_unparkedcall(self, event):
         channel = event.pop('Channel')
