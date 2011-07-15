@@ -33,6 +33,7 @@ pf_sip_notify_provd
 
 pf_skill_queues
 pf_manager_inherit.patch
+pf_remove_warning_deprecated
 pf_AgentCallbackLogin
 
 # digium patches
