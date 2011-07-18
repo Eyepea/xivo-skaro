@@ -1030,8 +1030,8 @@ CREATE UNIQUE INDEX meetmefeatures__uidx__meetmeid ON meetmefeatures(meetmeid);
 CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
 
 
-DROP TABLE meetmeautoprov;
-CREATE TABLE meetmeautoprov (
+DROP TABLE meetmeguest;
+CREATE TABLE meetmeguest (
  id integer unsigned,
  meetmefeaturesid integer unsigned NOT NULL,
  fullname varchar(255) NOT NULL,
@@ -1040,9 +1040,9 @@ CREATE TABLE meetmeautoprov (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX meetmeautoprov__idx__meetmefeaturesid ON meetmeautoprov(meetmefeaturesid);
-CREATE INDEX meetmeautoprov__idx__fullname ON meetmeautoprov(fullname);
-CREATE INDEX meetmeautoprov__idx__email ON meetmeautoprov(email);
+CREATE INDEX meetmeguest__idx__meetmefeaturesid ON meetmeguest(meetmefeaturesid);
+CREATE INDEX meetmeguest__idx__fullname ON meetmeguest(fullname);
+CREATE INDEX meetmeguest__idx__email ON meetmeguest(email);
 
 
 DROP TABLE musiconhold;

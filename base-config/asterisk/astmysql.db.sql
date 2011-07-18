@@ -1060,8 +1060,8 @@ CREATE UNIQUE INDEX `meetmefeatures__uidx__meetmeid` ON `meetmefeatures`(`meetme
 CREATE UNIQUE INDEX `meetmefeatures__uidx__name` ON `meetmefeatures`(`name`);
 
 
-DROP TABLE IF EXISTS `meetmeautoprov`;
-CREATE TABLE `meetmeautoprov` (
+DROP TABLE IF EXISTS `meetmeguest`;
+CREATE TABLE `meetmeguest` (
  `id` int(10) unsigned auto_increment,
  `meetmefeaturesid` int(10) unsigned NOT NULL,
  `fullname` varchar(255) NOT NULL,
@@ -1070,9 +1070,9 @@ CREATE TABLE `meetmeautoprov` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `meetmeautoprov__idx__meetmefeaturesid` ON `meetmeautoprov`(`meetmefeaturesid`);
-CREATE INDEX `meetmeautoprov__idx__fullname` ON `meetmeautoprov`(`fullname`);
-CREATE INDEX `meetmeautoprov__idx__email` ON `meetmeautoprov`(`email`);
+CREATE INDEX `meetmeguest__idx__meetmefeaturesid` ON `meetmeguest`(`meetmefeaturesid`);
+CREATE INDEX `meetmeguest__idx__fullname` ON `meetmeguest`(`fullname`);
+CREATE INDEX `meetmeguest__idx__email` ON `meetmeguest`(`email`);
 
 
 DROP TABLE IF EXISTS `musiconhold`;
