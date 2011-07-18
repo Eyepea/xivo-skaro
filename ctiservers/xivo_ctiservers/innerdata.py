@@ -258,12 +258,20 @@ class Safe:
         self.xod_status['parkinglots'][parkingid] = { exten: info, }
         self.handle_cti_stack('empty_stack')
 
+    def unpark(self, channel):
+        parking_id, exten = self.get_parking_name_exten(channel)
+        if parking_id:
+            self.handle_cti_stack('set', ('parkinglots', 'updatestatus', parking_id))
+            self.xod_status['parkinglots'][parking_id][exten] = {}
+            self.handle_cti_stack('empty_stack')
+
     def get_parking_name_exten(self, channel):
         '''Search for a parking who's parked channel is channel and return
         the parking name and parking bar'''
         for parking_id in self.xod_status['parkinglots']:
             for exten in self.xod_status['parkinglots'][parking_id]:
-                if channel in self.xod_status['parkinglots'][parking_id][exten]['parked']:
+                parked_chan = self.xod_status['parkinglots'][parking_id][exten].get('parked')
+                if parked_chan and channel in parked_chan:
                     return (parking_id, exten)
         return (None, None)
 
