@@ -539,6 +539,8 @@ class AMI_1_8:
         channel = event.pop('Channel')
         exten = event.pop('Exten')
         parkinglot = event.pop('Parkinglot')
+        if parkinglot.startswith('parkinglot_'):
+            parkinglot = '_'.join(parkinglot.split('_')[1:])
         self.log.info('ami_parkedcall %s %s %s %s' % (channel, parkinglot, exten, event))
         parkingevent = {
             'parker': event.pop('From'),

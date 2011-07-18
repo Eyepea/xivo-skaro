@@ -246,8 +246,8 @@ class Safe:
         '''Update the status of the parkinglot and sends an event to the
         clients'''
         def get_parking_id(name):
-            for id in self.xod_config['parkinglots'].keeplist:
-                if name is self.xod_config['parkinglots'].keeplist[id]['name']:
+            for id, parking in self.xod_config['parkinglots'].keeplist.iteritems():
+                if name in parking['name']:
                     return id
             return '0'
 
