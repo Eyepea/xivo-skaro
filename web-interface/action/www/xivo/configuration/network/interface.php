@@ -61,7 +61,6 @@ switch($act)
 				$_TPL->set_var('redirect_url_query',$param);
 				$_TPL->set_var('redirect_seconds',5);
 				$_TPL->display('redirect');
-				die();
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
@@ -117,7 +116,6 @@ switch($act)
 				$_TPL->set_var('redirect_url_query',$param);
 				$_TPL->set_var('redirect_seconds',5);
 				$_TPL->display('redirect');
-				die();
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
@@ -130,7 +128,7 @@ switch($act)
 			uksort($interfaces,array(&$ifacesort,'str_usort'));
 		}
 
-		$_TPL->set_var('id',$info['netiface']['name']);
+		$_TPL->set_var('id',$info['netiface']['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('deletable',$info['deletable']);
 		$_TPL->set_var('fm_save',$fm_save);

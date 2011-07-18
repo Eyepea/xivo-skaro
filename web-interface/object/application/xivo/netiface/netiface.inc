@@ -146,16 +146,21 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		return($scheme.'://'.$uri);
 	}
 
-	function get($name,$disable=null)
+	function get($id,$disable=null)
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['netiface'] = $this->_netiface->get($name)) === false)
+		if(($this->_info['netiface'] = $this->_netiface->get($id)) === false)
 			return(false);
+
+		// requested iface uuid must match local one
+		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
+		if($this->_info['netiface']['uuid'] != $uuid['uuid'])
+			return false;
 
 		$this->_origin['netiface'] = $this->_netiface->get_origin();
 
-		if($this->_netiface->exists_link($this->_info['netiface']['name']) !== false)
+		if($this->_netiface->exists_link($this->_info['netiface']['ifname'],$uuid['uuid']) !== false)
 			$this->_info['deletable'] = false;
 		else if(($unremovables = $this->get_unremovable_interfaces()) !== false
 		&& isset($unremovables[$this->_info['netiface']['ifname']]) === true)
@@ -361,7 +366,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		return($rs);
 	}
 
-	function valid_interface($ifname,$hwtypeid=null,$address=null,$vlanrawdevice=null,$vlanid=null,$name=null)
+	function valid_interface($ifname,$hwtypeid=null,$address=null,$vlanrawdevice=null,$vlanid=null,$uuid=null,$id=null)
 	{
 		if($hwtypeid !== null && $hwtypeid !== 0 && ($hwtypeid = dwho_uint($hwtypeid)) === 0)
 			return(false);
@@ -370,10 +375,9 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		if($address !== null)
 		{
-			$where = array();
-			$where['address'] = $address;
+			$where = array('address' => $address, 'uuid' => $uuid);
 
-			if($name === null)
+			if($id === null)
 			{
 				if($this->_netiface->exists($where) === true)
 					return(false);
@@ -381,7 +385,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			else
 			{
 				if(($netiface = $this->_netiface->get_primary($where)) !== false
-				&& $name !== $netiface)
+				&& $id !== $netiface)
 					return(false);
 			}
 		}
@@ -398,8 +402,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if(is_array($phyiface) === false)
 				return(false);
 
-			$where = array();
-			$where['ifname'] = $phyifname;
+			$where = array('ifname' => $phyifname, 'uuid' => $uuid);
 
 			if($hwtypeid !== null)
 				$where['hwtypeid'] = $hwtypeid;
@@ -449,8 +452,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if($this->_sysnet->is_alias_if($ifname) === true)
 				return(false);
 
-			$where = array();
-			$where['ifname'] = $vlanrawdevice;
+			$where = array('ifname' => $vlanrawdevice, 'uuid' => $uuid);
 
 			if($hwtypeid !== null)
 				$where['hwtypeid'] = $hwtypeid;
@@ -458,13 +460,12 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if($this->_netiface->exists($where) !== true)
 				return(false);
 
-			$where = array();
-			$where['vlanid'] = $vlanid;
+			$where = array('vlanid' => $vlanid, 'uuid' => $uuid);
 
 			if($hwtypeid !== null)
 				$where['hwtypeid'] = $hwtypeid;
 
-			if($name === null)
+			if($id === null)
 			{
 				if($this->_netiface->exists($where) === true)
 					return(false);
@@ -472,7 +473,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			else
 			{
 				if(($netiface = $this->_netiface->get_primary($where)) !== false
-				&& $name !== $netiface)
+				&& $id !== $netiface)
 					return(false);
 			}
 
@@ -528,7 +529,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 	function get_netifaces_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$rs = $this->_netiface->get_all($disable,true,$order,$limit,$assoc);
+		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
+		$rs = $this->_netiface->get_all_where(array('uuid' => $uuid['uuid']), $disable,true,$order,$limit,$assoc);
 		$this->_cnt = $this->_netiface->get_cnt();
 
 		$netinfo = $this->_sysconfd->request_get('/discover_netifaces');
@@ -546,7 +548,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					continue;
 				}
 
-				$key = $val['name'].'-'.$val['ifname'];
+				$key = $val['ifname'];
 
 				$r[$key] = array('netinfo'	=> false,
 						 'netiface'	=> $val);
@@ -555,10 +557,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 				$ref['netiface']['hwtype'] = $hwtype;
 				$ref['netiface']['identity'] = $this->_xobj->identity('netiface',$ref['netiface']);
 
-				if($this->_netiface->exists_link($val['ifname']) !== false)
+				/* cannot remove/disable a interface if another one is depending on */
+				if($this->_netiface->exists_link($val['ifname'], $uuid['uuid']) !== false)
 					$ref['deletable'] = false;
-				else if(($unremovables = $this->get_unremovable_interfaces()) !== false
-				&& isset($unremovables[$val['ifname']]) === true)
+				else if(isset($unremovables[$val['ifname']]) === true)
 					$ref['deletable'] = false;
 				else
 					$ref['deletable'] = true;
@@ -566,7 +568,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 				$ref['actionable'] = $this->is_valid_interface_method($val['method']);
 
 				if(is_array($netinfo) === true
-				&& ($netinfo[$val['ifname']]) === true
+				&& ($netinfo[$val['ifname']]) !== false
 				&& (int) $val['hwtypeid'] === dwho_uint($netinfo[$val['ifname']]['hwtypeid']))
 				{
 					$ref['netinfo'] = $netinfo[$val['ifname']];
@@ -605,7 +607,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 				$val['flags'] = $this->_sysnet->netinfo_iff_to_dict($val['flags']);
 
-				$key = $val['name'].'-'.$val['name'];
+				$key = $val['name'];
 
 				$r[$key] = array('netinfo'	=> $val,
 						 'netiface'	    => isset($r[$key]) ? $r[$key]['netiface'] : false,
@@ -681,9 +683,12 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 				return(false);
 		}
 
+		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
+		$arr['uuid'] = $uuid['uuid'];
+		
 		$this->set_netiface($arr);
 		$this->set_sysconfnet($devname);
-		
+
 		return($this->get_errnb() < 1);
 	}
 
@@ -715,10 +720,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		else if(($normalized = $this->normalize_interface_method($rs)) === false)
 		{
 			$this->_set_result('netiface',$rs);
-			$this->_set_error('netiface','interface method not valid');
+			$this->_set_error('netiface','method','invalid_interface_method');
 			return(false);
 		}
-		
+
 		$this->_set_result('netiface',$normalized);
 
 		return(true);
@@ -839,7 +844,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					  $rs['hwtypeid'],
 					  $rs['address'],
 					  $rs['vlanrawdevice'],
-					  $rs['vlanid']) === false)
+					  $rs['vlanid'],
+					  $rs['uuid']) === false)
 			return(false);
 
 		if($this->_netiface->add($rs) !== false)
@@ -944,7 +950,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$iface['netiface']['networktype'] = 'data';
 			
 			if(($rs = $this->_netiface->chk_values($iface['netiface'])) === false
-			or $this->_netiface->edit($iface['netiface']['name'], $rs) === false)
+			or $this->_netiface->edit($iface['netiface']['id'], $rs) === false)
 				return false;
 		}
 
@@ -961,13 +967,14 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					  $rs['address'],
 					  $rs['vlanrawdevice'],
 					  $rs['vlanid'],
-					  $this->_info['netiface']['name']) === false)
+					  $rs['uuid'],
+					  $this->_info['netiface']['id']) === false)
 			return(false);
 		else if(strcmp($rs['ifname'],$this->_info['netiface']['ifname']) !== 0
-		&& $this->_netiface->exists_link($this->_info['netiface']['ifname']) !== false)
+		&& $this->_netiface->exists_link($this->_info['netiface']['ifname'], $this->_info['netiface']['uuid']) !== false)
 			return(false);
 
-		if($this->_netiface->edit($this->_info['netiface']['name'],$rs) !== false)
+		if($this->_netiface->edit($this->_info['netiface']['id'],$rs) !== false)
 			$this->_return['netiface'] = $rs['name'];
 		else
 			$this->_return['netiface'] = false;
@@ -1023,10 +1030,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
-        if($r === false)
-            return false;
+	        if($r === false)
+        	    return false;
     
-        return $this->update_server();
+	        return $this->update_server();
 	}
 
 	function delete_netiface()
@@ -1034,7 +1041,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if(dwho_issa('netiface',$this->_info) === false)
 			return(false);
 
-		$r = $this->_netiface->delete($this->_info['netiface']['name']);
+		$r = $this->_netiface->delete($this->_info['netiface']['id']);
 
 		if($this->_status === 'delete')
 			$this->_return['netiface'] = $r;
@@ -1105,11 +1112,11 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
+   
+		if($r === false)
+			return false;
     
-        if($r === false)
-            return false;
-    
-        return $this->update_server();
+		return $this->update_server();
 	}
 
 	function disable()
@@ -1155,9 +1162,9 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if(dwho_issa('netiface',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
-			$r = $this->_netiface->enable($this->_info['netiface']['name']);
+			$r = $this->_netiface->enable($this->_info['netiface']['id']);
 		else
-			$r = $this->_netiface->disable($this->_info['netiface']['name']);
+			$r = $this->_netiface->disable($this->_info['netiface']['id']);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
 			$this->_return['netiface'] = $r;
@@ -1248,12 +1255,14 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	    false otherwise
 	*/
 	function update_server()
-    {
-        if(!$this->_commonconf->generate())
-            return false;
-        
-        return $this->_sysconfd->request_get('/munin_update');
-    }
+	{
+		/* TEMP: disabling commonconf
+        	if(!$this->_commonconf->generate())
+	            return false;
+       		*/
+
+        	return $this->_sysconfd->request_get('/munin_update');
+	}
 }
 
 ?>

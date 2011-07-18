@@ -73,3 +73,6 @@ Options
 
 ; error(already-defined)
 An interface with the same name already exist or vlan id does not match interface name
+
+; error(invalid_interface_method)
+Invalide method

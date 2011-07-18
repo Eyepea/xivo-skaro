@@ -58,7 +58,7 @@ $array['monitoring']['primary'] = array('id' => '');
 
 $array['netiface'] = array();
 $array['netiface']['table'] = 'netiface';
-$array['netiface']['primary'] = array('name' => '');
+$array['netiface']['primary'] = array('id' => '');
 
 $array['resolvconf'] = array();
 $array['resolvconf']['table'] = 'resolvconf';

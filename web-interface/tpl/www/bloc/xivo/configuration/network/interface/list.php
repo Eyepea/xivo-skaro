@@ -125,7 +125,7 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			if(empty($netiface) === false):
-				$id		= $netiface['name'];
+				$id		= $netiface['id'];
 				$name		= $netiface['name'];
 				$ifname		= $netiface['ifname'];
 				$hwtype		= $netiface['hwtype'];

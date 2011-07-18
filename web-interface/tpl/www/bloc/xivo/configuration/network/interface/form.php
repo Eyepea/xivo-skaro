@@ -78,7 +78,9 @@ endif;
 				    'bbf'       => 'network_method',
 				    'bbfopt'    => array('argmode' => 'paramvalue'),
 				    'default'   => $element['netiface']['method']['default'],
-				    'selected'  => $this->get_var_default('info','method',$this->get_var('devinfo','method'))),
+				    'selected'  => $this->get_var_default('info','method',$this->get_var('devinfo','method')),
+				    'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'method'))),
 			      $element['netiface']['method']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_address'),

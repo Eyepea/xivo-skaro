@@ -24,18 +24,21 @@ class xivo_object_netiface_sql extends xivo_object_abstract_sql
 {
 	var $_unique	= array('name','ifname');
 
-	function exists_link($ifname)
+	function exists_link($ifname, $uuid)
 	{
-		if(dwho_has_len($ifname) === false)
+		if(dwho_has_len($ifname) === false
+		|| dwho_has_len($uuid)   === false)
 			return(null);
 
 		$this->_dso->new_select($this->_table,array('ifname'));
 
 		// Test if exists an alias interface
-		$this->_dso->wherebegin('ifname',$ifname.':');
+		$this->_dso->where(array('uuid' => $uuid));
+		$this->_dso->andwherebegin('ifname',$ifname.':');
 
 		// Test if exists a vlan-raw-device
-		$this->_dso->orwhere(array('vlanrawdevice' => $ifname));
+		$this->_dso->orwhere(array('uuid' => $uuid));
+		$this->_dso->andwhere(array('vlanrawdevice' => $ifname));
 
 		return($this->_dso->select_single());
 	}

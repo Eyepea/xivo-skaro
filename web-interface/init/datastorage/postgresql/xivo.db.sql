@@ -159,7 +159,9 @@ CREATE TYPE "netiface_networktype" AS ENUM ('data','voip');
 CREATE TYPE "netiface_type" AS ENUM ('iface');
 CREATE TYPE "netiface_family" AS ENUM ('inet','inet6');
 CREATE TYPE "netiface_method" AS ENUM ('static','dhcp');
-CREATE TABLE "netiface" (
+CREATE TABLE "netiface" ( 
+ "id" SERIAL,
+ "uuid" varchar(64) NOT NULL,
  "name" varchar(64) NOT NULL DEFAULT '',
  "ifname" varchar(64) NOT NULL DEFAULT '',
  "hwtypeid" INTEGER NOT NULL DEFAULT 65534,
@@ -178,7 +180,7 @@ CREATE TABLE "netiface" (
  "disable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "dcreate" INTEGER NOT NULL DEFAULT 0,
  "description" text NOT NULL,
- PRIMARY KEY("name")
+ PRIMARY KEY("id")
 );
 
 CREATE INDEX "netiface__idx__hwtypeid" ON "netiface"("hwtypeid");
@@ -194,7 +196,7 @@ CREATE INDEX "netiface__idx__mtu" ON "netiface"("mtu");
 CREATE INDEX "netiface__idx__vlanrawdevice" ON "netiface"("vlanrawdevice");
 CREATE INDEX "netiface__idx__vlanid" ON "netiface"("vlanid");
 CREATE INDEX "netiface__idx__disable" ON "netiface"("disable");
-CREATE UNIQUE INDEX "netiface__uidx__ifname" ON "netiface"("ifname");
+CREATE UNIQUE INDEX "netiface__uidx__ifname" ON "netiface"("uuid","ifname");
 
 
 DROP TABLE IF EXISTS "resolvconf";
