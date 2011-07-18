@@ -2780,11 +2780,11 @@ CREATE TABLE "queue_log" (
  "queuename" varchar(50) DEFAULT ''::varchar NOT NULL,
  "agent" varchar(50) DEFAULT ''::varchar NOT NULL,
  "event" varchar(20) DEFAULT ''::varchar NOT NULL,
- "data1" varchar(30) DEFAULT ''::varchar NOT NULL,
- "data2" varchar(30) DEFAULT ''::varchar NOT NULL,
- "data3" varchar(30) DEFAULT ''::varchar NOT NULL,
- "data4" varchar(30) DEFAULT ''::varchar NOT NULL,
- "data5" varchar(30) DEFAULT ''::varchar NOT NULL
+ "data1" varchar(30) DEFAULT ''::varchar,
+ "data2" varchar(30) DEFAULT ''::varchar,
+ "data3" varchar(30) DEFAULT ''::varchar,
+ "data4" varchar(30) DEFAULT ''::varchar,
+ "data5" varchar(30) DEFAULT ''::varchar
  );
 
 CREATE INDEX queue_log__idx_time ON queue_log USING btree ("time");

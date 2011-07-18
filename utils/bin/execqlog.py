@@ -43,36 +43,35 @@ from xivo.BackSQL import backpostgresql
 VERBOSE = False
 IP_XIVO = "127.0.0.1"
 FILE_DELIMITERS = '|'
-DBASTPGSQL = '/usr/share/pf-xivo-base-config/astpgsql.db.sql'
 DEFAULT_OUT_FILE = "/tmp/insert_file_pg_copy_%s" % time.strftime('%Y%m%d%H%M%S',time.localtime())
 DEFAULT_DB_NAME = 'asterisk'
 
-URL_QUEUE = "https://%s/service/ipbx/json.php/private/call_center/queues/" % IP_XIVO
-URL_AGENT = "https://%s/service/ipbx/json.php/private/call_center/agents/" % IP_XIVO
-
 IPBX_INI_FILE = os.path.join(os.path.sep, 'etc', 'pf-xivo','web-interface','ipbx.ini')
-QLOG_DIR = "/var/lib/pf-xivo-web-interface/statistics/qlog/"
+QLOG_DIR = os.path.join(os.path.sep, 'var','lib','pf-xivo-web-interface','statistics','qlog')
+
+URL_QUEUE = "https://%s/callcenter/json.php/private/settings/queues/?forcedatabase=%s"
+URL_AGENT = "https://%s/callcenter/json.php/private/settings/agents/?forcedatabase=%s"
 
 LIST_QUEUE = set()
 LIST_AGENT = set()
 
 DATA_QUEUE ={ "queuefeatures": 
-                {   
+                {
                     "name": "%s", 
                     "context": "default", 
                     "number": "", 
                     "timeout": 0
-                }, 
+                },
                 "queue": 
                 { 
                     "timeoutpriority": "app", 
                     "min-announce-frequency": 60, 
                     "announce-position": "yes", 
                     "announce-position-limit": 5 
-                } 
+                }
             }
 DATA_AGENT ={ "agentfeatures": 
-                { 
+                {
                     "firstname": "%s", 
                     "lastname": "", 
                     "context": "default", 
@@ -83,14 +82,13 @@ DATA_AGENT ={ "agentfeatures":
                     "wrapuptime": 0, 
                     "acceptdtmf": "#", 
                     "enddtmf": "*" 
-                }, 
+                },
                 "agentoptions": 
-                { 
+                {
                     "maxlogintries": 3 
                 }
             }
 
-PGCREATEDB = "CREATE DATABASE %s TEMPLATE tpl_asterisk;" % DEFAULT_DB_NAME
 COMMAND_COPY = "COPY queue_log (time,callid,queuename,agent,event,data1,data2,data3,data4,data5) " \
                "FROM '%s' DELIMITERS '%s' CSV"  %( DEFAULT_OUT_FILE, FILE_DELIMITERS)
 
@@ -110,6 +108,7 @@ class DbManager(object):
         
     def close(self):
         self._conn.close()
+        
 
 def _limit(count):
    # decorator that limit the number of elements returned by a generator
@@ -169,27 +168,33 @@ def request_http(url, data=None):
         f = urllib2.urlopen(req) 
         return f
     except HTTPError, e:
-        #print e.code
-        print e.read()
+        print 'code:', e.code,' response:', e.read()
     except URLError, e:
-        print e.reason
+        print 'code:', e.code,' response:', e.read()
 
 
 def exec_ws():
+    base_url_queue = URL_QUEUE % (IP_XIVO, DEFAULT_DB_NAME)
+    base_url_agent = URL_AGENT % (IP_XIVO, DEFAULT_DB_NAME)
     for q in LIST_QUEUE:
-        f = request_http('%s?act=search&search=%s' % (URL_QUEUE, q))
-        if f.code == 204:
-            data = json.dumps(DATA_QUEUE) % q
+        f = request_http('%s&act=search&search=%s' % (base_url_queue, q))
+        if hasattr(f, 'code'):
             if VERBOSE:
-                print 'JSON:', data
-            f = request_http('%s?act=add' % (URL_QUEUE), data)
+                print 'code:', f.code,' response:', f.read()
+            if f.code == 204:
+                data = json.dumps(DATA_QUEUE) % q
+                f = request_http('%s&act=add' % (base_url_queue), data)
+                if VERBOSE:
+                    print 'JSON:', data
+                    #print 'code:', f.code,' response:', f.read()
     for a in LIST_AGENT:
-        m = re.search("agent/([0-9]{4})", a, re.I)
+        m = re.search("agent/([0-9]+)", a, re.I)
         if m is not None:
             data = json.dumps(DATA_AGENT) % (a, m.group(1))
+            f = request_http('%s&act=add' % (base_url_agent), data)
             if VERBOSE:
                 print 'JSON:', data
-            f = request_http('%s?act=add' % (URL_AGENT), data)
+                #print 'code:', f.code,' response:', f.read()
         
 
 def main(directory):
@@ -209,7 +214,8 @@ def main(directory):
             LIST_AGENT.add(linet[3])
     fobj.close()
     dbman.close()
-    #exec_ws()    
+    
+    PGCREATEDB = "CREATE DATABASE \"%s\" TEMPLATE tpl_asterisk;" % DEFAULT_DB_NAME
     
     try:
         if VERBOSE:
@@ -217,6 +223,8 @@ def main(directory):
         subprocess.check_call(['sudo', '-H', '-u', 'postgres' ,'psql', '-c', PGCREATEDB])
     except:
         pass
+    
+    exec_ws()
     
     try:
         if VERBOSE:
@@ -242,10 +250,8 @@ if __name__ == '__main__':
     if opts.output_db_name:
         DEFAULT_DB_NAME = 'ast_%s' % opts.output_db_name
         CLIENT_NAME = opts.output_db_name
-    if len(args) != 0:
-        print >>sys.stderr, "usage: %s -v -o <output_filename> <directory>" % ("./qlogtopostgres.py")
-        raise sys.exit(1)
     else:
-        dir = os.path.join(os.path.sep, QLOG_DIR, CLIENT_NAME, 'process')
-        main(dir)
+        print >>sys.stderr, "usage: %s -v -d <client_name> [-o <output_filename>]" % ("./execqlog.py")
+        raise sys.exit(1)
+    main(os.path.join(os.path.sep, QLOG_DIR, CLIENT_NAME, 'process'))
 
