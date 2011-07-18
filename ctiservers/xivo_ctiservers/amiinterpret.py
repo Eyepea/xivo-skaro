@@ -559,16 +559,19 @@ class AMI_1_8:
         self.log.info('ami_unparkedcall %s %s' % (channel, event))
         if channel in self.innerdata.channels:
             self.innerdata.channels[channel].unsetparking()
+        self.innerdata.unpark(channel)
         return
     def ami_parkedcalltimeout(self, event):
         channel = event.pop('Channel')
         self.log.info('ami_parkedcalltimeout %s %s' % (channel, event))
         if channel in self.innerdata.channels:
             self.innerdata.channels[channel].unsetparking()
+        self.innerdata.unpark(channel)
         return
     def ami_parkedcallgiveup(self, event):
         channel = event.pop('Channel')
         self.log.info('ami_parkedcallgiveup %s %s' % (channel, event))
+        self.innerdata.unpark(channel)
         return
 
     def ami_jitterbufstats(self, event):
