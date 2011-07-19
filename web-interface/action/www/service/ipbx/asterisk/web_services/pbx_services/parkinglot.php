@@ -43,7 +43,7 @@ switch($act)
 			$http_response->send(true);
 
 			header(dwho_json::get_header());
-			die($appark->get_filter_error());			
+			die($appark->get_filter_error());
 		}
 
 		$_TPL->set_var('list', $id);
@@ -92,7 +92,7 @@ switch($act)
 			$http_response->send(true);
 
 			header(dwho_json::get_header());
-			die($appark->get_filter_error());			
+			die($appark->get_filter_error());
 		}
 
 		$http_response->set_status_line(200);
@@ -119,9 +119,13 @@ switch($act)
 	case 'list':
 	default:
 		$act = 'list';
-		
+
 		$order = array('name' => SORT_ASC);
-		$list  = $appark->get_all(null,true,$order);
+		if(($list  = $appark->get_all(null,true,$order)) === false)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		};
 
 		$_TPL->set_var('list', $list);
 }
