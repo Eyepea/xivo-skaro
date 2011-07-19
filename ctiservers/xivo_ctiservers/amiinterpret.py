@@ -608,6 +608,7 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
         chanprops.set_extra_data('xivo', 'desttype', 'user')
         chanprops.set_extra_data('xivo', 'destid', xivo_dstid)
         chanprops.set_extra_data('xivo', 'origin', 'internal')
@@ -619,6 +620,7 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
         return
 
     def userevent_queue(self, chanprops, event):
@@ -626,6 +628,7 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
         return
 
     def userevent_meetme(self, chanprops, event):
@@ -633,6 +636,7 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
         # chanprops.set_extra_data('xivo', 'calledidname', xivo_dstid)
         return
 
@@ -641,6 +645,7 @@ class AMI_1_8:
         xivo_dstid = event.get('XIVO_DSTID')
         calleridnum = event.get('XIVO_SRCNUM')
         calledidnum = event.get('XIVO_DSTNUM')
+        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
         chanprops.set_extra_data('xivo', 'origin', 'outcall')
         chanprops.set_extra_data('xivo', 'direction', 'outgoing')
         self.innerdata.sheetsend('outcall', chanprops.channel)

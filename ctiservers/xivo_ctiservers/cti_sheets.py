@@ -26,6 +26,7 @@ __author__    = 'Corentin Le Gall'
 
 import base64
 import struct
+import urllib
 import zlib
 
 class Sheet:
@@ -64,6 +65,20 @@ class Sheet:
             for kk, vv in v.iteritems():
                 variablename = '{%s-%s}' % (k, kk)
                 finalstring = finalstring.replace(variablename, vv)
+        if finalstring.find('{xivo-callerpicture}') >= 0:
+            userid = self.channelprops.extra_data.get('xivo').get('userid')
+            url = 'https://127.0.0.1/getatt.php?id=%s&obj=user' % userid
+            try:
+                picture_desc = urllib.urlopen(url)
+                picture_data = picture_desc.read()
+                picture_desc.close()
+            except:
+                picture_data = ''
+            # remove the '\x' char from the beginning of the resulting data
+            # and encode the binary in base64 : data length changes from 1 to 1/2 to 3/4
+            b64value = base64.b64encode(base64.b16decode(picture_data[2:].upper()))
+            finalstring = b64value
+
         result = { 'name' : title,
                    'type': ftype,
                    'contents' : finalstring }
@@ -116,7 +131,7 @@ class Sheet:
             ulen = len(self.xmlstring)
             # prepend the uncompressed length in big endian
             # to the zlib compressed string to meet Qt qUncompress() function expectations
-            toencode = struct.pack(">I", ulen) + zlib.compress(self.xmlstring)
+            toencode = struct.pack('>I', ulen) + zlib.compress(self.xmlstring)
             self.payload = base64.b64encode(toencode)
             self.compressed = True
         else:

@@ -217,8 +217,10 @@ class Safe:
         return
 
     def add_default_parking(self):
-        '''Add the default parking from extenfeatures to
-        xod_config['parkinglots']'''
+        """
+        Add the default parking from extenfeatures to
+        xod_config['parkinglots']
+        """
         name_map = {'context': 'context',
                     'extension': 'parkext',
                     'positions': 'parkpos',
@@ -266,7 +268,7 @@ class Safe:
             self.handle_cti_stack('empty_stack')
 
     def get_parking_name_exten(self, channel):
-        '''Search for a parking who's parked channel is channel and return
+        '''Search for a parking whose parked channel is channel and return
         the parking name and parking bar'''
         for parking_id in self.xod_status['parkinglots']:
             for exten in self.xod_status['parkinglots'][parking_id]:
@@ -1589,6 +1591,7 @@ class Channel:
             'did',
             'calleridnum', 'calleridname', 'calleridrdnis', 'calleridton',
             'queuename', 'agentnumber',
+            'userid',
             'desttype', 'destid'
             ],
         'dp' : [],
