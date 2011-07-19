@@ -360,7 +360,7 @@ class Safe:
                                            'tipbxid' : self.ipbxid,
                                            'list' : finaldels
                                            } )
-            for tid, v in deltas.get('change').iteritems():
+            for tid, v in deltas.get('change', {}).iteritems():
                 if not v:
                     continue
                 props = self.xod_config[listname].keeplist[tid]
@@ -981,8 +981,9 @@ class Safe:
         if truestate != oldstate:
             self.xod_status.get('users').get(userid)['availstate'] = truestate
             agentid = self.xod_config.get('users').keeplist.get(userid).get('agentid')
-            if agentid:
-                agentnumber = self.xod_config.get('agents').keeplist.get(agentid).get('number')
+            agents_keeplist = self.xod_config.get('agents').keeplist
+            if agentid in agents_keeplist:
+                agentnumber = agents_keeplist[agentid].get('number')
                 actionid = ''.join(random.sample(__alphanums__, 10))
                 params = {
                     'mode' : 'presence',
