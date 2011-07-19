@@ -27,6 +27,8 @@ from sqlalchemy.sql.expression import and_, cast, alias, Alias
 from sqlalchemy.sql.functions  import coalesce
 from sqlalchemy.sql            import select
 from sqlalchemy.types          import VARCHAR
+from sqlalchemy.orm            import scoped_session, sessionmaker
+from sqlalchemy                import exc
 
 from confgen.backend import Backend
 
@@ -54,7 +56,13 @@ def mapped_iteritems(self):
 def iterable(mode):
 	def _iterable(f):
 		def single_wrapper(*args, **kwargs):
-			ret = f(*args, **kwargs)
+			try:
+				ret = f(*args, **kwargs)
+			except exc.OperationalError:
+				# reconnect & retry
+				args[0].db.flush()
+				ret = f(*args, **kwargs)
+
 			if ret is not None:
 				ret.__class__.__getitem__ = lambda self, key: self.__dict__[key]
 				ret.__class__.iteritems   = mapped_iteritems
@@ -62,7 +70,14 @@ def iterable(mode):
 			return ret
 				
 		def list_wrapper(*args, **kwargs):
-			ret = f(*args, **kwargs)
+			try:
+				ret = f(*args, **kwargs)
+			except exc.OperationalError:
+				# reconnect & retry
+				args[0].db.flush()
+				ret = f(*args, **kwargs)
+
+
 			if isinstance(ret, list) and len(ret) > 0:
 				ret[0].__class__.__getitem__  = lambda self, key: self.__dict__[key]
 				ret[0].__class__.__setitem__  = mapped_set
@@ -93,8 +108,15 @@ class SpecializedHandler(object):
 		self.name = name
 
 	def execute(self, q):
-		conn = self.db.engine.connect()
-		return conn.execute(q)
+		try:
+			ret = self.db.engine.connect().execute(q)
+		except exc.OperationalError:
+			# reconnect & retry
+			self.db.flush()
+			ret = self.db.engine.connect().execute(q)
+
+		return ret
+
 
 class SCCPUsersHandler(SpecializedHandler):
 	def all(self, commented=None, order=None, **kwargs):
@@ -260,13 +282,14 @@ class ProgfunckeysHintsHandler(SpecializedHandler):
 				_p.c.typeextenumbers     != None,
 				_p.c.typevalextenumbers  != None,
 				_p.c.supervision         == 1, 
-				_p.c.progfunckey         == 1, 
+				_p.c.progfunckey         == 1,
 				cast(_p.c.typeextenumbers,VARCHAR(255)) == cast(_e.c.type,VARCHAR(255)),
-				_p.c.typevalextenumbers == _e.c.typeval
+				_p.c.typevalextenumbers  != 'user',
+				_p.c.typevalextenumbers  == _e.c.typeval
 		]
 		if 'context' in kwargs:
 			conds.append(_l.c.context == kwargs['context'])
-		
+
 		q = select(
 			[_p.c.iduserfeatures, _p.c.exten, _p.c.typeextenumbers,
 			 _p.c.typevalextenumbers, _p.c.typeextenumbersright,
@@ -275,6 +298,33 @@ class ProgfunckeysHintsHandler(SpecializedHandler):
 			and_(*conds)
 		)
 
+		"""
+		_l2 = alias(_l)
+
+		conds = [
+				_l.c.iduserfeatures      == _p.c.iduserfeatures, 
+				_p.c.typeextenumbers     != None,
+				_p.c.typevalextenumbers  != None,
+				_p.c.supervision         == 1, 
+				_p.c.progfunckey         == 1,
+				cast(_p.c.typeextenumbers,VARCHAR(255)) == cast(_e.c.type,VARCHAR(255)),
+				_p.c.typevalextenumbers  == 'user',
+				_p.c.typevalextenumbers  == cast(_l2.c.iduserfeatures,VARCHAR(255)),
+				_e.c.typeval             == cast(_l2.c.id,VARCHAR(255))
+		]
+		if 'context' in kwargs:
+			conds.append(_l.c.context == kwargs['context'])
+
+		q2 = select(
+			[_p.c.iduserfeatures, _p.c.exten, _p.c.typeextenumbers,
+			 _p.c.typevalextenumbers, _p.c.typeextenumbersright,
+			 _p.c.typevalextenumbersright, _e.c.exten.label('leftexten')],
+
+			and_(*conds)
+		)
+
+		return self.execute(q1.union(q2)).fetchall()
+		"""
 		return self.execute(q).fetchall()
 
 
@@ -474,7 +524,8 @@ class QObject(object):
 
 class XivoDBBackend(Backend):
 	def __init__(self, uri):
-		self.db = SqlSoup(uri)
+		self.db = SqlSoup(uri,
+				session=scoped_session(sessionmaker(autoflush=True,expire_on_commit=False,autocommit=True)))
 
 	def __getattr__(self, name):
 		if not name in QObject._translation:
