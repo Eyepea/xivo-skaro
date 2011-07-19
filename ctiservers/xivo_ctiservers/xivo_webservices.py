@@ -42,7 +42,7 @@ class xws():
         return
 
     def serviceget(self, userid):
-        uri = '/service/ipbx/json.php/restricted/pbx_settings/users/?act=view&id=%s' % userid
+        uri = '/service/ipbx/json.php/private/pbx_settings/users/?act=view&id=%s' % userid
         pattern = {}
         self.myconn.request('POST', uri, cjson.encode(pattern), headers)
         z = self.myconn.getresponse()
@@ -51,7 +51,7 @@ class xws():
 
     def serviceput(self, userid, function, value):
         status = self.serviceget(userid)
-        uri = '/service/ipbx/json.php/restricted/pbx_settings/users/?act=edit&id=%s' % userid
+        uri = '/service/ipbx/json.php/private/pbx_settings/users/?act=edit&id=%s' % userid
         status['userfeatures'][function] = value
         pattern = { 'userfeatures' : status.get('userfeatures') }
         self.myconn.request('POST', uri, cjson.encode(pattern), headers)
