@@ -243,6 +243,7 @@ class Safe:
             if not gf[ekey]['commented']:
                 default_parking[pkey] = gf[ekey]['var_val']
         self.xod_config['parkinglots'].keeplist['0'] = default_parking
+        self.xod_status['parkinglots']['0'] = self.props_status['parkinglots']
 
     def update_parking(self, parkinglot, exten, info):
         '''Update the status of the parkinglot and sends an event to the
@@ -257,7 +258,7 @@ class Safe:
         if not parkingid in self.xod_status['parkinglots']:
             self.xod_status['parkinglots'][parkingid] = {}
         self.handle_cti_stack('set', ('parkinglots', 'updatestatus', parkingid))
-        self.xod_status['parkinglots'][parkingid] = { exten: info, }
+        self.xod_status['parkinglots'][parkingid][exten] = info
         self.handle_cti_stack('empty_stack')
 
     def unpark(self, channel):
