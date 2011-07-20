@@ -192,6 +192,7 @@ class Safe:
                 self.xod_status[listname] = {}
             except Exception:
                 self.log.exception(listname)
+        self.add_default_parking()
         return
 
     def set_extenfeatures(self, urls):
@@ -209,7 +210,6 @@ class Safe:
     # }
 
     def update_config_list_all(self):
-        self.add_default_parking()
         for listname, urllistkey in self.urlvars.iteritems():
             self.update_config_list(listname)
 
@@ -242,7 +242,6 @@ class Safe:
         for pkey, ekey in name_map.iteritems():
             if not gf[ekey]['commented']:
                 default_parking[pkey] = gf[ekey]['var_val']
-        self.xod_status['parkinglots']['0'] = self.props_status['parkinglots']
         self.xod_config['parkinglots'].set_default_parking(default_parking)
 
     def update_parking(self, parkinglot, exten, info):
