@@ -24,7 +24,7 @@ require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'file.inc');
 function dwho_munin_graphstree($urldir, $domain)
 {
     $classifier = array(
-        'lighttpd_.*'     => 'lighttpd',
+        'nginx_.*'        => 'nginx',
         'asterisk_.*'     => 'asterisk',
         'df.*'            => 'disk',
         'iostat'          => 'disk',

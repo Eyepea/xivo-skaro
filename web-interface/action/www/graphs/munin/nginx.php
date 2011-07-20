@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$module     = 'lighttpd';
+$module     = 'nginx';
 #domain     = 'localdomain';
 #$graphs     = array('apache_accesses', 'apache_processes');
 $freqs      = array('day', 'week', 'month', 'year');

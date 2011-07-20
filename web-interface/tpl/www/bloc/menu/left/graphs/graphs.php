@@ -31,7 +31,7 @@ $tree = &$this->get_var('tree');
 	<dd>
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_localhost');?></dt>
-			<?php if(array_key_exists('apache', $tree)) { ?>
+			<?php if(array_key_exists('nginx', $tree)) { ?>
 			<dd id="mn-apache">
 				<?=$url->href_html($this->bbf('mn_left_munin-apache'),
 						   'graphs/munin/apache');?>
