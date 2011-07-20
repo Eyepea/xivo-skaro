@@ -10,7 +10,7 @@ server {
     server_name $domain;
 
     access_log /var/log/nginx/xivo.access.log;
-    error_log /var/log/nginx/xivo.error.log debug;
+    error_log /var/log/nginx/xivo.error.log;
     root /usr/share/pf-xivo-web-interface/www;
 
     location / {
