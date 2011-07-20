@@ -28,6 +28,9 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('parkinglotlist')
 
 class ParkinglotList(AnyList):
+
+    default_parking_index = '0'
+
     def __init__(self, newurls = [], useless = None):
         self.anylist_properties = { 'name' : 'parkinglot',
                                     'urloptions' : (0,0,False)
@@ -47,16 +50,14 @@ class ParkinglotList(AnyList):
         Since the parking from features.conf is not returned by the webservice
         we have to add it manually after each update
         """
-        if '0' in self.keeplist:
+        if self.default_parking_index in self.keeplist:
             should_add_default = False
         else:
             should_add_default = True
         ret = AnyList.update(self)
-        if 'del' in ret and self.default_parking['id'] in ret['del']:
-            ret['del'].pop(int(self.default_parking['id']))
-            if len(ret['del']) == 0:
-                ret.pop('del')
+        if 'del' in ret and self.default_parking_index in ret['del']:
+            ret['del'].pop(ret['del'].index(self.default_parking_index))
+        self.keeplist[self.default_parking_index] = self.default_parking
         if should_add_default:
-            self.keeplist['0'] = self.default_parking
-            ret['add'].append('0')
+            ret['add'].append(self.default_parking_index)
         return ret
