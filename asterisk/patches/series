@@ -33,7 +33,7 @@ pf_meetme_moderation
 
 pf_skill_queues
 pf_manager_inherit.patch
-#pf_remove_warning_deprecated
-#pf_AgentCallbackLogin
+pf_remove_warning_deprecated
+pf_AgentCallbackLogin
 
 # digium patches
