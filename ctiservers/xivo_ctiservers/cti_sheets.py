@@ -92,12 +92,21 @@ class Sheet:
                     continue
                 for order, vv in v.iteritems():
                     self.fields[sheetpart][order] = self.buildresult(vv)
+            elif sheetpart == 'sheet_qtui':
+                for order, vv in v.iteritems():
+                    try:
+                        qtui_desc = urllib.urlopen(vv)
+                        qtui_data = qtui_desc.read().decode('utf8')
+                        qtui_desc.close()
+                    except Exception:
+                        qtui_data = ''
+                    self.fields[sheetpart] = {'ui' : {'name' : 'qtui',
+                                                      'contents' : qtui_data}}
             else:
-                print sheetpart, v
+                print 'unknown', sheetpart, v
         # print self.fields
         # linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
         return
-
 
     def serialize(self):
         if True:
@@ -117,7 +126,14 @@ class Sheet:
         for k, v in self.options.iteritems():
             self.addinternal(k, v)
 
-        for sheetpart, v in self.fields.iteritems():
+        # making sure that 'sheet_qtui' is the first in the line, if ever we send it
+        # quite long stuff for that, but feel free to shorten it
+        sfkeys = self.fields.keys()
+        if 'sheet_qtui' in sfkeys:
+            sfkeys.pop(sfkeys.index('sheet_qtui'))
+            sfkeys.insert(0, 'sheet_qtui')
+        for sheetpart in sfkeys:
+            v = self.fields.get(sheetpart)
             for order, vv in v.iteritems():
                 title = vv.get('name')
                 ftype = vv.get('type')
