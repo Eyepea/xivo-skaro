@@ -25,7 +25,7 @@ pf_sip_notify_provd
 #pf_voicemail_date_language
 
 #pf_queue_incoming_limit
-#pf_meetme_moderation
+pf_meetme_moderation
 #pf_queue_has_member_function
 #pf_ftbfs_configure_PTHREAD_ONCE_INIT_test_fix
 #pf_file_copy_keeps_modes
@@ -33,7 +33,7 @@ pf_sip_notify_provd
 
 pf_skill_queues
 pf_manager_inherit.patch
-pf_remove_warning_deprecated
-pf_AgentCallbackLogin
+#pf_remove_warning_deprecated
+#pf_AgentCallbackLogin
 
 # digium patches

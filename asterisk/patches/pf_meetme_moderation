@@ -1,89 +1,108 @@
-Index: asterisk-1.4.33/apps/app_meetme.c
-===================================================================
---- asterisk-1.4.33.orig/apps/app_meetme.c	2010-06-22 11:24:23.000000000 +0200
-+++ asterisk-1.4.33/apps/app_meetme.c	2010-06-22 11:27:12.000000000 +0200
-@@ -81,9 +81,13 @@
- #define DEFAULT_AUDIO_BUFFERS  32
- 
- enum {
--	ADMINFLAG_MUTED =     (1 << 1), /*!< User is muted */
--	ADMINFLAG_SELFMUTED = (1 << 2), /*!< User muted self */
--	ADMINFLAG_KICKME =    (1 << 3)  /*!< User has been kicked */
-+	ADMINFLAG_MUTED =           (1 << 1), /*!< User is muted */
-+	ADMINFLAG_SELFMUTED =       (1 << 2), /*!< User muted self */
-+	ADMINFLAG_KICKME =          (1 << 3), /*!< User has been kicked */
-+	ADMINFLAG_NOAUTHED =        (1 << 4), /*!< User is currently waiting for acceptance */
-+	ADMINFLAG_AUTH_REQUESTING = (1 << 5), /*!< User is in a auth requesting process by an admin */
-+	ADMINFLAG_SILENCED_KICK   = (1 << 6), /*!< Silenced kicked */
-+	ADMINFLAG_TALK_TO_ADMIN   = (1 << 7), /*!< User talks to admin */
+--- asterisk-1.8.5.0.orig/apps/app_meetme.c	2011-07-20 11:43:11.942684263 -0400
++++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-20 12:41:45.322435875 -0400
+@@ -115,15 +115,27 @@
+ 						</argument>
+ 						<para>Play an intro announcement in conference.</para>
+ 					</option>
++					<option name="h">
++						<para>Disallow anonymous calls.</para>
++					</option>
+ 					<option name="i">
+ 						<para>Announce user join/leave with review.</para>
+ 					</option>
+ 					<option name="I">
+ 						<para>Announce user join/leave without review.</para>
+ 					</option>
++					<option name="k">
++						<para>Moderation mode - all invited users wait admin to join
++		             			conference. He can accept or kick or talk to each invited.
++             					It automatically set the 'I' flag.</para>
++					</option>
+ 					<option name="l">
+ 						<para>Set listen only mode (Listen only, no talking).</para>
+ 					</option>
++					<option name="L">
++						<para>L(<secs>[^<minusers>[^<timeoutannounce>]])
++						set a timeout on conference.</para>
++					</option>
+ 					<option name="m">
+ 						<para>Set initially muted.</para>
+ 					</option>
+@@ -519,6 +531,10 @@
+ 	ADMINFLAG_KICKME =    (1 << 3),  /*!< User has been kicked */
+ 	/*! User has requested to speak */
+ 	ADMINFLAG_T_REQUEST = (1 << 4),
++	ADMINFLAG_NOAUTHED =        (1 << 5), /*!< User is currently waiting for acceptance */
++	ADMINFLAG_AUTH_REQUESTING = (1 << 6), /*!< User is in a auth requesting process by an admin */
++	ADMINFLAG_SILENCED_KICK   = (1 << 7), /*!< Silenced kicked */
++	ADMINFLAG_TALK_TO_ADMIN   = (1 << 8), /*!< User talks to admin */
  };
  
  #define MEETME_DELAYDETECTTALK     300
-@@ -167,11 +171,18 @@
- 	CONFFLAG_SLA_TRUNK = (1 << 27),
- 	/*! Do not write any audio to this channel until the state is up. */
- 	CONFFLAG_NO_AUDIO_UNTIL_UP = (1 << 28),
-+	/*! Administrator moderates users who join. */
-+	CONFFLAG_MODERATION = (1 << 29),
-+	/*! No anonymous calls. */
-+	CONFFLAG_NOANONYMOUS = (1 << 30),
-+	/*! Timeout. */
-+	CONFFLAG_TIMEOUT = (1 << 31),
- };
+@@ -608,6 +624,12 @@
+ 
+ /* !If set play an intro announcement at start of conference */
+ #define CONFFLAG_INTROMSG ((uint64_t)1 << 32)
++/*! Administrator moderates users who join. */
++#define CONFFLAG_MODERATION ((uint64_t)1 << 33)
++/*! No anonymous calls. */
++#define CONFFLAG_NOANONYMOUS ((uint64_t)1 << 34)
++/*! Timeout. */
++#define CONFFLAG_TIMEOUT ((uint64_t)1 << 35)
  
  enum {
  	OPT_ARG_WAITMARKED = 0,
--	OPT_ARG_ARRAY_SIZE = 1,
-+	OPT_ARG_TIMEOUT = 1,
-+	OPT_ARG_ARRAY_SIZE = 2,
+@@ -616,7 +638,8 @@
+ 	OPT_ARG_DURATION_LIMIT = 3,
+ 	OPT_ARG_MOH_CLASS = 4,
+ 	OPT_ARG_INTROMSG = 5,
+-	OPT_ARG_ARRAY_SIZE = 6,
++	OPT_ARG_TIMEOUT = 6,
++	OPT_ARG_ARRAY_SIZE = 7,
  };
  
  AST_APP_OPTIONS(meetme_opts, BEGIN_OPTIONS
-@@ -184,8 +195,11 @@
- 	AST_APP_OPTION('E', CONFFLAG_EMPTYNOPIN ),
+@@ -631,8 +654,11 @@
  	AST_APP_OPTION('e', CONFFLAG_EMPTY ),
  	AST_APP_OPTION('F', CONFFLAG_PASS_DTMF ),
+ 	AST_APP_OPTION_ARG('G', CONFFLAG_INTROMSG, OPT_ARG_INTROMSG ),
 +	AST_APP_OPTION('h', CONFFLAG_NOANONYMOUS ),
  	AST_APP_OPTION('i', CONFFLAG_INTROUSER ),
  	AST_APP_OPTION('I', CONFFLAG_INTROUSERNOREVIEW ),
 +	AST_APP_OPTION('k', CONFFLAG_MODERATION ),
 +	AST_APP_OPTION_ARG('L', CONFFLAG_TIMEOUT, OPT_ARG_TIMEOUT ),
- 	AST_APP_OPTION('M', CONFFLAG_MOH ),
+ 	AST_APP_OPTION_ARG('M', CONFFLAG_MOH, OPT_ARG_MOH_CLASS ),
  	AST_APP_OPTION('m', CONFFLAG_STARTMUTED ),
  	AST_APP_OPTION('o', CONFFLAG_OPTIMIZETALKER ),
-@@ -235,9 +249,15 @@
- "      'e' -- select an empty conference\n"
- "      'E' -- select an empty pinless conference\n"
- "      'F' -- Pass DTMF through the conference.\n"
-+"      'h' -- disallow anonymous calls.\n"
- "      'i' -- announce user join/leave with review\n"
- "      'I' -- announce user join/leave without review\n"
-+"      'k' -- moderation mode - all invited users wait admin to join\n"
-+"             conference. He can accept or kick or talk to each invited.\n"
-+"             It automatically set the 'I' flag.\n"
- "      'l' -- set listen only mode (Listen only, no talking)\n"
-+"      'L(<secs>[^<minusers>[^<timeoutannounce>]])'\n"
-+"          -- set a timeout on conference.\n"
- "      'm' -- set initially muted\n"
- "      'M' -- enable music on hold when the conference has a single caller\n"
- "      'o' -- set talker optimization - treats talkers who aren't speaking as\n"
-@@ -347,11 +367,15 @@
- 	int zapconf;                            /*!< Zaptel Conf # */
+@@ -701,14 +727,18 @@
+ 	int dahdiconf;                            /*!< DAHDI Conf # */
  	int users;                              /*!< Number of active users */
  	int markedusers;                        /*!< Number of marked users */
 +	int noauthorized;                       /*!< Number of no yet authorized users */
 +	int kicked;                             /*!< Number of kicked users who don't leave conf yet */
+ 	int maxusers;                           /*!< Participant limit if scheduled */
+ 	int endalert;                           /*!< When to play conf ending message */
  	time_t start;                           /*!< Start time (s) */
 +	time_t begin;                           /*!< Conference begin (s) */
  	int refcount;                           /*!< reference count of usage */
  	enum recording_state recording:2;       /*!< recording status */
  	unsigned int isdynamic:1;               /*!< Created on the fly? */
  	unsigned int locked:1;                  /*!< Is the conference locked? */
+ 	unsigned int gmuted:1;                  /*!< Is the conference globally muted? (all non-admins) */
 +	unsigned int paused;                    /*!< Is the conference paused? */
  	pthread_t recordthread;                 /*!< thread for recording */
  	ast_mutex_t recordthreadlock;           /*!< control threads trying to start recordthread */
  	pthread_attr_t attr;                    /*!< thread attribute */
-@@ -600,6 +624,11 @@
+@@ -748,7 +778,7 @@
+ struct ast_conf_user {
+ 	int user_no;                            /*!< User Number */
+ 	struct ast_flags64 userflags;           /*!< Flags as set in the conference */
+-	int adminflags;                         /*!< Flags set by the Admin */
++	struct ast_flags64 adminflags;                         /*!< Flags set by the Admin */
+ 	struct ast_channel *chan;               /*!< Connected channel */
+ 	int talking;                            /*!< Is user talking */
+ 	int dahdichannel;                       /*!< Is a DAHDI channel */
+@@ -981,6 +1011,11 @@
  		return "(not talking)";
  }
  
@@ -95,48 +114,191 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  static int careful_write(int fd, unsigned char *data, int len, int block)
  {
  	int res;
-@@ -888,9 +917,9 @@
- 			min = ((now - cnf->start) % 3600) / 60;
- 			sec = (now - cnf->start) % 60;
+@@ -1280,6 +1315,161 @@
  
--			ast_cli(fd, data_format, cnf->confno, cnf->users, cmdline, hr, min, sec, cnf->isdynamic ? "Dynamic" : "Static");
+ 	return cnf;
+ }
++#if 0
++static int meetme_cmd(int fd, int argc, char **argv) 
++{
++	/* Process the command */
++	struct ast_conference *cnf;
++	struct ast_conf_user *user;
++	int hr, min, sec;
++	int i = 0, total = 0;
++	time_t now;
++	char *header_format = "%-14s %-14s %-10s %-8s  %-8s\n";
++	char *data_format = "%-12.12s   %4.4d	      %4.4s       %02d:%02d:%02d  %-8s\n";
++	char cmdline[1024] = "";
++
++	if (argc > 8)
++		ast_cli(fd, "Invalid Arguments.\n");
++	/* Check for length so no buffer will overflow... */
++	for (i = 0; i < argc; i++) {
++		if (strlen(argv[i]) > 100)
++			ast_cli(fd, "Invalid Arguments.\n");
++	}
++	if (argc == 1) {
++		/* 'MeetMe': List all the conferences */	
++		now = time(NULL);
++		AST_LIST_LOCK(&confs);
++		if (AST_LIST_EMPTY(&confs)) {
++			ast_cli(fd, "No active MeetMe conferences.\n");
++			AST_LIST_UNLOCK(&confs);
++			return RESULT_SUCCESS;
++		}
++		ast_cli(fd, header_format, "Conf Num", "Parties", "Marked", "Activity", "Creation");
++		AST_LIST_TRAVERSE(&confs, cnf, list) {
++			if (cnf->markedusers == 0)
++				strcpy(cmdline, "N/A ");
++			else 
++				snprintf(cmdline, sizeof(cmdline), "%4.4d", cnf->markedusers);
++			hr = (now - cnf->start) / 3600;
++			min = ((now - cnf->start) % 3600) / 60;
++			sec = (now - cnf->start) % 60;
++
 +			ast_cli(fd, data_format, cnf->confno, count_real_users(cnf), cmdline, hr, min, sec, cnf->isdynamic ? "Dynamic" : "Static");
- 
--			total += cnf->users; 	
++
 +			total += count_real_users(cnf);
- 		}
- 		AST_LIST_UNLOCK(&confs);
- 		ast_cli(fd, "* Total number of MeetMe users: %d\n", total);
-@@ -965,7 +994,7 @@
- 			min = ((now - user->jointime) % 3600) / 60;
- 			sec = (now - user->jointime) % 60;
- 			if ( !concise )
--				ast_cli(fd, "User #: %-2.2d %12.12s %-20.20s Channel: %s %s %s %s %s %02d:%02d:%02d\n",
++		}
++		AST_LIST_UNLOCK(&confs);
++		ast_cli(fd, "* Total number of MeetMe users: %d\n", total);
++		return RESULT_SUCCESS;
++	}
++	if (argc < 3)
++		return RESULT_SHOWUSAGE;
++	ast_copy_string(cmdline, argv[2], sizeof(cmdline));	/* Argv 2: conference number */
++	if (strstr(argv[1], "lock")) {	
++		if (strcmp(argv[1], "lock") == 0) {
++			/* Lock */
++			strncat(cmdline, "|L", sizeof(cmdline) - strlen(cmdline) - 1);
++		} else {
++			/* Unlock */
++			strncat(cmdline, "|l", sizeof(cmdline) - strlen(cmdline) - 1);
++		}
++	} else if (strstr(argv[1], "mute")) { 
++		if (argc < 4)
++			return RESULT_SHOWUSAGE;
++		if (strcmp(argv[1], "mute") == 0) {
++			/* Mute */
++			if (strcmp(argv[3], "all") == 0) {
++				strncat(cmdline, "|N", sizeof(cmdline) - strlen(cmdline) - 1);
++			} else {
++				strncat(cmdline, "|M|", sizeof(cmdline) - strlen(cmdline) - 1);	
++				strncat(cmdline, argv[3], sizeof(cmdline) - strlen(cmdline) - 1);
++			}
++		} else {
++			/* Unmute */
++			if (strcmp(argv[3], "all") == 0) {
++				strncat(cmdline, "|n", sizeof(cmdline) - strlen(cmdline) - 1);
++			} else {
++				strncat(cmdline, "|m|", sizeof(cmdline) - strlen(cmdline) - 1);
++				strncat(cmdline, argv[3], sizeof(cmdline) - strlen(cmdline) - 1);
++			}
++		}
++	} else if (strcmp(argv[1], "kick") == 0) {
++		if (argc < 4)
++			return RESULT_SHOWUSAGE;
++		if (strcmp(argv[3], "all") == 0) {
++			/* Kick all */
++			strncat(cmdline, "|K", sizeof(cmdline) - strlen(cmdline) - 1);
++		} else {
++			/* Kick a single user */
++			strncat(cmdline, "|k|", sizeof(cmdline) - strlen(cmdline) - 1);
++			strncat(cmdline, argv[3], sizeof(cmdline) - strlen(cmdline) - 1);
++		}	
++	} else if(strcmp(argv[1], "list") == 0) {
++		struct ao2_iterator user_iter;
++		int concise = ( 4 == argc && ( !strcasecmp(argv[3], "concise") ) );
++		/* List all the users in a conference */
++		if (AST_LIST_EMPTY(&confs)) {
++			if ( !concise )
++				ast_cli(fd, "No active conferences.\n");
++			return RESULT_SUCCESS;	
++		}
++		/* Find the right conference */
++		AST_LIST_LOCK(&confs);
++		AST_LIST_TRAVERSE(&confs, cnf, list) {
++			if (strcmp(cnf->confno, argv[2]) == 0)
++				break;
++		}
++		if (!cnf) {
++			if ( !concise )
++				ast_cli(fd, "No such conference: %s.\n",argv[2]);
++			AST_LIST_UNLOCK(&confs);
++			return RESULT_SUCCESS;
++		}
++		/* Show all the users */
++		time(&now);
++		user_iter = ao2_iterator_init(cnf->usercontainer, 0);
++		while((user = ao2_iterator_next(&user_iter))) {
++			hr = (now - user->jointime) / 3600;
++			min = ((now - user->jointime) % 3600) / 60;
++			sec = (now - user->jointime) % 60;
++			if (!concise) {
 +				ast_cli(fd, "User #: %-2.2d %12.12s %-20.20s Channel: %s %s %s %s %s %s %02d:%02d:%02d\n",
- 					user->user_no,
- 					S_OR(user->chan->cid.cid_num, "<unknown>"),
- 					S_OR(user->chan->cid.cid_name, "<no name>"),
-@@ -973,9 +1002,10 @@
- 					user->userflags & CONFFLAG_ADMIN ? "(Admin)" : "",
- 					user->userflags & CONFFLAG_MONITOR ? "(Listen only)" : "",
- 					user->adminflags & ADMINFLAG_MUTED ? "(Admin Muted)" : user->adminflags & ADMINFLAG_SELFMUTED ? "(Muted)" : "",
-+					user->adminflags & ADMINFLAG_NOAUTHED ? "(Noauthed)" : "",
- 					istalking(user->talking), hr, min, sec); 
- 			else 
--				ast_cli(fd, "%d!%s!%s!%s!%s!%s!%s!%d!%02d:%02d:%02d\n",
++					user->user_no,
++					S_OR(user->chan->caller.id.number.str, "<unknown>"),
++					S_OR(user->chan->caller.id.name.str, "<no name>"),
++					user->chan->name,
++					ast_test_flag64(&user->userflags, CONFFLAG_ADMIN) ? "(Admin)" : "",
++					ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "(Listen only)" : "",
++					ast_test_flag64(&user->adminflags, ADMINFLAG_MUTED) ? "(Admin Muted)" : ast_test_flag64(&user->adminflags, ADMINFLAG_SELFMUTED) ? "(Muted)" : "",
++					ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED) ? "(Noauthed)" : "",
++					istalking(user->talking), hr, min, sec); 
++			} else {
 +				ast_cli(fd, "%d!%s!%s!%s!%s!%s!%s!%s!%d!%02d:%02d:%02d\n",
- 					user->user_no,
- 					S_OR(user->chan->cid.cid_num, ""),
- 					S_OR(user->chan->cid.cid_name, ""),
-@@ -983,6 +1013,7 @@
- 					user->userflags  & CONFFLAG_ADMIN   ? "1" : "",
- 					user->userflags  & CONFFLAG_MONITOR ? "1" : "",
- 					user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)  ? "1" : "",
-+					user->adminflags & ADMINFLAG_NOAUTHED ? "1" : "",
++					user->user_no,
++					S_OR(user->chan->caller.id.number.str, ""),
++					S_OR(user->chan->caller.id.name.str, ""),
++					user->chan->name,
++					ast_test_flag64(&user->userflags, CONFFLAG_ADMIN)   ? "1" : "",
++					ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "1" : "",
++					ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))  ? "1" : "",
++					ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED) ? "1" : "",
++					user->talking, hr, min, sec);
++			}
++			ao2_ref(user, -1);
++		}
++		ao2_iterator_destroy(&user_iter);
++		if ( !concise )
++			ast_cli(fd,"%d users in that conference.\n",cnf->users);
++		AST_LIST_UNLOCK(&confs);
++		return RESULT_SUCCESS;
++	} else 
++		return RESULT_SHOWUSAGE;
++	ast_log(LOG_DEBUG, "Cmdline: %s\n", cmdline);
++	admin_exec(NULL, cmdline);
++
++	return 0;
++}
++#endif
+ 
+ static char *complete_meetmecmd(const char *line, const char *word, int pos, int state)
+ {
+@@ -1468,8 +1658,8 @@
+ 					user->chan->name,
+ 					ast_test_flag64(&user->userflags, CONFFLAG_ADMIN) ? "(Admin)" : "",
+ 					ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "(Listen only)" : "",
+-					user->adminflags & ADMINFLAG_MUTED ? "(Admin Muted)" : user->adminflags & ADMINFLAG_SELFMUTED ? "(Muted)" : "",
+-					user->adminflags & ADMINFLAG_T_REQUEST ? "(Request to Talk)" : "",
++					ast_test_flag64(&user->adminflags, ADMINFLAG_MUTED) ? "(Admin Muted)" : ast_test_flag64(&user->adminflags, ADMINFLAG_SELFMUTED) ? "(Muted)" : "",
++					ast_test_flag64(&user->adminflags, ADMINFLAG_T_REQUEST)	 ? "(Request to Talk)" : "",
+ 					istalking(user->talking), hr, min, sec); 
+ 			} else {
+ 				ast_cli(a->fd, "%d!%s!%s!%s!%s!%s!%s!%s!%d!%02d:%02d:%02d\n",
+@@ -1479,8 +1669,8 @@
+ 					user->chan->name,
+ 					ast_test_flag64(&user->userflags, CONFFLAG_ADMIN) ? "1" : "",
+ 					ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "1" : "",
+-					user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED) ? "1" : "",
+-					user->adminflags & ADMINFLAG_T_REQUEST ? "1" : "",
++					ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) ? "1" : "",
++					ast_test_flag64(&user->adminflags, ADMINFLAG_T_REQUEST) ? "1" : "",
  					user->talking, hr, min, sec);
- 			
- 		}
-@@ -1521,6 +1552,203 @@
+ 			}
+ 			ao2_ref(user, -1);
+@@ -2153,13 +2343,207 @@
  	}
  }
  
@@ -159,27 +321,27 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	{
 +		/* Be sure there isn't admin talks anymore. */
 +		struct ast_conf_user *user;
-+		AST_LIST_TRAVERSE(&conf->userlist, user, list)
-+			user->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
++		struct ao2_iterator user_iter = ao2_iterator_init(conf->usercontainer, 0);
++		while ((user = ao2_iterator_next(&user_iter)))
++			ast_set_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN);
 +	}
 +}
 +
 +static void meetme_mod_silence_kick(struct ast_conference *conf, struct ast_conf_user* admin,
 +                                    struct ast_conf_user* usr)
 +{
-+	usr->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
-+	usr->adminflags |= ADMINFLAG_SILENCED_KICK;
++	ast_set_flag64(&usr->adminflags, ADMINFLAG_SILENCED_KICK);
 +	conf->noauthorized--;
 +	conf->kicked++;
-+	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN && conf->noauthorized == 0)
++	if (ast_test_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN) && conf->noauthorized == 0)
 +		meetme_pause(conf, 0);
-+	admin->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
++	ast_clear_flag64(&usr->adminflags, ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
 +}
 +
 +static void meetme_mod_authorize(struct ast_conference *conf, struct ast_conf_user* admin,
 +                                 struct ast_conf_user* usr)
 +{
-+	usr->adminflags &= ~(ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
++	ast_clear_flag64(&usr->adminflags, (ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN));
 +	manager_event(EVENT_FLAG_CALL, "MeetmeNoAuthed",
 +			"Channel: %s\r\n"
 +			"Uniqueid: %s\r\n"
@@ -188,17 +350,17 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +			"Status: off\r\n",
 +			usr->chan->name, usr->chan->uniqueid, conf->confno, usr->user_no);
 +	conf->noauthorized--;
-+	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN && conf->noauthorized == 0)
++	if (ast_test_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN) && conf->noauthorized == 0)
 +		meetme_pause(conf, 0);
-+	admin->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
++	ast_clear_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN);
 +}
 +
 +static void meetme_mod_talk(struct ast_conference *conf, struct ast_conf_user* admin,
 +                            struct ast_conf_user* usr)
 +{
-+	if (!(admin->adminflags & ADMINFLAG_TALK_TO_ADMIN)) {
-+		admin->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
-+		usr->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
++	if (!(ast_test_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN))) {
++		ast_set_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN);
++		ast_set_flag64(&usr->adminflags, ADMINFLAG_TALK_TO_ADMIN);
 +		if (!conf->paused)
 +			meetme_pause(conf, 1);
 +	}
@@ -214,17 +376,14 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	struct ast_conf_user* usr;
 +	int menu_active = 1;
 +
-+	AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
-+		if (usr->user_no == *auth_requesting)
-+			break;
-+	}
++	usr = ao2_find(conf->usercontainer, auth_requesting, 0);
 +
-+	if (!usr || !(usr->adminflags & ADMINFLAG_AUTH_REQUESTING)) {
++	if (!usr || !(ast_test_flag64(&usr->adminflags, ADMINFLAG_AUTH_REQUESTING))) {
 +		ast_log(LOG_WARNING, "The moderated user left.\n");
 +		*auth_requesting = menu_active = 0;
-+		if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN)
++		if (ast_test_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN))
 +			meetme_pause(conf, 0);
-+		admin->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
++		ast_clear_flag64(&admin->adminflags, ADMINFLAG_TALK_TO_ADMIN);
 +	} else if (dtmf) {
 +		switch(dtmf) {
 +		case '1': /* Silenced kick */
@@ -254,13 +413,13 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	int res = 0;
 +	const char* message = "conf-otherinparty";
 +
-+	if ((user->userflags & CONFFLAG_QUIET) ||
-+	    !(user->userflags & CONFFLAG_ANNOUNCEUSERCOUNT) ||
-+	    (user->adminflags & ADMINFLAG_NOAUTHED)) {
++	if ((ast_test_flag64(&user->userflags, CONFFLAG_QUIET)) ||
++	    !(ast_test_flag64(&user->userflags, CONFFLAG_ANNOUNCEUSERCOUNT)) ||
++	    (ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED))) {
 +		return 0;
 +	}
 +
-+	if (conf->noauthorized > 0 && (user->userflags & CONFFLAG_ADMIN)) {
++	if (conf->noauthorized > 0 && (ast_test_flag64(&user->userflags, CONFFLAG_ADMIN))) {
 +		count = conf->noauthorized;
 +		message = "conf-moderation-noauthed";
 +	} else {
@@ -270,7 +429,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	if (count < 1)
 +		return 0;
 +
-+	if (count == 1 && (conf->noauthorized == 0 || !(user->userflags & CONFFLAG_ADMIN))) {
++	if (count == 1 && (conf->noauthorized == 0 || !(ast_test_flag64(&user->userflags, CONFFLAG_ADMIN)))) {
 +		if (!ast_streamfile(chan,"conf-onlyone",chan->language)) {
 +			res = ast_waitstream(chan, AST_DIGIT_ANY);
 +			ast_stopstream(chan);
@@ -310,10 +469,10 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +
 +static int conf_announce_user_join(struct ast_channel *chan, struct ast_conference *conf, struct ast_conf_user *user)
 +{
-+	if (!(user->userflags & CONFFLAG_QUIET) &&
-+	    ((user->userflags & CONFFLAG_INTROUSER) || (user->userflags & CONFFLAG_INTROUSERNOREVIEW)) &&
++	if (!(ast_test_flag64(&user->userflags, CONFFLAG_QUIET)) &&
++	    ((ast_test_flag64(&user->userflags, CONFFLAG_INTROUSER)) || (ast_test_flag64(&user->userflags, CONFFLAG_INTROUSERNOREVIEW))) &&
 +	    count_real_users(conf) > 1 &&
-+	    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
++	    !(ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED))) {
 +		struct announce_listitem *item;
 +		if (!(item = ao2_alloc(sizeof(*item), NULL)))
 +			return -1;
@@ -337,10 +496,36 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	return 0;
 +}
 +
- static int conf_run(struct ast_channel *chan, struct ast_conference *conf, int confflags, char *optargs[])
+ static int user_set_kickme_cb(void *obj, void *check_admin_arg, int flags)
  {
- 	struct ast_conf_user *user = NULL;
-@@ -1540,9 +1768,14 @@
+ 	struct ast_conf_user *user = obj;
+ 	/* actual pointer contents of check_admin_arg is irrelevant */
+ 
+ 	if (!check_admin_arg || (check_admin_arg && !ast_test_flag64(&user->userflags, CONFFLAG_ADMIN))) {
+-		user->adminflags |= ADMINFLAG_KICKME;
++		ast_set_flag64(&user->adminflags, ADMINFLAG_KICKME);
+ 	}
+ 	return 0;
+ }
+@@ -2170,7 +2554,7 @@
+ 	/* actual pointer contents of check_admin_arg is irrelevant */
+ 
+ 	if (!check_admin_arg || !ast_test_flag64(&user->userflags, CONFFLAG_ADMIN)) {
+-		user->adminflags &= ~(ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST);
++		ast_clear_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST));
+ 	}
+ 	return 0;
+ }
+@@ -2181,7 +2565,7 @@
+ 	/* actual pointer contents of check_admin_arg is irrelevant */
+ 
+ 	if (!check_admin_arg || !ast_test_flag64(&user->userflags, CONFFLAG_ADMIN)) {
+-		user->adminflags |= ADMINFLAG_MUTED;
++		ast_set_flag64(&user->adminflags, ADMINFLAG_MUTED);
+ 	}
+ 	return 0;
+ }
+@@ -2204,9 +2588,14 @@
  	int firstpass = 0;
  	int lastmarked = 0;
  	int currentmarked = 0;
@@ -352,10 +537,10 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  	int x;
  	int menu_active = 0;
 +	int auth_requesting = 0; /* 0 if no request, or user_no of moderated user. */
+ 	int menu8_active = 0;
+ 	int talkreq_manager = 0;
  	int using_pseudo = 0;
- 	int duration=20;
- 	int hr, min, sec;
-@@ -1557,6 +1790,7 @@
+@@ -2224,6 +2613,7 @@
  	char recordingtmp[AST_MAX_EXTENSION] = "";
  	char members[10] = "";
  	int dtmf, opt_waitmarked_timeout = 0;
@@ -363,25 +548,25 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  	time_t timeout = 0;
  	struct dahdi_bufferinfo bi;
  	char __buf[CONF_SIZE + AST_FRIENDLY_OFFSET];
-@@ -1567,6 +1801,13 @@
- 	if (!(user = ast_calloc(1, sizeof(*user))))
+@@ -2246,6 +2636,13 @@
  		return ret;
+ 	}
  
 +	/* Set flags dependences when moderation is set. */
-+	if (confflags & CONFFLAG_MODERATION) {
-+		if (!(confflags & (CONFFLAG_INTROUSER|CONFFLAG_INTROUSERNOREVIEW)))
-+			confflags |= CONFFLAG_INTROUSERNOREVIEW;
-+		confflags |= CONFFLAG_STARMENU;
++	if (ast_test_flag64(confflags, CONFFLAG_MODERATION)) {
++		if (!(ast_test_flag64(confflags, (CONFFLAG_INTROUSER|CONFFLAG_INTROUSERNOREVIEW))))
++			ast_set_flag64(confflags, CONFFLAG_INTROUSERNOREVIEW);
++		ast_set_flag64(confflags, CONFFLAG_STARMENU);
 +	}
 +
  	/* Possible timeout waiting for marked user */
- 	if ((confflags & CONFFLAG_WAITMARKED) &&
+ 	if (ast_test_flag64(confflags, CONFFLAG_WAITMARKED) &&
  		!ast_strlen_zero(optargs[OPT_ARG_WAITMARKED]) &&
-@@ -1575,6 +1816,22 @@
+@@ -2253,6 +2650,21 @@
+ 		(opt_waitmarked_timeout > 0)) {
  		timeout = time(NULL) + opt_waitmarked_timeout;
  	}
- 
-+	if ((confflags & CONFFLAG_TIMEOUT) &&
++	if ((ast_test_flag64(confflags, CONFFLAG_TIMEOUT)) &&
 +		!ast_strlen_zero(optargs[OPT_ARG_TIMEOUT])) {
 +		char *endptr = optargs[OPT_ARG_TIMEOUT];
 +		opt_timeout = strtoul(endptr, &endptr, 10);
@@ -396,16 +581,31 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +			}
 +		}
 +	}
+ 	 	
+  	if (ast_test_flag64(confflags, CONFFLAG_DURATION_STOP) && !ast_strlen_zero(optargs[OPT_ARG_DURATION_STOP])) {
+  		calldurationlimit = atoi(optargs[OPT_ARG_DURATION_STOP]);
+@@ -2435,8 +2847,13 @@
+ 
+ 	user->chan = chan;
+ 	user->userflags = *confflags;
+-	user->adminflags = ast_test_flag64(confflags, CONFFLAG_STARTMUTED) ? ADMINFLAG_SELFMUTED : 0;
+-	user->adminflags |= (conf->gmuted) ? ADMINFLAG_MUTED : 0;
++	
++	if (ast_test_flag64(confflags, CONFFLAG_STARTMUTED))
++		ast_set_flag64(&user->adminflags, ADMINFLAG_SELFMUTED);
++	
++	if (conf->gmuted)
++		ast_test_flag64(&user->adminflags, ADMINFLAG_MUTED);
 +
- 	if (confflags & CONFFLAG_RECORDCONF) {
- 		if (!conf->recordingfilename) {
- 			conf->recordingfilename = pbx_builtin_getvar_helper(chan, "MEETME_RECORDINGFILE");
-@@ -1666,10 +1923,37 @@
+ 	user->talking = -1;
+ 
+ 	ast_mutex_unlock(&conf->playlock);
+@@ -2463,10 +2880,40 @@
  			goto outrun;
  	}
  
 +	/* Disallow users who call with a hidden number to join this conference. */
-+	if ((confflags & CONFFLAG_NOANONYMOUS) && ast_strlen_zero(user->chan->cid.cid_num)) {
++	if ((ast_test_flag64(confflags, CONFFLAG_NOANONYMOUS)) && ast_strlen_zero(user->chan->caller.id.number.str)) {
 +		if (!ast_streamfile(chan, "conf-nohidden", chan->language))
 +			ast_waitstream(chan, "");
 +		goto outrun;
@@ -413,13 +613,15 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +
  	ast_mutex_lock(&conf->playlock);
  
--	if (confflags & CONFFLAG_MARKEDUSER)
-+	if (confflags & CONFFLAG_ADMIN) {
+-	if (ast_test_flag64(confflags, CONFFLAG_MARKEDUSER))
++	if (ast_test_flag64(confflags, CONFFLAG_ADMIN)) {
 +		if (conf->paused)
 +		{
 +			/* Check if there isn't any talk before disable pause. */
-+			AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
-+				if (usr->adminflags & ADMINFLAG_TALK_TO_ADMIN)
++			struct ao2_iterator user_iter = ao2_iterator_init(conf->usercontainer, 0);
++			struct ast_conf_user *usr;
++			while ((usr = ao2_iterator_next(&user_iter))) {
++				if (ast_test_flag64(&usr->adminflags, ADMINFLAG_TALK_TO_ADMIN))
 +					break;
 +			}
 +			if (!usr)
@@ -428,43 +630,51 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +
 +		/* Directly request admin about waiting users. */
 +		if(conf->noauthorized > 0)
-+			user->adminflags |= ADMINFLAG_AUTH_REQUESTING;
-+	} else if (confflags & CONFFLAG_MODERATION) {
-+		user->adminflags |= ADMINFLAG_NOAUTHED;
++			ast_set_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING);
++	} else if (ast_test_flag64(confflags, CONFFLAG_MODERATION)) {
++		ast_set_flag64(&user->adminflags, ADMINFLAG_NOAUTHED);
 +		conf->noauthorized++;
 +	}
-+	if (confflags & CONFFLAG_MARKEDUSER) {
++	if (ast_test_flag64(confflags, CONFFLAG_MARKEDUSER)) {
  		conf->markedusers++;
 +	}
++
  	conf->users++;
- 	/* Update table */
- 	snprintf(members, sizeof(members), "%d", conf->users);
-@@ -1691,53 +1975,18 @@
- 			ast_copy_string(exitcontext, chan->context, sizeof(exitcontext));
+ 	if (rt_log_members) {
+ 		/* Update table */
+@@ -2508,56 +2955,26 @@
+ 		}
  	}
  
--	if ( !(confflags & (CONFFLAG_QUIET | CONFFLAG_NOONLYPERSON)) ) {
--		if (conf->users == 1 && !(confflags & CONFFLAG_WAITMARKED))
-+	if ( !(confflags & CONFFLAG_QUIET) ) {
-+		if ((confflags & CONFFLAG_NOONLYPERSON) && count_real_users(conf) == 1 && !(confflags & CONFFLAG_WAITMARKED) && !(user->adminflags & ADMINFLAG_NOAUTHED))
+-	if (!ast_test_flag64(confflags, (CONFFLAG_QUIET | CONFFLAG_NOONLYPERSON))) {
+-		if (conf->users == 1 && !ast_test_flag64(confflags, CONFFLAG_WAITMARKED))
++	if ( !(ast_test_flag64(confflags, CONFFLAG_QUIET)) ) {
++
++		if ((ast_test_flag64(confflags, CONFFLAG_NOONLYPERSON)) && 
++			count_real_users(conf) == 1 && 
++			!(ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) 
++			&& !(ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED)))
++
  			if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
  				ast_waitstream(chan, "");
--		if ((confflags & CONFFLAG_WAITMARKED) && conf->markedusers == 0)
-+		if (((confflags & CONFFLAG_WAITMARKED) && conf->markedusers == 0 && !(confflags & CONFFLAG_MARKEDUSER)) ||
-+		    (user->adminflags & ADMINFLAG_NOAUTHED))
+-		if (ast_test_flag64(confflags, CONFFLAG_WAITMARKED) && conf->markedusers == 0)
++
++		if (((ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) && conf->markedusers == 0 && !(ast_test_flag64(confflags, CONFFLAG_MARKEDUSER))) ||
++		    (ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED)))
  			if (!ast_streamfile(chan, "conf-waitforleader", chan->language))
  				ast_waitstream(chan, "");
  	}
  
--	if (!(confflags & CONFFLAG_QUIET) && (confflags & CONFFLAG_ANNOUNCEUSERCOUNT) && conf->users > 1) {
+-	if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && ast_test_flag64(confflags, CONFFLAG_ANNOUNCEUSERCOUNT) &&
+-		conf->users > 1) {
 -		int keepplaying = 1;
 -
 -		if (conf->users == 2) { 
--			if (!ast_streamfile(chan,"conf-onlyone",chan->language)) {
+-			if (!ast_streamfile(chan, "conf-onlyone", chan->language)) {
 -				res = ast_waitstream(chan, AST_DIGIT_ANY);
 -				ast_stopstream(chan);
 -				if (res > 0)
--					keepplaying=0;
+-					keepplaying = 0;
 -				else if (res == -1)
 -					goto outrun;
 -			}
@@ -473,14 +683,14 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 -				res = ast_waitstream(chan, AST_DIGIT_ANY);
 -				ast_stopstream(chan);
 -				if (res > 0)
--					keepplaying=0;
+-					keepplaying = 0;
 -				else if (res == -1)
 -					goto outrun;
 -			}
 -			if (keepplaying) {
 -				res = ast_say_number(chan, conf->users - 1, AST_DIGIT_ANY, chan->language, (char *) NULL);
 -				if (res > 0)
--					keepplaying=0;
+-					keepplaying = 0;
 -				else if (res == -1)
 -					goto outrun;
 -			}
@@ -488,7 +698,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 -				res = ast_waitstream(chan, AST_DIGIT_ANY);
 -				ast_stopstream(chan);
 -				if (res > 0)
--					keepplaying=0;
+-					keepplaying = 0;
 -				else if (res == -1) 
 -					goto outrun;
 -			}
@@ -497,16 +707,20 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	if (conf_announce(chan, conf, user) < 0)
 +		goto outrun;
  
- 	if (!(confflags & CONFFLAG_NO_AUDIO_UNTIL_UP)) {
+-	if (!ast_test_flag64(confflags, CONFFLAG_NO_AUDIO_UNTIL_UP)) {
++	if (!(ast_test_flag64(confflags, CONFFLAG_NO_AUDIO_UNTIL_UP))) {
  		/* We're leaving this alone until the state gets changed to up */
-@@ -1812,28 +2061,10 @@
- 	ztc.chan = 0;	
- 	ztc.confno = conf->zapconf;
+ 		ast_indicate(chan, -1);
+ 	}
+@@ -2636,29 +3053,10 @@
+ 	dahdic.chan = 0;	
+ 	dahdic.confno = conf->dahdiconf;
  
--	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
+-	if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && (ast_test_flag64(confflags, CONFFLAG_INTROUSER) ||
+-		ast_test_flag64(confflags, CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
 -		struct announce_listitem *item;
 -		if (!(item = ao2_alloc(sizeof(*item), NULL)))
--			return -1;
+-			goto outrun;
 -		ast_copy_string(item->namerecloc, user->namerecloc, sizeof(item->namerecloc));
 -		ast_copy_string(item->language, chan->language, sizeof(item->language));
 -		item->confchan = conf->chan;
@@ -526,77 +740,62 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +	if(conf_announce_user_join(chan, conf, user) < 0)
 +		return -1;
  
--	if (confflags & CONFFLAG_WAITMARKED && !conf->markedusers)
-+	if ((confflags & CONFFLAG_WAITMARKED && !conf->markedusers) || (user->adminflags & ADMINFLAG_NOAUTHED))
- 		ztc.confmode = DAHDI_CONF_CONF;
- 	else if (confflags & CONFFLAG_MONITOR)
- 		ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
-@@ -1853,29 +2084,32 @@
- 
- 	if (!sent_event) {
- 		manager_event(EVENT_FLAG_CALL, "MeetmeJoin", 
--                              "Channel: %s\r\n"
--                              "Uniqueid: %s\r\n"
--                              "Meetme: %s\r\n"
--                              "PseudoChan: %s\r\n"
--                              "Admin: %s\r\n"
--                              "Usernum: %d\r\n"
--                              "CallerIDnum: %s\r\n"
--                              "CallerIDname: %s\r\n",
--                              chan->name,
--                              chan->uniqueid,
--                              conf->confno,
--                              (conf->chan ? conf->chan->name : "<unknown>"),
--                              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
--                              user->user_no,
--                              S_OR(user->chan->cid.cid_num, "<unknown>"),
--                              S_OR(user->chan->cid.cid_name, "<unknown>"));
-+		              "Channel: %s\r\n"
-+		              "Uniqueid: %s\r\n"
-+		              "Meetme: %s\r\n"
-+		              "PseudoChan: %s\r\n"
-+		              "Admin: %s\r\n"
-+		              "NoAuthed: %s\r\n"
-+		              "Usernum: %d\r\n"
-+		              "CallerIDnum: %s\r\n"
-+		              "CallerIDname: %s\r\n",
-+		              chan->name,
-+		              chan->uniqueid,
-+		              conf->confno,
-+		              (conf->chan ? conf->chan->name : "<unknown>"),
-+		              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
-+		              user->adminflags & ADMINFLAG_NOAUTHED ? "Yes" : "No",
-+		              user->user_no,
-+		              S_OR(user->chan->cid.cid_num, "<unknown>"),
-+		              S_OR(user->chan->cid.cid_name, "<unknown>"));
- 		sent_event = 1;
- 	}
- 
- 	if (!firstpass && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN)) {
+-	if (ast_test_flag64(confflags, CONFFLAG_WAITMARKED) && !conf->markedusers)
++	if ((ast_test_flag64(confflags, CONFFLAG_WAITMARKED) && !conf->markedusers) || (ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED)))
+ 		dahdic.confmode = DAHDI_CONF_CONF;
+ 	else if (ast_test_flag64(confflags, CONFFLAG_MONITOR))
+ 		dahdic.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
+@@ -2679,11 +3077,17 @@
+ 			"Channel: %s\r\n"
+ 			"Uniqueid: %s\r\n"
+ 			"Meetme: %s\r\n"
++			"PseudoChan: %s\r\n"
++			"Admin: %s\r\n"
++			"NoAuthed: %s\r\n"
+ 			"Usernum: %d\r\n"
+ 			"CallerIDnum: %s\r\n"
+ 			"CallerIDname: %s\r\n"
+ 			"ConnectedLineNum: %s\r\n"
+ 			"ConnectedLineName: %s\r\n",
++			chan->name,
++			chan->uniqueid,
++			conf->confno,
+ 			chan->name, chan->uniqueid, conf->confno,
+ 			user->user_no,
+ 			S_COR(user->chan->caller.id.number.valid, user->chan->caller.id.number.str, "<unknown>"),
+@@ -2697,13 +3101,11 @@
+ 	if (!firstpass && !ast_test_flag64(confflags, CONFFLAG_MONITOR) &&
+ 		!ast_test_flag64(confflags, CONFFLAG_ADMIN)) {
  		firstpass = 1;
- 		if (!(confflags & CONFFLAG_QUIET))
--			if (!(confflags & CONFFLAG_WAITMARKED) || ((confflags & CONFFLAG_MARKEDUSER) && (conf->markedusers >= 1)))
-+			if (!(user->adminflags & ADMINFLAG_NOAUTHED) &&
-+			    (!(confflags & CONFFLAG_WAITMARKED) || ((confflags & CONFFLAG_MARKEDUSER) && (conf->markedusers >= 1))))
+-		if (!ast_test_flag64(confflags, CONFFLAG_QUIET))
+-			if (!ast_test_flag64(confflags, CONFFLAG_WAITMARKED) || (ast_test_flag64(confflags, CONFFLAG_MARKEDUSER) &&
+-				(conf->markedusers >= 1))) {
++		if (!(ast_test_flag64(confflags, CONFFLAG_QUIET)))
++			if (!(ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED)) &&
++			    (!(ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) || ((ast_test_flag64(confflags, CONFFLAG_MARKEDUSER)) && (conf->markedusers >= 1))))
  				conf_play(chan, conf, ENTER);
+-			}
  	}
+-
+ 	conf_flush(fd, chan);
  
-@@ -1921,6 +2155,7 @@
+ 	if (dsp)
+@@ -2752,6 +3154,7 @@
  		}	
- 		for(;;) {
+ 		for (;;) {
  			int menu_was_active = 0;
 +			int auth_requested = 0;
  
  			outfd = -1;
  			ms = -1;
-@@ -1928,6 +2163,32 @@
- 			if (timeout && time(NULL) >= timeout)
+@@ -2909,6 +3312,32 @@
  				break;
+ 			}
  
 +			/* Conference room has a timeout. */
 +			if (opt_timeout && conf->begin) {
-+				now = time(NULL);
-+				if (opt_timeout_warning && (now + opt_timeout_warning) >= (conf->begin + opt_timeout)) {
++				now = ast_tvnow();
++				if (opt_timeout_warning && (now.tv_sec + opt_timeout_warning) >= (conf->begin + opt_timeout)) {
 +					if (!ast_streamfile(chan, "conf-warn-timeout", chan->language)) {
 +						const char *message = "minutes";
 +						if (opt_timeout_warning >= 60)
@@ -612,7 +811,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +
 +					opt_timeout_warning = 0;
 +				}
-+				if (now >= (conf->begin + opt_timeout)) {
++				if (now.tv_sec >= (conf->begin + opt_timeout)) {
 +					if (!ast_streamfile(chan, "conf-timeouted", chan->language))
 +						ast_waitstream(chan, "");
 +					break;
@@ -622,8 +821,8 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  			/* if we have just exited from the menu, and the user had a channel-driver
  			   volume adjustment, restore it
  			*/
-@@ -1935,15 +2196,19 @@
- 				set_talk_volume(user, user->listen.desired);
+@@ -2917,15 +3346,19 @@
+ 			}
  
  			menu_was_active = menu_active;
 +			auth_requested = auth_requesting;
@@ -632,9 +831,9 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +			currentnoauth = conf->noauthorized;
 +			ispaused = conf->paused;
 +
- 			if (!(confflags & CONFFLAG_QUIET) &&
- 			    (confflags & CONFFLAG_MARKEDUSER) &&
- 			    (confflags & CONFFLAG_WAITMARKED) &&
+ 			if (!ast_test_flag64(confflags, CONFFLAG_QUIET) &&
+ 			    ast_test_flag64(confflags, CONFFLAG_MARKEDUSER) &&
+ 			    ast_test_flag64(confflags, CONFFLAG_WAITMARKED) &&
  			    lastmarked == 0) {
 -				if (currentmarked == 1 && conf->users > 1) {
 -					ast_say_number(chan, conf->users - 1, AST_DIGIT_ANY, chan->language, (char *) NULL);
@@ -642,117 +841,123 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +				if (currentmarked == 1 && count_real_users(conf) > 1) {
 +					ast_say_number(chan, count_real_users(conf) - 1, AST_DIGIT_ANY, chan->language, (char *) NULL);
 +					if (count_real_users(conf) - 1 == 1) {
- 						if (!ast_streamfile(chan, "conf-userwilljoin", chan->language))
+ 						if (!ast_streamfile(chan, "conf-userwilljoin", chan->language)) {
  							ast_waitstream(chan, "");
- 					} else {
-@@ -1951,7 +2216,8 @@
- 							ast_waitstream(chan, "");
+ 						}
+@@ -2935,25 +3368,54 @@
+ 						}
  					}
  				}
--				if (conf->users == 1 && ! (confflags & CONFFLAG_MARKEDUSER))
-+				/* How does this happen, as we check above that user is marked... */
-+				if (count_real_users(conf) == 1 && ! (confflags & CONFFLAG_MARKEDUSER))
- 					if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
+-				if (conf->users == 1 && !ast_test_flag64(confflags, CONFFLAG_MARKEDUSER)) {
++				if (count_real_users(conf) == 1 && !ast_test_flag64(confflags, CONFFLAG_MARKEDUSER)) {
+ 					if (!ast_streamfile(chan, "conf-onlyperson", chan->language)) {
  						ast_waitstream(chan, "");
+ 					}
+ 				}
  			}
-@@ -1959,13 +2225,43 @@
+-
  			/* Update the struct with the actual confflags */
- 			user->userflags = confflags;
+ 			user->userflags = *confflags;
  
--			if (confflags & CONFFLAG_WAITMARKED) {
--				if(currentmarked == 0) {
+-			if (ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) {
+-				if (currentmarked == 0) {
 -					if (lastmarked != 0) {
--						if (!(confflags & CONFFLAG_QUIET))
+-						if (!ast_test_flag64(confflags, CONFFLAG_QUIET)) {
 +			/* Allow me or not to talk with admin. */
-+			if ((user->adminflags & ADMINFLAG_TALK_TO_ADMIN) && !(ztc.confmode & DAHDI_CONF_TALKER)) {
-+				if (musiconhold && (confflags & CONFFLAG_MOH)) {
++			if ((ast_test_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN)) && !(dahdic.confmode & DAHDI_CONF_TALKER)) {
++				if (musiconhold && (ast_test_flag64(confflags, CONFFLAG_MOH))) {
 +					ast_moh_stop(chan);
 +					musiconhold = 0;
 +				}
-+				ztc.confmode = DAHDI_CONF_CONF | DAHDI_CONF_TALKER | DAHDI_CONF_LISTENER;
-+				if (ioctl(fd, DAHDI_SETCONF, &ztc)) {
++				dahdic.confmode = DAHDI_CONF_CONF | DAHDI_CONF_TALKER | DAHDI_CONF_LISTENER;
++				if (ioctl(fd, DAHDI_SETCONF, &dahdic)) {
 +					ast_log(LOG_WARNING, "Error setting conference\n");
 +					close(fd);
 +					goto outrun;
 +				}
-+			} else if (!(user->adminflags & ADMINFLAG_TALK_TO_ADMIN) &&
-+			           (ztc.confmode & DAHDI_CONF_TALKER) &&
-+			           (user->adminflags & ADMINFLAG_NOAUTHED)) {
-+				ztc.confmode = DAHDI_CONF_CONF;
-+				if (ioctl(fd, DAHDI_SETCONF, &ztc)) {
++			} else if (!(ast_test_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN)) &&
++			           (dahdic.confmode & DAHDI_CONF_TALKER) &&
++			           (ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED))) {
++				dahdic.confmode = DAHDI_CONF_CONF;
++				if (ioctl(fd, DAHDI_SETCONF, &dahdic)) {
 +					ast_log(LOG_WARNING, "Error setting conference\n");
 +					close(fd);
 +					goto outrun;
 +				}
-+				if (musiconhold == 0 && (confflags & CONFFLAG_MOH)) {
++				if (musiconhold == 0 && (ast_test_flag64(confflags, CONFFLAG_MOH))) {
 +					ast_moh_start(chan, NULL, NULL);
 +					musiconhold = 1;
 +				}
 +			}
 +
-+			if ((confflags & CONFFLAG_WAITMARKED) || (confflags & CONFFLAG_MODERATION)) {
-+				if((confflags & CONFFLAG_WAITMARKED && currentmarked == 0) || (user->adminflags & ADMINFLAG_NOAUTHED) || ispaused) {
++
++			if (ast_test_flag64(confflags, CONFFLAG_WAITMARKED) || ast_test_flag64(confflags, CONFFLAG_MODERATION)) {
++				if((ast_test_flag64(confflags, CONFFLAG_WAITMARKED) && currentmarked == 0) || (ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED)) || ispaused) {
 +					/* Marked users left, or a new no authorized user joined. */
-+					if (((currentmarked == 0 && lastmarked != 0) ||
-+					     (ispaused && !waspaused)) &&
-+					    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
-+						if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MARKEDUSER))
- 							if (!ast_streamfile(chan, "conf-leaderhasleft", chan->language))
++				if (((currentmarked == 0 && lastmarked != 0) || (ispaused && !waspaused)) && 
++						!(ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED))) {
++						if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && !(ast_test_flag64(confflags, CONFFLAG_MARKEDUSER))) {
+ 							if (!ast_streamfile(chan, "conf-leaderhasleft", chan->language)) {
  								ast_waitstream(chan, "");
--						if(confflags & CONFFLAG_MARKEDEXIT)
-+						if(confflags & CONFFLAG_MARKEDEXIT && !ispaused)
- 							break;
- 						else {
- 							ztc.confmode = DAHDI_CONF_CONF;
-@@ -1976,11 +2272,17 @@
+ 							}
+ 						}
+-						if (ast_test_flag64(confflags, CONFFLAG_MARKEDEXIT)) {
++						if (ast_test_flag64(confflags, CONFFLAG_MARKEDEXIT) && !ispaused) {
+ 							if (ast_test_flag64(confflags, CONFFLAG_KICK_CONTINUE)) {
+ 								ret = 0;
+ 							}
+@@ -2967,11 +3429,17 @@
  							}
  						}
  					}
--					if (musiconhold == 0 && (confflags & CONFFLAG_MOH)) {
-+					if (musiconhold == 0 && (confflags & CONFFLAG_MOH) && !(user->adminflags & ADMINFLAG_TALK_TO_ADMIN)) {
- 						ast_moh_start(chan, NULL, NULL);
+-					if (!musiconhold && (ast_test_flag64(confflags, CONFFLAG_MOH))) {
++					if (!musiconhold && (ast_test_flag64(confflags, CONFFLAG_MOH)) && !(ast_test_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN))) {
+ 						conf_start_moh(chan, optargs[OPT_ARG_MOH_CLASS]);
  						musiconhold = 1;
  					}
--				} else if(currentmarked >= 1 && lastmarked == 0) {
-+				} else if ((!(confflags & CONFFLAG_WAITMARKED) || currentmarked >= 1) &&
+-				} else if (currentmarked >= 1 && lastmarked == 0) {
++				} else if ((!(ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) || currentmarked >= 1) &&
 +					   !ispaused &&
-+					   !(user->adminflags & (ADMINFLAG_SILENCED_KICK|ADMINFLAG_NOAUTHED)) &&
-+					   ztc.confmode == DAHDI_CONF_CONF &&
-+					   (((confflags & CONFFLAG_WAITMARKED) && lastmarked == 0) ||
++					   !(ast_test_flag64(&user->adminflags, (ADMINFLAG_SILENCED_KICK|ADMINFLAG_NOAUTHED))) &&
++					   dahdic.confmode == DAHDI_CONF_CONF &&
++					   (((ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) && lastmarked == 0) ||
 +					    currentnoauth < lastnoauth ||
 +					    waspaused)) {
  					/* Marked user entered, so cancel timeout */
  					timeout = 0;
- 					if (confflags & CONFFLAG_MONITOR)
-@@ -2002,13 +2304,75 @@
- 						if (!ast_streamfile(chan, "conf-placeintoconf", chan->language))
+ 					if (ast_test_flag64(confflags, CONFFLAG_MONITOR)) {
+@@ -2996,13 +3464,78 @@
  							ast_waitstream(chan, "");
+ 						}
  						conf_play(chan, conf, ENTER);
 +						conf_announce(chan, conf, user);
 +						conf_announce_user_join(chan, conf, user);
- 					}
- 				}
- 			}
- 
++
++					}
++				}
++			}
++
 +			/* Conference begins when there aren't any no authorized people. */
 +			if (!conf->begin &&
 +			    !currentnoauth &&
-+			    (!(confflags & CONFFLAG_WAITMARKED) || currentmarked > 0) &&
++			    (!(ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) || currentmarked > 0) &&
 +			    conf->users >= opt_timeout_minusers) {
 +				conf->begin = time(NULL);
 +			}
 +
-+			if ((confflags & CONFFLAG_ADMIN) && currentnoauth > 0 && (!auth_requesting || lastnoauth != currentnoauth)) {
++			if ((ast_test_flag64(confflags, CONFFLAG_ADMIN)) && currentnoauth > 0 && (!auth_requesting || lastnoauth != currentnoauth)) {
 +				/* There are new unauthorized people.
 +				 *
 +				 * Find a no authorized user who is not yet in
 +				 * an * auth request process. Then ask admin to
 +				 * kick or authorize him.
 +				 */
-+				if (user->adminflags & ADMINFLAG_AUTH_REQUESTING) {
-+					AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
-+						if ((usr->adminflags & ADMINFLAG_NOAUTHED) &&
-+						   !(usr->adminflags & (ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_SILENCED_KICK)))
++				if (ast_test_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING)) {
++					struct ao2_iterator user_iter = ao2_iterator_init(conf->usercontainer, 0);
++					struct ast_conf_user *usr;
++					while ((usr = ao2_iterator_next(&user_iter))) {
++						if ((ast_test_flag64(&usr->adminflags, ADMINFLAG_NOAUTHED)) &&
++						   !(ast_test_flag64(&usr->adminflags, (ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_SILENCED_KICK))))
 +							break;
 +					}
 +					if(usr) {
@@ -760,7 +965,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +							ast_moh_stop(chan);
 +							musiconhold = 0;
 +						}
-+						usr->adminflags |= ADMINFLAG_AUTH_REQUESTING;
++						ast_set_flag64(&usr->adminflags, ADMINFLAG_AUTH_REQUESTING);
 +
 +						/* Say request to admin. */
 +						if (!ast_streamfile(chan, usr->namerecloc, chan->language))
@@ -776,10 +981,10 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +							menu_active = meetme_moderation_menu(chan, conf, user, dtmf, &auth_requesting);
 +						else
 +							menu_active = 1;
-+					}
+ 					}
 +					else
 +					{
-+						user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
++						ast_clear_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING);
 +						menu_active = auth_requesting = 0;
 +					}
 +				} else if (currentnoauth != lastnoauth) {
@@ -787,70 +992,111 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +					 * no authorized users who wait. */
 +					if (!ast_streamfile(chan, "beep", chan->language))
 +						ast_waitstream(chan, "");
-+				}
-+			}
-+			else if (currentnoauth == 0 && lastnoauth > 0 && (confflags & CONFFLAG_ADMIN)) {
-+				user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
+ 				}
+ 			}
++			else if (currentnoauth == 0 && lastnoauth > 0 && (ast_test_flag64(confflags, CONFFLAG_ADMIN))) {
++				ast_clear_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING);
 +				menu_active = auth_requesting = 0;
 +			}
-+
+ 
  			/* trying to add moh for single person conf */
--			if ((confflags & CONFFLAG_MOH) && !(confflags & CONFFLAG_WAITMARKED)) {
+-			if (ast_test_flag64(confflags, CONFFLAG_MOH) && !ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) {
 -				if (conf->users == 1) {
-+			if ((confflags & CONFFLAG_MOH) && !(confflags & (CONFFLAG_WAITMARKED|CONFFLAG_MODERATION))) {
++			if (ast_test_flag64(confflags, CONFFLAG_MOH) && !ast_test_flag64(confflags, CONFFLAG_WAITMARKED|CONFFLAG_MODERATION)) {
 +				if (count_real_users(conf) == 1) {
- 					if (musiconhold == 0) {
- 						ast_moh_start(chan, NULL, NULL);
+ 					if (!musiconhold) {
+ 						conf_start_moh(chan, optargs[OPT_ARG_MOH_CLASS]);
  						musiconhold = 1;
-@@ -2022,7 +2386,7 @@
+@@ -3016,7 +3549,7 @@
  			}
  			
  			/* Leave if the last marked user left */
--			if (currentmarked == 0 && lastmarked != 0 && (confflags & CONFFLAG_MARKEDEXIT)) {
-+			if (currentmarked == 0 && lastmarked != 0 && (confflags & CONFFLAG_MARKEDEXIT) && !ispaused) {
- 				ret = -1;
- 				break;
- 			}
-@@ -2053,7 +2417,11 @@
+-			if (currentmarked == 0 && lastmarked != 0 && ast_test_flag64(confflags, CONFFLAG_MARKEDEXIT)) {
++			if (currentmarked == 0 && lastmarked != 0 && ast_test_flag64(confflags, CONFFLAG_MARKEDEXIT) && !ispaused) {
+ 				if (ast_test_flag64(confflags, CONFFLAG_KICK_CONTINUE)) {
+ 					ret = 0;
+ 				} else {
+@@ -3028,7 +3561,7 @@
+ 			/* Check if my modes have changed */
+ 
+ 			/* If I should be muted but am still talker, mute me */
+-			if ((user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) && (dahdic.confmode & DAHDI_CONF_TALKER)) {
++			if ((ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) && (dahdic.confmode & DAHDI_CONF_TALKER)) {
+ 				dahdic.confmode ^= DAHDI_CONF_TALKER;
+ 				if (ioctl(fd, DAHDI_SETCONF, &dahdic)) {
+ 					ast_log(LOG_WARNING, "Error setting conference - Un/Mute \n");
+@@ -3051,7 +3584,11 @@
  			}
  
  			/* If I should be un-muted but am not talker, un-mute me */
--			if (!(user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) && !(confflags & CONFFLAG_MONITOR) && !(ztc.confmode & DAHDI_CONF_TALKER)) {
-+			if (!(user->adminflags & (ADMINFLAG_MUTED|ADMINFLAG_SELFMUTED|ADMINFLAG_NOAUTHED)) &&
-+			    !(confflags & CONFFLAG_MONITOR) &&
-+			    (!(confflags & CONFFLAG_WAITMARKED) || currentmarked > 0) &&
-+			    !(ztc.confmode & DAHDI_CONF_TALKER) &&
+-			if (!(user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) && !ast_test_flag64(confflags, CONFFLAG_MONITOR) && !(dahdic.confmode & DAHDI_CONF_TALKER)) {
++			if (!(ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED|ADMINFLAG_SELFMUTED|ADMINFLAG_NOAUTHED))) &&
++			    !(ast_test_flag64(confflags, CONFFLAG_MONITOR)) &&
++			    (!(ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) || currentmarked > 0) &&
++			    !(dahdic.confmode & DAHDI_CONF_TALKER) &&
 +			    !ispaused) {
- 				ztc.confmode |= DAHDI_CONF_TALKER;
- 				if (ioctl(fd, DAHDI_SETCONF, &ztc)) {
+ 				dahdic.confmode |= DAHDI_CONF_TALKER;
+ 				if (ioctl(fd, DAHDI_SETCONF, &dahdic)) {
  					ast_log(LOG_WARNING, "Error setting conference - Un/Mute \n");
-@@ -2074,7 +2442,7 @@
- 			if (user->adminflags & ADMINFLAG_KICKME) {
- 				//You have been kicked.
- 				if (!(confflags & CONFFLAG_QUIET) && 
--					!ast_streamfile(chan, "conf-kicked", chan->language)) {
-+				    !ast_streamfile(chan, "conf-kicked", chan->language)) {
- 					ast_waitstream(chan, "");
+@@ -3068,8 +3605,8 @@
+ 						chan->name, chan->uniqueid, conf->confno, user->user_no);
+ 			}
+ 			
+-			if ((user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) && 
+-				(user->adminflags & ADMINFLAG_T_REQUEST) && !(talkreq_manager)) {
++			if ((ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) && 
++				(ast_test_flag64(&user->adminflags, ADMINFLAG_T_REQUEST)) && !(talkreq_manager)) {
+ 				talkreq_manager = 1;
+ 
+ 				ast_manager_event(chan, EVENT_FLAG_CALL, "MeetmeTalkRequest",
+@@ -3082,8 +3619,8 @@
+ 			}
+ 
+ 			
+-			if (!(user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) && 
+-				!(user->adminflags & ADMINFLAG_T_REQUEST) && (talkreq_manager)) {
++			if (!(ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) && 
++				!(ast_test_flag64(&user->adminflags, ADMINFLAG_T_REQUEST)) && (talkreq_manager)) {
+ 				talkreq_manager = 0;
+ 				ast_manager_event(chan, EVENT_FLAG_CALL, "MeetmeTalkRequest",
+ 					      "Channel: %s\r\n"
+@@ -3095,7 +3632,7 @@
+ 			}
+ 			
+ 			/* If I have been kicked, exit the conference */
+-			if (user->adminflags & ADMINFLAG_KICKME) {
++			if (ast_test_flag64(&user->adminflags, ADMINFLAG_KICKME)) {
+ 				/* You have been kicked. */
+ 				if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && 
+ 					!ast_streamfile(chan, "conf-kicked", chan->language)) {
+@@ -3121,7 +3658,7 @@
+ 					user->dahdichannel = !retrydahdi;
+ 					goto dahdiretry;
  				}
- 				ret = 0;
-@@ -2169,7 +2537,13 @@
+-				if (ast_test_flag64(confflags, CONFFLAG_MONITOR) || (user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) {
++				if (ast_test_flag64(confflags, CONFFLAG_MONITOR) || (ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)))) {
+ 					f = ast_read_noaudio(c);
+ 				} else {
+ 					f = ast_read(c);
+@@ -3191,7 +3728,14 @@
  					if (musiconhold) {
  			   			ast_moh_stop(chan);
  					}
--					if ((confflags & CONFFLAG_ADMIN)) {
+-					if (menu8_active) {
++
 +					if (auth_requesting) {
 +						/* Request authorization from admin for a user. */
-+						dtmf = f->subclass;
++						dtmf = f->subclass.integer;
 +
 +						menu_active = meetme_moderation_menu(chan, conf, user, dtmf, &auth_requesting);
 +
-+					} else if ((confflags & CONFFLAG_ADMIN)) {
- 						/* Admin menu */
- 						if (!menu_active) {
- 							menu_active = 1;
-@@ -2182,6 +2556,14 @@
- 						} else 
- 							dtmf = f->subclass;
++					} else if (menu8_active) {
+ 						/* *8 Submenu */
+ 						dtmf = f->subclass.integer;
+ 						if (dtmf) {
+@@ -3354,18 +3898,26 @@
+ 							dtmf = f->subclass.integer;
+ 						}
  						if (dtmf) {
 +							/* Check here to break the main loop. */
 +							if (dtmf == '#') {
@@ -863,7 +1109,32 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  							switch(dtmf) {
  							case '1': /* Un/Mute */
  								menu_active = 0;
-@@ -2237,6 +2619,16 @@
+ 
+ 								/* for admin, change both admin and use flags */
+-								if (user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) {
+-									user->adminflags &= ~(ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED);
++								if (ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) {
++									ast_clear_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED));
+ 								} else {
+-									user->adminflags |= (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED);
++									ast_set_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED));
+ 								}
+ 
+-								if (ast_test_flag64(confflags, CONFFLAG_MONITOR) || (user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) {
++								if (ast_test_flag64(confflags, CONFFLAG_MONITOR) || (ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)))) {
+ 									if (!ast_streamfile(chan, "conf-muted", chan->language)) {
+ 										ast_waitstream(chan, "");
+ 									}
+@@ -3401,7 +3953,7 @@
+ 										ast_waitstream(chan, "");
+ 									}
+ 								} else {
+-									usr->adminflags |= ADMINFLAG_KICKME;
++									ast_set_flag64(&usr->adminflags, ADMINFLAG_KICKME);
+ 								}
+ 								ao2_ref(usr, -1);
+ 								ast_stopstream(chan);
+@@ -3438,6 +3990,16 @@
  							case '9':
  								tweak_talk_volume(user, VOL_UP);
  								break;
@@ -871,7 +1142,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
 +								menu_active = 0;
 +								if (conf->noauthorized > 0) {
 +									conf_announce(chan, conf, user);
-+									user->adminflags |= ADMINFLAG_AUTH_REQUESTING;
++									ast_set_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING);
 +								} else {
 +									if (!ast_streamfile(chan, "conf-moderation-noinvited", chan->language))
 +										ast_waitstream(chan, "");
@@ -880,8 +1151,45 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  							default:
  								menu_active = 0;
  								/* Play an error message! */
-@@ -2419,6 +2811,8 @@
- 					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
+@@ -3466,10 +4028,10 @@
+ 								menu_active = 0;
+ 
+ 								/* user can only toggle the self-muted state */
+-								user->adminflags ^= ADMINFLAG_SELFMUTED;
++								ast_clear_flag64(&user->adminflags, ADMINFLAG_SELFMUTED);
+ 
+ 								/* they can't override the admin mute state */
+-								if (ast_test_flag64(confflags, CONFFLAG_MONITOR) || (user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) {
++								if (ast_test_flag64(confflags, CONFFLAG_MONITOR) || (ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)))) {
+ 									if (!ast_streamfile(chan, "conf-muted", chan->language)) {
+ 										ast_waitstream(chan, "");
+ 									}
+@@ -3481,11 +4043,11 @@
+ 								break;
+ 							case '2':
+ 								menu_active = 0;
+-								if (user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) {
+-									user->adminflags |= ADMINFLAG_T_REQUEST;
++								if (ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) {
++									ast_set_flag64(&user->adminflags, ADMINFLAG_T_REQUEST);
+ 								}
+ 									
+-								if (user->adminflags & ADMINFLAG_T_REQUEST) {
++								if (ast_test_flag64(&user->adminflags, ADMINFLAG_T_REQUEST)) {
+ 									if (!ast_streamfile(chan, "beep", chan->language)) {
+ 										ast_waitstream(chan, "");
+ 									}
+@@ -3601,7 +4163,7 @@
+ 					fr.offset = AST_FRIENDLY_OFFSET;
+ 					if (!user->listen.actual &&
+ 						(ast_test_flag64(confflags, CONFFLAG_MONITOR) ||
+-						 (user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)) ||
++						 (ast_test_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED))) ||
+ 						 (!user->talking && ast_test_flag64(confflags, CONFFLAG_OPTIMIZETALKER))
+ 						 )) {
+ 						int idx;
+@@ -3676,6 +4238,8 @@
+ 				}
  			}
  			lastmarked = currentmarked;
 +			lastnoauth = currentnoauth;
@@ -889,22 +1197,28 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  		}
  	}
  
-@@ -2440,23 +2834,28 @@
+@@ -3697,26 +4261,33 @@
  
  	reset_volumes(user);
  
--	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
-+	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN) && !(user->adminflags & (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK)))
+-	if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && !ast_test_flag64(confflags, CONFFLAG_MONITOR) &&
+-		!ast_test_flag64(confflags, CONFFLAG_ADMIN)) {
++	if (!(ast_test_flag64(confflags, CONFFLAG_QUIET)) && 
++		!(ast_test_flag64(confflags, CONFFLAG_MONITOR)) && 
++		!(ast_test_flag64(confflags, CONFFLAG_ADMIN)) && 
++		!(ast_test_flag64(&user->adminflags, (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK)))) {
++
  		conf_play(chan, conf, LEAVE);
+ 	}
  
--	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
-+	if (!(confflags & CONFFLAG_QUIET) &&
-+	    ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) &&
+-	if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && (ast_test_flag64(confflags, CONFFLAG_INTROUSER) || ast_test_flag64(confflags, CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
++	if (!(ast_test_flag64(confflags, CONFFLAG_QUIET)) &&
++	    ((ast_test_flag64(confflags, CONFFLAG_INTROUSER)) || (ast_test_flag64(confflags, CONFFLAG_INTROUSERNOREVIEW))) &&
 +	    count_real_users(conf) > 1 &&
-+	    !(user->adminflags & (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK))) {
++	    !(ast_test_flag64(&user->adminflags, (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK)))) {
  		struct announce_listitem *item;
  		if (!(item = ao2_alloc(sizeof(*item), NULL)))
- 			return -1;
+ 			goto outrun;
  		ast_copy_string(item->namerecloc, user->namerecloc, sizeof(item->namerecloc));
  		ast_copy_string(item->language, chan->language, sizeof(item->language));
  		item->confchan = conf->chan;
@@ -915,267 +1229,144 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  		AST_LIST_INSERT_TAIL(&conf->announcelist, item, entry);
  		ast_cond_signal(&conf->announcelist_addition);
  		ast_mutex_unlock(&conf->announcelistlock);
--	} else if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users == 1) {
-+	} else if (!(confflags & CONFFLAG_QUIET) &&
-+	           ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) &&
-+		   (count_real_users(conf) == 1 || (user->adminflags & (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK)))) {
+-	} else if (!ast_test_flag64(confflags, CONFFLAG_QUIET) && (ast_test_flag64(confflags, CONFFLAG_INTROUSER) ||
+-		ast_test_flag64(confflags, CONFFLAG_INTROUSERNOREVIEW)) && conf->users == 1) {
++	} else if (!(ast_test_flag64(confflags, CONFFLAG_QUIET)) &&
++	           ((ast_test_flag64(confflags, CONFFLAG_INTROUSER)) || (ast_test_flag64(confflags, CONFFLAG_INTROUSERNOREVIEW))) &&
++		   (count_real_users(conf) == 1 || (ast_test_flag64(&user->adminflags, (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK))))) {
  		/* Last person is leaving, so no reason to try and announce, but should delete the name recording */
  		ast_filedelete(user->namerecloc, NULL);
  	}
-@@ -2496,8 +2895,23 @@
- 			/* Update table */
- 			snprintf(members, sizeof(members), "%d", conf->users);
- 			ast_update_realtime("meetme", "confno", conf->confno, "members", members, NULL);
--			if (confflags & CONFFLAG_MARKEDUSER) 
-+			if (confflags & CONFFLAG_ADMIN) {
+@@ -3763,9 +4334,26 @@
+ 					NULL);
+ 				ast_update_realtime("meetme", "confno", conf->confno, "members", members, NULL);
+ 			}
++			if (ast_test_flag64(confflags, CONFFLAG_ADMIN)) {
 +				if (auth_requesting) {
-+					AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
++					struct ao2_iterator user_iter = ao2_iterator_init(conf->usercontainer, 0);
++					struct ast_conf_user *usr;
++					while ((usr = ao2_iterator_next(&user_iter))) {
 +						/* Moderated user is released. */
 +						if (usr->user_no == auth_requesting)
-+							usr->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
++							ast_clear_flag64(&usr->adminflags, (ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN));
 +					}
 +				}
-+				if (user->adminflags & ADMINFLAG_TALK_TO_ADMIN)
++				if (ast_test_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN))
 +					meetme_pause(conf, 0);
 +			}
-+			if (confflags & CONFFLAG_MARKEDUSER)
+ 			if (ast_test_flag64(confflags, CONFFLAG_MARKEDUSER)) {
  				conf->markedusers--;
-+			if (user->adminflags & ADMINFLAG_SILENCED_KICK)
+ 			}
++			if (ast_test_flag64(&user->adminflags, ADMINFLAG_SILENCED_KICK))
 +				conf->kicked--;
-+			else if (user->adminflags & ADMINFLAG_NOAUTHED)
++			else if (ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED))
 +				conf->noauthorized--;
  		}
- 		/* Remove ourselves from the list */
- 		AST_LIST_REMOVE(&conf->userlist, user, list);
-@@ -2699,7 +3113,7 @@
- 	conf = find_conf(chan, args.confno, 0, 0, NULL, 0, 1, NULL);
+ 		/* Remove ourselves from the container */
+ 		ao2_unlink(conf->usercontainer, user); 
+@@ -3999,6 +4587,7 @@
+ 	if (cnf) {
+ 		cnf->refcount += refcount;
+ 	}
++
+ 	AST_LIST_UNLOCK(&confs);
  
- 	if (conf) {
--		count = conf->users;
-+		count = count_real_users(conf);
- 		dispose_conf(conf);
- 		conf = NULL;
- 	} else
-@@ -2909,7 +3323,7 @@
+ 	if (!cnf) {
+@@ -4165,7 +4754,8 @@
+ 			allowretry = 1;
+ 		}
+ 	}
+-	
++
++
+ 	if (args.pin)
+ 		ast_copy_string(the_pin, args.pin, sizeof(the_pin));
+ 
+@@ -4353,6 +4943,7 @@
+ 							res = ast_app_getdata(chan, "conf-getpin", pin + strlen(pin), sizeof(pin) - 1 - strlen(pin), 0);
+ 						}
+ 						if (res >= 0) {
++
+ 							if ((!strcasecmp(pin, cnf->pin) &&
+ 							     (ast_strlen_zero(cnf->pinadmin) ||
+ 							      !ast_test_flag64(&confflags, CONFFLAG_ADMIN))) ||
+@@ -4361,6 +4952,9 @@
  								/* Pin correct */
  								allowretry = 0;
- 								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
--									ast_set_flag(&confflags, CONFFLAG_ADMIN);
-+									ast_set_flag(&confflags, CONFFLAG_MARKEDUSER|CONFFLAG_ADMIN);
- 								/* Run the conference */
- 								res = conf_run(chan, cnf, confflags.flags, optargs);
- 								break;
-@@ -3135,6 +3549,172 @@
- 	return 0;
- }
+ 								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) {
++										
++									ast_test_flag64(&confflags, CONFFLAG_MARKEDUSER|CONFFLAG_ADMIN);
++
+ 									if (!ast_strlen_zero(cnf->adminopts)) {
+ 										char *opts = ast_strdupa(cnf->adminopts);
+ 										ast_app_parse_options64(meetme_opts, &confflags, optargs, opts);
+@@ -4562,7 +5156,7 @@
+ 		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_max_cmp, &max_no);
+ 		user = ao2_find(cnf->usercontainer, &max_no, 0);
+ 		if (!ast_test_flag64(&user->userflags, CONFFLAG_ADMIN))
+-			user->adminflags |= ADMINFLAG_KICKME;
++			ast_set_flag64(&user->adminflags, ADMINFLAG_KICKME);
+ 		else {
+ 			res = -1;
+ 			ast_log(LOG_NOTICE, "Not kicking last user, is an Admin!\n");
+@@ -4571,19 +5165,19 @@
+ 		break;
+ 	}
+ 	case 77: /* M: Mute */ 
+-		user->adminflags |= ADMINFLAG_MUTED;
++		ast_set_flag64(&user->adminflags, ADMINFLAG_MUTED);
+ 		break;
+ 	case 78: /* N: Mute all (non-admin) users */
+ 		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_set_muted_cb, NULL);
+ 		break;					
+ 	case 109: /* m: Unmute */ 
+-		user->adminflags &= ~(ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST);
++		ast_clear_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST));
+ 		break;
+ 	case 110: /* n: Unmute all users */
+ 		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_set_unmuted_cb, NULL);
+ 		break;
+ 	case 107: /* k: Kick user */ 
+-		user->adminflags |= ADMINFLAG_KICKME;
++		ast_set_flag64(&user->adminflags, ADMINFLAG_KICKME);
+ 		break;
+ 	case 118: /* v: Lower all users listen volume */
+ 		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_listen_voldown_cb, NULL);
+@@ -4680,13 +5274,13 @@
+ 	/* perform the specified action */
+ 	switch (*args.command) {
+ 		case 77: /* M: Mute */ 
+-			user->adminflags |= ADMINFLAG_MUTED;
++			ast_set_flag64(&user->adminflags, ADMINFLAG_MUTED);
+ 			break;
+ 		case 109: /* m: Unmute */ 
+-			user->adminflags &= ~ADMINFLAG_MUTED;
++			ast_clear_flag64(&user->adminflags, ADMINFLAG_MUTED);
+ 			break;
+ 		case 107: /* k: Kick user */ 
+-			user->adminflags |= ADMINFLAG_KICKME;
++			ast_set_flag64(&user->adminflags, ADMINFLAG_KICKME);
+ 			break;
+ 		default: /* unknown command */
+ 			ast_log(LOG_WARNING, "Unknown MeetMeChannelAdmin command '%s'\n", args.command);
+@@ -4745,9 +5339,9 @@
+ 	}
  
-+static int meetme_moderation(struct mansession *s, const struct message *m, int action)
-+{
-+	struct ast_conference *conf;
-+	struct ast_conf_user *user, *admin;
-+	const char *confid = astman_get_header(m, "Meetme");
-+	char *userid = ast_strdupa(astman_get_header(m, "Usernum"));
-+	char *adminid = ast_strdupa(astman_get_header(m, "Adminnum"));
-+	int userno, adminno;
-+
-+	if (ast_strlen_zero(confid)) {
-+		astman_send_error(s, m, "Meetme conference not specified");
-+		return 0;
-+	}
-+
-+	if (ast_strlen_zero(userid)) {
-+		astman_send_error(s, m, "Meetme user number not specified");
-+		return 0;
-+	}
-+
-+	userno = strtoul(userid, &userid, 10);
-+
-+	if (*userid) {
-+		astman_send_error(s, m, "Invalid user number");
-+		return 0;
-+	}
-+
-+	if (ast_strlen_zero(adminid)) {
-+		astman_send_error(s, m, "Meetme admin number not specified");
-+		return 0;
-+	}
-+
-+	adminno = strtoul(adminid, &adminid, 10);
-+
-+	if (*adminid) {
-+		astman_send_error(s, m, "Invalid admin number");
-+		return 0;
-+	}
-+
-+	/* Look in the conference list */
-+	AST_LIST_LOCK(&confs);
-+	AST_LIST_TRAVERSE(&confs, conf, list) {
-+		if (!strcmp(confid, conf->confno))
-+			break;
-+	}
-+
-+	if (!conf) {
-+		AST_LIST_UNLOCK(&confs);
-+		astman_send_error(s, m, "Meetme conference does not exist");
-+		return 0;
-+	}
-+
-+	AST_LIST_TRAVERSE(&conf->userlist, user, list)
-+		if (user->user_no == userno)
-+			break;
-+
-+	if (!user) {
-+		AST_LIST_UNLOCK(&confs);
-+		astman_send_error(s, m, "User number not found");
-+		return 0;
-+	}
-+
-+	if (!(user->adminflags & ADMINFLAG_NOAUTHED)) {
-+		AST_LIST_UNLOCK(&confs);
-+		astman_send_error(s, m, "User already is authorized.");
-+		return 0;
-+	}
-+
-+	AST_LIST_TRAVERSE(&conf->userlist, admin, list)
-+		if (admin->user_no == adminno)
-+			break;
-+
-+	if (!admin && !(admin->userflags & CONFFLAG_ADMIN)) {
-+		AST_LIST_UNLOCK(&confs);
-+		astman_send_error(s, m, "Admin number not found");
-+		return 0;
-+	}
-+	if (action == ADMINFLAG_TALK_TO_ADMIN) {
-+		meetme_mod_talk(conf, admin, user);
-+		astman_send_ack(s, m, "Start talk");
-+	}
-+	else {
-+		if (action == ADMINFLAG_AUTH_REQUESTING) {
-+			meetme_mod_authorize(conf, admin, user);
-+			astman_send_ack(s, m, "User authorized");
-+		} else if (action == ADMINFLAG_SILENCED_KICK) {
-+			meetme_mod_silence_kick(conf, admin, user);
-+			astman_send_ack(s, m, "User is kicked");
-+		} else {
-+			AST_LIST_UNLOCK(&confs);
-+			astman_send_error(s, m, "Action is invalid.");
-+			return 0;
-+		}
-+	}
-+
-+	AST_LIST_UNLOCK(&confs);
-+
-+	return 0;
-+}
-+
-+static int action_meetmeaccept(struct mansession *s, const struct message *m)
-+{
-+	return meetme_moderation(s, m, ADMINFLAG_AUTH_REQUESTING);
-+}
-+
-+static int action_meetmekick(struct mansession *s, const struct message *m)
-+{
-+	return meetme_moderation(s, m, ADMINFLAG_SILENCED_KICK);
-+}
-+
-+static int action_meetmetalk(struct mansession *s, const struct message *m)
-+{
-+	return meetme_moderation(s, m, ADMINFLAG_TALK_TO_ADMIN);
-+}
-+
-+static int action_meetmepause(struct mansession *s, const struct message *m)
-+{
-+	struct ast_conference *conf;
-+	const char *confid = astman_get_header(m, "Meetme");
-+	const char *pause = astman_get_header(m, "Status");
-+	int is_paused;
-+
-+	if (ast_strlen_zero(confid)) {
-+		astman_send_error(s, m, "Meetme conference not specified");
-+		return 0;
-+	}
-+
-+	if (ast_strlen_zero(pause)) {
-+		astman_send_error(s, m, "Pause status not specified");
-+		return 0;
-+	}
-+
-+	if (!strcmp(pause, "on"))
-+		is_paused = 1;
-+	else if (!strcmp(pause, "off"))
-+		is_paused = 0;
-+	else {
-+		astman_send_error(s, m, "Pause status must be 'on' or 'off'");
-+		return 0;
-+	}
-+
-+	/* Look in the conference list */
-+	AST_LIST_LOCK(&confs);
-+	AST_LIST_TRAVERSE(&confs, conf, list) {
-+		if (!strcmp(confid, conf->confno))
-+			break;
-+	}
-+
-+	if (!conf) {
-+		AST_LIST_UNLOCK(&confs);
-+		astman_send_error(s, m, "Meetme conference does not exist");
-+		return 0;
-+	}
-+
-+	if (is_paused && !conf->paused)
-+		meetme_pause(conf, 1);
-+	else if (!is_paused && conf->paused)
-+		meetme_pause(conf, 0);
-+
-+	AST_LIST_UNLOCK(&confs);
-+
-+	ast_log(LOG_NOTICE, "Requested to %spause conf %s \n", conf->paused ? "" : "un", conf->confno);
-+
-+	astman_send_ack(s, m, conf->paused ? "Conf paused" : "Conf unpaused");
-+	return 0;
-+}
-+
- static int meetmemute(struct mansession *s, const struct message *m, int mute)
- {
- 	struct ast_conference *conf;
-@@ -3254,6 +3834,7 @@
-                                       "Channel: %s\r\n"
-                                       "Uniqueid: %s\r\n"
-                                       "Admin: %s\r\n"
-+                                      "NoAuthed: %s\r\n"
-                                       "Role: %s\r\n"
-                                       "MarkedUser: %s\r\n"
-                                       "Muted: %s\r\n"
-@@ -3268,6 +3849,7 @@
-                                       user->chan->name,
-                                       user->chan->uniqueid,
-                                       user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
-+                                      user->adminflags & ADMINFLAG_NOAUTHED ? "Yes" : "No",
-                                       user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
-                                       user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
-                                       user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
-@@ -5113,6 +5695,9 @@
- 	res = ast_manager_unregister("MeetmeMute");
- 	res |= ast_manager_unregister("MeetmeUnmute");
- 	res |= ast_manager_unregister("MeetmeList");
-+	res |= ast_manager_unregister("MeetmeAccept");
-+	res |= ast_manager_unregister("MeetmeKick");
-+	res |= ast_manager_unregister("MeetmeTalk");
- 	res |= ast_unregister_application(app3);
- 	res |= ast_unregister_application(app2);
- 	res |= ast_unregister_application(app);
-@@ -5142,6 +5727,14 @@
- 				    action_meetmeunmute, "Unmute a Meetme user");
- 	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
-                                      action_meetmelist, "List participants in a conference", mandescr_meetmelist);
-+	res |= ast_manager_register("MeetmeAccept", EVENT_FLAG_CALL,
-+                                    action_meetmeaccept, "Accept a no authorized user in a conference");
-+	res |= ast_manager_register("MeetmeKick", EVENT_FLAG_CALL,
-+                                    action_meetmekick, "Kick a user from a conference");
-+	res |= ast_manager_register("MeetmeTalk", EVENT_FLAG_CALL,
-+                                    action_meetmetalk, "Talk to a no authorized user");
-+	res |= ast_manager_register("MeetmePause", EVENT_FLAG_CALL,
-+                                    action_meetmepause, "Pause/unpause conference");
- 	res |= ast_register_application(app3, admin_exec, synopsis3, descrip3);
- 	res |= ast_register_application(app2, count_exec, synopsis2, descrip2);
- 	res |= ast_register_application(app, conf_exec, synopsis, descrip);
+ 	if (mute)
+-		user->adminflags |= ADMINFLAG_MUTED;	/* request user muting */
++		ast_set_flag64(&user->adminflags, ADMINFLAG_MUTED);	/* request user muting */
+ 	else
+-		user->adminflags &= ~(ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST);	/* request user unmuting */
++		ast_clear_flag64(&user->adminflags, (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST));	/* request user unmuting */
+ 
+ 	AST_LIST_UNLOCK(&confs);
+ 
+@@ -4826,7 +5420,7 @@
+ 				ast_test_flag64(&user->userflags, CONFFLAG_ADMIN) ? "Yes" : "No",
+ 				ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "Listen only" : ast_test_flag64(&user->userflags, CONFFLAG_TALKER) ? "Talk only" : "Talk and listen",
+ 				ast_test_flag64(&user->userflags, CONFFLAG_MARKEDUSER) ? "Yes" : "No",
+-				user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
++				ast_test_flag64(&user->adminflags, ADMINFLAG_MUTED) ? "By admin" : ast_test_flag64(&user->adminflags, ADMINFLAG_SELFMUTED) ? "By self" : "No",
+ 				user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored");
+ 			ao2_ref(user, -1);
+ 		}
