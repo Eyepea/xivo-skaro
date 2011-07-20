@@ -198,11 +198,14 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		|| ($arr['hwtypeid'] = dwho_uint($arr['hwtypeid'])) !== 1)
 			return(false);
 
+		$ret = arr;
 		switch($arr['method'])
 		{
 			case 'dhcp':
-				if($this->_sysnet->is_alias_if($arr['ifname']) === true)
+				if($this->_sysnet->is_alias_if($arr['ifname']) === true) {
+					$this->_set_error('netiface','method','invalid_interface_method');
 					return(false);
+				}
 
 				$arr['address'] = null;
 				$arr['netmask'] = null;
@@ -211,24 +214,42 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 				$arr['mtu'] = null;
 				break;
 			case 'static':
-				if(dwho_has_len($arr,'address') === false
-				|| dwho_has_len($arr,'netmask') === false)
-					return(false);
-				else if(dwho_has_len($arr,'broadcast') === true
+				if(dwho_has_len($arr,'address') === false) {
+					$this->_set_error('netiface','address','empty');
+					$ret = false;
+				}
+
+				if(dwho_has_len($arr,'netmask') === false) {
+					$this->_set_error('netiface','netmask','empty');
+					$ret = false;
+				}
+				
+				if(dwho_has_len($arr,'broadcast') === false) {
+					$this->_set_error('netiface','broadcast','empty');
+					$ret = false;
+				}
+
+				if(dwho_has_len($arr,'broadcast') === true
 				&& dwho_network::valid_ipv4_broadcast($arr['broadcast'],
 								      $arr['address'],
 								      $arr['netmask']) === false)
-					return(false);
-				else if(dwho_has_len($arr,'gateway') === true
+				{
+					$this->_set_error('netiface','broadcast','invalid');
+					$ret = false;
+				}
+
+				if(dwho_has_len($arr,'gateway') === true
 				&& dwho_network::ipv4_in_subnet($arr['gateway'],
-								$arr['address'].'/'.$arr['netmask']) === false)
-					return(false);
+								$arr['address'].'/'.$arr['netmask']) === false) {
+					$this->_set_error('netiface','gateway','invalid');
+					$ret = false;
+				}
 				break;
 			default:
 				return(false);
 		}
 
-		return($arr);
+		return($ret);
 	}
 
 	function clean_interface_options($arr,$outputline=false)
@@ -720,7 +741,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		else if(($normalized = $this->normalize_interface_method($rs)) === false)
 		{
 			$this->_set_result('netiface',$rs);
-			$this->_set_error('netiface','method','invalid_interface_method');
+
 			return(false);
 		}
 

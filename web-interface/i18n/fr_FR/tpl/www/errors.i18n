@@ -2,6 +2,9 @@
 ; error(empty)
 Champ obligatoire
 
+; error(invalid)
+Valeur incorrecte
+
 ; error(regexp)
 Contient des caractères invalides
 

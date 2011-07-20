@@ -7,6 +7,9 @@ An error occurred when saving the form.
 ; error(empty)
 Required Field
 
+; error(invalid)
+Invalid value
+
 ; error(regexp)
 Contains invalid characters
 
