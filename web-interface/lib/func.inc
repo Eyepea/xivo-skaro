@@ -80,6 +80,8 @@ function dwho_second_to($sec, $round=null)
 
 function dwho_byte_to($size)
 {
+    if (is_numeric($size) === false)
+        return(0);
     $unit = array('b','kb','mb','gb','tb','pb');
     return(round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i]);
 }

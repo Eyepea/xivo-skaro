@@ -32,7 +32,7 @@ $dend = $this->get_var('dend');
 $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($dend)) : $this->bbf('fm_description_cache-without_end');
 
 ?>
-	
+
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
@@ -50,7 +50,7 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 	endif;
 ?>
 		</p>
-		
+
 		<form action="#" method="get" accept-charset="utf-8">
 			<?=$form->hidden(array('name' => 'act','value' => $act))?>
 			<?=$form->hidden(array('name' => 'idconf','value' => $idconf))?>
@@ -68,7 +68,7 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 						      	$listtype);
 			?>
 		</form>
-		
+
 		<fieldset id="it-cache-generation-all" class="tab_cache_generation b-nodisplay">
 			<legend><?=$this->bbf('cache_generation_processing');?></legend>
 			<h1><?=$this->bbf('wait_during_traitment');?></h1>
@@ -83,7 +83,7 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 			<h1><?=$this->bbf('cache_generation_success');?></h1>
 			<p><h1 id="ressuccess-all"></h1></p>
 		</div>
-		
+
 <?php
 	$js_listkeyfile = array();
 	if (($type = $this->get_var('type')) === null):
@@ -108,19 +108,19 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		for ($i=0;$i<$nb;$i++):
 			$ref = $list[$i];
 			$mod = ($i % 2) + 1;
-			
+
 			array_push($js_listkeyfile,$ref['keyfile']);
-				
+
 			$id = $ref['id'];
 			$keyfile = $ref['keyfile'];
 			$identity = $ref['identity'];
-			
+
 			$basecache = DWHO_PATH_CACHE_STATS.DWHO_SEP_DIR.'cache';
 			$dir = $basecache.DWHO_SEP_DIR.
 					$idconf.DWHO_SEP_DIR.
 					$type.DWHO_SEP_DIR.
 					$keyfile;
-			
+
 			if (($r = dwho_file::read_d($dir,'file',FILE_R_OK)) === false
 			|| empty($r) === true):
 			    $infoscache = $this->bbf('cache_noexist');
@@ -205,18 +205,17 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 <?php
 if (($type = $this->get_var('type')) !== null
 && ($listmonth = $this->get_var('listmonth')) !== null) :
-	
+
 	$js_listmonth_firstday = array();
 	$js_listmonth_lastday = array();
 	$js_listmonth_timestamp = array();
 
-	foreach ($listmonth as $month)
-	{
+	foreach ($listmonth as $month) :
 		array_push($js_listmonth_firstday,$month['time']);
 		array_push($js_listmonth_timestamp,date('Y-m-d',$month['time']));
 		$lastday = mktime(23, 59, 59, date('m',$month['time']) + 1, 0, date('Y',$month['time']));
 		array_push($js_listmonth_lastday,$lastday);
-	}
+	endforeach;
 ?>
 var listmonthtimestamp = new Array('<?=implode('\',\'',$js_listmonth_timestamp)?>');
 var listmonthfirstday = new Array('<?=implode('\',\'',$js_listmonth_firstday)?>');

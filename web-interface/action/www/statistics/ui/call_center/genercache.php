@@ -37,13 +37,13 @@ if(isset($_QR['idconf']) === true
 	$_XS->generate_cache($_QR['idconf'],$_QR['dbeg'],$_QR['dend'],$_QR['type'],$idtype);
 	return;
 }
-					
+
 if(isset($_QR['update']) === true)
 {
 	if (($appstats_conf = &$_XOBJ->get_application('stats_conf')) === false
 	|| ($listconf = $appstats_conf->get_stats_conf_list(null,'name')) === false)
 		exit;
-				
+
 	while ($listconf)
 	{
 		$conf = array_shift($listconf);

@@ -457,6 +457,9 @@ $array['statistics/web_services/restricted/call_center/stats5'] = array(
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 # PRIVATE
+$array['statistics/web_services/private/call_center/genercache'] = array(
+	'path'		=> 'statistics/web_services/call_center/genercache',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['statistics/web_services/private/call_center/queue'] = array(
 	'path'		=> 'statistics/web_services/call_center/queue',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));

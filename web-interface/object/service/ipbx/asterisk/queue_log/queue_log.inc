@@ -40,17 +40,17 @@ class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
-	
+
 	function get_min_and_max_time()
 	{
 		if(($min = $this->_dso->get_min_time()) === false
 		|| ($max = $this->_dso->get_max_time()) === false)
-			$return(false);
-			
+			return(false);
+
 		$rs = array();
 		$rs['min'] = $min;
 		$rs['max'] = $max;
-		
+
 		return($rs);
 	}
 

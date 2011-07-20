@@ -41,7 +41,7 @@ function xivo_genercache() {
         if (idtype == 'all') {
             $('#it-cache-generation-all').show();
             $('#t-list-obj').hide();
-        } else    {
+        } else {
             $('#it-cache-generation-'+idtype).show();
         }
     }

@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 #
@@ -18,15 +19,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$erase = false;
-if (isset($GLOBALS['argv']) === true)
-{
-	foreach ($GLOBALS['argv'] as $argv)
-	{
-		if ($argv === 'erase')
-			$erase = true;
-	}
-}
+if (isset($GLOBALS['argv'],$GLOBALS['argv'][1]) === true)
+	parse_str($GLOBALS['argv'][1],$output);
+
+if (isset($output['idconf']) === false
+|| isset($output['type']) === false)
+	die('missing arguments');
+	
+$idconf = $output['idconf'];
+$type = $output['type'];
+$erase = isset($output['erase']) ? (bool) $output['erase'] : false;
 
 require_once('xivo.php');
 
@@ -35,38 +37,19 @@ $ipbx = &$_SRE->get('ipbx');
 if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
 	die('Failed to load xivo_statistics object');
 
-if (($appstats_conf = &$_XOBJ->get_application('stats_conf')) === false
-|| ($listconf = $appstats_conf->get_stats_conf_list(null,'name')) === false)
-	exit('application stats_conf required or no stats_conf registered');
-
 $base_memory = memory_get_usage();
 
-while ($listconf)
+$_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
+$_XS->set_idconf($idconf,true);
+echo "Update cache for $type in progress.. \n";
+$_XS->_objectkey = 0;
+$listobject = $_XS->get_list_by_type($type);
+while($listobject !== false && ($object = array_shift($listobject)))
 {
-	$conf = array_shift($listconf);
-	$idconf = (int) $conf['id'];
-	
-	$_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
-	$_XS->set_idconf($idconf,true);
-	
-	$listype = $_XS->get_listtype();
-	$nblt = count($listype);
-	for($i=0;$i<$nblt;$i++)
-	{
-		$type = $listype[$i];
-		$_XS->_objectkey = 0;
-		$listobject = $_XS->get_list_by_type($type);
-		while($listobject)
-		{
-			$object = array_shift($listobject);
-			
-			if (empty($object) === true)
-				continue;
-			
-			$_XS->update_cache($idconf,$type,$object,$erase);
-			echo "-- memory usage: ", dwho_byte_to(memory_get_usage() - $base_memory), "\n";
-		}
-	}
+    if (empty($object) === true)
+        continue;
+	$_XS->update_cache($idconf,$type,$object,(bool) $erase);
+	echo "-- memory usage: ", dwho_byte_to(memory_get_usage() - $base_memory), "\n";
 }
 
 echo "-- full memory usage: ", dwho_byte_to(memory_get_peak_usage()), "\n";

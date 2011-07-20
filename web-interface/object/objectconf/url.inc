@@ -399,6 +399,7 @@ $array['statistics/cdr/advanced_search'] 		= 'statistics/cdr/index.php/advanced_
 $array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
 $array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';
 
+$array['statistics/json/private/call_center/genercache'] 		= 'statistics/json.php/private/call_center/genercache/';
 $array['statistics/json/private/call_center/queue'] 		= 'statistics/json.php/private/call_center/queue/';
 $array['statistics/json/private/call_center/stats1'] 		= 'statistics/json.php/private/call_center/stats1/';
 $array['statistics/json/private/call_center/stats2'] 		= 'statistics/json.php/private/call_center/stats2/';
