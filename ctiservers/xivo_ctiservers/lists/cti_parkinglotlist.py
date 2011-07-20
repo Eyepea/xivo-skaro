@@ -34,3 +34,29 @@ class ParkinglotList(AnyList):
                                     }
         AnyList.__init__(self, newurls)
         return
+
+    def set_default_parking(self, default_parking):
+        """
+        Set the default parkinglot info since it's not going to be on the
+        updates from the webservices
+        """
+        self.default_parking = default_parking
+
+    def update(self):
+        """
+        Since the parking from features.conf is not returned by the webservice
+        we have to add it manually after each update
+        """
+        if '0' in self.keeplist:
+            should_add_default = False
+        else:
+            should_add_default = True
+        ret = AnyList.update(self)
+        if 'del' in ret and self.default_parking['id'] in ret['del']:
+            ret['del'].pop(int(self.default_parking['id']))
+            if len(ret['del']) == 0:
+                ret.pop('del')
+        if should_add_default:
+            self.keeplist['0'] = self.default_parking
+            ret['add'].append('0')
+        return ret

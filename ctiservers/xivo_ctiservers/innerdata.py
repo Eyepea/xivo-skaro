@@ -209,11 +209,11 @@ class Safe:
     # }
 
     def update_config_list_all(self):
+        self.add_default_parking()
         for listname, urllistkey in self.urlvars.iteritems():
             self.update_config_list(listname)
 
         self.fill_lines_into_users()
-        self.add_default_parking()
         return
 
     def add_default_parking(self):
@@ -242,8 +242,8 @@ class Safe:
         for pkey, ekey in name_map.iteritems():
             if not gf[ekey]['commented']:
                 default_parking[pkey] = gf[ekey]['var_val']
-        self.xod_config['parkinglots'].keeplist['0'] = default_parking
         self.xod_status['parkinglots']['0'] = self.props_status['parkinglots']
+        self.xod_config['parkinglots'].set_default_parking(default_parking)
 
     def update_parking(self, parkinglot, exten, info):
         '''Update the status of the parkinglot and sends an event to the
