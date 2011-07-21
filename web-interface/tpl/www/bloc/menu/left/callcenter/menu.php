@@ -36,7 +36,7 @@ $dhtml = &$this->get_module('dhtml');
 
     	if(xivo_user::chk_acl('settings','','service/callcenter') === true):
 
-    		echo	'<dl><dt>',$this->bbf('mn_left_ti_callcenter-settings'),'</dt>';
+    		echo	'<dt>',$this->bbf('mn_left_ti_callcenter-settings'),'</dt>';
 
         	if(xivo_user::chk_acl('settings','agents','service/callcenter') === true):
         		echo	'<dd id="mn-call-center--agents">',
@@ -75,7 +75,7 @@ $dhtml = &$this->get_module('dhtml');
         			$url->href_html($this->bbf('mn_left_callcenter-queueskillrules'),
         					'callcenter/settings/queueskillrules',
         					'act=list'),
-        					'</dd>';
+        				'</dd>';
         	endif;
 
     	endif;
@@ -106,8 +106,8 @@ $dhtml = &$this->get_module('dhtml');
     	endif;
 
 		echo	'</dl>';
-	endif;
 
+	endif;
 ?>
 	</dd>
 	<dd class="b-nosize">

@@ -62,11 +62,11 @@ $element = $this->get_var('element');
 		<span class="span-center"><?=$this->bbf('mn_left_name_statistics');?></span>
 		<span class="span-right">&nbsp;</span>
 	</dt>
+	<dd>
+		<dl>
 <?php
 if(xivo_user::chk_acl_section('service/statistics/call_center') === true):
 ?>
-	<dd>
-		<dl>
 			<dt><?=$this->bbf('mn_left_ti_call_center')?></dt>
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_home_call_center'),
@@ -142,11 +142,11 @@ endif;
 				<?=$url->href_html($this->bbf('mn_left_advanced_search_cdr'),
 						   'statistics/cdr/advanced_search');?>
 			</dd>
-		</dl>
-	</dd>
 <?php
     endif;
 ?>
+		</dl>
+	</dd>
 	<dd class="b-nosize">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center">&nbsp;</span>

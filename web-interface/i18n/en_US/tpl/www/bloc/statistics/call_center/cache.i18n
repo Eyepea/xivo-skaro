@@ -10,28 +10,28 @@ Arrival date:
 ; fm_dend
 End date:
 
-; Fm_type-default
+; fm_type-default
 
 
-; Fm_type-opt(tail)
+; fm_type-opt(tail)
 Queue
 
-; Fm_type-opt(agent)
+; fm_type-opt(agent)
 agent
 
-; Fm_type-opt(period)
+; fm_type-opt(period)
 period
 
-; Fm_type-opt(incall)
+; fm_type-opt(incall)
 incoming call
 
 ; fm_description_cache
 Period cache: %s %s depending on configuration.
 
-; Fm_description_cache-with_end
+; fm_description_cache-with_end
    %s
  
-; Fm_description_cache-without_end
+; fm_description_cache-without_end
 to date
 
 ; object_all
@@ -43,29 +43,29 @@ name
 ; col_cache_status
 status
 
-; No_type_in_conf-opt
+; no_type_in_conf-opt
 No %s in configuration
 
 ; cache_noexist
 Cache nonexistent
 
-; Cache_exist-nbfile
+; cache_exist-nbfile
 Existing cache files with %d
 
-, Bt-cache_generation
+; bt-cache_generation
 Generate %s
 
-, Bt-cache_generation_all
+; bt-cache_generation_all
 generate all
 
 ; wait_during_traitment
 Please wait while the treatment and do not refresh or change pages.
 This would cancel the current job.
 
-, Bt-submit-wait
+; bt-submit-wait
 Processing
 
-, Bt-success-submit
+; bt-success-submit
 Completed successfully
 
 ; cache_generation_all
@@ -89,7 +89,7 @@ Total time remaining:
 ; process_total_time
 Total time of progression:
 
-; Legend-cache_generation_success
+; legend-cache_generation_success
 Generation completed!
 
 ; cache_generation_success

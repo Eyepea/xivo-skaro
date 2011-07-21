@@ -316,7 +316,7 @@ Processing
 ; bt-success-submit
 Completed successfully
 
-; Mn_left_name_dashboard
+; mn_left_name_dashboard
 Dashboard
 
 ; title_conf_cache_period
@@ -355,7 +355,7 @@ Sunday
 ; january
 January
 
-; February
+; february
 February
 
 ; march
@@ -427,13 +427,13 @@ Year
 ; week_number-opt
 Week No. %d
 
-; Month_number-opt
+; month_number-opt
 Month %s %d
 
 ; hour-opt
  hours %d
 
-; Monday-opt
+; monday-opt
 Monday %d
 
 ; tuesday-opt
@@ -445,17 +445,17 @@ Wednesday %d
 ; thursday-opt
 Thursday %d
 
-; Friday-opt
+; friday-opt
 Friday %d
 
-; Saturday-opt
+; saturday-opt
 Saturday %d
 
-; Sunday-opt
+; sunday-opt
 Sunday %d
 
 ; week
-% D week
+%d week
 
 ; no_cache_generated_for
 Cache %s is not generated
