@@ -1,0 +1,28 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+"""Pretty print the CTI configuration (or any URL returning json)."""
+
+import urllib2
+import sys
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+DEFAULT_URL = "https://localhost/service/ipbx/json.php/private/ctiserver/configuration"
+
+
+if len(sys.argv) == 2:
+    url = sys.argv[1]
+else:
+    url = DEFAULT_URL
+
+fobj = urllib2.urlopen(url)
+try:
+    obj = json.load(fobj)
+finally:
+    fobj.close()
+
+json.dump(obj, sys.stdout, indent=4, sort_keys=True)
+print
