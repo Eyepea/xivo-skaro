@@ -1,5 +1,5 @@
 --- asterisk-1.8.5.0.orig/apps/app_meetme.c	2011-07-20 11:43:11.942684263 -0400
-+++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-20 12:41:45.322435875 -0400
++++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-21 13:53:17.742184688 -0400
 @@ -115,15 +115,27 @@
  						</argument>
  						<para>Play an intro announcement in conference.</para>
@@ -323,7 +323,7 @@
 +		struct ast_conf_user *user;
 +		struct ao2_iterator user_iter = ao2_iterator_init(conf->usercontainer, 0);
 +		while ((user = ao2_iterator_next(&user_iter)))
-+			ast_set_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN);
++			ast_clear_flag64(&user->adminflags, ADMINFLAG_TALK_TO_ADMIN);
 +	}
 +}
 +
