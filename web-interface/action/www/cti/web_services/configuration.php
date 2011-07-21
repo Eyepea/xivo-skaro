@@ -367,6 +367,7 @@ switch($act)
         $out['regcommands']['itm_regcommands'] = array("login_id", "login_pass", "login_capas",
                                                        "getipbxlist",
                                                        "getlist", "ipbxcommand", "chitchat",
+                                                       "actionfiche",
                                                        "availstate", "keepalive", "filetransfer",
                                                        "getqueuesstats", "logfromclient",
                                                        "featuresput", "featuresget", "faxsend",
