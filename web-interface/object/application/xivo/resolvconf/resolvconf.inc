@@ -98,10 +98,10 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 
 		if($this->get_errnb() > 0
 		|| $this->save_resolvconf()       === false
-		|| $this->set_sysconfd()          === false
-		|| $this->_commonconf->generate() === false)
+		|| $this->set_sysconfd()          === false)
 			$r = false;
 
+		$this->_commonconf->notify_changes();
 		$this->_status = '';
 
 		return($r);

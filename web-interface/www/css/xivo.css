@@ -408,3 +408,13 @@ input.readonly {background-color: #F1F1F1;color: #7E7E7E;}
 .ui-timepicker-div dl dt{ height: 25px; }
 .ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
 .ui-timepicker-div td { font-size: 90%; }
+
+
+.active {
+  font-weight: bold;
+}
+
+.active:before {
+  padding-right: 3px;
+  content: url('/img/site/button/restart.gif');
+}

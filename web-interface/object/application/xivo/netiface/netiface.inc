@@ -1277,10 +1277,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	*/
 	function update_server()
 	{
-		/* TEMP: disabling commonconf
-        	if(!$this->_commonconf->generate())
-	            return false;
-       		*/
+		// notify commonconf needs to be updated
+		$this->_commonconf->notify_changes();
 
         	return $this->_sysconfd->request_get('/munin_update');
 	}

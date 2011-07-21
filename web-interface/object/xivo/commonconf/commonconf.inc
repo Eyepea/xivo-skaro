@@ -22,7 +22,7 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 
 class xivo_object_commonconf extends xivo_object_abstract
 {
-	var $_name		= 'commonconf';
+	var $_name	 = 'commonconf';
 	var $_sysconfd	 = false;
 	var $_dhcp       = false;
 	var $_monitoring = false;
@@ -31,8 +31,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_resolvconf = false;
 	var $_provisioning = false;
 	
-	function xivo_object_commonconf(&$xobj)
-	{
+    function xivo_object_commonconf(&$xobj)
+    {
 		$this->xivo_object_abstract(&$xobj);
 
 		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))     === false
@@ -43,10 +43,10 @@ class xivo_object_commonconf extends xivo_object_abstract
 			return(false);
 
 		return(true);
-	}
+    }
 	
-	function _ip2subnet($ip, $netmask)
-	{
+    function _ip2subnet($ip, $netmask)
+    {
 		$dotted_ip = split('\.', $ip);
 		$dotted_nm = split('\.', $netmask);
 
@@ -58,10 +58,10 @@ class xivo_object_commonconf extends xivo_object_abstract
 		);
 
 		return($subnet);
-	}
+     }
 	
-	function generate($onlystatic=true)
-	{
+    function generate($content, $onlystatic=true)
+    {
         $conf    = array();
 
         // dhcp
@@ -113,8 +113,10 @@ class xivo_object_commonconf extends xivo_object_abstract
         //resolvconf
         // we can't load module at start, or we'll have an infinite loop
         $this->_resolvconf  = &$this->_xobj->get_application('resolvconf');
-        if($this->_resolvconf == false)
+        if($this->_resolvconf == false) {
+            $content = 'cannot load *resolvconf* application';
             return false;
+	}
 
         $rawdata = $this->_resolvconf->get(1);
         $ns = '';
@@ -138,8 +140,10 @@ class xivo_object_commonconf extends xivo_object_abstract
         // netiface
         // we can't load module at start, or we'll have an infinite loop
         $this->_netiface    = &$this->_xobj->get_application('netiface');
-        if($this->_netiface == false)
+        if($this->_netiface == false) {
+            $content = 'cannot load *netiface* application';
             return false;
+	}
 
         $list = $this->_netiface->get_netifaces_list();
 
@@ -168,9 +172,11 @@ class xivo_object_commonconf extends xivo_object_abstract
                 $cidr_id = $i;
         }
 
-		// no VOIP netiface defined
-        if($cidr_id < 0)
+	// no VOIP netiface defined
+        if($cidr_id < 0) {
+            $content = 'no VOIP interface configured';
             return false;
+        }
 
         $net = array(
             'ipaddr'    => $list[$cidr_id]['netiface']['address'],
@@ -230,20 +236,28 @@ class xivo_object_commonconf extends xivo_object_abstract
         $conf = array_merge($conf, array(
             'xivo.astdb'            => $db_ast,
             'xivo.xivodb'           => $db_xivo
-		));
+	));
 
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
-	}
+    }
 
     function apply()
     {
-        return $this->_sysconfd->request_get('/commonconf_apply');
+        if(($ret = $this->_sysconfd->request_get('/commonconf_apply')) !== false)
+		unlink('/var/lib/pf-xivo-web-interface/commonconf.reload');
+
+	return $ret;
     }
     
     function last_status_code()
     {
         return $this->_sysconfd->last_status_code();
     }
+
+    function notify_changes()
+    {
+	touch('/var/lib/pf-xivo-web-interface/commonconf.reload');
+    } 
 }
 
 ?>

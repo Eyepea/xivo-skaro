@@ -21,15 +21,19 @@
 #$sysconfd    = &$_XOBJ->get_module('sysconfd');
 #$content     = $sysconfd->request_get('/commonconf_apply');
 $commonconf    = &$_XOBJ->get_module('commonconf');
-$commonconf->generate();
-$content     = $commonconf->apply();
-$status      = $commonconf->last_status_code();
 
-if($status != 200)
+$content = '';
+if($commonconf->generate(&$content) !== false)
 {
-    preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
-    if(count($matches) > 1)
-        $content = $matches[1];
+	$content     = $commonconf->apply();
+	$status      = $commonconf->last_status_code();
+
+	if($status != 200)
+	{
+	    preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
+	    if(count($matches) > 1)
+        	$content = $matches[1];
+	}
 }
 
 $content = str_replace("\n", "<br/>\n", $content);

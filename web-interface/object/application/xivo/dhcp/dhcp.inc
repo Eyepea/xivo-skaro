@@ -65,8 +65,8 @@ class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abs
         if($this->_dhcp->edit(1, $arr) === false)
             return false;
 
-        // update commonconf via sysconfd
-        return $this->_commonconf->generate();
+        // notify commonconf needs to be updated
+        return $this->_commonconf->notify_changes();
     }
 }
 

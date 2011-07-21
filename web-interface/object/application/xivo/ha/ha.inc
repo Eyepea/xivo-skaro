@@ -183,12 +183,11 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 			return false;
         
 		// update commonconf
-		/*
-        if(($_commonconf = &$this->_xobj->get_module('commonconf')) === false
-        || $_commonconf->generate()                                 === false)
-            return false;
-		*/
-    return true;
+        	if(($_commonconf = &$this->_xobj->get_module('commonconf')) === false)
+			return $false;
+		$_commonconf->notify_changes();
+
+		return true;
 	}
 
 	function _ip2subnet($ip, $netmask)

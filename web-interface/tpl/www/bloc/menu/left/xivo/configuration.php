@@ -134,13 +134,25 @@ $dhtml = &$this->get_module('dhtml');
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_controlsystem');?></dt>
 			<dd id="mn-controlsystem--commonconf">
-				<?=$url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
+<?php
+	$class = file_exists('/var/lib/pf-xivo-web-interface/commonconf.reload')?'active':false;
+
+				echo $url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
 						   'xivo/configuration/controlsystem/commonconf',
 						   null,
 						   'onclick="return(confirm(\''.
 						       $dhtml->escape($this->bbf('controlsystem_commonconf_confirm')).
-						       '\'));"'
-			    );?>
+						       '\'));"',
+						   null,
+						   false,
+						   '&amp;',
+						   true,
+						   true,
+						   true,
+						   null,
+					           $class
+			    );
+?>
 			</dd>
 			<dd id="mn-controlsystem--ha_stop">
 				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha_stop'),

@@ -92,11 +92,12 @@ class dwho_tpl_url extends dwho_tpl_module
                $sid=true,
                $internal=true,
                $encode=true,
-                 $target=null)
+               $target=null,
+               $class=null)
     {
         $url = $this->href($url,$query,$absolute,$sep,$sid,$internal,$encode);
 
-        return($this->_mk_href_html($content,$url,$opt,$title,$target));
+        return($this->_mk_href_html($content,$url,$opt,$title,$target,$class));
     }
 
     function href_htmln($content, $url=null, $query=null,
@@ -119,7 +120,7 @@ class dwho_tpl_url extends dwho_tpl_module
         return($this->href_html($content,$url,$query,$opt,$title,false,null,false,false,$encode));
     }
 
-    function _mk_href_html($content,$url=null,$opt=null,$title=null,$target=null)
+    function _mk_href_html($content,$url=null,$opt=null,$title=null,$target=null,$class=null)
     {
         $content    = (string) $content;
         $opt        = (string) $opt;
@@ -131,8 +132,9 @@ class dwho_tpl_url extends dwho_tpl_module
 
         $title  = isset($title{0}) === true ? ' title="'.trim(dwho_alttitle($title)).'"' : '';
         $target = is_null($target)?'':' target="'.$target.'"';
+	$class  = is_null($class)?'':' class="'.$class.'"';
 
-        return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.$target.'>'.$content.'</a>');
+        return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.$target.$class.'>'.$content.'</a>');
     }
 
     function img($url,$i18n=false,$internal=true)

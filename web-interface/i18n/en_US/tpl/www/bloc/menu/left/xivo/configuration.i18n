@@ -62,7 +62,7 @@ Limits
 Control System
 
 ; mn_left_controlsystem-commonconf 
-Reload Config
+Apply system configuration
 
 ; mn_left_controlsystem-ha 
 Reload HA
