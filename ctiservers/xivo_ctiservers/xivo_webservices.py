@@ -35,6 +35,9 @@ class xws():
         self.myconn = None
         self.ipaddress = ipaddress
         self.ipport = ipport
+        self.path = '/service/ipbx/json.php/private/pbx_settings/users'
+        if self.ipaddress not in ['localhost', '127.0.0.1']:
+            self.path = '/service/ipbx/json.php/restricted/pbx_settings/users'
         return
 
     def connect(self):
@@ -42,7 +45,7 @@ class xws():
         return
 
     def serviceget(self, userid):
-        uri = '/service/ipbx/json.php/private/pbx_settings/users/?act=view&id=%s' % userid
+        uri = '%s/?act=view&id=%s' % (self.path, userid)
         pattern = {}
         self.myconn.request('POST', uri, cjson.encode(pattern), headers)
         z = self.myconn.getresponse()
@@ -51,7 +54,7 @@ class xws():
 
     def serviceput(self, userid, function, value):
         status = self.serviceget(userid)
-        uri = '/service/ipbx/json.php/private/pbx_settings/users/?act=edit&id=%s' % userid
+        uri = '%s/?act=edit&id=%s' % (self.path, userid)
         status['userfeatures'][function] = value
         pattern = { 'userfeatures' : status.get('userfeatures') }
         self.myconn.request('POST', uri, cjson.encode(pattern), headers)
