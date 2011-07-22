@@ -331,6 +331,20 @@ CREATE TABLE `ctiaccounts` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `ctilog`;
+CREATE TABLE `ctilog` (
+ `id` int(10) unsigned auto_increment,
+ `eventdate` timestamp,
+ `loginclient` varchar(64),
+ `company` varchar(64),
+ `status` varchar(64),
+ `action` varchar(64),
+ `arguments` varchar(255),
+ `callduration` int(10) unsigned,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `cticontexts`;
 CREATE TABLE `cticontexts` (
  `id` int(10) unsigned auto_increment,

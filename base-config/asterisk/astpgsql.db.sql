@@ -369,6 +369,20 @@ CREATE TABLE "ctiaccounts" (
 );
 
 
+DROP TABLE IF EXISTS "ctilog";
+CREATE TABLE "ctilog" (
+ "id" SERIAL,
+ "eventdate" TIMESTAMP,
+ "loginclient" varchar(64),
+ "company" varchar(64),
+ "status" varchar(64),
+ "action" varchar(64),
+ "arguments" varchar(255),
+ "callduration" integer,
+ PRIMARY KEY("id")
+);
+
+
 DROP TABLE IF EXISTS "cticontexts";
 CREATE TABLE "cticontexts" (
  "id" SERIAL,

@@ -327,6 +327,20 @@ CREATE TABLE ctiaccounts (
 );
 
 
+DROP TABLE ctilog;
+CREATE TABLE ctilog (
+ id integer unsigned,
+ eventdate char(19) DEFAULT '0000-00-00 00:00:00',
+ loginclient varchar(64),
+ company varchar(64),
+ status varchar(64),
+ action varchar(64),
+ arguments varchar(255),
+ callduration integer unsigned,
+ PRIMARY KEY(id)
+);
+
+
 DROP TABLE cticontexts;
 CREATE TABLE cticontexts (
  id integer unsigned,
