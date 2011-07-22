@@ -53,6 +53,7 @@ REGCOMMANDS = [
     'faxsend',
     'filetransfer',
     'chitchat',
+    'actionfiche',
 
     'callcampaign',
     'logfromclient',
@@ -410,6 +411,16 @@ class Command:
                                     'message' : { 'to' : self.commanddict.get('to'),
                                                   'from' : '%s/%s' % (self.ripbxid, self.ruserid),
                                                   'text' : chitchattext}} )
+        return reply
+
+    def regcommand_actionfiche(self):
+        reply = {}
+        infos = self.commanddict.get('infos')
+        uri = self.ctid.cconf.getconfig('ipbxes').get(self.ripbxid).get('cdr_db_uri')
+        self.rinnerdata.fill_user_ctilog(uri,
+                                         self.ruserid,
+                                         'cticommand:actionfiche',
+                                         infos.get('buttonname'))
         return reply
 
     def regcommand_featuresget(self):

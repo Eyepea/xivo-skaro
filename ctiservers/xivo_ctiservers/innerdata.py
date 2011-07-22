@@ -39,6 +39,7 @@ from xivo_ctiservers import lists
 import cti_urllist
 from xivo_ctiservers.lists import *
 from xivo_ctiservers import cti_sheets
+from xivo_ctiservers import db_connection_manager
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
@@ -957,8 +958,8 @@ class Safe:
         rep.append('--------------')
         return rep
 
+
     def user_connection_status(self, userid):
-        
         return
 
     def update_presence(self, userid, newstate):
@@ -1083,6 +1084,26 @@ class Safe:
                 break
         # print self.xod_status['trunks']
         return idfound
+
+    def fill_user_ctilog(self, uri, userid, what, options = '', callduration = None):
+        request = "INSERT INTO ctilog (${columns}) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        columns = ('eventdate', 'loginclient', 'company', 'status',
+                   'action', 'arguments', 'callduration')
+        datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        userprops = self.xod_config.get('users').keeplist.get(userid)
+        loginclient = self.xod_config.get('users').keeplist.get(userid).get('loginclient')
+        entityid = self.xod_config.get('users').keeplist.get(userid).get('entityid')
+        userstatus = self.xod_status.get('users').get(userid).get('availstate')
+        arguments = (datetime,
+                     loginclient,
+                     entityid,
+                     userstatus,
+                     what, options, callduration)
+
+        with db_connection_manager.DbConnectionPool(uri) as connection:
+            connection['cur'].query(request, columns, arguments)
+            connection['conn'].commit()
+        return
 
     def sheetsend(self, where, channel, outdest = None):
         if 'sheets' not in self.ctid.cconf.getconfig():
@@ -1313,14 +1334,14 @@ class Safe:
 
         elif function == 'callerid_forphones':
             if self.channels.has_key(channel):
-                uniqueiddefs = self.uniqueids[uniqueid]
-                if uniqueiddefs.has_key('dialplan_data'):
-                    dialplan_data = uniqueiddefs['dialplan_data']
-                    calleridsolved = dialplan_data.get('dbr-display')
-                else:
-                    self.log.warning('handle_fagi %s no dialplan_data received yet'
-                                % (function))
-                    calleridsolved = None
+                uniqueiddefs = self.channels.get(channel)
+                calleridsolved = None
+##                if uniqueiddefs.has_key('dialplan_data'):
+##                    dialplan_data = uniqueiddefs['dialplan_data']
+##                    calleridsolved = dialplan_data.get('dbr-display')
+##                else:
+##                    self.log.warning('handle_fagi %s no dialplan_data received yet'
+##                                % (function))
             else:
                 self.log.warning('handle_fagi %s no such uniqueid received yet : %s %s'
                             % (function, uniqueid, channel))
