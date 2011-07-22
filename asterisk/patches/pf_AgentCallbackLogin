@@ -1,5 +1,5 @@
---- asterisk-1.8.5.0/channels/chan_agent.c	2011-07-22 08:24:55.474297429 -0400
-+++ asterisk-1.8.5.0.new/channels/chan_agent.c	2011-07-22 08:29:15.386235458 -0400
+--- asterisk-1.8.5.0.orig/channels/chan_agent.c	2011-07-22 09:47:50.842684900 -0400
++++ asterisk-1.8.5.0/channels/chan_agent.c	2011-07-22 09:55:00.898187506 -0400
 @@ -37,7 +37,7 @@
  
  #include "asterisk.h"
@@ -1259,7 +1259,7 @@
 +
 +								break;
 +							}
-+							ast_log(LOG_NOTICE, "context %s tmpchan %s\n", context, tmpchan);
++
 +							if(ast_exists_extension(chan, S_OR(context,"default"), tmpchan,1, NULL) ) {
 +
 +								if(!allow_multiple_login(tmpchan,context) ) {
