@@ -19,6 +19,7 @@
 
 $url     = &$this->get_module('url');
 $basedir = $this->get_var('basedir');
+$basename = $this->get_var('basename');
 
 $zoom    = $this->get_var('zoom');
 $prev    = $this->get_var('prev');
@@ -42,15 +43,15 @@ function bbf_format($ctx, $link)
 	<div class="sb-content">
 <?php
     if(!is_null($prev))
-        echo $url->href_html('«'.$url->img_html("$basedir/XIVO.$prev.png", 
+        echo $url->href_html('«'.$url->img_html("$basedir/$basename".substr($prev,strpos($prev,'-')+1).".png", 
                 null, "class=nav-left"), 
             null, array("zoom" => $prev), null, bbf_format($this, $prev)
         );
 
-    echo $url->img_html("$basedir/XIVO.$zoom.png", "$zoom graph");
+    echo $url->img_html("$basedir/$basename".substr($zoom,strpos($zoom,'-')+1).".png", "$zoom graph");
 
     if(!is_null($next))
-        echo $url->href_html($url->img_html("$basedir/XIVO.$next.png", 
+        echo $url->href_html($url->img_html("$basedir/$basename".substr($next,strpos($next,'-')+1).".png", 
                 null, "class=nav-right").'»', 
             null, array("zoom" => $next), null, bbf_format($this, $next)
         );

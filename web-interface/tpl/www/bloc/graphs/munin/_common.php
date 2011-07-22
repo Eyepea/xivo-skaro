@@ -17,11 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$url     = &$this->get_module('url');
-$basedir = $this->get_var('basedir');
-$domain  = $this->get_var('domain');
-$graphs  = $this->get_var('graphs');
-$freqs   = $this->get_var('freqs');
+$url      = &$this->get_module('url');
+$basedir  = $this->get_var('basedir');
+$basename = $this->get_var('basename');
+$domain   = $this->get_var('domain');
+$graphs   = $this->get_var('graphs');
+$freqs    = $this->get_var('freqs');
 
 ?>
 <div id="sr-users" class="b-infos b-form">
@@ -42,7 +43,7 @@ $freqs   = $this->get_var('freqs');
         foreach($freqs as $freq)
         {
             echo $url->href_html(
-                $url->img_html("$basedir/XIVO.$domain-$graph-$freq.png", 
+                $url->img_html("$basedir/$basename$graph-$freq.png", 
                     "$graph $freq graph", "class=\"mini\""),
                 null, array("zoom" => "$domain-$graph-$freq"), null, $this->bbf("Zoom")
             );

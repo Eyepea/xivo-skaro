@@ -45,7 +45,6 @@ function dwho_munin_graphstree($urldir, $domain)
         'load'            => 'system',
         'memory'          => 'system',
         'open_.*'         => 'system',
-        'open_.*'         => 'system',
         'swap'            => 'system',
         'ntp_.*'          => 'time',
         'mysql_.*'        => 'mysql'

@@ -19,11 +19,12 @@
 #
 
 $domain     = 'localdomain/localhost.localdomain';
+$basename   = ''; //XIVO.$domain
 
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'munin.inc');
 
 $basedir        = "img/graphs/munin/$domain/";
-$graph_tree     =  dwho_munin_graphstree($basedir, $domain);
+$graph_tree     = dwho_munin_graphstree($basedir, $domain);
 $module_tree    = $graph_tree[$module];
 sort($module_tree);
 
@@ -68,6 +69,7 @@ if(isset($_QR['zoom']))
 }
 
 $_TPL->set_var('basedir', $basedir);
+$_TPL->set_var('basename', $basename);
 $_TPL->set_var('domain' , $domain);
 $_TPL->set_var('graphs' , $module_tree);
 $_TPL->set_var('freqs'  , $freqs);
