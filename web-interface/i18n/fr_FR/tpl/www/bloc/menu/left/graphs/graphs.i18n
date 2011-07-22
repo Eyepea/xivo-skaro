@@ -4,9 +4,6 @@ Graphiques
 ; mn_left_ti_localhost
 Localhost
 
-; mn_left_munin-apache
-Apache
-
 ; mn_left_munin-asterisk
 Asterisk
 

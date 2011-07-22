@@ -70,7 +70,7 @@ switch($act)
 		
 		// formatting result
 		$result = array();
-        $services = array('apache2', 'asterisk', 'dhcp', 'monit', 'mysql', 
+        $services = array('nginx', 'asterisk', 'dhcp', 'monit', 'mysql', 
             'ntp', 'rsync', 'smokeping', 'mailto');
         foreach($services as $svc)
             $result[$svc] = $info['global'][$svc] != 0;

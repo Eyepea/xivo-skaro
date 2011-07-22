@@ -32,9 +32,9 @@ $tree = &$this->get_var('tree');
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_localhost');?></dt>
 			<?php if(array_key_exists('nginx', $tree)) { ?>
-			<dd id="mn-apache">
-				<?=$url->href_html($this->bbf('mn_left_munin-apache'),
-						   'graphs/munin/apache');?>
+			<dd id="mn-nginx">
+				<?=$url->href_html($this->bbf('mn_left_munin-nginx'),
+						   'graphs/munin/nginx');?>
 			</dd>
 			<?php 
 				} 

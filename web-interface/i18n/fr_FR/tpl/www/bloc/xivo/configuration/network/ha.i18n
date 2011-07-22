@@ -13,9 +13,6 @@ Cluster
 ; smenu_params
 Paramètres heartbeat
 
-; fm_ha_apache2
-Apache2 : 
-
 ; fm_ha_asterisk
 Asterisk : 
 

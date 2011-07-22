@@ -28,9 +28,6 @@ Slave
 ; fm_help-ha_status
 Display Heartbeat status
 
-; fm_ha_apache2
-Apache2 :
-
 ; fm_ha_asterisk
 Asterisk :
 
