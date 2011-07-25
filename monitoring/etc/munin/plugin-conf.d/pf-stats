@@ -14,3 +14,12 @@ env.ssl yes
 [asterisk_voicemail]
 user asterisk
 
+[pgstats]
+user postgres
+env.PGUSER postgres
+env.PGPORT 5432
+env.include_db asterisk xivo
+
+[nginxstats]
+env.ssl yes
+
