@@ -133,12 +133,18 @@ class WEBI(Interfaces):
         return
 
     def makereply_close(self, actionid, status, reply = []):
-        self.connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, self.ipbxid))
-        for r in reply:
-            self.connid.sendall('%s\n' % r)
-        self.connid.sendall('%s:%s\n' % (XIVO_CLI_WEBI_HEADER, status))
-        self.log.info('did a WEBI reply %s for %s' % (status, actionid))
-
-        del self.ctid.fdlist_established[self.connid]
-        self.connid.close()
+        if self.connid:
+            try:
+                self.connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, self.ipbxid))
+                for r in reply:
+                    self.connid.sendall('%s\n' % r)
+                self.connid.sendall('%s:%s\n' % (XIVO_CLI_WEBI_HEADER, status))
+                self.log.info('did a WEBI reply %s for %s' % (status, actionid))
+            except Exception:
+                self.log.warning('failed a WEBI reply %s for %s (disconnected)' % (status, actionid))
+            if self.connid in self.ctid.fdlist_established:
+                del self.ctid.fdlist_established[self.connid]
+            self.connid.close()
+        else:
+            self.log.warning('failed a WEBI reply %s for %s (connid None)' % (status, actionid))
         return
