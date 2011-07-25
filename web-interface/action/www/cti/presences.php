@@ -52,7 +52,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -86,7 +89,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -110,6 +116,7 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/presences'),$param);
 
 		$app->delete();
+		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/presences'),$param);
 		break;
@@ -154,7 +161,7 @@ switch($act)
 			$sl_key = $sl['ctistatus']['id'];
 			$status_list[$sl_key] = $sl['ctistatus'];
 		}
-		
+
 		$actionslist = explode(',', $status_list[$idstatus]['actions']);
 		if($actionslist[0] == '')
 			$actionslist = null;
@@ -205,7 +212,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
+			}
 		}
 ////////////////////////////////////////////////////////////////
 
@@ -220,7 +230,7 @@ switch($act)
 				{
 					$selected[] = array('id' => $k);
 				}
-				$info['access_status']['slt'] = 
+				$info['access_status']['slt'] =
 					dwho_array_intersect_key(
 						$selected,
 						$info['access_status']['list'],
@@ -295,7 +305,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
+			}
 		}
 ////////////////////////////////////////////////////////////////
 
@@ -310,7 +323,7 @@ switch($act)
 				{
 					$selected[] = array('id' => $k);
 				}
-				$info['access_status']['slt'] = array(); 
+				$info['access_status']['slt'] = array();
 			}
 		}
 
@@ -337,6 +350,7 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/presences'),$param);
 
 		$app->delete();
+	    $ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/presences'),$param);
 		break;

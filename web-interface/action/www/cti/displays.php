@@ -64,7 +64,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/displays'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -120,7 +123,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/displays'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -153,6 +159,7 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/displays'),$param);
 
 		$app->delete();
+		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/displays'),$param);
 		break;

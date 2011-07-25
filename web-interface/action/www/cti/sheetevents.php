@@ -41,7 +41,7 @@ foreach($actionslist as $v)
 {
 	$sheetactionslist[] = $v['ctisheetactions']['name'];
 }
-	
+
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
@@ -67,9 +67,12 @@ if(isset($_QR['fm_send']) === true)
 		else
 			$ret = $sheetevents->add($rs);
 	}
-	
+
 	if($ret == 1)
+	{
+	    $ipbx->discuss('xivo[cticonfig,update]');
 		$fm_save = true;
+	}
 }
 $load_inf = $sheetevents->get_all();
 

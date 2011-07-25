@@ -86,7 +86,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-				$_QRY->go($_TPL->url('cti/contexts'),$param);
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
+			    $_QRY->go($_TPL->url('cti/contexts'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -163,7 +166,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-				$_QRY->go($_TPL->url('cti/contexts'),$param);
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
+			    $_QRY->go($_TPL->url('cti/contexts'),$param);
+			}
 		}
 
 		$info['directories']['slt'] = array();
@@ -206,6 +212,8 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/contexts'),$param);
 
 		$app->delete();
+
+		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/contexts'),$param);
 		break;

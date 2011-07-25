@@ -98,7 +98,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/reversedirectories'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -171,7 +174,10 @@ switch($act)
 				$error  = $app->get_error();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/reversedirectories'),$param);
+			}
 		}
 
 		$info['directories']['slt'] = array();
@@ -213,6 +219,7 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/reversedirectories'),$param);
 
 		$app->delete();
+		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/reversedirectories'),$param);
 		break;
@@ -248,7 +255,7 @@ $_TPL->set_var('act'     , $act);
 $_TPL->set_var('idrdid'  , $idrdid);
 $_TPL->set_var('contexts', $contexts);
 $_TPL->set_var('incalls' , $incalls);
-	
+
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/cti/reversedirectories.js');

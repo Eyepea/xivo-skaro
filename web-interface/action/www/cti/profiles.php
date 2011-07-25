@@ -40,14 +40,14 @@ $servicesavail = array(
 );
 
 $preferencesavail = array(
-    'logagent' => $_TPL->bbf('pref-logagent'), 
-    'pauseagent' => $_TPL->bbf('pref-pauseagent'), 
-    'blinktime' => $_TPL->bbf('pref-blinktime'), 
-    'fontsize' => $_TPL->bbf('pref-fontsize'), 
-    'fontname' => $_TPL->bbf('pref-fontname'), 
-    'iconsize' => $_TPL->bbf('pref-iconsize'), 
-    'supervisor' => $_TPL->bbf('pref-supervisor'), 
-    'queues-showqueuenames' => $_TPL->bbf('pref-queues-showqueuenames'), 
+    'logagent' => $_TPL->bbf('pref-logagent'),
+    'pauseagent' => $_TPL->bbf('pref-pauseagent'),
+    'blinktime' => $_TPL->bbf('pref-blinktime'),
+    'fontsize' => $_TPL->bbf('pref-fontsize'),
+    'fontname' => $_TPL->bbf('pref-fontname'),
+    'iconsize' => $_TPL->bbf('pref-iconsize'),
+    'supervisor' => $_TPL->bbf('pref-supervisor'),
+    'queues-showqueuenames' => $_TPL->bbf('pref-queues-showqueuenames'),
     'queues-showqueues' => $_TPL->bbf('pref-queues-showqueues'),
     'queues-statscolumns' => $_TPL->bbf('pref-queues-statscolumns'),
     'queues-shortlegends' => $_TPL->bbf('pref-queues-shortlegends'),
@@ -57,12 +57,12 @@ $preferencesavail = array(
 );
 
 $funcsavail = array(
-    'agents' => $_TPL->bbf('agents'), 
-    'presence' => $_TPL->bbf('presence'), 
-    'switchboard' => $_TPL->bbf('switchboard'), 
-    'customerinfo' => $_TPL->bbf('customerinfo'), 
-    'search' => $_TPL->bbf('search'), 
-    'dial' => $_TPL->bbf('dial'), 
+    'agents' => $_TPL->bbf('agents'),
+    'presence' => $_TPL->bbf('presence'),
+    'switchboard' => $_TPL->bbf('switchboard'),
+    'customerinfo' => $_TPL->bbf('customerinfo'),
+    'search' => $_TPL->bbf('search'),
+    'dial' => $_TPL->bbf('dial'),
     'chitchat' => $_TPL->bbf('chitchat'),
     'conference' => $_TPL->bbf('conference'),
     'directory' => $_TPL->bbf('directory'),
@@ -181,7 +181,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -295,7 +298,10 @@ switch($act)
 				$info['ctiprofiles'] = $result['profiles'];
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
+			}
 		}
 
 
@@ -334,7 +340,7 @@ switch($act)
 
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
-		
+
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
 			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);
@@ -373,6 +379,7 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/profiles'),$param);
 
 		$app->delete();
+	    $ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/profiles'),$param);
 		break;

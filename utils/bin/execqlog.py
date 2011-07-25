@@ -5,19 +5,22 @@ __version__   = '$Revision: 0.1 $'
 __date__      = '$Date: 2010-06-08 10:41:52 -0400 (mer 08 jun 2010) $'
 __copyright__ = 'Copyright (C) 2009-2011 Proformatique'
 __author__    = 'Cedric Abunar'
+__license__   = """
+    Copyright (c) 2010  Proformatique <technique@proformatique.com>
 
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import ConfigParser
 import contextlib
@@ -42,7 +45,6 @@ from xivo.BackSQL import backpostgresql
 ################################################
 # Define variables
 
-VERBOSE = False
 DEBUG = False
 IP_XIVO = "127.0.0.1"
 FILE_DELIMITERS = '|'
@@ -58,14 +60,22 @@ URL_AGENT = "https://%s/callcenter/json.php/private/settings/agents/?forcedataba
 LIST_QUEUE = set()
 LIST_AGENT = set()
 
-DATA_QUEUE ={ "queuefeatures": 
+
+COMMAND_COPY = "COPY queue_log (time,callid,queuename,agent,event,data1,data2,data3,data4,data5) " \
+               "FROM '%s' DELIMITERS '%s' CSV"  %( DEFAULT_OUT_FILE, FILE_DELIMITERS)               
+
+# end of define
+##############################################
+
+def populate_data_queue(name):
+    return {"queuefeatures": 
                 {
-                    "name": "%s", 
+                    "name": name, 
                     "context": "default", 
                     "number": "", 
                     "timeout": 0
                 },
-                "queue": 
+            "queue": 
                 { 
                     "timeoutpriority": "app", 
                     "min-announce-frequency": 60, 
@@ -73,12 +83,14 @@ DATA_QUEUE ={ "queuefeatures":
                     "announce-position-limit": 5 
                 }
             }
-DATA_AGENT ={ "agentfeatures": 
+
+def populate_data_agent(firtname, lastname, number):
+    return {"agentfeatures": 
                 {
-                    "firstname": "%s", 
-                    "lastname": "%s", 
+                    "firstname": firtname, 
+                    "lastname": lastname, 
                     "context": "default", 
-                    "number": "%s", 
+                    "number": number, 
                     "numgroup": 1, 
                     "autologoff": 0, 
                     "ackcall": "no", 
@@ -86,18 +98,11 @@ DATA_AGENT ={ "agentfeatures":
                     "acceptdtmf": "#", 
                     "enddtmf": "*" 
                 },
-                "agentoptions": 
+            "agentoptions": 
                 {
                     "maxlogintries": 3 
                 }
             }
-
-COMMAND_COPY = "COPY queue_log (time,callid,queuename,agent,event,data1,data2,data3,data4,data5) " \
-               "FROM '%s' DELIMITERS '%s' CSV"  %( DEFAULT_OUT_FILE, FILE_DELIMITERS)
-               
-
-# end of define
-##############################################
 
 
 def parse_qlog_dir_process():
@@ -110,7 +115,7 @@ def parse_qlog_dir_process():
     for client in list_client:
         dir_process = os.path.join(QLOG_DIR, client, 'process')
         if os.access(dir_process, os.R_OK):
-            if VERBOSE:
+            if DEBUG:
                 print 'Processing dirrectory for', client, '...'
             DB_NAME = 'ast_%s' % client
             CLIENT = client
@@ -153,14 +158,19 @@ def _open_file(file):
 
 #@_limit(50000)
 def readlines(directory, backup=None):
+    print 'Directory process: %s' % directory
     for file in os.listdir(directory):
+        print 'File process: %s' % file
         abs_file = os.path.join(directory, file)
         with _open_file(abs_file) as fobj:
+            nb_line = 0
             for line in fobj:
+                nb_line += 1
                 yield line
         if backup is not None:
             newfile = os.path.join(QLOG_DIR, CLIENT, 'backup', file)
             os.rename(abs_file, newfile)
+        print '%s entries found in %s.' % (nb_line, file)
 
 
 def traitmentline(line, separator='|'):
@@ -182,6 +192,22 @@ def find_most_recent(directory, partial_file_name=None):
     return max(name_n_timestamp, key=lambda k: name_n_timestamp.get(k))
 
 
+def found_agent_identity(number):
+    agent_dir = os.path.join(QLOG_DIR, CLIENT, 'agent');
+    agent_filename = find_most_recent(agent_dir)
+    agent_filepath = os.path.join(agent_dir, agent_filename)
+    agents = json.load(open(agent_filepath))
+    firstname = 'agent/%s' % number
+    lastname = ''
+    if agents:
+        for agent in agents:
+            if number == agent[5]:
+                firstname = agent[3]
+                lastname = agent[4]
+                print 'Found agent identity for agent/%s' % number, ':', firstname, lastname
+    return [firstname, lastname]
+
+
 def valid_line(cursor, linet):
     return True
     cursor.execute("SELECT count(time) FROM queue_log "
@@ -189,9 +215,7 @@ def valid_line(cursor, linet):
             "AND queuename = '%s' "
             "AND agent = '%s' "
             "AND event = '%s' LIMIT 1" % (linet[1], linet[2], linet[3], linet[4]))
-    
-    retval = not cursor.fetchone()
-    return retval
+    return not cursor.fetchone()
 
 
 def request_http(url, data=None):
@@ -199,8 +223,7 @@ def request_http(url, data=None):
         if data is not None:
             data = data.replace(' ', '').replace('\n','')
         req = urllib2.Request(url, data)
-        f = urllib2.urlopen(req) 
-        return f
+        return urllib2.urlopen(req)
     except HTTPError, e:
         if DEBUG:
             print 'code:', e.code,' response:', e.read()
@@ -217,7 +240,7 @@ def exec_ws():
             if DEBUG:
                 print 'code:', f.code,' response:', f.read()
             if f.code == 204:
-                data = json.dumps(DATA_QUEUE) % q
+                data = json.dumps(populate_data_queue(q))
                 f = request_http('%s&act=add' % (base_url_queue), data)
                 if DEBUG:
                     print 'QUEUE ADD JSON:', data
@@ -226,19 +249,9 @@ def exec_ws():
     for a in LIST_AGENT:
         m = re.search("agent/([0-9]+)", a, re.I)
         if m is not None:
-            agent_dir = os.path.join(QLOG_DIR, CLIENT, 'agent');
             number = m.group(1)
-            agent_filename = find_most_recent(agent_dir)
-            agent_filepath = os.path.join(agent_dir, agent_filename)
-            agents = json.load(open(agent_filepath))
-            if agents:
-                for agent in agents:
-                    if number == agent[5]:
-                        firstname = agent[3]
-                        lastname = agent[4]
-                        if VERBOSE:
-                            print 'Found agent identity for', a, ':', firstname, lastname
-            data = json.dumps(DATA_AGENT) % (firstname, lastname, number)
+            identity = found_agent_identity(number)
+            data = json.dumps(populate_data_agent(identity[0], identity[1], number))
             f = request_http('%s&act=add' % (base_url_agent), data)
             if DEBUG:
                 print 'AGENT ADD JSON:', data
@@ -247,11 +260,13 @@ def exec_ws():
 
 def main(directory):
     if not os.access(directory, os.R_OK):
-        raise Exeption("Can't open directory %s" % directory)
+        raise Exception("Can't open directory %s" % directory)
     dbman = DbManager()
     fobj = open(DEFAULT_OUT_FILE,'w')
+    total_line_nb = 0
     for line in readlines(directory,True):
         linet = traitmentline(line)
+        total_line_nb += 1
         if valid_line(dbman.cursor, linet):
             datetime = time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime((int(linet[0]))))
             lineoutput = '%s%s' % (datetime, FILE_DELIMITERS) + FILE_DELIMITERS.join(linet[1:]) + '\n'
@@ -263,10 +278,14 @@ def main(directory):
     fobj.close()
     dbman.close()
     
+    if total_line_nb == 0:
+        print 'No files found for processing for %s' % CLIENT
+        return
+    
     PGCREATEDB = "CREATE DATABASE \"%s\" TEMPLATE tpl_asterisk;" % DB_NAME
     
     try:
-        if VERBOSE:
+        if DEBUG:
             print 'sudo', '-H', '-u', 'postgres' ,'psql', '-c', PGCREATEDB
         subprocess.check_call(['sudo', '-H', '-u', 'postgres' ,'psql', '-c', PGCREATEDB])
     except:
@@ -275,7 +294,7 @@ def main(directory):
     exec_ws()
     
     try:
-        if VERBOSE:
+        if DEBUG:
             print 'sudo', '-H', '-u', 'postgres' ,'psql' ,DB_NAME, '-c', COMMAND_COPY
         subprocess.check_call(['sudo', '-H', '-u', 'postgres' ,'psql' ,DB_NAME, '-c', COMMAND_COPY])
     except (OSError, subprocess.CalledProcessError), e:
@@ -284,8 +303,6 @@ def main(directory):
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-                      help='mode verbose')
     parser.add_option('-d', '--debug', action='store_true', dest='debug',
                       help='mode debug')
     parser.add_option('-o', '--outfile', action='store', dest='output_filename',
@@ -293,8 +310,6 @@ if __name__ == '__main__':
     parser.add_option('-c', '--client', action='store', dest='output_client',
                       help='choose client')
     opts, args = parser.parse_args()
-    if opts.verbose:
-        VERBOSE = True
     if opts.debug:
         DEBUG = True
     if opts.output_filename:
@@ -305,6 +320,4 @@ if __name__ == '__main__':
         main(os.path.join(QLOG_DIR, CLIENT, 'process'))
     else:
         parse_qlog_dir_process()
-    #    print >>sys.stderr, "usage: %s -c <client_name>" % ("./execqlog.py")
-    #    raise sys.exit(1)
 

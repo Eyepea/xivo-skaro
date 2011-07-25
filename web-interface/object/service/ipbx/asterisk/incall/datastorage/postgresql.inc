@@ -35,8 +35,6 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
-		
-		dwho_dump($this->_dso->get_select());
 
 		$r = $this->_dso->select_all();
 
@@ -49,7 +47,7 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 
 		return($r);
 	}
-	
+
 	function _search_where($arr)
 	{
 		if(is_array($arr) === false)
@@ -77,7 +75,7 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
     ["userfield"] => string(0) ""
     ["peer"] => string(0) ""
 */
-		
+
 		if(isset($arr['dbeg']) === true)
 		{
 			$dbeg = $arr['dbeg'];
@@ -108,7 +106,7 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 
 		if(isset($arr['eventtype']) === true)
 			$this->_dso->andwhere(array('eventtype' => $arr['eventtype']));
-		
+
 		if(isset($arr['exten']) === true)
 			$this->_dso->andwhere(array('exten' => $arr['exten']));
 
@@ -151,15 +149,15 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 	}
 
 	public function stats_sum_by_type($type,$value,$event,$fieldsum,$interval=null,$addwhere=null)
-	{			
-		$this->_cnt = 0;		
-		
+	{
+		$this->_cnt = 0;
+
 		$s = microtime(true);
 
 		$field = array((object) ('SUM(cast("'.$fieldsum.'" as int))'));
-		
+
 		$this->_dso->new_select($this->_table,$field);
-	
+
 		switch ($type)
 		{
 			case 'incall':
@@ -176,13 +174,13 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('eventtype' => $event));
 		$this->_dso->andwhere('"'.$fieldsum.'" ~ \'^[0-9]+$\'');
-		
+
 		if (is_null($addwhere) === false)
 			$this->search_add_where($addwhere);
-	
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
@@ -195,12 +193,12 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 					$this->_dso->orwherebetween('eventtime',$itl['beg'],$itl['end'],$this->_table);
 				$this->_dso->aggregate_where(false,'AND');
 			}
-			else 
+			else
 				return(false);
 		}
-		
+
 		$r = $this->_dso->select_singlecolumn();
-		
+
 		#print ($this->_dso->get_select().'<br>');
 		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
@@ -209,15 +207,15 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 
 		return((int) $r[0]);
 	}
-	
+
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
-	{			
-		$this->_cnt = 0;		
-		
+	{
+		$this->_cnt = 0;
+
 		$s = microtime(true);
-		
+
 		$this->_dso->new_select($this->_table,array('eventtype'));
-		
+
 		switch ($type)
 		{
 			case 'incall':
@@ -234,46 +232,46 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('eventtype' => $event));
-		
+
 		if (is_null($addwhere) === false)
 			$this->search_add_where($addwhere);
-		
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
 			&& isset($interval['end']) === true)
 				$this->_dso->wherebetween('eventtime',$interval['beg'],$interval['end'],$this->_table);
 			elseif (($nbinterval = count($interval)) > 2)
-			{				
+			{
 				$this->_dso->aggregate_where(false,'AND');
-				
+
 				foreach ($interval as $itl)
 					$this->_dso->orwherebetween('eventtime',$itl['beg'],$itl['end'],$this->_table);
-				
+
 				$this->_dso->aggregate_where(false,'AND');
 			}
-			else 
+			else
 				return(0);
 		}
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
-		
-		print ($this->_dso->get_select().'<br>');
+
+		#print ($this->_dso->get_select().'<br>');
 		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
 		return($this->_cnt);
 	}
-	
+
 	private function search_add_where($addwhere)
 	{
 		if(is_array($addwhere) === false)
 			return(false);
-			
+
 		$type = $addwhere[0];
-		$value = $addwhere[1];		
+		$value = $addwhere[1];
 		switch ($type)
 		{
 			case 'BETWEEN':
@@ -286,8 +284,8 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 				}
 				$this->_dso->andwhere('"'.$this->_table.'"."'.$value[0].'"'.$cast.' BETWEEN '.$value[1].' AND '.$value[2]);
 				break;
-			case 'ISNOT':					
-				$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);		
+			case 'ISNOT':
+				$this->_dso->andwherenot(array($value[0] => $value[1]),$this->_table);
 				break;
 			case '<':
 			case '>':

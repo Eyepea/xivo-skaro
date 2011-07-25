@@ -22,7 +22,7 @@
 /*
 	In this code, we assume that only
 	'field_phone', 'field_fullname', 'field_firstname', 'field_lastname', 'field_company' and 'field_mail'
-	are used. These correspond to 
+	are used. These correspond to
 	'{db-phone}', '{db-fullname}', '{db-firstname}', '{db-lastname}', '{db-company}' and '{db-mail}'
 	in "displays" form.
 	If you want to add fields you need to
@@ -32,7 +32,7 @@
 		/usr/share/pf-xivo-web-interface/object/service/ipbx/asterisk/ctidirectories/config.inc
 	4/ Add corresponding widgets in template file :
 		/usr/share/pf-xivo-web-interface/tpl/www/bloc/cti/directories/form.php
-	5/ Add JSON generation for these fields in 
+	5/ Add JSON generation for these fields in
 		/usr/share/pf-xivo-web-interface/application/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
 */
 /***************************************************************************************************************************/
@@ -87,7 +87,10 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
+			{
+				$ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/directories'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -135,7 +138,10 @@ switch($act)
 				$error  = $app->get_error();
 			}
 			else
+			{
+			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/directories'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -151,7 +157,7 @@ switch($act)
 				$return['directories'][$v] = implode(',', $arr);
 			}
 		}
-		
+
 		$_TPL->set_var('urilist',$urilist);
 		$_TPL->set_var('iddirectories',$info['directories']['id']);
 		$_TPL->set_var('info',$return);
@@ -171,6 +177,7 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/directories'),$param);
 
 		$app->delete();
+		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/directories'),$param);
 		break;
