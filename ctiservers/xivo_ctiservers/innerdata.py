@@ -236,12 +236,12 @@ class Safe:
         default_parking['name'] = 'default'
         default_parking['id'] = '0'
         gf = self.extenfeatures['generalfeatures']
-        if gf['findslot']['var_val'] is 'next':
+        if 'findslot' in gf and gf['findslot']['var_val'] is 'next':
             default_parking['next'] = '1'
         else:
             default_parking['next'] = '0'
         for pkey, ekey in name_map.iteritems():
-            if not gf[ekey]['commented']:
+            if ekey in gf and not gf[ekey]['commented']:
                 default_parking[pkey] = gf[ekey]['var_val']
         self.xod_config['parkinglots'].set_default_parking(default_parking)
 
