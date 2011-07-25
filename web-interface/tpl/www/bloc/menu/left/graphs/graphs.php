@@ -47,6 +47,22 @@ $tree = &$this->get_var('tree');
 			</dd>
 			<?php 
 				} 
+				if(array_key_exists('mysql', $tree)) {
+			?>
+			<dd id="mn-mysql">
+				<?=$url->href_html($this->bbf('mn_left_munin-mysql'),
+						   'graphs/munin/mysql');?>
+			</dd>
+			<?php 
+				} 
+				if(array_key_exists('postgresql', $tree)) {
+			?>
+			<dd id="mn-postgresql">
+				<?=$url->href_html($this->bbf('mn_left_munin-postgresql'),
+						   'graphs/munin/postgresql');?>
+			</dd>
+			<?php 
+				} 
 				
 				if(array_key_exists('disk', $tree)) {
 			?>

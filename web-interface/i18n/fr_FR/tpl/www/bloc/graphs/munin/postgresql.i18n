@@ -1,0 +1,21 @@
+
+; title_content_name
+PostgreSQL
+
+; pg_blockreads
+Blocs lus
+
+; pg_connections
+Connexions
+
+; pg_diskspace
+Espace disque utilisé
+
+; pg_xact
+Transactions
+
+; pg_tup_read
+Tuples lues
+
+; pg_tup_write
+Tuples écrits

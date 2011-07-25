@@ -1,0 +1,13 @@
+; title_content_name
+Nginx
+
+; nginx_activeconn
+Active connections
+
+; nginx_connections
+Connections
+
+; nginx_requests
+Requests
+
+

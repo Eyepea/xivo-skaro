@@ -365,7 +365,9 @@ $array['callcenter/ui/settings/queues'] = 'callcenter/ui.php/settings/queues/';
  */
 
 $array['graphs'] = 'graphs/index.php';
-$array['graphs/munin/nginx']			  = 'graphs/munin/index.php/nginx';
+$array['graphs/munin/nginx']        = 'graphs/munin/index.php/nginx';
+$array['graphs/munin/postgresql']   = 'graphs/munin/index.php/postgresql';
+$array['graphs/munin/mysql']	    = 'graphs/munin/index.php/mysql';
 $array['graphs/munin/asterisk']     = 'graphs/munin/index.php/asterisk';
 $array['graphs/munin/disk']         = 'graphs/munin/index.php/disk';
 $array['graphs/munin/time']         = 'graphs/munin/index.php/time';
