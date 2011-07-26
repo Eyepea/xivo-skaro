@@ -1,53 +1,91 @@
+[pkg_7902-fw]
+description: Firmware for Cisco 7902G (SCCP)
+description_fr: Micrologiciel pour Cisco 7902G (SCCP)
+version: 8.0.2
+files: 7902-fw
+install: cisco-unified-fw
+
+[pkg_7905-fw]
+description: Firmware for Cisco 7905G (SCCP)
+description_fr: Micrologiciel pour Cisco 7905G (SCCP)
+version: 8.0.3
+files: 7905-fw
+install: cisco-unified-fw
+
+[pkg_7910-fw]
+description: Firmware for Cisco 7910G (SCCP)
+description_fr: Micrologiciel pour Cisco 7910G (SCCP)
+version: 5.0.7
+files: 7910-fw
+install: cisco-unified-fw
+
+[pkg_7912-fw]
+description: Firmware for Cisco 7912G (SCCP)
+description_fr: Micrologiciel pour Cisco 7912G (SCCP)
+version: 8.0.4
+files: 7912-fw
+install: cisco-unified-fw
+
+[pkg_7940-7960-fw]
+description: Firmware for Cisco 7940G and 7960G (SCCP)
+description_fr: Micrologiciel pour Cisco 7940G et 7960G (SCCP)
+version: 8.1.2
+files: 7940-7960-fw
+install: cisco-unified-fw
+
 [pkg_7914-fw]
 description: Firmware for Cisco Expansion Module 7914G (SCCP)
 description_fr: Micrologiciel pour module d'extension Cisco 7914G (SCCP)
 version: 5.0.4
 files: 7914-fw
-install: cisco-7900-fw
+install: cisco-unified-fw
 
 [pkg_7915-fw]
 description: Firmware for Cisco Expansion Module 7915G (SCCP)
 description_fr: Micrologiciel pour module d'extension Cisco 7915G (SCCP)
 version: 1.0.4
 files: 7915-fw
-install: cisco-7900-fw
+install: cisco-unified-fw
 
 [pkg_7916-fw]
 description: Firmware for Cisco Expansion Module 7916G (SCCP)
 description_fr: Micrologiciel pour module d'extension Cisco 7916G (SCCP)
 version: 1.0.4
 files: 7916-fw
-install: cisco-7900-fw
+install: cisco-unified-fw
 
 [pkg_networklocale]
-description: Network locale for Cisco 79xx (SCCP)
-description_fr: Locale réseau pour Cisco 79xx (SCCP)
+description: Network locale
+description_fr: Locale réseau
 version: 9.0.2
 files: networklocale
 install: cisco-networklocale
 
 [pkg_userlocale_de_DE]
-description: de_DE user locale for Cisco 79xx (SCCP)
-description_fr: Locale utilisateur de_DE pour Cisco 79xx (SCCP)
+description: de_DE user locale
+description_fr: Locale utilisateur de_DE
 version: 9.0.2
 files: userlocale_de_DE
 install: cisco-userlocale
 
 [pkg_userlocale_es_ES]
-description: es_ES user locale for Cisco 79xx (SCCP)
-description_fr: Locale utilisateur es_ES pour Cisco 79xx (SCCP)
+description: es_ES user locale
+description_fr: Locale utilisateur es_ES
 version: 9.0.2
 files: userlocale_es_ES
 install: cisco-userlocale
 
 [pkg_userlocale_fr_FR]
-description: fr_FR user locale for Cisco 79xx (SCCP)
-description_fr: Locale utilisateur fr_FR pour Cisco 79xx (SCCP)
+description: fr_FR user locale
+description_fr: Locale utilisateur fr_FR
 version: 9.0.2
 files: userlocale_fr_FR
 install: cisco-userlocale
 
 
+
+[install_cisco-unified-fw]
+a-b: unzip $FILE1
 
 [install_cisco-networklocale]
 a-b: unsign $FILE1 f.tgz
@@ -66,6 +104,41 @@ c-d: untar *.tar
 d-e: cp usr/local/cm/tftp/* i18n/
 
 
+
+[file_7902-fw]
+; Released on June 2006
+url: http://download-sj.cisco.com/swc/esd/02/278078615/contract/cmterm-7902G-sccp.8-0-2.zip
+size: 329363
+sha1sum: 691fb351d9228bd193dcb78cb1e7ddec73ccf835
+downloader: x-cisco
+
+[file_7905-fw]
+; Released on April 2007
+url: http://download-sj.cisco.com/swc/esd/02/273941556/contract/cmterm-7905G-sccp.8-0-3.zip
+size: 673168
+sha1sum: c68b1ddddc06ab7bc85eef2a5956d6a58844d700
+downloader: x-cisco
+
+[file_7910-fw]
+; Released on May 2005
+url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp.5-0-7.zip
+size: 592359
+sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
+downloader: x-cisco
+
+[file_7912-fw]
+; Released on January 2008
+url: http://download-sj.cisco.com/swc/esd/02/278115698/contract/cmterm-7912G-sccp.8-0-4.zip
+size: 339004
+sha1sum: 5c93605519fb691690b3c1eefc67127e85497892
+downloader: x-cisco
+
+[file_7940-7960-fw]
+; Released on August 2009
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
+size: 701384
+sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
+downloader: x-cisco
 
 [file_7914-fw]
 url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp.5-0-4.zip

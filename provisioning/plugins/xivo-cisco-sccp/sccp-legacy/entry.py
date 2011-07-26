@@ -1,11 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin for legacy Cisco phones using the SCCP software.
+"""Plugin for legacy Cisco phones using the SCCP software."""
 
-"""
-
-common_globals = {}
-execfile_('common.py', common_globals)
+sccpcommon = {}
+execfile_('sccpcommon.py', sccpcommon)
 
 
 MODEL_VERSION = {u'7902G': u'8.0.2/SCCP',
@@ -16,7 +14,7 @@ MODEL_VERSION = {u'7902G': u'8.0.2/SCCP',
                  u'7960G': u'8.1.2/SCCP'}
 
 
-class CiscoSccpPlugin(common_globals['BaseCiscoSccpPlugin']):
+class CiscoSccpPlugin(sccpcommon['BaseCiscoSccpPlugin']):
     IS_PLUGIN = True
     
-    pg_associator = common_globals['BaseCiscoPgAssociator'](MODEL_VERSION)
+    pg_associator = sccpcommon['common']['BaseCiscoPgAssociator'](MODEL_VERSION)
