@@ -113,15 +113,9 @@ switch($act)
             {
                 $ctxid = $context['name'];
                 $ctxlist[] = "contexts.".$ctxid;
-                $ctxdirs = explode(',', $context['directories']);
                 $ctxout[$ctxid] = array();
-                $arr = array();
-                foreach($ctxdirs as $cd)
-                {
-                    $arr[] = "directories.".$cd;
-                }
-                $ctxout[$ctxid]['directories'] = $arr;
-
+                $ctxdirs = explode(',', $context['directories']);
+                $ctxout[$ctxid]['directories'] = $ctxdirs;
                 $ctxout[$ctxid]['display'] = $context['display'];
             }
             $out['contexts'] = $ctxout;
@@ -210,9 +204,6 @@ switch($act)
                 }
 
                 $dirblok = dwho_json::decode($rdid['directories'], true);
-                for($i = 0; $i < count($dirblok); $i++)
-                    $dirblok[$i] = "directories." . $dirblok[$i];
-
                 foreach(explode(',', $rdid['extensions']) as $exten)
                     $curblok['didextens'][$exten] = $dirblok;
             }
