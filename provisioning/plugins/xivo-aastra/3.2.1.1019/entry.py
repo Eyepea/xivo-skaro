@@ -24,8 +24,8 @@ work with this plugin:
 
 import logging
 
-common_globals = {}
-execfile_('common.py', common_globals)
+common = {}
+execfile_('common.py', common)
 
 logger = logging.getLogger('plugin.xivo-aastra')
 
@@ -36,11 +36,11 @@ COMPAT_MODELS = [u'6751i']
 VERSION = u'3.2.1.1019'
 
 
-class AastraPlugin(common_globals['BaseAastraPlugin']):
+class AastraPlugin(common['BaseAastraPlugin']):
     IS_PLUGIN = True
     
-    pg_associator = common_globals['BaseAastraPgAssociator'](MODELS, VERSION,
-                                                             COMPAT_MODELS)
+    pg_associator = common['BaseAastraPgAssociator'](MODELS, VERSION,
+                                                     COMPAT_MODELS)
 
     def _do_add_parking(self, raw_config, parking):
         raw_config[u'XX_parking'] = '\n'.join('sip line%s park pickup config: %s;%s;asterisk' %

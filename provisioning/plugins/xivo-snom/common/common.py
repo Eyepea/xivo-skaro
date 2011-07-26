@@ -296,4 +296,4 @@ class BaseSnomPlugin(StandardPlugin):
             if sync_service is None or sync_service.TYPE != 'AsteriskAMI':
                 return defer.fail(Exception('Incompatible sync service: %s' % sync_service))
             else:
-                return threads.deferToThread(sync_service.sip_notify, ip, 'check-sync');
+                return threads.deferToThread(sync_service.sip_notify, ip, 'check-sync')

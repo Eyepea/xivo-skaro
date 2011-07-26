@@ -27,7 +27,6 @@ import re
 import os.path
 import urllib2
 from operator import itemgetter
-from fetchfw.download import AuthenticatingDownloader
 from provd.devices.config import RawConfigError
 from provd.devices.pgasso import IMPROBABLE_SUPPORT, COMPLETE_SUPPORT, UNKNOWN_SUPPORT,\
     BasePgAssociator

@@ -359,4 +359,4 @@ class BaseAlcatelPlugin(StandardPlugin):
             return defer.fail(Exception('IP address needed for device synchronization'))
         else:
             password = raw_config.get(u'admin_password', self._DEFAULT_PASSWORD).encode('ascii')
-            return threads.deferToThread(self._do_synchronize_via_telnet, ip, password);
+            return threads.deferToThread(self._do_synchronize_via_telnet, ip, password)
