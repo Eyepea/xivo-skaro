@@ -21,6 +21,7 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
+$act    = $this->get_var('act');
 $info    = $this->get_var('info');
 $error   = $this->get_var('error');
 $plugininstalled = $this->get_var('plugininstalled');
@@ -42,7 +43,7 @@ endif;
 				  'name'	=> 'devicefeatures[ip]',
 				  'labelid'	=> 'devicefeatures-ip',
 				  'size'	=> 15,
-				  'readonly'=> true,
+				  'readonly'=> ($act === 'add') ? false : true,
 				  'default'	=> $element['devicefeatures']['ip']['default'],
 				  'value'	=> $this->get_var('info','devicefeatures','ip'),
 				  'error'	=> $this->bbf_args('error',
@@ -52,7 +53,7 @@ endif;
 				  'name'	=> 'devicefeatures[mac]',
 				  'labelid'	=> 'devicefeatures-mac',
 				  'size'	=> 15,
-				  'readonly'=> true,
+				  'readonly'=> ($act === 'add') ? false : true,
 				  'default'	=> $element['devicefeatures']['mac']['default'],
 				  'value'	=> $this->get_var('info','devicefeatures','mac'),
 				  'error'	=> $this->bbf_args('error',
@@ -75,7 +76,7 @@ endif;
 				  'altkey'	=> 'id',
 				  'selected'	=> $this->get_var('info','deviceconfig','configdevice')),
 			      $listconfigdevice),
-			      
+
 		$form->select(array('desc'	=> $this->bbf('fm_config_language'),
 				    'name'		=> 'config[locale]',
 				    'labelid'	=> 'config-locale',
@@ -100,13 +101,13 @@ endif;
 				    'key'	=> false,
 				    'selected'	=> $this->get_var('info','config','protocol')),
 			      $element['config']['protocol']['value']),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_config_encryption_enabled'),
 				      'name'	=> 'config[config_encryption_enabled]',
 				      'labelid'	=> 'config-config_encryption_enabled',
 				      'default'	=> $element['config']['config_encryption_enabled']['default'],
 				      'checked'	=> $this->get_var('info','config','config_encryption_enabled'))),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_ntp_enabled'),
 				      'name'	=> 'config[ntp_enabled]',
 				      'labelid'	=> 'config-ntp_enabled',
@@ -165,7 +166,7 @@ endif;
 				  'value'	=> $this->get_var('info','config','user_password'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'user_password')) )),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_sip_subscribe_mwi'),
 				      'name'	=> 'config[sip_subscribe_mwi]',
 				      'labelid'	=> 'config-sip_subscribe_mwi',
@@ -296,7 +297,7 @@ if (($capabilities = $info['capabilities']) !== false):
 	endif;
 
 endif;
-	
+
 ?>
 <div class="sb-list">
 <table cellspacing="0" cellpadding="0" border="0">

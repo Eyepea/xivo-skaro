@@ -489,6 +489,12 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		switch ($method)
 		{
 			case 'provd':
+                if(($rs = $this->_provddevice->chk_values($rs)) === false)
+                    $this->_set_error('devicefeatures',$this->_provddevice->get_filter_error());
+
+        		if($this->get_errnb() > 0)
+        			return false;
+
 				$this->_return['devicefeatures'] = $this->_provddevice->add($rs);
 				break;
 			default:

@@ -94,6 +94,15 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return($rs);
 	}
 
+	private function _prepare_to($arr)
+	{
+		if (isset($arr['mac']) === true
+		&& $arr['mac'] === '')
+		    unset($arr['mac']);
+
+		return($arr);
+	}
+
 	public function add($arr)
 	{
 		if (is_array($arr) === false)
@@ -101,7 +110,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		$uri = $this->_build_uri(array('devices'));
 
-		$data['device'] = $arr;
+		$data['device'] = $this->_prepare_to($arr);
 
 		$rs = $this->request_post($uri,$data);
 
@@ -121,6 +130,10 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			return(false);
 
 		$uri = $this->_build_uri(array('devices',$id));
+
+		if (isset($arr['mac']) === true
+		&& $arr['mac'] === '')
+		    unset($arr['mac']);
 
 		$data['device'] = $arr;
 

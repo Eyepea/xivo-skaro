@@ -21,6 +21,68 @@
 $array = array();
 $array['element'] = array();
 
+$array['element']['mac'] = array();
+$array['element']['mac']['default'] = '';
+
+$array['element']['ip'] = array();
+$array['element']['ip']['default'] = '';
+
+$array['element']['plugin'] = array();
+$array['element']['plugin']['default'] = '';
+
+$array['element']['config'] = array();
+$array['element']['config']['default'] = '';
+
+$array['element']['deviceid'] = array();
+$array['element']['deviceid']['default'] = '';
+
+$array['element']['sn'] = array();
+$array['element']['sn']['default'] = '';
+
+$array['element']['vendor'] = array();
+$array['element']['vendor']['default'] = '';
+
+$array['element']['model'] = array();
+$array['element']['model']['default'] = '';
+
+$array['element']['proto'] = array();
+$array['element']['proto']['default'] = '';
+
+$array['element']['version'] = array();
+$array['element']['version']['default'] = '';
+
+$array['element']['configured'] = array();
+$array['element']['configured']['value'] = array(0,1);
+$array['element']['configured']['default'] = 0;
+$array['element']['configured']['set'] = true;
+
+$array['element']['commented'] = array();
+$array['element']['commented']['value'] = array(0,1);
+$array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
+
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
+
 $array['filter'] = array();
+$array['filter']['mac'] = array('set'	     => false,
+								'chk'	     => 2,
+								'minlen'     => 11,
+								'maxlen'     => 17,
+								'regexp'     => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/');
+$array['filter']['ip'] = array('callback'		=> 'dwho_network::valid_host',
+						    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+$array['filter']['plugin'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['config'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['deviceid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['sn'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['vendor'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['model'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['proto'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['version'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['configured'] = array('bool' => true);
+$array['filter']['commented'] = array('bool' => true);
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
+
 
 ?>

@@ -65,21 +65,16 @@ $linked_js = $dhtml->escape($linked);
 ?>
 	</div>
 </form><?php
-	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
-			       $this->bbf('toolbar_opt_add'),
-			       'id="toolbar-bt-add"
-				border="0"');
-?>
-<div class="sb-advanced-menu">
-	<ul id="toolbar-add-menu">
-		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),
-				       'service/ipbx/pbx_settings/devices',
-				       'act=add');?></li>
-		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),
-				       'service/ipbx/pbx_settings/devices',
-				       'act=import');?></li>
-	</ul>
-</div><?php
+
+echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
+				       $this->bbf('toolbar_opt_add'),
+				       'id="toolbar-bt-add"
+					border="0"'),
+			'service/ipbx/pbx_settings/devices',
+			'act=add',
+			null,
+			$this->bbf('toolbar_opt_add'));
+
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
