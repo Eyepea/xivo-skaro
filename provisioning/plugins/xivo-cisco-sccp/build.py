@@ -19,18 +19,6 @@ def build_sccp_8_5_2(path):
                 'sccp-8.5.2/', path])
 
 
-@target('sccp-9.0.3', 'xivo-cisco-sccp-9.0.3')
-def build_sccp_9_0_3(path):
-    check_call(['rsync', '-rlp', '--exclude', '.*',
-                'common/', path])
-    
-    check_call(['rsync', '-rlp', '--exclude', '.*',
-                'sccp-common/', path])
-    
-    check_call(['rsync', '-rlp', '--exclude', '.*',
-                'sccp-9.0.3/', path])
-
-
 @target('sccp-9.2.1', 'xivo-cisco-sccp-9.2.1')
 def build_sccp_9_2_1(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
