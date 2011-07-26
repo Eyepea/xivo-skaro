@@ -198,7 +198,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		|| ($arr['hwtypeid'] = dwho_uint($arr['hwtypeid'])) !== 1)
 			return(false);
 
-		$ret = arr;
+		$ret = $arr;
 		switch($arr['method'])
 		{
 			case 'dhcp':
