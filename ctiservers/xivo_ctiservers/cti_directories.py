@@ -26,314 +26,655 @@ __author__    = 'Corentin Le Gall'
 
 """
 Directory search related definitions.
+
+Here's the list of standardized keys, i.e. identifiers that can be used in
+display format strings and that should be mapped by directories:
+  firstname -- the first name
+  lastname -- the last name
+  mail -- the electronic mail address
+  phone -- the phone number
+  society -- the society name
+  fullname -- the display name
+  reverse -- used for reverse lookup
+
+Note that the syntax to use in display format string is {db-KEY}, for
+example "{db-phone}" (just "{phone}" won't work for historical reasons).
+
 """
 
+import csv
 import logging
+import re
 import urllib
-from xivo import anysql
-from xivo.BackSQL import backmysql
-from xivo.BackSQL import backsqlite
+import urllib2
+from itertools import chain, ifilter, imap, izip
+from operator import itemgetter
+from xivo_ctiservers import db_connection_manager
 from xivo_ctiservers import xivo_ldap
-from xivo_ctiservers import cti_directories_csv
 
 log = logging.getLogger('directories')
 
-class Context:
-    def __init__(self):
-        self.directories = list()
-        self.display = None
-        self.didextens = dict()
-        return
+# XXX str/unicode is handled the same way as in 1.1, it might need to be
+#     reviewed more carefully since it seems a bit inconsistent/incomplete
+# XXX there is a potential problem for reverse lookup since it doesn't do
+#     exact string matching, so if we lookup for number '0' then we'll return
+#     every entry that has a '0' in it, which is not what we want. That said,
+#     this behaviour was the same in 1.1 for most directory src
 
-    def update(self, contents):
-        self.directories = list()
-        if 'directories' in contents:
-            directories = contents.get('directories')
-            for direct in directories:
-                dtr = direct[12:]
-                if dtr not in self.directories:
-                    self.directories.append(dtr)
-        self.display = contents.get('display')
-        self.didextens = contents.get('didextens')
-        return
 
-class Display:
-    def __init__(self):
-        self.display_header = []
-        self.outputformat = ''
-        return
+class Context(object):
+    def __init__(self, directories, display, didextens):
+        """
+        directories -- a list of directory objects to use for direct lookup
+        display -- a display object to format the results of direct lookup
+        didextens -- a dictionary mapping extension number to list of
+          directory objects for reverse lookup
+        """
+        self._directories = directories
+        self._display = display
+        self._didextens = didextens
+    
+    def lookup_direct(self, string):
+        """Return a tuple (<headers>, <resultlist>)."""
+        if self._display is None:
+            raise Exception('No display defined for this context')
+        directory_results = []
+        for directory in self._directories:
+            try:
+                directory_result = directory.lookup_direct(string)
+            except Exception:
+                log.error('Error while looking up in directory %s for %s',
+                          directory.name, string, exc_info=True)
+            else:
+                directory_results.append(directory_result)
+        combined_results = chain.from_iterable(directory_results)
+        resultlist = list(self._display.format(combined_results))
+        return self._display.display_header, resultlist
+    
+    def lookup_reverse(self, did_number, number):
+        """Return a list of directory entries."""
+        if did_number in self._didextens:
+            directories = self._didextens[did_number]
+        elif '*' in self._didextens:
+            directories = self._didextens['*']
+        else:
+            log.warning('No directories for DID %s', did_number)
+            return []
+        
+        directory_results = []
+        for directory in directories:
+            try:
+                directory_result = directory.lookup_reverse(number)
+            except Exception:
+                log.error('Error while looking up in directory %s for %s',
+                          directory.name, number, exc_info=True)
+            else:
+                directory_results.append(directory_result)
+        combined_results = list(chain.from_iterable(directory_results))
+        return combined_results
+    
+    @classmethod
+    def new_from_contents(cls, avail_displays, avail_directories, contents):
+        """Return a new instance of this class from "configuration contents"
+        and dictionaries of displays and directories object.
+        
+        """ 
+        directories = cls._directories_from_contents(avail_directories, contents)
+        display = cls._display_from_contents(avail_displays, contents)
+        didextens = cls._didextens_from_contents(avail_directories, contents)
+        return cls(directories, display, didextens)
+    
+    @staticmethod
+    def _directories_from_contents(avail_directories, contents):
+        directory_ids = contents.get('directories', [])
+        directories = [avail_directories[directory_id] for directory_id in
+                       directory_ids]
+        return directories
+    
+    @staticmethod
+    def _display_from_contents(avail_displays, contents):
+        display_id = contents.get('display')
+        return avail_displays.get(display_id)
+    
+    @staticmethod
+    def _didextens_from_contents(avail_directories, contents):
+        raw_didextens = contents.get('didextens', {})
+        didextens = {}
+        for exten, directory_ids in raw_didextens.iteritems():
+            directories = [avail_directories[directory_id] for directory_id in
+                           directory_ids]
+            didextens[exten] = directories
+        return didextens
 
-    def update(self, contents):
-        display_items = contents.keys()
-        display_items.sort()
-        self.outputformat = ''
-        fmt = []
-        self.display_header = []
-        for k in display_items:
-            [title, type, defaultval, format] = contents.get(k)
-            self.display_header.append(title)
-            fmt.append(format)
-        self.outputformat = ';'.join(fmt)
-        # XXX make a csv output instead
-        # XXX handle type ? handle defaultval ?
-        return
 
-class Directory:
-    def __init__(self, dirid):
-        self.dirid = dirid
-        self.uri = ''
-        self.name = '(noname)'
+_APPLY_SUBS_REGEX = re.compile(r'\{([^}]+)\}')
 
-        self.display_reverse = '{db-fullname}'
-        self.match_direct = []
-        self.match_reverse = []
+def _apply_subs(display_elem, result):
+    fmt_string = display_elem['fmt']
+    # use of 1-element list since we can't rebind local variables in inner scope
+    # in python2
+    nb_subs = [0]
+    nb_succesfull_subs = [0]
+    def aux(m):
+        nb_subs[0] += 1
+        var_name = m.group(1)
+        if var_name in result:
+            nb_succesfull_subs[0] += 1
+            return result[var_name]
+        else:
+            return m.group()
+    fmted_string = _APPLY_SUBS_REGEX.sub(aux, fmt_string)
+    # use default value if there was at least one substitution tried
+    # but none were successful
+    if nb_subs[0] > 0 and nb_succesfull_subs[0] == 0:
+        fmted_string = display_elem.get('default', '')
+    return fmted_string
 
-        self.delimiter = ';'
-        self.sqltable = 'UNDEFINED'
-        return
 
-    def update(self, xivoconf_local):
-        self.fkeys = {}
-        for field, value in xivoconf_local.iteritems():
-            if field.startswith('field_'):
-                keyword = field.split('_')[1]
-                self.fkeys['db-%s' % keyword] = value
-            elif field in 'uri':
-                self.dbkind = value.split(':')[0]
-                self.uri = value
-                if self.dbkind.find('sql') >= 0:
-                    if value.find('?table=') > 0:
-                        self.uri = value.split('?table=')[0]
-                        self.sqltable = value.split('?table=')[1]
-            elif field == 'name':
-                self.name = value
-            elif field == 'delimiter':
-                self.delimiter = value
-            elif field == 'display_reverse':
-                if value:
-                    self.display_reverse = value[0]
-            elif field == 'match_direct':
-                self.match_direct = value
-            elif field == 'match_reverse':
-                self.match_reverse = value
-        return
+class Display(object):
+    def __init__(self, display_elems):
+        """
+        display_elems -- a list of dictionaries with the followings keys:
+          'title', 'default' and 'fmt'.
+        """
+        self._display_elems = display_elems
+        self.display_header = [e['title'] for e in display_elems]
+        self._map_fun = self._new_map_function()
+    
+    def format(self, results):
+        """Return an iterator over the formated results."""
+        return imap(self._map_fun, results)
+    
+    def _new_map_function(self):
+        def aux(result):
+            return ';'.join(_apply_subs(display_elem, result) for
+                            display_elem in self._display_elems)
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, contents):
+        # Example contents:
+        #   [{"title": "Numero",
+        #     "default": "",
+        #     "fmt": "{db-phone}"},
+        #    {"title":"Nom",
+        #     "default": "",
+        #     "fmt": "{db-fullname}"
+        #    }]
+        # XXX in fact, we are still expecting that contents be the old format
+        contents = list({'title': v[0], 'default': v[2], 'fmt': v[3]} for
+                        (_, v) in
+                        sorted(contents.iteritems(), key=itemgetter(0)))
+        return cls(contents)
 
-# - '*' (wildcard) support
-# - more than 1 result
-# - message for error/empty
-# - encodings
-# - avoid reconnections to already opened links (if applicable)
-# - better reverse vs. direct
-# - extend to 'internal'
 
-    def findpattern(self, searchpattern, reversedir):
-        fullstatlist = []
+def _get_key_mapping(contents):
+    # Return a dictionary mapping std key to src key
+    key_mapping = {}
+    for k, v in contents.iteritems():
+        if k.startswith('field_'):
+            # strip the leading 'field_' and add a leading 'db-'
+            std_key = 'db-' + k[6:]
+            # XXX right now we only handle 1 src key per std key
+            key_mapping[std_key] = v[0]
+    return key_mapping
 
-        if searchpattern == '':
+
+class CSVFileDirectoryDataSource(object):
+    def __init__(self, csv_file, delimiter, key_mapping):
+        """
+        csv_file -- the path to the CSV file
+        delimiter -- the character used to separate fields in the CSV file
+        key_mapping -- a dictionary mapping std key to list of CSV field name
+        """
+        self._csv_file = csv_file
+        self._delimiter = delimiter
+        self._key_mapping = key_mapping
+    
+    def lookup(self, string, fields):
+        """Do a lookup using string to match on the given list of src fields."""
+        encoded_string = string.encode('UTF-8')
+        fobj = urllib2.urlopen(self._csv_file)
+        try:
+            reader = csv.DictReader(fobj, delimiter=self._delimiter)
+            filter_fun = self._new_filter_function(encoded_string, fields,
+                                                   reader.fieldnames)
+            map_fun = self._new_map_function(reader.fieldnames)
+            def generator():
+                try:
+                    for result in imap(map_fun, ifilter(filter_fun, reader)):
+                        yield result
+                finally:
+                    fobj.close()
+            # this function is not an iterator because we want the fail fast
+            # behaviour that iterator/generator doesn't have
+            return generator()
+        except Exception:
+            fobj.close()
+            raise
+    
+    def _new_filter_function(self, string, requested_fields, available_fields):
+        lookup_fields = list(set(available_fields).intersection(requested_fields))
+        if not lookup_fields:
+            log.warning('Requested fields %s but only fields %s are available',
+                        requested_fields, available_fields)
+        lowered_string = string.lower()
+        def aux(row):
+            for field in lookup_fields:
+                if lowered_string in row[field].lower():
+                    return True
+            return False
+        return aux
+    
+    def _new_map_function(self, available_fields):
+        mapping = list((std_key, src_key) for
+                       (std_key, src_key) in self._key_mapping.iteritems() if
+                       src_key in available_fields)
+        if not mapping:
+            log.warning('Key mapping %s but only fields %s are available',
+                        self._key_mapping, available_fields)
+        def aux(row):
+            return dict((std_key, row[src_key]) for (std_key, src_key) in mapping)
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, ctid, contents):
+        """Return a new instance of this class from "configuration contents"
+        and a ctiserver instance.
+        
+        """
+        csv_file = contents['uri']
+        delimiter = contents.get('delimiter', ',')
+        key_mapping = _get_key_mapping(contents)
+        return cls(csv_file, delimiter, key_mapping)
+
+
+class SQLDirectoryDataSource(object):
+    def __init__(self, db_uri, key_mapping):
+        self._db_uri = db_uri
+        self._key_mapping = key_mapping
+        self._map_fun = self._new_map_fun()
+    
+    def lookup(self, string, fields):
+        # handle when fields is empty to simplify implementation
+        if not fields:
+            log.warning('No requested fields')
+            return []
+        
+        table, test_columns = self._get_table_and_columns_from_fields(fields)
+        request_beg = 'SELECT ${columns} FROM %s WHERE ' % table
+        request_end = ' OR '.join('%s LIKE %%s' % column for column in test_columns)
+        request = request_beg + request_end
+        params = ('%' + string + '%',) * len(test_columns)
+        columns = tuple(self._key_mapping.itervalues())
+        
+        conn_mgr = db_connection_manager.DbConnectionPool(self._db_uri)
+        connection = conn_mgr.get()
+        try:
+            cursor = connection['cur']
+            log.debug('Doing SQL request: %s', request)
+            cursor.query(request, columns, params)
+            def generator():
+                try:
+                    while True:
+                        row = cursor.fetchone()
+                        if row is None:
+                            break
+                        yield self._map_fun(row)
+                finally:
+                    conn_mgr.put()
+            return generator()
+        except Exception:
+            conn_mgr.put()
+            raise
+    
+    def _get_table_and_columns_from_fields(self, fields):
+        # Return a tuple (table id, list of column ids)
+        tables = set()
+        columns = set()
+        for field in fields:
+            table, column = field.split('.', 1)
+            tables.add(table)
+            columns.add(column)
+        if len(tables) != 1:
+            raise ValueError('fields must reference exactly 1 table: %s' % tables)
+        return tables.pop(), list(columns)
+    
+    def _new_map_fun(self):
+        def aux(row):
+            return dict(izip(self._key_mapping, row))
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, ctid, contents):
+        db_uri = contents['uri']
+        key_mapping = _get_key_mapping(contents)
+        return cls(db_uri, key_mapping)
+
+
+class InternalDirectoryDataSource(object):
+    def __init__(self, db_uri, key_mapping):
+        self._db_uri = db_uri
+        self._key_mapping = key_mapping
+        self._map_fun = self._new_map_fun()
+    
+    def lookup(self, string, fields):
+        # handle when fields is empty to simplify implementation
+        if not fields:
+            log.warning('No requested fields')
             return []
 
-        if self.dbkind in ['ldap', 'ldaps']:
-            ldap_filter = []
-            ldap_attributes = []
-            for fname in self.match_direct:
-                if searchpattern == '*':
-                    ldap_filter.append("(%s=*)" % fname)
-                else:
-                    ldap_filter.append("(%s=*%s*)" %(fname, searchpattern))
-
-            for listvalue in self.fkeys.itervalues():
-                for attrib in listvalue:
-                    if isinstance(attrib, unicode):
-                        ldap_attributes.append(attrib.encode('utf8'))
-                    else:
-                        ldap_attributes.append(attrib)
-
-            try:
-                results = None
-                if self.uri not in xivocti.ldapids:
-                    # first connection to ldap, or after failure
-                    ldapid = xivo_ldap.xivo_ldap(self.uri)
-                    if ldapid.ldapobj is not None:
-                        xivocti.ldapids[self.uri] = ldapid
-                else:
-                    # retrieve the connection already setup, if not yet deleted
-                    ldapid = xivocti.ldapids[self.uri]
-                    if ldapid.ldapobj is None:
-                        del xivocti.ldapids[self.uri]
-
-                # at this point, either we have a successful ldapid.ldapobj value, with xivocti.ldapids[self.uri] = ldapid
-                #                either ldapid.ldapobj is None, and self.uri not in xivocti.ldapids
-
-                if ldapid.ldapobj is not None:
-                    # if the ldapid had already been defined and setup, the failure would occur here
-                    try:
-                        results = ldapid.getldap('(|%s)' % ''.join(ldap_filter),
-                                                 ldap_attributes,
-                                                 searchpattern)
-                    except Exception:
-                        ldapid.ldapobj = None
-                        del xivocti.ldapids[self.uri]
-
-                if results is not None:
-                    for result in results:
-                        futureline = {'xivo-directory' : self.name}
-                        for keyw, dbkeys in self.fkeys.iteritems():
-                            for dbkey in dbkeys:
-                                if futureline.get(keyw, '') != '':
-                                    break
-                                elif dbkey in result[1]:
-                                    futureline[keyw] = result[1][dbkey][0]
-                                elif keyw not in futureline:
-                                    futureline[keyw] = ''
-                        fullstatlist.append(futureline)
-            except Exception:
-                log.exception('ldaprequest (directory)')
-
-        elif self.dbkind == 'phonebook':
-            if reversedir:
-                matchkeywords = self.match_reverse
-            else:
-                matchkeywords = self.match_direct
-            for iastid in xivocti.weblist['phonebook'].keys():
-                for k, v in xivocti.weblist['phonebook'][iastid].keeplist.iteritems():
-                    matchme = False
-                    for tmatch in matchkeywords:
-                        if v.has_key(tmatch):
-                            if reversedir:
-                                if v[tmatch].lstrip('0') == searchpattern.lstrip('0'):
-                                    matchme = True
-                            else:
-                                if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
-                                    matchme = True
-                    if matchme:
-                        futureline = {'xivo-directory' : self.name}
-                        for keyw, dbkeys in self.fkeys.iteritems():
-                            for dbkey in dbkeys:
-                                if dbkey in v.keys():
-                                    futureline[keyw] = v[dbkey]
-                        fullstatlist.append(futureline)
-
-        elif self.dbkind == 'file':
-            if reversedir:
-                matchkeywords = self.match_reverse
-            else:
-                matchkeywords = self.match_direct
-            fullstatlist = cti_directories_csv.lookup(searchpattern.encode('utf8'),
-                                                      self.uri,
-                                                      matchkeywords,
-                                                      self.fkeys,
-                                                      self.delimiter,
-                                                      self.name)
-
-        elif self.dbkind == 'http':
-            if not reversedir:
-                fulluri = self.uri
-                # add an ending slash if needed
-                if fulluri[8:].find('/') == -1:
-                    fulluri += '/'
-                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in self.match_direct])
-                n = 0
+        test_columns = fields
+        request_beg = 'SELECT ${columns} FROM userfeatures ' \
+                'LEFT JOIN linefeatures ON userfeatures.id = linefeatures.iduserfeatures ' \
+                'WHERE '
+        request_end = ' OR '.join('%s LIKE %%s' % column for column in test_columns)
+        request = request_beg + request_end
+        params = ('%' + string + '%',) * len(test_columns)
+        columns = tuple(self._key_mapping.itervalues())
+        
+        conn_mgr = db_connection_manager.DbConnectionPool(self._db_uri)
+        connection = conn_mgr.get()
+        try:
+            cursor = connection['cur']
+            log.debug('Doing SQL request: %s', request)
+            cursor.query(request, columns, params)
+            def generator():
                 try:
-                    f = urllib.urlopen(fulluri)
-                    # use f.info() to detect charset
-                    charset = 'utf-8'
-                    s = f.info().getheader('Content-Type')
-                    k = s.lower().find('charset=')
-                    if k >= 0:
-                        charset = s[k:].split(' ')[0].split('=')[1]                                    
-                    for line in f:
-                        if n == 0:
-                            header = line
-                            headerfields = header.strip().split(self.delimiter)
-                        else:
-                            ll = line.strip()
-                            if isinstance(ll, str): # dont try to decode unicode string.
-                                ll = ll.decode(charset)
-                            t = ll.split(self.delimiter)
-                            futureline = {'xivo-directory' : self.name}
-                            # XXX problem when badly set delimiter + index()
-                            for keyw, dbkeys in self.fkeys.iteritems():
-                                for dbkey in dbkeys:
-                                    idx = headerfields.index(dbkey)
-                                    futureline[keyw] = t[idx]
-                            fullstatlist.append(futureline)
-                        n += 1
-                    f.close()
-                except Exception:
-                    log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
-                if n == 0:
-                    log.warning('WARNING : %s is empty' % self.uri)
-                # we don't warn about "only one line" here since the filter has probably already been applied
-            else:
-                fulluri = self.uri
-                # add an ending slash if needed
-                if fulluri[8:].find('/') == -1:
-                    fulluri += '/'
-                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in self.match_reverse])
-                f = urllib.urlopen(fulluri)
-                # TODO : use f.info() to detect charset
-                fsl = f.read().strip()
-                if fsl:
-                    fullstatlist = [ {'xivo-directory' : self.name,
-                                      'db-fullname' : fsl}]
-                else:
-                    fullstatlist = []
+                    while True:
+                        row = cursor.fetchone()
+                        if row is None:
+                            break
+                        yield self._map_fun(row)
+                finally:
+                    conn_mgr.put()
+            return generator()
+        except Exception:
+            conn_mgr.put()
+            raise
+    
+    def _new_map_fun(self):
+        def aux(row):
+            return dict(izip(self._key_mapping, row))
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, ctid, contents):
+        db_uri = ctid.cconf.getconfig('ipbxes')[ctid.myipbxid]['userfeatures_db_uri']
+        key_mapping = _get_key_mapping(contents)
+        return cls(db_uri, key_mapping)
 
-        elif self.dbkind in ['sqlite', 'mysql']:
-            if searchpattern == '*':
-                whereline = ''
-            else:
-                # prevent SQL injection and make use of '*' wildcard possible
-                esc_searchpattern = searchpattern.replace("'", "\\'").replace('%', '\\%').replace('*', '%')
-                wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in self.match_direct]
-                whereline = 'WHERE ' + ' OR '.join(wl)
 
-            results = []
+class LDAPDirectoryDataSource(object):
+    def __init__(self, uri, key_mapping):
+        self._uri = uri
+        self._key_mapping = key_mapping
+        self._map_fun = self._new_map_fun()
+        self._xivo_ldap = None
+    
+    def lookup(self, string, fields):
+        ldap_filter = ['(%s=*%s*)' % (field, string) for field in fields]
+        ldap_attributes = []
+        for src_key in self._key_mapping.itervalues():
+            if isinstance(src_key, unicode):
+                ldap_attributes.append(src_key.encode('UTF-8'))
+            else:
+                ldap_attributes.append(src_key)
+        ldapid = self._try_connect()
+        if ldapid.ldapobj is not None:
             try:
-                conn = anysql.connect_by_uri(str(self.uri))
-                cursor = conn.cursor()
-                sqlrequest = 'SELECT ${columns} FROM %s %s' % (self.sqltable, whereline)
-                cursor.query(sqlrequest,
-                             tuple(self.match_direct),
-                             None)
-                results = cursor.fetchall()
-                conn.close()
-            except Exception:
-                log.exception('sqlrequest for %s' % self.uri)
-
-            for result in results:
-                futureline = {'xivo-directory' : self.name}
-                for keyw, dbkeys in self.fkeys.iteritems():
-                    for dbkey in dbkeys:
-                        if dbkey in self.match_direct:
-                            n = self.match_direct.index(dbkey)
-                            futureline[keyw] = result[n]
-                fullstatlist.append(futureline)
-
-        elif self.dbkind in ['internal']:
-            pass
-
-        elif self.dbkind in ['mssql']:
-            pass
-
+                results = ldapid.getldap('(|%s)' % ''.join(ldap_filter),
+                                         ldap_attributes, string)
+            except Exception, e:
+                log.warning('Error with LDAP request: %s', e)
+                self._xivo_ldap = None
+            else:
+                if results is not None:
+                    return imap(self._map_fun, results)
+        return []
+    
+    def _try_connect(self):
+        # Try to connect/reconnect to the LDAP if necessary
+        if self._xivo_ldap is None:
+            ldapid = xivo_ldap.xivo_ldap(self._uri)
+            if ldapid.ldapobj is not None:
+                self._xivo_ldap = ldapid
         else:
-            log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                        % (self.dbkind, self.dirid))
+            ldapid = self._xivo_ldap
+            if ldapid.ldapobj is None:
+                self._xivo_ldap = None
+        return ldapid
+    
+    def _new_map_fun(self):
+        def aux(ldap_result):
+            return dict((std_key, ldap_result[1][src_key][0]) for
+                        (std_key, src_key) in self._key_mapping.iteritems() if
+                        src_key in ldap_result[1])
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, ctid, contents):
+        uri = contents['uri']
+        key_mapping = _get_key_mapping(contents)
+        return cls(uri, key_mapping)
 
 
+class HTTPDirectoryDataSource(object):
+    def __init__(self, base_uri, delimiter, key_mapping):
+        self._base_uri = base_uri
+        self._delimiter = delimiter
+        self._key_mapping = key_mapping
+    
+    def lookup(self, string, fields):
+        uri = self._build_uri(string, fields)
+        fobj = urllib2.urlopen(uri)
+        try:
+            charset = self._get_result_charset(fobj)
+            try:
+                line = fobj.next()
+            except StopIteration:
+                raise ValueError('no lines in result from %s', uri)
+            else:
+                line = line.decode(charset).rstrip()
+                headers = line.split(self._delimiter)
+                map_fun = self._new_map_function(headers, charset)
+                def generator():
+                    try:
+                        for result in imap(map_fun, fobj):
+                            yield result
+                    finally:
+                        fobj.close()
+                return generator()
+        except Exception:
+            fobj.close()
+            raise
+    
+    def _build_uri(self, string, fields):
+        uri = self._base_uri
+        if uri[8:].find('/') == -1:
+            uri += '/'
+        encoded_string = urllib.quote(string.encode('UTF-8'))
+        uri += '?' + '&'.join(field + '=' + encoded_string for field in fields)
+        return uri
+    
+    def _get_result_charset(self, fobj):
+        charset = 'UTF-8'
+        content_type = fobj.info().getheader('Content-Type')
+        if content_type:
+            i = content_type.lower().find('charset=')
+            if i >= 0:
+                charset = content_type[i:].split(' ', 1)[0].split('=', 1)[1]
+        return charset
+    
+    def _new_map_function(self, headers, charset):
+        headers_map = dict((header, idx) for (idx, header) in enumerate(headers))
+        mapping = [(std_key, headers_map[src_key]) for (std_key, src_key) in
+                   self._key_mapping.iteritems() if
+                   src_key in headers_map]
+        def aux(line):
+            line = line.decode(charset).rstrip()
+            tokens = line.split(self._delimiter)
+            return dict((std_key, tokens[idx]) for (std_key, idx) in mapping)
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, ctid, contents):
+        base_uri = contents['uri']
+        delimiter = contents.get('delimiter', ',')
+        key_mapping = _get_key_mapping(contents)
+        return cls(base_uri, delimiter, key_mapping)
 
-        if reversedir:
-            display_reverse = self.display_reverse
-            if fullstatlist:
-                for k, v in fullstatlist[0].iteritems():
-                    if isinstance(v, unicode):
-                        display_reverse = display_reverse.replace('{%s}' % k, v)
-                    elif isinstance(v, str):
-                        # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
-                        # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
-                        display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
-                    else:
-                        log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
-                e = fullstatlist[0]
-                e.update({'dbr-display' : display_reverse})
-        return fullstatlist
+
+class PhonebookDirectoryDataSource(object):
+    def __init__(self, phonebook_list, key_mapping):
+        self._phonebook_list = phonebook_list
+        self._key_mapping = key_mapping
+        self._map_fun = self._new_map_function()
+    
+    def lookup(self, string, fields):
+        filter_fun = self._new_filter_function(string, fields)
+        return imap(self._map_fun, ifilter(filter_fun,
+                                           self._phonebook_list.keeplist.itervalues()))
+    
+    def _new_filter_function(self, string, fields):
+        lowered_string = string.lower()
+        def aux(phonebook_entry):
+            for field in fields:
+                if field in phonebook_entry:
+                    if lowered_string in phonebook_entry[field].lower():
+                        return True
+            return False
+        return aux
+    
+    def _new_map_function(self):
+        def aux(phonebook_entry):
+            return dict((std_key, phonebook_entry[src_key]) for (std_key, src_key) in
+                        self._key_mapping.iteritems() if
+                        src_key in phonebook_entry)
+        return aux
+    
+    @classmethod
+    def new_from_contents(cls, ctid, contents):
+        phonebook_list = ctid.safe[ctid.myipbxid].xod_config['phonebooks']
+        key_mapping = _get_key_mapping(contents)
+        return cls(phonebook_list, key_mapping)
+
+
+class DirectoryAdapter(object):
+    """Adapt a DirectoryDataSource instance to the Directory interface,
+    i.e. to something with a name attribute, a lookup_direct and
+    lookup_reverse method, etc...
+    
+    """
+    def __init__(self, directory_src, name, match_direct, match_reverse):
+        self._directory_src = directory_src
+        self.name = name
+        self._match_direct = match_direct
+        self._match_reverse = match_reverse
+        self._map_fun = self._new_map_function()
+    
+    def _new_map_function(self):
+        def aux(result):
+            result['xivo-directory'] = self.name
+            return result
+        return aux
+    
+    def lookup_direct(self, string):
+        return imap(self._map_fun, self._directory_src.lookup(string, self._match_direct))
+    
+    def lookup_reverse(self, string):
+        return self._directory_src.lookup(string, self._match_reverse)
+    
+    @classmethod
+    def new_from_contents(cls, directory, contents):
+        name = contents['name']
+        match_direct = contents['match_direct']
+        match_reverse = contents['match_reverse']
+        return cls(directory, name, match_direct, match_reverse)
+
+
+class ContextsMgr(object):
+    def __init__(self):
+        self.contexts = {}
+        self._old_contents = {}
+    
+    def update(self, avail_displays, avail_directories, contents):
+        # remove old contexts
+        # deleting a key will raise a RuntimeError if you do not use .keys() here
+        for context_id in self.contexts.keys():
+            if context_id not in contents:
+                del self.contexts[context_id]
+        # add/update contexts
+        for context_id, context_contents in contents.iteritems():
+            if context_contents != self._old_contents.get(context_id):
+                try:
+                    self.contexts[context_id] = Context.new_from_contents(
+                            avail_displays, avail_directories, context_contents)
+                except Exception:
+                    log.error('Error while creating context %s from %s',
+                              context_id, context_contents, exc_info=True)
+        self._old_contents = contents
+
+
+class DisplaysMgr(object):
+    def __init__(self):
+        self.displays = {}
+        self._old_contents = {}
+    
+    def update(self, contents):
+        # remove old displays
+        # deleting a key will raise a RuntimeError if you do not use .keys() here
+        for display_id in self.displays.keys():
+            if display_id not in contents:
+                del self.displays[display_id]
+        # add/update displays
+        for display_id, display_contents in contents.iteritems():
+            if display_contents != self._old_contents.get(display_id):
+                try:
+                    self.displays[display_id] = Display.new_from_contents(display_contents)
+                except Exception:
+                    log.error('Error while creating display %s from %s',
+                              display_id, display_contents, exc_info=True)
+        self._old_contents = contents
+
+
+class DirectoriesMgr(object):
+    _DIRECTORY_SRC_CLASSES = {
+        'file': CSVFileDirectoryDataSource,
+        'http': HTTPDirectoryDataSource,
+        'internal': InternalDirectoryDataSource,
+        'ldap': LDAPDirectoryDataSource,
+        'ldaps': LDAPDirectoryDataSource,
+        'phonebook': PhonebookDirectoryDataSource,
+        'sqlite': SQLDirectoryDataSource,
+        'mysql': SQLDirectoryDataSource,
+        'postgresql': SQLDirectoryDataSource,
+    }
+    
+    def __init__(self):
+        self.directories = {}
+        self._old_contents = {}
+    
+    def update(self, ctid, contents):
+        # remove old directories
+        # deleting a key will raise a RuntimeError if you do not use .keys() here
+        for directory_id in self.directories.keys():
+            if directory_id not in contents:
+                del self.directories[directory_id]
+        # add/update directories
+        for directory_id, directory_contents in contents.iteritems():
+            if directory_contents != self._old_contents.get(directory_id):
+                try:
+                    class_ = self._get_directory_class(directory_contents)
+                    directory_src = class_.new_from_contents(ctid, directory_contents)
+                    directory = DirectoryAdapter.new_from_contents(directory_src, directory_contents)
+                    self.directories[directory_id] = directory
+                except Exception:
+                    log.error('Error while creating directory %s from %s',
+                              directory_id, directory_contents, exc_info=True)
+        self._old_contents = contents
+    
+    def _get_directory_class(self, directory_contents):
+        uri = directory_contents['uri']
+        kind = uri.split(':', 1)[0]
+        return self._DIRECTORY_SRC_CLASSES[kind]

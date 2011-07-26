@@ -282,10 +282,10 @@ class INFO(Interfaces):
                 elif usefulmsg.startswith('reverse '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
-                        dirnames = command_args[1].split(',')
+                        context = command_args[1]
                         numbers = command_args[2:]
                         for number in numbers:
-                            reverses = self.ctid.commandclass.findreverse(dirnames, number)
+                            reverses = self.ctid.safe[self.ctid.myipbxid].findreverse(context, '*', number)
                             for number, rep in reverses.iteritems():
                                 if isinstance(rep, unicode):
                                     clireply.append('%s %s' % (number, rep.encode('utf8')))

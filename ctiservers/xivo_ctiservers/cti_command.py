@@ -443,12 +443,14 @@ class Command:
         return reply
 
     def regcommand_directory(self):
-        reply = {}
-        print self.commanddict
-        userprops = self.rinnerdata.xod_config['users'].keeplist.get(self.ruserid)
-        # userprops.get('entityid') => context ?
-        result = self.rinnerdata.getcustomers('mamaop', self.commanddict.get('pattern'))
-        return reply
+        # Since there's no direct, unique link between a user and a context in
+        # xivo 1.2, contrarily to xivo 1.1, we always search for "customers"
+        # in the "default" directory context.
+        #
+        # This implies is that it's useless to add more "directory context"
+        # in the CTI server configuration.
+        result = self.rinnerdata.getcustomers('default', self.commanddict.get('pattern'))
+        return result
 
     def regcommand_history(self):
         reply = {}

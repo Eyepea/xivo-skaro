@@ -26,10 +26,7 @@ __author__    = 'Corentin Le Gall'
 
 import logging
 import urllib2
-import sys
 import cjson
-
-from xivo_ctiservers import cti_directories
 
 log = logging.getLogger('cti_config')
 
@@ -37,9 +34,6 @@ class Config:
     def __init__(self, * urilist):
         self.urilist = urilist
         self.ipwebs = None
-        self.ctxlist = {}
-        self.dpylist = {}
-        self.dirlist = {}
         self.xc_json = {}
         self.overconf = None
         return
@@ -67,7 +61,7 @@ class Config:
             response = urllib2.urlopen(uri)
             self.json_config = response.read().replace('\/', '/')
             self.xc_json = cjson.decode(self.json_config)
-        except:
+        except Exception:
             log.exception('fetch url %s' % uri)
 
         for profile, profdef in self.xc_json.get('profiles', {}).iteritems():
@@ -79,11 +73,6 @@ class Config:
                         del xlet_attr[2]
                     if xlet_attr[1] == 'grid':
                         del xlet_attr[2]
-
-        try:
-            self.setdirconfigs()
-        except:
-            log.exception('setdirconfigs')
 
         self.translate()
 
@@ -115,20 +104,6 @@ class Config:
             cdruri = v.get('cdr_db_uri')
             v['cdr_db_uri'] = cdruri.replace('@localhost/', '@%s/' % self.ipwebs)
         return
-
-    def setdirconfigs(self):
-        for dirid, dirdet in self.xc_json.get('directories', {}).iteritems():
-            if dirid not in self.dirlist:
-                self.dirlist[dirid] = cti_directories.Directory(dirid)
-            self.dirlist[dirid].update(dirdet)
-        for dpyid, dpydet in self.xc_json.get('displays', {}).iteritems():
-            if dpyid not in self.dpylist:
-                self.dpylist[dpyid] = cti_directories.Display()
-            self.dpylist[dpyid].update(dpydet)
-        for contextname, contextdef in self.xc_json.get('contexts', {}).iteritems():
-            if contextname not in self.ctxlist:
-                self.ctxlist[contextname] = cti_directories.Context()
-            self.ctxlist[contextname].update(contextdef)
 
     def getconfig(self, key = None):
         if key:

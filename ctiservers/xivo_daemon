@@ -149,7 +149,10 @@ class ctiserver:
             formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
                                           % LOGDAEMONNAME)
             logfilehandler.setFormatter(formatter)
-            logging.getLogger('').addHandler(logfilehandler)
+            root_logger = logging.getLogger()
+            root_logger.addHandler(logfilehandler)
+            if DEBUG_MODE:
+                root_logger.setLevel(logging.DEBUG)
 
         except Exception:
             log.exception('logfilehandler')
@@ -353,6 +356,7 @@ class ctiserver:
             # interface : safe deposit
             self.safe[self.myipbxid] = innerdata.Safe(self, self.myipbxid,
                                                       ipbxconfig.get('urllists'))
+            self.safe[self.myipbxid].update_directories()
             # interface : AMI
             self.myami[self.myipbxid] = interface_ami.AMI(self, self.myipbxid,
                                                           ipbxconfig.get('ipbx_connection'))

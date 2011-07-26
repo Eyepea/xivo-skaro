@@ -57,8 +57,14 @@ class DbConnectionPool:
             DbConnectionPool._pool[db_uri].put(connection)
 
     def __enter__(self):
-        self._connection = DbConnectionPool._pool[self._db_uri].get()
-        return self._connection
+        return self.get()
 
     def __exit__(self, type, value, traceback):
+        self.put()
+    
+    def get(self):
+        self._connection = DbConnectionPool._pool[self._db_uri].get()
+        return self._connection
+    
+    def put(self):
         DbConnectionPool._pool[self._db_uri].put(self._connection)

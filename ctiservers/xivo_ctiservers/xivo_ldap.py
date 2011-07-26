@@ -39,7 +39,7 @@ log = logging.getLogger('ldap')
 class xivo_ldap:
     def __init__(self, iuri):
         self.iuri    = iuri
-        self.ldapopj = None
+        self.ldapobj = None
         self.uri     = None
         self.dbname  = None
 

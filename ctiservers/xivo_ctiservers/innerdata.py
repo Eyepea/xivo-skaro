@@ -38,6 +38,7 @@ import Queue
 from xivo_ctiservers import lists
 import cti_urllist
 from xivo_ctiservers.lists import *
+from xivo_ctiservers import cti_directories
 from xivo_ctiservers import cti_sheets
 from xivo_ctiservers import db_connection_manager
 
@@ -170,6 +171,10 @@ class Safe:
         self.channels = {}
         self.queuemembers = {}
         self.faxes = {}
+        
+        self.displays_mgr = cti_directories.DisplaysMgr()
+        self.contexts_mgr = cti_directories.ContextsMgr()
+        self.directories_mgr = cti_directories.DirectoriesMgr()
 
         self.ctistack = []
 
@@ -1429,8 +1434,23 @@ class Safe:
         Define here the tasks one would like to complete on a regular basis.
         """
         # like self.logout_all_agents(), according to 'regupdates'
-        return
-
+        self.update_directories() 
+    
+    def update_directories(self):
+        # This function must be called after a certain amount of initialization
+        # went by in the ctid object since some of the directories depends on
+        # some information which is not available during this Safe __init__
+        display_contents = self.ctid.cconf.getconfig('displays')
+        self.displays_mgr.update(display_contents)
+        
+        directories_contents = self.ctid.cconf.getconfig('directories')
+        self.directories_mgr.update(self.ctid, directories_contents)
+        
+        contexts_contents = self.ctid.cconf.getconfig('contexts')
+        self.contexts_mgr.update(self.displays_mgr.displays,
+                                 self.directories_mgr.directories,
+                                 contexts_contents)
+    
     def version(self):
         return '1.2-skaro-githash-gitdate'
 
@@ -1454,86 +1474,38 @@ class Safe:
 
     # directory lookups entry points - START
 
-    def get_matching_dirs(self, context, exten = None):
-        if context in self.ctid.cconf.ctxlist:
-            ctxdef = self.ctid.cconf.ctxlist.get(context)
+    def findreverse(self, context, did_number, number):
+        """
+        did_number -- the called number
+        number -- the calling number, i.e. the number we want to get
+          information about
+        """
+        self.log.debug('findreverse %s %s %s', context, did_number, number)
+        try:
+            context_obj = self.contexts_mgr.contexts[context]
+        except KeyError:
+            self.log.error('findreverse: undefined context: %s', context)
+            return {}
         else:
-            ctxdef = self.ctid.cconf.ctxlist.get('*', None)
-        if not ctxdef:
-            self.log.warning('context %s not defined' % context)
-            return [], None
-        # ctxdef defines the context properties : list of directories + display options
-        if exten is None:
-            # exten will be None in direct search cases
-            return ctxdef.directories, ctxdef.display
-        else:
-            if exten in ctxdef.didextens:
-                dirids = ctxdef.didextens.get(exten)
-            else:
-                dirids = ctxdef.didextens.get('*', [])
-            return dirids, None
-        return [], None
-
-    def findreverse(self, context, exten, number):
-        self.log.info('findreverse %s %s %s' % (context, exten, number))
-        if not number.isdigit():
-            return
-        dirlist, dummy = self.get_matching_dirs(context, exten)
-
-        itemdir = {}
-        for dirid in dirlist:
-            dirdef = self.ctid.cconf.dirlist.get(dirid)
-            try:
-                y = dirdef.findpattern(number, True)
-            except Exception:
-                self.log.exception('(findreverse) %s %s %s' % (dirlist, dirid, number))
-                y = []
-            if y:
-                itemdir['xivo-reverse-nresults'] = str(len(y))
-                for g, gg in y[0].iteritems():
-                    itemdir[g] = gg
-        return itemdir
+            lookup_results = context_obj.lookup_reverse(did_number, number)
+            result = {}
+            for lookup_result in lookup_results:
+                result.update(lookup_result)
+            result['xivo-reverse-nresults'] = str(len(lookup_results))
+            return result
 
     def getcustomers(self, context, pattern):
-        fulllist = []
-
-        dirids, dpyid = self.get_matching_dirs(context)
-
-        for dirid in dirids:
-            dirdef = self.ctid.cconf.dirlist.get(dirid)
-            try:
-                y = dirdef.findpattern(pattern, False)
-                fulllist.extend(y)
-            except Exception:
-                self.log.exception('getcustomers (%s)' % dirid)
-
-        # fulllist is the unformatted list of results, coming from all directories
-
-        mylines = []
-
-        if not dpyid or dpyid not in self.ctid.cconf.dpylist:
-            self.log.warning('display %s not defined' % dpyid)
-            return {'status' : 'ko', 'reason' : 'undefined_display'}
-
-        dpydef = self.ctid.cconf.dpylist.get(dpyid)
-        for itemdir in fulllist:
-            basestr = dpydef.outputformat
-            for k, v in itemdir.iteritems():
-                # loop over set variables
-                try:
-                    basestr = basestr.replace('{%s}' % k, v.decode('utf8'))
-                except UnicodeEncodeError:
-                    basestr = basestr.replace('{%s}' % k, v)
-            mylines.append(basestr)
-
-        uniq = {}
-        uniq_mylines = []
-        for fsl in [uniq.setdefault(e,e) for e in sorted(mylines) if e not in uniq]:
-            uniq_mylines.append(fsl)
-
-        tosend = { 'status' : 'ok', 'header' : dpydef.display_header,
-                   'result' : uniq_mylines }
-        return tosend
+        try:
+            context_obj = self.contexts_mgr.contexts[context]
+        except KeyError:
+            self.log.error('getcustomers: undefined context: %s', context)
+            return {'status': 'ko', 'reason': 'undefined_context'}
+        else:
+            headers, resultlist = context_obj.lookup_direct(pattern)
+            # remove any duplicated line
+            resultlist = list(set(resultlist))
+            return {'status': 'ok', 'headers': headers,
+                    'resultlist': resultlist}
 
     # directory lookups entry points - STOP
 

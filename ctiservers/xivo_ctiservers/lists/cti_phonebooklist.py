@@ -33,4 +33,35 @@ class PhonebookList(AnyList):
         self.anylist_properties = { 'name' : 'phonebook',
                                     'urloptions' : (1, 5, True)}
         AnyList.__init__(self, newurls)
-        return
+        self.commandclass = self
+        self.getter = '_getphonebook'
+
+    def setcommandclass(self, commandclass):
+        # WARNING: this is a hack, i.e. we are overriding the setcommandclass
+        # so that it's not possible to change the commandclass, and this
+        # breaks with the expected behaviour of the setcommandclass method
+        log.debug("In PhonebookList: ignoring setcommandclass")
+
+    def setgetter(self, getter):
+        # WARNING: this is a hack, see setcommandclass for more info.
+        log.debug("In PhonebookList: ignoring setgetter")
+
+    def _getphonebook(self, jsonreply):
+        pblist = {}
+        for pitem in jsonreply:
+            pbitem = {}
+            for i1, v1 in pitem.iteritems():
+                if isinstance(v1, dict):
+                    for i2, v2 in v1.iteritems():
+                        if isinstance(v2, dict):
+                            for i3, v3 in v2.iteritems():
+                                idx = '.'.join([i1, i2, i3])
+                                pbitem[idx] = v3
+                        else:
+                            idx = '.'.join([i1, i2])
+                            pbitem[idx] = v2
+                else:
+                    pbitem[i1] = v1
+            myid = pbitem.get('phonebook.id')
+            pblist[myid] = pbitem
+        return pblist
