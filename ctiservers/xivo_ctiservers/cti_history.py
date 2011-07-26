@@ -44,7 +44,7 @@ class History:
     def fetch(self, request):
         with db_connection_manager.DbConnectionPool(self.uri) as connection:
             connection['cur'].query(request, self.columns, (self.likestring,))
-        results = connection['cur'].fetchall()
+            results = connection['cur'].fetchall()
         dresults = []
         for r in results:
             dresults.append(dict(zip(self.columns, r)))
