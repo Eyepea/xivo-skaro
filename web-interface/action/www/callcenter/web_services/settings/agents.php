@@ -30,11 +30,12 @@ switch($act)
 	case 'view':
 		$appagent = &$ipbx->get_application('agent');
 
-		$nocomponents = array('contextmember'	=> true);
+		$nocomponents = array('contextmember' => true);
 
 		if(($info = $appagent->get($_QRY->get('id'),
 					   null,
-					   $nocomponents)) === false)
+					   $nocomponents)) === false
+		&& ($info = $appagent->get_by_number($_QRY->get('id'))) === false)
 		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
@@ -73,6 +74,17 @@ switch($act)
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);
+		break;
+	case 'search':
+		$appagent = &$ipbx->get_application('agent',null,false);
+
+		if(($list = $appagent->get_agents_search($_QRY->get('search'))) === false)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:

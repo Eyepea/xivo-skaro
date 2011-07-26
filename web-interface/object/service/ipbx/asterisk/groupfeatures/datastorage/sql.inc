@@ -26,13 +26,16 @@ class xivo_service_asterisk_groupfeatures_sql extends xivo_service_asterisk_abst
 	var $_autoincrement = true;
 	var $_unique  		= array('name',array('name','number'));
 
-	function get_all_wherein($id,$where)
+	function get_all_wherein($id,$where,$order=null,$limit=null)
 	{
 		$this->_dso->new_select($this->_table,'*');
 
-		$this->_dso->wherein('id',$where);
+		$this->_dso->wherein($id,$where);
 
-		$r = $this->_dso->select_all('',true,false,'id');
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all('',true,false,$id);
 
 		if(empty($r) === true)
 			$r = false;

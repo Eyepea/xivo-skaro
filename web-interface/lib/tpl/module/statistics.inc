@@ -21,25 +21,25 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
 class dwho_tpl_statistics extends dwho_tpl_module
 {
-    public     $_tpl            = null;
-    private     $_xs            = null;
-    private  $_basedir        = '';
-    private  $_baseurl        = '';
-    private  $_csv            = '';
-    private  $_name            = '';
+    public   $_tpl           = null;
+    private  $_xs            = null;
+    private  $_basedir       = '';
+    private  $_baseurl       = '';
+    private  $_csv           = '';
+    private  $_name          = '';
     private  $_col_struct    = '';
-    private  $_row_key        = '';
+    private  $_row_key       = '';
     private  $_ignore_col    = array('rowdata');
     private  $_struct        = array();
-    private  $_data            = array();
-    private  $_data_custom    = array();
+    private  $_data          = array();
+    private  $_data_custom   = array();
     private  $_data_table    = array();
-    private  $_data_foot    = array();
+    private  $_data_foot     = array();
     private  $_result        = array();
-    private  $_prepare_rows    = array();
-    private  $_full_rows    = array();
-    private  $_prepare_cols    = array();
-    private     $_var_to_eval    = array();
+    private  $_prepare_rows  = array();
+    private  $_full_rows     = array();
+    private  $_prepare_cols  = array();
+    private  $_var_to_eval   = array();
 
     public function __construct(&$tpl)
     {
@@ -669,7 +669,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
         $return .= '</tfoot>';
 
         $return .= '</table>';
-        
+
         $url = &$this->_tpl->get_module('url');
 
         $return .= $divtoken;
@@ -682,7 +682,10 @@ class dwho_tpl_statistics extends dwho_tpl_module
         $url = &$this->_tpl->get_module('url');
         if (isset($this->_data_custom['axetype']) === false)
             return(false);
-        
+
+        if (empty($this->_data_table) === true)
+            return($this->bbf('no_data_for-'.$this->_name));
+
         $axetype = $this->_data_custom['axetype'];
 
         if (is_object($this->_xs) === true)

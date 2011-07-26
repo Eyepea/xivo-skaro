@@ -22,7 +22,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 if(xivo::load_class('xivo_statistics_period',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'statistics','period',false) === false)
 	die('Can\'t load xivo_statistics_period object');
-	
+
 $stats_period = new xivo_statistics_period(&$_XS);
 $stats_period->get_data();
 
@@ -98,6 +98,7 @@ $_TPL->set_var('table1',$tpl_statistics);
 $_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
 $_TPL->set_var('showdashboard_call_center',true);
+$_TPL->set_var('list_period',$conf['periods']);
 
 if($act === 'exportcsv')
 {

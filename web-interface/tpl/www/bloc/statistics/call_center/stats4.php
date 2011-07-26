@@ -23,6 +23,7 @@ $table1 = $this->get_var('table1');
 $axetype = $this->get_var('axetype');
 $listrow = $this->get_var('listrow');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
+$periods = $this->get_var('list_period');
 
 ?>
 <div id="sr-users" class="b-infos b-form">
@@ -33,24 +34,37 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 	</h3>
 	<div class="sb-content">
 <?php
-	if (($msg = $table1->get_error()) !== false):
-		echo $msg;
-	else :
+
+    if ($periods !== false):
+        foreach ($periods as $k => $v):
+            echo $this->bbf('col_t'.$k);
+            if (empty($v['end']) === true):
+            	echo ': ',$v['beg'], 's ';
+            else:
+                echo ': ',$v['beg'], '-', $v['end'], 's ';
+            endif;
+            echo ' | ';
+        endforeach;
+    endif;
+
+if (($msg = $table1->get_error()) !== false):
+	echo $msg;
+else :
 ?>
-		<div class="sb-list"> 
+		<div class="sb-list">
 <?php
 		echo $table1->infos_html();
 		echo $table1->render_html(false);
 ?>
 		</div>
 		<div class="sb-graph">
-<?php		
+<?php
 		$xivo_jqplot->get_result('chart1');
 		$xivo_jqplot->get_result('chart2');
 ?>
 		</div>
 <?php
-	endif;
+endif;
 ?>
     </div>
 	<div class="sb-foot xspan">

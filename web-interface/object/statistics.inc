@@ -131,6 +131,9 @@ class xivo_statistics
 		// Init last day for the month
 		$dend = $this->get_lastday_for_month($year,$month);
 
+		if ($dend > time())
+		    $dend = time();
+
 		if (isset($conf['default_delta']) === true)
 		{
 		    // Choose this day because interval is set to 0
@@ -139,8 +142,22 @@ class xivo_statistics
 			else
 				$dbeg = strtotime($conf['default_delta'], $dend);
 		}
-		else // initialize dbeg at -1 day by default
+		// initialize dbeg at -1 day by default
+		else
 			$dbeg = strtotime('-1 day', $dend);
+
+		$conf = $this->_conf['stats_conf'];
+
+		$i=0;
+		while ($i<6)
+        {
+            $dayname = strtolower(date('l',$dbeg));
+            if (isset($conf[$dayname]) === true
+            && $conf[$dayname] === true)
+                break;
+            $dbeg = strtotime('-1 day',$dbeg);
+            $i++;
+        }
 
 		$infocal = array();
 		$infocal['dbeg'] 	= date('Y-m-d',$dbeg);
@@ -832,7 +849,6 @@ class xivo_statistics
 				{
 					if($this->_conf['incall'] !== false)
 					{
-						asort($this->_conf['incall']);
 						$incall = array_values($this->_conf['incall']);
 						$nb = count($incall);
 						for($i=0;$i<$nb;$i++)
@@ -887,7 +903,6 @@ class xivo_statistics
 				{
 					if($this->_conf['agent'] !== false)
 					{
-						asort($this->_conf['agent']);
 						$agent = array_values($this->_conf['agent']);
 						$nb = count($agent);
 						for($i=0;$i<$nb;$i++)
@@ -901,7 +916,6 @@ class xivo_statistics
 
 					if ($this->_conf['user'] !== false)
 					{
-						asort($this->_conf['user']);
 						$user = array_values($this->_conf['user']);
 						$nb = count($user);
 						for($i=0;$i<$nb;$i++)
@@ -972,7 +986,6 @@ class xivo_statistics
 				{
 					if($this->_conf['queue'] !== false)
 					{
-						asort($this->_conf['queue']);
 						$queue = array_values($this->_conf['queue']);
 						$nb = count($queue);
 						for($i=0;$i<$nb;$i++)
@@ -986,7 +999,6 @@ class xivo_statistics
 
 					if($this->_conf['group'] !== false)
 					{
-						asort($this->_conf['group']);
 						$group = array_values($this->_conf['group']);
 						$nb = count($group);
 						for($i=0;$i<$nb;$i++)
@@ -1105,7 +1117,7 @@ class xivo_statistics
 		if (($list = $this->get_list_by_type('queue')) === false)
 			return(false);
 
-		asort($list);
+		#asort($list);
 		return($list);
 	}
 
@@ -1514,7 +1526,7 @@ class xivo_statistics
 		if (($rs = dwho_file::put_contents($file,json_encode($data))) === false)
 			$rs = 'error';
 
-		echo "save data to $file => ",dwho_byte_to($rs)," write. \n";
+		#echo "save data to $file => ",dwho_byte_to($rs)," write. \n";
 
 		return($rs);
 	}
@@ -1598,36 +1610,38 @@ class xivo_statistics
 
 			if ($erase !== false)
 			{
-				echo "$report -- mode erase enabled >> creation required... \n";
-				echo "$report >> create in progress......... \n";
+				echo "$report -- mode erase enabled >> creation required: ";
+				echo " in progress......... ";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
-				echo "$report >> creation finished \n";
+				echo "  finished \n";
 			}
 
 			if (dwho_file::is_f_r($filemonth) === false)
 			{
-				echo "$report -- not exist >> creation required... \n";
-				echo "$report >> create in progress......... \n";
+				echo "$report -- not exist >> creation required: ";
+				echo " in progress......... \n";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
+				echo "  finished \n";
 			}
 			else
 			{
-				echo "$report -- already exist >> check if is up to date... \n";
+				echo "$report -- already exist >> check if is up to date: ";
 
-				if($lastdayformonth === $lastdayforcache)
+				if(date('m') !== $month
+				&& $lastdayformonth === $lastdayforcache)
 				{
-					echo "month $index is up to date. \n";
+					echo "Yes. continue.\n";
 					continue;
 				}
-				echo "month $index is not up to date. \n";
-				echo "$report >> update in progress......... \n";
+				echo "No.  update in progress......  ";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
+				echo "  finished \n";
 			}
 		}
 		return(true);

@@ -36,13 +36,13 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		echo $msg;
 	else :
 ?>
-		<div class="sb-list"> 
+		<div class="sb-list">
 <?php
 		echo $table1->infos_html();
 		echo $table1->render_html(false);
 ?>
 		</div>
-<?php		
+<?php
 		$xivo_jqplot->get_result('chart1');
 		$xivo_jqplot->get_result('chart2');
 	endif;

@@ -24,13 +24,13 @@ class xivo_service_asterisk_queuefeatures_sql extends xivo_service_asterisk_abst
 {
 	var $_unique	= 'name';
 	var $_disable	= null;
-	
+
 	function get_by_name($name)
 	{
 		$this->_dso->new_select($this->_table,'*');
 
 		$this->_dso->where(array('name' => (string) $name));
-		
+
 		$r = $this->_dso->select_single();
 
 		if(empty($r) === true)
@@ -38,12 +38,15 @@ class xivo_service_asterisk_queuefeatures_sql extends xivo_service_asterisk_abst
 
 		return($r);
 	}
-	
-	function get_all_wherein($id,$where)
+
+	function get_all_wherein($id,$where,$order=null,$limit=null)
 	{
 		$this->_dso->new_select($this->_table,'*');
 
 		$this->_dso->wherein('id',$where);
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
 
 		$r = $this->_dso->select_all('',true,false,'id');
 

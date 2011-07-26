@@ -68,10 +68,10 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 	{
 		return(parent::get_where($arr,$delete));
 	}
-	
-	function get_all_wherein($id,$where)
+
+	function get_all_wherein($id,$where,$order=null,$limit=null)
 	{
-		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
+		if(($list = $this->_dso->get_all_wherein($id,$where,$order,$limit)) === false)
 			return(false);
 
 		return($list);

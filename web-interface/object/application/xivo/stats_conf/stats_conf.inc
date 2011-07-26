@@ -145,7 +145,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		}
 
 		if($this->_queuefeatures === false
-		|| ($this->_info['queue'] = $this->_queuefeatures->get_all_wherein('id',$tmp)) === false
+		|| ($this->_info['queue'] = $this->_queuefeatures->get_all_wherein('id',$tmp,array('name' => SORT_ASC))) === false
 		|| empty($this->_info['queue']) === true)
 			return(false);
 
@@ -177,7 +177,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		}
 
 		if($this->_groupfeatures === false
-		|| ($this->_info['group'] = $this->_groupfeatures->get_all_wherein('id',$tmp)) === false
+		|| ($this->_info['group'] = $this->_groupfeatures->get_all_wherein('id',$tmp,array('name' => SORT_ASC))) === false
 		|| empty($this->_info['group']) === true)
 			return(false);
 
@@ -204,8 +204,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		foreach($rs as $qid)
 			array_push($tmp,$qid['agentfeatures_id']);
 
+		$order = array();
+		$order['lastname'] = SORT_ASC;
+		$order['firstname'] = SORT_ASC;
+
 		if($this->_agentfeatures === false
-		|| ($this->_info['agent'] = $this->_agentfeatures->get_all_wherein('id',$tmp)) === false
+		|| ($this->_info['agent'] = $this->_agentfeatures->get_all_wherein('id',$tmp,$order)) === false
 		|| empty($this->_info['agent']) === true)
 			return(false);
 
@@ -228,8 +232,12 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		foreach($rs as $qid)
 			array_push($tmp,$qid['userfeatures_id']);
 
+		$order = array();
+		$order['lastname'] = SORT_ASC;
+		$order['firstname'] = SORT_ASC;
+
 		if($this->_userfeatures === false
-		|| ($this->_info['user'] = $this->_userfeatures->get_all_wherein('id',$tmp)) === false
+		|| ($this->_info['user'] = $this->_userfeatures->get_all_wherein('id',$tmp,$order)) === false
 		|| empty($this->_info['user']) === true)
 			return(false);
 
