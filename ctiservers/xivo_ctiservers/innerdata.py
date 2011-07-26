@@ -913,23 +913,29 @@ class Safe:
         else:
             if oldchannel.startswith('SIPPeer'):
                 self.log.info('no peerchannel setting, since parking action (A) (%s %s)'
-                         % (oldchannel, newchannel))
+                              % (oldchannel, newchannel))
             elif oldchannel.startswith('Parked'):
                 self.log.info('no peerchannel setting, since parking action (B) (%s %s)'
-                         % (oldchannel, newchannel))
+                              % (oldchannel, newchannel))
             else:
                 self.log.warning('no peerchannel setting ... why ? %s %s'
-                            % (oldchannel, newchannel))
+                                 % (oldchannel, newchannel))
         return
 
     def setpeerchannel(self, channel, peerchannel):
-        self.channels[channel].peerchannel = peerchannel
-        self.channels[channel].properties['talkingto_id'] = peerchannel # XXX
+        chanprops = self.channels.get(channel)
+        chanprops.peerchannel = peerchannel
+        chanprops.properties['talkingto_id'] = peerchannel # XXX
         if peerchannel and self.channels.get(peerchannel).relations:
             for k in self.channels.get(peerchannel).relations:
                 if k.startswith('phone'):
                     phoneid = k[6:]
-                    self.channels[channel].properties['peerdisplay'] = self.xod_config['phones'].keeplist[phoneid]['fullname']
+                    phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
+                    iduf = str(phoneprops.get('iduserfeatures'))
+                    number = phoneprops.get('number')
+                    userprops = self.xod_config.get('users').keeplist.get(iduf)
+                    fullname = userprops.get('fullname')
+                    chanprops.properties['peerdisplay'] = '%s (%s)' % (fullname, number)
         return
 
     def currentstatus(self):
