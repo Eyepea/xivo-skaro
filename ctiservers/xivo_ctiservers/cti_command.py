@@ -907,7 +907,7 @@ class Command:
 
         innerdata = self.ctid.safe.get(src.get('ipbxid'))
 
-        if src.get('type') == 'channel':
+        if src.get('type') == 'chan':
             if src.get('id') in innerdata.channels:
                 channel = src.get('id')
                 peerchannel = innerdata.channels.get(channel).peerchannel
@@ -915,12 +915,17 @@ class Command:
             pass
 
         if dst.get('type') == 'parking':
-            parkinglot = dst.get('id')
+            try:
+                parkinglot = innerdata.xod_config['parkinglots'].keeplist[dst['id']]['name']
+                if parkinglot is not 'default':
+                    parkinglot = 'parkinglot_' + parkinglot
+            except Exception:
+                parkinglot = 'default'
 
         rep = {'amicommand' : 'park',
                'amiargs' : (channel, peerchannel, parkinglot, 120000)
                }
-        return rep
+        return [rep, ]
 
     # direct transfers
     def ipbxcommand_transfer(self):
