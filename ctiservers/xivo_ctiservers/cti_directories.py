@@ -192,15 +192,6 @@ class Display(object):
     
     @classmethod
     def new_from_contents(cls, contents):
-        # Example contents:
-        #   [{"title": "Numero",
-        #     "default": "",
-        #     "fmt": "{db-phone}"},
-        #    {"title":"Nom",
-        #     "default": "",
-        #     "fmt": "{db-fullname}"
-        #    }]
-        # XXX in fact, we are still expecting that contents be the old format
         contents = list({'title': v[0], 'default': v[2], 'fmt': v[3]} for
                         (_, v) in
                         sorted(contents.iteritems(), key=itemgetter(0)))
