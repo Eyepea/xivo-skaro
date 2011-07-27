@@ -1013,8 +1013,12 @@ class Command:
 
     # hangup and one's own line management
     def ipbxcommand_hangup(self):
-        print self.ipbxcommand, self.commanddict
-        return []
+        channel = self.parseid(self.commanddict.get('channelids'))
+        rep = { 'amicommand': 'hangup',
+                'amiargs': (channel.get('id'), )
+                }
+        return [rep, ]
+
     def ipbxcommand_answer(self):
         print self.ipbxcommand, self.commanddict
         return []
