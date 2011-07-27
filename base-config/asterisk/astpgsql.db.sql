@@ -393,7 +393,7 @@ CREATE TABLE "cticontexts" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "cticontexts" VALUES(3,'default','xivodir','Display','Contexte par défaut',1);
+INSERT INTO "cticontexts" VALUES(3,'default','xivodir,internal','Display','Contexte par défaut',1);
 SELECT setval('cticontexts_id_seq', 4);
 
 
@@ -445,7 +445,7 @@ CREATE TABLE "ctidisplays" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctidisplays" VALUES(4,'Display','{"10": [ "Numéro","phone","","{db-phone}" ],"20": [ "Nom","","","{db-fullname}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail}" ], "50": [ "Source","","","{xivo-directory}" ]}',1,'Affichage par défaut');
+INSERT INTO "ctidisplays" VALUES(4,'Display','{"10": [ "Nom","","","{db-firstname} {db-lastname}" ],"20": [ "Numéro","phone","","{db-phone}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail}" ], "50": [ "Source","","","{xivo-directory}" ]}',1,'Affichage par défaut');
 SELECT setval('ctidisplays_id_seq', 5);
 
 
