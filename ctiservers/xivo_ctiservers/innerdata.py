@@ -927,6 +927,15 @@ class Safe:
                                  % (oldchannel, newchannel))
         return
 
+    def usersummary_from_phoneid(self, phoneid):
+        phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
+        userid = str(phoneprops.get('iduserfeatures'))
+        userprops = self.xod_config.get('users').keeplist.get(userid)
+        usersummary = { 'phonenumber' : phoneprops.get('number'),
+                        'userid' : userid,
+                        'fullname' : userprops.get('fullname') }
+        return usersummary
+
     def setpeerchannel(self, channel, peerchannel):
         chanprops = self.channels.get(channel)
         chanprops.peerchannel = peerchannel
@@ -934,13 +943,9 @@ class Safe:
         if peerchannel and self.channels.get(peerchannel).relations:
             for k in self.channels.get(peerchannel).relations:
                 if k.startswith('phone'):
-                    phoneid = k[6:]
-                    phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
-                    iduf = str(phoneprops.get('iduserfeatures'))
-                    number = phoneprops.get('number')
-                    userprops = self.xod_config.get('users').keeplist.get(iduf)
-                    fullname = userprops.get('fullname')
-                    chanprops.properties['peerdisplay'] = '%s (%s)' % (fullname, number)
+                    usersummary = self.usersummary_from_phoneid(k[6:])
+                    chanprops.properties['peerdisplay'] = '%s (%s)' % (usersummary.get('fullname'),
+                                                                       usersummary.get('number'))
         return
 
     def currentstatus(self):
@@ -1591,7 +1596,9 @@ class Channel:
             'time', 'date',
             'origin', 'direction', 'context',
             'did',
-            'calleridnum', 'calleridname', 'calleridrdnis', 'calleridton',
+            'calleridnum', 'calleridname',
+            'calleridrdnis', 'calleridton',
+            'calledidnum', 'calledidname',
             'queuename', 'agentnumber',
             'userid',
             'desttype', 'destid'

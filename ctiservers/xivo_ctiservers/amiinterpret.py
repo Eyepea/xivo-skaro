@@ -605,14 +605,23 @@ class AMI_1_8:
 
     def userevent_user(self, chanprops, event):
         xivo_userid = event.get('XIVO_USERID')
-        xivo_dstid = event.get('XIVO_DSTID')
-        calleridnum = event.get('XIVO_SRCNUM')
-        calledidnum = event.get('XIVO_DSTNUM')
-        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
+        userprops = self.innerdata.xod_config.get('users').keeplist.get(xivo_userid)
+        xivo_srcnum = event.get('XIVO_SRCNUM')
+        usersummary_src = { 'fullname' : userprops.get('fullname'),
+                            'phonenumber' : xivo_srcnum }
+
+        xivo_lineid = event.get('XIVO_LINEID')
+        usersummary_dst = self.innerdata.usersummary_from_phoneid(xivo_lineid)
+
         chanprops.set_extra_data('xivo', 'desttype', 'user')
-        chanprops.set_extra_data('xivo', 'destid', xivo_dstid)
+        chanprops.set_extra_data('xivo', 'destid', usersummary_dst.get('userid'))
+        chanprops.set_extra_data('xivo', 'userid', xivo_userid)
         chanprops.set_extra_data('xivo', 'origin', 'internal')
         chanprops.set_extra_data('xivo', 'direction', 'internal')
+        chanprops.set_extra_data('xivo', 'calleridnum', usersummary_src.get('phonenumber'))
+        chanprops.set_extra_data('xivo', 'calleridname', usersummary_src.get('fullname'))
+        chanprops.set_extra_data('xivo', 'calledidnum', usersummary_dst.get('phonenumber'))
+        chanprops.set_extra_data('xivo', 'calledidname', usersummary_dst.get('fullname'))
         return
 
     def userevent_group(self, chanprops, event):
