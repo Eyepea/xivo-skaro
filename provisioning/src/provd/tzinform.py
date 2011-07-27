@@ -123,7 +123,7 @@ class TextTimezoneInfoDB(object):
         - 'dst':          a dictionary containing the DST rules, or None if the timezone has no DST
           - 'start'       a dictionary containing the DST start rule
             - 'month'     the month number
-            - 'day'       the day. Can be either something like 'D24' or 'W1/6'
+            - 'day'       the day. Can be either something like 'D24' or 'W1.6'
             - 'time'      the time of the day, as a Time object
           - 'end'         a dictionary containing the DST end rule
           - 'save'        an offset from standard time as a Time object

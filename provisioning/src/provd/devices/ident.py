@@ -874,25 +874,25 @@ class RequestProcessingService(object):
         req_id = self._new_request_id()
         
         # 1. Get a device info object
-        logger.info('<%s> Extracting device info', req_id)
+        logger.debug('<%s> Extracting device info', req_id)
         dev_info = yield self.dev_info_extractor.extract(request, request_type)
         if not dev_info:
-            logger.warning('<%s> No device info extracted', req_id)
+            logger.info('<%s> No device info extracted', req_id)
             dev_info = {}
         else:
             logger.info('<%s> Extracted device info: %s', req_id, dev_info)
         
         # 2. Get a device object
-        logger.info('<%s> Retrieving device', req_id)
+        logger.debug('<%s> Retrieving device', req_id)
         device = yield self.dev_retriever.retrieve(dev_info)
         if device is None:
-            logger.warn('<%s> No device retrieved', req_id)
+            logger.info('<%s> No device retrieved', req_id)
         else:
-            logger.info('<%s> Retrieved device: %s', req_id, device)
+            logger.info('<%s> Retrieved device id: %s', req_id, device[u'id'])
         
         # 3. Update the device
         if device is not None:
-            logger.info('<%s> Updating device', req_id)
+            logger.debug('<%s> Updating device', req_id)
             # 3.1 Update the device
             orig_device = copy.deepcopy(device)
             force_reconfigure = yield self.dev_updater.update(device, dev_info,
@@ -911,10 +911,10 @@ class RequestProcessingService(object):
                 self._app.dev_reconfigure(device[ID_KEY])
         
         # 4. Return a plugin ID
-        logger.info('<%s> Finding route', req_id)
+        logger.debug('<%s> Finding route', req_id)
         pg_id = self.dev_router.route(device, dev_info)
         if pg_id is None:
-            logger.warn('<%s> No route found', req_id)
+            logger.info('<%s> No route found', req_id)
         else:
             logger.info('<%s> Routing request to plugin %s', req_id, pg_id)
         defer.returnValue((device, pg_id))

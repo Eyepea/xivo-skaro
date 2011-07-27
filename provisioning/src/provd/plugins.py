@@ -987,8 +987,7 @@ class PluginManager(object):
                 globals = args[0]
                 args = args[1:]
             elif 'globals' in kwargs:
-                globals = kwargs['globals']
-                del kwargs['globals']
+                globals = kwargs.pop('globals')
             else:
                 globals = pg_globals
             # reinject execfile_ if not present

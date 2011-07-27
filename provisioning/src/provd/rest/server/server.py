@@ -549,7 +549,8 @@ class UpdateResource(_OipInstallResource):
         except Exception, e:
             # XXX should handle the exception differently if it was
             #     because there's already an update in progress
-            return respond_error(request, e)
+            logger.error('Error while updating packages', exc_info=True)
+            return respond_error(request, e, http.INTERNAL_SERVER_ERROR)
         else:
             _ignore_deferred_error(deferred)
             location = self._add_new_oip(oip, request)
@@ -568,7 +569,7 @@ class _ListInstallxxxxResource(Resource):
         try:
             pkgs = fun()
         except Exception, e:
-            logger.error('Error while listinging install packages', exc_info=True)
+            logger.error('Error while listing install packages', exc_info=True)
             return respond_error(request, e, http.INTERNAL_SERVER_ERROR)
         else:
             content = {u'pkgs': pkgs}

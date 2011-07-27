@@ -94,6 +94,14 @@ tftp_port [mandatory if http_port is not defined]
   If the device only support TFTP yet this value is not defined, an Exception
   SHOULD be raised.
 
+dns_enabled [optional]
+  A boolean indicating if DNS is enabled or not.
+  If this parameter is not defined or is false, all the dns_* parameters
+  MUST be ignored.
+
+dns_ip [mandatory if dns_enabled is true]
+  The IP address of a DNS server.
+
 ntp_enabled [optional]
   A boolean indicating if NTP is enabled or not.
   If this parameter is not defined or is false, NTP MUST be disabled and
@@ -481,9 +489,18 @@ def _check_config_validity(config):
     
     if u'raw_config' not in config:
         raise ValueError('missing "raw_config" field in config')
-    if not isinstance(config[u'raw_config'], dict):
+    
+    raw_config = config[u'raw_config']
+    if not isinstance(raw_config, dict):
         raise ValueError('"raw_config" field must be a dict; is %s' %
                          type(config[u'raw_config']))
+    # check dict parameters
+    # XXX huh... maybe we should do more extensive checking on some values...
+    #     instead of doing only some ad-hoc checks...
+    for param in [u'sip_lines', u'sccp_managers', u'funckeys']:
+        if param in raw_config and not isinstance(raw_config[param], dict):
+            raise ValueError('"raw_config.%s" field must be a dict; is %s' %
+                             (param, type(raw_config[param])))
 
 
 def _needs_childs_and_parents_indexes(fun):
