@@ -1,5 +1,5 @@
---- asterisk-1.8.5.0.orig/apps/app_meetme.c	2011-07-20 11:43:11.942684263 -0400
-+++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-21 13:53:17.742184688 -0400
+--- asterisk-1.8.5.0.orig/apps/app_meetme.c	2011-07-27 13:55:14.294685161 -0400
++++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-27 13:44:19.806436081 -0400
 @@ -115,15 +115,27 @@
  						</argument>
  						<para>Play an intro announcement in conference.</para>
@@ -22,7 +22,7 @@
  						<para>Set listen only mode (Listen only, no talking).</para>
  					</option>
 +					<option name="L">
-+						<para>L(<secs>[^<minusers>[^<timeoutannounce>]])
++						<para>L(secs, minusers, timeoutannounce)
 +						set a timeout on conference.</para>
 +					</option>
  					<option name="m">
