@@ -37,9 +37,6 @@ display format strings and that should be mapped by directories:
   fullname -- the display name
   reverse -- used for reverse lookup
 
-Note that the syntax to use in display format string is {db-KEY}, for
-example "{db-phone}" (just "{phone}" won't work for historical reasons).
-
 """
 
 import csv
@@ -80,6 +77,7 @@ class Context(object):
             raise Exception('No display defined for this context')
         directory_results = []
         for directory in self._directories:
+            log.info('Direct lookup in directory %s', directory.name)
             try:
                 directory_result = directory.lookup_direct(string)
             except Exception:
@@ -103,6 +101,7 @@ class Context(object):
         
         directory_results = []
         for directory in directories:
+            log.info('Reverse lookup in directory %s', directory.name)
             try:
                 directory_result = directory.lookup_reverse(number)
             except Exception:
@@ -227,6 +226,7 @@ class CSVFileDirectoryDataSource(object):
         delimiter -- the character used to separate fields in the CSV file
         key_mapping -- a dictionary mapping std key to list of CSV field name
         """
+        log.debug('New directory data source %s', self.__class__.__name__)
         self._csv_file = csv_file
         self._delimiter = delimiter
         self._key_mapping = key_mapping
@@ -291,6 +291,7 @@ class CSVFileDirectoryDataSource(object):
 
 class SQLDirectoryDataSource(object):
     def __init__(self, db_uri, key_mapping):
+        log.debug('New directory data source %s', self.__class__.__name__)
         self._db_uri = db_uri
         self._key_mapping = key_mapping
         self._map_fun = self._new_map_fun()
@@ -354,6 +355,7 @@ class SQLDirectoryDataSource(object):
 
 class InternalDirectoryDataSource(object):
     def __init__(self, db_uri, key_mapping):
+        log.debug('New directory data source %s', self.__class__.__name__)
         self._db_uri = db_uri
         self._key_mapping = key_mapping
         self._map_fun = self._new_map_fun()
@@ -407,6 +409,7 @@ class InternalDirectoryDataSource(object):
 
 class LDAPDirectoryDataSource(object):
     def __init__(self, uri, key_mapping):
+        log.debug('New directory data source %s', self.__class__.__name__)
         self._uri = uri
         self._key_mapping = key_mapping
         self._map_fun = self._new_map_fun()
@@ -461,6 +464,7 @@ class LDAPDirectoryDataSource(object):
 
 class HTTPDirectoryDataSource(object):
     def __init__(self, base_uri, delimiter, key_mapping):
+        log.debug('New directory data source %s', self.__class__.__name__)
         self._base_uri = base_uri
         self._delimiter = delimiter
         self._key_mapping = key_mapping
@@ -527,6 +531,7 @@ class HTTPDirectoryDataSource(object):
 
 class PhonebookDirectoryDataSource(object):
     def __init__(self, phonebook_list, key_mapping):
+        log.debug('New directory data source %s', self.__class__.__name__)
         self._phonebook_list = phonebook_list
         self._key_mapping = key_mapping
         self._map_fun = self._new_map_function()
@@ -599,14 +604,17 @@ class ContextsMgr(object):
         self._old_contents = {}
     
     def update(self, avail_displays, avail_directories, contents):
+        log.debug('Updating contexts in manager')
         # remove old contexts
         # deleting a key will raise a RuntimeError if you do not use .keys() here
         for context_id in self.contexts.keys():
             if context_id not in contents:
+                log.info('Removing context %s', context_id)
                 del self.contexts[context_id]
         # add/update contexts
         for context_id, context_contents in contents.iteritems():
             if context_contents != self._old_contents.get(context_id):
+                log.info('Adding/updating context %s', context_id)
                 try:
                     self.contexts[context_id] = Context.new_from_contents(
                             avail_displays, avail_directories, context_contents)
@@ -622,14 +630,17 @@ class DisplaysMgr(object):
         self._old_contents = {}
     
     def update(self, contents):
+        log.debug('Updating displays in manager')
         # remove old displays
         # deleting a key will raise a RuntimeError if you do not use .keys() here
         for display_id in self.displays.keys():
             if display_id not in contents:
+                log.info('Removing display %s', display_id)
                 del self.displays[display_id]
         # add/update displays
         for display_id, display_contents in contents.iteritems():
             if display_contents != self._old_contents.get(display_id):
+                log.info('Adding/updating display %s', display_id)
                 try:
                     self.displays[display_id] = Display.new_from_contents(display_contents)
                 except Exception:
@@ -656,14 +667,17 @@ class DirectoriesMgr(object):
         self._old_contents = {}
     
     def update(self, ctid, contents):
+        log.debug('Updating directories in manager')
         # remove old directories
         # deleting a key will raise a RuntimeError if you do not use .keys() here
         for directory_id in self.directories.keys():
             if directory_id not in contents:
+                log.info('Removing directory %s', directory_id)
                 del self.directories[directory_id]
         # add/update directories
         for directory_id, directory_contents in contents.iteritems():
             if directory_contents != self._old_contents.get(directory_id):
+                log.info('Adding/updating directory %s', directory_id)
                 try:
                     class_ = self._get_directory_class(directory_contents)
                     directory_src = class_.new_from_contents(ctid, directory_contents)

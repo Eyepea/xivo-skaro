@@ -1487,6 +1487,7 @@ class Safe:
             self.log.error('findreverse: undefined context: %s', context)
             return {}
         else:
+            self.log.info('Reverse lookup in context %s', context)
             lookup_results = context_obj.lookup_reverse(did_number, number)
             result = {}
             for lookup_result in lookup_results:
@@ -1501,6 +1502,7 @@ class Safe:
             self.log.error('getcustomers: undefined context: %s', context)
             return {'status': 'ko', 'reason': 'undefined_context'}
         else:
+            self.log.info('Direct lookup in context %s', context)
             headers, resultlist = context_obj.lookup_direct(pattern)
             # remove any duplicated line
             resultlist = list(set(resultlist))
