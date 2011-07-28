@@ -1,0 +1,72 @@
+Tests
+*****
+
+I. Définitions
+==============
+
+1. U1 = Utilisateur 1
+2. U2 = Utilisateur 2
+3. A  = Administrateur
+
+II. Séquence
+============
+
+Les différentes sections nécessitent de garder l'état de la section précédente.
+
+1. Arrivée de l'administrateur
+------------------------------
+
+* Création de la chambre de conférence 300 avec les modes "kxw(60)iM",
+  code pin 1234 et code admin 4567
+* U1 appelle 300, tape 1234 et donne son nom
+-> U1 est en attente musicale
+* U2 appelle 300, tape 1234 et donne son nom
+-> U2 est en attente musicale
+* A appelle 300, tape 4567 et donne son nom
+-> A se voit proposer de modérer U1
+* A appuie sur 2 pour l'autoriser
+-> U1 entre dans la conférence
+-> A se voit proposer de modérer U2
+* A appuie sur 3 pour avoir une conversation privée avec U2
+-> U1 est mis en attente musicale
+-> A et U2 peuvent discuter
+* A appuie sur 1 pour refuser U2
+-> U2 est mis en attente musicale pendant 60 secondes.
+-> U1 rejoint la conférence
+
+La conférence se déroule maintenant entre U1 et A.
+
+2. Arrivée d'utilisateurs pendant une conférence débutée
+--------------------------------------------------------
+
+* U2 appelle 300, tape 1234 et donne son nom
+-> U2 est en attente musicale
+-> A entends un bip
+* A fait '**'
+-> A se voit proposer de modérer U2
+* A fait 3 pour avoir une conversation privée avec U2
+-> U1 est mis en attente musicale
+-> A et U2 peuvent discuter
+* A appuie sur 2 pour accepter U2
+-> U1 sort de l'attente musicale
+-> U2 rejoint la conférence
+
+La conférence se déroule maintenant entre U1, U2 et A.
+
+3. Suspension de la conférence
+------------------------------
+
+* A appuie sur '*#'
+-> U1 et U2 sont mis en attente musicale
+-> A sort de la conférence.
+* A appelle 300, tape 4567 et donne son nom
+-> A rejoint la conférence
+-> U1 et U2 sortent de l'attente musicale
+
+4. Fin de la conférence
+-----------------------
+
+* A appuie sur '#'
+-> A, U1 et U2 se voient refouler de la conversation.
+
+
