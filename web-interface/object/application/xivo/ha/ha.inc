@@ -133,7 +133,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
   function generate()
 	{
 		$arr  = $this->get();
-		$conf = array('nodes' => array(), 'cluster' => array(), 'services' => array());
+		$conf = array('nodes' => array(), 'cluster' => array('services' => array()));
 
 		# we need to reread database to get services rsc_class
 		$rsc_classes = array();
@@ -142,14 +142,14 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 		foreach($arr['service'] as $name => $attrs)
 			if(intval($attrs['active']) === 1) {
-				$conf['services'][$name] = array();
+				$conf['cluster']['services'][$name] = array();
 				if(!is_null($attrs['monitor']))
-					$conf['services'][$name]['monitor'] = intval($attrs['monitor']);
+					$conf['cluster']['services'][$name]['monitor'] = intval($attrs['monitor']);
 				if(!is_null($attrs['timeout']))
-					$conf['services'][$name]['timeout'] = intval($attrs['timeout']);
+					$conf['cluster']['services'][$name]['timeout'] = intval($attrs['timeout']);
 
 				if(array_key_exists($name, $rsc_classes) && !is_null($rsc_classes[$name]))
-					$conf['services'][$name]['rsc_class'] = $rsc_classes[$name];
+					$conf['cluster']['services'][$name]['rsc_class'] = $rsc_classes[$name];
 			}
 
 		$conf['cluster']['cluster_addr'] = array();
