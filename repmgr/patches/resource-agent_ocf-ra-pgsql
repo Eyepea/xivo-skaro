@@ -46,11 +46,11 @@ index 0000000..67e19ee
 +: ${OCF_RESKEY_CRM_meta_master_node_max=1}
 +
 +: ${OCF_RESKEY_repmgr=/usr/bin/repmgr}
-+: ${OCF_RESKEY_repmgr_conf=/var/lib/pgsql/repmgr/repmgr.conf}
++: ${OCF_RESKEY_repmgr_conf=/etc/postgresql/9.0/main/repmgr.conf}
 +: ${OCF_RESKEY_repmgr_clone_opt="-d postgres -U repmgr -R postgres"}
-+: ${OCF_RESKEY_pgctl=/usr/bin/pg_ctl}
++: ${OCF_RESKEY_pgctl=/usr/lib/postgresql/9.0/bin/pg_ctl}
 +: ${OCF_RESKEY_psql=/usr/bin/psql}
-+: ${OCF_RESKEY_pgdata=/var/lib/pgsql/data}
++: ${OCF_RESKEY_pgdata=/etc/postgresql/9.0/main}
 +: ${OCF_RESKEY_pgconfig=${OCF_RESKEY_pgdata}/postgresql.conf}
 +: ${OCF_RESKEY_pgdba=postgres}
 +: ${OCF_RESKEY_pgport=5432}
@@ -62,7 +62,7 @@ index 0000000..67e19ee
 +: ${OCF_RESKEY_slave_score=50}
 +
 +CRM_MASTER="${HA_SBIN_DIR}/crm_master -l reboot"
-+PIDFILE=${OCF_RESKEY_pgdata}/postmaster.pid
++PIDFILE=/var/run/postgresql/9.0-main.pid
 +SOCKETDIR=/var/run/postgresql
 +
 +#######################################################################
@@ -307,7 +307,7 @@ index 0000000..67e19ee
 +	then
 +		return $OCF_NOT_RUNNING
 +	else
-+		ocf_log info "PostgreSQL proccess exist..."
++		ocf_log info "PostgreSQL process exist..."
 +	fi
 +
 +	run_repmgr -f ${OCF_RESKEY_repmgr_conf} state check
