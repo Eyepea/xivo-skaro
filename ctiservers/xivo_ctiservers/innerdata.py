@@ -945,7 +945,7 @@ class Safe:
                 if k.startswith('phone'):
                     usersummary = self.usersummary_from_phoneid(k[6:])
                     chanprops.properties['peerdisplay'] = '%s (%s)' % (usersummary.get('fullname'),
-                                                                       usersummary.get('number'))
+                                                                       usersummary.get('phonenumber'))
         return
 
     def currentstatus(self):
@@ -1601,6 +1601,7 @@ class Channel:
             'calledidnum', 'calledidname',
             'queuename', 'agentnumber',
             'userid',
+            'directory',
             'desttype', 'destid'
             ],
         'dp' : [],

@@ -482,7 +482,10 @@ class Command:
                 r['calldate'] = p.get('calldate').isoformat()
                 r['duration'] = p.get('duration')
                 if mode == 0:
-                    r['fullname'] = p.get('dst')
+                    termination = self.rinnerdata.ast_channel_to_termination(p.get('dstchannel'))
+                    phoneid = self.rinnerdata.zphones(termination.get('protocol'), termination.get('name'))
+                    usersummary = self.rinnerdata.usersummary_from_phoneid(phoneid)
+                    r['fullname'] = '"%s" <%s>' % (usersummary.get('fullname'), usersummary.get('phonenumber'))
                 else:
                     r['fullname'] = p.get('clid')
                 # todo : transmit a name + a number if possible ...
