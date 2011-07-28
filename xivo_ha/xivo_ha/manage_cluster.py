@@ -502,6 +502,9 @@ class ClusterResourceManager(Tools):
         '''
         result = {}
         cluster_addr = self.cluster_addr if addr is None else addr
+        if not isinstance(cluster_addr, (list,dict)):
+            cluster_addr = [cluster_addr]
+
         for data in cluster_addr:
             itf, addr = data.split(':')
             cluster_addr_name = "ip_%s_%s" % (self.cluster_name, itf)
