@@ -28,6 +28,11 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'view':
+	    if ($_QRY->get('id') === null)
+	    {
+			$http_response->set_status_line(404);
+			$http_response->send(true);
+	    }
 		$appagent = &$ipbx->get_application('agent');
 
 		$nocomponents = array('contextmember' => true);
@@ -37,7 +42,7 @@ switch($act)
 					   $nocomponents)) === false
 		&& ($info = $appagent->get_by_number($_QRY->get('id'))) === false)
 		{
-			$http_response->set_status_line(404);
+			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
 

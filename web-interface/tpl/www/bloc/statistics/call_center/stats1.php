@@ -22,12 +22,18 @@ $url = &$this->get_module('url');
 $table1 = $this->get_var('table1');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
 
+$tbl_identity = '';
+if (($type = $table1->get_data_custom('listtype')) !== null
+&& count($type) === 1
+&& isset($type[0]['identity']) === true)
+    $tbl_identity = '('.$type[0]['identity'].')';
+
 ?>
 
 <div class="b-infos">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?> <?=$tbl_identity?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">

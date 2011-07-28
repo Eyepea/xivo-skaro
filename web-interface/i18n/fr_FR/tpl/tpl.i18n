@@ -64,6 +64,9 @@ Action
 ; opt_synchronize
 Synchroniser
 
+; opt_synchronize_confirm
+Confirmer la synchronisation de la terminaison?
+
 ; opt_install
 Installer
 

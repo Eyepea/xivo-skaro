@@ -881,7 +881,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
                         break;
                     case 'day':
                     default:
-                        $return .= $this->bbf($identity,$bbf);
+                        #$return .= $this->bbf($identity,$bbf);
+                        $return .= $coldata['key'].'h-'.($coldata['key']+1).'h';
                 }
 
                 $return .= '</td>';

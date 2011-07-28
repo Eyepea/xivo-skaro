@@ -75,13 +75,6 @@ endif;
 				  'default'	=> $element['directories']['match_reverse']['default'],
 				  'value'	=> $info['directories']['match_reverse']));
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_display_reverse'),
-				  'name'	=> 'directories[display_reverse]',
-				  'labelid'	=> 'directories-display_reverse',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['display_reverse']['default'],
-				  'value'	=> $info['directories']['display_reverse']));
-
 ?>
 
 

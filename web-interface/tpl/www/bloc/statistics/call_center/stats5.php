@@ -25,11 +25,18 @@ $axetype = $this->get_var('axetype');
 $listrow = $this->get_var('listrow');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
 
+$tbl_identity = '';
+if (($type = $table1->get_data_custom('listtype')) !== null
+&& count($type) === 1
+&& isset($type[0]['identity']) === true)
+    $tbl_identity = '('.$type[0]['identity'].')';
+
 ?>
-<div id="sr-users" class="b-infos b-form">
+
+<div class="b-infos">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?> <?=$tbl_identity?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
@@ -38,13 +45,13 @@ $xivo_jqplot = $this->get_var('xivo_jqplot');
 		echo $msg;
 	else :
 ?>
-		<div class="sb-list"> 
+		<div class="sb-list">
 <?php
 		echo $table1->infos_html();
 		echo $table1->render_html(false);
 ?>
 		</div>
-<?php		
+<?php
 		$xivo_jqplot->get_result('chart1');
 	endif;
 ?>

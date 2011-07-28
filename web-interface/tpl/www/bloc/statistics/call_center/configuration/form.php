@@ -48,7 +48,7 @@ if (is_null($listqos) === false
 	translation['queue'] = '<?=addslashes($this->bbf('queue'))?>';
 	translation['group'] = '<?=addslashes($this->bbf('group'))?>';
 </script>
-				
+
 	<div id="sb-part-first" class="b-nodisplay">
 		<p>
 			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description_general');?></label>
@@ -70,11 +70,19 @@ if (is_null($listqos) === false
 				  'default'	=> $element['stats_conf']['default_delta']['default'],
 				  'value'	=> $info['stats_conf']['default_delta'],
 				  'error'	=> $this->bbf_args('error',$this->get_var('error','stats_conf','default_delta')) ));
-	
+
 	echo	$form->checkbox(array('desc' => $this->bbf('fm_conf_homepage'),
 				  'name'	=> 'stats_conf[homepage]',
 				  'labelid'	=> 'homepage',
 				  'checked'	=> $info['stats_conf']['homepage']));
+
+	echo	$form->select(array('desc'	=> $this->bbf('fm_stats_conf_timezone'),
+				    'name'	=> 'stats_conf[timezone]',
+				    'labelid'	=> 'stats_conf-timezone',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'selected'	=> $this->get_var('info','stats_conf','timezone')),
+			      array_keys(dwho_i18n::get_timezone_list()));
 ?>
 			<fieldset id="stats_conf_cache_period">
 				<legend><?=$this->bbf('cache_during_period');?></legend>
@@ -111,7 +119,7 @@ if (is_null($listqos) === false
     				  'value'	    => $this->get_var('info','stats_conf','hour_start'),
     				  'error'	    => $this->bbf_args('error',
     				$this->get_var('error', 'stats_conf', 'hour_start'))));
-    				
+
     echo $form->text(array('desc'	=> $this->bbf('fm_hour_end'),
     				  'name'	    => 'stats_conf[hour_end]',
     				  'labelid'	    => 'stats_conf-hour_end',

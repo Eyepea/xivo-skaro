@@ -28,6 +28,11 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'view':
+	    if ($_QRY->get('id') === null)
+	    {
+			$http_response->set_status_line(404);
+			$http_response->send(true);
+	    }
 		$appqueue = &$ipbx->get_application('queue');
 
 		$nocomponents = array('queuemacro'		=> true,
@@ -39,7 +44,7 @@ switch($act)
 					   null,
 					   $nocomponents)) === false)
 		{
-			$http_response->set_status_line(404);
+			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
 

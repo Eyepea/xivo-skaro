@@ -60,14 +60,15 @@ switch ($axetype)
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
-$tpl_statistics->set_col_struct(null);
-$tpl_statistics->add_col('presented',
+$tpl_statistics->set_col_struct('calls');
+$tpl_statistics->add_col('total',
 					'direct',
 					'custom:queue,[key],presented');
+/*
 $tpl_statistics->add_col('connected',
 					'direct',
 					'custom:queue,[key],enterqueue');
-
+*/
 #$tpl_statistics->set_col_struct('traitment');
 $tpl_statistics->add_col('connect',
 					'direct',
@@ -75,7 +76,7 @@ $tpl_statistics->add_col('connect',
 $tpl_statistics->add_col('abandon',
 					'direct',
 					'custom:queue,[key],abandon');
-
+/*
 $tpl_statistics->set_col_struct('deterred');
 $tpl_statistics->add_col('on_close',
 					'direct',
@@ -83,7 +84,7 @@ $tpl_statistics->add_col('on_close',
 $tpl_statistics->add_col('on_saturation',
 					'direct',
 					'custom:queue,[key],deterred_on_saturation');
-
+*/
 $tpl_statistics->set_col_struct('rerouted');
 $tpl_statistics->add_col('on_hungup',
 					'direct',

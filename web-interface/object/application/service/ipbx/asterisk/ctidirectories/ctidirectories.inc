@@ -188,7 +188,7 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		|| $rs === false)
 			return(false);
 
-		foreach(array('match_direct', 'match_reverse', 'display_reverse') as $v)
+		foreach(array('match_direct', 'match_reverse') as $v)
 		{
 			if($rs[$v] != '')
 			{
@@ -272,8 +272,8 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
       || ($rs = $this->get_result('directories')) === null
       || $rs === false)
 				return(false);
-				
-		foreach(array('match_direct', 'match_reverse', 'display_reverse') as $v)
+
+		foreach(array('match_direct', 'match_reverse') as $v)
 		{
 			if($rs[$v] != '')
 			{

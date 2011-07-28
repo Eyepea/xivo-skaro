@@ -179,6 +179,9 @@ class xivo_statistics
 		$this->_conf['stats_conf'] = $conf['stats_conf'];
 		$stats_conf = $conf['stats_conf'];
 
+		if (empty($stats_conf['timezone']) === false)
+		    date_default_timezone_set($stats_conf['timezone']);
+
 		$this->init_cal($stats_conf);
 
 		for($i=1;$i<6;$i++)
@@ -1631,7 +1634,7 @@ class xivo_statistics
 			{
 				echo "$report -- already exist >> check if is up to date: ";
 
-				if(date('m') !== $month
+				if(date('Ym') !== ($year.$month)
 				&& $lastdayformonth === $lastdayforcache)
 				{
 					echo "Yes. continue.\n";

@@ -14,7 +14,7 @@ No configuration
 No cache generated for this configuration
 
 ; hlp_fm_conf_period_cache
-Period cache: %s %s depending on configuration.
+Interval cache: %s %s depending on configuration.
 
 ; index_general
 Summary
@@ -50,31 +50,28 @@ Calls handled
 <acronym title="Moyenne Time d'Appels"> MTA </acronym>
 
 ; col_presented
-Pre <acronym title="Présenté">. </acronym>
-
-; col_connected
-<acronym title="Connécté"> Con. </acronym>
+Pre <acronym title="Total">Total</acronym>
 
 ; col_connect
-Rep. <acronym title="Répondu">. </acronym>
+Rep. <acronym title="Answered">Answered</acronym>
 
 ; col_abandon
-<acronym title="Abandoné"> Aba. </acronym>
+<acronym title="Abandoned">Abandoned</acronym>
 
 ; col_ringnoanswer
-Not <acronym title="NON répondu"> R. </acronym>
+Not <acronym title="NO Answered">NO Answered</acronym>
 
 ; col_outgoing
-Sort <acronym title="Sortants">. </acronym>
+Sort <acronym title="Outcall">Outcall</acronym>
 
 ; col_completeagent
-<acronym title="Raccrochés l'agent"> by RPA </acronym>
+<acronym title="reattached by agent"> RbA </acronym>
 
 ; col_completecaller
-<acronym title="Raccrochés by l'appelant"> PPIP </acronym>
+<acronym title="reattached by caller"> RbY </acronym>
 
 ; col_transfer
-<acronym title="Transféré"> Trans. </acronym>
+<acronym title="Forward">Forward </acronym>
 
 ; colstruct_deterred
 Deterred
@@ -89,19 +86,19 @@ Deterred
 Rerouted
 
 ; col_on_hungup
-<acronym title="Reroutés a raccrocheś"> RR </acronym>
+<acronym title="Deterred on reattached"> DR </acronym>
 
 ; col_on_guide
-<acronym title="Reroutés on guide"> RG </acronym>
+<acronym title="Deterred on guide"> DG </acronym>
 
 ; col_on_number
-<acronym title="Reroutés on numéro"> RN </acronym>
+<acronym title="Rerouted on number"> RN </acronym>
 
 ; col_average_time_waiting
-<acronym title="Temps means d'attente"> TMA </acronym>
+<acronym title="Average waiting time"> AWT </acronym>
 
 ; col_home_rated
-<acronym title="Taux d'accueil"> TA </acronym>
+<acronym title="Rates Home"> RH </acronym>
 
 ; col_qos
 <acronym title="Qualité of service"> QOS </acronym>
@@ -149,7 +146,7 @@ Agent
 <acronym title="Total"> Total </acronym>
 
 ; col_duration
-Period
+Interval
 
 ; col_max_concurrent_calls
 Peak call
@@ -164,34 +161,34 @@ Peak call
 <acronym title="Dont WRAPUP"> WUP. </acronym>
 
 ; col_tperiod1
-<acronym title="Période 1"> P1 </acronym>
+<acronym title="Interval 1"> P1 </acronym>
 
 ; col_tperiod2
-<acronym title="Période 2"> P2 </acronym>
+<acronym title="Interval 2"> P2 </acronym>
 
 ; col_tperiod3
-<acronym title="Période 3"> P3 </acronym>
+<acronym title="Interval 3"> P3 </acronym>
 
 ; col_tperiod4
-<acronym title="Période 4"> P4 </acronym>
+<acronym title="Interval 4"> P4 </acronym>
 
 ; col_tperiod5
-<acronym title="Période 5"> P5 </acronym>
+<acronym title="Interval 5"> P5 </acronym>
 
 ; col_aperiod1
-<acronym title="Période 1"> P1 </acronym>
+<acronym title="Interval 1"> P1 </acronym>
 
 ; col_aperiod2
-<acronym title="Période 2"> P2 </acronym>
+<acronym title="Interval 2"> P2 </acronym>
 
 ; col_aperiod3
-<acronym title="Période 3"> P3 </acronym>
+<acronym title="Interval 3"> P3 </acronym>
 
 ; col_aperiod4
-<acronym title="Période 4"> P4 </acronym>
+<acronym title="Interval 4"> P4 </acronym>
 
 ; col_aperiod5
-<acronym title="Période 5"> P5 </acronym>
+<acronym title="Interval 5"> P5 </acronym>
 
 ; colstruct_nb
 Number
@@ -224,7 +221,7 @@ Outgoing
 Total
 
 ; colstruct_duration
-Period
+Interval
 
 ; col_duration_intern
 Internal
@@ -320,7 +317,7 @@ Completed successfully
 Dashboard
 
 ; title_conf_cache_period
-Period of cache
+Interval of cache
 
 ; bench_dashboard
 Performance
@@ -395,7 +392,7 @@ Axis of analysis:
 
 
 ; fm_stats_cdr_by-opt(period)
-Period
+Interval
 
 ; fm_stats_cdr_by-opt(day)
 Day

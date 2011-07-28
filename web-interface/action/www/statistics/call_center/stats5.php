@@ -60,9 +60,17 @@ switch ($axetype)
 $tpl_statistics->set_data_custom('incall',$stats_incall->_result);
 
 $tpl_statistics->set_col_struct(null);
-$tpl_statistics->add_col('presented',
+$tpl_statistics->add_col('total',
 					'direct',
 					'custom:incall,[key],chanstart');
+
+$tpl_statistics->set_col_struct('deterred');
+$tpl_statistics->add_col('on_close',
+					'direct',
+					'custom:queue,[key],deterred_on_close');
+$tpl_statistics->add_col('on_saturation',
+					'direct',
+					'custom:queue,[key],deterred_on_saturation');
 
 $tpl_statistics->gener_table();
 

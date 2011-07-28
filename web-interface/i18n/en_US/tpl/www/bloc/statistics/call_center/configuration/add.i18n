@@ -24,6 +24,9 @@ agents
 ; fm_name
 name:
 
+; fm_stats_conf_timezone 
+Timezone: 
+
 ; fm_default_delta
 interval:
 

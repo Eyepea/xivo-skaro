@@ -21,23 +21,24 @@
 $array = array();
 $array['element'] = array();
 
-$array['element'] = array();
-$array['element']['default'] = '';
-
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
+
 $array['element']['uri'] = array();
 $array['element']['uri']['default'] = '';
+
 $array['element']['delimiter'] = array();
 $array['element']['delimiter']['default'] = '';
+
 $array['element']['match_direct'] = array();
 $array['element']['match_direct']['default'] = '';
+
 $array['element']['match_reverse'] = array();
 $array['element']['match_reverse']['default'] = '';
-$array['element']['display_reverse'] = array();
-$array['element']['display_reverse']['default'] = '';
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
+
 $array['element']['deletable'] = array();
 $array['element']['deletable']['default'] = 1;
 
@@ -45,11 +46,10 @@ $array['element']['deletable']['default'] = 1;
 
 $array['filter'] = array();
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[[:alnum:]]+$/');
+$array['filter']['uri'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['delimiter'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.$/');
 $array['filter']['match_direct'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['match_reverse'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
-$array['filter']['uri'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
-$array['filter']['display_reverse'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['description'] 	= array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['deletable'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
 ?>

@@ -174,8 +174,6 @@ switch($act)
                 $fields = $ctidirectoryfld->get_all_where(array('dir_id' => $dir['id']));
                 foreach($fields as $field)
                     $dirout[$dirid]['field_' . $field['fieldname']] = array($field['value']);
-
-                $dirout[$dirid]['display_reverse'] = dwho_json::decode($dir['display_reverse'], true) == false ? array() : dwho_json::decode($dir['display_reverse'], true);
             }
             $out['directories'] = $dirout;
         }

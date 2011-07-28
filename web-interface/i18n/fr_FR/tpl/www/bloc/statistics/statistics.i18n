@@ -15,7 +15,7 @@ Aucune configuration
 Pas de cache généré pour cette configuration
 
 ; hlp_fm_conf_period_cache
-Période de cache: %s %s selon la configuration.
+Intervalle de cache: %s %s selon la configuration.
 
 ; index_general
 Résumé
@@ -51,16 +51,13 @@ Appels traités
 <acronym title="Moyenne Temps d'Appels">MTA</acronym>
 
 ; col_presented
-<acronym title="Présenté">Pré.</acronym>
-
-; col_connected
-<acronym title="Connecté">Con.</acronym>
+<acronym title="Total">Total</acronym>
 
 ; col_connect
-<acronym title="Répondu">Rép.</acronym>
+<acronym title="Répondu">Répondus</acronym>
 
 ; col_abandon
-<acronym title="Abandonné">Aba.</acronym>
+<acronym title="Abandonnés">Abandonnés</acronym>
 
 ; col_ringnoanswer
 <acronym title="NON répondu">Non R.</acronym>
@@ -90,22 +87,25 @@ Dissuadés
 Reroutés
 
 ; col_on_hungup	
-<acronym title="Reroutés sur un raccrocheś">RR</acronym>
+<acronym title="Reroutés sur un raccrocheś">Raccrocheś</acronym>
 
 ; col_on_guide	
-<acronym title="Reroutés sur guide">RG</acronym>
+<acronym title="Reroutés sur guide">Sur guide</acronym>
 
 ; col_on_number	
-<acronym title="Reroutés sur numéro">RN</acronym>
+<acronym title="Reroutés sur numéro">Sur numéro</acronym>
 
 ; col_average_time_waiting	
-<acronym title="Temps moyen d'attente">TMA</acronym>
+<acronym title="Temps moyen d'attente">Temps moyen d'attente</acronym>
 
 ; col_home_rated	
-<acronym title="Taux d'accueil">TA</acronym>
+<acronym title="Taux d'accueil">Taux d'accueil</acronym>
 
 ; col_qos
 <acronym title="Qualité de service">QOS</acronym>
+
+; colstruct_calls
+Appels
 
 ; colstruct_call_counter
 Nombre d'appel
@@ -165,34 +165,34 @@ Pic d'appels
 <acronym title="Dont WRAPUP">WUP.</acronym>
 
 ; col_tperiod1
-<acronym title="Période 1">P1</acronym>
+<acronym title="Intervalle 1">P1</acronym>
 
 ; col_tperiod2
-<acronym title="Période 2">P2</acronym>
+<acronym title="Intervalle 2">P2</acronym>
 
 ; col_tperiod3
-<acronym title="Période 3">P3</acronym>
+<acronym title="Intervalle 3">P3</acronym>
 
 ; col_tperiod4
-<acronym title="Période 4">P4</acronym>
+<acronym title="Intervalle 4">P4</acronym>
 
 ; col_tperiod5
-<acronym title="Période 5">P5</acronym>
+<acronym title="Intervalle 5">P5</acronym>
 
 ; col_aperiod1
-<acronym title="Période 1">P1</acronym>
+<acronym title="Intervalle 1">P1</acronym>
 
 ; col_aperiod2
-<acronym title="Période 2">P2</acronym>
+<acronym title="Intervalle 2">P2</acronym>
 
 ; col_aperiod3
-<acronym title="Période 3">P3</acronym>
+<acronym title="Intervalle 3">P3</acronym>
 
 ; col_aperiod4
-<acronym title="Période 4">P4</acronym>
+<acronym title="Intervalle 4">P4</acronym>
 
 ; col_aperiod5
-<acronym title="Période 5">P5</acronym>
+<acronym title="Intervalle 5">P5</acronym>
 
 ; colstruct_nb
 Nombre
@@ -321,7 +321,7 @@ Terminée avec succés
 Tableau de bord
 
 ; title_conf_cache_period
-Période de cache
+Intervalle de cache
 
 ; bench_dashboard
 Performance
@@ -396,7 +396,7 @@ Axe d'analyse:
 
 
 ; fm_stats_cdr_by-opt(period)
-Période
+Intervalle
 
 ; fm_stats_cdr_by-opt(day)
 Jour

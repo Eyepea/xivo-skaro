@@ -52,6 +52,9 @@ Action
 ; opt_synchronize
 Synchronize
 
+; opt_synchronize_confirm
+Confirm Synchronize?
+
 ; opt_install
 Install
 
