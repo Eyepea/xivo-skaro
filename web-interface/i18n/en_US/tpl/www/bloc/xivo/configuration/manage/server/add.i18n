@@ -1,6 +1,15 @@
 ; title_content_name
 Servers > Add
 
+; fld_general
+General
+
+; fld_webservices
+Web Services
+
+; fld_cti
+CTI Server
+
 ; fm_name
 Name:
 
@@ -13,25 +22,26 @@ WebServices login:
 ; fm_ws_pass
 WebServices password:
 
+; fm_ws_port
+Port:
+
+; fm_ws_ssl
+SSL:
+
+; fm_cti_port
+Port:
+
+; fm_cti_login
+Login:
+
+; fm_cti_pass
+Password:
+
+; fm_cti_ssl
+SSL:
+
 ; fm_port
 Port:
 
-; fm_ssl
-SSL:
-
 ; fm_description
 Description:
-
-; fm_webi_addr
-Web interface host: 
-
-; fm_ami_port
-AMI port:
-
-; fm_ami_login
-AMI login:
-
-; fm_ami_pass
-AMI password:
-
-
