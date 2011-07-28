@@ -38,6 +38,8 @@ class MeetmeList(AnyList):
 
     def update(self):
         ret = AnyList.update(self)
+        for idx, item in self.keeplist.iteritems():
+            item['pin_needed'] = 'pin' in item and len(item['pin']) > 0
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
             if ag['confno'] not in self.reverse_index:
