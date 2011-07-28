@@ -1,5 +1,5 @@
---- asterisk-1.8.5.0.orig/apps/app_meetme.c	2011-07-27 13:55:14.294685161 -0400
-+++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-27 13:44:19.806436081 -0400
+--- asterisk-1.8.5.0.orig/apps/app_meetme.c	2011-07-28 09:45:39.402370422 -0400
++++ asterisk-1.8.5.0/apps/app_meetme.c	2011-07-28 09:46:13.190189619 -0400
 @@ -115,15 +115,27 @@
  						</argument>
  						<para>Play an intro announcement in conference.</para>
@@ -74,6 +74,15 @@
  	AST_APP_OPTION_ARG('M', CONFFLAG_MOH, OPT_ARG_MOH_CLASS ),
  	AST_APP_OPTION('m', CONFFLAG_STARTMUTED ),
  	AST_APP_OPTION('o', CONFFLAG_OPTIMIZETALKER ),
+@@ -649,7 +675,7 @@
+ 	AST_APP_OPTION('x', CONFFLAG_MARKEDEXIT ),
+ 	AST_APP_OPTION('1', CONFFLAG_NOONLYPERSON ),
+  	AST_APP_OPTION_ARG('S', CONFFLAG_DURATION_STOP, OPT_ARG_DURATION_STOP),
+-	AST_APP_OPTION_ARG('L', CONFFLAG_DURATION_LIMIT, OPT_ARG_DURATION_LIMIT),
++//	AST_APP_OPTION_ARG('L', CONFFLAG_DURATION_LIMIT, OPT_ARG_DURATION_LIMIT),
+ END_OPTIONS );
+ 
+ static const char * const app = "MeetMe";
 @@ -701,14 +727,18 @@
  	int dahdiconf;                            /*!< DAHDI Conf # */
  	int users;                              /*!< Number of active users */
