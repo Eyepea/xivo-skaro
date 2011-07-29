@@ -194,16 +194,6 @@ def main(directory):
         linet = traitmentline(line)
         total_line_nb += 1
         datetime = time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime((int(linet[0]))))
-        
-        
-        m = re.search("2011-05-02 02.", datetime, re.I)
-        if m is None:
-            continue
-            
-        print datetime
-        continue
-    
-    
         lineoutput = '%s%s' % (datetime, FILE_DELIMITERS) + FILE_DELIMITERS.join(linet[1:]) + '\n'
         fobj.write(lineoutput)
         # build list queue
@@ -211,8 +201,6 @@ def main(directory):
         # build list agent
         LIST_AGENT.add(linet[3])
     fobj.close()
-    
-    exit(0)
     
     print 'Total: %s lines found for processing' % total_line_nb
     print
