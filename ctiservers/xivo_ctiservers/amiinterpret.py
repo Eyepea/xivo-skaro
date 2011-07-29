@@ -354,18 +354,16 @@ class AMI_1_8:
 
     # Meetme events
     def ami_meetmejoin(self, event):
-        self.log.info('ami_meetmejoin %s' % (event))
-        confno = event.pop('Meetme')
-        channel = event.get('Channel')
-        usernum = event.get('Usernum')
-        pseudochan = event.get('PseudoChan')
-        admin = event.get('Admin')
-        opts = { 'usernum' : usernum,
-                 'pseudochan' : pseudochan,
-                 'admin' : (admin == 'Yes')
+        opts = { 'usernum' : event['Usernum'],
+                 'pseudochan' : event['PseudoChan'],
+                 'admin' : 'Yes' in event['Admin'],
+                 'authed' : 'No' in event['NoAuthed'],
+                 'displayname' : event['CallerIDname'],
+                 'phonenumber' : event['CallerIDnum'],
                  }
-        self.innerdata.meetmeupdate(confno, channel, opts)
-        return
+        return self.innerdata.meetmeupdate(event['Meetme'],
+                                           event['Channel'],
+                                           opts)
 
         #{u'Talking': u'Not monitored',
         #u'Muted': u'No',
@@ -373,37 +371,42 @@ class AMI_1_8:
         #u'Role': u'Talk and listen',
 
     def ami_meetmeleave(self, event):
-        confno = event.pop('Meetme')
-        channel = event.pop('Channel')
-        usernum = event.pop('Usernum')
-        opts = { 'usernum' : usernum }
-        self.innerdata.meetmeupdate(confno, channel, opts)
-        self.log.info('ami_meetmeleave %s' % (event))
-        return
+        opts = { 'usernum' : event['Usernum'],
+                 'leave' : True, }
+        return self.innerdata.meetmeupdate(event['Meetme'],
+                                           event['Channel'],
+                                           opts)
 
     def ami_meetmeend(self, event):
-        confno = event.pop('Meetme')
-        self.innerdata.meetmeupdate(confno)
-        return
+        return self.innerdata.meetmeupdate(event['Meetme'])
 
     def ami_meetmemute(self, event):
-        self.log.info('ami_meetmemute %s' % (event))
-        return
+        opts = { 'muted' : 'on' in event['Status'],
+                 'usernum' : event['Usernum'], }
+        return self.innerdata.meetmeupdate(event['Meetme'],
+                                           event['Channel'],
+                                           opts)
 
     def ami_meetmetalking(self, event):
         self.log.info('ami_meetmetalking %s' % (event))
         return
+
     def ami_meetmetalkrequest(self, event):
         self.log.info('ami_meetmetalkrequest %s' % (event))
         return
 
     # XiVO events
     def ami_meetmenoauthed(self, event):
-        self.log.info('ami_meetmenoauthed %s' % (event))
-        return
+        opts = { 'usernum' : event['Usernum'],
+                 'authed' : 'on' in event['Status'], }
+        return self.innerdata.meetmeupdate(event['Meetme'],
+                                           event['Channel'],
+                                           opts)
+
     def ami_meetmepause(self, event):
-        self.log.info('ami_meetmepause %s' % (event))
-        return
+        opts = { 'paused': 'on' in event['Status'], }
+        return self.innerdata.meetmeupdate(event['Meetme'],
+                                           opts = opts)
 
     def ami_dahdichannel(self, event):
         self.log.info('ami_dahdichannel %s' % (event))
@@ -796,20 +799,17 @@ class AMI_1_8:
         return
 
     def ami_meetmelist(self, event):
-        self.log.info('ami_meetmelist %s' % (event))
-        confno = event.pop('Conference')
-        channel = event.pop('Channel')
-        usernum = event.pop('UserNumber')
-        pseudochan = event.pop('PseudoChan')
-        admin = event.get('Admin')
-        opts = { 'usernum' : usernum,
-                 'pseudochan' : pseudochan,
-                 'admin' : (admin == 'Yes')
+        # pseudochan = event.pop('PseudoChan') # Not in the Asterisk 1.8 event
+        opts = { 'usernum': event['UserNumber'],
+                 'admin': 'Yes' in event['Admin'],
+                 'muted': 'No' not in event['Muted'],
+                 'displayname': event['CallerIDName'],
+                 'phonenumber': event['CallerIDNum'],
                  }
-        self.innerdata.meetmeupdate(confno, channel, opts)
+        return self.innerdata.meetmeupdate(event['Conference'],
+                                           event['Channel'], opts)
         # we have no information about 'since when the channels are in the meetme room'
         # => see the by-channel information
-        return
 
     #    u'Talking': u'Not monitored',
     #    u'Muted': u'No',
