@@ -82,8 +82,6 @@ switch($act)
         $load_accounts = $ctiaccounts->get_all();
         $list = $app->get_server_list();
 
-        $ctxlist = array();
-
         $out = array(
             'main'             => array(),
             'contexts'         => array(),
@@ -105,14 +103,12 @@ switch($act)
         );
 
         # CONTEXTS
-        if(isset($load_contexts) === true
-        && is_array($load_contexts) === true)
+        if(isset($load_contexts) === true && is_array($load_contexts) === true)
         {
             $ctxout = array();
             foreach($load_contexts as $context)
             {
                 $ctxid = $context['name'];
-                $ctxlist[] = "contexts.".$ctxid;
                 $ctxout[$ctxid] = array();
                 $ctxdirs = explode(',', $context['directories']);
                 $ctxout[$ctxid]['directories'] = $ctxdirs;
@@ -122,8 +118,7 @@ switch($act)
         }
 
         # DISPLAYS
-        if(isset($load_displays) === true
-        && is_array($load_displays) === true)
+        if(isset($load_displays) === true && is_array($load_displays) === true)
         {
             $dspout = array();
 
@@ -137,8 +132,7 @@ switch($act)
         }
 
         # DIRECTORIES
-        if(isset($load_directories) === true
-        && is_array($load_directories) === true)
+        if(isset($load_directories) === true && is_array($load_directories) === true)
         {
             $dirout = array();
 
@@ -179,35 +173,21 @@ switch($act)
         }
 
         # REVERSEDID
-        if(isset($load_rdid) === true
-        && is_array($load_rdid) === true)
+        if(isset($load_rdid) === true && is_array($load_rdid) === true)
         {
-            $rdidout = array();
-            $curctx  = null;
-            $curblok = null;
-
             foreach($load_rdid as $rdid)
             {
-                if($rdid['context'] != $curctx)
-                {
-                    if(!is_null($curctx))
-                        $out['contexts'][$curctx]['didextens'] = $curblok;
+                $curctx  = $rdid['context'];
+                if(! array_key_exists($curctx, $out['contexts']))
+                    $out['contexts'][$curctx] = array();
 
-                    $curctx  = $rdid['context'];
-                    if(is_array($curctx) === true
-                    && array_key_exists($out['contexts'], $curctx))
-                        $curblok = $out['contexts'][$curctx];
-                    else
-                        $curblok = array();
-                }
-
+                $curblok = array();
                 $dirblok = dwho_json::decode($rdid['directories'], true);
                 foreach(explode(',', $rdid['extensions']) as $exten)
-                    $curblok['didextens'][$exten] = $dirblok;
-            }
+                    $curblok[$exten] = $dirblok;
 
-            if(!is_null($curctx))
-                $out['contexts'][$curctx] = $curblok;
+                $out['contexts'][$curctx]['didextens'] = $curblok;
+            }
         }
 
         # SHEETS
