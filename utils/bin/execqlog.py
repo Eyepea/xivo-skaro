@@ -235,16 +235,16 @@ def request_http(url, data=None):
 def exec_ws():
     base_url_queue = URL_QUEUE % (IP_XIVO, DB_NAME)
     for q in LIST_QUEUE:
-        f = request_http('%s&act=search&search=%s' % (base_url_queue, q))
-        if hasattr(f, 'code'):
+        fobj = request_http('%s&act=search&search=%s' % (base_url_queue, q))
+        if hasattr(fobj, 'code'):
             if DEBUG:
-                print 'code:', f.code,' response:', f.read()
-            if f.code == 204:
+                print 'code:', fobj.code,' response:', fobj.read()
+            if fobj.code == 204:
                 data = json.dumps(populate_data_queue(q))
-                f = request_http('%s&act=add' % (base_url_queue), data)
+                fobj = request_http('%s&act=add' % (base_url_queue), data)
                 if DEBUG:
                     print 'QUEUE ADD JSON:', data
-                    #print 'code:', f.code,' response:', f.read()
+                    #print 'code:', fobj.code,' response:', fobj.read()
     base_url_agent = URL_AGENT % (IP_XIVO, DB_NAME)
     for a in LIST_AGENT:
         m = re.search("agent/([0-9]+)", a, re.I)
@@ -252,10 +252,20 @@ def exec_ws():
             number = m.group(1)
             identity = found_agent_identity(number)
             data = json.dumps(populate_data_agent(identity[0], identity[1], number))
-            f = request_http('%s&act=add' % (base_url_agent), data)
-            if DEBUG:
-                print 'AGENT ADD JSON:', data
-                #print 'code:', f.code,' response:', f.read()
+            fobj = request_http('%s&act=view&id=%s' % (base_url_agent, number))
+            if not fobj:
+                fobj = request_http('%s&act=add' % (base_url_agent), data)
+                if DEBUG:
+                    print 'AGENT ADD JSON:', data
+            else:
+                #agent need update but edit method is not possible in webi via webservices.
+                #agentinfo = json.load(fobj.read())
+                #agentid = agentinfo['agentfeatures']['id']
+                #fobj = request_http('%s&act=edit&id=%d' % (base_url_agent), data, agentid)
+                fobj = request_http('%s&act=add' % (base_url_agent), data)
+                if DEBUG:
+                    print 'AGENT EDIT JSON:', data
+                #print 'code:', fobj.code,' response:', fobj.read()
 
 
 def main(directory):

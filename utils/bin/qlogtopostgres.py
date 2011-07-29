@@ -35,50 +35,16 @@ from optparse import OptionParser
 ################################################
 # Define variables
  
-VERBOSE = False
+DEBUG = False
 IP_XIVO = "127.0.0.1"
 FILE_DELIMITERS = '|'
 DEFAULT_OUT_FILE = "/tmp/insert_file_pg_cpoy_%s" % time.strftime('%Y%m%d%H%M%S',time.localtime())
 
-URL_QUEUE = "https://%s/service/ipbx/json.php/private/call_center/queues/" % IP_XIVO
-URL_AGENT = "https://%s/service/ipbx/json.php/private/call_center/agents/" % IP_XIVO
+URL_QUEUE = "https://%s/callcenter/json.php/private/settings/queues/"  % IP_XIVO
+URL_AGENT = "https://%s/callcenter/json.php/private/settings/agents/" % IP_XIVO
 
 LIST_QUEUE = set()
 LIST_AGENT = set()
-
-DATA_QUEUE ={ "queuefeatures": 
-                {   
-                    "name": "%s", 
-                    "context": "default", 
-                    "number": "", 
-                    "timeout": 0
-                }, 
-                "queue": 
-                { 
-                    "timeoutpriority": "app", 
-                    "min-announce-frequency": 60, 
-                    "announce-position": "yes", 
-                    "announce-position-limit": 5 
-                } 
-            }
-DATA_AGENT ={ "agentfeatures": 
-                { 
-                    "firstname": "%s", 
-                    "lastname": "", 
-                    "context": "default", 
-                    "number": "%s", 
-                    "numgroup": 1, 
-                    "autologoff": 0, 
-                    "ackcall": "no", 
-                    "wrapuptime": 0, 
-                    "acceptdtmf": "#", 
-                    "enddtmf": "*" 
-                }, 
-                "agentoptions": 
-                { 
-                    "maxlogintries": 3 
-                }
-            }
 
 COMMAND_COPY = "COPY queue_log (time,callid,queuename,agent,event,data1,data2,data3,data4,data5) " \
                "FROM '%s' DELIMITERS '%s' CSV"  % (DEFAULT_OUT_FILE, FILE_DELIMITERS)
@@ -86,6 +52,42 @@ COMMAND_COPY = "COPY queue_log (time,callid,queuename,agent,event,data1,data2,da
 # end of define
 ##############################################
 
+def populate_data_queue(name):
+    return {"queuefeatures": 
+                {
+                    "name": name, 
+                    "context": "default", 
+                    "number": "", 
+                    "timeout": 0
+                },
+            "queue": 
+                { 
+                    "timeoutpriority": "app", 
+                    "min-announce-frequency": 60, 
+                    "announce-position": "yes", 
+                    "announce-position-limit": 5 
+                }
+            }
+
+def populate_data_agent(firtname, lastname, number):
+    return {"agentfeatures": 
+                {
+                    "firstname": firtname, 
+                    "lastname": lastname, 
+                    "context": "default", 
+                    "number": number, 
+                    "numgroup": 1, 
+                    "autologoff": 0, 
+                    "ackcall": "no", 
+                    "wrapuptime": 0, 
+                    "acceptdtmf": "#", 
+                    "enddtmf": "*" 
+                },
+            "agentoptions": 
+                {
+                    "maxlogintries": 3 
+                }
+            }
 
 def _limit(count):
    # decorator that limit the number of elements returned by a generator
@@ -109,11 +111,16 @@ def _open_file(file):
 
 #@_limit(50000)
 def readlines(directory):
+    print 'Directory process: %s' % directory
     for file in os.listdir(directory):
+        print 'File process: %s' % file
         abs_file = os.path.join(directory, file)
         with _open_file(abs_file) as fobj:
+            nb_line = 0
             for line in fobj:
+                nb_line += 1
                 yield line
+        print '%s entries found in %s.' % (nb_line, file)
                 
 
 def traitmentline(line, separator='|'):
@@ -123,44 +130,80 @@ def traitmentline(line, separator='|'):
     return rs[:10]
 
 
-def request_http(url, data=None):    
+def request_http(url, data=None):
     try:
         if data is not None:
             data = data.replace(' ', '').replace('\n','')
         req = urllib2.Request(url, data)
-        f = urllib2.urlopen(req) 
-        return f
-    except HTTPError, e: 
-        #print e.code
-        print e.read()
+        return urllib2.urlopen(req)
+    except HTTPError, e:
+        if DEBUG:
+            print 'error during processing url:', url,'code:', e.code,' response:', e.read()
     except URLError, e:
-        print e.reason
+        if DEBUG:
+            print 'error during processing url:', url,'code:', e.code,' response:', e.read()
 
 
 def exec_ws():
     for q in LIST_QUEUE:
-        f = request_http('%s?act=search&search=%s' % (URL_QUEUE, q))
-        if f.code == 204:
-            data = json.dumps(DATA_QUEUE) % q
-            if VERBOSE:
-                print 'JSON:', data
-            f = request_http('%s?act=add' % (URL_QUEUE), data)
+        fobj = request_http('%s?act=search&search=%s' % (URL_QUEUE, q))
+        if hasattr(fobj, 'code'):
+            if fobj.code == 204:
+                if DEBUG:
+                    print 'Queue %s not found.' % (q)
+                data = json.dumps(populate_data_queue(q))
+                fobj = request_http('%s?act=add' % (URL_QUEUE), data)
+                if DEBUG:
+                    print 'Create Queue %s, response: %s' % (q, fobj.code)
+            else:
+                if DEBUG:
+                    print 'Queue %s found.' % (q)
     for a in LIST_AGENT:
         m = re.search("agent/([0-9]{4})", a, re.I)
         if m is not None:
-            data = json.dumps(DATA_AGENT) % (a, m.group(1))
-            if VERBOSE:
-                print 'JSON:', data
-            f = request_http('%s?act=add' % (URL_AGENT), data)
-        
+            number = m.group(1)
+            data = json.dumps(populate_data_agent(a, '', number))
+            fobj = request_http('%s?act=view&id=%s' % (URL_AGENT, number))
+            if hasattr(fobj, 'code'):
+                if fobj.code == 204:
+                    if DEBUG:
+                        print 'Agent %s not found.' % (number)
+                    fobj = request_http('%s?act=add' % (URL_AGENT), data)
+                    if hasattr(fobj, 'code') and fobj.code == 200:
+                        if DEBUG:
+                            print 'Agent %s successfully created' % (number)
+                else:
+                    if DEBUG:
+                        print 'Agent %s found.' % (number)
+                    #agent need update but edit method is not possible in webi via webservices.
+                    #agentinfo = json.load(fobj.read())
+                    #agentid = agentinfo['agentfeatures']['id']
+                    #fobj = request_http('%s&act=edit&id=%d' % (base_url_agent), data, agentid)
+                    fobj = request_http('%s?act=add' % (URL_AGENT), data)
+                    if hasattr(fobj, 'code') and fobj.code == 200:
+                        if DEBUG:
+                            print 'Agent %s successfully created' % (number)
+            
 
 def main(directory):
     if not os.access(directory, os.R_OK):
         raise "Can't open directory %s" % directory
     fobj = open(DEFAULT_OUT_FILE,'w')
+    total_line_nb = 0
     for line in readlines(directory):
         linet = traitmentline(line)
+        total_line_nb += 1
         datetime = time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime((int(linet[0]))))
+        
+        
+        m = re.search("2011-05-02 02.", datetime, re.I)
+        if m is None:
+            continue
+            
+        print datetime
+        continue
+    
+    
         lineoutput = '%s%s' % (datetime, FILE_DELIMITERS) + FILE_DELIMITERS.join(linet[1:]) + '\n'
         fobj.write(lineoutput)
         # build list queue
@@ -168,8 +211,17 @@ def main(directory):
         # build list agent
         LIST_AGENT.add(linet[3])
     fobj.close()
+    
+    exit(0)
+    
+    print 'Total: %s lines found for processing' % total_line_nb
+    print
+    
     exec_ws()
+    
     try:
+        if DEBUG:
+            print 'sudo', '-H', '-u', 'postgres' ,'psql', 'asterisk', '-c', COMMAND_COPY
         subprocess.check_call(['sudo', '-H', '-u', 'postgres' ,'psql' ,'asterisk', '-c', COMMAND_COPY])
     except (OSError, subprocess.CalledProcessError), e:
         traceback.print_exc()
@@ -177,13 +229,13 @@ def main(directory):
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-                      help='mode verbose')
+    parser.add_option('-d', '--debug', action='store_true', dest='debug',
+                      help='mode debug')
     parser.add_option('-o', '--outfile', action='store_true', dest='output_filename',
                       help='choose out file', default=DEFAULT_OUT_FILE)
     opts, args = parser.parse_args()
-    if opts.verbose:
-        VERBOSE = True
+    if opts.debug:
+        DEBUG = True
     if opts.output_filename:
         DEFAULT_OUT_FILE = opts.output_filename
     if len(args) != 1:
