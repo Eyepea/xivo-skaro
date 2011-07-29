@@ -25,6 +25,7 @@ __author__    = 'Corentin Le Gall'
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import base64
+import logging
 import struct
 import urllib
 import zlib
@@ -34,6 +35,7 @@ class Sheet:
         self.internaldata = { 'where' : where,
                               'ipbxid' : ipbxid,
                               'channel' : channel }
+        self.log = logging.getLogger('sheet(%s,%s,%s)' % (ipbxid, where, channel))
         # config items
         self.options = {}
         self.displays = {}
@@ -100,10 +102,10 @@ class Sheet:
                         qtui_desc.close()
                     except Exception:
                         qtui_data = ''
-                    self.fields[sheetpart] = {'ui' : {'name' : 'qtui',
+                    self.fields[sheetpart] = {'10' : {'name' : 'qtui',
                                                       'contents' : qtui_data}}
             else:
-                print 'unknown', sheetpart, v
+                self.log.warning('sheetpart %s contents %s' % (sheetpart, v)) 
         # print self.fields
         # linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
         return
@@ -138,8 +140,8 @@ class Sheet:
                 title = vv.get('name')
                 ftype = vv.get('type')
                 contents = vv.get('contents')
-                self.linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
-                                        % (sheetpart, order, title, ftype, contents, sheetpart))
+                self.linestosend.append('<%s order="%04d" name="%s" type="%s"><![CDATA[%s]]></%s>'
+                                        % (sheetpart, int(order), title, ftype, contents, sheetpart))
         self.linestosend.extend(['</user>', '</profile>'])
 
         self.xmlstring = ''.join(self.linestosend).encode('utf8')
