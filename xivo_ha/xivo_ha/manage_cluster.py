@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-__author__  = "Nicolas HICHER <nhicher@proformatique.com>"
+__author__  = "Nicolas HICHER <nhicher@proformatique.com>, Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -25,6 +25,9 @@ import hashlib
 import re
 from xivo_ha.tools import Tools
 from time import localtime, strftime
+
+PG_ETC = '/etc/postgresql/9.0/main'
+PG_VAR = '/var/lib/postgresql'
 
 class ClusterResourceManager(Tools):
     def __init__(self,
@@ -607,11 +610,70 @@ class DatabaseManagement(object):
     '''
     Used to manage database
     '''
-    def __init__(self):
-        pass
+    def __init__(self, ismaster, config):
+        """
+
+          ismaster = is this master node (T/F)
+          config   = pf-xivo-ha.conf instance
+        """
+        self.ismaster = ismaster
+
+	# get peer ip
+	p   = subprocess.Popen(['ip', 'addr'], stdout=subprocess.PIPE)
+        ret = p.wait()
+        if ret != 0:
+            raise OSError('unable to read local ip addresses')
+
+        data = p.stdout.read()
+        if config['nodes']['first_node']['ip'] in data:
+            self.peer = config['nodes']['second_node']['ip']
+        else:
+            self.peer = config['nodes']['first_node']['ip']
 
     def initialize(self):
-        raise NotImplementedError
+        print "database replication init"
+        # authorise postgres ssh key on remote peer
+        with open(PG_VAR+'/.ssh/id_rsa.pub') as f:
+            pubkey = f.read()
+
+        print "allow remote connection for postgres user on peer. Please enter root password."
+        authfile = PG_VAR+'/.ssh/authorized_keys'
+        p = subprocess.Popen(['/usr/bin/ssh', 'root@'+self.peer, "echo '%s' > %s && chown postgres.postgres %s" % (pubkey, authfile, authfile)])
+        if p.wait() != 0:
+            return
+
+        if self.ismaster:
+            with open(PG_ETC+'/ha.conf', 'w') as f:
+                #TODO: restrict listen_addresses to cluster_itf_data interface
+                print >>f, """
+listen_addresses  = '*'
+wal_level         = 'hot_standby'
+archive_mode      = on
+archive_command   = 'cd .'  
+max_wal_senders   = 10
+wal_keep_segments = 5000           # 80 GB required on pg_xlog
+hot_standby       = on 
+"""
+
+            p = subprocess.Popen(['su','-c','createuser --login --superuser repmgr','postgres'], stderr=subprocess.PIPE)
+            p.wait()
+
+        with open(PG_ETC+'/pg_hba.conf', 'r+') as f:
+            content = f.read()
+            if "# HA\n" not in content:
+                f.seek(0, os.SEEK_END)
+                print >>f, """
+# HA
+host     all              all         %s/32         trust
+host     replication      all         %s/32         trust
+""" % (self.peer, self.peer)
+
+        with open(PG_ETC+'/repmgr.conf', 'w') as f:
+            print >>f, """
+cluster=xivo
+node=%d
+conninfo='host=%s user=repmgr dbname=asterisk'
+""" % (1 if self.ismaster else 2, self.peer)
 
     def update(self):
         raise NotImplementedError

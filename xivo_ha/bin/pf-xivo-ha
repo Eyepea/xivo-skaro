@@ -177,7 +177,8 @@ if __name__ == '__main__':
                 cluster_config['services'][service][key] = value
 
     node_management  = ClusterEngine(network_addr, multicast_addr)
-    cluster = ClusterResourceManager(cluster_config)
+    cluster          = ClusterResourceManager(cluster_config)
+    db               = DatabaseManagement(options.master, config)
 
     # csync2 configuration.
     csync_data = {}
@@ -208,6 +209,7 @@ if __name__ == '__main__':
     if options.node:
         if options.node == 'init':
             print('node initialization')
+            db.initialize()
             node_management.initialize()
             for service in services:
                 manage_service = ManageService(service)
