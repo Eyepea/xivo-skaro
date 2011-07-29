@@ -890,10 +890,13 @@ class Safe:
             p = self.zphones(termination.get('protocol'), termination.get('name'))
             if p:
                 self.channels[channel].addrelation('phone:%s' % p)
-                self.channels[channel].properties['thisdisplay'] = self.xod_config['phones'].keeplist[p]['fullname']
+                userid = str(self.xod_config['phones'].keeplist[p]['iduserfeatures'])
+                self.channels[channel].properties['thisdisplay'] = self.xod_config['users'].keeplist[userid]['fullname']
                 oldchans = self.xod_status['phones'][p].get('channels')
                 if channel not in oldchans:
+                    self.handle_cti_stack('set', ('phones', 'updatestatus', p))
                     oldchans.append(channel)
+                    self.handle_cti_stack('empty_stack')
                 self.xod_status['phones'][p]['channels'] = oldchans
             t = self.ztrunks(termination.get('protocol'), termination.get('name'))
             if t:
