@@ -23,15 +23,14 @@ $(function() {
         path: '/extra-libs/multiselect/js/locale/'
     });
     
-    $('.multiselect').multiselect({});
+    $('.multiselect').multiselect({
+		onUpdate: function() {
+			populateqos('it-queue','queue');
+			populateqos('it-group','group');
+		}
+	});
     $('#it-stats_conf-hour_start').timepicker({});
     $('#it-stats_conf-hour_end').timepicker({});
-
-    populateqos('it-queue','queue');
-    populateqos('it-group','group');
-    setInterval('populateqos(\'it-queue\',\'queue\')',2000);
-    setInterval('populateqos(\'it-group\',\'group\')',2000);
-    
 });
 
 function populateqos(selectid,type) {

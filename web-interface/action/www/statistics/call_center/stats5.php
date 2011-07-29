@@ -64,13 +64,20 @@ $tpl_statistics->add_col('total',
 					'direct',
 					'custom:incall,[key],chanstart');
 
+$tpl_statistics->add_col('presented_to_queue',
+					'direct',
+					'custom:incall,[key],presented_to_q');
+$tpl_statistics->add_col('not_presented_to_queue',
+					'expression',
+					'{custom:incall,[key],chanstart}-{custom:incall,[key],presented_to_q}');
+
 $tpl_statistics->set_col_struct('deterred');
 $tpl_statistics->add_col('on_close',
 					'direct',
-					'custom:queue,[key],deterred_on_close');
+					'custom:incall,[key],deterred_on_close');
 $tpl_statistics->add_col('on_saturation',
 					'direct',
-					'custom:queue,[key],deterred_on_saturation');
+					'custom:incall,[key],deterred_on_saturation');
 
 $tpl_statistics->gener_table();
 

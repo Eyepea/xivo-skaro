@@ -27,8 +27,6 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 								'enterqueue'			=> array('type' => 'int'),
 								'connect'				=> array('type' => 'int'),
 								'abandon'				=> array('type' => 'int'),
-								'deterred_on_close'		=> array('type' => 'int'),
-								'deterred_on_saturation'=> array('type' => 'int'),
 								'rerouted_on_hungup'	=> array('type' => 'int'),
 								'rerouted_on_guide'		=> array('type' => 'int'),
 								'rerouted_on_number'	=> array('type' => 'int'),
@@ -78,24 +76,12 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 		$sum = $this->eval_sum_data($key_data,'CONNECT',$field);
 		$this->update_result(array($key,'total_time_waiting'),$sum);
 
-		$queue = $this->_xs->get_list_by_type('queue');
-		$stats_qos = array_shift($queue);
-		$stats_qos = $stats_qos['qos'];
-
-		$field = $this->eval_field_queue_log('CONNECT','holdtime');
-		$qos = $this->eval_count_data($key_data,'CONNECT',array('<', array($field, $stats_qos)));
-		$this->update_result(array($key,'qos'),$qos);
-
-		# unused field
-		#$closed = $this->eval_count_data($key_data,'CLOSED');
-		#$this->update_result(array($key,'deterred_on_close'),$closed);
-
-		# unused field
-		#$full = $this->eval_count_data($key_data,'FULL');
-		#$this->update_result(array($key,'deterred_on_saturation'),$full);
-
 		$abandon = $this->eval_count_data($key_data,'ABANDON');
 		$this->update_result(array($key,'abandon'),$abandon);
+
+		$field = $this->eval_field_queue_log('ABANDON','waittime');
+		$sum = $this->eval_sum_data($key_data,'ABANDON',$field);
+		$this->update_result(array($key,'total_time_waiting'),$sum);
 
 		$exitempty = $this->eval_count_data($key_data,'EXITEMPTY');
 		$this->update_result(array($key,'rerouted_on_hungup'),$exitempty);
@@ -105,12 +91,22 @@ class xivo_statistics_queue extends xivo_statistics_abstract
 
 		$rerouteguide = $this->eval_count_data($key_data,'REROUTEGUIDE');
 		$this->update_result(array($key,'rerouted_on_guide'),$rerouteguide);
+		$this->update_result(array($key,'presented'),$rerouteguide);
 
 		$reroutenumber = $this->eval_count_data($key_data,'REROUTENUMBER');
 		$this->update_result(array($key,'rerouted_on_number'),$reroutenumber);
+		$this->update_result(array($key,'presented'),$reroutenumber);
 
 		$transfer = $this->eval_count_data($key_data,'TRANSFER');
 		$this->update_result(array($key,'rerouted_on_number'),$transfer);
+
+		$queue = $this->_xs->get_list_by_type('queue');
+		$stats_qos = array_shift($queue);
+		$stats_qos = $stats_qos['qos'];
+
+		$field = $this->eval_field_queue_log('CONNECT','holdtime');
+		$qos = $this->eval_count_data($key_data,'CONNECT',array('<', array($field, $stats_qos)));
+		$this->update_result(array($key,'qos'),$qos);
 
 
 		return($this->_result);

@@ -1611,9 +1611,11 @@ class xivo_statistics
 			$dbeg = mktime(0,0,1,$month,1,$year);
 			$dend = mktime(23,59,59,$month,$lastdayformonth,$year);
 
+			echo "$report ";
+
 			if ($erase !== false)
 			{
-				echo "$report -- mode erase enabled >> creation required: ";
+				echo "-- mode erase enabled >> creation required: ";
 				echo " in progress......... ";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
@@ -1623,8 +1625,8 @@ class xivo_statistics
 
 			if (dwho_file::is_f_r($filemonth) === false)
 			{
-				echo "$report -- not exist >> creation required: ";
-				echo " in progress......... \n";
+				echo "-- not exist >> creation required: ";
+				echo " in progress......... ";
 				$rs = $this->generate_cache($idconf,$dbeg,$dend,$type,$objectkey);
 				while (!$rs)
 					usleep(1);
@@ -1632,7 +1634,7 @@ class xivo_statistics
 			}
 			else
 			{
-				echo "$report -- already exist >> check if is up to date: ";
+				echo "-- already exist >> check if is up to date: ";
 
 				if(date('Ym') !== ($year.$month)
 				&& $lastdayformonth === $lastdayforcache)

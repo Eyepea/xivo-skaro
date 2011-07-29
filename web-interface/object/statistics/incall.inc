@@ -23,7 +23,11 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','statistics.inc'));
 class xivo_statistics_incall extends xivo_statistics_abstract
 {
 
-	public		$_field	= array('chanstart'	=> array('type' => 'int'),);
+	public		$_field	= array('chanstart'	            => array('type' => 'int'),
+								'presented_to_q'		=> array('type' => 'int'),
+								'not_presented_to_q'    => array('type' => 'int'),
+								'deterred_on_close'		=> array('type' => 'int'),
+								'deterred_on_saturation'=> array('type' => 'int'));
 	private		$_cel	= false;
 
 	public function __construct(&$_XS)
@@ -68,12 +72,19 @@ class xivo_statistics_incall extends xivo_statistics_abstract
 		$this->update_result(array($key,'chanstart'),$val);
 
 		$this->_table = 'queue_log';
+		$this->_xs->set_type('queue');
+
+		$enterqueue = $this->eval_count_data($key_data,'ENTERQUEUE');
+		$this->update_result(array($key,'presented_to_q'),$enterqueue);
 
 		$closed = $this->eval_count_data($key_data,'CLOSED');
 		$this->update_result(array($key,'deterred_on_close'),$closed);
 
 		$full = $this->eval_count_data($key_data,'FULL');
 		$this->update_result(array($key,'deterred_on_saturation'),$full);
+
+		$this->_table = 'cel';
+		$this->_xs->set_type($this->_type);
 
 		return($this->_result);
 	}

@@ -36,6 +36,7 @@ $.widget("ui.multiselect", {
 		show: 'slideDown',
 		hide: 'slideUp',
 		dividerLocation: 0.6,
+		onUpdate: null, // Define a callback function when a update
 		nodeComparator: function(node1,node2) {
 			var text1 = node1.text(),
 			    text2 = node2.text();
@@ -158,6 +159,10 @@ $.widget("ui.multiselect", {
   },
 	_updateCount: function() {
 		this.selectedContainer.find('span.count').text(this.count+" "+$.ui.multiselect.locale.itemsCount);
+		// callback after update
+		if ('function' == typeof this.options.onUpdate) {
+			this.options.onUpdate();
+		}
 	},
 	_getOptionNode: function(option) {
 		option = $(option);

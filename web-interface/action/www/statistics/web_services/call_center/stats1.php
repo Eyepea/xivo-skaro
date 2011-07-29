@@ -57,34 +57,21 @@ switch ($axetype)
 		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'keyfile',true);
 }
 
-
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
-$tpl_statistics->set_col_struct('calls');
+$tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('total',
 					'direct',
 					'custom:queue,[key],presented');
-/*
-$tpl_statistics->add_col('connected',
-					'direct',
-					'custom:queue,[key],enterqueue');
-*/
-#$tpl_statistics->set_col_struct('traitment');
+
+$tpl_statistics->set_col_struct('calls');
 $tpl_statistics->add_col('connect',
 					'direct',
 					'custom:queue,[key],connect');
 $tpl_statistics->add_col('abandon',
 					'direct',
 					'custom:queue,[key],abandon');
-/*
-$tpl_statistics->set_col_struct('deterred');
-$tpl_statistics->add_col('on_close',
-					'direct',
-					'custom:queue,[key],deterred_on_close');
-$tpl_statistics->add_col('on_saturation',
-					'direct',
-					'custom:queue,[key],deterred_on_saturation');
-*/
+
 $tpl_statistics->set_col_struct('rerouted');
 $tpl_statistics->add_col('on_hungup',
 					'direct',
@@ -99,16 +86,19 @@ $tpl_statistics->add_col('on_number',
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
 					'expression',
-					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],connect}',
-					'time');
+					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],enterqueue}',
+					'time',
+                    'average');
 $tpl_statistics->add_col('home_rated',
 					'expression',
 					'{custom:queue,[key],connect}/{custom:queue,[key],enterqueue}',
-					'percent');
+					'percent',
+                    'average');
 $tpl_statistics->add_col('qos',
 					'expression',
 					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
-					'percent');
+					'percent',
+                    'average');
 
 $tpl_statistics->gener_table();
 

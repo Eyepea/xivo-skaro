@@ -31,6 +31,7 @@ $tpl_statistics->set_baseurl('statistics/call_center/stats1');
 $tpl_statistics->set_data_custom('axetype',$axetype);
 $tpl_statistics->set_data_custom('listtype',$stats_queue->get_list_by_type());
 $itl = $_XS->get_datecal();
+
 switch ($axetype)
 {
 	case 'day':
@@ -67,15 +68,7 @@ $tpl_statistics->add_col('connect',
 $tpl_statistics->add_col('abandon',
 					'direct',
 					'custom:queue,[key],abandon');
-/*
-$tpl_statistics->set_col_struct('deterred');
-$tpl_statistics->add_col('on_close',
-					'direct',
-					'custom:queue,[key],deterred_on_close');
-$tpl_statistics->add_col('on_saturation',
-					'direct',
-					'custom:queue,[key],deterred_on_saturation');
-*/
+
 $tpl_statistics->set_col_struct('rerouted');
 $tpl_statistics->add_col('on_hungup',
 					'direct',
@@ -90,7 +83,7 @@ $tpl_statistics->add_col('on_number',
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
 					'expression',
-					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],connect}',
+					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],enterqueue}',
 					'time',
                     'average');
 $tpl_statistics->add_col('home_rated',

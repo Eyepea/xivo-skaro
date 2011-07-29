@@ -78,10 +78,10 @@ Appels traités
 Dissuadés
 
 ; col_on_close
-<acronym title="Dissuadés sur fermeture">DF</acronym>
+<acronym title="Dissuadés sur fermeture">fermeture</acronym>
 
 ; col_on_saturation	
-<acronym title="Dissuadés sur saturation">DS</acronym>
+<acronym title="Dissuadés sur saturation">saturation</acronym>
 
 ; colstruct_rerouted
 Reroutés
@@ -121,6 +121,12 @@ File d'attente
 
 ; colstruct_agent
 Agent
+
+; col_presented_to_queue
+Présentés à une FA
+
+; col_not_presented_to_queue
+Présentés hors FA
 
 ; col_productivity
 <acronym title="Productivité">Prod.</acronym>

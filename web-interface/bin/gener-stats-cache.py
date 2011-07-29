@@ -67,7 +67,7 @@ def request_http(url, data=None):
         
 def main():
     dbman = DbManager()
-    dbman.cursor.execute("SELECT * FROM stats_conf")    
+    dbman.cursor.execute("SELECT * FROM stats_conf")
     list_conf = dbman.cursor.fetchall()
     dbman.close()
     for conf in list_conf:
@@ -77,7 +77,7 @@ def main():
             for dir in dirs:
                 os.chown(os.path.join(root, dir), 33, 33)
             for file in files:
-                os.chown(os.path.join(root, file), 33, 33)         
+                os.chown(os.path.join(root, file), 33, 33)
         for type in LIST_TYPE:
             qry = 'idconf=%d&type=%s&erase=%s' % (id, type, ERASE)
             try:

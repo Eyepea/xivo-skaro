@@ -77,10 +77,10 @@ Sort <acronym title="Outcall">Outcall</acronym>
 Deterred
 
 ; col_on_close
-<acronym title="Dissuadés on fermeture"> DF </acronym>
+<acronym title="Deterred on close"> DF </acronym>
 
 ; col_on_saturation
-<acronym title="Dissuadés saturation"> on DS </acronym>
+<acronym title="Deterred on saturation"> on DS </acronym>
 
 ; colstruct_rerouted
 Rerouted
@@ -117,6 +117,12 @@ Queue
 
 ; colstruct_agent
 Agent
+
+; col_presented_to_queue
+Presented to a queue
+
+; col_not_presented_to_queue
+Presented out queue
 
 ; col_productivity
 <acronym title="Productivité"> Prod. </acronym>
