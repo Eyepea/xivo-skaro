@@ -1,8 +1,8 @@
-diff --git a/ocf-ra-pgsql b/ocf-ra-pgsql
+diff --git a/postgresql b/postgresql
 new file mode 100755
 index 0000000..67e19ee
 --- /dev/null
-+++ b/ocf-ra-pgsql
++++ b/postgresql
 @@ -0,0 +1,654 @@
 +#!/bin/bash
 +#
@@ -70,7 +70,7 @@ index 0000000..67e19ee
 +	cat <<END
 +<?xml version="1.0"?>
 +<!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
-+<resource-agent name="pgsql" version="1.0">
++<resource-agent name="postgresql" version="1.0">
 +<version>1.0</version>
 +
 +<longdesc lang="en">
