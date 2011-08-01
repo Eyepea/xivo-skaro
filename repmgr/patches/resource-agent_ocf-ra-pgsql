@@ -45,21 +45,22 @@ index 0000000..67e19ee
 +: ${OCF_RESKEY_CRM_meta_master_max=1}
 +: ${OCF_RESKEY_CRM_meta_master_node_max=1}
 +
-+: ${OCF_RESKEY_repmgr=/usr/bin/repmgr}
-+: ${OCF_RESKEY_repmgr_conf=/etc/postgresql/9.0/main/repmgr.conf}
-+: ${OCF_RESKEY_repmgr_clone_opt="-d postgres -U repmgr -R postgres"}
 +: ${OCF_RESKEY_pgctl=/usr/lib/postgresql/9.0/bin/pg_ctl}
 +: ${OCF_RESKEY_psql=/usr/bin/psql}
-+: ${OCF_RESKEY_pgdata=/etc/postgresql/9.0/main}
-+: ${OCF_RESKEY_pgconfig=${OCF_RESKEY_pgdata}/postgresql.conf}
++: ${OCF_RESKEY_pgetc=/etc/postgresql/9.0/main}
++: ${OCF_RESKEY_pgdata=/var/lib/postgresql/9.0/main}
++: ${OCF_RESKEY_pgconfig=${OCF_RESKEY_pgetc}/postgresql.conf}
 +: ${OCF_RESKEY_pgdba=postgres}
 +: ${OCF_RESKEY_pgport=5432}
 +: ${OCF_RESKEY_start_opt="-p $OCF_RESKEY_pgport"}
 +: ${OCF_RESKEY_pgdb=template1}
-+: ${OCF_RESKEY_logfile=/dev/null}
++: ${OCF_RESKEY_logfile=/var/log/postgresql/postgresql-9.0-main.log}
 +: ${OCF_RESKEY_stop_escalate=30}
 +: ${OCF_RESKEY_master_score=100}
 +: ${OCF_RESKEY_slave_score=50}
++: ${OCF_RESKEY_repmgr=/usr/bin/repmgr}
++: ${OCF_RESKEY_repmgr_conf=${OCF_RESKEY_pgetc}/repmgr.conf}
++: ${OCF_RESKEY_repmgr_clone_opt="-d postgres -U repmgr -R postgres"}
 +
 +CRM_MASTER="${HA_SBIN_DIR}/crm_master -l reboot"
 +PIDFILE=/var/run/postgresql/9.0-main.pid
@@ -153,7 +154,7 @@ index 0000000..67e19ee
 +
 +<parameter name="pghost" unique="0" required="0">
 +<longdesc lang="en">
-+Hostname/IP Addreess where PosrgeSQL is listening
++Hostname/IP Address where PostgreSQL is listening
 +</longdesc>
 +<shortdesc lang="en">pghost</shortdesc>
 +<content type="string" default="" />
@@ -328,7 +329,7 @@ index 0000000..67e19ee
 +	mkdir -p $SOCKETDIR &&	\
 +	chown $OCF_RESKEY_pgdba. $SOCKETDIR && \
 +	chmod 2775 $SOCKETDIR
-+	run_as_pg ${OCF_RESKEY_pgctl} start -w -D ${OCF_RESKEY_pgdata} $OCF_RESKEY_ctl_opt -l ${OCF_RESKEY_logfile} -o "'-c config_file=${OCF_RESKEY_pgconfig}'" -o "'$OCF_RESKEY_start_opt'"
++	run_as_pg ${OCF_RESKEY_pgctl} start -w -D ${OCF_RESKEY_pgdata} $OCF_RESKEY_ctl_opt -l ${OCF_RESKEY_logfile} -o "'-c config_file=${OCF_RESKEY_pgconfig} $OCF_RESKEY_start_opt'"
 +	sleep 10
 +}
 +
