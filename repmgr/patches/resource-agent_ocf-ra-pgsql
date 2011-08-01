@@ -600,10 +600,10 @@ index 0000000..67e19ee
 +	check_config $OCF_RESKEY_pgconfig
 +	check_config $OCF_RESKEY_repmgr_conf
 +	
-+	if ! su --login $OCF_RESKEY_pgdba -c "type -p `basename $OCF_RESKEY_pgctl`" > /dev/null ; then
-+		ocf_log err "`basename $OCF_RESKEY_pgctl` should be in PATH for user $OCF_RESKEY_pgdba"
-+		return $OCF_ERR_INSTALLED
-+	fi
++	#if ! su --login $OCF_RESKEY_pgdba -c "type -p `basename $OCF_RESKEY_pgctl`" > /dev/null ; then
++	#	ocf_log err "`basename $OCF_RESKEY_pgctl` should be in PATH for user $OCF_RESKEY_pgdba"
++	#	return $OCF_ERR_INSTALLED
++	#fi
 +	
 +	return $OCF_SUCCESS
 +}
