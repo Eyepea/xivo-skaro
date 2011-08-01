@@ -666,7 +666,10 @@ class ctiserver:
                                                              ssl_version = SSLPROTO)
                                 connc = ClientConnection(connstream, sockparams, ctiseparator)
                             except ssl.SSLError, exc:
-                                log.exception('%s:%s:%d' % (kind, sockparams[0], sockparams[1]))
+                                log.exception('%s:%s:%d cert=%s key=%s)'
+                                              % (kind, sockparams[0], sockparams[1],
+                                                 self.cconf.getconfig('certfile'),
+                                                 self.cconf.getconfig('keyfile')))
                                 connc.close()
                                 connc = None
                         # appending the opened socket to the ones watched
