@@ -11,7 +11,7 @@ CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
 . /usr/sbin/pf-common-read-config
 
 # list all variables with the good prefix
-TEMPLATE_VARS="$(compgen -v XIVO_) $(compgen -v _XIVO_)"
+TEMPLATE_VARS="$(compgen -v XIVO_) $(compgen -v _XIVO_) $(compgen -v HA_)"
 
 
 #### functions used for templating ####
