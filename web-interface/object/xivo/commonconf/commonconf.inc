@@ -30,6 +30,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_netiface   = false;
 	var $_resolvconf = false;
 	var $_provisioning = false;
+	var $_ha           = false;
 	
     function xivo_object_commonconf(&$xobj)
     {
@@ -39,7 +40,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))         === false
 		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
 		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
-		|| ($this->_provisioning = &$this->_xobj->get_module('provisioning')) === false)
+		|| ($this->_provisioning = &$this->_xobj->get_module('provisioning')) === false
+		|| ($this->_ha           = &$this->_xobj->get_module('ha')) === false)
 			return(false);
 
 		return(true);
@@ -61,7 +63,7 @@ class xivo_object_commonconf extends xivo_object_abstract
      }
 	
     function generate($content, $onlystatic=true)
-    {
+		{
         $conf    = array();
 
         // dhcp
@@ -172,7 +174,7 @@ class xivo_object_commonconf extends xivo_object_abstract
                 $cidr_id = $i;
         }
 
-	// no VOIP netiface defined
+        // no VOIP netiface defined
         if($cidr_id < 0) {
             $content = 'no VOIP interface configured';
             return false;
@@ -186,6 +188,14 @@ class xivo_object_commonconf extends xivo_object_abstract
         $ifaces = trim($ifaces);
         $subnet = $this->_ip2subnet($list[$cidr_id]['netiface']['address'], $list[$cidr_id]['netiface']['netmask']);
 
+				// HA
+        $rawdata = $this->_ha->get(1);
+        $conf = array_merge($conf, array(
+          'ha.master.ip'    => strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],
+          'ha.master.name'  => strlen($rawdata['node1_name']) == 0?null:$rawdata['node1_name'],
+          'ha.slave.ip'     => strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
+          'ha.slave.name'   => strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name']
+        ));
         /* checking with HA configuration
              If HA is activated, we must use HA ip address instead of server one
         */
@@ -236,7 +246,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         $conf = array_merge($conf, array(
             'xivo.astdb'            => $db_ast,
             'xivo.xivodb'           => $db_xivo
-	));
+        ));
 
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
     }
