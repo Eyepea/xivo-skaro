@@ -337,6 +337,9 @@ class ClusterResourceManager(Tools):
             # monitoring and timeout on scripts
             group_srv_members = []
             for service in self.services:
+                if hasattr(self, '_svc_'+service):
+                    getattr(self, '_svc_'+service)(file_); continue
+
                 file_.write(self._format_string(self._resource_primitive(service, rsc_class = 'lsb')))
                 group_srv_members.append(service)
 
@@ -372,6 +375,10 @@ class ClusterResourceManager(Tools):
                 monitor_timeout  = val['timeout'] if val.has_key('timeout') else self.cluster_timeout
                 monitor_role     = val['role']    if val.has_key('role')    else None
                 file_.write(self._format_string(self._resource_monitor(res, monitor_interval, monitor_timeout, monitor_role)))
+
+            for svc in self.services:
+                if hasattr(self, '_svc_'+svc):
+                    getattr(self, '_svc_'+svc)(file_, state='post');
 
             file_.write(self._format_string(self._resources_location()))
             file_.write(self._format_string(self._resources_order()))
@@ -440,10 +447,17 @@ class ClusterResourceManager(Tools):
             result += " group_ip_%s" % name
         else:
             result += " ip_%s" % name
+
+        if 'postgresql' in self.services:
+           result += " ms_postgresql"
+ 
         if not self.cluster_group:
             # same as _resources_order
             # need refactoring
             for service in sorted(self.services):
+                if service == 'postgresql':
+                    continue
+
                 result += " %s" % service
         else:
             result +=  " group_srv_%s" % name
@@ -493,11 +507,20 @@ class ClusterResourceManager(Tools):
         timeout  = ':%s' % monitor_timeout
         return 'monitor ' + rsc + monitor_role + interval + timeout
 
-    def _resource_master_slave(self):
+    def _resource_master_slave(self, rsc,
+                                 ms_name,
+                                 notify=False,
+                                 target_role='Master',
+                                 clone_max=2,
+                                 clone_node_max=1,
+                                 master_max=1,
+                                 master_node_max=1):
         '''
         used for mysql/pgsql
         '''
-        raise NotImplementedError
+        return 'ms %s %s meta clone-max="%d" clone-node-max="%d" master-max="%d" master-node-max="%d" notify="%s" target-role="%s"' %\
+          (ms_name, rsc, clone_max, clone_node_max, master_max, master_node_max,
+           'true' if notify else 'false', target_role)
 
     def _cluster_addr(self, addr = None):
         '''
@@ -588,6 +611,7 @@ class ClusterResourceManager(Tools):
             raise IOError('impossible to erase configuration : %s', er_data)
         print("configure cluster")
         self._cluster_configure()
+
         result = self._cluster_push_config()
         if result != 'ok':
             for message in result:
@@ -605,6 +629,20 @@ class ClusterResourceManager(Tools):
         for l in data:
             sys.stdout.write(l)
         return True
+
+    def _svc_postgresql(self, file_, state='pre'):
+        """PostgreSQL service must be handled differently than other services
+
+          need a Master/Slave conf
+        """ 
+        rsc = 'postgresql'
+        if state == 'pre':
+            file_.write(self._format_string(self._resource_primitive(rsc, rsc_op=['monitor interval="30s"'])))
+            return
+
+        # post state
+        file_.write(self._format_string(self._resource_master_slave(rsc, 'ms_'+rsc, True)))
+
 
 class DatabaseManagement(object):
     '''
