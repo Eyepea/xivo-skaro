@@ -528,7 +528,18 @@ class AMI_1_8:
         self.log.info('ami_agentlogoff %s : %s' % (agent, event))
         return
 
-    # XXX TODO handle former AgentCallBacklogin & logoff
+    def ami_agentcallbacklogin(self, event):
+        agent = event.pop('Agent')
+        loginchan = event.pop('Loginchan')
+        self.innerdata.agentlogin(agent, loginchan)
+        self.log.info('ami_agentcallbacklogin %s %s : %s' % (agent, loginchan, event))
+        return
+
+    def ami_agentcallbacklogoff(self, event):
+        agent = event.pop('Agent')
+        self.innerdata.agentlogout(agent)
+        self.log.info('ami_agentcallbacklogoff %s : %s' % (agent, event))
+        return
 
     def ami_musiconhold(self, event):
         channel = event.pop('Channel')
