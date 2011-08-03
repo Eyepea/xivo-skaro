@@ -179,6 +179,7 @@ endif;
 <?php
 	$type = 'preferences';
 	$count = count($info['preferences']['slt']);
+  $keys = array_keys($info['preferences']['slt']);
 ?>
 </div>
 <div id="sb-part-last" class="b-nodisplay">
@@ -203,31 +204,19 @@ endif;
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
-					$errdisplay = '';
-					$pattern = '/^(.*)\((.*)\)/';
-					$match = array();
-					preg_match($pattern, $info['preferences']['slt'][$i], $match);
+				$errdisplay = '';
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left txt-center">
 	<?php
 	
-#								'label' => false,
-#							'id'    => 'it-funcslist',
-#							'key'   => 'name',
-#							'altkey'    => 'id',
-#							'multiple'  => true,
-#							'size'  => 5,
-#							'paragraph' => false),
-	
 					echo $form->select(array('paragraph'	=> false,
 								   'name'		=> 'preferenceslist[]',
 								   'id'		=> false,
 								   'label'		=> false,
-#								   'key'		=> false,
-							        'key'   => 'name',
-							        'altkey'    => 'id',
-								   'selected'	=> $match[1],
+					         'key'   => 'name',
+							     'altkey'    => 'id',
+								   'selected'	=> $keys[$i],
 								   'invalid'	=> true,
 							 ),
 							 $info['preferences']['avail']);?>
@@ -237,9 +226,9 @@ endif;
 								 'name'		=> 'preferencesargs[]',
 								 'id'		=> false,
 								 'label'		=> false,
-								 'size'		=> 15,
-								 'value'		=> $match[2],
-								 'default'		=> $match[2]));?>
+								 'size'		=> 45,
+								 'value'		=> $info['preferences']['slt'][$keys[$i]]));
+					?>
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
