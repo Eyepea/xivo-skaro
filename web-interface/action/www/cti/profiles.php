@@ -40,37 +40,37 @@ $servicesavail = array(
 );
 
 $preferencesavail = array(
-    'logagent' => $_TPL->bbf('pref-logagent'),
-    'pauseagent' => $_TPL->bbf('pref-pauseagent'),
-    'blinktime' => $_TPL->bbf('pref-blinktime'),
-    'fontsize' => $_TPL->bbf('pref-fontsize'),
-    'fontname' => $_TPL->bbf('pref-fontname'),
-    'iconsize' => $_TPL->bbf('pref-iconsize'),
-    'supervisor' => $_TPL->bbf('pref-supervisor'),
-    'queues-showqueuenames' => $_TPL->bbf('pref-queues-showqueuenames'),
-    'queues-showqueues' => $_TPL->bbf('pref-queues-showqueues'),
-    'queues-statscolumns' => $_TPL->bbf('pref-queues-statscolumns'),
-    'queues-shortlegends' => $_TPL->bbf('pref-queues-shortlegends'),
-    'conference-allowrecord' => $_TPL->bbf('pref-conference-allowrecord'),
-    'noqueueaction' => $_TPL->bbf('pref-noqueueaction'),
-    'autochangestate' => $_TPL->bbf('pref-autochangestate')
+    'loginwindow.url'                 => $_TPL->bbf('pref-loginwindow-url'),
+    'xlet.identity.logagent'          => $_TPL->bbf('pref-xlet-identity-logagent'),
+    'xlet.identity.pauseagent'        => $_TPL->bbf('pref-xlet-identity-pauseagent'),
+    'xlet.agentsnext.fontname'        => $_TPL->bbf('pref-xlet-agentsnext-fontname'),
+    'xlet.agentsnext.fontsize'        => $_TPL->bbf('pref-xlet-agentsnext-fontsize'),
+    'xlet.agentsnext.blinktime'       => $_TPL->bbf('pref-xlet-agentsnext-blinktime'),
+    'xlet.agentdetails.noqueueaction' => $_TPL->bbf('pref-xlet-agentdetails-noqueueaction'),
+    'xlet.agentdetails.hideastid'     => $_TPL->bbf('pref-xlet-agentdetails-hideastid'),
+    'xlet.agentdetails.hidecontext'   => $_TPL->bbf('pref-xlet-agentdetails-hidecontext'),
+    'xlet.agents.fontname'            => $_TPL->bbf('pref-xlet-agents-fontname'),
+    'xlet.agents.fontsize'            => $_TPL->bbf('pref-xlet-agents-fontsize'),
+    'xlet.agents.iconsize'            => $_TPL->bbf('pref-xlet-agents-iconsize'),
+    'xlet.queues.statsfetchperiod'    => $_TPL->bbf('pref-xlet-queues-statsfetchperiod'),
+    'presence.autochangestate'        => $_TPL->bbf('pref-presence-autochangestate'),
+    'adlibitum'                       => $_TPL->bbf('pref-adlibitum')
 );
 
 $funcsavail = array(
-    'agents' => $_TPL->bbf('agents'),
-    'presence' => $_TPL->bbf('presence'),
-    'switchboard' => $_TPL->bbf('switchboard'),
-    'customerinfo' => $_TPL->bbf('customerinfo'),
-    'search' => $_TPL->bbf('search'),
-    'dial' => $_TPL->bbf('dial'),
-    'chitchat' => $_TPL->bbf('chitchat'),
-    'conference' => $_TPL->bbf('conference'),
-    'directory' => $_TPL->bbf('directory'),
-    'fax' => $_TPL->bbf('fax'),
-    'features' => $_TPL->bbf('features'),
-    'history' => $_TPL->bbf('history'),
-		'database' => $_TPL->bbf('database'),
-		// merge from callcenter campaigns. still exists ?
+    'agents' => $_TPL->bbf('func-agents'),
+    'presence' => $_TPL->bbf('func-presence'),
+    'switchboard' => $_TPL->bbf('func-switchboard'),
+    'customerinfo' => $_TPL->bbf('func-customerinfo'),
+    'search' => $_TPL->bbf('func-search'),
+    'dial' => $_TPL->bbf('func-dial'),
+    'chitchat' => $_TPL->bbf('func-chitchat'),
+    'conference' => $_TPL->bbf('func-conference'),
+    'directory' => $_TPL->bbf('func-directory'),
+    'fax' => $_TPL->bbf('func-fax'),
+    'features' => $_TPL->bbf('func-features'),
+    'history' => $_TPL->bbf('func-history'),
+    'database' => $_TPL->bbf('func-database'),
     'supervisor' => $_TPL->bbf('func-supervisor'),
     'administrator' => $_TPL->bbf('func-administrator'),
 );
@@ -163,13 +163,11 @@ switch($act)
 
 			if(array_key_exists('preferencesargs', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['preferencesargs'] as $k => $v)
-				{
-					$pref = $_QR['preferenceslist'][$k];
-					$arr[] = $pref.'('.$v.')';
-				}
-				$_QR['profiles']['preferences'] = implode(',', $arr);
+				$pres = array();
+				for($i = 0; $i < count($_QR['preferenceslist'])-1; $i++)
+				{ $pres[$_QR['preferenceslist'][$i]] = $_QR['preferencesargs'][$i]; }
+
+				$_QR['profiles']['preferences'] = dwho_json::encode($pres);
 			}
 			else
 				$_QR['profiles']['preferences'] = '';
@@ -275,15 +273,15 @@ switch($act)
 			}
 			else
 				$_QR['profiles']['funcs'] = '';
+
+
 			if(array_key_exists('preferencesargs', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['preferencesargs'] as $k => $v)
-				{
-					$pref = $_QR['preferenceslist'][$k];
-					$arr[] = $pref.'('.$v.')';
-				}
-				$_QR['profiles']['preferences'] = implode(',', $arr);
+				$pres = array();
+				for($i = 0; $i < count($_QR['preferenceslist'])-1; $i++)
+				{ $pres[$_QR['preferenceslist'][$i]] = $_QR['preferencesargs'][$i]; }
+
+				$_QR['profiles']['preferences'] = dwho_json::encode($pres);
 			}
 			else
 				$_QR['profiles']['preferences'] = '';
@@ -340,10 +338,10 @@ switch($act)
 
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
-
+		
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
-			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);
+			$info['preferences']['slt'] = dwho_json::decode($info['ctiprofiles']['preferences'], true);
 		}
 
 		$info['xlets']['list']['xlets'] = $xletsavail;

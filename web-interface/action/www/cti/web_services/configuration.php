@@ -363,17 +363,6 @@ switch($act)
             foreach($load_profiles as $pf)
             {
                 $pfid = $pf['name'];
-                $prefs = array();
-                $prefout = array();
-
-                $prefs = explode(',', $pf['preferences']);
-                $pattern = '/^(.*)\((.*)\)/';
-                foreach($prefs as $p)
-                {
-                    $match = array();
-                    if (preg_match($pattern, $p, $match) === 1)
-                        $prefout[$match[1]] = $match[2];
-                }
                 $out['profiles'][$pfid] = array(
                     'name' => $pf['appliname'],
 
@@ -392,7 +381,7 @@ switch($act)
                 );
                 $out['functions']["itm_functions_".$pfid] = explode(',', $pf['funcs']);
                 $out['services']["itm_services_".$pfid] = explode(',', $pf['services']);
-                $out['preferences']["itm_preferences_".$pfid] = $prefout;
+                $out['preferences']["itm_preferences_".$pfid] = 0?null:dwho_json::decode($pf['preferences']);
             }
         }
 
