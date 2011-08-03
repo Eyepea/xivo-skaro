@@ -946,13 +946,15 @@ class Safe:
         return
 
     def usersummary_from_phoneid(self, phoneid):
-        phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
-        userid = str(phoneprops.get('iduserfeatures'))
-        userprops = self.xod_config.get('users').keeplist.get(userid)
-        usersummary = { 'phonenumber' : phoneprops.get('number'),
-                        'userid' : userid,
-                        'context' : phoneprops.get('context'),
-                        'fullname' : userprops.get('fullname') }
+        usersummary = {}
+        if phoneid and phoneid in self.xod_config.get('phones').keeplist.keys():
+            phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
+            userid = str(phoneprops.get('iduserfeatures'))
+            userprops = self.xod_config.get('users').keeplist.get(userid)
+            usersummary = { 'phonenumber' : phoneprops.get('number'),
+                            'userid' : userid,
+                            'context' : phoneprops.get('context'),
+                            'fullname' : userprops.get('fullname') }
         return usersummary
 
     def setpeerchannel(self, channel, peerchannel):

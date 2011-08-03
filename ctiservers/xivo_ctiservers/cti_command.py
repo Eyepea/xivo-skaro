@@ -486,6 +486,9 @@ class Command:
                     phoneid = self.rinnerdata.zphones(termination.get('protocol'), termination.get('name'))
                     usersummary = self.rinnerdata.usersummary_from_phoneid(phoneid)
                     r['fullname'] = '"%s" <%s>' % (usersummary.get('fullname'), usersummary.get('phonenumber'))
+                    if not phoneid:
+                        # occurs in agentlogin (dis)connection cases
+                        self.log.warning('could not find a phoneid for %s' % p)
                 else:
                     r['fullname'] = p.get('clid')
                 # todo : transmit a name + a number if possible ...
@@ -511,10 +514,10 @@ class Command:
 
     def regcommand_logfromclient(self):
         self.log.warning('logfromclient from user %s (level %s) : %s : %s'
-                    % (self.ruserid,
-                       self.commanddict.get('level'),
-                       self.commanddict.get('classmethod'),
-                       self.commanddict.get('message')))
+                         % (self.ruserid,
+                            self.commanddict.get('level'),
+                            self.commanddict.get('classmethod'),
+                            self.commanddict.get('message')))
         return
 
     def regcommand_getqueuesstats(self):
