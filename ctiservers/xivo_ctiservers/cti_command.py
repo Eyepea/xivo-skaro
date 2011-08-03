@@ -317,7 +317,7 @@ class Command:
         summarycapas = {}
         if profilespecs:
             for capakind in ['regcommands', 'ipbxcommands',
-                             'services', 'functions',
+                             'services', 'functions', 'preferences',
                              'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
                 if profilespecs.get(capakind):
                     tt = profilespecs.get(capakind)
@@ -1034,30 +1034,58 @@ class Command:
 
     # agents and queues
     def ipbxcommand_agentlogin(self):
-##        rep = { 'amicommand' : 'agentcallbacklogin',
-##                'amiargs' : ('a', 'b', 'c', 'd')
-##                }
-        rep = { 'amicommand' : 'agentlogin',
-                'amiargs' : ('a', 'b', 'c', 'd')
-                }
-        return [rep]
+        agentphonenumber = self.commanddict.get('agentphonenumber')
+        memberstatus = None
+        agentnumber = None
+        agentcontext = None
+        if 'member' in self.commanddict:
+            member = self.parseid(self.commanddict.get('member'))
+            innerdata = self.ctid.safe.get(member.get('ipbxid'))
+            if member.get('id') in innerdata.xod_config.get('agents').keeplist:
+                memberstruct = innerdata.xod_config.get('agents').keeplist.get(member.get('id'))
+                memberstatus = innerdata.xod_status.get('agents').get(member.get('id'))
+                agentnumber = memberstruct.get('number')
+                agentcontext = memberstruct.get('context')
+        else:
+            agentid = self.rinnerdata.xod_config.get('users').keeplist.get(self.ruserid).get('agentid')
+            if agentid:
+                memberstruct = self.rinnerdata.xod_config.get('agents').keeplist.get(agentid)
+                memberstatus = self.rinnerdata.xod_status.get('agents').get(agentid)
+                agentnumber = memberstruct.get('number')
+                agentcontext = memberstruct.get('context')
+
+        rep = list()
+        if agentnumber and agentcontext and memberstatus:
+            if memberstatus.get('status') not in ['AGENT_IDLE', 'AGENT_ONCALL']:
+                rep = [{ 'amicommand' : 'agentcallbacklogin',
+                         'amiargs' : (agentnumber, agentphonenumber, agentcontext, True)
+                         }]
+        return rep
 
     def ipbxcommand_agentlogout(self):
-        member = self.parseid(self.commanddict.get('member'))
-        if not member:
-            return [{'error' : 'member'}]
+        agentnumber = None
+        memberstatus = None
+        if 'member' in self.commanddict:
+            member = self.parseid(self.commanddict.get('member'))
+            innerdata = self.ctid.safe.get(member.get('ipbxid'))
+            if member.get('id') in innerdata.xod_config.get('agents').keeplist:
+                memberstruct = innerdata.xod_config.get('agents').keeplist.get(member.get('id'))
+                memberstatus = innerdata.xod_status.get('agents').get(member.get('id'))
+                agentnumber = memberstruct.get('number')
+        else:
+            agentid = self.rinnerdata.xod_config.get('users').keeplist.get(self.ruserid).get('agentid')
+            if agentid:
+                memberstruct = self.rinnerdata.xod_config.get('agents').keeplist.get(agentid)
+                memberstatus = self.rinnerdata.xod_status.get('agents').get(agentid)
+                agentnumber = memberstruct.get('number')
 
-        innerdata = self.ctid.safe.get(member.get('ipbxid'))
-        rep = {}
-        if member.get('id') in innerdata.xod_config.get('agents').keeplist:
-            memberstruct = innerdata.xod_config.get('agents').keeplist.get(member.get('id'))
-            memberstatus = innerdata.xod_status.get('agents').get(member.get('id'))
+        rep = list()
+        if agentnumber and memberstatus:
             if memberstatus.get('status') != 'AGENT_LOGGEDOFF':
-                rep = { 'amicommand' : 'agentlogoff',
-                        'amiargs' : (memberstruct.get('number'),)
-                        }
-        return [rep]
-
+                rep = [{ 'amicommand' : 'agentlogoff',
+                         'amiargs' : (agentnumber,)
+                         }]
+        return rep
 
     def whenmember(self, innerdata, command, dopause, listname, k, member):
         memberlist = []
