@@ -187,14 +187,14 @@ class XivoRecords():
                         resultitem['id'] = '%06d' % resultitem.get('id')
                         finalresults.append(resultitem)
 
-            tosend = { 'class' : 'records-campaign',
+            tosend = { 'class' : 'records_campaign',
                        'function' : function,
                        'payload' : finalresults
                        }
             repstr = self.cset.__cjson_encode__(tosend)
 
         elif function in ['getprops']:
-            tosend = { 'class' : 'records-campaign',
+            tosend = { 'class' : 'records_campaign',
                        'function' : function,
                        'tags' : self.recordcampaignconfig.get('tags')
                        }
@@ -276,7 +276,7 @@ class XivoRecords():
                 log.warning('unallowed tag request from %s on id %s : tag=%s'
                             % (userinfo.get('user'), idv, tag))
 
-            tosend = { 'class' : 'records-campaign',
+            tosend = { 'class' : 'records_campaign',
                        'function' : function,
                        'id' : idv,
                        'returncode' : retvalue
@@ -302,7 +302,7 @@ class XivoRecords():
                 log.warning('unallowed comment request from %s on id %s : comment=%s'
                             % (userinfo.get('user'), idv, comment))
 
-            tosend = { 'class' : 'records-campaign',
+            tosend = { 'class' : 'records_campaign',
                        'function' : function,
                        'id' : idv,
                        'returncode' : retvalue
@@ -324,7 +324,7 @@ class XivoRecords():
             else:
                 retvalue = 'ko:unallowed'
 
-            tosend = { 'class' : 'records-campaign',
+            tosend = { 'class' : 'records_campaign',
                        'function' : function,
                        'id' : idv,
                        'returncode' : retvalue

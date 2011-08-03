@@ -341,6 +341,7 @@ switch($act)
                                                        "getqueuesstats", "logfromclient",
                                                        "featuresput", "featuresget", "faxsend",
                                                        "logfromclient", "getqueuesstats", "directory",
+                                                       "records_campaign",
                                                        "history");
 
         $out['ipbxcommands']['itm_ipbxcommands'] = array("originate",
