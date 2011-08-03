@@ -29,7 +29,6 @@ Asterisk AMI utilities.
 """
 
 import logging
-import random
 import re
 import socket
 import string
@@ -498,6 +497,25 @@ class AMIClass:
         except socket.timeout:
             return False
         except socket:
+            return False
+        except Exception:
+            return False
+    
+    def alarmclk(self, userid, callerid='Alarm clock'):
+        # execute the alarm clock 'procedure' for the given user
+        try:
+            ret = self.sendcommand('Originate',
+                                   [('Channel', 'Local/s@alarmclk-execute/n'),
+                                    ('Context', 'alarmclk-play-msg'),
+                                    ('Exten', 's'),
+                                    ('Priority', '1'),
+                                    # 10 minutes timeout
+                                    ('Timeout', '600000'),
+                                    ('CallerID', callerid),
+                                    ('Async', 'true'),
+                                    ('Variable', 'XIVO_DSTID=%s' % userid)])
+            return ret
+        except self.AMIError:
             return False
         except Exception:
             return False
