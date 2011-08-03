@@ -677,7 +677,7 @@ class DatabaseManagement(object):
             pubkey = f.read()
 
         # prevent ssh from asking to allow remote host
-        with open('/etc/ssh/ssh_host_dsa_key.pub') as f:
+        with open('/etc/ssh/ssh_host_rsa_key.pub') as f:
             hostkey = f.read()
         hostkey = ' '.join(hostkey.split(' ')[:2])
 
