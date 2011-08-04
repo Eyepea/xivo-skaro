@@ -124,11 +124,11 @@ class SCCPUsersHandler(SpecializedHandler):
 		(_s, _u, _p) = [getattr(self.db, o)._table for o in
 				('usersccp','linefeatures','devicefeatures')]
 		q  = select(
-			[_s, _p.c.macaddr, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
+			[_s, _p.c.mac, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
 			and_(
-				_u.c.protocol == 'sccp', 
-				_u.c.protocolid == _s.c.id, 
-				_u.c.id == _p.c.iduserfeatures
+				_u.c.protocol   == 'sccp',
+				_u.c.protocolid == _s.c.id,
+				_u.c.device     == cast(_p.c.id, VARCHAR(32))
 			)
 		)
 
