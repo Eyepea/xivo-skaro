@@ -795,6 +795,8 @@ INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features',
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),1,'xivo-features','_*92.',1,'GoSub','vmuserpurge,s,1(${EXTEN:3})','vmuserpurgeslt');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*96.',1,'GoSub','vmuser,s,1(${EXTEN:3})','vmuserslt');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*11.',1,'GoSub','paging,s,1(${EXTEN:3})','paging');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*14',1,'GoSub','alarmclk-set,s,1','alarmclk-set');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*15',1,'GoSub','alarmclk-clear,s,1','alarmclk-clear');
 
 
 DROP TABLE IF EXISTS "extenumbers";
@@ -874,6 +876,8 @@ INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*92','97f991a4f
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*92.','36711086667cbfc27488236e0e0fdd2d7f896f6b','','extenfeatures','vmuserpurgeslt');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*96.','ac6c7ac899867fe0120fe20120fae163012615f2','','extenfeatures','vmuserslt');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*11.','0a038e5c4e6e33baee9f210b9a4f7e313f3e79fa','','extenfeatures','paging');
+INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*14','7b32828c56cbc865729669a824d098c1e6584ae9','','extenfeatures','alarmclk-set');
+INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*15','509d0dd56f5acd077613872f49e1dab759b1a435','','extenfeatures','alarmclk-clear');
 
 
 DROP TABLE IF EXISTS "features";
@@ -2265,7 +2269,7 @@ CREATE TABLE "userfeatures" (
  "ringgroup" varchar(64),
  "ringforward" varchar(64),
  "rightcallcode" varchar(16),
- "alarmclock" varchar(5) DEFAULT '00:00' NOT NULL,
+ "alarmclock" varchar(5) NOT NULL DEFAULT '',
  "pitch" varchar(16),
  "pitchdirection" varchar(16),
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN

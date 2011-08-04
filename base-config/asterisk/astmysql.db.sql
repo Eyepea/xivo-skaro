@@ -722,6 +722,8 @@ INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*92',1,'GoSub','vmuserp
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*92.',1,'GoSub','vmuserpurge,s,1(${EXTEN:3})','vmuserpurgeslt');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*96.',1,'GoSub','vmuser,s,1(${EXTEN:3})','vmuserslt');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*11.',1,'GoSub','paging,s,1(${EXTEN:3})','paging');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*14',1,'GoSub','alarmclk-set,s,1','alarmclk-set');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*15',1,'GoSub','alarmclk-clear,s,1','alarmclk-clear');
 
 
 DROP TABLE IF EXISTS `extenumbers`;
@@ -796,6 +798,8 @@ INSERT INTO `extenumbers` VALUES (NULL,'*98','6fb653e9eaf6f4d9c8d2cb48d1a6e3f4d4
 INSERT INTO `extenumbers` VALUES (NULL,'*92','97f991a4ffd7fa843bc0ca3bdc730851382c5cdf','','extenfeatures','vmuserpurge');
 INSERT INTO `extenumbers` VALUES (NULL,'_*92.','36711086667cbfc27488236e0e0fdd2d7f896f6b','','extenfeatures','vmuserpurgeslt');
 INSERT INTO `extenumbers` VALUES (NULL,'_*96.','ac6c7ac899867fe0120fe20120fae163012615f2','','extenfeatures','vmuserslt');
+INSERT INTO `extenumbers` VALUES (NULL,'*14','7b32828c56cbc865729669a824d098c1e6584ae9','','extenfeatures','alarmclk-set');
+INSERT INTO `extenumbers` VALUES (NULL,'*15','509d0dd56f5acd077613872f49e1dab759b1a435','','extenfeatures','alarmclk-clear');
 
 
 DROP TABLE IF EXISTS `features`;
@@ -2161,7 +2165,7 @@ CREATE TABLE `userfeatures` (
  `ringgroup` varchar(64),
  `ringforward` varchar(64),
  `rightcallcode` varchar(16),
- `alarmclock` varchar(5) DEFAULT '00:00' NOT NULL,
+ `alarmclock` varchar(5) NOT NULL DEFAULT '',
  `pitch` varchar(16),
  `pitchdirection` varchar(16),
  `commented` tinyint(1) NOT NULL DEFAULT 0,

@@ -1,7 +1,7 @@
-Index: asterisk-1.8.5-rc1/channels/chan_sip.c
+Index: asterisk-1.8.5.0/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.5-rc1.orig/channels/chan_sip.c	2011-06-30 15:38:30.435708648 -0400
-+++ asterisk-1.8.5-rc1/channels/chan_sip.c	2011-06-30 15:38:43.035710153 -0400
+--- asterisk-1.8.5.0.orig/channels/chan_sip.c	2011-06-28 17:50:43.000000000 -0400
++++ asterisk-1.8.5.0/channels/chan_sip.c	2011-08-03 16:24:56.286233411 -0400
 @@ -13439,11 +13439,19 @@
  		if (s) {
  			expires = strsep(&s, ";"); /* trim ; and beyond */
@@ -50,6 +50,15 @@ Index: asterisk-1.8.5-rc1/channels/chan_sip.c
  	}
  	if (peer->is_realtime && !ast_test_flag(&peer->flags[1], SIP_PAGE2_RTCACHEFRIENDS)) {
  		peer->expire = -1;
+@@ -14299,7 +14316,7 @@
+ 		}
+ 		ao2_unlock(peer);
+ 	}
+-	if (!peer && sip_cfg.autocreatepeer) {
++	if (!peer && sip_cfg.autocreatepeer && strstr(name, sip_cfg.autocreate_prefix) == name) {
+ 		/* Create peer if we have autocreate mode enabled */
+ 		peer = temp_peer(name);
+ 		if (peer) {
 @@ -17401,6 +17418,7 @@
  	ast_cli(a->fd, "  Textsupport:            %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_TEXTSUPPORT)));
  	ast_cli(a->fd, "  Ignore SDP sess. ver.:  %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_IGNORESDPVERSION)));
@@ -68,11 +77,12 @@ Index: asterisk-1.8.5-rc1/channels/chan_sip.c
  	peer->selfdestruct = TRUE;
  	peer->host_dynamic = TRUE;
  	peer->prefs = default_prefs;
-@@ -27168,6 +27189,11 @@
+@@ -27168,6 +27189,12 @@
  	global_regattempts_max = 0;
  	sip_cfg.pedanticsipchecking = DEFAULT_PEDANTIC;
  	sip_cfg.autocreatepeer = DEFAULT_AUTOCREATEPEER;
 +	ast_copy_string(sip_cfg.autocreate_context, DEFAULT_AUTOCREATE_CONTEXT, sizeof(sip_cfg.autocreate_context));
++	ast_copy_string(sip_cfg.autocreate_prefix, DEFAULT_AUTOCREATE_PREFIX, sizeof(sip_cfg.autocreate_prefix));
 +	sip_cfg.autocreate_minexpiry = DEFAULT_AUTOCREATE_MIN_EXPIRY;
 +	sip_cfg.autocreate_maxexpiry = DEFAULT_AUTOCREATE_MAX_EXPIRY;
 +	sip_cfg.autocreate_defaultexpiry = DEFAULT_AUTOCREATE_DEFAULT_EXPIRY;
@@ -80,12 +90,14 @@ Index: asterisk-1.8.5-rc1/channels/chan_sip.c
  	global_autoframing = 0;
  	sip_cfg.allowguest = DEFAULT_ALLOWGUEST;
  	global_callcounter = DEFAULT_CALLCOUNTER;
-@@ -27465,6 +27491,31 @@
+@@ -27465,6 +27492,33 @@
  			proxy_update(&sip_cfg.outboundproxy);
  		} else if (!strcasecmp(v->name, "autocreatepeer")) {
  			sip_cfg.autocreatepeer = ast_true(v->value);
 +		} else if (!strcasecmp(v->name, "autocreate_context")) {
 +			ast_copy_string(sip_cfg.autocreate_context, v->value, sizeof(sip_cfg.autocreate_context));
++		} else if (!strcasecmp(v->name, "autocreate_prefix")) {
++			ast_copy_string(sip_cfg.autocreate_prefix, v->value, sizeof(sip_cfg.autocreate_prefix));
 +		} else if (!strcasecmp(v->name, "autocreate_minexpiry")) {
 +			sip_cfg.autocreate_minexpiry = atoi(v->value);
 +			if (sip_cfg.autocreate_minexpiry < 1) {
@@ -112,26 +124,28 @@ Index: asterisk-1.8.5-rc1/channels/chan_sip.c
  		} else if (!strcasecmp(v->name, "match_auth_username")) {
  			global_match_auth_username = ast_true(v->value);
  		} else if (!strcasecmp(v->name, "srvlookup")) {
-Index: asterisk-1.8.5-rc1/channels/sip/include/sip.h
+Index: asterisk-1.8.5.0/channels/sip/include/sip.h
 ===================================================================
---- asterisk-1.8.5-rc1.orig/channels/sip/include/sip.h	2011-06-30 15:38:30.445708757 -0400
-+++ asterisk-1.8.5-rc1/channels/sip/include/sip.h	2011-06-30 15:38:43.035710153 -0400
-@@ -206,6 +206,10 @@
+--- asterisk-1.8.5.0.orig/channels/sip/include/sip.h	2011-05-20 09:28:24.000000000 -0400
++++ asterisk-1.8.5.0/channels/sip/include/sip.h	2011-08-03 16:00:04.546232921 -0400
+@@ -206,6 +206,11 @@
  #define DEFAULT_NOTIFYCID      DISABLED	/*!< Include CID with ringing notifications */
  #define DEFAULT_PEDANTIC       TRUE     /*!< Follow SIP standards for dialog matching */
  #define DEFAULT_AUTOCREATEPEER FALSE    /*!< Don't create peers automagically */
 +#define DEFAULT_AUTOCREATE_CONTEXT DEFAULT_CONTEXT
++#define DEFAULT_AUTOCREATE_PREFIX ""
 +#define DEFAULT_AUTOCREATE_DEFAULT_EXPIRY DEFAULT_DEFAULT_EXPIRY
 +#define DEFAULT_AUTOCREATE_MIN_EXPIRY DEFAULT_MIN_EXPIRY
 +#define DEFAULT_AUTOCREATE_MAX_EXPIRY DEFAULT_MAX_EXPIRY
  #define	DEFAULT_MATCHEXTERNADDRLOCALLY FALSE /*!< Match extern IP locally default setting */
  #define DEFAULT_QUALIFY        FALSE    /*!< Don't monitor devices */
  #define DEFAULT_CALLEVENTS     FALSE    /*!< Extra manager SIP call events */
-@@ -676,6 +680,11 @@
+@@ -676,6 +681,12 @@
  	int directrtpsetup;         /*!< Enable support for Direct RTP setup (no re-invites) */
  	int pedanticsipchecking;    /*!< Extra checking ?  Default off */
  	int autocreatepeer;         /*!< Auto creation of peers at registration? Default off. */
 +	char autocreate_context[AST_MAX_CONTEXT];
++	char autocreate_prefix[64]; /*!< Only peer with this prefix will be autocreated */
 +	int autocreate_minexpiry;
 +	int autocreate_maxexpiry;
 +	int autocreate_defaultexpiry;

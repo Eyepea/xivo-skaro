@@ -124,11 +124,11 @@ class SCCPUsersHandler(SpecializedHandler):
 		(_s, _u, _p) = [getattr(self.db, o)._table for o in
 				('usersccp','linefeatures','devicefeatures')]
 		q  = select(
-			[_s, _p.c.macaddr, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
+			[_s, _p.c.mac, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
 			and_(
-				_u.c.protocol == 'sccp', 
-				_u.c.protocolid == _s.c.id, 
-				_u.c.id == _p.c.iduserfeatures
+				_u.c.protocol   == 'sccp',
+				_u.c.protocolid == _s.c.id,
+				_u.c.device     == cast(_p.c.id, VARCHAR(32))
 			)
 		)
 
@@ -161,13 +161,14 @@ class UserQueueskillsHandler(SpecializedHandler):
 		"""
 		NOTE: we generate the same queueskills for each line of the user
 		"""
-		(_u, _f, _s,_l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
-			'userfeatures', 'queueskill','linefeatures')]
+		(_u, _s,_l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
+			'queueskill','linefeatures')]
 
 		q = select(
 			[_s.name, _u.weight, _l.id],
 			and_(_u.userid == _l.iduserfeatures, _u.skillid == _s.id)
 		)
+		q = q.order_by(_u.userid)
 
 		return self.execute(q).fetchall()
 
@@ -179,6 +180,7 @@ class AgentQueueskillsHandler(SpecializedHandler):
 			[_f.c.id, _s.c.name, _a.c.weight],
 			and_(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
 		)
+		q = q.order_by(_f.c.id)
 
 		return self.execute(q).fetchall()
 

@@ -53,8 +53,8 @@ __author__    = 'Corentin Le Gall'
 """
 
 # debian.org modules
+import datetime
 import getopt
-from optparse import OptionParser
 import os
 import select
 import signal
@@ -85,6 +85,8 @@ from xivo_ctiservers import interface_rcti
 from xivo_ctiservers import innerdata
 from xivo_ctiservers import amiinterpret
 from xivo_ctiservers import queue_logger
+from xivo_ctiservers.alarm import scheduler
+from xivo_ctiservers.alarm import alarm
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
@@ -102,6 +104,7 @@ XIVO_CONF_OVER     = None
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
 LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
 XIVOIP             = 'localhost'
+ALARM_DIRECTORY    = '/var/lib/pf-xivo-cti-server/alarms'
 PORTDELTA          = 0
 GETOPT_SHORTOPTS   = 'dc:C:p:l:i:P:'
 GETOPT_LONGOPTS    = ['debug', 'config=', 'confoverride=', 'pidfile=',
@@ -162,16 +165,28 @@ class ctiserver:
 
         daemonize.lock_pidfile_or_die(PIDFILE)
 
-        signal.signal(signal.SIGINT, self.sighandler)
-        signal.signal(signal.SIGTERM, self.sighandler)
-        signal.signal(signal.SIGHUP, self.sighandler_reload)
-
         self.nreload = 0
         self.myami = {}
         self.mycti = {}
         self.safe = {}
         self.timeout_queue = Queue.Queue()
         self.pipe_queued_threads = None
+        self.scheduler = scheduler.Scheduler()
+        persister = alarm.JSONPersister(ALARM_DIRECTORY)
+        persister = alarm.MaxDeltaPersisterDecorator(datetime.timedelta(hours=2),
+                                                     persister)
+        try:
+            system_zone = alarm.get_system_zone()
+        except Exception, e:
+            log.warning('Error while getting system zone: %s', e)
+            system_zone = None
+        self.alarm_mgr = alarm.AlarmClockManager(scheduler, persister,
+                                                 self._alarm_callback,
+                                                 system_zone)
+
+        signal.signal(signal.SIGINT, self.sighandler)
+        signal.signal(signal.SIGTERM, self.sighandler)
+        signal.signal(signal.SIGHUP, self.sighandler_reload)
 
         while True:
             try:
@@ -179,7 +194,12 @@ class ctiserver:
             except Exception:
                 log.exception('main loop has crashed ... retrying in 5 seconds ...')
                 time.sleep(5)
-
+    
+    def _alarm_callback(self, data):
+        # WARNING: we are in the scheduler thread
+        userid = data['userid']
+        os.write(self.pipe_queued_threads[1], 'alarmclk:%s\n' % userid)
+    
     ## \brief Handler for catching signals (in the main thread)
     # \param signum signal number
     # \param frame frame
@@ -187,6 +207,7 @@ class ctiserver:
     def sighandler(self, signum, frame):
         log.warning('(sighandler) signal %s lineno %s (atq = %s) received : quits'
                     % (signum, frame.f_lineno, self.askedtoquit))
+        self.scheduler.shutdown()
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
             print '--- living thread <%s>' % (t.getName())
             t._Thread__stop()
@@ -305,8 +326,6 @@ class ctiserver:
         self.nreload += 1
 
         # global default definitions
-        ctilog = None
-
         self.update_userlist = {}
         self.lastrequest_time = {}
 
@@ -443,8 +462,12 @@ class ctiserver:
             except:
                 sys.exit()
         else:
-            while not self.askedtoquit:
-                self.select_step()
+            self.scheduler.start()
+            try:
+                while not self.askedtoquit:
+                    self.select_step()
+            finally:
+                self.scheduler.shutdown()
     # }
 
     def loop_over_cti_queue(self, innerdata):
@@ -543,7 +566,11 @@ class ctiserver:
                         % self.fdlist_ami.keys())
             log.warning('(select) current open TCP connections : (RCTI) %s'
                         % self.fdlist_remote_cti.keys())
-
+            
+            # we must close the scheduler early since scheduled jobs depends
+            # on the AMI connection
+            self.scheduler.shutdown()
+            
             for s in self.fdlist_full:
                 if s in self.fdlist_established:
                     if self.askedtoquit:
@@ -782,6 +809,11 @@ class ctiserver:
                                         elif kind == 'ami':
                                             nactions = self.myami[where].checkqueue()
                                         log.info('handled %d actions for %s' % (nactions, kind))
+                                    elif kind == 'alarmclk':
+                                        userid = where
+                                        params = {'amicommand': 'alarmclk',
+                                                  'amiargs': (userid,)}
+                                        self.myami[self.myipbxid].execute_and_track(None, params)
                                     else:
                                         log.warning('unknown kind for %s' % pb)
                         except Exception:

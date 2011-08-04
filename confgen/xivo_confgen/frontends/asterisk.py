@@ -216,8 +216,8 @@ class AsteriskFrontend(Frontend):
 
         for user in self.backend.sccpusers.all(commented=False):
             #print user.keys()
-            name = 'SEP' + user['macaddr'].replace(':', '')
-            phone_class = xivo_config.phone_factory({'vendor': user['vendor'], 'model': user['model']})
+            name = 'SEP' + user['mac'].replace(':', '')
+            phone_class = xivo_config.phone_factory({'vendor': user['vendor'].lower(), 'model': user['model']})
             if not phone_class:
                 continue
 

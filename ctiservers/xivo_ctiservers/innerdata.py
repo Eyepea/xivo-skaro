@@ -126,8 +126,8 @@ class Safe:
                                   'groups' : []
                                   },
 
-                     'agents' : { 'phonenumber' : '',
-                                  # channel for static login cases
+                     'agents' : { 'phonenumber' : None, # static mode
+                                  'channel' : None, # dynamic mode
                                   'status' : 'undefined', # statuses are AGENT_LOGGEDOFF, _ONCALL, _IDLE and '' (undefined)
                                   'queues' : [],
                                   'groups' : []
@@ -591,7 +591,12 @@ class Safe:
         idx = self.xod_config['agents'].idbyagentnumber(agentnumber)
         self.handle_cti_stack('set', ('agents', 'updatestatus', idx))
         agstatus = self.xod_status['agents'].get(idx)
-        agstatus['channel'] = channel
+        if channel.find('@') >= 0:
+            # static agent mode
+            agstatus['phonenumber'] = channel.split('@')[0]
+        else:
+            # dynamic agent mode
+            agstatus['channel'] = channel
         agstatus['status'] = 'AGENT_IDLE'
         # define relations for agent:x : channel:y and phone:z
         self.handle_cti_stack('empty_stack')
@@ -602,7 +607,6 @@ class Safe:
         self.handle_cti_stack('set', ('agents', 'updatestatus', idx))
         agstatus = self.xod_status['agents'].get(idx)
         agstatus['status'] = 'AGENT_LOGGEDOFF'
-        del agstatus['channel']
         # define relations for agent:x : channel:y and phone:z
         self.handle_cti_stack('empty_stack')
         return
@@ -942,12 +946,15 @@ class Safe:
         return
 
     def usersummary_from_phoneid(self, phoneid):
-        phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
-        userid = str(phoneprops.get('iduserfeatures'))
-        userprops = self.xod_config.get('users').keeplist.get(userid)
-        usersummary = { 'phonenumber' : phoneprops.get('number'),
-                        'userid' : userid,
-                        'fullname' : userprops.get('fullname') }
+        usersummary = {}
+        if phoneid and phoneid in self.xod_config.get('phones').keeplist.keys():
+            phoneprops = self.xod_config.get('phones').keeplist.get(phoneid)
+            userid = str(phoneprops.get('iduserfeatures'))
+            userprops = self.xod_config.get('users').keeplist.get(userid)
+            usersummary = { 'phonenumber' : phoneprops.get('number'),
+                            'userid' : userid,
+                            'context' : phoneprops.get('context'),
+                            'fullname' : userprops.get('fullname') }
         return usersummary
 
     def setpeerchannel(self, channel, peerchannel):
@@ -1486,9 +1493,6 @@ class Safe:
         return
 
     def set_partings(self, pic):
-        return
-
-    def gethistory(self, userid, s, m, r):
         return
 
     # directory lookups entry points - START
