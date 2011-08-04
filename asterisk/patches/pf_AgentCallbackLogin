@@ -1,5 +1,5 @@
 --- asterisk-1.8.5.0.orig/channels/chan_agent.c	2011-05-03 15:55:49.000000000 -0400
-+++ asterisk-1.8.5.0/channels/chan_agent.c	2011-08-04 13:18:39.830309672 -0400
++++ asterisk-1.8.5.0/channels/chan_agent.c	2011-08-04 13:46:02.266436165 -0400
 @@ -37,7 +37,7 @@
  
  #include "asterisk.h"
@@ -1548,11 +1548,11 @@
 +static int agent_logoff_exec(struct ast_channel *chan, const char *data)
 +{
 +        char *parse;
-+        parse = ast_strdupa(data);
 +        AST_DECLARE_APP_ARGS(args,
 +                             AST_APP_ARG(agent_id);
 +                );
 +
++        parse = ast_strdupa(data);
 +        AST_STANDARD_APP_ARGS(args, parse);
 +
 +        if (data == NULL || ast_strlen_zero(args.agent_id)) {
