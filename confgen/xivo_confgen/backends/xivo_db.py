@@ -161,13 +161,14 @@ class UserQueueskillsHandler(SpecializedHandler):
 		"""
 		NOTE: we generate the same queueskills for each line of the user
 		"""
-		(_u, _f, _s,_l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
-			'userfeatures', 'queueskill','linefeatures')]
+		(_u, _s,_l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
+			'queueskill','linefeatures')]
 
 		q = select(
 			[_s.name, _u.weight, _l.id],
 			and_(_u.userid == _l.iduserfeatures, _u.skillid == _s.id)
 		)
+		q = q.order_by(_u.userid)
 
 		return self.execute(q).fetchall()
 
@@ -179,6 +180,7 @@ class AgentQueueskillsHandler(SpecializedHandler):
 			[_f.c.id, _s.c.name, _a.c.weight],
 			and_(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
 		)
+		q = q.order_by(_f.c.id)
 
 		return self.execute(q).fetchall()
 
