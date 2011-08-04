@@ -1,5 +1,5 @@
---- asterisk-1.8.5.0.orig/channels/chan_agent.c	2011-07-27 13:29:16.782219148 -0400
-+++ asterisk-1.8.5.0/channels/chan_agent.c	2011-07-27 13:19:09.334189185 -0400
+--- asterisk-1.8.5.0.orig/channels/chan_agent.c	2011-05-03 15:55:49.000000000 -0400
++++ asterisk-1.8.5.0/channels/chan_agent.c	2011-08-04 13:18:39.830309672 -0400
 @@ -37,7 +37,7 @@
  
  #include "asterisk.h"
@@ -9,7 +9,7 @@
  
  #include <sys/socket.h>
  #include <fcntl.h>
-@@ -197,12 +197,27 @@
+@@ -197,13 +197,29 @@
  			<para>Sets an agent as no longer logged in.</para>
  		</description>
  	</manager>
@@ -35,9 +35,11 @@
  static const char app[] = "AgentLogin";
 +static const char app2[] = "AgentCallbackLogin";
  static const char app3[] = "AgentMonitorOutgoing";
++static const char app4[] = "AgentLogoff";
  
  static char moh[80] = "default";
-@@ -214,6 +229,9 @@
+ 
+@@ -214,6 +230,9 @@
  static const char pa_family[] = "Agents";          /*!< Persistent Agents astdb family */
  #define PA_MAX_LEN 2048                             /*!< The maximum length of each persistent member agent database entry */
  
@@ -47,7 +49,7 @@
  #define DEFAULT_ACCEPTDTMF '#'
  #define DEFAULT_ENDDTMF '*'
  
-@@ -269,11 +287,16 @@
+@@ -269,11 +288,16 @@
  	char agent[AST_MAX_AGENT];     /*!< Agent ID */
  	char password[AST_MAX_AGENT];  /*!< Password for Agent login */
  	char name[AST_MAX_AGENT];
@@ -65,7 +67,7 @@
  	char logincallerid[80];        /**< Caller ID they had when they logged in */
  	struct ast_channel *chan;      /**< Channel we use */
  	unsigned int flags;            /**< Flags show if settings were applied with channel vars */
-@@ -331,6 +354,7 @@
+@@ -331,6 +355,7 @@
  /*--- Forward declarations */
  static struct ast_channel *agent_request(const char *type, format_t format, const struct ast_channel *requestor, void *data, int *cause);
  static int agent_devicestate(void *data);
@@ -73,7 +75,7 @@
  static int agent_digit_begin(struct ast_channel *ast, char digit);
  static int agent_digit_end(struct ast_channel *ast, char digit, unsigned int duration);
  static int agent_call(struct ast_channel *ast, char *dest, int timeout);
-@@ -373,6 +397,95 @@
+@@ -373,6 +398,95 @@
  	.set_base_channel = agent_set_base_channel,
  };
  
@@ -169,7 +171,7 @@
  /*!
   * Adds an agent to the global list of agents.
   *
-@@ -397,7 +510,10 @@
+@@ -397,7 +511,10 @@
  	parse = ast_strdupa(agent);
  
  	/* Extract username (agt), password and name from agent (args). */
@@ -181,7 +183,7 @@
  
  	if(args.argc == 0) {
  		ast_log(LOG_WARNING, "A blank agent line!\n");
-@@ -414,11 +530,14 @@
+@@ -414,11 +531,14 @@
  		password = args.password;
  		while (*password && *password < 33) password++;
  	}
@@ -196,7 +198,7 @@
  	/* Are we searching for the agent here ? To see if it exists already ? */
  	AST_LIST_TRAVERSE(&agents, p, list) {
  		if (!pending && !strcmp(p->agent, agt))
-@@ -430,12 +549,13 @@
+@@ -430,12 +550,13 @@
  			return NULL;
  		ast_copy_string(p->agent, agt, sizeof(p->agent));
  		ast_mutex_init(&p->lock);
@@ -211,7 +213,7 @@
  		AST_LIST_INSERT_TAIL(&agents, p, list);
  	}
  	
-@@ -484,25 +604,26 @@
+@@ -484,25 +605,26 @@
   */
  static int agent_cleanup(struct agent_pvt *p)
  {
@@ -244,7 +246,7 @@
  	return 0;
  }
  
-@@ -510,12 +631,15 @@
+@@ -510,12 +632,15 @@
  
  static int agent_answer(struct ast_channel *ast)
  {
@@ -260,7 +262,7 @@
  	char tmp[AST_MAX_BUF],tmp2[AST_MAX_BUF], *pointer;
  	char filename[AST_MAX_BUF];
  	int res = -1;
-@@ -539,6 +663,9 @@
+@@ -539,6 +664,9 @@
  		res = 0;
  	} else
  		ast_log(LOG_ERROR, "Recording already started on that call.\n");
@@ -270,7 +272,7 @@
  	return res;
  }
  
-@@ -549,9 +676,11 @@
+@@ -549,9 +677,11 @@
  
  static struct ast_frame *agent_read(struct ast_channel *ast)
  {
@@ -282,7 +284,7 @@
  	int cur_time = time(NULL);
  	ast_mutex_lock(&p->lock);
  	CHECK_FORMATS(ast, p);
-@@ -568,7 +697,32 @@
+@@ -568,7 +698,32 @@
  		/* If there's a channel, make it NULL */
  		if (p->chan) {
  			p->chan->_bridge = NULL;
@@ -315,7 +317,7 @@
  			ast_devstate_changed(AST_DEVICE_UNAVAILABLE, "Agent/%s", p->agent);
  			p->acknowledged = 0;
  		}
-@@ -583,6 +737,7 @@
+@@ -583,6 +738,7 @@
  			int howlong = cur_time - p->start;
  			if (p->autologoff && (howlong >= p->autologoff)) {
  				ast_log(LOG_NOTICE, "Agent '%s' didn't answer/confirm within %d seconds (waited %d)\n", p->name, p->autologoff, howlong);
@@ -323,7 +325,7 @@
  				if (p->owner || p->chan) {
  					while (p->owner && ast_channel_trylock(p->owner)) {
  						DEADLOCK_AVOIDANCE(&p->lock);
-@@ -599,6 +754,11 @@
+@@ -599,6 +755,11 @@
  						ast_softhangup(p->chan, AST_SOFTHANGUP_EXPLICIT);
  						ast_channel_unlock(p->chan);
  					}
@@ -335,7 +337,7 @@
  				}
  			}
  		}
-@@ -662,33 +822,43 @@
+@@ -662,33 +823,43 @@
  	ast_mutex_unlock(&p->lock);
  	if (recordagentcalls && f == &answer_frame)
  		agent_start_monitoring(ast,0);
@@ -379,7 +381,7 @@
  	struct agent_pvt *p = ast->tech_pvt;
  	int res = -1;
  	CHECK_FORMATS(ast, p);
-@@ -709,11 +879,14 @@
+@@ -709,11 +880,14 @@
  	}
  	CLEANUP(ast, p);
  	ast_mutex_unlock(&p->lock);
@@ -394,7 +396,7 @@
  	struct agent_pvt *p = newchan->tech_pvt;
  	ast_mutex_lock(&p->lock);
  	if (p->owner != oldchan) {
-@@ -723,11 +896,14 @@
+@@ -723,11 +897,14 @@
  	}
  	p->owner = newchan;
  	ast_mutex_unlock(&p->lock);
@@ -409,7 +411,7 @@
  	struct agent_pvt *p = ast->tech_pvt;
  	int res = -1;
  	ast_mutex_lock(&p->lock);
-@@ -747,72 +923,86 @@
+@@ -747,72 +924,86 @@
  	} else
  		res = 0;
  	ast_mutex_unlock(&p->lock);
@@ -522,7 +524,7 @@
  	if (!res) {
  		res = ast_set_read_format(p->chan, ast_best_codec(p->chan->nativeformats));
  		ast_debug(3, "Set read format, result '%d'\n", res);
-@@ -821,6 +1011,7 @@
+@@ -821,6 +1012,7 @@
  	} else {
  		/* Agent hung-up */
  		p->chan = NULL;
@@ -530,7 +532,7 @@
  		ast_devstate_changed(AST_DEVICE_UNAVAILABLE, "Agent/%s", p->agent);
  	}
  
-@@ -832,9 +1023,9 @@
+@@ -832,9 +1024,9 @@
  	}
  	if(!res) {
  		/* Call is immediately up, or might need ack */
@@ -542,7 +544,7 @@
  			newstate = AST_STATE_UP;
  			if (recordagentcalls)
  				agent_start_monitoring(ast, 0);
-@@ -846,12 +1037,30 @@
+@@ -846,12 +1038,30 @@
  	ast_mutex_unlock(&p->lock);
  	if (newstate)
  		ast_setstate(ast, newstate);
@@ -573,7 +575,7 @@
  	struct agent_pvt *p = NULL;
  	struct ast_channel *base = chan;
  
-@@ -863,11 +1072,14 @@
+@@ -863,11 +1073,14 @@
  	p = chan->tech_pvt;
  	if (p->chan) 
  		base = p->chan;
@@ -588,7 +590,7 @@
  	struct agent_pvt *p = NULL;
  	
  	if (!chan || !base) {
-@@ -880,23 +1092,22 @@
+@@ -880,23 +1093,22 @@
  		return -1;
  	}
  	p->chan = base;
@@ -616,7 +618,7 @@
  	/* if they really are hung up then set start to 0 so the test
  	 * later if we're called on an already downed channel
  	 * doesn't cause an agent to be logged out like when
-@@ -906,13 +1117,47 @@
+@@ -906,13 +1118,47 @@
  
  	ast_debug(1, "Hangup called for state %s\n", ast_state2str(ast->_state));
  	if (p->start && (ast->_state != AST_STATE_UP)) {
@@ -666,7 +668,7 @@
  			ast_channel_lock(p->chan);
  			ast_softhangup(p->chan, AST_SOFTHANGUP_EXPLICIT);
  			ast_channel_unlock(p->chan);
-@@ -928,7 +1173,10 @@
+@@ -928,7 +1174,10 @@
  
  	/* Only register a device state change if the agent is still logged in */
  	if (!p->loginstart) {
@@ -677,7 +679,7 @@
  	} else {
  		ast_devstate_changed(AST_DEVICE_NOT_INUSE, "Agent/%s", p->agent);
  	}
-@@ -944,8 +1192,8 @@
+@@ -944,8 +1193,8 @@
  		p->abouttograb = 0;
  	} else if (p->dead) {
  		ast_mutex_destroy(&p->lock);
@@ -687,7 +689,7 @@
  		ast_free(p);
  	} else {
  		if (p->chan) {
-@@ -955,12 +1203,18 @@
+@@ -955,12 +1204,18 @@
  			p->lastdisc = ast_tvadd(ast_tvnow(), ast_samp2tv(p->wrapuptime, 1000));
  			ast_mutex_unlock(&p->lock);
  		}
@@ -706,7 +708,7 @@
  	struct agent_pvt *p;
  	int res;
  
-@@ -982,6 +1236,7 @@
+@@ -982,6 +1237,7 @@
  
  static int agent_ack_sleep(void *data)
  {
@@ -714,7 +716,7 @@
  	struct agent_pvt *p;
  	int res=0;
  	int to = 1000;
-@@ -1023,6 +1278,7 @@
+@@ -1023,6 +1279,7 @@
  
  static struct ast_channel *agent_bridgedchannel(struct ast_channel *chan, struct ast_channel *bridge)
  {
@@ -722,7 +724,7 @@
  	struct agent_pvt *p = bridge->tech_pvt;
  	struct ast_channel *ret = NULL;
  
-@@ -1040,7 +1296,9 @@
+@@ -1040,7 +1297,9 @@
  /*! \brief Create new agent channel */
  static struct ast_channel *agent_new(struct agent_pvt *p, int state, const char *linkedid)
  {
@@ -732,7 +734,7 @@
  #if 0
  	if (!p->chan) {
  		ast_log(LOG_WARNING, "No channel? :(\n");
-@@ -1078,6 +1336,50 @@
+@@ -1078,6 +1337,50 @@
  	tmp->tech_pvt = p;
  	p->owner = tmp;
  	tmp->priority = 1;
@@ -783,7 +785,7 @@
  	return tmp;
  }
  
-@@ -1089,10 +1391,12 @@
+@@ -1089,10 +1392,12 @@
   */
  static int read_agent_config(int reload)
  {
@@ -796,7 +798,7 @@
  	const char *catname;
  	const char *hasagent;
  	int genhasagent;
-@@ -1135,6 +1439,8 @@
+@@ -1135,6 +1440,8 @@
  	savecallsin[0] = '\0';
  
  	/* Read in [general] section for persistence */
@@ -805,7 +807,7 @@
  	multiplelogin = ast_true(ast_variable_retrieve(cfg, "general", "multiplelogin"));
  
  	/* Read in the [agents] section */
-@@ -1150,9 +1456,12 @@
+@@ -1150,9 +1457,12 @@
  			if (autologoff < 0)
  				autologoff = 0;
  		} else if (!strcasecmp(v->name, "ackcall")) {
@@ -820,7 +822,7 @@
  		} else if (!strcasecmp(v->name, "endcall")) {
  			endcall = ast_true(v->value);
  		} else if (!strcasecmp(v->name, "acceptdtmf")) {
-@@ -1235,8 +1544,8 @@
+@@ -1235,8 +1545,8 @@
  			if (!p->owner) {
  				if (!p->chan) {
  					ast_mutex_destroy(&p->lock);
@@ -830,7 +832,7 @@
  					ast_free(p);
  				} else {
  					/* Cause them to hang up */
-@@ -1253,6 +1562,7 @@
+@@ -1253,6 +1563,7 @@
  
  static int check_availability(struct agent_pvt *newlyavailable, int needlock)
  {
@@ -838,7 +840,7 @@
  	struct ast_channel *chan=NULL, *parent=NULL;
  	struct agent_pvt *p;
  	int res;
-@@ -1279,7 +1589,7 @@
+@@ -1279,7 +1590,7 @@
  	if (needlock)
  		AST_LIST_UNLOCK(&agents);
  	if (parent && chan)  {
@@ -847,7 +849,7 @@
  			/* Don't do beep here */
  			res = 0;
  		} else {
-@@ -1318,6 +1628,7 @@
+@@ -1318,6 +1629,7 @@
  
  static int check_beep(struct agent_pvt *newlyavailable, int needlock)
  {
@@ -855,7 +857,7 @@
  	struct agent_pvt *p;
  	int res=0;
  
-@@ -1352,9 +1663,33 @@
+@@ -1352,9 +1664,33 @@
  	return res;
  }
  
@@ -889,7 +891,7 @@
  	struct agent_pvt *p;
  	struct ast_channel *chan = NULL;
  	char *s;
-@@ -1377,7 +1712,8 @@
+@@ -1377,7 +1713,8 @@
  	AST_LIST_LOCK(&agents);
  	AST_LIST_TRAVERSE(&agents, p, list) {
  		ast_mutex_lock(&p->lock);
@@ -899,7 +901,7 @@
  			if (p->chan)
  				hasagent++;
  			now = ast_tvnow();
-@@ -1400,9 +1736,8 @@
+@@ -1400,9 +1737,8 @@
  		AST_LIST_TRAVERSE(&agents, p, list) {
  			ast_mutex_lock(&p->lock);
  			if (!p->pending && ((groupmatch && (p->group & groupmatch)) || !strcmp(data, p->agent))) {
@@ -910,7 +912,7 @@
  				now = ast_tvnow();
  				if (!p->lastdisc.tv_sec || (now.tv_sec >= p->lastdisc.tv_sec)) {
  					p->lastdisc = ast_tv(0, 0);
-@@ -1410,6 +1745,11 @@
+@@ -1410,6 +1746,11 @@
  					if (!p->owner && p->chan) {
  						/* Could still get a fixed agent */
  						chan = agent_new(p, AST_STATE_DOWN, requestor ? requestor->linkedid : NULL);
@@ -922,7 +924,7 @@
  					}
  					if (chan) {
  						ast_mutex_unlock(&p->lock);
-@@ -1437,45 +1777,6 @@
+@@ -1437,45 +1778,6 @@
  	}
  	*cause = hasagent ? AST_CAUSE_BUSY : AST_CAUSE_UNREGISTERED;
  	AST_LIST_UNLOCK(&agents);
@@ -968,7 +970,7 @@
  	return chan;
  }
  
-@@ -1495,12 +1796,14 @@
+@@ -1495,12 +1797,14 @@
   * \param s
   * \param m
   * \returns 
@@ -984,7 +986,7 @@
  	struct agent_pvt *p;
  	char *username = NULL;
  	char *loginChan = NULL;
-@@ -1526,7 +1829,15 @@
+@@ -1526,7 +1830,15 @@
  		/* Set a default status. It 'should' get changed. */
  		status = "AGENT_UNKNOWN";
  
@@ -1001,7 +1003,7 @@
  			loginChan = ast_strdupa(p->chan->name);
  			if (p->owner && p->owner->_bridge) {
  				talkingto = S_COR(p->chan->caller.id.number.valid,
-@@ -1568,9 +1879,52 @@
+@@ -1568,9 +1880,52 @@
  	return 0;
  }
  
@@ -1054,7 +1056,7 @@
  	int ret = -1; /* Return -1 if no agent if found */
  
  	AST_LIST_LOCK(&agents);
-@@ -1600,6 +1954,10 @@
+@@ -1600,6 +1955,10 @@
  					ast_mutex_unlock(&p->lock);
  				} else
  					p->deferlogoff = 1;
@@ -1065,7 +1067,7 @@
  			}
  			break;
  		}
-@@ -1611,6 +1969,7 @@
+@@ -1611,6 +1970,7 @@
  
  static char *agent_logoff_cmd(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
  {
@@ -1073,7 +1075,7 @@
  	int ret;
  	const char *agent;
  
-@@ -1645,10 +2004,11 @@
+@@ -1645,10 +2005,11 @@
   * \param s
   * \param m
   * \returns 
@@ -1086,7 +1088,7 @@
  	const char *agent = astman_get_header(m, "Agent");
  	const char *soft_s = astman_get_header(m, "Soft"); /* "true" is don't hangup */
  	int soft;
-@@ -1671,6 +2031,7 @@
+@@ -1671,6 +2032,7 @@
  
  static char *complete_agent_logoff_cmd(const char *line, const char *word, int pos, int state)
  {
@@ -1094,7 +1096,7 @@
  	char *ret = NULL;
  
  	if (pos == 2) {
-@@ -1698,6 +2059,7 @@
+@@ -1698,6 +2060,7 @@
   */
  static char *agents_show(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
  {
@@ -1102,7 +1104,7 @@
  	struct agent_pvt *p;
  	char username[AST_MAX_BUF];
  	char location[AST_MAX_BUF] = "";
-@@ -1741,6 +2103,15 @@
+@@ -1741,6 +2104,15 @@
  				 else 
  					strcpy(talkingto, " is idle");
  				online_agents++;
@@ -1118,7 +1120,7 @@
  			} else {
  				strcpy(location, "not logged in");
  				talkingto[0] = '\0';
-@@ -1767,6 +2138,7 @@
+@@ -1767,6 +2139,7 @@
  
  static char *agents_show_online(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
  {
@@ -1126,7 +1128,7 @@
  	struct agent_pvt *p;
  	char username[AST_MAX_BUF];
  	char location[AST_MAX_BUF] = "";
-@@ -1806,6 +2178,13 @@
+@@ -1806,6 +2179,13 @@
  				strcpy(talkingto, " is idle");
  			agent_status = 1;
  			online_agents++;
@@ -1140,7 +1142,7 @@
  		}
  		if (!ast_strlen_zero(p->moh))
  			snprintf(music, sizeof(music), " (musiconhold is '%s')", p->moh);
-@@ -1844,13 +2223,14 @@
+@@ -1844,13 +2224,14 @@
   * \returns
   * \sa agentmonitoroutgoing_exec(), load_module().
   */
@@ -1156,7 +1158,7 @@
  	char user[AST_MAX_AGENT] = "";
  	char pass[AST_MAX_AGENT];
  	char agent[AST_MAX_AGENT] = "";
-@@ -1863,10 +2243,15 @@
+@@ -1863,10 +2244,15 @@
  			     AST_APP_ARG(extension);
  		);
  	const char *tmpoptions = NULL;
@@ -1172,7 +1174,7 @@
  
  	u = ast_module_user_add(chan);
  
-@@ -1901,7 +2286,18 @@
+@@ -1901,7 +2287,18 @@
  	ast_channel_unlock(chan);
  	/* End Channel Specific Login Overrides */
  	
@@ -1191,7 +1193,7 @@
  		if (strchr(args.options, 's')) {
  			play_announcement = 0;
  		}
-@@ -1916,6 +2312,9 @@
+@@ -1916,6 +2313,9 @@
  			res = ast_app_getdata(chan, "agent-user", user, sizeof(user) - 1, 0);
  	}
  	while (!res && (max_login_tries==0 || tries < max_login_tries)) {
@@ -1201,7 +1203,7 @@
  		tries++;
  		/* Check for password */
  		AST_LIST_LOCK(&agents);
-@@ -1944,6 +2343,7 @@
+@@ -1944,6 +2344,7 @@
  			ast_mutex_lock(&p->lock);
  			if (!strcmp(p->agent, user) &&
  			    !strcmp(p->password, pass) && !p->pending) {
@@ -1209,7 +1211,7 @@
  
  				/* Ensure we can't be gotten until we're done */
  				p->lastdisc = ast_tvnow();
-@@ -1951,11 +2351,13 @@
+@@ -1951,11 +2352,13 @@
  
  				/* Set Channel Specific Agent Overrides */
  				if (!ast_strlen_zero(pbx_builtin_getvar_helper(chan, "AGENTACKCALL"))) {
@@ -1226,7 +1228,7 @@
  					tmpoptions=pbx_builtin_getvar_helper(chan, "AGENTACKCALL");
  					ast_verb(3, "Saw variable AGENTACKCALL=%s, setting ackcall to: %d for Agent '%s'.\n", tmpoptions, p->ackcall, p->agent);
  					ast_set_flag(p, AGENT_FLAG_ACKCALL);
-@@ -1998,34 +2400,158 @@
+@@ -1998,34 +2401,158 @@
  				unlock_channel = 0;
  				/* End Channel Specific Agent Overrides */
  				if (!p->chan) {
@@ -1391,7 +1393,7 @@
  						ast_indicate_data(chan, AST_CONTROL_HOLD, 
  							S_OR(p->moh, NULL), 
  							!ast_strlen_zero(p->moh) ? strlen(p->moh) + 1 : 0);
-@@ -2043,7 +2569,7 @@
+@@ -2043,7 +2570,7 @@
  								    ast_getformatname(chan->readformat), ast_getformatname(chan->writeformat));
  						/* Login this channel and wait for it to go away */
  						p->chan = chan;
@@ -1400,7 +1402,7 @@
  							check_beep(p, 0);
  						} else {
  							check_availability(p, 0);
-@@ -2072,7 +2598,7 @@
+@@ -2072,7 +2599,7 @@
  									ast_debug(1, "Wrapup time for %s expired!\n", p->agent);
  									p->lastdisc = ast_tv(0, 0);
  									ast_devstate_changed(AST_DEVICE_NOT_INUSE, "Agent/%s", p->agent);
@@ -1409,7 +1411,7 @@
  										check_beep(p, 0);
  									} else {
  										check_availability(p, 0);
-@@ -2081,20 +2607,20 @@
+@@ -2081,20 +2608,20 @@
  							}
  							ast_mutex_unlock(&p->lock);
  							AST_LIST_UNLOCK(&agents);
@@ -1436,7 +1438,7 @@
  								AST_LIST_LOCK(&agents);
  								ast_mutex_lock(&p->lock);
  								check_availability(p, 0);
-@@ -2104,21 +2630,16 @@
+@@ -2104,21 +2631,16 @@
  							}
  							sched_yield();
  						}
@@ -1463,7 +1465,7 @@
  						p->acknowledged = 0;
  						logintime = time(NULL) - p->loginstart;
  						p->loginstart = 0;
-@@ -2134,8 +2655,8 @@
+@@ -2134,8 +2656,8 @@
  						ast_devstate_changed(AST_DEVICE_UNAVAILABLE, "Agent/%s", p->agent);
  						if (p->dead && !p->owner) {
  							ast_mutex_destroy(&p->lock);
@@ -1473,7 +1475,7 @@
  							ast_free(p);
  						}
  					}
-@@ -2166,12 +2687,157 @@
+@@ -2166,12 +2688,177 @@
  	if (!res)
  		res = ast_safe_sleep(chan, 500);
  
@@ -1541,6 +1543,26 @@
 +static int callback_exec(struct ast_channel *chan, const char *data)
 +{
 +	return __login_exec(chan, data, 1);
++}
++
++static int agent_logoff_exec(struct ast_channel *chan, const char *data)
++{
++        char *parse;
++        parse = ast_strdupa(data);
++        AST_DECLARE_APP_ARGS(args,
++                             AST_APP_ARG(agent_id);
++                );
++
++        AST_STANDARD_APP_ARGS(args, parse);
++
++        if (data == NULL || ast_strlen_zero(args.agent_id)) {
++                ast_log(LOG_ERROR, "Invalid parameter!\n");
++                return -1;
++        }
++
++        agent_logoff(args.agent_id, 0);
++
++        return 0;
 +}
 +
 +/*!
@@ -1631,7 +1653,7 @@
   *  \brief Called by the AgentMonitorOutgoing application (from the dial plan).
   *
   * \param chan
-@@ -2181,6 +2847,7 @@
+@@ -2181,6 +2868,7 @@
   */
  static int agentmonitoroutgoing_exec(struct ast_channel *chan, const char *data)
  {
@@ -1639,7 +1661,7 @@
  	int exitifnoagentid = 0;
  	int nowarnings = 0;
  	int changeoutgoing = 0;
-@@ -2231,13 +2898,96 @@
+@@ -2231,13 +2919,96 @@
  	return 0;
  }
  
@@ -1736,7 +1758,7 @@
  	int res = AST_DEVICE_INVALID;
  	
  	s = data;
-@@ -2245,6 +2995,7 @@
+@@ -2245,6 +3016,7 @@
  		groupmatch = (1 << groupoff);
  	else if ((s[0] == ':') && (sscanf(s + 1, "%30d", &groupoff) == 1)) {
  		groupmatch = (1 << groupoff);
@@ -1744,7 +1766,7 @@
  	} else 
  		groupmatch = 0;
  
-@@ -2256,10 +3007,12 @@
+@@ -2256,10 +3028,12 @@
  			if (p->owner) {
  				if (res != AST_DEVICE_INUSE)
  					res = AST_DEVICE_BUSY;
@@ -1758,7 +1780,7 @@
  					if (res == AST_DEVICE_INVALID)
  						res = AST_DEVICE_UNKNOWN;
  				} else if (res == AST_DEVICE_INVALID)	
-@@ -2281,6 +3034,7 @@
+@@ -2281,6 +3055,7 @@
   */
  static struct agent_pvt *find_agent(char *agentid)
  {
@@ -1766,7 +1788,7 @@
  	struct agent_pvt *cur;
  
  	AST_LIST_TRAVERSE(&agents, cur, list) {
-@@ -2293,6 +3047,7 @@
+@@ -2293,6 +3068,7 @@
  
  static int function_agent(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len)
  {
@@ -1774,7 +1796,7 @@
  	char *parse;    
  	AST_DECLARE_APP_ARGS(args,
  		AST_APP_ARG(agentid);
-@@ -2324,7 +3079,7 @@
+@@ -2324,7 +3100,7 @@
  
  	if (!strcasecmp(args.item, "status")) {
  		char *status = "LOGGEDOUT";
@@ -1783,7 +1805,7 @@
  			status = "LOGGEDIN";
  		}
  		ast_copy_string(buf, status, len);
-@@ -2373,6 +3128,7 @@
+@@ -2373,6 +3149,7 @@
  static int agents_data_provider_get(const struct ast_data_search *search,
  	struct ast_data *data_root)
  {
@@ -1791,15 +1813,16 @@
  	struct agent_pvt *p;
  	struct ast_data *data_agent, *data_channel, *data_talkingto;
  
-@@ -2452,6 +3208,7 @@
+@@ -2452,13 +3229,16 @@
  		return AST_MODULE_LOAD_DECLINE;
  	/* Dialplan applications */
  	ast_register_application_xml(app, login_exec);
 +	ast_register_application_xml(app2, callback_exec);
  	ast_register_application_xml(app3, agentmonitoroutgoing_exec);
++	ast_register_application_xml(app4, agent_logoff_exec);
  
  	/* data tree */
-@@ -2459,6 +3216,7 @@
+ 	ast_data_register_multiple(agents_data_providers, ARRAY_LEN(agents_data_providers));
  
  	/* Manager commands */
  	ast_manager_register_xml("Agents", EVENT_FLAG_AGENT, action_agents);
@@ -1807,7 +1830,7 @@
  	ast_manager_register_xml("AgentLogoff", EVENT_FLAG_AGENT, action_agent_logoff);
  
  	/* CLI Commands */
-@@ -2467,12 +3225,18 @@
+@@ -2467,12 +3247,18 @@
  	/* Dialplan Functions */
  	ast_custom_function_register(&agent_function);
  
@@ -1827,7 +1850,7 @@
  }
  
  static int unload_module(void)
-@@ -2480,16 +3244,22 @@
+@@ -2480,16 +3266,22 @@
  	struct agent_pvt *p;
  	/* First, take us out of the channel loop */
  	ast_channel_unregister(&agent_tech);
