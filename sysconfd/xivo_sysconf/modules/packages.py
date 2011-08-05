@@ -125,15 +125,15 @@ class Packages:
              'installedversion':    None,
              'candidateversion':    None}
 
-        if not self.aptcache.has_key(pkgname):
+        if pkgname not in self.aptcache:
             return r
-        elif self.aptcache[pkgname].isInstalled:
+        elif self.aptcache[pkgname].is_installed:
             r['status'] = 'installed'
         else:
             r['status'] = 'notinstalled'
 
-        r['installedversion'] = self.aptcache[pkgname].installedVersion
-        r['candidateversion'] = self.aptcache[pkgname].candidateVersion
+        r['installedversion'] = self.aptcache[pkgname].installed.version
+        r['candidateversion'] = self.aptcache[pkgname].candidate.version
 
         return r
 
