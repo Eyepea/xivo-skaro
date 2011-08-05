@@ -2,7 +2,6 @@
 
 """Synchronization services for devices."""
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -20,6 +19,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import collections
 import logging
 import functools
 import socket
@@ -50,7 +50,7 @@ class ISynchronizeService(object):
         raise Exception('This is an interface, not made to be instantiated')
 
 
-class AMIInteractionError(Exception):
+class AMIError(Exception):
     pass
 
 
@@ -58,201 +58,309 @@ class _RemoteSocketClosedError(Exception):
     pass
 
 
-class _AsteriskAMIClient(object):
-    # assertion are used in this class since this class is private to this module
-    # Note that this is not thread safe.
-    _TIMEOUT = 15.0
+class _LowLevelAMIClient(object):
+    """    
+    Once an instance of this class raise a _RemoteSocketClosedError, you
+    should call its close method and not reuse the object.
     
-    def __init__(self, host, port, enable_tls, username, password):
-        self._host = host
-        self._port = port
-        self._enable_tls = False
-        self._username = username
-        self._password = password
+    """
+    def __init__(self, host, port=5038, enable_tls=False, timeout=15):
+        """
+        Raise a socket.error if we weren't unable to connect to the AMI
+        server.
         
-        self._sock = None
+        """
+        self._host = host
         self._buffer = ''
-        self._action_id = 0
-        self._action_ids = {}
-        self.closed = False
+        self._recv_msg_queue = collections.deque()
+        self._sock = self._new_connected_socket(port, enable_tls, timeout)
     
-    @property
-    def connected(self):
-        return self._sock is not None
-    
-    def _create_socket(self):
-        # create a new socket and connect it to the AMI
-        assert self._sock is None
-        new_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def _new_connected_socket(self, port, enable_tls, timeout):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            new_sock.settimeout(self._TIMEOUT)
-            if self._enable_tls:
+            sock.settimeout(timeout)
+            if enable_tls:
                 import ssl
-                new_sock = ssl.wrap_socket(new_sock)
-                # TODO eventually takes a cert file in argument so that we can
-                #      authenticate the server so we are not prone to MITM attack
-            logger.info('Connecting to %s:%s...', self._host, self._port)
-            new_sock.connect((self._host, self._port))
+                sock = ssl.wrap_socket(sock)
+            logger.info('Connecting to AMI %s:%s...', self._host, port)
+            sock.connect((self._host, port))
         except Exception, e:
-            logger.error('Could not connect to %s: %s', self._host, e)
-            new_sock.close()
+            logger.error('Could not connect to AMI %s: %s', self._host, e)
+            sock.close()
             raise
         else:
-            logger.info('Connected to %s', self._host)
-            self._sock = new_sock
+            logger.info('Connected to AMI %s', self._host)
+            return sock
     
-    def _close_socket(self):
-        assert self._sock is not None
+    def close(self):
         self._sock.close()
-        self._sock = None
-        # clear actions ids
-        self._actions_ids = {}
     
-    def _new_action_id(self):
-        action_id = str(self._action_id)
-        self._action_id += 1
-        return action_id
-    
-    def _send_packet(self, lines, add_action_id, reconnect):
-        # Lines is a bunch of lines to send. Note that it should not contains
-        # an action id, nor contain empty lines, i.e. it should be valid...
-        # Note: lines object will be modified
-        if add_action_id:
-            lines.append('ActionID: %s' % self._new_action_id())
-        lines.append('\r\n')
-        # check if we are connected
-        if self._sock is None:
-            if reconnect:
-                self._login()
-            else:
-                raise Exception('Not connected and reconnect is False')
-        assert self._sock is not None
+    def send_msg(self, msg):
+        """Send an "AMI message", which is just a big string, not ending with
+        an empty line.
+        
+        Raise a _RemoteSocketClosedError if we think the remote socket was
+        closed. In this case, you should close this instance and create a
+        new one if you want to reconnect.
+        
+        Raise a socket.timeout error if a timeout occurs.
+        
+        Raise a socket.error error if there's a socket error not related to
+        the remote socket being closed.
+        
+        > client.send_msg("Action: Ping\r\nActionID: 1\r\n")
+        
+        """
+        data = msg + '\r\n'
         try:
-            self._sock.sendall('\r\n'.join(lines))
+            self._sock.sendall(data)
+        except socket.timeout:
+            # socket.timeout is a child of socket.error
+            raise
         except socket.error, e:
-            logger.warning('Error while sending packet: %s', e)
-            self._close_socket()
-            if reconnect:
-                self._login()
-                # XXX raise AMIInteractionError on error ?
-                self._sock.sendall('\r\n'.join(lines))
-            else:
-                # XXX raise AMIInteractionError ?
-                raise
+            logger.warning('Socket error while sending AMI message to %s: %s',
+                           self._host, e)
+            logger.warning('Assuming the remote socket was closed')
+            raise _RemoteSocketClosedError('remote socket closed')
     
-    def _recv_packet(self, action_id):
-        # Receive the next packets until a packet with the given action id is
-        # found and return it. If action_id is none, just read the next packets.
-        assert self._sock is not None
-        while action_id not in self._action_ids:
-            while True:
+    def recv_msg(self):
+        """Return an "AMI message". Note that the last '\r\n' is not included.
+        
+        > recv_msg()
+        'Response: Success\r\nPing: Pong\r\nTimestamp: 1312554314.077034'
+        
+        Raise the same errors as send_msg.
+        
+        """
+        if self._recv_msg_queue:
+            return self._recv_msg_queue.popleft()
+        
+        while True:
+            try:
                 buffer = self._sock.recv(2048)
+            except socket.timeout:
+                raise
+            except socket.error, e:
+                logger.warning('Socket error while receiving data from %s: %s',
+                               self._host, e)
+                logger.warning('Assuming the remote socket was closed')
+                raise _RemoteSocketClosedError('remote socket closed')
+            else:
                 if not buffer:
                     # empty buffer means the remote socket was closed
-                    self._close_socket()
-                    # XXX good exception to raise ?
+                    logger.warning('Empty string returned by recv from %s',
+                                   self._host)
+                    logger.warning('Assuming the remote socket was closed')
                     raise _RemoteSocketClosedError('remote socket closed')
                 self._buffer += buffer
                 if '\r\n\r\n' in self._buffer:
                     break
-            
-            splitted_buffer = self._buffer.split('\r\n\r\n')
-            self._buffer = splitted_buffer[-1]
-            packets = splitted_buffer[:-1]
-            
-            for packet in packets:
-                lines = packet.split('\r\n')
-                for line in lines:
-                    if line.startswith('ActionID:'):
-                        action_id = int(line.split(':', 1)[1].lstrip())
-                        self._action_ids[action_id] = lines
-                        break
-            
-            if action_id is None:
-                break
         
-        return self._action_ids.pop(action_id, None)
+        splitted_buffer = self._buffer.split('\r\n\r\n')
+        assert len(splitted_buffer) >= 2
+        self._buffer = splitted_buffer[-1]
+        self._recv_msg_queue.extend(splitted_buffer[1:-1])
+        return splitted_buffer[0]
+
+
+class _AMIClient(object):
+    _TIMEOUT = 15
     
-    def _build_command_lines(self, action, args):
+    def __init__(self, host, port, enable_tls, username, password):
+        """
+        Raise a socket.error if we could not connect to the server, or
+        if we were connected but we had a timeout during the login.
+        
+        Raise a _RemoteSocketClosedError if we could connect but later on
+        the connection was closed.
+        
+        Raise an AMIError if we could not login to the AMI.
+        
+        """
+        self._host = host
+        self._action_id = 0
+        self._action_ids = {}
+        self._ll_client = _LowLevelAMIClient(self._host, port, enable_tls,
+                                             self._TIMEOUT)
+        self._ll_client_closed = False
+        try:
+            self._login(username, password)
+        except Exception:
+            self._ll_client.close()
+            raise
+    
+    def _new_msg(self, action, args=None):
         lines = ['Action: %s' % action]
-        for k, v in args:
-            lines.append('%s: %s' % (k, v))
-        return lines
+        if args is not None:
+            lines.extend('%s: %s' % (k, v) for (k, v) in args)
+        lines.append('')
+        return '\r\n'.join(lines)
     
-    def _send_command(self, action, args=[], add_action_id=True, reconnect=True):
-        # Build a packet from a command and sent it
-        lines = self._build_command_lines(action, args)
-        self._send_packet(lines, add_action_id, reconnect)
+    def _new_msg_with_action_id(self, action, args=None):
+        action_id = str(self._action_id)
+        self._action_id += 1
+        
+        action_id_tuple = ('ActionID', action_id)
+        if args is not None:
+            args = args + [action_id_tuple]
+        else:
+            args = [action_id_tuple]
+        return action_id, self._new_msg(action, args)
     
-    def _get_value(self, key, lines):
-        search_key = key + ':'
-        for line in lines:
-            if line.startswith(search_key):
-                return line.split(':', 1)[1].lstrip()
-        raise ValueError('No lines with key "%s" in: %s' % (key, lines))
+    def _parse_msg(self, msg):
+        # Return a dict where of keys/value
+        #
+        # NOTE: it doesn't handle multiple line with the same key, the last
+        # value will be used.
+        result = {}
+        for line in msg.split('\r\n'):
+            try:
+                key, value = line.split(':', 1)
+            except ValueError:
+                # unpack error (at least in theory)
+                logger.info('Invalid AMI line: %s', line)
+            else:
+                result[key] = value.lstrip()
+        return result
     
-    def _login(self):
-        # Note that a failed login will yield a socket deconnection, i.e. it's
-        # not possible to be connected yet not logged in
-        assert self._sock is None
-        self._create_socket()
-        logger.info('Logging in to %s', self._host)
-        aid = self._send_command('Login',
-                                 [('Username', self._username),
-                                  ('Secret', self._password)],
-                                 reconnect=False)
-        response_lines = self._recv_packet(aid)
-        if self._get_value('Response', response_lines) != 'Success':
-            self._close_socket()
-            raise AMIInteractionError('Incorrect AMI username/password')
+    def _send_msg(self, msg):
+        try:
+            self._ll_client.send_msg(msg)
+        except _RemoteSocketClosedError:
+            self._ll_client.close()
+            self._ll_client_closed = True
+            raise
+    
+    def _recv_msg(self, action_id):
+        while True:
+            try:
+                msg = self._ll_client.recv_msg()
+            except _RemoteSocketClosedError:
+                self._ll_client.close()
+                self._ll_client_closed = True
+                raise
+            
+            response_dict = self._parse_msg(msg)
+            if response_dict.get('ActionID') == action_id:
+                return response_dict
+            else:
+                logger.debug('Dropping message: %r', msg)
+    
+    def _check_response(self, response, action):
+        if response.get('Response') != 'Success':
+            raise AMIError('%s returned %s: %s' % (action,
+                                                   response.get('Response', '<no resp>'),
+                                                   response.get('Message', '<no msg>')))
+    
+    def _login(self, username, password):
+        aid, msg = self._new_msg_with_action_id('Login',
+                                                [('Username', username),
+                                                 ('Secret', password)])
+        self._send_msg(msg)
+        response = self._recv_msg(aid)
+        self._check_response(response, 'Login')
     
     def _logoff(self):
-        assert self._sock is not None
-        self._send_command('Logoff', add_action_id=False)
-        
+        msg = self._new_msg('Logoff')
+        self._send_msg(msg)
+    
     def close(self):
-        if not self.closed:
-            if self._sock is not None:
+        if not self._ll_client_closed:
+            try:
                 self._logoff()
-                self._close_socket()
-            self.closed = True
+            except socket.error, e:
+                logger.info('Error while logging off from AMI %s: %s', self._host, e)
+            
+            self._ll_client.close()
+            self._ll_client_closed = True
     
     def sip_notify(self, ip, event):
-        aid = self._send_command('SIPnotifyprovd',
-                                 [('PeerIP', ip.encode('ascii')),
-                                  ('Variable', 'Event=%s' % event.encode('ascii'))])
-        response_lines = self._recv_packet(aid)
-        if self._get_value('Response', response_lines) != 'Success':
-            raise AMIInteractionError('SIPnotifyprovd returned error: %s' %
-                                      self._get_value('Message', response_lines))
+        aid, msg = self._new_msg_with_action_id('SIPnotifyprovd',
+                                                [('PeerIP', ip.encode('ascii')),
+                                                 ('Variable', 'Event=%s' % event.encode('ascii'))])
+        self._send_msg(msg)
+        response = self._recv_msg(aid)
+        self._check_response(response, 'SIPnotifyprovd')
     
     def sccp_reset(self, device_name):
-        aid = self._send_command('SCCPDeviceRestart',
-                                 [('Devicename', device_name),
-                                  ('Type', 'reset')])
-        response_lines = self._recv_packet(aid)
-        if self._get_value('Response', response_lines) != 'Success':
-            raise AMIInteractionError('SIPnotifyprovd returned error: %s' %
-                                      self._get_value('Message', response_lines))
+        aid, msg = self._new_msg_with_action_id('SCCPDeviceRestart',
+                                                [('Devicename', device_name.encode('ascii')),
+                                                 ('Type', 'reset')])
+        self._send_msg(msg)
+        response = self._recv_msg(aid)
+        self._check_response(response, 'SCCPDeviceRestart')
+
+
+class _MaxReconnectionError(Exception):
+    pass
+
+
+class _ReconnectingAMIClient(object):
+    """An AMI client that does transparent reconnecting."""
+    def __init__(self, host, port, enable_tls, username, password, max_try=2):
+        self._host = host
+        self._port = port
+        self._enable_tls = enable_tls
+        self._username = username
+        self._password = password
+        self._max_try = max_try
+        self._client = None
+    
+    def close(self):
+        self._close_client()
+    
+    def _init_client(self):
+        if self._client is None:
+            self._client = _AMIClient(self._host, self._port, self._enable_tls,
+                                      self._username, self._password)
+    
+    def _close_client(self):
+        if self._client is not None:
+            self._client.close()
+            self._client = None
+    
+    def _do_client_method(self, method_name, args):
+        for _ in xrange(self._max_try):
+            try:
+                self._init_client()
+            except (_RemoteSocketClosedError, socket.error), e:
+                    logger.warning('Error while creating client: %s', e)
+            else:
+                fun = getattr(self._client, method_name)
+                try:
+                    return fun(*args)
+                except socket.timeout:
+                    raise
+                except (_RemoteSocketClosedError, socket.error), e:
+                    logger.warning('AMI socket error: %s', e)
+                    self._close_client()
+        else:
+            raise _MaxReconnectionError('giving up connection after %s try' %
+                                        self._max_try)
+    
+    def sip_notify(self, ip, event):
+        self._do_client_method('sip_notify', (ip, event))
+    
+    def sccp_reset(self, device_name):
+        self._do_client_method('sccp_reset', (device_name,))
     
     def __repr__(self):
-        return '<_AsteriskAMIClient to %s:%s (conneted, %s)>' % \
-                (self._host, self._port, self._sock is not None)
+        return '<_ReconnectingAMIClient to %s:%s (connected, %s)>' % \
+                (self._host, self._port, self._client is not None)
 
 
 def _asterisk_ami_sync_lock(fun):
-    # to be used on methods that require locking of the AsteriskAMISynchronizeService class
+    # to be used on methods of the AsteriskAMISynchronizeService class that
+    # require locking
     @functools.wraps(fun)
     def aux(self, *args, **kwargs):
-        self._lock.acquire()
-        try:
+        with self._lock:
             return fun(self, *args, **kwargs)
-        finally:
-            self._lock.release()
     return aux
 
 
 class AsteriskAMISynchronizeService(object):
+    # This class is thread safe
     TYPE = 'AsteriskAMI'
     
     def __init__(self, servers):
@@ -272,11 +380,11 @@ class AsteriskAMISynchronizeService(object):
         self._lock = threading.Lock()
         self._clients = []
         for server in servers:
-            client = _AsteriskAMIClient(server['host'],
-                                        server.get('port', 5038),
-                                        server.get('enable_tls', False),
-                                        server['username'],
-                                        server['password'])
+            client = _ReconnectingAMIClient(server['host'],
+                                            server.get('port', 5038),
+                                            server.get('enable_tls', False),
+                                            server['username'],
+                                            server['password'])
             self._clients.append(client)
         self._closed = False
     
@@ -287,49 +395,30 @@ class AsteriskAMISynchronizeService(object):
                 client.close()
             self._closed = True
     
-    def _do_sip_notify(self, ip, event, recurse):
+    def _do_client_method(self, method_name, args):
         for client in self._clients:
+            fun = getattr(client, method_name)
             try:
-                client.sip_notify(ip, event)
-            except AMIInteractionError, e:
-                logger.debug('Interaction error for client %s: %s', client, e)
-            except _RemoteSocketClosedError, e:
-                if recurse:
-                    self._do_sip_notify(ip, event, False)
-                    return
-                else:
-                    raise
+                return fun(*args)
+            except _MaxReconnectionError, e:
+                logger.warning('Reconnection failed for client %s: %s', client, e)
+            except socket.timeout:
+                logger.warning('Socket timeout for client %s', client)
+            except socket.error:
+                logger.warning('Socket error for client %s: %s', e)
             except Exception, e:
-                logger.info('Could not send sip_notify to %s: %s', client, e, exc_info=True)
-            else:
-                return
-        raise AMIInteractionError('all AMI server returned false')
+                logger.warning('Error while doing %s%s via %s:',
+                               method_name, args, client, exc_info=True)
+        # going over all the AMI clients unsuccessfully means it's a failure 
+        raise AMIError('all AMI servers returned failure')
     
     @_asterisk_ami_sync_lock
     def sip_notify(self, ip, event):
-        return self._do_sip_notify(ip, event, True)
-    
-    def _do_sccp_reset(self, device_name, recurse):
-        for client in self._clients:
-            try:
-                client.sccp_reset(device_name)
-            except AMIInteractionError, e:
-                logger.debug('Interaction error for client %s: %s', client, e)
-            except _RemoteSocketClosedError, e:
-                if recurse:
-                    self._do_sccp_reset(device_name, False)
-                    return
-                else:
-                    raise
-            except Exception, e:
-                logger.info('Could not send sccp_reset to %s: %s', client, e)
-            else:
-                return
-        raise AMIInteractionError('all AMI server returned false')
+        self._do_client_method('sip_notify', (ip, event))
     
     @_asterisk_ami_sync_lock
     def sccp_reset(self, device_name):
-        return self._do_sccp_reset(device_name, True)
+        self._do_client_method('sccp_reset', (device_name,))
 
 
 def register_sync_service(sync_service):
