@@ -725,7 +725,7 @@ host     replication      all         %s/32         trust
 cluster=xivo
 node=%d
 conninfo='host=%s user=repmgr dbname=asterisk'
-""" % (1 if self.ismaster else 2, self.peer['ip'])
+""" % (1 if self.ismaster else 2, self.local['ip'])
 
     def update(self):
         raise NotImplementedError
