@@ -45,10 +45,11 @@ index 0000000..67e19ee
 +: ${OCF_RESKEY_CRM_meta_master_max=1}
 +: ${OCF_RESKEY_CRM_meta_master_node_max=1}
 +
-+: ${OCF_RESKEY_pgctl=/usr/lib/postgresql/9.0/bin/pg_ctl}
 +: ${OCF_RESKEY_psql=/usr/bin/psql}
 +: ${OCF_RESKEY_pgetc=/etc/postgresql/9.0/main}
 +: ${OCF_RESKEY_pgdata=/var/lib/postgresql/9.0/main}
++: ${OCF_RESKEY_pgbin=/usr/lib/postgresql/9.0/bin}
++: ${OCF_RESKEY_pgctl=${OCF_RESKEY_pgbin}/pg_ctl}
 +: ${OCF_RESKEY_pgconfig=${OCF_RESKEY_pgetc}/postgresql.conf}
 +: ${OCF_RESKEY_pgdba=postgres}
 +: ${OCF_RESKEY_pgport=5432}
@@ -293,7 +294,7 @@ index 0000000..67e19ee
 +run_repmgr() {
 +	# pgctl should be in PATH (set it in /etc/login.defs or ~postgres/.profile)
 +	ocf_log info "Run as $OCF_RESKEY_pgdba: ${OCF_RESKEY_repmgr} $@"
-+	su --login $OCF_RESKEY_pgdba -c "${OCF_RESKEY_repmgr} $*" 2>&1 >> /dev/r.out
++	su --login $OCF_RESKEY_pgdba -c "PATH=$PATH:${OCF_RESKEY_pgbin} ${OCF_RESKEY_repmgr} $*" 2>&1 >> /dev/r.out
 +	rc=$?
 +	# 100 = master state
 +	if [ $rc -ne 0 -a $rc -ne 100 ]; then 
