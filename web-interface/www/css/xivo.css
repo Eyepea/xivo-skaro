@@ -24,7 +24,7 @@ body, th, td {font-size: 9pt;color: #000;}
 div, input, select, textarea, optgroup {font-size: 8pt;}
 body, dl, dt, dd, h1, h2, h3, h4, h5, h6, hr, form, ul, li, ol, p, table {margin: 0px;padding: 0px;}
 h1, h2, h3, h4, h5, h6 {font-size: 9pt;}
-hr, table {border: none;border-spacing: 0px;}
+hr, table {border: none;border-spacing: 0px;border-collapse: collapse;}
 ol, li, ul {list-style: none;}
 pre {text-align: left;}
 

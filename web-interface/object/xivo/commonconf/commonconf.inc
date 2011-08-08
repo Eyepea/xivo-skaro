@@ -31,7 +31,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_resolvconf = false;
 	var $_provisioning = false;
 	var $_ha           = false;
-	
+
     function xivo_object_commonconf(&$xobj)
     {
 		$this->xivo_object_abstract(&$xobj);
@@ -46,7 +46,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 
 		return(true);
     }
-	
+
     function _ip2subnet($ip, $netmask)
     {
 		$dotted_ip = split('\.', $ip);
@@ -61,9 +61,9 @@ class xivo_object_commonconf extends xivo_object_abstract
 
 		return($subnet);
      }
-	
+
     function generate($content, $onlystatic=true)
-		{
+    {
         $conf    = array();
 
         // dhcp
@@ -85,9 +85,9 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.smtp.fallback_relayhost' => $rawdata['fallback_relayhost'],
             'xivo.smtp.canonical'          => $rawdata['canonical'],
         ));
-        
+
         $provisioning = $this->_provisioning->get(1);
-        
+
         $conf = array_merge($conf, array(
             'xivo.provd.net4_ip'		=> $provisioning['net4_ip'],
             'xivo.provd.http_port'		=> $provisioning['http_port'],
@@ -145,7 +145,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         if($this->_netiface == false) {
             $content = 'cannot load *netiface* application';
             return false;
-	}
+		}
 
         $list = $this->_netiface->get_netifaces_list();
 
@@ -164,12 +164,12 @@ class xivo_object_commonconf extends xivo_object_abstract
             || $item['netiface']['disable']
             || strcmp($item['netiface']['networktype'], 'voip') != 0)
                 continue;
-                
+
             $ifaces .= $item['netiface']['ifname'] . ' ';
 
             if($vlanid == 0 && $item['netinfo']['vlanif'])
                 $vlanid = intval($item['netiface']['vlanid']);
-               
+
             if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
                 $cidr_id = $i;
         }
@@ -177,7 +177,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         // no VOIP netiface defined
         if($cidr_id < 0) {
             $content = 'no VOIP interface configured';
-            return false;
+           # return false;
         }
 
         $net = array(
@@ -202,12 +202,12 @@ class xivo_object_commonconf extends xivo_object_abstract
         /*
         if(($havirtnet_mod = &$this->_xobj->get_module('ha_virtnet')) === false)
             return false;
-        
+
         $virtnets = $havirtnet_mod->get_all();
         if(is_array($virtnets) && count($virtnets) > 0)
         {
             $hafound = false;
-            
+
             foreach($virtnets as $virtnet)
             {
                 $virtsubnet = $this->_ip2subnet($virtnet['ipaddr'], $virtnet['netmask']);
@@ -219,7 +219,7 @@ class xivo_object_commonconf extends xivo_object_abstract
                     break;
                 }
             }
-            
+
             // no HA virtnet set for VoIP interface
             if(!$hafound)
                 return false;
@@ -256,9 +256,9 @@ class xivo_object_commonconf extends xivo_object_abstract
         if(($ret = $this->_sysconfd->request_get('/commonconf_apply')) !== false)
 		unlink('/var/lib/pf-xivo-web-interface/commonconf.reload');
 
-	return $ret;
+		return $ret;
     }
-    
+
     function last_status_code()
     {
         return $this->_sysconfd->last_status_code();
@@ -266,8 +266,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 
     function notify_changes()
     {
-	touch('/var/lib/pf-xivo-web-interface/commonconf.reload');
-    } 
+		touch('/var/lib/pf-xivo-web-interface/commonconf.reload');
+    }
 }
 
 ?>

@@ -27,10 +27,10 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 
 class xivo_object_sysconfd extends xivo_object_abstract
 {
-	var $_name		= 'sysconfd';
-	var $_curl		= null;
-	var $_uri		= null;
-	var $_url		= array();
+	var $_name			= 'sysconfd';
+	var $_curl			= null;
+	var $_uri			= null;
+	var $_url			= array();
 	var $_status_code	= null;
 
 	function xivo_object_sysconfd(&$xobj)

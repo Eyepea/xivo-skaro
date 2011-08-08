@@ -137,8 +137,7 @@ switch($step)
 		if($ressave === true
 		&& $_QRY->get('step') === $step)
 		{
-			session_destroy();
-			die;
+			die();
 		}
 
 		$_TPL->set_var('info',$appwizard->step_validate());
