@@ -199,11 +199,13 @@ class ManageService(Tools):
             except:
                 raise IOError("impossible to disable service %s" % self.service_name)
 
+            """
             sys.stdout.write("stopping %s \n" % self.service_name)
             try:
                 self._stop_service()
             except:
                 raise IOError("impossible to stop service %s" % self.service_name)
+            """
             return True
         else:
             return False

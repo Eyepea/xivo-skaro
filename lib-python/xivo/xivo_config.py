@@ -520,6 +520,7 @@ def phone_factory(phone):
     description.
     """
     global PhoneClasses
+    print phone		
     phone_class = PhoneClasses[phone["vendor"]]
     return phone_class(phone)
 

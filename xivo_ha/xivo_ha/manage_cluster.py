@@ -23,11 +23,13 @@ import sys
 import time
 import hashlib
 import re
+import random
 from xivo_ha.tools import Tools
 from time import localtime, strftime
 
 PG_ETC = '/etc/postgresql/9.0/main'
 PG_VAR = '/var/lib/postgresql'
+PG_LSB = '/etc/init.d/postgresql'
 
 class ClusterResourceManager(Tools):
     def __init__(self,
@@ -657,8 +659,8 @@ class DatabaseManagement(object):
         """
         self.ismaster = ismaster
 
-	# get peer ip
-	p   = subprocess.Popen(['ip', 'addr'], stdout=subprocess.PIPE)
+        # get peer ip
+        p   = subprocess.Popen(['ip', 'addr'], stdout=subprocess.PIPE)
         ret = p.wait()
         if ret != 0:
             raise OSError('unable to read local ip addresses')
@@ -725,8 +727,42 @@ host     replication      all         %s/32         trust
 cluster=xivo
 node=%d
 conninfo='host=%s user=repmgr dbname=asterisk'
-""" % (1 if self.ismaster else 2, self.peer['ip'])
+""" % (1 if self.ismaster else 2, self.local['ip'])
+
+
+        # need to register node as reprmgr master/slave
+        print "registering node as repmgr %s (WARNING: database will be stopped)" % ("master" if self.ismaster else "slave")
+        self.stop_server()
+
+        if not self.ismaster:
+            # cloning db
+						self.clone_master()
+
+        self.start_server()
+        cmd = ['su', '--login', 'postgres', '-c',
+						'PATH=$PATH:/usr/lib/postgresql/9.0/bin repmgr -f	/etc/postgresql/9.0/main/repmgr.conf --verbose %s register' % ('master'	if self.ismaster else 'standby')]
+        p = subprocess.Popen(cmd)
+        res = p.wait()
+        print "register res=", res
 
     def update(self):
         raise NotImplementedError
 
+    def stop_server(self):
+        p = subprocess.Popen([PG_LSB, 'stop'])
+        p.wait()
+
+    def start_server(self):
+        p = subprocess.Popen([PG_LSB, 'start'])
+        p.wait()
+
+
+    def clone_master(self):
+        p = subprocess.Popen(['mv', PG_VAR+'/9.0/main',	PG_VAR+'/9.0/main.'+random.randint(0,9999)])
+        p.wait()
+
+        cmd = ['su', '--login', 'postgres', '-c', 'PATH=$PATH:/usr/lib/postgresql/9.0/bin repmgr -f	/etc/postgresql/9.0/main/repmgr.conf -D /var/lib/postgresql/9.0/main -d	postgres -p 5432 -U repmgr -R postgres -F --verbose	standby clone %s' % self.peer['name']]
+        print 'cmd= ', ' '.join(cmd)
+        p = subprocess.Popen(cmd)
+        res = p.wait()
+        print "clone res=", res
