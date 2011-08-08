@@ -35,7 +35,7 @@ $netifaces 	= $this->get_var('netifaces');
 	<?= $this->bbf("fm_ha_nodes") ?>
 
 	<div class="sb-list2">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -122,7 +122,7 @@ $netifaces 	= $this->get_var('netifaces');
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">

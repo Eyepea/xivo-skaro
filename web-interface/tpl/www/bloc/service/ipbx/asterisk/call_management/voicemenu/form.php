@@ -412,7 +412,7 @@ endif;
 			    array('event'	=> 'voicemenuevent'));
 ?>
 	<div id="voicemenu-event" class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0">
+	<table>
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left voicemenu-event-desc"><?=$this->bbf('col_voicemenu-event');?></th>

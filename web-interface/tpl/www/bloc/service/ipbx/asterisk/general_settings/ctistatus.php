@@ -10,12 +10,12 @@
         <tr class="sb-top">
             <th class="th-left">status</th>
             <th class="th-center">dispname</th>
-            <th class="th-right col-action">&nbsp</th>
+            <th class="th-right col-action">&nbsp;</th>
         </tr>
         <?php
-            foreach($status as $p => $v) 
-            {   
-                echo 
+            foreach($status as $p => $v)
+            {
+                echo
                     '<tr><td>', $p, '</td><td>', $v['display'], '</td>',
                     '<td>',$url->href_html($url->img_html('img/site/button/edit.gif',
                                 $this->bbf('opt_modify'),
@@ -26,7 +26,7 @@
                             null,
                             $this->bbf('opt_modify')),"\n</td></tr>";
             }
-        ?>  
+        ?>
         </table>
     </div>
 </div>

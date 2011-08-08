@@ -445,7 +445,7 @@ endif;
 			'<div class="clearboth"></div>';
 	endif;
 ?>
-	<table cellspacing="0" cellpadding="0" border="0">
+	<table>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_calldate');?></th>
 			<th class="th-center"><?=$this->bbf('col_src');?></th>

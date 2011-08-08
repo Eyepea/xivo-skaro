@@ -204,7 +204,7 @@ endif;
 <div class="clearboth"></div>
 
 <div class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0">
+	<table>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_queue-name');?></th>
 			<th class="th-right"><?=$this->bbf('col_queue-penalty');?></th>

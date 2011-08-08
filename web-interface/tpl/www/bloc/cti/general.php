@@ -106,7 +106,7 @@ if(isset($error_js[0]) === true)
 <fieldset id="cti-accounts">
 	<legend><?=$this->bbf('cti-accounts');?></legend>
 <div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0" id="list_exten">
+<table id="list_exten">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left th-rule">&nbsp;</th>
@@ -193,7 +193,7 @@ endif;
 </table>
 </div>
 
-<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+<table class="b-nodisplay">
 	<tbody id="ex-row">
 	<tr class="fm-paragraph">
 		<td class="td-left txt-center">
@@ -237,7 +237,7 @@ endif;
 	<fieldset id="cti-servers">
 		<legend><?=$this->bbf('cti-servers');?></legend>
 		<div class="sb-list">
-			<table cellspacing="0" cellpadding="0" border="0">
+			<table>
 			<tr class="sb-top">
 				<th width="70%"><?=$this->bbf('fm_cti_list_ip')?></th>
 				<th class="th-right"><?=$this->bbf('fm_cti_list_port')?></th>

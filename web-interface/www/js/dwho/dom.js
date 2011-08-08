@@ -35,7 +35,7 @@ dwho.dom.eid = function(id,forcereload)
         return((dwho.dom.eids[id] = get));
 
     return(false);
-}
+};
 
 var dwho_eid = dwho.dom.eid;
 
@@ -44,11 +44,13 @@ dwho.dom.has_cssclass = function(obj,classname,strict)
     if(dwho_is_object(obj) === false
     || dwho_is_undef(obj.className) === true)
         return(false);
+    
+    var list = '';
 
     if(dwho_has_len(classname) === true)
-        var list = dwho_object_flip(classname.split(/\s+/));
+        list = dwho_object_flip(classname.split(/\s+/));
     else if(dwho_is_array(classname) === true)
-        var list = dwho_object_flip(classname);
+        list = dwho_object_flip(classname);
     else
         return(false);
 
@@ -70,7 +72,7 @@ dwho.dom.has_cssclass = function(obj,classname,strict)
     }
 
     return(strict);
-}
+};
 
 dwho.dom.add_cssclass = function(obj,classname,mode)
 {
@@ -79,11 +81,13 @@ dwho.dom.add_cssclass = function(obj,classname,mode)
         return(false);
     else if(mode !== 'unshift' && mode !== 'push')
         mode = 'push';
+    
+    var list = '';
 
     if(dwho_has_len(classname) === true)
-        var list = dwho_object_flip(classname.split(/\s+/));
+        list = dwho_object_flip(classname.split(/\s+/));
     else if(dwho_is_array(classname) === true)
-        var list = dwho_object_flip(classname);
+        list = dwho_object_flip(classname);
     else
         return(false);
 
@@ -104,28 +108,30 @@ dwho.dom.add_cssclass = function(obj,classname,mode)
     obj.className = rs.join(' ');
 
     return(true);
-}
+};
 
 dwho.dom.unshift_cssclass = function(obj,classname)
 {
     return(dwho.dom.add_cssclass(obj,classname,'unshift'));
-}
+};
 
 dwho.dom.push_cssclass = function(obj,classname)
 {
     return(dwho.dom.add_cssclass(obj,classname,'push'));
-}
+};
 
 dwho.dom.remove_cssclass = function(obj,classname)
 {
     if(dwho_is_object(obj) === false
     || dwho_is_undef(obj.className) === true)
         return(false);
+    
+    var list = '';
 
     if(dwho_has_len(classname) === true)
-        var list = dwho_object_flip(classname.split(/\s+/));
+        list = dwho_object_flip(classname.split(/\s+/));
     else if(dwho_is_array(classname) === true)
-        var list = dwho_object_flip(classname);
+        list = dwho_object_flip(classname);
     else
         return(false);
 
@@ -142,7 +148,7 @@ dwho.dom.remove_cssclass = function(obj,classname)
     obj.className = rs.join(' ');
 
     return(true);
-}
+};
 
 dwho.dom.add_event = function(type,obj,fn)
 {
@@ -156,7 +162,7 @@ dwho.dom.add_event = function(type,obj,fn)
         return(obj.attachEvent('on' + type,fn));
 
     return(false);
-}
+};
 
 dwho.dom.remove_event = function(type,obj,fn)
 {
@@ -170,7 +176,7 @@ dwho.dom.remove_event = function(type,obj,fn)
         return(obj.detachEvent('on' + type,fn));
 
     return(false);
-}
+};
 
 dwho.dom.create_element = function(tag,attr,content,html)
 {
@@ -190,10 +196,10 @@ dwho.dom.create_element = function(tag,attr,content,html)
             elt.innerHTML = content;
     }
     else if(tcontent === 'object')
-        elt.appendChild(content)
+        elt.appendChild(content);
 
     return(elt);
-}
+};
 
 dwho.dom.remove_element = function(obj,nb)
 {
@@ -217,7 +223,7 @@ dwho.dom.remove_element = function(obj,nb)
         return(false);
 
     return(pnode.removeChild(obj));
-}
+};
 
 dwho.dom.etag = function(tag,obj,nb)
 {
@@ -238,7 +244,7 @@ dwho.dom.etag = function(tag,obj,nb)
         return(false);
 
     return(obj.getElementsByTagName(tag)[nb]);
-}
+};
 
 dwho.dom.ename = function(name,obj,nb)
 {
@@ -259,19 +265,19 @@ dwho.dom.ename = function(name,obj,nb)
         return(false);
 
     return(obj.getElementsByName(name)[nb]);
-}
+};
 
 dwho.dom.free_focus = function()
 {
     dwho.dom.etag('a',null,0).focus();
 
     return(false);
-}
+};
 
 dwho.dom.confirm_newlocation = function(msg,newlocation)
 {
     window.location = confirm(msg) === true ? newlocation : '#';
-}
+};
 
 dwho.dom.set_confirm_newlocation = function(obj)
 {
@@ -286,7 +292,7 @@ dwho.dom.set_confirm_newlocation = function(obj)
     obj.onclick    = null;
 
     return(true);
-}
+};
 
 dwho.dom.set_confirm_uri_onchild = function(id)
 {
@@ -301,7 +307,7 @@ dwho.dom.set_confirm_uri_onchild = function(id)
         dwho.dom.set_confirm_newlocation(list[i]);
 
     return(true);
-}
+};
 
 dwho.dom.get_offset_position = function(obj)
 {
@@ -330,7 +336,7 @@ dwho.dom.get_offset_position = function(obj)
     }
 
     return(ret);
-}
+};
 
 dwho.dom.get_parent_by_tag = function(obj,tag)
 {
@@ -353,7 +359,7 @@ dwho.dom.get_parent_by_tag = function(obj,tag)
     }
 
     return(false);
-}
+};
 
 dwho.dom.get_table_idcnt = function(name)
 {
@@ -363,7 +369,7 @@ dwho.dom.get_table_idcnt = function(name)
         return(false);
 
     return(dwho.dom.table_list[name]['idcnt']);
-}
+};
 
 dwho.dom.get_table_cnt = function(name)
 {
@@ -373,7 +379,7 @@ dwho.dom.get_table_cnt = function(name)
         return(false);
 
     return(dwho.dom.table_list[name]['cnt']);
-}
+};
 
 dwho.dom.set_table_list = function(name,cnt)
 {
@@ -381,7 +387,7 @@ dwho.dom.set_table_list = function(name,cnt)
         cnt = 0;
 
     dwho.dom.table_list[name] = {'cnt': Number(cnt)};
-}
+};
 
 dwho.dom.make_table_list = function(name,obj,del,idcnt)
 {
@@ -445,7 +451,7 @@ dwho.dom.make_table_list = function(name,obj,del,idcnt)
     }
 
     return(true);
-}
+};
 
 dwho.dom.append_relative_element = function(dest,obj,align)
 {
@@ -467,7 +473,7 @@ dwho.dom.append_relative_element = function(dest,obj,align)
         obj.style.left = pos.x + dest.offsetWidth + 'px';
 
     return(true);
-}
+};
 
 dwho.dom.create_focus_caption = function(dest,obj,sum,align)
 {
@@ -490,12 +496,12 @@ dwho.dom.create_focus_caption = function(dest,obj,sum,align)
     var fnappend = function()
                {
             dwho.dom.append_relative_element(a,obj,align);
-               }
+               };
 
     var fnremove = function()
                {
             dwho.dom.remove_element(dwho_eid(obj.id,true));
-               }
+               };
 
     dwho.dom.add_event('focus',a,fnappend);
     dwho.dom.add_event('click',a,fnappend);
@@ -504,7 +510,7 @@ dwho.dom.create_focus_caption = function(dest,obj,sum,align)
     dwho.dom.add_event('mouseout',a,fnremove);
 
     return(true);
-}
+};
 
 dwho.dom.node.empty = function(node)
 {
@@ -514,7 +520,7 @@ dwho.dom.node.empty = function(node)
         return(true);
 
     return(false);
-}
+};
 
 dwho.dom.node.previous = function(node)
 {
@@ -525,7 +531,7 @@ dwho.dom.node.previous = function(node)
     }
 
     return(false);
-}
+};
 
 dwho.dom.node.next = function(node)
 {
@@ -536,7 +542,7 @@ dwho.dom.node.next = function(node)
     }
 
     return(false);
-}
+};
 
 dwho.dom.node.firstchild = function(node)
 {
@@ -551,7 +557,7 @@ dwho.dom.node.firstchild = function(node)
     }
 
     return(false);
-}
+};
 
 dwho.dom.node.lastchild = function(node)
 {
@@ -566,7 +572,7 @@ dwho.dom.node.lastchild = function(node)
     }
 
     return(false);
-}
+};
 
 dwho.dom.set_onload = function(fn)
 {
@@ -575,13 +581,13 @@ dwho.dom.set_onload = function(fn)
 
     if(dwho_is_function(fn) === true)
         dwho.dom.callback_onload.push([fn,args]);
-}
+};
 
 dwho.dom.call_onload = function()
 {
     for(var property in dwho.dom.callback_onload)
         dwho.dom.callback_onload[property][0].apply(null,
                                 dwho.dom.callback_onload[property][1]);
-}
+};
 
 dwho.dom.add_event('load',window,dwho.dom.call_onload);

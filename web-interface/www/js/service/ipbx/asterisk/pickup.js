@@ -22,4 +22,4 @@ $(document).ready(function() {
         path: '/extra-libs/multiselect/js/locale/'
     });
     $('.multiselect').multiselect();
-})
+});

@@ -41,19 +41,20 @@ var xivo_bw = new xivo_bwcheck();
 
 function xivo_open_center(url,name,width,height,param)
 {
+	var x, y, w, h = 0;
     if(xivo_bw.ie)
     {
-        var x = 0;
-        var y = 0;
-        var w = screen.width;
-        var h = screen.height;
+        x = 0;
+        y = 0;
+        w = screen.width;
+        h = screen.height;
     }
     else
     {
-        var x = window.screenX;
-        var y = window.screenY;
-        var w = window.outerWidth;
-        var h = window.outerHeight;
+        x = window.screenX;
+        y = window.screenY;
+        w = window.outerWidth;
+        h = window.outerHeight;
     }
 
     var cx = x;
@@ -89,10 +90,11 @@ function xivo_chg_style_attrib(elem,obj,type)
 
     try
     {
+        var styletype = '';
         if(dwho_is_undef(elem['style']) === false)
-            var styletype = 1;
+            styletype = 1;
         else if(dwho_is_undef(elem.style.setAttribute) === false)
-            var styletype = 2;
+            styletype = 2;
         else
             var styletype = 3;
 

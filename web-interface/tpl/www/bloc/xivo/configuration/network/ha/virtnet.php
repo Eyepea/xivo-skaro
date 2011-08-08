@@ -37,7 +37,7 @@ $netifaces 	= $this->get_var('netifaces');
 	<p>&nbsp;</p>
     <?= $this->bbf("fm_ha_virtual_network") ?>
 	<div class="sb-list">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -123,7 +123,7 @@ $netifaces 	= $this->get_var('netifaces');
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">

@@ -64,7 +64,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 	<fieldset id="fld-opened-hours">
 		<legend><?=$this->bbf('fld-opened-hours');?></legend>
 
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -158,7 +158,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">
@@ -246,7 +246,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 ?>
 	<div class="sb-list">
 
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -350,7 +350,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">

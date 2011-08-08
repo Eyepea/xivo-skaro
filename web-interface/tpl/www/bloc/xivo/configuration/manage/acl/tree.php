@@ -76,7 +76,7 @@ if(is_array($tree) === true && empty($tree) === false):
 			echo	'</div>';
 		else:
 			if($i === 0):
-				echo	'<table cellspacing="0" cellpadding="0" border="0" id="table-',
+				echo	'<table id="table-',
 					$v['parent']['id'],
 					'"><tr><td>',"\n";
 			elseif($mod9 === 0):

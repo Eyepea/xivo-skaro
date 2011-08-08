@@ -210,7 +210,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 
 <div id="sb-part-last" class="b-nodisplay">
 	<div class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0">
+	<table>
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_contextnumbers_incall-numberbeg');?></th>
@@ -288,7 +288,7 @@ endif;
 		</tr>
 		</tfoot>
 	</table>
-	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+	<table class="b-nodisplay">
 		<tbody id="ex-contextnumbers-incall">
 		<tr class="fm-paragraph">
 			<td class="td-left txt-center">

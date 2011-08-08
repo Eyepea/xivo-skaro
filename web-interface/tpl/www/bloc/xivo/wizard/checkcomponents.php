@@ -38,7 +38,7 @@ $packages = $this->get_var('packages');
 </div>
 
 <div id="network" class="sb-list">
-	<table border="0" cellpadding="0" cellspacing="0">
+	<table>
 		<tr class="sb-top">
 			<th colspan="2" class="th-left th-right"><?=$this->bbf('sysinfos_network');?></th>
 		</tr>

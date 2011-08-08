@@ -44,7 +44,7 @@ endif;
 
 ?>
 			<div id="sysinfo">
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table>
 					<tr class="sb-top">
 						<th colspan="2" class="th-left th-right"><?=$this->bbf('sysinfos_system');?></th>
 					</tr>
@@ -82,7 +82,7 @@ endif;
 				</table>
 			</div>
 			<div id="devstats">
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table>
 					<tr class="sb-top">
 						<th colspan="6" class="th-left th-right"><?=$this->bbf('sysinfos_device');?></th>
 					</tr>
@@ -136,7 +136,7 @@ endif;
 			</div>
 		</div>
 		<div id="cpustats">
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table>
 				<tr class="sb-top">
 					<th colspan="5" class="th-left th-right"><?=$this->bbf('sysinfos_cpu');?></th>
 				</tr>
@@ -158,7 +158,7 @@ endif;
 			</table>
 		</div>
 		<div id="netstats">
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table>
 				<tr class="sb-top">
 					<th colspan="5" class="th-left th-right"><?=$this->bbf('sysinfos_network');?></th>
 				</tr>

@@ -28,7 +28,7 @@ $list = $this->get_var('list');
 $err = $this->get_var('error',$type);
 
 ?>
-<table cellspacing="0" cellpadding="0" border="0">
+<table>
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_operator_destination-name');?></th>
@@ -116,7 +116,7 @@ endif;
 	</tr>
 	</tfoot>
 </table>
-<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+<table class="b-nodisplay">
 	<tbody id="ex-operator-<?=$type?>">
 	<tr class="fm-paragraph">
 		<td class="td-left txt-center">

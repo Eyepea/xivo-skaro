@@ -34,7 +34,7 @@ $data = $info['uname_node'];
 	<p>&nbsp;</p>
     <?= $this->bbf("fm_ha_uname_node") ?>
 	<div class="sb-list2">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -93,7 +93,7 @@ $data = $info['uname_node'];
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">
