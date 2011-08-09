@@ -639,8 +639,9 @@ class ClusterResourceManager(Tools):
         """ 
         rsc = 'postgresql'
         if state == 'pre':
-            file_.write(self._format_string(self._resource_primitive(rsc, rsc_op=['monitor interval="30s"', 'start timeout="90s"', 'end timeout="90s"', 'demote timeout="90s"', 
-                'stop	timeout="60s"'])))
+            file_.write(self._format_string(self._resource_primitive(rsc,
+							rsc_op=['monitor interval="30s"', 'start timeout="90s"',
+								      'promote timeout="90s"', 'demote timeout="90s"', 'stop timeout="60s"'])))
             return
 
         # post state
