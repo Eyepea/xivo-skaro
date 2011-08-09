@@ -106,6 +106,9 @@ class BaseAastraPgAssociator(BasePgAssociator):
             if model in self._models:
                 if version == self._version:
                     return FULL_SUPPORT
+                if version and version[0] != self._version[0]:
+                    # not sharing the same major version
+                    return COMPLETE_SUPPORT - 1
                 return COMPLETE_SUPPORT
             if model in self._compat_models:
                 return INCOMPLETE_SUPPORT

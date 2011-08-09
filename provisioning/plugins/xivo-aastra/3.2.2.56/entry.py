@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin for Aastra phones using the 3.2.1.1019 software.
+"""Plugin for Aastra phones using the 3.2.2.56 software.
 
 The following Aastra phones are supported:
 - 6730i
@@ -11,14 +11,6 @@ The following Aastra phones are supported:
 - 6757i / 6757i CT
 - 9143i
 - 9480i / 9480i CT
-
-The following Aastra expansion modules are supported:
-- M670i
-- M675i
-
-The following Aastra phones are NOT officially supported, although they should
-work with this plugin:
-- 6751i
 
 """
 
@@ -33,7 +25,7 @@ logger = logging.getLogger('plugin.xivo-aastra')
 MODELS = [u'6730i', u'6731i', u'6739i', u'6753i', u'6755i', u'6757i',
           u'9143i', u'9480i']
 COMPAT_MODELS = [u'6751i']
-VERSION = u'3.2.1.1019'
+VERSION = u'3.2.2.56'
 
 
 class AastraPlugin(common['BaseAastraPlugin']):

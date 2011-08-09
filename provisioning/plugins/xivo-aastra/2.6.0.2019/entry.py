@@ -12,14 +12,6 @@ The following Aastra phones are supported:
 - 9143i
 - 9480i / 9480i CT
 
-The following Aastra expansion modules are supported:
-- M670i
-- M675i
-
-The following Aastra phones are NOT officially supported, although they should
-work with this plugin:
-- 6739i
-
 """
 
 common = {}
