@@ -1,9 +1,29 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 from __future__ import with_statement
+__version__ = "$Revision$ $Date$"
+__author__  = "Guillaume Bour <gbour@proformatique.com>"
+__license__ = """
+    Copyright (C) 2010-2011  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
 
 import sys, urllib2, httplib, os.path
 
-DAKBASE = 'http://dak.proformatique.com/debian'
+DAKBASE = 'http://mirror.xivo.fr/debian'
 
 
 if __name__ == '__main__':
@@ -100,7 +120,7 @@ if __name__ == '__main__':
 
 	DWPATH = 'xivo_packages/'
 	# 2. downloading packages
-	conn = httplib.HTTPConnection('dak.proformatique.com')
+	conn = httplib.HTTPConnection('mirror.xivo.fr')
 	for package in packages:
 		debfile = package.rsplit('/', 1)[-1]
 		print " . downloading", debfile, ':',
@@ -123,13 +143,16 @@ if __name__ == '__main__':
 		print '...'
 		conn.request("GET", '/debian/' + package)
 		resp = conn.getresponse()
-		
-		with open('xivo_packages/' + debfile, 'wb') as f:
-			while True:
-				data = resp.read(8192)
-				if len(data) == 0:
-					break
+
+		try:
+			with open('xivo_packages/' + debfile, 'wb') as f:
+				while True:
+					data = resp.read(8192)
+					if len(data) == 0:
+						break
 					
-				f.write(data)
+					f.write(data)
+		except:
+			pass
 			
 		conn.close()

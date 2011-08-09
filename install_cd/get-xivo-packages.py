@@ -4,7 +4,7 @@ from __future__ import with_statement
 __version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
-    Copyright (C) 2010  Proformatique
+    Copyright (C) 2010-2011  Proformatique
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ __license__ = """
 import sys, urllib2, httplib, os, os.path
 from optparse import OptionParser
 
-DAKBASE = 'http://dak.proformatique.com/debian/dists/'
+DAKBASE = 'http://mirror.xivo.fr/debian/dists/'
 SUITES  = {
 	'gallifrey': [
 		'lenny-xivo-gallifrey/main/binary-i386/Packages',
@@ -43,6 +43,10 @@ SUITES  = {
 		'squeeze-xivo-skaro-dev/main/binary-i386/Packages',
 		'squeeze-xivo-skaro-dev/contrib/binary-i386/Packages',
 		'squeeze-xivo-skaro-dev/non-free/binary-i386/Packages',
+		
+		'squeeze-xivo-skaro/main/binary-i386/Packages',
+		'squeeze-xivo-skaro/contrib/binary-i386/Packages',
+		'squeeze-xivo-skaro/non-free/binary-i386/Packages',
 
 		'squeeze-dev/main/binary-i386/Packages',
 		'squeeze-dev/contrib/binary-i386/Packages',
@@ -157,7 +161,7 @@ if __name__ == '__main__':
 	if not os.path.exists(args[0]):
 		os.makedirs(args[0])
 	
-	conn = httplib.HTTPConnection('dak.proformatique.com')
+	conn = httplib.HTTPConnection('mirror.xivo.fr')
 	for package in packages:
 		debfile = package.rsplit('/', 1)[-1]
 		print " . downloading", debfile, ':',
