@@ -187,6 +187,9 @@ class BaseAastraPlugin(StandardPlugin):
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
+        # adjust tftpboot directory since some Aastra firmware doesn't handle
+        # well configuration file at the root directory
+        self._tftpboot_dir = os.path.join(self._tftpboot_dir, 'Aastra')
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
