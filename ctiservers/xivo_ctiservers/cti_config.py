@@ -79,9 +79,6 @@ class Config:
         if self.overconf:
             self.xc_json['ipbxes'] = self.overconf
 
-        # temporarily forced configuration items
-        self.xc_json['certfile'] = '/usr/share/doc/libssl-dev/demos/sign/cert.pem'
-        self.xc_json['keyfile'] = '/usr/share/doc/libssl-dev/demos/sign/key.pem'
         return
 
     def translate(self):
