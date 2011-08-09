@@ -23,6 +23,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import errno
 import glob
 import hashlib
 import json
@@ -71,6 +72,18 @@ def _list_bplugins(directory):
     return list(aux())
 
 
+def _mkdir(path):
+    # Similar to os.mkdir but does not raise an exception if the directory
+    # already exist
+    try:
+        os.mkdir(path)
+    except OSError, e:
+        if e.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+
 class Bplugin(object):
     def __init__(self, path):
         """Create a new Bplugin object.
@@ -84,12 +97,14 @@ class Bplugin(object):
     
     def _load_bplugin(self, path):
         targets = {}
-        def _target(target_id, pg_id):
+        def _target(target_id, pg_id, std_dirs=True):
             def aux(fun):
                 if target_id in targets:
                     raise Exception("in bplugin '%s': target redefinition for '%s'" %
                                     (self.name, target_id))
-                targets[target_id] = {'fun': fun, 'pg_id': pg_id}
+                targets[target_id] = {'fun': fun,
+                                      'pg_id': pg_id,
+                                      'std_dirs': std_dirs}
                 return fun
             return aux
         build_file = os.path.join(path, BUILD_FILENAME)
@@ -110,14 +125,20 @@ class Bplugin(object):
         os.mkdir(path)
         # assert: path is empty
         old_cwd = os.getcwd()
+        abs_path = os.path.abspath(path)
+        os.chdir(self._bplugin_path)
         try:
-            abs_path = os.path.abspath(path)
-            os.chdir(self._bplugin_path)
             # assert: current directory is the one of the bplugin
             target['fun'](abs_path)
         finally:
             os.chdir(old_cwd)
-
+        if target['std_dirs']:
+            self._mk_std_dirs(abs_path)
+    
+    def _mk_std_dirs(self, abs_path):
+        for dir in ['var', 'var/cache', 'var/installed', 'var/templates', 'var/tftpboot']:
+            _mkdir(os.path.join(abs_path, dir))
+    
 
 def build_op(opts, args, src_dir, dest_dir):
     # Pre: src_dir is a directory
