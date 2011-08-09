@@ -1564,14 +1564,11 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         $appsip = &$this->_ipbx->get_apprealstatic('sip');
         $appgeneralsip = &$appsip->get_module('general');
-        $info = $appgeneralsip->get_all_val_by_category(false);
-
-		$provd_secure_key = 'ap'.dwho_generate_code();
 
 		$rs = array();
 		$rs['commented'] = 0;
 		$rs['var_name'] = 'autocreate_prefix';
-		$rs['var_val'] = $provd_secure_key;
+		$rs['var_val'] = 'ap'.dwho_generate_code();
 
 		if($appgeneralsip->set($rs) === false
 		|| $appgeneralsip->save() === false)
