@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..67e19ee
 --- /dev/null
 +++ b/postgresql
-@@ -0,0 +1,654 @@
+@@ -0,0 +1,676 @@
 +#!/bin/bash
 +#
 +#
@@ -513,6 +513,26 @@ index 0000000..67e19ee
 +				ocf_log warn "${OCF_RESOURCE_INSTANCE} Cannot stop resource, still runned"
 +				return $OCF_ERR_GENERIC
 +			fi
++
++			if [ ! -f ${OCF_RESKEY_pgdata}/recovery.conf ] ; then
++				ocf_log warn "${OCF_RESOURCE_INSTANCE} recovery.conf file not found. I think this is old Master. Start cloning the current Master..." 
++				rename_data &&
++					pg_clone_master $OCF_RESKEY_CRM_meta_notify_master_uname ||
++						return $?
++			fi
++			pg_start
++			pg_state_check
++			status=$?
++			if [ "$status" = $OCF_RUNNING_MASTER ] ; then
++				ocf_log err "${OCF_RESOURCE_INSTANCE} started as Master"
++				return $OCF_ERR_GENERIC
++			elif [ "$status" = $OCF_SUCCESS ] ; then
++				ocf_log info "${OCF_RESOURCE_INSTANCE} started as Standby"
++			else
++				ocf_log err "${OCF_RESOURCE_INSTANCE} Unexpected status ($status) of node at demote action"
++				return $status
++			fi
++
 +			return $OCF_SUCCESS
 +			;;
 +		$OCF_SUCCESS)
