@@ -418,17 +418,24 @@ CREATE TABLE `ctimain` (
  `ami_password` varchar(64),
  `fagi_ip` varchar(255),
  `fagi_port` int(10) unsigned,
+ `fagi_commented` tinyint(1),
  `cti_ip` varchar(255),
  `cti_port` int(10) unsigned,
+ `cti_commented` tinyint(1),
  `ctis_ip` varchar(255),
  `ctis_port` int(10) unsigned,
+ `ctis_commented` tinyint(1),
  `webi_ip` varchar(255),
  `webi_port` int(10) unsigned,
+ `webi_commented` tinyint(1),
  `info_ip` varchar(255),
  `info_port` int(10) unsigned,
+ `info_commented` tinyint(1),
  `announce_ip` varchar(255),
  `announce_port` int(10) unsigned,
+ `announce_commented` tinyint(1),
  `asterisklist` varchar(255),
+ `tlscertfile` varchar(255),
  `updates_period` int(10) unsigned,
  `socket_timeout` int(10) unsigned,
  `login_timeout` int(10) unsigned,
@@ -436,7 +443,7 @@ CREATE TABLE `ctimain` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctimain` VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 3600, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 3600, 10, 5, 'context');
 
 
 DROP TABLE IF EXISTS `ctiphonehints`;
@@ -523,12 +530,13 @@ CREATE TABLE `ctisheetactions` (
  `action_info` text,
  `focus` tinyint(1),
  `deletable` tinyint(1),
+ `disable` tinyint(1),
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctisheetactions` VALUES(6,'dial','sheet_action_dial','[`default`]','dest','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} de {xivo-calleridnum}` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ],`40`: [ `Numéro appelé`,`phone`,`Inconnu`,`{xivo-calledidnum}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction}` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','','{}',0,1);
-INSERT INTO `ctisheetactions` VALUES(7,'queue','sheet_action_queue','[`default`]','dest','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} de la File {xivo-queuename}` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction} de la File {xivo-queuename}` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
-INSERT INTO `ctisheetactions` VALUES(8,'custom1','sheet_action_custom1','[`default`]','all','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} (Custom)` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction} (Custom)` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','','{}',0,1);
+INSERT INTO `ctisheetactions` VALUES(6,'dial','sheet_action_dial','[`default`]','dest','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} de {xivo-calleridnum}` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ],`40`: [ `Numéro appelé`,`phone`,`Inconnu`,`{xivo-calledidnum}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction}` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','','{}',0,1,0);
+INSERT INTO `ctisheetactions` VALUES(7,'queue','sheet_action_queue','[`default`]','dest','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} de la File {xivo-queuename}` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction} de la File {xivo-queuename}` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1,0);
+INSERT INTO `ctisheetactions` VALUES(8,'custom1','sheet_action_custom1','[`default`]','all','[`agentsup`,`agent`,`client`]','{`10`: [ ``,`text`,`Inconnu`,`Appel {xivo-direction} (Custom)` ],`20`: [ `Numéro entrant`,`phone`,`Inconnu`,`{xivo-calleridnum}` ],`30`: [ `Nom`,`text`,`Inconnu`,`{db-fullname}` ]}','{`10`: [ ``,`title`,``,`Appel {xivo-direction} (Custom)` ],`20`: [ ``,`body`,`Inconnu`,`appel de {xivo-calleridnum} pour {xivo-calledidnum}` ],`30`: [ ``,`body`,`Inconnu`,`{db-fullname} (selon {xivo-directory})` ],`40`: [ ``,`body`,``,`le {xivo-date}, il est {xivo-time}` ]}','','{}',0,1,0);
 
 
 DROP TABLE IF EXISTS `ctisheetevents`;

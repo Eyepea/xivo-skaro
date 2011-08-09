@@ -59,6 +59,11 @@ $array['element']['description']['default'] = '';
 $array['element']['deletable'] = array();
 $array['element']['deletable']['default'] = 1;
 
+$array['element']['disable'] = array();
+$array['element']['disable']['value'] = array(0,1);
+$array['element']['disable']['default'] = 0;
+$array['element']['disable']['set'] = true;
+
 $array['filter'] = array();
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[[:alnum:]]+$/i');
 $array['filter']['context'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
@@ -71,4 +76,5 @@ $array['filter']['action_info'] 	= array('set' => false, 'chk' => 2, 'regexp' =>
 $array['filter']['focus'] 	= array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['deletable'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
+$array['filter']['disable'] 	= array('bool' => true);
 ?>
