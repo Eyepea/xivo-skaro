@@ -1400,7 +1400,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         $listcontext = $this->_wizsess['context'];
 
         $appcontext = &$this->_ipbx->get_application('context');
-        
+
         // allow to reexecute the process several times
         foreach($appcontext->get_contexts_list() as $context)
         {
@@ -1567,7 +1567,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)
             trigger_error('Unable to load provdconfig module',E_USER_ERROR);
-        
+
         if ($provdconfig->eval_required_config($netiface['address'],true) === false)
             return false;
 
@@ -1610,7 +1610,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         return true;
     }
 
-    function send_redirect($tpl)
+    function send_redirect($tpl,$content='')
     {
         $uri = $this->discover_finish_uri();
         $tpl->load_i18n_file('tpl/tpl.i18n', 'global');
@@ -1620,22 +1620,28 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
+<html lang="&lt;?=DWHO_I18N_BABELFISH_LANGUAGE?&gt;">
 <head>
-    <title><?= dwho_htmlsc($tpl->bbf('page_title',php_uname('n'))); ?></title>
-    <script>
-        function redirect()
-        {
-            window.location = "<?= $uri ?>";
+<title><?=dwho_htmlsc($tpl->bbf('page_title',php_uname('n')))?></title>
+<link rel="stylesheet" type="text/css" href="/css/xivo.css">
+<script type="text/javascript">
+        function redirect() {
+            window.location = "<?=$uri?>";
         }
 
-        setInterval("redirect()", 10000);
+        setInterval("redirect()", <?=($seconds*1000)?>);
     </script>
 </head>
 <body>
-    <p><?=nl2br($tpl->bbf('redirect_message',$seconds));?></p>
+<center>
+	<p><?=nl2br($tpl->bbf('redirect_message',$seconds));?></p>
+	<hr />
+	<p class="xivo-warning"><?=nl2br($content);?></p>
+</center>
 </body>
 </html>
+
+
 <?php
 
         ob_flush();
@@ -1740,25 +1746,40 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
             return(false);
-        if($commonconf->generate(false) === false)
-            return(false);
 
-        //page redirection must be sent to client BEFORE changing server ip address
-        $this->send_redirect($tpl);
+        $content = '';
+        if($commonconf->generate(&$content) !== false)
+        {
+	        $content = str_replace("\n", "<br/>\n", $content);
 
-        if($this->_commit_netiface() === false
-        || $commonconf->apply()      === false)
-            return(false);
+	        //page redirection must be sent to client BEFORE changing server ip address
+	        $this->send_redirect($tpl,$content);
 
-        // restart provisioning service
-        $this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));
+	        $this->_commit_netiface();
 
-        // restart asterisk service
-        $this->_sysconfd->request_post('/services', array('asterisk' => 'restart'));
+	        $content = $commonconf->apply();
+	        $status = $commonconf->last_status_code();
 
-        $this->_wizsess['commit']['step']['validate'] = true;
-        die;
-        return(true);
+	        if($status != 200)
+	        {
+	        	preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
+	        	if(count($matches) > 1)
+	        		$content = $matches[1];
+	        }
+
+	        // restart provisioning service
+	        $this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));
+
+	        // restart asterisk service
+	        $this->_sysconfd->request_post('/services', array('asterisk' => 'restart'));
+
+	        $this->_wizsess['commit']['step']['validate'] = true;
+
+	        session_destroy();
+        	die;
+        }
+
+        dwho_report::push('error', $content);
     }
 
     function save($data, $tpl)

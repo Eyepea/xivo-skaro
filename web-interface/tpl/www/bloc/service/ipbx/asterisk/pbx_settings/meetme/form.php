@@ -139,7 +139,7 @@ endif;
 
 <div id="sb-part-period" class="b-nodisplay">
 <div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0" class="fm-paragraph">
+<table class="fm-paragraph">
 	<thead>
 	<tr class="sb-top">
 		<th colspan="2" class="th-single"><?=$this->bbf('col_startdate');?></th>

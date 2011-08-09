@@ -21,7 +21,7 @@
 $form = &$this->get_module('form');
 
 ?>
-<script language=javascript type='text/javascript'>
+<script type="text/javascript">
 function hidediv() {
 		val = document.getElementById('it-type').value;
 		if(val != 1) {
@@ -31,7 +31,7 @@ function hidediv() {
 			document.getElementById('sgbdr').setAttribute("class", "");
 		}
 
-	} 
+	}
 
 dwho.dom.set_onload(hidediv);
 </script>

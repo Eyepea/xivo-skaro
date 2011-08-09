@@ -95,7 +95,7 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 	else:
 ?>
 		<div id="t-list-obj">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_cache_name')?></th>
@@ -151,7 +151,6 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 		</tr>
 		<tr id="cache-infos-<?=$keyfile?>" class="sb-content l-infos-<?=$mod?>on2 b-nodisplay cache-infos">
 			<td colspan="3" class="td-single">
-			<dl>
 				<div id="it-cache-generation-<?=$keyfile?>" class="tab_cache_generation b-nodisplay">
 					<h1><?=$this->bbf('wait_during_traitment');?></h1>
 					<p><h1 id="restitle-<?=$keyfile?>"></h1></p>
@@ -165,7 +164,6 @@ $dencache = ($dend != 0) ? $this->bbf('fm_description_cache-with_end',array($den
 					<h1><?=$this->bbf('cache_generation_success');?></h1>
 					<p><div id="ressuccess-<?=$keyfile?>"></div></p>
 				</div>
-			</dl>
 			</td>
 		</tr>
 <?php

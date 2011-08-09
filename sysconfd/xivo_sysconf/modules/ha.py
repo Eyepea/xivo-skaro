@@ -41,12 +41,12 @@ class Ha(object):
         http_json_server.register(self.generate , CMD_RW, name='ha_generate',
             safe_init=self.safe_init)
         http_json_server.register(self.status   , CMD_R , name='ha_status')
-				#http_json_server.register(self.apply    , CMD_R , name='ha_apply')
-				#http_json_server.register(self.stop     , CMD_R , name='ha_stop')
+        #http_json_server.register(self.apply    , CMD_R , name='ha_apply')
+        #http_json_server.register(self.stop     , CMD_R , name='ha_stop')
 
     def safe_init(self, options):
         self.file       = options.configuration.get('ha', 'ha_file')
-				#self.cmd        = options.configuration.get('ha', 'ha_cmd')
+        #self.cmd        = options.configuration.get('ha', 'ha_cmd')
 
         self.DEPTH = 0
         self.OUT   = None
@@ -70,8 +70,8 @@ class Ha(object):
             # 'services' content is dict but generated conf is not standard
             self._do_svc(dicts)
         else:
-	          for k, v in dicts:
-		            self._dispatch(k, v)
+            for k, v in dicts:
+                self._dispatch(k, v)
 
         self.DEPTH -= 1
 
@@ -87,7 +87,7 @@ class Ha(object):
 
     def _do_svc(self, svcs):
         for k, v in svcs:
-           print >>self.OUT, "%s = %s" % (k, ', '.join(['%s:%s' % (opt, v[opt]) for opt in v]))
+            print >>self.OUT, "%s = %s" % (k, ', '.join(['%s:%s' % (opt, v[opt]) for opt in v]))
 
     def generate(self, args, options):
         """Generate HA configuration file (erase previous configuration)

@@ -53,9 +53,7 @@ switch($act)
 			else if(is_array($currentiface) === true
 			&& isset($currentiface['name']) === true
 			&& ($uri = $appnetiface->get_redirect_uri(
-					$appnetiface->get_result_var('netiface',
-								     'ifname'),
-					$currentiface['name'])) !== false)
+					$appnetiface->get_result_var('netiface','ifname'),$currentiface['name'])) !== false)
 			{
 				$_TPL->set_var('redirect_url',$uri.$_TPL->url('xivo/configuration/network/interface'));
 				$_TPL->set_var('redirect_url_query',$param);

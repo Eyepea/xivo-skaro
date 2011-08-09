@@ -20,13 +20,10 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, logging, subprocess
-from datetime import datetime
+import logging, subprocess
 
 from xivo import http_json_server
-from xivo.http_json_server import CMD_RW, CMD_R
-
-from xivo_sysconf import helpers
+from xivo.http_json_server import CMD_R
 
 
 class Munin(object):

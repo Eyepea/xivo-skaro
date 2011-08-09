@@ -36,23 +36,24 @@ dwho.json = function()
             '\r':    'r',
             '\t':    't'};
     
-    this._fnescchar    = function(chr) { return('\\' + charlist[chr]); }
-    this._fnescuni    = function(chr) { return('\\u' + chr.charCodeAt(0).toString(16).toUpperCase()); }
+    this._fnescchar    = function(chr) { return('\\' + charlist[chr]); };
+    this._fnescuni    = function(chr) { return('\\u' + chr.charCodeAt(0).toString(16).toUpperCase()); };
 
     this._fnevalrfc4627    = function(text)
                   {
-                    return(!(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
+                    var string = (!(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
                                  text.replace(/"(\\.|[^"\\])*"/g, ''))) &&
                          eval('(' + text + ')'));
-                  }
-}
+					return string;
+                  };
+};
 
 dwho.json.prototype.escaped = function(str)
 {
     return(dwho_string(str).
            replace(this._regexp.charlist,this._fnescchar).
            replace(this._regexp.unicode,this._fnescuni));
-}
+};
 
 dwho.json.prototype.encode = function(data)
 {
@@ -90,7 +91,7 @@ dwho.json.prototype.encode = function(data)
         rs.push('"' + this.escaped(property) + '":' + this.encode(data[property]));
 
     return('{' + rs.join(',') + '}');
-}
+};
 
 dwho.json.prototype.decode = function(data)
 {
@@ -99,4 +100,4 @@ dwho.json.prototype.decode = function(data)
         return(JSON.parse(data));
 
     return(this._fnevalrfc4627(data));
-}
+};

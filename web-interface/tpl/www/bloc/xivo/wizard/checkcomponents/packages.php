@@ -24,7 +24,7 @@ $level = $this->get_var('package_level');
 if(is_array($packages) === true && empty($packages) === false):
 
 ?>
-<table border="0" cellpadding="0" cellspacing="0" class="<?=$level?>">
+<table class="<?=$level?>">
 	<tr class="sb-top">
 		<th colspan="3" class="th-left th-right"><?=$this->bbf('package_level',$level);?></th>
 	</tr>

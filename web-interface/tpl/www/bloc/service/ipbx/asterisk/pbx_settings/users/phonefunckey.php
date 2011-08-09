@@ -35,7 +35,7 @@ endif;
 
 ?>
 <div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0">
+<table>
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_phonefunckey-fknum');?></th>
@@ -179,7 +179,7 @@ endif;
 	</tr>
 	</tfoot>
 </table>
-<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+<table class="b-nodisplay">
 	<tbody id="ex-phonefunckey">
 	<tr class="fm-paragraph">
 <?php

@@ -35,7 +35,7 @@ $data = $info['ping_ipaddr'];
 	<p>&nbsp;</p>
     <?= $this->bbf("fm_ha_ping") ?>
 	<div class="sb-list2">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -95,7 +95,7 @@ $data = $info['ping_ipaddr'];
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">

@@ -26,16 +26,16 @@ $info = $this->get_var('info');
 $actionslist = $this->get_var('actionslist');
 
 $actionsavail = array(
-	'queueadd'        => $this->bbf('action-queueadd'), 
-	'queueremove'     => $this->bbf('action-queueremove'), 
-	'queuepause'      => $this->bbf('action-queuepause'), 
+	'queueadd'        => $this->bbf('action-queueadd'),
+	'queueremove'     => $this->bbf('action-queueremove'),
+	'queuepause'      => $this->bbf('action-queuepause'),
 	'queueunpause'    => $this->bbf('action-queueunpause'),
-	'enablevoicemail' => $this->bbf('action-enablevoicemail'), 
-	'callrecord'      => $this->bbf('action-callrecord'), 
-	'incallfilter'    => $this->bbf('action-incallfilter'), 
-	'enablednd'       => $this->bbf('action-enablednd'), 
-	'enableunc'       => $this->bbf('action-enableunc'), 
-	'enablebusy'      => $this->bbf('action-enablebusy'), 
+	'enablevoicemail' => $this->bbf('action-enablevoicemail'),
+	'callrecord'      => $this->bbf('action-callrecord'),
+	'incallfilter'    => $this->bbf('action-incallfilter'),
+	'enablednd'       => $this->bbf('action-enablednd'),
+	'enableunc'       => $this->bbf('action-enableunc'),
+	'enablebusy'      => $this->bbf('action-enablebusy'),
 	'enablerna'       => $this->bbf('action-enablerna'),
 );
 
@@ -51,7 +51,7 @@ endif;
 
 ?>
 
-<div id="sb-part-first"">
+<div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_status_name'),
 				  'name'	=> 'status[name]',
@@ -131,7 +131,7 @@ endif;
 		<div class="clearboth"></div>
 	</div>
 	<div class="sb-list">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 				<th class="th-left"><?=$this->bbf('col_'.$type.'-name');?></th>
@@ -202,7 +202,7 @@ endif;
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left txt-center">

@@ -38,7 +38,7 @@ dwho.form.set_text_helper = function(id,defaultvalue)
         dwho.dom.add_cssclass(obj,'it-helper');
         dwho.form.text_helper[obj.id] = Boolean(defaultvalue) === false ? '' : obj.defaultValue;
     }
-}
+};
 
 dwho.form.unset_text_helper = function(id,defaultvalue)
 {
@@ -57,7 +57,7 @@ dwho.form.unset_text_helper = function(id,defaultvalue)
         if(defaultvalue === false || obj.defaultValue === obj.value)
             obj.value = '';
     }
-}
+};
 
 dwho.form.set_events_text_helper = function(id,usedefaultvalue)
 {
@@ -74,7 +74,7 @@ dwho.form.set_events_text_helper = function(id,usedefaultvalue)
     dwho.dom.add_event('blur',obj,function() { dwho.form.set_text_helper(this.id,usedefaultvalue); });
     dwho.dom.add_event('focus',obj,function() { dwho.form.unset_text_helper(this.id,usedefaultvalue); });
     return(true);
-}
+};
 
 dwho.form.show_error = function()
 {
@@ -103,7 +103,7 @@ dwho.form.show_error = function()
     }
 
     return(true);
-}
+};
 
 dwho.form.set_onfocus = function(obj)
 {
@@ -131,7 +131,7 @@ dwho.form.set_onfocus = function(obj)
     dwho.dom.add_cssclass(obj,dwho_form_class_onfocus);
 
     return(true);
-}
+};
 
 dwho.form.set_onblur = function(obj)
 {
@@ -159,14 +159,14 @@ dwho.form.set_onblur = function(obj)
     dwho.dom.add_cssclass(obj,dwho_form_class_onblur);
 
     return(true);
-}
+};
 
 dwho.form.onfocus_onblur = function(obj)
 {
     var arr = ['input', 'select', 'textarea'];
 
     var focus    = function() { dwho.form.set_onfocus(this); };
-    var blur    = function() { dwho.form.set_onblur(this); }
+    var blur    = function() { dwho.form.set_onblur(this); };
 
     for(var i = 0;i < 3;i++)
     {
@@ -188,7 +188,7 @@ dwho.form.onfocus_onblur = function(obj)
     }
 
     return(true);
-}
+};
 
 dwho.form.set_disable_submit_onenter = function(form)
 {
@@ -209,7 +209,7 @@ dwho.form.set_disable_submit_onenter = function(form)
     }
 
     return(true);
-}
+};
 
 dwho.form.move_selected = function(from,to)
 {
@@ -233,7 +233,7 @@ dwho.form.move_selected = function(from,to)
 
         opt = new Option(from.options[i].text,from.options[i].value);        
         attrs = from.options[i].attributes;
-        for(j = 0; j < attrs.length; j++)
+        for(var j = 0; j < attrs.length; j++)
         {
             if(attrs[j].name.indexOf('xivo_') != 0)
                 continue;
@@ -249,21 +249,22 @@ dwho.form.move_selected = function(from,to)
     }
 
     return(true);
-}
+};
 
 dwho.form.copy_select = function(from,to)
-{
+{    
+    var selected = '';
     if((from = dwho_eid(from)) === false
     || (to = dwho_eid(to)) === false
     || (from.type !== 'select-one'
        && from.type !== 'select-multiple') === true
     || (to.type !== 'select-one'
        && to.type !== 'select-multiple') === true)
-        return(false);
+        return(false);    
     else if(to.selectedIndex === -1 || dwho_is_undef(to.options[to.selectedIndex]) === true)
-        var selected = false;
+        selected = false;
     else
-        var selected = to.options[to.selectedIndex].text;
+        selected = to.options[to.selectedIndex].text;
 
     var len = to.options.length;
 
@@ -279,7 +280,7 @@ dwho.form.copy_select = function(from,to)
     }
 
     return(true);
-}
+};
 
 dwho.form.add_event_opt_select = function(ev,id,fn)
 {
@@ -296,7 +297,7 @@ dwho.form.add_event_opt_select = function(ev,id,fn)
         dwho.dom.add_event(ev,obj.options[i],fn);
 
     return(true);
-}
+};
 
 dwho.form.unshift_opt_select = function(from,text,value)
 {
@@ -325,7 +326,7 @@ dwho.form.unshift_opt_select = function(from,text,value)
         from.options[i+1] = noptions[i];
 
     return(true);
-}
+};
 
 dwho.form.pop_opt_select = function(from)
 {
@@ -337,7 +338,7 @@ dwho.form.pop_opt_select = function(from)
     from.options[0] = null;
 
     return(true);
-}
+};
 
 dwho.form.get_text_opt_select = function(from,value,chk)
 {
@@ -361,7 +362,7 @@ dwho.form.get_text_opt_select = function(from,value,chk)
     from.selectedIndex = sltindex;
 
     return(r);
-}
+};
 
 dwho.form.select = function(from,select)
 {
@@ -376,7 +377,7 @@ dwho.form.select = function(from,select)
         from.options[i].selected = select;
 
     return(true);
-}
+};
 
 dwho.form.order_selected = function(from,order,num)
 {
@@ -464,7 +465,7 @@ dwho.form.order_selected = function(from,order,num)
 
         from.options[selected - 1].selected = true;
     }
-}
+};
 
 dwho.form.select_add_entry = function(id,text,value,num)
 {
@@ -487,7 +488,7 @@ dwho.form.select_add_entry = function(id,text,value,num)
     obj.scrollTop = obj.scrollHeight;
 
     return(true);
-}
+};
 
 dwho.form.select_delete_entry = function(id,num)
 {
@@ -526,7 +527,7 @@ dwho.form.select_delete_entry = function(id,num)
     }
 
     return(true);
-}
+};
 
 dwho.form.field_disabled = function(obj,disable)
 {
@@ -562,7 +563,7 @@ dwho.form.field_disabled = function(obj,disable)
     }
 
     return(true);
-}
+};
 
 dwho.form.field_id_counter = function(obj,cnt)
 {
@@ -588,7 +589,7 @@ dwho.form.field_id_counter = function(obj,cnt)
     }
 
     return(true);
-}
+};
 
 dwho.form.field_name_counter = function(obj,cnt)
 {
@@ -628,7 +629,7 @@ dwho.form.field_name_counter = function(obj,cnt)
     }
 
     return(true);
-}
+};
 
 dwho.form.readonly = function(list,enable)
 {
@@ -658,7 +659,7 @@ dwho.form.readonly = function(list,enable)
             element.className = dwho_form_class_readonly;
         }
     }
-}
+};
 
 dwho.form.checked_all = function(form,name,mode)
 {
@@ -706,7 +707,7 @@ dwho.form.checked_all = function(form,name,mode)
     }
 
     return(true);
-}
+};
 
 dwho.form.get_checked = function(form,name)
 {
@@ -734,7 +735,7 @@ dwho.form.get_checked = function(form,name)
     }
 
     return(false);
-}
+};
 
 dwho.form.get_value_from_key = function(form,name,key)
 {
@@ -747,7 +748,7 @@ dwho.form.get_value_from_key = function(form,name,key)
         return(false);
 
     return(dwho.fm[form][name][key].value);
-}
+};
 
 dwho.form.toggle_enable_field = function(form,name,disable,exform,exformtag)
 {
@@ -755,16 +756,19 @@ dwho.form.toggle_enable_field = function(form,name,disable,exform,exformtag)
     || dwho_is_string(name) === false
     || dwho_is_undef(form[name]) === true)
         return(false);
+    
+    var disableparent = '';
+    var classname = '';
 
     if(dwho_is_string(exform) === true && dwho_is_string(exformtag) === true)
-        var disableparent = false;
+        disableparent = false;
     else
-        var disableparent = true;
+        disableparent = true;
 
     if((disable = Boolean(disable) !== false))
-        var classname = dwho_form_class_disabled;
+        classname = dwho_form_class_disabled;
     else
-        var classname = dwho_form_class_enabled;
+        classname = dwho_form_class_enabled;
 
     var ref = form[name];
 
@@ -808,7 +812,7 @@ dwho.form.toggle_enable_field = function(form,name,disable,exform,exformtag)
     }
 
     return(true);
-}
+};
 
 dwho.form.reset_field = function(obj,empty)
 {
@@ -842,7 +846,7 @@ dwho.form.reset_field = function(obj,empty)
     }
 
     return(true);
-}
+};
 
 dwho.form.reset_child_field = function(obj,empty)
 {
@@ -874,7 +878,7 @@ dwho.form.reset_child_field = function(obj,empty)
     }
 
     return(true);
-}
+};
 
 dwho.form.disable_submit_onenter = function(e)
 {
@@ -888,7 +892,7 @@ dwho.form.disable_submit_onenter = function(e)
     }
 
     return(true);
-}
+};
 
 dwho.form.create_help_div = function(obj,str)
 {
@@ -900,7 +904,7 @@ dwho.form.create_help_div = function(obj,str)
                       {'id':    '__dwho_form_help__',
                        'className':    'dwho-form-help'},
                        str,
-                       true)
+                       true);
 
     var pos = dwho.dom.get_offset_position(obj);
 
@@ -915,12 +919,12 @@ dwho.form.create_help_div = function(obj,str)
         obj.parentNode.appendChild(div);
 
     return(true);
-}
+};
 
 dwho.form.destroy_help_div = function()
 {
     dwho.dom.remove_element(dwho_eid('__dwho_form_help__',true));
-}
+};
 
 dwho.form.create_error_div = function(obj,str)
 {
@@ -932,7 +936,7 @@ dwho.form.create_error_div = function(obj,str)
                       {'id':    '__dwho_form_error__',
                        'className':    'dwho-form-error'},
                        str,
-                       true)
+                       true);
 
     var pos = dwho.dom.get_offset_position(obj);
 
@@ -947,12 +951,12 @@ dwho.form.create_error_div = function(obj,str)
         obj.parentNode.appendChild(div);
 
     return(true);
-}
+};
 
 dwho.form.destroy_error_div = function()
 {
     dwho.dom.remove_element(dwho_eid('__dwho_form_error__',true));
-}
+};
 
 dwho.form.modify_input_data = function(obj,reg)
 {
@@ -966,7 +970,7 @@ dwho.form.modify_input_data = function(obj,reg)
     var rs = null;
 
     if(dwho_strcmp('[[:',reg,3) !== 0)
-        var regcheck = new RegExp(reg);
+        regcheck = new RegExp(reg);
     else
     {
         reto = /^\[\[\:(\w+)\((.*?)\)\:\]\]$/;
@@ -1012,7 +1016,7 @@ dwho.form.modify_input_data = function(obj,reg)
                 return(false);
         }
     }
-}
+};
 
 dwho.form.check_input_data = function(obj,reg)
 {
@@ -1026,16 +1030,16 @@ dwho.form.check_input_data = function(obj,reg)
     var rs = null;
 
     if(dwho_strcmp('[[:',reg,3) !== 0)
-        var regcheck = new RegExp(reg);
+        regcheck = new RegExp(reg);
     else
     {
         switch(reg.toLowerCase())
         {
             case '[[:int:]]':
-                var regcheck = /^\d+$/;
+                regcheck = /^\d+$/;
                 break;
             case '[[:float:]]':
-                var regcheck = /^\d*[0-9](\.\d*[0-9])?$/;
+                regcheck = /^\d*[0-9](\.\d*[0-9])?$/;
                 break;
             case '[[:port:]]':
                 if(dwho_is_int(obj.value) === false
@@ -1049,7 +1053,7 @@ dwho.form.check_input_data = function(obj,reg)
                 rs = dwho_chk_ipv4_strict(obj.value) !== false;
                 break;
             case '[[:url:]]':
-                var regcheck = /^(http[s]?:\/\/|ftp:\/\/)?(www\.)?[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+$/;
+                regcheck = /^(http[s]?:\/\/|ftp:\/\/)?(www\.)?[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+$/;
                 break;
             default:
                 var regcheck = /^.*$/;
@@ -1068,7 +1072,7 @@ dwho.form.check_input_data = function(obj,reg)
     }
 
     return(rs);
-}
+};
 
 // Return the object label associated to a given input field id, if exists
 // Return false otherwise
@@ -1086,13 +1090,13 @@ dwho.form.get_associated_label = function(id)
     }
 
     return(false);
-}
+};
 
 // Check if field is required by analysing if it has className "_dwho-form-field-required"
 dwho.form.is_required = function(obj)
 {
     return(dwho.dom.has_cssclass(obj,'_dwho-form-field-required'));
-}
+};
 
 // Scan all input fields to check if required ones are filled in or not
 // Store fields in error and display an alert if needed
@@ -1133,7 +1137,7 @@ dwho.form.check_required_fields = function(ev,form)
     alert('ERROR - Mandatory fields not filled in:\n- ' + errors.join('\n -'));
 
     return(false);
-}
+};
 
 // Call checkboxes onclick functions just after loading
 dwho.form.execregexp = function()
@@ -1154,7 +1158,7 @@ dwho.form.execregexp = function()
                 func();
         }
     }
-}
+};
 
 
 dwho.dom.set_onload(dwho.form.onfocus_onblur);

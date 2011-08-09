@@ -28,7 +28,7 @@ $nb = 0;
 
 ?>
 
-<table cellspacing="0" cellpadding="0" border="0" id="list_exten">
+<table id="list_exten">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left th-rule">&nbsp;</th>
@@ -149,7 +149,7 @@ endif;
 	</tfoot>
 </table>
 
-<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+<table class="b-nodisplay">
 	<tbody id="ex-row">
 	<tr class="fm-paragraph">
 		<td class="td-left txt-center">

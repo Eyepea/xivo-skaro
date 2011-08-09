@@ -54,7 +54,7 @@ else:
 endif;
 
 ?>
-<table border="0" cellpadding="0" cellspacing="0">
+<table>
 	<tr class="sb-top">
 		<th colspan="8" class="th-left th-right"><?=$this->bbf('sysinfos_memory');?></th>
 	</tr>

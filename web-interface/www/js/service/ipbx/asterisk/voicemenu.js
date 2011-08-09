@@ -256,18 +256,20 @@ function xivo_ast_voicemenuevent_defapplication(action)
 
     if((target = dwho_eid(targetid)) === false)
         return(false);
+    
+    var r = false;
 
     switch(action)
     {
         case 'none':
             if(target.type === 'text')
             {
-                var r = true;
+                r = true;
                 target.value = '';
             }
             else if(dwho_is_undef(target.type) === true)
             {
-                var r = true;
+                r = true;
                 target.innerHTML = '-';
 
                 if((ittarget = dwho_eid('it-'+targetid)) !== false
@@ -275,41 +277,41 @@ function xivo_ast_voicemenuevent_defapplication(action)
                     ittarget.value = '';
             }
             else
-                var r = false;
+                r = false;
 
             return(r);
         case 'endcall':
-            var r = xivo_ast_defapplication_endcall('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_endcall('voicemenuevent',targetid);
             break;
         case 'user':
-            var r = xivo_ast_defapplication_user('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_user('voicemenuevent',targetid);
             break;
         case 'group':
-            var r = xivo_ast_defapplication_group('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_group('voicemenuevent',targetid);
             break;
         case 'queue':
-            var r = xivo_ast_defapplication_queue('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_queue('voicemenuevent',targetid);
             break;
         case 'meetme':
-            var r = xivo_ast_defapplication_meetme('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_meetme('voicemenuevent',targetid);
             break;
         case 'voicemail':
-            var r = xivo_ast_defapplication_voicemail('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_voicemail('voicemenuevent',targetid);
             break;
         case 'voicemenu':
-            var r = xivo_ast_defapplication_voicemenu('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_voicemenu('voicemenuevent',targetid);
             break;
         case 'schedule':
-            var r = xivo_ast_defapplication_schedule('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_schedule('voicemenuevent',targetid);
             break;
         case 'extension':
-            var r = xivo_ast_defapplication_extension('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_extension('voicemenuevent',targetid);
             break;
         case 'application':
-            var r = xivo_ast_defapplication_application('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_application('voicemenuevent',targetid);
             break;
         case 'sound':
-            var r = xivo_ast_defapplication_sound('voicemenuevent',targetid);
+            r = xivo_ast_defapplication_sound('voicemenuevent',targetid);
             break;
         default:
             return(false);

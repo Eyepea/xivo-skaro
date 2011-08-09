@@ -66,7 +66,7 @@ else:
 	</div>
 	
 	<div class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0" id="tb-list-pkgs">
+	<table id="tb-list-pkgs">
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_name');?></th>

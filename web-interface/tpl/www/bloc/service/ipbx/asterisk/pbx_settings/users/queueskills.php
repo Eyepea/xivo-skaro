@@ -39,7 +39,7 @@ $data 		= $this->get_var('queueskills');
 ?>
 	<p>&nbsp;</p>
 	<div class="sb-list">
-		<table cellspacing="0" cellpadding="0" border="0">
+		<table>
 			<thead>
 			<tr class="sb-top">
 
@@ -116,7 +116,7 @@ $data 		= $this->get_var('queueskills');
 			</tr>
 			</tfoot>
 		</table>
-		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left">

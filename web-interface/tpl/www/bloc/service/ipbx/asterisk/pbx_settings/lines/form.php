@@ -70,7 +70,7 @@ if (is_readable($filename) === true)
 
 <div id="sb-part-ipbxinfos" class="b-nodisplay">
 <div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0">
+<table>
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_line-key');?></th>

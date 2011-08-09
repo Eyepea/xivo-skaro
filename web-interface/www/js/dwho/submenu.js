@@ -42,8 +42,8 @@ dwho.submenu = function(options)
 
     var dwsmptr = this;
 
-    this.fnonload = function() { dwsmptr.load(); }
-}
+    this.fnonload = function() { dwsmptr.load(); };
+};
 
 dwho.submenu.prototype.set_option = function(name,value)
 {
@@ -70,7 +70,7 @@ dwho.submenu.prototype.set_option = function(name,value)
     }
 
     return(true);
-}
+};
 
 dwho.submenu.prototype.set_options = function(options)
 {
@@ -79,7 +79,7 @@ dwho.submenu.prototype.set_options = function(options)
 
     for(var property in options)
         this.set_option(property,options[property]);
-}
+};
 
 dwho.submenu.prototype.select = function(obj,part,last,cname)
 {
@@ -141,7 +141,7 @@ dwho.submenu.prototype.select = function(obj,part,last,cname)
 
     dwho.dom.free_focus();
     location = $('li#'+obj.id).find('a').first().attr('href');
-}
+};
 
 dwho.submenu.prototype.onstate = function(obj,last,cname,state)
 {
@@ -185,17 +185,17 @@ dwho.submenu.prototype.onstate = function(obj,last,cname,state)
     obj.className = cname;
 
     return(true);
-}
+};
 
 dwho.submenu.prototype.blur = function(obj,last,cname)
 {
     return(this.onstate(obj,last,cname,'blur'));
-}
+};
 
 dwho.submenu.prototype.focus = function(obj,last,cname)
 {
     return(this.onstate(obj,last,cname,'focus'));
-}
+};
 
 dwho.submenu.prototype.submit_form = function(obj)
 {
@@ -212,7 +212,7 @@ dwho.submenu.prototype.submit_form = function(obj)
     obj['dwsm-form-part'].value = this._display;
 
     return(true);
-}
+};
 
 dwho.submenu.prototype.load = function()
 {
@@ -235,7 +235,7 @@ dwho.submenu.prototype.load = function()
 
     this._backup[tab.id] = tab.className;
     this.select(tab,part,last);
-}
+};
 
 if(dwho_is_undef(dwho.dom) === false
 && (typeof(dwho.submenu.autoload) === 'undefined'

@@ -83,7 +83,7 @@ var xivo_list_elt_extenfeatures = {
                              'it-extenfeatures-list-queueremovemember'],
     'it-extenfeatures-enable-phoneprogfunckey':    ['it-extenfeatures-phoneprogfunckey',
                              'it-extenfeatures-list-phoneprogfunckey'],
-    'it-extenfeatures-enable-guestprov':        ['it-extenfeatures-guestprov']}
+    'it-extenfeatures-enable-guestprov':        ['it-extenfeatures-guestprov']};
 
 function xivo_extenfeatures_onload()
 {

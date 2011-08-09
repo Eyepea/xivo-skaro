@@ -79,7 +79,7 @@ $err = $this->get_var('error','linefeatures');
 								$this->bbf('col_rules_group-add'));?>
 </p>
 
-<table cellspacing="0" cellpadding="0" border="0" id="list_linefeatures">
+<table id="list_linefeatures">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left th-rule">&nbsp;</th>

@@ -346,9 +346,9 @@ dwho.uri.prototype.split_authority = function(authority)
     var r = {};
 
     if((pos = authority.indexOf('@')) === -1)
-        var hostport = authority;
+        hostport = authority;
     else if(pos === 0)
-        var hostport = authority.substring(1);
+        hostport = authority.substring(1);
     else
     {
         var userinfo = authority.substring(0,pos);

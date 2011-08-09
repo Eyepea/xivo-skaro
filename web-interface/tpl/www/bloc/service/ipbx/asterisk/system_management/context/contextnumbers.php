@@ -28,7 +28,7 @@ $nb = $this->get_var('count');
 $err = $this->get_var('error','contextnumbers',$type);
 
 ?>
-<table cellspacing="0" cellpadding="0" border="0">
+<table>
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_contextnumbers_'.$type.'-numberbeg');?></th>
@@ -94,7 +94,7 @@ endif;
 	</tr>
 	</tfoot>
 </table>
-<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+<table class="b-nodisplay">
 	<tbody id="ex-contextnumbers-<?=$type?>">
 	<tr class="fm-paragraph">
 		<td class="td-left txt-center">

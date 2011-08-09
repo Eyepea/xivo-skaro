@@ -121,7 +121,6 @@ function xivo_genercache() {
     function on_success(idtype) {
         if (idtype == 'all') {
            var nb = listkeyfile.length;
-           var sum = 0;
            for (var i = 0; i < nb;i++) {
               keyfile = listkeyfile[i];
               $('#gcache-'+keyfile).html(jstxt_img_success_submit);
