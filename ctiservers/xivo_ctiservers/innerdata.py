@@ -183,7 +183,8 @@ class Safe:
         self.fagichannels = {}
 
         self.extenfeatures = {}
-        self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
+        if 'urllist_extenfeatures' in cnf:
+            self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
 
         for listname, urllistkey in self.urlvars.iteritems():
             try:
