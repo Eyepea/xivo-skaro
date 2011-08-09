@@ -181,7 +181,7 @@ function xivo_wizard_chg_ipbxbackend()
 
     var len = backend.options.length;
 
-    for(i = 0;i < len;i++)
+    for(var i = 0;i < len;i++)
     {
         if((engine = dwho_eid('ipbxengine-' + backend.options[i].value)) === false)
             continue;
@@ -228,9 +228,9 @@ function xivo_wizard_chg_entity_name()
     
     if(dwho_is_undef(displayname) === false && displayname.length > 0)
         name = displayname;
-    
-    name = name.replace(/[^a-z0-9_\.-]+/g,'');
+
     name = name.toLowerCase();
+    name = name.replace(/[^a-z0-9_\.-]+/g,'');
     
     dwho_eid('it-entity-name').value = name;
 }
