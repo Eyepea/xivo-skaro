@@ -49,6 +49,9 @@ Ajouter une ligne
 ; opt_row-delete
 Effacer la ligne
 
+; no_row
+Aucune entrée
+
 ; toolbar_opt_add
 Ajouter
 

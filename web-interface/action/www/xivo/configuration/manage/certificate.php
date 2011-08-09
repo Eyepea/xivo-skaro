@@ -45,7 +45,7 @@ switch($act)
 		$fm_save = true;
 
 		if(isset($_QR['fm_send']) 	 === true)
-		{	
+		{
 			$now = new DateTime("now");
 			$end = DateTime::createFromFormat("Y-m-d", $_QR['validity-end-format']);
 
@@ -62,7 +62,7 @@ switch($act)
 				if(!array_key_exists('CA', $_QR) || $_QR['CA'] != 1)
 				{
 					$cert['autosigned'] = isset($_QR['autosigned']);
-	
+
 					if(!array_key_exists('autosigned',$_QR) || $_QR['autosigned'] != 1)
 					{ $cert['ca'] = $_QR['ca_authority']; $cert['ca_password'] = $_QR['ca_password']; }
 				}
@@ -91,7 +91,7 @@ switch($act)
 
 		function cafilter($cert)
 		{
-			return $cert['CA'];
+			return isset($cert['CA']) ? $cert['CA'] : null;
 		}
 
 		$authorities = array_filter($modcert->get_all(), "cafilter");

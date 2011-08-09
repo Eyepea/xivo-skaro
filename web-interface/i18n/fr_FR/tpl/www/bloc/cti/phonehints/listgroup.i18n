@@ -1,11 +1,9 @@
-; col_name
-Nom du statut
 
-; col_number
-Numéro
+; col_phonehintsgroup
+Groupe
 
-; col_color
-Couleur
+; col_description
+Description
 
 ; no_phonehints
 Aucun statut de terminaison

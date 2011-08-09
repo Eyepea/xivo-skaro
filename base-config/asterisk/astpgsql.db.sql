@@ -459,17 +459,24 @@ CREATE TABLE "ctimain" (
  "ami_password" varchar(64),
  "fagi_ip" varchar(16),
  "fagi_port" INTEGER,
+ "fagi_commented" INTEGER, -- BOOLEAN
  "cti_ip" varchar(16),
  "cti_port" INTEGER,
+ "cti_commented" INTEGER, -- BOOLEAN
  "ctis_ip" varchar(16),
  "ctis_port" INTEGER,
+ "ctis_commented" INTEGER, -- BOOLEAN
  "webi_ip" varchar(16),
  "webi_port" INTEGER,
+ "webi_commented" INTEGER, -- BOOLEAN
  "info_ip" varchar(16),
  "info_port" INTEGER,
+ "info_commented" INTEGER, -- BOOLEAN
  "announce_ip" varchar(16),
  "announce_port" INTEGER,
+ "announce_commented" INTEGER, -- BOOLEAN
  "asterisklist" varchar(128),
+ "tlscertfile" varchar(128),
  "updates_period" INTEGER,
  "socket_timeout" INTEGER,
  "login_timeout" INTEGER,
@@ -477,7 +484,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 3600, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 3600, 10, 5, 'context');
 SELECT setval('ctimain_id_seq', 2);
 
 
