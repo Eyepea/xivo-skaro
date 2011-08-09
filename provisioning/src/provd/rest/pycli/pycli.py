@@ -324,19 +324,19 @@ RAW_HELP_MAP = {
 \x1b[1mExamples\x1b[0m
     Get the parameters description
     
-        plugins.parameters().show()
+        parameters.infos()
     
-    Get the value of 'server' parameter
+    Get the value of 'locale' parameter
     
-        plugins.parameters().get('server')
+        parameters.get('locale')
     
-    Set the value of 'server' parameter
+    Set the value of 'locale' parameter
     
-        plugins.parameters().set('server', 'http://example.com/plugins')
+        parameters.set('locale', 'en')
     
-    Unset the 'server' parameter
+    Unset the 'locale' parameter
     
-        plugins.parameters().unset('server')
+        parameters.unset('locale')
 """
 }
 
