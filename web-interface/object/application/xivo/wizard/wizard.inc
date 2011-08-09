@@ -1562,6 +1562,21 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         $this->_load_xivo_dso();
         $this->_load_ipbx_service();
 
+        $appsip = &$this->_ipbx->get_apprealstatic('sip');
+        $appgeneralsip = &$appsip->get_module('general');
+        $info = $appgeneralsip->get_all_val_by_category(false);
+
+		$provd_secure_key = 'ap'.dwho_generate_code();
+
+		$rs = array();
+		$rs['commented'] = 0;
+		$rs['var_name'] = 'autocreate_prefix';
+		$rs['var_val'] = $provd_secure_key;
+
+		if($appgeneralsip->set($rs) === false
+		|| $appgeneralsip->save() === false)
+			dwho_report::push('error', 'Can\'t create autocreate_prefix in staticsip table');
+
         $modprov = &$this->_xobj->get_module('provisioning');
         $modprov->edit(1, array('net4_ip' => $netiface['address']));
 
