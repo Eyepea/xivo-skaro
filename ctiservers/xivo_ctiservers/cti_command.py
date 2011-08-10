@@ -824,13 +824,12 @@ class Command:
 
 
     def ipbxcommand_meetme(self):
-        print 'ipbxcommand_meetme', self.commanddict, self.userid, self.ruserid
-        function = icommand.struct.get('function')
-        argums = icommand.struct.get('functionargs')
+        function = self.commanddict['function']
+        argums = self.commanddict['functionargs']
         if function == 'record' and len(argums) == 3 and argums[2] in ['start' , 'stop']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                command = argums[2]
+                                # command = argums[2]
                                 chan = ''
                                 validuid = ''
                                 for uid, info in self.xod_config['meetme'][astid]. \
@@ -867,12 +866,10 @@ class Command:
                                                                 ('Adminnum', '%s' % (adminnum[0]))])
 
         elif function in ['kick', 'mute', 'unmute']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                self.__ami_execute__(astid, 'sendcommand',
-                                                            'Command', [('Command', 'meetme %s %s %s' %
-                                                                        (function, roomname, castid))])
+            usernum, meetmeid = argums[:2]
+            confno = self.innerdata.xod_config['meetmes'].keeplist[meetmeid]['confno']
+            return [{'amicommand': 'meetme' + function,
+                     'amiargs': (confno, usernum)}]
 
         elif function == 'getlist':
                                 fullstat = {}

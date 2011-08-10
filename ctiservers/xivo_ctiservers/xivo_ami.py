@@ -325,6 +325,16 @@ class AMIClass:
         except Exception:
             return False
 
+    # \brief Mute a meetme user
+    def meetmemute(self, meetme, usernum):
+        try:
+            ret = self.sendcommand('MeetmeMute', (('Meetme', meetme),
+                                                  ('Usernum', usernum)))
+        except self.AMIError:
+            return False
+        except Exception:
+            return False
+
     # \brief Adds an Interface into a Queue
     def queueadd(self, queuename, interface, paused, skills = ''):
         try:
