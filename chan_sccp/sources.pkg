@@ -1,4 +1,4 @@
 DEST_PATH=tarballs
-SVN_URL="https://chan-sccp-b.svn.sourceforge.net/svnroot/chan-sccp-b/trunk"
+GIT_URL="git://git.proformatique.com/official/chan_sccp.git"
 PKG_NAME="asterisk-chan-sccp"
 DFSG_EXCLUDE_PATTERNS=
