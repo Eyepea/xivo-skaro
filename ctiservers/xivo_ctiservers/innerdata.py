@@ -574,7 +574,7 @@ class Safe:
             if 'displayname' in opts and not chan_props.get('thisdisplay'):
                 chan_props['thisdisplay'] = opts['displayname']
             if 'muted' in opts:
-                chan_props['muted'] = opts['muted']
+                chan_props['meetme_ismuted'] = opts['muted']
             if 'authed' in opts:
                 chan_props['meetme_isauthed'] = opts['authed']
             if 'leave' in opts:
@@ -1552,7 +1552,7 @@ class Channel:
             'holded' : False,
             'parked' : False,
             # meetme statuses
-            'muted' : False,
+            'meetme_ismuted' : False,
             'meetme_isauthed' : False,
             'meetme_isadmin' : False,
             'meetme_usernum' : 0,
