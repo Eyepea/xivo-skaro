@@ -32,8 +32,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_provisioning = false;
 	var $_ha           = false;
 
-    function xivo_object_commonconf(&$xobj)
-    {
+	function xivo_object_commonconf(&$xobj)
+	{
 		$this->xivo_object_abstract(&$xobj);
 
 		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))     === false
@@ -45,50 +45,49 @@ class xivo_object_commonconf extends xivo_object_abstract
 			return(false);
 
 		return(true);
-    }
+	}
 
-    function _ip2subnet($ip, $netmask)
-    {
+	function _ip2subnet($ip, $netmask)
+	{
 		$dotted_ip = split('\.', $ip);
 		$dotted_nm = split('\.', $netmask);
 
 		$subnet = sprintf("%d.%d.%d.%d",
-			(((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
-			(((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
-			(((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
-			(((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
-		);
+				(((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
+				(((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
+				(((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
+				(((int)$dotted_ip[3]) & ((int)$dotted_nm[3])));
 
 		return($subnet);
-     }
+	}
 
-    function generate($content, $onlystatic=true)
-    {
-        $conf    = array();
+	function generate($content, $onlystatic=true)
+	{
+		$conf = array();
 
-        // dhcp
-        $rawdata = $this->_dhcp->get(1);
-        $conf = array_merge($conf, array(
+		// dhcp
+		$rawdata = $this->_dhcp->get(1);
+		$conf = array_merge($conf, array(
             'xivo.dhcp.pool'         =>
-                strlen($rawdata['pool_start'])==0?'':$rawdata['pool_start'].' '.$rawdata['pool_end'],
+		strlen($rawdata['pool_start'])==0?'':$rawdata['pool_start'].' '.$rawdata['pool_end'],
             'xivo.dhcp.extra_ifaces' => $rawdata['extra_ifaces'],
             'xivo.dhcp.active'       => $rawdata['active']==0?false:true,
-        ));
+		));
 
-        // mail (postfix)
-        $rawdata = $this->_mail->get(1);
-        $conf = array_merge($conf, array(
+		// mail (postfix)
+		$rawdata = $this->_mail->get(1);
+		$conf = array_merge($conf, array(
             'xivo.smtp.mydomain'           =>
-                strlen($rawdata['mydomain'])==0?null:$rawdata['mydomain'],
+		strlen($rawdata['mydomain'])==0?null:$rawdata['mydomain'],
             'xivo.smtp.origin'             => $rawdata['origin'],
             'xivo.smtp.relayhost'          => $rawdata['relayhost'],
             'xivo.smtp.fallback_relayhost' => $rawdata['fallback_relayhost'],
             'xivo.smtp.canonical'          => $rawdata['canonical'],
-        ));
+		));
 
-        $provisioning = $this->_provisioning->get(1);
-
-        $conf = array_merge($conf, array(
+		// provisioning
+		$provisioning = $this->_provisioning->get(1);
+		$conf = array_merge($conf, array(
             'xivo.provd.net4_ip'		=> $provisioning['net4_ip'],
             'xivo.provd.http_port'		=> $provisioning['http_port'],
             'xivo.provd.username'		=> $provisioning['username'],
@@ -98,176 +97,174 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.provd.rest_authentication'	=> (bool) $provisioning['private'],
             'xivo.provd.rest_ssl'		=> (bool) $provisioning['secure'],
             'xivo.provd.dhcp_integration' => (bool) $provisioning['dhcp_integration']
-        ));
+		));
 
-        // monitoring
-        $rawdata = $this->_monitoring->get(1);
-        $conf = array_merge($conf, array(
+		// monitoring
+		$rawdata = $this->_monitoring->get(1);
+		$conf = array_merge($conf, array(
             'xivo.maintenance'             => $rawdata['maintenance']==0?false:true,
             'alert_emails'                 =>
-                strlen($rawdata['alert_emails']) == 0?null:str_replace("\r\n", " ", $rawdata['alert_emails']),
+		strlen($rawdata['alert_emails']) == 0?null:str_replace("\r\n", " ", $rawdata['alert_emails']),
             'dahdi_monitor_ports'          =>
-                strlen($rawdata['dahdi_monitor_ports'])==0?null:$rawdata['dahdi_monitor_ports'],
+		strlen($rawdata['dahdi_monitor_ports'])==0?null:$rawdata['dahdi_monitor_ports'],
             'max_call_duration'            =>
-                strlen($rawdata['max_call_duration'])==0?null:$rawdata['max_call_duration'],
-        ));
+		strlen($rawdata['max_call_duration'])==0?null:$rawdata['max_call_duration'],
+		));
 
-        //resolvconf
-        // we can't load module at start, or we'll have an infinite loop
-        $this->_resolvconf  = &$this->_xobj->get_application('resolvconf');
-        if($this->_resolvconf == false) {
-            $content = 'cannot load *resolvconf* application';
-            return false;
-	}
-
-        $rawdata = $this->_resolvconf->get(1);
-        $ns = '';
-        if(strlen($rawdata['resolvconf']['nameserver1']) > 0)
-            $ns .= $rawdata['resolvconf']['nameserver1'] . " ";
-        if(strlen($rawdata['resolvconf']['nameserver2']) > 0)
-            $ns .= $rawdata['resolvconf']['nameserver2'] . " ";
-        if(strlen($rawdata['resolvconf']['nameserver3']) > 0)
-            $ns .= $rawdata['resolvconf']['nameserver3'];
-        $ns = trim($ns);
-
-        $conf = array_merge($conf, array(
-            'xivo.hostname'                =>
-                is_null($rawdata['resolvconf']['hostname'])?'':$rawdata['resolvconf']['hostname'],
-            'xivo.domain'                  =>
-                is_null($rawdata['resolvconf']['domain'])?'':$rawdata['resolvconf']['domain'],
-            'xivo.extra.dns.search'        => '',
-            'xivo.nameservers'             => $ns,
-        ));
-
-        // netiface
-        // we can't load module at start, or we'll have an infinite loop
-        $this->_netiface    = &$this->_xobj->get_application('netiface');
-        if($this->_netiface == false) {
-            $content = 'cannot load *netiface* application';
-            return false;
+		//resolvconf
+		// we can't load application at start, or we'll have an infinite loop
+		if(($this->_resolvconf  = &$this->_xobj->get_application('resolvconf')) == false) {
+			$content = 'cannot load *resolvconf* application';
+			return false;
 		}
 
-        $list = $this->_netiface->get_netifaces_list();
+		$rawdata = $this->_resolvconf->get(1);
+		$ns = '';
+		if(strlen($rawdata['resolvconf']['nameserver1']) > 0)
+		$ns .= $rawdata['resolvconf']['nameserver1'] . " ";
+		if(strlen($rawdata['resolvconf']['nameserver2']) > 0)
+		$ns .= $rawdata['resolvconf']['nameserver2'] . " ";
+		if(strlen($rawdata['resolvconf']['nameserver3']) > 0)
+		$ns .= $rawdata['resolvconf']['nameserver3'];
+		$ns = trim($ns);
 
-        // we filter network devices list, keeping only 'voip' interfaces:
-        //  1. 1st vlan
-        //  2. 1st voip iface
-        //  3. voip ifaces list
-        $vlanid     = 0;        //0 means no vlan
-        $ifaces     = "";
-        $cidr_id    = -1;
+		$conf = array_merge($conf, array(
+            'xivo.hostname'                =>
+		is_null($rawdata['resolvconf']['hostname'])?'':$rawdata['resolvconf']['hostname'],
+            'xivo.domain'                  =>
+		is_null($rawdata['resolvconf']['domain'])?'':$rawdata['resolvconf']['domain'],
+            'xivo.extra.dns.search'        => '',
+            'xivo.nameservers'             => $ns,
+		));
 
-        for($i = 0; $i < count($list); $i++)
-        {
-            $item = &$list[$i];
-            if(!$item['actionable']
-            || $item['netiface']['disable']
-            || strcmp($item['netiface']['networktype'], 'voip') != 0)
-                continue;
+		// netiface
+		// we can't load application at start, or we'll have an infinite loop
+		if(($this->_netiface    = &$this->_xobj->get_application('netiface')) == false) {
+			$content = 'cannot load *netiface* application';
+			return false;
+		}
 
-            $ifaces .= $item['netiface']['ifname'] . ' ';
+		$list = $this->_netiface->get_netifaces_list();
 
-            if($vlanid == 0 && $item['netinfo']['vlanif'])
-                $vlanid = intval($item['netiface']['vlanid']);
+		// we filter network devices list, keeping only 'voip' interfaces:
+		//  1. 1st vlan
+		//  2. 1st voip iface
+		//  3. voip ifaces list
+		$vlanid     = 0;        //0 means no vlan
+		$ifaces     = "";
+		$cidr_id    = -1;
 
-            if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
-                $cidr_id = $i;
-        }
+		for($i = 0; $i < count($list); $i++)
+		{
+			$item = &$list[$i];
+			if(!$item['actionable']
+			|| $item['netiface']['disable']
+			|| strcmp($item['netiface']['networktype'], 'voip') != 0)
+				continue;
 
-        // no VOIP netiface defined
-        if($cidr_id < 0) {
-            $content = 'no VOIP interface configured';
-           # return false;
-        }
+			$ifaces .= $item['netiface']['ifname'] . ' ';
 
-        $net = array(
+			if($vlanid == 0 && $item['netinfo']['vlanif'])
+				$vlanid = intval($item['netiface']['vlanid']);
+
+			if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
+				$cidr_id = $i;
+		}
+
+		// no VOIP netiface defined
+		if($cidr_id < 0) {
+			$content = 'no VOIP interface configured';
+			return false;
+		}
+
+		$net = array(
             'ipaddr'    => $list[$cidr_id]['netiface']['address'],
             'netmask'   => $list[$cidr_id]['netiface']['netmask'],
             'broadcast' => $list[$cidr_id]['netiface']['broadcast']);
 
-        $ifaces = trim($ifaces);
-        $subnet = $this->_ip2subnet($list[$cidr_id]['netiface']['address'], $list[$cidr_id]['netiface']['netmask']);
+		$ifaces = trim($ifaces);
+		$subnet = $this->_ip2subnet($list[$cidr_id]['netiface']['address'], $list[$cidr_id]['netiface']['netmask']);
 
-				// HA
-        $rawdata = $this->_ha->get(1);
-        $conf = array_merge($conf, array(
+		// HA
+		$rawdata = $this->_ha->get(1);
+		$conf = array_merge($conf, array(
           'ha.master.ip'    => strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],
           'ha.master.name'  => strlen($rawdata['node1_name']) == 0?null:$rawdata['node1_name'],
           'ha.slave.ip'     => strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
           'ha.slave.name'   => strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name']
-        ));
-        /* checking with HA configuration
-             If HA is activated, we must use HA ip address instead of server one
-        */
-        /*
-        if(($havirtnet_mod = &$this->_xobj->get_module('ha_virtnet')) === false)
-            return false;
+		));
+		/* checking with HA configuration
+		 If HA is activated, we must use HA ip address instead of server one
+		*/
+		/*
+		 if(($havirtnet_mod = &$this->_xobj->get_module('ha_virtnet')) === false)
+		return false;
 
-        $virtnets = $havirtnet_mod->get_all();
-        if(is_array($virtnets) && count($virtnets) > 0)
-        {
-            $hafound = false;
+		$virtnets = $havirtnet_mod->get_all();
+		if(is_array($virtnets) && count($virtnets) > 0)
+		{
+		$hafound = false;
 
-            foreach($virtnets as $virtnet)
-            {
-                $virtsubnet = $this->_ip2subnet($virtnet['ipaddr'], $virtnet['netmask']);
-                if($virtsubnet == $subnet)
-                {
-                    $net    = $virtnet;
-                    $subnet = $virtsubnet;
-                    $hafound = true;
-                    break;
-                }
-            }
+		foreach($virtnets as $virtnet)
+		{
+		$virtsubnet = $this->_ip2subnet($virtnet['ipaddr'], $virtnet['netmask']);
+		if($virtsubnet == $subnet)
+		{
+		$net    = $virtnet;
+		$subnet = $virtsubnet;
+		$hafound = true;
+		break;
+		}
+		}
 
-            // no HA virtnet set for VoIP interface
-            if(!$hafound)
-                return false;
-        }
-        */
-        $conf = array_merge($conf, array(
+		// no HA virtnet set for VoIP interface
+		if(!$hafound)
+		return false;
+		}
+		*/
+		$conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
             'xivo.voip.vlan.id'     => $vlanid,
             'xivo.net4.ip'          => $net['ipaddr'],
             'xivo.net4.netmask'     => $net['netmask'],
             'xivo.net4.broadcast'   => $net['broadcast'],
             'xivo.net4.subnet'      => $subnet
-        ));
+		));
 
-        // load database uri
-        // 1. xivo
-        $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini');
-        $db_xivo = $config['general']['datastorage'];
+		// load database uri
+		// 1. xivo
+		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini');
+		$db_xivo = $config['general']['datastorage'];
 
-        // 2. asterisk
-        $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
-        $db_ast  = $config['general']['datastorage'];
+		// 2. asterisk
+		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+		$db_ast  = $config['general']['datastorage'];
 
-        $conf = array_merge($conf, array(
+		$conf = array_merge($conf, array(
             'xivo.astdb'            => $db_ast,
             'xivo.xivodb'           => $db_xivo
-        ));
+		));
 
-        return $this->_sysconfd->request_post('/commonconf_generate', $conf);
-    }
+		return $this->_sysconfd->request_post('/commonconf_generate', $conf);
+	}
 
-    function apply()
-    {
-        if(($ret = $this->_sysconfd->request_get('/commonconf_apply')) !== false)
+	function apply()
+	{
+		if(($ret = $this->_sysconfd->request_get('/commonconf_apply')) !== false)
 		unlink('/var/lib/pf-xivo-web-interface/commonconf.reload');
 
 		return $ret;
-    }
+	}
 
-    function last_status_code()
-    {
-        return $this->_sysconfd->last_status_code();
-    }
+	function last_status_code()
+	{
+		return $this->_sysconfd->last_status_code();
+	}
 
-    function notify_changes()
-    {
+	function notify_changes()
+	{
 		touch('/var/lib/pf-xivo-web-interface/commonconf.reload');
-    }
+	}
 }
 
 ?>

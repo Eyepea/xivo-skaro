@@ -1513,7 +1513,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         // save to database
         $this->_load_xivo_dso();
-
         $this->_load_ipbx_service();
         $module = &$this->_xobj->get_module('netiface');
 
@@ -1527,7 +1526,11 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         $bcast  = implode('.', $bcast);
 
-        $data = array(
+        // requested iface uuid must match local one
+        $uuid = $this->_sysconfd->request_get('/xivo_uuid');
+
+		$data = array(
+        	'uuid'        => $uuid['uuid'],
             'name'        => $name,
             'ifname'      => $name,
             'hwtypeid'    => 1,
@@ -1539,14 +1542,19 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
             'broadcast'   => $bcast,
             'gateway'     => $netiface['gateway'],
             'mtu'         => 1500,
-            'description' => 'wizard configuration'
-        );
+            'description' => 'wizard configuration');
 
         if(($data = $module->chk_values($data)) === false)
+        {
+        	dwho_report::push('error', $module->get_filter_error());
             return false;
+        }
 
         if($module->save($data) === false)
+        {
+        	dwho_report::push('error', 'Can\'t save network data');
             return false;
+        }
 
         return(true);
     }
@@ -1622,40 +1630,29 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         return true;
     }
 
-    function send_redirect($tpl,$content='')
+    function send_redirect($tpl)
     {
         $uri = $this->discover_finish_uri();
         $tpl->load_i18n_file('tpl/tpl.i18n', 'global');
         $tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
 
         $seconds = 10;
-
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="&lt;?=DWHO_I18N_BABELFISH_LANGUAGE?&gt;">
+<html>
 <head>
 <title><?=dwho_htmlsc($tpl->bbf('page_title',php_uname('n')))?></title>
-<link rel="stylesheet" type="text/css" href="/css/xivo.css">
 <script type="text/javascript">
-        function redirect() {
-            window.location = "<?=$uri?>";
-        }
-
-        setInterval("redirect()", <?=($seconds*1000)?>);
-    </script>
+	function redirect() {
+		window.location = "<?=$uri?>";
+	}
+	setInterval("redirect()", <?=($seconds*1000)?>);
+</script>
 </head>
 <body>
-<center>
 	<p><?=nl2br($tpl->bbf('redirect_message',$seconds));?></p>
-	<hr />
-	<p class="xivo-warning"><?=nl2br($content);?></p>
-</center>
 </body>
 </html>
-
-
 <?php
-
         ob_flush();
         flush();
         ob_end_flush();
@@ -1756,28 +1753,19 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         $this->_load_xivo_dso();
         $this->_load_ipbx_service();
 
+		//page redirection must be sent to client BEFORE changing server ip address
+		$this->send_redirect($tpl);
+
         if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
             return(false);
 
-        $content = '';
-        if($commonconf->generate(&$content) !== false)
+        if($commonconf->generate(&$content,false) !== false)
         {
 	        $content = str_replace("\n", "<br/>\n", $content);
-
-	        //page redirection must be sent to client BEFORE changing server ip address
-	        $this->send_redirect($tpl,$content);
 
 	        $this->_commit_netiface();
 
 	        $content = $commonconf->apply();
-	        $status = $commonconf->last_status_code();
-
-	        if($status != 200)
-	        {
-	        	preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
-	        	if(count($matches) > 1)
-	        		$content = $matches[1];
-	        }
 
 	        // restart provisioning service
 	        $this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));
@@ -1788,7 +1776,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	        $this->_wizsess['commit']['step']['validate'] = true;
 
 	        session_destroy();
-        	die;
+        	return(true);
         }
 
         dwho_report::push('error', $content);
