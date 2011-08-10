@@ -183,7 +183,9 @@ class Safe:
         self.fagichannels = {}
 
         self.extenfeatures = {}
-        self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
+
+        if cnf:
+            self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
 
         for listname, urllistkey in self.urlvars.iteritems():
             try:
@@ -199,7 +201,9 @@ class Safe:
                 self.xod_status[listname] = {}
             except Exception:
                 self.log.exception(listname)
-        self.add_default_parking()
+
+        if cnf:
+            self.add_default_parking()
         return
 
     def set_extenfeatures(self, urls):

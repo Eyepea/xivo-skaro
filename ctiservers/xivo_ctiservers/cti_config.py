@@ -90,7 +90,7 @@ class Config:
         if self.ipwebs is None or self.ipwebs == 'localhost':
             return
         for k, v in self.xc_json.get('ipbxes', {}).iteritems():
-            for kk, vv in v.get('urllists').iteritems():
+            for kk, vv in v.get('urllists', {}).iteritems():
                 nl = []
                 for item in vv:
                     z = item.replace('://localhost/', '://%s/' % self.ipwebs).replace('/private/', '/restricted/')
@@ -99,7 +99,8 @@ class Config:
             if 'ipbx_connection' in v:
                 v.get('ipbx_connection')['ipaddress'] = self.ipwebs
             cdruri = v.get('cdr_db_uri')
-            v['cdr_db_uri'] = cdruri.replace('@localhost/', '@%s/' % self.ipwebs)
+            if cdruri:
+                v['cdr_db_uri'] = cdruri.replace('@localhost/', '@%s/' % self.ipwebs)
         return
 
     def getconfig(self, key = None):
