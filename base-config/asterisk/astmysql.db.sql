@@ -436,6 +436,7 @@ CREATE TABLE `ctimain` (
  `announce_commented` tinyint(1),
  `asterisklist` varchar(255),
  `tlscertfile` varchar(255),
+ `tlscafile` varchar(255),
  `updates_period` int(10) unsigned,
  `socket_timeout` int(10) unsigned,
  `login_timeout` int(10) unsigned,
@@ -443,7 +444,7 @@ CREATE TABLE `ctimain` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 3600, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 
 
 DROP TABLE IF EXISTS `ctiphonehints`;

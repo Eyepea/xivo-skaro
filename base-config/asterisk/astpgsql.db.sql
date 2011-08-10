@@ -477,6 +477,7 @@ CREATE TABLE "ctimain" (
  "announce_commented" INTEGER, -- BOOLEAN
  "asterisklist" varchar(128),
  "tlscertfile" varchar(128),
+ "tlscafile" varchar(128),
  "updates_period" INTEGER,
  "socket_timeout" INTEGER,
  "login_timeout" INTEGER,
@@ -484,7 +485,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 3600, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 SELECT setval('ctimain_id_seq', 2);
 
 
