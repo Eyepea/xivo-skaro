@@ -88,12 +88,6 @@ aide adresse annonce
 ; hlp_fm_cti_announce_port
 aide port annonce
 
-; fm_cti_asterisklist
-Choix du serveur Asterisk :
-
-; hlp_fm_cti_asterisklist
-aide choix serveur asterisk
-
 ; fm_cti_updates_period
 Intervalle de mise à jour :
 

@@ -106,12 +106,6 @@ aide port annonce
 ; fm_tlscertfile
 Certificat:
 
-; fm_cti_asterisklist
-Choix du serveur Asterisk:
-
-; hlp_fm_cti_asterisklist
-aide choix serveur asterisk
-
 ; cti-intervals
 Echéances
 

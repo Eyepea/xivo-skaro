@@ -104,13 +104,7 @@ Announce server help
 Announce server help
 
 ; fm_tlscertfile
-Certificat:
-
-; fm_cti_asterisklist
-Choix du serveur Asterisk:
-
-; hlp_fm_cti_asterisklist
-aide choix serveur asterisk
+Certificate:
 
 ; cti-intervals
 Timeouts
