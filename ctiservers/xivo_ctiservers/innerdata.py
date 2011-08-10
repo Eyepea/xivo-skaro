@@ -142,7 +142,7 @@ class Safe:
                                   'incalls' : []
                                   },
                      'meetmes' : { 'pseudochan' : None,
-                                   'channels' : [],
+                                   'channels' : {},
                                    'paused' : False,
                                    },
                      'voicemails' : { 'waiting' : False,
@@ -558,36 +558,27 @@ class Safe:
 
     def meetmeupdate(self, confno, channel = None, opts = {}):
         mid = self.xod_config['meetmes'].idbyroomnumber(confno)
+        status = self.xod_status['meetmes'][mid]
         self.handle_cti_stack('set', ('meetmes', 'updatestatus', mid))
         if channel:
-            self.handle_cti_stack('set', ('channels', 'updatestatus', channel))
-            if channel not in self.xod_status['meetmes'][mid]['channels']:
-                self.xod_status['meetmes'][mid]['channels'].append(channel)
-            if 'pseudochan' in opts:
-                # (join)
-                self.xod_status['meetmes'][mid]['pseudochan'] = opts['pseudochan']
-            chan_props = self.channels[channel].properties
-            if 'admin' in opts:
-                chan_props['meetme_isadmin'] = opts['admin']
-            if 'usernum' in opts:
-                chan_props['meetme_usernum'] = opts['usernum']
-            if 'displayname' in opts and not chan_props.get('thisdisplay'):
-                chan_props['thisdisplay'] = opts['displayname']
-            if 'muted' in opts:
-                chan_props['meetme_ismuted'] = opts['muted']
-            if 'authed' in opts:
-                chan_props['meetme_isauthed'] = opts['authed']
+            if channel not in status['channels']:
+                keys = ('isadmin', 'usernum', 'ismuted', 'isauthed')
+                status['channels'][channel] = dict.fromkeys(keys)
+            status['pseudochan'] = opts.get('pseudochan') or status['pseudochan']
+            chan = status['channels'][channel]
+            chan['isadmin'] = opts.get('admin') or chan['isadmin']
+            chan['ismuted'] = opts.get('muted') or chan['ismuted']
+            chan['usernum'] = opts.get('usernum') or chan['usernum']
+            chan['isauthed'] = opts.get('authed') or chan['isauthed']
             if 'leave' in opts:
-                # (leave)
-                if channel in self.xod_status['meetmes'][mid]['channels']:
-                    self.xod_status['meetmes'][mid]['channels'].remove(channel)
-        elif opts:
+                status['channels'].pop(channel)
+        elif opts and 'paused' in opts:
             # (pause)
-            self.xod_status['meetmes'][mid]['paused'] = opts['paused']
+            status['paused'] = opts['paused']
         else:
             # (end)
-            self.xod_status['meetmes'][mid]['pseudochan'] = None
-            self.xod_status['meetmes'][mid]['channels'] = []
+            status['pseudochan'] = None
+            status['channels'] = {}
         self.handle_cti_stack('empty_stack')
         return
 
