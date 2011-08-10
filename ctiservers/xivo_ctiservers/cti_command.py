@@ -865,12 +865,13 @@ class Command:
                                                                 ('Usernum', '%s' % (castid)),
                                                                 ('Adminnum', '%s' % (adminnum[0]))])
 
-        elif function in ['kick', 'mute', 'unmute']:
+        elif function in ['MeetmeMute', 'MeetmeUnmute']:
             usernum, meetmeid = argums[:2]
             confno = self.innerdata.xod_config['meetmes'].keeplist[meetmeid]['confno']
-            return [{'amicommand': 'meetme' + function,
+            return [{'amicommand': function.lower(),
                      'amiargs': (confno, usernum)}]
-
+        elif function == 'kick':
+            pass
         elif function == 'getlist':
                                 fullstat = {}
                                 for iastid, v in self.xod_config['meetme'].iteritems():
