@@ -24,6 +24,8 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $info = $this->get_var('info');
 $preslist = $this->get_var('preslist');
+$phonehintslist = $this->get_var('phonehintslist');
+$agentslist = $this->get_var('agentslist');
 
 $preferencesavail = $this->get_var('preferencesavail');
 $xletsavail = $this->get_var('xletsavail');
@@ -62,16 +64,39 @@ endif;
 				  'comment' => $this->bbf('cmt_profiles_maxgui'),
 				  'default'	=> $element['ctiprofiles']['maxgui']['default'],
 				  'value'	=> $info['ctiprofiles']['maxgui']));
+?>
 
+	<fieldset id="cti-profiles_status">
+	<legend><?=$this->bbf('cti-profiles-status');?></legend>
+<?php
 	echo $form->select(array('desc'		=> $this->bbf('fm_profiles_presence'),
 				   'name'		=> 'presence',
-				   'id'		=> false,
+				   'id'			=> false,
 				   'label'		=> false,
 				   'key'		=> false,
 				   'selected'	=> $info['ctiprofiles']['presence']
-			 ),
-			 $preslist);
+			 ),$preslist);
+
+	echo $form->select(array('desc'		=> $this->bbf('fm_profiles_phonehints'),
+				   'name'		=> 'phonehints',
+				   'id'			=> false,
+				   'label'		=> false,
+				   'key'		=> 'name',
+				   'altkey'		=> 'name',
+				   'selected'	=> $info['ctiprofiles']['phonehints']
+			 ),$phonehintslist);
+
+	echo $form->select(array('desc'		=> $this->bbf('fm_profiles_agents'),
+				   'name'		=> 'agents',
+				   'id'			=> false,
+				   'label'		=> false,
+				   'key'		=> 'name',
+				   'altkey'		=> 'name',
+				   'selected'	=> $info['ctiprofiles']['agents']
+			 ),$agentslist);
 ?>
+	</fieldset>
+
 	<div class="fm-paragraph fm-description">
 		<fieldset id="cti-profiles_services">
 			<legend><?=$this->bbf('cti-profiles-services');?></legend>
@@ -209,7 +234,7 @@ endif;
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left txt-center">
 	<?php
-	
+
 					echo $form->select(array('paragraph'	=> false,
 								   'name'		=> 'preferenceslist[]',
 								   'id'		=> false,

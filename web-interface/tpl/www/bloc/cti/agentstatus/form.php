@@ -24,7 +24,7 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $info = $this->get_var('info');
 
-$presence = $this->get_var('phonehints');
+$presence = $this->get_var('agentstatus');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -35,20 +35,20 @@ endif;
 
 <div id="sb-part-first">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_phonehints_name'),
-				  'name'	=> 'phonehints[name]',
-				  'labelid'	=> 'phonehints-name',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_agentstatus_name'),
+				  'name'	=> 'agentstatus[name]',
+				  'labelid'	=> 'agentstatus-name',
 				  'size'	=> 15,
-				  'default'	=> $element['phonehints']['name']['default'],
-				  'value'	=> $info['phonehints']['name']));
+				  'default'	=> $element['agentstatus']['name']['default'],
+				  'value'	=> $info['agentstatus']['name']));
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_phonehints_color'),
-				  'name'	=> 'phonehints[color]',
-				  'labelid'	=> 'phonehints-color',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_agentstatus_color'),
+				  'name'	=> 'agentstatus[color]',
+				  'labelid'	=> 'agentstatus-color',
 				  'size'	=> 15,
 				  'class'	=> 'color {hash:true}',
-				  'default'	=> $element['phonehints']['color']['default'],
-				  'value'	=> $info['phonehints']['color']));
+				  'default'	=> $element['agentstatus']['color']['default'],
+				  'value'	=> $info['agentstatus']['color']));
 
 ?>
 </div>

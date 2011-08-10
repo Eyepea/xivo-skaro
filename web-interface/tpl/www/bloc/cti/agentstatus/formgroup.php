@@ -24,7 +24,7 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $info = $this->get_var('info');
 
-$presence = $this->get_var('phonehints');
+$presence = $this->get_var('agentstatusgroup');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -35,21 +35,26 @@ endif;
 
 <div id="sb-part-first">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_phonehints_name'),
-				  'name'	=> 'phonehints[name]',
-				  'labelid'	=> 'phonehints-name',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_agentstatusgroup_name'),
+				  'name'	=> 'agentstatusgroup[name]',
+				  'labelid'	=> 'agentstatusgroup-name',
 				  'size'	=> 15,
-				  'default'	=> $element['phonehints']['name']['default'],
-				  'value'	=> $info['phonehints']['name']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_phonehints_color'),
-				  'name'	=> 'phonehints[color]',
-				  'labelid'	=> 'phonehints-color',
-				  'size'	=> 15,
-				  'class'	=> 'color {hash:true}',
-				  'default'	=> $element['phonehints']['color']['default'],
-				  'value'	=> $info['phonehints']['color']));
+				  'default'	=> $element['agentstatusgroup']['name']['default'],
+				  'value'	=> $info['agentstatusgroup']['name']));
 
 ?>
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-agentstatusgroup-description" for="it-agentstatusgroup-description"><?=$this->bbf('fm_agentstatusgroup_description');?></label>
+		</p>
+		<?=$form->textarea(array('paragraph'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'agentstatusgroup[description]',
+					 'id'		=> 'it-agentstatusgroup-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['agentstatusgroup']['description']['default']),
+				   $info['agentstatusgroup']['description']);?>
+	</div>
 </div>
 

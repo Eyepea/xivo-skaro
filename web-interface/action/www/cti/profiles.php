@@ -102,6 +102,11 @@ switch($act)
 	case 'add':
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
+		$appctiphonehintsgroup = &$ipbx->get_application('ctiphonehintsgroup');
+		$appctiagentstatusgroup = &$ipbx->get_application('ctiagentstatusgroup');
+
+		$agentslist = $appctiagentstatusgroup->get_agentstatusgroup_list();
+		$phonehintslist = $appctiphonehintsgroup->get_phonehintsgroup_list();
 
 		$pl = $apppres->get_presences_list();
 		$preslist = array();
@@ -118,6 +123,8 @@ switch($act)
 		{
 			$_QR['profiles']['deletable'] = 1;
 			$_QR['profiles']['presence'] = $_QR['presence'];
+			$_QR['profiles']['agents'] = $_QR['agents'];
+			$_QR['profiles']['phonehints'] = $_QR['phonehints'];
 
 			if(array_key_exists('xletslist', $_QR))
 			{
@@ -200,6 +207,8 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('preslist',$preslist);
+		$_TPL->set_var('phonehintslist',$phonehintslist);
+		$_TPL->set_var('agentslist',$agentslist);
 		$_TPL->set_var('xletslocavail',$xletslocavail);
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -210,6 +219,11 @@ switch($act)
 	case 'edit':
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
+		$appctiphonehintsgroup = &$ipbx->get_application('ctiphonehintsgroup');
+		$appctiagentstatusgroup = &$ipbx->get_application('ctiagentstatusgroup');
+
+		$agentslist = $appctiagentstatusgroup->get_agentstatusgroup_list();
+		$phonehintslist = $appctiphonehintsgroup->get_phonehintsgroup_list();
 
 		$pl = $apppres->get_presences_list();
 		$preslist = array();
@@ -231,6 +245,8 @@ switch($act)
 
 			$_QR['profiles']['deletable'] = 1;
 			$_QR['profiles']['presence'] = $_QR['presence'];
+			$_QR['profiles']['agents'] = $_QR['agents'];
+			$_QR['profiles']['phonehints'] = $_QR['phonehints'];
 
 			if(array_key_exists('xletslist', $_QR))
 			{
@@ -338,7 +354,7 @@ switch($act)
 
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
-		
+
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
 			$info['preferences']['slt'] = dwho_json::decode($info['ctiprofiles']['preferences'], true);
@@ -356,6 +372,8 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('preslist',$preslist);
+		$_TPL->set_var('phonehintslist',$phonehintslist);
+		$_TPL->set_var('agentslist',$agentslist);
 		$_TPL->set_var('servicesavail',$servicesavail);
 		$_TPL->set_var('funcsavail',$funcsavail);
 		$_TPL->set_var('preferencesavail',$preferencesavail);

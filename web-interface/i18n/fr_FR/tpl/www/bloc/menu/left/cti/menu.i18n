@@ -7,11 +7,17 @@ Options générales
 ; mn_left_ctisettings-presences
 Présences
 
+; mn_left_ti_status
+Statuts
+
 ; mn_left_ctisettings-phonehints
-Statuts des terminaisons
+Terminaisons
 
 ; mn_left_ctisettings-profiles
 Profils
+
+; mn_left_ctisettings-agentstatus
+Agents
 
 ; mn_left_ctisettings-directories
 Définitions

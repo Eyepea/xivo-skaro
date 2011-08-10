@@ -19,13 +19,13 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : 'listgroup';
-$idphonehints = isset($_QR['idphonehints']) === true ? dwho_uint($_QR['idphonehints'],1) : 1;
+$idagentstatus = isset($_QR['idagentstatus']) === true ? dwho_uint($_QR['idagentstatus'],1) : 1;
 $idgroup = isset($_QR['idgroup']) === true ? dwho_uint($_QR['idgroup'],1) : 1;
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'listgroup';
-$param['idphonehints'] = $idphonehints;
+$param['idagentstatus'] = $idagentstatus;
 $param['idgroup'] = $idgroup;
 
 $info = $result = array();
@@ -36,12 +36,12 @@ $info['access_status']['slt'] = array();
 switch($act)
 {
 	case 'addgroup':
-		$app = &$ipbx->get_application('ctiphonehintsgroup');
+		$app = &$ipbx->get_application('ctiagentstatusgroup');
 
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('phonehintsgroup',$_QR) === true)
+		&& dwho_issa('agentstatusgroup',$_QR) === true)
 		{
 			if($app->set_add($_QR) === false
 			|| $app->add() === false)
@@ -52,7 +52,7 @@ switch($act)
 			else
 			{
 			    $ipbx->discuss('xivo[cticonfig,update]');
-				$_QRY->go($_TPL->url('cti/phonehints'),$param);
+				$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 			}
 		}
 
@@ -63,17 +63,17 @@ switch($act)
 		break;
 
 	case 'editgroup':
-		$app = &$ipbx->get_application('ctiphonehintsgroup');
+		$app = &$ipbx->get_application('ctiagentstatusgroup');
 
 		if(isset($_QR['idgroup']) === false
 		|| ($info = $app->get($_QR['idgroup'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+			$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('phonehintsgroup',$_QR) === true)
+		&& dwho_issa('agentstatusgroup',$_QR) === true)
 		{
 			$return = &$result;
 			if($app->set_edit($_QR) === false
@@ -85,7 +85,7 @@ switch($act)
 			else
 			{
 			    $ipbx->discuss('xivo[cticonfig,update]');
-				$_QRY->go($_TPL->url('cti/phonehints'),$param);
+				$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 			}
 		}
 
@@ -98,39 +98,40 @@ switch($act)
 	case 'deletegroup':
 		$param['page'] = $page;
 
-		$app = &$ipbx->get_application('ctiphonehintsgroup');
+		$app = &$ipbx->get_application('ctiagentstatusgroup');
 
 		if(isset($_QR['idgroup']) === false
 		|| ($info = $app->get($_QR['idgroup'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+			$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 
 		$app->delete();
 		$ipbx->discuss('xivo[cticonfig,update]');
 
-		$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 		break;
 
 	case 'add':
-		$app = &$ipbx->get_application('ctiphonehints');
+		$app = &$ipbx->get_application('ctiagentstatus');
 		$param['idgroup'] = $idgroup;
 
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('phonehints',$_QR) === true)
+		&& dwho_issa('agentstatus',$_QR) === true)
 		{
-		    $_QR['phonehints']['idgroup'] = $idgroup;
+		    $_QR['agentstatus']['idgroup'] = $idgroup;
 			if($app->set_add($_QR) === false
 			|| $app->add() === false)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
 				$error = $app->get_error();
+				dwho_var_dump($error);
 			}
 			else
 			{
 			    $ipbx->discuss('xivo[cticonfig,update]');
-				$_QRY->go($_TPL->url('cti/phonehints'),$param);
+				$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 			}
 		}
 
@@ -145,22 +146,22 @@ switch($act)
 		break;
 
 	case 'edit':
-		$app = &$ipbx->get_application('ctiphonehints');
+		$app = &$ipbx->get_application('ctiagentstatus');
 		$param['idgroup'] = $idgroup;
 
-		if(isset($_QR['idphonehints']) === false
-		|| ($info = $app->get($_QR['idphonehints'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		if(isset($_QR['idagentstatus']) === false
+		|| ($info = $app->get($_QR['idagentstatus'])) === false)
+			$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('phonehints',$_QR) === true)
+		&& dwho_issa('agentstatus',$_QR) === true)
 		{
 			$return = &$result;
 
-			$_QR['phonehints']['idgroup'] = $idgroup;
+			$_QR['agentstatus']['idgroup'] = $idgroup;
 
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)
@@ -171,13 +172,13 @@ switch($act)
 			else
 			{
 			    $ipbx->discuss('xivo[cticonfig,update]');
-				$_QRY->go($_TPL->url('cti/phonehints'),$param);
+				$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 			}
 		}
 
 		dwho::load_class('dwho_sort');
 
-		$_TPL->set_var('idphonehints',$info['phonehints']['id']);
+		$_TPL->set_var('idagentstatus',$info['agentstatus']['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('fm_save',$fm_save);
 
@@ -189,16 +190,16 @@ switch($act)
 	case 'delete':
 		$param['page'] = $page;
 
-		$app = &$ipbx->get_application('ctiphonehints');
+		$app = &$ipbx->get_application('ctiagentstatus');
 
-		if(isset($_QR['idphonehints']) === false
-		|| ($info = $app->get($_QR['idphonehints'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		if(isset($_QR['idagentstatus']) === false
+		|| ($info = $app->get($_QR['idagentstatus'])) === false)
+			$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 
 		$app->delete();
 	    $ipbx->discuss('xivo[cticonfig,update]');
 
-		$_QRY->go($_TPL->url('cti/phonehints'),$param);
+		$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 		break;
 
 	case 'list':
@@ -206,7 +207,7 @@ switch($act)
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$app = &$ipbx->get_application('ctiphonehints',null,false);
+		$app = &$ipbx->get_application('ctiagentstatus',null,false);
 
 		$order = array();
 		$order['name'] = SORT_ASC;
@@ -215,13 +216,13 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $app->get_phonehints_list($order,$limit,false,$idgroup);
+		$list = $app->get_agentstatus_list($order,$limit,false,$idgroup);
 		$total = $app->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+			$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
@@ -234,7 +235,7 @@ switch($act)
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$app = &$ipbx->get_application('ctiphonehintsgroup',null,false);
+		$app = &$ipbx->get_application('ctiagentstatusgroup',null,false);
 
 		$order = array();
 		$order['name'] = SORT_ASC;
@@ -243,13 +244,13 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $app->get_phonehintsgroup_list($order);
+		$list = $app->get_agentstatusgroup_list($order);
 		$total = $app->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
+			$_QRY->go($_TPL->url('cti/agentstatus'),$param);
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
@@ -263,9 +264,9 @@ $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/cti/menu');
 
-$menu->set_toolbar('toolbar/cti/phonehints');
+$menu->set_toolbar('toolbar/cti/agentstatus');
 
-$_TPL->set_bloc('main','/cti/phonehints/'.$act);
+$_TPL->set_bloc('main','/cti/agentstatus/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
 $_TPL->display('index');
 

@@ -1756,15 +1756,14 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		//page redirection must be sent to client BEFORE changing server ip address
 		$this->send_redirect($tpl);
 
+		$this->_commit_netiface();
+
         if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
             return(false);
 
         if($commonconf->generate(&$content,false) !== false)
         {
 	        $content = str_replace("\n", "<br/>\n", $content);
-
-	        $this->_commit_netiface();
-
 	        $content = $commonconf->apply();
 
 	        // restart provisioning service

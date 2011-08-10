@@ -29,17 +29,17 @@ $page = $url->pager($pager['pages'],
 		    $pager['page'],
 		    $pager['prev'],
 		    $pager['next'],
-		    'cti/phonehints',
+		    'cti/agentstatus',
 		    array('act' => $act));
 
 ?>
-<div id="sr-ctiphonehints" class="b-list">
+<div id="sr-ctiagentstatusgroup" class="b-list">
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-ctiphonehints-list" method="post" accept-charset="utf-8">
+<form action="#" name="fm-ctiagentstatusgroup-list" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
@@ -53,8 +53,8 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_color');?></th>
+		<th class="th-center"><?=$this->bbf('col_agentstatusgroup');?></th>
+		<th class="th-center"><?=$this->bbf('col_description');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -62,7 +62,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_phonehints');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_agentstatusgroup');?></td>
 	</tr>
 <?php
 	else:
@@ -74,42 +74,47 @@ $page = $url->pager($pager['pages'],
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
-			<?=$form->checkbox(array('name'		=> 'phonehints[]',
-						 'value'	=> $ref['ctiphonehints']['id'],
+			<?=$form->checkbox(array('name'		=> 'agentstatusgroups[]',
+						 'value'	=> $ref['ctiagentstatusgroup']['id'],
 						 'label'	=> false,
-						 'id'		=> 'it-phonehints-'.$i,
+						 'id'		=> 'it-agentstatusgroups-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left" title="<?=dwho_alttitle($ref['ctiphonehints']['name']);?>">
+		<td class="txt-left curpointer"
+		    title="<?=dwho_alttitle($ref['ctiagentstatusgroup']['name']);?>"
+		    onclick="location.href = dwho.dom.node.lastchild(this);">
 <?php
-			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');
+			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+				$url->href_html(dwho_trunc($ref['ctiagentstatusgroup']['name'],40,'...',false),
+						'cti/agentstatus',
+						array('act'	=> 'list',
+						      'idgroup'	=> $ref['ctiagentstatusgroup']['id']));
 ?>
-			<?=$ref['ctiphonehints']['name']?>
 		</td>
-		<td align="left" bgcolor="<?=$ref['ctiphonehints']['color']?>">&nbsp;</td>
+		<td align="left"><?=dwho_trunc($ref['ctiagentstatusgroup']['description'],40,'...',false)?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 						       $this->bbf('opt_modify'),
 						       'border="0"'),
-					'cti/phonehints',
-					array('act'	=> 'edit',
-					      'idphonehints'	=> $ref['ctiphonehints']['id']),
+					'cti/agentstatus',
+					array('act'	=> 'editgroup',
+					      'idgroup'	=> $ref['ctiagentstatusgroup']['id']),
 					null,
 					$this->bbf('opt_modify')),"\n";
 
-#		if($ref['ctiphonehints']['deletable'] == 1):
+		if($ref['ctiagentstatusgroup']['deletable'] == 1):
 			echo	$url->href_html($url->img_html('img/site/button/delete.gif',
 							       $this->bbf('opt_delete'),
 							       'border="0"'),
-						'cti/phonehints',
-						array('act'	=> 'delete',
-						      'idphonehints'	=> $ref['ctiphonehints']['id'],
+						'cti/agentstatus',
+						array('act'	=> 'deletegroup',
+						      'idgroup'	=> $ref['ctiagentstatusgroup']['id'],
 						      'page'	=> $pager['page']),
 						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 						$this->bbf('opt_delete'));
-#		endif;
+		endif;
 ?>
 		</td>
 	</tr>

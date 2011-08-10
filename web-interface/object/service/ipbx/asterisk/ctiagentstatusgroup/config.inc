@@ -18,12 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
+$array = array();
+$array['element'] = array();
 
-class xivo_service_asterisk_ctiphonehints_sql extends xivo_service_asterisk_abstract_sql
-{
-	var $_unique	= array('');
-}
+$array['element'] = array();
+$array['element']['default'] = '';
+
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
 
 
+$array['filter'] = array();
+$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
+#$array['filter']['description'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 ?>

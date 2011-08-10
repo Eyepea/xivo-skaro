@@ -20,9 +20,9 @@
 
 xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-class xivo_service_asterisk_ctiphonehints_sql extends xivo_service_asterisk_abstract_sql
+class xivo_service_asterisk_ctiagentstatusgroup_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_unique	= array('');
+	var $_unique	= array('name');
 }
 
 
