@@ -359,7 +359,7 @@ INSERT INTO `ha_service` VALUES ('nginx'              , 0, 'ocf', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('isc-dhcp-server'    , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('ntp'                , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('csync2'             , 0, 'ocf', NULL, NULL);
-INSERT INTO `ha_service` VALUES ('postgresql'         , 0, 'ocf', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('postgresql'         , 0, 'ocf', 30, NULL);
 INSERT INTO `ha_service` VALUES ('pf-xivo-agid'       , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('pf-xivo-confgend'   , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('pf-xivo-cti-server' , 0, 'lsb', NULL, NULL);

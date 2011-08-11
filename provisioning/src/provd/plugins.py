@@ -541,8 +541,8 @@ class FetchfwPluginHelper(object):
     def __init__(self, plugin_dir, downloaders=None, filter_builder=None):
         self._plugin_dir = plugin_dir
         self._in_install_set = set()
-        self._root_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
         self._pkg_mgr = self._new_pkg_mgr(downloaders, filter_builder)
+        self.root_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
     
     def _new_pkg_mgr(self, downloaders, filter_builder):
         # downloaders and filter_builder can be None
@@ -581,7 +581,7 @@ class FetchfwPluginHelper(object):
                                   sub_oips=[dl_oip, install_oip])
         ctrl_factory = AsyncInstallerController.new_factory(dl_oip, install_oip)
         deferred = threads.deferToThread(self._pkg_mgr.install, [pkg_id],
-                                         self._root_dir, ctrl_factory)
+                                         self.root_dir, ctrl_factory)
         self._in_install_set.add(pkg_id)
         def callback(res):
             logger.info('Plugin-package %s installed', pkg_id)
@@ -605,7 +605,7 @@ class FetchfwPluginHelper(object):
         """
         logger.info('Uninstalling plugin-package %s', pkg_id)
         ctrl_factory = UninstallerController.new_factory()
-        self._pkg_mgr.uninstall([pkg_id], self._root_dir, ctrl_factory)
+        self._pkg_mgr.uninstall([pkg_id], self.root_dir, ctrl_factory)
     
     def _new_localize_description_fun(self):
         locale, lang = get_locale_and_language()

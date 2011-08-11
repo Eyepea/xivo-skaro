@@ -419,7 +419,12 @@ class ClusterResourceManager(Tools):
         '''
         name = self.cluster_name
         result = 'order order_%s inf:' % name
-        # add cluster_addr first
+
+        # add postgresql cluster first
+        if 'postgresql' in self.services:
+            result += " ms_postgresql:promote"
+
+        # add cluster_addr second
         ip_res = self._cluster_addr()
         if ip_res > 1:
             result += " group_ip_%s:start" % name
@@ -431,6 +436,9 @@ class ClusterResourceManager(Tools):
             # services = self._services_order(self.services)
             # at the moment, it is just sorted
             for service in sorted(self.services):
+                if service == 'postgresql':
+                    continue
+
                 result += " %s:start" % service
         else:
             result +=  " group_srv_%s:start" % name
@@ -451,7 +459,7 @@ class ClusterResourceManager(Tools):
             result += " ip_%s" % name
 
         if 'postgresql' in self.services:
-           result += " ms_postgresql"
+            result += " ms_postgresql:Master"
  
         if not self.cluster_group:
             # same as _resources_order
@@ -512,7 +520,6 @@ class ClusterResourceManager(Tools):
     def _resource_master_slave(self, rsc,
                                  ms_name,
                                  notify=False,
-                                 target_role='Master',
                                  clone_max=2,
                                  clone_node_max=1,
                                  master_max=1,
@@ -520,9 +527,9 @@ class ClusterResourceManager(Tools):
         '''
         used for mysql/pgsql
         '''
-        return 'ms %s %s meta clone-max="%d" clone-node-max="%d" master-max="%d" master-node-max="%d" notify="%s" target-role="%s"' %\
+        return 'ms %s %s meta clone-max="%d" clone-node-max="%d" master-max="%d" master-node-max="%d" notify="%s"' %\
           (ms_name, rsc, clone_max, clone_node_max, master_max, master_node_max,
-           'true' if notify else 'false', target_role)
+           'true' if notify else 'false')
 
     def _cluster_addr(self, addr = None):
         '''
@@ -640,8 +647,8 @@ class ClusterResourceManager(Tools):
         rsc = 'postgresql'
         if state == 'pre':
             file_.write(self._format_string(self._resource_primitive(rsc,
-							rsc_op=['monitor interval="30s"', 'start timeout="90s"',
-								      'promote timeout="90s"', 'demote timeout="90s"', 'stop timeout="60s"'])))
+							rsc_op=['start timeout="90s"', 'promote timeout="90s"', 'demote timeout="90s"', 
+								'stop timeout="60s"'])))
             return
 
         # post state

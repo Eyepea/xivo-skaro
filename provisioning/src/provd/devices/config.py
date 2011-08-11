@@ -199,7 +199,8 @@ protocol [optional]
   - SCCP
   If the protocol is not supported by the device, an exception
   (RawConfigError) MAY be raised or the device MAY be misconfigured.
-  This parameter is mostly useful for multi-protocol device/plugin.
+  You SHOULD only specify this parameter in the case your device and its
+  associated plugin have multi-protocol support.
 
 sip_proxy_ip [mandatory if proxy_ip is not defined on a per line basis and there's at least 1 line]
   The IP address of the SIP proxy.
@@ -284,8 +285,8 @@ sip_subscribe_mwi [optional]
   notification or not.
 
 sip_lines [optional|default to empty dictionary]
-  A dictionary where keys are line number and values are dictionaries with
-  the following keys:
+  A dictionary where keys are line number (unicode string) and values are
+  dictionaries with the following keys:
   
     proxy_ip [mandatory if proxy_ip is not defined globally]
       See sip_proxy_ip.

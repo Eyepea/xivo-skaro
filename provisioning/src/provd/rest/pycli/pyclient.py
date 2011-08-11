@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -18,7 +17,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO regroup some shared/similar operations
 # TODO wrap some exceptions at client level, especially the one that are
 #      easy to process
 # XXX Configs.update and Devices.update are more of a replace operation than
@@ -292,6 +290,12 @@ class Configs(object):
         id = _get_id(id_or_config)
         self._cfg_mgr.remove(id)
     
+    def remove_all(self):
+        for config in self._cfg_mgr.find({}):
+            config_id = config[ID_KEY]
+            print 'Removing config %s' % config_id
+            self._cfg_mgr.remove(config_id)
+    
     def autocreate(self):
         return self._cfg_mgr.autocreate()
     
@@ -308,9 +312,8 @@ class Configs(object):
     def __getitem__(self, name):
         return Config(name, self._cfg_mgr)
     
-    def remove_all(self):
-        for config in self._cfg_mgr.find({}):
-            self._cfg_mgr.remove(config[ID_KEY])
+    def count(self):
+        return len(self._cfg_mgr.find(fields=[ID_KEY]))
 
 
 class Config(object):
@@ -363,8 +366,6 @@ class Config(object):
 
 
 class Devices(object):
-    # TODO add something to get the list of out of sync devices and other
-    #      functionalities for mass reappro
     def __init__(self, dev_mgr):
         self._dev_mgr = dev_mgr
 
@@ -384,6 +385,12 @@ class Devices(object):
         id = _get_id(id_or_device)
         self._dev_mgr.remove(id)
     
+    def remove_all(self):
+        for device in self._dev_mgr.find({}):
+            device_id = device[ID_KEY]
+            print 'Removing device %s' % device_id
+            self._dev_mgr.remove(device_id)
+    
     def reconfigure(self, id_or_device):
         id = _get_id(id_or_device)
         self._dev_mgr.reconfigure(id)
@@ -401,10 +408,9 @@ class Devices(object):
     
     def __getitem__(self, name):
         return Device(name, self._dev_mgr)
-
-    def remove_all(self):
-        for device in self._dev_mgr.find({}):
-            self._dev_mgr.remove(device[ID_KEY])
+    
+    def count(self):
+        return len(self._dev_mgr.find(fields=[ID_KEY]))
 
 
 class Device(object):
@@ -473,6 +479,13 @@ class Plugins(object):
         install_srv = self._pg_mgr.install_service()
         install_srv.uninstall(id)
     
+    def uninstall_all(self):
+        install_srv = self._pg_mgr.install_service()
+        pg_ids = sorted(install_srv.installed())
+        for pg_id in pg_ids:
+            print 'Uninstalling plugin %s' % pg_id
+            install_srv.uninstall(pg_id)
+    
     def update(self):
         install_srv = self._pg_mgr.install_service()
         client_oip = install_srv.update()
@@ -488,7 +501,7 @@ class Plugins(object):
                 client_oip.delete()
     
     def installed(self, search=None):
-        install_srv = self._pg_mgr.install_service() 
+        install_srv = self._pg_mgr.install_service()
         return _search_in_pkgs(install_srv.installed(), search)
     
     def installable(self, search=None):
@@ -498,6 +511,10 @@ class Plugins(object):
     def __getitem__(self, id):
         # return the plugin with id id
         return Plugin(self._pg_mgr.plugin(id))
+    
+    def count_installed(self):
+        install_srv = self._pg_mgr.install_service()
+        return len(install_srv.installed())
 
 
 class Parameters(object):
@@ -521,7 +538,7 @@ class Parameters(object):
 class Plugin(object):
     def __init__(self, client_plugin):
         self._client_plugin = client_plugin
-        
+    
     def install(self, id):
         install_srv = self._client_plugin.install_service()
         client_oip = install_srv.install(id)
@@ -529,6 +546,19 @@ class Plugin(object):
             _display_operation_in_progress(client_oip)
         finally:
             client_oip.delete()
+    
+    def install_all(self):
+        """Install all the packages available from this plugin."""
+        install_srv = self._client_plugin.install_service()
+        pkg_ids = sorted(install_srv.installable())
+        for pkg_id in pkg_ids:
+            print 'Installing package %s' % pkg_id
+            client_oip = install_srv.install(pkg_id)
+            try:
+                _display_operation_in_progress(client_oip)
+            finally:
+                client_oip.delete()
+            print
     
     def upgrade(self, id):
         install_srv = self._client_plugin.install_service()
@@ -541,6 +571,13 @@ class Plugin(object):
     def uninstall(self, id):
         install_srv = self._client_plugin.install_service()
         install_srv.uninstall(id)
+    
+    def uninstall_all(self):
+        install_srv = self._client_plugin.install_service()
+        pkg_ids = sorted(install_srv.installed())
+        for pkg_id in pkg_ids:
+            print 'Uninstalling package %s' % pkg_id
+            install_srv.uninstall(pkg_id)
     
     def update(self):
         install_srv = self._client_plugin.install_service()
@@ -557,18 +594,6 @@ class Plugin(object):
     def installable(self, search=None):
         install_srv = self._client_plugin.install_service()
         return _search_in_pkgs(install_srv.installable(), search)
-    
-    def install_all(self):
-        install_srv = self._client_plugin.install_service()
-        pkgs = install_srv.installable()
-        for pkg in pkgs:
-            print '== Installing package "%s" ==' % pkg
-            client_oip = install_srv.install(pkg)
-            try:
-                _display_operation_in_progress(client_oip)
-            finally:
-                client_oip.delete()
-            print
     
     def parameters(self):
         return Parameters(self._client_plugin.configure_service())
