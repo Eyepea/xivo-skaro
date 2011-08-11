@@ -300,3 +300,8 @@ must be <b>uname</b> value
 ; fm_help-ha_node2_name
 must be <b>uname</b> value
 
+; fm_ha_activate
+Activate HA:
+
+; fm_help_ha_virtnet
+First VIP will be used as VoIP interface

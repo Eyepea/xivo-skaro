@@ -316,4 +316,9 @@ Doit correspondre au résultat de la commande <b>uname</b>
 ; fm_help-ha_node2_name
 Doit correspondre au résultat de la commande <b>uname</b>
 
+; fm_ha_activate
+Activer la HA : 
+
+; fm_help_ha_virtnet
+La première VIP sera utilisée comme interface VoIP
 

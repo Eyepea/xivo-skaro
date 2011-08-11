@@ -33,6 +33,7 @@ $netifaces 	= $this->get_var('netifaces');
 ?>
 	<p>&nbsp;</p>
 	<?= $this->bbf("fm_ha_nodes") ?>
+  <a href="#" class="fm-help-icon" onclick="return(false);" onfocus="dwho.form.create_help_div(this,'<?=$this->bbf('fm_help_ha_virtnet');?>');" onblur="dwho.form.destroy_help_div();" onmouseover="dwho.form.create_help_div(this,'<?=$this->bbf('fm_help_ha_virtnet');?>');" onmouseout="dwho.form.destroy_help_div();">&nbsp;</a>
 
 	<div class="sb-list2">
 		<table>

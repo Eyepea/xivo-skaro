@@ -31,6 +31,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_resolvconf = false;
 	var $_provisioning = false;
 	var $_ha           = false;
+	var $_ha_vips      = false;
 
     function xivo_object_commonconf(&$xobj)
     {
@@ -41,6 +42,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
 		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
 		|| ($this->_provisioning = &$this->_xobj->get_module('provisioning')) === false
+		|| ($this->_ha_vips      = &$this->_xobj->get_module('ha_cluster_node')) === false
 		|| ($this->_ha           = &$this->_xobj->get_module('ha')) === false)
 			return(false);
 
@@ -49,21 +51,39 @@ class xivo_object_commonconf extends xivo_object_abstract
 
     function _ip2subnet($ip, $netmask)
     {
-		$dotted_ip = split('\.', $ip);
-		$dotted_nm = split('\.', $netmask);
+        $dotted_ip = split('\.', $ip);
+        $dotted_nm = split('\.', $netmask);
 
-		$subnet = sprintf("%d.%d.%d.%d",
-			(((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
-			(((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
-			(((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
-			(((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
-		);
+        $subnet = sprintf("%d.%d.%d.%d",
+            (((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
+            (((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
+            (((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
+            (((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
+        );
 
-		return($subnet);
-     }
+        return($subnet);
+		}
+
+		function _ip2bcast($ip, $netmask)
+		{
+        $dotted_ip = split('\.', $ip);
+        $dotted_nm = split('\.', $netmask);
+ 
+        /*NOTE:
+          * not bitwise operator (~) return a negative value (~255 = -256).
+          * as we want a value between 0 and 255, we add 256 and take module of the 
+					* result
+          */
+        $bcast = '';
+        foreach(range(0,3) as $i)
+            $bcast .= sprintf('%d.', ((int)$dotted_ip[$i]) | ((~ ((int)$dotted_nm[$i])+256)%256));
+        $bcast = substr($bcast, 0, -1);
+
+        return($bcast);
+    }			
 
     function generate($content, $onlystatic=true)
-    {
+		{
         $conf    = array();
 
         // dhcp
@@ -118,7 +138,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         if($this->_resolvconf == false) {
             $content = 'cannot load *resolvconf* application';
             return false;
-	}
+        }
 
         $rawdata = $this->_resolvconf->get(1);
         $ns = '';
@@ -145,9 +165,9 @@ class xivo_object_commonconf extends xivo_object_abstract
         if($this->_netiface == false) {
             $content = 'cannot load *netiface* application';
             return false;
-		}
+        }
 
-        $list = $this->_netiface->get_netifaces_list();
+				$list = $this->_netiface->get_netifaces_list();
 
         // we filter network devices list, keeping only 'voip' interfaces:
         //  1. 1st vlan
@@ -157,8 +177,12 @@ class xivo_object_commonconf extends xivo_object_abstract
         $ifaces     = "";
         $cidr_id    = -1;
 
+				$_netifaces  = array();
         for($i = 0; $i < count($list); $i++)
-        {
+				{
+						if(array_key_exists('netiface', $item))
+	            $_netifaces[$item['netiface']['ifname']] = $item;
+
             $item = &$list[$i];
             if(!$item['actionable']
             || $item['netiface']['disable']
@@ -170,7 +194,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             if($vlanid == 0 && $item['netinfo']['vlanif'])
                 $vlanid = intval($item['netiface']['vlanid']);
 
-            if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
+            if($cidr_id < 0 && (!$onlystatic || strcmp($item['netiface']['method'], 'static') == 0))
                 $cidr_id = $i;
         }
 
@@ -189,42 +213,36 @@ class xivo_object_commonconf extends xivo_object_abstract
         $subnet = $this->_ip2subnet($list[$cidr_id]['netiface']['address'], $list[$cidr_id]['netiface']['netmask']);
 
 				// HA
-        $rawdata = $this->_ha->get(1);
-        $conf = array_merge($conf, array(
-          'ha.master.ip'    => strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],
-          'ha.master.name'  => strlen($rawdata['node1_name']) == 0?null:$rawdata['node1_name'],
-          'ha.slave.ip'     => strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
-          'ha.slave.name'   => strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name']
-        ));
-        /* checking with HA configuration
-             If HA is activated, we must use HA ip address instead of server one
-        */
-        /*
-        if(($havirtnet_mod = &$this->_xobj->get_module('ha_virtnet')) === false)
-            return false;
-
-        $virtnets = $havirtnet_mod->get_all();
-        if(is_array($virtnets) && count($virtnets) > 0)
-        {
-            $hafound = false;
-
-            foreach($virtnets as $virtnet)
-            {
-                $virtsubnet = $this->_ip2subnet($virtnet['ipaddr'], $virtnet['netmask']);
-                if($virtsubnet == $subnet)
-                {
-                    $net    = $virtnet;
-                    $subnet = $virtsubnet;
-                    $hafound = true;
-                    break;
-                }
+				$rawdata = $this->_ha->get(1);
+        if($rawdata['active'] == 1) {
+            $conf = array_merge($conf, array(
+              'ha.master.ip'    => strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],
+              'ha.master.name'  => strlen($rawdata['node1_name']) == 0?null:$rawdata['node1_name'],
+              'ha.slave.ip'     => strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
+              'ha.slave.name'   => strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name']
+		    		));
+			
+            $vips = $this->_ha_vips->get_all();
+            if(count($vips) == 0) {
+                $content = 'no VIP declared in HA configuration'; return false;
             }
 
-            // no HA virtnet set for VoIP interface
-            if(!$hafound)
-                return false;
+            $ifaces = $vips[0]['device'];
+            $subnet = $this->_ip2subnet($rawdata['netaddr'], $rawdata['netmask']);
+            $net = array(
+                'ipaddr'    => $vips[0]['address'],
+                'netmask'   => $rawdata['netmask'],
+                'broadcast'	=> $this->_ip2bcast($rawdata['netaddr'], $rawdata['netmask'])
+            );
+
+						// search vlan matching HA iface
+            if(array_key_exists($ifaces, $_netifaces)) {
+                $_iface = $_netifaces[$ifaces];
+                if($_iface['netinfo']['vlanif'])
+                    $vlanid = intval($_iface['netiface']['vlanid']);
+            }
         }
-        */
+
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
             'xivo.voip.vlan.id'     => $vlanid,

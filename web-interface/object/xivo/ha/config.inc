@@ -21,6 +21,11 @@
 $array = array();
 $array['element'] = array();
 
+$array['element']['active'] = array();
+$array['element']['active']['value']   = array(0,1);
+$array['element']['active']['default'] = 0;
+$array['element']['active']['set']     = true;
+
 $array['element']['netaddr'] = array();
 $array['element']['netaddr']['default'] = '';
 
@@ -68,25 +73,7 @@ $array['element']['cluster_pingd']['default'] = '';
 $array['element']['cluster_pingd']['null'] = true;
 
 
-/*
-$array['element']['alert_emails'] = array();
-$array['element']['alert_emails']['default'] = '';
-
-$array['element']['user'] = array();
-$array['element']['user']['default'] = '';
-
-$array['element']['password'] = array();
-$array['element']['password']['default'] = '';
-
-$array['element']['dest_user'] = array();
-$array['element']['dest_user']['default'] = '';
-
-$array['element']['dest_password'] = array();
-$array['element']['dest_password']['default'] = '';
- */
-
 ### filters ###
 $array['filter'] = array();
-$array['filter']['com_mode']	        = array('chk'   => 1);
 
 ?>

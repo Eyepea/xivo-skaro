@@ -48,6 +48,9 @@ if(isset($_QR['fm_send']) === true)
 				$val['active'] = 1;
 		}
 
+		if(!isset($_QR['ha']['active']))
+			$_QR['ha']['active'] = 0;
+
 		if(!isset($_QR['ha']['cluster_group']))
 			$_QR['ha']['cluster_group'] = 0;
 

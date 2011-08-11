@@ -80,7 +80,13 @@ endif;
 
 <div id="sb-part-first" class="b-nodisplay">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_netaddr'),
+  echo $form->checkbox(array('desc'		=> $this->bbf('fm_ha_activate'),
+				      'name'		=> 'ha[active]',
+				      'labelid'		=> 'ha_active',
+				      'checked'		=> $info['ha']['active'],
+						)),
+		
+	$form->text(array('desc'	=> $this->bbf('fm_ha_netaddr'),
 				  'name'	=> 'ha[netaddr]',
 				  'labelid'	=> 'netaddr',
 				  'size'	=> 15,
