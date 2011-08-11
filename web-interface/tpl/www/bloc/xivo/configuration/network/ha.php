@@ -139,17 +139,6 @@ endif;
 
 </div>
 
-<div id="z-sb-part-first" class="b-nodisplay">
-<?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_status'),
-	              'class'   => 'readonly',
-				  'size'	=> 20,
-				  'readonly'=> true,
-			      'help'    => $this->bbf('fm_help-ha_status'),
-				  'value'	=> $this->bbf_args('ha_status', $status)));
-
-?></div>
-
 <div id="sb-part-services" class="b-nodisplay">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
@@ -160,7 +149,6 @@ endif;
 
 
 		foreach($info['service'] as $k => $svc) {
-			//var_dump($svc);
 			echo $form->checkbox(array('desc'		=> $this->bbf("fm_ha_service_$k"),
 				      'name'		=> "service[$k][active]",
 							'labelid'		=> "ha_$k",
@@ -239,88 +227,8 @@ endif;
 ?>
 </div>
 
-<div id="z-sb-part-last" class="b-nodisplay">
-<?php
-		/*
-	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_alert_emails'),
-				  'name'	=> 'alert_emails',
-				  'labelid'	=> 'alert_emails',
-				  'size'	=> 15,
-			      'help'    => $this->bbf('fm_help-ha_alert_emails'),
-				  'value'	=> $this->get_var('info', 'global', 'alert_emails'))),
-
-	$form->text(array('desc'	=> $this->bbf('fm_ha_serial'),
-				  'name'	=> 'serial',
-				  'labelid'	=> 'serial',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'global', 'serial'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_authkeys'),
-				  'name'	=> 'authkeys',
-				  'labelid'	=> 'authkeys',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'global', 'authkeys'))),
-
-    // bcast, mcast, ucast
-	$form->select(array(
-	        'desc'      => $this->bbf('fm_ha_com_mode'),
-			'name'		=> 'com_mode',
-			'id'		=> "it-pf-ha-com_mode",
-			'empty'		=> false,
-			'key'		=> false,
-			'selected'	=> $this->get_var('info', 'global', 'com_mode'),
-    		'error'    	=> $this->bbf_args	('error_pf_ha_com_mode', 
-		    $this->get_var('error', 'pf_ha_com_mode'))),
-	$commodes);
-		 */
-?>
-<br/>
-
-<fieldset id="fld-group">
-	<legend><?=$this->bbf('fm_ha_user_title');?></legend>
-<div>
-<?php
-		/*
-    echo $form->text(array('desc'	=> $this->bbf('fm_ha_user'),
-				  'name'	=> 'user',
-				  'labelid'	=> 'user',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'global', 'user'))),
-
-	$form->text(array('desc'	=> $this->bbf('fm_ha_password'),
-				  'name'	=> 'password',
-				  'labelid'	=> 'password',
-				  'size'	=> 15,
-					'value'	=> $this->get_var('info', 'global', 'password')));
-		 */
-?>
-</div>
-</fieldset>
-
-<fieldset id="fld-group">
-	<legend><?= $this->bbf('fm_ha_dest_user_title') ?></legend>
-<div>
-<?php
-		/*
-	echo $form->text(array('desc'	=> $this->bbf('fm_ha_dest_user'),
-				  'name'	=> 'dest_user',
-				  'labelid'	=> 'dest_user',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'global', 'dest_user'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_password'),
-				  'name'	=> 'dest_password',
-				  'labelid'	=> 'dest_password',
-				  'size'	=> 15,
-					'value'	=> $this->get_var('info', 'global', 'dest_password')));
-		 */
-?>
-</div>
-</fieldset>
-
 </div>
 <?php
-
 echo	$form->submit(array('name'	=> 'submit',
 			    'id'	=> 'it-submit',
 			    'value'	=> $this->bbf('fm_bt-save')));
