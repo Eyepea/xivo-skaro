@@ -1,3 +1,8 @@
+{# DNS settings #}
+{% if dns_enabled -%}
+dns1: {{ dns_ip }}
+{% endif -%}
+
 {# Syslog settings -#}
 {% if syslog_enabled -%}
 log server ip: {{ syslog_ip }}
@@ -105,3 +110,4 @@ directed call pickup prefix: {{ exten_pickup_call }}
 {{ XX_parking }}
 
 {{ XX_fkeys }}
+
