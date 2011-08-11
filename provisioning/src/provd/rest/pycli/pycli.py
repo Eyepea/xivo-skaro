@@ -4,7 +4,6 @@
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -53,11 +52,13 @@ DEFAULT_HISTFILESIZE = 500
 
 
 # parse command line arguments
-parser = optparse.OptionParser(usage='usage: %prog [options] hostname')
-parser.add_option('-u', '--user', dest='user', default=DEFAULT_USER,
+parser = optparse.OptionParser(usage='usage: %prog [options] [hostname]')
+parser.add_option('-u', '--user', default=DEFAULT_USER,
                   help='user name for server authentication')
-parser.add_option('-p', '--port', dest='port', default=DEFAULT_PORT,
+parser.add_option('-p', '--port', default=DEFAULT_PORT,
                   help='port number of the REST API')
+parser.add_option('--tests', action='store_true', default=False,
+                  help='import the tests module')
 
 opts, args = parser.parse_args()
 if not args:
@@ -380,8 +381,14 @@ def dirr(obj):
 
 
 # import and initialize the helpers module
-import helpers
+import provd.rest.pycli.helpers as helpers
 helpers._init_module(configs, devices, plugins)
+
+
+# import and initialize the tests module
+if opts.tests:
+    import provd.rest.pycli.tests as tests
+    tests._init_module(configs, devices, plugins)
 
 
 # change interpreter prompt
@@ -414,6 +421,9 @@ cli_globals = {
     'options': pyclient.OPTIONS,
     'pprint': pprint
 }
+
+if opts.tests:
+    cli_globals['tests'] = tests
 
 
 # define completer for readline auto-completion

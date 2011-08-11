@@ -315,7 +315,10 @@ class ProvisioningApplication(object):
         # synchronization is completed.
         plugin, raw_config = yield self._dev_get_plugin_and_raw_config(device)
         if plugin is None:
-            raise Exception('Missing information to synchronize device %s' % device[ID_KEY])
+            # somewhat rare case were the device is marked as configured but
+            # the plugin used by the device is not installed/loaded. This
+            # is often caused by a manual plugin uninstallation
+            raise Exception('Plugin %s is not installed/loaded' % device.get(u'plugin'))
         else:
             yield self._dev_synchronize(device, plugin, raw_config)
     
