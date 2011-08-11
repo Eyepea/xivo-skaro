@@ -48,8 +48,11 @@ if __name__ == '__main__':
             return False
         return True
 
-    def _get_extra_services():
-        for l in open(extra):
+    def _get_extra_services(_file):
+        if not os.path.exists(_file):
+            return
+
+        for l in open(_file):
             data = l.replace(' ', '').strip()
             data = data.split("=")
             if data[0] == 'services' and data[1] is not '':
@@ -90,8 +93,11 @@ if __name__ == '__main__':
                 raise OSError("interface %s is not configured" % itf)
             
 
-    def _get_extra_csync_data():
-        for l in open(extra):
+    def _get_extra_csync_data(_file):
+        if not os.path.exists(_file):
+            return
+
+        for l in open(_file):
             data = l.replace(' ', '').strip()
             data = data.split("=")
             if data[0] == 'extra_include' and data[1] is not '':
@@ -134,7 +140,7 @@ if __name__ == '__main__':
         if options.master is None and options.slave is None:
             parser.error('you have to specify role for this node (--master or --slave)')
 
-    extra = "/etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf"
+    extra_file = "/etc/pf-xivo/xivo_ha/pf-xivo-ha-extra.conf"
 
     role = 'master' if options.master else 'slave'
 
@@ -154,7 +160,7 @@ if __name__ == '__main__':
     cluster_config = config['cluster']
     cluster_config['cluster_nodes'] = nodes 
 
-    extra_services = _get_extra_services() 
+    extra_services = _get_extra_services(extra_file) 
     #extra_scripts  = _get_extra_scripts()
 
     if extra_services is not None:
@@ -185,7 +191,7 @@ if __name__ == '__main__':
     csync_data['hosts']    = nodes
     csync_data['data_itf'] = cluster_config['cluster_itf_data']
     csync_data['role']     = role
-    _get_extra_csync_data()
+    _get_extra_csync_data(extra_file)
     csync2 = FilesReplicationManagement(csync_data)
 
     if cluster_config.has_key('cluster_addr'):
