@@ -187,14 +187,15 @@ class BaseAastraPlugin(StandardPlugin):
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        # adjust tftpboot directory since some Aastra firmware doesn't handle
-        # well configuration file at the root directory
+        # update to use the non-standard tftpboot directory
         self._tftpboot_dir = os.path.join(self._tftpboot_dir, 'Aastra')
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         
         downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
+        # update to use the non-standard tftpboot directory
+        fetchfw_helper.root_dir = self._tftpboot_dir
         
         self.services = fetchfw_helper.services()
         self.http_service = HTTPNoListingFileService(self._tftpboot_dir)
@@ -290,7 +291,7 @@ class BaseAastraPlugin(StandardPlugin):
     
     def _add_fkeys(self, raw_config, model):
         if model not in self._KEYTYPE:
-            logger.info(u'Unknown model or model with no funckeys: %s', model)
+            logger.warning(u'Unknown model or model with no funckeys: %s', model)
             return
         lines = []
         for funckey_no, funckey_dict in sorted(raw_config[u'funckeys'].iteritems(),
