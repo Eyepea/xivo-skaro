@@ -22,6 +22,9 @@ Adresse IP:
 ; fm_cti_ami_port
 Port:
 
+; fm_cti_list_commented
+Activé
+
 ; fm_cti_list_ip
 Adresses IP
 
@@ -100,11 +103,8 @@ aide adresse annonce
 ; hlp_fm_cti_announce_port
 aide port annonce
 
-; fm_cti_asterisklist
-Choix du serveur Asterisk:
-
-; hlp_fm_cti_asterisklist
-aide choix serveur asterisk
+; fm_tlscertfile
+Certificat:
 
 ; cti-intervals
 Echéances

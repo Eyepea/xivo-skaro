@@ -28,6 +28,9 @@ IP Address:
 ; fm_cti_ami_port
 Port:
 
+; fm_cti_list_commented
+Activated
+
 ; cti-servers
 Listening ports
 
@@ -100,11 +103,8 @@ Announce server help
 ; hlp_fm_cti_announce_port
 Announce server help
 
-; fm_cti_asterisklist
-Choix du serveur Asterisk:
-
-; hlp_fm_cti_asterisklist
-aide choix serveur asterisk
+; fm_tlscertfile
+Certificate:
 
 ; cti-intervals
 Timeouts

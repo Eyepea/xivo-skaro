@@ -38,7 +38,12 @@ $array['element']['maxgui']['default'] = -1;
 $array['element']['maxgui']['null'] = true;
 
 $array['element']['presence'] = array();
-$array['element']['presence']['default'] = '';
+$array['element']['presence']['default'] = 'xivo';
+$array['element']['agents'] = array();
+$array['element']['agents']['default'] = 'xivo';
+$array['element']['phonehints'] = array();
+$array['element']['phonehints']['default'] = 'xivo';
+
 $array['element']['services'] = array();
 $array['element']['services']['default'] = '';
 $array['element']['preferences'] = array();
@@ -54,6 +59,8 @@ $array['filter']['appliname'] 	= array('set' => false, 'chk' => 2, 'regexp' => '
 $array['filter']['xlets'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['maxgui'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
 $array['filter']['presence'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
+$array['filter']['agents'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
+$array['filter']['phonehints'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
 $array['filter']['services'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['funcs'] 		= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['preferences'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');

@@ -42,13 +42,6 @@ endif;
 				  'default'	=> $element['phonehints']['name']['default'],
 				  'value'	=> $info['phonehints']['name']));
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_phonehints_number'),
-				  'name'	=> 'phonehints[number]',
-				  'labelid'	=> 'phonehints-number',
-				  'size'	=> 5,
-				  'default'	=> $element['phonehints']['number']['default'],
-				  'value'	=> $info['phonehints']['number']));
-
 	echo	$form->text(array('desc'	=> $this->bbf('fm_phonehints_color'),
 				  'name'	=> 'phonehints[color]',
 				  'labelid'	=> 'phonehints-color',

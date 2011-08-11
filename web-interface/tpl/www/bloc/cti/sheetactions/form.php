@@ -181,6 +181,12 @@ endif;
 </div>
 <div id="sb-part-screens" class="b-nodisplay">
 <!-- ///////////////////////////////// SCREENS ///////////////////////////// -->
+
+<?=$form->checkbox(array('desc'	=> $this->bbf('fm_sheetactions_disable'),
+	'name'		=> 'sheetactions[disable]',
+	'value'		=> $info['sheetactions']['disable'],
+	'id'		=> 'it-sheetactions-disable',
+	'default'	=> !$element['sheetactions']['disable']['default']));?>
 <?php
 	$type = 'screens';
 	$count = count($screens);
@@ -198,8 +204,8 @@ endif;
 		<table>
 			<thead>
 			<tr class="sb-top">
-
-				<th class="th-left"><?=$this->bbf('col_1');?></th>
+				<th class="th-left">&nbsp;</th>
+				<th class="th-center"><?=$this->bbf('col_1');?></th>
 				<th class="th-center"><?=$this->bbf('col_2');?></th>
 				<th class="th-center"><?=$this->bbf('col_3');?></th>
 				<th class="th-center"><?=$this->bbf('col_4');?></th>
@@ -217,16 +223,25 @@ endif;
 			<tbody id="<?=$type?>">
 		<?php
 		if($count > 0):
+			$i=0;
 			foreach($screens as $v)
 			{
 
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left txt-center">
+				<?=$form->checkbox(array('name'	=> 'screencol5['.$i.']',
+					'checked'	=> !$v[4],
+					'label'		=> false,
+					'id'		=> false,
+					'default'	=> 1,
+					'paragraph'	=> false));?>
+				</td>
+				<td class="txt-center">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'screencol1[]',
-								   'id'		=> false,
+								   'name'		=> 'screencol1['.$i.']',
+								   'id'			=> false,
 								   'label'		=> false,
 								   'size'		=> 15,
 								   'key'		=> false,
@@ -237,8 +252,8 @@ endif;
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'screencol2[]',
-								   'id'		=> false,
+								   'name'		=> 'screencol2['.$i.']',
+								   'id'			=> false,
 								   'label'		=> false,
 								   'size'		=> 15,
 								   'key'		=> false,
@@ -249,8 +264,8 @@ endif;
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'screencol3[]',
-								   'id'		=> false,
+								   'name'		=> 'screencol3['.$i.']',
+								   'id'			=> false,
 								   'label'		=> false,
 								   'size'		=> 15,
 								   'key'		=> false,
@@ -261,8 +276,8 @@ endif;
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'screencol4[]',
-								   'id'		=> false,
+								   'name'		=> 'screencol4['.$i.']',
+								   'id'			=> false,
 								   'label'		=> false,
 								   'size'		=> 15,
 								   'key'		=> false,
@@ -282,13 +297,14 @@ endif;
 			</tr>
 
 		<?php
+			$i++;
 			}
 		endif;
 		?>
 			</tbody>
 			<tfoot>
 			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
-				<td colspan="7" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+				<td colspan="8" class="td-single"><?=$this->bbf('no_'.$type);?></td>
 			</tr>
 			</tfoot>
 		</table>
@@ -296,10 +312,17 @@ endif;
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
 				<td class="td-left txt-center">
+				<?=$form->checkbox(array('name'	=> 'screencol5[]',
+					'label'		=> false,
+					'id'		=> false,
+					'checked'	=> 1,
+					'default'	=> 1));?>
+				</td>
+				<td class="txt-center">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
 								   'name'		=> 'screencol1[]',
-								   'id'		=> false,
+								   'id'			=> false,
 								   'label'		=> false,
 								   'size'		=> 15,
 								   'key'		=> false,

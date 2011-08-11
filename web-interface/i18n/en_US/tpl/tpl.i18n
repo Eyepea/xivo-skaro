@@ -37,6 +37,9 @@ Add
 ; toolbar_opt_delete
 Delete
 
+; no_row
+No row
+
 ; toolbar_opt_advanced
 Advanced mode
 

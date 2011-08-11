@@ -47,6 +47,30 @@ function dwho_logw($str,$login,$act)
         die('ERR: can\'t create or write '.XIVO_LOG_FILE);
 }
 
+function dwho_generate_code($length=8)
+{
+	$password = "";
+	$possible = "2346789bcdfghjkmnpqrtvwxyzBCDFGHJKLMNPQRTVWXYZ";
+	$maxlength = strlen($possible);
+
+	if ($length > $maxlength)
+		$length = $maxlength;
+
+	$i = 0;
+	while ($i < $length)
+	{
+		$char = substr($possible, mt_rand(0, $maxlength-1), 1);
+		if (!strstr($password, $char))
+		{
+			$password .= $char;
+			$i++;
+		}
+	}
+
+	return($password);
+}
+
+
 function dwho_constant($name,$default=null)
 {
     if(defined($name) === true)

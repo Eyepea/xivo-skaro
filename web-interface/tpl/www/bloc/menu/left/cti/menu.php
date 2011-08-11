@@ -46,6 +46,8 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		echo	'<dt>',$this->bbf('mn_left_ti_status'),'</dt>';
+
 		if(xivo_user::chk_acl('cti', 'general_settings/presences', 'service') === true):
 			echo	'<dd id="mn-presences">',
 				$url->href_html($this->bbf('mn_left_ctisettings-presences'),
@@ -131,7 +133,7 @@ $dhtml = &$this->get_module('dhtml');
 					'\'));"'),
 				'</dd>';
 		endif;
-		
+
 		echo	'</dl>';
 	endif;
 

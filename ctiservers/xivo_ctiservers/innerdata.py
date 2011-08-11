@@ -183,7 +183,9 @@ class Safe:
         self.fagichannels = {}
 
         self.extenfeatures = {}
-        self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
+
+        if cnf:
+            self.set_extenfeatures(cnf.get('urllist_extenfeatures'))
 
         for listname, urllistkey in self.urlvars.iteritems():
             try:
@@ -199,7 +201,9 @@ class Safe:
                 self.xod_status[listname] = {}
             except Exception:
                 self.log.exception(listname)
-        self.add_default_parking()
+
+        if cnf:
+            self.add_default_parking()
         return
 
     def set_extenfeatures(self, urls):
@@ -570,7 +574,7 @@ class Safe:
             if 'displayname' in opts and not chan_props.get('thisdisplay'):
                 chan_props['thisdisplay'] = opts['displayname']
             if 'muted' in opts:
-                chan_props['muted'] = opts['muted']
+                chan_props['meetme_ismuted'] = opts['muted']
             if 'authed' in opts:
                 chan_props['meetme_isauthed'] = opts['authed']
             if 'leave' in opts:
@@ -1548,7 +1552,7 @@ class Channel:
             'holded' : False,
             'parked' : False,
             # meetme statuses
-            'muted' : False,
+            'meetme_ismuted' : False,
             'meetme_isauthed' : False,
             'meetme_isadmin' : False,
             'meetme_usernum' : 0,

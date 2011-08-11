@@ -45,3 +45,6 @@ Add »
 
 ; bt_outaccess_sheetactions
 « Remove
+
+; fm_sheetactions_disable
+Activated: 

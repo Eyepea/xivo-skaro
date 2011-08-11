@@ -22,8 +22,17 @@ Display name:
 ; fm_profiles_maxgui
 Max. GUI:
 
+; cti-profiles-status
+Status
+
 ; fm_profiles_presence
 Presence:
+
+; fm_profiles_phonehints
+Phonehints:
+
+; fm_profiles_agents 
+Agent: 
 
 ; cti-profiles-services
 Services

@@ -106,6 +106,9 @@ class BaseAastraPgAssociator(BasePgAssociator):
             if model in self._models:
                 if version == self._version:
                     return FULL_SUPPORT
+                if version and version[0] != self._version[0]:
+                    # not sharing the same major version
+                    return COMPLETE_SUPPORT - 1
                 return COMPLETE_SUPPORT
             if model in self._compat_models:
                 return INCOMPLETE_SUPPORT
@@ -184,6 +187,9 @@ class BaseAastraPlugin(StandardPlugin):
     
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
+        # adjust tftpboot directory since some Aastra firmware doesn't handle
+        # well configuration file at the root directory
+        self._tftpboot_dir = os.path.join(self._tftpboot_dir, 'Aastra')
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         

@@ -23,12 +23,14 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_application_asterisk_abstract
 {
 	var $_ctiphonehintsgroup = false;
+	var $_ctiphonehints = false;
 	var $_ctistatus = false;
 
 	function xivo_application_service_asterisk_ctiphonehintsgroup(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
-		if(($this->_ctiphonehintsgroup = &$this->_service->get_module('ctiphonehintsgroup')) === false)
+		if(($this->_ctiphonehintsgroup = &$this->_service->get_module('ctiphonehintsgroup')) === false
+		|| ($this->_ctiphonehints = &$this->_service->get_module('ctiphonehints')) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
@@ -90,20 +92,20 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 		return($r);
 	}
 
-	function set_add($arr)
+	function set_add($arr,$create_phonehints_tpl=true)
 	{
-		return($this->_set('add',$arr));
+	return($this->_set('add',$arr,$create_phonehints_tpl));
 	}
 
-	function set_edit($arr)
+	function set_edit($arr,$create_phonehints_tpl=true)
 	{
-		if(empty($this->_info) === true)
-			return(false);
+	if(empty($this->_info) === true)
+	return(false);
 
-		return($this->_set('edit',$arr));
+	return($this->_set('edit',$arr,$create_phonehints_tpl));
 	}
 
-	function _set($action,$arr)
+	function _set($action,$arr,$create_phonehints_tpl)
 	{
 		$this->_reset();
 
@@ -112,6 +114,42 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 			return(false);
 
 		$this->set_phonehintsgroup($arr['phonehintsgroup']);
+
+		if ($create_phonehints_tpl)
+		{
+			$list = array();
+			$list[] = array(0,'-2','Inexistant','#030303');
+			$list[] = array(0,'-1','Désactivé','#000000');
+			$list[] = array(0,'0','Disponible','#0DFF25');
+			$list[] = array(0,'1','En ligne OU appelle','#FF032D');
+			$list[] = array(0,'2','Occupé','#FF0008');
+			$list[] = array(0,'4','Indisponible','#FFFFFF');
+			$list[] = array(0,'8','Sonne','#1B0AFF');
+			$list[] = array(0,'9','(En Ligne OU Appelle) ET Sonne','#FF0526');
+			$list[] = array(0,'16','En Attente','#F7FF05');
+
+			$error = array();
+			$res = array();
+			$data = array();
+			for($i=0;$i<count($list);$i++)
+			{
+				$line = &$list[$i];
+				$data['idgroup'] = $line[0];
+				$data['number'] = $line[1];
+				$data['name'] = $line[2];
+				$data['color'] = $line[3];
+
+				if(($rs = $this->_ctiphonehints->chk_values($data)) === false)
+				{
+					$this->_set_error('phonehints',$this->_ctiphonehints->get_filter_error());
+					continue;
+				}
+
+				array_push($res,$rs);
+			}
+
+			$this->_set_result('phonehints',$res);
+		}
 
 		return(($this->get_errnb() < 1));
 	}
@@ -144,11 +182,12 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| ($phonehintsgroupid = $this->add_phonehintsgroup()) === false)
+		|| ($phonehintsgroupid = $this->add_phonehintsgroup()) === false
+		|| $this->add_phonehints($phonehintsgroupid) === false)
 		{
 			$r = false;
 			if($phonehintsgroupid !== null)
-				$this->_reverse_add();
+				$this->_reverse_add($phonehintsgroupid);
 		}
 
 		$this->_status = '';
@@ -167,7 +206,24 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 		return($this->_return['phonehintsgroup']);
 	}
 
-	function _reverse_add()
+	function add_phonehints($phonehintsgroupid)
+	{
+		if(($rs = $this->get_result('phonehints')) === null
+		|| $rs === false)
+			return(false);
+
+		for($i=0;$i<count($rs);$i++)
+		{
+			$line = &$rs[$i];
+			$line['idgroup'] = (int) $phonehintsgroupid;
+			if(($this->_return['phonehints'][] = $this->_ctiphonehints->add($line)) === false)
+				return(false);
+		}
+
+		return($this->_return['phonehints']);
+	}
+
+	function _reverse_add($phonehintsgroupid)
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
@@ -184,6 +240,10 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 			{
 				case 'phonehintsgroup':
 					$this->_ctiphonehintsgroup->delete($val);
+					break;
+				case 'phonehints':
+					$w = array('idgroup' => $phonehintsgroupid);
+					$this->_ctiphonehints->delete_where($w);
 					break;
 			}
 		}

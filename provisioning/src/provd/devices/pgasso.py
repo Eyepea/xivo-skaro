@@ -32,24 +32,25 @@ logger = logging.getLogger(__name__)
 
 NO_SUPPORT = 0
 # Used when the device is known to not be supported
-IMPROBABLE_SUPPORT = 10
+IMPROBABLE_SUPPORT = 100
 # Used when it is expected the device won't be supported
-UNKNOWN_SUPPORT = 20
-# Used when not enough information is available to take a decision
-PROBABLE_SUPPORT = 30
+UNKNOWN_SUPPORT = 200
+# Used when not enough information is available to take a decision or when
+# the plugin is not interested in supporting the device.
+PROBABLE_SUPPORT = 300
 # Used when it is expected the device will be supported, but we are either
 # missing some information, either we don't know for real if this device is
 # supported, i.e. no test have been done
-INCOMPLETE_SUPPORT = 40
+INCOMPLETE_SUPPORT = 400
 # The device is supported, but in an incomplete way. This might be because
 # it's a kind of device that share some similarities but also have some
 # difference, or because this would be a completely supported device but we
 # did not add explicit support for it
-COMPLETE_SUPPORT = 50
+COMPLETE_SUPPORT = 500
 # The device is completely supported, i.e. we know it works well, but the
 # device might not be in the version we are targeting, but in a version that
 # is so closely similar that it makes no difference
-FULL_SUPPORT = 60
+FULL_SUPPORT = 600
 # The device is exactly what the plugin is targeting.
 
 

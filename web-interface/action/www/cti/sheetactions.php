@@ -64,7 +64,8 @@ switch($act)
 					$str .= '[ "'.trim($v).'",';
 					$str .= '"'.trim($_QR['screencol2'][$k]).'",';
 					$str .= '"'.trim($_QR['screencol3'][$k]).'",';
-					$str .= '"'.trim($_QR['screencol4'][$k]).'" ]';
+					$str .= '"'.trim($_QR['screencol4'][$k]).'",';
+					$str .= (isset($_QR['screencol5'][$k]) ? 0 : 1).' ]';
 					$cpt += 10;
 				}
 				$str .= ',';
@@ -198,7 +199,8 @@ switch($act)
 					$str .= '[ "'.trim($v).'",';
 					$str .= '"'.trim($_QR['screencol2'][$k]).'",';
 					$str .= '"'.trim($_QR['screencol3'][$k]).'",';
-					$str .= '"'.trim($_QR['screencol4'][$k]).'" ]';
+					$str .= '"'.trim($_QR['screencol4'][$k]).'",';
+					$str .= (isset($_QR['screencol5'][$k]) ? 0 : 1).' ]';
 					$cpt += 10;
 				}
 				$str .= ',';

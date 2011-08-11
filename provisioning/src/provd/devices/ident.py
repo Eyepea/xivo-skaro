@@ -590,7 +590,7 @@ class StaticDeviceUpdater(object):
 
 
 class DynamicDeviceUpdater(object):
-    """Device updater that updates zero or moes of the device key with the
+    """Device updater that updates zero or more of the device key with the
     value of the device info key.
     
     If the key is already present in the device, then the device will be

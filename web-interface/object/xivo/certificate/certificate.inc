@@ -39,7 +39,8 @@ class xivo_object_certificate extends xivo_object_abstract
 		return $this->_sysconfd !== false;
 	}
 
-	function get_all($none, $order, $limit, &$total)
+	#function get_all($none, $order, $limit, &$total)
+	function get_all()
 	{
 		function certs_sort($a, $b)
 		{
@@ -67,7 +68,7 @@ class xivo_object_certificate extends xivo_object_abstract
 
 			return $bweight - $aweight;
 		}
-		
+
 		$certs = $this->get_certs();
 		if($certs === false)
 			return false;
@@ -75,7 +76,8 @@ class xivo_object_certificate extends xivo_object_abstract
 		usort($certs, "certs_sort");
 
 		$total = count($certs);
-		return array_slice($certs, $limit[0], $limit[1]);
+		return $certs;
+		#return array_slice($certs, $limit[0], $limit[1]);
 	}
 
 	function get($id)
@@ -109,7 +111,7 @@ class xivo_object_certificate extends xivo_object_abstract
 
 		if($this->_sysconfd->_status_code != 200)
 			dwho_report::push('error', 'Cannot create certificate: '.$ret['message'].' (errno='.$ret['code'].')');
-	
+
 		return $ret;
 	}
 
@@ -126,7 +128,7 @@ class xivo_object_certificate extends xivo_object_abstract
 
 	function export($name)
 	{
-		$ret = $this->_sysconfd->request_get('/openssl_export', 
+		$ret = $this->_sysconfd->request_get('/openssl_export',
 			array(array('name',$name)));
 
 		if($this->_sysconfd->_status_code != 200) {

@@ -97,6 +97,15 @@ $_TPL->set_var('element',$element);
 $_TPL->set_var('info', $info);
 $_TPL->set_var('listaccount', $ctiaccounts->get_all());
 
+function certfilter($cert)
+{
+	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && in_array('CA', $cert);
+}
+
+$modcert = &$_XOBJ->get_module('certificate');
+$allcerts = $modcert->get_all();
+$_TPL->set_var('tlscertfiles', array_filter($allcerts, "certfilter"));
+
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
 $dhtml->load_js_multiselect_files();

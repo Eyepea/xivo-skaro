@@ -7,11 +7,17 @@ General
 ; mn_left_ctisettings-presences
 Presences
 
+; mn_left_ti_status
+Status
+
 ; mn_left_ctisettings-phonehints
 Phone Hints
 
 ; mn_left_ctisettings-profiles
 Profiles
+
+; mn_left_ctisettings-agentstatus
+Agents
 
 ; mn_left_ctisettings-directories
 Definitions

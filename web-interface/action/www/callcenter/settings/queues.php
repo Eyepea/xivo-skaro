@@ -135,7 +135,7 @@ switch($act)
 			else
 			{
 				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload'));
+				$ipbx->discuss(array('xivo[queuelist,update]', 'queue reload all'));
 				$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 			}
 		}
@@ -344,7 +344,7 @@ switch($act)
 			else
 			{
 				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload'));
+				$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload', 'queue reload all'));
 				$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 			}
 		}
@@ -461,7 +461,7 @@ switch($act)
 		$appqueue->delete();
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload'));
+		$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload', 'queue reload all'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
@@ -507,7 +507,7 @@ switch($act)
 		}
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload'));
+		$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload', 'queue reload all'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
