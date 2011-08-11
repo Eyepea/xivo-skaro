@@ -105,7 +105,7 @@ Monitoring des connexions réseau :
 Adresses IP à monitorer
 
 ; fm_ha_virtual_network
-Réseaux virtuels : 
+Interfaces virtuelles : 
 
 ; fm_ha_virtnet_col_ipaddr
 Adresse IP
@@ -123,7 +123,7 @@ Members du cluster :
 Interface réseau
 
 ; fm_ha_virtnet_col_peer
-Adresse IP du pair
+Adresse IP virtuelle
 
 ; fm_ha_virtnet_col_xfer
 Transfert activé via ce lien
