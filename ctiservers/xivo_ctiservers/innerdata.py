@@ -556,7 +556,7 @@ class Safe:
         self.handle_cti_stack('empty_stack')
         return
 
-    def meetmeupdate(self, confno, channel = None, opts = {}):
+    def meetmeupdate(self, confno, channel=None, opts={}):
         mid = self.xod_config['meetmes'].idbyroomnumber(confno)
         status = self.xod_status['meetmes'][mid]
         self.handle_cti_stack('set', ('meetmes', 'updatestatus', mid))
@@ -564,12 +564,16 @@ class Safe:
             if channel not in status['channels']:
                 keys = ('isadmin', 'usernum', 'ismuted', 'isauthed')
                 status['channels'][channel] = dict.fromkeys(keys)
-            status['pseudochan'] = opts.get('pseudochan') or status['pseudochan']
+            status['pseudochan'] = (opts.get('pseudochan')
+                                    or status['pseudochan'])
             chan = status['channels'][channel]
-            chan['isadmin'] = opts.get('admin') or chan['isadmin']
-            chan['ismuted'] = opts.get('muted') or chan['ismuted']
+            if 'admin' in opts:
+                chan['isadmin'] = opts['admin']
+            if 'muted' in opts:
+                chan['ismuted'] = opts['muted']
             chan['usernum'] = opts.get('usernum') or chan['usernum']
-            chan['isauthed'] = opts.get('authed') or chan['isauthed']
+            if 'authed' in opts:
+                chan['isauthed'] = opts['authed']
             if 'leave' in opts:
                 status['channels'].pop(channel)
         elif opts and 'paused' in opts:

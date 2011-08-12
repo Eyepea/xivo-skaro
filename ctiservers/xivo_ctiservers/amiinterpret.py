@@ -381,8 +381,8 @@ class AMI_1_8:
         return self.innerdata.meetmeupdate(event['Meetme'])
 
     def ami_meetmemute(self, event):
-        opts = { 'muted' : 'on' in event['Status'],
-                 'usernum' : event['Usernum'], }
+        opts = {'muted': 'on' in event['Status'],
+                 'usernum': event['Usernum'], }
         return self.innerdata.meetmeupdate(event['Meetme'],
                                            event['Channel'],
                                            opts)
