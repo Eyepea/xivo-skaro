@@ -1,0 +1,142 @@
+
+Le symbole '->' implique une commande dans provd_pycli
+Le symbole '-$' implique une commande dans un shell, i.e. bash
+
+
+== Preparation ==
+
+* builder le plugin, si applicable, et vérifier que le build fonctionne bien
+
+
+* rendre le plugin accessible pour installation sur le provd de test
+
+
+* admettons que notre plugin se nomme '<plugin id>'
+
+  -> X = '<plugin id>'
+  -$ X=<plugin_id>
+
+
+* partir provd_pycli avec l'option --tests, puis cleaner les configs et devices
+  de tests
+
+  -> tests.remove_test_objects()
+
+
+== Tests sans device ==
+
+* vérifier que le plugin s'installe et se charge correctement, et que la
+  structure du répertoire semble bonne
+  
+  -> plugins.update()
+  -> plugins.install(X)
+  -$ tree /var/tmp/pf-xivo/provd/plugins/$X
+
+
+* vérifier la liste des 'plugin package' installables que le plugin offre
+
+  -> plugins[X].installable()
+
+
+* installer tous les 'plugin packages', en vérifiant que ca s'installe
+  correctement et que les fichiers installés se trouvent au bon endroit
+  
+  -> plugins[X].install_all()
+  -$ tree /var/tmp/pf-xivo/provd/plugins/$X
+
+
+* vérifier la syntaxe/sémantique des fichiers globaux statiques, si applicable
+
+  -$ cd /var/tmp/pf-xivo/provd/plugins/$X/var/tftpboot
+  -$ ...
+
+
+* vérifier la syntaxe/sémantique des fichiers globaux dynamiques au load time,
+  si applicable
+  * vérifier entre autre que les substitutions se sont bien faites, si applicable
+  
+  -$ cd /var/tmp/pf-xivo/provd/plugins/$X/var/tftpboot
+  -$ ...
+
+
+* créer les devices de tests
+
+  -> tests.add_test_devices(X)
+
+
+* executer quelques tests sur le device empty, pour voir si on le handle ou non
+  (la plupart ne devrait pas comme pas de mac addresse est fourni)
+  
+  -> tests.exec_config_tests('empty')
+
+
+* executer les tests sur le device min
+
+  -> tests.exec_config_tests('min')
+
+
+* modifier le device min pour y inclure d'autres informations (vendor, model,
+  version, etc) et executer les tests, si applicable
+
+  -> devices['min'].set({...})
+  -> tests.exec_config_tests('min')
+
+
+== Tests avec device ==
+
+Tests à faire sur un xivo 1.2...
+
+* installer le plugin et les plugins package necessaires pour le device (et
+  désinstaller les plugins qui visent le meme devices)
+
+
+* dans certains cas (plugins alcatel par exemple), des dependances
+  supplémentaires sont nécessaire (7zr, telnet, ssh, pexpect). Les installer
+  au besoin)
+
+
+* brancher le téléphone dans un broadcast domain ou seulement le serveur DHCP
+  du XiVO se trouve
+
+
+* vérifier que le device a bien réussi a avoir une adresse IP
+
+
+* vérifier que le device a bien faite une requete sur provd (si applicable,
+  par exemple non applicable pour les gigaset). Dans certains cas, un factory
+  reset est necessaire car les devices sont commes ca (Snom).
+
+
+* vérifier que le device a été identifier correctement et avec toutes les
+  informations possibles applicable
+
+
+* vérifier que le device s'est fait associé le plugin de facon automatique
+
+
+* vérifier que le device est bien passé en autoprov et qu'il s'est bien
+  enregistré sur l'asterisk
+
+
+* entrer le code d'approvisionnement sur le device et regarder que le device
+  se synchronise correctement (si applicable)
+
+
+* vérifier que c'est possible de passer un appel avec le device, ou qqch
+  dans ce genre
+
+
+* tester le code pour revenir en autoprov, vérifier que ca se fait correctement
+
+
+* vérifier si le changement de VLAN s'opere correctement (optionnel, surtout
+  si on ne l'a jamais fait)
+
+
+* si applicable, tester integration dhcp/provd
+
+
+== Autre tests  ==
+
+* regarder pour le support des devices plus anciens (optionel)
+
