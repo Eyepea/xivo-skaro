@@ -822,64 +822,57 @@ class Command:
             # {'XIVO_USERID' : userinfo.get('xivo_userid')})
         return [rep]
 
-
     def ipbxcommand_meetme(self):
+        self.log.info('ipbxcommand_meetme %s' % self.commanddict)
         function = self.commanddict['function']
-        argums = self.commanddict['functionargs']
-        if function == 'record' and len(argums) == 3 and argums[2] in ['start' , 'stop']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                # command = argums[2]
-                                chan = ''
-                                validuid = ''
-                                for uid, info in self.xod_config['meetme'][astid]. \
-                                                 keeplist[confno]['uniqueids'].iteritems():
-                                    if info['usernum'] == castid:
-                                        chan = info['channel']
-                                        validuid = uid
-                                        break
+        args = self.commanddict['functionargs']
 
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-                                if argums[1] == "start":
-                                    self.__ami_execute__(astid, "monitor", chan,
-                                                         'cti-meetme-%s-%s' % (roomname, datestring))
-                                else:
-                                    self.__ami_execute__(astid, "stopmonitor", chan)
+        if function in ('record', ) and len(args) >= 4:
+            mxid, usernum, adminnum, status = args[:4]
+        elif (function in ('MeetmeMute', 'MeetmeUnmute')
+              and len(args) >= 2):
+            mxid, usernum = args[:2]
+        elif (len(args) >= 3 and function in
+              ('MeetmeAccept', 'MeetmeKick', 'MeetmeTalk')):
+            mxid, usernum, adminnum = args[:3]
+        mid = mxid.split("/", 1)[1]
 
-        elif function in ['MeetmePause']:
-                                confno = argums[0]
-                                status = argums[1]
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
-                                                                ('status', '%s' % (status))])
+        meetme_conf = self.innerdata.xod_config['meetmes'].keeplist[mid]
+        meetme_status = self.innerdata.xod_status['meetmes'][mid]
 
-        elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                adminnum = self.xod_config['meetme'][astid].keeplist[confno]['adminnum']
-                                roomname = self.xod_config['meetme'][astid].keeplist[confno]['roomname']
-                                self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
-                                                                ('Usernum', '%s' % (castid)),
-                                                                ('Adminnum', '%s' % (adminnum[0]))])
-
-        elif function in ['MeetmeMute', 'MeetmeUnmute']:
-            usernum, meetmeid = argums[:2]
-            confno = self.innerdata.xod_config['meetmes'].keeplist[meetmeid]['confno']
+        if 'record' in function and status in ('start', 'stop'):
+            chan = ''
+            for key, value in meetme_status.iteritems():
+                if value['usernum'] == usernum:
+                    chan = key
+            if status == 'start' and chan:
+                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
+                filename = ('cti-meetme-%s-%s' %
+                            (meetme_conf['name'], datestring))
+                return [{'amicommand': 'monitor',
+                          'amiargs': (chan, filename)}]
+            elif status == 'stop':
+                return [{'amicommand': 'stopmonitor',
+                          'amiargs': (chan, )}]
+        elif function in ('MeetmePause',):
             return [{'amicommand': function.lower(),
-                     'amiargs': (confno, usernum)}]
-        elif function == 'kick':
-            pass
-        elif function == 'getlist':
-                                fullstat = {}
-                                for iastid, v in self.xod_config['meetme'].iteritems():
-                                    fullstat[iastid] = v.keeplist
-                                tosend = { 'class' : 'meetme',
-                                           'function' : 'sendlist',
-                                           'payload' : fullstat }
-                                repstr = self.__cjson_encode__(tosend)
+                      'amiargs': (meetme_conf['confno'], status)}]
+        elif function in ('MeetmeKick', 'MeetmeAccept', 'MeetmeTalk'):
+            return [{'amicommand': 'meetmemoderation',
+                      'amiargs': (function, meetme_conf['confno'],
+                                    usernum, adminnum)}]
+        elif function in ['MeetmeMute', 'MeetmeUnmute']:
+            return [{'amicommand': function.lower(),
+                     'amiargs': (meetme_conf['confno'], usernum)}]
+        # elif function == 'kick':
+        #     pass
+        # elif function == 'getlist':
+        #     fullstat = {}
+        #     for iastid, v in self.xod_config['meetme'].iteritems():
+        #         fullstat[iastid] = v.keeplist
+        #     tosend = {'class': 'meetme', 'function': 'sendlist',
+        #               'payload': fullstat}
+        #     repstr = self.__cjson_encode__(tosend)
 
         return
 

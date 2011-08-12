@@ -328,9 +328,8 @@ class AMIClass:
     # \brief Mute a meetme user
     def meetmemute(self, meetme, usernum):
         try:
-            ret = self.sendcommand('MeetmeMute', (('Meetme', meetme),
-                                                  ('Usernum', usernum)))
-            return ret
+            return self.sendcommand('MeetmeMute', (('Meetme', meetme),
+                                                    ('Usernum', usernum)))
         except self.AMIError:
             return False
         except Exception:
@@ -339,9 +338,33 @@ class AMIClass:
     # \brief Unmute a meetme user
     def meetmeunmute(self, meetme, usernum):
         try:
-            ret = self.sendcommand('MeetmeUnmute', (('Meetme', meetme),
-                                                     ('Usernum', usernum)))
-            return ret
+            return self.sendcommand('MeetmeUnmute', (('Meetme', meetme),
+                                                      ('Usernum', usernum)))
+        except self.AMIError:
+            return False
+        except Exception:
+            return False
+
+    # \brief Handle moderation commands for meetmes
+    # MeetmeAccept, MeetmeKick, MeetmeTalk
+    def meetmemoderation(self, command, meetme, usernum, adminnum):
+        self.log.info('meetmemoderation %s %s %s %s' %
+                      (command, meetme, usernum, adminnum))
+        try:
+            return self.sendcommand(command, (('Meetme', meetme),
+                                               ('Usernum', usernum),
+                                               ('Adminnum', adminnum)))
+        except self.AMIError:
+            return False
+        except Exception:
+            return False
+
+    # \brief Pauses and unpause a meetme room
+    def meetmepause(self, meetme, status):
+        self.log.info('meetmepause %s %s' % (meetme, status))
+        try:
+            return self.sendcommand('MeetmePause', (('Meetme', meetme),
+                                                     ('Status', status)))
         except self.AMIError:
             return False
         except Exception:
@@ -419,7 +442,7 @@ class AMIClass:
         return ret
 
     # \brief Starts monitoring a channel
-    def monitor(self, channel, filename, mixme = 'true'):
+    def monitor(self, channel, filename, mixme='true'):
         try:
             ret = self.sendcommand('Monitor',
                                    [('Channel', channel),
