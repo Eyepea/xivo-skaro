@@ -1,7 +1,5 @@
-Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
-===================================================================
---- asterisk-1.8.6.0-rc1.orig/apps/app_meetme.c	2011-08-11 11:15:56.859011766 -0400
-+++ asterisk-1.8.6.0-rc1/apps/app_meetme.c	2011-08-11 11:16:16.889013520 -0400
+--- asterisk-1.8.6.0-rc1.orig/apps/app_meetme.c	2011-07-19 11:43:32.000000000 -0400
++++ asterisk-1.8.6.0-rc1/apps/app_meetme.c	2011-08-12 13:02:16.228047010 -0400
 @@ -117,15 +117,27 @@
  						</argument>
  						<para>Play an intro announcement in conference.</para>
@@ -948,10 +946,10 @@ Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
 +						conf_announce(chan, conf, user);
 +						conf_announce_user_join(chan, conf, user);
 +
-+					}
-+				}
-+			}
-+
+ 					}
+ 				}
+ 			}
+ 
 +			/* Conference begins when there aren't any no authorized people. */
 +			if (!conf->begin &&
 +			    !currentnoauth &&
@@ -996,7 +994,7 @@ Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
 +							menu_active = meetme_moderation_menu(chan, conf, user, dtmf, &auth_requesting);
 +						else
 +							menu_active = 1;
- 					}
++					}
 +					else
 +					{
 +						ast_clear_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING);
@@ -1007,13 +1005,13 @@ Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
 +					 * no authorized users who wait. */
 +					if (!ast_streamfile(chan, "beep", chan->language))
 +						ast_waitstream(chan, "");
- 				}
- 			}
++				}
++			}
 +			else if (currentnoauth == 0 && lastnoauth > 0 && (ast_test_flag64(confflags, CONFFLAG_ADMIN))) {
 +				ast_clear_flag64(&user->adminflags, ADMINFLAG_AUTH_REQUESTING);
 +				menu_active = auth_requesting = 0;
 +			}
- 
++
  			/* trying to add moh for single person conf */
 -			if (ast_test_flag64(confflags, CONFFLAG_MOH) && !ast_test_flag64(confflags, CONFFLAG_WAITMARKED)) {
 -				if (conf->users == 1) {
@@ -1364,7 +1362,176 @@ Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
  			break;
  		default: /* unknown command */
  			ast_log(LOG_WARNING, "Unknown MeetMeChannelAdmin command '%s'\n", args.command);
-@@ -4745,9 +5341,9 @@
+@@ -4698,6 +5294,168 @@
+ 	return 0;
+ }
+ 
++static int meetme_moderation(struct mansession *s, const struct message *m, int action)
++{
++	struct ast_conference *conf;
++	struct ast_conf_user *user, *admin;
++	const char *confid = astman_get_header(m, "Meetme");
++	char *userid = ast_strdupa(astman_get_header(m, "Usernum"));
++	char *adminid = ast_strdupa(astman_get_header(m, "Adminnum"));
++	int userno, adminno;
++
++	if (ast_strlen_zero(confid)) {
++		astman_send_error(s, m, "Meetme conference not specified");
++		return 0;
++	}
++
++	if (ast_strlen_zero(userid)) {
++		astman_send_error(s, m, "Meetme user number not specified");
++		return 0;
++	}
++
++	userno = strtoul(userid, &userid, 10);
++
++	if (*userid) {
++		astman_send_error(s, m, "Invalid user number");
++		return 0;
++	}
++
++	if (ast_strlen_zero(adminid)) {
++		astman_send_error(s, m, "Meetme admin number not specified");
++		return 0;
++	}
++
++	adminno = strtoul(adminid, &adminid, 10);
++
++	if (*adminid) {
++		astman_send_error(s, m, "Invalid admin number");
++		return 0;
++	}
++
++	/* Look in the conference list */
++	AST_LIST_LOCK(&confs);
++	AST_LIST_TRAVERSE(&confs, conf, list) {
++		if (!strcmp(confid, conf->confno))
++			break;
++	}
++
++	if (!conf) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "Meetme conference does not exist");
++		return 0;
++	}
++
++	user = ao2_find(conf->usercontainer, &userno, 0);
++
++	if (!user) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "User number not found");
++		return 0;
++	}
++
++	if (!ast_test_flag64(&user->adminflags, ADMINFLAG_NOAUTHED)) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "User already is authorized.");
++		return 0;
++	}
++
++	admin = ao2_find(conf->usercontainer, &adminno, 0);
++
++	if (!admin && !ast_test_flag64(&admin->userflags, CONFFLAG_ADMIN)) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "Admin number not found");
++		return 0;
++	}
++	if (action == ADMINFLAG_TALK_TO_ADMIN) {
++		meetme_mod_talk(conf, admin, user);
++		astman_send_ack(s, m, "Start talk");
++	}
++	else {
++		if (action == ADMINFLAG_AUTH_REQUESTING) {
++			meetme_mod_authorize(conf, admin, user);
++			astman_send_ack(s, m, "User authorized");
++		} else if (action == ADMINFLAG_SILENCED_KICK) {
++			meetme_mod_silence_kick(conf, admin, user);
++			astman_send_ack(s, m, "User is kicked");
++		} else {
++			AST_LIST_UNLOCK(&confs);
++			astman_send_error(s, m, "Action is invalid.");
++			return 0;
++		}
++	}
++
++	AST_LIST_UNLOCK(&confs);
++
++	return 0;
++}
++
++static int action_meetmeaccept(struct mansession *s, const struct message *m)
++{
++	return meetme_moderation(s, m, ADMINFLAG_AUTH_REQUESTING);
++}
++
++static int action_meetmekick(struct mansession *s, const struct message *m)
++{
++	return meetme_moderation(s, m, ADMINFLAG_SILENCED_KICK);
++}
++
++static int action_meetmetalk(struct mansession *s, const struct message *m)
++{
++	return meetme_moderation(s, m, ADMINFLAG_TALK_TO_ADMIN);
++}
++
++static int action_meetmepause(struct mansession *s, const struct message *m)
++{
++	struct ast_conference *conf;
++	const char *confid = astman_get_header(m, "Meetme");
++	const char *pause = astman_get_header(m, "Status");
++	int is_paused;
++
++	if (ast_strlen_zero(confid)) {
++		astman_send_error(s, m, "Meetme conference not specified");
++		return 0;
++	}
++
++	if (ast_strlen_zero(pause)) {
++		astman_send_error(s, m, "Pause status not specified");
++		return 0;
++	}
++
++	if (!strcmp(pause, "on"))
++		is_paused = 1;
++	else if (!strcmp(pause, "off"))
++		is_paused = 0;
++	else {
++		astman_send_error(s, m, "Pause status must be 'on' or 'off'");
++		return 0;
++	}
++
++	/* Look in the conference list */
++	AST_LIST_LOCK(&confs);
++	AST_LIST_TRAVERSE(&confs, conf, list) {
++		if (!strcmp(confid, conf->confno))
++			break;
++	}
++
++	if (!conf) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "Meetme conference does not exist");
++		return 0;
++	}
++
++	if (is_paused && !conf->paused)
++		meetme_pause(conf, 1);
++	else if (!is_paused && conf->paused)
++		meetme_pause(conf, 0);
++
++	AST_LIST_UNLOCK(&confs);
++
++	ast_log(LOG_NOTICE, "Requested to %spause conf %s \n", conf->paused ? "" : "un", conf->confno);
++
++	astman_send_ack(s, m, conf->paused ? "Conf paused" : "Conf unpaused");
++	return 0;
++}
++
+ static int meetmemute(struct mansession *s, const struct message *m, int mute)
+ {
+ 	struct ast_conference *conf;
+@@ -4745,9 +5503,9 @@
  	}
  
  	if (mute)
@@ -1376,7 +1543,7 @@ Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
  
  	AST_LIST_UNLOCK(&confs);
  
-@@ -4826,7 +5422,7 @@
+@@ -4826,7 +5584,7 @@
  				ast_test_flag64(&user->userflags, CONFFLAG_ADMIN) ? "Yes" : "No",
  				ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "Listen only" : ast_test_flag64(&user->userflags, CONFFLAG_TALKER) ? "Talk only" : "Talk and listen",
  				ast_test_flag64(&user->userflags, CONFFLAG_MARKEDUSER) ? "Yes" : "No",
@@ -1385,3 +1552,18 @@ Index: asterisk-1.8.6.0-rc1/apps/app_meetme.c
  				user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored");
  			ao2_ref(user, -1);
  		}
+@@ -7134,6 +7892,14 @@
+ 	res |= load_config(0);
+ 
+ 	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
++	res |= ast_manager_register("MeetmeAccept", EVENT_FLAG_CALL,
++                                    action_meetmeaccept, "Accept a no authorized user in a conference");
++	res |= ast_manager_register("MeetmeKick", EVENT_FLAG_CALL,
++                                    action_meetmekick, "Kick a user from a conference");
++	res |= ast_manager_register("MeetmeTalk", EVENT_FLAG_CALL,
++                                    action_meetmetalk, "Talk to a no authorized user");
++	res |= ast_manager_register("MeetmePause", EVENT_FLAG_CALL,
++                                    action_meetmepause, "Pause/unpause conference");
+ 	res |= ast_manager_register_xml("MeetmeMute", EVENT_FLAG_CALL, action_meetmemute);
+ 	res |= ast_manager_register_xml("MeetmeUnmute", EVENT_FLAG_CALL, action_meetmeunmute);
+ 	res |= ast_manager_register_xml("MeetmeList", EVENT_FLAG_REPORTING, action_meetmelist);
