@@ -6,7 +6,6 @@ A packet is a dictionary object. A dgram (datagram) is a string object.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
