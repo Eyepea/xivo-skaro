@@ -330,6 +330,18 @@ class AMIClass:
         try:
             ret = self.sendcommand('MeetmeMute', (('Meetme', meetme),
                                                   ('Usernum', usernum)))
+            return ret
+        except self.AMIError:
+            return False
+        except Exception:
+            return False
+
+    # \brief Unmute a meetme user
+    def meetmeunmute(self, meetme, usernum):
+        try:
+            ret = self.sendcommand('MeetmeUnmute', (('Meetme', meetme),
+                                                     ('Usernum', usernum)))
+            return ret
         except self.AMIError:
             return False
         except Exception:
