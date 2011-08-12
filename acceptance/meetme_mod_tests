@@ -7,6 +7,10 @@ I. Définitions
 1. U1 = Utilisateur 1
 2. U2 = Utilisateur 2
 3. A  = Administrateur
+4. ami_user = nom d'utilisateur de l'ami entre "[ ]" dans /etc/asterisk/manager.conf
+5. ami_secret = mot de passe de l'ami dans /etc/asterisk/manager.conf champ "Secret"
+6. usernum = Numéro d'utilisateur d'une meetme
+7. adminnum = Numéro d'utilisateur de l'administrateur d'une meetme
 
 II. Séquence
 ============
@@ -69,4 +73,52 @@ La conférence se déroule maintenant entre U1, U2 et A.
 * A appuie sur '#'
 -> A, U1 et U2 se voient refouler de la conversation.
 
+5. AMI command MeetmeAccept
+---------------------------
+* A appel la chambre de conférence et entre son mot de passe
+* U1 appel la chambre de conférence et entre le pin de la chambre de conférence
+* Depuis l'AMI effectuer la commande suivante
 
+Action: MeetmeAccept
+Meetme: 300
+Usernum: 2
+Adminnum: 1
+<enter>
+
+-> U1 est accepté dans la conférence
+
+6. AMI command MeetmeKick
+-------------------------
+* A appel la chanbre de conférence et entre son mot de passe
+* U1 appel la chambre de conférence, entre le pin de la conférence
+- A authorise U1
+* Depuis l'AMI effectuer la commande suivante
+
+Action: MeetmeKick
+Meetme: 300
+Usernum: 2
+Adminnum: 1
+<enter>
+
+-> U1 n'est plus dans la conférence
+
+7. AMI command MeetmeTalk
+-------------------------
+
+8. AMI command MeetmePause
+--------------------------
+
+III. Procédure de loggin sur l'AMI
+----------------------------------
+- `telnet localhost 5038`
+
+- `Action: Login`
+- `Username: <ami_user>`
+- `Secret: <ami_secret>`
+
+- Enter, Enter
+
+IV. Récurérer les usernum et adminnum
+-------------------------------------
+En général le premier utilisateur à téléphoner dans une chambre de conférence se
+voit attribuer le usernum 1, le second 2 et ainsi de suite.
