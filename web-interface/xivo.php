@@ -16,32 +16,32 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# 
+#
 
 define('XIVO_PATH_ROOT',dirname(__FILE__));
 
 require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'xivo.inc');
 
-$_XIVO = &dwho_gct::set_get(new xivo());
+$_XIVO = dwho_gct::set_get(new xivo());
 
 dwho_report::decode();
 
-$_CF = &dwho_gat::get('_CF');
-$_QR = &dwho_gat::get('_QR');
-$_URL = &dwho_gat::load_get('url',XIVO_PATH_OBJECTCONF);
-$_ACTION_MISC = &dwho_gat::load_get('action_misc',XIVO_PATH_OBJECTCONF);
+$_CF = dwho_gat::get('_CF');
+$_QR = dwho_gat::get('_QR');
+$_URL = dwho_gat::load_get('url',XIVO_PATH_OBJECTCONF);
+$_ACTION_MISC = dwho_gat::load_get('action_misc',XIVO_PATH_OBJECTCONF);
 
-$_I18N = &dwho_gct::get('dwho_i18n');
+$_I18N = dwho_gct::get('dwho_i18n');
 $_I18N->load_file('xivo');
 
-$_QRY = &dwho_gct::get('dwho_query');
+$_QRY = dwho_gct::get('dwho_query');
 
 dwho::load_class('location');
-$_LOC = &dwho_gct::set_get(new dwho_location($_CF['location'],$_ACTION_MISC));
+$_LOC = dwho_gct::set_get(new dwho_location($_CF['location'],$_ACTION_MISC));
 
-$_XOBJ = &dwho_gct::get('xivo_object');
-$_SRE = &dwho_gct::get('xivo_service');
-$_USR = &dwho_gct::get('_USR');
+$_XOBJ = dwho_gct::get('xivo_object');
+$_SRE = dwho_gct::get('xivo_service');
+$_USR = dwho_gct::get('_USR');
 
 if(defined('XIVO_TPL_AREA') === false)
     define('XIVO_TPL_AREA','www');
@@ -73,7 +73,11 @@ switch($tpl_area)
                       array('json','url','dhtml'),
                       $_URL);
 
-        if(dwho::load_class('dwho_json') === false
+		if(defined('FORCE_WIZARD') === true
+		&& FORCE_WIZARD === true)
+			break;
+
+		if(dwho::load_class('dwho_json') === false
         || dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
         {
             dwho::load_class('dwho_http');

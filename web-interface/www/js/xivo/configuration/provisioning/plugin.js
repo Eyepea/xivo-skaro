@@ -16,59 +16,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$(function(){
-    mt = ($('#tb-list-pkgs').height() / 2) - ($('#box_installer').find('div').height() / 2);
-    $('#box_installer').css('height',$('#tb-list-pkgs').height()+'px');
-    $('#box_installer').css('width',$('#tb-list-pkgs').width()+'px');    
-    $('#box_installer').find('div').css('margin-top',mt+'px');
-    $('#box_installer').hide();
+$(function() {
+	mt = ($('#tb-list-pkgs').height() / 2)
+			- ($('#box_installer').find('div').height() / 2);
+	$('#box_installer').css('height', $('#tb-list-pkgs').height() + 'px');
+	$('#box_installer').css('width', $('#tb-list-pkgs').width() + 'px');
+	$('#box_installer').find('div').css('margin-top', mt + 'px');
+	$('#box_installer').hide();
 
-    $('input[id="configure-ajax"]').each(function(){
-        $(this).keyup(function(){
-            name = $(this).attr('name');
-            val = $(this).val();
-            href = $('#href-'+name).val();
-            uri = $('#uri-'+name).val();
-            act = $('#act-'+name).val();
-            delay(function(){
-                $.post(uri,
-                    {
-                        act: act,
-                        uri: href,
-                        value: val
-                    },
-                    function(data){
-                        $('#res-'+name).show().html(data).delay(1500).hide('slow');
-                    }
-                );
-            }, 900);
-        });
-    });
+	$('input[id="configure-ajax"]').each(
+			function() {
+				$(this).keyup(
+						function() {
+							name = $(this).attr('name');
+							val = $(this).val();
+							href = $('#href-' + name).val();
+							uri = $('#uri-' + name).val();
+							act = $('#act-' + name).val();
+							delay(function() {
+								$.post(uri, {
+									act : act,
+									uri : href,
+									value : val
+								}, function(data) {
+									$('#res-' + name).show().html(data).delay(
+											1500).hide('slow');
+								});
+							}, 900);
+						});
+			});
 
 });
 
-function init_install(plugin,id)
-{
-    $('#box_installer').show();
-    $.get('/xivo/configuration/ui.php/provisioning/plugin?act=install-pkgs&plugin='+plugin+'&id='+id, function(data) {
-        if (data === null)
-            return false;
-        ajax_request_oip(data,plugin);
-        this.int = setInterval(ajax_request_oip,1000,data,plugin);
-    });
+function init_install(plugin, id) {
+	$('#box_installer').show();
+	$.get(
+			'/xivo/configuration/ui.php/provisioning/plugin?act=install-pkgs&plugin='
+					+ plugin + '&id=' + id, function(data) {
+				if (data === null)
+					return false;
+				ajax_request_oip(data, plugin);
+				this.int = setInterval(ajax_request_oip, 1000, data, plugin);
+			});
 }
 
-function ajax_request_oip(url,plugin)
-{
-    $.get('/xivo/configuration/ui.php/provisioning/plugin?act=request_oip&id='+plugin+'&path='+url, function(data) {
-        if (data === null)
-            return false;
-        if (data.indexOf( "act=edit" ) > -1) {
-            $('#box_installer').hide();
-            top.location.href = data;
-        }
-        else {
-            $('#box_installer').find('div').html(data);
-        }
-    });
+function ajax_request_oip(url, plugin) {
+	$.get('/xivo/configuration/ui.php/provisioning/plugin?act=request_oip&id='
+			+ plugin + '&path=' + url, function(data) {
+		if (data === null)
+			return false;
+		if (data.indexOf("act=edit") > -1) {
+			$('#box_installer').hide();
+			top.location.href = data;
+		} else {
+			$('#box_installer').find('div').html(data);
+		}
+	});
 }

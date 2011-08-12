@@ -28,34 +28,33 @@ class dwho_sysinfo
     var $_sysinfo    = null;
     var $_net    = null;
 
-    function dwho_sysinfo()
+    public function __construct()
     {
         $os = strtolower(PHP_OS);
+        $class = 'dwho_sysinfo_'.$os;
 
-        if(dwho::load_class('dwho::sysinfo::'.$os) === false)
+        if(dwho::load_class($class,'sysinfo',$os) === false)
             trigger_error('Failed to load SysInfo class for '.PHP_OS,E_USER_ERROR);
 
-        $name = 'dwho_sysinfo_'.$os;
-
-        $this->_sysinfo = new $name();
+        $this->_sysinfo = new $class();
     }
 
-    function os_name()
+    public function os_name()
     {
         return(PHP_OS);
     }
 
-    function os_meta()
+    public function os_meta()
     {
         return(strtolower(substr(PHP_OS,0,3)));
     }
 
-    function php_version()
+    public function php_version()
     {
         return(PHP_VERSION);
     }
 
-    function argin_separator()
+    public function argin_separator()
     {
         if(($sep = ini_get('arg_separator.input')) !== false
         && dwho_has_len($sep) === true
@@ -65,7 +64,7 @@ class dwho_sysinfo
         return(ARGIN_SEPARATOR);
     }
 
-    function argout_separator()
+    public function argout_separator()
     {
         if(($sep = ini_get('arg_separator.output')) !== false
         && dwho_has_len($sep) === true
@@ -75,27 +74,27 @@ class dwho_sysinfo
         return(ARGOUT_SEPARATOR);
     }
 
-    function directory_separator()
+    public function directory_separator()
     {
         return(DIRECTORY_SEPARATOR);
     }
 
-    function path_separator()
+    public function path_separator()
     {
         return(PATH_SEPARATOR);
     }
 
-    function eol()
+    public function eol()
     {
         return(PHP_EOL);
     }
 
-    function sapi_name()
+    public function sapi_name()
     {
         return(PHP_SAPI);
     }
 
-    function sapi_mode()
+    public function sapi_mode()
     {
         switch(PHP_SAPI)
         {
@@ -106,7 +105,7 @@ class dwho_sysinfo
         return('default');
     }
 
-    function uptime()
+    public function uptime()
     {
         if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
             return($this->_sysinfo->uptime());
@@ -114,7 +113,7 @@ class dwho_sysinfo
         return(false);
     }
 
-    function cpustats()
+    public function cpustats()
     {
         if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
             return($this->_sysinfo->cpustats());
@@ -122,7 +121,7 @@ class dwho_sysinfo
         return(false);
     }
 
-    function memstats($byte=false)
+    public function memstats($byte=false)
     {
         if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
             return($this->_sysinfo->memstats($byte));
@@ -130,7 +129,7 @@ class dwho_sysinfo
         return(false);
     }
 
-    function net()
+    public function net()
     {
         if(isset($this->_sysinfo) === false
         || is_object($this->_sysinfo) === false)
@@ -145,7 +144,7 @@ class dwho_sysinfo
         return(false);
     }
 
-    function netinfo()
+    public function netinfo()
     {
         if($this->net() !== false)
             return($this->_net->netinfo());
@@ -153,7 +152,7 @@ class dwho_sysinfo
         return(false);
     }
 
-    function netstats()
+    public function netstats()
     {
         if($this->net() !== false)
             return($this->_net->netstats());

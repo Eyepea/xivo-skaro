@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_service_abstract
+abstract class xivo_service_abstract
 {
 	var $_conf		= array();
 	var $_module		= array();

@@ -54,7 +54,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$arr = (array) $arr;
 
-		array_unshift($arr,dirname(__FILE__).DWHO_SEP_DIR.$this->_name);
+		array_unshift($arr,dirname(__FILE__).DWHO_SEP_DIR.'asterisk');
 
 		return(dwho_file::required($arr,$once,$includable));
 	}

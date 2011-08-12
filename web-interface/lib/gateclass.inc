@@ -18,21 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class dwho_gateclass
+abstract class dwho_gateclass
 {
-    var $_class = array();
+    private static $_class = array();
 
-    function &getinstance()
-    {
-        static $instance = null;
-
-        if($instance === null)
-            $instance = new dwho_gateclass();
-
-        return(($ref = &$instance));
-    }
-
-    function set(&$obj,$name='')
+    public static function set($obj,$name='')
     {
         $name = (string) $name;
 
@@ -43,66 +33,62 @@ class dwho_gateclass
 
         if($name !== '' && preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
             return(false);
-        else if(isset($this->_class[$name]) === false)
-            $this->_class[$name] = &$obj;
+        #else if(isset(self::$_class[$name]) === false)
+        self::$_class[$name] = &$obj;
 
         return(true);
     }
 
-    function &get($name)
+    public static function &get($name)
     {
         $r = false;
 
         $name = (string) $name;
 
-        if(isset($this->_class[$name]) === true)
-            $r = &$this->_class[$name];
+        if(isset(self::$_class[$name]) === true)
+            $r = &self::$_class[$name];
 
         return(($ref = &$r));
     }
 
-    function &set_get(&$obj,$name='')
+    public static function &set_get($obj,$name='')
     {
         $r = false;
 
         $name = (string) $name;
 
-        if($this->set($obj,$name) === true)
-            $r = &$this->get(($name === '' ? get_class($obj) : $name));
+        if(self::set($obj,$name) === true)
+            $r = &self::get(($name === '' ? get_class($obj) : $name));
 
         return(($ref = &$r));
     }
 
-    function is_valid($name)
+    public static function is_valid($name)
     {
-        return((isset($this->_class[$name]) === true && is_object($this->_class[$name]) === true));
+        return((isset(self::$_class[$name]) === true && is_object(self::$_class[$name]) === true));
     }
 }
 
-class dwho_gct
+abstract class dwho_gct
 {
-    function set(&$obj,$name='')
+    public static function set($obj,$name='')
     {
-        $agc = &dwho_gateclass::getinstance();
-        return($agc->set($obj,$name));
+        return(dwho_gateclass::set($obj,$name));
     }
 
-    function get($name)
+    public static function get($name)
     {
-        $agc = &dwho_gateclass::getinstance();
-        return(($ref = $agc->get($name)));
+        return(dwho_gateclass::get($name));
     }
 
-    function set_get(&$obj,$name='')
+    public static function set_get($obj,$name='')
     {
-        $agc = &dwho_gateclass::getinstance();
-        return(($ref = $agc->set_get($obj,$name)));
+        return(dwho_gateclass::set_get($obj,$name));
     }
 
-    function is_valid($name)
+    public static function is_valid($name)
     {
-        $agc = &dwho_gateclass::getinstance();
-        return($agc->is_valid($name));
+        return(dwho_gateclass::is_valid($name));
     }
 }
 

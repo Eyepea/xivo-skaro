@@ -29,12 +29,12 @@ require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'dwho.inc');
 
 class xivo extends dwho
 {
-    function xivo()
+    public function __construct()
     {
         if(($this->_conf['user'] = dwho_gat::load_get('user',XIVO_PATH_OBJECTCONF)) === false)
             die('ERR: Failed to load user Array');
 
-        $this->dwho();
+        parent::__construct();
 
         $this->_conf['xivo'] = &$this->_conf['dwho'];
 
@@ -43,8 +43,8 @@ class xivo extends dwho
 
         $this->_init_cfg();
 
-        $this->_set_report();    
-        $this->_set_error();        
+        $this->_set_report();
+        $this->_set_error();
         $this->_set_query();
         $this->_set_language();
         $this->_set_session();
@@ -58,9 +58,9 @@ class xivo extends dwho
         dwho_gat::set('_CF',$this->_conf);
     }
 
-    function _init_cfg()
+    protected function _init_cfg()
     {
-        if(($xivo_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini')) === false)
+        if(($xivo_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini')) === false)
             define('XIVO_WEBI_CONFIGURED',false);
 
         if(dwho_issa('locale',$xivo_ini) === true)
@@ -80,17 +80,17 @@ class xivo extends dwho
 
         ini_set('include_path',XIVO_PATH_ROOT.DWHO_SEP_PATH.ini_get('include_path'));
 
-        if(($location_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'location.ini')) !== false)
+        if(($location_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'location.ini')) !== false)
             $this->_cfg_ini_location($location_ini);
         else
-            die('ERR: Missing location init file');        
-        
-        if(($report_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'report.ini')) !== false)
+            die('ERR: Missing location init file');
+
+        if(($report_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'report.ini')) !== false)
             $this->_cfg_ini_report($report_ini);
         else
             die('ERR: Missing report init file');
 
-        if(($template_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'template.ini')) !== false)
+        if(($template_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'template.ini')) !== false)
             $this->_cfg_ini_template($template_ini);
         else
             die('ERR: Missing template init file');
@@ -133,15 +133,15 @@ class xivo extends dwho
         return(true);
     }
 
-    function _set_language()
+    protected function _set_language()
     {
-        $_QRY = &dwho_gct::get('dwho_query');
+        $_QRY = dwho_gct::get('dwho_query');
         $hl = $_QRY->get('hl');
 
         if(dwho_has_len($hl) === false || defined('DWHO_USER_I18N_LANGUAGE') === true)
             return(null);
 
-        $_LANG = &dwho_gat::load_get('language',XIVO_PATH_OBJECTCONF);
+        $_LANG = dwho_gat::load_get('language',XIVO_PATH_OBJECTCONF);
 
         if(isset($_LANG[$hl]) === false || (bool) $_LANG[$hl] === false)
             return(false);
@@ -151,36 +151,36 @@ class xivo extends dwho
         return(true);
     }
 
-    function _set_xivo_object()
+    protected function _set_xivo_object()
     {
-        xivo::load_class('xivo_object',XIVO_PATH_OBJECT,'xivo',false);
+        self::load_class('xivo_object',XIVO_PATH_OBJECT,'xivo',false);
         dwho_gct::set(new xivo_object());
     }
 
-    function _set_service()
+    protected function _set_service()
     {
-        xivo::load_class('xivo_service',XIVO_PATH_OBJECT,null,false);
+        self::load_class('xivo_service',XIVO_PATH_OBJECT,null,false);
         dwho_gct::set(new xivo_service($this->_conf['xivo']['ini']['service']));
     }
 
-    function _set_user()
+    protected function _set_user()
     {
-        xivo::load_class('xivo_user',XIVO_PATH_OBJECT,null,false);
+        self::load_class('xivo_user',XIVO_PATH_OBJECT,null,false);
         new xivo_user();
     }
 
-    function load_datastorage($dso)
+    public function load_datastorage($dso)
     {
         return($this->_cfg_ini_datastorage($dso));
     }
 
-    function load_class($class,$dir='',$file='',$lib=true)
+    public static function load_class($class,$dir='',$file='',$lib=true)
     {
         if(strncmp('xivo_',$class,5) === 0
         && dwho_has_len($file) === false)
             $file = substr($class,5);
 
-        return(dwho::load_class($class,$dir,$file,$lib));
+        return(parent::load_class($class,$dir,$file,$lib));
     }
 }
 

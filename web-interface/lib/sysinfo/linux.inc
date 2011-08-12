@@ -20,7 +20,7 @@
 
 class dwho_sysinfo_linux
 {
-    function net()
+    public function net()
     {
         if(dwho::load_class('dwho::sysinfo::linux::net') === false)
             trigger_error('Failed to load SysInfo Net class for Linux',E_USER_ERROR);
@@ -30,7 +30,7 @@ class dwho_sysinfo_linux
         return(new $name());
     }
 
-    function cpustats()
+    public function cpustats()
     {
         $path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','cpuinfo');
 
@@ -53,7 +53,7 @@ class dwho_sysinfo_linux
         return($r);
     }
 
-    function memstats($byte=false)
+    public function memstats($byte=false)
     {
         $path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','meminfo');
 
@@ -92,7 +92,7 @@ class dwho_sysinfo_linux
         return($r);
     }
 
-    function uptime()
+    public function uptime()
     {
         $path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','uptime');
 

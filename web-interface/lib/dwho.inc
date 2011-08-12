@@ -28,25 +28,27 @@ require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'func.inc');
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'file.inc');
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'sysinfo.inc');
 
-define('DWHO_OS_NAME',dwho_sysinfo::os_name());
-define('DWHO_OS_META',dwho_sysinfo::os_meta());
-define('DWHO_PHP_VER',dwho_sysinfo::php_version());
-define('DWHO_SEP_ARG_IN',dwho_sysinfo::argin_separator());
-define('DWHO_SEP_ARG_OUT',dwho_sysinfo::argout_separator());
-define('DWHO_SEP_DIR',dwho_sysinfo::directory_separator());
-define('DWHO_SEP_PATH',dwho_sysinfo::path_separator());
-define('DWHO_EOL',dwho_sysinfo::eol());
-define('DWHO_SAPI_NAME',dwho_sysinfo::sapi_name());
-define('DWHO_SAPI_MODE',dwho_sysinfo::sapi_mode());
+$dwho_sysinfo = new dwho_sysinfo();
+
+define('DWHO_OS_NAME',$dwho_sysinfo->os_name());
+define('DWHO_OS_META',$dwho_sysinfo->os_meta());
+define('DWHO_PHP_VER',$dwho_sysinfo->php_version());
+define('DWHO_SEP_ARG_IN',$dwho_sysinfo->argin_separator());
+define('DWHO_SEP_ARG_OUT',$dwho_sysinfo->argout_separator());
+define('DWHO_SEP_DIR',$dwho_sysinfo->directory_separator());
+define('DWHO_SEP_PATH',$dwho_sysinfo->path_separator());
+define('DWHO_EOL',$dwho_sysinfo->eol());
+define('DWHO_SAPI_NAME',$dwho_sysinfo->sapi_name());
+define('DWHO_SAPI_MODE',$dwho_sysinfo->sapi_mode());
 
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gateclass.inc');
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gatearray.inc');
 
 class dwho
 {
-    var $_conf    = array();
+    protected  $_conf = array();
 
-    function dwho()
+    public function __construct()
     {
         if(($this->_conf['dwho'] = dwho_gat::get_file(DWHO_PATH_CONF.DIRECTORY_SEPARATOR.'dwho')) === false)
             die('ERR: Failed to load DWHO Array');
@@ -62,38 +64,38 @@ class dwho
         $this->_cfg_infos_extension();
     }
 
-    function _set_report()
+    protected function _set_report()
     {
-        dwho::load_class('dwho_report');
+        self::load_class('dwho_report');
     }
 
-    function _set_error()
+    protected function _set_error()
     {
-        dwho::load_class('dwho_tracerror');
-        $_ERR = &dwho_gct::set_get(new dwho_tracerror($this->_conf['dwho']['ini']['error']));
+        self::load_class('dwho_tracerror');
+        $_ERR = dwho_gct::set_get(new dwho_tracerror($this->_conf['dwho']['ini']['error']));
         set_error_handler(array(&$_ERR,'report_e_err'));
     }
 
-    function _set_query()
+    protected function _set_query()
     {
-        dwho::load_class('dwho_query');
-        $_QUERY = &dwho_gct::set_get(new dwho_query());
+        self::load_class('dwho_query');
+        $_QUERY = dwho_gct::set_get(new dwho_query());
         dwho_gat::set_get('_QR',$_QUERY->raw);
     }
 
-    function _set_session()
+    protected function _set_session()
     {
-        dwho::load_class('dwho_session');
+        self::load_class('dwho_session');
         dwho_gct::set(new dwho_session());
     }
-    
-    function _set_i18n()
+
+    protected function _set_i18n()
     {
-        dwho::load_class('dwho_i18n');
+        self::load_class('dwho_i18n');
         dwho_gct::set(new dwho_i18n());
     }
 
-    function _cfg_url()
+    protected function _cfg_url()
     {
         $url = $scheme = '';
 
@@ -115,7 +117,7 @@ class dwho
         define('DWHO_URL',$url);
     }
 
-    function _cfg_ini_get()
+    protected function _cfg_ini_get()
     {
         define('DWHO_PHP_SAFE',(bool) ini_get('safe_mode'));
 
@@ -124,7 +126,7 @@ class dwho
         $this->_conf['dwho']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
     }
 
-    function _cfg_ini_set()
+    protected function _cfg_ini_set()
     {
         ini_set('register_globals',false);
         ini_set('magic_quotes_gpc',false);
@@ -147,7 +149,7 @@ class dwho
         }
     }
 
-    function _cfg_ini_locale($locale=null)
+    protected function _cfg_ini_locale($locale=null)
     {
         if(is_array($locale) === false)
             $locale = $this->_conf['dwho']['ini']['locale'];
@@ -170,7 +172,7 @@ class dwho
         define('DWHO_LC_LABEL',setlocale(LC_ALL,0));
     }
 
-    function _cfg_ini_session($session=null)
+    protected function _cfg_ini_session($session=null)
     {
         if(is_array($session) === false)
             $session = $this->_conf['dwho']['ini']['session'];
@@ -197,7 +199,7 @@ class dwho
         define('DWHO_SESS_SAVE_PATH',(string) $session['save_path']);
     }
 
-    function _cfg_ini_error($error=null)
+    protected function _cfg_ini_error($error=null)
     {
         if(dwho_issa('error',$this->_conf['dwho']['ini']) === false)
             $this->_conf['dwho']['ini']['error'] = array();
@@ -223,7 +225,7 @@ class dwho
             $this->_conf['dwho']['ini']['error']['file'] = (string) $error['file'];
     }
 
-    function _cfg_infos_extension()
+    protected function _cfg_infos_extension()
     {
         $prefix = $suffix = '';
 
@@ -250,7 +252,7 @@ class dwho
         define('DWHO_EXT_SUF',$suffix);
     }
 
-    function _cfg_ini_datastorage($dso)
+    protected function _cfg_ini_datastorage($dso)
     {
         if(defined('DWHO_DSO_TYPE') === true)
             return(true);
@@ -258,7 +260,7 @@ class dwho
         if(dwho_issa('datastorage',$this->_conf['dwho']['ini']) === false)
             $this->_conf['dwho']['ini']['datastorage'] = array();
 
-        dwho::load_class('dwho_datastorage');
+        self::load_class('dwho_datastorage');
 
         if(is_string($dso) === true)
             $dso = dwho_datastorage::get_param_from_uri($dso);
@@ -272,7 +274,7 @@ class dwho
             die('ERR: Invalid datastorage "type" configuration');
         else if(dwho_datastorage::chk_extension_loaded($dso['type'],true) === false)
             die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
-        else if(($datastorage = &dwho_gct::set_get(
+        else if(($datastorage = dwho_gct::set_get(
                         dwho_datastorage::factory($dso['type'],
                                       $dso),
                         'DWHO_DSO')) === false)
@@ -283,16 +285,16 @@ class dwho
         $this->_conf['dwho']['ini']['datastorage']['type'] = DWHO_DSO_TYPE;
         $this->_conf['dwho']['ini']['datastorage']['param'] = $dso;
     }
-    
-    function _cfg_ini_report($report)
+
+    protected function _cfg_ini_report($report)
     {
         if(is_array($report) === false || empty($report) === true)
             die('ERR: Invalid report configuration');
         else if(dwho_issa('general',$report) === false)
             die('ERR: Missing general section for report configuration');
-            
+
         $listreport = array('error','warning','info','notice','debug');
-        
+
         while($listreport)
         {
             $rp = array_shift($listreport);
@@ -303,7 +305,7 @@ class dwho
         }
     }
 
-    function _cfg_ini_location($location)
+    protected function _cfg_ini_location($location)
     {
         if(is_array($location) === false || empty($location) === true)
             die('ERR: Invalid location configuration');
@@ -332,22 +334,22 @@ class dwho
             else
                 die('ERR: Invalid root_url option in general for location configuration');
         }
-    
+
         if(is_array($location['cache']) === false)
             die('ERR: Missing cache section for location configuration');
-        
+
         if(isset($location['cache']['statistics']) === false)
             die('ERR: Missing statistics option in cache for location configuration');
-        
+
         if (dwho_file::is_d_w($location['cache']['statistics']) === false
         && mkdir($location['cache']['statistics'],0775) === false)
             die('ERR: Invalid statistics option in cache for location configuration');
         else
             define('DWHO_PATH_CACHE_STATS',$location['cache']['statistics']);
-    
+
         if(isset($location['cache']['pchart']) === false)
             die('ERR: Missing pchart section for location configuration');
-                
+
         if (dwho_file::is_d_w($location['cache']['pchart']) === false
         && mkdir($location['cache']['pchart'],0775) === false)
             die('ERR: Invalid pchart option in cache for location configuration');
@@ -357,7 +359,7 @@ class dwho
         return(true);
     }
 
-    function _cfg_ini_template($template)
+    protected function _cfg_ini_template($template)
     {
         if(is_array($template) == false)
             die('ERR: Invalid template configuration');
@@ -376,7 +378,7 @@ class dwho
         return(true);
     }
 
-    function chk_extension_loaded($ext)
+    public static function chk_extension_loaded($ext)
     {
         if(dwho_has_len($ext) === false)
             return(false);
@@ -384,7 +386,7 @@ class dwho
         return(extension_loaded($ext));
     }
 
-    function load_extension($ext)
+    public static function load_extension($ext)
     {
         if(dwho_has_len($ext) === false
         || preg_match('/^[a-z0-9_-]+$/',$ext) !== 1)
@@ -402,11 +404,11 @@ class dwho
             return(false);
 
         dl($file);
-        
+
         return(extension_loaded($ext));
     }
 
-    function load_class($class,$dir='',$file='',$lib=true)
+    public static function load_class($class,$dir='',$file='',$lib=true)
     {
         if(is_array($dir) === true)
             $dir = implode(DIRECTORY_SEPARATOR,$dir);
@@ -460,7 +462,7 @@ class dwho
         return(class_exists($class));
     }
 
-    function load_init($file,$name='')
+    public function load_init($file,$name='')
     {
         $name = (string) $name;
 
@@ -517,7 +519,7 @@ class dwho
         return(false);
     }
 
-    function load_array($file,$once=true)
+    public function load_array($file,$once=true)
     {
         return(dwho_gat::get_file($file,$once));
     }

@@ -274,9 +274,9 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
 
     function unescape_bytea($str)
     {
-        $escaped_data = str_replace(array("\\\\", "''"), array("\\", "'"), $str); 
-        /* and later unescape the escaped data from the bytea field with following to get the original binary data */    
-        
+        $escaped_data = str_replace(array("\\\\", "''"), array("\\", "'"), $str);
+        /* and later unescape the escaped data from the bytea field with following to get the original binary data */
+
         return(pg_unescape_bytea($escaped_data));
     }
 

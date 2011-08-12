@@ -51,9 +51,9 @@ define('DWHO_NETWORK_MASK_IPV4_ALL',(DWHO_NETWORK_MASK_IPV4 |
                      DWHO_NETWORK_MASK_IPV4_BIT |
                      DWHO_NETWORK_MASK_IPV4_DOTDEC));
 
-class dwho_network
+abstract class dwho_network
 {
-    function ipv4_long($ip)
+    public static function ipv4_long($ip)
     {
         if(is_scalar($ip) === false)
             return(false);
@@ -66,7 +66,7 @@ class dwho_network
         return($long);
     }
 
-    function normalize_ipv4_dotdec($ip)
+    public static function normalize_ipv4_dotdec($ip)
     {
         if(($long = dwho_network::ipv4_long($ip)) === false)
             return(false);
@@ -74,12 +74,12 @@ class dwho_network
         return(long2ip($long));
     }
 
-    function valid_ipv4($ip)
+    public static function valid_ipv4($ip)
     {
         return((dwho_network::ipv4_long($ip) !== false));
     }
 
-    function valid_ipv4_dotdec($ip)
+    public static function valid_ipv4_dotdec($ip)
     {
         if(($ipv4_dotdec = dwho_network::normalize_ipv4_dotdec($ip)) === false
         || (string) $ip !== $ipv4_dotdec)
@@ -88,7 +88,7 @@ class dwho_network
         return(true);
     }
 
-    function valid_bitmask_ipv4($bit)
+    public static function valid_bitmask_ipv4($bit)
     {
         if(dwho_is_uint($bit) === false
         || $bit > 32)
@@ -97,7 +97,7 @@ class dwho_network
         return(true);
     }
 
-    function valid_bitmask_ipv6($bit)
+    public static function valid_bitmask_ipv6($bit)
     {
         if(dwho_is_uint($bit) === false
         || $bit > 128)
@@ -106,7 +106,7 @@ class dwho_network
         return(true);
     }
 
-    function netmask_ipv4_to_bitmask($nm)
+    public static function netmask_ipv4_to_bitmask($nm)
     {
         if(($nm = dwho_network::ipv4_long($nm)) === 0)
             return(0);
@@ -120,7 +120,7 @@ class dwho_network
         return(32 - intval(log($inv + 1,2)));
     }
 
-    function bitmask_to_netmask_ipv4($bit)
+    public static function bitmask_to_netmask_ipv4($bit)
     {
         if(dwho_network::valid_bitmask_ipv4($bit) === false)
             return(false);
@@ -128,7 +128,7 @@ class dwho_network
         return(long2ip((0xFFFFFFFF >> (32 - $bit)) << (32 - $bit)));
     }
 
-    function bitmask_to_netmask_ipv6($bit)
+    public static function bitmask_to_netmask_ipv6($bit)
     {
         if(dwho_network::valid_bitmask_ipv6($bit) === false)
             return(false);
@@ -149,7 +149,7 @@ class dwho_network
         return(implode(':',array_pad($r,8,'0000')));
     }
 
-    function valid_mask_ipv4($nm,$mode=null,$ret=false)
+    public static function valid_mask_ipv4($nm,$mode=null,$ret=false)
     {
         $mode = intval($mode);
 
@@ -172,7 +172,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_subnet_ipv4($host,$mask=null,$mask_mode=null,$host_mode=null,$ret=false)
+    public static function valid_subnet_ipv4($host,$mask=null,$mask_mode=null,$host_mode=null,$ret=false)
     {
         if(is_scalar($host) === false)
             return(false);
@@ -198,7 +198,7 @@ class dwho_network
         return($bitmask);
     }
 
-    function ipv4_calc($ip,$mask)
+    public static function ipv4_calc($ip,$mask)
     {
         if(dwho_network::valid_ipv4($ip) === false
         || ($bit = dwho_network::valid_subnet_ipv4($ip,
@@ -224,7 +224,7 @@ class dwho_network
         return($r);
     }
 
-    function ipv4_in_subnet($ip,$sub,$broadcast=false)
+    public static function ipv4_in_subnet($ip,$sub,$broadcast=false)
     {
         if(is_string($sub) === false || ($pos = strrpos($sub,'/')) === false)
             return(false);
@@ -249,7 +249,7 @@ class dwho_network
         return(($decip > $network && $decip < $broadcast));
     }
 
-    function valid_ipv4_broadcast($broadcast,$address,$netmask)
+    public static function valid_ipv4_broadcast($broadcast,$address,$netmask)
     {
         if(dwho_network::valid_ipv4($broadcast) === false
         || ($ipcalc = dwho_network::ipv4_calc($address,
@@ -260,7 +260,7 @@ class dwho_network
         return(true);
     }
 
-    function ipv4_in_lhost($ip,$host)
+    public static function ipv4_in_lhost($ip,$host)
     {
         if(is_scalar($ip) === false || is_scalar($host) === false)
             return(false);
@@ -296,7 +296,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_ipv6($ip)
+    public static function valid_ipv6($ip)
     {
         if(is_scalar($ip) === false)
             return(false);
@@ -311,7 +311,7 @@ class dwho_network
         return(($right + $left < 8));
     }
 
-    function valid_ipv6_h16($h16)
+    public static function valid_ipv6_h16($h16)
     {
         if(is_scalar($h16) === false)
             return(false);
@@ -324,7 +324,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_ipv6_left($ip)
+    public static function valid_ipv6_left($ip)
     {
         if(is_scalar($ip) === false)
             return(false);
@@ -347,7 +347,7 @@ class dwho_network
         return($nb);
     }
 
-    function valid_ipv6_right($ip)
+    public static function valid_ipv6_right($ip)
     {
         if(is_scalar($ip) === false)
             return(false);
@@ -387,7 +387,7 @@ class dwho_network
         return($h16_cnt + $nb);
     }
 
-    function valid_ipvfuture($ip)
+    public static function valid_ipvfuture($ip)
     {
         if(is_scalar($ip) === true
         && preg_match('/^'.DWHO_NETWORK_RE_IPVFUTURE.'$/',$ip) === 1)
@@ -396,7 +396,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_hostname_part($hostpart)
+    public static function valid_hostname_part($hostpart)
     {
         if(is_string($hostpart) === true
         && preg_match('/^('.DWHO_NETWORK_RE_HOSTNAME.')$/',$hostpart,$match) === 1)
@@ -405,7 +405,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_hostname($host)
+    public static function valid_hostname($host)
     {
         if(is_string($host) === true
         && strlen($host) < 256
@@ -416,7 +416,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_hostname_tld($host)
+    public static function valid_hostname_tld($host)
     {
         if(is_string($host) === true
         && strlen($host) < 256
@@ -427,7 +427,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_hostname_list($list,$mode=null,$max=6,$sep=null)
+    public static function valid_hostname_list($list,$mode=null,$max=6,$sep=null)
     {
         if(is_scalar($list) === false)
             return(false);
@@ -456,7 +456,7 @@ class dwho_network
         return(true);
     }
 
-    function valid_host($host,$mode=null)
+    public static function valid_host($host,$mode=null)
     {
         $mode = intval($mode);
 
@@ -490,7 +490,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_host_subnet_ipv4($host,$host_mode=null,$mask_mode=null,$subnet_host_mode=null)
+    public static function valid_host_subnet_ipv4($host,$host_mode=null,$mask_mode=null,$subnet_host_mode=null)
     {
         if(dwho_network::valid_host($host,$host_mode) === true
         || dwho_network::valid_subnet_ipv4($host,null,$mask_mode,$subnet_host_mode) === true)
@@ -499,7 +499,7 @@ class dwho_network
         return(false);
     }
 
-    function valid_port_number($port)
+    public static function valid_port_number($port)
     {
         if(is_scalar($port) === false
         || ctype_digit((string) $port) === false
@@ -509,7 +509,7 @@ class dwho_network
 
         return(true);
     }
-    function normalize_macaddr($macaddr)
+    public static function normalize_macaddr($macaddr)
     {
         if(is_scalar($macaddr) === false
         || preg_match_all('/([A-F0-9]{1,2})[-: ]?/i',$macaddr,$match) !== 6)
@@ -523,7 +523,7 @@ class dwho_network
         return(substr($r,1));
     }
 
-    function valid_macaddr($macaddr)
+    public static function valid_macaddr($macaddr)
     {
         if(is_string($macaddr) === false
         || preg_match('/^([A-F0-9]{2}:){5}([A-F0-9]{2})$/i',$macaddr,$match) !== 1
@@ -533,7 +533,7 @@ class dwho_network
         return(true);
     }
 
-    function valid_email_localpart($localpart)
+    public static function valid_email_localpart($localpart)
     {
         $atom        = '\!#\$%&\'\*\+\-\/0-9\=\?A-Z\^_`a-z\{\|\}~';
         $qtext        = '\x20\x21\x23-\x5B\x5D-\x7E';
@@ -550,7 +550,7 @@ class dwho_network
         return(true);
     }
 
-    function valid_email_address_literal($address,$host_mode=null,$chkmx=false)
+    public static function valid_email_address_literal($address,$host_mode=null,$chkmx=false)
     {
         if(is_string($address) === false
         || isset($address{0}) === false)
@@ -603,7 +603,7 @@ class dwho_network
         return(($chkmx === false ? true : getmxrr($address,$mxhosts)));
     }
 
-    function valid_email($email,$host_mode=null,$chkmx=false)
+    public static function valid_email($email,$host_mode=null,$chkmx=false)
     {
         if(is_string($email) === false
         || strlen($email) > 320

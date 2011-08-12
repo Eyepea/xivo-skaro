@@ -35,9 +35,9 @@ define('FILE_X_OK',1);
 define('FILE_W_OK',2);
 define('FILE_R_OK',4);
 
-class dwho_file
+abstract class dwho_file
 {
-    function fileinfo($file)
+    public static function fileinfo($file)
     {
         static $mime_cim = null;
 
@@ -65,11 +65,11 @@ class dwho_file
         return($r);
     }
 
-    function get_mime($file)
+    public static function get_mime($file)
     {
-        if(($file = dwho_file::is_f($file)) === false)
+        if(($file = self::is_f($file)) === false)
             return(false);
-        else if(($fileinfo = dwho_file::fileinfo($file)) !== false)
+        else if(($fileinfo = self::fileinfo($file)) !== false)
             $r = $fileinfo['type'].'/'.$fileinfo['subtype'];
         else if(dwho::load_extension('mime_magic') !== false)
             $r = mime_content_type($file);
@@ -79,10 +79,10 @@ class dwho_file
         return($r);
     }
 
-    function get_charset($file=null)
+    public static function get_charset($file=null)
     {
-        if(($file = dwho_file::is_f($file)) !== false
-        && ($fileinfo = dwho_file::fileinfo($file)) !== false
+        if(($file = self::is_f($file)) !== false
+        && ($fileinfo = self::fileinfo($file)) !== false
         && dwho_issa('parameters',$fileinfo) === true
         && isset($fileinfo['parameters']['charset']) === true)
             return($fileinfo['parameters']['charset']);
@@ -90,19 +90,19 @@ class dwho_file
         return(false);
     }
 
-    function get_time($file)
+    public static function get_time($file)
     {
         $r = false;
 
-        if(($file = dwho_file::is_f($file)) !== false)
+        if(($file = self::is_f($file)) !== false)
             $r = filemtime($file);
 
         return($r);
     }
 
-    function get_info($file)
+    public static function get_info($file)
     {
-        if(($file = dwho_file::is_f($file)) === false)
+        if(($file = self::is_f($file)) === false)
             return(false);
 
         $pinfo = pathinfo($file);
@@ -122,8 +122,8 @@ class dwho_file
             $info['filename'] = $info['name'];
 
         $info['pathnoext']    = $pinfo['dirname'].DIRECTORY_SEPARATOR.$info['filename'];
-        $info['mime']        = dwho_file::get_mime($info['path']);
-        $info['charset']    = dwho_file::get_charset($info['path']);
+        $info['mime']        = self::get_mime($info['path']);
+        $info['charset']    = self::get_charset($info['path']);
         $info['mtime']        = filemtime($info['path']);
         $info['size']        = filesize($info['path']);
 
@@ -133,14 +133,14 @@ class dwho_file
         return($info);
     }
 
-    function load_file($file,$dir='',$once=false,$verif=true)
+    public static function load_file($file,$dir='',$once=false,$verif=true)
     {
         $path = '';
 
         if(preg_match('/^[a-z0-9\-_\.]+$/i',$file) !== 1)
             return(false);
         else if(is_array($dir) === true)
-            $dir = dwho_file::list_to_path($dir);
+            $dir = self::list_to_path($dir);
 
         $dir = (string) $dir;
 
@@ -163,7 +163,7 @@ class dwho_file
         return((bool) require_once($path));
     }
 
-    function is_includable($file,$verif=true)
+    public static function is_includable($file,$verif=true)
     {
         if((bool) $verif === true
         && (is_file($file) === false || is_readable($file) === false) === true)
@@ -174,14 +174,14 @@ class dwho_file
         return(true);
     }
 
-    function required($arr,$once=false,$includable=false)
+    public static function required($arr,$once=false,$includable=false)
     {
-        $path = dwho_file::list_to_path($arr);
+        $path = self::list_to_path($arr);
 
         if($path === false
-        || ($path = dwho_file::is_f_r($path)) === false
+        || ($path = self::is_f_r($path)) === false
         || ((bool) $includable === true
-           && dwho_file::is_includable($path) === false) === true)
+           && self::is_includable($path) === false) === true)
             return(false);
         else if((bool) $once === false)
             return((bool) require($path));
@@ -189,42 +189,42 @@ class dwho_file
             return((bool) require_once($path));
     }
 
-    function is_r($file)
+    public static function is_r($file)
     {
         return(is_readable($file));
     }
 
-    function is_w($file)
+    public static function is_w($file)
     {
         return(is_writeable($file));
     }
 
-    function is_x($file)
+    public static function is_x($file)
     {
         return(is_executable($file));
     }
 
-    function is_rw($file)
+    public static function is_rw($file)
     {
         return((is_readable($file) === true && is_writeable($file) === true));
     }
 
-    function is_rx($file)
+    public static function is_rx($file)
     {
         return((is_readable($file) === true && is_executable($file) === true));
     }
 
-    function is_wx($file)
+    public static function is_wx($file)
     {
         return((is_writeable($file) === true && is_executable($file) === true));
     }
 
-    function is_rwx($file)
+    public static function is_rwx($file)
     {
         return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true));
     }
 
-    function list_to_path($list)
+    public static function list_to_path($list)
     {
         if(is_array($list) === false)
             return(false);
@@ -232,14 +232,14 @@ class dwho_file
         return(implode(DIRECTORY_SEPARATOR,$list));
     }
 
-    function joinpath()
+    public static function joinpath()
     {
         $arr = func_get_args();
 
         return(dwho_implode(DIRECTORY_SEPARATOR,$arr));
     }
 
-    function abspath($str)
+    public static function abspath($str)
     {
         $str = (string) $str;
 
@@ -267,10 +267,10 @@ class dwho_file
                 array_pop($r);
         }
 
-        return(DIRECTORY_SEPARATOR.dwho_file::list_to_path($r));
+        return(DIRECTORY_SEPARATOR.self::list_to_path($r));
     }
 
-    function is_f($file,$mode=1)
+    public static function is_f($file,$mode=1)
     {
         static $pathcache = array();
 
@@ -281,7 +281,7 @@ class dwho_file
         else if(isset($pathcache[$file]) === false)
         {
             if($mode !== 2)
-                $pathcache[$file] = dwho_file::abspath($file);
+                $pathcache[$file] = self::abspath($file);
             else
                 $pathcache[$file] = realpath($file);
         }
@@ -289,63 +289,63 @@ class dwho_file
         return($pathcache[$file]);
     }
 
-    function is_f_r($file,$mode=1)
+    public static function is_f_r($file,$mode=1)
     {
         if(is_readable($file) === true)
-            return(dwho_file::is_f($file,$mode));
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_f_w($file,$mode=1)
+    public static function is_f_w($file,$mode=1)
     {
         if(is_writeable($file) === true)
-            return(dwho_file::is_f($file,$mode));
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_f_x($file,$mode=1)
+    public static function is_f_x($file,$mode=1)
     {
         if(is_executable($file) === true)
-            return(dwho_file::is_f($file,$mode));
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_f_rw($file,$mode=1)
+    public static function is_f_rw($file,$mode=1)
     {
-        if(dwho_file::is_rw($file) === true)
-            return(dwho_file::is_f($file,$mode));
+        if(self::is_rw($file) === true)
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_f_rx($file,$mode=1)
+    public static function is_f_rx($file,$mode=1)
     {
-        if(dwho_file::is_rx($file) === true)
-            return(dwho_file::is_f($file,$mode));
+        if(self::is_rx($file) === true)
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_f_wx($file,$mode=1)
+    public static function is_f_wx($file,$mode=1)
     {
-        if(dwho_file::is_wx($file) === true)
-            return(dwho_file::is_f($file,$mode));
+        if(self::is_wx($file) === true)
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_f_rwx($file,$mode=1)
+    public static function is_f_rwx($file,$mode=1)
     {
-        if(dwho_file::is_rwx($file) === true)
-            return(dwho_file::is_f($file,$mode));
+        if(self::is_rwx($file) === true)
+            return(self::is_f($file,$mode));
 
         return(false);
     }
 
-    function is_d($dir,$dirname=false,$mode=1)
+    public static function is_d($dir,$dirname=false,$mode=1)
     {
         static $pathcache = array();
 
@@ -359,7 +359,7 @@ class dwho_file
         else if(isset($pathcache[$dir]) === false)
         {
             if($mode !== 2)
-                $pathcache[$dir] = dwho_file::abspath($dir);
+                $pathcache[$dir] = self::abspath($dir);
             else
                 $pathcache[$dir] = realpath($dir);
         }
@@ -367,84 +367,84 @@ class dwho_file
         return($pathcache[$dir]);
     }
 
-    function is_d_r($dir,$dirname=false,$mode=1)
+    public static function is_d_r($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
         if(is_readable($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function is_d_w($dir,$dirname=false,$mode=1)
+    public static function is_d_w($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
         if(is_writeable($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function is_d_x($dir,$dirname=false,$mode=1)
+    public static function is_d_x($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
         if(is_executable($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function is_d_rw($dir,$dirname=false,$mode=1)
+    public static function is_d_rw($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
-        if(dwho_file::is_rw($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+        if(self::is_rw($dir) === true)
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function is_d_rx($dir,$dirname=false,$mode=1)
+    public static function is_d_rx($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
-        if(dwho_file::is_rx($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+        if(self::is_rx($dir) === true)
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function is_d_wx($dir,$dirname=false,$mode=1)
+    public static function is_d_wx($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
-        if(dwho_file::is_wx($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+        if(self::is_wx($dir) === true)
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function is_d_rwx($dir,$dirname=false,$mode=1)
+    public static function is_d_rwx($dir,$dirname=false,$mode=1)
     {
         if((bool) $dirname === true)
             $dir = dirname($dir);
 
-        if(dwho_file::is_rwx($dir) === true)
-            return(dwho_file::is_d($dir,false,$mode));
+        if(self::is_rwx($dir) === true)
+            return(self::is_d($dir,false,$mode));
 
         return(false);
     }
 
-    function put_contents($filename,$data,$flags=0)
+    public static function put_contents($filename,$data,$flags=0)
     {
         $filename = (string) $filename;
         $flags = dwho_uint($flags);
@@ -457,11 +457,11 @@ class dwho_file
 
         $dir = dirname($filename);
 
-        if(dwho_file::is_d_rwx($dir) === false)
+        if(self::is_d_rwx($dir) === false)
             return(false);
         else if(($flags & FILE_APPEND) !== 0)
             $mode = 'a';
-        else if(($filename = dwho_file::is_f_rw($filename)) !== false)
+        else if(($filename = self::is_f_rw($filename)) !== false)
             $mode = 'wb';
         else
             return(false);
@@ -487,15 +487,15 @@ class dwho_file
         return($r);
     }
 
-    function read_d($dir,$type='',$mode=0,$match='',$dirwriteable=false,$stat=false)
+    public static function read_d($dir,$type='',$mode=0,$match='',$dirwriteable=false,$stat=false)
     {
         $type = (string) $type;
         $match = (string) $match;
         $stat = (bool) $stat;
 
-        if(($dir = dwho_file::is_d_rx($dir)) === false
+        if(($dir = self::is_d_rx($dir)) === false
         || ($open = opendir($dir)) === false
-        || ((bool) $dirwriteable === true && dwho_file::is_w($dir) === false) === true)
+        || ((bool) $dirwriteable === true && self::is_w($dir) === false) === true)
             return(false);
 
         if($type !== 'file' && $type !== 'dir')
@@ -512,21 +512,21 @@ class dwho_file
 
             $file = $dir.DIRECTORY_SEPARATOR.$name;
 
-            if(($mode & FILE_R_OK) !== 0 && dwho_file::is_r($file) === false)
+            if(($mode & FILE_R_OK) !== 0 && self::is_r($file) === false)
                 continue;
-            else if(($mode & FILE_W_OK) !== 0 && dwho_file::is_w($file) === false)
+            else if(($mode & FILE_W_OK) !== 0 && self::is_w($file) === false)
                 continue;
-            else if(($mode & FILE_X_OK) !== 0 && dwho_file::is_x($file) === false)
+            else if(($mode & FILE_X_OK) !== 0 && self::is_x($file) === false)
                 continue;
 
             switch($type)
             {
                 case 'file':
-                    if(dwho_file::is_f($file) === false)
+                    if(self::is_f($file) === false)
                         continue 2;
                     break;
                 case 'dir':
-                    if(dwho_file::is_d($file) === false)
+                    if(self::is_d($file) === false)
                         continue 2;
                     break;
             }
@@ -544,19 +544,19 @@ class dwho_file
         return($r);
     }
 
-    function rm($file)
+    public static function rm($file)
     {
-        if(dwho_file::is_d_w($file,true) !== false && unlink($file) !== false)
+        if(self::is_d_w($file,true) !== false && unlink($file) !== false)
             return(true);
 
         return(false);
     }
 
-    function rmdir($dir)
+    public static function rmdir($dir)
     {
-        if(($dir = dwho_file::is_d_rwx($dir)) === false
-        || dwho_file::is_d_rw(dirname($dir)) === false
-        || ($list = dwho_file::read_d($dir)) === false
+        if(($dir = self::is_d_rwx($dir)) === false
+        || self::is_d_rw(dirname($dir)) === false
+        || ($list = self::read_d($dir)) === false
         || is_link($dir) === true)
             return(false);
         else if(isset($list[0]) === false)
@@ -568,14 +568,14 @@ class dwho_file
         {
             $path = $dir.DIRECTORY_SEPARATOR.$list[$i];
 
-            if(dwho_file::is_f($path) !== false)
+            if(self::is_f($path) !== false)
             {
                 unlink($path);
                 continue;
             }
 
-            if(dwho_file::is_d($path) !== false)
-                dwho_file::rmdir($path);
+            if(self::is_d($path) !== false)
+                self::rmdir($path);
         }
 
         return(rmdir($dir));

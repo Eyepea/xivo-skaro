@@ -20,12 +20,12 @@
 
 class xivo_service
 {
-	var $_ini	= array();
+	var $_ini		= array();
 	var $_services	= array();
 	var $_config	= array();
 	var $_enginecfg	= array();
 
-	function xivo_service($ini=null)
+	public function __construct($ini=null)
 	{
 		if(($this->_services = dwho_gat::get_file(XIVO_PATH_OBJECTCONF.DWHO_SEP_DIR.'service')) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);
@@ -36,7 +36,7 @@ class xivo_service
 			$_SESSION['_SRE'] = array();
 	}
 
-	function get_engines($service)
+	public function get_engines($service)
 	{
 		if(dwho_issa($service,$this->_services) === true)
 			return($this->_services[$service]);
@@ -44,7 +44,7 @@ class xivo_service
 		return(false);
 	}
 
-	function is_valid_engine($service,$engine)
+	public function is_valid_engine($service,$engine)
 	{
 		if(dwho_issa($service,$this->_services) === true
 		&& isset($this->_services[$service][$engine]) === true)
@@ -53,7 +53,7 @@ class xivo_service
 		return(false);
 	}
 
-	function get_engine_initcfg($service,$engine)
+	public function get_engine_initcfg($service,$engine)
 	{
 		return(dwho_gat::get_file(
 				array(XIVO_PATH_OBJECT,
@@ -63,7 +63,7 @@ class xivo_service
 				      'initcfg')));
 	}
 
-	function get_init_file($service)
+	public function get_init_file($service)
 	{
 		if(dwho_issa($service,$this->_services) === false)
 			return(false);
@@ -71,7 +71,7 @@ class xivo_service
 		return(xivo::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.$service.'.ini'));
 	}
 
-	function get_engine_config($service,$engine)
+	public function get_engine_config($service,$engine)
 	{
 		if($this->is_valid_engine($service,$engine) === false)
 			return(false);
@@ -85,7 +85,7 @@ class xivo_service
 		return($this->_enginecfg[$service][$engine]);
 	}
 
-	function set_engine_config($service,$engine,$config)
+	public function set_engine_config($service,$engine,$config)
 	{
 		if($this->get_engine_config($service,$engine) === false
 		|| is_array($config) === false)
@@ -97,7 +97,7 @@ class xivo_service
 		return(true);
 	}
 
-	function get_service_config($service,$engine=null)
+	public function get_service_config($service,$engine=null)
 	{
 		$init = $this->get_init_file($service);
 
@@ -119,7 +119,7 @@ class xivo_service
                 $this->get_engine_config($service,$engine)));
 	}
 
-	function &get_module($service,$module,$engine=null)
+	public function &get_module($service,$module,$engine=null)
 	{
 		if(($class = &$this->get($service,$engine)) === false)
 			trigger_error('Service not found or not installed',E_USER_ERROR);
@@ -127,42 +127,44 @@ class xivo_service
 		return(($ref = &$class->get_module($module)));
 	}
 
-	function _set($service,&$obj)
+	protected function _set($service,&$obj)
 	{
-		if(dwho_has_len($service) === false || is_object($obj) === false)
+		if(dwho_has_len($service) === false
+		|| is_object($obj) === false)
 			return(false);
 
 		return(dwho_gct::set($obj,XIVO_SRE_CLASS_PRE.$service));
 	}
 
-	function &get($service,$engine=null)
+	public function &get($service,$engine=null,$reload=false)
 	{
 		$r = false;
 
-		if($this->_load_service($service,$engine) !== false)
-			$r = &dwho_gct::get(XIVO_SRE_CLASS_PRE.$service);
+		if($this->_load_service($service,$engine,$reload) !== false)
+			$r = dwho_gct::get(XIVO_SRE_CLASS_PRE.$service);
 
 		return(($ref = &$r));
 	}
 
-	function &_set_get($service,&$obj)
+	public function &_set_get($service,&$obj)
 	{
 		$r = false;
 
 		if(dwho_has_len($service) === true)
-			$r = &dwho_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$service);
+			$r = dwho_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$service);
 
 		return(($ref = &$r));
 	}
 
-	function is_loaded($service)
+	public function is_loaded($service)
 	{
 		return(dwho_gct::is_valid(XIVO_SRE_CLASS_PRE.$service));
 	}
 
-	function _load_service($service,$engine=null)
+	protected function _load_service($service,$engine=null,$reload=false)
 	{
-		if($this->is_loaded($service) === true)
+		if($reload === false
+		&& $this->is_loaded($service) === true)
 			return(null);
 		else if((bool) dwho_ak($service,$this->_ini,true) === false
 		|| ($config = $this->get_service_config($service,$engine)) === false)

@@ -39,6 +39,8 @@ $array['xivo/configuration/json/restricted/check'] = 'xivo/configuration/json.ph
 // just for monit local requesting
 $array['xivo/ui/monit'] = 'xivo/ui.php/monit/';
 
+// just for wizard local requesting
+$array['xivo/wizard/ui/wizard'] = 'xivo/ui.php/wizard/';
 
 // just for monitoring page refresh
 $array['xivo/configuration/json/restricted/support/monitoring'] = 'xivo/configuration/json.php/restricted/support/monitoring/';

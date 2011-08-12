@@ -18,16 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class dwho_datastorage
+abstract class dwho_datastorage
 {
-    function factory($type,$param=array())
+    public static function factory($type,$param=array())
     {
         $type = strtolower($type);
         $name = 'dwho_datastorage_adapter_'.$type;
 
-        if(dwho_datastorage::is_valid($type) === false)
+        if(self::is_valid($type) === false)
             trigger_error('Invalid datastorage type',E_USER_ERROR);
-        else if(dwho_datastorage::chk_extension_loaded($type,true) === false)
+        else if(self::chk_extension_loaded($type,true) === false)
             trigger_error('Datastorage '.$type.' extension is not loaded',E_USER_ERROR);
         else if(dwho::load_class($name,array('datastorage','adapter'),$type) === false)
             return(false);
@@ -35,7 +35,7 @@ class dwho_datastorage
         return(new $name($param));
     }
 
-    function is_valid($type)
+    public static function is_valid($type)
     {
         $type = (string) $type;
 
@@ -44,20 +44,20 @@ class dwho_datastorage
         return(isset($datastorage[$type]));
     }
 
-    function has_ssl($type)
+    public static function has_ssl($type)
     {
         $type = (string) $type;
 
         $datastorage = &dwho_gat::get('datastorage');
 
-        if(dwho_datastorage::is_valid($type) === true
+        if(self::is_valid($type) === true
         && (bool) $datastorage[$type]['ssl'] === true)
             return($type);
 
-        return(dwho_datastorage::is_ssl_scheme($type));
+        return(self::is_ssl_scheme($type));
     }
 
-    function is_ssl_scheme($type)
+    public static function is_ssl_scheme($type)
     {
         $type = (string) $type;
 
@@ -65,23 +65,23 @@ class dwho_datastorage
 
         if(substr($type,-1) === 's'
         && ($type = substr($type,0,-1)) !== false
-        && dwho_datastorage::is_valid($type) === true
+        && self::is_valid($type) === true
         && (bool) $datastorage[$type]['ssl'] === true)
             return($type);
 
         return(false);
     }
 
-    function get_param_from_uri($str)
+    public static function get_param_from_uri($str)
     {
         dwho::load_class('dwho_uri');
         $uri = new dwho_uri();
 
         if(($arr = $uri->parse_uri($str)) === false || isset($arr['scheme']) === false)
             return(false);
-        else if(($ssl = dwho_datastorage::is_ssl_scheme($arr['scheme'])) !== false)
+        else if(($ssl = self::is_ssl_scheme($arr['scheme'])) !== false)
             $arr['scheme'] = $ssl;
-        else if(dwho_datastorage::is_valid($arr['scheme']) === false)
+        else if(self::is_valid($arr['scheme']) === false)
             return(false);
 
         $r = array();
@@ -130,11 +130,11 @@ class dwho_datastorage
         return($r);
     }
 
-    function get_extension_name($type)
+    public static function get_extension_name($type)
     {
         $type = (string) $type;
 
-        if(dwho_datastorage::chk_extension_exists($type) === false)
+        if(self::chk_extension_exists($type) === false)
             return(false);
 
         $datastorage = &dwho_gat::get('datastorage');
@@ -142,13 +142,13 @@ class dwho_datastorage
         return($datastorage[$type]['extension']);
     }
 
-    function chk_extension_loaded($type,$load=false)
+    public static function chk_extension_loaded($type,$load=false)
     {
         $type = (string) $type;
 
-        if(dwho_datastorage::chk_extension_exists($type) === false)
+        if(self::chk_extension_exists($type) === false)
             return(false);
-    
+
         $datastorage = &dwho_gat::get('datastorage');
 
         if((bool) $load === true)
@@ -157,11 +157,11 @@ class dwho_datastorage
         return(dwho::chk_extension_loaded($datastorage[$type]['extension']));
     }
 
-    function chk_extension_exists($type)
+    public static function chk_extension_exists($type)
     {
         $type = (string) $type;
 
-        if(dwho_datastorage::is_valid($type) === false)
+        if(self::is_valid($type) === false)
             return(false);
 
         $datastorage = &dwho_gat::get('datastorage');
@@ -169,11 +169,11 @@ class dwho_datastorage
         return(dwho_ak('extension',$datastorage[$type]));
     }
 
-    function get_meta($type)
+    public static function get_meta($type)
     {
         $type = (string) $type;
 
-        if(dwho_datastorage::is_valid($type) === false)
+        if(self::is_valid($type) === false)
             return(false);
 
         $datastorage = &dwho_gat::get('datastorage');

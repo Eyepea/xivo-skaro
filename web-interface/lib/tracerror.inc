@@ -22,7 +22,7 @@ dwho::load_class('dwho_network');
 
 class dwho_tracerror
 {
-    var $_param = array(
+    private $_param = array(
                 'level'        => 0,
                 'report_type'    => 0,
                 'report_mode'    => 0,
@@ -30,11 +30,11 @@ class dwho_tracerror
                 'email'        => false,
                 'file'        => false);
 
-    var $_delayed_content    = array();
-    var $_sapi        = DWHO_SAPI_MODE;
-    var $_conf        = array();
+    private $_delayed_content    = array();
+    private $_sapi        = DWHO_SAPI_MODE;
+    private $_conf        = array();
 
-    function dwho_tracerror($param=array())
+    public function __construct($param=array())
     {
         $param = (array) $param;
 
@@ -67,7 +67,7 @@ class dwho_tracerror
             $this->_param['file'] = false;
     }
 
-    function get_param($name)
+    public function get_param($name)
     {
         if(isset($this->_param[$name]) === true)
             return($this->_param[$name]);
@@ -75,7 +75,7 @@ class dwho_tracerror
         return(null);
     }
 
-    function set_param($name,$value)
+    public function set_param($name,$value)
     {
         switch($name)
         {
@@ -120,22 +120,22 @@ class dwho_tracerror
         return(true);
     }
 
-    function notice($msg,$context='',$report_type=null)
+    public function notice($msg,$context='',$report_type=null)
     {
         return($this->report_err($msg,DWHO_TE_ERR_NOTICE,$context,$report_type));
     }
 
-    function warning($msg,$context='',$report_type=null)
+    public function warning($msg,$context='',$report_type=null)
     {
         return($this->report_err($msg,DWHO_TE_ERR_WARNING,$context,$report_type));
     }
 
-    function error($msg,$context='',$report_type=null)
+    public function error($msg,$context='',$report_type=null)
     {
         return($this->report_err($msg,DWHO_TE_ERR_ERROR,$context,$report_type));
     }
 
-    function _chk_level($level)
+    private function _chk_level($level)
     {
         $r = false;
 
@@ -147,7 +147,7 @@ class dwho_tracerror
         return($r);
     }
 
-    function _chk_report_type($type)
+    private function _chk_report_type($type)
     {
         $r = false;
 
@@ -159,12 +159,12 @@ class dwho_tracerror
         return($r);
     }
 
-    function _chk_report_mode($mode)
+    private function _chk_report_mode($mode)
     {
         return(isset($this->_conf['rmode'][$mode]));
     }
 
-    function _chk_email($email)
+    private function _chk_email($email)
     {
         if($email !== false && dwho_network::valid_email($email) === true)
             return($email);
@@ -172,7 +172,7 @@ class dwho_tracerror
         return(false);
     }
 
-    function _chk_file($file)
+    private function _chk_file($file)
     {
         if(($filelog = dwho_file::is_f_rw($file)) !== false)
             $r = $filelog;
@@ -184,7 +184,7 @@ class dwho_tracerror
         return($r);
     }
 
-    function report_mail($to,$subject,$body)
+    public function report_mail($to,$subject,$body)
     {
         if(dwho_network::valid_email($to) === false)
             return(false);
@@ -202,7 +202,7 @@ class dwho_tracerror
         return(mail($to,$subject,$body,implode("\r\n",$headers)));
     }
 
-    function report_err($msg,$level=0,$context=DWHO_TE_CONTEXT,$report_type=null)
+    public function report_err($msg,$level=0,$context=DWHO_TE_CONTEXT,$report_type=null)
     {
         $level = $this->_chk_level($level);
 
@@ -220,7 +220,7 @@ class dwho_tracerror
         return($this->display($msg,DWHO_TE_ERR_TRAC,DWHO_TE_RTYPE_SCREEN,$context,DWHO_TE_RMODE_DELAYED));
     }
 
-    function report_e_err($errno,$errstr,$errfile,$errline)
+    public function report_e_err($errno,$errstr,$errfile,$errline)
     {
         if(error_reporting() < 1)
             return(null);
@@ -247,7 +247,7 @@ class dwho_tracerror
         $this->report_err($msg,$level,$context,$this->_param['report_type']);
     }
 
-    function report_trac($msg,$context=DWHO_TE_CONTEXT,$report_type=null,$report_mode=0)
+    public function report_trac($msg,$context=DWHO_TE_CONTEXT,$report_type=null,$report_mode=0)
     {
         if(($report_type = $this->_chk_report_type($report_type)) === false)
             $report_type = $this->_param['report_type'];
@@ -268,7 +268,7 @@ class dwho_tracerror
         return($this->display($msg,DWHO_TE_ERR_TRAC,DWHO_TE_RTYPE_SCREEN,$context,DWHO_TE_RMODE_DELAYED));
     }
 
-    function display($msg,$level=DWHO_TE_ERR_TRAC,$report_type=null,$context=DWHO_TE_CONTEXT,$report_mode=0)
+    public function display($msg,$level=DWHO_TE_ERR_TRAC,$report_type=null,$context=DWHO_TE_CONTEXT,$report_mode=0)
     {
         if(($level = $this->_chk_level($level)) === false)
             $level = DWHO_TE_ERR_TRAC;
@@ -348,7 +348,7 @@ class dwho_tracerror
             die();
     }
 
-    function display_delayed()
+    public function display_delayed()
     {
         if(is_array($this->_delayed_content) === false
         || empty($this->_delayed_content) === true)

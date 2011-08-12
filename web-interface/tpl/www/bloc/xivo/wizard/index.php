@@ -24,6 +24,13 @@ $dhtml = &$this->get_module('dhtml');
 $step = $this->get_var('step');
 
 ?>
+<div id="boxee" style="position: absolute;z-index: 99;left: 0;top: 0;width: 100%;height: 100%;background: #bbb;opacity: 0.8;filter: alpha(opacity=80);display:none;">
+	<div style="z-index: 100;margin: auto;width: 500px;height: 150px;margin-top:200px;background: #fff;border: 1px solid #333;
+	font-size: 12px;padding: 10px;text-align: center;font-weight: bold;">
+		<p><?=nl2br($this->bbf('redirect_message_waiting'));?></p>
+	</div>
+</div>
+
 <form action="#" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 <div id="xivo-wizard-step-<?=$step?>" class="b-infos">
 	<h3 class="sb-top xspan">
@@ -68,7 +75,7 @@ $step = $this->get_var('step');
 
 			$form->hidden(array('name'	=> 'step',
 					    'value'	=> $step)),
-	
+
 			$form->hidden(array('name'	=> 'verify',
 					    'value'	=> 0)),
 

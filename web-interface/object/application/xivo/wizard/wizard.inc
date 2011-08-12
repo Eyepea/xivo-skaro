@@ -67,7 +67,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         || isset($this->_wizsess['dbconfig']['save']['xivo']) === false)
             return(false);
 
-        $_XIVO = &dwho_gct::get('xivo');
+        $_XIVO = dwho_gct::get('xivo');
         $_XIVO->load_datastorage($this->_wizsess['dbconfig']['save']['xivo']);
         $this->_xivo_dso_loaded = true;
 
@@ -78,6 +78,10 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
     {
         if(is_object($this->_ipbx) === true)
             return(true);
+        elseif(dwho_issa('ipbxengine',$this->_wizsess) === false
+        && ($_SRE = dwho_gct::get('xivo_service')) !== false
+		&& ($this->_ipbx = &$_SRE->get('ipbx')) !== false)
+        	return(true);
         else if(dwho_issa('ipbxengine',$this->_wizsess) === false
         || isset($this->_wizsess['ipbxengine']['engine']) === false
         || dwho_issa('dbconfig',$this->_wizsess) === false
@@ -85,7 +89,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         || isset($this->_wizsess['dbconfig']['save']['ipbx']) === false)
             return(false);
 
-        $_SRE = &dwho_gct::get('xivo_service');
+        $_SRE = dwho_gct::get('xivo_service');
         $engines = $_SRE->get_engines('ipbx');
 
         if(defined('XIVO_SRE_IPBX_LABEL') === false)
@@ -97,7 +101,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         $_SRE->set_engine_config('ipbx',$this->_wizsess['ipbxengine']['engine'],$config);
 
-        $this->_ipbx = &$_SRE->get('ipbx',$this->_wizsess['ipbxengine']['engine']);
+        $this->_ipbx = &$_SRE->get('ipbx',$this->_wizsess['ipbxengine']['engine'],true);
 
         return(true);
     }
@@ -282,7 +286,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         else
             $r['selected'] = null;
 
-        $_SRE = &dwho_gct::get('xivo_service');
+        $_SRE = dwho_gct::get('xivo_service');
         $r['engines'] = $_SRE->get_engines('ipbx');
 
         return($r);
@@ -620,7 +624,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
             return(false);
         }
 
-        $_SRE = &dwho_gct::get('xivo_service');
+        $_SRE = dwho_gct::get('xivo_service');
         $engines = $_SRE->get_engines('ipbx');
 
         if(isset($engines[$data['ipbxengine']]) === false)
@@ -1273,7 +1277,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         || isset($this->_wizsess['mainconfig']['adminpasswd']) === false)
             return(false);
 
-        $this->_load_xivo_dso();
         xivo::load_class('xivo_user',XIVO_PATH_OBJECT);
         xivo::load_class('xivo_user_root',
                  array(XIVO_PATH_OBJECT,'user'),
@@ -1336,9 +1339,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
             return(false);
         }
 
-        // save to database
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
         $module = &$this->_xobj->get_module('resolvconf');
 
         $data = array(
@@ -1364,9 +1364,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         $name = $this->_wizsess['entity']['name'];
 
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
-
         $appentity = &$this->_xobj->get_application('entity');
 
         // allow to reexecute the process several times
@@ -1389,9 +1386,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         || dwho_issa('incall',$this->_wizsess['context']) === false
         || dwho_issa('outcall',$this->_wizsess['context']) === false)
             return(false);
-
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
 
         $context_internal = true;
         $context_incall = true;
@@ -1449,7 +1443,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         || empty($this->_wizsess['ipbximportuser']) === true)
             return(null);
 
-        $this->_load_ipbx_service();
         $appuser = &$this->_ipbx->get_application('user');
         $r = $appuser->import_from_array($this->_wizsess['ipbximportuser']);
 
@@ -1511,9 +1504,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         $netiface = $this->_wizsess['netiface'];
         $name = $netiface['name'];
 
-        // save to database
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
         $module = &$this->_xobj->get_module('netiface');
 
         //computing broadcast address
@@ -1561,37 +1551,34 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
     function set_default_provisioning_values()
     {
-        if(dwho_issa('netiface',$this->_wizsess) === false)
-            return(false);
-
-        $netiface = $this->_wizsess['netiface'];
-
         // save to database
         $this->_load_xivo_dso();
         $this->_load_ipbx_service();
 
-        $appsip = &$this->_ipbx->get_apprealstatic('sip');
-        $appgeneralsip = &$appsip->get_module('general');
+        $modnetiface = &$this->_xobj->get_module('netiface');
+        if (($voip_iface = $modnetiface->get_voip_iface()) === false)
+        	return(false);
+
+        $modprov = &$this->_xobj->get_module('provisioning');
+        $modprov->edit(1, array('net4_ip' => $voip_iface['address']));
+
+        $provdconfig = &$this->_xobj->get_module('provdconfig');
+        if ($provdconfig->eval_required_config($voip_iface['address'],true) === false)
+            return false;
 
 		$rs = array();
 		$rs['commented'] = 0;
 		$rs['var_name'] = 'autocreate_prefix';
 		$rs['var_val'] = 'ap'.dwho_generate_code();
 
+		$appsip = &$this->_ipbx->get_apprealstatic('sip');
+		$appgeneralsip = &$appsip->get_module('general');
+
 		if($appgeneralsip->set($rs) === false
 		|| $appgeneralsip->save() === false)
 			dwho_report::push('error', 'Can\'t create autocreate_prefix in staticsip table');
 
-        $modprov = &$this->_xobj->get_module('provisioning');
-        $modprov->edit(1, array('net4_ip' => $netiface['address']));
-
-        if(($provdconfig = &$this->_xobj->get_module('provdconfig')) === false)
-            trigger_error('Unable to load provdconfig module',E_USER_ERROR);
-
-        if ($provdconfig->eval_required_config($netiface['address'],true) === false)
-            return false;
-
-        return(true);
+		return(true);
     }
 
     function _commit_language($lang)
@@ -1630,32 +1617,81 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         return true;
     }
 
+    function save_step_validate($data, $tpl)
+    {
+    }
+
+	function commit_db_data()
+	{
+		// save to database
+		$this->_load_xivo_dso();
+		$this->_load_ipbx_service();
+
+		$ref_components = array();
+		$ref_components['adminpasswd'] = $this->_commit_adminpasswd();
+		$ref_components['hosts'] = $this->_commit_hosts();
+		$ref_components['resolvconf'] = $this->_commit_resolvconf();
+		$ref_components['entity'] = $this->_commit_entity();
+		$ref_components['context'] = $this->_commit_context();
+		$ref_components['ipbximportuser'] = $this->_commit_ipbximportuser();
+		$ref_components['netiface'] = $this->_prepare_netiface();
+	}
+
+	function commit_syslanguage()
+	{
+		$this->_commit_language($this->_wizsess['welcome']['language']);
+		$this->_commit_timezone();
+	}
+
+	function commit_sysdbconfig()
+	{
+		$this->_commit_dbconfig();
+	}
+
+	function commit_netinfos()
+	{
+		$this->_commit_netiface();
+	}
+
+	function commit_commonconf()
+	{
+        if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
+            trigger_error('Unable to load commonconf module',E_USER_ERROR);
+
+        // Generate commonconf file
+        $this->_load_xivo_dso();
+        $this->_load_ipbx_service();
+        $content = '';
+        if($commonconf->generate(&$content) !== false)
+        {
+	        $content = str_replace("\n", "<br/>\n", $content);
+	        $content = $commonconf->apply();
+
+	        // restart provisioning service
+	        $this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));
+
+	        // restart asterisk service
+	        $this->_sysconfd->request_post('/services', array('asterisk' => 'restart'));
+
+	        #session_destroy();
+	        return(true);
+        }
+
+        dwho_report::push('error', $content);
+    }
+/*
+
     function send_redirect($tpl)
     {
-        $uri = $this->discover_finish_uri();
-        $tpl->load_i18n_file('tpl/tpl.i18n', 'global');
-        $tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
-
-        $seconds = 10;
+		$tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
+		$url = $this->discover_finish_uri();
 ?>
-<html>
-<head>
-<title><?=dwho_htmlsc($tpl->bbf('page_title',php_uname('n')))?></title>
 <script type="text/javascript">
-	function redirect() {
-		window.location = "<?=$uri?>";
-	}
-	setInterval("redirect()", <?=($seconds*1000)?>);
+	window.setTimeout( function() {window.location = '<?=$url?>';}, 10000);
 </script>
-</head>
-<body>
-	<p><?=nl2br($tpl->bbf('redirect_message',$seconds));?></p>
-</body>
-</html>
+<p><?=nl2br($tpl->bbf('redirect_message',10));?></p>
 <?php
-        ob_flush();
-        flush();
-        ob_end_flush();
+	ob_end_flush();
     }
 
     function save_step_validate($data, $tpl)
@@ -1749,19 +1785,19 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
         $this->set_default_provisioning_values();
 
-        // Generate commonconf file
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
-
 		//page redirection must be sent to client BEFORE changing server ip address
 		$this->send_redirect($tpl);
 
 		$this->_commit_netiface();
 
         if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
-            return(false);
+            trigger_error('Unable to load commonconf module',E_USER_ERROR);
 
-        if($commonconf->generate(&$content,false) !== false)
+        // Generate commonconf file
+        $this->_load_xivo_dso();
+        $this->_load_ipbx_service();
+        $content = '';
+        if($commonconf->generate(&$content) !== false)
         {
 	        $content = str_replace("\n", "<br/>\n", $content);
 	        $content = $commonconf->apply();
@@ -1774,12 +1810,13 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	        $this->_wizsess['commit']['step']['validate'] = true;
 
-	        session_destroy();
-        	return(true);
+	        #session_destroy();
+	        return(true);
         }
 
         dwho_report::push('error', $content);
     }
+    */
 
     function save($data, $tpl)
     {

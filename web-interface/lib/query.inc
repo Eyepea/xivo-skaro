@@ -43,7 +43,7 @@ class dwho_query
     var $qraw    = array();
     var $input    = null;
 
-    function dwho_query()
+    public function __construct()
     {
         $this->_uri = new dwho_uri();
 
@@ -76,7 +76,7 @@ class dwho_query
         $this->raw = &$this->request_meth_raw();
     }
 
-    function &query_string($type='request',$mode=0)
+    public function &query_string($type='request',$mode=0)
     {
         $r = array();
 
@@ -98,7 +98,7 @@ class dwho_query
         return(($ref = &$r));
     }
 
-    function go($location='',$query='')
+    public function go($location='',$query='')
     {
         $location = (string) $location;
 
@@ -132,7 +132,7 @@ class dwho_query
         die(header('Location: '.$location));
     }
 
-    function get($name,$default=null)
+    public function get($name,$default=null)
     {
         if(($r = $this->get_qr($name)) !== null)
             return($r);
@@ -142,7 +142,7 @@ class dwho_query
         return($default);
     }
 
-    function get_qr($name)
+    public function get_qr($name)
     {
         if(isset($this->raw[$name]) === true)
             return($this->raw[$name]);
@@ -157,7 +157,7 @@ class dwho_query
         return($this->raw[$name]);
     }
 
-    function get_qs($name)
+    public function get_qs($name)
     {
         if(isset($this->qraw[$name]) === true)
             return($this->qraw[$name]);
@@ -172,7 +172,7 @@ class dwho_query
         return($this->qraw[$name]);
     }
 
-    function get_uqr($name)
+    public function get_uqr($name)
     {
         if(isset($this->uraw[$name]) === true)
             return($this->uraw[$name]);
@@ -187,7 +187,7 @@ class dwho_query
         return($this->uraw[$name]);
     }
 
-    function get_qq($name)
+    public function get_qq($name)
     {
         if(isset($this->qot[$name]) === true)
             return($this->qot[$name]);
@@ -202,7 +202,7 @@ class dwho_query
         return($this->qot[$name]);
     }
 
-    function get_uqq($name)
+    public function get_uqq($name)
     {
         if(isset($this->uqot[$name]) === true)
             return($this->uqot[$name]);
@@ -217,7 +217,7 @@ class dwho_query
         return($this->uqot[$name]);
     }
 
-    function get_qo($name)
+    public function get_qo($name)
     {
         if(isset($this->_orig['request'][$name]) === true)
             return($this->_orig['request'][$name]);
@@ -225,7 +225,7 @@ class dwho_query
         return(null);
     }
 
-    function get_uqo($name)
+    public function get_uqo($name)
     {
         if(isset($this->uqo[$name]) === true)
             return($this->uqo[$name]);
@@ -238,13 +238,13 @@ class dwho_query
         return($this->uqot[$name]);
     }
 
-    function get_qot($name)
+    public function get_qot($name)
     {
         if(isset($this->_orig['request'][$name]) === true)
             return($this->_orig['request'][$name]);
     }
 
-    function get_qos($name)
+    public function get_qos($name)
     {
         if(isset($this->_orig['qstring'][$name]) === true)
             return($this->_orig['qstring'][$name]);
@@ -252,7 +252,7 @@ class dwho_query
         return(null);
     }
 
-    function get_input()
+    public function get_input()
     {
         if($this->input === null)
             $this->input = file_get_contents('php://input');
@@ -260,77 +260,77 @@ class dwho_query
         return($this->input);
     }
 
-    function request_meth_raw()
+    public function request_meth_raw()
     {
         return(($ref = $this->query_string('request',DWHO_QUERY_MODE_RAW)));
     }
 
-    function request_meth_raw_str($sep=null)
+    public function request_meth_raw_str($sep=null)
     {
         return($this->build_query_str($this->request_meth_raw(),true,$sep));
     }
 
-    function request_meth_uraw()
+    public function request_meth_uraw()
     {
         return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_URAW)));
     }
 
-    function request_meth_uraw_str($sep=null)
+    public function request_meth_uraw_str($sep=null)
     {
         return($this->build_query_str($this->request_meth_uraw(),true,$sep));
     }
 
-    function &request_meth_qot()
+    public function &request_meth_qot()
     {
         return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_QOT)));
     }
 
-    function request_meth_qot_str($sep=null)
+    public function request_meth_qot_str($sep=null)
     {
         return($this->build_query_str($this->request_meth_qot(),true,$sep));
     }
 
-    function &request_orig()
+    public function &request_orig()
     {
         return(($ref = &$this->_orig['request']));
     }
 
-    function request_orig_str($sep=null)
+    public function request_orig_str($sep=null)
     {
         return($this->build_query_str($this->_orig['request'],true,$sep));
     }
 
-    function &qstring_raw()
+    public function &qstring_raw()
     {
         return(($ref = &$this->query_string('qstring',DWHO_QUERY_MODE_RAW)));
     }
 
-    function qstring_raw_str($sep=null)
+    public function qstring_raw_str($sep=null)
     {
         return($this->build_query_str($this->qstring_raw(),true,$sep));
     }
 
-    function &qstring_qot()
+    public function &qstring_qot()
     {
         return(($ref = $this->query_string('qstring',DWHO_QUERY_MODE_QOT)));
     }
 
-    function qstring_qot_str($sep=null)
+    public function qstring_qot_str($sep=null)
     {
         return($this->build_query_str($this->qstring_qot(),true,$sep));
     }
 
-    function qstring_orig()
+    public function qstring_orig()
     {
         return($this->_orig['qstring']);
     }
 
-    function qstring_orig_str()
+    public function qstring_orig_str()
     {
         return($_SERVER['QUERY_STRING']);
     }
 
-    function get_path_info($arr,$beg=0)
+    public function get_path_info($arr,$beg=0)
     {
         $r = array();
 
@@ -362,7 +362,7 @@ class dwho_query
         return($r);
     }
 
-    function build_query_str($query,$encode=true,$sep=null)
+    public function build_query_str($query,$encode=true,$sep=null)
     {
         $r    = '';
         $query    = (array) $query;
@@ -390,7 +390,7 @@ class dwho_query
         return(implode($sep,$r));
     }
 
-    function &_filter($value,$mode=0,$quote=null)
+    public function &_filter($value,$mode=0,$quote=null)
     {
         $mode = dwho_uint($mode);
 

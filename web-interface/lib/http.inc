@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class dwho_http
+abstract class dwho_http
 {
-    function factory($mode,$version='1.1')
+    public static function factory($mode,$version='1.1')
     {
         if(($httparr = &dwho_gat::load_get('http',DWHO_PATH_CONF)) === false)
             trigger_error('Failed to load HTTP configuration',E_USER_ERROR);

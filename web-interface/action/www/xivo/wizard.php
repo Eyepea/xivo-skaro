@@ -143,6 +143,7 @@ switch($step)
 		$_TPL->set_var('info',$appwizard->step_validate());
 		$_TPL->set_var('ipbxengine',$appwizard->step_ipbxengine());
 		$_TPL->set_var('dbbackend',dwho_gat::get('datastorage'));
+		$_TPL->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
 
 		break;
 	case 'welcome':

@@ -17,273 +17,569 @@
  */
 
 var xivo_wz_fm_dbconfig_backend_elt = {
-    'error-dbconfig-sqlite-xivo':    {'style':    {display: 'none'}},
-    'fd-dbconfig-sqlite-xivodb':    {'style':    {display: 'none'}},
-    'it-dbconfig-sqlite-xivodb':    {'property':    {disabled: true}},
-    'error-dbconfig-sqlite-ipbx':    {'style':    {display: 'none'}},
-    'fd-dbconfig-sqlite-ipbxdb':    {'style':    {display: 'none'}},
-    'it-dbconfig-sqlite-ipbxdb':    {'property':    {disabled: true}},
-    'fd-dbconfig-sqlite-qldb':    {'style':    {display: 'none'}},
-    'it-dbconfig-sqlite-qldb':    {'property':    {disabled: true}},
-    'fd-dbconfig-mysql-host':    {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-host':    {'property':    {disabled: true}},
-    'fd-dbconfig-mysql-port':    {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-port':    {'property':    {disabled: true}},
-    'error-dbconfig-mysql-xivo':    {'style':    {display: 'none'}},
-    'fd-dbconfig-mysql-xivodbname': {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-xivodbname': {'property':    {disabled: true}},
-    'fd-dbconfig-mysql-xivouser':    {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-xivouser':    {'property':    {disabled: true}},
-    'fd-dbconfig-mysql-xivopass':    {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-xivopass':    {'property':    {disabled: true}},
-    'error-dbconfig-mysql-ipbx':    {'style':    {display: 'none'}},
-    'fd-dbconfig-mysql-ipbxdbname': {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-ipbxdbname': {'property':    {disabled: true}},
-    'fd-dbconfig-mysql-ipbxuser':    {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-ipbxuser':    {'property':    {disabled: true}},
-    'fd-dbconfig-mysql-ipbxpass':    {'style':    {display: 'none'}},
-    'it-dbconfig-mysql-ipbxpass':    {'property':    {disabled: true}},
-    'fd-dbconfig-postgresql-host':    {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-host':    {'property':    {disabled: true}},
-    'fd-dbconfig-postgresql-port':    {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-port':    {'property':    {disabled: true}},
-    'error-dbconfig-postgresql-xivo':    {'style':    {display: 'none'}},
-    'fd-dbconfig-postgresql-xivodbname': {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-xivodbname': {'property':    {disabled: true}},
-    'fd-dbconfig-postgresql-xivouser':    {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-xivouser':    {'property':    {disabled: true}},
-    'fd-dbconfig-postgresql-xivopass':    {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-xivopass':    {'property':    {disabled: true}},
-    'error-dbconfig-postgresql-ipbx':    {'style':    {display: 'none'}},
-    'fd-dbconfig-postgresql-ipbxdbname': {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-ipbxdbname': {'property':    {disabled: true}},
-    'fd-dbconfig-postgresql-ipbxuser':    {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-ipbxuser':    {'property':    {disabled: true}},
-    'fd-dbconfig-postgresql-ipbxpass':    {'style':    {display: 'none'}},
-    'it-dbconfig-postgresql-ipbxpass':    {'property':    {disabled: true}},
-    'links':
-        {link:    [['error-dbconfig-sqlite-xivo',0,1],
-             ['fd-dbconfig-sqlite-xivodb',0,1],
-             ['it-dbconfig-sqlite-xivodb',0,1],
-             ['error-dbconfig-sqlite-ipbx',0,1],
-             ['fd-dbconfig-sqlite-ipbxdb',0,1],
-             ['it-dbconfig-sqlite-ipbxdb',0,1],
-             ['fd-dbconfig-sqlite-qldb',0,1],
-             ['it-dbconfig-sqlite-qldb',0,1],
-             ['fd-dbconfig-mysql-host',0,1],
-             ['it-dbconfig-mysql-host',0,1],
-             ['fd-dbconfig-mysql-port',0,1],
-             ['it-dbconfig-mysql-port',0,1],
-             ['error-dbconfig-mysql-xivo',0,1],
-             ['fd-dbconfig-mysql-xivodbname',0,1],
-             ['it-dbconfig-mysql-xivodbname',0,1],
-             ['fd-dbconfig-mysql-xivouser',0,1],
-             ['it-dbconfig-mysql-xivouser',0,1],
-             ['fd-dbconfig-mysql-xivopass',0,1],
-             ['it-dbconfig-mysql-xivopass',0,1],
-             ['error-dbconfig-mysql-ipbx',0,1],
-             ['fd-dbconfig-mysql-ipbxdbname',0,1],
-             ['it-dbconfig-mysql-ipbxdbname',0,1],
-             ['fd-dbconfig-mysql-ipbxuser',0,1],
-             ['it-dbconfig-mysql-ipbxuser',0,1],
-             ['fd-dbconfig-mysql-ipbxpass',0,1],
-             ['it-dbconfig-mysql-ipbxpass',0,1],
-             ['fd-dbconfig-postgresql-host',0,1],
-             ['it-dbconfig-postgresql-host',0,1],
-             ['fd-dbconfig-postgresql-port',0,1],
-             ['it-dbconfig-postgresql-port',0,1],
-             ['error-dbconfig-postgresql-xivo',0,1],
-             ['fd-dbconfig-postgresql-xivodbname',0,1],
-             ['it-dbconfig-postgresql-xivodbname',0,1],
-             ['fd-dbconfig-postgresql-xivouser',0,1],
-             ['it-dbconfig-postgresql-xivouser',0,1],
-             ['fd-dbconfig-postgresql-xivopass',0,1],
-             ['it-dbconfig-postgresql-xivopass',0,1],
-             ['error-dbconfig-postgresql-ipbx',0,1],
-             ['fd-dbconfig-postgresql-ipbxdbname',0,1],
-             ['it-dbconfig-postgresql-ipbxdbname',0,1],
-             ['fd-dbconfig-postgresql-ipbxuser',0,1],
-             ['it-dbconfig-postgresql-ipbxuser',0,1],
-             ['fd-dbconfig-postgresql-ipbxpass',0,1],
-             ['it-dbconfig-postgresql-ipbxpass',0,1]]
-        }
+	'error-dbconfig-sqlite-xivo' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'fd-dbconfig-sqlite-xivodb' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-sqlite-xivodb' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'error-dbconfig-sqlite-ipbx' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'fd-dbconfig-sqlite-ipbxdb' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-sqlite-ipbxdb' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-sqlite-qldb' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-sqlite-qldb' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-mysql-host' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-host' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-mysql-port' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-port' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'error-dbconfig-mysql-xivo' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'fd-dbconfig-mysql-xivodbname' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-xivodbname' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-mysql-xivouser' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-xivouser' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-mysql-xivopass' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-xivopass' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'error-dbconfig-mysql-ipbx' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'fd-dbconfig-mysql-ipbxdbname' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-ipbxdbname' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-mysql-ipbxuser' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-ipbxuser' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-mysql-ipbxpass' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-mysql-ipbxpass' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-postgresql-host' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-host' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-postgresql-port' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-port' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'error-dbconfig-postgresql-xivo' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'fd-dbconfig-postgresql-xivodbname' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-xivodbname' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-postgresql-xivouser' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-xivouser' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-postgresql-xivopass' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-xivopass' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'error-dbconfig-postgresql-ipbx' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'fd-dbconfig-postgresql-ipbxdbname' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-ipbxdbname' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-postgresql-ipbxuser' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-ipbxuser' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'fd-dbconfig-postgresql-ipbxpass' : {
+		'style' : {
+			display : 'none'
+		}
+	},
+	'it-dbconfig-postgresql-ipbxpass' : {
+		'property' : {
+			disabled : true
+		}
+	},
+	'links' : {
+		link : [ [ 'error-dbconfig-sqlite-xivo', 0, 1 ],
+				[ 'fd-dbconfig-sqlite-xivodb', 0, 1 ],
+				[ 'it-dbconfig-sqlite-xivodb', 0, 1 ],
+				[ 'error-dbconfig-sqlite-ipbx', 0, 1 ],
+				[ 'fd-dbconfig-sqlite-ipbxdb', 0, 1 ],
+				[ 'it-dbconfig-sqlite-ipbxdb', 0, 1 ],
+				[ 'fd-dbconfig-sqlite-qldb', 0, 1 ],
+				[ 'it-dbconfig-sqlite-qldb', 0, 1 ],
+				[ 'fd-dbconfig-mysql-host', 0, 1 ],
+				[ 'it-dbconfig-mysql-host', 0, 1 ],
+				[ 'fd-dbconfig-mysql-port', 0, 1 ],
+				[ 'it-dbconfig-mysql-port', 0, 1 ],
+				[ 'error-dbconfig-mysql-xivo', 0, 1 ],
+				[ 'fd-dbconfig-mysql-xivodbname', 0, 1 ],
+				[ 'it-dbconfig-mysql-xivodbname', 0, 1 ],
+				[ 'fd-dbconfig-mysql-xivouser', 0, 1 ],
+				[ 'it-dbconfig-mysql-xivouser', 0, 1 ],
+				[ 'fd-dbconfig-mysql-xivopass', 0, 1 ],
+				[ 'it-dbconfig-mysql-xivopass', 0, 1 ],
+				[ 'error-dbconfig-mysql-ipbx', 0, 1 ],
+				[ 'fd-dbconfig-mysql-ipbxdbname', 0, 1 ],
+				[ 'it-dbconfig-mysql-ipbxdbname', 0, 1 ],
+				[ 'fd-dbconfig-mysql-ipbxuser', 0, 1 ],
+				[ 'it-dbconfig-mysql-ipbxuser', 0, 1 ],
+				[ 'fd-dbconfig-mysql-ipbxpass', 0, 1 ],
+				[ 'it-dbconfig-mysql-ipbxpass', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-host', 0, 1 ],
+				[ 'it-dbconfig-postgresql-host', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-port', 0, 1 ],
+				[ 'it-dbconfig-postgresql-port', 0, 1 ],
+				[ 'error-dbconfig-postgresql-xivo', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-xivodbname', 0, 1 ],
+				[ 'it-dbconfig-postgresql-xivodbname', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-xivouser', 0, 1 ],
+				[ 'it-dbconfig-postgresql-xivouser', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-xivopass', 0, 1 ],
+				[ 'it-dbconfig-postgresql-xivopass', 0, 1 ],
+				[ 'error-dbconfig-postgresql-ipbx', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-ipbxdbname', 0, 1 ],
+				[ 'it-dbconfig-postgresql-ipbxdbname', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-ipbxuser', 0, 1 ],
+				[ 'it-dbconfig-postgresql-ipbxuser', 0, 1 ],
+				[ 'fd-dbconfig-postgresql-ipbxpass', 0, 1 ],
+				[ 'it-dbconfig-postgresql-ipbxpass', 0, 1 ] ]
+	}
 };
 
-var xivo_wz_fm_dbconfig_backend = {'sqlite':    dwho_clone(xivo_wz_fm_dbconfig_backend_elt)};
-xivo_wz_fm_dbconfig_backend['sqlite']['error-dbconfig-sqlite-xivo']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-xivodb']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-xivodb']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['sqlite']['error-dbconfig-sqlite-ipbx']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-ipbxdb']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-ipbxdb']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-qldb']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-qldb']['property'] = {disabled: false};
+var xivo_wz_fm_dbconfig_backend = {
+	'sqlite' : dwho_clone(xivo_wz_fm_dbconfig_backend_elt)
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['error-dbconfig-sqlite-xivo']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-xivodb']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-xivodb']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['error-dbconfig-sqlite-ipbx']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-ipbxdb']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-ipbxdb']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-qldb']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-qldb']['property'] = {
+	disabled : false
+};
 
-xivo_attrib_register('fm_dbconfig_backend-sqlite',xivo_wz_fm_dbconfig_backend['sqlite']);
+xivo_attrib_register('fm_dbconfig_backend-sqlite',
+		xivo_wz_fm_dbconfig_backend['sqlite']);
 
 xivo_wz_fm_dbconfig_backend['mysql'] = dwho_clone(xivo_wz_fm_dbconfig_backend_elt);
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-host']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-host']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-port']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-port']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['error-dbconfig-mysql-xivo']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-xivodbname']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-xivodbname']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-xivouser']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-xivouser']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-xivopass']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-xivopass']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['error-dbconfig-mysql-ipbx']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxdbname']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxdbname']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxuser']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxuser']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxpass']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxpass']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-host']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-host']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-port']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-port']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['error-dbconfig-mysql-xivo']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-xivodbname']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-xivodbname']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-xivouser']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-xivouser']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-xivopass']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-xivopass']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['error-dbconfig-mysql-ipbx']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxdbname']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxdbname']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxuser']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxuser']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['mysql']['fd-dbconfig-mysql-ipbxpass']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['mysql']['it-dbconfig-mysql-ipbxpass']['property'] = {
+	disabled : false
+};
 
-xivo_attrib_register('fm_dbconfig_backend-mysql',xivo_wz_fm_dbconfig_backend['mysql']);
+xivo_attrib_register('fm_dbconfig_backend-mysql',
+		xivo_wz_fm_dbconfig_backend['mysql']);
 
 xivo_wz_fm_dbconfig_backend['postgresql'] = dwho_clone(xivo_wz_fm_dbconfig_backend_elt);
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-host']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-host']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-port']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-port']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['error-dbconfig-postgresql-xivo']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivodbname']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivodbname']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivouser']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivouser']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivopass']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivopass']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['error-dbconfig-postgresql-ipbx']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxdbname']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxdbname']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxuser']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxuser']['property'] = {disabled: false};
-xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxpass']['style'] = {display: 'block'};
-xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxpass']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-host']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-host']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-port']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-port']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['error-dbconfig-postgresql-xivo']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivodbname']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivodbname']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivouser']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivouser']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-xivopass']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-xivopass']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['error-dbconfig-postgresql-ipbx']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxdbname']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxdbname']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxuser']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxuser']['property'] = {
+	disabled : false
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['fd-dbconfig-postgresql-ipbxpass']['style'] = {
+	display : 'block'
+};
+xivo_wz_fm_dbconfig_backend['postgresql']['it-dbconfig-postgresql-ipbxpass']['property'] = {
+	disabled : false
+};
 
-xivo_attrib_register('fm_dbconfig_backend-postgresql',xivo_wz_fm_dbconfig_backend['postgresql']);
+xivo_attrib_register('fm_dbconfig_backend-postgresql',
+		xivo_wz_fm_dbconfig_backend['postgresql']);
 
-
-function xivo_wizard_chg_dbconfig_backend()
-{
-    if((backend = dwho_eid('it-dbconfig-backend')) !== false)
-        xivo_chg_attrib('fm_dbconfig_backend-' + backend.value,'links',0,1);
-    xivo_wizard_chg_dbconfig_backend_create_mode();
+function xivo_wizard_chg_dbconfig_backend() {
+	if ((backend = dwho_eid('it-dbconfig-backend')) !== false)
+		xivo_chg_attrib('fm_dbconfig_backend-' + backend.value, 'links', 0, 1);
+	xivo_wizard_chg_dbconfig_backend_create_mode();
 }
 
-function xivo_wizard_chg_ipbxbackend()
-{
-    if((backend = dwho_eid('it-ipbxengine')) === false
-    || backend.type !== 'select-one')
-        return(false);
+function xivo_wizard_chg_ipbxbackend() {
+	if ((backend = dwho_eid('it-ipbxengine')) === false
+			|| backend.type !== 'select-one')
+		return (false);
 
-    var len = backend.options.length;
+	var len = backend.options.length;
 
-    for(var i = 0;i < len;i++)
-    {
-        if((engine = dwho_eid('ipbxengine-' + backend.options[i].value)) === false)
-            continue;
-        else if(backend.options[i].value !== backend.value)
-            engine.style.display = 'none';
-        else
-            engine.style.display = 'block';
-    }
+	for ( var i = 0; i < len; i++) {
+		if ((engine = dwho_eid('ipbxengine-' + backend.options[i].value)) === false)
+			continue;
+		else if (backend.options[i].value !== backend.value)
+			engine.style.display = 'none';
+		else
+			engine.style.display = 'block';
+	}
 }
 
-function xivo_wizard_ipbximportuser_error(sum)
-{
-    var spansum = dwho.dom.create_element('span',
-                          {'id':        'ipbximportuser-tooltips-error',
-                           'className':    'fm-txt-error'},
-                          sum);
+function xivo_wizard_ipbximportuser_error(sum) {
+	var spansum = dwho.dom.create_element('span', {
+		'id' : 'ipbximportuser-tooltips-error',
+		'className' : 'fm-txt-error'
+	}, sum);
 
-    dwho.dom.create_focus_caption(
-            dwho_eid('tooltips'),
-            dwho_eid('ipbximportuser-lines-status'),
-            spansum,
-            'center');
+	dwho.dom.create_focus_caption(dwho_eid('tooltips'),
+			dwho_eid('ipbximportuser-lines-status'), spansum, 'center');
 }
 
-function xivo_wizard_chg_dbconfig_backend_create_mode()
-{    
-    if ($('#it-dbconfig-create_auto:checked').val() !== undefined){
-        $('#sb-part_dbconfig_'+backend.value).hide('slow');
-    }
-    else
-    {
-        $('#sb-part_dbconfig_'+backend.value).show('slow');
-    }
+function xivo_wizard_chg_dbconfig_backend_create_mode() {
+	if ($('#it-dbconfig-create_auto:checked').val() !== undefined) {
+		$('#sb-part_dbconfig_' + backend.value).hide('slow');
+	} else {
+		$('#sb-part_dbconfig_' + backend.value).show('slow');
+	}
 }
 
-function xivo_wizard_chg_entity_name()
-{
-    if(dwho_eid('it-entity-name') === false
-    || dwho_eid('it-entity-displayname') === false)
-        return(false);
+function xivo_wizard_chg_entity_name() {
+	if (dwho_eid('it-entity-name') === false
+			|| dwho_eid('it-entity-displayname') === false)
+		return (false);
 
-    var name = '';
-    var displayname = dwho_eid('it-entity-displayname').value;
-    
-    if(dwho_is_undef(displayname) === false && displayname.length > 0)
-        name = displayname;
+	var name = '';
+	var displayname = dwho_eid('it-entity-displayname').value;
 
-    name = name.toLowerCase();
-    name = name.replace(/[^a-z0-9_\.-]+/g,'');
-    
-    dwho_eid('it-entity-name').value = name;
+	if (dwho_is_undef(displayname) === false && displayname.length > 0)
+		name = displayname;
+
+	name = name.toLowerCase();
+	name = name.replace(/[^a-z0-9_\.-]+/g, '');
+
+	dwho_eid('it-entity-name').value = name;
 }
 
-function xivo_wizard_dbconfig_backend_onload()
-{
-    dwho.dom.add_event('change',
-               dwho_eid('it-language'),
-               function()
-               {
-                this.form['refresh'].value = 1;
-                this.form.submit();
-               });
+function xivo_wizard_dbconfig_backend_onload() {
+	dwho.dom.add_event('change', dwho_eid('it-language'), function() {
+		this.form['refresh'].value = 1;
+		this.form.submit();
+	});
 
-    xivo_wizard_chg_ipbxbackend();
+	xivo_wizard_chg_ipbxbackend();
 
-    dwho.dom.add_event('change',
-               dwho_eid('it-ipbxengine'),
-               xivo_wizard_chg_ipbxbackend);
+	dwho.dom.add_event('change', dwho_eid('it-ipbxengine'),
+			xivo_wizard_chg_ipbxbackend);
 
-    xivo_wizard_chg_dbconfig_backend();
+	xivo_wizard_chg_dbconfig_backend();
 
-    dwho.dom.add_event('change',
-               dwho_eid('it-dbconfig-backend'),
-               xivo_wizard_chg_dbconfig_backend);
-    
-    xivo_wizard_chg_entity_name();
+	dwho.dom.add_event('change', dwho_eid('it-dbconfig-backend'),
+			xivo_wizard_chg_dbconfig_backend);
 
-    dwho.dom.add_event('change',
-               dwho_eid('it-entity-displayname'),
-               xivo_wizard_chg_entity_name);
+	xivo_wizard_chg_entity_name();
 
-    xivo_wizard_chg_dbconfig_backend_create_mode();
-    
-    dwho.dom.add_event('click',
-               dwho_eid('it-dbconfig-create_auto'),
-               xivo_wizard_chg_dbconfig_backend_create_mode);    
+	dwho.dom.add_event('change', dwho_eid('it-entity-displayname'),
+			xivo_wizard_chg_entity_name);
 
-    dwho.dom.add_event('click',
-               dwho_eid('it-previous'),
-               function()
-               {
-                this.type = 'submit';
-               });
+	xivo_wizard_chg_dbconfig_backend_create_mode();
 
-    dwho.dom.add_event('click',
-               dwho_eid('it-verify'),
-               function()
-               {
-                this.form['verify'].value = 1;
-                   this.type = 'submit';
-               });
+	dwho.dom.add_event('click', dwho_eid('it-dbconfig-create_auto'),
+			xivo_wizard_chg_dbconfig_backend_create_mode);
+
+	dwho.dom.add_event('click', dwho_eid('it-previous'), function() {
+		this.type = 'submit';
+	});
+
+	dwho.dom.add_event('click', dwho_eid('it-verify'), function() {
+		this.form['verify'].value = 1;
+		this.type = 'submit';
+	});
 }
 
 dwho.dom.set_onload(xivo_wizard_dbconfig_backend_onload);
 
+var apply_wizard = {
+
+	counter : new Number(1),
+	next : '',
+
+	init : function() {
+		$('#boxee').show();
+		apply_wizard.request_post();
+	},
+
+	request_post : function(step) {
+		var me = apply_wizard;
+		$.ajax({
+			type: 'GET',
+			url : '/xivo/wizard/ui.php/wizard?step=' + step,
+			async : false,
+			success: function(data) {
+				var str = data.split('::');
+				if (str.length < 2) {
+					me.populate_infos('fatal error',true);
+				} else if (str[0] == 'next') {
+					me.next = str[1];
+					me.populate_infos(str[2]);
+				} else if (str[0] == 'uri') {
+					me.populate_infos(str[2], true);
+					me.send_redirect(str[1]);
+				} else {
+					me.populate_infos('fatal error',true);
+				}
+			}
+		});
+		me.counter++;
+	},
+
+	populate_infos : function(msg, last) {
+		$('#boxee').find('div').append(msg + '<br>');
+		if (last === undefined)
+			apply_wizard.request_post(apply_wizard.next);
+	},
+
+	send_redirect : function(url) {
+		window.setTimeout(function() {
+			window.location = url;
+		}, 10000);
+	}
+};
+
+$(function() {
+	$('input[name="validate"]').click(function() {
+		apply_wizard.init();
+		return false;
+	});
+});
