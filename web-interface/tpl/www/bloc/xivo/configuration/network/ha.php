@@ -233,13 +233,13 @@ endif;
 ?>
 </div>
 
-</div>
 <?php
 echo	$form->submit(array('name'	=> 'submit',
 			    'id'	=> 'it-submit',
 			    'value'	=> $this->bbf('fm_bt-save')));
 
 ?>
+</div>
 </form>
 	</div>
 	<div class="sb-foot xspan">

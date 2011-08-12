@@ -117,7 +117,7 @@ Masque de sous-réseau
 Adresse broadcast
 
 ; fm_ha_nodes
-Members du cluster : 
+Interfaces virtuelles : 
 
 ; fm_ha_virtnet_col_iface
 Interface réseau
