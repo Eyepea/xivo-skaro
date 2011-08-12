@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
@@ -19,9 +18,9 @@ __license__ = """
 """
 
 import logging
-from twisted.internet.protocol import DatagramProtocol
 from provd.servers.tftp.connection import RFC2347Connection, RFC1350Connection
 from provd.servers.tftp.packet import *
+from twisted.internet.protocol import DatagramProtocol
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +54,9 @@ class TFTPProtocol(DatagramProtocol):
         self._service = read_service
         
     def _handle_rrq(self, pkt, addr):
+        # only accept mode octet
         if pkt['mode'] != 'octet':
-            # only accept mode octet for now
+            logger.warning('TFTP mode not supported: %s', pkt['mode'])
             r_dgram = build_dgram(err_packet(ERR_UNDEF, 'mode not supported'))
             self.transport.write(r_dgram, addr)
         else:
@@ -65,6 +65,7 @@ class TFTPProtocol(DatagramProtocol):
             def on_accept(fobj):
                 if 'blksize' in pkt['options']:
                     blksize = pkt['options']['blksize']
+                    logger.debug('Using TFTP blksize of %s', blksize)
                     oack_dgram = build_dgram(oack_packet({'blksize': str(blksize)}))
                     connection = RFC2347Connection(addr, fobj, oack_dgram)
                     connection.blksize = blksize
@@ -81,6 +82,7 @@ class TFTPProtocol(DatagramProtocol):
             
     def _handle_wrq(self, pkt, addr):
         # we don't accept WRQ - send an error
+        logger.info('TFTP write request not supported')
         dgram = build_dgram(err_packet(ERR_UNDEF, 'WRQ not supported'))
         self.transport.write(dgram, addr)
     
@@ -98,5 +100,4 @@ class TFTPProtocol(DatagramProtocol):
                 logger.info('TFTP read request from %s', addr)
                 self._handle_rrq(pkt, addr)
             else:
-                # non-request packet - ignore it
-                pass
+                logger.info('Ignoring non-request packet from %s', addr)

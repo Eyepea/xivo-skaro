@@ -2,7 +2,6 @@
 
 """Manage the transfer between two host."""
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
@@ -21,14 +20,11 @@ __license__ = """
 """
 
 # TODO RFC1122 says we must use an adaptive timeout...
-# TODO handle more gracefully the case where we want to send a file larger
-#      than what the protocol permits
-# TODO more logging statement
 
 import struct
 import logging
-from twisted.internet.protocol import DatagramProtocol
 from provd.servers.tftp.packet import *
+from twisted.internet.protocol import DatagramProtocol
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +49,9 @@ class _AbstractConnection(DatagramProtocol):
     
     The '_blk_no' instance attribute MUST be supplied in derived class.
     This value should be equal to the first value of the block number field.
-    This value should be modify by the derived class such that it always
+    This value should be modified by the derived class such that it always
     reflect the block number we are waiting in the next ACK packet.
-    we are waiting in the ACK packet.
-      
+    
     The '_next_dgram' method MUST be overridden in derived class. It should
     return the next datagram to send to the client. This is usually a DATA
     packet, but it could also be an OACK packet.
@@ -66,7 +61,8 @@ class _AbstractConnection(DatagramProtocol):
     
     """
     
-    timeout = 3
+    blksize = 512
+    timeout = 4
     max_retries = 4
     
     def __init__(self, addr):
@@ -79,8 +75,11 @@ class _AbstractConnection(DatagramProtocol):
         self._closed = False
         self._dup_ack = False
         self._last_dgram = None
+        self._last_blk_no = None
         self._retry_cnt = 0
         self._timeout_timer = None
+        from twisted.internet import reactor
+        self._reactor = reactor
         
     def _close(self):
         """Close this connection.
@@ -100,25 +99,26 @@ class _AbstractConnection(DatagramProtocol):
     def __do_close(self):
         """Cleanup and make sure self._close is called once."""
         if not self._closed:
-            logger.debug('Closing this connection')
+            logger.debug('Closing connection')
             self._cancel_timeout()
             self._close()
             self._closed = True
+            self.transport.stopListening()
             
     def _cancel_timeout(self):
         if self._timeout_timer:
-            logger.debug('Cancelling the timeout')
+            logger.debug('Cancelling timeout')
             self._retry_cnt = 0
             self._timeout_timer.cancel()
             self._timeout_timer = None
     
     def _set_timeout(self):
-        logger.debug('Setting the timeout with delay %s', self.timeout)
-        from twisted.internet import reactor
-        self._timeout_timer = reactor.callLater(self.timeout, self._timeout_expired)
+        logger.debug('Setting %ss timeout', self.timeout)
+        self._timeout_timer = self._reactor.callLater(self.timeout, self._timeout_expired)
     
     def _timeout_expired(self):
         logger.info('Timeout has expired with current retry count %s', self._retry_cnt)
+        self._timeout_timer = None
         self._retry_cnt += 1
         if self._retry_cnt >= self.max_retries:
             self.__do_close()
@@ -130,18 +130,18 @@ class _AbstractConnection(DatagramProtocol):
         self._set_timeout()
         
     def _send_next_dgram(self):
-        logger.debug('Sending a new datagram')
         try:
             dgram = self._next_dgram()
         except _NoMoreDatagramError:
             logger.debug('No more datagram to send')
             self.__do_close()
         else:
+            logger.debug('Sending next datagram')
             self._send_dgram(dgram)
             self._last_dgram = dgram
     
     def _send_last_dgram(self):
-        logger.debug('Resending the last datagram')
+        logger.debug('Resending last datagram')
         self._send_dgram(self._last_dgram)
             
     def _handle_wrong_tid(self, addr):
@@ -149,7 +149,7 @@ class _AbstractConnection(DatagramProtocol):
         self.transport.write(dgram, addr)
     
     def _handle_invalid_dgram(self):
-        """Called when a datagram sent by the the remote host could not be parsed."""
+        """Called when a datagram sent by the remote host could not be parsed."""
         dgram = build_dgram(err_packet(ERR_UNDEF, 'Invalid datagram'))
         self.transport.write(dgram, self._addr)
         self.__do_close()
@@ -162,12 +162,13 @@ class _AbstractConnection(DatagramProtocol):
     def _handle_ack(self, pkt):
         blk_no = _unpack_to_uint16(pkt['blkno'])
         if blk_no == self._blk_no:
-            logger.debug('Received ACK for the current packet')
+            logger.debug('Received ACK for current packet')
+            self._last_blk_no = blk_no
             self._dup_ack = False
             self._cancel_timeout()
             self._send_next_dgram()
-        elif blk_no == self._blk_no - 1:
-            logger.debug('Received ACK for the last packet')
+        elif blk_no == self._last_blk_no:
+            logger.debug('Received ACK for last packet')
             if not self._dup_ack:
                 self._dup_ack = True
                 self._cancel_timeout()
@@ -220,24 +221,27 @@ class RFC1350Connection(_AbstractConnection):
         _AbstractConnection.__init__(self, addr)
         self._fobj = fobj
         self._blk_no = 0
+        self._last_buf = None
     
     def _close(self):
         self._fobj.close()
-        self.transport.stopListening()
-        
+    
     def _next_dgram(self):
-        buf = self._fobj.read(512)
-        if not buf:
+        buf = self._fobj.read(self.blksize)
+        if not buf and self._blk_no != 0 and len(self._last_buf) != self.blksize:
+            # no more datagram if:
+            # - there's no more content to be read from the file (not buf)
+            # - at least one datagram has been sent (self._blk_no != 0)
+            # - the last block we sent was not the size of blksize
             raise _NoMoreDatagramError()
         else:
-            self._blk_no += 1
+            self._last_buf = buf
+            self._blk_no = (self._blk_no + 1) % 65536
             dgram = build_dgram(data_packet(_pack_from_uint16(self._blk_no), buf))
             return dgram
 
 
 class RFC2347Connection(_AbstractConnection):
-    blksize = 512
-    
     def __init__(self, addr, fobj, oack_dgram):
         """Create a new RFC2347 connection.
         
@@ -250,20 +254,25 @@ class RFC2347Connection(_AbstractConnection):
         self._fobj = fobj
         self._oack_dgram = oack_dgram
         self._blk_no = -1
+        self._last_buf = None
     
     def _close(self):
         self._fobj.close()
-        self.transport.stopListening()
-        
+    
     def _next_dgram(self):
         if self._blk_no == -1:
             self._blk_no += 1
             return self._oack_dgram
         else:
             buf = self._fobj.read(self.blksize)
-            if not buf:
+            if not buf and self._blk_no != 0 and len(self._last_buf) != self.blksize:
+                # no more datagram if:
+                # - there's no more content to be read from the file (not buf)
+                # - at least one datagram has been sent (self._blk_no != 0)
+                # - the last block we sent was not the size of blksize
                 raise _NoMoreDatagramError()
             else:
-                self._blk_no += 1
+                self._last_buf = buf
+                self._blk_no = (self._blk_no + 1) % 65536
                 dgram = build_dgram(data_packet(_pack_from_uint16(self._blk_no), buf))
                 return dgram

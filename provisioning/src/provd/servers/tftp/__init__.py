@@ -10,12 +10,8 @@ Things to note:
 - netascii mode is not supported -- only octet mode is.
 - mail mode is, of course, not supported, since it's deprecated.
 - support the blksize option (RFC2348).
-- doesn't handle gracefully the case where you want to transfer a file
-  larger than what the TFTP protocol permits, which is 32 MiB if you
-  are using the standard block size. If you try transferring such a file,
-  the transfer will eventually fail from a block number desynchronization.
-  Ideally, this should be detected at the start of the transfer instead
-  of after sending 32 MiB.
+- use zero-based wraparound when transferring files taking more than
+  65535 blocks to transfer.
 - it's not using an adaptive timeout.
 - although it would be theorically possible to run the TFTP service on
   a different datagram service than UDP, currently it is not because
@@ -24,7 +20,6 @@ Things to note:
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
