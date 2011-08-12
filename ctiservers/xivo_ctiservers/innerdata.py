@@ -583,6 +583,8 @@ class Safe:
             # (end)
             status['pseudochan'] = None
             status['channels'] = {}
+        self.log.info('Channel statuses %s' %
+                      self.xod_status['meetmes'][mid]['channels'])
         self.handle_cti_stack('empty_stack')
         return
 

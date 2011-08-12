@@ -354,13 +354,13 @@ class AMI_1_8:
 
     # Meetme events
     def ami_meetmejoin(self, event):
-        opts = { 'usernum' : event['Usernum'],
-                 'pseudochan' : event['PseudoChan'],
-                 'admin' : 'Yes' in event['Admin'],
-                 'authed' : 'No' in event['NoAuthed'],
-                 'displayname' : event['CallerIDname'],
-                 'phonenumber' : event['CallerIDnum'],
-                 }
+        self.log.info('ami_meetmejoin %s' % event)
+        opts = {'usernum': event['Usernum'],
+                'pseudochan': event['PseudoChan'],
+                'admin': 'Yes' in event['Admin'],
+                'authed': 'No' in event['NoAuthed'],
+                'displayname': event['CallerIDname'],
+                'phonenumber': event['CallerIDnum'], }
         return self.innerdata.meetmeupdate(event['Meetme'],
                                            event['Channel'],
                                            opts)
@@ -371,18 +371,20 @@ class AMI_1_8:
         #u'Role': u'Talk and listen',
 
     def ami_meetmeleave(self, event):
-        opts = { 'usernum' : event['Usernum'],
-                 'leave' : True, }
+        self.log.info('ami_meetmeleave %s' % event)
+        opts = {'usernum': event['Usernum'], 'leave': True, }
         return self.innerdata.meetmeupdate(event['Meetme'],
                                            event['Channel'],
                                            opts)
 
     def ami_meetmeend(self, event):
+        self.log.info('ami_meetmeend %s' % event)
         return self.innerdata.meetmeupdate(event['Meetme'])
 
     def ami_meetmemute(self, event):
+        self.log.info('ami_meetmemute %s' % event)
         opts = {'muted': 'on' in event['Status'],
-                 'usernum': event['Usernum'], }
+                'usernum': event['Usernum'], }
         return self.innerdata.meetmeupdate(event['Meetme'],
                                            event['Channel'],
                                            opts)
@@ -397,16 +399,17 @@ class AMI_1_8:
 
     # XiVO events
     def ami_meetmenoauthed(self, event):
-        opts = { 'usernum' : event['Usernum'],
-                 'authed' : 'on' in event['Status'], }
+        self.log.info('ami_meetmenoauthed %s' % event)
+        opts = {'usernum': event['Usernum'],
+                'authed': 'off' in event['Status'], }
         return self.innerdata.meetmeupdate(event['Meetme'],
                                            event['Channel'],
                                            opts)
 
     def ami_meetmepause(self, event):
-        opts = { 'paused': 'on' in event['Status'], }
-        return self.innerdata.meetmeupdate(event['Meetme'],
-                                           opts = opts)
+        self.log.info('ami_meetmepause %s' % event)
+        opts = {'paused': 'on' in event['Status'], }
+        return self.innerdata.meetmeupdate(event['Meetme'], opts=opts)
 
     def ami_dahdichannel(self, event):
         self.log.info('ami_dahdichannel %s' % (event))
