@@ -76,10 +76,10 @@ def remove_all():
     _configs.remove_all()
 
 
-def remove_devices_and_configs():
+def remove_test_objects():
     """Remove all devices and configs."""
-    _devices.remove_all()
-    _configs.remove_all()
+    remove_test_devices()
+    remove_test_configs()
 
 
 def remove_test_configs():
@@ -323,9 +323,9 @@ def _multiple_lines_sip():
                 },
                 u'3': {
                     u'proxy_ip': u'1.1.3.1',
-                    u'username': u'username2',
-                    u'password': u'password2',
-                    u'display_name': u'User 2'
+                    u'username': u'username3',
+                    u'password': u'password3',
+                    u'display_name': u'User 3'
                 }
             }
         }
