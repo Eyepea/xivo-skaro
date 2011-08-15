@@ -951,7 +951,11 @@ class ProvisioningApplication(object):
         
         If the plugin is not loaded yet, load it.
         
-        Raise the same exceptions as pg_uninstall and pg_install.
+        Return a deferred that will fire with None once the operation is
+        completed.
+        
+        The deferred will fire its errback with an exception if the plugin
+        is not already installed or if there's an error at loading.
         
         """
         logger.info('Reloading plugin %s', id)
