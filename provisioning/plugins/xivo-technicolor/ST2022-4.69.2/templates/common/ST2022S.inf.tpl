@@ -7,3 +7,4 @@ booturl=http://{{ ip }}:{{ http_port }}/binary/v2022_boot_v303.zz
 telcfg=http://{{ ip }}:{{ http_port }}/telconf-4.69.2-1.txt
 common_config=http://{{ ip }}:{{ http_port }}/comconf-4.69.2-1.txt
 config=http://{{ ip }}:{{ http_port }}/
+

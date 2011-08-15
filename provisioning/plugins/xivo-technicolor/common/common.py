@@ -192,6 +192,12 @@ class BaseTechnicolorPlugin(StandardPlugin):
         u'SIP-INFO': u'4'
     }
     _DTMF_DEF = u'1'
+    _SIP_TRANSPORT = {
+        u'udp': u'0',
+        u'tcp': u'1',
+        u'tls': u'2'
+    }
+    _TRANSPORT_DEF = u'0'
     _NTP_ZONE_NUM_DEF = u'23'
     _XX_PHONEBOOK_NAME = {
         u'fr': u'Annuaire entreprise',
@@ -229,8 +235,14 @@ class BaseTechnicolorPlugin(StandardPlugin):
         raw_config[u'XX_config_sn'] = '%012.f' % time.time()
     
     def _add_dtmf_mode_flag(self, raw_config):
-        raw_config[u'XX_dtmf_mode_flag'] = self._SIP_DTMF_MODE.get(raw_config.get(u'sip_dtmf_mode'),
-                                                          self._DTMF_DEF)
+        dtmf_mode = raw_config.get(u'sip_dtmf_mode')
+        raw_config[u'XX_dtmf_mode_flag'] = self._SIP_DTMF_MODE.get(dtmf_mode,
+                                                                   self._DTMF_DEF)
+    
+    def _add_transport_flg(self, raw_config):
+        sip_transport = raw_config.get(u'sip_transport')
+        raw_config[u'XX_transport_flg'] = self._SIP_TRANSPORT.get(sip_transport,
+                                                                  self._TRANSPORT_DEF)
     
     def _gen_xx_phonebook_name(self, raw_config):
         if u'locale' in raw_config:
@@ -319,6 +331,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
         self._add_country_and_lang(raw_config)
         self._add_config_sn(raw_config)
         self._add_dtmf_mode_flag(raw_config)
+        self._add_transport_flg(raw_config)
         self._add_ntp_zone_num(raw_config)
         self._add_fkeys(raw_config)
         raw_config[u'XX_phonebook_name'] = self._gen_xx_phonebook_name(raw_config)

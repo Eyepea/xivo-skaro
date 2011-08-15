@@ -7,3 +7,4 @@ booturl=http://{{ ip }}:{{ http_port }}/binary/TB30S_BOOT_V1.02.0.0.zz
 telcfg=http://{{ ip }}:{{ http_port }}/telconf-1.74.0-1.txt
 common_config=http://{{ ip }}:{{ http_port }}/comconf-1.74.0-1.txt
 config=http://{{ ip }}:{{ http_port }}/
+

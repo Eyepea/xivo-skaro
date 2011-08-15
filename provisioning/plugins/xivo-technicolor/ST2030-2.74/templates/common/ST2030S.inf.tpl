@@ -7,3 +7,4 @@ booturl=http://{{ ip }}:{{ http_port }}/binary/v2030_boot_v111.zz
 telcfg=http://{{ ip }}:{{ http_port }}/telconf-2.74-1.txt
 common_config=http://{{ ip }}:{{ http_port }}/comconf-2.74-1.txt
 config=http://{{ ip }}:{{ http_port }}/
+

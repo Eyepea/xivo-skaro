@@ -8,6 +8,12 @@
 LanguageType={{ XX_language_type }}
 
 [net]
+{% if dns_enabled -%}
+DNSSrv1={{ dns_ip }}
+{% else -%}
+DNSSrv1=0.0.0.0
+{% endif -%}
+
 {% if vlan_enabled -%}
 VLAN=1
 {% else -%}
@@ -42,8 +48,17 @@ RegisterServerMP{{ line_no }}=
 RegisterServerBK{{ line_no }}=
 TEL{{ line_no }}Number=
 TEL0{{ line_no }}Use=0
-{% endif %}
-{% endfor %}
+{% endif -%}
+{% endfor -%}
+
+TransportFlgMP1={{ XX_transport_flg }}
+TransportFlgMP2={{ XX_transport_flg }}
+TransportFlgMP3={{ XX_transport_flg }}
+TransportFlgMP4={{ XX_transport_flg }}
+TransportFlgBK1={{ XX_transport_flg }}
+TransportFlgBK2={{ XX_transport_flg }}
+TransportFlgBK3={{ XX_transport_flg }}
+TransportFlgBK4={{ XX_transport_flg }}
 
 {% if exten_voicemail -%}
 VoiceMailTelNum={{ exten_voicemail }}
