@@ -718,8 +718,6 @@ class DeviceResource(Resource):
             if device is None:
                 deferred_respond_no_resource(request)
             else:
-                # XXX one day... if we find this useful... add link to the
-                #     config and plugin
                 data = json.dumps({u'device': device})
                 deferred_respond_ok(request, data)
         def on_error(failure):
@@ -898,7 +896,8 @@ class RawConfigResource(Resource):
 
 def PluginManagerResource(app):
     links = [(REL_INSTALL_SRV, 'install', PluginManagerInstallServiceResource(app)),
-             (u'pg.plugins', 'plugins', PluginsResource(app.pg_mgr))]
+             (u'pg.plugins', 'plugins', PluginsResource(app.pg_mgr)),
+             (u'pg.reload', 'reload', PluginReloadResource(app))]
     return IntermediaryResource(links)
 
 
@@ -998,6 +997,27 @@ class PluginsResource(Resource):
             plugins[pg_id] = {u'links': links}
         content = {u'plugins': plugins}
         return json.dumps(content)
+
+
+class PluginReloadResource(Resource):
+    def __init__(self, app):
+        Resource.__init__(self)
+        self._app = app
+    
+    @json_request_entity
+    def render_POST(self, request, content):
+        try:
+            id = content[u'id']
+        except KeyError:
+            return respond_bad_json_entity(request, 'Missing "id" key')
+        else:
+            def on_callback(ign):
+                deferred_respond_no_content(request)
+            def on_errback(failure):
+                deferred_respond_error(request, failure.value)
+            d = self._app.pg_reload(id)
+            d.addCallbacks(on_callback, on_errback)
+            return NOT_DONE_YET
 
 
 class PluginInfoResource(Resource):

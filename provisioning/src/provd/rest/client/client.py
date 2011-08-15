@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -228,6 +227,10 @@ class PluginManager(object):
     def _get_plugins_res(self):
         return self._pg_mgr_res.plugins_res()
     
+    @once_per_instance
+    def _get_reload_res(self):
+        return self._pg_mgr_res.reload_res()
+    
     def plugins(self):
         """Return a list of [loaded] plugin ID."""
         plugins_res = self._get_plugins_res()
@@ -237,6 +240,11 @@ class PluginManager(object):
         """Return the [loaded] plugin with the given ID."""
         plugins_res = self._get_plugins_res()
         return Plugin(plugins_res.get(id))
+    
+    def reload(self, id):
+        """Reload the plugin with the given ID."""
+        reload_res = self._get_reload_res()
+        reload_res.reload(id)
 
 
 class Plugin(object):

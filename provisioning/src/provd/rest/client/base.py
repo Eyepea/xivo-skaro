@@ -11,7 +11,6 @@ to characters available in ASCII).
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -622,12 +621,18 @@ class PluginManagerResource(object):
         
         plugins_uri = uri_append_path(pg_mgr_uri, 'plugins')
         self._plugins_res = PluginsResource(plugins_uri, broker)
+        
+        reload_uri = uri_append_path(pg_mgr_uri, 'reload')
+        self._reload_res = PluginReloadResource(reload_uri, broker)
     
     def install_srv_res(self):
         return self._install_res
     
     def plugins_res(self):
         return self._plugins_res
+    
+    def reload_res(self):
+        return self._reload_res
 
 
 class PluginsResource(object):
@@ -644,6 +649,21 @@ class PluginsResource(object):
         response, _ = self._broker.json_content(request)
         ids = list(response[u'plugins'].iterkeys())
         return ids
+
+
+class PluginReloadResource(object):
+    def __init__(self, reload_uri, broker):
+        self._reload_uri = reload_uri
+        self._broker = broker
+    
+    def _build_reload_request(self, id):
+        content = {u'id': id}
+        return new_post_request(self._reload_uri, content)
+    
+    def reload(self, id):
+        """Reload the plugin with the given ID."""
+        request = self._build_reload_request(id)
+        self._broker.ignore_content(request)
 
 
 class PluginResource(object):

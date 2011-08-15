@@ -289,9 +289,9 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while deconfiguring device %s', device[ID_KEY],
                          exc_info=True)
+            return False
         else:
             return True
-        return False
     
     def _dev_deconfigure_if_possible(self, device):
         # Return true if the device has been successfully configured (i.e.
@@ -814,15 +814,13 @@ class ProvisioningApplication(object):
             self._pg_configure_pg(id)
     
     def _pg_unload(self, id):
+        # This method should never raise an exception (in theory)
         try:
             self.pg_mgr.unload(id)
         except PluginNotLoadedError:
             # this is the case were an incompatible/bogus plugin has been
             # installed succesfully but the plugin was not loadable
             logger.info('Plugin %s was not loaded ', id)
-        except Exception:
-            logger.error('Error while unloading plugin %s', id, exc_info=True)
-            raise
     
     @defer.inlineCallbacks
     def _pg_configure_all_devices(self, id):
@@ -904,7 +902,6 @@ class ProvisioningApplication(object):
             # The lock apply only to the deferred return by this function
             # and not on the function itself
             if id in self.pg_mgr:
-                # next line might raise an exception, which is ok
                 self._pg_unload(id)
             # next line might raise an exception, which is ok
             self._pg_load(id)
@@ -946,6 +943,49 @@ class ProvisioningApplication(object):
         for device in affected_devices:
             device[u'configured'] = False
             yield self._dev_collection.update(device)
+
+    @_wlock
+    @defer.inlineCallbacks    
+    def pg_reload(self, id):
+        """Reload the plugin with the given id.
+        
+        If the plugin is not loaded yet, load it.
+        
+        Raise the same exceptions as pg_uninstall and pg_install.
+        
+        """
+        logger.info('Reloading plugin %s', id)
+        if not self.pg_mgr.is_installed(id):
+            logger.error('Can\'t reload plugin %s: not installed', id)
+            raise Exception('plugin %s is not installed' % id)
+        
+        devices = yield self._dev_collection.find({u'plugin': id})
+        devices = list(devices)
+        # unload plugin
+        if id in self.pg_mgr:
+            plugin = self.pg_mgr[id]
+            for device in devices:
+                if device[u'configured']:
+                    self._dev_deconfigure(device, plugin)
+            self._pg_unload(id)
+        # load plugin
+        try:
+            self._pg_load(id)
+        except Exception:
+            # mark all the devices as not configured and reraise
+            # the exception
+            for device in devices:
+                if device[u'configured']:
+                    device[u'configured'] = False
+                    yield self._dev_collection.update(device)
+            raise
+        else:
+            # reconfigure every device
+            for device in devices:
+                configured = yield self._dev_configure_if_possible(device)
+                if device[u'configured'] != configured:
+                    device[u'configured'] = configured
+                    yield self._dev_collection.update(device)
     
     def pg_retrieve(self, id):
         return self.pg_mgr[id]
