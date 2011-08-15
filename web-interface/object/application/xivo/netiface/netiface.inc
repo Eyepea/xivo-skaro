@@ -28,7 +28,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	var $_sysconfd	= false;
 	var $_sysnet	= false;
 	var $_commonconf = false;
-	
+
 	function xivo_application_xivo_object_netiface(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
@@ -223,7 +223,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					$this->_set_error('netiface','netmask','empty');
 					$ret = false;
 				}
-				
+
 				if(dwho_has_len($arr,'broadcast') === false) {
 					$this->_set_error('netiface','broadcast','empty');
 					$ret = false;
@@ -419,7 +419,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 			$phyiface = $this->_sysconfd->request_get('/netiface',
 								  array(array('ifname',$phyifname)));
-            
+
 			if(is_array($phyiface) === false)
 				return(false);
 
@@ -513,7 +513,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$devinfo = $this->_sysconfd->request_get('/netiface',
 							 array(array('ifname',$ifname)));
-        
+
 		if(is_array($devinfo) === true)
 		{
 			if($hwtypeid === null)
@@ -706,7 +706,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
 		$arr['uuid'] = $uuid['uuid'];
-		
+
 		$this->set_netiface($arr);
 		$this->set_sysconfnet($devname);
 
@@ -828,7 +828,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if($netifacename !== null)
 				$this->_reverse_add();
 		}
-		
+
 
 		/*
 			If we found another VoIP interface, we update this last so
@@ -842,7 +842,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$iface = $this->get($voip_iface['name']);
 			$iface['networktype'] = 'data';
 			$iface['netiface']['networktype'] = 'data';
-			
+
 			if(($rs = $this->_netiface->chk_values($iface['netiface'])) === false
 			or $this->_netiface->edit($iface['netiface']['name'], $rs) === false)
 				return false;
@@ -969,7 +969,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$iface = $this->get($voip_iface['name']);
 			$iface['networktype'] = 'data';
 			$iface['netiface']['networktype'] = 'data';
-			
+
 			if(($rs = $this->_netiface->chk_values($iface['netiface'])) === false
 			or $this->_netiface->edit($iface['netiface']['id'], $rs) === false)
 				return false;
@@ -1053,7 +1053,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = '';
 	        if($r === false)
         	    return false;
-    
+
 	        return $this->update_server();
 	}
 
@@ -1133,10 +1133,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
-   
+
 		if($r === false)
 			return false;
-    
+
 		return $this->update_server();
 	}
 
@@ -1164,7 +1164,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
         if($r === false)
             return false;
-    
+
         return $this->update_server();
 	}
 
@@ -1267,11 +1267,11 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		return(true);
 	}
-	
+
 	/**
 	    Send device network configuration IFF device is voip type,
 	    Update munin graphs
-	    
+
 	    Return true if sysconfd store values & regenerate common.conf correctly,
 	    false otherwise
 	*/

@@ -23,3 +23,6 @@ Generation of the overall system configuration XiVO ...
 ; redirect_message
 You will be redirected to the XiVO interface in %s seconds.
 Please be patient ...
+
+; commit_finished
+Successfully finished

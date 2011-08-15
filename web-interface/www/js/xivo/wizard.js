@@ -540,12 +540,14 @@ var apply_wizard = {
 		apply_wizard.request_post();
 	},
 
-	request_post : function(step) {
+	request_post : function(step,async) {
+		if (async === undefined)
+			async = false;
 		var me = apply_wizard;
 		$.ajax({
 			type: 'GET',
 			url : '/xivo/wizard/ui.php/wizard?step=' + step,
-			async : false,
+			async : async,
 			success: function(data) {
 				var str = data.split('::');
 				if (str.length < 2) {
@@ -556,6 +558,10 @@ var apply_wizard = {
 				} else if (str[0] == 'uri') {
 					me.populate_infos(str[2], true);
 					me.send_redirect(str[1]);
+				} else if (str[0] == 'nexturi') {
+					me.next = str[1];
+					me.populate_infos(str[3],'async');
+					me.send_redirect(str[2]);
 				} else {
 					me.populate_infos('fatal error',true);
 				}
@@ -566,7 +572,9 @@ var apply_wizard = {
 
 	populate_infos : function(msg, last) {
 		$('#boxee').find('div').append(msg + '<br>');
-		if (last === undefined)
+		if (last === 'async')
+			apply_wizard.request_post(apply_wizard.next,true);
+		else if (last === undefined)
 			apply_wizard.request_post(apply_wizard.next);
 	},
 

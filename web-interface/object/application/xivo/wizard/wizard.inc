@@ -262,6 +262,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         && dwho_issa('netiface',$this->_wizsess) === true
         && isset($this->_wizsess['netiface']['address']) === true)
             $uri = $this->_wizsess['netiface']['address'];
+        else if(($modnetiface = &$this->_xobj->get_module('netiface')) !== false
+        && ($voip_iface = $modnetiface->get_voip_iface()) !== false)
+        	$uri = $voip_iface['address'];
         else
             $uri = $_SERVER['SERVER_ADDR'];
 
@@ -1473,20 +1476,32 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
     function _commit_netiface()
     {
-        if(dwho_issa('netiface',$this->_wizsess) === false
-        || isset($this->_wizsess['netiface']['name']) === false)
-            return(false);
+    	// save to database
+        $this->_load_xivo_dso();
+        $modnetiface = &$this->_xobj->get_module('netiface');
+        if (($voip_iface = $modnetiface->get_voip_iface()) === false)
+        	return(false);
 
-        $netiface = $this->_wizsess['netiface'];
-        $name = $netiface['name'];
-        unset($netiface['name']);
-
-        if(dwho_has_len($netiface,'gateway') === false)
-            unset($netiface['gateway']);
+		/*
+         * $args must be validate this schema
+         * MODIFY_ETH_IPV4_SCHEMA
+            address:    !~ipv4_address 192.168.0.1
+            netmask:    !~netmask 255.255.255.0
+            broadcast?: !~ipv4_address 192.168.0.255
+            gateway?:   !~ipv4_address 192.168.0.254
+            mtu?:       !~~between(68,1500) 1500
+            auto?:      !!bool True
+            up?:        !!bool True
+            options?:   !~~seqlen(0,64) [ !~~seqlen(2,2) ['dns-search', 'toto.tld tutu.tld'],
+                                          !~~seqlen(2,2) ['dns-nameservers', '127.0.0.1 192.168.0.254'] ]
+		*/
+        $args = array();
+        $args['address'] = $voip_iface['address'];
+        $args['netmask'] = $voip_iface['netmask'];
 
         if($this->_sysconfd->request_post('/modify_eth_ipv4',
-                          $netiface,
-                          array(array('ifname',$name))) === false)
+                          $args,
+                          array(array('ifname',$voip_iface['name']))) === false)
         {
             $this->_set_error('netiface','save');
             return(false);
@@ -1635,22 +1650,34 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$ref_components['context'] = $this->_commit_context();
 		$ref_components['ipbximportuser'] = $this->_commit_ipbximportuser();
 		$ref_components['netiface'] = $this->_prepare_netiface();
+
+		return(true);
 	}
 
 	function commit_syslanguage()
 	{
 		$this->_commit_language($this->_wizsess['welcome']['language']);
 		$this->_commit_timezone();
+		return(true);
 	}
 
 	function commit_sysdbconfig()
 	{
-		$this->_commit_dbconfig();
+		if ($this->_commit_dbconfig() === false)
+			return(false);
+
+		return(true);
 	}
 
 	function commit_netinfos()
 	{
-		$this->_commit_netiface();
+		if ($this->_commit_netiface() === false)
+			return(false);
+
+		// restart provisioning service
+		$this->_sysconfd->request_post('/services', array('ntp' => 'restart'));
+
+		return(true);
 	}
 
 	function commit_commonconf()
@@ -1659,13 +1686,13 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
             trigger_error('Unable to load commonconf module',E_USER_ERROR);
 
         // Generate commonconf file
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
         $content = '';
         if($commonconf->generate(&$content) !== false)
         {
 	        $content = str_replace("\n", "<br/>\n", $content);
 	        $content = $commonconf->apply();
+
+	        #$this->_sysconfd->request_post('/services', array('spawn-fcgi' => 'restart'));
 
 	        // restart provisioning service
 	        $this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));

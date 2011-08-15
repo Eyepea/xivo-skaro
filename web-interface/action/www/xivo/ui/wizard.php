@@ -27,41 +27,40 @@ $code = 400;
 
 switch($step)
 {
+	case 'commit_db_data':
+		if($appwizard->commit_db_data() !== false)
+			$code = 200;
+		echo 'next::commit_syslanguage::', $_TPL->bbf('commit_syslanguage');
+		break;
 	case 'commit_syslanguage':
 		if($appwizard->commit_syslanguage() !== false)
 			$code = 200;
-		echo 'next::commit_sysdbconfig::', $_TPL->bbf('commit_syslanguage');
+		echo 'next::commit_sysdbconfig::', $_TPL->bbf('commit_sysdbconfig');
 		break;
 	case 'commit_sysdbconfig':
 		if($appwizard->commit_sysdbconfig() !== false)
 			$code = 200;
-		echo 'next::commit_netinfos::', $_TPL->bbf('commit_sysdbconfig');
-		break;
-	case 'commit_netinfos':
-		if($appwizard->commit_netinfos() !== false)
-			$code = 200;
-		echo 'next::set_default_provisioning_values::', $_TPL->bbf('commit_netinfos');
+		echo 'next::set_default_provisioning_values::', $_TPL->bbf('set_default_provisioning_values');
 		break;
 	case 'set_default_provisioning_values':
 		if($appwizard->set_default_provisioning_values() !== false)
 			$code = 200;
-		echo 'next::commit_commonconf::', $_TPL->bbf('set_default_provisioning_values');
-		break;
-	case 'commit_commonconf':
-		if($appwizard->commit_commonconf() !== false)
-			$code = 200;
-		echo 'next::redirect_message::', $_TPL->bbf('commit_commonconf');
-		break;
-	case 'redirect_message':
-		$code = 200;
 		$uri = $appwizard->discover_finish_uri();
-		echo 'uri::', $uri, '::', nl2br($_TPL->bbf('redirect_message',10));
+		echo 'nexturi::commit_finished::'.$uri.'::',
+			$_TPL->bbf('commit_netinfos'),
+			'<br />',
+			$_TPL->bbf('commit_commonconf'),
+			'<br />',
+			$_TPL->bbf('redirect_message',10);
 		break;
-	case 'commit_db_data':
+	case 'commit_finished':
+		if($appwizard->commit_netinfos() !== false
+		&& $appwizard->commit_commonconf() !== false)
+			die;
+		break;
 	default:
-		if($appwizard->commit_db_data() !== false)
-			$code = 200;
-		echo 'next::commit_syslanguage::', $_TPL->bbf('commit_db_data');
+		$code = 200;
+		echo 'next::commit_db_data::', $_TPL->bbf('commit_db_data');
 		break;
 }
 
