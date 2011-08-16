@@ -212,6 +212,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 
 				// HA
 				$rawdata = $this->_ha->get(1);
+        $conf['xivo.ha'] = intval($rawdata['active']);
         if($rawdata['active'] == 1) {
             $conf = array_merge($conf, array(
               'ha.master.ip'    => strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],

@@ -1,0 +1,5 @@
+check system SYSTEM
+  if loadavg (1min) > 10 then alert
+  if loadavg (5min) > 7 then alert
+  if memory usage > 85% then alert
+  if cpu usage (wait) > 30% then alert

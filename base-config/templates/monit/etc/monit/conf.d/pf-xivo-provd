@@ -1,0 +1,5 @@
+check process pf-xivo-provd with pidfile /var/run/provd.pid
+	group telephony
+	mode #_XIVO_MONIT_MODE#
+	start program = "/etc/init.d/pf-xivo-provd start"
+	stop program = "/etc/init.d/pf-xivo-provd stop"

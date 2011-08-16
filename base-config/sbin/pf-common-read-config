@@ -71,3 +71,9 @@ if [ "${XIVO_PROVD_DHCP_INTEGRATION}" = "1" ]; then
 else
   _XIVO_PROVD_DHCP_INTEGRATION="false"
 fi
+
+# HA
+_XIVO_MONIT_MODE=active
+if [ "${XIVO_HA}" = "1" ]; then
+	_XIVO_MONIT_MODE=passive
+fi
