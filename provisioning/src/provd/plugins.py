@@ -701,6 +701,8 @@ class PluginManager(object):
     
     """
     
+    PLUGIN_IFACE_VERSION = 0.1
+    
     _ENTRY_FILENAME = 'entry.py'
     # name of the python plugin code
     _DB_FILENAME = 'plugins.db'
@@ -710,7 +712,8 @@ class PluginManager(object):
     _DOWNLOAD_LABEL = 'download'
     _UPDATE_LABEL = 'update'
     
-    def __init__(self, app, plugins_dir, cache_dir, cache_plugin=True):
+    def __init__(self, app, plugins_dir, cache_dir, cache_plugin=True,
+                 check_compat_min=True, check_compat_max=True):
         """
         app -- a provisioning application object
         plugins_dir -- the directory where plugins are installed
@@ -723,6 +726,8 @@ class PluginManager(object):
         self._plugins_dir = plugins_dir
         self._cache_dir = cache_dir
         self._cache_plugin = cache_plugin
+        self._check_compat_min = check_compat_min
+        self._check_compat_max = check_compat_max
         self.server = None
         self._in_update = False
         self._in_install = set()
@@ -953,6 +958,11 @@ class PluginManager(object):
         """
         return id in self.list_installed()
     
+    def _get_installed_plugin_info(self, plugin_dir):
+        plugin_info_path = os.path.join(plugin_dir, _PLUGIN_INFO_FILENAME)
+        with open(plugin_info_path) as fobj:
+            return json.load(fobj)
+    
     def list_installed(self):
         """Return a dictionary of installed plugins, where keys are plugin
         identifier and value are dictionary of plugin information.
@@ -970,9 +980,7 @@ class PluginManager(object):
         for rel_plugin_dir in os.listdir(self._plugins_dir):
             abs_plugin_dir = os.path.join(self._plugins_dir, rel_plugin_dir)
             if os.path.isdir(abs_plugin_dir):
-                plugin_info_path = os.path.join(abs_plugin_dir, _PLUGIN_INFO_FILENAME)
-                with open(plugin_info_path) as fobj:
-                    raw_plugin_info = json.load(fobj)
+                raw_plugin_info = self._get_installed_plugin_info(abs_plugin_dir)
                 _check_raw_plugin_info(raw_plugin_info, rel_plugin_dir,
                                        _PLUGIN_INFO_INSTALLED_KEYS)
                 localize_fun(raw_plugin_info)
@@ -1085,6 +1093,21 @@ class PluginManager(object):
         if id in self._plugins:
             raise Exception('plugin %s is already loaded' % id)
         plugin_dir = os.path.join(self._plugins_dir, id)
+        plugin_info = self._get_installed_plugin_info(plugin_dir)
+        if self._check_compat_min:
+            min_compat = plugin_info.get(u'plugin_iface_version_min')
+            if min_compat is not None:
+                if self.PLUGIN_IFACE_VERSION < min_compat:
+                    logger.error('Plugin %s is not compatible: %s < %s',
+                                 id, self.PLUGIN_IFACE_VERSION, min_compat)
+                    raise Exception('plugin min compat not satisfied')
+        if self._check_compat_max:
+            max_compat = plugin_info.get(u'plugin_iface_version_max')
+            if max_compat is not None:
+                if self.PLUGIN_IFACE_VERSION > max_compat:
+                    logger.error('Plugin %s is not compatible: %s > %s',
+                                 id, self.PLUGIN_IFACE_VERSION, max_compat)
+                    raise Exception('plugin max compat not satisfied')
         plugin_globals = {}
         self._execplugin(plugin_dir, plugin_globals)
         for obj in plugin_globals.itervalues():

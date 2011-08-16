@@ -196,7 +196,9 @@ class ProvisioningApplication(object):
         self.pg_mgr = PluginManager(self,
                                     plugins_dir,
                                     config['general.cache_dir'],
-                                    config['general.cache_plugin'])
+                                    config['general.cache_plugin'],
+                                    config['general.check_compat_min'],
+                                    config['general.check_compat_max'])
         if 'general.plugin_server' in config:
             self.pg_mgr.server = config['general.plugin_server']
         
