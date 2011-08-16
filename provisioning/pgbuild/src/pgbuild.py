@@ -362,7 +362,10 @@ def create_db_op(opts, args, src_dir, dest_dir):
     fobj = open(db_file, 'w')
     try:
         print "Creating DB file '%s'..." % db_file
-        json.dump(package_infos, fobj, indent=4, sort_keys=True)
+        if opts.pretty_db:
+            json.dump(package_infos, fobj, indent=4, sort_keys=True)
+        else:
+            json.dump(package_infos, fobj, separators=(',', ':'), sort_keys=True)
     finally:
         fobj.close()
 
@@ -396,6 +399,8 @@ def main():
                       help='source directory')
     parser.add_option('-d', '--destination', dest='destination',
                       help='destination directory')
+    parser.add_option('--pretty-db', action='store_true', dest='pretty_db',
+                      help='pretty format the DB file')
     
     opts, args = parser.parse_args()
     nb_op = count(getattr(opts, name) for name in ('build', 'package', 'create_db'))
