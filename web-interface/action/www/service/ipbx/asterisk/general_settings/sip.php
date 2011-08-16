@@ -73,6 +73,8 @@ if(isset($_QR['fm_send']) === true)
 			$error = $rs['error'];
 			$fm_save = empty($error);
 		}
+
+		$ipbx->discuss(array('sip reload'));
 	}
 }
 

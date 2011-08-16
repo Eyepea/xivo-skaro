@@ -127,7 +127,7 @@ if(isset($_QR['fm_send']) === true)
 				$info['userinternal']['guest']['linefeatures']['commented'] = true;
 		}
 	}
-	
+
 	if(dwho_issa('general',$_QR) === false)
 		$_QR['general'] = array();
 	if(!array_key_exists('dundi',$_QR['general']))
@@ -141,7 +141,10 @@ if(isset($_QR['fm_send']) === true)
 		$fm_save = false;
 	}
 	else
-	{ $info['general'] = $_QR['general']; }
+	{
+		$info['general'] = $_QR['general'];
+		$ipbx->discuss(array('xivo[cticonfig,update]'));
+	}
 }
 
 $_TPL->set_var('fm_save'      , $fm_save);

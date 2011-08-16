@@ -67,6 +67,10 @@ switch($act)
         $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
         $db_ast  = $config['general']['datastorage'];
 
+        // Timezone
+        $general = &$ipbx->get_module('general');
+        $info_general = $general->get(1);
+
         $load_ctimain = $ctimain->get(1);
 
         $load_contexts = $cticontexts->get_all();
@@ -444,6 +448,7 @@ switch($act)
         $outlocalserver['urllists'] = $urllists;
         $outlocalserver['cdr_db_uri'] = $db_ast;
         $outlocalserver['userfeatures_db_uri'] = $db_ast;
+		$outlocalserver['timezone'] = $info_general['timezone'];
 
         # XiVO SERVERS
         if(isset($load_ctimain['asterisklist'])
