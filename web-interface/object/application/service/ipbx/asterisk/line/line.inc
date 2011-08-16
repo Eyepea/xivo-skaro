@@ -184,7 +184,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		);
 
 		$infos = $this->_service->discuss($q, true);
-		
+
 		if(!is_array($infos))
 			return false;
 
@@ -321,11 +321,11 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 			$linefeatures = dwho_array_startswith_key($ref,'linefeatures.',true);
 			$linefeatures = $this->_linefeatures->_prepare($linefeatures);
-			
+
 			$r[$linefeatures['id']] = array();
-			
+
 			$userfeatures = dwho_array_startswith_key($ref,'userfeatures.',true);
-						
+
 			if (is_array($userfeatures) === true
 			&& isset($userfeatures['firstname'], $userfeatures['lastname']))
 				$linefeatures['useridentity'] = $userfeatures['firstname'].' '.$userfeatures['lastname'];
@@ -397,7 +397,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			return(false);
 
 		$this->_protocolname = $protocolname;
-		
+
 		if ($action === 'add')
 			$arr['protocol']['secret'] = $this->gen_password(6);
 
@@ -431,13 +431,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->set_linefeatures($action,$arr['linefeatures']);
 			if($this->get_errnb() === 0)
 				return(true);
-				
+
 			return(false);
 		}
 		else
 		{
 			$userfeatures = $arr['userfeatures'];
-			
+
 			if (isset($arr['userfeatures']['id']) === true)
 				$arr['linefeatures']['iduserfeatures'] = (int) $arr['userfeatures']['id'];
 
@@ -598,7 +598,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if (isset($this->_info['linefeatures']) === true
 		&& ($iduserfeatures = $this->_info['linefeatures']['iduserfeatures']) !== 0)
 			$rs['iduserfeatures'] = (int) $iduserfeatures;
-			
+
 		$this->_set_result('linefeatures',$rs);
 
 		return(true);
@@ -665,7 +665,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			if($protocolid !== null)
 				$this->_reverse_add();
 		}
-		
+
 		if($this->get_result_var('linefeatures','number') !== '')
 		{
 			if($this->add_hints() === false
@@ -677,7 +677,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$this->_reverse_add();
 			}
 		}
-		
+
 		if(((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures')) !== 0
 		&& dwho_has_len($this->get_result_var('linefeatures','number')) === true)
 		{
@@ -685,10 +685,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			|| $this->add_usermacro($iduserfeatures,$linefeaturesid) === false)
 				$r = false;
 		}
-		
+
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$this->_service->discuss('sccp reload');
-		
+
 		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
 
 		$this->_status = '';
@@ -715,7 +715,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$rs['protocolid'] = (int) $protocolid;
 
 		$this->_return['linefeatures'] = $this->_linefeatures->add($rs);
-		
+
 		return($this->_return['linefeatures']);
 	}
 
@@ -726,16 +726,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| ($rs = $this->get_result('linefeatures')) === null
 		|| $rs === false)
 			return(false);
-		
+
 		if (empty($rs['device']) === false)
 		{
 			$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
-				
+
 			$arr = array();
 			$arr['linefeatures'] = $this->get_result('linefeatures');
 			$arr['userfeatures'] = $this->get_result('userfeatures');
 			$arr['protocol'] = $this->get_result('protocol');
-			
+
 			// new device associated
 			if (empty($rs['device']) === false)
 			{
@@ -884,7 +884,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_status = '';
 			return(false);
 		}
-		
+
 		$linefeaturesid = (int) $this->_info['linefeatures']['id'];
 
 		if($this->edit_linefeatures($protocolret) === false
@@ -941,7 +941,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 							$hints = $this->add_hints();
 						else
 							$hints = $this->edit_hints();
-	
+
 						if($hints === false)
 						{
 							$this->_reverse_edit($protocolret);
@@ -973,7 +973,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$this->_service->discuss('sccp reload');
-			
+
 		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
 
 		$this->_status = '';
@@ -1058,43 +1058,42 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| ($rs = $this->get_result('linefeatures')) === null
 		|| $rs === false)
 			return(false);
-			
+
 		if ($this->_info['linefeatures']['device'] !== $rs['device'])
 		{
 			$linefeaturesid = $this->_info['linefeatures']['id'];
 			$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
-				
+
 			$arr = array();
 			$arr['linefeatures'] = $this->get_result('linefeatures');
 			$arr['userfeatures'] = $this->get_result('userfeatures');
-			
+
 			if(($this->_protocol = &$this->_service->get_protocol_module($arr['linefeatures']['protocol'])) === false
 			|| ($protocol = $this->_protocol->get($arr['linefeatures']['protocolid'])) === false)
 				return(false);
-			
+
 			$arr['protocol'] = $protocol;
-			
+
 			// new device associated
 			if (empty($rs['device']) === false)
 			{
 				if (($device = $this->_devicefeatures->get($rs['device'])) === false)
 				{
-					dwho_report::push('error', 'device doesn\'t exist');
+					dwho_report::push('error', 'device doesn\'t exist: '.$rs['device']);
 					return(false);
 				}
 				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
 					return(false);
 			}
 			// remove device associated
-			elseif (empty($rs['device']) === true)
+			if (empty($this->_info['linefeatures']['device']) === false)
 			{
-				if(($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
+				if (($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false
+				|| $this->_provdconfig->remove_line_from_config($device['deviceid'],$this->_info['linefeatures']['num']) === false)
 				{
-					dwho_report::push('error', 'device doesn\'t exist');
+					dwho_report::push('error', 'device doesn\'t exist: '.$device['deviceid']);
 					return(false);
 				}
-				elseif($this->_provdconfig->remove_line_from_config($device['deviceid'],$this->_info['linefeatures']['num']) === false)
-					return(false);
 			}
 		}
 		elseif (empty($rs['device']) === false
@@ -1102,13 +1101,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		{
 			if (($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
 			{
-				dwho_report::push('error', 'device doesn\'t exist');
+				dwho_report::push('error', 'device doesn\'t exist: '.$this->_info['linefeatures']['device']);
 				return(false);
 			}
 			else
 			    $this->_provdconfig->rebuild_device_config($device['id']);
 		}
-		
+
 		return(true);
 	}
 
@@ -1334,13 +1333,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	{
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(false);
-		
+
 		// remove device if associated
 		if(($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
 			return(true);
 		elseif($this->_provdconfig->remove_line_from_config($device['deviceid'],$this->_info['linefeatures']['num']) === false)
 			return(false);
-		
+
 		return(true);
 	}
 
@@ -1479,7 +1478,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		}
 
 		$this->_status = '';
-		
+
 		$this->_service->discuss(array('sip reload','dialplan reload','xivo[userlist,update]'));
 
 		return(true);
@@ -1569,7 +1568,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	{
 		if(dwho_issa('protocol',$arr) === false)
 			return(false);
-		
+
 		return($arr);
 	}
 

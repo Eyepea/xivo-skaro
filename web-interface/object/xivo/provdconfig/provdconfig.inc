@@ -848,9 +848,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		&& isset($raw_config['sip_lines'][$line_num]) === true)
 		{
 			unset($raw_config['sip_lines'][$line_num]);
+			if (empty($raw_config['sip_lines']) === true)
+				unset($raw_config['sip_lines']);
 			if($this->edit($config,$globalconfig) === false)
 			{
-				dwho_report::push('error', 'Can\'t remove line fromn config: '.$config);
+				dwho_report::push('error', 'Can\'t remove line from config: '.$config);
 				return(false);
 			}
 		}
