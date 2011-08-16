@@ -486,6 +486,13 @@ class Plugins(object):
             print 'Uninstalling plugin %s' % pg_id
             install_srv.uninstall(pg_id)
     
+    def reload(self, id):
+        """Reload the plugin with the given ID. This is mostly useful for
+        debugging purpose.
+        
+        """
+        self._pg_mgr.reload(id)
+    
     def update(self):
         install_srv = self._pg_mgr.install_service()
         client_oip = install_srv.update()

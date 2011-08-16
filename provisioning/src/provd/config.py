@@ -14,6 +14,8 @@ configuration file are documented in provd.conf):
     general.request_config_dir 
     general.cache_dir
     general.cache_plugin
+    general.check_compat_min
+    general.check_compat_max
     general.base_storage_dir
     general.plugin_server
     general.info_extractor
@@ -112,6 +114,8 @@ class DefaultConfigSource(object):
         ('general.request_config_dir', '/etc/pf-xivo/provd'),
         ('general.cache_dir', '/var/cache/pf-xivo-provd'),
         ('general.cache_plugin', 'True'),
+        ('general.check_compat_min', 'True'),
+        ('general.check_compat_max', 'True'),
         ('general.base_storage_dir', '/var/lib/pf-xivo-provd'),
         ('general.plugin_server', 'http://provd.xivo.fr/plugins/1/stable/'),
         ('general.info_extractor', 'default'),
@@ -350,6 +354,8 @@ _PARAMS_DEFINITION = [
     ('general.request_config_dir', (str, True)),
     ('general.cache_dir', (str, True)),
     ('general.cache_plugin', (_bool, True)),
+    ('general.check_compat_min', (_bool, True)),
+    ('general.check_compat_max', (_bool, True)),
     ('general.base_storage_dir', (str, True)),
     ('general.info_extractor', (str, True)),
     ('general.retriever', (str, True)),

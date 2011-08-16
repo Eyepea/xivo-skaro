@@ -13,7 +13,11 @@
         "dsize": 1074, 
         "filename": "null-1.0-a.tar.bz2", 
         "sha1sum": "d1b5bca23b1d081eade66a32958c355c5b49acd0", 
-        "version": "1.0-a"
+        "version": "1.0-a",
+        # plugin_iface_version_min is optional, no min version if not specified
+        "plugin_iface_version_min": 0,
+        # plugin_iface_version_max is optional, no max version if not specified
+        "plugin_iface_version_max": 0.1
     }, 
     "xivo-aastra-2.6.0.2019": {
         "capabilities": {
