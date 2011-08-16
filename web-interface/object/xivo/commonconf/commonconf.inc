@@ -68,10 +68,10 @@ class xivo_object_commonconf extends xivo_object_abstract
 		{
         $dotted_ip = split('\.', $ip);
         $dotted_nm = split('\.', $netmask);
- 
+
         /*NOTE:
           * not bitwise operator (~) return a negative value (~255 = -256).
-          * as we want a value between 0 and 255, we add 256 and take module of the 
+          * as we want a value between 0 and 255, we add 256 and take module of the
 					* result
           */
         $bcast = '';
@@ -80,7 +80,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         $bcast = substr($bcast, 0, -1);
 
         return($bcast);
-    }			
+    }
 
     function generate($content, $onlystatic=true)
 		{
@@ -175,13 +175,13 @@ class xivo_object_commonconf extends xivo_object_abstract
 		$ifaces     = "";
 		$cidr_id    = -1;
 
-				$_netifaces  = array();
+		$_netifaces  = array();
         for($i = 0; $i < count($list); $i++)
-				{
-						if(array_key_exists('netiface', $item))
+		{
+            $item = &$list[$i];
+			if(array_key_exists('netiface', $item))
 	            $_netifaces[$item['netiface']['ifname']] = $item;
 
-            $item = &$list[$i];
             if(!$item['actionable']
             || $item['netiface']['disable']
             || strcmp($item['netiface']['networktype'], 'voip') != 0)
@@ -213,6 +213,14 @@ class xivo_object_commonconf extends xivo_object_abstract
 				// HA
 				$rawdata = $this->_ha->get(1);
         $conf['xivo.ha'] = intval($rawdata['active']);
+
+        //
+        $conf['ha.master.ip'] = '';
+        $conf['ha.master.name'] = '';
+        $conf['ha.slave.ip'] = '';
+        $conf['ha.slave.name'] = '';
+        //
+
         if($rawdata['active'] == 1) {
             $conf = array_merge($conf, array(
               'ha.master.ip'    => strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],
@@ -220,7 +228,7 @@ class xivo_object_commonconf extends xivo_object_abstract
               'ha.slave.ip'     => strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
               'ha.slave.name'   => strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name']
 		    		));
-			
+
             $vips = $this->_ha_vips->get_all();
             if(count($vips) == 0) {
                 $content = 'no VIP declared in HA configuration'; return false;
@@ -271,7 +279,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 	function apply()
 	{
 		if(($ret = $this->_sysconfd->request_get('/commonconf_apply')) !== false)
-		unlink('/var/lib/pf-xivo-web-interface/commonconf.reload');
+		if (dwho_file::is_f('/var/lib/pf-xivo-web-interface/commonconf.reload'))
+			unlink('/var/lib/pf-xivo-web-interface/commonconf.reload');
 
 		return $ret;
 	}
