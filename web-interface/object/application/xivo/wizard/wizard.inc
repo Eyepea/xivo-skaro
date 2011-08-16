@@ -1700,7 +1700,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	        // restart asterisk service
 	        $this->_sysconfd->request_post('/services', array('asterisk' => 'restart'));
 
-	        #session_destroy();
+	        session_destroy();
 	        return(true);
         }
 
