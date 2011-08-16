@@ -90,7 +90,7 @@ class Safe:
             ],
         'phones' : [
             'context', 'protocol', 'number',
-            'iduserfeatures', 'identify',
+            'iduserfeatures', 'identity',
             'firstname', 'lastname',
             'call-limit', 'dtmfmode',
             'language',
