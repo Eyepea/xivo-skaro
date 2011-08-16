@@ -135,6 +135,8 @@ if __name__ == '__main__':
 	reactor.run()
 
 application = service.Application('confgend')
+service.IProcess(application).processName = "confgend"
+
 svc = internet.TCPServer(o['port'], f, interface=o['listen'])
 svc.setServiceParent(application)
 
