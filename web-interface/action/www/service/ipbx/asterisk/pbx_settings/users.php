@@ -39,9 +39,9 @@ switch($act)
 	case 'add':
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
-		
+
 		$entity_list = false;
-		
+
 		$appcontext= &$ipbx->get_application('context');
 		if(($context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'internal')) !== false)
 		{
@@ -51,51 +51,51 @@ switch($act)
     		for($i = 0;$i < $nb;$i++)
     		{
     			$ref = &$context_list[$i];
-    			
+
     			if (($contextnumbers = $ref['contextnumbers']) === false)
     				continue;
-    				
+
     			if (is_array($contextnumbers) === true
     			&& ($nbct = count($contextnumbers)) === 0)
     				continue;
-    				
+
     			for($k = 0;$k < $nbct;$k++)
     			{
     				$refct = &$contextnumbers[$k];
-    				
+
     				if ($refct['type'] !== 'user'
     				|| isset($idx[$ref['entity']['id']]) === true)
     					continue;
-    				
+
     				$idx[$ref['entity']['id']] = true;
     				array_push($entity_list, $ref['entity']);
     			}
     		}
 		}
-		
+
 		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
 		$order = array('displayname' => SORT_ASC);
 		$list_configregistrar = $appprovdconfig->get_config_list('',$order,false,false,false,'registrar');
-		
+
 		$appdevice = &$ipbx->get_application('device');
 		$order = array('ip' => SORT_ASC);
 		$list_device_line = $appdevice->get_devices_list(null,$order,false);
-		
+
 		$_TPL->set_var('entity_list',$entity_list);
 		$_TPL->set_var('list_configregistrar',$list_configregistrar);
 		$_TPL->set_var('list_device_line',$list_device_line);
 		$_TPL->set_var('import_file',$appuser->get_config_import_file());
-		
+
 		$dhtml = &$_TPL->get_module('dhtml');
-		
+
 		// timepicker
 		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
 		$dhtml->set_js('extra-libs/timepicker/jquery-ui-timepicker-addon.js',true);
-		
+
 		// autocomplete
 		$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);
 		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js',true);
-		
+
 		include(dirname(__FILE__).'/users/'.$act.'.php');
 		break;
 	case 'delete':
@@ -109,7 +109,7 @@ switch($act)
 		$appuser->delete();
 		$appqueue = &$ipbx->get_application('queue');
 		$appqueue->userskills_delete($_QR['id']);
-		
+
 		$ipbx->discuss(array('dialplan reload',
 							'xivo[userlist,update]',
 							'module reload app_queue.so',
@@ -136,11 +136,11 @@ switch($act)
 
 			$appqueue->userskills_delete($values[$i]);
 		}
-		
+
 		$ipbx->discuss(array('dialplan reload',
 							'xivo[userlist,update]',
 							'module reload app_queue.so',
-							'sip reload'										// refresh pickup groups
+							'sip reload'// refresh pickup groups
 		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
@@ -165,10 +165,10 @@ switch($act)
 			else
 				$appuser->enable();
 		}
-		
+
 		$ipbx->discuss(array('dialplan reload',
 			'xivo[userlist,update]',
-			'sip reload'															// refresh pickup groups
+			'sip reload'// refresh pickup groups
 		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);

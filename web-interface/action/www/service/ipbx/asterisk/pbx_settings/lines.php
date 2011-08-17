@@ -65,7 +65,7 @@ switch($act)
 			else
 			{
 				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('sip reload'));
+				$this->_service->discuss(array('sip reload','dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 			}
 		}
@@ -123,7 +123,7 @@ switch($act)
 		&& dwho_issa('protocol',$_QR) === true)
 		{
 			$_QR['linefeatures'] = $return['linefeatures'];
-			
+
 			if($appline->set_edit($_QR,$_QR['proto']) === false
 			|| $appline->edit() === false)
 			{
@@ -134,7 +134,7 @@ switch($act)
 			else
 			{
 				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('sip reload'));
+				$this->_service->discuss(array('sip reload','dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 			}
 		}
@@ -180,7 +180,7 @@ switch($act)
 		$appline->delete();
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('sip reload'));
+		$this->_service->discuss(array('sip reload','dialplan reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 		break;
@@ -201,7 +201,7 @@ switch($act)
 		}
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('sip reload'));
+		$this->_service->discuss(array('sip reload','dialplan reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 		break;
@@ -227,7 +227,7 @@ switch($act)
 		}
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('sip reload'));
+		$this->_service->discuss(array('sip reload','dialplan reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/lines'),$param);
 		break;

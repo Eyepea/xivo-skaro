@@ -73,17 +73,21 @@ switch($act)
 			else
 			{
 				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
+				$ipbx->discuss(array('dialplan reload',
+									'xivo[grouplist,update]',
+									'module reload app_queue.so',
+									'sip reload'// refresh pickup groups
+				));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 			}
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($user['list'] !== false && dwho_issa('user',$result) === true
 		&& ($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'userid')) !== false)
 			$user['slt'] = array_keys($user['slt']);
-		
+
 		if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true
 		&& ($rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid')) !== false)
 			$rightcall['slt'] = array_keys($rightcall['slt']);
@@ -141,7 +145,7 @@ switch($act)
 
 		$appuser = &$ipbx->get_application('user',null,false);
 		$user['list'] = $appuser->get_users_list(null,$userorder,null,true,true);
-			
+
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
@@ -161,17 +165,21 @@ switch($act)
 			else
 			{
 				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
+				$ipbx->discuss(array('dialplan reload',
+									'xivo[grouplist,update]',
+									'module reload app_queue.so',
+									'sip reload'// refresh pickup groups
+				));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 			}
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($user['list'] !== false && dwho_issa('user',$info) === true
 		&& ($user['slt'] = dwho_array_intersect_key($info['user'],$user['list'],'userid')) !== false)
 			$user['slt'] = array_keys($user['slt']);
-		
+
 		if($rightcall['list'] !== false && dwho_issa('rightcall',$info) === true
 		&& ($rightcall['slt'] = dwho_array_intersect_key($info['rightcall'],$rightcall['list'],'rightcallid')) !== false)
 			$rightcall['slt'] = array_keys($rightcall['slt']);
@@ -220,7 +228,11 @@ switch($act)
 		$appgroup->delete();
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[grouplist,update]',
+							'module reload app_queue.so',
+							'sip reload'// refresh pickup groups
+		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
@@ -241,7 +253,11 @@ switch($act)
 		}
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[grouplist,update]',
+							'module reload app_queue.so',
+							'sip reload'// refresh pickup groups
+		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
@@ -266,7 +282,11 @@ switch($act)
 		}
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[grouplist,update]','dialplan reload', 'sip reload'));
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[grouplist,update]',
+							'module reload app_queue.so',
+							'sip reload'// refresh pickup groups
+		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
