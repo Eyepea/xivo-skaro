@@ -559,7 +559,7 @@ function xivo_ast_user_onload()
 }
 
 $(function() {
-    $('#it-userfeatures-alarmclock').timepicker({});    
+    $('#it-userfeatures-alarmclock').timepicker({});
 });
 
 dwho.dom.set_onload(xivo_ast_user_onload);

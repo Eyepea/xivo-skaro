@@ -93,7 +93,7 @@ endif;
 				  'value'	=> $info['userfeatures']['lastname'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'userfeatures', 'lastname')) )),
-						   
+
 		$form->file(array('desc'	=> $this->bbf('fm_userfeatures_picture'),
 						  'name'	=> 'picture',
 						  'id'		=> 'picture',
@@ -309,7 +309,7 @@ endif;
 			           'selected'  => $info['userfeatures']['voicemailtype'],
 			           'default'   => $element['userfeatures']['voicemailtype']['default']),
 			       $element['userfeatures']['voicemailtype']['value']),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablevoicemail'),
 				      'name'	=> 'userfeatures[enablevoicemail]',
 				      'labelid'	=> 'userfeatures-enablevoicemail',
@@ -487,7 +487,7 @@ endif;
 				  'name'	=> 'userfeatures[alarmclock]',
 				  'labelid'	=> 'userfeatures-alarmclock',
 				  'size'	=> 5,
-				  'readonly'	=> true,
+				  'readonly'	=> false,
 				  'value'	=> $info['userfeatures']['alarmclock'],
 				  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'userfeatures', 'alarmclock'))));
@@ -591,7 +591,7 @@ endif;
 	endif;
 ?>
 	</fieldset>
-	
+
 	<fieldset id="fld-rightcalls">
 		<legend><?=$this->bbf('fld-rightcalls');?></legend>
 <?php
@@ -604,7 +604,7 @@ endif;
 				  'value'	=> $info['userfeatures']['rightcallcode'],
 				  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'userfeatures', 'rightcallcode')) ));
-				
+
 				if($rightcall['list'] !== false):
 ?>
     <div id="rightcalllist" class="fm-paragraph fm-description">
