@@ -268,12 +268,9 @@ switch($act)
 		$userorder = array();
 		$userorder['firstname'] = SORT_ASC;
 		$userorder['lastname'] = SORT_ASC;
-		$userorder['number'] = SORT_ASC;
-		$userorder['context'] = SORT_ASC;
-		$userorder['name'] = SORT_ASC;
 
 		$appuser = &$ipbx->get_application('user',null,false);
-		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+		$user['list'] = $appuser->get_users_list(null,$userorder,null,true);
 
 		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
 		$agentgroup['list'] = $appagentgroup->get_agentgroups_list(null,
