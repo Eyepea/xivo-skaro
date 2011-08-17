@@ -254,11 +254,21 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return($rs['id']);
 	}
 
+	private function _delete_required_config($reset=false)
+	{
+		if ($reset === true)
+			$this->delete('default');
+		if ($reset || $this->get('autoprov') !== false)
+			$this->delete('autoprov');
+		if ($reset || $this->get('base') !== false)
+			$this->delete('base');
+		if ($reset || $this->get('defaultconfigdevice') !== false)
+			$this->delete('defaultconfigdevice');
+	}
+
 	public function rebuild_required_config()
 	{
-		$this->delete('autoprov');
-		$this->delete('base');
-		$this->delete('defaultconfigdevice');
+		$this->_delete_required_config();
 
 		$confdefault = $this->get('default');
 
@@ -276,10 +286,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		if ($reset === true)
 		{
-			$this->delete('default');
-			$this->delete('autoprov');
-			$this->delete('base');
-			$this->delete('defaultconfigdevice');
+			$this->_delete_required_config(true);
 			if (is_null($registrarip) === true)
 				$registrarip = $_SERVER['SERVER_ADDR'];
 			return($this->eval_required_config($registrarip));
