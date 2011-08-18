@@ -34,7 +34,7 @@ $dhtml   = &$this->get_module('dhtml');
 
 <fieldset id="fld-registrar">
 	<legend><?=$this->bbf('fld_provd_server');?></legend>
-	
+
 <?php
 if (($params = $this->get_var('info','configure')) !== false
 && is_array($params) === true
@@ -83,16 +83,17 @@ endif;
                     'name'	    => 'provd[net4_ip]',
                     'labelid'	=> 'provd-net4_ip',
                     'size'	  	=> 16,
+                    'help'	  	=> $this->bbf('fm_hlp_provd_net4_ip'),
                     'value'	  	=> $this->get_var('info','provd','net4_ip'),
                     'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','net4_ip')))),
-	
+
 	$form->text(array('desc'	=> $this->bbf('fm_provd_http_port'),
                     'name'	    => 'provd[http_port]',
                     'labelid'	=> 'provd-http_port',
                     'size'	  	=> 4,
                     'value'	  	=> $this->get_var('info','provd','http_port'),
                     'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','provd_http_port')))),
-	
+
 	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_dhcp_integration'),
                     'name'	    => 'provd[dhcp_integration]',
                     'labelid'	=> 'provd-dhcp_integration',
@@ -121,27 +122,27 @@ endif;
                     'size'	  	=> 12,
                     'value'	  	=> $this->get_var('info','provd','username'),
                     'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','username')))),
-	
+
 	$form->text(array('desc'	=> $this->bbf('fm_provd_password'),
                     'name'		=> 'provd[password]',
                     'labelid'	=> 'provd-password',
                     'size'	  	=> 12,
                     'value'	  	=> $this->get_var('info','provd','password'),
                     'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','password')))),
-	
+
 	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_secure_rest'),
                     'name'	    => 'provd[secure]',
                     'labelid'	=> 'provd-secure',
                     'checked'	=> $this->get_var('info','provd','secure'))),
-	
+
 	$form->text(array('desc'	=> $this->bbf('fm_provd_rest_port'),
                     'name'		=> 'provd[rest_port]',
                     'labelid'	=> 'provd-rest_port',
                     'size'	  	=> 4,
                     'value'	  	=> $this->get_var('info','provd','rest_port'),
                     'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','rest_port'))));
-	
-	
+
+
 ?>
 </fieldset>
 </div>

@@ -1574,8 +1574,15 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         if (($voip_iface = $modnetiface->get_voip_iface()) === false)
         	return(false);
 
-        $modprov = &$this->_xobj->get_module('provisioning');
-        $modprov->edit(1, array('net4_ip' => $voip_iface['address']));
+		/*
+        should not explicitly specify provd bind address in webi by default
+        To simplify HA implementation and also to simplify the common case
+        where the provd daemon listen on the VoIP network interface,
+        there should not be an IP explicitly set in the web-i
+        configuration/provisioning/general/ip server field.
+        */
+        #$modprov = &$this->_xobj->get_module('provisioning');
+        #$modprov->edit(1, array('net4_ip' => $voip_iface['address']));
 
         $provdconfig = &$this->_xobj->get_module('provdconfig');
         if ($provdconfig->eval_required_config($voip_iface['address'],true) === false)

@@ -29,6 +29,9 @@ Configuration de l'API REST
 ; fm_provd_net4_ip
 Adresse IP:
 
+; fm_hlp_provd_net4_ip
+Laisser vide si provd est sur le même serveur.
+
 ; fm_provd_http_port
 Port HTTP: 
 
