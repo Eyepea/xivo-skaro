@@ -144,11 +144,13 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		}
 
 		if(empty($reslist) === true)
+			return(null);
+		/*
 		{
 			$this->_set_result(false);
 			return(false);
 		}
-
+		*/
 		$this->_set_result($reslist);
 
 		return(true);

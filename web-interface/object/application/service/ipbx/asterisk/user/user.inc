@@ -114,7 +114,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function get($id,$disable=null,$where=false,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
-		
+
 		if((bool) $where === false)
 			$this->_info['userfeatures'] = $this->_userfeatures->get($id);
 		else
@@ -185,7 +185,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(is_object($this->_linefeatures) === false)
 			return(false);
-			
+
 		$order = array();
 		$order['rules_group'] = SORT_ASC;
 		$order['rules_order'] = SORT_ASC;
@@ -422,7 +422,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		$this->_profileclientlist = array();
-			
+
 		for($i=0;$i<$nb;$i++)
 		{
 			$ref = &$list[$i]['ctiprofiles'];
@@ -744,10 +744,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 		{
 			$context = $linefeatures['context'];
-			
+
 			if($vmaction === 'add')
 				$arr['voicemail']['context'] = $context;
-			
+
 			$arr['voicemail']['locale'] = $this->get_result_var('userfeatures','language');
 
 			if(isset($arr['voicemail']['deletevoicemail']) === false)
@@ -775,7 +775,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$r = false;
 		else
 			$r = true;
-		
+
 		// schedule
 		if(array_key_exists('schedule_id', $arr))
 			$this->_set_result('schedule_id', intval($arr['schedule_id']));
@@ -885,7 +885,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$fileinfo['object_type'] = 'user';
 		$fileinfo['object_id'] = (int) $iduserfeatures;
 		$fileinfo['file'] = $fileinfo['tmp_name'];
-	
+
 		if($fileinfo['error'] > 0
 		|| ($rs = $this->_attachment->chk_values($fileinfo)) === false)
 		{
@@ -908,26 +908,33 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$reslist = $error = array();
 		$errnb = 0;
 
-		foreach($arr as $key => $list)
+		if (isset($arr[0],$arr[0]['id']) === true)
+			$reslist = $arr;
+		else
 		{
-			for($i = 0;$i < count($list);$i++)
-			{
-				if (isset($arr[$key][$i]) === false
-				|| $arr[$key][$i] === '')
-					$reslist[$i][$key] = '';
-				else
-					$reslist[$i][$key] = $arr[$key][$i];
-			}
-		}
 
-		if(empty($reslist) === true)
-		{
-			$this->_set_result('linefeatures',false);
-			$this->_set_error('linefeatures','empty');
-			return(false);
+			foreach($arr as $key => $list)
+			{
+				for($i = 0;$i < count($list);$i++)
+				{
+					if (isset($arr[$key][$i]) === false
+					|| $arr[$key][$i] === '')
+						$reslist[$i][$key] = '';
+					else
+						$reslist[$i][$key] = $arr[$key][$i];
+				}
+			}
+
+			if(empty($reslist) === true)
+			{
+				$this->_set_result('linefeatures',false);
+				$this->_set_error('linefeatures','empty');
+				return(false);
+			}
+
+			array_pop($reslist);
+
 		}
-		
-		array_pop($reslist);
 
 		/*
 		if(dwho_issa('queue',$arr) === true
@@ -953,10 +960,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				|| ($linefeatures = $line['linefeatures']) === false)
 				{
 					$errnb++;
-					$error[$i] = 'line_not_exist';
+					$error[$i] = 'linefeatures_not_exist';
+					dwho_var_dump($ref['id']);
 					continue;
 				}
-		
+
 				$ref['id'] = (int) $ref['id'];
 				$ref['protocol'] = $linefeatures['protocol'];
 				$ref['protocolid'] = (int) $linefeatures['protocolid'];
@@ -993,7 +1001,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref['iduserfeatures'] = (int) $iduserfeatures;
 			$ref['rules_order'] = isset($ref['rules_order']) ? (int) $ref['rules_order'] : 0;
 			$ref['rules_group'] = isset($ref['rules_group']) ? $ref['rules_group'] : '';
-				
+
 			$callerid = $this->get_result_var('userfeatures','callerid');
 			$ref['callerid'] = $this->_service->mk_callerid($callerid,$number,$protocolname);
 
@@ -1003,7 +1011,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$error[$i] = $this->_linefeatures->get_filter_error();
 			}
 		}
-		
+
 		$this->_set_result('linefeatures',$reslist);
 
 		if ($errnb >> 0)
@@ -1534,7 +1542,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		elseif($this->_attachment === false
 		|| $rs === false)
 			return(false);
-			
+
 		if(dwho_issa('picture',$this->_info) === false)
 		{
 			$return = $this->_attachment->add($rs);
@@ -1551,12 +1559,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_linefeatures($userfeaturesid=0)
 	{
-		
-		if((($rs = $this->get_result('linefeatures')) === null
-		|| ($nbrs = count($rs)) === 0)
+		if(($rs = $this->get_result('linefeatures')) === null
+		|| (($nbrs = count($rs)) === 0)
 			&& $this->_info['linefeatures'] === false)
 			return($rs);
-			
+
 		if(is_null($rs) === true)
 			$rs = array();
 
@@ -1608,10 +1615,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nbrs;$i++)
 		{
 			$line = &$rs[$i];
-			
+
 			if($userfeaturesid !== 0)
 				$line['iduserfeatures'] = (int) $userfeaturesid;
-		
+
 			$this->_line->_reset();
 
 			if (isset($line['id']) === true
@@ -1809,7 +1816,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$id['iduserfeatures'] = $ref['iduserfeatures'];
 			$id['fknum'] = $ref['fknum'];
-			
+
 			if($this->_phonefunckey->add($ref) === false)
 				return(false);
 
@@ -2198,7 +2205,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($issa_userfeatures === true)
 		{
 			$arr['userfeatures']['callerid'] = '';
-			
+
 			if (dwho_issa('entityid',$arr['userfeatures']) === false)
 			    $arr['userfeatures']['entityid'] = 1;
 
@@ -2219,7 +2226,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['userfeatures']['agentid'] = $agentid;
 
 		unset($arr['userfeatures']['agentnumber']);
-		
+
 		if(dwho_issa('linefeatures',$arr) === true)
 		{
 		    $arr['linefeatures']['id'] = array();
@@ -2239,8 +2246,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			    $arr['linefeatures']['protocol'] = array();
 			    array_push($arr['linefeatures']['protocol'], 'sip');
 			}
-			
-			
+
+
 			array_push($arr['linefeatures']['id'], 0);
 		}
 
@@ -2273,7 +2280,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0,$row = 1;$i < $nb;$i++,$row++)
 		{
 		    $ref = &$data[$i];
-		    
+
 			if(($arr = $this->_prepare_import($ref)) === false
 			|| $this->set_add($arr) === false)
 			{
@@ -2297,7 +2304,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				{
 					$r['lines'][$row] = 'error_user';
 					$r['total']['error']++;
-					
+
 					$this->_reverse_add();
 
 					dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
@@ -2343,7 +2350,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
-					
+
 				$this->_reverse_add();
 
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
@@ -2358,7 +2365,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
-					
+
 				$appincall->_reverse_add();
 
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($ref, true), 'userimport', "line #$i");
@@ -2370,7 +2377,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['success']++;
 			}
 		}
-		
+
 		return($r);
 	}
 

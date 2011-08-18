@@ -892,3 +892,6 @@ Device
 
 ; fm_type-opt(simul)
 simul
+
+; no_linefeatures
+No line
