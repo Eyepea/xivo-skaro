@@ -1,77 +1,164 @@
 Tests
 *****
+Les tests du patch pf_meetme_moderation se déroule par itération du plus bas
+niveau vers le plus haut. Lorsqu'une phase de test dépend d'une phase
+précédente, la dépendance sera décrite.
 
-I. Définitions
-==============
+Les phases se déroulent comme suit:
+1. Tests de la CLI Asterisk
+2. Tests du menu "*"
+3. Tests des commande de l'AMI
 
-1. U1 = Utilisateur 1
-2. U2 = Utilisateur 2
-3. A  = Administrateur
-4. ami_user = nom d'utilisateur de l'ami entre "[ ]" dans /etc/asterisk/manager.conf
-5. ami_secret = mot de passe de l'ami dans /etc/asterisk/manager.conf champ "Secret"
-6. usernum = Numéro d'utilisateur d'une meetme
-7. adminnum = Numéro d'utilisateur de l'administrateur d'une meetme
+Les tests supposent une chambre de conférence en mode modéré numéro 300 pin 1234
+pin admin 4567
 
-II. Séquence
-============
+II. Tests CLI Asterisk
+=====================
 
-Les différentes sections nécessitent de garder l'état de la section précédente.
+1. À la ligne de commande Asterisk tapez "meetme <TAB>"
+-> La liste de complétion doit contenir "kick"
 
-1. Arrivée de l'administrateur
-------------------------------
+2. À la ligne de commande Asterisk tapez "manager show command meet<TAB>"
+-> La liste de complétion doit contenir "MeetmeKick", "MeetmeTalk" et "MeetmeAccept"
 
-* Création de la chambre de conférence 300 avec les modes "kxw(60)iM",
-  code pin 1234 et code admin 4567
-* U1 appelle 300, tape 1234 et donne son nom
+3.1 Composé le 300 sur un téléphone
+3.2 Entrez 4567 lorsque le pin est demandé
+3.3 À la ligne de commande Asterisk tapez "meetme kick 300 1"
+-> Un message vous indicant que vous avez été éjecté de la conférence doit être
+ententu
+-> La ligne est raccrochée
+
+4.1 Répétez les étapes 3.1 et 3.2
+4.2 Sur un deuxième téléphone composez le 300
+4.3 Entrez 1234 lorsque le pin de la conférence est demandé
+4.4 À la ligne de commande Asterisk tapez "meetme kick 300 all"
+-> Le message d'éjection doit être ententu sur les deux lignes
+-> Les deux lignes devraient être raccrochées
+
+III. Tests des menu "*"
+=======================
+
+1.1 Composez le 300
+1.2 Entrez 4567 lorsque le pin est demandé
+1.3 Appuyez sur "*"
+-> Les options suivantes doivent être ententues:
+   1) Mute/Unmute (mode discret)
+   2) Lock/Unlock
+   3) Kick last user
+   4) Decrease volume (conference)
+   5) Extend the conference
+   6) Increase volume (conference)
+   7) Decrease volume (self)
+   8) Exit the menu
+   9) Increase volume (self)
+
+# Menu **1 (Dépendant du test MeetmeKick Section II. test 3)
+2.1 Répétez 1.1, 1.2
+2.2 Sur un autre téléphone composé le 300
+2.3 Entrez 1234 lorsque le pin est demandé
+-> Admin entend "beep"
+-> Utilisateur est en attente
+2.4 Admin: Appuyez sur **
+-> Vous devez entredre qu'un utilisateur est en attente
+2.5 Admin: Appuyez sur 1
+-> L'utilisateur doit être entre qu'il est éjecté de la conférence
+-> La ligne de l'utilisateur est raccrocrée
+
+# Menu **2
+3.1 Répétez 2.1 à 2.4
+3.2 Appuyez sur 2
+-> L'Admin et l'utilisateur sont maintenant en conférence
+
+# Menu **3
+4.1 Répétez 2.1 à 2.4
+4.2 Appuyez sur 3
+-> L'admin et l'utilisateur sont maintenant en communication privée
+4.3 Admin: Appuyez sur 2
+-> Admin et l'utilisateur sont maintenant dans la conférence
+4.4 Répétez 2.2 à 2.4
+4.5 Admin: Appuyez sur 3
+-> Admin et le nouvel utilisateur sont maintenant en communication privée
+-> Le premier utilisateur est en attente
+4.6 Admin: Appuyez sur 1
+-> Admin et le premier utilisateur sont en conférence
+-> Le deuxième utilisateur entend qu'il a été éjecté
+-> La ligne du deuxième utilisateur est raccrochée
+
+# Menu *1
+5.1 Répétez 1.1, 1.2, 1.3
+5.2 Appuyez sur 1
+-> Vous devez entendre le message muted/unmuted dépendant du status précédent
+
+# Menu *2
+6.1 Répétez 1.1, 1.2, 1.3
+6.2 Appuyez sur 2
+-> Vous devez entendre que la conférence est maintenant barrée
+6.3 Répétez 2.2 et 2.3
+-> Vous devez entre que la conférence est barrée
+6.4 Admin: Appuyez sur "*2"
+-> Vous devez entre que la conférence est débarrée
+6.5 Répétez 2.2 et 2.3
+-> Utilisateur: Vous devriez être en attente
+
+# Menu *3 (Dépendant du test MeetmeKick Section II. test 3)
+7.1 Répétez 1.1, 1.2
+7.2 Répétez 3.3, 3.4
+7.5 Admin: Appuyez sur "*3"
+-> Utilisateur doit entendre qu'il a été éjecté de la conférence
+-> La ligne de l'utilisateur doit être raccroché
+
+# Menu *8
+... à définir (Sortir du menu ou de la conférence)
+
+# Menu *#
+9.1 Répétez 3.1 et 3.2
+9.2 Admin: Appuyez sur *#
+-> La ligne de l'admin est raccrochée
+-> L'utilisateur est en attente
+9.3 Répétez 1.1 et 1.2
+-> Admin et l'utilisateur sont en conférence
+
+# Menu #
+L'option Close conference on administrator exit doit être sélectionné
+10.1 Répétez 3.1 et 3.2
+10.2 Admin: Appuyez sur #
+-> Les lignes de l'utilisateur et de l'admin sont raccrochées
+
+# Arrivé de l'administrateur après les utilisateurs
+11.1 U1 appelle 300, tape 1234 et donne son nom
 -> U1 est en attente musicale
-* U2 appelle 300, tape 1234 et donne son nom
+11.2 U2 appelle 300, tape 1234 et donne son nom
 -> U2 est en attente musicale
-* A appelle 300, tape 4567 et donne son nom
+11.3 A appelle 300, tape 4567 et donne son nom
 -> A se voit proposer de modérer U1
-* A appuie sur 2 pour l'autoriser
+11.4 A appuie sur 2 pour l'autoriser
 -> U1 entre dans la conférence
 -> A se voit proposer de modérer U2
-* A appuie sur 3 pour avoir une conversation privée avec U2
+11.5 A appuie sur 3 pour avoir une conversation privée avec U2
 -> U1 est mis en attente musicale
 -> A et U2 peuvent discuter
-* A appuie sur 1 pour refuser U2
--> U2 est mis en attente musicale pendant 60 secondes.
+11.6 A appuie sur 1 pour refuser U2
+-> La ligne de U2 est raccrochée
 -> U1 rejoint la conférence
+-> La conférence se déroule maintenant entre U1 et A.
 
-La conférence se déroule maintenant entre U1 et A.
 
-2. Arrivée d'utilisateurs pendant une conférence débutée
---------------------------------------------------------
+IV. Tests des commandes de l'AMI
+================================
 
-* U2 appelle 300, tape 1234 et donne son nom
--> U2 est en attente musicale
--> A entends un bip
-* A fait '**'
--> A se voit proposer de modérer U2
-* A fait 3 pour avoir une conversation privée avec U2
--> U1 est mis en attente musicale
--> A et U2 peuvent discuter
-* A appuie sur 2 pour accepter U2
--> U1 sort de l'attente musicale
--> U2 rejoint la conférence
+Procédure de loggin sur l'AMI
+- `telnet localhost 5038`
 
-La conférence se déroule maintenant entre U1, U2 et A.
+- `Action: Login`
+- `Username: <ami_user>`
+- `Secret: <ami_secret>`
+- <Enter>
 
-3. Suspension de la conférence
-------------------------------
+ami_user = nom d'utilisateur de l'ami entre "[ ]" dans /etc/asterisk/manager.conf
+ami_secret = mot de passe de l'ami dans /etc/asterisk/manager.conf champ "Secret"
 
-* A appuie sur '*#'
--> U1 et U2 sont mis en attente musicale
--> A sort de la conférence.
-* A appelle 300, tape 4567 et donne son nom
--> A rejoint la conférence
--> U1 et U2 sortent de l'attente musicale
-
-4. Fin de la conférence
------------------------
-
-* A appuie sur '#'
--> A, U1 et U2 se voient refouler de la conversation.
+Le champs usernum est déterminé par l'ordre d'arrivé dans la conférence
+Le champs adminnum correspond au usernum de l'admin
 
 5. AMI command MeetmeAccept
 ---------------------------
@@ -104,21 +191,38 @@ Adminnum: 1
 
 7. AMI command MeetmeTalk
 -------------------------
+* A appel la chanbre de conférence et entre son mot de passe
+* U1 appel la chambre de conférence, entre le pin de la conférence
+* Depuis l'AMI effectuer la commande suivante
+
+Action: MeetmeTalk
+Meetme: 300
+Usernum: 2
+Adminnum: 1
+<enter>
+
+-> A et U1 sont en communication privée
 
 8. AMI command MeetmePause
 --------------------------
+* A appel la chanbre de conférence et entre son mot de passe
+* U1 appel la chambre de conférence, entre le pin de la conférence
+* Depuis l'AMI effectuer la commande suivante
 
-III. Procédure de loggin sur l'AMI
-----------------------------------
-- `telnet localhost 5038`
+Action: MeetmePause
+Meetme: 300
+Status: on
 
-- `Action: Login`
-- `Username: <ami_user>`
-- `Secret: <ami_secret>`
+-> Les utilisateurs et l'admin sont tous en attente
+* Depuis l'AMI effectuer la commande suivante
 
-- Enter, Enter
+Action: MeetmePause
+Meetme: 300
+Status: off
 
-IV. Récurérer les usernum et adminnum
--------------------------------------
-En général le premier utilisateur à téléphoner dans une chambre de conférence se
-voit attribuer le usernum 1, le second 2 et ainsi de suite.
+-> Les utilisateur et l'admin sont tous de retour dans la conférence
+
+# Pour quitter l'AMI
+Action: Logoff
+<enter>
+
