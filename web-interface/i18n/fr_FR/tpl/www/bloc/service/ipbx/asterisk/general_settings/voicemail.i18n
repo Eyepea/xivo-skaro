@@ -414,13 +414,13 @@ Propriétés des messageries vocales sauvegardées avec succès
 
 ;;; asterisk 1.8
 ; fm_moveheard
-Déplacer les messages consultés dans le répertoire *Old*: 
+Déplacer les messages consultés dans le répertoire <b>Old</b>: 
 
 ; hlp_fm_moveheard
 Config asterisk: moveheard
 
 ; fm_forward_urgent_auto
-Transferer un message urgent en <b>urgent</b>: 
+Transférer un message urgent en <b>urgent</b>: 
 
 ; hlp_fm_forward_urgent_auto
 Config asterisk: forward_urgent_auto

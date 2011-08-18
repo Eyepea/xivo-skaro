@@ -162,7 +162,7 @@ Reboucler sur le 1er message à la fin :
 Config asterisk: messagewrap
 
 ; fm_voicemail-moveheard
-Déplacer les messages consultés dans le répertoire *Old* : 
+Déplacer les messages consultés dans le répertoire <b>Old</b> : 
 
 ; hlp_fm_voicemail-moveheard
 Config asterisk: moveheard
