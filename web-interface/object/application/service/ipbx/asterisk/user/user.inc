@@ -1560,9 +1560,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function edit_linefeatures($userfeaturesid=0)
 	{
 		if(($rs = $this->get_result('linefeatures')) === null
-		|| (($nbrs = count($rs)) === 0)
-			&& $this->_info['linefeatures'] === false)
-			return($rs);
+		|| (($nbrs = count($rs)) === 0
+			&& $this->_info['linefeatures'] === false))
+			return(null);
 
 		if(is_null($rs) === true)
 			$rs = array();

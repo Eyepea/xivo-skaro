@@ -1087,7 +1087,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				if (($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false
 				|| $this->_provdconfig->remove_line_from_config($device['deviceid'],$this->_info['linefeatures']['num']) === false)
 				{
-					dwho_report::push('error', 'device doesn\'t exist: '.$device['deviceid']);
+					dwho_report::push('error', 'doesn\'t exist: '.$device['deviceid']);
 					return(false);
 				}
 			}
@@ -1101,7 +1101,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				return(false);
 			}
 			else
-			    $this->_provdconfig->rebuild_device_config($device['id']);
+				$this->_provdconfig->rebuild_device_config($device['id']);
 		}
 
 		return(true);

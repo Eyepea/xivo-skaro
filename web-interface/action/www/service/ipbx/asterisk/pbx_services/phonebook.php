@@ -38,7 +38,7 @@ $appphonebook = &$ipbx->get_application('phonebook');
 switch($act)
 {
 	case 'add':
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('phonebook',$_QR) === true)
 		{
@@ -77,7 +77,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appphonebook->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('phonebook',$_QR) === true)
