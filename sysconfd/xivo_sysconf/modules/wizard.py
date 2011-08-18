@@ -93,25 +93,27 @@ WIZARD_IPBX_ENGINES         = {'asterisk':
                                                      'dbpass':  'dbpass',
                                                      'dbhost':  'dbhost',
                                                      'dbport':  'dbport',
-                                                     'charset': 'dbcharset'},
+                                                     'charset': 'dbcharset',
+                                                     'encoding': 'dbcharset'},
 
                                          'cdr':     {'dbname':  'dbname',
                                                      'dbuser':  'user',
                                                      'dbpass':  'password',
                                                      'dbhost':  'hostname',
                                                      'dbport':  'port',
-                                                     'charset': 'charset'},
+                                                     'charset': 'dbcharset',
+                                                     'encoding': 'dbcharset'},
                                          'modules': ('res_config_pgsql.so', 'cdr_pgsql.so')},
                                      'sqlite':
                                         {'params':  {'timeout_ms':  150},
                                          'modules': ('res_config_sqlite.so',)}}}}
 
 WIZARD_XIVO_DB_ENGINES      = {'mysql':
-                                    {'params':  {'charset':     'utf8'}},
+                                    {'params':  {'charset': 'utf8'}},
                                'postgresql':
-                                    {'params':  {}},
+                                    {'params':  {'encoding': 'utf8'}},
                                'sqlite':
-                                    {'params':  {'timeout_ms':  150}}}
+                                    {'params':  {'timeout_ms': 150}}}
 
 
 def _find_template_file(tplfilename, customtplfilename, newfilename):
@@ -333,6 +335,12 @@ def asterisk_postgresql_config(authority, database, params, options):
     """
     Return PostgreSQL options for Asterisk
     """
+
+    if WIZARD_XIVO_DB_ENGINES['postgresql']:
+        dbparams = WIZARD_XIVO_DB_ENGINES['postgresql']['params']
+    else:
+        dbparams = {}
+
     rs = {}
 
     xdict = dict(options)
@@ -358,6 +366,8 @@ def asterisk_postgresql_config(authority, database, params, options):
         xdict['dbhost'],
         xdict['dbport'],
         xdict['dbname'])
+    
+    rs = dict(rs, **dbparams)
 
     if params:
         for k, v in params.iteritems():
@@ -461,6 +471,7 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
     """
     POST /set_db_backends
     """
+    
     if 'xivo' not in args:
         raise HttpReqError(415, "missing option 'xivo'")
     else:
