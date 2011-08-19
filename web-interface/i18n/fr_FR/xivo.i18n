@@ -28,6 +28,9 @@ Rechercher
 ; report_export
 Exporter
 
+; successfully_reset
+Terminaison réinitialisée en mode "Autoprov" 
+
 ; successfully_installed
 %s correctement installé
 

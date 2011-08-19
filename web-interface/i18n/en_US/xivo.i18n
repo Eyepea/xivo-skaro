@@ -28,6 +28,9 @@ Search
 ; report_export
 Export
 
+; successfully_reset
+Device successfully "Autoprov" mode reset
+
 ; successfully_installed
 %s successfully installed
 
