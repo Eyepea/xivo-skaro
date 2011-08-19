@@ -8,7 +8,6 @@ DHCP information is passed to it by the dxtorc application.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique
 
@@ -27,6 +26,7 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
+import errno
 import json
 import ConfigParser
 import logging
@@ -189,13 +189,18 @@ class UnixSocketDHCPInfoSource(object):
     Use a Unix datagram socket to get DHCP information.
     
     """
-    def __init__(self, ctl_file):
+    def __init__(self, ctl_file, remove_file=False):
         """Create a new source.
         
         Raise a socket.error exception if the socket can't be binded to
         ctl_file.
         
         """
+        if remove_file:
+            try:
+                os.remove(ctl_file)
+            except OSError, e:
+                pass
         self._ctl_file = ctl_file
         self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         try:
@@ -299,6 +304,34 @@ class Agent(object):
 
 
 class PidFile(object):
+    def _remove_stale_pid_file(self):
+        try:
+            fobj = open(self._pid_file)
+        except IOError, e:
+            if e.errno == errno.ENOENT:
+                # pidfile doesn't exist -- do nothing
+                pass
+            else:
+                raise
+        else:
+            try:
+                pid = int(fobj.read().strip())
+            finally:
+                fobj.close()
+            # check if a process with the given pid exist by sending a signal
+            # with value 0 (see "man 2 kill" for more info).
+            try:
+                os.kill(pid, 0)
+            except OSError, e:
+                if e.errno == errno.ESRCH:
+                    # no such process -- remove stale pidfile
+                    logger.info('Found stale pidfile %s, removing it', self._pid_file)
+                    os.remove(self._pid_file)
+                else:
+                    raise
+            else:
+                logger.error('Found fresh pidfile %s', self._pid_file)
+    
     def _create_pid_file(self):
         pid = os.getpid()
         tmp_pid_file = self._pid_file + '.' + str(pid)
@@ -320,6 +353,7 @@ class PidFile(object):
     
     def __init__(self, pid_file):
         self._pid_file = pid_file
+        self._remove_stale_pid_file()
         self._create_pid_file()
 
     def _remove_pid_file(self):
@@ -456,17 +490,17 @@ def main():
         sys.exit(1)
     base_uri = config['prov_server']['dev_mgr_uri']
     
-    source = UnixSocketDHCPInfoSource(UNIX_SERVER_ADDR)
+    username = config['prov_server'].get('username')
+    password = config['prov_server'].get('password')
+    sink = ProvServerDHCPInfoSink(base_uri, username, password)
     try:
-        username = config['prov_server'].get('username')
-        password = config['prov_server'].get('password')
-        sink = ProvServerDHCPInfoSink(base_uri, username, password)
+        if config['general']['cache']:
+            sink = CachingDHCPInfoSink(sink)
+        if not config['general']['foreground']:
+            _daemonize()
+        pidfile = PidFile(PID_FILE)
         try:
-            if config['general']['cache']:
-                sink = CachingDHCPInfoSink(sink)
-            if not config['general']['foreground']:
-                _daemonize()
-            pidfile = PidFile(PID_FILE)
+            source = UnixSocketDHCPInfoSource(UNIX_SERVER_ADDR, True)
             try:
                 signum = signal.SIGTERM
                 old_handler = signal.signal(signum, _sig_handler)
@@ -476,11 +510,11 @@ def main():
                 finally:
                     signal.signal(signum, old_handler)
             finally:
-                pidfile.close()
+                source.close()
         finally:
-            sink.close()
+            pidfile.close()
     finally:
-        source.close()
+        sink.close()
 
 
 if __name__ == '__main__':
