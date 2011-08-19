@@ -28,7 +28,7 @@ $info['provd'] = $appprovisionning->get();
 if(isset($_QR['act']) === true
 && $_QR['act'] === 'reset')
 {
-    $provdconfig = &$_XOBJ->get_module('provdconfig');
+	$provdconfig = &$_XOBJ->get_module('provdconfig');
 	if ($provdconfig->eval_required_config(null,true) === false)
 		dwho_report::push('error','error_during_update');
 	else
