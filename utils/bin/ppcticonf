@@ -4,6 +4,7 @@
 """Pretty print the CTI configuration (or any URL returning json)."""
 
 import urllib2
+import re
 import sys
 try:
     import json
@@ -13,16 +14,29 @@ except ImportError:
 DEFAULT_URL = "https://localhost/service/ipbx/json.php/private/ctiserver/configuration"
 
 
-if len(sys.argv) == 2:
-    url = sys.argv[1]
-else:
-    url = DEFAULT_URL
+def get_fobj(string_):
+    if re.match(r'^\w+:', string_):
+        # string_ is an URI
+        return urllib2.urlopen(string_)
+    else:
+        return open(string_)
 
-fobj = urllib2.urlopen(url)
-try:
-    obj = json.load(fobj)
-finally:
-    fobj.close()
 
-json.dump(obj, sys.stdout, indent=4, sort_keys=True)
-print
+def main():
+    if len(sys.argv) == 2:
+        url = sys.argv[1]
+    else:
+        url = DEFAULT_URL
+
+    fobj = get_fobj(url)
+    try:
+        obj = json.load(fobj)
+    finally:
+        fobj.close()
+
+    json.dump(obj, sys.stdout, indent=4, sort_keys=True)
+    print
+
+
+if __name__ == '__main__':
+    main()
