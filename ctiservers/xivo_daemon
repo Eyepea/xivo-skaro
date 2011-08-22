@@ -537,9 +537,11 @@ class ctiserver:
         if global_zone != self.global_zone:
             log.info('Global zone changed to %s', global_zone)
             for userid, user in userlist.keeplist.iteritems():
-                alarmclock = user['alarmclock']
-                if alarmclock and not user['timezone']:
-                    self.alarm_mgr.test_update_alarm_clock(int(userid), alarmclock, global_zone)
+                # ignore 'remote users'
+                if not userid.startswith('cs:'):
+                    alarmclock = user['alarmclock']
+                    if alarmclock and not user['timezone']:
+                        self.alarm_mgr.test_update_alarm_clock(int(userid), alarmclock, global_zone)
             self.global_zone = global_zone
         if userlist.alarm_clk_changes:
             for userid, (alarmclock, zone) in userlist.alarm_clk_changes.iteritems():
