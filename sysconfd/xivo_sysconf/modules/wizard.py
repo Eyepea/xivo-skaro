@@ -590,7 +590,7 @@ def exec_db_file(args, options):
     
     if args['backend'] == 'postgresql':
         try:
-            subprocess.check_call(["apt-get install php5-pgsql postgresql"], shell=True)
+            subprocess.check_call(["apt-get install --yes php5-pgsql postgresql"], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
             raise HttpReqError(500, "Can't install postgresql packages")
@@ -607,7 +607,7 @@ def exec_db_file(args, options):
 
     if args['backend'] == 'mysql':
         try:
-            subprocess.check_call(["apt-get install php5-mysql mysql-server"], shell=True)
+            subprocess.check_call(["apt-get install --yes php5-mysql mysql-server"], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
             raise HttpReqError(500, "Can't install mysql packages")
