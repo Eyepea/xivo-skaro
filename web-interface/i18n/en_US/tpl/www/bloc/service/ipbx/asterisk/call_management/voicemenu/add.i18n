@@ -460,3 +460,5 @@ Rule :
 ; fm_dialaction_actiontype-opt(queueskillrule|Asterisk)
 Queue skill rule
 
+; fm_voicemenu_schedule
+Schedule:

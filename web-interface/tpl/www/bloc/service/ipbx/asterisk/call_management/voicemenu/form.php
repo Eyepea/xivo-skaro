@@ -26,6 +26,7 @@ $error = $this->get_var('error');
 $element = $this->get_var('element');
 $ipbxapplications = $this->get_var('ipbxapplications');
 $context_list = $this->get_var('context_list');
+$schedule_list = $this->get_var('schedule_list');
 
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
@@ -66,6 +67,23 @@ endif;
 		echo	'<div id="fd-voicemenu-context" class="txt-center">',
 			$url->href_htmln($this->bbf('create_context'),
 					'service/ipbx/system_management/context',
+					'act=add'),
+			'</div>';
+	endif;
+
+	if($schedule_list !== false):
+		echo $form->select(array('desc'		=> $this->bbf('fm_voicemenu_schedule'),
+					 'name'		=> 'schedule_id',
+					 'labelid'	=> 'schedule_id',
+					 'key'		=> 'name',
+					 'altkey'	=> 'id',
+					'empty'     => true,
+					 'selected'	=> $this->get_var('schedule_id')),
+				   $schedule_list);
+	else:
+		echo	'<div id="fd-voicemenu-schedule" class="txt-center">',
+			$url->href_htmln($this->bbf('create_schedule'),
+					'service/ipbx/call_management/schedule',
 					'act=add'),
 			'</div>';
 	endif;

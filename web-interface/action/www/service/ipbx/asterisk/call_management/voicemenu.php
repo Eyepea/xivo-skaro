@@ -21,6 +21,8 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
+$appschedule   = &$ipbx->get_application('schedule');
+
 $info = array();
 
 $param = array();
@@ -32,7 +34,6 @@ switch($act)
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
 		$result = $fm_save = $error = null;
-
 		if(isset($_QR['fm_send']) === true && dwho_issa('voicemenu',$_QR) === true)
 		{
 			if($appvoicemenu->set_add($_QR) === false
@@ -41,6 +42,9 @@ switch($act)
 				$fm_save = false;
 				$result = $appvoicemenu->get_result();
 				$error = $appvoicemenu->get_error();
+
+				if(isset($error['voicemenuflow']) && $error['voicemenuflow'] == 'invalid data')
+					dwho_report::push('error', 'voicemenuflow_empty');
 			}
 			else
 			{
@@ -75,7 +79,9 @@ switch($act)
 		$_TPL->set_var('sound_list',$appvoicemenu->get_sound());
 		$_TPL->set_var('moh_list',$appvoicemenu->get_musiconhold());
 		$_TPL->set_var('context_list',$appvoicemenu->get_context_list());
+		$_TPL->set_var('schedule_list',$appschedule->get_schedules_list());
 		$_TPL->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
+		$_TPL->set_var('schedule_id', isset($_QR['schedule_id'])?$_QR['schedule_id']:null);
 
 
 		$appqueue = &$ipbx->get_application('queue');
@@ -134,7 +140,9 @@ switch($act)
 		$_TPL->set_var('destination_list',$appvoicemenu->get_destination_list());
 		$_TPL->set_var('moh_list',$appvoicemenu->get_musiconhold());
 		$_TPL->set_var('context_list',$appvoicemenu->get_context_list());
+		$_TPL->set_var('schedule_list',$appschedule->get_schedules_list());
 		$_TPL->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
+		$_TPL->set_var('schedule_id', $return['schedule_id']);
 
 		$appqueue = &$ipbx->get_application('queue');
 		$_TPL->set_var('skills_tree', $appqueue->skills_gettree());
