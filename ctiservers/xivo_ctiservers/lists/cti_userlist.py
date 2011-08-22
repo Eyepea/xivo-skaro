@@ -47,24 +47,30 @@ class UserList(AnyList):
         delta_add = delta.get('add')
         if delta_add:
             for id in delta_add:
-                user = self.keeplist[id]
-                # cjson workaround
-                user_timezone = user['timezone'].replace('\\/', '/')
-                self.alarm_clk_changes[id] = (user['alarmclock'], user_timezone)
-        
-        delta_del = delta.get('del')
-        if delta_del:
-            for id in delta_del:
-                self.alarm_clk_changes[id] = ('', '')
-        
-        delta_change = delta.get('change')
-        if delta_change:
-            for id, changed_keys in delta_change.iteritems():
-                if 'alarmclock' in changed_keys or 'timezone' in changed_keys:
+                # ignore 'remote user'
+                if not id.startswith('cs:'):
                     user = self.keeplist[id]
                     # cjson workaround
                     user_timezone = user['timezone'].replace('\\/', '/')
                     self.alarm_clk_changes[id] = (user['alarmclock'], user_timezone)
+        
+        delta_del = delta.get('del')
+        if delta_del:
+            for id in delta_del:
+                # ignore 'remote user'
+                if not id.startswith('cs:'):
+                    self.alarm_clk_changes[id] = ('', '')
+        
+        delta_change = delta.get('change')
+        if delta_change:
+            for id, changed_keys in delta_change.iteritems():
+                # ignore 'remote user'
+                if not id.startswith('cs:'):
+                    if 'alarmclock' in changed_keys or 'timezone' in changed_keys:
+                        user = self.keeplist[id]
+                        # cjson workaround
+                        user_timezone = user['timezone'].replace('\\/', '/')
+                        self.alarm_clk_changes[id] = (user['alarmclock'], user_timezone)
     
     def update_noinput(self):
         newuserlist = self.commandclass.getuserslist()
