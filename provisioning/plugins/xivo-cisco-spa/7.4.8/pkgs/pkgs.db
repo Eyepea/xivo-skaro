@@ -36,14 +36,14 @@ b-c: cp *.bin firmware/
 a-b: unzip $FILE1
 b-c: cp spa50x_30x_de_* i18n/spa50x_30x_de.xml
 b-d: cp spa50x_30x_en_* i18n/spa50x_30x_en.xml
-b-e: cp spa50x_30x_es_* i18n/spa50x_30x_es.xml
+b-e: cp spa50x_30x_es_v* i18n/spa50x_30x_es.xml
 b-f: cp spa50x_30x_fr_* i18n/spa50x_30x_fr.xml
 
 [install_cisco-spa525lang]
 a-b: unzip $FILE1
 b-c: cp spa525_de_* i18n/spa525_de.xml
 b-d: cp spa525_en_* i18n/spa525_en.xml
-b-e: cp spa525_es_* i18n/spa525_es.xml
+b-e: cp spa525_es_v* i18n/spa525_es.xml
 b-f: cp spa525_fr_* i18n/spa525_fr.xml
 
 

@@ -380,10 +380,13 @@ class BaseCiscoPlugin(StandardPlugin):
     def _format_proxy(self, raw_config, line, line_no):
         proxy_ip = line.get(u'proxy_ip') or raw_config[u'sip_proxy_ip']
         backup_proxy_ip = line.get(u'backup_proxy_ip') or raw_config.get(u'sip_backup_proxy_ip')
+        proxy_port = line.get(u'proxy_port') or raw_config.get(u'sip_proxy_port', '5060')
+        backup_proxy_port = line.get(u'backup_proxy_port') or raw_config.get(u'sip_backup_proxy_port', '5060')
         if backup_proxy_ip:
-            proxy_value = u'xivo_proxies%s:SRV=%s:5060:p=0|%s:5060:p=1' % (line_no, proxy_ip, backup_proxy_ip)
+            proxy_value = u'xivo_proxies%s:SRV=%s:%s:p=0|%s:%s:p=1' % (line_no,
+                            proxy_ip, proxy_port, backup_proxy_ip, backup_proxy_port)
         else:
-            proxy_value = u'%s:5060' % proxy_ip
+            proxy_value = u'%s:%s' % (proxy_ip, proxy_port)
         return proxy_value
     
     def _add_proxies(self, raw_config):
@@ -425,7 +428,7 @@ class BaseCiscoPlugin(StandardPlugin):
         self._add_language(raw_config)
         
         update_device = False
-        if raw_config.get(u'config_encryption'):
+        if raw_config.get(u'config_encryption_enabled'):
             # config encryption is enabled
             if u'X_xivo_cisco_spa_key' not in device:
                 device[u'X_xivo_cisco_spa_key'] = self._new_encryption_key()
@@ -439,7 +442,7 @@ class BaseCiscoPlugin(StandardPlugin):
         self._tpl_helper.dump(tpl, raw_config, cache_path, self._ENCODING)
         
         # encrypt configuration file if needed
-        if raw_config.get(u'config_encryption') or device.get(u'X_xivo_cisco_spa_encrypted'):
+        if raw_config.get(u'config_encryption_enabled') or device.get(u'X_xivo_cisco_spa_encrypted'):
             in_file = cache_path
             out_file = os.path.join(self._tftpboot_dir, filename + '.encrypted')
             logger.info('Encrypting configuration file to "%s"', out_file)
@@ -448,7 +451,7 @@ class BaseCiscoPlugin(StandardPlugin):
                                    '-in', in_file, '-out', out_file])
         
         # create a link to unencrypted config file if needed
-        if not raw_config.get(u'config_encryption') or not device.get(u'X_xivo_cisco_spa_encrypted'):
+        if not raw_config.get(u'config_encryption_enabled') or not device.get(u'X_xivo_cisco_spa_encrypted'):
             tftpboot_path = os.path.join(self._tftpboot_dir, filename)
             try:
                 os.symlink(cache_path, tftpboot_path)

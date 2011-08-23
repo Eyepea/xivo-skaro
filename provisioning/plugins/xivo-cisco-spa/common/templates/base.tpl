@@ -10,10 +10,14 @@
 {% endif -%}
 
 {% if admin_password is defined -%}
-<Admin_Passwd>{{ admin_passwd|e }}</Admin_Passwd>
+<Admin_Passwd>{{ admin_password|e }}</Admin_Passwd>
 {% endif -%}
 {% if user_password is defined -%}
 <User_Password>{{ user_password|e }}</User_Password>
+{% endif -%}
+
+{% if dns_enabled -%}
+<Primary_DNS>{{ dns_ip }}</Primary_DNS>
 {% endif -%}
 
 {% if ntp_enabled -%}
