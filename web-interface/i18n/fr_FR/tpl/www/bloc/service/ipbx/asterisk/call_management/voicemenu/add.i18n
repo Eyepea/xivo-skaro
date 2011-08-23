@@ -457,3 +457,5 @@ Règle :
 ; fm_dialaction_actiontype-opt(queueskillrule|Asterisk)
 Règles de compétences (Qualification des appels)
 
+; fm_voicemenu_schedule
+Horaire : 

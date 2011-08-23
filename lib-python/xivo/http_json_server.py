@@ -97,7 +97,7 @@ class HttpReqError(Exception):
         self.json = json				
         msg = text or BaseHTTPRequestHandler.responses[code][1]
         Exception.__init__(self, msg)
-				
+    
     def report(self, req_handler):
         "Send a response corresponding to this error to the client"
         if self.exc:
@@ -108,7 +108,7 @@ class HttpReqError(Exception):
             else:
                 req_handler.send_error_msgtxt(self.code, self.text)
         else:
-            req_handler.send_error(self.code)
+            req_handler.send_error_msgtxt(self.code, 'Unknown error')
 
 
 def _encode_if(value, encoding='iso-8859-1'):
@@ -349,6 +349,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
                 res_json = execute(cmd, query)
 
             except HttpReqError, e:
+                log.warning('HttpReqError while executing %s: %s', cmd, e.text)
                 e.report(self)
             
             except Exception:

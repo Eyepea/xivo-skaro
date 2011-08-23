@@ -32,6 +32,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
 	var $_conf		= array();
+	var $_schedule_path = false;
 
 	function xivo_application_service_asterisk_voicemenu(&$service,$param=null,$components=true)
 	{
@@ -54,7 +55,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		if(($this->_dialaction = &$this->_service->get_module('dialaction')) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'voicemenu'))) === false
-		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'voicemenu'))) === false)
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'voicemenu'))) === false
+		|| ($this->_schedule_path = &$this->_service->get_module('schedule_path')) === false)
 			return(false);
 
 		$this->_voicemail = &$this->_service->get_application('voicemail');
@@ -79,6 +81,10 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		$this->_get_voicemenuflow();
 		$this->_get_voicemenuevent();
 		$this->_get_contextmember($this->_info['voicemenu']['id']);
+
+		$schedule = $this->_schedule_path->get_where(array('path' => 'voicemenu', 'pathid'	=> $this->_info['voicemenu']['id']));
+		if($schedule !== false)
+			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
 	}
@@ -384,6 +390,10 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			$this->set_extenumbers($action,$number,$context);
 		}
 	
+		// schedule
+		if(array_key_exists('schedule_id', $arr))
+			$this->_set_result('schedule_id', intval($arr['schedule_id']));
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -617,7 +627,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		|| $this->add_voicemenumacro($voicemenuid) === false
 		|| $this->add_voicemenuflow() === false
 		|| $this->add_voicemenuevent() === false
-		|| $this->add_contextmember($voicemenuid) === false)
+		|| $this->add_contextmember($voicemenuid) === false
+		|| $this->add_schedule_path($voicemenuid) === false)
 		{
 			$r = false;
 
@@ -663,6 +674,14 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			return($rs);
 
 		return(($this->_return['voicemenuevent'] = $this->_extensions->add_context($rs)));
+	}
+
+	function add_schedule_path($voicemenuid)
+	{
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'voicemenu',
+			$voicemenuid);
 	}
 
 	function _reverse_add($voicemenuid)
@@ -745,7 +764,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 		if($this->edit_voicemenuflow() === false
 		|| $this->edit_voicemenuevent() === false
-		|| $this->edit_contextmember() === false)
+		|| $this->edit_contextmember() === false
+		|| $this->edit_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -813,6 +833,16 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['voicemenu']['id']));
+	}
+
+	function edit_schedule_path()
+	{
+		$this->_schedule_path->delete_where(array('path' => 'voicemenu', 'pathid' =>	intval($this->_info['voicemenu']['id'])));
+
+		return $this->_schedule_path->schedule_add(
+			$this->get_result('schedule_id'),
+			'voicemenu',
+			$this->_info['voicemenu']['id']);
 	}
 
 	function _reverse_edit()
@@ -883,7 +913,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		|| $this->delete_voicemenuflow() === false
 		|| ($delvoicemenuevent = $this->delete_voicemenuevent()) === false
 		|| $delvoicemenuevent === 'error'
-		|| $this->delete_contextmember() === false)
+		|| $this->delete_contextmember() === false
+		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -955,6 +986,11 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			$this->_return['voicemenuflow'] = $r;
 
 		return($r);
+	}
+
+	function delete_schedule_path()
+	{
+		return $this->_schedule_path->delete_where(array('path' => 'voicemenu', 'pathid' =>	$this->_info['voicemenu']['id']));
 	}
 
 	function _reverse_delete()

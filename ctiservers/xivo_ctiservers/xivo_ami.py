@@ -554,8 +554,8 @@ class AMIClass:
                                     ('Context', 'alarmclk-play-msg'),
                                     ('Exten', 's'),
                                     ('Priority', '1'),
-                                    # 10 minutes timeout
-                                    ('Timeout', '600000'),
+                                    # 15 minutes timeout
+                                    ('Timeout', '900000'),
                                     ('CallerID', callerid),
                                     ('Async', 'true'),
                                     ('Variable', 'XIVO_DSTID=%s' % userid)])

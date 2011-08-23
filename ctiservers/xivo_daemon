@@ -180,9 +180,10 @@ class ctiserver:
         except Exception, e:
             log.warning('Error while getting system zone: %s', e)
             system_zone = None
-        self.alarm_mgr = alarm.AlarmClockManager(scheduler, persister,
+        self.alarm_mgr = alarm.AlarmClockManager(self.scheduler, persister,
                                                  self._alarm_callback,
                                                  system_zone)
+        self.global_zone = None
 
         signal.signal(signal.SIGINT, self.sighandler)
         signal.signal(signal.SIGTERM, self.sighandler)
@@ -462,6 +463,10 @@ class ctiserver:
             except:
                 sys.exit()
         else:
+            # we call _schedule_alarms before starting the scheduler so that
+            # alarms that have changed will be rescheduled before having a
+            # chance to be fired
+            self._schedule_alarms()
             self.scheduler.start()
             try:
                 while not self.askedtoquit:
@@ -525,7 +530,30 @@ class ctiserver:
                     if k.connection_details.get('userid')[3:] == ipbxid:
                         k.reply(what)
 
+    def _schedule_alarms(self):
+        # Schedule new alarms/reschedule updated alarm
+        global_zone = self.cconf.getconfig('ipbxes').get(self.myipbxid, {}).get('timezone')
+        userlist = self.safe[self.myipbxid].xod_config['users']
+        if global_zone != self.global_zone:
+            log.info('Global zone changed to %s', global_zone)
+            for userid, user in userlist.keeplist.iteritems():
+                # ignore 'remote users'
+                if not userid.startswith('cs:'):
+                    alarmclock = user['alarmclock']
+                    if alarmclock and not user['timezone']:
+                        self.alarm_mgr.test_update_alarm_clock(int(userid), alarmclock, global_zone)
+            self.global_zone = global_zone
+        if userlist.alarm_clk_changes:
+            for userid, (alarmclock, zone) in userlist.alarm_clk_changes.iteritems():
+                log.info('Alarm clock changed for user %s', userid)
+                if not zone:
+                    zone = global_zone
+                self.alarm_mgr.test_update_alarm_clock(int(userid), alarmclock, zone) 
+            userlist.alarm_clk_changes.clear()
+        
     def select_step(self):  # {
+        self._schedule_alarms()
+        
         try:    # {
             fdtodel = []
             for cn in self.fdlist_established.keys():

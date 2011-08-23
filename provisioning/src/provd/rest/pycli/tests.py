@@ -537,7 +537,15 @@ def _dns_enabled():
         u'parent_ids': [],
         u'raw_config': {
             u'dns_enabled': True,
-            u'dns_ip': u'1.1.1.1'
+            u'dns_ip': u'2.2.2.2',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -548,7 +556,15 @@ def _ntp_enabled():
         u'parent_ids': [],
         u'raw_config': {
             u'ntp_enabled': True,
-            u'ntp_ip': u'1.1.1.1'
+            u'ntp_ip': u'2.2.2.2',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -559,7 +575,15 @@ def _vlan_enabled():
         u'parent_ids': [],
         u'raw_config': {
             u'vlan_enabled': True,
-            u'vlan_id': u'100'
+            u'vlan_id': u'100',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -571,7 +595,15 @@ def _vlan_with_priority():
         u'raw_config': {
             u'vlan_enabled': True,
             u'vlan_id': u'100',
-            u'vlan_priority': u'5'
+            u'vlan_priority': u'5',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -583,7 +615,15 @@ def _vlan_with_pc_port():
         u'raw_config': {
             u'vlan_enabled': True,
             u'vlan_id': u'100',
-            u'vlan_pc_port_id': u'200'
+            u'vlan_pc_port_id': u'200',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -594,9 +634,17 @@ def _syslog_enabled():
         u'parent_ids': [],
         u'raw_config': {
             u'syslog_enabled': True,
-            u'syslog_ip': u'1.1.1.1',
+            u'syslog_ip': u'2.2.2.2',
             u'syslog_port': 515,
             u'syslog_level': u'info',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -607,7 +655,15 @@ def _admin_username_and_password():
         u'parent_ids': [],
         u'raw_config': {
             u'admin_username': u'ausername',
-            u'admin_password': u'apassword'
+            u'admin_password': u'apassword',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -618,7 +674,15 @@ def _user_username_and_password():
         u'parent_ids': [],
         u'raw_config': {
             u'user_username': u'uusername',
-            u'user_password': u'upassword'
+            u'user_password': u'upassword',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -628,7 +692,15 @@ def _timezone_paris():
     return {
         u'parent_ids': [],
         u'raw_config': {
-            u'timezone': u'Europe/Paris'
+            u'timezone': u'Europe/Paris',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -638,7 +710,15 @@ def _timezone_montreal():
     return {
         u'parent_ids': [],
         u'raw_config': {
-            u'timezone': u'America/Montreal'
+            u'timezone': u'America/Montreal',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -648,7 +728,15 @@ def _locale_fr_FR():
     return {
         u'parent_ids': [],
         u'raw_config': {
-            u'locale': u'fr_FR'
+            u'locale': u'fr_FR',
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 
@@ -659,6 +747,14 @@ def _config_encryption_enabled():
         u'parent_ids': [],
         u'raw_config': {
             u'config_encryption_enabled': True,
+            u'sip_lines': {
+                u'1': {
+                    u'proxy_ip': u'1.1.1.1',
+                    u'username': u'username1',
+                    u'password': u'password1',
+                    u'display_name': u'User 1'
+                }
+            }
         }
     }
 

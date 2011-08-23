@@ -322,7 +322,7 @@ class AMI_1_8:
         event.pop('Uniqueid')
         event.pop('Response') # response is included in reason (4 for Success)
         channel = event.pop('Channel')
-        actionid = event.pop('ActionID')
+        actionid = event.pop('ActionID', None)
         reason = event.pop('Reason')
         # reasons ...
         # 4 : Success
