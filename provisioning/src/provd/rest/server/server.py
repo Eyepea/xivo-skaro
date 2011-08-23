@@ -5,7 +5,6 @@ configuration.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Proformatique <technique@proformatique.com>
 
@@ -23,18 +22,15 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO input checking
-#      ...and in particular, type value checking (i.e. check for TypeError..)
-#      ,,,and put some check (device, config, etc) in application object, so
-#         stuff doesn't break too much
 # TODO we sometimes return 400 error when it's not a client error but a server error;
 #      that said raised exceptions sometimes does not permit to differentiate...
 # XXX passing a 'dhcp_request_processing_service' around doesn't look really
 #     good and we might want to create an additional indirection level so that
 #     it's a bit cleaner
 
-import logging
+import functools
 import json
+import logging
 from binascii import a2b_hex, a2b_base64
 from provd.app import InvalidIdError
 from provd.localization import get_locale_and_language
@@ -66,10 +62,11 @@ REL_CONFIGURE_PARAM = u'srv.configure.param'
 REALM_NAME = 'provd server'
 
 
-_PPRINT = True
+_PPRINT = False
 if _PPRINT:
-    import functools
-    json.dumps = functools.partial(json.dumps, sort_keys=True, indent=4)
+    json_dumps = functools.partial(json.dumps, sort_keys=True, indent=4)
+else:
+    json_dumps = functools.partial(json.dumps, separators=(',', ':'))
 
 
 def new_id_generator():
@@ -323,7 +320,7 @@ class IntermediaryResource(Resource):
     @json_response_entity
     def render_GET(self, request):
         content = {u'links': self._build_links(request.path)}
-        return json.dumps(content)
+        return json_dumps(content)
 
 
 def ServerResource(app, dhcp_request_processing_service):
@@ -349,7 +346,7 @@ class OperationInProgressResource(Resource):
     @json_response_entity
     def render_GET(self, request):
         content = {u'status': format_oip(self._oip)}
-        return json.dumps(content)
+        return json_dumps(content)
     
     def render_DELETE(self, request):
         if self._on_delete is not None:
@@ -398,7 +395,7 @@ class ConfigureServiceResource(Resource):
                            u'links': [{u'rel': REL_CONFIGURE_PARAM,
                                        u'href': href}]})
         content = {u'params': params}
-        return json.dumps(content)
+        return json_dumps(content)
 
 
 class ConfigureParameterResource(Resource):
@@ -417,7 +414,7 @@ class ConfigureParameterResource(Resource):
             return respond_no_resource(request)
         else:
             content = {u'param': {u'value': value}}
-            return json.dumps(content)
+            return json_dumps(content)
     
     @json_request_entity
     def render_PUT(self, request, content):
@@ -573,7 +570,7 @@ class _ListInstallxxxxResource(Resource):
             return respond_error(request, e, http.INTERNAL_SERVER_ERROR)
         else:
             content = {u'pkgs': pkgs}
-            return json.dumps(content)
+            return json_dumps(content)
 
 
 def InstalledResource(install_srv):
@@ -682,7 +679,7 @@ class DevicesResource(Resource):
     def render_GET(self, request):
         find_arguments = find_arguments_from_request(request)
         def on_callback(devices):
-            data = json.dumps({u'devices': list(devices)})
+            data = json_dumps({u'devices': list(devices)})
             deferred_respond_ok(request, data)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
@@ -697,7 +694,7 @@ class DevicesResource(Resource):
         def on_callback(id):
             location = uri_append_path(request.path, str(id))
             request.setHeader('Location', location)
-            data = json.dumps({u'id': id})
+            data = json_dumps({u'id': id})
             deferred_respond_ok(request, data, http.CREATED)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
@@ -718,7 +715,7 @@ class DeviceResource(Resource):
             if device is None:
                 deferred_respond_no_resource(request)
             else:
-                data = json.dumps({u'device': device})
+                data = json_dumps({u'device': device})
                 deferred_respond_ok(request, data)
         def on_error(failure):
             deferred_respond_error(request, failure.value, http.INTERNAL_SERVER_ERROR)
@@ -772,7 +769,7 @@ class AutocreateConfigResource(Resource):
         def on_callback(id):
             location = uri_append_path(request.path, str(id))
             request.setHeader('Location', location)
-            data = json.dumps({u'id': id})
+            data = json_dumps({u'id': id})
             deferred_respond_ok(request, data, http.CREATED)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
@@ -793,7 +790,7 @@ class ConfigsResource(Resource):
     def render_GET(self, request):
         find_arguments = find_arguments_from_request(request)
         def on_callback(configs):
-            data = json.dumps({u'configs': list(configs)})
+            data = json_dumps({u'configs': list(configs)})
             deferred_respond_ok(request, data)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
@@ -808,7 +805,7 @@ class ConfigsResource(Resource):
         def on_callback(id):
             location = uri_append_path(request.path, str(id))
             request.setHeader('Location', location)
-            data = json.dumps({u'id': id})
+            data = json_dumps({u'id': id})
             deferred_respond_ok(request, data, http.CREATED)
         def on_errback(failure):
             deferred_respond_error(request, failure.value)
@@ -835,7 +832,7 @@ class ConfigResource(Resource):
             if config is None:
                 deferred_respond_no_resource(request)
             else:
-                data = json.dumps({u'config': config})
+                data = json_dumps({u'config': config})
                 deferred_respond_ok(request, data)
         def on_error(failure):
             deferred_respond_error(request, failure.value, http.INTERNAL_SERVER_ERROR)
@@ -884,7 +881,7 @@ class RawConfigResource(Resource):
             if raw_config is None:
                 deferred_respond_no_resource(request)
             else:
-                data = json.dumps({u'raw_config': raw_config})
+                data = json_dumps({u'raw_config': raw_config})
                 deferred_respond_ok(request, data)
         def on_errback(failure):
             deferred_respond_error(request, failure.value, http.INTERNAL_SERVER_ERROR)
@@ -996,7 +993,7 @@ class PluginsResource(Resource):
             links = [{u'rel': u'pg.plugin', 'href': href}]
             plugins[pg_id] = {u'links': links}
         content = {u'plugins': plugins}
-        return json.dumps(content)
+        return json_dumps(content)
 
 
 class PluginReloadResource(Resource):
@@ -1027,7 +1024,7 @@ class PluginInfoResource(Resource):
     
     @json_response_entity
     def render_GET(self, request):
-        return json.dumps({u'plugin_info': self._plugin.info()})
+        return json_dumps({u'plugin_info': self._plugin.info()})
 
 
 def PluginResource(plugin):
