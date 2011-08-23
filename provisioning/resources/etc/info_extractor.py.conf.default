@@ -5,4 +5,4 @@ def xtor_factory(xtors):
 
 std_xtor = StandardDeviceInfoExtractor()
 all_pg_xtor = AllPluginsDeviceInfoExtractor(xtor_factory, app.pg_mgr)
-info_extractor = CollaboratingDeviceInfoExtractor(VotingUpdater, [std_xtor, all_pg_xtor])
+info_extractor = CollaboratingDeviceInfoExtractor(LastSeenUpdater, [all_pg_xtor, std_xtor])
