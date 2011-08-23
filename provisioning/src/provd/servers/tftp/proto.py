@@ -61,8 +61,10 @@ class TFTPProtocol(DatagramProtocol):
             self.transport.write(r_dgram, addr)
         else:
             def on_reject(errcode, errmsg):
+                logger.info('TFTP read request rejected: %s %s', errcode, errmsg)
                 self.transport.write(build_dgram(err_packet(errcode, errmsg)), addr)
             def on_accept(fobj):
+                logger.info('TFTP read request accepted')
                 if 'blksize' in pkt['options']:
                     blksize = pkt['options']['blksize']
                     logger.debug('Using TFTP blksize of %s', blksize)
