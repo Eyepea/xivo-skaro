@@ -151,6 +151,7 @@ class ProvServerDHCPInfoSink(object):
         for link in links:
             if link['rel'] == 'dev.dhcpinfo':
                 self._resource_uri = urlparse.urljoin(self._base_uri, link['href'])
+                break
         else:
             raise DHCPInfoSinkError('no link to DHCP info resource on base resource')
             
@@ -294,6 +295,7 @@ class Agent(object):
             try:
                 dhcp_info = self._source.pull()
                 logger.info("Pulled DHCP info: (%(op)s, %(ip)s)", dhcp_info)
+                logger.debug('DHCP info: %s', dhcp_info)
                 self._sink.push(dhcp_info)
             except DHCPInfoSourceError, e:
                 logger.error('Error while pulling info from source: %s', e)
