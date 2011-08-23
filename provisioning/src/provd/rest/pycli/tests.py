@@ -470,7 +470,8 @@ def _subscribe_mwi_sip():
                     u'proxy_ip': u'1.1.1.1',
                     u'username': u'username1',
                     u'password': u'password1',
-                    u'display_name': u'User 1'
+                    u'display_name': u'User 1',
+                    u'voicemail': u'*981'
                 }
             }
         }

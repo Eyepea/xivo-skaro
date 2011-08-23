@@ -99,7 +99,8 @@ Tests à faire sur un xivo 1.2...
   du XiVO se trouve
 
 
-* vérifier que le device a bien réussi a avoir une adresse IP
+* vérifier que le device a bien réussi a avoir une adresse IP et que les bonnes
+  options lui ont été envoyé
 
 
 * vérifier que le device a bien faite une requete sur provd (si applicable,
