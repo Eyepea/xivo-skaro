@@ -878,8 +878,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		if(($http_response = dwho_http::factory('response')) === false
-		|| ($fileinfo = $http_response->upload_file('picture',
-							    $this->_conf['picture']['file'])) === false)
+		|| ($fileinfo = $http_response->upload_file('picture',$this->_conf['picture']['file'])) === false)
 			return(false);
 
 		$fileinfo['object_type'] = 'user';
@@ -909,10 +908,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$errnb = 0;
 
 		if (isset($arr[0],$arr[0]['id']) === true)
+		{
 			$reslist = $arr;
+		}
 		else
 		{
-
 			foreach($arr as $key => $list)
 			{
 				for($i = 0;$i < count($list);$i++)
@@ -933,18 +933,17 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 
 			array_pop($reslist);
-
 		}
 
 		/*
 		if(dwho_issa('queue',$arr) === true
 		&& dwho_issa('queue-select',$arr) === true)
 			$this->set_queuemember($arr['queue'],
-					       $arr['queue-select'],
-					       $name,
-					       $context,
-					       $number,
-					       $protocolname);
+						$arr['queue-select'],
+						$name,
+						$context,
+						$number,
+						$protocolname);
 		*/
 
 		for($i = 0;$i < count($reslist);$i++)
@@ -961,7 +960,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				{
 					$errnb++;
 					$error[$i] = 'linefeatures_not_exist';
-					dwho_var_dump($ref['id']);
 					continue;
 				}
 
@@ -976,26 +974,25 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$ref['protocolid'] = 0;
 				$ref['name'] = $this->gen_password(6,true);
 				if (isset($ref['rules_order']) === false)
-				    $ref['rules_order'] = $i+1;
+					$ref['rules_order'] = $i+1;
 			}
 
 			$protocolname = $ref['protocol'];
 			$number = $ref['number'];
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-			  $this->_set_result_var('userfeatures','voicemailtype',null);
+				$this->_set_result_var('userfeatures','voicemailtype',null);
 
 			switch($this->get_result_var('userfeatures','voicemailtype'))
 			{
-			  case 'asterisk':
-			    break;
-			  case 'exchange':
-			    if($number === '')
-			      $this->_set_result_var('userfeatures','voicemailtype',null);
-			  default:
-			    $vmaction = 'none';
-			    $this->_set_result_var('userfeatures','voicemailid',null);
-			    break;
+				case 'asterisk':
+				break;
+				case 'exchange':
+					if($number === '')
+						$this->_set_result_var('userfeatures','voicemailtype',null);
+				default:
+					$vmaction = 'none';
+					$this->_set_result_var('userfeatures','voicemailid',null);
 			}
 
 			$ref['iduserfeatures'] = (int) $iduserfeatures;
@@ -1645,6 +1642,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$arr['linefeatures'] = $line;
 			$arr['protocol'] = $line;
+			$arr['protocol']['language'] = $arr['userfeatures']['language'];
 			$arr['protocol']['mailbox'] = $this->get_result_var('protocol','mailbox');
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
