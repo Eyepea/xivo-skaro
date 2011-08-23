@@ -550,7 +550,7 @@ class AMIClass:
         # execute the alarm clock 'procedure' for the given user
         try:
             ret = self.sendcommand('Originate',
-                                   [('Channel', 'Local/s@alarmclk-execute/n'),
+                                   [('Channel', 'Local/s@alarmclk-execute'),
                                     ('Context', 'alarmclk-play-msg'),
                                     ('Exten', 's'),
                                     ('Priority', '1'),
