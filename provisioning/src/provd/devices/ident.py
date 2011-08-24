@@ -878,7 +878,7 @@ class RequestProcessingService(object):
             
             # 3.2 Persist the modification if there was a change
             if device != orig_device:
-                logger.info('<%s> Device has been updated')
+                logger.info('<%s> Device has been updated', req_id)
                 yield self._app.dev_update(device)
             
             # 3.3 Reconfigure the device if needed
