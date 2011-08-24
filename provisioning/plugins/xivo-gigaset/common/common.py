@@ -249,6 +249,8 @@ class BaseGigasetPlugin(StandardPlugin):
         self._app = app
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
+        
+    dhcp_dev_info_extractor = BaseGigasetDHCPDeviceInfoExtractor()
     
     def _check_device(self, device):
         if u'ip' not in device:
