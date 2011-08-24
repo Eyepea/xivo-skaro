@@ -1,10 +1,22 @@
 server {
     listen 80;
-    server_name ~^(www\.)?(?<domain>.+)$;
-    location / {
-        rewrite ^/(.*) https://$domain permanent;
+    server_name $domain;
+
+    if ($host !~* "(127\.0\.0\.1|localhost)") {
+        rewrite ^(.*) https://$host$1;
     }
+
+    access_log /var/log/nginx/xivo.access.log;
+    error_log /var/log/nginx/xivo.error.log;
+    root /usr/share/pf-xivo-web-interface/www;
+
+    location / {
+        index index.php;
+        include /etc/nginx/xivo_params;
+    }
+
 }
+
 server {
     listen 443;
     server_name $domain;
