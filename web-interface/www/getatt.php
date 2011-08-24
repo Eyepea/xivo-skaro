@@ -18,9 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if (isset($_SERVER['REMOTE_ADDR']) === false
-|| ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1'
-&& $_SERVER['REMOTE_ADDR'] !== '::1'))
+if (isset($_SERVER['REMOTE_ADDR']) === true
+&& ($_SERVER['REMOTE_ADDR'] == '127.0.0.1' || $_SERVER['REMOTE_ADDR'] === '::1'))
 	define('DWHO_SESS_ENABLE',false);
 
 require_once('xivo.php');
@@ -28,7 +27,7 @@ require_once('xivo.php');
 dwho::load_class('dwho_http');
 $http_response = dwho_http::factory('response');
 
-if(DWHO_SESS_ENABLE === true
+if(dwho_constant('DWHO_SESS_ENABLE',true) === true
 && $_USR->mk_active() === false)
 {
 	$http_response->set_status_line(403);
