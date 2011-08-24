@@ -127,7 +127,13 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
 					'error_device_'.$act);
 				foreach($this->get_error() as $k => $v)
-				    dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
+				{
+					if (is_array($v))
+						foreach($v as $kk => $vv)
+							dwho_report::push('error',$kk.': '.$vv,'error_device_'.$act);
+					else
+						dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
+				}
 			}
 		}
 
@@ -266,8 +272,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		if(dwho_issa('devicefeatures',$this->_info) === false)
 			return(false);
 
-	    $id = $this->_info['devicefeatures']['id'];
-	    $deviceid = $this->_info['devicefeatures']['deviceid'];
+		$id = $this->_info['devicefeatures']['id'];
+		$deviceid = $this->_info['devicefeatures']['deviceid'];
 
 		if (($confid = $this->_provdconfig->autocreate()) === false
 		|| $this->_provddevice->update_configid($deviceid,$confid,$synchronize) === false
@@ -285,8 +291,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$appline = &$this->_service->get_application('line');
 		$userfeatures = &$this->_service->get_module('userfeatures');
 
-	    $id = $this->_info['devicefeatures']['id'];
-	    $deviceid = $this->_info['devicefeatures']['deviceid'];
+		$id = $this->_info['devicefeatures']['id'];
+		$deviceid = $this->_info['devicefeatures']['deviceid'];
 
 		if(($rs = $appline->get($idlinefeatures)) === false
 		|| ($rs['userfeatures'] = $userfeatures->get($rs['linefeatures']['iduserfeatures'])) === false
