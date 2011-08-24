@@ -1053,18 +1053,16 @@ class PluginManager(object):
     
     def _unload_and_notify(self, id):
         try:
-            plugin = self._plugins[id]
+            plugin = self._plugins.pop(id)
         except KeyError:
             raise PluginNotLoadedError(id)
         else:
-            self._notify(id, 'unload')
             logger.info('Closing plugin %s', id)
             try:
                 plugin.close()
             except Exception:
                 logger.error('Error while closing plugin %s', id, exc_info=True)
-            finally:
-                del self._plugins[id]
+            self._notify(id, 'unload')
     
     @staticmethod
     def _is_plugin_class(obj):
