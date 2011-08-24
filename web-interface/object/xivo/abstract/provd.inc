@@ -43,11 +43,11 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	protected 	$_filter		= false;
 	protected 	$_origin		= false;
 	protected 	$_origin_list	= false;
-	
+
 	protected function _load_init()
 	{
 		$this->_set_configuration();
-		
+
 		$this->_url = array('scheme' => 'http',
 				    'host' => $this->_conf['provd']['host'],
 				    'port' => $this->_conf['provd']['port']);
@@ -61,7 +61,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 		$_XOBJ = &dwho_gct::get('xivo_object');
 		$appprovisionning = &$_XOBJ->get_application('provisioning');
 		$ref = $appprovisionning->get(1);
-		
+
 		$this->_conf['provd'] = array();
 
 		if(isset($ref['net4_ip_rest']) === true)
@@ -125,7 +125,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		return(true);
 	}
-	
+
 	protected function reset()
 	{
 		$this->_limit = array();
@@ -141,21 +141,21 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		return(true);
 	}
-	
+
 	public function _build_uri($arr)
 	{
 		if (is_array($arr) === false
 		|| ($nb = count($arr)) === 0)
 			return($this->_base_url);
-			
+
 		$path = $this->_base_url.'/'.implode('/', $arr);
-			
+
 		if ($this->_uri->valid_path($path) === false)
 			return(false);
-		
+
 		return($path);
 	}
-	
+
 	public function decode_header($header)
 	{
 		$ret = array();
@@ -171,10 +171,10 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 					$ret[$match[1]] = trim($match[2]);
 			}
 		}
-		
+
 		return($ret);
 	}
-	
+
 	protected function _split_top_parentheses($str)
 	{
 		$idx = 0;
@@ -213,47 +213,47 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 					#'writefunction'	=> array($this,'header'),
 					#'followlocation'	=> true,
 					#'httpheader'		=> array(dwho_json::get_header()));
-					'httpheader'		=> array('Content-Type: text/plain'));
-		
+					'httpheader'		=> array('Content-Type: application/vnd.proformatique.provd+json'));
+
 		if(is_array($this->_curl_opt) === true
 		&& empty($this->_curl_opt) === false)
 			$opt = array_merge($opt, $this->_curl_opt);
-			
+
 		if(((bool) $this->_conf['provd']['private']) === true
 		&& ($user = $this->_conf['provd']['user']) !== ''
 		&& ($pass = $this->_conf['provd']['pass']) !== '')
 			$opt = array_merge($opt, array('httpauth' => CURLAUTH_DIGEST,
 				'userpwd' => $user.':'.$pass));
-			
+
 		if(((bool) $this->_conf['provd']['secure']) === true)
 		{
 			$ssl = array(CURLOPT_PROTOCOLS	=> CURLPROTO_HTTPS,
 					CURLOPT_SSL_VERIFYHOST	=> 0,
 					CURLOPT_SSL_VERIFYPEER 	=> 0,
 					CURLOPT_SSLVERSION 		=> 3);
-					
+
 			$opt = array_merge($opt, $ssl);
 		}
-		
+
 		return($this->_curl->load(null,$opt,false));
 	}
-	
+
 	protected function set_limit($limit)
 	{
 		$this->_limit = array();
-		
+
 		if (is_null($limit) === true
 		|| is_array($limit) === false
 		|| count($limit) !== 2)
 			return(false);
-			
+
 		$this->_limit = $limit;
 	}
-	
+
 	protected function set_order($column,$sort='')
 	{
 		$this->_order = array();
-		
+
 		if (is_null($column) === true
 		|| is_array($column) === false)
 			return(false);
@@ -270,11 +270,11 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 				$tmp['sort_ord'] = $this->_set_sort($val);
 				$r[] = $tmp;
 			}
-			
+
 			if (isset($r[0]) === false)
 				return(false);
 		}
-			
+
 		$this->_order = $r[0];
 	}
 
@@ -292,7 +292,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		return('ASC');
 	}
-	
+
 	public function build_href($path,$query=null)
 	{
 		if(dwho_has_len($path) === false)
@@ -306,7 +306,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		if(($uri = $this->_uri->build_uri($url)) === false)
 			return(false);
-		
+
 		return($uri);
 	}
 
@@ -314,13 +314,13 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	{
 		if (is_null($query) === true)
 			$query = array();
-		
+
 		if (empty($this->_limit) === false)
 		{
 			array_push($query,array('skip',$this->_limit[0]));
 			array_push($query,array('limit',$this->_limit[1]));
 		}
-		
+
 		if (empty($this->_order) === false)
 		{
 			if (isset($this->_order['sort']) === true)
@@ -328,11 +328,11 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 			if (isset($this->_order['sort_ord']) === true)
 				array_push($query,array('sort_ord',$this->_order['sort_ord']));
 		}
-		
+
 		if(($uri = $this->build_href($path,$query)) === false
 		|| $this->_curl->set_option('url',$uri) === false)
 			return(false);
-			
+
 		$response = $this->_curl->connect();
 		$this->_response = $this->_curl->decode_response($response);
 
@@ -343,33 +343,33 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 	{
 		return($this->_status_code);
 	}
-	
+
 	public function edit_params($uri,$value)
 	{
 		$data = array();
 		$data['param'] = array();
 		$data['param']['value'] = $value;
-		
+
 		$rs = $this->request_put($uri,$data);
-		
+
 		if($this->_status_code !== 204)
 			return(false);
-			
+
 		return(true);
 	}
-	
+
 	public function get_params($uri)
 	{
 		$rs = $this->request_get($uri);
-		
+
 		if(is_array($rs) === false
 		|| $this->_status_code !== 200
 		|| empty($rs['param']) === true)
 			return(false);
-			
+
 		return($rs['param']);
 	}
-	
+
 	public function request_oip($path)
 	{
 		$this->_status_code = null;
@@ -386,7 +386,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_status_code = $this->_curl->get_info('http_code');
 		$this->_curl->close();
-		
+
 		if ($this->_status_code === 401)
 			dwho_report::push('error','authentification to provd failed');
 
@@ -409,7 +409,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_status_code = $this->_curl->get_info('http_code');
 		$this->_curl->close();
-		
+
 		if ($this->_status_code === 401)
 			dwho_report::push('error','authentification to provd failed');
 
@@ -432,7 +432,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_status_code = $this->_curl->get_info('http_code');
 		$this->_curl->close();
-		
+
 		if ($this->_status_code === 401)
 			dwho_report::push('error','authentification to provd failed');
 
@@ -456,7 +456,7 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_status_code = $this->_curl->get_info('http_code');
 		$this->_curl->close();
-		
+
 		if ($this->_status_code === 401)
 			dwho_report::push('error','authentification to provd failed');
 
@@ -472,14 +472,14 @@ abstract class xivo_object_provd_abstract extends xivo_object_abstract
 
 		$this->_curl->set_option('post',true);
 		$this->_curl->set_option('postfields',dwho_json::encode($data));
-		
+
 		$rs = false;
 		if(($r = $this->_connect($path,$query)) !== false)
 			$rs = dwho_json::decode(rtrim($r['body']),$decode_assoc);
-			
+
 		$this->_status_code = $this->_curl->get_info('http_code');
 		$this->_curl->close();
-		
+
 		if ($this->_status_code === 401)
 			dwho_report::push('error','authentification to provd failed');
 
