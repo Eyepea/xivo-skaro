@@ -362,11 +362,13 @@ class AllPluginsDeviceInfoExtractor(object):
         return '_%s_xtor' % request_type
     
     def _set_xtors(self):
+        logger.debug('Updating extractors for %s', self)
         for request_type in self._REQUEST_TYPES:
             pg_extractors = []
             for pg in self._pg_mgr.itervalues():
                 pg_extractor = getattr(pg, request_type + '_dev_info_extractor')
                 if pg_extractor is not None:
+                    logger.debug('Adding %s extractor from %s', request_type, pg)
                     pg_extractors.append(pg_extractor)
             xtor = self.extractor_factory(pg_extractors)
             setattr(self, self._xtor_name(request_type), xtor)
@@ -932,6 +934,7 @@ class HTTPRequestProcessingService(Resource):
     @defer.inlineCallbacks
     def getChild(self, path, request):
         logger.info('Processing HTTP request: %s', request.path)
+        logger.debug('HTTP request: %s', request)
         try:
             device, pg_id = yield self._process_service.process(request, 'http')
         except Exception:
@@ -972,6 +975,7 @@ class TFTPRequestProcessingService(object):
     
     def handle_read_request(self, request, response):
         logger.info('Processing TFTP request: %s', request['packet']['filename'])
+        logger.debug('TFTP request: %s', request)
         def callback((device, pg_id)):
             # Here we 'inject' the device object into the request object
             request['prov_dev'] = device
@@ -1019,6 +1023,7 @@ class DHCPRequestProcessingService(Resource):
             representing the raw value of the option
         """
         logger.info('Processing DHCP request: %s', request[u'ip'])
+        logger.debug('DHCP request: %s', request)
         def errback(failure):
             logger.error('Error while processing DHCP request: %s', failure)
         d = self._process_service.process(request, 'dhcp')

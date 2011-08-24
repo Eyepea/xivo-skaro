@@ -426,7 +426,7 @@ class ConfigureParameterResource(Resource):
             try:
                 self._cfg_srv.set(self._key, value)
             except InvalidParameterError, e:
-                logger.info('Invalid value for key %s: %s', self._key, value)
+                logger.info('Invalid value for key %s: %r', self._key, value)
                 return respond_error(request, e)
             except KeyError:
                 logger.info('Invalid/unknown key: %s', self._key)
@@ -656,8 +656,8 @@ class DeviceDHCPInfoResource(Resource):
             return respond_error(request, e)
         else:
             if op == u'commit':
-                request = {u'ip': ip, u'mac': mac, u'options': options}
-                self._dhcp_req_processing_srv.handle_dhcp_request(request)
+                dhcp_request = {u'ip': ip, u'mac': mac, u'options': options}
+                self._dhcp_req_processing_srv.handle_dhcp_request(dhcp_request)
                 return respond_no_content(request)
             elif op == u'expiry' or op == u'release':
                 # we are keeping this only for compatibility -- release and
