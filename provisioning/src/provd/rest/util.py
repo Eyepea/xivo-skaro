@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
@@ -18,8 +17,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-#PROV_MIME_TYPE = 'application/vnd.proformatique.provd+json'
-PROV_MIME_TYPE = 'text/plain'
+PROV_MIME_TYPE = 'application/vnd.proformatique.provd+json'
 
 
 def uri_append_path(base, *path):

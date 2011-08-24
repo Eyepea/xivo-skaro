@@ -817,7 +817,7 @@ INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features',
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*51.',1,'GoSub','groupmember,s,1(group,add,${EXTEN:3})','groupaddmember');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*52.',1,'GoSub','groupmember,s,1(group,remove,${EXTEN:3})','groupremovemember');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*50.',1,'GoSub','groupmember,s,1(group,toggle,${EXTEN:3})','grouptogglemember');
-INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*48378',1,'GoSub','autoprovprov,s,1','autoprovprov');
+INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*48378',1,'GoSub','autoprov,s,1','autoprov');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*27',1,'GoSub','incallfilter,s,1','incallfilter');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','*10',1,'GoSub','phonestatus,s,1','phonestatus');
 INSERT INTO "extensions" VALUES (nextval('extensions_id_seq'),0,'xivo-features','_*735.',1,'GoSub','phoneprogfunckey,s,1(${EXTEN:0:4},${EXTEN:4})','phoneprogfunckey');
@@ -898,7 +898,7 @@ INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*20','934aca632
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*51.','fd3d50358d246ab2fbc32e14056e2f559d054792','','extenfeatures','groupaddmember');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*52.','069a278d266d0cf2aa7abf42a732fc5ad109a3e6','','extenfeatures','groupremovemember');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*50.','53f7e7fa7fbbabb1245ed8dedba78da442a8659f','','extenfeatures','grouptogglemember');
-INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','autoprovprov');
+INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','autoprov');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*27','663b9615ba92c21f80acac52d60b28a8d1fb1c58','','extenfeatures','incallfilter');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'_*735.','32e9b3597f8b9cd2661f0c3d3025168baafca7e6','','extenfeatures','phoneprogfunckey');
 INSERT INTO "extenumbers" VALUES (nextval('extenumbers_id_seq'),'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');
