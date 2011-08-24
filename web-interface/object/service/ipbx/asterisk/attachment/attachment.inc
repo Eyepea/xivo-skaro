@@ -54,10 +54,10 @@ class xivo_service_asterisk_attachment extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false
 		|| isset($arr['file']) === false)
-			return(false);		
+			return(false);
 		else if(isset($arr['name']) === true)
-			$arr['name'] = strtolower($arr['name']);			
-		
+			$arr['name'] = strtolower($arr['name']);
+
 		return(parent::add($arr,$id));
 	}
 
@@ -68,7 +68,7 @@ class xivo_service_asterisk_attachment extends xivo_service_asterisk_abstract
 			return(false);
 		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
-		
+
 		return(parent::edit($id,$arr));
 	}
 }

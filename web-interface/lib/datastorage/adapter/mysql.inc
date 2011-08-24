@@ -257,6 +257,10 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
         return(mysql_escape_string($str));
     }
 
+    function set_bytea_output()
+    {
+    }
+
     function escape_bytea($str)
     {
         return($str);

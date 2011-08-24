@@ -264,6 +264,11 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
         return(pg_escape_string($this->_link, $str));
     }
 
+    function set_bytea_output()
+    {
+    	$this->query('SET bytea_output = "escape";');
+    }
+
     function escape_bytea($str)
     {
         if(is_resource($this->_link) === false)
