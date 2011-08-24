@@ -94,7 +94,7 @@ class HttpReqError(Exception):
         self.code = code
         self.text = text
         self.exc = exc
-        self.json = json				
+        self.json = json
         msg = text or BaseHTTPRequestHandler.responses[code][1]
         Exception.__init__(self, msg)
     

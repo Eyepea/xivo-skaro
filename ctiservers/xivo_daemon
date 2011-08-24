@@ -99,7 +99,7 @@ except:
 XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
 
 DEBUG_MODE         = False
-XIVO_CONF_FILE     = 'https://localhost/cti/json.php/private/configuration'
+XIVO_CONF_FILE     = 'http://localhost/cti/json.php/private/configuration'
 XIVO_CONF_OVER     = None
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
 LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'

@@ -624,7 +624,11 @@ class AMI_1_8:
         xivo_userid = event.get('XIVO_USERID')
         userprops = self.innerdata.xod_config.get('users').keeplist.get(xivo_userid)
         xivo_srcnum = event.get('XIVO_SRCNUM')
-        usersummary_src = { 'fullname' : userprops.get('fullname'),
+        if userprops is not None:
+            usersummary_src = { 'fullname' : userprops.get('fullname'),
+                            'phonenumber' : xivo_srcnum }
+        else:
+            usersummary_src = { 'fullname' : xivo_srcnum,
                             'phonenumber' : xivo_srcnum }
 
         xivo_lineid = event.get('XIVO_LINEID')

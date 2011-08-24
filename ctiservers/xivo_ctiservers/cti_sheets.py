@@ -27,7 +27,7 @@ __author__    = 'Corentin Le Gall'
 import base64
 import logging
 import struct
-import urllib
+import urllib2
 import zlib
 
 class Sheet:
@@ -61,7 +61,16 @@ class Sheet:
         return
 
     def buildresult(self, lineprops):
-        [title, ftype, defaultval, sformat] = lineprops
+        # line if disabled if disabled = 1
+        disabled = 0
+        if len(lineprops) == 5:
+            [title, ftype, defaultval, sformat, disabled] = lineprops
+        else:
+            [title, ftype, defaultval, sformat] = lineprops
+
+        if disabled:
+            return {}
+
         finalstring = sformat
         for k, v in self.channelprops.extra_data.iteritems():
             for kk, vv in v.iteritems():
@@ -69,17 +78,18 @@ class Sheet:
                 finalstring = finalstring.replace(variablename, vv)
         if finalstring.find('{xivo-callerpicture}') >= 0:
             userid = self.channelprops.extra_data.get('xivo').get('userid')
-            url = 'https://127.0.0.1/getatt.php?id=%s&obj=user' % userid
-            try:
-                picture_desc = urllib.urlopen(url)
-                picture_data = picture_desc.read()
-                picture_desc.close()
-            except:
-                picture_data = ''
-            # remove the '\x' char from the beginning of the resulting data
-            # and encode the binary in base64 : data length changes from 1 to 1/2 to 3/4
-            b64value = base64.b64encode(base64.b16decode(picture_data[2:].upper()))
-            finalstring = b64value
+            if userid:
+                url = 'http://127.0.0.1/getatt.php?id=%s&obj=user' % userid
+                try:
+                    fobj = urllib2.urlopen(url)
+                    picture_data = fobj.read()
+                    fobj.close()
+                except:
+                    picture_data = ''
+                b64value = base64.b64encode(picture_data)
+                finalstring = b64value
+            else:
+                finalstring = ''
 
         result = { 'name' : title,
                    'type': ftype,
@@ -93,13 +103,15 @@ class Sheet:
                 if not isinstance(v, dict):
                     continue
                 for order, vv in v.iteritems():
-                    self.fields[sheetpart][order] = self.buildresult(vv)
+                    line = self.buildresult(vv)
+                    if line:
+                        self.fields[sheetpart][order] = line
             elif sheetpart == 'sheet_qtui':
                 for order, vv in v.iteritems():
                     try:
-                        qtui_desc = urllib.urlopen(vv)
-                        qtui_data = qtui_desc.read().decode('utf8')
-                        qtui_desc.close()
+                        fobj = urllib2.urlopen(vv)
+                        qtui_data = fobj.read().decode('utf8')
+                        fobj.close()
                     except Exception:
                         qtui_data = ''
                     self.fields[sheetpart] = {'10' : {'name' : 'qtui',

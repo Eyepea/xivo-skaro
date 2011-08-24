@@ -67,7 +67,7 @@ class UrlList:
                     http_contenttype = f.headers.getheaders('Content-Type')
                     http_code = f.code
                     t2 = time.time()
-                    # print 'time for %s is %f' % (request, t2 - t1)
+                    log.debug('time for %s is %f' % (request, t2 - t1))
                 else:
                     log.warning('URL kind %s not supported' % kind)
                     return -1
