@@ -422,9 +422,9 @@ switch($act)
         }
         else
         {
-            $ipbxuri = 'https://127.0.0.1/service/ipbx/json.php/private/';
-            $ctiuri = 'https://127.0.0.1/cti/json.php/private/';
-            $callcenteruri = 'https://127.0.0.1/callcenter/json.php/private/';
+            $ipbxuri = 'http://127.0.0.1/service/ipbx/json.php/private/';
+            $ctiuri = 'http://127.0.0.1/cti/json.php/private/';
+            $callcenteruri = 'http://127.0.0.1/callcenter/json.php/private/';
         }
 
         $urllists = array(

@@ -18,12 +18,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once('xivo.php');
+if (isset($_SERVER['REMOTE_ADDR']) === false
+|| ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1'
+&& $_SERVER['REMOTE_ADDR'] !== '::1'))
+	define('DWHO_SESS_ENABLE',false);
 
-$ipbx = &$_SRE->get('ipbx');
+require_once('xivo.php');
 
 dwho::load_class('dwho_http');
 $http_response = dwho_http::factory('response');
+
+if(DWHO_SESS_ENABLE === true
+&& $_USR->mk_active() === false)
+{
+	$http_response->set_status_line(403);
+	$http_response->send(true);
+}
+
+$ipbx = &$_SRE->get('ipbx');
 
 $act = isset($_QR['act']) === false ? null : $_QR['act'];
 $obj = isset($_QR['obj']) === false ? null : $_QR['obj'];

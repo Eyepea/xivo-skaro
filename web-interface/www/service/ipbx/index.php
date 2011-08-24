@@ -21,8 +21,8 @@
 require_once('xivo.php');
 
 if(xivo_user::chk_acl(true) === false)
-    $_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
-    
+	$_QRY->go($_TPL->url('xivo'), array('go' => urlencode($_SERVER['REQUEST_URI'])));
+
 $ipbx = &$_SRE->get('ipbx');
 
 $dhtml = &$_TPL->get_module('dhtml');
@@ -36,8 +36,7 @@ $action_path = $_LOC->get_action_path('service/ipbx/'.$ipbx->get_name(),2);
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
 
 if($action_path === false)
-    $_QRY->go($_TPL->url('xivo'));
-
+	$_QRY->go($_TPL->url('xivo'));
 
 die(include($action_path));
 
