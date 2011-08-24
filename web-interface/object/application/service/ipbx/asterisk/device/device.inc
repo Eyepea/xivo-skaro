@@ -495,11 +495,11 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		switch ($method)
 		{
 			case 'provd':
-                if(($rs = $this->_provddevice->chk_values($rs)) === false)
-                    $this->_set_error('devicefeatures',$this->_provddevice->get_filter_error());
+				if(($rs = $this->_provddevice->chk_values($rs)) === false)
+					$this->_set_error('devicefeatures',$this->_provddevice->get_filter_error());
 
-        		if($this->get_errnb() > 0)
-        			return false;
+				if($this->get_errnb() > 0)
+					return false;
 
 				$this->_return['devicefeatures'] = $this->_provddevice->add($rs);
 				break;
@@ -655,7 +655,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->delete_devicefeatures() === false)
+		if($this->delete_devicefeatures() === false
+		|| $this->reset_linefeatures() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -676,6 +677,16 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		if($this->_status === 'delete')
 			$this->_return['devicefeatures'] = $r;
+
+		return($r);
+	}
+
+	function reset_linefeatures()
+	{
+		if(dwho_issa('devicefeatures',$this->_info) === false)
+			return(false);
+
+		$r = $this->_linefeatures->reset_device($this->_info['devicefeatures']['id']);
 
 		return($r);
 	}
