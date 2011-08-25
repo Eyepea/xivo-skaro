@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
@@ -500,6 +499,28 @@ class CiscoUnsignFilter(object):
 
 class IncludeExcludeFilter(object):
     def __init__(self, filter_fun):
+        """
+        filter_fun -- a callable object taking two arguments, the first being
+          the relative name of the file currently under test and the second
+          being the absolute name of the file. The call returns true if the
+          file is to be included in the destination directory, or false to
+          exclude it.
+        
+        The relative name is relative to the source directory, i.e. if the
+        source directory contains a directory named 'dir1' that contains a
+        file named 'file1', the relative name for this file would be
+        'dir1/file1'.
+        
+        Note that if false is returned for a file that is a directory, the
+        filter_fun object won't be called for any files under this directory
+        because it wouldn't make sense to include a file if you excluded the
+        parent directory.
+        
+        That said, if true is returned for a directory, the files under this
+        directory are not automatically included and the filter_fun will be
+        called for every child files of this directory.
+         
+        """
         self._filter_fun = filter_fun
     
     def apply(self, src_directory, dst_directory):
@@ -512,13 +533,13 @@ class IncludeExcludeFilter(object):
                     rel_file = file
                 else:
                     rel_file = os.path.join(rel_current_dir, file)
-                if self._filter_fun(rel_file):
-                    src_abs_file = os.path.join(src_directory, rel_file)
+                src_abs_file = os.path.join(src_directory, rel_file)
+                if self._filter_fun(rel_file, src_abs_file):
                     dst_abs_file = os.path.join(dst_directory, rel_file)
                     if os.path.isdir(src_abs_file):
                         os.mkdir(dst_abs_file)
                         rel_dir_stack.append(rel_file)
-                    elif os.path.isfile(src_abs_file):
+                    else:
                         shutil.copy(src_abs_file, dst_abs_file)
 
 
@@ -536,7 +557,7 @@ def ExcludeFilter(pathnames):
     else:
         pathnames = list(pathnames)
     
-    def filter_fun(rel_file):
+    def filter_fun(rel_file, abs_file):
         for pathname in pathnames:
             if fnmatch(rel_file, pathname):
                 return False
@@ -558,9 +579,18 @@ def IncludeFilter(pathnames):
     else:
         pathnames = list(pathnames)
     
-    def filter_fun(rel_file):
+    included_dirs = set()
+    def filter_fun(rel_file, abs_file):
+        # include rel_file if its a child of an already included directory
+        rel_dirname = os.path.dirname(rel_file)
+        if rel_dirname in included_dirs:
+            if os.path.isdir(abs_file):
+                included_dirs.add(rel_file)
+            return True
         for pathname in pathnames:
             if fnmatch(rel_file, pathname):
+                if os.path.isdir(abs_file):
+                    included_dirs.add(rel_file)
                 return True
         return False
     return IncludeExcludeFilter(filter_fun)

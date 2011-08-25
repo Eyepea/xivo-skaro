@@ -7,8 +7,11 @@ import unittest
 import fetchfw.install as install
 from fetchfw.util import list_paths 
 
-#TEST_RES_DIR = '../test_resources/install'
-TEST_RES_DIR = 'test_resources/install'
+if os.path.basename(os.getcwd()) == 'test':
+    TEST_RES_DIR = '../test_resources/install'
+else:
+    # assuming we are running the test in the parent directory
+    TEST_RES_DIR = 'test_resources/install'
 
 
 def _create_file(base_path, filename, content=None):
@@ -98,12 +101,22 @@ class TestExcludeFilter(unittest.TestCase):
     def _create_file(self, filename, content=None):
         _create_file(self._tmp_src_dir, filename, content)
     
+    def _create_dir(self, dirname):
+        _create_dir(self._tmp_src_dir, dirname)
+    
     def test_filter(self):
         self._create_file('file1')
         self._create_file('file2')
         filter = install.ExcludeFilter(['file1'])
         filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
         self.assertEqual(['file2'], sorted(list_paths(self._tmp_dst_dir)))
+    
+    def test_exclude_files_inside_directory(self):
+        self._create_dir('dir1')
+        self._create_file('dir1/file1')
+        filter = install.ExcludeFilter(['dir1/file1'])
+        filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
+        self.assertEqual(['dir1/'], sorted(list_paths(self._tmp_dst_dir)))
 
 
 class TestIncludeFilter(unittest.TestCase):
@@ -118,12 +131,25 @@ class TestIncludeFilter(unittest.TestCase):
     def _create_file(self, filename, content=None):
         _create_file(self._tmp_src_dir, filename, content)
     
+    def _create_dir(self, dirname):
+        _create_dir(self._tmp_src_dir, dirname)
+    
     def test_filter(self):
         self._create_file('file1')
         self._create_file('file2')
         filter = install.IncludeFilter(['file1'])
         filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
         self.assertEqual(['file1'], sorted(list_paths(self._tmp_dst_dir)))
+    
+    def test_include_files_inside_directory(self):
+        self._create_dir('dir1')
+        self._create_dir('dir1/dir2')
+        self._create_file('dir1/file1')
+        self._create_file('dir1/dir2/file2')
+        filter = install.IncludeFilter(['dir1'])
+        filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
+        self.assertEqual(['dir1/', 'dir1/dir2/', 'dir1/dir2/file2', 'dir1/file1'],
+                         sorted(list_paths(self._tmp_dst_dir)))
 
 
 class TestCopyFilter(unittest.TestCase):
@@ -135,41 +161,47 @@ class TestCopyFilter(unittest.TestCase):
         shutil.rmtree(self._tmp_src_dir)
         shutil.rmtree(self._tmp_dst_dir)
     
+    def _create_file(self, filename, content=None):
+        _create_file(self._tmp_src_dir, filename, content)
+    
+    def _create_dir(self, dirname):
+        _create_dir(self._tmp_src_dir, dirname)
+    
     def test_copy_file_to_file_is_ok(self):
-        _create_file(self._tmp_src_dir, 'file1')
+        self._create_file('file1')
         filter = install.CopyFilter('file1', 'file')
         filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
         self.assertEqual(['file'], sorted(list_paths(self._tmp_dst_dir)))
     
     def test_copy_files_to_file_raise_error(self):
-        _create_file(self._tmp_src_dir, 'file1')
-        _create_file(self._tmp_src_dir, 'file2')
+        self._create_file('file1')
+        self._create_file('file2')
         filter = install.CopyFilter(['file1', 'file2'], 'file')
         self.assertRaises(Exception, filter.apply, self._tmp_src_dir, self._tmp_dst_dir)
     
     def test_copy_files_to_dir_is_ok(self):
-        _create_file(self._tmp_src_dir, 'file1')
-        _create_file(self._tmp_src_dir, 'file2')
+        self._create_file('file1')
+        self._create_file('file2')
         filter = install.CopyFilter(['file1', 'file2'], 'dir/')
         filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
         self.assertEqual(['dir/', 'dir/file1', 'dir/file2'],
                          sorted(list_paths(self._tmp_dst_dir)))
     
     def test_copy_dirs_into_dir_is_ok(self):
-        _create_dir(self._tmp_src_dir, 'dir1')
-        _create_dir(self._tmp_src_dir, 'dir2')
+        self._create_dir('dir1')
+        self._create_dir('dir2')
         filter = install.CopyFilter(['dir1', 'dir2'], 'dir/')
         filter.apply(self._tmp_src_dir, self._tmp_dst_dir)
         self.assertEqual(['dir/', 'dir/dir1/', 'dir/dir2/'],
                          sorted(list_paths(self._tmp_dst_dir)))
     
     def test_copy_dir_into_file_raise_error(self):
-        _create_dir(self._tmp_src_dir, 'dir1')
+        self._create_dir('dir1')
         filter = install.CopyFilter('dir1', 'file1')
         self.assertRaises(Exception, filter.apply, self._tmp_src_dir, self._tmp_dst_dir)
     
     def test_copy_dirs_into_file_raise_error(self):
-        _create_dir(self._tmp_src_dir, 'dir1')
-        _create_dir(self._tmp_src_dir, 'dir2')
+        self._create_dir('dir1')
+        self._create_dir('dir2')
         filter = install.CopyFilter(['dir1', 'dir2'], 'file')
         self.assertRaises(Exception, filter.apply, self._tmp_src_dir, self._tmp_dst_dir)
