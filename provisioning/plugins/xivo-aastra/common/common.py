@@ -322,7 +322,6 @@ class BaseAastraPlugin(StandardPlugin):
         raw_config[u'XX_fkeys'] = u'\n'.join(lines)
     
     def _update_sip_lines(self, raw_config):
-        # XXX some stuff here might not be so good...
         proxy_ip = raw_config.get(u'sip_proxy_ip')
         proxy_port = raw_config.get(u'sip_proxy_port', u'0')
         backup_proxy_ip = raw_config.get(u'sip_backup_proxy_ip', u'0.0.0.0')
@@ -335,30 +334,14 @@ class BaseAastraPlugin(StandardPlugin):
         srtp_mode = raw_config.get(u'sip_srtp_mode')
         voicemail = raw_config.get(u'exten_voicemail')
         for line in raw_config[u'sip_lines'].itervalues():
-            # add proxy ip
-            if u'proxy_ip' not in line:
-                line[u'proxy_ip'] = proxy_ip
-            # add proxy port
-            if u'proxy_port' not in line:
-                line[u'proxy_port'] = proxy_port
-            # add backup proxy ip
-            if u'backup_proxy_ip' not in line:
-                line[u'backup_proxy_ip'] = backup_proxy_ip
-            # add backup proxy port
-            if u'backup_proxy_port' not in line:
-                line[u'backup_proxy_port'] = backup_proxy_port
-            # add registrar ip
-            if u'registrar_ip' not in line:
-                line[u'registrar_ip'] = registrar_ip
-            # add registrar port
-            if u'registrar_port' not in line:
-                line[u'registrar_port'] = registrar_port
-            # add backup registrar ip
-            if u'backup_registrar_ip' not in line:
-                line[u'backup_registrar_ip'] = backup_registrar_ip
-            # add backup registrar port
-            if u'backup_registrar_port' not in line:
-                line[u'backup_registrar_port'] = backup_registrar_port
+            line.setdefault(u'proxy_ip', proxy_ip)
+            line.setdefault(u'proxy_port', proxy_port)
+            line.setdefault(u'backup_proxy_ip', backup_proxy_ip)
+            line.setdefault(u'backup_proxy_port', backup_proxy_port)
+            line.setdefault(u'registrar_ip', registrar_ip)
+            line.setdefault(u'registrar_port', registrar_port)
+            line.setdefault(u'backup_registrar_ip', backup_registrar_ip)
+            line.setdefault(u'backup_registrar_port', backup_registrar_port)
             # add XX_dtmf_method
             cur_dtmf_mode = line.get(u'dtmf_mode', dtmf_mode)
             if cur_dtmf_mode in self._SIP_DTMF_MODE:
@@ -369,8 +352,8 @@ class BaseAastraPlugin(StandardPlugin):
             cur_srtp_mode = line.get(u'srtp_mode', srtp_mode)
             line[u'XX_srtp_mode'] = self._SIP_SRTP_MODE.get(cur_srtp_mode, u'0')
             # add voicemail
-            if u'voicemail' not in line and voicemail:
-                line[u'voicemail'] = voicemail
+            if voicemail:
+                line.setdefault(u'voicemail', voicemail)
     
     def _gen_xx_dict(self, raw_config):
         xx_dict = self._XX_DICT[self._XX_DICT_DEF]
