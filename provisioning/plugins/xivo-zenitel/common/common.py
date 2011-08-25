@@ -148,7 +148,7 @@ class BaseZenitelPlugin(StandardPlugin):
             raw_config[u'XX_sip'] = True
             raw_config[u'XX_nick_name'] = line[u'display_name']
             raw_config[u'XX_sip_id'] = line[u'username']
-            raw_config[u'XX_domain'] = line[u'proxy_ip'] or raw_config[u'sip_proxy_ip']
+            raw_config[u'XX_domain'] = line.get(u'proxy_ip') or raw_config[u'sip_proxy_ip']
             raw_config[u'XX_domain2'] = line.get(u'backup_proxy_ip') or \
                                         raw_config.get(u'backup_proxy_ip', u'')
             raw_config[u'XX_auth_user'] = line[u'auth_username']
