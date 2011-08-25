@@ -60,19 +60,19 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 
 		return(true);
 	}
-	
+
 	public function get($id,$nocomponents=null)
 	{
 		if (($this->_info['config'] = $this->_provdconfig->get($id)) === false)
 			return(false);
-		
+
 		return($this->_info);
 	}
-	
+
 	public function get_config_list($search='',$order=null,$limit=null,$assoc=false,$internal=false,$type=null)
 	{
 		$list = $this->_provdconfig->get_configs('list',$search,$order,$limit,$assoc,$internal,$type);
-		
+
 		return($list);
 	}
 
@@ -80,7 +80,7 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 	{
 		$r = $this->_provdconfig->get_supp_elements();
 		$r['config'] = $this->_provdconfig->get_element();
-		
+
 		return($r);
 	}
 
@@ -118,7 +118,8 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 			$this->_set_error('config','invalid data');
 			return(false);
 		}
-		
+
+		$config = array();
 		switch ($type)
 		{
 			case 'registrar':
@@ -127,9 +128,10 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 					dwho_report::push('error', 'config data not valid');
 					return(false);
 				}
-				$rs['parent_ids'] = array();
-				$rs['raw_config'] = array('X_key' => 'xivo');
-				$rs['X_type'] = 'registrar';
+				$config = $rs;
+				$config['X_type'] = 'registrar';
+				$config['parent_ids'] = array();
+				$config['raw_config']['X_key'] = 'xivo';
 				break;
 			case 'device':
 				if(($rs = $this->_provdconfig->chk_values($arr)) === false)
@@ -137,22 +139,25 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 					dwho_report::push('error', 'config data not valid');
 					return(false);
 				}
-				$rs['parent_ids'] = array();
-				$rs['raw_config'] = array('X_key' => 'xivo');
-				$rs['X_type'] = 'device';
+				$config['X_type'] = 'device';
+				$config['label'] = $rs['label'];
+				$config['parent_ids'] = array();
+				$config['raw_config'] = $this->_provdconfig->build_raw_config_device($rs);
+				$config['raw_config']['X_key'] = 'xivo';
 				break;
 			default:
-				$rs['deletable'] = true;
+				$config['deletable'] = true;
 				if(($rs = $this->_provdconfig->chk_values($arr)) === false)
 				{
 					$this->_set_result('config',$this->_provdconfig->get_filter_result());
 					$this->_set_error('config',$this->_provdconfig->get_filter_error());
 					return(false);
 				}
-				$rs['X_type'] = 'default';
+				$config['raw_config'] = $rs;
+				$config['X_type'] = 'default';
 		}
 
-		$this->_set_result('config',$rs);
+		$this->_set_result('config',$config);
 
 		return(true);
 	}
@@ -183,9 +188,9 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 		if(($rs = $this->get_result('config')) === null
 		|| $rs === false)
 			return(false);
-		
+
 		$this->_return['config'] = $this->_provdconfig->add($rs);
-		
+
 		return($this->_return['config']);
 	}
 
@@ -236,9 +241,9 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 		if(dwho_issa('config',$this->_info) === false
 		|| ($rs = $this->get_result('config')) === null)
 			return(false);
-			
+
 		$this->_return['config'] = $this->_provdconfig->edit($this->_info['config']['id'],$rs);
-			
+
 		if ($this->_return['config'] !== false
 		&& $rs['X_type'] === 'registrar')
 		{
@@ -246,7 +251,7 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 			|| ($modlinefeatures = &$_SRE->get_module('ipbx','linefeatures')) === false
 			|| ($moddevicefeatures = &$_SRE->get_module('ipbx','devicefeatures')) === false)
 				return(false);
-			
+
 			if (($list = $modlinefeatures->get_all_where(array('configregistrar' => $rs['id']))) !== false
 			&& ($nb = count($list)) > 0)
 			{
@@ -260,17 +265,18 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 						continue;
 					array_push($res,$device['id']);
 				}
-						
+
 				$listid = array_unique($res);
 				$listid = array_values($listid);
+
 				for($i=0;$i<count($listid);$i++)
 					$this->_provdconfig->rebuild_device_config($listid[$i]);
 			}
-			
+
 			if($this->_info['config']['id'] === 'default')
 				$this->_provdconfig->rebuild_required_config();
 		}
-		
+
 		return($this->_return['config']);
 	}
 

@@ -264,8 +264,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 	public function rebuild_required_config()
 	{
-		$this->_delete_required_config();
-
 		$confdefault = $this->get('default');
 
 		if ($this->_add_base($confdefault) === false
@@ -367,6 +365,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$base['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
 		}
 
+		if (($rs = $this->get('base')) !== false)
+			$this->delete('base');
+		if (is_array($rs) === true)
+			$base['raw_config'] = array_merge($rs['raw_config'],$base['raw_config']);
+
 		if ($this->add($base) === false)
 		{
 			dwho_report::push('error', 'fail to create base config');
@@ -411,6 +414,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$autoprov['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
 		}
 
+
+		if (($rs = $this->get('autoprov')) !== false)
+			$this->delete('autoprov');
+		if (is_array($rs) === true)
+			$autoprov['raw_config'] = array_merge($rs['raw_config'],$autoprov['raw_config']);
+
 		if ($this->add($autoprov) === false)
 		{
 			dwho_report::push('error', 'fail to create autoprov config');
@@ -434,6 +443,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf['raw_config'] = array();
 		$conf['raw_config']['ntp_enabled'] = true;
 		$conf['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
+
+
+		if (($rs = $this->get('defaultconfigdevice')) !== false)
+			$this->delete('defaultconfigdevice');
+		if (is_array($rs) === true)
+			$conf['raw_config'] = array_merge($rs['raw_config'],$conf['raw_config']);
 
 		if ($this->add($conf) === false)
 		{
@@ -801,6 +816,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{
 		$conf = array();
 
+		$this->_set_config_var($conf,$raw,'X_key');
 		$this->_set_config_var($conf,$raw,'_comment');
 		$this->_set_config_var($conf,$raw,'timezone');
 		$this->_set_config_var($conf,$raw,'locale');

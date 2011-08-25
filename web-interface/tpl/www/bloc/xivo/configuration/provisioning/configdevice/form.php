@@ -43,7 +43,7 @@ endif;
 				  'value'	=> $this->get_var('info','config','label'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'label')) )),
-						   
+
 		$form->select(array('desc'	=> $this->bbf('fm_config_language'),
 				    'name'		=> 'config[locale]',
 				    'labelid'	=> 'config-locale',
@@ -68,13 +68,13 @@ endif;
 				    'key'	=> false,
 				    'selected'	=> $this->get_var('info','config','protocol')),
 			      $element['config']['protocol']['value']),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_config_encryption_enabled'),
 				      'name'	=> 'config[config_encryption_enabled]',
 				      'labelid'	=> 'config-config_encryption_enabled',
 				      'default'	=> $element['config']['config_encryption_enabled']['default'],
 				      'checked'	=> $this->get_var('info','config','config_encryption_enabled'))),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_ntp_enabled'),
 				      'name'	=> 'config[ntp_enabled]',
 				      'labelid'	=> 'config-ntp_enabled',
@@ -133,7 +133,7 @@ endif;
 				  'value'	=> $this->get_var('info','config','user_password'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'user_password')) )),
-			       
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_sip_subscribe_mwi'),
 				      'name'	=> 'config[sip_subscribe_mwi]',
 				      'labelid'	=> 'config-sip_subscribe_mwi',

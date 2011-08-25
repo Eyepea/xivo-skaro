@@ -60,13 +60,9 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appprovdconfig->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
 
-		$return = &$info;
-
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('config',$_QR) === true)
 		{
-			$return = &$result;
-
 			$_QR['config']['X_type'] = 'registrar';
 			if($appprovdconfig->set_edit($_QR,'registrar') === false
 			|| $appprovdconfig->edit() === false)
@@ -74,13 +70,14 @@ switch($act)
 				$fm_save = false;
 				$result = $appprovdconfig->get_result('config');
 				$error = $appprovdconfig->get_error('config');
+				$info = array_merge($info,$result);
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/provisioning/configregistrar'),$param);
 		}
 
 		$_TPL->set_var('id',$info['config']['id']);
-		$_TPL->set_var('info',$return);
+		$_TPL->set_var('info',$info);
 		$_TPL->set_var('element',$appprovdconfig->get_elements());
 		break;
 	case 'delete':
@@ -123,9 +120,9 @@ switch($act)
 
 		if (($list = $appprovdconfig->get_config_list($search,$order,$limit,false,false,'registrar')) === false)
 			$list = array();
-			
+
 		$total = $appprovdconfig->get_cnt();
-		
+
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;

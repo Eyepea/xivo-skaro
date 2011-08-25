@@ -152,7 +152,7 @@ abstract class dwho_report
     {
         if (isset(self::${$type}) === false
         || ($self = &self::${$type}) === false)
-            return(false);
+            return(null);
 
         return($self);
     }
