@@ -36,9 +36,9 @@ switch($act)
 			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
-		
-		$cmd = &$ipbx->get_module('ami')->cmd('queue show',true);
-		
+
+		$cmd = &$ipbx->discuss('queue show',true);
+
 		$list = array();
 		foreach($cmd as $line)
 		{
@@ -51,12 +51,12 @@ switch($act)
 				array_push($list,$tmp);
 			}
 		}
-		
+
 		$_TPL->set_var('list',$list);
 	default:
 		$http_response->set_status_line(400);
 		$http_response->send(true);
-	    
+
 }
 
 $_TPL->set_var('act',$act);

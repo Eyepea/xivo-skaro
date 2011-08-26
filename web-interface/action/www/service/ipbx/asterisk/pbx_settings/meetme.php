@@ -66,7 +66,7 @@ switch($act)
 			}
 			else
 			{
-				$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so'));
+				$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so','dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 			}
 		}
@@ -120,7 +120,7 @@ switch($act)
 			}
 			else
 			{
-				$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so'));
+				$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so','dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 			}
 		}
@@ -150,7 +150,7 @@ switch($act)
 
 		$appmeetme->delete();
 
-		$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so'));
+		$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so','dialplan reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
@@ -170,7 +170,7 @@ switch($act)
 				$appmeetme->delete();
 		}
 
-		$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so'));
+		$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so','dialplan reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
@@ -195,7 +195,7 @@ switch($act)
 				$appmeetme->enable();
 		}
 
-		$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so'));
+		$ipbx->discuss(array('xivo[meetmelist,update]','module reload app_meetme.so','dialplan reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;

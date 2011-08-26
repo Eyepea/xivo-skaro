@@ -23,9 +23,9 @@ $access_subcategory = 'restart';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$ami = &$ipbx->get_module('ami');
+$ctibus = &$ipbx->get_module('ctibus');
 
-$status = $ami->cmd('restart now',true) === false ? 500 : 200;
+$status = $ctibus->cmd('core restart now',true) === false ? 500 : 200;
 
 $http_response->set_status_line($status);
 $http_response->send(true);

@@ -64,9 +64,6 @@ $array['module']['agentfeatures']['datastorage'] = true;
 $array['module']['agentgroup'] = array();
 $array['module']['agentgroup']['datastorage'] = true;
 
-$array['module']['ami'] = array();
-$array['module']['ami']['datastorage'] = false;
-
 $array['module']['attachment'] = array();
 $array['module']['attachment']['datastorage'] = true;
 
@@ -118,6 +115,9 @@ $array['module']['ctiagentstatusgroup']['datastorage'] = true;
 
 $array['module']['ctiaccounts'] = array();
 $array['module']['ctiaccounts']['datastorage'] = true;
+
+$array['module']['ctibus'] = array();
+$array['module']['ctibus']['datastorage'] = false;
 
 $array['module']['ctidirectories'] = array();
 $array['module']['ctidirectories']['datastorage'] = true;

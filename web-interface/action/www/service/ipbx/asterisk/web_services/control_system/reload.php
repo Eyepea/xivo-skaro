@@ -23,10 +23,9 @@ $access_subcategory = 'reload';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$ami = &$ipbx->get_module('ami');
+$ctibus = &$ipbx->get_module('ctibus');
 
-if($ami->cmd('module reload',true) === false
-|| $ami->cmd('moh reload',true) === false)
+if($ctibus->cmd(array('module reload','moh reload'),true) === false)
 	$status = 500;
 else
 	$status = 200;
