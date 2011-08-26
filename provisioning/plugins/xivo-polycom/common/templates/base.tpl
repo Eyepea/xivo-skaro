@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!-- TODO check for VLAN priority and qos.ethernet.rtp.user_priority attribute
      and how it fit with our less specific config model. -->
-<!-- FIXME usage of sip.lines.x.number in this template is against what the
+<!-- FIXME usage of sip_lines.x.number in this template is against what the
      config (see config.py) says, i.e. that it should be use only for display. -->
 <config
 
@@ -80,14 +80,14 @@ voIpProt.SIP.dtmfViaSignaling.rfc2976="1"
 
 {% for line_no, line in sip_lines.iteritems() %}
 reg.{{ line_no }}.server.1.address="{{ line['proxy_ip'] }}"
-reg.{{ line_no }}.server.1.port=""
+reg.{{ line_no }}.server.1.port="{{ line['proxy_port'] }}"
 reg.{{ line_no }}.server.1.transport="{{ XX_sip_transport }}"
 reg.{{ line_no }}.server.1.expires="3600"
 reg.{{ line_no }}.server.1.register="1"
 reg.{{ line_no }}.server.1.retryMaxCount="2"
 {% if line['backup_proxy_ip'] -%}
 reg.{{ line_no }}.server.2.address="{{ line['backup_proxy_ip'] }}"
-reg.{{ line_no }}.server.2.port=""
+reg.{{ line_no }}.server.2.port="{{ line['backup_proxy_port'] }}"
 reg.{{ line_no }}.server.2.transport="{{ XX_sip_transport }}"
 reg.{{ line_no }}.server.2.expires="3600"
 {% endif -%}
@@ -102,7 +102,7 @@ msg.mwi.{{ line_no }}.subscribe="{{ line['number'] }}"
 msg.mwi.{{ line_no }}.subscribe=""
 {% endif -%}
 msg.mwi.{{ line_no }}.callBackMode="contact"
-msg.mwi.{{ line_no }}.callBack="{{ line['voicemail'] or exten_voicemail }}"
+msg.mwi.{{ line_no }}.callBack="{{ line['voicemail'] }}"
 {% endfor -%}
 
 {% if exten_pickup_call -%}

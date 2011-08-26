@@ -254,6 +254,20 @@ class BasePolycomPlugin(StandardPlugin):
             pem_cert = raw_config[u'sip_servers_root_and_intermediate_certificates']
             raw_config[u'XX_custom_cert'] = self._strip_pem_cert(pem_cert)
     
+    def _update_sip_lines(self, raw_config):
+        proxy_ip = raw_config.get(u'sip_proxy_ip')
+        proxy_port = raw_config.get(u'sip_proxy_port', u'')
+        backup_proxy_ip = raw_config.get(u'sip_backup_proxy_ip', u'')
+        backup_proxy_port = raw_config.get(u'sip_backup_proxy_port', u'')
+        voicemail = raw_config.get(u'exten_voicemail')
+        for line in raw_config[u'sip_lines'].itervalues():
+            line.setdefault(u'proxy_ip', proxy_ip)
+            line.setdefault(u'proxy_port', proxy_port)
+            line.setdefault(u'backup_proxy_ip', backup_proxy_ip)
+            line.setdefault(u'backup_proxy_port', backup_proxy_port)
+            if voicemail:
+                line.setdefault(u'voicemail', voicemail)
+    
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='')
@@ -279,6 +293,7 @@ class BasePolycomPlugin(StandardPlugin):
         self._add_syslog_level(raw_config)
         self._add_sip_transport(raw_config)
         self._add_custom_cert(raw_config)
+        self._update_sip_lines(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)

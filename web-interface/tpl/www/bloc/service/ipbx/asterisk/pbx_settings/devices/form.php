@@ -26,6 +26,7 @@ $info    = $this->get_var('info');
 $error   = $this->get_var('error');
 $plugininstalled = $this->get_var('plugininstalled');
 $listconfigdevice = $this->get_var('listconfigdevice');
+$configdevice = $this->get_var('configdevice');
 #$listline = $this->get_var('listline');
 $listline = $this->get_var('info','config','sip_lines');
 $element = $this->get_var('element');
@@ -66,7 +67,9 @@ endif;
 				  'key'		=> 'name',
 				  'altkey'	=> 'name',
 				  'default'	=> $element['devicefeatures']['plugin']['default'],
-				  'selected'	=> $this->get_var('info','devicefeatures','plugin')),
+				  'selected'	=> $this->get_var('info','devicefeatures','plugin'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'devicefeatures', 'plugin'))),
 			      $plugininstalled),
 
 		$form->select(array('desc'	=> $this->bbf('fm_devicefeatures_configdevice'),
@@ -83,7 +86,10 @@ endif;
 				    'empty'		=> true,
 				    'key'		=> false,
 				    'default'	=> $element['config']['locale']['default'],
-				    'selected'	=> $this->get_var('info','config','locale')),
+				    'selected'	=> $this->get_var('info','config','locale'),
+				    'legend'	=> $this->get_var('configdevice','raw_config','locale'),
+				    'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'locale'))),
 			      $element['config']['locale']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_config_timezone'),
@@ -91,7 +97,10 @@ endif;
 				    'labelid'	=> 'config-timezone',
 				    'empty'		=> true,
 				    'key'		=> false,
-				    'selected'	=> $this->get_var('info','config','timezone')),
+				    'selected'	=> $this->get_var('info','config','timezone'),
+				    'legend'	=> $this->get_var('configdevice','raw_config','timezone'),
+				    'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'timezone'))),
 			      array_keys(dwho_i18n::get_timezone_list())),
 
 		$form->select(array('desc'	=> $this->bbf('fm_config_protocol'),
@@ -99,20 +108,29 @@ endif;
 				    'labelid'	=> 'config-protocol',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'selected'	=> $this->get_var('info','config','protocol')),
+				    'selected'	=> $this->get_var('info','config','protocol'),
+				    'legend'	=> $this->get_var('configdevice','raw_config','protocol'),
+				    'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'protocol'))),
 			      $element['config']['protocol']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_config_encryption_enabled'),
 				      'name'	=> 'config[config_encryption_enabled]',
 				      'labelid'	=> 'config-config_encryption_enabled',
 				      'default'	=> $element['config']['config_encryption_enabled']['default'],
-				      'checked'	=> $this->get_var('info','config','config_encryption_enabled'))),
+				      'checked'	=> $this->get_var('info','config','config_encryption_enabled'),
+				      'legend'	=> $this->get_var('configdevice','raw_config','config_encryption_enabled'),
+				      'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'config_encryption_enabled')))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_ntp_enabled'),
 				      'name'	=> 'config[ntp_enabled]',
 				      'labelid'	=> 'config-ntp_enabled',
 				      'default'	=> $element['config']['ntp_enabled']['default'],
-				      'checked'	=> $this->get_var('info','config','ntp_enabled'))),
+				      'checked'	=> $this->get_var('info','config','ntp_enabled'),
+				      'legend'	=> $this->get_var('configdevice','raw_config','ntp_enabled'),
+				      'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'ntp_enabled')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config_ntp_ip'),
 				  'name'	=> 'config[ntp_ip]',
@@ -120,6 +138,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['config']['ntp_ip']['default'],
 				  'value'	=> $this->get_var('info','config','ntp_ip'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','ntp_ip'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'ntp_ip')) )),
 
@@ -128,7 +147,10 @@ endif;
 				    'labelid'	=> 'config-sip_dtmf_mode',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'selected'	=> $this->get_var('info','config','sip_dtmf_mode')),
+				    'selected'	=> $this->get_var('info','config','sip_dtmf_mode'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','sip_dtmf_mode'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'sip_dtmf_mode')) ),
 			      $element['config']['sip_dtmf_mode']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config_admin_username'),
@@ -137,6 +159,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['config']['admin_username']['default'],
 				  'value'	=> $this->get_var('info','config','admin_username'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','admin_username'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'admin_username')) )),
 
@@ -146,6 +169,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['config']['admin_password']['default'],
 				  'value'	=> $this->get_var('info','config','admin_password'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','admin_password'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'admin_password')) )),
 
@@ -155,6 +179,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['config']['user_username']['default'],
 				  'value'	=> $this->get_var('info','config','user_username'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','user_username'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'user_username')) )),
 
@@ -164,14 +189,16 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['config']['user_password']['default'],
 				  'value'	=> $this->get_var('info','config','user_password'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','user_password'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'user_password')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_config_sip_subscribe_mwi'),
-				      'name'	=> 'config[sip_subscribe_mwi]',
-				      'labelid'	=> 'config-sip_subscribe_mwi',
-				      'default'	=> $element['config']['sip_subscribe_mwi']['default'],
-				      'checked'	=> $this->get_var('info','config','sip_subscribe_mwi')));
+				  'name'	=> 'config[sip_subscribe_mwi]',
+				  'labelid'	=> 'config-sip_subscribe_mwi',
+				  'default'	=> $element['config']['sip_subscribe_mwi']['default'],
+				  'checked'	=> $this->get_var('info','config','sip_subscribe_mwi'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','sip_subscribe_mwi')));
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -194,11 +221,14 @@ endif;
 	<legend><?=$this->bbf('fld-device-srtp_config')?></legend>
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_config_sip_srtp_mode'),
-				    'name'	=> 'config[sip_srtp_mode]',
-				    'labelid'	=> 'config-sip_srtp_mode',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'selected'	=> $this->get_var('info','config','sip_srtp_mode')),
+				  'name'	=> 'config[sip_srtp_mode]',
+				  'labelid'	=> 'config-sip_srtp_mode',
+				  'empty'	=> true,
+				  'key'	=> false,
+				  'selected'	=> $this->get_var('info','config','sip_srtp_mode'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','sip_srtp_mode'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'sip_srtp_mode')) ),
 			      $element['config']['sip_srtp_mode']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_config_sip_transport'),
@@ -206,7 +236,10 @@ endif;
 				    'labelid'	=> 'config-sip_transport',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'selected'	=> $this->get_var('info','config','sip_transport')),
+				    'selected'	=> $this->get_var('info','config','sip_transport'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','sip_transport'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'sip_transport')) ),
 			      $element['config']['sip_transport']['value']);
 ?>
 </fieldset>
@@ -225,6 +258,7 @@ endif;
 				  'size'	=> 4,
 				  'default'	=> $element['config']['vlan_id']['default'],
 				  'value'	=> $this->get_var('info','config','vlan_id'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','vlan_id'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'vlan_id')) )),
 
@@ -233,7 +267,8 @@ endif;
 				    'labelid'	=> 'config-vlan_priority',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'selected'	=> $this->get_var('info','config','vlan_priority')),
+				    'selected'	=> $this->get_var('info','config','vlan_priority'),
+				    'legend'	=> $this->get_var('configdevice','raw_config','vlan_priority')),
 			      $element['config']['vlan_priority']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config_vlan_pc_port_id'),
@@ -242,6 +277,7 @@ endif;
 				  'size'	=> 4,
 				  'default'	=> $element['config']['vlan_pc_port_id']['default'],
 				  'value'	=> $this->get_var('info','config','vlan_pc_port_id'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','vlan_pc_port_id'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'vlan_pc_port_id')) ));
 ?>
@@ -261,6 +297,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['config']['syslog_ip']['default'],
 				  'value'	=> $this->get_var('info','config','syslog_ip'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','syslog_ip'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'syslog_ip')) )),
 
@@ -270,15 +307,17 @@ endif;
 				  'size'	=> 4,
 				  'default'	=> $element['config']['syslog_port']['default'],
 				  'value'	=> $this->get_var('info','config','syslog_port'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','syslog_port'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'syslog_port')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_config_syslog_level'),
-				    'name'		=> 'config[syslog_level]',
-				    'labelid'	=> 'config-syslog_level',
-				    'key'		=> false,
-				  	'default'	=> $element['config']['syslog_level']['default'],
-				    'selected'	=> $this->get_var('info','config','syslog_level')),
+				  'name'		=> 'config[syslog_level]',
+				  'labelid'	=> 'config-syslog_level',
+				  'key'		=> false,
+				  'default'	=> $element['config']['syslog_level']['default'],
+				  'selected'	=> $this->get_var('info','config','syslog_level'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','syslog_level')),
 			      $element['config']['syslog_level']['value']);
 ?>
 </fieldset>

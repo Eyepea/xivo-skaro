@@ -12,6 +12,9 @@
     {% if admin_username -%}
     <http_user perm="R">{{ admin_username|e }}</http_user>
     {% endif -%}
+    {% if dns_enabled -%}
+    <dns_server1 perm="R">{{ dns_ip }}</dns_server1>
+    {% endif -%}
     {% if ntp_enabled -%}
     <ntp_server perm="R">{{ ntp_ip }}</ntp_server>
     {% endif -%}
@@ -21,6 +24,7 @@
     <user_idle_text idx="{{ line_no }}" perm="R">{{ line['display_name']|e }}</user_idle_text>
     <user_host idx="{{ line_no }}" perm="R">{{ line['proxy_ip'] or sip_proxy_ip }}</user_host>
     <user_name idx="{{ line_no }}" perm="R">{{ line['username']|e }}</user_name>
+    <user_pname idx="{{ line_no }}" perm="R">{{ line['auth_username']|e }}</user_pname>
     <user_pass idx="{{ line_no }}" perm="R">{{ line['password']|e }}</user_pass>
     <user_realname idx="{{ line_no }}" perm="R">{{ line['display_name']|e }}</user_realname>
     <user_mailbox idx="{{ line_no }}" perm="R">{{ line['voicemail'] or exten_voicemail }}</user_mailbox>
