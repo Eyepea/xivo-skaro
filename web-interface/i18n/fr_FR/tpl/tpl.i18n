@@ -64,6 +64,9 @@ Mode avancé
 ; col_action
 Action
 
+; fm_cmt-inherited_value
+valeur héritée: %s
+
 ; opt_synchronize
 Synchroniser
 

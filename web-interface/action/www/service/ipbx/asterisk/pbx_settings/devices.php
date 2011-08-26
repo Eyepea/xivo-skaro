@@ -35,7 +35,7 @@ if($search !== '')
 switch($act)
 {
 	case 'modeautoprov':
-	    $param['act'] = 'list';
+		$param['act'] = 'list';
 		$appdevice = &$ipbx->get_application('device',null,false);
 
 		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
@@ -138,18 +138,20 @@ switch($act)
 		$order = array('num' => SORT_ASC);
 		$listline = $appline->get_lines_device((int) $_QR['id'],'',null,$order);
 
-		$result = $fm_save = $error = null;
+		$fm_save = $error = null;
+
+		$configdevice = $appprovdconfig->get($info['deviceconfig']['configdevice']);
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('devicefeatures',$_QR) === true)
 		{
-
 			if($appdevice->set_edit($_QR) === false
 			|| $appdevice->edit('provd') === false)
 			{
 				$fm_save = false;
 				$result = $appdevice->get_result();
 				$error = $appdevice->get_error();
+				$info = array_merge($info,$result);
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
@@ -167,6 +169,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('plugininstalled',$plugininstalled);
 		$_TPL->set_var('listconfigdevice',$listconfigdevice);
+		$_TPL->set_var('configdevice',$configdevice['config']);
 		$_TPL->set_var('listline',$listline);
 		$_TPL->set_var('element',$element);
 		break;

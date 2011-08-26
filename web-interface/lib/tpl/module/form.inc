@@ -72,6 +72,7 @@ class dwho_tpl_form extends dwho_tpl_module
         $this->_param['jump_strict']    = true;
         $this->_param['invalid']    = false;
         $this->_param['error']        = '';
+        $this->_param['legend']        = '';
 
         if(isset($v['name']) === true)
             $this->_param['name'] = dwho_htmlsc($v['name']);
@@ -84,6 +85,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
         if(isset($v['comment']) === true)
             $this->_param['comment'] = (string) $v['comment'];
+
+        if(isset($v['legend']) === true)
+            $this->_param['legend'] = (string) $v['legend'];
 
         if(isset($v['desc']) === true)
             $this->_param['desc'] = $v['desc'];
@@ -488,6 +492,14 @@ class dwho_tpl_form extends dwho_tpl_module
         $r = '<span class="fm-error">'.$r.'</span>';
     }
 
+    function _mk_legend()
+    {
+        if($this->_param['legend'] === '')
+            return(null);
+
+        $this->_render .= '<span class="fm-legend">'.dwho_htmlsc($this->_param['legend']).'</span>';
+    }
+
     function _mk_comment()
     {
         if($this->_param['comment'] === '')
@@ -600,6 +612,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -626,6 +639,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -679,6 +693,7 @@ class dwho_tpl_form extends dwho_tpl_module
         $this->_mk_input($o);
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
 
         if($this->_param['paragraph'] === true)
@@ -709,6 +724,7 @@ class dwho_tpl_form extends dwho_tpl_module
         $this->_mk_input($o);
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
 
         if($this->_param['paragraph'] === true)
@@ -742,6 +758,7 @@ class dwho_tpl_form extends dwho_tpl_module
         $this->_mk_input($o);
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
 
         if($this->_param['paragraph'] === true)
@@ -771,6 +788,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -807,6 +825,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -843,6 +862,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -896,6 +916,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -1500,6 +1521,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
@@ -1591,6 +1613,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
         $this->_mk_help();
         $this->_mk_error();
+        $this->_mk_legend();
         $this->_mk_comment();
         $this->_mk_desc();
         $this->_mk_label();
