@@ -161,7 +161,7 @@ class BaseYealinkPlugin(StandardPlugin):
         lines = []
         self._add_funckey_header(funckey_no, lines)
         # line for blf start at 0 (instead of 1 for speeddial)
-        lines.append(u'Line = %s' % funckey_dict.get(u'line', 1) - 1)
+        lines.append(u'Line = %s' % (funckey_dict.get(u'line', 1) - 1))
         lines.append(u'DKtype = 16')
         lines.append(u'type = blf')
         value = funckey_dict[u'value']

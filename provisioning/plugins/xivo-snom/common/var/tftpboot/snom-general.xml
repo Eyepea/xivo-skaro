@@ -15,6 +15,8 @@
     <subscription_delay perm="R">100</subscription_delay>
     <mailbox_active perm="R">on</mailbox_active>
     
+    <network_id_port perm="R">5060</network_id_port> 
+    
     <user_active idx="1" perm="R">off</user_active>
     <user_active idx="2" perm="R">off</user_active>
     <user_active idx="3" perm="R">off</user_active>
