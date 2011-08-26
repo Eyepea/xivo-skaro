@@ -22,7 +22,7 @@ xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
 class xivo_object_netiface_sql extends xivo_object_abstract_sql
 {
-	var $_unique	= array('name','ifname');
+	var $_unique	= array(array('uuid','name'),array('uuid','ifname'));
 
 	function exists_link($ifname, $uuid)
 	{
@@ -43,11 +43,12 @@ class xivo_object_netiface_sql extends xivo_object_abstract_sql
 		return($this->_dso->select_single());
 	}
 
-	function get_voip_iface()
+	function get_voip_iface($uuid)
 	{
 		$this->_dso->new_select($this->_table);
-	    $this->_dso->where(array('networktype' => 'voip'));
-	    $this->_dso->where(array('disable' => 0));
+		$this->_dso->where(array('uuid' => $uuid));
+		$this->_dso->where(array('networktype' => 'voip'));
+		$this->_dso->where(array('disable' => 0));
 
 		return($this->_dso->select_single());
 	}

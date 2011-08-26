@@ -521,7 +521,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			else if(isset($devinfo['hwtypeid']) === true
 			&& dwho_uint($devinfo['hwtypeid']) !== $hwtypeid)
 				return(false);
-			else if(($info = $this->_netiface->get_where(array('ifname' => $ifname))) !== false
+			else if(($info = $this->_netiface->get_where(array('uuid' => $uuid, 'ifname' => $ifname))) !== false
 			&& dwho_uint($info['hwtypeid']) !== $hwtypeid)
 				return(false);
 
@@ -817,7 +817,9 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = 'add';
 		$this->_return = array();
 		$netifacename = null;
-		$voip_iface = $this->_netiface->get_voip_iface();
+
+		$rs = $this->get_result('netiface');
+		$voip_iface = $this->_netiface->get_voip_iface($rs['uuid']);
 
 		if($this->get_errnb() > 0
 		|| ($netifacename = $this->add_netiface()) === false
