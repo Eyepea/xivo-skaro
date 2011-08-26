@@ -64,6 +64,9 @@ switch($step)
 		break;
 }
 
+if ($code === 400)
+	echo dwho_report::get_message('error');
+
 $http_response->set_status_line($code);
 $http_response->send(true);
 

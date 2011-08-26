@@ -87,12 +87,12 @@ class xivo_object_netiface extends xivo_object_abstract
 	{
 		return($this->_dso->exists_link($ifname, $uuid));
 	}
-	
-	function get_voip_iface()
-	{ 
-	    return($this->_dso->get_voip_iface());
+
+	function get_voip_iface($uuid)
+	{
+	    return($this->_dso->get_voip_iface($uuid));
 	}
-	
+
 	function save($arr)
 	{
 		if($this->exists(null,null,1) === false)

@@ -42,12 +42,12 @@ warnings.simplefilter('default', FutureWarning)
 
 log = logging.getLogger('xivo_sysconf.modules.packages') # pylint: disable-msg=C0103
 
-PACKAGES_LOCK_TIMEOUT       = 60 # XXX
-PACKAGESLOCK                = RWLock()
+PACKAGES_LOCK_TIMEOUT = 60 # XXX
+PACKAGESLOCK = RWLock()
 
-PACKAGES_LIST   = {'asterisk':
+PACKAGES_LIST = {'asterisk':
                                 {'depends':     ['asterisk'],
-                                 'recommends':  ['asterisk-moh-nonfree']},
+                                 'recommends':  ['asterisk-moh-opsound-g722', 'asterisk-moh-opsound-gsm', 'asterisk-moh-opsound-wav']},
                    'mysql':
                                 {'depends':     ['php5-mysql'],
                                  'ipbxengine':  {'asterisk':
@@ -60,7 +60,7 @@ PACKAGES_LIST   = {'asterisk':
 		   'postgresql':{'depends':     ['postgresql', 'php5-pgsql']},
                    'xivo':      {'depends':     ['pf-xivo']}}
 
-PACKAGES_DEPENDENCY_LEVELS   = ('depends',
+PACKAGES_DEPENDENCY_LEVELS = ('depends',
                                 'recommends',
                                 'suggests',
                                 'enhances',
@@ -69,12 +69,12 @@ PACKAGES_DEPENDENCY_LEVELS   = ('depends',
 
 class Packages:
     def __init__(self):
-        self.aptcache   = None
-        self.reqpkg     = None
+        self.aptcache = None
+        self.reqpkg = None
 
-        self.opts       = {}
-        self.args       = {}
-        self.options    = {}
+        self.opts = {}
+        self.args = {}
+        self.options = {}
 
     def aptcache_update(self, args, options):    # pylint: disable-msg=W0613
         """
@@ -132,7 +132,8 @@ class Packages:
         else:
             r['status'] = 'notinstalled'
 
-        r['installedversion'] = self.aptcache[pkgname].installed.version
+        if self.aptcache[pkgname].installed:
+            r['installedversion'] = self.aptcache[pkgname].installed.version
         r['candidateversion'] = self.aptcache[pkgname].candidate.version
 
         return r
@@ -172,11 +173,11 @@ class Packages:
         Just returns asterisk dependencies and their status
         """
 
-        self.reqpkg     = 'asterisk'
-        self.opts       = {}
+        self.reqpkg = 'asterisk'
+        self.opts = {}
 
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         self._get_dependency_level()
 
@@ -189,11 +190,11 @@ class Packages:
         Just returns postgresql dependencies and their status
         """
 
-        self.reqpkg     = 'postgresql'
-        self.opts       = {}
+        self.reqpkg = 'postgresql'
+        self.opts = {}
 
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         self._get_dependency_level()
         self._get_ipbxengine()
@@ -207,11 +208,11 @@ class Packages:
         Just returns mysql dependencies and their status
         """
 
-        self.reqpkg     = 'mysql'
-        self.opts       = {}
+        self.reqpkg = 'mysql'
+        self.opts = {}
 
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         self._get_dependency_level()
         self._get_ipbxengine()
@@ -225,11 +226,11 @@ class Packages:
         Just returns sqlite dependencies and their status
         """
 
-        self.reqpkg     = 'sqlite'
-        self.opts       = {}
+        self.reqpkg = 'sqlite'
+        self.opts = {}
 
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         self._get_dependency_level()
         self._get_ipbxengine()
@@ -243,11 +244,11 @@ class Packages:
         Just returns xivo dependencies and their status
         """
 
-        self.reqpkg     = 'xivo'
-        self.opts       = {}
+        self.reqpkg = 'xivo'
+        self.opts = {}
 
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         self._get_dependency_level()
 
