@@ -250,21 +250,22 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return($rs['id']);
 	}
 
-	private function _delete_required_config($reset=false)
+	private function _delete_required_config()
 	{
-		if ($reset)
+		if ($this->get('default') !== false)
 			$this->delete('default');
-		if ($reset || $this->get('base') !== false)
+		if ($this->get('base') !== false)
 			$this->delete('base');
-		if ($reset || $this->get('autoprov') !== false)
+		if ($this->get('autoprov') !== false)
 			$this->delete('autoprov');
-		if ($reset || $this->get('defaultconfigdevice') !== false)
+		if ($this->get('defaultconfigdevice') !== false)
 			$this->delete('defaultconfigdevice');
 	}
 
-	public function rebuild_required_config()
+	public function rebuild_required_config($confdefault=null)
 	{
-		$confdefault = $this->get('default');
+		if (is_null($confdefault) === true)
+			$confdefault = $this->get('default');
 
 		if ($this->_add_base($confdefault) === false
 		|| $this->_add_autoprov($confdefault) === false
@@ -280,9 +281,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		if ($reset === true)
 		{
-			$this->_delete_required_config(true);
+			$this->_delete_required_config();
 			if (is_null($registrarip) === true)
-			$registrarip = $_SERVER['SERVER_ADDR'];
+				$registrarip = $_SERVER['SERVER_ADDR'];
 			return($this->eval_required_config($registrarip));
 		}
 
@@ -305,10 +306,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			return(false);
 		}
 
-		if ($this->_add_base($confdefault) === false
-		|| $this->_add_autoprov($confdefault) === false
-		|| $this->_add_configdevice($confdefault) === false)
+		if ($this->rebuild_required_config($confdefault) === false)
+		{
+			dwho_report::push('error', 'Can\'t rebuild config');
 			return(false);
+		}
 
 		return(true);
 	}
