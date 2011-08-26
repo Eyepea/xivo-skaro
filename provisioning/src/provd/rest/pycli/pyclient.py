@@ -245,25 +245,64 @@ def _rec_update_dict(base_dict, overlay_dict):
             base_dict[k] = v
 
 
+def _do_expand_dotted_dict(dotted_dict, result_dict):
+    for k, v in dotted_dict.iteritems():
+        k_head, sep, k_tail = k.partition('.')
+        if sep:
+            # dotted key
+            if k_head in result_dict:
+                cur_result_dict = result_dict[k_head]
+                # replace result with empty dict if not dict
+                if not isinstance(cur_result_dict, dict):
+                    cur_result_dict = {}
+                    result_dict[k_head] = cur_result_dict
+            else:
+                cur_result_dict = {}
+                result_dict[k_head] = cur_result_dict
+            _do_expand_dotted_dict({k_tail: v}, cur_result_dict) 
+        else:
+            # non dotted key
+            if isinstance(v, dict):
+                if k in result_dict:
+                    cur_result_dict = result_dict[k]
+                    if isinstance(cur_result_dict, dict):
+                        # merge result
+                        _do_expand_dotted_dict(v, cur_result_dict)
+                    else:
+                        # overwrite result
+                        cur_result_dict = {}
+                        _do_expand_dotted_dict(v, cur_result_dict)
+                        result_dict[k] = cur_result_dict
+                else:
+                    cur_result_dict = {}
+                    _do_expand_dotted_dict(v, cur_result_dict)
+                    result_dict[k] = cur_result_dict
+            else:
+                if k in result_dict:
+                    old_v = result_dict[k]
+                    # overwrite if not dict
+                    if not isinstance(old_v, dict):
+                        result_dict[k] = v
+                else:
+                    result_dict[k] = v
+
+
 def _expand_dotted_dict(dotted_dict):
-    # return a new dictionary which is the same as dotted dict except that it
-    # is 'expanded'
-    # Note that every key of the dictionary must be string and every keys of
-    # dictionaries must also be string
-    res = {}
-    for raw_k, raw_v in dotted_dict.iteritems():
-        if isinstance(raw_v, dict):
-            v = _expand_dotted_dict(raw_v)
-        else:
-            v = raw_v
-        pre, sep, post = raw_k.partition('.')
-        if not sep:
-            k = raw_k
-        else:
-            k = pre
-            v = _expand_dotted_dict({post: v})
-        res[k] = v
-    return res
+    """Expand a "dotted dict" to a regular dict.
+    
+    >>> _expand_dotted_dict({'a.b': 'v'})
+    {'a': {'b': 'v'}}
+    >>> _expand_dotted_dict({'a.b': {'c': 'v', 'd': 'v'}})
+    {'a': {'b': {'c': 'v', 'd': 'v'}}}
+    
+    Some dotted dicts have undefined expansion, for example:
+      {'a.b': 'v1', 'a': {'b': 'v2'}}
+      {'a': {'b': {'c': 'v1'}}, 'a.b': {'c': 'v1'}}
+    
+    """
+    result = {}
+    _do_expand_dotted_dict(dotted_dict, result)
+    return result
 
 
 class Configs(object):
