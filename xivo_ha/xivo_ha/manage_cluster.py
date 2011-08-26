@@ -766,7 +766,7 @@ conninfo='host=%s user=repmgr dbname=asterisk'
 
 
     def clone_master(self):
-        p = subprocess.Popen(['mv', PG_VAR+'/9.0/main',	PG_VAR+'/9.0/main.'+random.randint(0,9999)])
+        p = subprocess.Popen(['mv', PG_VAR+'/9.0/main',	PG_VAR+'/9.0/main.'+str(random.randint(0,9999))])
         p.wait()
 
         cmd = ['su', '--login', 'postgres', '-c', 'PATH=$PATH:/usr/lib/postgresql/9.0/bin repmgr -f	/etc/postgresql/9.0/main/repmgr.conf -D /var/lib/postgresql/9.0/main -d	postgres -p 5432 -U repmgr -R postgres -F --verbose	standby clone %s' % self.peer['name']]
