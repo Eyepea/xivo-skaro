@@ -360,7 +360,7 @@ class XivoRecords():
             except:
                 log.exception('moving %s to %s' % (tmpfilename, self.cron_filename))
         except:
-            log.exception('trying to update %s' % cronfilename)
+            log.exception('trying to update %s' % self.cronfilename)
 
 
     def fetch_config(self, astid):
