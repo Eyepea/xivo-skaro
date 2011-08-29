@@ -940,7 +940,7 @@ class Command:
 
         innerdata = self.ctid.safe.get(src.get('ipbxid'))
 
-        if src.get('type') == 'channel':
+        if 'type' in src and 'chan' in src['type']:
             if src.get('id') in innerdata.channels:
                 channel = src.get('id')
                 src_context = innerdata.channels.get(channel).context
