@@ -86,6 +86,21 @@ class ZenitelConfigureService(object):
         self._auth_downloader = auth_downloader
         self._p_username = username
         self._p_password = password
+        self._update_dler()
+    
+    def _update_dler(self):
+        if self._p_username and self._p_password:
+            self._auth_downloader.add_password(None, self._URI,
+                                               self._p_username,
+                                               self._p_password)
+        else:
+            # XXX this use some knowledge of the underlying implementation:
+            # * AuthDownloader.add_password is just a wrapper around
+            #   urllib2.HTTPPasswordManager.add_password
+            # * urllib2.HTTPPaswordManager accept (None, None) as username
+            #   and password
+            self._auth_downloader.add_password(None, self._URI,
+                                               None, None)
     
     def get(self, name):
         try:
@@ -97,10 +112,7 @@ class ZenitelConfigureService(object):
         attrname = '_p_' + name
         if hasattr(self, attrname):
             setattr(self, attrname, value)
-            if self._p_username is not None and self._p_password is not None:
-                self._auth_downloader.add_password(None, self._URI,
-                                                   self._p_username,
-                                                   self._p_password)
+            self._update_dler()
         else:
             raise KeyError(name)
     

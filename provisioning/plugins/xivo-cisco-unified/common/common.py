@@ -55,6 +55,9 @@ class CiscoDownloader(DefaultDownloader):
         self._form_params = None
         self._is_authenticated = False
     
+    def clear_password(self):
+        self._form_params = None
+    
     def set_password(self, user, passwd):
         self._is_authenticated = False
         self._cookiejar.clear()
@@ -274,8 +277,10 @@ class CiscoConfigureService(object):
         self._update_dler()
     
     def _update_dler(self):
-        if self._p_username is not None and self._p_password is not None:
+        if self._p_username and self._p_password:
             self._cisco_dler.set_password(self._p_username, self._p_password)
+        else:
+            self._cisco_dler.clear_password()
     
     def get(self, name):
         try:

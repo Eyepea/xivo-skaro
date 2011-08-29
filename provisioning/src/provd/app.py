@@ -1066,7 +1066,7 @@ class ApplicationConfigureService(object):
         if l10n_service is None:
             logger.info('No localization service registered')
         else:
-            if value is None:
+            if not value:
                 l10n_service.set_locale(None)
             else:
                 try:
@@ -1075,7 +1075,7 @@ class ApplicationConfigureService(object):
                     raise InvalidParameterError(e)
     
     def _generic_set_proxy(self, key, value):
-        if value is None:
+        if not value:
             if key in self._proxies:
                 del self._proxies[key]
         else:
