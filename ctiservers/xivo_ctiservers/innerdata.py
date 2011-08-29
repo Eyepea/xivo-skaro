@@ -1483,17 +1483,24 @@ class Safe:
 
     def set_configs(self, cfgs):
         # fetch faxcallerid, db settings (cdr and features)
+        # TODO ??
         return
+    
     def set_ctilog(self, ctilog):
         # ctilog db
+        # TODO ??
         return
+    
     def set_contextlist(self, ctx):
+        # TODO ??
         return
 
     def read_internatprefixes(self, ipf):
+        # TODO ??
         return
 
     def set_partings(self, pic):
+        # TODO ??
         return
 
     # directory lookups entry points - START
