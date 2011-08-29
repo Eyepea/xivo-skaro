@@ -69,7 +69,10 @@ class Config:
                 for xlet_attr in profdef['xlets']:
                     if 'N/A' in xlet_attr:
                         xlet_attr.remove('N/A')
-                    if ('tab' or 'tabber') in xlet_attr:
+                    # XXX what should be done when 'tabber' is in xlet_attr ?
+                    #     this was currently a no-op due to what looked like a
+                    #     programming bug
+                    if 'tab' in xlet_attr:
                         del xlet_attr[2]
                     if xlet_attr[1] == 'grid':
                         del xlet_attr[2]
