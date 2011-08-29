@@ -590,24 +590,28 @@ def exec_db_file(args, options):
     
     if args['backend'] == 'postgresql':
         try:
-            subprocess.check_call(["apt-get install --yes php5-pgsql postgresql"], shell=True)
+            subprocess.check_call(["apt-get", "install", "--yes",
+                                   "php5-pgsql", "postgresql"])
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
             raise HttpReqError(500, "Can't install postgresql packages")
         try:
-            subprocess.check_call(["sudo -u postgres psql -f /%s" % args['xivoscript']], shell=True)
+            subprocess.check_call(["sudo", "-u", "postgres", "psql", "-f",
+                                   "/%s" % args['xivoscript']])
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
             raise HttpReqError(500, "Can't create xivo DB with postgresql")
         try:
-            subprocess.check_call(["sudo -u postgres psql -f /%s" % args['ipbxscript']], shell=True)
+            subprocess.check_call(["sudo", "-u", "postgres", "psql", "-f",
+                                   "/%s" % args['ipbxscript']])
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
             raise HttpReqError(500, "Can't create IPBX DB with postgresql")
 
     if args['backend'] == 'mysql':
         try:
-            subprocess.check_call(["apt-get install --yes php5-mysql mysql-server"], shell=True)
+            subprocess.check_call(["apt-get", "install", "--yes",
+                                   "php5-mysql", "mysql-server"])
         except (OSError, subprocess.CalledProcessError), e:
             traceback.print_exc()
             raise HttpReqError(500, "Can't install mysql packages")
