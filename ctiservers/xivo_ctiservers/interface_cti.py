@@ -89,6 +89,7 @@ class CTI(Interfaces):
             multimsg = msg.split(self.sep)
             for usefulmsgpart in multimsg:
                 cmd = self.serial.decode(usefulmsgpart)
+                self.log.debug('commanddict: %s', cmd)
                 nc = cti_command.Command(self, cmd)
                 z.extend(nc.parse())
                 # print nc.commandid
