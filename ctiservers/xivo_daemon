@@ -369,6 +369,8 @@ class ctiserver:
             if 'ipbx_connection' in ipbxconfig:
                 self.myipbxid = ipbxid
                 break
+        else:
+            self.myipbxid = None
 
         log.info('# STARTING %s # (1/3) Local AMI socket connection' % self.xdname)
         if self.myipbxid:
@@ -772,6 +774,9 @@ class ctiserver:
                                     lines = sel_i.readlines()
                                     for line in lines:
                                         if line:
+                                            # XXX closemenow always take the latest value of the handled line, which
+                                            #     might not be what we want (we want it to be True if it's been true
+                                            #1    at least once)
                                             closemenow = self.manage_tcp_connections(sel_i, line, kind)
                                 except ClientConnection.CloseException, cexc:
                                     kind.disconnected('end_receiving')
