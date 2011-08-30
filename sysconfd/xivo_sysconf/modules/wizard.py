@@ -602,8 +602,8 @@ def exec_db_file(args, options):
     
     if args['backend'] == 'postgresql':
         try:
-            aptget_install(['php5-pgsql','postgresql'])
-        except:
+            aptget_install(['php5-pgsql', 'postgresql'])
+        except Exception:
             raise HttpReqError(500, "Can't install postgresql packages")
         try:
             subprocess.check_call(["sudo", "-u", "postgres", "psql", "-f",
