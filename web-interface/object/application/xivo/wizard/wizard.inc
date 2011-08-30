@@ -1497,6 +1497,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$args = array();
 		$args['address'] = $voip_iface['address'];
 		$args['netmask'] = $voip_iface['netmask'];
+		$args['gateway'] = $voip_iface['gateway'];
 
 		if($this->_sysconfd->request_post('/modify_eth_ipv4',
 		$args,

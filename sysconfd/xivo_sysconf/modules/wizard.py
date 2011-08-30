@@ -573,17 +573,6 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
             asterisk_configuration(ipbxdburi, ipbxdbinfo[ipbxdburi[0]], ipbxdbparams)
     finally:
         WIZARDLOCK.release()
-        
-def aptget_install(list_package):
-    cache = apt.Cache()
-    cache.update()
-    # Mark packages for install
-    with cache.actiongroup():
-        for package in list_package:
-            pkg = cache[package]
-            pkg.mark_install()
-    # Now, really install it
-    cache.commit()
 
 def exec_db_file(args, options):
     """
@@ -602,20 +591,24 @@ def exec_db_file(args, options):
     
     if args['backend'] == 'postgresql':
         try:
-            aptget_install(['php5-pgsql', 'postgresql'])
+            env = dict(os.environ)
+            subprocess.check_call(["apt-get", "install", "--yes",
+                                   "php5-pgsql", "postgresql"],
+                                  env=env)
         except Exception:
+            log.exception('error')
             raise HttpReqError(500, "Can't install postgresql packages")
         try:
             subprocess.check_call(["sudo", "-u", "postgres", "psql", "-f",
                                    "/%s" % args['xivoscript']])
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't create xivo DB with postgresql")
         try:
             subprocess.check_call(["sudo", "-u", "postgres", "psql", "-f",
                                    "/%s" % args['ipbxscript']])
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't create IPBX DB with postgresql")
 
     if args['backend'] == 'mysql':
@@ -623,17 +616,17 @@ def exec_db_file(args, options):
             subprocess.check_call(["apt-get", "install", "--yes",
                                    "php5-mysql", "mysql-server"])
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't install mysql packages")
         try:
             subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't create xivo DB with mysql")
         try:
             subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't create IPBX DB with mysql")
 
     if args['backend'] == 'sqlite':
@@ -645,7 +638,7 @@ def exec_db_file(args, options):
         try:
             subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't create IPBX DB with sqlite")
 
 http_json_server.register(exec_db_file, CMD_RW, name="exec_db_file")
