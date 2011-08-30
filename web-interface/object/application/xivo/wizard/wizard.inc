@@ -1473,8 +1473,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	{
 		// save to database
 		$this->_load_xivo_dso();
+		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
 		$modnetiface = &$this->_xobj->get_module('netiface');
-		if (($voip_iface = $modnetiface->get_voip_iface()) === false)
+		if (($voip_iface = $modnetiface->get_voip_iface($uuid['uuid'])) === false)
 		{
 			$this->_set_error('netiface','get_voip_iface');
 			return(false);
@@ -1693,21 +1694,13 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function commit_netinfos()
 	{
-		if ($this->_commit_netiface() === false)
-		{
-			return(false);
-		}
-
-		// restart provisioning service
-		$this->_sysconfd->request_post('/services', array('ntp' => 'restart'));
-
-		return(true);
+		return($this->_commit_netiface());
 	}
 
 	function commit_commonconf()
 	{
 		if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
-		trigger_error('Unable to load commonconf module',E_USER_ERROR);
+			trigger_error('Unable to load commonconf module',E_USER_ERROR);
 
 		// Generate commonconf file
 		$content = '';
