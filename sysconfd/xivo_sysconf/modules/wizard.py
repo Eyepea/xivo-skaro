@@ -26,6 +26,7 @@ __license__ = """
 import os, subprocess, traceback
 import logging
 import re
+import apt
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
@@ -572,6 +573,17 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
             asterisk_configuration(ipbxdburi, ipbxdbinfo[ipbxdburi[0]], ipbxdbparams)
     finally:
         WIZARDLOCK.release()
+        
+def aptget_install(list_package):
+    cache = apt.Cache()
+    cache.update()
+    # Mark packages for install
+    with cache.actiongroup():
+        for package in list_package:
+            pkg = cache[package]
+            pkg.mark_install()
+    # Now, really install it
+    cache.commit()
 
 def exec_db_file(args, options):
     """
@@ -590,10 +602,8 @@ def exec_db_file(args, options):
     
     if args['backend'] == 'postgresql':
         try:
-            subprocess.check_call(["apt-get", "install", "--yes",
-                                   "php5-pgsql", "postgresql"])
-        except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            aptget_install(['php5-pgsql','postgresql'])
+        except:
             raise HttpReqError(500, "Can't install postgresql packages")
         try:
             subprocess.check_call(["sudo", "-u", "postgres", "psql", "-f",

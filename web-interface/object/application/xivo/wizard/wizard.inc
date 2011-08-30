@@ -1593,7 +1593,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$provdconfig = &$this->_xobj->get_module('provdconfig');
 		if ($provdconfig->eval_required_config($voip_iface['address'],true) === false)
 		{
-			dwho_var_dump(dwho_report::get('error'));
 			return false;
 		}
 
