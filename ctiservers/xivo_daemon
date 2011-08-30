@@ -397,6 +397,8 @@ class ctiserver:
             z = self.myami[self.myipbxid].connect()
             if z:
                 self.fdlist_ami[z] = self.myami[self.myipbxid]
+                # For hintstatus
+                self.myami[self.myipbxid].initrequest(0)
 
             try:
                 self.safe[self.myipbxid].update_config_list_all()
