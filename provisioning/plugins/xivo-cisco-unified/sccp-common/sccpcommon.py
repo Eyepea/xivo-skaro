@@ -6,7 +6,6 @@ Support most of the 6900 and 7900 phones.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
@@ -130,7 +129,7 @@ class BaseCiscoSccpPlugin(StandardPlugin):
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
-        return 'SEP%s.cfg.xml' % fmted_mac
+        return 'SEP%s.cnf.xml' % fmted_mac
     
     def _check_config(self, raw_config):
         if u'tftp_port' not in raw_config:
