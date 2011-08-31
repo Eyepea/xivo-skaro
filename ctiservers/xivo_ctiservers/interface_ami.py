@@ -325,8 +325,23 @@ class AMI:
                 except Exception:
                     # when requester is not connected any more ...
                     pass
-                if properties.get('amicommand') in ['originate', 'origapplication', 'txfax']:
-                    self.originate_actionids[actionid] = properties
+
+                if 'amicommand' in properties:
+                    if properties['amicommand'] in ['originate',
+                                                    'origapplication',
+                                                    'txfax']:
+                        self.originate_actionids[actionid] = properties
+                    elif ('mailboxcount' in properties['amicommand']
+                          and 'amiargs' in properties
+                          and len(properties['amiargs']) > 1):
+                        # The context is not part of this event, it's only part
+                        # of the request when using track_and_execute with an
+                        # extra argument
+                        context = properties['amiargs'][1]
+                        fullmailbox = event['Mailbox'] + '@' + context
+                        self.innerdata.voicemailupdate(fullmailbox,
+                                                       event['NewMessages'],
+                                                       event['OldMessages'])
             elif mode == 'extension':
                 # this is the reply to 'ExtensionState'
                 # too much verbose log output

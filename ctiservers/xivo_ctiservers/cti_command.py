@@ -75,7 +75,7 @@ IPBXCOMMANDS = [
     'hangup', 'hangupme', 'cancel', 'transfercancel',
 
     'sipnotify',
-
+    'mailboxcount',
     'meetme',
     'record',
     'listen',
@@ -887,6 +887,15 @@ class Command:
             channel = line['identity'].replace('\\','')
         reply = {'amicommand': 'sipnotify', 'amiargs': (channel, variables)}
         return [reply]
+
+    def ipbxcommand_mailboxcount(self):
+        """
+        Send a MailboxCount ami command
+        """
+        if 'mailbox' in self.commanddict:
+            return [{'amicommand': 'mailboxcount',
+                      'amiargs': (self.commanddict['mailbox'],
+                                    self.commanddict['context'])}]
 
     # transfers
     def ipbxcommand_parking(self):

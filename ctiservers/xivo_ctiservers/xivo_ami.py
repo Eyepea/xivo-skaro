@@ -490,6 +490,16 @@ class AMIClass:
             ret = False
         return ret
 
+    # \brief Request a mailbox count
+    # context is for tracking only
+    def mailboxcount(self, mailbox, context=None):
+        try:
+            return self.sendcommand('MailboxCount', (('MailBox', mailbox),))
+        except self.AMIError:
+            return False
+        except Exception:
+            return False
+
     # \brief Transfers a channel towards a new extension.
     def transfer(self, channel, extension, context):
         ph = re.sub(__dialallowed__, '', extension)
