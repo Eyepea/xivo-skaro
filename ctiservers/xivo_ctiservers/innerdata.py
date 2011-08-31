@@ -775,7 +775,7 @@ class Safe:
     def appendcti(self, listname, which, id, status = None):
         if status is None:
             if id is None:
-                log.warning('XXX id is None (why ?) %s %s' % (listname, which))
+                self.log.warning('XXX id is None (why ?) %s %s' % (listname, which))
             else:
                 status = self.statusbylist(listname, id)
         if status:
@@ -801,7 +801,7 @@ class Safe:
         if action == 'set':
             (x, y, z) = event
             if z is None:
-                self.log.warning('XXX id is None %s' % event)
+                self.log.warning('XXX id is None %s', event)
             thisstatus = copy.deepcopy(self.statusbylist(x, z))
             self.ctistack.append((event, thisstatus))
         elif action == 'setforce':
