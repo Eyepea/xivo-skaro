@@ -29,16 +29,16 @@ Slave
 Display Heartbeat status
 
 ; fm_ha_asterisk
-Asterisk :
+Asterisk
 
 ; fm_ha_dhcp
-Dhcp :
+Dhcp
 
 ; fm_ha_monit
-Monit :
+Monit
 
 ; fm_ha_mysql
-MySQL :
+MySQL
 
 ; fm_ha_uname_node
 Heartbeat machine name:
@@ -217,7 +217,7 @@ Name:
 IP adress:
 
 ; fm_ha_service_asterisk
-Asterisk : 
+Asterisk
 
 ; fm_ha_service_monitor
 Check frequency (seconds):
@@ -226,40 +226,40 @@ Check frequency (seconds):
 Switch delay (seconds):
 
 ; fm_ha_service_nginx
-Nginx : 
+Nginx
 
 ; fm_ha_service_isc-dhcp-server
-DHCP : 
+DHCP
 
 ; fm_ha_service_ntp
-NTP : 
+NTP
 
 ; fm_ha_service_csync2
-Csync2 : 
+Csync2
 
 ; fm_ha_service_postgresql
-Postgresql : 
+Postgresql
 
 ; fm_ha_service_pf-xivo-agid
-XiVO Agid : 
+XiVO Agid
 
 ; fm_ha_service_pf-xivo-confgend
-XiVO Confgend : 
+XiVO Confgend
 
 ; fm_ha_service_pf-xivo-cti-server
-XiVO CTI : 
+XiVO CTI
 
 ; fm_ha_service_pf-xivo-dxtora
-XiVO Dxtora : 
+XiVO Dxtora
 
 ; fm_ha_service_pf-xivo-provd
-XiVO Provd : 
+XiVO Provd
 
 ; fm_ha_service_pf-xivo-sysconfd
-XiVO Sysconfd : 
+XiVO Sysconfd
 
 ; fm_ha_service_pf-xivo-ha-scripts
-XiVO HA scripts : 
+XiVO HA scripts
 
 ; fm_ha_cluster_name
 Cluster name:
@@ -305,3 +305,15 @@ Activate HA:
 
 ; fm_help_ha_virtnet
 First VIP will be used as VoIP interface
+
+; svc_col_1
+Activation
+
+; svc_col_2
+Check frequency (secs)
+
+; svc_col_3
+Switch delay (secs)
+
+; fm_ha_service_spawn-fcgi
+PHP5 CGIs
