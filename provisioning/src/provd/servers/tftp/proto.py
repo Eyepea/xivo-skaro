@@ -61,7 +61,9 @@ class TFTPProtocol(DatagramProtocol):
             self.transport.write(r_dgram, addr)
         else:
             def on_reject(errcode, errmsg):
-                logger.info('TFTP read request rejected: %s %s', errcode, errmsg)
+                # do not format errcode as %s since it's the raw error code
+                # sent in the TFTP packet, for example '\x00\x11'
+                logger.info('TFTP read request rejected: %s', errmsg)
                 self.transport.write(build_dgram(err_packet(errcode, errmsg)), addr)
             def on_accept(fobj):
                 logger.info('TFTP read request accepted')
