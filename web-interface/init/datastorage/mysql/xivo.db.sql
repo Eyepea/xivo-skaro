@@ -356,6 +356,7 @@ CREATE TABLE `ha_service` (
 
 INSERT INTO `ha_service` VALUES ('asterisk'           , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('nginx'              , 0, 'ocf', NULL, NULL);
+INSERT INTO `ha_service` VALUES ('spawn-fcgi'         , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('isc-dhcp-server'    , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('ntp'                , 0, 'lsb', NULL, NULL);
 INSERT INTO `ha_service` VALUES ('csync2'             , 0, 'ocf', NULL, NULL);

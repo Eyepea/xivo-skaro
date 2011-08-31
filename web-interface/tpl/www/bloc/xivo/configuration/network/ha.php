@@ -152,29 +152,63 @@ endif;
 
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
-
-
-		foreach($info['service'] as $k => $svc) {
-			echo $form->checkbox(array('desc'		=> $this->bbf("fm_ha_service_$k"),
-				      'name'		=> "service[$k][active]",
-							'labelid'		=> "ha_$k",
-				      'checked'		=> $svc['active'],
-						)),
-			"<fieldset id=\"fld-svc-$k\">",
-			$form->text(array(
-	        'desc'    => $this->bbf("fm_ha_service_monitor"),
-					'name'		=> "service[$k][monitor]",
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service',$k,'monitor'))),
-			$form->text(array(
-	        'desc'    => $this->bbf("fm_ha_service_timeout"),
-					'name'		=> "service[$k][timeout]",
-					'size'	  => 4,
-					'value'   => $this->get_var('info', 'service',$k,'timeout'))),
-			'</fieldset>';
-		}
-
 ?>
+
+	<div class="sb-list">
+		<table>
+			<thead>
+			<tr class="sb-top">
+
+				<th class="th-left"><?=$this->bbf('svc_col_1');?></th>
+				<th class="th-center"><?=$this->bbf('svc_col_2');?></th>
+				<th class="th-right"><?=$this->bbf('svc_col_3');?></th>
+			</tr>
+			</thead>
+			<tbody id="disp">
+<?php
+	foreach($info['service'] as $k => $svc) {
+?>
+				<tr class="fm-paragraph<?=$errdisplay?>">
+					<td class="td-left svc-left">
+<?php
+		
+			//echo $form->checkbox(array($this->bbf("fm_ha_service_$k"),
+			echo $form->checkbox(array(
+				'name'		=> "service[$k][active]",
+				'label'   => false,
+				'paragraph' => false,
+	      'checked'		=> $svc['active'],
+			)),
+
+			'&nbsp',
+			$this->bbf("fm_ha_service_$k");
+?>
+					</td><td class="svc-center">
+<?php
+			echo $form->text(array(
+				'name'		=> "service[$k][monitor]",
+				'label'   => false,
+				'paragraph' => false,
+				'size'	  => 4,
+				'value'   => $this->get_var('info', 'service',$k,'monitor')));
+?>
+					</td><td class="td-right svc-center">
+<?php
+			echo $form->text(array(
+				'name'		=> "service[$k][timeout]",
+				'label'   => false,
+				'paragraph' => false,
+				'size'	  => 4,
+				'value'   => $this->get_var('info', 'service',$k,'timeout')));
+?>
+			</tr>
+<?php
+		}
+?>
+			</tbody>
+		</table>
+	</div>
+	
 </div>
 
 <div id="sb-part-network" class="b-nodisplay">
