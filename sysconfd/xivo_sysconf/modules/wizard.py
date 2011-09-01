@@ -592,6 +592,7 @@ def exec_db_file(args, options):
     if args['backend'] == 'postgresql':
         try:
             env = dict(os.environ)
+            env['LANG'] = 'en_US.UTF8';
             subprocess.check_call(["apt-get", "install", "--yes",
                                    "php5-pgsql", "postgresql"],
                                   env=env)
