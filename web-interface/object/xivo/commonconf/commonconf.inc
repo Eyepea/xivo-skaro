@@ -227,7 +227,9 @@ class xivo_object_commonconf extends xivo_object_abstract
               'ha.master.name'  => strlen($rawdata['node1_name']) == 0?null:$rawdata['node1_name'],
               'ha.slave.ip'     => strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
               'ha.slave.name'   => strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name'],
-							'ha.data.iface'		=> strlen($rawdata['cluster_itf_data']) == 0?null:$rawdata['cluster_itf_data'] 
+							'ha.data.iface'		=> strlen($rawdata['cluster_itf_data']) == 0?null:$rawdata['cluster_itf_data'],
+							'ha.data.master.ip'		=> strlen($rawdata['cluster_itf_master_ip']) == 0?null:$rawdata['cluster_itf_master_ip'] ,
+							'ha.data.slave.ip'		=> strlen($rawdata['cluster_itf_slave_ip']) == 0?null:$rawdata['cluster_itf_slave_ip'] 
 		    		));
 
             $vips = $this->_ha_vips->get_all();

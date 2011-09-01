@@ -271,7 +271,7 @@ Group cluster:
 DATA interface: 
 
 ; hlp_fm_cluster_itf_data
-Network interface used to replicate datas (configuration, voicemails, ...)
+Network interface used to replicate datas (configuration, voicemails, ...).<br/>If left empty, csync2 will use default network route
 
 ; fm_ha_cluster_monitor
 Check frequency (seconds):
@@ -317,3 +317,16 @@ Switch delay (secs)
 
 ; fm_ha_service_spawn-fcgi
 PHP5 CGIs
+
+; fm_ha_cluster_itf_master_ip
+Master DATA IP address:
+
+; fm_ha_cluster_itf_slave_ip
+Slave DATA IP address:
+
+; hlp_fm_cluster_itf_master_ip
+IP Address of DATA interface on master node
+
+; hlp_fm_cluster_itf_slave_ip
+IP Address of DATA interface on slave node
+

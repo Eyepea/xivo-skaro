@@ -233,7 +233,26 @@ endif;
 					'empty'		=> true,
 					'key'  		=> false,
 					'selected'	=> $info['ha']['cluster_itf_data']),
-				$netifaces),
+				$netifaces,
+				// dynamically show master/slave ips
+				'onchange="data_iface_change()"'),
+
+
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_itf_master_ip'),
+					'name'		=> 'ha[cluster_itf_master_ip]',
+					'paragraphid' => 'p_cluster_itf_master_ip',
+					'help'    => $this->bbf('hlp_fm_cluster_itf_master_ip'),
+					'size'	  => 20,
+					'value'   => $this->get_var('info','ha','cluster_itf_master_ip'))),
+
+		$form->text(array(
+	        'desc'    => $this->bbf('fm_ha_cluster_itf_slave_ip'),
+					'name'		=> 'ha[cluster_itf_slave_ip]',
+					'paragraphid' => 'p_cluster_itf_slave_ip',
+					'help'    => $this->bbf('hlp_fm_cluster_itf_slave_ip'),
+					'size'	  => 20,
+					'value'   => $this->get_var('info','ha','cluster_itf_slave_ip'))),
 
 		$form->text(array(
 	        'desc'    => $this->bbf('fm_ha_cluster_monitor'),

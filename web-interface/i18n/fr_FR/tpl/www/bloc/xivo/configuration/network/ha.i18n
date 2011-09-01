@@ -281,7 +281,8 @@ Grouper :
 Interface DATA : 
 
 ; hlp_fm_cluster_itf_data
-C'est l'interface réseau utilisée pour la réplication des données (configuration, messages vocaux, ...)
+C'est l'interface réseau utilisée pour la réplication des données (configuration,
+messages vocaux, ...).<br/>Si vide, csync2 utilisera la route par défaut
 
 ; fm_ha_cluster_monitor
 Fréquence de contrôle (secondes) : 
@@ -327,4 +328,16 @@ Délai avant bascule (secs)
 
 ; fm_ha_service_spawn-fcgi
 CGI PHP5
+
+; fm_ha_cluster_itf_master_ip
+Adresse IP DATA du Maître : 
+
+; fm_ha_cluster_itf_slave_ip
+Adresse IP DATA de l'esclave : 
+
+; hlp_fm_cluster_itf_master_ip
+Adresse IP de l'interface DATA du noeud maître
+
+; hlp_fm_cluster_itf_slave_ip
+Adresse IP de l'interface DATA du noeud esclave
 

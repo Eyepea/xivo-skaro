@@ -58,6 +58,12 @@ $array['element']['cluster_group']['set']     = true;
 $array['element']['cluster_itf_data'] = array();
 $array['element']['cluster_itf_data']['default'] = '';
 
+$array['element']['cluster_itf_master_ip'] = array();
+$array['element']['cluster_itf_master_ip']['default'] = '';
+
+$array['element']['cluster_itf_slave_ip'] = array();
+$array['element']['cluster_itf_slave_ip']['default'] = '';
+
 $array['element']['cluster_monitor'] = array();
 $array['element']['cluster_monitor']['default'] = 0;
 

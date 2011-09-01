@@ -74,6 +74,7 @@ $_TPL->set_var('netifaces'   , $netifaces);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
+$dhtml->set_js('js/xivo/configuration/network/ha.js');
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

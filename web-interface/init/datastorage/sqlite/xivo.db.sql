@@ -317,6 +317,8 @@ CREATE TABLE ha (
  cluster_name  VARCHAR(255) DEFAULT NULL,
  cluster_group INTEGER NOT NULL DEFAULT 1,
  cluster_itf_data VARCHAR(255) DEFAULT NULL,
+ cluster_itf_master_ip VARCHAR(255) DEFAULT NULL,
+ cluster_itf_slave_ip  VARCHAR(255) DEFAULT NULL,
  cluster_monitor INTEGER NOT NULL DEFAULT 20,
  cluster_timeout INTEGER NOT NULL DEFAULT 60,
  cluster_mailto  VARCHAR(255) DEFAULT NULL,
