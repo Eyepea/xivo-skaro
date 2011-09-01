@@ -1,7 +1,7 @@
-Index: asterisk-1.8.6.0-rc1/apps/app_queue.c
+Index: asterisk-1.8.6.0/apps/app_queue.c
 ===================================================================
---- asterisk-1.8.6.0-rc1.orig/apps/app_queue.c	2011-08-11 11:15:56.569012165 -0400
-+++ asterisk-1.8.6.0-rc1/apps/app_queue.c	2011-08-11 11:16:26.609012952 -0400
+--- asterisk-1.8.6.0.orig/apps/app_queue.c	2011-07-14 16:13:06.000000000 -0400
++++ asterisk-1.8.6.0/apps/app_queue.c	2011-09-01 13:20:11.592932442 -0400
 @@ -853,6 +853,8 @@
  	QUEUE_RELOAD_MEMBER = (1 << 1),
  	QUEUE_RELOAD_RULES = (1 << 2),
@@ -2035,10 +2035,10 @@ Index: asterisk-1.8.6.0-rc1/apps/app_queue.c
  	MEMBER(queue_ent, start, AST_DATA_INTEGER)				\
  	MEMBER(queue_ent, expire, AST_DATA_INTEGER)				\
  	MEMBER(queue_ent, cancel_answered_elsewhere, AST_DATA_INTEGER)
-Index: asterisk-1.8.6.0-rc1/configs/queueskillrules.conf.sample
+Index: asterisk-1.8.6.0/configs/queueskillrules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.8.6.0-rc1/configs/queueskillrules.conf.sample	2011-08-11 11:16:26.609012952 -0400
++++ asterisk-1.8.6.0/configs/queueskillrules.conf.sample	2011-09-01 13:20:11.592932442 -0400
 @@ -0,0 +1,67 @@
 +; This file describes skill routing rules. The Queue() application can get the
 +; 'skill_ruleset' argument which is the name of one skill routing ruleset. If
@@ -2107,10 +2107,10 @@ Index: asterisk-1.8.6.0-rc1/configs/queueskillrules.conf.sample
 +; [client-cool]
 +; rule => EWT < 120, technic = 0 & (sympathy > 60)
 +; rule => technic = 0
-Index: asterisk-1.8.6.0-rc1/configs/queueskills.conf.sample
+Index: asterisk-1.8.6.0/configs/queueskills.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.8.6.0-rc1/configs/queueskills.conf.sample	2011-08-11 11:16:26.609012952 -0400
++++ asterisk-1.8.6.0/configs/queueskills.conf.sample	2011-09-01 13:20:11.592932442 -0400
 @@ -0,0 +1,46 @@
 +; Describe skills groups here to assign them to queue members. You can set
 +; weight to each skills. It'll be used by skill rules to know if a queue member
