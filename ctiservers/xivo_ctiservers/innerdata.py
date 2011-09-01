@@ -777,7 +777,7 @@ class Safe:
     def appendcti(self, listname, which, id, status = None):
         if status is None:
             if id is None:
-                log.warning('XXX id is None (why ?) %s %s' % (listname, which))
+                self.log.warning('XXX id is None (why ?) %s %s' % (listname, which))
             else:
                 status = self.statusbylist(listname, id)
         if status:

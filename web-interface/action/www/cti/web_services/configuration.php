@@ -362,6 +362,7 @@ switch($act)
                                                          "queueremove_all", "queuepause_all", "queueunpause_all",
                                                          "listen", "record",
                                                          "parking", "meetme",
+                                                         "mailboxcount",
                                                          "intercept",
                                                          "cancel", "refuse", "answer",
                                                          "transfercancel", "hangup", "hangupme",
