@@ -1716,6 +1716,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			// restart asterisk service
 			$this->_sysconfd->request_post('/services', array('asterisk' => 'restart'));
 
+			// dhcpd_update
+			$this->_sysconfd->request_get('/dhcpd_update');
+
 			session_destroy();
 			return(true);
 		}
