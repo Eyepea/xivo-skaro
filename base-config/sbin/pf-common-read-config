@@ -76,4 +76,9 @@ fi
 _XIVO_MONIT_MODE=active
 if [ "${XIVO_HA}" = "1" ]; then
 	_XIVO_MONIT_MODE=passive
+
+	if [ -n "${HA_DATA_IFACE}" ]; then
+		HA_CSYNC2_MASTER="${HA_MASTER_IP}	${HA_MASTER_NAME}-${HA_DATA_IFACE}"
+		HA_CSYNC2_SLAVE="${HA_SLAVE_IP}	${HA_SLAVE_NAME}-${HA_DATA_IFACE}"
+	fi
 fi

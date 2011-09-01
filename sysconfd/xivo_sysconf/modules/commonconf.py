@@ -76,7 +76,8 @@ class CommonConf(jsoncore.JsonCore):
         '6. Maintenance': ['xivo.maintenance'],
         '7. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
         '8. Databases'  : ['xivo.xivodb' , 'xivo.astdb'],
-        '9. HA'         : ['xivo.ha', 'ha.master.ip', 'ha.master.name', 'ha.slave.ip', 'ha.slave.name'],
+        '9. HA'         : ['xivo.ha', 'ha.master.ip', 'ha.master.name',
+					'ha.slave.ip', 'ha.slave.name', 'ha.data.iface'],
     }
     KEYSELECT = ''
     

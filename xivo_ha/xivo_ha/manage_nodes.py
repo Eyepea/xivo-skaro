@@ -247,10 +247,7 @@ class FilesReplicationManagement(Tools):
         '''
         string = "host"
         for host in self.hosts:
-            if self.itf:
-                string += " %s@%s-%s" % (host, host, self.itf)
-            else:
-                string += " %s" % host
+            string += " %s%s" % (host, '@'+host+'-'+self.itf if self.itf is not None else '')
         string += ";"
         return string
 
