@@ -74,6 +74,8 @@ fi
 
 # HA
 _XIVO_MONIT_MODE=active
+HA_CSYNC2_MASTER=""
+HA_CSYNC2_SLAVE=""
 if [ "${XIVO_HA}" = "1" ]; then
 	_XIVO_MONIT_MODE=passive
 
