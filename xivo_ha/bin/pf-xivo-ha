@@ -189,7 +189,13 @@ if __name__ == '__main__':
     # csync2 configuration.
     csync_data = {}
     csync_data['hosts']    = nodes
-    csync_data['data_itf'] = cluster_config['cluster_itf_data']
+
+    #NOTE: cluster_itf_data field is facultative in configuration file
+    try:
+        csync_data['data_itf'] = cluster_config['cluster_itf_data']
+    except KeyError:
+        csync_data['data_itf'] = None
+
     csync_data['role']     = role
     _get_extra_csync_data(extra_file)
     csync2 = FilesReplicationManagement(csync_data)
