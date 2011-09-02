@@ -646,19 +646,20 @@ class Safe:
         midx = None
         if location.lower().startswith('agent/'):
             aid = self.xod_config['agents'].idbyagentnumber(location[6:])
-            self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
-            midx = '%sa:%s-%s' % (qgname[0], qgid, aid)
-            # todo : group all this stuff, take care of relations
-            if props:
-                if aid not in self.xod_status[qgname][qgid]['agentmembers']:
-                    self.xod_status[qgname][qgid]['agentmembers'].append(aid)
-                if qgid not in self.xod_status['agents'][aid][qgname]:
-                    self.xod_status['agents'][aid][qgname].append(qgid)
-            else:
-                if aid in self.xod_status[qgname][qgid]['agentmembers']:
-                    self.xod_status[qgname][qgid]['agentmembers'].remove(aid)
-                if qgid in self.xod_status['agents'][aid][qgname]:
-                    self.xod_status['agents'][aid][qgname].remove(qgid)
+            if aid:
+                self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
+                midx = '%sa:%s-%s' % (qgname[0], qgid, aid)
+                # todo : group all this stuff, take care of relations
+                if props:
+                    if aid not in self.xod_status[qgname][qgid]['agentmembers']:
+                        self.xod_status[qgname][qgid]['agentmembers'].append(aid)
+                    if qgid not in self.xod_status['agents'][aid][qgname]:
+                        self.xod_status['agents'][aid][qgname].append(qgid)
+                else:
+                    if aid in self.xod_status[qgname][qgid]['agentmembers']:
+                        self.xod_status[qgname][qgid]['agentmembers'].remove(aid)
+                    if qgid in self.xod_status['agents'][aid][qgname]:
+                        self.xod_status['agents'][aid][qgname].remove(qgid)
         else:
             termination = self.ast_channel_to_termination(location)
             pid = self.zphones(termination.get('protocol'), termination.get('name'))
