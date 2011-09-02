@@ -2,7 +2,7 @@ from __future__ import with_statement
 """commonconf module
 """
 __version__ = "$Revision$ $Date$"
-__author__  = "Guillaume Bour <gbour@proformatique.com>"
+__author__ = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
 
@@ -36,30 +36,30 @@ class CommonConf(jsoncore.JsonCore):
         super(CommonConf, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.commonconf')
 
-        http_json_server.register(self.generate , CMD_RW, 
-            safe_init=self.safe_init, 
+        http_json_server.register(self.generate , CMD_RW,
+            safe_init=self.safe_init,
             name='commonconf_generate')
         http_json_server.register(self.apply, CMD_R, name='commonconf_apply')
         
     def safe_init(self, options):
         super(CommonConf, self).safe_init(options)
 
-        self.file       = options.configuration.get('commonconf', 'commonconf_file')
-        self.cmd        = options.configuration.get('commonconf', 'commonconf_cmd')
-        self.monit      = options.configuration.get('commonconf', 'commonconf_monit')
+        self.file = options.configuration.get('commonconf', 'commonconf_file')
+        self.cmd = options.configuration.get('commonconf', 'commonconf_cmd')
+        self.monit = options.configuration.get('commonconf', 'commonconf_monit')
    
-    SECTIONS  = {
+    SECTIONS = {
         '1. VoIP'       : ['xivo.voip.ifaces'],
         '2. Network'    : [
-            'xivo.hostname', 'xivo.domain', 'xivo.net4.ip', 
-            'xivo.net4.netmask', 'xivo.net4.broadcast', 'xivo.net4.subnet', 
+            'xivo.hostname', 'xivo.domain', 'xivo.net4.ip',
+            'xivo.net4.netmask', 'xivo.net4.broadcast', 'xivo.net4.subnet',
             'xivo.extra.dns.search', 'xivo.nameservers'
          ],
         '3. DHCP'       : [
             'xivo.dhcp.active', 'xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'
          ],
         '4. Mail'       : [
-            'xivo.smtp.mydomain', 'xivo.smtp.origin', 'xivo.smtp.relayhost', 
+            'xivo.smtp.mydomain', 'xivo.smtp.origin', 'xivo.smtp.relayhost',
             'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'
          ],
         '5. Provd'      : [
@@ -77,8 +77,8 @@ class CommonConf(jsoncore.JsonCore):
         '7. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
         '8. Databases'  : ['xivo.xivodb' , 'xivo.astdb'],
         '9. HA'         : ['xivo.ha', 'ha.master.ip', 'ha.master.name',
-					'ha.slave.ip', 'ha.slave.name', 'ha.data.iface', 'ha.data.master.ip',
-					'ha.data.slave.ip'],
+                           'ha.slave.ip', 'ha.slave.name', 'ha.data.iface', 'ha.data.master.ip',
+                           'ha.data.slave.ip'],
     }
     KEYSELECT = ''
     
