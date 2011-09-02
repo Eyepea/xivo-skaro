@@ -227,7 +227,9 @@ class FilesReplicationManagement(Tools):
         self.backup_keep   = data['backup_keep'] if data.has_key('backup_keep') else '/var/backups/pf-xivo/xivo_ha/csync2' 
         self.conflict_res  = 'younger'
 
-    def _generate_ssl_key(self, time = None):
+    def _generate_csync2_key(self, time = None):
+        """Csync2 key is a unique string value shared by both csync2 peers
+				"""
         if time is None:
             time = strftime("%Y%m%d-%H%M%S", localtime())
         string = "%s%s%s" % (self.hosts[0], self.hosts[1], time )
@@ -236,7 +238,7 @@ class FilesReplicationManagement(Tools):
     def _create_key_file(self):
         key_file = self.key_file
         if not os.path.isfile(key_file):
-            key = self._generate_ssl_key()
+            key = self._generate_csync2_key()
             with open(key_file, 'w') as file_:
                 file_.write(key)
         return key_file
@@ -311,17 +313,38 @@ class FilesReplicationManagement(Tools):
                     file_.write('%s\n' % line)
         return config_file
 
+    def gen_ssl_certificate(self):
+        """Generate SSL Key+Certificate for csync2
+        """
+        cmds = (
+          'openssl genrsa -out /etc/csync2_ssl_key.pem 1024',
+          'openssl req -new -key /etc/csync2_ssl_key.pem -out /etc/csync2_ssl_cert.csr -subj /C=fr/L=Puteaux/O=Proformatique/CN=R&D',
+          'openssl x509 -req -days 3650 -in /etc/csync2_ssl_cert.csr -signkey /etc/csync2_ssl_key.pem -out /etc/csync2_ssl_cert.pem',
+        )
+
+        for cmd in cmds:
+            p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ret = p.wait()
+            if ret != 0:
+                print "fail to create SSL certificate for csync2"
+                print "$>", cmd, '\n', 'retcode=', ret, '\n', p.stdout
+                return False
+
+        return True
+
 
     def initialize(self):
         '''
         create /etc/csync2.cfg and /etc/csync2.key on master
         normalize files on slave
         '''
-        role = self.role
-        if role == 'master':
-            key_file   = self._create_key_file()
-            config_file = self._create_config_file()
-            sys.stdout.write('you have to copy %s and %s on slave\n' % (config_file, key_file))
+        if self.role != 'master':
+            sys.stdout.write('Done\n')
+
+        key_file   = self._create_key_file()
+        config_file = self._create_config_file()
+        self.gen_ssl_certificate()
+        sys.stdout.write('you have to copy /etc/csync2* files on slave\n')
         sys.stdout.write('Done\n')
 
 
