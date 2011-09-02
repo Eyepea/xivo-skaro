@@ -89,7 +89,8 @@ class UserList(AnyList):
 # the company/context/entity vs. multiple servers is to be solved one day XXXX
             if uinfo == None:
                 for kk, userinfo in self.keeplist.iteritems():
-                    if userinfo and userinfo.get('loginclient') == userid:
+                    if userinfo and userinfo.get('enableclient') and \
+                       userinfo.get('loginclient') == userid:
                         uinfo = userinfo
                         break
             return uinfo
