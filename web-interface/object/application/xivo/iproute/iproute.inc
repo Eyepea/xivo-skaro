@@ -209,8 +209,13 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 
 	function is_valid_iproute($iface,$destination,$netmask,$id=null)
 	{
+		# get local UUID
+		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
+		$uuid = $uuid['uuid'];
+
 		if($this->_netiface->exists(array('name'	=> $iface,
-						  'hwtypeid'	=> 1)) === false)
+						  'hwtypeid'	=> 1,
+						  'uuid'        => $uuid)) === false)
 			return(false);
 
 		$where = array();
@@ -291,6 +296,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$rs['disable'] = $this->_info['iproute']['disable'];
 
 		$this->_return['iproute'] = $this->_iproute->edit($this->_info['iproute']['id'],$rs);
+
 
 		return($this->_return['iproute']);
 	}
@@ -398,13 +404,17 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 	{
 		if(($list = $this->get_iproutes_list(null,$order,$limit)) === false)
 			$list = array();
-		
+
+		# get local UUID
+		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
+		$uuid = $uuid['uuid'];
+
 		$curroute = $this->_info['iproute'];
 		foreach($list as &$route)
 		{
 			$route['current'] = ($route['id'] == $curroute['id']);
 			// we need system network interface name, not database name
-			$iface            = $this->_netiface->get($route['iface']);
+			$iface            = $this->_netiface->get_where(array('name' => $route['iface'], 'uuid' => $uuid));
 			$route['iface']   = $iface['ifname'];
 		}
 
