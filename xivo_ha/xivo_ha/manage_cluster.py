@@ -667,14 +667,15 @@ class DatabaseManagement(object):
         """
         self.ismaster = ismaster
 
-        # get peer ip
+        # guessing if current mode is "default master" or not
+        # (default master is the 1st node declared in the web-interface HA configuration)
         p   = subprocess.Popen(['ip', 'addr'], stdout=subprocess.PIPE)
         ret = p.wait()
         if ret != 0:
             raise OSError('unable to read local ip addresses')
 
         data = p.stdout.read()
-        if config['nodes']['first_node']['ip'] in data:
+        if 'inet %s/' % config['nodes']['first_node']['ip'] in data:
             self.local = config['nodes']['first_node']
             self.peer  = config['nodes']['second_node']
         else:
@@ -682,6 +683,12 @@ class DatabaseManagement(object):
             self.peer  = config['nodes']['first_node']
 
     def initialize(self):
+        """Initializing PostgreSQL database replication for HA.
+
+         This procedure is safe, as it can be executed several time without breaking
+         configuration
+        """
+
         print "database replication init"
         # authorize postgres ssh key on remote peer
         with open(PG_VAR+'/.ssh/id_rsa.pub') as f:
@@ -696,14 +703,27 @@ class DatabaseManagement(object):
         authfile = PG_VAR+'/.ssh/authorized_keys'
         hostfile = PG_VAR+'/.ssh/known_hosts'
 
-        p = subprocess.Popen([
-            '/usr/bin/ssh', 
-            'root@'+self.peer['ip'],
-            "mkdir {pgvar}/.ssh; echo '{pubkey}' > {authfile} && echo '{peername},{peerip} {hostkey}' > {hostfile} && chown -R postgres.postgres {pgvar}/.ssh".format(pgvar=PG_VAR,
-							pubkey=pubkey, authfile=authfile,	peername=self.local['name'], peerip=self.local['ip'], hostkey=hostkey, hostfile=hostfile)])
+        # add local 'postgresql' ssh pubkey to remote .ssh/authorized_keys
+        # add local host to remote .ssh/known_hosts
+        remote_cmds = ' && '.join([
+            "test -d {pgvar}/.ssh || mkdir {pgvar}/.ssh",
+            "echo '{pubkey}' > {authfile}",
+            "echo '{peername},{peerip} {hostkey}' > {hostfile}",
+            "chown -R postgres.postgres {pgvar}/.ssh"
+        ]).format(
+            pgvar=PG_VAR,
+            pubkey=pubkey,
+            authfile=authfile,
+            peername=self.local['name'],
+            peerip=self.local['ip'],
+            hostkey=hostkey,
+            hostfile=hostfile
+        )
+        p = subprocess.Popen(['/usr/bin/ssh', 'root@'+self.peer['ip'], remote_cmds])
         if p.wait() != 0:
-            return
+            return False
 
+        # alter postgresql configuration adding HA-specific setup
         with open(PG_ETC+'/ha.conf', 'w') as f:
             #TODO: restrict listen_addresses to cluster_itf_data interface
             print >>f, """
@@ -716,9 +736,15 @@ wal_keep_segments = 5000           # 80 GB required on pg_xlog
 hot_standby       = on 
 """
 
-        p = subprocess.Popen(['su','-c','createuser --login --superuser repmgr','postgres'], stderr=subprocess.PIPE)
-        p.wait()
+        # create postgresql *repmgr* user (needed for repmgr replication)
+        p = subprocess.Popen(['su','-c',
+            'psql template1 -c "\du"|grep repmgr || createuser --login --superuser repmgr', 
+            'postgres'
+				], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if p.wait() != 0:
+            return False
 
+        # all pgsql connections from HA peer node (needed for replication)
         with open(PG_ETC+'/pg_hba.conf', 'r+') as f:
             content = f.read()
             if "# HA\n" not in content:
@@ -730,6 +756,7 @@ host     all              repmgr      %s/32         trust
 host     replication      all         %s/32         trust
 """ % (self.local['ip'], self.peer['ip'], self.peer['ip'])
 
+        # write repmgr configuration
         with open(PG_ETC+'/repmgr.conf', 'w') as f:
             print >>f, """
 cluster=xivo
