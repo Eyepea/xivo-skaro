@@ -392,6 +392,7 @@ class Command:
         ipbxid = cdetails.get('ipbxid')
         userid = cdetails.get('userid')
         self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] = None
+        availstate = self.commanddict.get('availstate')
         # disconnected vs. invisible vs. recordstatus ?
         self.ctid.safe[ipbxid].update_presence(userid, availstate)
         return
