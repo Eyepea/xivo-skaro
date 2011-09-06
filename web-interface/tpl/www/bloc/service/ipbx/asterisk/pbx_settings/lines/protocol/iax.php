@@ -54,10 +54,12 @@ $element = $this->get_var('element');
 		$form->text(array('desc'	=> $this->bbf('fm_linefeatures_number'),
 				  'name'	=> 'linefeatures[number]',
 				  'labelid'	=> 'linefeatures-number',
-				  'size'	=> 15,
+				  'size'	=> 6,
 				  'disabled'	=> true,
-				'readonly' => $this->get_var('element','linefeatures','number','readonly'),
-				'class'    => $this->get_var('element','linefeatures','number','class'),
+				  'readonly' => true,
+				  'class'    => 'it-disabled',
+				  #'readonly' => $this->get_var('element','linefeatures','number','readonly'),
+				  #'class'    => $this->get_var('element','linefeatures','number','class'),
 				  'value'	=> $this->get_var('info','linefeatures','number'),
 				  'error'	=> $this->bbf_args('error',$this->get_var('error', 'linefeatures', 'number')) ));
 
@@ -102,7 +104,7 @@ $element = $this->get_var('element');
             'selected'  => $this->get_var('info', 'protocol','forceencryption'),
             'default'   => $element['protocol']['iax']['forceencryption']['default']),
          $element['protocol']['iax']['forceencryption']['value']),
-			      
+
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_parkinglot'),
 					'name'	=> 'protocol[parkinglot]',
 					'labelid'   => 'procotol-parkinglot',
