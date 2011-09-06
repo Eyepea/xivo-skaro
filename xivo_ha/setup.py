@@ -29,5 +29,6 @@ setup(
                                                               'templates/csync2/csync2.cfg',
                                                              ]),
                 ('/ocf', ['ocf/asterisk', 'ocf/csync2', 'ocf/pf-xivo-ha-scripts']),
+								('/usr/share/pf-xivo-ha/bin', ['scripts/routes']),
                ]
 )
