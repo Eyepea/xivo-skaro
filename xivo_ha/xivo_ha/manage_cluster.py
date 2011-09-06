@@ -26,6 +26,7 @@ import re
 import random
 from xivo_ha.tools import Tools
 from time import localtime, strftime
+from manage_nodes import ManageService
 
 PG_ETC = '/etc/postgresql/9.0/main'
 PG_VAR = '/var/lib/postgresql'
@@ -737,6 +738,11 @@ hot_standby       = on
 """
 
         # create postgresql *repmgr* user (needed for repmgr replication)
+        res, ret, err = pg_svc.start_service()
+        if ret != 0:
+            print 'fail to start postgresql:', res, err
+            return False
+
         p = subprocess.Popen(['su','-c',
             'psql template1 -c "\du"|grep repmgr || createuser --login --superuser repmgr', 
             'postgres'
@@ -766,38 +772,70 @@ conninfo='host=%s user=repmgr dbname=asterisk'
 
 
         # need to register node as reprmgr master/slave
-        print "registering node as repmgr %s (WARNING: database will be stopped)" % ("master" if self.ismaster else "slave")
-        self.stop_server()
+        #NOTE: even if we are master, we stop/start database to apply configuration changes
+        print "registering node as repmgr %s (WARNING: database will be stopped)" %\
+            ("master" if self.ismaster else "slave")
+        pg_svc = ManageService('postgresql')
+        res, ret, err = pg_svc.stop_service()
+        if ret != 0:
+            print 'fail to stop postgresql:', res, err
+            return False
 
-        if not self.ismaster:
-            # cloning db
-						self.clone_master()
+        # cloning db is current node is slave
+        if not self.ismaster and not self._clone_master():
+            return False
 
-        self.start_server()
-        cmd = ['su', '--login', 'postgres', '-c',
-						'PATH=$PATH:/usr/lib/postgresql/9.0/bin repmgr -f	/etc/postgresql/9.0/main/repmgr.conf --verbose %s register' % ('master'	if self.ismaster else 'standby')]
-        p = subprocess.Popen(cmd)
-        res = p.wait()
-        print "register res=", res
+        res, ret, err = pg_svc.start_service()
+        if ret != 0:
+            print 'fail to start postgresql:', res, err
+            return False
+
+
+        # we register current node ONLY if not already done
+        cmd = 'psql asterisk -c "SELECT 1 FROM pg_namespace WHERE nspname = \'repmgr_xivo\'"'
+        p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if p.wait() != 0 or '(0 rows)' in p.stdout.read():
+            cmd = ' '.join([
+                "PATH=$PATH:/usr/lib/postgresql/9.0/bin",
+                "repmgr -f /etc/postgresql/9.0/main/repmgr.conf --verbose %s register"
+            ]) % ('master'	if self.ismaster else 'standby')
+            p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
+            if p.wait() != 0:
+                print 'fail to repmgr register (with cmd %s):\n' % cmd, ''.join(p.stdout.readlines())
+                return False
+
+        return True
 
     def update(self):
         raise NotImplementedError
 
-    def stop_server(self):
-        p = subprocess.Popen([PG_LSB, 'stop'])
-        p.wait()
+    def _clone_master(self):
+        """Clone database from master node
+        """
 
-    def start_server(self):
-        p = subprocess.Popen([PG_LSB, 'start'])
-        p.wait()
+        # backup pg datadir
+        datadir = PG_VAR+'/9.0/main'
+        if os.path.exists(datadir):
+            p = subprocess.Popen(['mv',datadir,"%s.%d" % (datadir,random.randint(0,9999))],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+						)
+            if p.wait() != 0:
+                print 'fail to backup postgresql datadir (%s):' % datadir, p.stdout.readlines()
+                return False
 
+        # clone datas
+        cmd = ' '.join([
+            "PATH=$PATH:/usr/lib/postgresql/9.0/bin",
+            "repmgr -f /etc/postgresql/9.0/main/repmgr.conf",
+            "-D /var/lib/postgresql/9.0/main -d	postgres",
+            "-p 5432 -U repmgr -R postgres -F --verbose",
+            "standby clone %s"
+        ]) % self.peer['name']
+        p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,
+						stderr=subprocess.STDOUT)
+        if p.wait() != 0:
+            print 'fail to clone datas from master:\n', ''.join(p.stderr.read())
+            return False
 
-    def clone_master(self):
-        p = subprocess.Popen(['mv', PG_VAR+'/9.0/main',	PG_VAR+'/9.0/main.'+str(random.randint(0,9999))])
-        p.wait()
-
-        cmd = ['su', '--login', 'postgres', '-c', 'PATH=$PATH:/usr/lib/postgresql/9.0/bin repmgr -f	/etc/postgresql/9.0/main/repmgr.conf -D /var/lib/postgresql/9.0/main -d	postgres -p 5432 -U repmgr -R postgres -F --verbose	standby clone %s' % self.peer['name']]
-        print 'cmd= ', ' '.join(cmd)
-        p = subprocess.Popen(cmd)
-        res = p.wait()
-        print "clone res=", res
+        return True

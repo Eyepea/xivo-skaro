@@ -185,11 +185,15 @@ class ManageService(Tools):
         result, ret, error = self._cluster_command(args)
         return result, ret, error
     
-    def _stop_service(self):
+    def stop_service(self):
         args = ['/etc/init.d/%s' % self.service_name, 'stop']
         result, ret, error = self._cluster_command(args)
         return result, ret, error
 
+    def start_service(self):
+        args = ['/etc/init.d/%s' % self.service_name, 'start']
+        result, ret, error = self._cluster_command(args)
+        return result, ret, error
 
     def initialize(self):
         if self._is_available():
@@ -202,7 +206,7 @@ class ManageService(Tools):
             """
             sys.stdout.write("stopping %s \n" % self.service_name)
             try:
-                self._stop_service()
+                self.stop_service()
             except:
                 raise IOError("impossible to stop service %s" % self.service_name)
             """
@@ -326,12 +330,11 @@ class FilesReplicationManagement(Tools):
             p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             ret = p.wait()
             if ret != 0:
-                print "fail to create SSL certificate for csync2"
-                print "$>", cmd, '\n', 'retcode=', ret, '\n', p.stdout
+                print "fail to create SSL certificate for csync2:"
+                print "$>", cmd, '\n', 'retcode=', ret, '\n',	''.join(p.stdout.readlines())
                 return False
 
         return True
-
 
     def initialize(self):
         '''
@@ -346,7 +349,6 @@ class FilesReplicationManagement(Tools):
         self.gen_ssl_certificate()
         sys.stdout.write('you have to copy /etc/csync2* files on slave\n')
         sys.stdout.write('Done\n')
-
 
     def update(self):
         '''
