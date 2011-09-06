@@ -34,6 +34,7 @@ import string
 import time
 
 from queue_logger import queue_logger
+from xivo_ctiservers import xivo_webservices
 
 log_ami_events_statusrequest = True
 log_ami_events_complete = False
@@ -725,8 +726,42 @@ class AMI_1_8:
         # for ChanSpy + XIVO_ORIGAPPLI + XIVO_ORIGACTIONID
         return
 
-    def userevent_feature(self, chanprops, event):
-        return
+    def userevent_feature(self, chanprops, ev):
+        reply = {}
+        if 'XIVO_USERID' in ev and 'Function' in ev and 'Status' in ev:
+            userid = ev['XIVO_USERID']
+            status = int(ev['Status']) != 0
+            user = self.innerdata.xod_config['users'].keeplist[userid]
+            fn = ev['Function']
+            if 'dnd' in fn:
+                user['enablednd'] = status
+            if 'callrecord' in fn:
+                user['callrecord'] = status
+            if 'incallfilter' in fn:
+                user['incallfilter'] = status
+            if 'unc' in fn:
+                fn = 'unableunc'
+                user[fn] = status
+                user['destunc'] = ev.get('Value')
+            if 'rna' in fn:
+                fn = 'enablerna'
+                user[fn] = status
+                user['destrna'] = ev.get('Value')
+            if 'busy' in fn:
+                fn = 'enablebusy'
+                user[fn] = status
+                user['destbusy'] = ev.get('Value')
+            self.innerdata.events_cti.put({'class': 'getlist',
+                                            'listname': 'users',
+                                            'function': 'updateconfig',
+                                            'tipbxid': self.ipbxid,
+                                            'tid': userid,
+                                            'config': user})
+            z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
+            z.connect()
+            z.serviceput(userid, fn, status)
+            z.close()
+        return reply
 
     def userevent_custom(self, chanprops, event):
         customname = event.get('NAME')
