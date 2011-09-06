@@ -99,7 +99,13 @@ if(isset($_QR['fm_send']) === true
 		/**
 		 * sip reload: refresh pickup groups
 		 * */
-		$ipbx->discuss(array('dialplan reload','xivo[userlist,update]', 'sip reload'));
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]',
+							'module reload app_queue.so',
+							'sip reload' // refresh pickup groups
+		));
+		if(dwho_issa('voicemail',$_QR) === true)
+			$ipbx->discuss(array('voicemail reload'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 }

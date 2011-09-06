@@ -88,6 +88,8 @@ if(isset($_QR['fm_send']) === true
 							'module reload app_queue.so',
 							'sip reload' // refresh pickup groups
 		));
+		if(dwho_issa('voicemail',$_QR) === true)
+			$ipbx->discuss(array('voicemail reload'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 
@@ -130,7 +132,7 @@ if($qmember['list'] !== false && dwho_ak('queuemember',$result) === true)
 		uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 	}
 }
-		
+
 	if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true
 	&& ($rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid')) !== false)
 		$rightcall['slt'] = array_keys($rightcall['slt']);
