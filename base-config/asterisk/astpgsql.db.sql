@@ -1111,10 +1111,6 @@ CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
 CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
 
 
-INSERT INTO "linefeatures" VALUES (1,'sip',1,0,'','','','autoprov','','default',0,'','',0,'',0,0,'',1,0,'');
-SELECT setval('linefeatures_id_seq', 2);
-
-
 DROP TABLE IF EXISTS "ldapfilter";
 DROP TYPE  IF EXISTS "ldapfilter_additionaltype";
 
@@ -2551,15 +2547,6 @@ CREATE INDEX "usersip__idx__host_port" ON "usersip"("host","port");
 CREATE INDEX "usersip__idx__ipaddr_port" ON "usersip"("ipaddr","port");
 CREATE INDEX "usersip__idx__lastms" ON "usersip"("lastms");
 CREATE UNIQUE INDEX "usersip__uidx__name" ON "usersip"("name");
- 
-INSERT INTO "usersip" VALUES (1, 'autoprov','friend','autoprov','autoprov','','xivo-initconfig',NULL,NULL,'default',
-NULL,NULL,NULL,NULL,0,NULL,0,'Autoprov Mode',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-'XIVO_USERID=1','dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'',NULL,'sip','user',
-NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','',0);
-
-SELECT setval('usersip_id_seq', 2);
 
 
 DROP TABLE IF EXISTS "voicemail";

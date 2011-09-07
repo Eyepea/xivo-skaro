@@ -139,8 +139,8 @@ if(isset($error_js[0]) === true)
 	<?=$form->checkbox(array('desc'		=> $this->bbf('fm_userinternal_guest'),
 				 'name'		=> 'userinternal[guest]',
 				 'labelid'	=> 'userinternal-guest',
-				 'help'	=> $this->bbf('hlp_fm_userinternal_guest'),
-				 'checked'	=> ($this->get_var('userinternal','guest','linefeatures','commented') === true)?'no':'yes'));?>
+				 'help'		=> $this->bbf('hlp_fm_userinternal_guest'),
+				 'checked'	=> $this->get_var('info','userinternal','guest')));?>
 </div>
 
 <div id="sb-part-agents" class="b-nodisplay">

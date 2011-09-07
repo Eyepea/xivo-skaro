@@ -39,13 +39,16 @@ $appgeneralmeetme = &$appmeetme->get_module('general');
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 $element['generalmeetme'] = $appgeneralmeetme->get_elements();
 
-$applineautoprov = &$ipbx->get_application('line',array('internal' => 1),false);
+$appsip = &$ipbx->get_apprealstatic('sip');
+$appgeneralsip = &$appsip->get_module('general');
+$autocreatepeer = $appgeneralsip->get('autocreatepeer');
+$autocreatepeerval = $autocreatepeer['general']['var_val'];
 $info['userinternal'] = array();
-$info['userinternal']['guest'] = $applineautoprov->get(1,null,false);
+$info['userinternal']['guest'] = ($autocreatepeerval === 'yes') ? true : false;
 
-$general   = &$ipbx->get_module('general');
-$info['general']       = $general->get(1);
-$element['general']       = array_keys(dwho_i18n::get_timezone_list());
+$general = &$ipbx->get_module('general');
+$info['general'] = $general->get(1);
+$element['general'] = array_keys(dwho_i18n::get_timezone_list());
 
 $error = array();
 $error['generalagents'] = array();
@@ -114,18 +117,33 @@ if(isset($_QR['fm_send']) === true)
 	if(dwho_issa('userinternal',$_QR) === false)
 		$_QR['userinternal'] = array();
 
-	if($info['userinternal']['guest'] !== false)
+	$rs_sccp = array();
+	$rs_sccp['commented'] = 0;
+	$rs_sccp['var_name'] = 'hotline_enabled';
+
+	$rs_sip = array();
+	$rs_sip['commented'] = 0;
+	$rs_sip['var_name'] = 'autocreatepeer';
+
+	if(isset($_QR['userinternal']['guest']) === true)
 	{
-		if(isset($_QR['userinternal']['guest']) === true)
-		{
-			if($applineautoprov->enable() === true)
-				$info['userinternal']['guest']['linefeatures']['commented'] = false;
-		}
-		else
-		{
-			if($applineautoprov->disable() === true)
-				$info['userinternal']['guest']['linefeatures']['commented'] = true;
-		}
+		$rs_sccp['var_val'] = 'yes';
+		$rs_sip['var_val'] = 'yes';
+		$info['userinternal']['guest'] = true;
+	}
+	else
+	{
+		$rs_sccp['var_val'] = 'no';
+		$rs_sip['var_val'] = 'no';
+		$info['userinternal']['guest'] = false;
+	}
+
+	if($appgeneralsip->set($rs_sip) === false
+	|| $appgeneralsip->set($rs_sccp) === false
+	|| $appgeneralsip->save() === false)
+	{
+		dwho_report::push('error', 'Can\'t edit autocreatepeer in staticsip table');
+		return false;
 	}
 
 	if(dwho_issa('general',$_QR) === false)
