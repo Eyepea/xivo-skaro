@@ -392,6 +392,7 @@ class Command:
         ipbxid = cdetails.get('ipbxid')
         userid = cdetails.get('userid')
         self.ctid.safe[ipbxid].xod_status['users'][userid]['connection'] = None
+        availstate = self.commanddict.get('availstate')
         # disconnected vs. invisible vs. recordstatus ?
         self.ctid.safe[ipbxid].update_presence(userid, availstate)
         return
@@ -786,7 +787,18 @@ class Command:
             if dst.get('id') in innerdata.xod_config.get('phones').keeplist:
                 phoneidstruct_dst = innerdata.xod_config.get('phones').keeplist.get(dst.get('id'))
         elif dst.get('type') == 'voicemail':
-            extentodial = '*98'
+            try:
+                vmusermsg = innerdata.extenfeatures['extenfeatures']['vmusermsg']
+                vm = innerdata.xod_config['voicemails'].keeplist[dst['id']]
+                if not vmusermsg['commented']:
+                    extentodial = vmusermsg['exten']
+                    dst_context = vm['context']
+                    dst_identity = 'Voicemail'
+                else:
+                    extentodial = None
+            except KeyError:
+                self.log.info('Missing info to call this voicemail')
+                extentodial = None
             # XXX especially for the 'dial' command, actually
             # XXX display password on phone in order for the user to know what to type
         elif dst.get('type') == 'meetme':

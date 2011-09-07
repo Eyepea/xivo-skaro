@@ -48,6 +48,7 @@ switch($act)
             $out[$i]['loginclient'] = $ref['login'];
             $out[$i]['passwdclient'] = $ref['password'];
             $out[$i]['profileclient'] = "ctiserver";
+            $out[$i]['enableclient'] = true;
         }
 
         $_TPL->set_var('info',$out);

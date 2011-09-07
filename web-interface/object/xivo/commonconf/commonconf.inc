@@ -107,7 +107,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 		));
 
 		// provisioning
-		$rawdatahis->_provisioning->get(1);
+		$rawdata = $this->_provisioning->get(1);
 		$conf = array_merge($conf, array(
 			'xivo.provd.net4_ip'		=> $rawdata['net4_ip'],
 			'xivo.provd.http_port'		=> $rawdata['http_port'],
