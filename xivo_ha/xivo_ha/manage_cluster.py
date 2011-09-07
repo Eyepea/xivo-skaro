@@ -790,17 +790,26 @@ conninfo='host=%s user=repmgr dbname=asterisk'
             print 'fail to start postgresql:', res, err
             return False
 
+        if not self.ismaster:
+            #NOTE: on slave node, after a replication, database is unavailable during few seconds after startup
+            # (while the startup script gave back hand)
+            # so we wait few seconds before querying database just to be sure its started
+            import time; time.sleep(10)
+
 
         # we register current node ONLY if not already done
         cmd = 'psql asterisk -c "SELECT 1 FROM pg_namespace WHERE nspname = \'repmgr_xivo\'"'
-        p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         if p.wait() != 0 or '(0 rows)' in p.stdout.read():
+            print "  . registering node as repmgr %s (WARNING: database will be stopped)" %\
+                ("master" if self.ismaster else "slave")
             cmd = ' '.join([
                 "PATH=$PATH:/usr/lib/postgresql/9.0/bin",
                 "repmgr -f /etc/postgresql/9.0/main/repmgr.conf --verbose %s register"
             ]) % ('master'	if self.ismaster else 'standby')
             p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT)
+
             if p.wait() != 0:
                 print 'fail to repmgr register (with cmd %s):\n' % cmd, ''.join(p.stdout.readlines())
                 return False
@@ -835,8 +844,9 @@ conninfo='host=%s user=repmgr dbname=asterisk'
         ]) % self.peer['name']
         p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,
 						stderr=subprocess.STDOUT)
-        if p.wait() != 0:
-            print 'fail to clone datas from master:\n', ''.join(p.stderr.read())
+        (stdout, stderr) = p.communicate()
+        if p.returncode != 0:
+            print 'fail to clone datas from master:\n', stdout, stderr
             return False
 
         return True
