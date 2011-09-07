@@ -739,6 +739,7 @@ hot_standby       = on
 """
 
         # create postgresql *repmgr* user (needed for repmgr replication)
+        pg_svc = ManageService('postgresql')
         res, ret, err = pg_svc.start_service()
         if ret != 0:
             print 'fail to start postgresql:', res, err
@@ -775,9 +776,6 @@ conninfo='host=%s user=repmgr dbname=asterisk'
 
         # need to register node as reprmgr master/slave
         #NOTE: even if we are master, we stop/start database to apply configuration changes
-        print "registering node as repmgr %s (WARNING: database will be stopped)" %\
-            ("master" if self.ismaster else "slave")
-        pg_svc = ManageService('postgresql')
         res, ret, err = pg_svc.stop_service()
         if ret != 0:
             print 'fail to stop postgresql:', res, err
