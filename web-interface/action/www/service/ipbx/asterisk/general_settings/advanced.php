@@ -39,6 +39,9 @@ $appgeneralmeetme = &$appmeetme->get_module('general');
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 $element['generalmeetme'] = $appgeneralmeetme->get_elements();
 
+$appsccp = &$ipbx->get_apprealstatic('sccp');
+$appgeneralsccp = &$appsccp->get_module('general');
+
 $appsip = &$ipbx->get_apprealstatic('sip');
 $appgeneralsip = &$appsip->get_module('general');
 $autocreatepeer = $appgeneralsip->get('autocreatepeer');
@@ -139,11 +142,11 @@ if(isset($_QR['fm_send']) === true)
 	}
 
 	if($appgeneralsip->set($rs_sip) === false
-	|| $appgeneralsip->set($rs_sccp) === false
-	|| $appgeneralsip->save() === false)
+	|| $appgeneralsccp->set($rs_sccp) === false
+	|| $appgeneralsip->save() === false
+	|| $appgeneralsccp->save() === false)
 	{
 		dwho_report::push('error', 'Can\'t edit autocreatepeer in staticsip table');
-		return false;
 	}
 
 	if(dwho_issa('general',$_QR) === false)
