@@ -700,7 +700,7 @@ class DatabaseManagement(object):
             hostkey = f.read()
         hostkey = ' '.join(hostkey.split(' ')[:2])
 
-        print "allow remote connection for postgres user on peer. Please enter root password."
+        print "  . allow remote connection for postgres user on peer. Please enter root password."
         authfile = PG_VAR+'/.ssh/authorized_keys'
         hostfile = PG_VAR+'/.ssh/known_hosts'
 
@@ -722,6 +722,7 @@ class DatabaseManagement(object):
         )
         p = subprocess.Popen(['/usr/bin/ssh', 'root@'+self.peer['ip'], remote_cmds])
         if p.wait() != 0:
+            print "fail to allow remote access for postgres user"
             return False
 
         # alter postgresql configuration adding HA-specific setup
@@ -748,6 +749,7 @@ hot_standby       = on
             'postgres'
 				], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if p.wait() != 0:
+            print "fail to create repmgr pg user:\n", ''.join(p.stdout.readlines())
             return False
 
         # all pgsql connections from HA peer node (needed for replication)
@@ -813,6 +815,7 @@ conninfo='host=%s user=repmgr dbname=asterisk'
     def _clone_master(self):
         """Clone database from master node
         """
+        print "  . replicating master database"
 
         # backup pg datadir
         datadir = PG_VAR+'/9.0/main'
