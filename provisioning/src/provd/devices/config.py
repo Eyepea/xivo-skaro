@@ -424,7 +424,6 @@ specific values to a template.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
@@ -692,14 +691,27 @@ class DefaultConfigFactory(object):
         # why we introduced this whole thing)
         self._n = int(time.time())
     
+    def _new_config(self, id, sip_line_1_username):
+        new_suffix = unicode(self._n)
+        self._n += 1
+        new_config = {
+            u'id': id + new_suffix,
+            u'parent_ids': [id],
+            u'raw_config': {
+                u'sip_lines': {
+                    u'1': {
+                       u'username': sip_line_1_username + new_suffix
+                    }
+                }
+            },
+            u'transient': True
+        }
+        return new_config
+    
     def __call__(self, config):
         try:
             sip_line_1 = config[u'raw_config'][u'sip_lines'][u'1']
         except KeyError:
             return None
         else:
-            sip_line_1[u'username'] = sip_line_1[u'username'] + unicode(self._n)
-            config[u'id'] = config[u'id'] + unicode(self._n)
-            config[u'transient'] = True
-            self._n += 1
-            return config
+            return self._new_config(config[u'id'], sip_line_1['username'])

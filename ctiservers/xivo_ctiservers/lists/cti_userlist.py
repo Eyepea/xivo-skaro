@@ -51,8 +51,9 @@ class UserList(AnyList):
                 if not id.startswith('cs:'):
                     user = self.keeplist[id]
                     # cjson workaround
-                    user_timezone = user['timezone'].replace('\\/', '/')
-                    self.alarm_clk_changes[id] = (user['alarmclock'], user_timezone)
+                    fixed_timezone = user['timezone'].replace('\\/', '/')
+                    user['timezone'] = fixed_timezone
+                    self.alarm_clk_changes[id] = (user['alarmclock'], fixed_timezone)
         
         delta_del = delta.get('del')
         if delta_del:
@@ -69,8 +70,9 @@ class UserList(AnyList):
                     if 'alarmclock' in changed_keys or 'timezone' in changed_keys:
                         user = self.keeplist[id]
                         # cjson workaround
-                        user_timezone = user['timezone'].replace('\\/', '/')
-                        self.alarm_clk_changes[id] = (user['alarmclock'], user_timezone)
+                        fixed_timezone = user['timezone'].replace('\\/', '/')
+                        user['timezone'] = fixed_timezone
+                        self.alarm_clk_changes[id] = (user['alarmclock'], fixed_timezone)
     
     def update_noinput(self):
         newuserlist = self.commandclass.getuserslist()

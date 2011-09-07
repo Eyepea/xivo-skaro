@@ -700,7 +700,7 @@ class DatabaseManagement(object):
             hostkey = f.read()
         hostkey = ' '.join(hostkey.split(' ')[:2])
 
-        print "allow remote connection for postgres user on peer. Please enter root password."
+        print "  . allow remote connection for postgres user on peer. Please enter root password."
         authfile = PG_VAR+'/.ssh/authorized_keys'
         hostfile = PG_VAR+'/.ssh/known_hosts'
 
@@ -722,6 +722,7 @@ class DatabaseManagement(object):
         )
         p = subprocess.Popen(['/usr/bin/ssh', 'root@'+self.peer['ip'], remote_cmds])
         if p.wait() != 0:
+            print "fail to allow remote access for postgres user"
             return False
 
         # alter postgresql configuration adding HA-specific setup
@@ -738,6 +739,7 @@ hot_standby       = on
 """
 
         # create postgresql *repmgr* user (needed for repmgr replication)
+        pg_svc = ManageService('postgresql')
         res, ret, err = pg_svc.start_service()
         if ret != 0:
             print 'fail to start postgresql:', res, err
@@ -748,6 +750,7 @@ hot_standby       = on
             'postgres'
 				], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if p.wait() != 0:
+            print "fail to create repmgr pg user:\n", ''.join(p.stdout.readlines())
             return False
 
         # all pgsql connections from HA peer node (needed for replication)
@@ -773,9 +776,6 @@ conninfo='host=%s user=repmgr dbname=asterisk'
 
         # need to register node as reprmgr master/slave
         #NOTE: even if we are master, we stop/start database to apply configuration changes
-        print "registering node as repmgr %s (WARNING: database will be stopped)" %\
-            ("master" if self.ismaster else "slave")
-        pg_svc = ManageService('postgresql')
         res, ret, err = pg_svc.stop_service()
         if ret != 0:
             print 'fail to stop postgresql:', res, err
@@ -790,17 +790,26 @@ conninfo='host=%s user=repmgr dbname=asterisk'
             print 'fail to start postgresql:', res, err
             return False
 
+        if not self.ismaster:
+            #NOTE: on slave node, after a replication, database is unavailable during few seconds after startup
+            # (while the startup script gave back hand)
+            # so we wait few seconds before querying database just to be sure its started
+            import time; time.sleep(10)
+
 
         # we register current node ONLY if not already done
         cmd = 'psql asterisk -c "SELECT 1 FROM pg_namespace WHERE nspname = \'repmgr_xivo\'"'
-        p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         if p.wait() != 0 or '(0 rows)' in p.stdout.read():
+            print "  . registering node as repmgr %s (WARNING: database will be stopped)" %\
+                ("master" if self.ismaster else "slave")
             cmd = ' '.join([
                 "PATH=$PATH:/usr/lib/postgresql/9.0/bin",
                 "repmgr -f /etc/postgresql/9.0/main/repmgr.conf --verbose %s register"
             ]) % ('master'	if self.ismaster else 'standby')
             p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT)
+
             if p.wait() != 0:
                 print 'fail to repmgr register (with cmd %s):\n' % cmd, ''.join(p.stdout.readlines())
                 return False
@@ -813,6 +822,7 @@ conninfo='host=%s user=repmgr dbname=asterisk'
     def _clone_master(self):
         """Clone database from master node
         """
+        print "  . replicating master database"
 
         # backup pg datadir
         datadir = PG_VAR+'/9.0/main'
@@ -834,8 +844,9 @@ conninfo='host=%s user=repmgr dbname=asterisk'
         ]) % self.peer['name']
         p = subprocess.Popen(['su','-c',cmd,'postgres'], stdout=subprocess.PIPE,
 						stderr=subprocess.STDOUT)
-        if p.wait() != 0:
-            print 'fail to clone datas from master:\n', ''.join(p.stderr.read())
+        (stdout, stderr) = p.communicate()
+        if p.returncode != 0:
+            print 'fail to clone datas from master:\n', stdout, stderr
             return False
 
         return True

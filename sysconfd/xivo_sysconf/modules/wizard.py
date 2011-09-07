@@ -26,7 +26,6 @@ __license__ = """
 import os, subprocess, traceback
 import logging
 import re
-import apt
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
