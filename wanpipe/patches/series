@@ -1,3 +1,4 @@
+buildsys_fix_cflags_libsangoma
 buildsys_util_makefile_fixes
 buildsys_dahdi_detect
 tools_fixes

@@ -1,16 +1,16 @@
-Index: sangoma-wanpipe-3.5.15.2.dfsg.1/util/Makefile
+fix util Makefile
+Index: wanpipe-3.5.22/util/Makefile
 ===================================================================
---- sangoma-wanpipe-3.5.15.2.dfsg.1.orig/util/Makefile	2010-09-14 16:17:41.000000000 +0200
-+++ sangoma-wanpipe-3.5.15.2.dfsg.1/util/Makefile	2010-09-14 16:18:03.000000000 +0200
-@@ -31,7 +31,6 @@
+--- wanpipe-3.5.22.orig/util/Makefile	2011-09-02 16:26:03.814305525 -0400
++++ wanpipe-3.5.22/util/Makefile	2011-09-02 16:28:14.994207603 -0400
+@@ -30,17 +30,14 @@
+ 	make -C wancfg all CC=$(CC) SYSINC=$(SYSINC) PROTOCOL_DEFS="$(PROTOCOL_DEFS)" EXTRA_FLAGS="$(EXTRA_FLAGS)" ARCH=$(ARCH) 2> /dev/null
  
  install:
- 	make -C ft1 install WAN_VIRTUAL=$(WAN_VIRTUAL)
 -	make -C wancfg_legacy install WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C lxdialog install WAN_VIRTUAL=$(WAN_VIRTUAL)
- 	make -C sdladump install WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C wanconfig install WAN_VIRTUAL=$(WAN_VIRTUAL)
-@@ -39,10 +38,8 @@
+ 	make -C wanec_client install WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C wan_plxctrl install WAN_VIRTUAL=$(WAN_VIRTUAL) 
  	make -C wanpipemon install WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C wanpipemon_legacy install WAN_VIRTUAL=$(WAN_VIRTUAL)
@@ -18,10 +18,10 @@ Index: sangoma-wanpipe-3.5.15.2.dfsg.1/util/Makefile
  	make -C wan_aftup install WAN_VIRTUAL=$(WAN_VIRTUAL) 
  	make -C bwm install WAN_VIRTUAL=$(WAN_VIRTUAL)
 -	make -C wancfg_zaptel install WAN_VIRTUAL=$(WAN_VIRTUAL)
+ 	make -C libsangoma install DESTDIR=$(WAN_VIRTUAL)
  
  uninstall:
- 	make -C ft1 uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
-@@ -54,10 +51,8 @@
+@@ -53,10 +50,8 @@
  	make -C wan_plxctrl uninstall WAN_VIRTUAL=$(WAN_VIRTUAL) 
  	make -C wanpipemon uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C wanpipemon_legacy uninstall WAN_VIRTUAL=$(WAN_VIRTUAL)
@@ -32,11 +32,11 @@ Index: sangoma-wanpipe-3.5.15.2.dfsg.1/util/Makefile
  
  clean:
  	make -C ft1 clean WAN_VIRTUAL=$(WAN_VIRTUAL)
-@@ -68,7 +63,6 @@
+@@ -67,7 +62,6 @@
  	make -C wan_plxctrl clean WAN_VIRTUAL=$(WAN_VIRTUAL) 
  	make -C wanpipemon clean WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C wanpipemon_legacy clean WAN_VIRTUAL=$(WAN_VIRTUAL)
 -	make -C wancfg clean WAN_VIRTUAL=$(WAN_VIRTUAL)
  	make -C wan_aftup clean WAN_VIRTUAL=$(WAN_VIRTUAL) 
  	make -C bwm clean  WAN_VIRTUAL=$(WAN_VIRTUAL) 
- 	make -C misc clean  WAN_VIRTUAL=$(WAN_VIRTUAL) 
+ 	make -C wanctl clean  WAN_VIRTUAL=$(WAN_VIRTUAL) 
