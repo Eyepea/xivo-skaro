@@ -23,9 +23,12 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, subprocess, traceback
+import contextlib
+import os
+import subprocess
 import logging
 import re
+import apt
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
@@ -114,6 +117,10 @@ WIZARD_XIVO_DB_ENGINES      = {'mysql':
                                     {'params':  {'encoding': 'utf8'}},
                                'sqlite':
                                     {'params':  {'timeout_ms': 150}}}
+
+POSTGRES_LOCALE = 'en_US.UTF-8'
+POSTGRES_CHARSET = 'UTF-8'
+LOCALE_GEN_PATH = '/etc/locale.gen'
 
 
 def _find_template_file(tplfilename, customtplfilename, newfilename):
@@ -573,6 +580,51 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
     finally:
         WIZARDLOCK.release()
 
+
+def _update_locale_gen(locale, charset):
+    is_installed = False
+    with open(LOCALE_GEN_PATH, 'r+') as fobj:
+        for cur_raw_line in fobj:
+            cur_line = cur_raw_line.strip()
+            if cur_line and not cur_line.startswith('#'):
+                cur_locale, cur_charset = cur_line.split()
+                if cur_locale == locale and cur_charset == charset:
+                    is_installed = True
+                    break
+        if not is_installed:
+            fobj.seek(0, os.SEEK_END)
+            fobj.write('%s %s\n' % (locale, charset))
+    if not is_installed:
+        subprocess.check_call(['locale-gen'])
+
+
+@contextlib.contextmanager
+def _modified_env(name, new_value):
+    old_value = os.environ.get(name)
+    os.environ[name] = new_value
+    try:
+        yield
+    finally:
+        if old_value is not None:
+            os.environ[name] = old_value
+
+
+def _install_postgresql(apt_cache):
+    postgresql_pkg = apt_cache['postgresql']
+    if not postgresql_pkg.is_installed:
+        _update_locale_gen(POSTGRES_LOCALE, POSTGRES_CHARSET)
+        postgresql_pkg.mark_install()
+        with _modified_env('LC_ALL', POSTGRES_LOCALE):
+            apt_cache.commit()
+
+
+def _install_php5_pgsql(apt_cache):
+    php5_pgsql_pkg = apt_cache['php5-pgsql']
+    if not php5_pgsql_pkg.is_installed:
+        php5_pgsql_pkg.mark_install()
+        apt_cache.commit()
+
+
 def exec_db_file(args, options):
     """
     POST /exec_db_file
@@ -590,11 +642,9 @@ def exec_db_file(args, options):
     
     if args['backend'] == 'postgresql':
         try:
-            env = dict(os.environ)
-            env['LANG'] = 'en_US.UTF8';
-            subprocess.check_call(["apt-get", "install", "--yes",
-                                   "php5-pgsql", "postgresql"],
-                                  env=env)
+            apt_cache = apt.Cache()
+            _install_postgresql(apt_cache)
+            _install_php5_pgsql(apt_cache)
         except Exception:
             log.exception('error')
             raise HttpReqError(500, "Can't install postgresql packages")
@@ -633,7 +683,7 @@ def exec_db_file(args, options):
         try:
             subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
         except (OSError, subprocess.CalledProcessError), e:
-            traceback.print_exc()
+            log.exception('error')
             raise HttpReqError(500, "Can't create xivo DB with sqlite")
         try:
             subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
