@@ -39,12 +39,15 @@ switch($act)
         	$http_response->send(false);
         }
 
+        $modresolvconf = &$_XOBJ->get_module('resolvconf');
+        $infolocalserver = $modresolvconf->get(1);
+
         $out = array();
         for ($i=0;$i<$nb;$i++)
         {
             $ref = &$rs[$i];
             $out[$i] = array();
-            $out[$i]['id'] = "cs:".uniqid();
+            $out[$i]['id'] = "cs:".$infolocalserver['hostname'];
             $out[$i]['loginclient'] = $ref['login'];
             $out[$i]['passwdclient'] = $ref['password'];
             $out[$i]['profileclient'] = "ctiserver";

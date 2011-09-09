@@ -878,8 +878,10 @@ class ctiserver:
                                         if tmp_ltr != 'xivo[cticonfig,update]':
                                             listtorequest = tmp_ltr[5:-12] + 's'
                                             safe.update_config_list(listtorequest)
+                                            self.loop_over_cti_queues()
                                 else:
                                     safe.update_config_list_all()
+                                    self.loop_over_cti_queues()
                             except Exception:
                                 log.exception('%s : commandclass.updates() (computed timeout)' % ipbxid)
                       else:
