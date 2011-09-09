@@ -33,11 +33,7 @@ from xivo.moresynchro import RWLock
 
 from xivo_sysconf import helpers
 
-# XXX Disable apt FutureWarning: apt API not stable yet
-import warnings
-warnings.simplefilter('ignore', FutureWarning)
 import apt
-warnings.simplefilter('default', FutureWarning)
 
 
 log = logging.getLogger('xivo_sysconf.modules.packages') # pylint: disable-msg=C0103

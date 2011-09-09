@@ -1,0 +1,22 @@
+42 - Final =)
+Index: wanpipe-3.5.22/Setup
+===================================================================
+--- wanpipe-3.5.22.orig/Setup	2011-09-07 14:44:43.000000000 -0400
++++ wanpipe-3.5.22/Setup	2011-09-07 14:45:11.000000000 -0400
+@@ -1941,6 +1941,7 @@
+ 	fi
+ 
+ 	cd libsangoma
++	CFLAGS="-g"
+ 	eval "./init-automake.sh  >> $CMP_LOG 2>> $CMP_LOG"
+ 	eval "./configure --prefix=/usr >> $CMP_LOG 2>> $CMP_LOG" 
+ 	eval "make clean >> $CMP_LOG 2>> $CMP_LOG" 
+@@ -3305,7 +3306,7 @@
+ 
+ 	eval "grep \"define *CONFIG_MODVERSIONS\" $SOURCEDIR/include/linux/autoconf.h > /dev/null"
+ 	if [ $? -eq 0 ]; then
+-		if [ $KERN_VER -ne 26 ] || [ $KERN_VER -ne 30 ]; then
++		if [ $KERN_VER -ne 26 ] && [ $KERN_VER -ne 30 ]; then
+ 		MODVER=" -DMODVERSIONS -include $SOURCEDIR/include/linux/modversions.h "
+ 		fi
+ 		MOD_ENABLED=y

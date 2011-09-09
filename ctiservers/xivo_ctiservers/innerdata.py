@@ -578,6 +578,12 @@ class Safe:
                 chan['isauthed'] = opts['authed']
             if 'leave' in opts:
                 status['channels'].pop(channel)
+            else:
+                if channel in self.channels:
+                    self.handle_cti_stack('set', ('channels', 'updatestatus', channel))
+                    self.channels[channel].properties['talkingto_kind'] = '<meetme>'
+                    self.channels[channel].properties['talkingto_id'] = mid
+                    self.handle_cti_stack('empty_stack')
         elif opts and 'paused' in opts:
             # (pause)
             status['paused'] = opts['paused']

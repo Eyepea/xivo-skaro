@@ -513,7 +513,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 SELECT setval('ctimain_id_seq', 2);
 
 
@@ -1109,10 +1109,6 @@ CREATE INDEX "linefeatures__idx__internal" ON "linefeatures"("internal");
 CREATE UNIQUE INDEX "linefeatures__uidx__provisioningid" ON "linefeatures"("provisioningid");
 CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
 CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
-
-
-INSERT INTO "linefeatures" VALUES (1,'sip',1,0,'','','','autoprov','','default',0,'','',0,'',0,0,'',1,0,'');
-SELECT setval('linefeatures_id_seq', 2);
 
 
 DROP TABLE IF EXISTS "ldapfilter";
@@ -2551,15 +2547,6 @@ CREATE INDEX "usersip__idx__host_port" ON "usersip"("host","port");
 CREATE INDEX "usersip__idx__ipaddr_port" ON "usersip"("ipaddr","port");
 CREATE INDEX "usersip__idx__lastms" ON "usersip"("lastms");
 CREATE UNIQUE INDEX "usersip__uidx__name" ON "usersip"("name");
- 
-INSERT INTO "usersip" VALUES (1, 'autoprov','friend','autoprov','autoprov','','xivo-initconfig',NULL,NULL,'default',
-NULL,NULL,NULL,NULL,0,NULL,0,'Autoprov Mode',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-'XIVO_USERID=1','dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'',NULL,'sip','user',
-NULL,'udp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','',0);
-
-SELECT setval('usersip_id_seq', 2);
 
 
 DROP TABLE IF EXISTS "voicemail";

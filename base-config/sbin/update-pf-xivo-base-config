@@ -1,14 +1,12 @@
 #!/bin/bash
 #
-# This script is a temporary and ugly solution to generate
-# a proper XiVO configuration, until the real subsystem for
-# this task is finished.
-#
 
 BASE_TEMPLATE_DIR=/usr/share/pf-xivo-base-config/templates
 CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
 
+set -o allexport
 . /usr/sbin/pf-common-read-config
+set +o allexport
 
 # list all variables with the good prefix
 TEMPLATE_VARS="$(compgen -v XIVO_) $(compgen -v _XIVO_) $(compgen -v HA_)"
@@ -161,6 +159,12 @@ if [ -x /usr/sbin/pf-check-dahdi-ports ]; then
     echo "DEBUG: create monit DAHDI ports configuration"
   fi
   /usr/sbin/pf-check-dahdi-ports configure
+fi
+
+if [ "${XIVO_DHCP_ACTIVE}" = "1" ]; then
+  update-rc.d isc-dhcp-server defaults > /dev/null
+else
+  update-rc.d isc-dhcp-server remove > /dev/null
 fi
 
 #### cleanup ####

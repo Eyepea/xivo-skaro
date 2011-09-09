@@ -103,7 +103,7 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
-						
+
 			$phone = 'green';
 			if((int) ($ref['device']) === 0)
 			    $phone = 'red';
@@ -156,19 +156,17 @@ $page = $url->pager($pager['pages'],
 					      'id'	=> $ref['id']),
 					null,
 					$this->bbf('opt_modify')),"\n";
-					
-		if (dwho_has_len($ref['number']) === false):
-			echo	$url->href_html($url->img_html('img/site/button/delete.gif',
-						       $this->bbf('opt_delete'),
-						       'border="0"'),
-					'service/ipbx/pbx_settings/lines',
-					array('act'	=> 'delete',
-					      'id'	=> $ref['id'],
-					      'page'	=> $pager['page'],
-					      $param),
-					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
-					$this->bbf('opt_delete'));
-		endif;
+
+		echo	$url->href_html($url->img_html('img/site/button/delete.gif',
+					       $this->bbf('opt_delete'),
+					       'border="0"'),
+				'service/ipbx/pbx_settings/lines',
+				array('act'	=> 'delete',
+				      'id'	=> $ref['id'],
+				      'page'	=> $pager['page'],
+				      $param),
+				'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+				$this->bbf('opt_delete'));
 ?>
 		</td>
 	</tr>

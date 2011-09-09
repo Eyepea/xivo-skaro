@@ -233,7 +233,7 @@ Désactivée
 Annoncer le temps d'attente:
 
 ; fm_queuefeatures_announce_holdtime
-Announcer le temps d'attente avant d'entrer dans la file : 
+Annoncer le temps d'attente avant d'entrer dans la file : 
 
 ; fm_queue_announce-holdtime-opt(no)
 Non
