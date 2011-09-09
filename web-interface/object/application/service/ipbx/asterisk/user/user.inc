@@ -907,33 +907,26 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$reslist = $error = array();
 		$errnb = 0;
 
-		if (isset($arr[0],$arr[0]['id']) === true)
+		foreach($arr as $key => $list)
 		{
-			$reslist = $arr;
+			for($i = 0;$i < count($list);$i++)
+			{
+				if (isset($arr[$key][$i]) === false
+				|| $arr[$key][$i] === '')
+					$reslist[$i][$key] = '';
+				else
+					$reslist[$i][$key] = $arr[$key][$i];
+			}
 		}
-		else
+
+		if(empty($reslist) === true)
 		{
-			foreach($arr as $key => $list)
-			{
-				for($i = 0;$i < count($list);$i++)
-				{
-					if (isset($arr[$key][$i]) === false
-					|| $arr[$key][$i] === '')
-						$reslist[$i][$key] = '';
-					else
-						$reslist[$i][$key] = $arr[$key][$i];
-				}
-			}
-
-			if(empty($reslist) === true)
-			{
-				$this->_set_result('linefeatures',false);
-				$this->_set_error('linefeatures','empty');
-				return(false);
-			}
-
-			array_pop($reslist);
+			$this->_set_result('linefeatures',false);
+			$this->_set_error('linefeatures','empty');
+			return(false);
 		}
+
+		array_pop($reslist);
 
 		/*
 		if(dwho_issa('queue',$arr) === true
@@ -1240,6 +1233,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_return = array();
 		$userfeaturesid = null;
 
+		dwho_print_r($this->get_errnb());
+
 		if($this->get_errnb() > 0
 		|| ($userfeaturesid = $this->add_userfeatures()) === false
 		|| $this->add_picture($userfeaturesid) === false
@@ -1257,6 +1252,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($userfeaturesid !== null)
 				$this->_reverse_add();
 		}
+		dwho_print_r($this->get_error());
 
 		$this->_status = '';
 
@@ -2205,7 +2201,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['userfeatures']['callerid'] = '';
 
 			if (dwho_issa('entityid',$arr['userfeatures']) === false)
-			    $arr['userfeatures']['entityid'] = 1;
+				$arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
 				$arr['userfeatures']['callerid'] = $arr['userfeatures']['firstname'].' ';
@@ -2225,29 +2221,26 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		unset($arr['userfeatures']['agentnumber']);
 
-		if(dwho_issa('linefeatures',$arr) === true)
+		if(dwho_issa('linefeatures',$arr) === false)
 		{
-		    $arr['linefeatures']['id'] = array();
-			array_push($arr['linefeatures']['id'], 0);
 			if (dwho_issa('context',$arr['linefeatures']) === false)
 			{
-			    $arr['linefeatures']['context'] = array();
-			    array_push($arr['linefeatures']['context'], 'default');
+				$arr['linefeatures']['context'] = array();
+				array_push($arr['linefeatures']['context'], 'default');
 			}
 			if (dwho_issa('configregistrar',$arr['linefeatures']) === false)
 			{
-			    $arr['linefeatures']['configregistrar'] = array();
-			    array_push($arr['linefeatures']['configregistrar'], 'default');
+				$arr['linefeatures']['configregistrar'] = array();
+				array_push($arr['linefeatures']['configregistrar'], 'default');
 			}
 			if (dwho_issa('protocol',$arr['linefeatures']) === false)
 			{
-			    $arr['linefeatures']['protocol'] = array();
-			    array_push($arr['linefeatures']['protocol'], 'sip');
+				$arr['linefeatures']['protocol'] = array();
+				array_push($arr['linefeatures']['protocol'], 'sip');
 			}
-
-
-			array_push($arr['linefeatures']['id'], 0);
 		}
+
+		array_push($arr['linefeatures']['id'], 0);
 
 		return($arr);
 	}
