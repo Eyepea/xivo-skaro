@@ -207,7 +207,7 @@ class Command:
             ipbxid = self.ctid.myipbxid
             saferef = self.ctid.safe.get(ipbxid)
             self.log.info('searching user %s in %s'
-                     % (self.commanddict.get('userlogin'), ipbxid))
+                          % (self.commanddict.get('userlogin'), ipbxid))
             userid = saferef.user_find(self.commanddict.get('userlogin'),
                                        self.commanddict.get('company'))
             if userid:

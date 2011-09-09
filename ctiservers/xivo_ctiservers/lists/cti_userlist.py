@@ -92,7 +92,7 @@ class UserList(AnyList):
             if uinfo == None:
                 for kk, userinfo in self.keeplist.iteritems():
                     if userinfo and userinfo.get('enableclient') and \
-                       userinfo.get('loginclient') == userid:
+                           userinfo.get('loginclient') == userid:
                         uinfo = userinfo
                         break
             return uinfo
