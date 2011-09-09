@@ -277,8 +277,27 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function reset_device($iddevice)
+	public function disassociate_line($id)
 	{
+		if($this->get($id) === false)
+			return(false);
+
+		$arr = array();
+		$arr['iduserfeatures'] = 0;
+		$arr['config'] = '';
+		$arr['device'] = 0;
+		$arr['configregistrar'] = '';
+		$arr['number'] = '';
+
+		if($this->edit($id,$arr) === false)
+			return(false);
+
+		return(true);
+	}
+
+	public function reset_device($iddevice)
+	{
+		$arr = array();
 		$arr['device'] = 0;
 		$where = array('device' => (string) $iddevice);
 

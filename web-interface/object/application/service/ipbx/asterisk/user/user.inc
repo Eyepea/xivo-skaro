@@ -1233,8 +1233,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_return = array();
 		$userfeaturesid = null;
 
-		dwho_print_r($this->get_errnb());
-
 		if($this->get_errnb() > 0
 		|| ($userfeaturesid = $this->add_userfeatures()) === false
 		|| $this->add_picture($userfeaturesid) === false
@@ -1252,7 +1250,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($userfeaturesid !== null)
 				$this->_reverse_add();
 		}
-		dwho_print_r($this->get_error());
 
 		$this->_status = '';
 
@@ -1596,12 +1593,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			for($i = 0;$i < $nb;$i++)
 			{
 				$ref = &$linefeatures_list[$i];
-				$this->_line->_reset();
-				$this->_line->_reset_info();
-				if (isset($ref['id']) === true
-				&& $this->_line->get($ref['id']) !== false
-				&& $this->_line->delete() !== false)
+				if (isset($ref['id']) === false)
 					continue;
+				if($this->_linefeatures->disassociate_line($ref['id']) === false)
+					dwho_report::push('error','Can\'t disassociate line: '.$ref['id'],'linefeatures');
 			}
 		}
 
