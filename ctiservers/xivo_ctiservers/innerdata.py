@@ -452,7 +452,7 @@ class Safe:
         return contexts
 
     def user_find(self, ctilogin, company):
-        uinfo = self.xod_config['users'].finduser(ctilogin, company)
+        uinfo = self.xod_config.get('users').finduser(ctilogin, company)
         if uinfo:
             return str(uinfo.get('id')) # XXX redmine#2169
         else:
