@@ -986,10 +986,15 @@ class Command:
         elif dst.get('type') == 'exten':
             extentodial = dst.get('id')
         elif dst.get('type') == 'voicemail':
-            # 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
-            # exten_dst = 's'
-            # context_src = 'macro-voicemail'
-            pass
+            # *97 vm number
+            self.log.debug('transfer to voicemail %s', self.commanddict)
+            if dst['id'] in innerdata.xod_config['voicemails'].keeplist:
+                voicemail = innerdata.xod_config['voicemails'].keeplist[dst['id']]
+                vm_number = voicemail['mailbox']
+                prefix = innerdata.extenfeatures['extenfeatures']['vmboxslt']['exten']
+                prefix = prefix[:len(prefix) - 1]
+                extentodial = prefix + vm_number
+                dst_context = voicemail['context']
         elif dst.get('type') == 'meetme':
             if dst.get('id') in innerdata.xod_config.get('meetmes').keeplist:
                 meetmestruct = innerdata.xod_config.get('meetmes').keeplist.get(dst.get('id'))
