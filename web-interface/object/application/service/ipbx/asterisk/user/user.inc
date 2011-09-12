@@ -1926,12 +1926,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function delete_linefeatures()
 	{
-		if(($rs = $this->get_result('linefeatures')) === null)
-			return($rs);
-
-		if(dwho_issa('linefeatures',$this->_info) === false
-		|| $rs === false
-		|| $this->_line === false)
+		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(false);
 
 		$where = array('iduserfeatures' => (int) $this->_info['userfeatures']['id']);
@@ -1940,14 +1935,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(true);
 
 		$r = array();
-
 		foreach($listline as $line)
 		{
-			if (($rs = $this->_line->get($line['id'])) === false)
-				continue;
-
-			$r[] = $this->_line->delete();
-
+			if(($r[] = $this->_linefeatures->disassociate_line($line['id'])) === false)
+				dwho_report::push('error','Can\'t disassociate line: '.$line['id'],'linefeatures');
 		}
 
 		if($this->_status === 'delete')
