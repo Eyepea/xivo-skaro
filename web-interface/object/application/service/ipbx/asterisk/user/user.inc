@@ -1937,7 +1937,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$r = array();
 		foreach($listline as $line)
 		{
-			if(($r[] = $this->_linefeatures->disassociate_line($line['id'])) === false)
+			if(($r[$line['id']] = $this->_linefeatures->disassociate_line($line['id'])) === false)
 				dwho_report::push('error','Can\'t disassociate line: '.$line['id'],'linefeatures');
 		}
 
@@ -2207,26 +2207,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		unset($arr['userfeatures']['agentnumber']);
 
-		if(dwho_issa('linefeatures',$arr) === false)
-		{
-			if (dwho_issa('context',$arr['linefeatures']) === false)
-			{
-				$arr['linefeatures']['context'] = array();
-				array_push($arr['linefeatures']['context'], 'default');
-			}
-			if (dwho_issa('configregistrar',$arr['linefeatures']) === false)
-			{
-				$arr['linefeatures']['configregistrar'] = array();
-				array_push($arr['linefeatures']['configregistrar'], 'default');
-			}
-			if (dwho_issa('protocol',$arr['linefeatures']) === false)
-			{
-				$arr['linefeatures']['protocol'] = array();
-				array_push($arr['linefeatures']['protocol'], 'sip');
-			}
-		}
-
-		array_push($arr['linefeatures']['id'], 0);
+		if(dwho_issa('linefeatures',$arr) === true)
+			array_push($arr['linefeatures']['id'], 0);
 
 		return($arr);
 	}

@@ -85,6 +85,7 @@ if(isset($_QR['fm_send']) === true
 		// must reload app_queue
 		$ipbx->discuss(array('dialplan reload',
 							'xivo[userlist,update]',
+							'xivo[phonelist,update]',
 							'module reload app_queue.so',
 							'sip reload' // refresh pickup groups
 		));

@@ -30,10 +30,10 @@ switch($act)
 	case 'view':
 		$appuser = &$ipbx->get_application('user');
 
-		$nocomponents = array('usermacro'	=> true,
-				      'hints'				=> true,
-				      'extenumbers'			=> true,
-				      'contextnummember'	=> true);
+		$nocomponents = array('usermacro'		=> true,
+							'hints'				=> true,
+							'extenumbers'		=> true,
+							'contextnummember'	=> true);
 
 		if(($info = $appuser->get($_QRY->get('id'),
 					  null,
@@ -54,7 +54,12 @@ switch($act)
 		if($appuser->add_from_json() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('xivo[userlist,update]');
+			$ipbx->discuss(array('dialplan reload',
+								'xivo[userlist,update]',
+								'xivo[phonelist,update]',
+								'module reload app_queue.so',
+								'sip reload'
+			));
 		}
 		else
 			$status = 400;
@@ -70,7 +75,12 @@ switch($act)
 		else if($appuser->edit_from_json() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('xivo[userlist,update]');
+			$ipbx->discuss(array('dialplan reload',
+								'xivo[userlist,update]',
+								'xivo[phonelist,update]',
+								'module reload app_queue.so',
+								'sip reload'
+			));
 		}
 		else
 			$status = 400;
@@ -86,7 +96,12 @@ switch($act)
 		else if($appuser->delete() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('xivo[userlist,update]');
+			$ipbx->discuss(array('dialplan reload',
+								'xivo[userlist,update]',
+								'xivo[phonelist,update]',
+								'module reload app_queue.so',
+								'sip reload'
+			));
 		}
 		else
 			$status = 500;
