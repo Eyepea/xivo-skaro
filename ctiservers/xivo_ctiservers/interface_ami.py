@@ -359,6 +359,14 @@ class AMI:
                 # self.log.info('amiresponse_success %s %s : %s' % (actionid, mode, event))
                 # too verbose, since occurs each time a user changes its presence
                 pass
+            elif mode == 'vmupdate':
+                try:
+                    self.innerdata.voicemailupdate(
+                        event['Mailbox'] + '@' + properties['amiargs'][1],
+                        event['NewMessages'],
+                        event['OldMessages'])
+                except KeyError:
+                    self.log.warning('Could not update voicemail info: %s', event)
             else:
                 self.log.info('amiresponse_success %s %s (?) : %s'
                               % (actionid, mode, event))

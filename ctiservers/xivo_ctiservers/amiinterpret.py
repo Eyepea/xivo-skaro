@@ -820,11 +820,23 @@ class AMI_1_8:
         return
 
     def ami_messagewaiting(self, event):
-        old = event.pop('Old')
-        new = event.pop('New')
-        waiting = event.pop('Waiting')
-        mailbox = event.pop('Mailbox')
-        self.innerdata.voicemailupdate(mailbox, new, old, waiting)
+        try:
+            mailbox_id = event['Mailbox']
+            for id, mailbox in self.innerdata.xod_config['voicemails'].keeplist.iteritems():
+                if mailbox_id == mailbox['fullmailbox']:
+                    previous_status = self.innerdata.xod_status['voicemails'][id]
+                    old = event.get('Old') or previous_status['old']
+                    new = event.get('New') or previous_status['new']
+                    waiting = event.get('Waiting') or previous_status['waiting']
+                    self.innerdata.voicemailupdate(mailbox_id, new, old, waiting)
+            if 'Old' not in event and 'New' not in event:
+                params = {'mode': 'vmupdate',
+                          'amicommand': 'mailboxcount',
+                          'amiargs': mailbox_id.split('@')}
+                actionid = ''.join(random.sample(__alphanums__, 10))
+                self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
+        except KeyError:
+            self.log.warning('ami_messagewaiting Failed to update mailbox')
 
     # Status replies events
     def ami_peerentry(self, event):
