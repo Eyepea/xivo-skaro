@@ -2452,7 +2452,7 @@ CREATE TABLE "usersip" (
  "fromuser" varchar(80), -- peer --
  "fromdomain" varchar(255), -- general / peer --
  "mailbox" varchar(80), -- peer --
- "subscribemwi" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN -- peer --
+ "subscribemwi" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
  "buggymwi" INTEGER, -- BOOLEAN -- general / user / peer --
  "call-limit" INTEGER NOT NULL DEFAULT 0, -- user / peer --
  "callerid" varchar(160), -- general / user / peer --

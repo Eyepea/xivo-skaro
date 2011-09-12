@@ -701,7 +701,7 @@ Search
 Search filter
 
 ; fm_protocol_subscribemwi
-Verify new messages presence:
+Only send message-summary on explicit subscription:
 
 ; fm_protocol_buggymwi
 Verify new messages presence (RFC non-conformant):

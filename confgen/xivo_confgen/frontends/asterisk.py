@@ -105,7 +105,7 @@ class AsteriskFrontend(Frontend):
                         print >>o, "allow = " + str(c)
 
                 if k == 'subscribemwi' and v is not None:
-                    v = 'no' if v == '0' else 'yes'
+                    v = 'no' if v == 0 else 'yes'
                     print >>o, "subscribemwi = " + str(v)
 
             if user['name'] in pickups:
