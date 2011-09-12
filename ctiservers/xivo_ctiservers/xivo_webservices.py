@@ -41,7 +41,10 @@ class xws():
         return
 
     def connect(self):
-        self.myconn = httplib.HTTPSConnection(self.ipaddress, self.ipport)
+        if self.port == 443:
+            self.myconn = httplib.HTTPSConnection(self.ipaddress, self.ipport)
+        else:
+            self.myconn = httplib.HTTPConnection(self.ipaddress, self.ipport)
         return
 
     def serviceget(self, userid):

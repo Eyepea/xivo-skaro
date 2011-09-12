@@ -757,7 +757,7 @@ class AMI_1_8:
                                             'tipbxid': self.ipbxid,
                                             'tid': userid,
                                             'config': user})
-            z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
+            z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
             z.connect()
             z.serviceput(userid, fn, status)
             z.close()

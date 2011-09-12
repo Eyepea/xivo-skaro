@@ -426,7 +426,7 @@ class Command:
 
     def regcommand_featuresget(self):
         reply = {}
-        z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
+        z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
         z.connect()
         services = z.serviceget(self.ruserid)
         z.close()
@@ -437,7 +437,7 @@ class Command:
 
     def regcommand_featuresput(self):
         reply = {}
-        z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 443)
+        z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
         z.connect()
         z.serviceput(self.ruserid, self.commanddict.get('function'), self.commanddict.get('value'))
         z.close()
