@@ -2317,7 +2317,7 @@ CREATE TABLE `usersip` (
  `fromuser` varchar(80), -- peer --
  `fromdomain` varchar(255), -- general / peer --
  `mailbox` varchar(80), -- peer --
- `subscribemwi` tinyint(1) NOT NULL DEFAULT 1, -- peer --
+ `subscribemwi` tinyint(1) NOT NULL DEFAULT 0, -- peer --
  `buggymwi` tinyint(1), -- general / user / peer --
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0, -- user / peer --
  `callerid` varchar(160), -- general / user / peer --

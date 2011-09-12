@@ -76,7 +76,7 @@ $array['element']['mailbox']['null'] = true;
 
 $array['element']['subscribemwi'] = array();
 $array['element']['subscribemwi']['value'] = array(0,1);
-$array['element']['subscribemwi']['default'] = 1;
+$array['element']['subscribemwi']['default'] = 0;
 $array['element']['subscribemwi']['set'] = true;
 
 $array['element']['buggymwi'] = array();

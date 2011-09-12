@@ -110,10 +110,11 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 		$appqueue->userskills_delete($_QR['id']);
 
+		// refresh pickup groups
 		$ipbx->discuss(array('dialplan reload',
 							'xivo[userlist,update]',
 							'module reload app_queue.so',
-							'sip reload'											// refresh pickup groups
+							'sip reload'
 		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
@@ -137,10 +138,11 @@ switch($act)
 			$appqueue->userskills_delete($values[$i]);
 		}
 
+		// refresh pickup groups
 		$ipbx->discuss(array('dialplan reload',
 							'xivo[userlist,update]',
 							'module reload app_queue.so',
-							'sip reload'// refresh pickup groups
+							'sip reload'
 		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);

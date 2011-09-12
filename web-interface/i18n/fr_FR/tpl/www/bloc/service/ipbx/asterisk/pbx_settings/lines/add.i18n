@@ -80,7 +80,7 @@ Jamais
 Route
 
 ; fm_protocol_subscribemwi
-Vérifier la présence de nouveaux messages :
+Envoyer message-summary seulement sur souscription explicite :
 
 ; fm_protocol_buggymwi
 Vérification, non conforme à la RFC, de nouveaux messages :
