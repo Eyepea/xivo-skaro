@@ -56,7 +56,9 @@ switch($step)
 	case 'commit_finished':
 		if($appwizard->commit_netinfos() !== false
 		&& $appwizard->commit_commonconf() !== false)
-			die;
+			$code = 200;
+		$uri = $appwizard->discover_finish_uri();
+		echo 'nexturi::commit_finished::'.$uri.'::0';
 		break;
 	default:
 		$code = 200;

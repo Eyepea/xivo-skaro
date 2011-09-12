@@ -562,6 +562,10 @@ var apply_wizard = {
 					me.next = str[1];
 					me.populate_infos(str[3],'async');
 					me.send_redirect(str[2]);
+				} else if (str[0] == 'redirecturi') {
+					me.next = str[1];
+					me.populate_infos('',true);
+					me.send_redirect(str[2],str[3]);
 				} else {
 					me.populate_infos('fatal error',true);
 				}
@@ -578,10 +582,12 @@ var apply_wizard = {
 			apply_wizard.request_post(apply_wizard.next);
 	},
 
-	send_redirect : function(url) {
+	send_redirect : function(url,timeredirect) {
+		if (timeredirect == undefined)
+			timeredirect = 10000;
 		window.setTimeout(function() {
 			window.location = url;
-		}, 10000);
+		}, timeredirect);
 	}
 };
 
