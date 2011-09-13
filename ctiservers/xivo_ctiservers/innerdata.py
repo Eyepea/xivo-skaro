@@ -90,10 +90,8 @@ class Safe:
             ],
         'phones' : [
             'context', 'protocol', 'number',
-            'iduserfeatures', 'identity',
-            'firstname', 'lastname',
-            'call-limit', 'dtmfmode',
-            'language',
+            'iduserfeatures', 'rules_order',
+            'identity', 'firstname', 'lastname', 'call-limit', 'dtmfmode', 'language',
             # rpid's
             # other
             'initialized', 'outcallerid', 'allowtransfer',
