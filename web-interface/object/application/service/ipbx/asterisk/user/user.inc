@@ -1927,7 +1927,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function delete_linefeatures()
 	{
 		if(dwho_issa('linefeatures',$this->_info) === false)
-			return(false);
+			return(null);
 
 		$where = array('iduserfeatures' => (int) $this->_info['userfeatures']['id']);
 
