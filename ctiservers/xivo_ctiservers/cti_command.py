@@ -1019,8 +1019,22 @@ class Command:
         # http://lists.digium.com/pipermail/asterisk-users/2011-March/260508.html
         # however some clues could be found here :
         # https://issues.asterisk.org/view.php?id=12158
-        rep = [{}]
-        return rep
+        rep = {}
+        try:
+            src = self.parseid(self.commanddict.get('source'))
+            dst = self.parseid(self.commanddict.get('destination'))
+            exten = dst['id']
+            if src['id'] in self.innerdata.channels:
+                channel = self.innerdata.channels[src['id']]
+                context = channel.context
+                rep = {'amicommand': 'atxfer',
+                       'amiargs': (src['id'],
+                                   exten,
+                                   context)}
+        except KeyError:
+            self.log.warning('Atxfer failed %s', self.commanddict)
+        return [rep,]
+
 
     def ipbxcommand_transfercancel(self):
         print self.ipbxcommand, self.commanddict
