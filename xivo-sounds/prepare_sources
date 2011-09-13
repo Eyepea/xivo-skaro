@@ -4,16 +4,8 @@
 #   * get source tarballs
 #   * extract tarballs, correct rights is needed
 #   * create tarball with all datas
-#   * add tarball in vcs
 
 . ./sources.pkg
-
-vcs_add () {
-    tarball_name=$1
-    # TODO add git support
-    echo "keep vcs up-to-date"
-    svn add $tarball_name
-}
 
 clean_tmp_dir () {
     # clean tmp_dir
@@ -27,7 +19,7 @@ prepare_temp_dir () {
     echo "Prepare build directory $tmp_dir"
     clean_tmp_dir
     mkdir -p $tmp_dir/tarballs
-    rsync -av asterisk xivo freeswitch $tmp_dir/ --exclude='.svn' > /dev/null 2>&1
+    rsync -av asterisk xivo freeswitch $tmp_dir/ > /dev/null 2>&1
 }
 
 get_tarball () {
@@ -54,12 +46,12 @@ extract_digium_data () {
     tarball_path="$tmp_dir/asterisk/wav/$dest_dir"
 
     echo "extract $tarball on $tarball_path"
-    tar -xvzf $tarball -C $tarball_path > /dev/null 2>&1
+    tar xvzf $tarball -C $tarball_path > /dev/null 2>&1
     # overriden by pf-asterisk-prompts-xivo
     if [ $language = "fr" ]; then
         find $tarball_path -name "conf-adminmenu.wav" -delete
     fi
-    echo "asterisk/war/$dest_dir is up-to-date"
+    echo "asterisk/wav/$dest_dir is up-to-date"
 }
 
 prepare_greenable_tarball () {
@@ -96,7 +88,6 @@ create_final_tarball () {
     cd ..
     if [ $? -eq 0 ]; then
         clean_tmp_dir
-        vcs_add tarballs/$tarball_name
     else
         echo "impossible to build tarballs/$tarball_name"
         exit -1
