@@ -1592,12 +1592,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		#$modprov = &$this->_xobj->get_module('provisioning');
 		#$modprov->edit(1, array('net4_ip' => $voip_iface['address']));
 
-		$provdconfig = &$this->_xobj->get_module('provdconfig');
-		if ($provdconfig->eval_required_config($voip_iface['address'],true) === false)
-		{
-			return false;
-		}
-
 		$rs = array();
 		$rs['commented'] = 0;
 		$rs['var_name'] = 'autocreate_prefix';
@@ -1610,6 +1604,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		|| $appgeneralsip->save() === false)
 		{
 			dwho_report::push('error', 'Can\'t create autocreate_prefix in staticsip table');
+			return false;
+		}
+
+		$provdconfig = &$this->_xobj->get_module('provdconfig');
+		if ($provdconfig->eval_required_config($voip_iface['address'],true) === false)
+		{
 			return false;
 		}
 
