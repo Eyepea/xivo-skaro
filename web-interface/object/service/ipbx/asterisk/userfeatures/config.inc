@@ -165,6 +165,9 @@ $array['element']['outcallerid-custom']['unset'] = true;
 $array['element']['mobilephonenumber'] = array();
 $array['element']['mobilephonenumber']['default'] = '';
 
+$array['element']['userfield'] = array();
+$array['element']['userfield']['default'] = '';
+
 $array['element']['bsfilter'] = array();
 $array['element']['bsfilter']['value'] = array('no','boss','secretary');
 $array['element']['bsfilter']['default'] = 'no';
@@ -260,6 +263,9 @@ $array['filter']['preprocess_subroutine'] = array('set' => false,
 						  'callbackarg' => array(array(
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
+$array['filter']['userfield'] = array('set'	=> false,
+					      'chk'	=> 2,
+					      'maxlen'	=> 128);
 $array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
 $array['filter']['timezone'] = array('set' => false,'chk' => 2);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

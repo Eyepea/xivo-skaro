@@ -229,11 +229,17 @@ endif;
 				  'default'	=> $element['userfeatures']['preprocess_subroutine']['default'],
 				  'value'	=> $info['userfeatures']['preprocess_subroutine'],
 				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'preprocess_subroutine')) ));
-?>
-<?php
+				$this->get_var('error', 'userfeatures', 'preprocess_subroutine')) )),
 
-	echo 	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_userfield'),
+				  'name'	=> 'userfeatures[userfield]',
+				  'labelid'	=> 'userfeatures-userfield',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('info','userfeatures','userfield'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'userfield')) )),
+
+	 	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
 				      'name'	=> 'userfeatures[enableclient]',
 				      'labelid'	=> 'userfeatures-enableclient',
 				      'default'	=> $element['userfeatures']['enableclient']['default'],

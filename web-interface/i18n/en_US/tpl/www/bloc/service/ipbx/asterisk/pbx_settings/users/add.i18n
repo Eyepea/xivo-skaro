@@ -532,6 +532,9 @@ Password:
 ; fm_userfeatures_mobilephonenumber
 Mobile phone number:
 
+; fm_userfeatures_userfield
+User field :
+
 ; fm_userfeatures_bsfilter-opt(no)
 No
 
