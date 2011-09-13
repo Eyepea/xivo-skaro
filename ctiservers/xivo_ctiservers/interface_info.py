@@ -119,12 +119,10 @@ class INFO(Interfaces):
                             'xivo_version=%s;' \
                             'server_version=%s;' \
                             'commandset=%s;' \
-                            'commandset_version=%s;' \
                             'uptime=%d s' \
                             % (self.ctid.xivoversion,
                                self.ctid.revision,
                                self.ctid.xdname,
-                               self.ctid.commandclass.version(),
                                time_uptime)
                     clireply.append(reply)
                     # clireply.append('server capabilities = %s' % (','.join()))
