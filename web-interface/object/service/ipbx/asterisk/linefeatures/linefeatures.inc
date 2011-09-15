@@ -49,6 +49,8 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		$data['provisioningid'] = (int) $data['provisioningid'];
 		$data['iduserfeatures'] = (int) $data['iduserfeatures'];
 		$data['rules_order'] = (int) $data['rules_order'];
+		$data['num'] = (int) $data['num'];
+		$data['line_num'] = (int) $data['line_num'];
 		$data['internal'] = (bool) $data['internal'];
 		$data['commented'] = (bool) $data['commented'];
 		$data['encryption'] = isset($data['encryption']) ? (bool) $data['encryption'] : false;
@@ -164,17 +166,15 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if (isset($arr['num']) === true
-		&& ($arr['num']) === false)
+		if (isset($arr['num']) === true)
 			$arr['num'] = (int) $arr['num'];
 		else
-			$arr['num'] = 1;
+			$arr['num'] = 0;
 
-		if (isset($arr['line_num']) === true
-		&& is_int($arr['line_num']) === false)
+		if (isset($arr['line_num']) === true)
 			$arr['line_num'] = (int) $arr['line_num'];
 		else
-			$arr['num'] = 0;
+			$arr['line_num'] = 0;
 
 		$arr['ipfrom'] = $_SERVER['SERVER_ADDR'];
 

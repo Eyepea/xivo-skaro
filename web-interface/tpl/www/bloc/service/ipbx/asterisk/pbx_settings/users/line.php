@@ -105,7 +105,7 @@ $err = $this->get_var('error','linefeatures');
 	<tbody id="linefeatures">
 <?php
 if($list !== false):
-	
+
 	$rs = array();
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$list[$i];
@@ -115,19 +115,19 @@ if($list !== false):
 		else:
 			$ref['errdisplay'] = '';
 		endif;
-		
+
 		$rulesgroup = $ref['rules_group'];
 		if (($rulesorder = (int) $ref['rules_order']) === 0)
 			$rulesgroup = 0;
 		if ($rulesgroup === '')
 			$rulesgroup = 0;
-		
+
 		if (isset($rs[$rulesgroup]) === false)
 			$rs[$rulesgroup] = array();
-			
+
 		array_push($rs[$rulesgroup],$ref);
 	endfor;
-	
+
 	foreach($rs as $rulesgroup => $list):
 
 		if (empty($rulesgroup) === false

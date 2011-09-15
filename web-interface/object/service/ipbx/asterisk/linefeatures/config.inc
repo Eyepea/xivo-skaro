@@ -107,7 +107,7 @@ $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['iduserfeatures'] = array('set' => false,'cast' => 'ulongint');
-$array['filter']['num'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
+$array['filter']['num'] = array('set' => false,'cast' => 'ulongint');
 $array['filter']['line_num'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['config'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
