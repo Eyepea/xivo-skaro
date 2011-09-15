@@ -88,6 +88,12 @@ class xivo_object_commonconf extends xivo_object_abstract
 
 		// dhcp
 		$rawdata = $this->_dhcp->get(1);
+		if ($rawdata['active'] == 1)
+		{
+			$_SRE = dwho_gct::get('xivo_service');
+			$monitoring = &$_SRE->get('monitoring');
+			$monitoring->enable_monitor('isc-dhcp-server');
+		}
 		$pool_start = strlen($rawdata['pool_start'])==0?'':$rawdata['pool_start'];
 		$conf = array_merge($conf, array(
 			'xivo.dhcp.pool' 			=> $pool_start.' '.$rawdata['pool_end'],

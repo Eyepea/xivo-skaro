@@ -741,7 +741,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		else if(($normalized = $this->normalize_interface_method($rs)) === false)
 		{
 			$this->_set_result('netiface',$rs);
-
 			return(false);
 		}
 

@@ -47,16 +47,6 @@ var xivo_wz_fm_dbconfig_backend_elt = {
 			disabled : true
 		}
 	},
-	'fd-dbconfig-sqlite-qldb' : {
-		'style' : {
-			display : 'none'
-		}
-	},
-	'it-dbconfig-sqlite-qldb' : {
-		'property' : {
-			disabled : true
-		}
-	},
 	'fd-dbconfig-mysql-host' : {
 		'style' : {
 			display : 'none'
@@ -304,12 +294,6 @@ xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-ipbxdb']['style'] = {
 	display : 'block'
 };
 xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-ipbxdb']['property'] = {
-	disabled : false
-};
-xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-qldb']['style'] = {
-	display : 'block'
-};
-xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-qldb']['property'] = {
 	disabled : false
 };
 

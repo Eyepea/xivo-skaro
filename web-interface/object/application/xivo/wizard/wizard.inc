@@ -38,6 +38,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	var $_wizsess          = null;
 	var $_ipbx             = null;
 	var $_xivo_dso_loaded  = false;
+	var $_savetmpfile      = '/tmp/wizard';
 
 	function xivo_application_xivo_object_wizard(&$xobj,$param=null,$components=true)
 	{
@@ -255,16 +256,21 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function discover_finish_uri()
 	{
-		if(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === false)
-			return(false);
+		if (($wizsess = $this->get_save_data_tmp()) === false)
+		{
+			dwho_report::push('error', 'Can\'t get data for provd');
+			return false;
+		}
+		elseif(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === false)
+		{
+			dwho_report::push('error', 'Can\'t get SERVER_ADDR or SERVER_PORT');
+			return false;
+		}
 		else if($_SERVER['SERVER_ADDR'] !== '127.0.0.1'
 		&& $_SERVER['REMOTE_ADDR'] !== '::1'
-		&& dwho_issa('netiface',$this->_wizsess) === true
-		&& isset($this->_wizsess['netiface']['address']) === true)
-			$uri = $this->_wizsess['netiface']['address'];
-		else if(($modnetiface = &$this->_xobj->get_module('netiface')) !== false
-		&& ($voip_iface = $modnetiface->get_voip_iface()) !== false)
-			$uri = $voip_iface['address'];
+		&& dwho_issa('netiface',$wizsess) === true
+		&& isset($wizsess['netiface']['address']) === true)
+			$uri = $wizsess['netiface']['address'];
 		else
 			$uri = $_SERVER['SERVER_ADDR'];
 
@@ -562,6 +568,15 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function step_validate()
 	{
+		$data = dwho_json::encode($this->_wizsess);
+		if(($fh = fopen($this->_savetmpfile, 'w+')) !== false)
+		{
+			fputs($fh, $data, strlen($data));
+			fclose($fh);
+		}
+
+		$this->get_save_data_tmp();
+
 		return($this->_wizsess);
 	}
 
@@ -1571,17 +1586,17 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function set_default_provisioning_values()
 	{
+		if (($wizsess = $this->get_save_data_tmp()) === false)
+		{
+			dwho_report::push('error', 'Can\'t get data for provd');
+			return false;
+		}
+
 		// save to database
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
-		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
 
-		$modnetiface = &$this->_xobj->get_module('netiface');
-		if (($voip_iface = $modnetiface->get_voip_iface($uuid['uuid'])) === false)
-		{
-			dwho_report::push('error', 'Can\'t get voip iface');
-			return false;
-		}
+		$netiface = $wizsess['netiface'];
 		/*
 		 should not explicitly specify provd bind address in webi by default
 		To simplify HA implementation and also to simplify the common case
@@ -1608,7 +1623,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		}
 
 		$provdconfig = &$this->_xobj->get_module('provdconfig');
-		if ($provdconfig->eval_required_config($voip_iface['address'],true) === false)
+		if ($provdconfig->eval_required_config($netiface['address'],true) === false)
 		{
 			return false;
 		}
@@ -1622,9 +1637,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_load_ipbx_service();
 
 		if($lang == 'fr')
-		$lang = 'fr_FR';
+			$lang = 'fr_FR';
 		else
-		$lang = 'en_US';
+			$lang = 'en_US';
 
 		foreach(array('sip', 'iax', 'sccp') as $name)
 		{
@@ -1657,6 +1672,13 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$module = &$this->_ipbx->get_module('general');
 		$module->edit(1, array('timezone' => $tz));
 		return true;
+	}
+
+	function get_save_data_tmp()
+	{
+		$data = file_get_contents($this->_savetmpfile);
+		$wizsess = dwho_json::decode($data,true);
+		return($wizsess);
 	}
 
 	function save_step_validate($data, $tpl)
@@ -1710,6 +1732,10 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$content = str_replace("\n", "<br/>\n", $content);
 			$content = $commonconf->apply();
 
+			$_SRE = dwho_gct::get('xivo_service');
+			$monitoring = &$_SRE->get('monitoring');
+			$monitoring->disable_monitor('isc-dhcp-server');
+
 			// restart provisioning service
 			$this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));
 
@@ -1719,6 +1745,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			// dhcpd_update
 			$this->_sysconfd->request_get('/dhcpd_update');
 
+			unlink($this->_savetmpfile);
 			session_destroy();
 			return(true);
 		}
