@@ -180,7 +180,7 @@ endif;
 	      'checked'		=> $svc['active'],
 			)),
 
-			'&nbsp',
+			'&nbsp;',
 			$this->bbf("fm_ha_service_$k");
 ?>
 					</td><td class="svc-center">
