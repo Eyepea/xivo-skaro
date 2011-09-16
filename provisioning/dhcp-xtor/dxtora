@@ -76,28 +76,25 @@ class CachingDHCPInfoSink(object):
     def close(self):
         self._next_sink.close()
     
+    def _is_cached(self, dhcp_info):
+        ip = dhcp_info['ip']
+        return self._cache.get(ip) == dhcp_info
+
     def _update_cache(self, dhcp_info):
-        """Update the cache and return true if the cache has changed, else
-        false.
-        
-        """
         ip = dhcp_info['ip']
         old_dhcp_info = self._cache.get(ip)
         if old_dhcp_info != dhcp_info:
             self._cache[ip] = dhcp_info
-            return True
-        else:
-            return False
-        
+
     def push(self, dhcp_info):
         """Send the dhcp_info object to the sink."""
         logger.info('Pushing DHCP info through cache')
-        updated = self._update_cache(dhcp_info)
-        if updated:
+        if self._is_cached(dhcp_info):
+            logger.info('DHCP info in cache -- not pushing to next sink')
+        else:
             logger.info('DHCP info not in cache -- pushing to next sink')
             self._next_sink.push(dhcp_info)
-        else:
-            logger.info('DHCP info in cache -- not pushing to next sink')
+            self._update_cache(dhcp_info)
 
 
 class StreamDHCPInfoSink(object):
