@@ -1,5 +1,5 @@
 {
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "Plugin for Cisco 6901, 6911, 6921, 6941, 6945, 6961, 7906G, 7911G, 7931G, 7941G, 7941G-GE, 7942G, 7945G, 7961G, 7961G-GE, 7962G, 7965G, 7970G, 7971G and 7975G in version 9.2.1 of the SCCP software.",
     "description_fr": "Greffon pour Cisco 6901, 6911, 6921, 6941, 6945, 6961, 7906G, 7911G, 7931G, 7941G, 7941G-GE, 7942G, 7945G, 7961G, 7961G-GE, 7962G, 7965G, 7970G, 7971G et 7975G en version 9.2.1 du logiciel SCCP.",
     "capabilities": {
