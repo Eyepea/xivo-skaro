@@ -7,19 +7,19 @@ a Unix datagram socket.
 The client takes the DHCP information from its command line. For example, if
 the lease 192.168.1.1 has just been committed by the DHCP server to the DHCP
 client with the MAC address 00:11:22:33:44:55, if the script had been called
-from a shell, it could have look like:
+from a shell, it could have looked like:
 
-  dxtorc 'commit' '192.168.1.1' '00:11:22:33:44:55'
+  dxtorc 'commit' '192.168.1.1' '0:11:22:33:44:55'
 
 It can also take additional info about the DHCP request. Here's an example
 of sending the value of the vendor-class-identifier option, in this case,
 'foobar':
 
-  dxtorc 'commit' '192.168.1.1' '00:11:22:33:44:55' '060666f6f6261720a'
+  dxtorc 'commit' '192.168.1.1' '0:11:22:33:44:55' '06066.6f.6f.62.61.72.a'
 
 Note: the first 3 digits represent the decimal value of the DHCP option and
       everything after is the hexadecimal representation of the raw value
-      of the option.
+      of the option, separated by dot.
 
 Empty arguments after the MAC address are ignored.
 
@@ -30,7 +30,6 @@ only the IP address needs to be passed to the client:
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Proformatique
 
