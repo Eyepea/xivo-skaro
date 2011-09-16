@@ -65,7 +65,7 @@ if [ -z "${XIVO_PROVD_NET4_IP}" ]; then
 fi
 
 if [ "${XIVO_PROVD_DHCP_INTEGRATION}" = "1" ]; then
-  _XIVO_PROVD_DHCP_INTEGRATION='on commit {\n            execute("dxtorc",\n                    "commit",\n                    binary-to-ascii(10, 8, ".", leased-address),\n                    binary-to-ascii(16, 8, ":", suffix(hardware, 6)),\n                    pick-first-value(concat("060", binary-to-ascii(16, 8, "", option vendor-class-identifier)), "")\n                   );\n        }'
+  _XIVO_PROVD_DHCP_INTEGRATION='on commit {\n            execute("dxtorc",\n                    "commit",\n                    binary-to-ascii(10, 8, ".", leased-address),\n                    binary-to-ascii(16, 8, ":", suffix(hardware, 6)),\n                    pick-first-value(concat("060", binary-to-ascii(16, 8, ".", option vendor-class-identifier)), "")\n                   );\n        }'
 else
   _XIVO_PROVD_DHCP_INTEGRATION=""
 fi
