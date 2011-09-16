@@ -31,7 +31,7 @@ __license__ = """
 import functools
 import json
 import logging
-from binascii import a2b_hex, a2b_base64
+from binascii import a2b_base64
 from provd.app import InvalidIdError
 from provd.localization import get_locale_and_language
 from provd.operation import format_oip, operation_in_progres_from_deferred
@@ -639,7 +639,8 @@ class DeviceDHCPInfoResource(Resource):
         options = {}
         for raw_option in raw_options:
             code = int(raw_option[:3], 10)
-            value = a2b_hex(raw_option[3:])
+            value = ''.join(chr(int(token, 16)) for token in
+                            raw_option[3:].split('.'))
             options[code] = value
         return options
     
@@ -653,6 +654,7 @@ class DeviceDHCPInfoResource(Resource):
                 mac = norm_mac(raw_dhcp_info[u'mac'])
                 options = self._transform_options(raw_dhcp_info[u'options'])
         except (KeyError, TypeError, ValueError), e:
+            logger.warning('Invalid DHCP info content: %s', e)
             return respond_error(request, e)
         else:
             if op == u'commit':
