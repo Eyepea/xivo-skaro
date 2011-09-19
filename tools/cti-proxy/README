@@ -1,3 +1,8 @@
 A few tools for debugging CTI client-server interactions.
 
 If you are using python < 2.7, you need to install argparse.
+
+Make sure the src/ directory is in your PYTHONPATH, i.e. the correct way to
+launch the scripts if you are in this directory is, for example:
+
+  $ PYTHONPATH=src scripts/ctispy skaro-new
