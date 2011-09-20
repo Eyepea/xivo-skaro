@@ -93,8 +93,8 @@ $array['element']['announce_commented']['set'] = true;
 
 $array['element']['tlscertfile'] = array();
 $array['element']['tlscertfile']['default'] = '';
-$array['element']['tlscafile'] = array();
-$array['element']['tlscafile']['default'] = '';
+$array['element']['tlsprivkeyfile'] = array();
+$array['element']['tlsprivkeyfile']['default'] = '';
 
 $array['element']['asterisklist'] = array();
 $array['element']['asterisklist']['default'] = 'xivo';
@@ -130,7 +130,7 @@ $array['filter']['info_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'u
 $array['filter']['announce_ip'] 	= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['announce_port'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['tlscertfile'] 	= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
-$array['filter']['tlscafile'] 		= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
+$array['filter']['tlsprivkeyfile'] 		= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
 $array['filter']['asterisklist'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(60,86400));
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));

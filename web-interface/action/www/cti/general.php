@@ -98,13 +98,15 @@ $_TPL->set_var('info', $info);
 $_TPL->set_var('listaccount', $ctiaccounts->get_all());
 
 function certfilter($cert)
-{
-	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && in_array('CA', $cert);
-}
+{ return count($cert['types']) == 1 && $cert['types'][0] == 'certificate'; }
+
+function privkeyfilter($cert)
+{ return count($cert['types']) == 1 && $cert['types'][0] == 'privkey'; }
 
 $modcert = &$_XOBJ->get_module('certificate');
 $allcerts = $modcert->get_all();
 $_TPL->set_var('tlscertfiles', array_filter($allcerts, "certfilter"));
+$_TPL->set_var('tlsprivkeyfiles', array_filter($allcerts, "privkeyfilter"));
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');

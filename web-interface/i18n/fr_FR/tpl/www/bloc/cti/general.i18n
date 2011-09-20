@@ -153,3 +153,11 @@ Identifiant
 
 ; col_ctiaccounts_password
 Mot de passe
+
+
+; fm_tlsprivkeyfile
+Clé privée : 
+
+; hlp_fm_tlsprivkeyfile
+Vous devez sélectionner la clé privée utilisée pour générer le certificat choisit
+

@@ -426,6 +426,8 @@ CREATE TABLE ctimain (
  announce_ip varchar(255),
  announce_port integer unsigned,
  asterisklist varchar(255),
+ tlscertfile varchar(128),
+ tlsprivkeyfile varchar(128),
  updates_period integer unsigned,
  socket_timeout integer unsigned,
  login_timeout integer unsigned,
@@ -433,7 +435,7 @@ CREATE TABLE ctimain (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctimain VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 3600, 10, 5, 'context');
+INSERT INTO ctimain VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 
 
 DROP TABLE ctiphonehints;

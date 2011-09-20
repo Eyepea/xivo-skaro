@@ -266,11 +266,8 @@ switch($act)
         $udpdefs = array();
         $udpdefs['ANNOUNCE'] = array($load_ctimain['announce_ip'], $load_ctimain['announce_port']);
 
-        $certpath = dwho_file::get_info($load_ctimain['tlscertfile']);
-        $certpathnoext = $certpath['pathnoext'];
-
-        $out['certfile'] = $certpathnoext.'.crt';
-        $out['keyfile'] = $certpathnoext.'.key';
+        $out['certfile'] = $load_ctimain['tlscertfile'];
+        $out['keyfile']  = $load_ctimain['tlsprivkeyfile'];
 
         $out['main']['incoming_tcp'] = $tcpdefs;
         $out['main']['incoming_udp'] = $udpdefs;

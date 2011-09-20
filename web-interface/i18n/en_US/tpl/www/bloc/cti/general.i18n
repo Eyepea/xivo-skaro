@@ -153,3 +153,10 @@ Login
 
 ; col_ctiaccounts_password
 Password
+
+; fm_tlsprivkeyfile
+Private Key:
+
+; hlp_fm_tlsprivkeyfile
+Choose the private key used to generate selected certificate
+

@@ -328,25 +328,38 @@ endif;
 				'paragraph'	=> false));?>
 			</td>
 			<td>
-			<?=$form->text(array('desc'	=> $this->bbf('fm_cti_ctis_ip'),
-				'name'		=> 'cti[ctis_ip]',
-				'labelid'	=> 'cti_ctis_ip',
-				'value'		=> $info['ctimain']['ctis_ip'],
-				'required'	=> 1,
-				'regexp'	=> '[[:ipv4:]]',
-				'default'	=> $element['ctimain']['ctis_ip']['default'] //,
-				/* 'help'		=> $this->bbf('hlp_fm_ctis_cti_ip') */ ))
-			?>
-		    <?=$form->select(array('desc'  => $this->bbf('fm_tlscertfile'),
+			<?
+				echo $form->text(array('desc'	=> $this->bbf('fm_cti_ctis_ip'),
+								'name'		=> 'cti[ctis_ip]',
+								'labelid'	=> 'cti_ctis_ip',
+								'value'		=> $info['ctimain']['ctis_ip'],
+								'required'	=> 1,
+								'regexp'	=> '[[:ipv4:]]',
+								'default'	=> $element['ctimain']['ctis_ip']['default'])),
+
+							$form->select(array('desc'  => $this->bbf('fm_tlscertfile'),
 		            'name'    => 'cti[tlscertfile]',
 		            'labelid' => 'tlscertfile',
-					'key'     => 'name',
-					'altkey'  => 'path',
+								'key'     => 'name',
+								'altkey'  => 'path',
 		            'empty'   => true,
-					'label'		=> false,
+								'label'		=> false,
 		            'selected'=> $this->get_var('info','ctimain','tlscertfile'),
 		            'default' => $element['ctimain']['tlscertfile']['default']),
-		         $this->get_var('tlscertfiles'))?>
+					         $this->get_var('tlscertfiles')),
+
+
+					    $form->select(array('desc'  => $this->bbf('fm_tlsprivkeyfile'),
+							  'name'    => 'cti[tlsprivkeyfile]',
+		            'labelid' => 'tlsprivkeyfile',
+								'key'     => 'name',
+								'altkey'  => 'path',
+		            'empty'   => true,
+				        'help'    => $this->bbf('hlp_fm_tlsprivkeyfile'),
+						    'selected'=> $this->get_var('info','ctimain','tlsprivkeyfile'),
+								'default' => $element['ctimain']['tlsprivkeyfile']['default']),
+					         $this->get_var('tlsprivkeyfiles'));
+			?>
 			</td>
 			<td class="td-right">
 			<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_ctis_port'),
