@@ -161,3 +161,5 @@ Clé privée :
 ; hlp_fm_tlsprivkeyfile
 Vous devez sélectionner la clé privée utilisée pour générer le certificat choisit
 
+; fm_cti_list_active
+Activer

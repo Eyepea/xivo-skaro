@@ -160,3 +160,5 @@ Private Key:
 ; hlp_fm_tlsprivkeyfile
 Choose the private key used to generate selected certificate
 
+; fm_cti_list_active
+Activate
