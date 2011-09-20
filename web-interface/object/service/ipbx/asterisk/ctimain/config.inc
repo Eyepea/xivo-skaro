@@ -41,55 +41,55 @@ $array['element']['fagi_ip'] = array();
 $array['element']['fagi_ip']['default'] = '127.0.0.1';
 $array['element']['fagi_port'] = array();
 $array['element']['fagi_port']['default'] = 5002;
-$array['element']['fagi_commented'] = array();
-$array['element']['fagi_commented']['value'] = array(0,1);
-$array['element']['fagi_commented']['default'] = 1;
-$array['element']['fagi_commented']['set'] = true;
+$array['element']['fagi_active'] = array();
+$array['element']['fagi_active']['value'] = array(0,1);
+$array['element']['fagi_active']['default'] = 1;
+$array['element']['fagi_active']['set'] = true;
 
 $array['element']['cti_ip'] = array();
 $array['element']['cti_ip']['default'] = '0.0.0.0';
 $array['element']['cti_port'] = array();
 $array['element']['cti_port']['default'] = 5003;
-$array['element']['cti_commented'] = array();
-$array['element']['cti_commented']['value'] = array(0,1);
-$array['element']['cti_commented']['default'] = 1;
-$array['element']['cti_commented']['set'] = true;
+$array['element']['cti_active'] = array();
+$array['element']['cti_active']['value'] = array(0,1);
+$array['element']['cti_active']['default'] = 1;
+$array['element']['cti_active']['set'] = true;
 
 $array['element']['ctis_ip'] = array();
 $array['element']['ctis_ip']['default'] = '0.0.0.0';
 $array['element']['ctis_port'] = array();
 $array['element']['ctis_port']['default'] = 5013;
-$array['element']['ctis_commented'] = array();
-$array['element']['ctis_commented']['value'] = array(0,1);
-$array['element']['ctis_commented']['default'] = 1;
-$array['element']['ctis_commented']['set'] = true;
+$array['element']['ctis_active'] = array();
+$array['element']['ctis_active']['value'] = array(0,1);
+$array['element']['ctis_active']['default'] = 1;
+$array['element']['ctis_active']['set'] = true;
 
 $array['element']['webi_ip'] = array();
 $array['element']['webi_ip']['default'] = '127.0.0.1';
 $array['element']['webi_port'] = array();
 $array['element']['webi_port']['default'] = 5004;
-$array['element']['webi_commented'] = array();
-$array['element']['webi_commented']['value'] = array(0,1);
-$array['element']['webi_commented']['default'] = 1;
-$array['element']['webi_commented']['set'] = true;
+$array['element']['webi_active'] = array();
+$array['element']['webi_active']['value'] = array(0,1);
+$array['element']['webi_active']['default'] = 1;
+$array['element']['webi_active']['set'] = true;
 
 $array['element']['info_ip'] = array();
 $array['element']['info_ip']['default'] = '127.0.0.1';
 $array['element']['info_port'] = array();
 $array['element']['info_port']['default'] = 5005;
-$array['element']['info_commented'] = array();
-$array['element']['info_commented']['value'] = array(0,1);
-$array['element']['info_commented']['default'] = 1;
-$array['element']['info_commented']['set'] = true;
+$array['element']['info_active'] = array();
+$array['element']['info_active']['value'] = array(0,1);
+$array['element']['info_active']['default'] = 1;
+$array['element']['info_active']['set'] = true;
 
 $array['element']['announce_ip'] = array();
 $array['element']['announce_ip']['default'] = '127.0.0.1';
 $array['element']['announce_port'] = array();
 $array['element']['announce_port']['default'] = 5006;
-$array['element']['announce_commented'] = array();
-$array['element']['announce_commented']['value'] = array(0,1);
-$array['element']['announce_commented']['default'] = 1;
-$array['element']['announce_commented']['set'] = true;
+$array['element']['announce_active'] = array();
+$array['element']['announce_active']['value'] = array(0,1);
+$array['element']['announce_active']['default'] = 1;
+$array['element']['announce_active']['set'] = true;
 
 $array['element']['tlscertfile'] = array();
 $array['element']['tlscertfile']['default'] = '';
@@ -136,4 +136,11 @@ $array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' =
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['login_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['parting_astid_context'] = array('set' => false, 'chk' => 2, 'key' => array('astid', 'context', 'context,astid'));
+
+$array['filter']['fagi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['cti_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['ctis_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['webi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['info_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['announce_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 ?>

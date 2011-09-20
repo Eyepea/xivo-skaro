@@ -257,15 +257,22 @@ switch($act)
         }
 
         # MAIN
-        $tcpdefs = array();
-        $tcpdefs['FAGI'] = array($load_ctimain['fagi_ip'], $load_ctimain['fagi_port']);
-        $tcpdefs['CTI'] = array($load_ctimain['cti_ip'], $load_ctimain['cti_port']);
-        $tcpdefs['CTIS'] = array($load_ctimain['ctis_ip'], $load_ctimain['ctis_port']);
-        $tcpdefs['WEBI'] = array($load_ctimain['webi_ip'], $load_ctimain['webi_port']);
-        $tcpdefs['INFO'] = array($load_ctimain['info_ip'], $load_ctimain['info_port']);
-        $udpdefs = array();
-        $udpdefs['ANNOUNCE'] = array($load_ctimain['announce_ip'], $load_ctimain['announce_port']);
+				$tcpdefs = array();
+				foreach(array('fagi','cti','ctis','webi','info') as $k)
+					$tcpdefs[strtoupper($k)] = array(
+						$load_ctimain[$k.'_ip'],
+						$load_ctimain[$k.'_port'],
+						$load_ctimain[$k.'_active'] != 0
+					);
 
+				$udpdefs = array(
+					'ANNOUNCE' => array(
+						$load_ctimain['announce_ip'],
+						$load_ctimain['announce_port'],
+						$load_ctimain['announce_active'] != 0
+					)
+				);
+				
         $out['certfile'] = $load_ctimain['tlscertfile'];
         $out['keyfile']  = $load_ctimain['tlsprivkeyfile'];
 

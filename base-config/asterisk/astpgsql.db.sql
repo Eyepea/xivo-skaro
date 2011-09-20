@@ -487,22 +487,22 @@ CREATE TABLE "ctimain" (
  "ami_password" varchar(64),
  "fagi_ip" varchar(16),
  "fagi_port" INTEGER,
- "fagi_commented" INTEGER, -- BOOLEAN
+ "fagi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "cti_ip" varchar(16),
  "cti_port" INTEGER,
- "cti_commented" INTEGER, -- BOOLEAN
+ "cti_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "ctis_ip" varchar(16),
  "ctis_port" INTEGER,
- "ctis_commented" INTEGER, -- BOOLEAN
+ "ctis_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "webi_ip" varchar(16),
  "webi_port" INTEGER,
- "webi_commented" INTEGER, -- BOOLEAN
+ "webi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "info_ip" varchar(16),
  "info_port" INTEGER,
- "info_commented" INTEGER, -- BOOLEAN
+ "info_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "announce_ip" varchar(16),
  "announce_port" INTEGER,
- "announce_commented" INTEGER, -- BOOLEAN
+ "announce_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "asterisklist" varchar(128),
  "tlscertfile" varchar(128),
  "tlsprivkeyfile" varchar(128),

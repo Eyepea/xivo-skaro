@@ -248,18 +248,17 @@ endif;
 	<div class="sb-list">
 		<table>
 		<tr class="sb-top">
-			<th class="th-left" width="40"><?=$this->bbf('fm_cti_list_commented')?></th>
+			<th class="th-left" width="40"><?=$this->bbf('fm_cti_list_active')?></th>
 			<th class="th-center"><?=$this->bbf('fm_cti_list_ip')?></th>
 			<th class="th-right" width="25%"><?=$this->bbf('fm_cti_list_port')?></th>
 		</tr>
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[fagi_commented]',
-				'value'		=> $info['ctimain']['fagi_commented'],
+			<?=$form->checkbox(array('name'	=> 'cti[fagi_active]',
+				'checked'		=> $info['ctimain']['fagi_active'],
 				'label'		=> false,
-				'id'		=> 'it-fagi_commented',
-				'default'	=> $element['ctimain']['fagi_commented']['default'],
+				'id'		=> 'it-fagi_active',
 				'paragraph'	=> false));?>
 			</td>
 			<td>
@@ -269,7 +268,6 @@ endif;
 				'required'	=> 1,
 				'regexp'	=> '[[:ipv4:]]',
 				'value'		=> $info['ctimain']['fagi_ip'],
-				'default'	=> $element['ctimain']['fagi_ip']['default'] //,
 				/* 'help'		=> $this->bbf('hlp_fm_cti_fagi_ip') */ ))?>
 			</td>
 			<td class="td-right">
@@ -287,11 +285,10 @@ endif;
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[cti_commented]',
-				'value'		=> $info['ctimain']['cti_commented'],
+			<?=$form->checkbox(array('name'	=> 'cti[cti_active]',
+				'checked'=> $info['ctimain']['cti_active'],
 				'label'		=> false,
-				'id'		=> 'it-cti_commented',
-				'default'	=> $element['ctimain']['cti_commented']['default'],
+				'id'		=> 'it-cti_active',
 				'paragraph'	=> false));?>
 			</td>
 			<td>
@@ -320,11 +317,10 @@ endif;
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[ctis_commented]',
-				'value'		=> $info['ctimain']['ctis_commented'],
+			<?=$form->checkbox(array('name'	=> 'cti[ctis_active]',
+				'checked'=> $info['ctimain']['ctis_active'],
 				'label'		=> false,
-				'id'		=> 'it-ctis_commented',
-				'default'	=> $element['ctimain']['ctis_commented']['default'],
+				'id'		=> 'it-ctis_active',
 				'paragraph'	=> false));?>
 			</td>
 			<td>
@@ -377,11 +373,10 @@ endif;
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[webi_commented]',
-				'value'		=> $info['ctimain']['webi_commented'],
+			<?=$form->checkbox(array('name'	=> 'cti[webi_active]',
+				'checked'		=> $info['ctimain']['webi_active'],
 				'label'		=> false,
-				'id'		=> 'it-webi_commented',
-				'default'	=> $element['ctimain']['webi_commented']['default'],
+				'id'		=> 'it-webi_active',
 				'paragraph'	=> false));?>
 			</td>
 			<td>
@@ -411,11 +406,10 @@ endif;
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[info_commented]',
-				'value'		=> $info['ctimain']['info_commented'],
+			<?=$form->checkbox(array('name'	=> 'cti[info_active]',
+				'checked'	=> $info['ctimain']['info_active'],
 				'label'		=> false,
-				'id'		=> 'it-info_commented',
-				'default'	=> $element['ctimain']['info_commented']['default'],
+				'id'		=> 'it-info_active',
 				'paragraph'	=> false));?>
 			</td>
 			<td>
@@ -445,11 +439,10 @@ endif;
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[announce_commented]',
-				'value'		=> $info['ctimain']['announce_commented'],
+			<?=$form->checkbox(array('name'	=> 'cti[announce_active]',
+				'checked' => $info['ctimain']['announce_active'],
 				'label'		=> false,
-				'id'		=> 'it-announce_commented',
-				'default'	=> $element['ctimain']['announce_commented']['default'],
+				'id'		=> 'it-announce_active',
 				'paragraph'	=> false));?>
 			</td>
 			<td>

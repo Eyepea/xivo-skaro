@@ -415,16 +415,22 @@ CREATE TABLE ctimain (
  ami_password varchar(64),
  fagi_ip varchar(255),
  fagi_port integer unsigned,
+ fagi_active integer not null default 1,
  cti_ip varchar(255),
  cti_port integer unsigned,
+ cti_active integer not null default 1,
  ctis_ip varchar(16),
  ctis_port INTEGER,
+ ctis_active integer not null default 1,
  webi_ip varchar(255),
  webi_port integer unsigned,
+ webi_active integer not null default 1,
  info_ip varchar(255),
  info_port integer unsigned,
+ info_active integer not null default 1,
  announce_ip varchar(255),
  announce_port integer unsigned,
+ announce_active integer not null default 1,
  asterisklist varchar(255),
  tlscertfile varchar(128),
  tlsprivkeyfile varchar(128),
@@ -435,7 +441,7 @@ CREATE TABLE ctimain (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctimain VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, '0.0.0.0', 5003, '0.0.0.0', 5013, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
+INSERT INTO ctimain VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1 '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 
 
 DROP TABLE ctiphonehints;
