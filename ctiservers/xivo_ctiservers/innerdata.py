@@ -73,7 +73,7 @@ class Safe:
             'entityid', # XXX (for entity/context relations)
             'mobilephonenumber',
             'profileclient',
-
+            'enableclient',
             'agentid',
             'voicemailid',
 
