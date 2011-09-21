@@ -7,10 +7,6 @@ env.username xivo_munin_user
 env.secret jeSwupAd0
 env.channels SIP IAX2 SCCP DAHDI MISDN
 
-[apache_*]
-env.port
-env.ssl yes
-
 [asterisk_voicemail]
 user asterisk
 
