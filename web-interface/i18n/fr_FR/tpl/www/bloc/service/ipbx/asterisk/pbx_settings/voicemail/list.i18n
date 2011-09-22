@@ -11,7 +11,8 @@ E-mail
 Aucune messagerie vocale trouvée
 
 ; opt_delete_confirm
-Etes-vous certain de vouloir supprimer cette messagerie vocale ?
+Etes-vous certain de vouloir supprimer cette messagerie vocale (ATTENTION: ceci effacera de manière permanente les message vocaux associés) ?
 
 ; toolbar_adv_menu_delete_confirm
-Etes-vous certain de vouloir supprimer cette ou ces messageries vocales ?
+Etes-vous certain de vouloir supprimer cette ou ces messageries vocales (ATTENTION: ceci effacera de
+manière permanente les message vocaux associés) ?

@@ -11,4 +11,4 @@ E-mail
 No voicemail found
 
 ; opt_delete_confirm
-Are you sure you want to delete this voicemail?
+Are you sure you want to delete this voicemail (BEWARE, it will permanently delete all associated recorded messages) ?
