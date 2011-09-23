@@ -840,12 +840,12 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		&& $rs['networktype'] == 'voip'
 		&& $voip_iface['name'] != $rs['name'])
 		{
-			$iface = $this->get($voip_iface['name']);
+			$iface = $this->get($voip_iface['id']);
 			$iface['networktype'] = 'data';
 			$iface['netiface']['networktype'] = 'data';
 
 			if(($rs = $this->_netiface->chk_values($iface['netiface'])) === false
-			or $this->_netiface->edit($iface['netiface']['name'], $rs) === false)
+			or $this->_netiface->edit($iface['netiface']['id'], $rs) === false)
 				return false;
 		}
 
@@ -944,7 +944,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = 'edit';
 		$this->_return = array();
 
-		$voip_iface = $this->_netiface->get_voip_iface();
+		$rs = $this->get_result('netiface');
+		$voip_iface = $this->_netiface->get_voip_iface($rs['uuid']);
 
 		if($this->get_errnb() > 0
 		|| $this->edit_netiface() === false
@@ -967,7 +968,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		&& $rs['networktype'] == 'voip'
 		&& $voip_iface['name'] != $rs['name'])
 		{
-			$iface = $this->get($voip_iface['name']);
+			$iface = $this->get($voip_iface['id']);
 			$iface['networktype'] = 'data';
 			$iface['netiface']['networktype'] = 'data';
 
