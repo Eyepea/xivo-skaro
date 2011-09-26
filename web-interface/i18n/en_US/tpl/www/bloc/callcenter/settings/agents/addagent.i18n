@@ -97,3 +97,55 @@ weight must be an integer between 0 and 100
 
 ; fm_agentoptions_musiconhold
 Musiconhold:
+
+; fm_agentfeatures_musiconhold
+Music on hold:
+
+; fm_agentfeatures_ackcall
+Require a DTMF to pick a call :
+
+; hlp_fm_agentfeatures_ackcall
+Config asterisk: ackcall
+
+; fm_agentfeatures_ackcall-opt(no)
+No
+
+; fm_agentfeatures_ackcall-opt(yes)
+Yes
+
+; fm_agentfeatures_ackcall-opt(always)
+Always
+
+; hlp_fm_agentfeatures_acceptdtmf
+Config asterisk: acceptdtmf
+
+; fm_agentfeatures_acceptdtmf
+Accept call DTMF :
+
+; hlp_fm_agentfeatures_enddtmf
+Config asterisk: enddtmf
+
+; fm_agentfeatures_enddtmf
+End call DTFM :
+
+; hlp_fm_agentfeatures_autologoff
+Config asterisk: autologoff
+
+; fm_agentfeatures_autologoff
+Ring time before logoff :
+
+; fm_agentfeatures_autologoff-opt(0)
+Unlimited
+
+; fm_agentfeatures_autologoff-opt
+%s seconds
+
+; fm_agentfeatures_wrapuptime
+Wrap up time :
+
+; fm_agentfeatures_wrapuptime-opt(0)
+Disabled
+
+; fm_agentfeatures_wrapuptime-opt-seconds
+%s seconds
+
