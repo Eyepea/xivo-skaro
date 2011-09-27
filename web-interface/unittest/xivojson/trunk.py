@@ -4,7 +4,7 @@ from __future__ import with_statement
 __version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
-    Copyright (C) 2010  Proformatique
+    Copyright (C) 2010-2011  Proformatique
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,39 +20,46 @@ __license__ = """
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
+import cjson, os
 from xivojson import *
 
-class Test04Agent(XiVOTestCase):
-    OBJ = 'agents'
+"""REQUIREMENTS:
+    - a context from-extern
+    - a user with id 1 exists
+"""
+
+class Test07Trunk(XiVOTestCase):
+    OBJ = 'sip'
 
     def setUp(self):
-        super(Test04Agent, self).setUp()
-        self.client.register(self.OBJ, 'callcenter', 'settings')
+        super(Test07Trunk, self).setUp()
+        self.client.register(self.OBJ, 'service/ipbx', 'trunk_management')
 
 
-    def test_01_agent(self):
+    def test_01_siptrunk(self):
         (resp, data) = self.client.list(self.OBJ)
-        # no agent
+        # no queue == code 204
         self.assertEqual(resp.status, 204)
-        
+
         # ADD
-        content = self.jload('xivojson/agent.json')
-        self.debug(content)
+        with open('xivojson/siptrunk.json') as f:
+            content = cjson.decode(f.read())
+        self.debug(content)	
 
         (resp, data) = self.client.add(self.OBJ, content)
         self.debug(data)
         self.assertEqual(resp.status, 200)
 
-        # LIST
+        # LIST / Check add
         (resp, data) = self.client.list(self.OBJ)
         self.assertEqual(resp.status, 200)
 
-        data = self.jdecode(data)
+        data = cjson.decode(data)
         self.debug(data)
 
         self.assertEqual(len(data), 1)
-        self.assertTrue('number' in data[0])
-        self.assertTrue(data[0]['number'] == '160')
+        self.assertTrue('name' in data[0])
+        self.assertTrue(data[0]['name'] == 'unittest')
         
         id = data[0]['id']
 
@@ -60,10 +67,10 @@ class Test04Agent(XiVOTestCase):
         (resp, data) = self.client.view(self.OBJ, id)
         self.assertEqual(resp.status, 200)
 
-        data = self.jdecode(data)
+        data = cjson.decode(data)
         self.debug(data)
-        self.assertTrue('agentfeatures' in data)
-        self.assertTrue(data['agentfeatures']['fullname'] == 'john doe')
+        self.assertTrue('trunkfeatures' in data)
+        self.assertTrue(data['trunkfeatures']['protocol'] == 'sip')
 
         # DELETE
         (resp, data) = self.client.delete(self.OBJ, id)
@@ -73,6 +80,7 @@ class Test04Agent(XiVOTestCase):
         # try to redelete => must return 404
         (resp, data) = self.client.delete(self.OBJ, id)
         self.assertEqual(resp.status, 404)
+
 
 if __name__ == '__main__':
     unittest.main()
