@@ -7,11 +7,7 @@ import unittest
 import fetchfw.install as install
 from fetchfw.util import list_paths 
 
-if os.path.basename(os.getcwd()) == 'test':
-    TEST_RES_DIR = '../test_resources/install'
-else:
-    # assuming we are running the test in the parent directory
-    TEST_RES_DIR = 'test_resources/install'
+TEST_RES_DIR = os.path.join(os.path.dirname(__file__), 'install')
 
 
 def _create_file(base_path, filename, content=None):
