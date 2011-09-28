@@ -8,7 +8,6 @@ import tempfile
 import unittest
 import fetchfw.download as download
 
-
 CONTENT = 'foobar'
 CORRUPTED_CONTENT = 'barfoo'
 

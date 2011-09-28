@@ -7,11 +7,7 @@ import unittest
 import fetchfw.storage as storage
 from ConfigParser import RawConfigParser
 
-if os.path.basename(os.getcwd()) == 'test':
-    TEST_RES_DIR = '../test_resources/storage'
-else:
-    # assuming we are running the test in the parent directory
-    TEST_RES_DIR = 'test_resources/storage'
+TEST_RES_DIR = os.path.join(os.path.dirname(__file__), 'storage')
 
 
 class TestDefaultRemoteFileBuilder(unittest.TestCase):
