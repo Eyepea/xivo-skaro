@@ -40,8 +40,11 @@ Group:
 ; fm_agentfeatures_silent
 Disable connection announce:
 
-; fm_agentfeatures_numgroup
-Group:
+; bt_inuser
+Add user(s) ->
+
+; bt_outuser
+<- Remove user(s)
 
 ; bt_inqueue
 Add ->
@@ -64,15 +67,11 @@ Create a queue
 ; fm_agentfeatures_description
 Description:
 
-; bt_inuser
-Add user(s) ->
-
-; bt_outuser
-<- Remove user(s)
-
-
 ; smenu_queueskills
 Queueskills
+
+; fm_queueskills_item
+Skills weighing
 
 ; col_1
 Skill
@@ -95,17 +94,11 @@ weight is not an integer
 ; error_fm_queueskill_weight(unbound)
 weight must be an integer between 0 and 100
 
-; fm_agentoptions_musiconhold
-Musiconhold:
-
 ; fm_agentfeatures_musiconhold
 Music on hold:
 
 ; fm_agentfeatures_ackcall
 Require a DTMF to pick a call :
-
-; hlp_fm_agentfeatures_ackcall
-Config asterisk: ackcall
 
 ; fm_agentfeatures_ackcall-opt(no)
 No
@@ -116,20 +109,11 @@ Yes
 ; fm_agentfeatures_ackcall-opt(always)
 Always
 
-; hlp_fm_agentfeatures_acceptdtmf
-Config asterisk: acceptdtmf
-
 ; fm_agentfeatures_acceptdtmf
 Accept call DTMF :
 
-; hlp_fm_agentfeatures_enddtmf
-Config asterisk: enddtmf
-
 ; fm_agentfeatures_enddtmf
 End call DTFM :
-
-; hlp_fm_agentfeatures_autologoff
-Config asterisk: autologoff
 
 ; fm_agentfeatures_autologoff
 Ring time before logoff :
@@ -148,4 +132,22 @@ Disabled
 
 ; fm_agentfeatures_wrapuptime-opt-seconds
 %s seconds
+
+; hlp_fm_agentfeatures_ackcall
+Config asterisk: ackcall
+
+; hlp_fm_agentfeatures_acceptdtmf
+Config asterisk: acceptdtmf
+
+; hlp_fm_agentfeatures_enddtmf
+Config asterisk: enddtmf
+
+; hlp_fm_agentfeatures_autologoff
+Config asterisk: autologoff
+
+; hlp_fm_agentfeatures_wrapuptime
+Config asterisk: wrapuptime
+
+; hlp_fm_agentfeatures_musiconhold
+Config asterisk: musiconhold
 

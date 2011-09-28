@@ -28,26 +28,14 @@ Nom affiché :
 ; fm_context_entity
 Entité :
 
+; fm_context_description
+Description :
+
 ; fm_contexttype
 Type de contexte :
 
 ; fm_context_context-include
 Inclure des contextes :
-
-; bt_upcontext
-Monter un ou plusieurs contextes
-
-; bt_downcontext
-Descendre un ou plusieurs contextes
-
-; bt_incontext
-Ajouter un ou plusieurs contextes ->
-
-; bt_outcontext
-<- Enlever un ou plusieurs contextes
-
-; fm_context_description
-Description :
 
 ; create_entity
 Créer une entité
@@ -129,3 +117,16 @@ Supprimer un intervalle de numéros
 
 ; no_contextnumbers-incall
 Aucun intervalle de numéros
+
+; bt_upcontext
+Monter un ou plusieurs contextes
+
+; bt_downcontext
+Descendre un ou plusieurs contextes
+
+; bt_incontext
+Ajouter un ou plusieurs contextes ->
+
+; bt_outcontext
+<- Enlever un ou plusieurs contextes
+

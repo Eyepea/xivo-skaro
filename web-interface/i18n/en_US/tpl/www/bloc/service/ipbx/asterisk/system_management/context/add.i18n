@@ -31,6 +31,12 @@ Entity:
 ; fm_context_description
 Description:
 
+; fm_contexttype
+Context type:
+
+; fm_context_context-include
+Include sub-contexts
+
 ; create_entity
 Create an entity
 
@@ -111,9 +117,6 @@ Delete this number range
 
 ; no_contextnumbers-incall
 No number range
-
-; fm_context_context-include 
-Include sub-contexts
 
 ; bt_upcontext
 Move up context(s)
