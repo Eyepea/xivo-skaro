@@ -242,7 +242,7 @@ class Safe:
         default_parking['name'] = 'default'
         default_parking['id'] = '0'
         gf = self.extenfeatures['generalfeatures']
-        if 'findslot' in gf and gf['findslot']['var_val'] is 'next':
+        if 'findslot' in gf and gf['findslot']['var_val'] == 'next':
             default_parking['next'] = '1'
         else:
             default_parking['next'] = '0'
