@@ -30,6 +30,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	var $_timezones		= array();
 	var $_contextlist	= array();
 	var $_modules		= array();
+	var $_sysconfd = false;
 
 	function xivo_application_service_asterisk_voicemail(&$service,&$dso,$param=null,$components=true)
 	{
@@ -40,11 +41,18 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		$this->_dso = &$dso;
 
+
 		if(($this->_voicemailfeatures = &$this->_service->get_module('voicemailfeatures')) === false
 		|| ($this->_voicemail = &$this->_service->get_module('voicemail')) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
+
+		// sysconfd is a xivo object
+		$_XOBJ = &dwho_gct::get('xivo_object');
+		if ($_XOBJ == false
+		|| ($this->_sysconfd = &$_XOBJ->get_module('sysconfd')) == false)
+			return false;
 
 		return(true);
 	}
@@ -540,7 +548,10 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 			$this->reverse_delete();
 		}
 		else
+		{
 			$this->unlinks();
+			$this->delete_storage();	
+		}
 
 		$this->_status = '';
 
@@ -572,6 +583,15 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		return($r);
 	}
+
+	function delete_storage()
+	{
+		$this->_sysconfd->request_get('/delete_voicemail', array(
+			array('context', $this->_info['voicemail']['context']), 
+			array('name'   , $this->_info['voicemail']['mailbox'])
+		));
+	}
+
 
 	function reverse_delete()
 	{

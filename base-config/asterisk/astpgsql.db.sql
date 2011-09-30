@@ -487,25 +487,25 @@ CREATE TABLE "ctimain" (
  "ami_password" varchar(64),
  "fagi_ip" varchar(16),
  "fagi_port" INTEGER,
- "fagi_commented" INTEGER, -- BOOLEAN
+ "fagi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "cti_ip" varchar(16),
  "cti_port" INTEGER,
- "cti_commented" INTEGER, -- BOOLEAN
+ "cti_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "ctis_ip" varchar(16),
  "ctis_port" INTEGER,
- "ctis_commented" INTEGER, -- BOOLEAN
+ "ctis_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "webi_ip" varchar(16),
  "webi_port" INTEGER,
- "webi_commented" INTEGER, -- BOOLEAN
+ "webi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "info_ip" varchar(16),
  "info_port" INTEGER,
- "info_commented" INTEGER, -- BOOLEAN
+ "info_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "announce_ip" varchar(16),
  "announce_port" INTEGER,
- "announce_commented" INTEGER, -- BOOLEAN
+ "announce_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "asterisklist" varchar(128),
  "tlscertfile" varchar(128),
- "tlscafile" varchar(128),
+ "tlsprivkeyfile" varchar(128),
  "updates_period" INTEGER,
  "socket_timeout" INTEGER,
  "login_timeout" INTEGER,
@@ -672,7 +672,8 @@ INSERT INTO "ctistatus" VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1
 INSERT INTO "ctistatus" VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
-SELECT setval('ctistatus_id_seq', 6);
+INSERT INTO "ctistatus" VALUES(6,1,'unknown','Inconnu','','#202020','',1);
+SELECT setval('ctistatus_id_seq', 7);
 
 
 DROP TABLE IF EXISTS "devicefeatures";
@@ -1239,8 +1240,8 @@ CREATE TABLE "musiconhold" (
 CREATE INDEX "musiconhold__idx__commented" ON "musiconhold"("commented");
 CREATE UNIQUE INDEX "musiconhold__uidx__filename_category_var_name" ON "musiconhold"("filename","category","var_name");
 
-INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','custom');
-INSERT INTO "musiconhold" VALUES (2,0,0,0,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
+INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','files');
+INSERT INTO "musiconhold" VALUES (2,0,0,1,'musiconhold.conf','default','application','');
 INSERT INTO "musiconhold" VALUES (3,0,0,0,'musiconhold.conf','default','random','no');
 INSERT INTO "musiconhold" VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 SELECT setval('musiconhold_id_seq', 5);

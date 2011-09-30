@@ -26,10 +26,10 @@ Nom affiché :
 Appels Internes
 
 ; fm_context_internal-numberbeg
-Début de l'intervalle de numéro :
+Début de l'intervalle de numéros :
 
 ; fm_context_internal-numberend
-Fin de l'intervalle de numéro :
+Fin de l'intervalle de numéros :
 
 ; fld-context-incall
 Contexte des appels entrants
@@ -44,10 +44,10 @@ Nom affiché :
 Appels entrants
 
 ; fm_context_incall-numberbeg
-Début de l'intervalle de numéro :
+Début de l'intervalle de numéros :
 
 ; fm_context_incall-numberend
-Fin de l'intervalle de numéro :
+Fin de l'intervalle de numéros :
 
 ; fm_context_incall-didlength
 Nombre de chiffres reçus :

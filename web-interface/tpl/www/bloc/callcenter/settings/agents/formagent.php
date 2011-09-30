@@ -315,7 +315,7 @@ endif;
 				    'name'	=> 'agentfeatures[wrapuptime]',
 				    'labelid'	=> 'agentfeatures-wrapuptime',
 				    'key'	=> false,
-				    'help'	=> $this->bbf('hlp_fm_agentfeatures_warpuptime'),
+				    'help'	=> $this->bbf('hlp_fm_agentfeatures_wrapuptime'),
 				    'bbf'	=> 'time-opt',
 				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(

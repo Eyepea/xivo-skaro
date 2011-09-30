@@ -1,0 +1,8 @@
+{"id": "simple1",
+ "description": "Simple package.",
+ "version": "1",
+ 
+ "depends": [],
+ "explicit_install": true,
+ "files": ["file0.txt", "dir0/"]
+}

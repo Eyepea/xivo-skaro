@@ -28,11 +28,95 @@ Nom affiché :
 ; fm_context_entity
 Entité :
 
+; fm_context_description
+Description :
+
 ; fm_contexttype
 Type de contexte :
 
 ; fm_context_context-include
 Inclure des contextes :
+
+; create_entity
+Créer une entité
+
+; col_contextnumbers_user-numberbeg
+Début de l'intervalle de numéros
+
+; col_contextnumbers_user-numberend
+Fin de l'intervalle de numéros
+
+; col_contextnumbers_user-add
+Ajouter un intervalle de numéros
+
+; opt_contextnumbers_user-delete
+Supprimer un intervalle de numéros
+
+; no_contextnumbers-user
+Aucun intervalle de numéros
+
+; col_contextnumbers_group-numberbeg
+Début de l'intervalle de numéros
+
+; col_contextnumbers_group-numberend
+Fin de l'intervalle de numéros
+
+; col_contextnumbers_group-add
+Ajouter un intervalle de numéros
+
+; opt_contextnumbers_group-delete
+Supprimer un intervalle de numéros
+
+; no_contextnumbers-group
+Aucun intervalle de numéros
+
+; col_contextnumbers_queue-numberbeg
+Début de l'intervalle de numéros
+
+; col_contextnumbers_queue-numberend
+Fin de l'intervalle de numéros
+
+; col_contextnumbers_queue-add
+Ajouter un intervalle de numéros
+
+; opt_contextnumbers_queue-delete
+Supprimer un intervalle de numéros
+
+; no_contextnumbers-queue
+Aucun intervalle de numéros
+
+; col_contextnumbers_meetme-numberbeg
+Début de l'intervalle de numéros
+
+; col_contextnumbers_meetme-numberend
+Fin de l'intervalle de numéros
+
+; col_contextnumbers_meetme-add
+Ajouter un intervalle de numéros
+
+; opt_contextnumbers_meetme-delete
+Supprimer un intervalle de numéros
+
+; no_contextnumbers-meetme
+Aucun intervalle de numéros
+
+; col_contextnumbers_incall-numberbeg
+Début de l'intervalle de numéros
+
+; col_contextnumbers_incall-numberend
+Fin de l'intervalle de numéros
+
+; col_contextnumbers_incall-didlength
+Nb de chiffres reçus
+
+; col_contextnumbers_incall-add
+Ajouter un intervalle de numéros
+
+; opt_contextnumbers_incall-delete
+Supprimer un intervalle de numéros
+
+; no_contextnumbers-incall
+Aucun intervalle de numéros
 
 ; bt_upcontext
 Monter un ou plusieurs contextes
@@ -46,86 +130,3 @@ Ajouter un ou plusieurs contextes ->
 ; bt_outcontext
 <- Enlever un ou plusieurs contextes
 
-; fm_context_description
-Description :
-
-; create_entity
-Créer une entité
-
-; col_contextnumbers_user-numberbeg
-Début de l'intervalle de numéro
-
-; col_contextnumbers_user-numberend
-Fin de l'intervalle de numéro
-
-; col_contextnumbers_user-add
-Ajouter un intervalle de numéro
-
-; opt_contextnumbers_user-delete
-Supprimer un intervalle de numéro
-
-; no_contextnumbers-user
-Aucun intervalle de numéro
-
-; col_contextnumbers_group-numberbeg
-Début de l'intervalle de numéro
-
-; col_contextnumbers_group-numberend
-Fin de l'intervalle de numéro
-
-; col_contextnumbers_group-add
-Ajouter un intervalle de numéro
-
-; opt_contextnumbers_group-delete
-Supprimer un intervalle de numéro
-
-; no_contextnumbers-group
-Aucun intervalle de numéro
-
-; col_contextnumbers_queue-numberbeg
-Début de l'intervalle de numéro
-
-; col_contextnumbers_queue-numberend
-Fin de l'intervalle de numéro
-
-; col_contextnumbers_queue-add
-Ajouter un intervalle de numéro
-
-; opt_contextnumbers_queue-delete
-Supprimer un intervalle de numéro
-
-; no_contextnumbers-queue
-Aucun intervalle de numéro
-
-; col_contextnumbers_meetme-numberbeg
-Début de l'intervalle de numéro
-
-; col_contextnumbers_meetme-numberend
-Fin de l'intervalle de numéro
-
-; col_contextnumbers_meetme-add
-Ajouter un intervalle de numéro
-
-; opt_contextnumbers_meetme-delete
-Supprimer un intervalle de numéro
-
-; no_contextnumbers-meetme
-Aucun intervalle de numéro
-
-; col_contextnumbers_incall-numberbeg
-Début de l'intervalle de numéro
-
-; col_contextnumbers_incall-numberend
-Fin de l'intervalle de numéro
-
-; col_contextnumbers_incall-didlength
-Nb de chiffres reçus
-
-; col_contextnumbers_incall-add
-Ajouter un intervalle de numéro
-
-; opt_contextnumbers_incall-delete
-Supprimer un intervalle de numéro
-
-; no_contextnumbers-incall
-Aucun intervalle de numéro

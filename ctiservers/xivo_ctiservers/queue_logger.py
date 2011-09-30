@@ -92,9 +92,9 @@ class queue_logger:
     def Join(ev):
         ev['call_time_t'] = time.time()
 
-        sql = '''INSERT INTO "queue_info" ("call_time_t", "queue_name", ''' \
-                          '''"caller", "caller_uniqueid") ''' \
-              '''VALUES (%d, "%s", "%s", "%s");''' % \
+        sql = '''INSERT INTO queue_info (call_time_t, queue_name, ''' \
+                          '''caller, caller_uniqueid) ''' \
+              '''VALUES (%d, '%s', '%s', '%s');''' % \
               (ev['call_time_t'], ev['Queue'], ev['CallerIDNum'], ev['Uniqueid'])
 
         queue_logger._trace_event(ev)
@@ -108,9 +108,9 @@ class queue_logger:
 
         ct = queue_logger.cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
 
-        sql = '''UPDATE "queue_info" '''\
-              '''SET "call_picker" = "%s", "hold_time" = %s '''\
-              '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' %\
+        sql = '''UPDATE queue_info '''\
+              '''SET call_picker = '%s', hold_time = %s '''\
+              '''WHERE call_time_t = %d and caller_uniqueid = '%s'; ''' %\
               (ev["Member"], ev["Holdtime"], ct, ev["Uniqueid"]);
 
         queue_logger._trace_event(ev)
@@ -124,9 +124,9 @@ class queue_logger:
 
         ct = queue_logger.cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
 
-        sql = '''UPDATE "queue_info" ''' \
-              '''SET "talk_time" = %s ''' \
-              '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' % \
+        sql = '''UPDATE queue_info ''' \
+              '''SET talk_time = %s ''' \
+              '''WHERE call_time_t = %d and caller_uniqueid = '%s'; ''' % \
               (ev['TalkTime'], ct, ev['Uniqueid'])
 
         del queue_logger.cache[ev['Queue']][ev['Uniqueid']]
@@ -142,9 +142,9 @@ class queue_logger:
         ev['Holdtime'] = time.time() - queue_logger.cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
         ct = queue_logger.cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
 
-        sql = '''UPDATE "queue_info" ''' \
-              '''SET "hold_time" = %d ''' \
-              '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' % \
+        sql = '''UPDATE queue_info ''' \
+              '''SET hold_time = %d ''' \
+              '''WHERE call_time_t = %d and caller_uniqueid = '%s'; ''' % \
               (ev['Holdtime'], ct, ev['Uniqueid'])
 
         queue_logger._trace_event(ev)

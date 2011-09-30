@@ -444,24 +444,25 @@ CREATE TABLE `ctimain` (
  `ami_password` varchar(64),
  `fagi_ip` varchar(255),
  `fagi_port` int(10) unsigned,
- `fagi_commented` tinyint(1),
+ `fagi_active` tinyint(1) not null default 1,
  `cti_ip` varchar(255),
  `cti_port` int(10) unsigned,
- `cti_commented` tinyint(1),
+ `cti_active` tinyint(1) not null default 1,
  `ctis_ip` varchar(255),
  `ctis_port` int(10) unsigned,
- `ctis_commented` tinyint(1),
+ `ctis_active` tinyint(1) not null default 1,
  `webi_ip` varchar(255),
  `webi_port` int(10) unsigned,
- `webi_commented` tinyint(1),
+ `webi_active` tinyint(1) not null default 1,
  `info_ip` varchar(255),
  `info_port` int(10) unsigned,
- `info_commented` tinyint(1),
+ `info_active` tinyint(1) not null default 1,
  `announce_ip` varchar(255),
  `announce_port` int(10) unsigned,
- `announce_commented` tinyint(1),
+ `announce_active` tinyint(1) not null default 1,
  `asterisklist` varchar(255),
- `tlscertfile` varchar(255),
+ `tlscertfile` varchar(128),
+ `tlsprivkeyfile` varchar(128),
  `updates_period` int(10) unsigned,
  `socket_timeout` int(10) unsigned,
  `login_timeout` int(10) unsigned,
@@ -469,7 +470,7 @@ CREATE TABLE `ctimain` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctimain` VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 3600, 10, 5, 'context');
+INSERT INTO `ctimain` VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 
 
 DROP TABLE IF EXISTS `ctiphonehints`;
@@ -604,6 +605,7 @@ INSERT INTO `ctistatus` VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1
 INSERT INTO `ctistatus` VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
 INSERT INTO `ctistatus` VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
 INSERT INTO `ctistatus` VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
+INSERT INTO `ctistatus` VALUES(6,1,'unknown','Inconnu','','#202020','',1);
 
 
 DROP TABLE IF EXISTS `devicefeatures`;
@@ -1147,8 +1149,8 @@ CREATE TABLE `musiconhold` (
 CREATE INDEX `musiconhold__idx__commented` ON `musiconhold`(`commented`);
 CREATE UNIQUE INDEX `musiconhold__uidx__filename_category_var_name` ON `musiconhold`(`filename`(64),`category`,`var_name`);
 
-INSERT INTO `musiconhold` VALUES (1,0,0,0,'musiconhold.conf','default','mode','custom');
-INSERT INTO `musiconhold` VALUES (2,0,0,0,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
+INSERT INTO `musiconhold` VALUES (1,0,0,0,'musiconhold.conf','default','mode','files');
+INSERT INTO `musiconhold` VALUES (2,0,0,1,'musiconhold.conf','default','application','');
 INSERT INTO `musiconhold` VALUES (3,0,0,0,'musiconhold.conf','default','random','no');
 INSERT INTO `musiconhold` VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 

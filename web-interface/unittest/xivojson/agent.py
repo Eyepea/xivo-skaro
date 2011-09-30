@@ -20,36 +20,59 @@ __license__ = """
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
-import unittest, pprint, cjson
 from xivojson import *
-# define global variables
-from globals  import *
 
+class Test04Agent(XiVOTestCase):
+    OBJ = 'agents'
 
-class Test02Agent(unittest.TestCase):
     def setUp(self):
-        global IP, PORT, SSL, USERNAME, PASSWORD
+        super(Test04Agent, self).setUp()
+        self.client.register(self.OBJ, 'callcenter', 'settings')
 
-        self.client = JSONClient(IP, PORT, SSL, USERNAME, PASSWORD)
-        self.obj    = 'agents'
 
-    def test_01_user(self):
-        (resp, data) = self.client.list(self.obj)
-        print resp.status, resp.reason
-        self.assertEqual(resp.status, 200)
-        
-#        pprint.pprint(data)
-        data = cjson.decode(data)
-        pprint.pprint(data[0])
-        count = len(data)
+    def test_01_agent(self):
+        (resp, data) = self.client.list(self.OBJ)
+        # no agent
+        self.assertEqual(resp.status, 204)
         
         # ADD
-        with open('xivojson/agent.json') as f:
-            content = cjson.decode(f.read())
-            
-#        print content
-        (resp, data) = self.client.add(self.obj, content)
-        print resp.reason, data
-        pprint.pprint(data)
+        content = self.jload('xivojson/agent.json')
+        self.debug(content)
+
+        (resp, data) = self.client.add(self.OBJ, content)
+        self.debug(data)
         self.assertEqual(resp.status, 200)
 
+        # LIST
+        (resp, data) = self.client.list(self.OBJ)
+        self.assertEqual(resp.status, 200)
+
+        data = self.jdecode(data)
+        self.debug(data)
+
+        self.assertEqual(len(data), 1)
+        self.assertTrue('number' in data[0])
+        self.assertTrue(data[0]['number'] == '160')
+        
+        id = data[0]['id']
+
+        # SEARCH
+        (resp, data) = self.client.view(self.OBJ, id)
+        self.assertEqual(resp.status, 200)
+
+        data = self.jdecode(data)
+        self.debug(data)
+        self.assertTrue('agentfeatures' in data)
+        self.assertTrue(data['agentfeatures']['fullname'] == 'john doe')
+
+        # DELETE
+        (resp, data) = self.client.delete(self.OBJ, id)
+        self.assertEqual(resp.status, 200)
+        self.debug(data)
+
+        # try to redelete => must return 404
+        (resp, data) = self.client.delete(self.OBJ, id)
+        self.assertEqual(resp.status, 404)
+
+if __name__ == '__main__':
+    unittest.main()

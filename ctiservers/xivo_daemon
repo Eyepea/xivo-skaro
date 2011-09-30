@@ -427,8 +427,14 @@ class ctiserver:
         log.info('# STARTING %s # (3/3) listening sockets (CTI, WEBI, FAGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, FAGI, INFO) connections
         for kind, bind_and_port in xivoconf_general.get('incoming_tcp', {}).iteritems():
+            allow_kind = True
+            if len(bind_and_port) > 2:
+                allow_kind = bind_and_port[2]
+            if not allow_kind:
+                log.warning('%s kind listening socket has been explicitly disabled' % kind)
+                continue
             try:
-                (bind, port) = bind_and_port
+                (bind, port) = bind_and_port[:2]
                 trueport = int(port) + PORTDELTA
                 gai = socket.getaddrinfo(bind, trueport, 0, socket.SOCK_STREAM, socket.SOL_TCP)
                 if not gai:
@@ -443,8 +449,14 @@ class ctiserver:
                 log.exception('tcp %s %d' % (bind, trueport))
 
         for kind, bind_and_port in xivoconf_general.get('incoming_udp', {}).iteritems():
+            allow_kind = True
+            if len(bind_and_port) > 2:
+                allow_kind = bind_and_port[2]
+            if not allow_kind:
+                log.warning('%s kind listening socket has been explicitly disabled' % kind)
+                continue
             try:
-                (bind, port) = bind_and_port
+                (bind, port) = bind_and_port[:2]
                 trueport = int(port) + PORTDELTA
                 gai = socket.getaddrinfo(bind, trueport, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
                 if not gai:

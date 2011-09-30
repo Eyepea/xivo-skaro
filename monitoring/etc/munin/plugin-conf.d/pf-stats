@@ -1,15 +1,11 @@
 [dhcpd3]
-env.configfile /etc/dhcp3/dhcpd.conf
-env.leasefile /var/lib/dhcp3/dhcpd.leases
+env.leasefile /var/lib/dhcp/dhcpd.leases
+env.configfile /etc/dhcp/dhcpd.conf
 
 [asterisk_*]
 env.username xivo_munin_user
 env.secret jeSwupAd0
 env.channels SIP IAX2 SCCP DAHDI MISDN
-
-[apache_*]
-env.port
-env.ssl yes
 
 [asterisk_voicemail]
 user asterisk
@@ -22,4 +18,3 @@ env.include_db asterisk xivo
 
 [nginxstats]
 env.ssl yes
-

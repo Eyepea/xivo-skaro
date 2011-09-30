@@ -46,15 +46,15 @@ class TestParkinglot(unittest.TestCase):
             data = cjson.decode(data)
 #            pprint.pprint(data)
             count = len(data)
-				
+                
         # ADD
         content = {
-					'name'     : 'unittest', 
-					'context'  : 'default',
-					'extension': 900,
-					'positions': 10,
-					'next'     : 0,
-					'commented': False,
+                    'name'     : 'unittest', 
+                    'context'  : 'default',
+                    'extension': 900,
+                    'positions': 10,
+                    'next'     : 0,
+                    'commented': False,
         }            
         (resp, data) = self.client.add('parkinglot', content)
         self.assertEqual(resp.status, 200)
@@ -88,7 +88,7 @@ class TestParkinglot(unittest.TestCase):
 
         self.assertEqual(data.get('name','')          , 'unittest')
         self.assertEqual(int(data.get('extension',-1)), 800)
-				
+                
 
         # DELETE	
         (resp, data) = self.client.delete('parkinglot', id)
@@ -97,7 +97,7 @@ class TestParkinglot(unittest.TestCase):
         # try to redelete => must return 404
         (resp, data) = self.client.delete('parkinglot', id)
         self.assertEqual(resp.status, 404)
-	
+    
         # counting parkinglots
         (resp, data) = self.client.list('parkinglot')
         self.assertTrue(resp.status == 200)

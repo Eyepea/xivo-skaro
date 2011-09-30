@@ -54,6 +54,9 @@ if(isset($_QR['fm_send']) === true)
 	else
 		$_QR['cti']['asterisklist'] = '';
 
+	foreach(array('fagi','cti','ctis','webi','info','announce') as $k)
+		$_QR['cti'][$k.'_active'] = isset($_QR['cti'][$k.'_active'])?1:0;
+
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
 	{
 	    $err = $ctimain->get_filter_error();
@@ -91,6 +94,7 @@ if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
 			$info['xivoserver']['slt'] = array_keys($info['xivoserver']['slt']);
 	}
 }
+
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
@@ -98,13 +102,15 @@ $_TPL->set_var('info', $info);
 $_TPL->set_var('listaccount', $ctiaccounts->get_all());
 
 function certfilter($cert)
-{
-	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && in_array('CA', $cert);
-}
+{ return count($cert['types']) == 1 && $cert['types'][0] == 'certificate'; }
+
+function privkeyfilter($cert)
+{ return count($cert['types']) == 1 && $cert['types'][0] == 'privkey'; }
 
 $modcert = &$_XOBJ->get_module('certificate');
 $allcerts = $modcert->get_all();
 $_TPL->set_var('tlscertfiles', array_filter($allcerts, "certfilter"));
+$_TPL->set_var('tlsprivkeyfiles', array_filter($allcerts, "privkeyfilter"));
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');

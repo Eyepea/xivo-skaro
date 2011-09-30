@@ -73,7 +73,7 @@ class Safe:
             'entityid', # XXX (for entity/context relations)
             'mobilephonenumber',
             'profileclient',
-
+            'enableclient',
             'agentid',
             'voicemailid',
 
@@ -112,13 +112,13 @@ class Safe:
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
                                  'availstate' : 'unknown'
                                  },
-                     'phones' : { 'hintstatus' : '-4',
+                     'phones' : { 'hintstatus' : '-2',
                                   'reg' : '',
                                   'channels' : [],
                                   'queues' : [],
                                   'groups' : []
                                   },
-                     'trunks' : { 'hintstatus' : '-4',
+                     'trunks' : { 'hintstatus' : '-2',
                                   'channels' : [],
                                   'queues' : [],
                                   'groups' : []
@@ -221,8 +221,6 @@ class Safe:
     def update_config_list_all(self):
         for listname, urllistkey in self.urlvars.iteritems():
             self.update_config_list(listname)
-
-        self.fill_lines_into_users()
         return
 
     def add_default_parking(self):
@@ -244,7 +242,7 @@ class Safe:
         default_parking['name'] = 'default'
         default_parking['id'] = '0'
         gf = self.extenfeatures['generalfeatures']
-        if 'findslot' in gf and gf['findslot']['var_val'] is 'next':
+        if 'findslot' in gf and gf['findslot']['var_val'] == 'next':
             default_parking['next'] = '1'
         else:
             default_parking['next'] = '0'
@@ -347,6 +345,9 @@ class Safe:
             except Exception:
                 self.log.exception('unable to update %s', listname)
                 deltas = {}
+
+            do_fill_lines = False
+
             for k in deltas.get('add', {}):
                 self.xod_status[listname][k] = {}
                 for prop, defaultvalue in self.props_status.get(listname, {}).iteritems():
@@ -358,6 +359,8 @@ class Safe:
                                        'tipbxid' : self.ipbxid,
                                        'list' : [k]
                                        } )
+                do_fill_lines = True
+
             if deltas.get('del'):
                 finaldels = deltas.get('del', [])
                 # tells clients about deleted objects
@@ -368,6 +371,8 @@ class Safe:
                                            'tipbxid' : self.ipbxid,
                                            'list' : finaldels
                                            } )
+                    do_fill_lines = True
+
             for tid, v in deltas.get('change', {}).iteritems():
                 if not v:
                     continue
@@ -385,6 +390,11 @@ class Safe:
                                            'tid' : tid,
                                            'config' : newc
                                            } )
+                    do_fill_lines = True
+
+            if do_fill_lines and listname in ['phones', 'users']:
+                self.fill_lines_into_users()
+
         except Exception:
             self.log.exception('update_config_list %s', listname)
         return

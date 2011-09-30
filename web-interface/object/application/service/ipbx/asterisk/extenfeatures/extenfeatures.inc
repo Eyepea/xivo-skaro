@@ -403,8 +403,10 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set($arr) === false
-		|| $this->save() === false)
+		|| $this->save() === false) {
+			var_dump($this->get_error());
 			return(false);
+		}
 
 		return(true);
 	}

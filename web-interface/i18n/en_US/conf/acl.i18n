@@ -389,6 +389,15 @@ Configuration
 
 ; acl(xivo-configuration-provisioning)
 Provisioning
+
+; acl(xivo-configuration-cti)
+CTI
+ 
+; acl(xivo-configuration-cti-configuration)
+Configuration
+ 
+; acl(xivo-configuration-cti-accounts)
+Accounts
  
 ; acl(xivo-configuration-provisioning-general)
 General 
@@ -428,3 +437,14 @@ Campaigns
 
 ; acl(xivo-monit)
 Monit
+
+; acl(statistics-statistics)
+Statistics
+
+; acl(statistics-statistics-call_center)
+Call center
+
+; acl(statistics-statistics-cel)
+CEL
+
+

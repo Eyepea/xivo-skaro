@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+
 
 __version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
@@ -21,8 +21,33 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import httplib, urllib, base64
+import httplib, urllib, base64, pprint, unittest, os
 import cjson as json
+# define global variables
+from globals  import *
+
+class XiVOTestCase(unittest.TestCase):
+    def setUp(self):
+        global IP, PORT, SSL, USERNAME, PASSWORD
+        self._debug  = os.environ.get('DEBUG', '0') != '0'
+
+        self.client = JSONClient(IP, PORT, SSL, USERNAME, PASSWORD, self._debug)
+
+    def debug(self, obj):
+        if not self._debug:
+            return
+
+        pprint.pprint(obj)
+
+    def jload(self, jfile):
+        with open(jfile) as f:
+            content = json.decode(f.read())
+
+        return content
+
+    def jdecode(self, stream):
+        return json.decode(stream)
+
 
 class JSONClient(object):
     objects = {
@@ -42,7 +67,8 @@ class JSONClient(object):
         'monitoring'    : ['xivo/configuration'      , 'support'],
     }
 
-    def __init__(self, ip='localhost', port=80, ssl=False, username=None, password=None):
+    def __init__(self, ip='localhost', port=80, ssl=False, username=None,
+            password=None, debug=False):
         self.headers = {
             "Content-type": "application/json",
             "Accept": "text/plain"
@@ -58,6 +84,16 @@ class JSONClient(object):
         else:
             self.conn = httplib.HTTPConnection(ip, port)
 
+        self._debug = debug
+
+    def debug(self, o):
+        if not self._debug:
+            return
+
+        pprint.pprint(o)
+
+    def register(self, obj, base, section):
+        self.objects[obj] = (base, section)
         
     def request(self, method, uri, params=None):
         if method == 'POST':
@@ -67,7 +103,7 @@ class JSONClient(object):
             uri    = "%s%s%s" % (uri, mark, urllib.urlencode(params))
             params = None
 
-        print 'request= ', uri
+        self.debug('request= '+uri)
         self.conn.request(method, uri, params, self.headers)
         response = self.conn.getresponse()
         data     = response.read()

@@ -1,0 +1,47 @@
+{
+     "groupfeatures": {
+          "name": "unittest",
+          "number": "210",
+          "context": "default",
+          "timeout": "0",
+          "preprocess_subroutine": "",
+          "transfer_user": "1",
+          "transfer_call": "1",
+					"write_caller": "1",
+					"write_calling": "1"
+     },
+     "queue": {
+          "strategy": "ringall",
+          "timeout": "15",
+          "musiconhold": "default"
+     },
+     "callerid": {
+          "mode": "prepend",
+          "callerdisplay": "UNITTEST"
+     },
+     "user": [
+          "1"
+     ],
+     "dialaction": {
+           "noanswer": {
+                "actiontype": "endcall",
+                "actionarg1": "busy",
+                "actionarg2": ""
+           },
+           "busy": {
+                "actiontype": "none",
+                "actionarg1": "",
+                "actionarg2": ""
+           },
+           "congestion": {
+                "actiontype": "none",
+                "actionarg1": "",
+                "actionarg2": ""
+           },
+           "chanunavail": {
+                "actiontype": "none",
+                "actionarg1": "",
+                "actionarg2": ""
+           }
+     }
+}

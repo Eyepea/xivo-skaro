@@ -40,7 +40,6 @@ Groupe:
 ; fm_agentfeatures_silent
 Désactiver l'annonce de connexion :
 
-
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->
 
@@ -61,6 +60,9 @@ Pénalité
 
 ; no_queue
 Aucune file d'attente
+
+; create_queue
+Créer une file d'attente
 
 ; fm_agentfeatures_description
 Description :
@@ -95,6 +97,9 @@ Le poids doit être un nombre entier compris entre 0 et 100
 ; fm_agentfeatures_musiconhold
 Musique d'attente:
 
+; fm_agentfeatures_ackcall
+Requérir un DTMF avant de prendre un appel :
+
 ; fm_agentfeatures_ackcall-opt(no)
 Non
 
@@ -103,6 +108,12 @@ Oui
 
 ; fm_agentfeatures_ackcall-opt(always)
 Toujours
+
+; fm_agentfeatures_acceptdtmf
+DTMF requis : 
+
+; fm_agentfeatures_enddtmf
+DTMF requis : 
 
 ; fm_agentfeatures_autologoff
 Temps de sonnerie avant déconnexion :
@@ -122,18 +133,6 @@ Désactivé
 ; fm_agentfeatures_wrapuptime-opt-seconds
 %s secondes
 
-; fm_agentfeatures_ackcall
-Requérir un DTMF avant de prendre un appel :
-
-; fm_agentfeatures_enddtmf
-DTMF requis : 
-
-; fm_agentfeatures_acceptdtmf
-DTMF requis : 
-
-; hlp_fm_agentfeatures_autologoff
-Config asterisk: autologoff
-
 ; hlp_fm_agentfeatures_ackcall
 Config asterisk: ackcall
 
@@ -143,8 +142,11 @@ Config asterisk: acceptdtmf
 ; hlp_fm_agentfeatures_enddtmf
 Config asterisk: enddtmf
 
-; hlp_fm_agentfeatures_warpuptime
-Config asterisk: warpuptime
+; hlp_fm_agentfeatures_autologoff
+Config asterisk: autologoff
+
+; hlp_fm_agentfeatures_wrapuptime
+Config asterisk: wrapuptime
 
 ; hlp_fm_agentfeatures_musiconhold
 Config asterisk: musiconhold
