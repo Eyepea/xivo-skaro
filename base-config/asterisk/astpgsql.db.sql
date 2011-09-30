@@ -1239,8 +1239,8 @@ CREATE TABLE "musiconhold" (
 CREATE INDEX "musiconhold__idx__commented" ON "musiconhold"("commented");
 CREATE UNIQUE INDEX "musiconhold__uidx__filename_category_var_name" ON "musiconhold"("filename","category","var_name");
 
-INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','custom');
-INSERT INTO "musiconhold" VALUES (2,0,0,0,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
+INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','files');
+INSERT INTO "musiconhold" VALUES (2,0,0,1,'musiconhold.conf','default','application','');
 INSERT INTO "musiconhold" VALUES (3,0,0,0,'musiconhold.conf','default','random','no');
 INSERT INTO "musiconhold" VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 SELECT setval('musiconhold_id_seq', 5);
