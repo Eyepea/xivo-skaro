@@ -20,8 +20,8 @@ __license__ = """
 """
 
 class Frontend(object):
-	def __init__(self, backend, **kwargs):
-		self.backend = backend
+    def __init__(self, backend, **kwargs):
+        self.backend = backend
 
-		for k, v in kwargs.iteritems():
-			setattr(self, k, v)
+        for k, v in kwargs.iteritems():
+            setattr(self, k, v)

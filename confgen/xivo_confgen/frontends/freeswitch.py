@@ -23,52 +23,52 @@ import xml.etree.ElementTree as et
 from confgen.frontend  import Frontend
 
 class FreeSwitchFrontend(Frontend):
-	def directory(self):
-		"""
-			Users directory
-		"""
-		root = et.Element('include')
+    def directory(self):
+        """
+            Users directory
+        """
+        root = et.Element('include')
 
-		users = self.backend.users.list()
-		if users is None:
-			# error
-			return None
+        users = self.backend.users.list()
+        if users is None:
+            # error
+            return None
 
-		users = filter(lambda u: u['protocol'] == 'sip', users)
+        users = filter(lambda u: u['protocol'] == 'sip', users)
 
-		print 'yop'
-		for user in users:
-			user = self.backend.users.view(user['id'])
-			if user is None:
-				continue
-			user = user.get('protocol', {})
+        print 'yop'
+        for user in users:
+            user = self.backend.users.view(user['id'])
+            if user is None:
+                continue
+            user = user.get('protocol', {})
 
-			xuser    = et.SubElement(root, 'user')
-			xuser.set('id', user['name'])
-			params   = et.SubElement(xuser, 'params')
+            xuser    = et.SubElement(root, 'user')
+            xuser.set('id', user['name'])
+            params   = et.SubElement(xuser, 'params')
 
-			if 'secret' in user:
-				p = et.SubElement(params, 'param',
-					name='password',
-					value=user['secret'])
+            if 'secret' in user:
+                p = et.SubElement(params, 'param',
+                    name='password',
+                    value=user['secret'])
 
-		#return self.indent(et.tostring(root))
-		self.indent(root)
-		return et.tostring(root)
+        #return self.indent(et.tostring(root))
+        self.indent(root)
+        return et.tostring(root)
 
-	#def indent(self, raw):
-	#	xre = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
-	#	return xre.sub('>\g<1></', raw)
+    #def indent(self, raw):
+    #	xre = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+    #	return xre.sub('>\g<1></', raw)
 
-	def indent(self, elem, level=0):
-		i = "\n" + level*"  "
-		if len(elem):
-			if not elem.text or not elem.text.strip():
-				elem.text = i + "  "
-				for e in elem:
-					self.indent(e, level+1)
-				if not e.tail or not e.tail.strip():
-					e.tail = i
-		if level and (not elem.tail or not elem.tail.strip()):
-			elem.tail = i
+    def indent(self, elem, level=0):
+        i = "\n" + level*"  "
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = i + "  "
+                for e in elem:
+                    self.indent(e, level+1)
+                if not e.tail or not e.tail.strip():
+                    e.tail = i
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
 

@@ -24,30 +24,30 @@ from confgen.backend  import Backend
 from confgen.xivojson import JSONClient
 
 class WSObject(object):
-	def __init__(self, iface, name):
-		if not name in iface.objects:
-			raise AttributeError
+    def __init__(self, iface, name):
+        if not name in iface.objects:
+            raise AttributeError
 
-		self.iface = iface
-		self.name  = name
+        self.iface = iface
+        self.name  = name
 
-	def __getattr__(self, action):
-		print 'action=', action
-		if not action in ['list','add','edit','view','delete']:
-			raise AttributeError
+    def __getattr__(self, action):
+        print 'action=', action
+        if not action in ['list','add','edit','view','delete']:
+            raise AttributeError
 
-		def _q(*args, **kwargs):
-			(resp, data) = getattr(self.iface, action)(self.name, *args, **kwargs)
-			if resp is None or resp.status != 200:
-				return None
+        def _q(*args, **kwargs):
+            (resp, data) = getattr(self.iface, action)(self.name, *args, **kwargs)
+            if resp is None or resp.status != 200:
+                return None
 
-			return cjson.decode(data)
-		return _q
+            return cjson.decode(data)
+        return _q
 
 class XivoWebservicesBackend(Backend):
-	def __init__(self):
-		self.json = JSONClient('192.168.1.10',username='test',password='test',ssl=False)
+    def __init__(self):
+        self.json = JSONClient('192.168.1.10',username='test',password='test',ssl=False)
 
-	def __getattr__(self, name):
-		print 'getattr', name
-		return WSObject(self.json, name)
+    def __getattr__(self, name):
+        print 'getattr', name
+        return WSObject(self.json, name)
