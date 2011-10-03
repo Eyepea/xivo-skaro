@@ -6,8 +6,21 @@ import select
 import socket
 import sys
 import time
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
+
+def _get_fmted_time():
+    return datetime.now().strftime("%H:%M:%S.%f")
+
+
+def _get_client_to_server_header():
+    return "    %s Client > Server" % _get_fmted_time()
+
+
+def _get_server_to_client_header():
+    return "    %s Server > Client" % _get_fmted_time()
 
 
 class BaseListener(object):
@@ -72,11 +85,11 @@ class NewlineSplitListener(ForwardListener):
 
 class RawPrintListener(BaseListener):
     def client_send(self, data):
-        print "    Client > Server"
+        print _get_client_to_server_header()
         print data
 
     def server_send(self, data):
-        print "    Server > Client"
+        print _get_server_to_client_header()
         print data
 
 
@@ -301,32 +314,28 @@ class PrintMsgListener(BaseMsgListener):
         self._pretty_print = pretty_print
 
     def client_send_msg(self, msg):
-        print "    Client > Server"
+        print _get_client_to_server_header()
         if self._pretty_print:
             json.dump(msg, sys.stdout, indent=4, sort_keys=True)
         else:
             json.dump(msg, sys.stdout, sort_keys=True)
-        print
         print
 
     def client_send_data(self, data):
-        print "    Client > Server"
+        print _get_client_to_server_header()
         print data
-        print
 
     def server_send_msg(self, msg):
-        print "    Server > Client"
+        print _get_server_to_client_header()
         if self._pretty_print:
             json.dump(msg, sys.stdout, indent=4, sort_keys=True)
         else:
             json.dump(msg, sys.stdout, sort_keys=True)
         print
-        print
 
     def server_send_data(self, data):
-        print "    Server > Client"
+        print _get_server_to_client_header()
         print data
-        print
 
 
 class FileWriterMsgListener(BaseMsgListener):
