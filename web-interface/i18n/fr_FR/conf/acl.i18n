@@ -193,9 +193,6 @@ Extensions
 ; acl(service-ipbx-pbx_services-parkinglot)
 Parkings
 
-; acl(service-ipbx-pbx_services-handynumbers)
-Numéros utiles
-
 ; acl(service-ipbx-pbx_services-phonebook)
 Carnet d'adresses
 
