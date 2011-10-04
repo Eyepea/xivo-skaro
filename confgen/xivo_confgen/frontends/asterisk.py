@@ -25,7 +25,6 @@ from xivo             import xivo_helpers
 from cStringIO        import StringIO
 from confgen.frontend import Frontend
 
-
 class AsteriskFrontend(Frontend):
     def sip_conf(self):
         """
@@ -745,16 +744,6 @@ class AsteriskFrontend(Frontend):
                 line = re.sub('%%([^%]+)%%', varset, line)
                 print >>o, prefix, line
             print >>o
-
-        if not xfeatures['vmusermsg'].get('commented', 1):
-            vmusermsgexten = xfeatures['vmusermsg']['exten']
-
-            for line in (
-                    "1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % len(vmusermsgexten),
-                    "n,Gosub(xivo-pickup,0,1)",
-                    "n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT},${XIVO_VMMAIN_OPTIONS})",
-                    "n,Hangup()\n"):
-                cfeatures.append("_%s%s,%s" % (vmusermsgexten, 'X' * len(vmusermsgexten), line))
 
         for x in ('busy', 'rna', 'unc'):
             fwdtype = "fwd%s" % x
