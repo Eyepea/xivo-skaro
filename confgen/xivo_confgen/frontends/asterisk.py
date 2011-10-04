@@ -728,12 +728,7 @@ class AsteriskFrontend(Frontend):
 
         for exten in self.backend.extensions.all(context='xivo-features',    commented=False):
             app     = exten['app']
-            appdata = list(exten['appdata'].replace('|',',').split(','))
-            #todo to be removed
-            if app == 'Macro':
-                app     = 'Gosub'
-                appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
-                
+            appdata = list(exten['appdata'].replace('|',',').split(','))                
             exten['action'] = "%s(%s)" % (app, ','.join(appdata))
 
             for line in tmpl:
