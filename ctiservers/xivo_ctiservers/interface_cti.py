@@ -67,14 +67,13 @@ class CTI(Interfaces):
         self.logintimer.cancel()
         if self.transferconnection and self.transferconnection.get('direction') == 'c2s':
             self.log.info('%s got the file ...' % self.transferconnection.get('faxobj').fileid)
-        # self.connid.sendall(msg)
-        # tosend = { 'class' : 'serverdown',
-        # 'mode' : mode }
-        return
-
-        Interfaces.disconnected(self, msg)
-        # call to manage_logout
-        return
+        try:
+            ipbxid = self.connection_details['ipbxid']
+            id = self.connection_details['userid']
+            self._manage_logout(ipbxid, id, msg)
+        except KeyError:
+            self.warning('Could not retrieve the user id %s',
+                         self.connection_details)
 
     def manage_connection(self, msg):
         z = list()
@@ -109,17 +108,12 @@ class CTI(Interfaces):
         else:
             self.connid.sendall(self.serial.encode(msg) + '\n')
 
-    def manage_logout(self, userinfo, when):
-        self.log.info('logout (%s) user:%s/%s'
-                      % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
-        userinfo['last-logouttimestamp'] = time.time()
-        # XXX one could not always logout here + optionnally logout from the client side
-        self.__logout_agent__(userinfo.get('astid'), userinfo.get('agentid'))
-
-        self.__disconnect_user__(userinfo)
-        self.__fill_user_ctilog__(userinfo, 'cti_logout')
-        return
-
+    def _manage_logout(self, ipbxid, id, msg):
+        """
+        Clean up code for user disconnection
+        """
+        self.log.info('logout (%s) user:%s/%s', msg, ipbxid, id)
+        self._disconnect_user(ipbxid, id)
 
     def loginko(self, errorstring):
         self.log.warning('user can not connect (%s) : sending %s'
@@ -128,6 +122,20 @@ class CTI(Interfaces):
         tosend = { 'class' : 'loginko',
                    'error_string' : errorstring }
         return self.serial.encode(tosend)
+
+    def _disconnect_user(self, ipbxid, id):
+        """
+        Change the user's status to disconnected
+        """
+        try:
+            innerdata = self.ctid.safe[ipbxid]
+            userstatus = innerdata.xod_status['users'][id]
+            innerdata.handle_cti_stack('set', ('users', 'updatestatus', id))
+            userstatus['availstate'] = 'disconnected'
+            userstatus['last-logouttimestamp'] = time.time()
+            innerdata.handle_cti_stack('empty_stack')
+        except KeyError:
+            self.log.warning('Could not update user status %s', id)
 
 class CTIS(CTI):
     kind = 'CTIS'
