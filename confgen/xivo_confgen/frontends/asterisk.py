@@ -727,25 +727,24 @@ class AsteriskFrontend(Frontend):
             print >>o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
             print >>o
 
-        for exten in self.backend.extensions.all(context='xivo-features',    commented=0):
-            if not exten['commented']:
-                app     = exten['app']
-                appdata = list(exten['appdata'].replace('|',',').split(','))
-                #todo to be removed
-                if app == 'Macro':
-                    app     = 'Gosub'
-                    appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
-                    
-                exten['action'] = "%s(%s)" % (app, ','.join(appdata))
-    
-                for line in tmpl:
-                    prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
-    
-                    def varset(m):
-                        return str(exten.get(m.group(1).lower(), ''))
-                    line = re.sub('%%([^%]+)%%', varset, line)
-                    print >>o, prefix, line
-                print >>o
+        for exten in self.backend.extensions.all(context='xivo-features',    commented=False):
+            app     = exten['app']
+            appdata = list(exten['appdata'].replace('|',',').split(','))
+            #todo to be removed
+            if app == 'Macro':
+                app     = 'Gosub'
+                appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
+                
+            exten['action'] = "%s(%s)" % (app, ','.join(appdata))
+
+            for line in tmpl:
+                prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
+
+                def varset(m):
+                    return str(exten.get(m.group(1).lower(), ''))
+                line = re.sub('%%([^%]+)%%', varset, line)
+                print >>o, prefix, line
+            print >>o
 
         if not xfeatures['vmusermsg'].get('commented', 1):
             vmusermsgexten = xfeatures['vmusermsg']['exten']
