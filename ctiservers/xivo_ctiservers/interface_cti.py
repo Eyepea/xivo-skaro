@@ -132,6 +132,7 @@ class CTI(Interfaces):
             userstatus = innerdata.xod_status['users'][id]
             innerdata.handle_cti_stack('set', ('users', 'updatestatus', id))
             userstatus['availstate'] = 'disconnected'
+            userstatus['connection'] = None
             userstatus['last-logouttimestamp'] = time.time()
             innerdata.handle_cti_stack('empty_stack')
         except KeyError:
