@@ -710,15 +710,18 @@ class AsteriskFrontend(Frontend):
                 print >>o, "\n; prog funckeys supervision"
             for exten in extens:
                 print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
+        print >>o,self._extensions_features(conf, xfeatures)
+        return o.getvalue()
 
             # -- end per-context --
-
+    def _extensions_features(self,conf,xfeatures):
+        o = StringIO()
         # XiVO features
         context   = 'xivo-features'
         cfeatures = []
         tmpl      = []
 
-        print >>o, "\n[xivo-features]"
+        print >>o, "\n[%s]" % context
         for option in conf.iter_options(context):
             if option.get_name() == 'objtpl':
                 tmpl.append(option.get_value()); continue
