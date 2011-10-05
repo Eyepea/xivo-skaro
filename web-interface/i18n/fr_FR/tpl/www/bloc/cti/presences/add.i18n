@@ -1,3 +1,9 @@
 
 ; title_content_name
 Ajouter présence
+
+; mandatory_status_available
+Disponible
+
+; mandatory_status_disconnected
+Déconnecté

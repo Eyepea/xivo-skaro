@@ -1,2 +1,8 @@
 ; title_content_name
 Add presence
+
+; mandatory_status_available
+Available
+
+; mandatory_status_disconnected
+Disconnected
