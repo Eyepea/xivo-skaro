@@ -15,7 +15,6 @@ setup(
     license='GPLv3',
     
     packages=['fetchfw'],
-    package_dir={'': 'src'},
     scripts=['scripts/xivo_fetchfw'],
     data_files=[('/etc/pf-xivo', ['resources/etc/fetchfw.conf']),
                 ('/var/lib/pf-xivo-fetchfw/installable',

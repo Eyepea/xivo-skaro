@@ -36,7 +36,7 @@ class TestNullSource(unittest.TestCase):
         self.assertEqual([], os.listdir(self._tmp_dir))
 
 
-class TestStandardExtractFilter(object):
+class _TestStandardExtractFilter(object):
     # _FILE
     # _FILTER
     
@@ -58,27 +58,27 @@ class TestStandardExtractFilter(object):
                          sorted(list_paths(self._tmp_dir)))
 
 
-class TestZipFilter(TestStandardExtractFilter, unittest.TestCase):
+class TestZipFilter(_TestStandardExtractFilter, unittest.TestCase):
     _FILE = 'test.zip'
     _FILTER = install.ZipFilter
 
 
-class TestTarFilter(TestStandardExtractFilter, unittest.TestCase):
+class TestTarFilter(_TestStandardExtractFilter, unittest.TestCase):
     _FILE = 'test.tar'
     _FILTER = install.TarFilter
 
 
-class TestTgzFilter(TestStandardExtractFilter, unittest.TestCase):
+class TestTgzFilter(_TestStandardExtractFilter, unittest.TestCase):
     _FILE = 'test.tgz'
     _FILTER = install.TarFilter
 
 
-class TestTbz2Filter(TestStandardExtractFilter, unittest.TestCase):
+class TestTbz2Filter(_TestStandardExtractFilter, unittest.TestCase):
     _FILE = 'test.tbz2'
     _FILTER = install.TarFilter
 
 
-class TestCiscoUnsignFilter(TestStandardExtractFilter, unittest.TestCase):
+class TestCiscoUnsignFilter(_TestStandardExtractFilter, unittest.TestCase):
     def test_filter(self):
         filter = install.CiscoUnsignFilter('test-fake.sgn', 'test-fake.gz')
         filter.apply(TEST_RES_DIR, self._tmp_dir)
