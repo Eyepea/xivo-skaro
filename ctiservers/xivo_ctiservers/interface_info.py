@@ -37,7 +37,7 @@ infohelptext = ['',
                 '-- general purpose commands --',
                 'show_infos               : gives a few informations about the server (version, uptime)',
                 '-- informations about misc lists --',
-                'showlist [listname]      : show all lists or the specified list'
+                'showlist [listname [id]] : show all lists or the specified list'
                 'show_users               : the users list',
                 'show_phones, show_trunks : phones and trunks lists',
                 'show_queues, show_groups,',
@@ -192,10 +192,12 @@ class INFO(Interfaces):
                     for ipbxid, z in self.ctid.safe.iteritems():
                         clireply.append('ipbxid : %s' % ipbxid)
                         for k, v in z.xod_config.iteritems():
-                            if len(args) > 1 and not k in args[1:]:
+                            if len(args) > 1 and not args[1] in k:
                                 continue
                             clireply.append('    %s' % k)
                             for kk, vv in v.keeplist.iteritems():
+                                if len(args) > 2 and not kk in args[2]:
+                                    continue
                                 clireply.append('        %s %s' % (kk, vv))
 ##                    for user, info in self.ctid.safe.get(ipbxid).xod_config..users().iteritems():
 ##                        try:
