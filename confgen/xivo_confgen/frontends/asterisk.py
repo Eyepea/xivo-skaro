@@ -23,7 +23,7 @@ from xivo             import OrderedConf
 from xivo             import xivo_helpers
 
 from cStringIO        import StringIO
-from confgen.frontend import Frontend
+from xivo_confgen.frontend import Frontend
 
 class AsteriskFrontend(Frontend):
     def sip_conf(self):
@@ -210,8 +210,6 @@ class AsteriskFrontend(Frontend):
 
         # section::users (phones)
         from xivo import xivo_config
-        from xivo import all_phones
-        from xivo.provisioning import get_funckeys
 
         for user in self.backend.sccpusers.all(commented=False):
             #print user.keys()
@@ -288,7 +286,7 @@ class AsteriskFrontend(Frontend):
             if len(softkeys) > 0:
                 print >>o, "softkeyset = keyset_%s" % name
 
-                 ## END OF DEVICE / START OF SOFTKEY
+                ## END OF DEVICE / START OF SOFTKEY
                 print >>o, "\n[keyset_%s]" % name
                 print >>o, "type = softkeyset"
         
@@ -710,15 +708,18 @@ class AsteriskFrontend(Frontend):
                 print >>o, "\n; prog funckeys supervision"
             for exten in extens:
                 print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
+        print >>o,self._extensions_features(conf, xfeatures)
+        return o.getvalue()
 
             # -- end per-context --
-
+    def _extensions_features(self,conf,xfeatures):
+        o = StringIO()
         # XiVO features
         context   = 'xivo-features'
         cfeatures = []
         tmpl      = []
 
-        print >>o, "\n[xivo-features]"
+        print >>o, "\n[%s]" % context
         for option in conf.iter_options(context):
             if option.get_name() == 'objtpl':
                 tmpl.append(option.get_value()); continue

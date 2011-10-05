@@ -16,8 +16,8 @@ setup(
     url='http://wiki.xivo.fr/',
     license='GPLv3',
      
-    packages=['confgen', 'confgen.frontends', 'confgen.backends'],
-    package_dir={'confgen': 'xivo_confgen'},
+    packages=['xivo_confgen', 'xivo_confgen.frontends', 'xivo_confgen.backends'],
+    package_dir={'xivo_confgen': 'xivo_confgen'},
     scripts=['bin/confgen', 'bin/confgend'],
     data_files=[('/etc/pf-xivo', ['etc/confgen.conf', 'etc/confgend.conf']),
                 ('/etc/pf-xivo/confgend/asterisk', ['etc/asterisk/contexts.conf'])],
