@@ -845,3 +845,13 @@ class AsteriskFrontend(Frontend):
             print >>o, "channel => %s" % group['channels']
 
         return o.getvalue()
+    
+    def gen_dialplan_from_template(self,template,exten):
+        o = StringIO()
+        for line in template:
+            prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
+            def varset(matchObject):
+                return str(exten.get(matchObject.group(1).lower(), ''))
+            line = re.sub('%%([^%]+)%%', varset, line)
+            print >>o, prefix, line
+        return o.getvalue()

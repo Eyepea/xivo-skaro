@@ -20,4 +20,3 @@ __license__ = """
 """
 
 from asterisk   import AsteriskFrontend   as asterisk
-from freeswitch import FreeSwitchFrontend as freeswitch
