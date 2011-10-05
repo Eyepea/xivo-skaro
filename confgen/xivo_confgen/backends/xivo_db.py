@@ -30,7 +30,7 @@ from sqlalchemy.types          import VARCHAR
 from sqlalchemy.orm            import scoped_session, sessionmaker
 from sqlalchemy                import exc
 
-from confgen.backend import Backend
+from xivo_confgen.backend import Backend
 
 
 def mapped_set(self, key, value):

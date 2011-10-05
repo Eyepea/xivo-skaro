@@ -7,7 +7,7 @@ from twisted.internet           import reactor
 from twisted.internet.protocol  import Protocol, ServerFactory
 from twisted.application        import service, internet
 
-from confgen import backends, frontends, cache
+from xivo_confgen import backends, frontends, cache
 
 
 class Confgen(Protocol):

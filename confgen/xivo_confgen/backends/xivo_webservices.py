@@ -20,8 +20,8 @@ __license__ = """
 """
 import cjson
 
-from confgen.backend  import Backend
-from confgen.xivojson import JSONClient
+from xivo_confgen.backend  import Backend
+from xivo_confgen.xivojson import JSONClient
 
 class WSObject(object):
     def __init__(self, iface, name):

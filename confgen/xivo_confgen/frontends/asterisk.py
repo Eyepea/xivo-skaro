@@ -23,7 +23,7 @@ from xivo             import OrderedConf
 from xivo             import xivo_helpers
 
 from cStringIO        import StringIO
-from confgen.frontend import Frontend
+from xivo_confgen.frontend import Frontend
 
 class AsteriskFrontend(Frontend):
     def sip_conf(self):
@@ -210,8 +210,6 @@ class AsteriskFrontend(Frontend):
 
         # section::users (phones)
         from xivo import xivo_config
-        from xivo import all_phones
-        from xivo.provisioning import get_funckeys
 
         for user in self.backend.sccpusers.all(commented=False):
             #print user.keys()
@@ -288,7 +286,7 @@ class AsteriskFrontend(Frontend):
             if len(softkeys) > 0:
                 print >>o, "softkeyset = keyset_%s" % name
 
-                 ## END OF DEVICE / START OF SOFTKEY
+                ## END OF DEVICE / START OF SOFTKEY
                 print >>o, "\n[keyset_%s]" % name
                 print >>o, "type = softkeyset"
         
