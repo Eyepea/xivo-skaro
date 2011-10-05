@@ -21,6 +21,7 @@ __license__ = """
 import inspect, warnings
 warnings.simplefilter('ignore')
 
+import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.ext.sqlsoup    import SqlSoup
 from sqlalchemy.sql.expression import and_, cast, alias, Alias
