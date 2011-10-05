@@ -505,7 +505,6 @@ class AsteriskFrontend(Frontend):
             if userid != sk['id']:
                 print >>o, "\n[user-%d]" % sk['id']
                 userid = sk['id']
-                print >>o,"#*************************"
 
             print >>o, "%s = %s" % (sk['name'], sk['weight'])
 
