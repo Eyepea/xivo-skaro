@@ -94,8 +94,6 @@ class AsteriskFrontend(Frontend):
                     continue
 
                 if k not in ('regseconds','lastms','name','fullcontact','ipaddr','allow','disallow','subscribemwi'):
-                    if isinstance(v, unicode):
-                        v = v.encode('utf8')
                     print >>o, k + " = " + str(v)
 
                 if k == 'allow' and v != None:
