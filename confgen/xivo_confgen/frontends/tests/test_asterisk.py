@@ -24,7 +24,7 @@ class Test(unittest.TestCase):
         exten = {'exten':'*98','priority':1}
         result = self.asteriskFrontEnd.gen_dialplan_from_template(template,exten)
         
-        self.assertMultiLineEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
+        self.assertEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
 
 
 if __name__ == "__main__":
