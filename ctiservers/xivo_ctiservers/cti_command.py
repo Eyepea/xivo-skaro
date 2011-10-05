@@ -454,6 +454,20 @@ class Command:
         return result
 
     def regcommand_history(self):
+        """
+        Receives an history request from a CTI client
+        Modes:
+            0 - outcalls
+            1 - incalls
+            2 - missed
+        {
+            "class": "history",
+            "commandid": 218187832,
+            "mode": "2",
+            "size": "8",
+            "xuserid": "dev/3"
+        }
+        """
         reply = {}
         phoneidstruct = None
         if self.ruserid in self.rinnerdata.xod_config.get('users').keeplist:
