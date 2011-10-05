@@ -507,6 +507,7 @@ class AsteriskFrontend(Frontend):
             if userid != sk['id']:
                 print >>o, "\n[user-%d]" % sk['id']
                 userid = sk['id']
+                print >>o,"#*************************"
 
             print >>o, "%s = %s" % (sk['name'], sk['weight'])
 
@@ -617,15 +618,7 @@ class AsteriskFrontend(Frontend):
                     appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
                 
                 exten['action'] = "%s(%s)" % (app, ','.join(appdata))
-
-                for line in tmpl:
-                    prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
-
-                    def varset(m):
-                        return str(exten.get(m.group(1).lower(), ''))
-                    line = re.sub('%%([^%]+)%%', varset, line)
-                    print >>o, prefix, line
-                print >>o
+                print >>o, self.gen_dialplan_from_template(tmpl, exten)
 
             # phone (user) hints
             hints = self.backend.hints.all(context=ctx['name'])
@@ -731,15 +724,7 @@ class AsteriskFrontend(Frontend):
             app     = exten['app']
             appdata = list(exten['appdata'].replace('|',',').split(','))                
             exten['action'] = "%s(%s)" % (app, ','.join(appdata))
-
-            for line in tmpl:
-                prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
-
-                def varset(m):
-                    return str(exten.get(m.group(1).lower(), ''))
-                line = re.sub('%%([^%]+)%%', varset, line)
-                print >>o, prefix, line
-            print >>o
+            print >>o, self.gen_dialplan_from_template(tmpl, exten)
 
         for x in ('busy', 'rna', 'unc'):
             fwdtype = "fwd%s" % x

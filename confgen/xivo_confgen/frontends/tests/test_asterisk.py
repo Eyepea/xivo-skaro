@@ -4,9 +4,7 @@ Created on 2011-10-05
 @author: jylebleu
 '''
 import unittest
-from xivo_confgen.frontends import asterisk
 from xivo_confgen.frontends.asterisk import AsteriskFrontend
-from xivo_confgen.frontend import Frontend
 
 
 class Test(unittest.TestCase):
@@ -23,10 +21,10 @@ class Test(unittest.TestCase):
 
     def testGenerateDialPlanFromTemplate(self):
         template = ["%%EXTEN%%,%%PRIORITY%%,Set(XIVO_BASE_CONTEXT=${CONTEXT})"]
-        exten = {}
+        exten = {'exten':'*98','priority':1}
         result = self.asteriskFrontEnd.gen_dialplan_from_template(template,exten)
         
-        self.assertMultiLineEqual(result, result)
+        self.assertMultiLineEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
 
 
 if __name__ == "__main__":
