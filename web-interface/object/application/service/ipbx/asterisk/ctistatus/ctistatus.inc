@@ -96,9 +96,9 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 			switch($key)
 			{
 				case 'status':
-                    if(isset($this->_origin['status']) === true
-                    && $this->_origin['status'] !== false)
-                        $this->_ctistatus->add_origin($this->_origin['status']);
+					if(isset($this->_origin['status']) === true
+					&& $this->_origin['status'] !== false)
+						$this->_ctistatus->add_origin($this->_origin['status']);
 					break;
 			}
 		}
@@ -326,19 +326,19 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		return($r);
 	}
 
-    function edit_status()
-    {
+	function edit_status()
+	{
 		$t = dwho_issa('status',$this->_info);
 		$h = $this->get_result('status');
 
-        if(dwho_issa('status',$this->_info) === false
-        || ($rs = $this->get_result('status')) === null
-        || $rs === false)
-            return(false);
+		if(dwho_issa('status',$this->_info) === false
+		|| ($rs = $this->get_result('status')) === null
+		|| $rs === false)
+			return(false);
 
 		$this->_return['status'] = $this->_ctistatus->edit($this->_info['status']['id'],$rs);
-        return($this->_return['status']);
-    }
+		return($this->_return['status']);
+	}
 
 	function _reverse_edit()
 	{
@@ -392,8 +392,9 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		if(($rs = $this->get_result('status')) === null
 		|| $rs === false)
 			return(false);
+		if (isset($rs['deletable']) === false)
+			$rs['deletable'] = 1;
 
-		$rs['deletable'] = 1;
 		$this->_return['status'] = $this->_ctistatus->add($rs);
 		return($this->_return['status']);
 	}

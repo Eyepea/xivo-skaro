@@ -19,6 +19,7 @@
 #
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','ctistatus','ctistatus.inc'),true);
 
 class xivo_application_service_asterisk_ctipresences extends xivo_application_asterisk_abstract
 {
@@ -32,6 +33,8 @@ class xivo_application_service_asterisk_ctipresences extends xivo_application_as
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
+
+		$this->_ctistatus = new xivo_application_service_asterisk_ctistatus($service,$param,$components);
 
 		return(true);
 	}
@@ -164,6 +167,33 @@ class xivo_application_service_asterisk_ctipresences extends xivo_application_as
 
 		$rs['deletable'] = 1;
 		$this->_return['presences'] = $this->_ctipresences->add($rs);
+
+		$tpl = $GLOBALS['_TPL'];
+		$tpl->load_i18n_file('tpl/www/bloc/cti/presences/add.i18n', 'global');
+
+		// Create mandatory statuses : available and disconnected, both undeletable
+		$status = array();
+		$status['available']['name'] = 'available';
+		$status['available']['presence_id'] = $this->_return['presences'];
+		$status['available']['display_name'] = $tpl->bbf(mandatory_status_available);
+		$status['available']['actions'] = '';
+		$status['available']['color'] = '#08FD20';
+		$status['available']['access_status'] = '';
+		$status['available']['deletable'] = 0;
+		$status['disconnected']['name'] = 'disconnected';
+		$status['disconnected']['presence_id'] = $this->_return['presences'];
+		$status['disconnected']['display_name'] = $tpl->bbf(mandatory_status_disconnected);
+		$status['disconnected']['actions'] = '';
+		$status['disconnected']['color'] = '#202020';
+		$status['disconnected']['access_status'] = '';
+		$status['disconnected']['deletable'] = 0;
+		$this->_ctistatus->set_status($status['available']);
+		if ($this->_ctistatus->add() === false)
+			return false;
+		$this->_ctistatus->set_status($status['disconnected']);
+		if ($this->_ctistatus->add() === false)
+			return false;
+
 		return($this->_return['presences']);
 	}
 
@@ -210,15 +240,15 @@ class xivo_application_service_asterisk_ctipresences extends xivo_application_as
 		return($r);
 	}
 
-    function edit_presences()
-    {
-        if(dwho_issa('presences',$this->_info) === false
-        || ($rs = $this->get_result('presences')) === null
-        || $rs === false)
-            return(false);
+	function edit_presences()
+	{
+		if(dwho_issa('presences',$this->_info) === false
+		|| ($rs = $this->get_result('presences')) === null
+		|| $rs === false)
+			return(false);
 
-        return(($this->_return['presences'] = $this->_ctipresences->edit($this->_info['presences']['id'],$rs)));
-    }
+		return(($this->_return['presences'] = $this->_ctipresences->edit($this->_info['presences']['id'],$rs)));
+	}
 
 	function _reverse_edit()
 	{
@@ -296,9 +326,9 @@ class xivo_application_service_asterisk_ctipresences extends xivo_application_as
 			switch($key)
 			{
 				case 'presences':
-                    if(isset($this->_origin['presences']) === true
-                    && $this->_origin['presences'] !== false)
-                        $this->_ctipresences->add_origin($this->_origin['presences']);
+					if(isset($this->_origin['presences']) === true
+					&& $this->_origin['presences'] !== false)
+						$this->_ctipresences->add_origin($this->_origin['presences']);
 					break;
 			}
 		}

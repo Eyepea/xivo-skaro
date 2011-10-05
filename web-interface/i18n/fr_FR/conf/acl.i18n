@@ -390,3 +390,36 @@ Groupe de services
 
 ; acl(xivo-monit)
 Monit
+
+
+; acl(xivo-configuration-provisioning-autoprov)
+Autoprovisioning
+
+; acl(service-ipbx-pbx_settings-devices)
+Terminaisons
+
+; acl(service-ipbx-pbx_settings-lines)
+Lignes
+
+; acl(service-ipbx-call_management-pickup)
+Interceptions d'appels
+
+
+; acl(service-callcenter-settings-agents)
+Agents
+
+; acl(service-callcenter-settings-queues)
+Files d'attente
+
+; acl(service-callcenter-settings-queuepenalties)
+Pénalités
+
+; acl(service-callcenter-settings-queueskills)
+Compétences
+
+; acl(service-callcenter-settings-queueskillrules)
+Règles
+
+; acl(service-callcenter-registrationcampaign-campaigns)
+Campagnes
+
