@@ -421,7 +421,7 @@ Call Center
 Configuration
 
 ; acl(service-callcenter-registrationcampaign)
-Campage d'enregistrement
+Record campaigns
 
 ; acl(service-callcenter-general)
 General
@@ -444,4 +444,34 @@ Call center
 ; acl(statistics-statistics-cel)
 CEL
 
+; acl(xivo-configuration-provisioning-autoprov)
+Autoprovisioning
+
+; acl(service-ipbx-pbx_settings-devices)
+Devices
+
+; acl(service-ipbx-pbx_settings-lines)
+Lines
+
+; acl(service-ipbx-call_management-pickup)
+Call pickups
+
+
+; acl(service-callcenter-settings-agents)
+Agents
+
+; acl(service-callcenter-settings-queues)
+Queues
+
+; acl(service-callcenter-settings-queuepenalties)
+Queue penalties
+
+; acl(service-callcenter-settings-queueskills)
+Queue skills
+
+; acl(service-callcenter-settings-queueskillrules)
+Queue skill rules
+
+; acl(service-callcenter-registrationcampaign-campaigns)
+Campaigns
 
