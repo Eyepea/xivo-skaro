@@ -54,7 +54,10 @@ class AMI_1_8:
 
     def ami_fullybooted(self, event):
         self.log.info('ami_fullybooted : %s' % (event))
+        if self.ipbxid == self.ctid.myipbxid:
+            self.ctid.myami[self.ipbxid].initrequest(0)
         return
+
     def ami_shutdown(self, event):
         self.log.info('ami_shutdown : %s' % (event))
         return
