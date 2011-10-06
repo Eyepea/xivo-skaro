@@ -198,7 +198,15 @@ class INFO(Interfaces):
                             for kk, vv in v.keeplist.iteritems():
                                 if len(args) > 2 and not kk in args[2]:
                                     continue
-                                clireply.append('        %s %s' % (kk, vv))
+                                listname, id = k, kk
+                                clireply.append('        %s %s' %
+                                                (listname, id))
+                                clireply.append('        config: \n%s' % vv)
+                                try:
+                                    clireply.append('        status:\n%s' %
+                                                    z.xod_status[listname][id])
+                                except KeyError:
+                                    clireply.append('        status: None')
 ##                    for user, info in self.ctid.safe.get(ipbxid).xod_config..users().iteritems():
 ##                        try:
 ##                            clireply.append('%s %s' % (user.encode('latin1'), info))
