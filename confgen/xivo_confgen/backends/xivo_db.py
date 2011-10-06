@@ -526,7 +526,6 @@ class QObject(object):
 
 class XivoDBBackend(Backend):
     def __init__(self, uri):
-        sqlalchemy.convert_unicode = True
         self.db = SqlSoup(uri,
                 session=scoped_session(sessionmaker(autoflush=True,expire_on_commit=False,autocommit=True)))
 
