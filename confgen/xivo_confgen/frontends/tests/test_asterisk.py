@@ -8,7 +8,6 @@ from xivo_confgen.frontends.asterisk import AsteriskFrontend
 
 
 class Test(unittest.TestCase):
-    
 
 
     def setUp(self):
@@ -21,9 +20,9 @@ class Test(unittest.TestCase):
 
     def testGenerateDialPlanFromTemplate(self):
         template = ["%%EXTEN%%,%%PRIORITY%%,Set(XIVO_BASE_CONTEXT=${CONTEXT})"]
-        exten = {'exten':'*98','priority':1}
-        result = self.asteriskFrontEnd.gen_dialplan_from_template(template,exten)
-        
+        exten = {'exten':'*98', 'priority':1}
+        result = self.asteriskFrontEnd.gen_dialplan_from_template(template, exten)
+
         self.assertEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
 
 
