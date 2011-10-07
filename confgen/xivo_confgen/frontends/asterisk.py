@@ -22,7 +22,7 @@ import re
 from xivo             import OrderedConf
 from xivo             import xivo_helpers
 
-from cStringIO        import StringIO
+from StringIO        import StringIO
 from xivo_confgen.frontend import Frontend
 
 class AsteriskFrontend(Frontend):
@@ -86,39 +86,42 @@ class AsteriskFrontend(Frontend):
             user.setdefault(p[1], []).append(str(p[2]))
 
         for user in self.backend.sipusers.all(commented=False):
-            print >>o, "\n[%s]" % user['name']
-
-            for k, v in user.iteritems():
-                if k in ('id','name','protocol','category','commented','initialized','disallow') or\
-                     v in (None, ''):
-                    continue
-
-                if k not in ('regseconds','lastms','name','fullcontact','ipaddr','allow','disallow','subscribemwi'):
-                    if isinstance(v, unicode):
-                        v = v.encode('utf8')
-                    print >>o, k + " = " + str(v)
-
-                if k == 'allow' and v != None:
-                    print >>o, "disallow = all"
-                    for c in v.split(','):
-                        print >>o, "allow = " + str(c)
-
-                if k == 'subscribemwi' and v is not None:
-                    v = 'no' if v == 0 else 'yes'
-                    print >>o, "subscribemwi = " + str(v)
-
-            if user['name'] in pickups:
-                p = pickups[user['name']]
-                #WARNING: 
-                # pickupgroup: trappable calls  (xivo members)
-                # callgroup  : can pickup calls (xivo pickups)
-                if 'member' in p:
-                    print >>o, "pickupgroup = " + ','.join(frozenset(p['member']))
-                if 'pickup' in p:
-                    print >>o, "callgroup = " + ','.join(frozenset(p['pickup']))
-
-
+            print >> o, self.gen_sip_user(user, pickups)
         return o.getvalue()
+    
+    def gen_sip_user(self, user, pickups):
+        o = StringIO()
+        print >> o, "\n[%s]" % user['name']
+
+        for k, v in user.iteritems():
+            if k in ('id', 'name', 'protocol', 'category', 'commented', 'initialized', 'disallow') or\
+                 v in (None, ''):
+                continue
+
+            if k not in ('regseconds', 'lastms', 'name', 'fullcontact', 'ipaddr', 'allow', 'disallow', 'subscribemwi'):
+                print >> o, k + " = " + unicode(v)
+
+            if k == 'allow' and v != None:
+                print >> o, "disallow = all"
+                for c in v.split(','):
+                    print >> o, "allow = " + str(c)
+
+            if k == 'subscribemwi' and v is not None:
+                v = 'no' if v == 0 else 'yes'
+                print >> o, "subscribemwi = " + str(v)
+
+        if user['name'] in pickups:
+            p = pickups[user['name']]
+            #WARNING: 
+            # pickupgroup: trappable calls  (xivo members)
+            # callgroup  : can pickup calls (xivo pickups)
+            if 'member' in p:
+                print >> o, "pickupgroup = " + ','.join(frozenset(p['member']))
+            if 'pickup' in p:
+                print >> o, "callgroup = " + ','.join(frozenset(p['pickup']))
+        return o.getvalue()
+
+
 
 
     def iax_conf(self):
