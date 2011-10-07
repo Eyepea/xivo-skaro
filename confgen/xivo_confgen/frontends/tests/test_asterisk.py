@@ -50,6 +50,27 @@ callerid = "lucky" <45789>
         self.assertEqual(result,u'\n[papi]\ncallerid = "pépè" <45789>\n') 
         
 
+    def testGenSipUserEmptyValue(self):
+        user = {'name':'novalue',
+                u'context': u''}
+        pickups = {}
+        result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
+        self.assertEqual(result,u'\n[novalue]\n')
+         
+        user = {'name':'novalue',
+                u'context': None}
+        pickups = {}
+        result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
+        self.assertEqual(result,u'\n[novalue]\n')
+
+    def testGenSipUserCodec(self):
+        user = {'name':'papi',
+                u'allow': u'g723,gsm'}
+        pickups = {}
+        result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
+        self.assertEqual(result,u'\n[papi]\ndisallow = all\nallow = g723\nallow = gsm\n') 
+         
+         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGenerateConfiguration']
     unittest.main()

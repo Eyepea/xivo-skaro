@@ -93,22 +93,22 @@ class AsteriskFrontend(Frontend):
         o = StringIO()
         print >> o, "\n[%s]" % user['name']
 
-        for k, v in user.iteritems():
-            if k in ('id', 'name', 'protocol', 'category', 'commented', 'initialized', 'disallow') or\
-                 v in (None, ''):
+        for key, value in user.iteritems():
+            if key in ('id', 'name', 'protocol', 'category', 'commented', 'initialized', 'disallow') or\
+            value in (None, ''):
                 continue
 
-            if k not in ('regseconds', 'lastms', 'name', 'fullcontact', 'ipaddr', 'allow', 'disallow', 'subscribemwi'):
-                print >> o, k + " = " + unicode(v)
+            if key not in ('regseconds', 'lastms', 'name', 'fullcontact', 'ipaddr', 'allow', 'disallow', 'subscribemwi'):
+                print >> o, self._gen_value_line(key,value)
 
-            if k == 'allow' and v != None:
+            if key == 'allow' :
                 print >> o, "disallow = all"
-                for c in v.split(','):
-                    print >> o, "allow = " + str(c)
+                for codec in value.split(','):
+                    print >> o, self._gen_value_line("allow",codec)
 
-            if k == 'subscribemwi' and v is not None:
-                v = 'no' if v == 0 else 'yes'
-                print >> o, "subscribemwi = " + str(v)
+            if key == 'subscribemwi' :
+                value = 'no' if value == 0 else 'yes'
+                print >> o, "subscribemwi = " + str(value)
 
         if user['name'] in pickups:
             p = pickups[user['name']]
@@ -122,6 +122,8 @@ class AsteriskFrontend(Frontend):
         return o.getvalue()
 
 
+    def _gen_value_line(self, key, value):
+        return key + " = " + unicode(value)
 
 
     def iax_conf(self):
