@@ -454,18 +454,26 @@ class SocketProxy(object):
             for cur_socket in r_rlist:
                 if cur_socket == self._client_socket:
                     logger.debug("Receiving data from client")
-                    buf = self._client_socket.recv(self._BUFSIZE)
-                    if not buf:
+                    try:
+                        buf = self._client_socket.recv(self._BUFSIZE)
+                    except socket.error:
                         raise _RemoteSocketClosedError("recv from client")
-                    self._listener.client_send(buf)
-                    server_buf += buf
+                    else:
+                        if not buf:
+                            raise _RemoteSocketClosedError("recv from client")
+                        self._listener.client_send(buf)
+                        server_buf += buf
                 elif cur_socket == self._server_socket:
                     logger.debug("Receiving data from server")
-                    buf = self._server_socket.recv(self._BUFSIZE)
-                    if not buf:
+                    try:
+                        buf = self._server_socket.recv(self._BUFSIZE)
+                    except socket.error:
                         raise _RemoteSocketClosedError("recv from server")
-                    self._listener.server_send(buf)
-                    client_buf += buf
+                    else:
+                        if not buf:
+                            raise _RemoteSocketClosedError("recv from server")
+                        self._listener.server_send(buf)
+                        client_buf += buf
                 else:
                     raise AssertionError("cur_socket is: %r" % cur_socket)
 
