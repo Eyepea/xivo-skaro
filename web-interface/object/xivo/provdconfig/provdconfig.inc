@@ -416,7 +416,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$autoprov['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
 		}
 
-
 		if (($rs = $this->get('autoprov')) !== false)
 			$this->delete('autoprov');
 		if (is_array($rs) === true)
