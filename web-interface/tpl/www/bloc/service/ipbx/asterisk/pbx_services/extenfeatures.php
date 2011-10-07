@@ -96,7 +96,7 @@ if(isset($error_js[0]) === true)
 					<li><a href="#forward"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-forward');">
 							<?=$this->bbf('smenu_forwards');?></a></li>
-				
+
 				</ul>
 			</div>
 		</li>
@@ -1268,7 +1268,7 @@ if(isset($error_js[0]) === true)
 				      'name'	=> 'extenfeatures[paging][enable]',
 				      'labelid'	=> 'extenfeatures-enable-paging_enable',
 				      'checked'	=> ((bool) $this->get_var('extenfeatures','paging','commented') === false)));
-	
+
 	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-paging_exten'),
 				  'name'	=> 'extenfeatures[paging][exten]',
 				  'paragraph'	=> false,
@@ -1308,17 +1308,17 @@ if(isset($error_js[0]) === true)
 		</div>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-guestprov'),
-				      'name'	=> 'extenfeatures[guestprov][enable]',
-				      'labelid'	=> 'extenfeatures-enable-guestprov',
-				      'checked'	=> ((bool) $this->get_var('extenfeatures','guestprov','commented') === false))),
+				      'name'	=> 'extenfeatures[autoprov][enable]',
+				      'labelid'	=> 'extenfeatures-enable-autoprov',
+				      'checked'	=> ((bool) $this->get_var('extenfeatures','autoprov','commented') === false))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
-				  'name'	=> 'extenfeatures[guestprov][exten]',
-				  'labelid'	=> 'extenfeatures-guestprov',
+				  'name'	=> 'extenfeatures[autoprov][exten]',
+				  'labelid'	=> 'extenfeatures-autoprov',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('extenfeatures','guestprov','exten'),
-				  'default'	=> $element['extenfeatures']['guestprov']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['guestprov']))),
+				  'value'	=> $this->get_var('extenfeatures','autoprov','exten'),
+				  'default'	=> $element['extenfeatures']['autoprov']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['autoprov']))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_featuredigittimeout'),
 				    'name'	=> 'generalfeatures[featuredigittimeout]',

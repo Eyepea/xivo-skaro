@@ -62,7 +62,7 @@ if(isset($_QR['fm_send']) === true)
 
 			while(list($key) = each($extens))
 			{
-			
+
 				if(dwho_issa($key,$_QR['extenfeatures']) === false)
 					continue;
 				else if(isset($_QR['extenfeatures'][$key]['exten']) === true)
@@ -89,8 +89,8 @@ if(isset($_QR['fm_send']) === true)
 					$error['extenfeatures'][] = $key;
 				}
 			}
-			
-			if(isset($error['extenfeatures'][0]) === true)
+
+			if(empty($error['extenfeatures']) === false)
 				$fm_save = false;
 			else if($fm_save !== false)
 				$fm_save = true;
@@ -103,7 +103,7 @@ if(isset($_QR['fm_send']) === true)
 		$info['generalfeatures'] = $rs['result'];
 		$error['generalfeatures'] = $rs['error'];
 
-		if(isset($rs['error'][0]) === true)
+		if(empty($rs['error']) === false)
 			$fm_save = false;
 		else if($fm_save !== false)
 			$fm_save = true;
@@ -115,12 +115,12 @@ if(isset($_QR['fm_send']) === true)
 		$info['featuremap'] = $rs['result'];
 		$error['featuremap'] = $rs['error'];
 
-		if(isset($rs['error'][0]) === true)
+		if(empty($rs['error']) === false)
 			$fm_save = false;
 		else if($fm_save !== false)
 			$fm_save = true;
 	}
-	
+
 	$ipbx->discuss(array('dialplan reload', 'features reload'));
 }
 
