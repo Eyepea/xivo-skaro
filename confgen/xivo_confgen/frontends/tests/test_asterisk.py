@@ -69,6 +69,33 @@ callerid = "lucky" <45789>
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result,u'\n[papi]\ndisallow = all\nallow = g723\nallow = gsm\n') 
+        
+    def testGenSipUserSubscribemwi(self):
+        user = {'name':'voicemail',
+                u'subscribemwi': 0}
+        pickups = {}
+        result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
+        self.assertEqual(result,u'\n[voicemail]\nsubscribemwi = no\n')
+        user = {'name':'voicemail',
+                u'subscribemwi': 1}
+        result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
+        self.assertEqual(result,u'\n[voicemail]\nsubscribemwi = yes\n')
+        
+    def testGenSipUserUnusedKeys(self):
+        user = {'id': 1,
+                'name': 'unused',
+                'protocol': 'sip',
+                'category': 5,
+                'commented': 0,
+                'initialized': 1,
+                'disallow': 'all',
+                'regseconds': 1,
+                'lastms': 5,
+                'fullcontact': 'pepe',
+                'ipaddr': None,}
+        pickups = {}
+        result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
+        self.assertEqual(result,u'\n[unused]\n')
          
          
 if __name__ == "__main__":

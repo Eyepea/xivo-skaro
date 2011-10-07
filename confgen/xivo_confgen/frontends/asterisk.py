@@ -90,25 +90,28 @@ class AsteriskFrontend(Frontend):
         return o.getvalue()
     
     def gen_sip_user(self, user, pickups):
+        sipUnusedValues = ('id', 'name', 'protocol',
+                       'category', 'commented', 'initialized',
+                       'disallow', 'regseconds', 'lastms',
+                       'name', 'fullcontact', 'ipaddr',)
         o = StringIO()
         print >> o, "\n[%s]" % user['name']
 
         for key, value in user.iteritems():
-            if key in ('id', 'name', 'protocol', 'category', 'commented', 'initialized', 'disallow') or\
-            value in (None, ''):
+            if key in sipUnusedValues or value in (None, ''):
                 continue
 
-            if key not in ('regseconds', 'lastms', 'name', 'fullcontact', 'ipaddr', 'allow', 'disallow', 'subscribemwi'):
+            if key not in ( 'allow', 'subscribemwi'):
                 print >> o, self._gen_value_line(key,value)
 
             if key == 'allow' :
-                print >> o, "disallow = all"
+                print >> o, self._gen_value_line('disallow', 'all')
                 for codec in value.split(','):
                     print >> o, self._gen_value_line("allow",codec)
 
             if key == 'subscribemwi' :
                 value = 'no' if value == 0 else 'yes'
-                print >> o, "subscribemwi = " + str(value)
+                print >> o, self._gen_value_line('subscribemwi', value)
 
         if user['name'] in pickups:
             p = pickups[user['name']]

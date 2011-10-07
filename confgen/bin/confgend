@@ -39,12 +39,12 @@ class Confgen(Protocol):
 		if content is None:
 			# get cache content
 			print "cache hit on %s" % data
-			content = self.factory.cache.get(data)
+			content = self.factory.cache.get(data).decode('utf8')
 		else:
 			# write to cache
-			self.factory.cache.put(data, content)
+			self.factory.cache.put(data, content.encode('utf8'))
 
-		self.transport.write(content)
+		self.transport.write(content.encode('utf8'))
 		self.transport.loseConnection()
 
 
