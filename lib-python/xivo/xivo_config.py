@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-"""Common routines and objects for autoprovisioning services in XIVO
+"""Common routines services in XIVO
 
 Copyright (C) 2007-2010  Proformatique
 
@@ -28,18 +28,15 @@ import os
 import re
 import copy
 import yaml
-from ConfigParser import ConfigParser
-from itertools import chain, count
 import logging
 
+from itertools import chain, count
 from xivo import network
-from xivo import ConfigDict
 from xivo import interfaces
 from xivo import system
 from xivo import xys
 from xivo import udev
 from xivo import shvar
-from xivo import MacIpResolver
 
 
 log = logging.getLogger("xivo.xivo_config") # pylint: disable-msg=C0103
@@ -71,56 +68,7 @@ INTERFACES_FILE = "interfaces"      # /etc/network/
 DHCPD_CONF_FILE = "dhcpd.conf"      # /etc/dhcp/
 IFPLUGD_FILE = "ifplugd"            # /etc/default/
 
-
-ProvGeneralConf = {
-    'listen_ipv4':              "127.0.0.1",
-    'listen_port':              8666,
-    'connect_ipv4':             "127.0.0.1",
-    'connect_port':             8666,
-
-    'use_dhcpd_leases':         1,
-    'scan_ifaces_prefix':       "eth,vlan",
-    'arping_cmd':               "sudo /usr/sbin/arping",
-    'arping_sleep_us':          150000,
-
-    'log_level':                "info",
-
-    'database_uri':             "sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
-    'http_read_request_to_s':   90,
-    'http_request_to_s':        90,
-
-    'excl_del_lock_to_s':       45,
-
-    'tftproot':                 "/tftpboot/",
-    'curl_cmd':                 "/usr/bin/curl",
-    'curl_to_s':                30,
-    'telnet_to_s':              30,
-    'templates_dir':            "/usr/share/pf-xivo-provisioning/files/",
-    'asterisk_ipv4':            "0.0.0.0",
-    'ntp_server_ipv4':          "0.0.0.0",
-    'registrar_main':           "0.0.0.0",
-    'registrar_backup':         "0.0.0.0",
-    'proxy_main':               "0.0.0.0",
-    'proxy_backup':             "0.0.0.0",
-}
-Pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ("eth", "vlan", "dummy")
-
-
-def LoadConfig(filename):
-    """
-    Load provisioning configuration
-    """
-    global ProvGeneralConf
-    global AUTHORIZED_PREFIXES
-    cp = ConfigParser()
-    cp.readfp(open(filename))
-    ConfigDict.FillDictFromConfigSection(ProvGeneralConf, cp, "general")
-    AUTHORIZED_PREFIXES = tuple([
-        p.strip()
-        for p in Pgc['scan_ifaces_prefix'].split(',')
-        if p.strip()
-    ])
 
 
 def netif_managed(ifname):
@@ -129,41 +77,6 @@ def netif_managed(ifname):
     be managed by this module.
     """
     return True in [ifname.startswith(x) for x in AUTHORIZED_PREFIXES]
-
-
-def ipv4_from_macaddr(macaddr):
-    """
-    When using dhcpd.leases; wrapper for MacIpResolver.ipv4_from_macaddr().
-    Else; wrapper for network.ipv4_from_macaddr() that sets:
-    * ifname_match_func to netif_managed
-    * arping_cmd_list to Pgc['arping_cmd'].strip().split()
-    * arping_sleep_us to Pgc['arping_sleep_us']
-    """
-    if Pgc['use_dhcpd_leases']:
-        return MacIpResolver.ipv4_from_macaddr(macaddr)
-    else:
-        return network.ipv4_from_macaddr(macaddr,
-                                         ifname_match_func=netif_managed,
-                                         arping_cmd_list=Pgc['arping_cmd'].strip().split(),
-                                         arping_sleep_us=Pgc['arping_sleep_us'])
-
-
-def macaddr_from_ipv4(ipv4):
-    """
-    When using dhcpd.leases; wrapper for MacIpResolver.macaddr_from_ipv4().
-    Else; wrapper for network.macaddr_from_ipv4() that sets:
-    * ifname_match_func to netif_managed
-    * arping_cmd_list to Pgc['arping_cmd'].strip().split()
-    * arping_sleep_us to Pgc['arping_sleep_us']
-    """
-    if Pgc['use_dhcpd_leases']:
-        return MacIpResolver.macaddr_from_ipv4(ipv4)
-    else:
-        return network.macaddr_from_ipv4(ipv4,
-                                         ifname_match_func=netif_managed,
-                                         arping_cmd_list=Pgc['arping_cmd'].strip().split(),
-                                         arping_sleep_us=Pgc['arping_sleep_us'])
-
 
 # States for linesubst()
 NORM = object()
@@ -261,296 +174,7 @@ def txtsubst(lines, variables, target_file=None, charset=None):
 
 ID_CHR = ''.join(map(chr, xrange(0, 256)))
 
-def well_formed_provcode(provcode):
-    """
-    @provcode: string
-    Return True <=> provcode is a well formed XIVO provisioning code
-    """
-    return provcode and not provcode.translate(ID_CHR, "0123456789")
-
-
-class ProviConfigurability(type):
-    """
-    Metaclass that manages phone vendor classes
-    """
-
-    # Workaround pylint bug:
-    # pylint: disable-msg=C0203
-
-    def __init__(cls, name, bases, dct):
-        super(ProviConfigurability, cls).__init__(name, bases, dct)
-        if hasattr(cls, 'do_reinitprov'):
-            register_phone_vendor_class(cls)
-
-
-class PhoneVendorMixin(object):
-    """
-    Phone vendor base class
-    """
-
-    __metaclass__ = ProviConfigurability
-
-    TELNET_TO_S = None
-    CURL_TO_S = None
-    CURL_CMD = None
-    ASTERISK_IPV4 = None
-    REGISTRAR_MAIN = None
-    REGISTRAR_BACKUP = None
-    PROXY_MAIN = None
-    PROXY_BACKUP = None
-    TEMPLATES_DIR = None
-    NTP_SERVER_IPV4 = None
-    TFTPROOT = None
-    DEFAULT_LOCALE = 'fr_FR'
-    DEFAULT_TIMEZONE = 'Europe/Paris'
-    PROVI_VARS = {'config':
-                        {'asterisk_ipv4':       None,
-                         'ntp_server_ipv4':     None,
-                         'registrar_main':      None,
-                         'registrar_backup':    None,
-                         'proxy_main':          None,
-                         'proxy_backup':        None,
-                         },
-                  'user':
-                        {'display_name':    'name',
-                         'dtmfmode':        'dtmfmode',
-                         'firstname':       'firstname',
-                         'lastname':        'lastname',
-                         'mailbox':         'mailbox',
-                         'phone_ident':     'ident',
-                         'phone_passwd':    'passwd',
-                         'phone_number':    'number',
-                         'simultcalls':     'simultcalls',
-                         'subscribe_mwi':   'subscribemwi'},
-                  'exten':
-                        {'dnd':             'enablednd',
-                         'forward_unc':     'fwdunc',
-                         'park':            'parkext',
-                         'pickup':          'pickup',
-                         'pickup_group':    'pickupexten',
-                         'voicemail':       'vmusermsg'}
-                 }
-
-    @classmethod
-    def setup(cls, config):
-        """
-        Configuration of class attributes
-        """
-        cls.TELNET_TO_S = config['telnet_to_s']
-        cls.CURL_TO_S = config['curl_to_s']
-        cls.CURL_CMD = config['curl_cmd']
-        cls.ASTERISK_IPV4 = config['asterisk_ipv4']
-        cls.TEMPLATES_DIR = config['templates_dir']
-        cls.NTP_SERVER_IPV4 = config['ntp_server_ipv4']
-        cls.TFTPROOT = config['tftproot']
-        def get_value_if_valid(value, default):
-            if value and value != '0.0.0.0':
-                return value
-            else:
-                return default
-        cls.REGISTRAR_MAIN = config['registrar_main']
-        cls.REGISTRAR_BACKUP = get_value_if_valid(config['registrar_backup'], None)
-        cls.PROXY_MAIN = config['proxy_main']
-        cls.PROXY_BACKUP = get_value_if_valid(config['proxy_backup'], None)
-
-        cls.PROVI_VARS['config']['asterisk_ipv4'] = cls.ASTERISK_IPV4
-        cls.PROVI_VARS['config']['ntp_server_ipv4'] = cls.NTP_SERVER_IPV4
-        cls.PROVI_VARS['config']['registrar_main'] = cls.REGISTRAR_MAIN
-        cls.PROVI_VARS['config']['registrar_backup'] = cls.REGISTRAR_BACKUP
-        cls.PROVI_VARS['config']['proxy_main'] = cls.PROXY_MAIN
-        cls.PROVI_VARS['config']['proxy_backup'] = cls.PROXY_BACKUP
-
-    @classmethod
-    def set_provisioning_variables(cls, provinfo, xvars, format_var=None, format_extension=None):
-        for key in cls.PROVI_VARS['config'].keys():
-            if xvars.has_key(key):
-                continue
-            elif not format_var:
-                xvars[key] = cls.PROVI_VARS['config'][key]
-            else:
-                xvars[key] = format_var(cls.PROVI_VARS['config'][key])
-
-        for key, value in cls.PROVI_VARS['user'].iteritems():
-            key = "user_%s" % key
-
-            if xvars.has_key(key) \
-               or not provinfo.has_key(value) \
-               or provinfo[value] is None:
-                continue
-            elif not format_var:
-                xvars[key] = provinfo[value]
-            else:
-                xvars[key] = format_var(provinfo[value])
-
-        for key, value in cls.PROVI_VARS['exten'].iteritems():
-            key = "exten_%s" % key
-
-            if xvars.has_key(key) \
-               or not provinfo['extensions'].has_key(value) \
-               or provinfo['extensions'][value] is None:
-                continue
-            elif not format_extension:
-                xvars[key] = provinfo['extensions'][value]
-            else:
-                xvars[key] = format_extension(provinfo['extensions'][value])
-
-        return xvars
-    
-    def __init__(self, phone):
-        """
-        Constructor.
-
-        @phone must be a dictionary containing everything needed for the
-        one phone provisioning process to take place.  That is the
-        following keys:
-
-        'model', 'vendor', 'macaddr', 'actions', 'ipv4' if the value
-        for 'actions' is not 'no'
-        """
-        self.phone = phone
-        log.info("Instantiation of %r", self.phone)
-
-    def action_reinit(self):
-        """
-        This function can be called under some conditions after the
-        configuration for this phone has been generated by the
-        generate_reinitprov() method.
-        """
-        if self.phone["actions"] == "no": # possible cause: "distant" provisioning
-            log.info("Skipping REINIT action for phone %s", self.phone['macaddr'])
-            return
-        log.info("Sending REINIT command to phone %s", self.phone['macaddr'])
-        self.do_reinit()
-        log.debug("Sent REINIT command to phone %s", self.phone['macaddr'])
-
-    def action_reboot(self):
-        """
-        This function can be called under some conditions after the
-        configuration for this phone has been generated by the
-        generate_autoprov() method.
-        """
-        if self.phone["actions"] == "no": # distant provisioning with actions disabled
-            log.info("Skipping REBOOT action for phone %s", self.phone['macaddr'])
-            return
-        log.info("Sending REBOOT command to phone %s", self.phone['macaddr'])
-        self.do_reboot()
-        log.debug("Sent REBOOT command to phone %s", self.phone['macaddr'])
-
-    def action_upgradefw(self):
-        """
-        This function upgrade the phone firmware.
-        """
-        log.info("Sending UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
-
-        if hasattr(self, 'do_upgradefw'):
-            self.do_upgradefw()
-        else:
-            log.error("Missing UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
-            return
-        log.debug("Sent UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
-
-    def generate_reinitprov(self, provinfo, dry_run=False):
-        """
-        This function put the configuration for the phone back in guest
-        state.
-        
-        If dry_run is true, do not configure the phone; instead, return
-        the content of the file that would have been generated.
-        """
-        log.info("About to GUEST'ify the phone %s", self.phone['macaddr'])
-        res = self.do_reinitprov(provinfo, dry_run)
-        log.debug("Phone GUEST'ified %s", self.phone['macaddr'])
-        return res
-
-    def generate_autoprov(self, provinfo, dry_run=False):
-        """
-        This function generate the configuration for the phone with
-        provisioning informations provided in the provinfo dictionary.
-        
-        If dry_run is true, do not configure the phone; instead, return
-        the content of the file that would have been generated (if
-        applicable, else return None).
-        """
-        log.info("About to AUTOPROV the phone %s with infos %s", self.phone['macaddr'], str(provinfo))
-        res = self.do_autoprov(provinfo, dry_run)
-        log.debug("Phone AUTOPROV'ed %s", self.phone['macaddr'])
-        return res
-
-    def _write_cfg(self, tmp_filename, cfg_filename, txt):
-        """Write txt to cfg_filename in a two step process:
-        
-        - first write all txt into tmp_filename, which should be on
-          the same filesystem such that the rename operation is atomic
-        - then rename tmp_filename into cfg_filename
-        """
-        tmp_file = open(tmp_filename, 'w')
-        try:
-            tmp_file.writelines(txt)
-        finally:
-            tmp_file.close()
-        os.rename(tmp_filename, cfg_filename)
-
 PhoneClasses = {}
-
-
-def register_phone_vendor_class(cls):
-    """
-    Register a new class, derived from PhoneVendorMixin, that implements
-    provisioning methods for some phones of a given vendor.
-    """
-    global PhoneClasses
-    key = cls.__name__.lower()
-    if key not in PhoneClasses:
-        PhoneClasses[key] = cls
-    else:
-        raise ValueError, "A registration as already occurred for %r" % key
-
-
-def phone_vendor_iter_key_class():
-    """
-    Iterate over phone classes.
-    """
-    global PhoneClasses
-    return PhoneClasses.iteritems()
-
-
-def phone_factory(phone):
-    """
-    Instantiate a PhoneVendorMixin derived class according to the phone
-    description.
-    """
-    global PhoneClasses
-    print phone		
-    phone_class = PhoneClasses[phone["vendor"]]
-    return phone_class(phone)
-
-
-def phone_desc_by_ua(ua, exc_info=True):
-    """
-    Return a tuple (vendor_key, model, firmware), or None if no
-    PhoneVendorMixin derived class has recognized the user agent string.
-    vendor_key, model, and firmware are strings.
-    """
-    global PhoneClasses
-    for phone_class in PhoneClasses.itervalues():
-        try:
-            r = phone_class.get_vendor_model_fw(ua)
-        except Exception:
-            r = None
-            if exc_info:
-                log.exception("in phone_desc_by_ua(ua=%r)", ua)
-        if r:
-            return r
-    return None
-
-
-def phone_classes_setup():
-    """
-    For each registered phone class k, call k.setup(Pgc)
-    """
-    for phone_class in PhoneClasses.itervalues():
-        phone_class.setup(Pgc)
-
 
 ### GENERAL CONF
 
