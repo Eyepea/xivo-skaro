@@ -49,6 +49,8 @@ class xivo_service_asterisk_contextmember extends xivo_service_asterisk_abstract
 		else if(isset($arr['context']) === true)
 			$arr['context'] = strtolower($arr['context']);
 
+		$arr['typeval'] = (string) $arr['typeval'];
+
 		return(parent::add($arr,$id));
 	}
 
@@ -58,6 +60,8 @@ class xivo_service_asterisk_contextmember extends xivo_service_asterisk_abstract
 			return(false);
 		else if(isset($arr['context']) === true)
 			$arr['context'] = strtolower($arr['context']);
+
+		$arr['typeval'] = (string) $arr['typeval'];
 
 		return(parent::edit($id,$arr));
 	}
