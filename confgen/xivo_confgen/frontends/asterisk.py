@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 __version__ = "$Revision$ $Date$"
-__author__  = "Guillaume Bour <gbour@proformatique.com>"
+__author__ = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010-2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
 
@@ -32,51 +32,51 @@ class AsteriskFrontend(Frontend):
             o - output stream. write to it with *print >>o, 'blablabla'*
         """
         o = StringIO()
-        
+
         ## section::general
-        print >>o, '[general]'
+        print >> o, '[general]'
         for item in self.backend.sip.all(commented=False):
             if item['var_val'] is None:
                 continue
 
             if item['var_name'] in ('register', 'mwi'):
-                print >>o, item['var_name'], "=>", item['var_val']
+                print >> o, item['var_name'], "=>", item['var_val']
 
             elif item['var_name'] not in ['allow', 'disallow']:
-                print >>o, item['var_name'], "=", item['var_val']
+                print >> o, item['var_name'], "=", item['var_val']
 
             elif item['var_name'] == 'allow':
-                print >>o, 'disallow = all'
+                print >> o, 'disallow = all'
                 for c in item['var_val'].split(','):
-                    print >>o, 'allow = %s' % c
+                    print >> o, 'allow = %s' % c
 
         ## section::authentication
         items = self.backend.sipauth.all()
         if len(items) > 0:
-            print >>o, '\n[authentication]'
+            print >> o, '\n[authentication]'
 
             for auth in items:
                 mode = '#' if auth['secretmode'] == 'md5' else ':'
-                print >>o, "auth = %s%s%s@%s" % (auth['user'], mode, auth['secret'], auth['realm'])
+                print >> o, "auth = %s%s%s@%s" % (auth['user'], mode, auth['secret'], auth['realm'])
 
 
         # section::trunks
         for trunk in self.backend.siptrunks.all(commented=False):
-            print >>o, "\n[%s]" % trunk['name']
+            print >> o, "\n[%s]" % trunk['name']
 
             for k, v in trunk.iteritems():
-                if k in ('id','name','protocol','category','commented','disallow') or v in (None, ''):
+                if k in ('id', 'name', 'protocol', 'category', 'commented', 'disallow') or v in (None, ''):
                     continue
 
                 if isinstance(v, unicode):
                     v = v.encode('utf8')
 
                 if v == 'allow':
-                    print >>o, "disallow = all"
+                    print >> o, "disallow = all"
                     for c in v.split(','):
-                        print >>o, "allow = " + str(c)
+                        print >> o, "allow = " + str(c)
                 else:
-                    print >>o, k, '=', v
+                    print >> o, k, '=', v
 
 
         # section::users (xivo lines)
@@ -88,7 +88,7 @@ class AsteriskFrontend(Frontend):
         for user in self.backend.sipusers.all(commented=False):
             print >> o, self.gen_sip_user(user, pickups)
         return o.getvalue()
-    
+
     def gen_sip_user(self, user, pickups):
         sipUnusedValues = ('id', 'name', 'protocol',
                        'category', 'commented', 'initialized',
@@ -101,13 +101,13 @@ class AsteriskFrontend(Frontend):
             if key in sipUnusedValues or value in (None, ''):
                 continue
 
-            if key not in ( 'allow', 'subscribemwi'):
-                print >> o, self._gen_value_line(key,value)
+            if key not in ('allow', 'subscribemwi'):
+                print >> o, self._gen_value_line(key, value)
 
             if key == 'allow' :
                 print >> o, self._gen_value_line('disallow', 'all')
                 for codec in value.split(','):
-                    print >> o, self._gen_value_line("allow",codec)
+                    print >> o, self._gen_value_line("allow", codec)
 
             if key == 'subscribemwi' :
                 value = 'no' if value == 0 else 'yes'
@@ -131,58 +131,58 @@ class AsteriskFrontend(Frontend):
 
     def iax_conf(self):
         o = StringIO()
-        
+
         ## section::general
-        print >>o, '[general]'
+        print >> o, '[general]'
         for item in self.backend.iax.all(commented=False):
             if item['var_val'] is None:
                 continue
 
             if item['var_name'] == 'register':
-                print >>o, item['var_name'], "=>", item['var_val']
+                print >> o, item['var_name'], "=>", item['var_val']
 
             elif item['var_name'] not in ['allow', 'disallow']:
-                print >>o, "%s = %s" % (item['var_name'], item['var_val'])
+                print >> o, "%s = %s" % (item['var_name'], item['var_val'])
 
             elif item['var_name'] == 'allow':
-                print >>o, 'disallow = all'
+                print >> o, 'disallow = all'
                 for c in item['var_val'].split(','):
-                    print >>o, 'allow = %s' % c
+                    print >> o, 'allow = %s' % c
 
 
         ## section::authentication
         items = self.backend.iaxcalllimits.all()
         if len(items) > 0:
-            print >>o, '\n[callnumberlimits]'
+            print >> o, '\n[callnumberlimits]'
 
             for auth in items:
-                print >>o, "%s/%s = %s" % (auth['destination'], auth['netmask'], auth['calllimits'])
+                print >> o, "%s/%s = %s" % (auth['destination'], auth['netmask'], auth['calllimits'])
 
 
         # section::trunks
         for trunk in self.backend.iaxtrunks.all(commented=False):
-            print >>o, "\n[%s]" % trunk['name']
+            print >> o, "\n[%s]" % trunk['name']
 
             for k, v in trunk.iteritems():
-                if k in ('id','name','protocol','category','commented','disallow') or v in (None, ''):
+                if k in ('id', 'name', 'protocol', 'category', 'commented', 'disallow') or v in (None, ''):
                     continue
 
                 if isinstance(v, unicode):
                     v = v.encode('utf8')
 
                 if k == 'allow' and v != None:
-                    print >>o, "disallow = all"
+                    print >> o, "disallow = all"
                     for c in v.split(','):
-                        print >>o, "allow = " + str(c)
+                        print >> o, "allow = " + str(c)
                 else:
-                    print >>o, k + " = ", v
+                    print >> o, k + " = ", v
 
         # section::users
         for user in self.backend.iaxusers.all(commented=False):
-            print >>o, "\n[%s]" % user['name']
+            print >> o, "\n[%s]" % user['name']
 
             for k, v in user.iteritems():
-                if k in ('id','name','protocol','category','commented','initialized','disallow') or\
+                if k in ('id', 'name', 'protocol', 'category', 'commented', 'initialized', 'disallow') or\
                      v in (None, ''):
                     continue
 
@@ -190,140 +190,11 @@ class AsteriskFrontend(Frontend):
                     v = v.encode('utf8')
 
                 if k == 'allow' and v != None:
-                    print >>o, "disallow = all"
+                    print >> o, "disallow = all"
                     for c in v.split(','):
-                        print >>o, "allow = " + str(c)
+                        print >> o, "allow = " + str(c)
                 else:
-                    print >>o, k, "=", str(v)
-
-
-        return o.getvalue()
-
-
-    def sccp_conf(self):
-        o = StringIO()
-        
-        ## section::general
-        print >>o, '[general]'
-        for item in self.backend.sccp.all(commented=False):
-            #print item, type(item)
-            if item['var_name'] not in ['allow', 'disallow']:
-                print >>o, item['var_name'], "=", item['var_val']
-
-            elif item['var_name'] == 'allow':
-                print >>o, 'disallow = all'
-                for c in item['var_val'].split(','):
-                    print >>o, 'allow = %s' % c
-
-
-        # section::users (phones)
-        from xivo import xivo_config
-
-        for user in self.backend.sccpusers.all(commented=False):
-            #print user.keys()
-            name = 'SEP' + user['mac'].replace(':', '')
-            phone_class = xivo_config.phone_factory({'vendor': user['vendor'].lower(), 'model': user['model']})
-            if not phone_class:
-                continue
-
-            addons = []
-            if user['addons'] and len(user['addons']) > 0:
-                addons = user['addons'].split(',')
-                devicetype = addons[0]
-            else:
-                devicetype = phone_class.get_sccp_devicetype(user['model'])
-                if not devicetype:
-                    continue
-
-            print >>o, "\n[%s]" % name
-            print >>o, "type = device"
-            print >>o, "devicetype = %s" % devicetype
-            for addon in addons:
-                print >>o, "addon = %s" % addon
-
-            softkeys = {}
-            for k, v in user.items():
-                #print k, v
-                #k = k.split('.')[1]
-                if k in ['id', 'name', 'macaddr', 'vendor', 'model','defaultline', 'addons', 'number', 'commented', 'featid', 'protocol'] \
-                     or v is None or len(str(v)) == 0:
-                    continue
-
-                if k.startswith('softkey_'):
-                    softkeys[k[8:]] = v
-                    continue
-
-                print >>o, "%s = %s" % (k, v)
-
-            dftline = self.backend.sccpusers.default_line(user['defaultline'])
-            if dftline is not None:
-                print >>o, "button = line, %s" % dftline['name']
-
-            # map buttons
-            """ SKIPPED FROM NOW AS WE DONT USE xivo libpython SQL Cursor
-            fknum = 2
-            funckeys = get_funckeys(cursor, user['featid'], user['number'])
-            ids = funckeys.keys()
-            ids.sort()
-    
-            for num in ids:
-                # button #1 is reserved for phone default line
-                if num == 1:
-                    continue
-
-                # fill empty buttons
-                for i in xrange(fknum, num):
-                    print "button = empty"
-                fknum = num
-
-                btn = funckeys[num]
-                label = btn['label']
-                if label is None:
-                    label = btn.get('altlabel')
-
-                print "button = speeddial, %s, %s," % (label, btn['exten']),
-                if btn['supervision']:
-                    print "%s@%s" % (btn['exten'], btn['context'])
-                else:
-                    print
-
-                fknum += 1
-            """
-
-            # soft keys
-            if len(softkeys) > 0:
-                print >>o, "softkeyset = keyset_%s" % name
-
-                ## END OF DEVICE / START OF SOFTKEY
-                print >>o, "\n[keyset_%s]" % name
-                print >>o, "type = softkeyset"
-        
-                for k, v in softkeys.iteritems():
-                    print >>o, "%s = %s" % (k, v)
-
-
-        # section::lines
-        for l in self.backend.sccplines.all(commented=False):
-            print >>o, "\n[%s]" % l['name']
-   
-            label = l['label']
-            if not label or len(label) == 0:
-                label = l['name']
-
-            print >>o, "type = line"
-            print >>o, "id = %s" % l['name']
-            print >>o, "label = %s" % label
-            print >>o, "pin = %s" % l['pin']
-            print >>o, "cid_name = %s" % l['cid_name']
-            print >>o, "cid_num = %s" % l['cid_num']
-
-            for k, v in l.iteritems():
-                if k in ('id','name','label','cid_name','cid_num','commented') or v in (None, ''):
-                    continue
-
-                if isinstance(v, unicode):
-                    v = v.encode('utf8')
-                print >>o, k + " = " + str(v)
+                    print >> o, k, "=", str(v)
 
         return o.getvalue()
 
@@ -332,26 +203,26 @@ class AsteriskFrontend(Frontend):
         o = StringIO()
 
         ## section::general
-        print >>o, '[general]'
+        print >> o, '[general]'
         for item in self.backend.voicemail.all(commented=False, category='general'):
             if item['var_name'] == 'emailbody':
                 item['var_val'] = item['var_val'].replace('\n', '\\n')
-            print >>o, item['var_name'], '=', item['var_val'].encode('utf8')
+            print >> o, item['var_name'], '=', item['var_val'].encode('utf8')
 
-        print >>o, '\n[zonemessages]'
+        print >> o, '\n[zonemessages]'
         for item in self.backend.voicemail.all(commented=False, category='zonemessages'):
-            print >>o, "%s = %s" % (item['var_name'], item['var_val'])
+            print >> o, "%s = %s" % (item['var_name'], item['var_val'])
 
 
-        context  = None
-        excluded = ('uniqueid','context','mailbox','password','fullname','email','pager','commented','imapuser','imappassword','imapfolder')
+        context = None
+        excluded = ('uniqueid', 'context', 'mailbox', 'password', 'fullname', 'email', 'pager', 'commented', 'imapuser', 'imappassword', 'imapfolder')
         imapusers = []
 
         for vm in self.backend.voicemails.all(commented=False, order='context'):
             if vm['context'] != context:
-                print >>o, '\n[%s]' % vm['context']; context = vm['context']
+                print >> o, '\n[%s]' % vm['context']; context = vm['context']
 
-            print >>o, "%s => %s,%s,%s,%s,%s" % (
+            print >> o, "%s => %s,%s,%s,%s,%s" % (
                 vm['mailbox'],
                 vm['password'],
                 '' if vm['fullname'] is None else vm['fullname'],
@@ -364,18 +235,17 @@ class AsteriskFrontend(Frontend):
                 imapusers.append(vm)
 
         if len(imapusers) > 0:
-            print >>o, '\n[imapvm]'
+            print >> o, '\n[imapvm]'
 
             for vm in imapusers:
-                print >>o, "%s => %s,%s,%s,%s,%s" % (
+                print >> o, "%s => %s,%s,%s,%s,%s" % (
                     vm['mailbox'],
                     vm['password'],
                     '' if vm['fullname'] is None else vm['fullname'],
                     '' if vm['email'] is None else vm['email'],
                     '' if vm['pager'] is None else vm['pager'],
-                    '|'.join(["%s=%s" % (k, vm[k]) for k in vm.iterkeys() if k in ('imapuser','imappassword','imapfolder') and vm[k] is not None])
+                    '|'.join(["%s=%s" % (k, vm[k]) for k in vm.iterkeys() if k in ('imapuser', 'imappassword', 'imapfolder') and vm[k] is not None])
                 )
-
 
         return o.getvalue()
 
@@ -386,17 +256,17 @@ class AsteriskFrontend(Frontend):
 
         penalties = dict([(itm['id'], itm['name']) for itm in    self.backend.queuepenalty.all(commented=False)])
 
-        print >>o, '\n[general]'
+        print >> o, '\n[general]'
         for item in self.backend.queue.all(commented=False, category='general'):
-            print >>o, "%s = %s" % (item['var_name'], item['var_val'])
+            print >> o, "%s = %s" % (item['var_name'], item['var_val'])
 
 
         for q in self.backend.queues.all(commented=False, order='name'):
-            print >>o, '\n[%s]' % q['name']
+            print >> o, '\n[%s]' % q['name']
 
             for k, v in q.iteritems():
-                if k in ('name','category','commented') or v is None or \
-                        (isinstance(v, (str,unicode)) and len(v) == 0):
+                if k in ('name', 'category', 'commented') or v is None or \
+                        (isinstance(v, (str, unicode)) and len(v) == 0):
                     continue
 
                 if k == 'defaultrule':
@@ -404,7 +274,7 @@ class AsteriskFrontend(Frontend):
                         continue
                     v = penalties[int(v)]
 
-                print >>o, k,'=',v
+                print >> o, k, '=', v
 
             for m in self.backend.queuemembers.all(commented=False, queue_name=q['name']):
                 o.write("member => %s" % m['interface'])
@@ -417,40 +287,40 @@ class AsteriskFrontend(Frontend):
     def agents_conf(self):
         o = StringIO()
 
-        print >>o, '\n[general]'
+        print >> o, '\n[general]'
         for c in self.backend.agent.all(commented=False, category='general'):
-            print >>o, "%s = %s" % (c['var_name'], c['var_val'])
-        
-        print >>o, '\n[agents]'
+            print >> o, "%s = %s" % (c['var_name'], c['var_val'])
+
+        print >> o, '\n[agents]'
         for c in self.backend.agent.all(commented=False, category='agents'):
             if c['var_val'] is None or c['var_name'] == 'agent':
                 continue
 
-            print >>o, "%s = %s" % (c['var_name'], c['var_val'])
+            print >> o, "%s = %s" % (c['var_name'], c['var_val'])
 
-        print >>o, ''
+        print >> o, ''
         for a in self.backend.agentusers.all(commented=False):
             for k, v in a.items():
                 if k == 'var_val':
                     continue
 
-                print >>o, "%s = %s" % (k, v)
+                print >> o, "%s = %s" % (k, v)
 
-            print >>o, "agent =>", a['var_val'], "\n"
-        
+            print >> o, "agent =>", a['var_val'], "\n"
+
         return o.getvalue()
 
-            
+
     def meetme_conf(self):
         o = StringIO()
 
-        print >>o, '\n[general]'
+        print >> o, '\n[general]'
         for c in self.backend.meetme.all(commented=False, category='general'):
-            print >>o, "%s = %s" % (c['var_name'], c['var_val'])
+            print >> o, "%s = %s" % (c['var_name'], c['var_val'])
 
-        print >>o, '\n[rooms]'
+        print >> o, '\n[rooms]'
         for r in self.backend.meetme.all(commented=False, category='rooms'):
-            print >>o, "%s = %s" % (r['var_name'], r['var_val'])
+            print >> o, "%s = %s" % (r['var_name'], r['var_val'])
 
         return o.getvalue()
 
@@ -463,27 +333,27 @@ class AsteriskFrontend(Frontend):
                 continue
 
             if m['category'] != cat:
-                cat = m['category']; print >>o, '\n[%s]' % cat
+                cat = m['category']; print >> o, '\n[%s]' % cat
 
-            print >>o, "%s = %s" % (m['var_name'], m['var_val'])
+            print >> o, "%s = %s" % (m['var_name'], m['var_val'])
 
         return o.getvalue()
 
     def features_conf(self):
         o = StringIO()
 
-        print >>o, '\n[general]'
+        print >> o, '\n[general]'
         for f in self.backend.features.all(commented=False, category='general'):
-            print >>o, "%s = %s" % (f['var_name'], f['var_val'])
+            print >> o, "%s = %s" % (f['var_name'], f['var_val'])
 
         # parkinglots
         for f in self.backend.parkinglot.all(commented=False):
-            print >>o, "\n[parkinglot_%s]" % f['name']
-            print >>o, "context => %s" % f['context']
-            print >>o, "parkext => %s" % f['extension']
-            print >>o, "parkpos => %d-%d" % (int(f['extension'])+1, int(f['extension'])+f['positions'])
+            print >> o, "\n[parkinglot_%s]" % f['name']
+            print >> o, "context => %s" % f['context']
+            print >> o, "parkext => %s" % f['extension']
+            print >> o, "parkpos => %d-%d" % (int(f['extension']) + 1, int(f['extension']) + f['positions'])
             if f['next'] == 1:
-                print >>o, "findslot => next"
+                print >> o, "findslot => next"
 
             mmap = {
                 'duration'     : 'parkingtime',
@@ -496,11 +366,11 @@ class AsteriskFrontend(Frontend):
             }
             for k, v in mmap.iteritems():
                 if f[k] is not None:
-                    print >>o, "%s => %s" % (v, str(f[k]))
-                
-        print >>o, '\n[featuremap]'
+                    print >> o, "%s => %s" % (v, str(f[k]))
+
+        print >> o, '\n[featuremap]'
         for f in self.backend.features.all(commented=False, category='featuremap'):
-            print >>o, "%s = %s" % (f['var_name'], f['var_val'])
+            print >> o, "%s = %s" % (f['var_name'], f['var_val'])
 
         return o.getvalue()
 
@@ -513,18 +383,18 @@ class AsteriskFrontend(Frontend):
         userid = None
         for sk in self.backend.userqueueskills.all():
             if userid != sk['id']:
-                print >>o, "\n[user-%d]" % sk['id']
+                print >> o, "\n[user-%d]" % sk['id']
                 userid = sk['id']
 
-            print >>o, "%s = %s" % (sk['name'], sk['weight'])
+            print >> o, "%s = %s" % (sk['name'], sk['weight'])
 
         agentid = None
         for sk in self.backend.agentqueueskills.all():
             if agentid != sk['id']:
-                print >>o, "\n[agent-%d]" % sk['id']
+                print >> o, "\n[agent-%d]" % sk['id']
                 agentid = sk['id']
 
-            print >>o, "%s = %s" % (sk['name'], sk['weight'])
+            print >> o, "%s = %s" % (sk['name'], sk['weight'])
 
         return o.getvalue()
 
@@ -535,20 +405,20 @@ class AsteriskFrontend(Frontend):
         o = StringIO()
 
         for r in self.backend.queueskillrules.all():
-            print >>o, "\n[%s]" % r['name']
+            print >> o, "\n[%s]" % r['name']
 
             if 'rule' in r and r['rule'] is not None:
                 for rule in r['rule'].split(';'):
-                    print >>o, "rule = %s" % rule
+                    print >> o, "rule = %s" % rule
 
         return o.getvalue()
-    
+
 
     def extensions_conf(self):
         """Generate extensions.conf asterisk configuration file
         """
         o = StringIO()
-        conf    = None
+        conf = None
 
         # load context templates
         if hasattr(self, 'contextsconf'):
@@ -576,11 +446,11 @@ class AsteriskFrontend(Frontend):
 
         # voicemenus
         for vm in self.backend.voicemenus.all(commented=0, order='name'):
-            print >>o, "[voicemenu-%s]" % vm['name']
+            print >> o, "[voicemenu-%s]" % vm['name']
 
-            for act in self.backend.extensions.all(context='voicemenu-'+vm['name'],    commented=0):
-                print >>o, "exten = %s,%s,%s(%s)" % \
-                        (act['exten'], act['priority'],    act['app'], act['appdata'].replace('|',','))
+            for act in self.backend.extensions.all(context='voicemenu-' + vm['name'], commented=0):
+                print >> o, "exten = %s,%s,%s(%s)" % \
+                        (act['exten'], act['priority'], act['app'], act['appdata'].replace('|', ','))
 
         # foreach active context
         for ctx in self.backend.contexts.all(commented=False, order='name', asc=False):
@@ -588,10 +458,10 @@ class AsteriskFrontend(Frontend):
             if conf.has_section('!' + ctx['name']):
                 continue
 
-            print >>o, "\n[%s]" % ctx['name']
+            print >> o, "\n[%s]" % ctx['name']
             # context includes
             for row in self.backend.contextincludes.all(context=ctx['name'], order='priority'):
-                print >>o, "include = %s" % row['include']
+                print >> o, "include = %s" % row['include']
 
             if conf.has_section(ctx['name']):
                 section = ctx['name']
@@ -599,70 +469,70 @@ class AsteriskFrontend(Frontend):
                 section = 'type:%s' % ctx['contexttype']
             else:
                 section = 'template'
-            
+
             tmpl = []
             for option in conf.iter_options(section):
                 if option.get_name() == 'objtpl':
                     tmpl.append(option.get_value()); continue
 
-                print >>o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', ctx['name']))
-            print >>o
+                print >> o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', ctx['name']))
+            print >> o
 
             # test if we are in DUNDi active/active mode
             dundi_aa = self.backend.general.get(id=1)['dundi'] == 1
 
             # objects extensions (user, group, ...)
             for exten in self.backend.extensions.all(context=ctx['name'], commented=False, order='context'):
-                app     = exten['app']
-                appdata = list(exten['appdata'].replace('|',',').split(','))
+                app = exten['app']
+                appdata = list(exten['appdata'].replace('|', ',').split(','))
 
                 # active/active mode
                 if dundi_aa and appdata[0] == 'user':
                     exten['priority'] += 1
 
                 if app == 'Macro':
-                    app     = 'Gosub'
+                    app = 'Gosub'
                     appdata = (appdata[0], 's', '1(' + ','.join(appdata[1:]) + ')')
-                
+
                 exten['action'] = "%s(%s)" % (app, ','.join(appdata))
-                print >>o, self.gen_dialplan_from_template(tmpl, exten)
+                print >> o, self.gen_dialplan_from_template(tmpl, exten)
 
             # phone (user) hints
             hints = self.backend.hints.all(context=ctx['name'])
             if len(hints) > 0:
-                print >>o, "; phones hints"
+                print >> o, "; phones hints"
 
             for hint in hints:
-                xid       = hint['id']
-                number    = hint['number']
-                name      = hint['name']
-                proto     = hint['protocol'].upper()
+                xid = hint['id']
+                number = hint['number']
+                name = hint['name']
+                proto = hint['protocol'].upper()
                 if proto == 'IAX':
                     proto = 'IAX2'
 
                 if number:
-                    print >>o, "exten = %s,hint,%s/%s" % (number, proto, name)
+                    print >> o, "exten = %s,hint,%s/%s" % (number, proto, name)
 
                 if not xfeatures['calluser'].get('commented', 1):
                     #TODO: fkey_extension need to be reviewed (see hexanol)
-                    print >>o, "exten = %s,hint,%s/%s" % (xivo_helpers.fkey_extension(
-                        xfeatures['calluser']['exten'],    (xid,)),
+                    print >> o, "exten = %s,hint,%s/%s" % (xivo_helpers.fkey_extension(
+                        xfeatures['calluser']['exten'], (xid,)),
                         proto, name)
 
                 if not xfeatures['vmusermsg'].get('commented', 1) and int(hint['enablevoicemail']) \
                      and hint['uniqueid']:
-                    print >>o, "exten = %s%s,hint,%s/%s" % (xfeatures['vmusermsg']['exten'], number, proto, name)
+                    print >> o, "exten = %s%s,hint,%s/%s" % (xfeatures['vmusermsg']['exten'], number, proto, name)
 
 
             # objects(user,group,...) supervision
             phonesfk = self.backend.phonefunckeys.all(context=ctx['name'])
             if len(phonesfk) > 0:
-                print >>o, "\n; phones supervision"
+                print >> o, "\n; phones supervision"
 
             xset = set()
             for pkey in phonesfk:
-                xtype       = pkey['typeextenumbersright']
-                calltype    = "call%s" % xtype
+                xtype = pkey['typeextenumbersright']
+                calltype = "call%s" % xtype
 
                 if pkey['exten'] is not None:
                     exten = xivo_helpers.clean_extension(pkey['exten'])
@@ -676,19 +546,19 @@ class AsteriskFrontend(Frontend):
                 xset.add((exten, ("MeetMe:%s" if xtype == 'meetme' else "Custom:%s") % exten))
 
             for hint in xset:
-                print >>o, "exten = %s,hint,%s" % hint
+                print >> o, "exten = %s,hint,%s" % hint
 
 
             # BS filters supervision 
             bsfilters = self.backend.bsfilterhints.all(context=ctx['name'])
 
-            extens    =    set(xivo_helpers.speed_dial_key_extension(xfeatures['bsfilter'].get('exten'),
+            extens = set(xivo_helpers.speed_dial_key_extension(xfeatures['bsfilter'].get('exten'),
                 r['exten'], None, r['number'], True) for r in bsfilters)
 
             if len(extens) > 0:
-                print >>o, "\n; BS filters supervision"
+                print >> o, "\n; BS filters supervision"
             for exten in extens:
-                print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
+                print >> o, "exten = %s,hint,Custom:%s" % (exten, exten)
 
 
             # prog funckeys supervision
@@ -705,33 +575,33 @@ class AsteriskFrontend(Frontend):
                     (k['iduserfeatures'], k['leftexten'], exten)))
 
             if len(extens) > 0:
-                print >>o, "\n; prog funckeys supervision"
+                print >> o, "\n; prog funckeys supervision"
             for exten in extens:
-                print >>o, "exten = %s,hint,Custom:%s" % (exten, exten)
-        print >>o,self._extensions_features(conf, xfeatures)
+                print >> o, "exten = %s,hint,Custom:%s" % (exten, exten)
+        print >> o, self._extensions_features(conf, xfeatures)
         return o.getvalue()
 
             # -- end per-context --
-    def _extensions_features(self,conf,xfeatures):
+    def _extensions_features(self, conf, xfeatures):
         o = StringIO()
         # XiVO features
-        context   = 'xivo-features'
+        context = 'xivo-features'
         cfeatures = []
-        tmpl      = []
+        tmpl = []
 
-        print >>o, "\n[%s]" % context
+        print >> o, "\n[%s]" % context
         for option in conf.iter_options(context):
             if option.get_name() == 'objtpl':
                 tmpl.append(option.get_value()); continue
 
-            print >>o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
-            print >>o
+            print >> o, "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
+            print >> o
 
-        for exten in self.backend.extensions.all(context='xivo-features',    commented=False):
-            app     = exten['app']
-            appdata = list(exten['appdata'].replace('|',',').split(','))                
+        for exten in self.backend.extensions.all(context='xivo-features', commented=False):
+            app = exten['app']
+            appdata = list(exten['appdata'].replace('|', ',').split(','))
             exten['action'] = "%s(%s)" % (app, ','.join(appdata))
-            print >>o, self.gen_dialplan_from_template(tmpl, exten)
+            print >> o, self.gen_dialplan_from_template(tmpl, exten)
 
         for x in ('busy', 'rna', 'unc'):
             fwdtype = "fwd%s" % x
@@ -739,41 +609,41 @@ class AsteriskFrontend(Frontend):
                 exten = xivo_helpers.clean_extension(xfeatures[fwdtype]['exten'])
                 cfeatures.extend([
                     "%s,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})" % exten,
-                    "%s,n,Set(XIVO_BASE_EXTEN=${EXTEN})"     % exten,
-                    "%s,n,Gosub(feature_forward,s,1(%s))\n"    % (exten, x),
+                    "%s,n,Set(XIVO_BASE_EXTEN=${EXTEN})" % exten,
+                    "%s,n,Gosub(feature_forward,s,1(%s))\n" % (exten, x),
                 ])
 
         if cfeatures:
-            print >>o, "exten = " + "\nexten = ".join(cfeatures)
+            print >> o, "exten = " + "\nexten = ".join(cfeatures)
 
         return o.getvalue()
 
-    
+
     def queuerules_conf(self):
         o = StringIO()
 
         rule = None
         for m in self.backend.queuepenalties.all():
             if m['name'] != rule:
-                rule = m['name']; print >>o, "\n[%s]" % rule
+                rule = m['name']; print >> o, "\n[%s]" % rule
 
-            print >>o, "penaltychange => %d," % m['seconds'],
+            print >> o, "penaltychange => %d," % m['seconds'],
             if m['maxp_sign'] is not None and m['maxp_value'] is not None:
                 sign = '' if m['maxp_sign'] == '=' else m['maxp_sign']
-                print >>o, "%w%d" % (sign,m['maxp_value']),
+                print >> o, "%w%d" % (sign, m['maxp_value']),
 
             if m['minp_sign'] is not None and m['minp_value'] is not None:
                 sign = '' if m['minp_sign'] == '=' else m['minp_sign']
-                print >>o, ",%s%d" % (sign,m['minp_value']),
+                print >> o, ",%s%d" % (sign, m['minp_value']),
 
-            print >>o
+            print >> o
 
         return o.getvalue()
 
     def dundi_conf(self):
         o = StringIO()
 
-        print >>o, "[general]"
+        print >> o, "[general]"
         general = self.backend.dundi.get(id=1)
         for k, v in general.iteritems():
             if v is None or k == 'id':
@@ -781,69 +651,69 @@ class AsteriskFrontend(Frontend):
 
             if isinstance(v, unicode):
                 v = v.encode('utf8')
-            print >>o, k, "=", v
+            print >> o, k, "=", v
 
         trunks = dict([(t['id'], t) for t in self.backend.trunks.all()])
 
-        print >>o, "\n[mappings]"
+        print >> o, "\n[mappings]"
         for m in self.backend.dundimapping.all(commented=False):
             #dundi_context => local_context,weight,tech,dest[,options]]
-            _t = trunks.get(m.trunk,{})
+            _t = trunks.get(m.trunk, {})
             _m = "%s => %s,%s,%s,%s:%s@%s/%s" % \
-                    (m['name'],m['context'],m['weight'], 
-                    _t.get('protocol','').upper(), _t.get('username',''),    _t.get('', 'secret'), 
-                    _t['host']  if _t.get('host','dynamic') != 'dynamic' else '${IPADDR}',
+                    (m['name'], m['context'], m['weight'],
+                    _t.get('protocol', '').upper(), _t.get('username', ''), _t.get('', 'secret'),
+                    _t['host']  if _t.get('host', 'dynamic') != 'dynamic' else '${IPADDR}',
                     m['number'] if m['number'] is not None else '${NUMBER}',
             )
 
-            for k in ('nounsolicited','nocomunsolicit','residential','commercial','mobile','nopartial'):
+            for k in ('nounsolicited', 'nocomunsolicit', 'residential', 'commercial', 'mobile', 'nopartial'):
                 if m[k] == 1:
                     _m += ',' + k
 
-            print >>o, _m
+            print >> o, _m
 
         # peers
         for p in self.backend.dundipeer.all(commented=False):
-            print >>o, "\n[%s]" % p['macaddr']
+            print >> o, "\n[%s]" % p['macaddr']
 
             for k, v in p.iteritems():
-                if k in ('id', 'macaddr','description','commented') or v is None:
+                if k in ('id', 'macaddr', 'description', 'commented') or v is None:
                     continue
 
-                print >>o, "%s = %s" % (k,v)
+                print >> o, "%s = %s" % (k, v)
 
         return o.getvalue()
 
     def chan_dahdi_conf(self):
         o = StringIO()
 
-        print >>o, "[channels]"
+        print >> o, "[channels]"
         for k, v in self.backend.dahdi.get(id=1).iteritems():
             if v is None or k == 'id':
                 continue
 
             if isinstance(v, unicode):
                 v = v.encode('utf8')
-            print >>o, k, "=", v
+            print >> o, k, "=", v
 
-        print >>o
+        print >> o
         for group in self.backend.dahdigroup.all(commented=False):
-            print >>o, "\ngroup=%d" % group['groupno']
+            print >> o, "\ngroup=%d" % group['groupno']
 
-            for k in ('context','switchtype','signalling','callerid','mailbox'):
+            for k in ('context', 'switchtype', 'signalling', 'callerid', 'mailbox'):
                 if group[k] is not None:
-                    print >>o, k, "=", group[k]
+                    print >> o, k, "=", group[k]
 
-            print >>o, "channel => %s" % group['channels']
+            print >> o, "channel => %s" % group['channels']
 
         return o.getvalue()
-    
-    def gen_dialplan_from_template(self,template,exten):
+
+    def gen_dialplan_from_template(self, template, exten):
         o = StringIO()
         for line in template:
             prefix = 'exten =' if line.startswith('%%EXTEN%%') else 'same  =    '
             def varset(matchObject):
                 return str(exten.get(matchObject.group(1).lower(), ''))
             line = re.sub('%%([^%]+)%%', varset, line)
-            print >>o, prefix, line
+            print >> o, prefix, line
         return o.getvalue()

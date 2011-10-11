@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 __version__ = "$Revision$ $Date$"
-__author__  = "Guillaume Bour <gbour@proformatique.com>"
+__author__ = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010-2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
 
@@ -65,10 +65,10 @@ def iterable(mode):
 
             if ret is not None:
                 ret.__class__.__getitem__ = lambda self, key: self.__dict__[key]
-                ret.__class__.iteritems   = mapped_iteritems
+                ret.__class__.iteritems = mapped_iteritems
 
             return ret
-                
+
         def list_wrapper(*args, **kwargs):
             try:
                 ret = f(*args, **kwargs)
@@ -79,12 +79,12 @@ def iterable(mode):
 
 
             if isinstance(ret, list) and len(ret) > 0:
-                ret[0].__class__.__getitem__  = lambda self, key: self.__dict__[key]
-                ret[0].__class__.__setitem__  = mapped_set
+                ret[0].__class__.__getitem__ = lambda self, key: self.__dict__[key]
+                ret[0].__class__.__setitem__ = mapped_set
                 ret[0].__class__.__contains__ = lambda self, key: self.__dict__.__contains__(key)
-                ret[0].__class__.iteritems    = mapped_iteritems
-                ret[0].__class__.iterkeys     = mapped_iterkeys
-                ret[0].__class__.get          = lambda self, key, dft: self.__dict__[key] if key in self.__dict__ else dft
+                ret[0].__class__.iteritems = mapped_iteritems
+                ret[0].__class__.iterkeys = mapped_iterkeys
+                ret[0].__class__.get = lambda self, key, dft: self.__dict__[key] if key in self.__dict__ else dft
 
             return ret
 
@@ -104,7 +104,7 @@ def iterable(mode):
 
 class SpecializedHandler(object):
     def __init__(self, db, name):
-        self.db   = db
+        self.db = db
         self.name = name
 
     def execute(self, q):
@@ -118,37 +118,16 @@ class SpecializedHandler(object):
         return ret
 
 
-class SCCPUsersHandler(SpecializedHandler):
-    def all(self, commented=None, order=None, **kwargs):
-        #TODO: fix query (phone <-> line relation)
-        (_s, _u, _p) = [getattr(self.db, o)._table for o in
-                ('usersccp','linefeatures','devicefeatures')]
-        q  = select(
-            [_s, _p.c.mac, _p.c.model, _p.c.vendor, _u.c.id.label('featid'), _u.c.number, _u.c.description],
-            and_(
-                _u.c.protocol   == 'sccp',
-                _u.c.protocolid == _s.c.id,
-                _u.c.device     == cast(_p.c.id, VARCHAR(32))
-            )
-        )
-
-        return self.execute(q).fetchall()
-
-    @iterable('single')
-    def default_line(self, id):
-        return self.db.sccpline.filter(self.db.sccpline.id == id).first()
-
-
 class AgentUsersHandler(SpecializedHandler):
     def all(self, commented=None, order=None, **kwargs):
-        (_a, _f) = [getattr(self.db, o)._table for o in	('staticagent','agentfeatures')]
-        q  = select(
+        (_a, _f) = [getattr(self.db, o)._table for o in	('staticagent', 'agentfeatures')]
+        q = select(
             [_a.c.var_val, _f.c.autologoff, _f.c.ackcall, _f.c.acceptdtmf, _f.c.enddtmf,
                 _f.c.wrapuptime, _f.c.musiconhold],
             and_(
-                _a.c.category  == 'agents',
-                _a.c.var_name  == 'agent',
-                _a.c.id        == _f.c.agentid,
+                _a.c.category == 'agents',
+                _a.c.var_name == 'agent',
+                _a.c.id == _f.c.agentid,
                 _f.c.commented == 0
             )
         )
@@ -161,8 +140,8 @@ class UserQueueskillsHandler(SpecializedHandler):
         """
         NOTE: we generate the same queueskills for each line of the user
         """
-        (_u, _s,_l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
-            'queueskill','linefeatures')]
+        (_u, _s, _l) = [getattr(self.db, o)._table.c for o in ('userqueueskill',
+            'queueskill', 'linefeatures')]
 
         q = select(
             [_s.name, _u.weight, _l.id],
@@ -175,7 +154,7 @@ class UserQueueskillsHandler(SpecializedHandler):
 
 class AgentQueueskillsHandler(SpecializedHandler):
     def all(self, *args, **kwargs):
-        (_a, _f, _s) = [getattr(self.db, o)._table for o in ('agentqueueskill',	'agentfeatures', 'queueskill')]
+        (_a, _f, _s) = [getattr(self.db, o)._table for o in ('agentqueueskill', 	'agentfeatures', 'queueskill')]
         q = select(
             [_f.c.id, _s.c.name, _a.c.weight],
             and_(_a.c.agentid == _f.c.id, _a.c.skillid == _s.c.id)
@@ -188,7 +167,7 @@ class AgentQueueskillsHandler(SpecializedHandler):
 class ExtenumbersHandler(SpecializedHandler):
     def all(self, features=[], *args, **kwargs):
         #NOTE: sqlalchemy 4: table, 5: _table
-        (_n, _e) = [getattr(self.db, o)._table for o in ('extenumbers','extensions')] 
+        (_n, _e) = [getattr(self.db, o)._table for o in ('extenumbers', 'extensions')]
         q = select(
             [_n.c.typeval, _n.c.exten, _e.c.commented],
             and_(_n.c.typeval == _e.c.name, _e.c.context == 'xivo-features', _n.c.type == 'extenfeatures',
@@ -202,7 +181,7 @@ class HintsHandler(SpecializedHandler):
     def all(self, *args, **kwargs):
         # get users with hint
         (_u, _v, _l) = [getattr(self.db, o)._table for o in
-                ('userfeatures','voicemail','linefeatures')]
+                ('userfeatures', 'voicemail', 'linefeatures')]
 
         conds = [_u.c.id == _l.c.iduserfeatures, _l.c.internal == 0, _u.c.enablehint == 1]
         if 'context' in kwargs:
@@ -210,7 +189,7 @@ class HintsHandler(SpecializedHandler):
             conds.append(_l.c.context == kwargs['context'])
 
         q = select(
-            [_u.c.id,_l.c.number,_l.c.name,_l.c.protocol,_u.c.enablevoicemail,_v.c.uniqueid],
+            [_u.c.id, _l.c.number, _l.c.name, _l.c.protocol, _u.c.enablevoicemail, _v.c.uniqueid],
             and_(*conds),
             from_obj=[
                 _u.outerjoin(_v, _u.c.voicemailid == _v.c.uniqueid)
@@ -224,12 +203,12 @@ class PhonefunckeysHandler(SpecializedHandler):
     def all(self, *args, **kwargs):
         # get all supervised user/group/queue/meetme
         (_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
-                ('userfeatures','phonefunckey','extenumbers','linefeatures')]
+                ('userfeatures', 'phonefunckey', 'extenumbers', 'linefeatures')]
         conds = [
-            _l.c.iduserfeatures  == _p.c.iduserfeatures, 
-            _p.c.typeextenumbers == None, 
-            _p.c.typevalextenumbers == None, 
-            _p.c.typeextenumbersright.in_(('user','group','queue','meetme')), 
+            _l.c.iduserfeatures == _p.c.iduserfeatures,
+            _p.c.typeextenumbers == None,
+            _p.c.typevalextenumbers == None,
+            _p.c.typeextenumbersright.in_(('user', 'group', 'queue', 'meetme')),
             _p.c.supervision == 1,
         ]
         if 'context' in kwargs:
@@ -240,7 +219,7 @@ class PhonefunckeysHandler(SpecializedHandler):
             and_(*conds),
             from_obj=[
                 _p.outerjoin(_e, and_(
-                    cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)), 
+                    cast(_p.c.typeextenumbersright, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)),
                     _p.c.typevalextenumbersright == _e.c.typeval))],
         )
 
@@ -251,25 +230,25 @@ class BSFilterHintsHandler(SpecializedHandler):
     def all(self, *args, **kwargs):
         # get all supervised bsfilters
         (_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
-                ('userfeatures','phonefunckey','extenumbers','linefeatures')]
+                ('userfeatures', 'phonefunckey', 'extenumbers', 'linefeatures')]
 
         _l2 = alias(_l)
 
         conds = [
-            _l.c.iduserfeatures                          == _p.c.iduserfeatures, 
-            _p.c.typeextenumbers                         == 'extenfeatures',
-            _p.c.typevalextenumbers                      == 'bsfilter', 
-            _p.c.typeextenumbersright                    == 'user',
-            _p.c.supervision                             == 1, 
-            cast(_p.c.typeextenumbersright,VARCHAR(255)) ==	cast(_e.c.type,VARCHAR(255)), # 'user'
-            _p.c.typevalextenumbersright                 == cast(_l2.c.iduserfeatures,VARCHAR(255)),
-            _e.c.typeval                                 == cast(_l2.c.id,VARCHAR(255)),
-            coalesce(_l.c.number,'')                     != ''
+            _l.c.iduserfeatures == _p.c.iduserfeatures,
+            _p.c.typeextenumbers == 'extenfeatures',
+            _p.c.typevalextenumbers == 'bsfilter',
+            _p.c.typeextenumbersright == 'user',
+            _p.c.supervision == 1,
+            cast(_p.c.typeextenumbersright, VARCHAR(255)) == 	cast(_e.c.type, VARCHAR(255)), # 'user'
+            _p.c.typevalextenumbersright == cast(_l2.c.iduserfeatures, VARCHAR(255)),
+            _e.c.typeval == cast(_l2.c.id, VARCHAR(255)),
+            coalesce(_l.c.number, '') != ''
         ]
         if 'context' in kwargs:
             conds.append(_l.c.context == kwargs['context'])
 
-        q = select([_e.c.exten, _l.c.number],	and_(*conds))
+        q = select([_e.c.exten, _l.c.number], 	and_(*conds))
 
         return self.execute(q).fetchall()
 
@@ -277,17 +256,17 @@ class BSFilterHintsHandler(SpecializedHandler):
 class ProgfunckeysHintsHandler(SpecializedHandler):
     def all(self, *args, **kwargs):
         (_u, _p, _e, _l) = [getattr(self.db, o)._table for o in
-                ('userfeatures','phonefunckey','extenumbers','linefeatures')]
+                ('userfeatures', 'phonefunckey', 'extenumbers', 'linefeatures')]
 
         conds = [
-                _l.c.iduserfeatures      == _p.c.iduserfeatures, 
-                _p.c.typeextenumbers     != None,
-                _p.c.typevalextenumbers  != None,
-                _p.c.supervision         == 1, 
-                _p.c.progfunckey         == 1,
-                cast(_p.c.typeextenumbers,VARCHAR(255)) == cast(_e.c.type,VARCHAR(255)),
-                _p.c.typevalextenumbers  != 'user',
-                _p.c.typevalextenumbers  == _e.c.typeval
+                _l.c.iduserfeatures == _p.c.iduserfeatures,
+                _p.c.typeextenumbers != None,
+                _p.c.typevalextenumbers != None,
+                _p.c.supervision == 1,
+                _p.c.progfunckey == 1,
+                cast(_p.c.typeextenumbers, VARCHAR(255)) == cast(_e.c.type, VARCHAR(255)),
+                _p.c.typevalextenumbers != 'user',
+                _p.c.typevalextenumbers == _e.c.typeval
         ]
         if 'context' in kwargs:
             conds.append(_l.c.context == kwargs['context'])
@@ -336,58 +315,58 @@ class PickupsHandler(SpecializedHandler):
         NOTE: all user lines can be intercepted/intercept calls
     """
     def all(self, usertype, *args, **kwargs):
-        if usertype not in ('sip','iax','sccp'):
+        if usertype not in ('sip', 'iax'):
             raise TypeError
 
         (_p, _pm, _lf, _u, _g, _q, _qm) = [getattr(self.db, o)._table.c for o in
-                ('pickup','pickupmember','linefeatures','user'+usertype, 'groupfeatures',
+                ('pickup', 'pickupmember', 'linefeatures', 'user' + usertype, 'groupfeatures',
                 'queuefeatures', 'queuemember')]
 
         # simple users
         q1 = select([_u.name, _pm.category, _p.id],
             and_(
-                _p.commented    == 0,
-                _p.id           == _pm.pickupid,
-                _pm.membertype  == 'user',
-                _pm.memberid    == _lf.iduserfeatures,
+                _p.commented == 0,
+                _p.id == _pm.pickupid,
+                _pm.membertype == 'user',
+                _pm.memberid == _lf.iduserfeatures,
                 #_lf.line_num    == 0,
                 #_lf.rules_order == 0,
-                _lf.protocol    == usertype,
-                _lf.protocolid  == _u.id
+                _lf.protocol == usertype,
+                _lf.protocolid == _u.id
             )
         )
 
         # groups
         q2 = select([_u.name, _pm.category, _p.id],
             and_(
-                _p.commented    == 0,
-                _p.id           == _pm.pickupid,
-                _pm.membertype  == 'group',
-                _pm.memberid    == _g.id,
-                _g.name         == _qm.queue_name,
-                _qm.usertype    == 'user',
-                _qm.userid      == _lf.iduserfeatures,
+                _p.commented == 0,
+                _p.id == _pm.pickupid,
+                _pm.membertype == 'group',
+                _pm.memberid == _g.id,
+                _g.name == _qm.queue_name,
+                _qm.usertype == 'user',
+                _qm.userid == _lf.iduserfeatures,
                 #_lf.line_num    == 0,
                 #_lf.rules_order == 0,
-                _lf.protocol    == usertype,
-                _lf.protocolid  == _u.id
+                _lf.protocol == usertype,
+                _lf.protocolid == _u.id
             )
         )
 
         # queues
         q3 = select([_u.name, _pm.category, _p.id],
             and_(
-                _p.commented    == 0,
-                _p.id           == _pm.pickupid,
-                _pm.membertype  == 'queue',
-                _pm.memberid    == _q.id,
-                _q.name         == _qm.queue_name,
-                _qm.usertype    == 'user',
-                _qm.userid      == _lf.iduserfeatures,
+                _p.commented == 0,
+                _p.id == _pm.pickupid,
+                _pm.membertype == 'queue',
+                _pm.memberid == _q.id,
+                _q.name == _qm.queue_name,
+                _qm.usertype == 'user',
+                _qm.userid == _lf.iduserfeatures,
                 #_lf.line_num    == 0,
                 #_lf.rules_order == 0,
-                _lf.protocol    == usertype,
-                _lf.protocolid  == _u.id
+                _lf.protocol == usertype,
+                _lf.protocolid == _u.id
             )
         )
 
@@ -395,13 +374,13 @@ class PickupsHandler(SpecializedHandler):
 
 class QueuePenaltiesHandler(SpecializedHandler):
     def all(self, **kwargs):
-        (_p, _pc) = [getattr(self.db, o)._table.c for o in ('queuepenalty','queuepenaltychange')]
+        (_p, _pc) = [getattr(self.db, o)._table.c for o in ('queuepenalty', 'queuepenaltychange')]
 
         q = select(
                 [_p.name, _pc.seconds, _pc.maxp_sign, _pc.maxp_value, _pc.minp_sign, _pc.minp_value],
                 and_(
                     _p.commented == 0,
-                    _p.id        == _pc.queuepenalty_id
+                    _p.id == _pc.queuepenalty_id
                 )
         ).order_by(_p.name)
 
@@ -409,20 +388,20 @@ class QueuePenaltiesHandler(SpecializedHandler):
 
 class TrunksHandler(SpecializedHandler):
     def all(self, **kwargs):
-        (_t, _s, _i) = [getattr(self.db,o)._table.c for o in ('trunkfeatures','usersip','useriax')]
+        (_t, _s, _i) = [getattr(self.db, o)._table.c for o in ('trunkfeatures', 'usersip', 'useriax')]
 
         q1 = select([_t.id, _t.protocol, _s.username, _s.secret, _s.host],
             and_(
-                _t.protocol   == 'sip',
+                _t.protocol == 'sip',
                 _t.protocolid == _s.id,
-                _s.commented  == 0,
+                _s.commented == 0,
             )
         )
         q2 = select([_t.id, _t.protocol, _i.username, _i.secret, _i.host],
             and_(
-                _t.protocol   == 'iax',
+                _t.protocol == 'iax',
                 _t.protocolid == _i.id,
-                _i.commented  == 0,
+                _i.commented == 0,
             )
         )
         return self.execute(q2.union(q1)).fetchall()
@@ -432,7 +411,6 @@ class QObject(object):
     _translation = {
         'sip'           : ('staticsip',),
         'iax'           : ('staticiax',),
-        'sccp'          : ('staticsccp',),
         'voicemail'     : ('staticvoicemail',),
         'queue'         : ('staticqueue',),
         'agent'         : ('staticagent',),
@@ -445,8 +423,6 @@ class QObject(object):
 
         'sipusers'      : ('usersip', {'category': 'user'}),
         'iaxusers'      : ('useriax', {'category': 'user'}),
-        'sccpusers'     : SCCPUsersHandler,
-        'sccplines'     : ('sccpline',),
         'agentusers'    : AgentUsersHandler,
 
         'trunks'        : TrunksHandler,
@@ -484,7 +460,7 @@ class QObject(object):
     }
 
     def __init__(self, db, name):
-        self.db   = db
+        self.db = db
         self.name = name
 
     @iterable('list')
@@ -496,7 +472,7 @@ class QObject(object):
         conds = []
         if isinstance(commented, bool):
             conds.append(q.commented == int(commented))
-    
+
         if len(_trans) > 1:
             for k, v in _trans[1].iteritems():
                 conds.append(getattr(q, k) == v)
@@ -520,14 +496,14 @@ class QObject(object):
 
         conds = []
         for k, v in kwargs.iteritems():
-            conds.append(getattr(q,k) == v)
+            conds.append(getattr(q, k) == v)
         return q.filter(and_(*conds)).first()
 
 
 class XivoDBBackend(Backend):
     def __init__(self, uri):
         self.db = SqlSoup(uri,
-                session=scoped_session(sessionmaker(autoflush=True,expire_on_commit=False,autocommit=True)))
+                session=scoped_session(sessionmaker(autoflush=True, expire_on_commit=False, autocommit=True)))
 
     def __getattr__(self, name):
         if not name in QObject._translation:
