@@ -49,7 +49,6 @@ xivo_config_path        = /etc/pf-xivo
 templates_path          = /usr/share/pf-xivo-sysconfd/templates
 custom_templates_path   = /etc/pf-xivo/sysconfd/custom-templates
 backup_path             = /var/backups/pf-xivo-sysconfd
-db_uri                  = sqlite:/etc/pf-xivo/sysconfd/sysconfd.db?timeout_ms=150
 """)
 
 def get_log_level_by_name(loglevel_name):
@@ -74,11 +73,6 @@ def argv_parse_check():
     Parse (and check a little) command line parameters
     """
     parser = OptionParser(usage="usage: %prog [options]")
-
-    # XXX will be needed if we merge the provi in this daemon
-    #parser.add_option("-b",
-    #                  dest     = 'dburi',
-    #                  help     = "Override Database URI with DBURI")
     parser.add_option("-l",
                       dest      = 'loglevel',
                       default   = 'info',   # warning: see affectation under
@@ -150,11 +144,7 @@ def main(options):
     options.configuration   = cp
     options.testmethods     = True # XXX
 
-    # open database
-    options.database        = xivo_helpers.db_connect(cp.get('general', 'db_uri'))
-
     http_json_server.init(options)
-
 
     if not options.foreground:
         log.info("Transforming into a daemon from hell")
