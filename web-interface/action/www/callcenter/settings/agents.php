@@ -656,7 +656,6 @@ switch($act)
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
-		$_TPL->set_var('agentgroup_list',$appagentgroup->get_agentgroups_list(null,$order));
 }
 
 $_TPL->set_var('act',$act);
