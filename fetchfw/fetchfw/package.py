@@ -42,7 +42,7 @@ def _add_pkg_info_defaults(pkg_info):
 
 class InstallablePackage(object):
     _MANDATORY_KEYS = _COMMON_MANDATORY_KEYS
-    
+
     def __init__(self, pkg_info, remote_files, install_mgr):
         """Create a new installable package.
         
@@ -74,24 +74,24 @@ class InstallablePackage(object):
         self.pkg_info = pkg_info
         self.remote_files = remote_files
         self.install_mgr = install_mgr
-    
+
     def clone(self):
         new_pkg_info = copy.deepcopy(self.pkg_info)
         return InstallablePackage(new_pkg_info, self.remote_files, self.install_mgr)
-    
+
     def new_installed_package(self):
         # Note that for this to works, self must already have all mandatory keys
         # in it's info 
         new_pkg_info = copy.deepcopy(self.pkg_info)
         return InstalledPackage(new_pkg_info)
-    
+
     def __str__(self):
         return "%s %s" % (self.pkg_info['id'], self.pkg_info['version'])
 
 
 class InstalledPackage(object):
     _MANDATORY_KEYS = _COMMON_MANDATORY_KEYS + ['files', 'explicit_install']
-    
+
     def __init__(self, pkg_info):
         """Create a new installed package.
         
@@ -106,7 +106,7 @@ class InstalledPackage(object):
         _check_pkg_info(pkg_info, self._MANDATORY_KEYS)
         _add_pkg_info_defaults(pkg_info)
         self.pkg_info = pkg_info
-    
+
     def __str__(self):
         return "%s %s" % (self.pkg_info['id'], self.pkg_info['version'])
 
@@ -115,7 +115,7 @@ class PackageManager(object):
     def __init__(self, installable_pkg_sto, installed_pkg_sto):
         self.installable_pkg_sto = installable_pkg_sto
         self.installed_pkg_sto = installed_pkg_sto
-    
+
     def _remove_installed_paths(self, installed_paths, root_dir):
         # This method never raise an error
         removed_paths = []
@@ -130,11 +130,11 @@ class PackageManager(object):
                            e, exc_info=True)
             logger.warning('The following files have been left in %s: %s' %
                            (root_dir, non_removed_paths))
-    
+
     def _install_pkg_from_install_mgr(self, install_mgr, root_dir, pkg_id):
         install_process = install_mgr.new_installation_process()
         result_dir = install_process.execute()
-        
+
         installed_paths = []
         # this rely on the fact that install_paths is a generator (see doc)
         try:
@@ -152,11 +152,11 @@ class PackageManager(object):
             return installed_paths
         finally:
             install_process.cleanup()
-    
+
     def _install_pkg(self, installable_pkg, root_dir):
         # install the installable pkg and update the installed pkg sto
         pkg_id = installable_pkg.pkg_info['id']
-        
+
         # install files
         install_mgr = installable_pkg.install_mgr
         if install_mgr is None:
@@ -164,12 +164,12 @@ class PackageManager(object):
             files = []
         else:
             files = self._install_pkg_from_install_mgr(install_mgr, root_dir, pkg_id)
-        
+
         # commit to installed database
         try:
             installable_pkg.pkg_info['files'] = files
             installed_pkg = installable_pkg.new_installed_package()
-            
+
             self.installed_pkg_sto.upsert_pkg(installed_pkg)
         except Exception, e:
             logger.error("Error while commiting pkg %s to storage: %s" %
@@ -181,7 +181,7 @@ class PackageManager(object):
                 self._remove_installed_paths(files, root_dir)
         else:
             return installed_pkg
-    
+
     def install(self, raw_pkg_ids, root_dir, installer_ctrl_factory):
         # 1. do some preparation
         installable_pkg_sto = self.installable_pkg_sto
@@ -190,29 +190,29 @@ class PackageManager(object):
         installer_ctrl = installer_ctrl_factory(installable_pkg_sto,
                                                 installed_pkg_sto)
         installer_ctrl.pre_installation()
-        
+
         try:
             # 2. preprocessing
             # 2.1. get the list of package ids to install
             pkg_ids = installer_ctrl.preprocess_raw_pkg_ids(raw_pkg_ids)
-            
+
             # 2.2. get the list of packages to install
             # next line raise an error if one of pkg id is invalid, which is what we want
             raw_pkgs = [installable_pkg_sto[pkg_id].clone() for pkg_id in pkg_ids]
             pkgs = installer_ctrl.preprocess_raw_pkgs(raw_pkgs)
-            
+
             # 2.3. get the list of remote files to download
             # this is a quick way to get the list of unique remote files
             raw_remote_files = dict((remote_file.path, remote_file) for pkg in pkgs
                                     for remote_file in pkg.remote_files).values()
             remote_files = installer_ctrl.preprocess_raw_remote_files(raw_remote_files)
-            
+
             # 3. download remote files
             installer_ctrl.pre_download(remote_files)
             for remote_file in remote_files:
                 installer_ctrl.download_file(remote_file)
             installer_ctrl.post_download(remote_files)
-            
+
             # 4. install package
             installer_ctrl.pre_install(pkgs)
             for pkg in pkgs:
@@ -232,12 +232,12 @@ class PackageManager(object):
                                  e, exc_info=True)
         else:
             installer_ctrl.post_installation(None)
-    
+
     def _uninstall_pkg(self, installed_pkg, root_dir):
         # uninstall the installed pkg and update the installed pkg sto
         pkg_id = installed_pkg.pkg_info['id']
         installed_paths = installed_pkg.pkg_info['files']
-        
+
         removed_paths = []
         try:
             for removed_path in remove_paths(installed_paths, root_dir):
@@ -260,7 +260,7 @@ class PackageManager(object):
                                  "package will still be shown as installed: %s" %
                                  (root_dir, removed_path))
                 raise
-    
+
     def uninstall(self, raw_pkg_ids, root_dir, uninstaller_ctrl_factory):
         # 1. do some preparation
         installable_pkg_sto = self.installable_pkg_sto
@@ -269,17 +269,17 @@ class PackageManager(object):
         uninstaller_ctrl = uninstaller_ctrl_factory(installable_pkg_sto,
                                                     installed_pkg_sto)
         uninstaller_ctrl.pre_uninstallation()
-        
+
         try:
             # 2. preprocessing
             # 2.1. get the list of package ids to uninstall
             pkg_ids = uninstaller_ctrl.preprocess_raw_pkg_ids(raw_pkg_ids)
-            
+
             # 2.2. get the list of packages to install
             # next line raise an error if one of pkg id is invalid, which is what we want
             raw_pkgs = [installed_pkg_sto[pkg_id] for pkg_id in pkg_ids]
             pkgs = uninstaller_ctrl.preprocess_raw_pkgs(raw_pkgs)
-            
+
             # 3. uninstall package
             uninstaller_ctrl.pre_uninstall(pkgs)
             for pkg in pkgs:
@@ -299,7 +299,7 @@ class PackageManager(object):
                                  e, exc_info=True)
         else:
             uninstaller_ctrl.post_uninstallation(None)
-    
+
     def _get_raw_upgrade_list(self):
         # Return a list of tuple (<installed package>, <installable_pkg>) for
         # which the version differs
@@ -314,7 +314,7 @@ class PackageManager(object):
                         installed_pkg.pkg_info['explicit_install']
                     raw_upgrade_list.append((installed_pkg, installable_pkg))
         return raw_upgrade_list
-    
+
     def upgrade(self, root_dir, upgrader_ctrl_factory):
         # 1. do some preparation
         installable_pkg_sto = self.installable_pkg_sto
@@ -323,18 +323,18 @@ class PackageManager(object):
         upgrader_ctrl = upgrader_ctrl_factory(installable_pkg_sto,
                                               installed_pkg_sto)
         upgrader_ctrl.pre_upgradation()
-        
+
         try:
             raw_upgrade_list = self._get_raw_upgrade_list()
-            
+
             # 2. preprocess stuff
             # 2.1. 
             upgrade_list = upgrader_ctrl.preprocess_raw_upgrade_list(raw_upgrade_list)
-            
+
             # 2.2. from this list, get any package that should be 
             #      uninstalled/installed at the same time
             upgrade_specs = upgrader_ctrl.preprocess_upgrade_list(upgrade_list)
-            
+
             # 2.3. get the list of remote files to download
             raw_remote_files_dict = {}
             for _, installable_pkg, install_list, _ in upgrade_specs:
@@ -343,13 +343,13 @@ class PackageManager(object):
                         raw_remote_files_dict[remote_file.path] = remote_file
             raw_remote_files = raw_remote_files_dict.values()
             remote_files = upgrader_ctrl.preprocess_raw_remote_files(raw_remote_files)
-            
+
             # 3. download remote files
             upgrader_ctrl.pre_download(remote_files)
             for remote_file in remote_files:
                 upgrader_ctrl.download(remote_file)
             upgrader_ctrl.post_download(remote_files)
-            
+
             # 4. upgrade packages
             upgrader_ctrl.pre_upgrade(upgrade_specs)
             for installed_pkg, installable_pkg, install_list, uninstall_list in upgrade_specs:
@@ -391,10 +391,10 @@ class InstallerController(object):
     to use it directly.
     
     """
-    
+
     def __init__(self, installable_pkg_sto, installed_pkg_sto):
         pass
-    
+
     def pre_installation(self):
         """Called before anything else, i.e. just after installer controller
         creation.
@@ -403,7 +403,7 @@ class InstallerController(object):
         
         """
         pass
-    
+
     def preprocess_raw_pkg_ids(self, raw_pkg_ids):
         """Return a list of package IDs from the given list of package IDs.
         
@@ -416,7 +416,7 @@ class InstallerController(object):
         
         """
         return raw_pkg_ids
-    
+
     def preprocess_raw_pkgs(self, raw_installable_pkgs):
         """Return a list of package from the given list of packages.
         
@@ -432,7 +432,7 @@ class InstallerController(object):
         for installable_pkg in raw_installable_pkgs:
             installable_pkg.pkg_info['explicit_install'] = True
         return raw_installable_pkgs
-    
+
     def preprocess_raw_remote_files(self, raw_remote_files):
         """Return a list of remote file from the given list of remote files.
         
@@ -441,42 +441,42 @@ class InstallerController(object):
         
         """
         return [xfile for xfile in raw_remote_files if not xfile.exists()]
-    
+
     def pre_download(self, remote_files):
         """Called before any files have downloaded."""
         pass
-    
+
     def download_file(self, remote_file):
         """Called to download the next file."""
         remote_file.download()
-    
+
     def post_download(self, remote_files):
         """Called after every files have been downloaded."""
         pass
-    
+
     def pre_install(self, installable_pkgs):
         """Called before the installation of any pkg."""
         pass
-    
+
     def pre_install_pkg(self, installable_pkg):
         """Called before the installation of the given installable pkg."""
         pass
-    
+
     def post_install_pkg(self, installable_pkg):
         """Called after the successful installation of the given installable pkg."""
         pass
-    
+
     def post_install(self, installable_pkgs):
         """Called after the successful installation of all pkg."""
         pass
-    
+
     def post_installation(self, exc_value):
         """Called after anything else (will be called if pre_installation returned successfully)
         exc_value is None if no error, else the exception value
         
         """
         pass
-    
+
     @classmethod
     def new_factory(cls, *args, **kwargs):
         def aux(installable_pkg_sto, installed_pkg_sto):
@@ -490,7 +490,7 @@ class DefaultInstallerController(InstallerController):
         self._installable_pkg_sto = installable_pkg_sto
         self._installed_pkg_sto = installed_pkg_sto
         self._nodeps = nodeps
-    
+
     def preprocess_raw_pkg_ids(self, raw_pkg_ids):
         # check that all package are installable and raise our own
         # error even though this job is redone indirectly by the
@@ -499,7 +499,7 @@ class DefaultInstallerController(InstallerController):
             if pkg_id not in self._installable_pkg_sto:
                 raise PackageError("could not find package '%s'" % pkg_id)
         return raw_pkg_ids
-    
+
     def preprocess_raw_pkgs(self, raw_installable_pkgs):
         installable_pkgs = list(raw_installable_pkgs)
         for installable_pkg in installable_pkgs:
@@ -520,34 +520,34 @@ class DefaultInstallerController(InstallerController):
 
 class UninstallerController(object):
     # TODO add comments
-    
+
     def __init__(self, installable_pkg_sto, installed_pkg_sto):
         pass
-    
+
     def pre_uninstallation(self):
         pass
-    
+
     def preprocess_raw_pkg_ids(self, raw_pkg_ids):
         return raw_pkg_ids
-    
+
     def preprocess_raw_pkgs(self, raw_installed_pkgs):
         return raw_installed_pkgs
-    
+
     def pre_uninstall(self, installed_pkgs):
         pass
-    
+
     def pre_uninstall_pkg(self, installed_pkg):
         pass
-    
+
     def post_uninstall_pkg(self, installed_pkg):
         pass
-    
+
     def post_uninstall(self, installed_pkgs):
         pass
-    
+
     def post_uninstallation(self, exc_value):
         pass
-    
+
     @classmethod
     def new_factory(cls, *args, **kwargs):
         def aux(installable_pkg_sto, installed_pkg_sto):
@@ -561,7 +561,7 @@ class DefaultUninstallerController(UninstallerController):
         self._installable_pkg_sto = installable_pkg_sto
         self._installed_pkg_sto = installed_pkg_sto
         self._recursive = recursive
-    
+
     def preprocess_raw_pkg_ids(self, raw_pkg_ids):
         for pkg_id in raw_pkg_ids:
             # Check that each pkg_id in pkg_ids is installed on this system
@@ -575,7 +575,7 @@ class DefaultUninstallerController(UninstallerController):
                 raise PackageError("%s is required by: %s" %
                                    (pkg_id, ' '.join(requisite_ids)))
         return raw_pkg_ids
-    
+
     def preprocess_raw_pkgs(self, raw_installed_pkgs):
         installed_pkgs = list(raw_installed_pkgs)
         if self._recursive:
@@ -609,10 +609,10 @@ class UpgraderController(object):
     # TODO add comments
     def __init__(self, installable_pkg_sto, installed_pkg_sto):
         pass
-    
+
     def pre_upgradation(self):
         pass
-    
+
     def preprocess_raw_upgrade_list(self, raw_upgrade_list):
         """Return the list of tuple (installed pkg, installable pkg) to
         upgrade from the list of (installed pkg, installable pkg) tuple
@@ -622,7 +622,7 @@ class UpgraderController(object):
         # By default, upgrade all package that are not in sync, which is
         # not what you want to do for more evolved package management
         return raw_upgrade_list
-    
+
     def preprocess_upgrade_list(self, upgrade_list):
         """From the list of known to be upgraded pkgs, return a list of tuple
         (installed_pkg, [<new_to_install_pkg>], [<to_uninstall_pkg>])) such
@@ -633,47 +633,47 @@ class UpgraderController(object):
         
         """
         return [(ed_pkg, able_pkg, [], []) for (ed_pkg, able_pkg) in upgrade_list]
-    
+
     def preprocess_raw_remote_files(self, raw_remote_files):
         return [xfile for xfile in raw_remote_files if not xfile.exists()]
-    
+
     def pre_download(self, remote_files):
         pass
-    
+
     def download_file(self, remote_file):
         remote_file.download()
-    
+
     def post_download(self, remote_files):
         pass
-    
+
     def pre_upgrade(self, upgrade_specs):
         """Called before the installation of any pkg."""
         pass
-    
+
     def pre_upgrade_uninstall_pkg(self, installed_pkg):
         pass
-    
+
     def post_upgrade_uninstall_pkg(self, installed_pkg):
         pass
-    
+
     def pre_upgrade_install_pkg(self, installable_pkg):
         pass
-    
+
     def post_upgrade_install_pkg(self, installable_pkg):
         pass
-    
+
     def pre_upgrade_pkg(self, installed_pkg):
         pass
-    
+
     def post_upgrade_pkg(self, installed_pkg):
         pass
-    
+
     def post_upgrade(self, upgrade_specs):
         pass
-    
+
     def post_upgradation(self, exc_value):
         pass
-    
+
     @classmethod
     def new_factory(cls, *args, **kwargs):
         def aux(installable_pkg_sto, installed_pkg_sto):
@@ -689,21 +689,21 @@ class DefaultUpgraderController(UpgraderController):
         self._installed_pkg_sto = installed_pkg_sto
         self._ignore = [] if ignore is None else ignore
         self._nodeps = nodeps
-    
+
     def _upgrade_list_filter_function(self, (installed_pkg, installable_pkg)):
         # Return true if installed_pkg is not in the ignore list and if 
         # installable_pkg version is higher than installed_pkg version
         pkg_id = installed_pkg.pkg_info['id']
         if pkg_id in self._ignore:
             return False
-        
+
         installed_version = installed_pkg.pkg_info['version']
         installable_version = installable_pkg.pkg_info['version']
         return cmp_version(installable_version, installed_version)
-    
+
     def preprocess_raw_upgrade_list(self, raw_upgrade_list):
         return filter(self._upgrade_list_filter_function, raw_upgrade_list)
-    
+
     def preprocess_upgrade_list(self, upgrade_list):
         installed_specs = []
         scheduled_pkg_ids = set(elem[0].pkg_info['id'] for elem in upgrade_list)

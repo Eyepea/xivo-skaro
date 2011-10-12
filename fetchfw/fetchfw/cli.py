@@ -19,7 +19,7 @@ __license__ = """
 
 import logging
 import progressbar
-from fetchfw.package import DefaultInstallerController, DefaultUninstallerController,\
+from fetchfw.package import DefaultInstallerController, DefaultUninstallerController, \
     PackageError, DefaultUpgraderController
 from fetchfw.download import ProgressBarHook
 
@@ -42,7 +42,7 @@ class CliInstallerController(DefaultInstallerController):
             print "    ", pkg
         print
         return installable_pkgs
-    
+
     def pre_download(self, remote_files):
         total_dl_size = sum(remote_file.size for remote_file in remote_files)
         print "Total Download Size:    %.2f MB" % (float(total_dl_size) / 1000 ** 2)
@@ -50,7 +50,7 @@ class CliInstallerController(DefaultInstallerController):
         rep = raw_input("Proceed with installation? [Y/n] ")
         if rep and rep.lower() != 'y':
             raise UserCancellationError()
-    
+
     def download_file(self, remote_file):
         widgets = [remote_file.filename,
                    ':    ',
@@ -78,14 +78,14 @@ class CliUninstallerController(DefaultUninstallerController):
         rep = raw_input("Do you want to remove these packages? [Y/n] ")
         if rep and rep.lower() != 'y':
             raise UserCancellationError()
-    
+
     def pre_uninstall_pkg(self, installed_pkg):
         print "Removing %s..." % installed_pkg.pkg_info['id']
 
 
 class CliUpgraderController(DefaultUpgraderController):
     _nothing_to_do = False
-    
+
     def preprocess_upgrade_list(self, upgrade_list):
         if not self._nodeps:
             print "resolving dependencies..."
@@ -104,11 +104,11 @@ class CliUpgraderController(DefaultUpgraderController):
                 print "    ", pkg
             print
         return installed_specs
-    
+
     def pre_download(self, remote_files):
         if self._nothing_to_do:
             return
-        
+
         total_dl_size = sum(remote_file.size for remote_file in remote_files)
         print "Total Download Size:    %.2f MB" % (float(total_dl_size) / 1000 ** 2)
         print
@@ -129,12 +129,12 @@ class CliUpgraderController(DefaultUpgraderController):
                    ]
         pbar = progressbar.ProgressBar(widgets=widgets, maxval=remote_file.size)
         remote_file.download([ProgressBarHook(pbar)])
-    
+
     def pre_upgrade_uninstall_pkg(self, installed_pkg):
         print "Removing %s..." % installed_pkg.pkg_info['id']
-    
+
     def pre_upgrade_install_pkg(self, installable_pkg):
         print "Installing %s..." % installable_pkg.pkg_info['id']
-    
+
     def pre_upgrade_pkg(self, installed_pkg):
         print "Upgrading %s..." % installed_pkg.pkg_info['id']

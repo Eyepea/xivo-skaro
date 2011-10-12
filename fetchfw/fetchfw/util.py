@@ -68,7 +68,7 @@ def apply_subs(string, variables):
             # This treat a special case where var_value has the string
             # "\$" in it, we don't want it to get unescaped at the end
             return var_value.replace(r'\$', r'\\$')
-    interm = _APPLY_SUBS_REGEX.sub(aux, string) 
+    interm = _APPLY_SUBS_REGEX.sub(aux, string)
     return interm.replace(r'\$', '$')
 
 
@@ -144,7 +144,6 @@ def cmp_version(version1, version2):
 
 def _recursive_listdir_tuple(directory):
     # recursive_listdir that yield tuple (abs_path, path) instead
-    # XXX we might want to yield stat.st_mode also...
     directories_stack = []
     for path in os.listdir(directory):
         abs_path = os.path.join(directory, path)

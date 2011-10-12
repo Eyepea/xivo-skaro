@@ -38,7 +38,7 @@ class ConfigSpec(object):
     """Represent a configuration file's specification."""
     NO_DEFAULT = object()
     MANDATORY = object()
-    
+
     def __init__(self):
         # a dictionary where keys are param ids and values are tuple
         # (default value, fun). fun takes one argument, raw_value.
@@ -54,7 +54,7 @@ class ConfigSpec(object):
         self.add_dyn_param_decorator = self._create_dyn_param_decorator()
         self.add_section_decorator = self._create_section_decorator()
         self.set_unknown_section_hook_decorator = self._create_unknown_section_dec()
-    
+
     def _create_param_decorator(self):
         def param_decorator(param_id, default=self.NO_DEFAULT):
             def aux(fun):
@@ -62,7 +62,7 @@ class ConfigSpec(object):
                 return fun
             return aux
         return param_decorator
-    
+
     def _create_dyn_param_decorator(self):
         def dyn_param_decorator(template_id, option_id, default=self.NO_DEFAULT):
             def aux(fun):
@@ -70,7 +70,7 @@ class ConfigSpec(object):
                 return fun
             return aux
         return dyn_param_decorator
-    
+
     def _create_section_decorator(self):
         def section_decorator(section_id):
             def aux(fun):
@@ -78,13 +78,13 @@ class ConfigSpec(object):
                 return fun
             return aux
         return section_decorator
-    
+
     def _create_unknown_section_dec(self):
         def unknown_section_hook_decorator(fun):
             self.set_unknown_section_hook(fun)
             return fun
         return unknown_section_hook_decorator
-    
+
     def add_param(self, param_id, default=NO_DEFAULT, fun=None):
         """
         param_id -- a parameter id, i.e. a section id concatenated with an
@@ -101,7 +101,7 @@ class ConfigSpec(object):
         if param_id in self._params:
             raise ValueError('param has already been specified: %s' % param_id)
         self._params[param_id] = (default, fun)
-    
+
     def add_dyn_param(self, template_id, option_id, default=NO_DEFAULT, fun=None):
         """
         template_id -- an unique id for representing the unknown section
@@ -119,7 +119,7 @@ class ConfigSpec(object):
             raise ValueError('dyn param already been specified: %s.%s' %
                              (template_id, option_id))
         template_dict[option_id] = (default, fun)
-    
+
     def add_section(self, section_id, fun=None):
         """
         fun -- a function taking two arguments, option_id and raw_value, and return
@@ -131,7 +131,7 @@ class ConfigSpec(object):
         if section_id in self._sections:
             raise ValueError('section has already been specified: %s' % section_id)
         self._sections[section_id] = fun
-    
+
     def set_unknown_section_hook(self, fun):
         """
         fun -- a function taking three arguments, config_dict, section_id,
@@ -142,7 +142,7 @@ class ConfigSpec(object):
         
         """
         self._unknown_section_hook = fun
-    
+
     def _process_param(self, param_id, raw_value):
         assert param_id in self._params
         fun = self._params[param_id][1]
@@ -150,7 +150,7 @@ class ConfigSpec(object):
             return raw_value
         else:
             return fun(raw_value)
-    
+
     def _process_section(self, section_id, option_id, raw_value):
         assert section_id in self._sections
         fun = self._sections[section_id]
@@ -158,7 +158,7 @@ class ConfigSpec(object):
             return raw_value
         else:
             return fun(option_id, raw_value)
-    
+
     def _add_default_and_check_mandatory(self, config_dict):
         for param_id, param_value in self._params.iteritems():
             if param_id not in config_dict:
@@ -169,7 +169,7 @@ class ConfigSpec(object):
                     pass
                 else:
                     config_dict[param_id] = default
-    
+
     def read_config(self, config_parser):
         """Return a dictionary where keys are parameter ids and values are
         parameter values.
@@ -187,7 +187,7 @@ class ConfigSpec(object):
                 else:
                     unknown_sections[section_id][option_id] = raw_value
         self._add_default_and_check_mandatory(config_dict)
-        
+
         # unknown section handling
         if unknown_sections:
             if self._unknown_section_hook:
@@ -221,7 +221,7 @@ class ConfigSpec(object):
             else:
                 raise ValueError("unknown sections: %s" % unknown_sections.keys())
         return config_dict
-    
+
     def read_config_from_filename(self, filename):
         config_parser = ConfigParser.RawConfigParser()
         with open(filename) as fobj:

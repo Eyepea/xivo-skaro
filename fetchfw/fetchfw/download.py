@@ -46,10 +46,13 @@ class AbortedDownloadError(DownloadError):
 
 class DefaultDownloader(object):
     _TIMEOUT = 15.0
-    
-    def __init__(self, handlers=[]):
-        self._opener = urllib2.build_opener(*handlers)
-        
+
+    def __init__(self, handlers=None):
+        if handlers is None:
+            self._opener = urllib2.build_opener()
+        else:
+            self._opener = urllib2.build_opener(*handlers)
+
     def download(self, url, timeout=_TIMEOUT):
         """Open the URL url and return a file-like object."""
         try:
@@ -63,14 +66,14 @@ class DefaultDownloader(object):
         except urllib2.URLError, e:
             logger.warning("URLError while downloading '%s': %s", self._get_url(url), e)
             raise DownloadError(e)
-        
+
     def _get_url(self, url):
         # Return the URL from either a urllib2.Request or string instance
         if hasattr(url, 'get_full_url'):
             return url.get_full_url()
         else:
             return url
-    
+
     def _do_download(self, url, timeout):
         """This method is called by the download method. Any urllib2-related exception
         raised in this method will be caught and wrapped around an exception who
@@ -82,12 +85,12 @@ class DefaultDownloader(object):
 
 
 class AuthenticatingDownloader(DefaultDownloader):
-    def __init__(self, handlers=[]):
+    def __init__(self, handlers=None):
         DefaultDownloader.__init__(self, handlers)
         self._pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
         self._opener.add_handler(urllib2.HTTPBasicAuthHandler(self._pwd_manager))
         self._opener.add_handler(urllib2.HTTPDigestAuthHandler(self._pwd_manager))
-        
+
     def add_password(self, realm, uri, user, passwd):
         # Note that if the realm and uri are the same that for an already
         # added user/passwd, it will be replaced by the new value
@@ -97,8 +100,8 @@ class AuthenticatingDownloader(DefaultDownloader):
 class BaseRemoteFile(object):
     """A remote file that can be downloaded."""
     _BLOCK_SIZE = 4096
-    
-    def __init__(self, url, downloader, hook_factories=[]):
+
+    def __init__(self, url, downloader, hook_factories=None):
         """
         url -- the URL/object to pass to the downloader
         downloader -- the file downloader
@@ -107,8 +110,11 @@ class BaseRemoteFile(object):
         """
         self._url = url
         self._downloader = downloader
-        self._hook_factories = list(hook_factories)
-    
+        if hook_factories is None:
+            self._hook_factories = []
+        else:
+            self._hook_factories = list(hook_factories)
+
     def download(self, supp_hooks=[]):
         """Download the file and run it through the hooks.
         
@@ -124,11 +130,11 @@ class BaseRemoteFile(object):
                 last_started_idx += 1
             with contextlib.closing(self._downloader.download(self._url)) as dlfile:
                 while True:
-                    bytes = dlfile.read(self._BLOCK_SIZE)
-                    if not bytes:
+                    data = dlfile.read(self._BLOCK_SIZE)
+                    if not data:
                         break
                     for hook in hooks:
-                        hook.update(bytes)
+                        hook.update(data)
             for hook in reversed(hooks):
                 hook.complete()
         except Exception, e:
@@ -176,24 +182,24 @@ class RemoteFile(object):
         self.path = path
         self.size = size
         self._base_remote_file = base_remote_file
-    
+
     @property
     def filename(self):
         return os.path.basename(self.path)
-    
+
     def exists(self):
         """Return True if the destination path of the file to download refers to
         an existing path.
         
         """
         return os.path.isfile(self.path)
-    
+
     def download(self, supp_hooks=[]):
         self._base_remote_file.download(supp_hooks)
-    
+
     @classmethod
     def new_remote_file(cls, path, size, url, downloader, hook_factories=[]):
-        hook_factories = hook_factories + [WriteToFileHook.create_factory(path)] 
+        hook_factories = hook_factories + [WriteToFileHook.create_factory(path)]
         base_remote_file = BaseRemoteFile(url, downloader, hook_factories)
         return cls(path, size, base_remote_file)
 
@@ -209,14 +215,14 @@ class DownloadHook(object):
         
         """
         pass
-    
-    def update(self, arg):
+
+    def update(self, data):
         """Called every time a certain amount of data from the download is
         received.
         
         """
         pass
-    
+
     def complete(self):
         """Called just after the download has completed.
         
@@ -225,7 +231,7 @@ class DownloadHook(object):
         
         """
         pass
-    
+
     def fail(self, exc_value):
         """Called just after the download has failed.
         
@@ -239,7 +245,7 @@ class DownloadHook(object):
         
         """
         pass
-    
+
     def stop(self):
         """Called just after the download is stopped, either because the
         download completed succesfully or failed.
@@ -255,6 +261,7 @@ class DownloadHook(object):
 class WriteToFileHook(DownloadHook):
     """Write a download to a file."""
     def __init__(self, filename):
+        DownloadHook.__init__(self)
         self._filename = filename
         # XXX usage of a fixed suffix might not be the best idea since we could
         #     overwrite a 'valid' file with this name, that said we want both files
@@ -262,18 +269,18 @@ class WriteToFileHook(DownloadHook):
         self._tmp_filename = filename + '.tmp'
         self._fobj = None
         self._renamed = False
-    
+
     def start(self):
         self._fobj = open(self._tmp_filename, 'wb')
-    
-    def update(self, arg):
-        self._fobj.write(arg)
-    
+
+    def update(self, data):
+        self._fobj.write(data)
+
     def complete(self):
         self._fobj.close()
         os.rename(self._tmp_filename, self._filename)
         self._renamed = True
-    
+
     def fail(self, exc_value):
         # note that self._fobj.close() might have already been called since
         # fail can sometimes be called after complete, but this is not a problem
@@ -290,7 +297,7 @@ class WriteToFileHook(DownloadHook):
                 os.remove(filename)
             except OSError, e:
                 logger.error("error while removing '%s': %s", filename, e)
-    
+
     @classmethod
     def create_factory(cls, filename):
         """Create a hook factory that will return WriteToFileHook instances."""
@@ -305,21 +312,22 @@ class SHA1Hook(DownloadHook):
         """
         sha1sum -- the raw sha1 sum (NOT an hex representation).
         """
+        DownloadHook.__init__(self)
         self._sha1sum = sha1sum
         self._hash = None
-        
+
     def start(self):
         self._hash = hashlib.sha1()
-    
-    def update(self, arg):
-        self._hash.update(arg)
-    
+
+    def update(self, data):
+        self._hash.update(data)
+
     def complete(self):
         sha1sum = self._hash.digest()
         if sha1sum != self._sha1sum:
             raise CorruptedFileError("sha1sum mismatch: %s instead of %s" %
                                      (b2a_hex(sha1sum), b2a_hex(self._sha1sum)))
-    
+
     @classmethod
     def create_factory(cls, sha1sum):
         """Create a hook factory that will return SHA1Hook instances."""
@@ -331,16 +339,17 @@ class SHA1Hook(DownloadHook):
 class ProgressBarHook(DownloadHook):
     """Update a progress bar matching the download status."""
     def __init__(self, pbar):
+        DownloadHook.__init__(self)
         self._pbar = pbar
         self._size = 0
-        
+
     def start(self):
         self._pbar.start()
-        
-    def update(self, arg):
-        self._size += len(arg)
+
+    def update(self, data):
+        self._size += len(data)
         self._pbar.update(self._size)
-    
+
     def complete(self):
         self._pbar.finish()
 
@@ -348,13 +357,14 @@ class ProgressBarHook(DownloadHook):
 class AbortHook(DownloadHook):
     """Abort a download at will by raising an exception in a call to update."""
     def __init__(self):
+        DownloadHook.__init__(self)
         self._abort = False
-    
-    def update(self, arg):
+
+    def update(self, data):
         if self._abort:
             logger.info('explicitly aborting download')
             raise AbortedDownloadError()
-    
+
     def abort_download(self):
         logger.info('scheduling download abortion')
         self._abort = True
@@ -380,8 +390,6 @@ def new_downloaders_from_handlers(handlers=None):
     ret['auth'] is an AuthenticatingDownloader
     
     """
-    if handlers is None:
-        handlers = []
     auth = AuthenticatingDownloader(handlers)
     default = DefaultDownloader(handlers)
     return {'auth': auth, 'default': default}

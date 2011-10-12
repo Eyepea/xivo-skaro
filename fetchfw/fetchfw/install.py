@@ -50,7 +50,7 @@ class _InstallationProcess(object):
         self._executed = False
         self._need_cleanup = False
         self._base_dir = None
-    
+
     def execute(self):
         """Execute the installation.
         
@@ -62,7 +62,7 @@ class _InstallationProcess(object):
             raise Exception('Installation process already executed')
         self._base_dir = tempfile.mkdtemp(dir=self._dir)
         req_map = self._build_requirement_map()
-        
+
         sources = self._sources
         filters = self._filters
         result_dir, input_dirs, output_dirs = self._create_directories_map(req_map)
@@ -90,7 +90,7 @@ class _InstallationProcess(object):
             self._executed = True
             self._need_cleanup = True
             return result_dir
-    
+
     def _build_requirement_map(self):
         # Return a 'requirement map', i.e. a dictionary which keys are node id
         # and values are node id that depends on the key
@@ -98,7 +98,7 @@ class _InstallationProcess(object):
         for filter_id, (_, filter_dependency) in self._filters.iteritems():
             req_map[filter_dependency].append(filter_id)
         return req_map
-    
+
     def _create_directories_map(self, req_map):
         # note that self._base_dir must have been set
         result_dir = os.path.join(self._base_dir, 'result')
@@ -117,7 +117,7 @@ class _InstallationProcess(object):
                 for requirement in requirements:
                     input_dirs[requirement] = cur_dir
         return result_dir, input_dirs, output_dirs
-    
+
     def _create_execution_plan(self, req_map):
         # Return a iterator which gives a valid order of execution of nodes
         # The algorithm is correct since each filter has 1 and exactly 1 dependency
@@ -128,7 +128,7 @@ class _InstallationProcess(object):
             for requirement in req_map[node_id]:
                 if requirement not in deque:
                     deque.append(requirement)
-    
+
     def cleanup(self):
         """Remove all files and directory created during the installation.
         
@@ -175,13 +175,13 @@ class InstallationManager(object):
         self._check_filters_depend_on_valid_node()
         self._check_no_useless_source()
         self._check_is_acyclic()
-    
+
     def _check_nodes_id_are_unique(self):
         common_ids = set(self._sources).intersection(self._filters)
         if common_ids:
             raise InstallationGraphError("these IDs are shared by both a source and a filter: %s" %
                                          common_ids)
-        
+
     def _check_filters_depend_on_valid_node(self):
         # Check that there's no unknown identifier in the installation graph, i.e. raise an
         # exception if there's a filter such that it depends on an unknown node.
@@ -192,7 +192,7 @@ class InstallationManager(object):
             if node_dependency not in filters and node_dependency not in sources:
                 raise InstallationGraphError("filter '%s' depends on unknown filter/source '%s'" %
                                              (filter_id, node_dependency))
-    
+
     def _check_no_useless_source(self):
         # Check if every sources participate in the installation process, i.e. raise an exception
         # if there's a source such that no other filter depend on it.
@@ -201,7 +201,7 @@ class InstallationManager(object):
         if unused_sources:
             raise InstallationGraphError("these sources doesn't participate in the installation: %s" %
                                          unused_sources)
-    
+
     def _check_is_acyclic(self):
         # Check that the installation graph is acyclic
         sources = self._sources
@@ -219,7 +219,7 @@ class InstallationManager(object):
                     currently_visited.add(next_node_id)
                     node_id = next_node_id
                 visited.update(currently_visited)
-    
+
     def new_installation_process(self, dir=None):
         """Return an installation process instance, i.e. an object with an
         "execute" and "cleanup" method.
@@ -253,10 +253,10 @@ class _GlobHelper(object):
             if pathname.startswith(os.pardir):
                 raise ValueError("path name '%s' makes reference to the parent directory" % pathname)
         self._error_on_no_matches = error_on_no_matches
-    
+
     def glob_in_dir(self, src_directory):
         return list(self.iglob_in_dir(src_directory))
-    
+
     def iglob_in_dir(self, src_directory):
         """Apply the glob patterns in src_directory and return an iterator over
         each file matched.
@@ -292,7 +292,7 @@ class FilesystemLinkSource(object):
             self._pathnames = [pathnames]
         else:
             self._pathnames = list(pathnames)
-    
+
     def pull(self, dst_directory):
         for pathname in self._pathnames:
             for globbed_pathname in glob.iglob(pathname):
@@ -309,7 +309,7 @@ class NonGlobbingFilesystemLinkSource(object):
             self._pathnames = [pathnames]
         else:
             self._pathnames = list(pathnames)
-    
+
     def pull(self, dst_directory):
         for pathname in self._pathnames:
             # note that we check if pathname really exist so we can easily
@@ -335,7 +335,7 @@ class FilesystemCopySource(object):
             self._pathnames = [pathnames]
         else:
             self._pathnames = list(pathnames)
-    
+
     def pull(self, dst_directory):
         for pathname in self._pathnames:
             for globbed_pathname in glob.iglob(pathname):
@@ -368,7 +368,7 @@ class ZipFilter(object):
         
         """
         self._glob_helper = _GlobHelper(pathnames)
-        
+
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             with contextlib.closing(zipfile.ZipFile(pathname, 'r')) as zf:
@@ -388,7 +388,7 @@ class TarFilter(object):
         
         """
         self._glob_helper = _GlobHelper(pathnames)
-    
+
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             with contextlib.closing(tarfile.open(pathname)) as tf:
@@ -405,7 +405,7 @@ class RarFilter(object):
     
     """
     _CMD_PREFIX = ['unrar', 'e', '-idq', '-y']
-    
+
     def __init__(self, pathnames):
         """
         pathnames -- a single glob pattern or an iterator over multiple glob
@@ -413,7 +413,7 @@ class RarFilter(object):
         
         """
         self._glob_helper = _GlobHelper(pathnames)
-    
+
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             cmd = self._CMD_PREFIX + [pathname, dst_directory]
@@ -439,7 +439,7 @@ class Filter7z(object):
     
     """
     _CMD_PREFIX = ['7zr', 'e', '-bd']
-    
+
     def __init__(self, pathnames):
         """
         pathnames -- a single glob pattern or an iterator over multiple glob
@@ -447,7 +447,7 @@ class Filter7z(object):
         
         """
         self._glob_helper = _GlobHelper(pathnames)
-    
+
     def apply(self, src_directory, dst_directory):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             cmd = self._CMD_PREFIX + ['-o%s' % dst_directory, pathname]
@@ -466,7 +466,7 @@ class CiscoUnsignFilter(object):
     """
     _BUF_SIZE = 512
     _GZIP_MAGIC_NUMBER = '\x1f\x8b'  # see http://www.gzip.org/zlib/rfc-gzip.html#file-format
-    
+
     def __init__(self, signed_pathname, unsigned_pathname):
         """Note: signed_pathname can be a glob pattern, but when the pattern is expanded,
         it must match only ONE file or an error will be raised. This is for convenience, so
@@ -480,7 +480,7 @@ class CiscoUnsignFilter(object):
             raise ValueError("unsigned path name '%s' is an absolute path" % self._unsigned_pathname)
         if self._unsigned_pathname.startswith(os.pardir):
             raise ValueError("unsigned path name '%s' makes reference to the parent directory" % self._unsigned_pathname)
-    
+
     def apply(self, src_directory, dst_directory):
         signed_pathnames = self._glob_helper.glob_in_dir(src_directory)
         if len(signed_pathnames) > 1:
@@ -522,7 +522,7 @@ class IncludeExcludeFilter(object):
          
         """
         self._filter_fun = filter_fun
-    
+
     def apply(self, src_directory, dst_directory):
         rel_dir_stack = [os.curdir]
         while rel_dir_stack:
@@ -556,7 +556,7 @@ def ExcludeFilter(pathnames):
         pathnames = [pathnames]
     else:
         pathnames = list(pathnames)
-    
+
     def filter_fun(rel_file, abs_file):
         for pathname in pathnames:
             if fnmatch(rel_file, pathname):
@@ -578,7 +578,7 @@ def IncludeFilter(pathnames):
         pathnames = [pathnames]
     else:
         pathnames = list(pathnames)
-    
+
     included_dirs = set()
     def filter_fun(rel_file, abs_file):
         # include rel_file if its a child of an already included directory
@@ -601,7 +601,7 @@ class CopyFilter(object):
     in the destination directory.
     
     """
-    
+
     def __init__(self, pathnames, dst):
         """
         pathnames -- a single glob pattern or an iterator over multiple glob
@@ -613,7 +613,7 @@ class CopyFilter(object):
         """
         self._glob_helper = _GlobHelper(pathnames)
         self._dst = dst
-        
+
     def apply(self, src_directory, dst_directory):
         dst_is_dir = self._dst.endswith('/')
         abs_dst = os.path.join(dst_directory, self._dst)
@@ -635,7 +635,7 @@ class CopyFilter(object):
         except EnvironmentError, e:
             logger.error("Error during execution of copy filter", exc_info=True)
             raise InstallationError(e)
-        
+
     def _apply_dir(self, src_directory, abs_dst):
         for pathname in self._glob_helper.iglob_in_dir(src_directory):
             if os.path.isdir(pathname):
@@ -643,7 +643,7 @@ class CopyFilter(object):
                 shutil.copytree(pathname, os.path.join(abs_dst, src_dir_name), True)
             else:
                 shutil.copy(pathname, abs_dst)
-    
+
     def _apply_file(self, src_directory, abs_dst):
         pathnames = self._glob_helper.glob_in_dir(src_directory)
         if len(pathnames) > 1:
