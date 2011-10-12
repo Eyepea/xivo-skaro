@@ -54,7 +54,6 @@ REGCOMMANDS = [
     'faxsend',
     'filetransfer',
     'chitchat',
-    'actionfiche',
 
     'callcampaign',
     'logfromclient',
