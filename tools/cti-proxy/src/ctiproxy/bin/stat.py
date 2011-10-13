@@ -1,4 +1,4 @@
-# -*- coding: UTF -*-
+# -*- coding: UTF-8 -*-
 
 import sys
 from ctiproxy import core
