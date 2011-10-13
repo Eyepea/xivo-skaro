@@ -7,15 +7,16 @@ from xivo_confgen.frontends.asterisk import AsteriskFrontend
 
 
 class Test(unittest.TestCase):
-
-
     def setUp(self):
         self.asteriskFrontEnd = AsteriskFrontend(None)
 
     def tearDown(self):
         pass
 
-# é oh è
+    def test_encoding(self):
+        charset = ("ascii", "US-ASCII",)
+        self.assertTrue(sys.getdefaultencoding() in charset, "Test should be run in ascii")
+
     def testGenerateDialPlanFromTemplate(self):
         template = ["%%EXTEN%%,%%PRIORITY%%,Set(XIVO_BASE_CONTEXT=${CONTEXT})"]
         exten = {'exten':'*98', 'priority':1}
@@ -30,57 +31,53 @@ class Test(unittest.TestCase):
                 'call-limit':10}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        
-        #caller_id = set(['callerid = "lucky" <45789>'])
-        #set_result = set(result.split('\n'))
-#        self.assertTrue(caller_id in set_result)
-        self.assertEqual(result, 
+
+        self.assertEqual(result,
 """
 [jean-yves]
 amaflags = default
 call-limit = 10
 callerid = "lucky" <45789>
 """)
-        
+
     def testGenSipUserWithAccent(self):
         user = {'name':'papi',
                 u'callerid': u'"pépè" <45789>'}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[papi]\ncallerid = "pépè" <45789>\n') 
-        
+        self.assertEqual(result, u'\n[papi]\ncallerid = "pépè" <45789>\n')
 
     def testGenSipUserEmptyValue(self):
         user = {'name':'novalue',
                 u'context': u''}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[novalue]\n')
-         
+        self.assertEqual(result, u'\n[novalue]\n')
+
         user = {'name':'novalue',
                 u'context': None}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[novalue]\n')
+        self.assertEqual(result, u'\n[novalue]\n')
 
     def testGenSipUserCodec(self):
         user = {'name':'papi',
                 u'allow': u'g723,gsm'}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[papi]\ndisallow = all\nallow = g723\nallow = gsm\n') 
-        
+        self.assertEqual(result, u'\n[papi]\ndisallow = all\nallow = g723\nallow = gsm\n')
+
     def testGenSipUserSubscribemwi(self):
         user = {'name':'voicemail',
                 u'subscribemwi': 0}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[voicemail]\nsubscribemwi = no\n')
+        self.assertEqual(result, u'\n[voicemail]\nsubscribemwi = no\n')
         user = {'name':'voicemail',
                 u'subscribemwi': 1}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[voicemail]\nsubscribemwi = yes\n')
-        
+        self.assertEqual(result, u'\n[voicemail]\nsubscribemwi = yes\n')
+
     def testGenSipUserUnusedKeys(self):
         user = {'id': 1,
                 'name': 'unused',
@@ -92,12 +89,13 @@ callerid = "lucky" <45789>
                 'regseconds': 1,
                 'lastms': 5,
                 'fullcontact': 'pepe',
-                'ipaddr': None,}
+                'ipaddr': None, }
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
-        self.assertEqual(result,u'\n[unused]\n')
-         
-         
+        self.assertEqual(result, u'\n[unused]\n')
+
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGenerateConfiguration']
     unittest.main()
