@@ -230,10 +230,9 @@ class ConfigSpec(object):
 
 
 def filter_section(config_dict, section_id):
-    """Utility function that return a dictionary containing all the option
-    for a specific section.
+    """Return a dictionary containing all the options of a given section.
     
-    >>> d = {'foo.a': 1, 'foo.b': 2, 'bar.a': 3}
+    >>> d = {'foo.a': 1, 'foo.b': 2, 'bar.c': 3}
     >>> filter_section(d, 'foo')
     {'a': 1, 'b': 2}
     
@@ -249,6 +248,14 @@ def filter_section(config_dict, section_id):
     return result
 
 
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)
+_BOOL_TRUE = ['True', 'true']
+_BOOL_FALSE = ['False', 'false']
+
+def bool_(raw_value):
+    """Return a bool from a string."""
+    if raw_value in _BOOL_TRUE:
+        return True
+    elif raw_value in _BOOL_FALSE:
+        return False
+    else:
+        raise ValueError('invalid boolean raw value "%s"' % raw_value)
