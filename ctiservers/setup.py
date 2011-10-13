@@ -12,7 +12,7 @@ setup(name='xivo_daemon',
       url='http://xivo.fr/',
       packages=['xivo_ctiservers',
                 'xivo_ctiservers.alarm',
-        'xivo_ctiservers.lists',
+                'xivo_ctiservers.lists',
                 'xivo_ctiservers.statistics'],
       data_files=[
           ('/usr/sbin', ['xivo_daemon']),
