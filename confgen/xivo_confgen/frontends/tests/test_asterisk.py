@@ -17,14 +17,14 @@ class Test(unittest.TestCase):
         charset = ("ascii", "US-ASCII",)
         self.assertTrue(sys.getdefaultencoding() in charset, "Test should be run in ascii")
 
-    def testGenerateDialPlanFromTemplate(self):
+    def test_generate_dialplan_from_template(self):
         template = ["%%EXTEN%%,%%PRIORITY%%,Set(XIVO_BASE_CONTEXT=${CONTEXT})"]
         exten = {'exten':'*98', 'priority':1}
         result = self.asteriskFrontEnd.gen_dialplan_from_template(template, exten)
 
         self.assertEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
 
-    def testGenSipUser(self):
+    def test_gen_sip_user(self):
         user = {'name':'jean-yves',
                 'amaflags': 'default',
                 'callerid': '"lucky" <45789>',
@@ -40,14 +40,14 @@ call-limit = 10
 callerid = "lucky" <45789>
 """)
 
-    def testGenSipUserWithAccent(self):
+    def test_gen_sip_user_with_accent(self):
         user = {'name':'papi',
                 u'callerid': u'"pépè" <45789>'}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[papi]\ncallerid = "pépè" <45789>\n')
 
-    def testGenSipUserEmptyValue(self):
+    def test_gen_sip_user_empty_value(self):
         user = {'name':'novalue',
                 u'context': u''}
         pickups = {}
@@ -60,14 +60,14 @@ callerid = "lucky" <45789>
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[novalue]\n')
 
-    def testGenSipUserCodec(self):
+    def test_gen_sip_user_codec(self):
         user = {'name':'papi',
                 u'allow': u'g723,gsm'}
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[papi]\ndisallow = all\nallow = g723\nallow = gsm\n')
 
-    def testGenSipUserSubscribemwi(self):
+    def test_gen_sip_user_subscribemwi(self):
         user = {'name':'voicemail',
                 u'subscribemwi': 0}
         pickups = {}
@@ -78,7 +78,7 @@ callerid = "lucky" <45789>
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[voicemail]\nsubscribemwi = yes\n')
 
-    def testGenSipUserUnusedKeys(self):
+    def test_gen_sip_user_unused_keys(self):
         user = {'id': 1,
                 'name': 'unused',
                 'protocol': 'sip',
@@ -93,7 +93,6 @@ callerid = "lucky" <45789>
         pickups = {}
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[unused]\n')
-
 
 
 if __name__ == "__main__":
