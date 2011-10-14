@@ -1,9 +1,5 @@
-from __future__ import with_statement
-"""systime module
+# -*- coding: UTF-8 -*-
 
-Manage system time informations
-"""
-__version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
@@ -26,9 +22,7 @@ __license__ = """
 import os.path, logging
 
 from xivo import http_json_server
-from xivo.http_json_server import HttpReqError
-from xivo.http_json_server import CMD_RW, CMD_R
-from xivo_sysconf import helpers
+from xivo.http_json_server import CMD_R
 
 logger = logging.getLogger('xivo_sysconf.modules.services')
 

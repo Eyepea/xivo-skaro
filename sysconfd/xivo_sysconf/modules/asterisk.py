@@ -1,8 +1,5 @@
-# -*- coding: utf8 -*-
-from __future__ import with_statement
-"""asterisk stuff-related module
-"""
-__version__ = "$Revision$ $Date$"
+# -*- coding: UTF-8 -*-
+
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
 	Copyright (C) 2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
@@ -22,19 +19,15 @@ __license__ = """
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, os.path, logging
+import os
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
-from xivo.http_json_server import CMD_RW, CMD_R
+from xivo.http_json_server import CMD_R
 
 class Asterisk(object):
-	"""
-	"""
 	def __init__(self):
 		super(Asterisk, self).__init__()
-		#self.log = logging.getLogger('xivo_sysconf.modules.commonconf')
-
 		http_json_server.register(self.deleteVoicemail, CMD_R,
 						name='delete_voicemail', safe_init=self.safe_init)
 

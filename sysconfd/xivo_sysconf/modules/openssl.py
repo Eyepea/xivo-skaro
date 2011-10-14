@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
-from __future__ import with_statement
-"""openssl module
-"""
-__version__ = "$Revision$ $Date$"
+
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
 	Copyright (C) 2010-2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
@@ -22,7 +19,7 @@ __license__ = """
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, os.path, logging, time, random, shutil, glob
+import os, time, random, shutil
 import magic
 from M2Crypto import RSA, X509, SSL, m2, EVP, ASN1
 
@@ -49,11 +46,8 @@ MAGIC = {
 }
 
 class OpenSSL(object):
-	"""
-	"""
 	def __init__(self):
 		super(OpenSSL, self).__init__()
-		#self.log = logging.getLogger('xivo_sysconf.modules.commonconf')
 
 		http_json_server.register(self.listCertificates, CMD_R,
 						name='openssl_listcertificates', safe_init=self.safe_init)
