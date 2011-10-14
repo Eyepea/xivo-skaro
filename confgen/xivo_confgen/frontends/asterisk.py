@@ -28,7 +28,6 @@ from xivo_confgen.frontend import Frontend
 class AsteriskFrontend(Frontend):
     def sip_conf(self):
         """
-
             o - output stream. write to it with *print >>o, 'blablabla'*
         """
         o = StringIO()
@@ -59,7 +58,6 @@ class AsteriskFrontend(Frontend):
                 mode = '#' if auth['secretmode'] == 'md5' else ':'
                 print >> o, "auth = %s%s%s@%s" % (auth['user'], mode, auth['secret'], auth['realm'])
 
-
         # section::trunks
         for trunk in self.backend.siptrunks.all(commented=False):
             print >> o, "\n[%s]" % trunk['name']
@@ -77,7 +75,6 @@ class AsteriskFrontend(Frontend):
                         print >> o, "allow = " + str(c)
                 else:
                     print >> o, k, '=', v
-
 
         # section::users (xivo lines)
         pickups = {}
@@ -141,56 +138,53 @@ class AsteriskFrontend(Frontend):
             return unicode(str.decode('utf8'))
 
     def iax_conf(self):
-        o = StringIO()
+        output = StringIO()
 
         ## section::general
-        print >> o, '[general]'
-        for item in self.backend.iax.all(commented=False):
-            if item['var_val'] is None:
-                continue
-
-            if item['var_name'] == 'register':
-                print >> o, item['var_name'], "=>", item['var_val']
-
-            elif item['var_name'] not in ['allow', 'disallow']:
-                print >> o, "%s = %s" % (item['var_name'], item['var_val'])
-
-            elif item['var_name'] == 'allow':
-                print >> o, 'disallow = all'
-                for c in item['var_val'].split(','):
-                    print >> o, 'allow = %s' % c
-
+        print >> output, self._gen_iax_general(self.backend.iax.all(commented=False))
 
         ## section::authentication
         items = self.backend.iaxcalllimits.all()
         if len(items) > 0:
-            print >> o, '\n[callnumberlimits]'
-
+            print >> output, '\n[callnumberlimits]'
             for auth in items:
-                print >> o, "%s/%s = %s" % (auth['destination'], auth['netmask'], auth['calllimits'])
-
+                print >> output, "%s/%s = %s" % (auth['destination'], auth['netmask'], auth['calllimits'])
 
         # section::trunks
         for trunk in self.backend.iaxtrunks.all(commented=False):
-            print >> o, "\n[%s]" % trunk['name']
-
-            for k, v in trunk.iteritems():
-                if k in ('id', 'name', 'protocol', 'category', 'commented', 'disallow') or v in (None, ''):
-                    continue
-
-                if isinstance(v, unicode):
-                    v = v.encode('utf8')
-
-                if k == 'allow' and v != None:
-                    print >> o, "disallow = all"
-                    for c in v.split(','):
-                        print >> o, "allow = " + str(c)
-                else:
-                    print >> o, k + " = ", v
+            print >> output, self._gen_iax_trunk(trunk)
 
         # section::users
-        for user in self.backend.iaxusers.all(commented=False):
-            print >> o, "\n[%s]" % user['name']
+        print >> output, self._gen_iax_users(self.backend.iaxusers.all(commented=False))
+
+        return output.getvalue()
+
+    def _gen_iax_general(self, data_iax_general):
+        output = StringIO()
+
+        print >> output, '[general]'
+        for item in data_iax_general:
+            if item['var_val'] is None:
+                continue
+
+            if item['var_name'] == 'register':
+                print >> output, item['var_name'], "=>", item['var_val']
+
+            elif item['var_name'] not in ['allow', 'disallow']:
+                print >> output, "%s = %s" % (item['var_name'], item['var_val'])
+
+            elif item['var_name'] == 'allow':
+                print >> output, 'disallow = all'
+                for c in item['var_val'].split(','):
+                    print >> output, 'allow = %s' % c
+
+        return output.getvalue()
+
+    def _gen_iax_users(self, data_iax_users):
+        output = StringIO()
+
+        for user in data_iax_users:
+            print >> output, "\n[%s]" % user['name']
 
             for k, v in user.iteritems():
                 if k in ('id', 'name', 'protocol', 'category', 'commented', 'initialized', 'disallow') or\
@@ -201,14 +195,34 @@ class AsteriskFrontend(Frontend):
                     v = v.encode('utf8')
 
                 if k == 'allow' and v != None:
-                    print >> o, "disallow = all"
+                    print >> output, "disallow = all"
                     for c in v.split(','):
-                        print >> o, "allow = " + str(c)
+                        print >> output, "allow = " + str(c)
                 else:
-                    print >> o, k, "=", str(v)
+                    print >> output, k, "=", str(v)
 
-        return o.getvalue()
+        return output.getvalue()
 
+    def _gen_iax_trunk(self, trunk):
+        output = StringIO()
+
+        print >> output, "\n[%s]" % trunk['name']
+
+        for k, v in trunk.iteritems():
+            if k in ('id', 'name', 'protocol', 'category', 'commented', 'disallow') or v in (None, ''):
+                continue
+
+            if isinstance(v, unicode):
+                v = v.encode('utf8')
+
+            if k == 'allow' and v != None:
+                print >> output, "disallow = all"
+                for c in v.split(','):
+                    print >> output, "allow = " + str(c)
+            else:
+                print >> output, k + " = ", v
+
+        return output.getvalue()
 
     def voicemail_conf(self):
         o = StringIO()
@@ -258,8 +272,8 @@ class AsteriskFrontend(Frontend):
             self._get_is_not_none(vm_context, 'fullname'),
             self._get_is_not_none(vm_context, 'email'),
             self._get_is_not_none(vm_context, 'pager'),
-            '|'.join(["%s=%s" % (k, vm_context[k]) 
-                      for k in vm_context.iterkeys() 
+            '|'.join(["%s=%s" % (k, vm_context[k])
+                      for k in vm_context.iterkeys()
                       if k not in excluded and vm_context[k] is not None])
         )
 
