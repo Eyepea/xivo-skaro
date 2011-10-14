@@ -127,9 +127,12 @@ class AsteriskFrontend(Frontend):
     def _gen_value_line(self, key, value):
         return u'%s = %s' % (key, self._unicodify_string(value))
 
-    def _get_is_not_none(self, dict, key):
-        value = dict.get(key)
-        return '' if value == None else self._unicodify_string(value)
+    def _get_is_not_none(self, data, key):
+        if key in data:
+            value = data[key]
+            return '' if value is None else self._unicodify_string(value)
+        else:
+            return ''
 
     def _unicodify_string(self, str):
         try:
@@ -255,7 +258,9 @@ class AsteriskFrontend(Frontend):
             self._get_is_not_none(vm_context, 'fullname'),
             self._get_is_not_none(vm_context, 'email'),
             self._get_is_not_none(vm_context, 'pager'),
-            '|'.join(["%s=%s" % (k, vm_context[k]) for k in vm_context.iterkeys() if k not in excluded and vm_context[k] is not None])
+            '|'.join(["%s=%s" % (k, vm_context[k]) 
+                      for k in vm_context.iterkeys() 
+                      if k not in excluded and vm_context[k] is not None])
         )
 
         if vm_context['imapuser'] is not None:
@@ -285,7 +290,7 @@ class AsteriskFrontend(Frontend):
     def queues_conf(self):
         o = StringIO()
 
-        penalties = dict([(itm['id'], itm['name']) for itm in    self.backend.queuepenalty.all(commented=False)])
+        penalties = dict([(itm['id'], itm['name']) for itm in self.backend.queuepenalty.all(commented=False)])
 
         print >> o, '\n[general]'
         for item in self.backend.queue.all(commented=False, category='general'):
@@ -340,7 +345,6 @@ class AsteriskFrontend(Frontend):
             print >> o, "agent =>", a['var_val'], "\n"
 
         return o.getvalue()
-
 
     def meetme_conf(self):
         o = StringIO()
@@ -405,7 +409,6 @@ class AsteriskFrontend(Frontend):
 
         return o.getvalue()
 
-
     def queueskills_conf(self):
         """Generate queueskills.conf asterisk configuration file
         """
@@ -429,7 +432,6 @@ class AsteriskFrontend(Frontend):
 
         return o.getvalue()
 
-
     def queueskillrules_conf(self):
         """Generate queueskillrules.conf asterisk configuration file
         """
@@ -443,7 +445,6 @@ class AsteriskFrontend(Frontend):
                     print >> o, "rule = %s" % rule
 
         return o.getvalue()
-
 
     def extensions_conf(self):
         """Generate extensions.conf asterisk configuration file
@@ -648,7 +649,6 @@ class AsteriskFrontend(Frontend):
             print >> o, "exten = " + "\nexten = ".join(cfeatures)
 
         return o.getvalue()
-
 
     def queuerules_conf(self):
         o = StringIO()

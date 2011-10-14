@@ -17,6 +17,10 @@ class Test(unittest.TestCase):
         charset = ("ascii", "US-ASCII",)
         self.assertTrue(sys.getdefaultencoding() in charset, "Test should be run in ascii")
 
+    def test_get_line(self):
+        result = self.asteriskFrontEnd._gen_value_line('emailbody', 'pépè')
+        self.assertEqual(result, u'emailbody = pépè')
+
     def test_unicodify_string(self):
             self.assertEqual(u'pépé',
                              self.asteriskFrontEnd._unicodify_string(u'pépé'))
@@ -106,10 +110,6 @@ class Test(unittest.TestCase):
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[unused]\n')
 
-    def test_get_line(self):
-        result = self.asteriskFrontEnd._gen_value_line('emailbody', 'pépè')
-        self.assertEqual(result, u'emailbody = pépè')
-
     def test_voicemail_conf_gen_emailbody_accents(self):
         general_config = {'var_name': 'emailbody',
                           'var_val': 'pépè'}
@@ -156,7 +156,9 @@ class Test(unittest.TestCase):
                                              'backupdeleted': None, 'volgain': None,
                                              'passwordlocation': None, 'commented': 0}]
         result = self.asteriskFrontEnd._gen_voicemail_imapusers()
-        print 'result:', result
+        self.assertTrue(u'[imapvm]' in result)
+        self.assertTrue(u'8000 => 0000,cédric,,,imappassword = superpass|imapfolder = lol|imapuser = cabunar' in result)
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGenerateConfiguration']
