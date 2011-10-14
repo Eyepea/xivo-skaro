@@ -125,12 +125,17 @@ class AsteriskFrontend(Frontend):
         return o.getvalue()
 
     def _gen_value_line(self, key, value):
-        if not isinstance(value, unicode):
-            try:
-                value = unicode(value)
-            except UnicodeDecodeError:
-                value = unicode(value.decode('utf8'))
-        return u'%s = %s' % (key, value)
+        return u'%s = %s' % (key, self._unicodify_string(value))
+
+    def _get_is_not_none(self, dict, key):
+        value = dict.get(key)
+        return '' if value == None else self._unicodify_string(value)
+
+    def _unicodify_string(self, str):
+        try:
+            return unicode(str)
+        except UnicodeDecodeError:
+            return unicode(str.decode('utf8'))
 
     def iax_conf(self):
         o = StringIO()
@@ -209,49 +214,21 @@ class AsteriskFrontend(Frontend):
         print >> o, '[general]'
         for item in self.backend.voicemail.all(commented=False, category='general'):
             if 'var_name' in item and 'emailbody' in item['var_name']:
-                print >> o, self._gen_emailbody(item)
+                print >> o, self._gen_voicemail_emailbody(item)
 
         print >> o, '\n[zonemessages]'
         for item in self.backend.voicemail.all(commented=False, category='zonemessages'):
-            print >> o, "%s = %s" % (item['var_name'], item['var_val'])
+            print >> o, self._gen_value_line(item['var_name'], item['var_val'])
 
+        self._vm_context = None
+        self._imapusers = []
 
-        context = None
-        excluded = ('uniqueid', 'context', 'mailbox', 'password', 'fullname', 'email', 'pager', 'commented', 'imapuser', 'imappassword', 'imapfolder')
-        imapusers = []
-
-        for vm in self.backend.voicemails.all(commented=False, order='context'):
-            if vm['context'] != context:
-                print >> o, '\n[%s]' % vm['context']; context = vm['context']
-
-            print >> o, "%s => %s,%s,%s,%s,%s" % (
-                vm['mailbox'],
-                vm['password'],
-                '' if vm['fullname'] is None else vm['fullname'],
-                '' if vm['email'] is None else vm['email'],
-                '' if vm['pager'] is None else vm['pager'],
-                '|'.join(["%s=%s" % (k, vm[k]) for k in vm.iterkeys() if k not in excluded and vm[k] is not None])
-            )
-
-            if vm['imapuser'] is not None:
-                imapusers.append(vm)
-
-        if len(imapusers) > 0:
-            print >> o, '\n[imapvm]'
-
-            for vm in imapusers:
-                print >> o, "%s => %s,%s,%s,%s,%s" % (
-                    vm['mailbox'],
-                    vm['password'],
-                    '' if vm['fullname'] is None else vm['fullname'],
-                    '' if vm['email'] is None else vm['email'],
-                    '' if vm['pager'] is None else vm['pager'],
-                    '|'.join(["%s=%s" % (k, vm[k]) for k in vm.iterkeys() if k in ('imapuser', 'imappassword', 'imapfolder') and vm[k] is not None])
-                )
+        for vm_context in self.backend.voicemails.all(commented=False, order='context'):
+            print >> o, self._gen_voicemail_context(vm_context)
 
         return o.getvalue()
 
-    def _gen_emailbody(self, voicemail_config):
+    def _gen_voicemail_emailbody(self, voicemail_config):
         output = StringIO()
         try:
             if voicemail_config['var_name'] == 'emailbody':
@@ -262,10 +239,51 @@ class AsteriskFrontend(Frontend):
 
         return output.getvalue()
 
+    def _gen_voicemail_context(self, vm_context):
+        excluded = ('uniqueid', 'context', 'mailbox', 'password', 'fullname',
+                    'email', 'pager', 'commented', 'imapuser', 'imappassword',
+                    'imapfolder',)
+
+        output = StringIO()
+        if vm_context['context'] != self._vm_context:
+            self._vm_context = vm_context['context']
+            print >> output, '\n[%s]' % vm_context['context']
+
+        print >> output, "%s => %s,%s,%s,%s,%s" % (
+            vm_context['mailbox'],
+            vm_context['password'],
+            self._get_is_not_none(vm_context, 'fullname'),
+            self._get_is_not_none(vm_context, 'email'),
+            self._get_is_not_none(vm_context, 'pager'),
+            '|'.join(["%s=%s" % (k, vm_context[k]) for k in vm_context.iterkeys() if k not in excluded and vm_context[k] is not None])
+        )
+
+        if vm_context['imapuser'] is not None:
+            self._imapusers.append(vm_context)
+
+        return output.getvalue()
+
+    def _gen_voicemail_imapusers(self):
+        output = StringIO()
+        if len(self._imapusers) > 0:
+            print >> output, '\n[imapvm]'
+
+            for vm_context in self._imapusers:
+                print >> output, "%s => %s,%s,%s,%s,%s" % (
+                    vm_context['mailbox'],
+                    vm_context['password'],
+                    self._get_is_not_none(vm_context, 'fullname'),
+                    self._get_is_not_none(vm_context, 'email'),
+                    self._get_is_not_none(vm_context, 'pager'),
+                    '|'.join([self._gen_value_line(k, vm_context[k])
+                              for k in vm_context.iterkeys()
+                              if k in ('imapuser', 'imappassword', 'imapfolder') and vm_context[k] is not None])
+                )
+
+        return output.getvalue()
 
     def queues_conf(self):
         o = StringIO()
-
 
         penalties = dict([(itm['id'], itm['name']) for itm in    self.backend.queuepenalty.all(commented=False)])
 
@@ -458,10 +476,10 @@ class AsteriskFrontend(Frontend):
         xfeatures.update(dict([x['typeval'], {'exten': x['exten'], 'commented': x['commented']}] for x in extenumbers))
 
         # voicemenus
-        for vm in self.backend.voicemenus.all(commented=0, order='name'):
-            print >> o, "[voicemenu-%s]" % vm['name']
+        for vm_context in self.backend.voicemenus.all(commented=0, order='name'):
+            print >> o, "[voicemenu-%s]" % vm_context['name']
 
-            for act in self.backend.extensions.all(context='voicemenu-' + vm['name'], commented=0):
+            for act in self.backend.extensions.all(context='voicemenu-' + vm_context['name'], commented=0):
                 print >> o, "exten = %s,%s,%s(%s)" % \
                         (act['exten'], act['priority'], act['app'], act['appdata'].replace('|', ','))
 
@@ -730,4 +748,4 @@ class AsteriskFrontend(Frontend):
             line = re.sub('%%([^%]+)%%', varset, line)
             print >> o, prefix, line
         return o.getvalue()
-    
+
