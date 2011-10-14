@@ -33,21 +33,7 @@ class AsteriskFrontend(Frontend):
         o = StringIO()
 
         ## section::general
-        print >> o, '[general]'
-        for item in self.backend.sip.all(commented=False):
-            if item['var_val'] is None:
-                continue
-
-            if item['var_name'] in ('register', 'mwi'):
-                print >> o, item['var_name'], "=>", item['var_val']
-
-            elif item['var_name'] not in ['allow', 'disallow']:
-                print >> o, item['var_name'], "=", item['var_val']
-
-            elif item['var_name'] == 'allow':
-                print >> o, 'disallow = all'
-                for c in item['var_val'].split(','):
-                    print >> o, 'allow = %s' % c
+        print >> o, self._gen_sip_general(self.backend.sip.all(commented=False))
 
         ## section::authentication
         items = self.backend.sipauth.all()
@@ -85,6 +71,25 @@ class AsteriskFrontend(Frontend):
         for user in self.backend.sipusers.all(commented=False):
             print >> o, self.gen_sip_user(user, pickups)
         return o.getvalue()
+
+    def _gen_sip_general(self, data_sip_general):
+        output = StringIO()
+        print >> output, '[general]'
+        for item in data_sip_general:
+            if item['var_val'] is None:
+                continue
+
+            if item['var_name'] in ('register', 'mwi'):
+                print >> output, item['var_name'], "=>", item['var_val']
+
+            elif item['var_name'] not in ['allow', 'disallow']:
+                print >> output, item['var_name'], "=", item['var_val']
+
+            elif item['var_name'] == 'allow':
+                print >> output, 'disallow = all'
+                for c in item['var_val'].split(','):
+                    print >> output, 'allow = %s' % c
+        return output.getvalue()
 
     def gen_sip_user(self, user, pickups):
         sipUnusedValues = ('id', 'name', 'protocol',

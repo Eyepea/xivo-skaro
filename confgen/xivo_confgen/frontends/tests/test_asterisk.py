@@ -44,6 +44,21 @@ class Test(unittest.TestCase):
 
         self.assertEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
 
+    def test_gen_sip_general(self):
+        staticsip = [{'filename': u'sip.conf', 'category': u'general', 'var_name': u'autocreate_prefix', 'var_val': u'apv6Ym3fJW'},
+                    {'filename': u'sip.conf', 'category': u'general', 'var_name': u'language', 'var_val': u'fr_FR'},
+                    {'filename': u'sip.conf', 'category': u'general', 'var_name': u'jbtargetextra', 'var_val': None},
+                    {'filename': u'sip.conf', 'category': u'general', 'var_name': u'notifycid', 'var_val': u'no'},
+                    {'filename': u'sip.conf', 'category': u'general', 'var_name': u'session-expires', 'var_val': u'600'},
+                    {'filename': u'sip.conf', 'category': u'general', 'var_name': u'vmexten', 'var_val': u'*98'}]
+        result = self.asteriskFrontEnd._gen_sip_general(staticsip)
+        self.assertTrue(u'[general]' in result)
+        self.assertTrue(u'autocreate_prefix = apv6Ym3fJW' in result)
+        self.assertTrue(u'language = fr_FR' in result)
+        self.assertTrue(u'notifycid = no' in result)
+        self.assertTrue(u'session-expires = 600' in result)
+        self.assertTrue(u'vmexten = *98' in result)
+
     def test_gen_sip_user(self):
         user = {'name':'jean-yves',
                 'amaflags': 'default',
@@ -110,18 +125,18 @@ class Test(unittest.TestCase):
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[unused]\n')
 
-    def test_voicemail_conf_gen_emailbody_accents(self):
+    def test_gen_voicemail_emailbody_accents(self):
         general_config = {'var_name': 'emailbody',
                           'var_val': 'pépè'}
         result = self.asteriskFrontEnd._gen_voicemail_emailbody(general_config)
         self.assertEqual(result, u'emailbody = pépè\n')
 
-    def test_voicemail_conf_gen_emailbody_empty(self):
+    def test_gen_voicemail_emailbody_empty(self):
         general_config = {}
         result = self.asteriskFrontEnd._gen_voicemail_emailbody(general_config)
         self.assertEqual(result, '')
 
-    def test_voicemail_conf_gen_context_accents(self):
+    def test_gen_voicemail_context_accents(self):
         voicemail_context = {'context': 'default',
                              'mailbox': 8000,
                              'password': 'password',
@@ -134,7 +149,7 @@ class Test(unittest.TestCase):
         self.assertTrue(u'[default]' in result)
         self.assertTrue(u'8000 => password,cédric,dev@avencall.com,pager,' in result)
 
-    def test_voicemail_conf_gen_imapusers(self):
+    def test_gen_voicemail_imapusers(self):
         self.asteriskFrontEnd._imapusers = [{'uniqueid': 1, 'context': u'default',
                                              'mailbox': u'8000', 'password': u'0000',
                                              'fullname': u'cédric', 'email': None,
@@ -159,7 +174,7 @@ class Test(unittest.TestCase):
         self.assertTrue(u'[imapvm]' in result)
         self.assertTrue(u'8000 => 0000,cédric,,,imappassword = superpass|imapfolder = lol|imapuser = cabunar' in result)
 
-    def test_iax_conf_gen_trunk(self):
+    def test_gen_iax_trunk(self):
         trunk = {'id': 1, 'name': u'xivo_devel_51', 'type': u'friend', 'username': u'xivo_devel_51',
                   'secret': u'xivo_devel_51', 'dbsecret': u'', 'context': u'default', 'language': u'fr_FR',
                   'accountcode': None, 'amaflags': None, 'mailbox': None, 'callerid': None, 'fullname': None,
@@ -192,7 +207,7 @@ class Test(unittest.TestCase):
         self.assertTrue(u'host =  192.168.32.253' in result)
         self.assertTrue(u'qualifyfreqok =  60000' in result)
 
-    def test_iax_conf_gen_general(self):
+    def test_gen_iax_conf_general(self):
         staticiax = [{'filename': u'iax.conf', 'category': u'general', 'var_name': u'bindport', 'var_val': u'4569'},
                     {'filename': u'iax.conf', 'category': u'general', 'var_name': u'bindaddr', 'var_val': u'0.0.0.0'},
                     {'filename': u'iax.conf', 'category': u'general', 'var_name': u'iaxcompat', 'var_val': u'no'},
@@ -208,7 +223,7 @@ class Test(unittest.TestCase):
         self.assertTrue(u'authdebug = yes' in result)
         self.assertTrue(u'language = fr_FR' in result)
 
-    def test_iax_conf_gen_users(self):
+    def test_gen_iax_conf_users(self):
         useriax = [{'id': 2, 'name': u'6rh29c', 'type': u'friend', 'username': None, 'secret': u'DC8HTI',
                     'dbsecret': u'', 'context': u'default', 'language': None, 'accountcode': None,
                     'amaflags': None, 'mailbox': None, 'callerid': u'"hq"', 'fullname': None,
