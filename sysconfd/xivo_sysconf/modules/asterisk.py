@@ -25,31 +25,27 @@ from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_R
 
+
 class Asterisk(object):
-	def __init__(self):
-		super(Asterisk, self).__init__()
-		http_json_server.register(self.deleteVoicemail, CMD_R,
-						name='delete_voicemail', safe_init=self.safe_init)
+	def __init__(self, base_vmail_path='/var/spool/asterisk/voicemail'):
+		self._base_vmail_path = base_vmail_path
 
-	def safe_init(self, args):
-		pass
-
-	def deleteVoicemail(self, args, options):
+	def delete_voicemail(self, args, options):
 		"""Delete spool dir associated with voicemail
 
 			options:
 				name    : voicemail name
 				context : voicemail context (opt. default is 'default')
 		"""
-		print args, options
 		if 'name' not in options:
 			raise HttpReqError(400, "missing 'name' arg", json=True)
 		context = options.get('context', 'default')
 
-		vmpath = os.path.join('/var/spool/asterisk/voicemail', context, options['name'])
+		vmpath = os.path.join(self._base_vmail_path, context, options['name'])
 		if not os.path.exists(vmpath):
 			raise HttpReqError(404, "voicemail spool dir not found", json=True)
 
+		
 		for root, dirs, files in os.walk(vmpath, topdown=False):
 			for name in files:
 				os.remove(os.path.join(root, name))
@@ -61,3 +57,5 @@ class Asterisk(object):
 
 
 asterisk = Asterisk()
+http_json_server.register(asterisk.delete_voicemail, CMD_R,
+						name='delete_voicemail')
