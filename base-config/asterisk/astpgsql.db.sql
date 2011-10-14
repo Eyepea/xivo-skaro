@@ -1918,8 +1918,10 @@ INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','bindport',50
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','videosupport','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreatepeer','yes');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_context','xivo-initconfig');
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_persist','yes');
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_minexpiry','30');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_maxexpiry','300');
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_defaultexpiry','180');
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_defaultexpiry','120');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_type','friend');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','allowautoprov','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','allowsubscribe','yes');
