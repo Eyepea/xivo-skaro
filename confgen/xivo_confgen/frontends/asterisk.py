@@ -124,10 +124,13 @@ class AsteriskFrontend(Frontend):
                 print >> o, "callgroup = " + ','.join(frozenset(p['pickup']))
         return o.getvalue()
 
-
     def _gen_value_line(self, key, value):
-        return key + " = " + unicode(value)
-
+        if not isinstance(value, unicode):
+            try:
+                value = unicode(value)
+            except UnicodeDecodeError:
+                value = unicode(value.decode('utf8'))
+        return u'%s = %s' % (key, value)
 
     def iax_conf(self):
         o = StringIO()
@@ -205,9 +208,8 @@ class AsteriskFrontend(Frontend):
         ## section::general
         print >> o, '[general]'
         for item in self.backend.voicemail.all(commented=False, category='general'):
-            if item['var_name'] == 'emailbody':
-                item['var_val'] = item['var_val'].replace('\n', '\\n')
-            print >> o, item['var_name'], '=', item['var_val'].encode('utf8')
+            if 'var_name' in item and 'emailbody' in item['var_name']:
+                print >> o, self._gen_emailbody(item)
 
         print >> o, '\n[zonemessages]'
         for item in self.backend.voicemail.all(commented=False, category='zonemessages'):
@@ -248,6 +250,17 @@ class AsteriskFrontend(Frontend):
                 )
 
         return o.getvalue()
+
+    def _gen_emailbody(self, voicemail_config):
+        output = StringIO()
+        try:
+            if voicemail_config['var_name'] == 'emailbody':
+                voicemail_config['var_val'] = voicemail_config['var_val'].replace('\n', '\\n')
+                print >> output, self._gen_value_line(voicemail_config['var_name'], voicemail_config['var_val'])
+        except KeyError:
+            pass
+
+        return output.getvalue()
 
 
     def queues_conf(self):
@@ -717,3 +730,4 @@ class AsteriskFrontend(Frontend):
             line = re.sub('%%([^%]+)%%', varset, line)
             print >> o, prefix, line
         return o.getvalue()
+    

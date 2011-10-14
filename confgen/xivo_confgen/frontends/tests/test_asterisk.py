@@ -94,6 +94,20 @@ callerid = "lucky" <45789>
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[unused]\n')
 
+    def test_get_line(self):
+        result = self.asteriskFrontEnd._gen_value_line('emailbody', 'pépè')
+        self.assertEqual(result, u'emailbody = pépè')
+
+    def test_voicemail_conf_gen_emailbody_accents(self):
+        general_config = {'var_name': 'emailbody',
+                          'var_val': 'pépè'}
+        result = self.asteriskFrontEnd._gen_emailbody(general_config)
+        self.assertEqual(result, u'emailbody = pépè\n')
+
+    def test_voicemail_conf_gen_emailbody_empty(self):
+        general_config = {}
+        result = self.asteriskFrontEnd._gen_emailbody(general_config)
+        self.assertEqual(result, '')
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGenerateConfiguration']
