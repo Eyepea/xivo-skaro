@@ -295,6 +295,10 @@ abstract class xivo_application_abstract extends xivo_libconfig_abstract
 			$ref = func_get_arg($i);
 		}
 
+		if (is_array($this->_error[$name]))
+			foreach ($this->_error[$name] as $key => $value)
+				dwho_report::push('error', "$key -> $value");
+
 		return(true);
 	}
 
