@@ -19,7 +19,8 @@ __license__ = """
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os
+import os.path
+import shutil
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
@@ -44,14 +45,7 @@ class Asterisk(object):
 		vmpath = os.path.join(self._base_vmail_path, context, options['name'])
 		if not os.path.exists(vmpath):
 			raise HttpReqError(404, "voicemail spool dir not found", json=True)
-
-		
-		for root, dirs, files in os.walk(vmpath, topdown=False):
-			for name in files:
-				os.remove(os.path.join(root, name))
-			for name in dirs:
-				os.rmdir(os.path.join(root, name))
-		os.rmdir(os.path.join(vmpath))
+		shutil.rmtree(vmpath)
 
 		return True
 
