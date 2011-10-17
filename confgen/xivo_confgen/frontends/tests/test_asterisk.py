@@ -59,6 +59,45 @@ class Test(unittest.TestCase):
         self.assertTrue(u'session-expires = 600' in result)
         self.assertTrue(u'vmexten = *98' in result)
 
+    def test_gen_sip_trunk(self):
+        trunksip = {'id': 10, 'name': u'cedric_51', 'type': u'peer', 'username': u'cedric_51',
+                    'secret': u'cedric_51', 'md5secret': u'', 'context': u'default', 'language': None,
+                    'accountcode': None, 'amaflags': u'default', 'allowtransfer': None, 'fromuser': None,
+                    'fromdomain': None, 'mailbox': None, 'subscribemwi': 0, 'buggymwi': None, 'call-limit': 0,
+                    'callerid': None, 'fullname': None, 'cid_number': None, 'maxcallbitrate': None,
+                    'insecure': None, 'nat': None, 'promiscredir': None, 'usereqphone': None,
+                    'videosupport': None, 'trustrpid': None, 'sendrpid': None, 'allowsubscribe': None,
+                    'allowoverlap': None, 'dtmfmode': None, 'rfc2833compensate': None, 'qualify': None,
+                    'g726nonstandard': None, 'disallow': None, 'allow': None, 'autoframing': None,
+                    'mohinterpret': None, 'mohsuggest': None, 'useclientcode': None, 'progressinband': None,
+                    't38pt_udptl': None, 't38pt_usertpsource': None, 'rtptimeout': None, 'rtpholdtimeout': None,
+                    'rtpkeepalive': None, 'deny': None, 'permit': None, 'defaultip': None, 'setvar': u'',
+                    'host': u'dynamic', 'port': 5060, 'regexten': None, 'subscribecontext': None, 
+                    'fullcontact': None, 'vmexten': None, 'callingpres': None, 'ipaddr': u'', 'regseconds': 0,
+                    'regserver': None, 'lastms': u'', 'parkinglot': None, 'protocol': u'sip', 'category': u'trunk',
+                    'outboundproxy': None, 'transport': u'udp', 'remotesecret': None, 'directmedia': u'yes',
+                    'callcounter': None, 'busylevel': None, 'ignoresdpversion': None, 'session-timers': None,
+                    'session-expires': None, 'session-minse': None, 'session-refresher': None,
+                    'callbackextension': None, 'registertrying': None, 'timert1': None, 'timerb': None,
+                    'qualifyfreq': None, 'contactpermit': None, 'contactdeny': None, 'unsolicited_mailbox': None,
+                    'use_q850_reason': None, 'encryption': None, 'snom_aoc_enabled': None, 'maxforwards': None,
+                    'disallowed_methods': None, 'textsupport': None, 'callgroup': None, 'pickupgroup': None,
+                    'commented': 0}
+        result = self.asteriskFrontEnd._gen_sip_trunk(trunksip)
+        self.assertTrue(u'[cedric_51]' in result)
+        self.assertTrue(u'amaflags = default' in result)
+        self.assertTrue(u'call-limit = 0' in result)
+        self.assertTrue(u'context = default' in result)
+        self.assertTrue(u'directmedia = yes' in result)
+        self.assertTrue(u'host = dynamic' in result)
+        self.assertTrue(u'port = 5060' in result)
+        self.assertTrue(u'regseconds = 0' in result)
+        self.assertTrue(u'secret = cedric_51' in result)
+        self.assertTrue(u'subscribemwi = 0' in result)
+        self.assertTrue(u'transport = udp' in result)
+        self.assertTrue(u'type = peer' in result)
+        self.assertTrue(u'username = cedric_51' in result)
+
     def test_gen_sip_user(self):
         user = {'name':'jean-yves',
                 'amaflags': 'default',
