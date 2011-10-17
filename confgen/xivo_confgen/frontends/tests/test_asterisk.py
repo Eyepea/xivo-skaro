@@ -38,11 +38,11 @@ class Test(unittest.TestCase):
         self.assertEqual(u'', self.asteriskFrontEnd._get_is_not_none(d, 'three'))
 
     def test_generate_dialplan_from_template(self):
-        template = ["%%EXTEN%%,%%PRIORITY%%,Set(XIVO_BASE_CONTEXT=${CONTEXT})"]
+        template = ["%%EXTEN%%,%%PRIORITY%%,Set('XIVO_BASE_CONTEXT': ${CONTEXT})"]
         exten = {'exten':'*98', 'priority':1}
         result = self.asteriskFrontEnd.gen_dialplan_from_template(template, exten)
 
-        self.assertEqual(result, "exten = *98,1,Set(XIVO_BASE_CONTEXT=${CONTEXT})\n")
+        self.assertEqual(result, "exten = *98,1,Set('XIVO_BASE_CONTEXT': ${CONTEXT})\n")
 
     def test_gen_sip_general(self):
         staticsip = [{'filename': u'sip.conf', 'category': u'general', 'var_name': u'autocreate_prefix', 'var_val': u'apv6Ym3fJW'},
@@ -59,6 +59,18 @@ class Test(unittest.TestCase):
         self.assertTrue(u'session-expires = 600' in result)
         self.assertTrue(u'vmexten = *98' in result)
 
+    def test_gen_sip_authentication(self):
+        sipauthentication = [{'id': 1, 'usersip_id': None, 'user': u'test', 'secretmode': u'md5',
+                              'secret': u'test', 'realm': u'test.com'}]
+        result = self.asteriskFrontEnd._gen_sip_authentication(sipauthentication)
+        self.assertTrue(u'[authentication]' in result)
+        self.assertTrue(u'auth = test#test@test.com' in result)
+
+    def test_gen_sip_authentication_empty(self):
+        sipauthentication = []
+        result = self.asteriskFrontEnd._gen_sip_authentication(sipauthentication)
+        self.assertEqual(u'', result)
+
     def test_gen_sip_trunk(self):
         trunksip = {'id': 10, 'name': u'cedric_51', 'type': u'peer', 'username': u'cedric_51',
                     'secret': u'cedric_51', 'md5secret': u'', 'context': u'default', 'language': None,
@@ -72,7 +84,7 @@ class Test(unittest.TestCase):
                     'mohinterpret': None, 'mohsuggest': None, 'useclientcode': None, 'progressinband': None,
                     't38pt_udptl': None, 't38pt_usertpsource': None, 'rtptimeout': None, 'rtpholdtimeout': None,
                     'rtpkeepalive': None, 'deny': None, 'permit': None, 'defaultip': None, 'setvar': u'',
-                    'host': u'dynamic', 'port': 5060, 'regexten': None, 'subscribecontext': None, 
+                    'host': u'dynamic', 'port': 5060, 'regexten': None, 'subscribecontext': None,
                     'fullcontact': None, 'vmexten': None, 'callingpres': None, 'ipaddr': u'', 'regseconds': 0,
                     'regserver': None, 'lastms': u'', 'parkinglot': None, 'protocol': u'sip', 'category': u'trunk',
                     'outboundproxy': None, 'transport': u'udp', 'remotesecret': None, 'directmedia': u'yes',

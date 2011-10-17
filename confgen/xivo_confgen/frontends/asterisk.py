@@ -37,12 +37,8 @@ class AsteriskFrontend(Frontend):
         print >> output, self._gen_sip_general(data_sip_general)
 
         ## section::authentication
-        items = self.backend.sipauth.all()
-        if len(items) > 0:
-            print >> output, '\n[authentication]'
-            for auth in items:
-                mode = '#' if auth['secretmode'] == 'md5' else ':'
-                print >> output, "auth = %s%s%s@%s" % (auth['user'], mode, auth['secret'], auth['realm'])
+        data_sip_authentication = self.backend.sipauth.all()
+        print >> output, self._gen_sip_authentication(data_sip_authentication)
 
         # section::trunks
         for trunk in self.backend.siptrunks.all(commented=False):
@@ -75,6 +71,15 @@ class AsteriskFrontend(Frontend):
                 print >> output, 'disallow = all'
                 for c in item['var_val'].split(','):
                     print >> output, 'allow = %s' % c
+        return output.getvalue()
+
+    def _gen_sip_authentication(self, data_sip_authentication):
+        output = StringIO()
+        if len(data_sip_authentication) > 0:
+            print >> output, '\n[authentication]'
+            for auth in data_sip_authentication:
+                mode = '#' if auth['secretmode'] == 'md5' else ':'
+                print >> output, "auth = %s%s%s@%s" % (auth['user'], mode, auth['secret'], auth['realm'])
         return output.getvalue()
 
     def _gen_sip_trunk(self, data_sip_trunk):
