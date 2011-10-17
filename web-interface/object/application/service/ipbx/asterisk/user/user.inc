@@ -708,14 +708,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		switch($this->get_result_var('userfeatures','voicemailtype'))
 		{
-		  case 'asterisk':
-		    break;
-		  case 'exchange':
-		      $this->_set_result_var('userfeatures','voicemailtype',null);
-		  default:
-		    $vmaction = 'none';
-		    $this->_set_result_var('userfeatures','voicemailid',null);
-		    break;
+			case 'asterisk':
+			break;
+			case 'exchange':
+				$this->_set_result_var('userfeatures','voicemailtype',null);
+			default:
+				$vmaction = 'none';
+				$this->_set_result_var('userfeatures','voicemailid',null);
+			break;
 		}
 /*
 		if(dwho_issa('group',$arr) === true
@@ -740,7 +740,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(dwho_issa('voicemail',$arr) === true
 		&& dwho_has_len($arr['voicemail'],'mailbox') === true
-		// getting master line
+		// getting master line for voicemail
 		&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 		{
 			$context = $linefeatures['context'];
@@ -1129,14 +1129,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('voicemail',$voicemailerror);
 			$this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
 		}
-		else $this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
+		else
+			$this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
 
 		if(($voicemailfeatureserror = $this->_voicemail->get_error('voicemailfeatures')) !== null)
 		{
 			$this->_set_error('voicemailfeatures',$voicemailfeatureserror);
 			$this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
 		}
-		else $this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
+		else
+			$this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
 
 		return($r);
 	}

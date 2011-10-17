@@ -325,7 +325,6 @@ class AsteriskFrontend(Frontend):
         for item in self.backend.queue.all(commented=False, category='general'):
             print >> o, "%s = %s" % (item['var_name'], item['var_val'])
 
-
         for q in self.backend.queues.all(commented=False, order='name'):
             print >> o, '\n[%s]' % q['name']
 

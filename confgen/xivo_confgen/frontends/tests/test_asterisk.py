@@ -225,6 +225,17 @@ class Test(unittest.TestCase):
         self.assertTrue(u'[imapvm]' in result)
         self.assertTrue(u'8000 => 0000,cédric,,,imappassword = superpass|imapfolder = lol|imapuser = cabunar' in result)
 
+    def test_gen_queues(self):
+        """
+        [general]
+        shared_lastcall = no
+        updatecdr = no
+        monitor-type = no
+        autofill = no
+        persistentmembers = yes
+        """
+        pass
+
     def test_gen_iax_trunk(self):
         trunk = {'id': 1, 'name': u'xivo_devel_51', 'type': u'friend', 'username': u'xivo_devel_51',
                   'secret': u'xivo_devel_51', 'dbsecret': u'', 'context': u'default', 'language': u'fr_FR',
