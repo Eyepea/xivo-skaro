@@ -88,7 +88,7 @@ define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_ANSWERED','ANSWERED');
 define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN','UNKNOWN');
 
 define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN','a-zA-Z0-9_\-\.');
-define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
+define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,194}');
 define('XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION','wav|WAV|wav49|ogg|ul|ulaw|um|pcm|al|alaw|au|vox|sln|raw');
 
 define('XIVO_SRE_IPBX_AST_REGEXP_CONTEXT','(?!(?i:macro|voicemenu|xivo)-)[a-zA-Z0-9_-]{1,39}');
@@ -128,7 +128,6 @@ define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','queue');
 define('XIVO_SRE_IPBX_AST_MEETME_MACRO','meetme');
 define('XIVO_SRE_IPBX_AST_INCALL_MACRO','did');
 define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outcall');
-define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO','handynumbers');
 define('XIVO_SRE_IPBX_AST_VOICEMENU_MACRO','voicemenu');
 
 define('XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION','authentication');
@@ -136,7 +135,6 @@ define('XIVO_SRE_IPBX_AST_CONTEXT_FEATURES','xivo-features');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GENERAL','general');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL','global');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS','globals');
-define('XIVO_SRE_IPBX_AST_CONTEXT_HANDYNUMBERS','xivo-handynumbers');
 define('XIVO_SRE_IPBX_AST_CONTEXT_HINT','hint');
 define('XIVO_SRE_IPBX_AST_CONTEXT_HINTS','hints');
 define('XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS','parkedcalls');

@@ -81,7 +81,8 @@ class History:
     def fetch_answered_calls(self):
         conditions = [
             "disposition = 'ANSWERED'",
-            "dstchannel LIKE %s"
+            "dstchannel LIKE %s",
+            "lastapp = 'Dial'",
             ]
         if self.lastdate:
             conditions.append("calldate > '%s'" % self.lastdate)
@@ -92,8 +93,8 @@ class History:
 
     def fetch_missed_calls(self):
         conditions = [
-            "disposition != 'ANSWERED'",
-            "dstchannel LIKE %s"
+            "dstchannel LIKE %s",
+            "(disposition != 'ANSWERED' OR lastapp != 'Dial')",
             ]
         if self.lastdate:
             conditions.append("calldate > '%s'" % self.lastdate)

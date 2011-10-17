@@ -1,8 +1,5 @@
-# -!- coding: utf8 -*-
-from __future__ import with_statement
-"""ha module
-"""
-__version__ = "$Revision$ $Date$"
+# -*- coding: UTF-8 -*-
+
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
@@ -22,18 +19,15 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, re, logging, subprocess, cjson, traceback, cStringIO
+import os, re, logging, subprocess, traceback
 from datetime import datetime
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
-from xivo_sysconf import helpers
 
 
 class Ha(object):
-    """
-    """
     def __init__(self):
         super(Ha, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.ha')

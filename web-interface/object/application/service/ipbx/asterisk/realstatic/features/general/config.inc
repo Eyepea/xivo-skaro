@@ -120,14 +120,6 @@ $array['element']['xferfailsound']['null'] = true;
 $array['element']['pickupexten'] = array();
 $array['element']['pickupexten']['default'] = '*8';
 
-$array['element']['pickupsound'] = array();
-$array['element']['pickupsound']['default'] = '';
-$array['element']['pickupsound']['null'] = true;
-
-$array['element']['pickupfailsound'] = array();
-$array['element']['pickupfailsound']['default'] = '';
-$array['element']['pickupfailsound']['null'] = true;
-
 $array['element']['featuredigittimeout'] = array();
 $array['element']['featuredigittimeout']['value'] = array(1,500,1000,1500,2000,2500,3000,3500,4000);
 $array['element']['featuredigittimeout']['default'] = 500;
@@ -175,8 +167,6 @@ $array['filter']['transferdigittimeout'] = array('cast' => 'uint','between' => a
 $array['filter']['xfersound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['xferfailsound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['pickupexten'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['pickupsound'] = array('set' => false);
-$array['filter']['pickupfailsound'] = array('set' => false);
 $array['filter']['featuredigittimeout'] = array('cast' => 'uint','between' => array(1,4000,500));
 $array['filter']['atxfernoanswertimeout'] = array('cast' => 'uint','between' => array(1,600));
 $array['filter']['atxferdropcall'] = array('bool' => true);

@@ -37,7 +37,7 @@ Add one or more users ->
 ; create_agent-queue
 Create an agent queue
 
-; fm_agentqueue
+; fm_agentgroup
 Groups:
 
 ; bt_inagentqueue

@@ -1,10 +1,5 @@
-"""XIVO Wizard module
+# -*- coding: UTF-8 -*-
 
-Copyright (C) 2010  Proformatique
-
-"""
-
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010  Proformatique
 

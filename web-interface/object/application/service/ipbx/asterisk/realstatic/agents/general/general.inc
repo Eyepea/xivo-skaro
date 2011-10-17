@@ -22,7 +22,7 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_realstatic_agents_general extends xivo_application_service_asterisk_realstatic_abstract
 {
-	var $_name		= 'generalagents';
+	var $_name			= 'generalagents';
 	var $_modulename	= 'staticagent';
 	var $_category		= 'general';
 	var $_cat_metric	= 0;

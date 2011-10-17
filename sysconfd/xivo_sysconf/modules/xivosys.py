@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
-from __future__ import with_statement
-"""openssl module
-"""
-__version__ = "$Revision$ $Date$"
+
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010-2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
@@ -27,8 +24,6 @@ from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_R
 
 class Xivo(object):
-    """
-    """
     def __init__(self):
         super(Xivo, self).__init__()
 

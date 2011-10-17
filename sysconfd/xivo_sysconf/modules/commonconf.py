@@ -1,7 +1,5 @@
-from __future__ import with_statement
-"""commonconf module
-"""
-__version__ = "$Revision$ $Date$"
+# -*- coding: UTF-8 -*-
+
 __author__ = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
@@ -30,8 +28,6 @@ from xivo_sysconf import jsoncore
 
 
 class CommonConf(jsoncore.JsonCore):
-    """
-    """
     def __init__(self):
         super(CommonConf, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.commonconf')

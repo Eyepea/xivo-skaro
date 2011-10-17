@@ -158,9 +158,9 @@ $array['exten']['grouptogglemember']['appdata'][1] = 'group';
 $array['exten']['grouptogglemember']['appdata'][2] = 'toggle';
 $array['exten']['grouptogglemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
-$array['exten']['guestprov'] = array();
-$array['exten']['guestprov']['app'] = 'GoSub';
-$array['exten']['guestprov']['appdata'] = 'guestprov';
+$array['exten']['autoprov'] = array();
+$array['exten']['autoprov']['app'] = 'GoSub';
+$array['exten']['autoprov']['appdata'] = 'autoprov';
 
 $array['exten']['incallfilter'] = array();
 $array['exten']['incallfilter']['app'] = 'GoSub';
@@ -329,8 +329,8 @@ $array['element']['groupremovemember']['default'] = '*52.';
 $array['element']['grouptogglemember'] = array();
 $array['element']['grouptogglemember']['default'] = '*50.';
 
-$array['element']['guestprov'] = array();
-$array['element']['guestprov']['default'] = '*48378';
+$array['element']['autoprov'] = array();
+$array['element']['autoprov']['default'] = '*48378';
 
 $array['element']['incallfilter'] = array();
 $array['element']['incallfilter']['default'] = '*27';
@@ -405,7 +405,7 @@ $array['filter']['fwdundoall'] = array('minlen' => 1,'maxlen' => 40,'regexp' => 
 $array['filter']['groupaddmember'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['groupremovemember'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['grouptogglemember'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['guestprov'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['autoprov'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['incallfilter'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['phoneprogfunckey'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');

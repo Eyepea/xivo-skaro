@@ -1,5 +1,6 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
+from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -97,6 +98,7 @@ class Command:
         self.ctid = self.connection.ctid
         self.commanddict = thiscommand
         self.othermessages = list()
+        self._queue_statistics_manager = QueueStatisticManager()
         self.log = logging.getLogger('cti_command(%s:%d)' % self.connection.requester)
         return
 
@@ -454,6 +456,20 @@ class Command:
         return result
 
     def regcommand_history(self):
+        """
+        Receives an history request from a CTI client
+        Modes:
+            0 - outcalls
+            1 - incalls
+            2 - missed
+        {
+            "class": "history",
+            "commandid": 218187832,
+            "mode": "2",
+            "size": "8",
+            "xuserid": "dev/3"
+        }
+        """
         reply = {}
         phoneidstruct = None
         if self.ruserid in self.rinnerdata.xod_config.get('users').keeplist:
@@ -522,8 +538,15 @@ class Command:
         return
 
     def regcommand_getqueuesstats(self):
+        # {"class": "getqueuesstats", "commandid": 165767435, "on": {"3": {"window": "3600", "xqos": "60"}, "4": {"window": "3600", "xqos": "60"}, "5": {"window": "3600", "xqos": "60"}}}
         self.log.warning('getqueuesstats %s' % self.commanddict)
-        return
+        if 'on' not in self.commanddict:
+            return {}
+        for queue_id, params in self.commanddict['on'].iteritems():
+            self._queue_statistics_manager.get_statistics(queue_id,
+                                                          int(params['xqos']),
+                                                          int(params['window']))
+        return {}
 
     def regcommand_keepalive(self):
         nbytes = self.commanddict.get('rate-bytes', -1)

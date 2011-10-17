@@ -22,49 +22,49 @@ __license__ = """
 import os.path
 
 class Cache(object):
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	def get(self, key):
-		raise NotImplementedError()
+    def get(self, key):
+        raise NotImplementedError()
 
-	def put(self, key):
-		# cache miss
-		raise NotImplementedError()
+    def put(self, key):
+        # cache miss
+        raise NotImplementedError()
 
 class FileCache(Cache):
-	def __init__(self, basedir):
-		super(FileCache, self).__init__()
-		self.basedir = basedir
+    def __init__(self, basedir):
+        super(FileCache, self).__init__()
+        self.basedir = basedir
 
-	def get(self, key):
-		path = os.path.join(self.basedir, key)
+    def get(self, key):
+        path = os.path.join(self.basedir, key)
 
-		if not os.path.exists(path):
-			return None
+        if not os.path.exists(path):
+            return None
 
-		with open(path, 'r') as f:
-			content = f.read()
+        with open(path, 'r') as f:
+            content = f.read()
 
-		return content
+        return content
 
-	def put(self, key, value):
-		path = os.path.join(self.basedir, key)
-		dir  = os.path.dirname(path)
+    def put(self, key, value):
+        path = os.path.join(self.basedir, key)
+        dir  = os.path.dirname(path)
 
-		if not os.path.exists(dir):
-			try:
-				os.makedirs(dir)	
-			except Exception:
-				return False
+        if not os.path.exists(dir):
+            try:
+                os.makedirs(dir)	
+            except Exception:
+                return False
 
-		with open(path, 'w') as f:
-			f.write(value)
-		
-		return True
-	
+        with open(path, 'w') as f:
+            f.write(value)
+        
+        return True
+    
     		
 
-	
+    
 
 

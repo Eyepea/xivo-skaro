@@ -1,4 +1,5 @@
-from __future__ import with_statement
+# -*- coding: UTF-8 -*-
+
 """
     Abstract JSON sysconfd database management:
         - get key/values
@@ -8,7 +9,6 @@ from __future__ import with_statement
     Currently used by commonconf & ha modules
 """
 
-__version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
@@ -28,7 +28,8 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import re, cjson, traceback
+import re
+import traceback
 from datetime import datetime
 
 from xivo.http_json_server import HttpReqError
@@ -117,4 +118,3 @@ class JsonCore(object):
         
     def apply(self, args, options):
         raise HttpReqError(500, "not implemented")
-

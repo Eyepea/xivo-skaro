@@ -518,19 +518,22 @@ var apply_wizard = {
 
 	counter : new Number(1),
 	next : '',
+	lang : 'en',
 
-	init : function() {
+	init : function(lang) {
 		$('#boxee').show();
-		apply_wizard.request_post();
+
+		apply_wizard.lang = lang;
+		apply_wizard.request_post(undefined,false,lang);
 	},
 
-	request_post : function(step,async) {
+	request_post : function(step,async,lang) {
 		if (async === undefined)
 			async = false;
 		var me = apply_wizard;
 		$.ajax({
 			type: 'GET',
-			url : '/xivo/wizard/ui.php/wizard?step=' + step,
+			url : '/xivo/wizard/ui.php/wizard?step=' + step + '&hl=' + lang,
 			async : async,
 			success: function(data) {
 				var str = data.split('::');
@@ -561,9 +564,9 @@ var apply_wizard = {
 	populate_infos : function(msg, last) {
 		$('#boxee').find('div').append(msg + '<br>');
 		if (last === 'async')
-			apply_wizard.request_post(apply_wizard.next,true);
+			apply_wizard.request_post(apply_wizard.next,true,apply_wizard.lang);
 		else if (last === undefined)
-			apply_wizard.request_post(apply_wizard.next);
+			apply_wizard.request_post(apply_wizard.next,false,apply_wizard.lang);
 	},
 
 	send_redirect : function(url,timeredirect) {
@@ -577,7 +580,7 @@ var apply_wizard = {
 
 $(function() {
 	$('input[name="validate"]').click(function() {
-		apply_wizard.init();
+		apply_wizard.init(dwho_i18n_lang);
 		return false;
 	});
 });

@@ -1,9 +1,5 @@
-from __future__ import with_statement
-"""services module
+# -*- coding: UTF-8 -*-
 
-Manage debian services (/etc/init.d/).
-"""
-__version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
@@ -23,13 +19,11 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, logging, subprocess, traceback
-from datetime import datetime
+import logging, subprocess, traceback
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
-from xivo.http_json_server import CMD_RW, CMD_R
-from xivo_sysconf import helpers, jsoncore
+from xivo.http_json_server import CMD_RW
 
 logger = logging.getLogger('xivo_sysconf.modules.services')
 

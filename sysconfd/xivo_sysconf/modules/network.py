@@ -1,11 +1,5 @@
-from __future__ import with_statement
-"""Network configuration module
+# -*- coding: UTF-8 -*-
 
-Copyright (C) 2008  Proformatique
-
-"""
-
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2008  Proformatique
 

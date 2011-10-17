@@ -1,4 +1,5 @@
-__version__ = "$Revision$"
+# -*- coding: utf-8 -*-
+
 __license__ = """
     Copyright (C) 2010  Proformatique <technique@proformatique.com>
 
@@ -26,8 +27,8 @@ def check_schedule(agi, cursor, args):
     if path is None or len(path) == 0:
         return
 
-		# set following variables:
-		#   . XIVO_SCHEDULE_STATUS = opened|closed
+    # set following variables:
+    #   . XIVO_SCHEDULE_STATUS = opened|closed
     schedule = objects.Schedule(agi, cursor, path=path, pathid=pathid)
 
     # erase path for next schedule check

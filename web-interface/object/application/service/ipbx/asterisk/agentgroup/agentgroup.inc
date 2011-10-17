@@ -240,9 +240,9 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$arr['group'] = 1;
 
 		if(($r = $this->_staticagentgroup->set_group($arr)) === false)
-			$this->_set_error('staticagentgroup',$this->_staticagentgroup->get_error('group'));
+			$this->_set_error('staticagentgroup',$this->_staticagentgroup->get_error('agent'));
 
-		$this->_set_result('staticagentgroup',$this->_staticagentgroup->get_result('group'));
+		$this->_set_result('staticagentgroup',$this->_staticagentgroup->get_result('agent'));
 
 		return($r);
 	}

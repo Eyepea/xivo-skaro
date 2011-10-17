@@ -600,12 +600,12 @@ CREATE TABLE `ctistatus` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctistatus` VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',1);
+INSERT INTO `ctistatus` VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',0);
 INSERT INTO `ctistatus` VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
 INSERT INTO `ctistatus` VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
 INSERT INTO `ctistatus` VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
 INSERT INTO `ctistatus` VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
-INSERT INTO `ctistatus` VALUES(6,1,'unknown','Inconnu','','#202020','',1);
+INSERT INTO `ctistatus` VALUES(6,1,'disconnected','Déconnecté','','#202020','6',0);
 
 
 DROP TABLE IF EXISTS `devicefeatures`;

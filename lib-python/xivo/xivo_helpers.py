@@ -26,8 +26,7 @@ __license__ = """
 import re
 import sys
 import logging
-
-from xivo import ConfigDict
+import ConfigParser
 
 from xivo import anysql
 from xivo.BackSQL import backsqlite
@@ -285,7 +284,9 @@ def db_connect(db_uri=None):
     db_close()
 
     if not db_uri:
-        db_uri = ConfigDict.ReadSingleKey(AGI_CONFFILE, 'db', 'db_uri')
+        conf_obj = ConfigParser()
+        conf_obj.readfp(open(AGI_CONFFILE))
+        db_uri = conf_obj.get('db', 'db_uri')
 
     try:
         db_conn = anysql.connect_by_uri(db_uri)

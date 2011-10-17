@@ -261,7 +261,12 @@ abstract class xivo_libconfig_abstract
 		if(isset($this->_filter) === false || $this->_filter === false)
 			return(false);
 
-		return($this->_filter->get_error());
+		$error = $this->_filter->get_error();
+
+		foreach ($error as $key => $value)
+			dwho_report::push('error', "$key -> $value");
+
+		return($error);
 	}
 
 	function get_filter_errnb()

@@ -1,6 +1,7 @@
-# -*- coding: UTF -*-
+# -*- coding: UTF-8 -*-
 
 import argparse
+import itertools
 import sys
 from ctiproxy import core
 from ctiproxy.bin import common
@@ -9,6 +10,8 @@ from ctiproxy.bin import common
 def _new_argument_parser():
     common_parser = common.new_argument_parser()
     parser = argparse.ArgumentParser(parents=[common_parser])
+    parser.add_argument("--loop", action="store_true", default=False,
+                        help="wait for another connection when one is closed")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--no-client", action="store_true", default=False,
                        help="don't display messages from client")
@@ -37,10 +40,7 @@ def _new_proxy_establisher(args):
     return core.IPv4ProxyEstablisher(bind_address, server_address)
 
 
-def main():
-    args = _parse_args(sys.argv[1:])
-    common.init_logging(args.verbose)
-
+def _new_listener(args):
     if args.raw:
         listener = core.RawPrintListener()
     else:
@@ -56,15 +56,39 @@ def main():
         listener = core.NoClientListener(listener)
     elif args.no_server:
         listener = core.NoServerListener(listener)
+    return listener
 
+
+def _new_loop_ctrl(args):
+    if args.loop:
+        return itertools.repeat(True)
+    else:
+        return [True]
+
+
+def main():
+    args = _parse_args(sys.argv[1:])
+    common.init_logging(args.verbose)
+
+    loop_ctrl = _new_loop_ctrl(args)
     proxy_establisher = _new_proxy_establisher(args)
     try:
-        csocket, ssocket = proxy_establisher.establish_connections()
-        socket_proxy = core.SocketProxy(csocket, ssocket, listener)
-        socket_proxy.start()
+        for _ in loop_ctrl:
+            listener = _new_listener(args)
+            try:
+                csocket, ssocket = proxy_establisher.establish_connections()
+            except Exception:
+                listener.close()
+                raise
+            else:
+                socket_proxy = core.SocketProxy(csocket, ssocket, listener)
+                socket_proxy.start()
     finally:
         proxy_establisher.close()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass

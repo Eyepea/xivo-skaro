@@ -88,4 +88,6 @@
 <Extended_Function_{{ line_no }}_></Extended_Function_{{ line_no }}_>
 {% endfor -%}
 
+{% block suffix %}{% endblock -%}
+
 </flat-profile>

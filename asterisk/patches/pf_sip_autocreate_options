@@ -1,7 +1,7 @@
-Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
+Index: asterisk-1.8.7.0/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.7.0-rc2.orig/channels/chan_sip.c	2011-09-20 15:20:24.498961372 -0400
-+++ asterisk-1.8.7.0-rc2/channels/chan_sip.c	2011-09-20 15:20:32.218959809 -0400
+--- asterisk-1.8.7.0.orig/channels/chan_sip.c	2011-08-31 14:50:33.000000000 -0400
++++ asterisk-1.8.7.0/channels/chan_sip.c	2011-10-14 08:33:08.376233324 -0400
 @@ -13476,11 +13476,19 @@
  		if (s) {
  			expires = strsep(&s, ";"); /* trim ; and beyond */
@@ -77,11 +77,41 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
  	peer->selfdestruct = TRUE;
  	peer->host_dynamic = TRUE;
  	peer->prefs = default_prefs;
-@@ -27367,6 +27388,12 @@
+@@ -27182,6 +27203,15 @@
+ 	return 0;
+ }
+ 
++static int peer_mark_non_selfdestruct_func(void *device, void *arg, int flags)
++{
++	struct sip_peer *peer = device;
++	if (!peer->selfdestruct) {
++		peer->the_mark = 1;
++	}
++	return 0;
++}
++
+ /*! \brief Re-read SIP.conf config file
+ \note	This function reloads all config data, except for
+ 	active peers (with registrations). They will only
+@@ -27279,7 +27309,11 @@
+ 		/* Then, actually destroy users and registry */
+ 		ASTOBJ_CONTAINER_DESTROYALL(&regl, sip_registry_destroy);
+ 		ast_debug(4, "--------------- Done destroying registry list\n");
+-		ao2_t_callback(peers, OBJ_NODATA, peer_markall_func, NULL, "callback to mark all peers");
++		if (sip_cfg.autocreate_persist) {
++			ao2_t_callback(peers, OBJ_NODATA, peer_mark_non_selfdestruct_func, NULL, "callback to mark non selfdestruct peers");
++		} else {
++			ao2_t_callback(peers, OBJ_NODATA, peer_markall_func, NULL, "callback to mark all peers");
++		}
+ 	}
+ 
+ 	/* Reset certificate handling for TLS sessions */
+@@ -27367,6 +27401,13 @@
  	global_regattempts_max = 0;
  	sip_cfg.pedanticsipchecking = DEFAULT_PEDANTIC;
  	sip_cfg.autocreatepeer = DEFAULT_AUTOCREATEPEER;
 +	ast_copy_string(sip_cfg.autocreate_context, DEFAULT_AUTOCREATE_CONTEXT, sizeof(sip_cfg.autocreate_context));
++	sip_cfg.autocreate_persist = DEFAULT_AUTOCREATE_PERSIST;
 +	ast_copy_string(sip_cfg.autocreate_prefix, DEFAULT_AUTOCREATE_PREFIX, sizeof(sip_cfg.autocreate_prefix));
 +	sip_cfg.autocreate_minexpiry = DEFAULT_AUTOCREATE_MIN_EXPIRY;
 +	sip_cfg.autocreate_maxexpiry = DEFAULT_AUTOCREATE_MAX_EXPIRY;
@@ -90,12 +120,14 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
  	global_autoframing = 0;
  	sip_cfg.allowguest = DEFAULT_ALLOWGUEST;
  	global_callcounter = DEFAULT_CALLCOUNTER;
-@@ -27665,6 +27692,33 @@
+@@ -27665,6 +27706,35 @@
  			proxy_update(&sip_cfg.outboundproxy);
  		} else if (!strcasecmp(v->name, "autocreatepeer")) {
  			sip_cfg.autocreatepeer = ast_true(v->value);
 +		} else if (!strcasecmp(v->name, "autocreate_context")) {
 +			ast_copy_string(sip_cfg.autocreate_context, v->value, sizeof(sip_cfg.autocreate_context));
++		} else if (!strcasecmp(v->name, "autocreate_persist")) {
++			sip_cfg.autocreate_persist = ast_true(v->value);
 +		} else if (!strcasecmp(v->name, "autocreate_prefix")) {
 +			ast_copy_string(sip_cfg.autocreate_prefix, v->value, sizeof(sip_cfg.autocreate_prefix));
 +		} else if (!strcasecmp(v->name, "autocreate_minexpiry")) {
@@ -124,15 +156,16 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
  		} else if (!strcasecmp(v->name, "match_auth_username")) {
  			global_match_auth_username = ast_true(v->value);
  		} else if (!strcasecmp(v->name, "srvlookup")) {
-Index: asterisk-1.8.7.0-rc2/channels/sip/include/sip.h
+Index: asterisk-1.8.7.0/channels/sip/include/sip.h
 ===================================================================
---- asterisk-1.8.7.0-rc2.orig/channels/sip/include/sip.h	2011-09-20 15:20:24.518962486 -0400
-+++ asterisk-1.8.7.0-rc2/channels/sip/include/sip.h	2011-09-20 15:20:32.218959809 -0400
-@@ -206,6 +206,11 @@
+--- asterisk-1.8.7.0.orig/channels/sip/include/sip.h	2011-08-23 14:11:50.000000000 -0400
++++ asterisk-1.8.7.0/channels/sip/include/sip.h	2011-10-14 08:33:19.656431869 -0400
+@@ -206,6 +206,12 @@
  #define DEFAULT_NOTIFYCID      DISABLED	/*!< Include CID with ringing notifications */
  #define DEFAULT_PEDANTIC       TRUE     /*!< Follow SIP standards for dialog matching */
  #define DEFAULT_AUTOCREATEPEER FALSE    /*!< Don't create peers automagically */
 +#define DEFAULT_AUTOCREATE_CONTEXT DEFAULT_CONTEXT
++#define DEFAULT_AUTOCREATE_PERSIST FALSE
 +#define DEFAULT_AUTOCREATE_PREFIX ""
 +#define DEFAULT_AUTOCREATE_DEFAULT_EXPIRY DEFAULT_DEFAULT_EXPIRY
 +#define DEFAULT_AUTOCREATE_MIN_EXPIRY DEFAULT_MIN_EXPIRY
@@ -140,11 +173,12 @@ Index: asterisk-1.8.7.0-rc2/channels/sip/include/sip.h
  #define	DEFAULT_MATCHEXTERNADDRLOCALLY FALSE /*!< Match extern IP locally default setting */
  #define DEFAULT_QUALIFY        FALSE    /*!< Don't monitor devices */
  #define DEFAULT_CALLEVENTS     FALSE    /*!< Extra manager SIP call events */
-@@ -677,6 +682,12 @@
+@@ -677,6 +683,13 @@
  	int directrtpsetup;         /*!< Enable support for Direct RTP setup (no re-invites) */
  	int pedanticsipchecking;    /*!< Extra checking ?  Default off */
  	int autocreatepeer;         /*!< Auto creation of peers at registration? Default off. */
 +	char autocreate_context[AST_MAX_CONTEXT];
++	int autocreate_persist;
 +	char autocreate_prefix[64]; /*!< Only peer with this prefix will be autocreated */
 +	int autocreate_minexpiry;
 +	int autocreate_maxexpiry;

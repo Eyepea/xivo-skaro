@@ -1,6 +1,5 @@
-"""munin module
-"""
-__version__ = "$Revision$ $Date$"
+# -*- coding: UTF-8 -*-
+
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010  Proformatique
@@ -27,8 +26,6 @@ from xivo.http_json_server import CMD_R
 
 
 class Munin(object):
-    """
-    """
     def __init__(self):
         super(Munin, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.munin')

@@ -275,6 +275,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$uri = $_SERVER['SERVER_ADDR'];
 
 		$uri .= ':'.$_SERVER['SERVER_PORT'];
+		// append lang
+		if(isset($_REQUEST['hl']))
+			$uri .= '?hl='.$_REQUEST['hl'];
 
 		$scheme = 'http';
 

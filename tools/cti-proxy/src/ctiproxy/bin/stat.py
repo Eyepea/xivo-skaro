@@ -1,4 +1,4 @@
-# -*- coding: UTF -*-
+# -*- coding: UTF-8 -*-
 
 import sys
 from ctiproxy import core
@@ -37,4 +37,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
