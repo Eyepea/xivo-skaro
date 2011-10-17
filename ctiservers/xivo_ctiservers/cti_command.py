@@ -1,6 +1,7 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
+from xivo_ctiservers.statistics.statisticqueueencoder import StatisticQueueEncoder
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -98,6 +99,7 @@ class Command:
         self.commanddict = thiscommand
         self.othermessages = list()
         self._queue_statistics_manager = QueueStatisticManager()
+        self._queue_statistics_encoder = StatisticQueueEncoder()
         self.log = logging.getLogger('cti_command(%s:%d)' % self.connection.requester)
         return
 
@@ -542,8 +544,8 @@ class Command:
         statistic_results = {}
         for queue_id, params in self.commanddict['on'].iteritems():
             statistic_results[queue_id] = self._queue_statistics_manager.get_statistics(queue_id,
-                                                          int(params['xqos']),
-                                                          int(params['window']))
+                                                                                        int(params['xqos']),
+                                                                                        int(params['window']))
         return self._statistic_queue_encoder.encode(statistic_results)
 
     def regcommand_keepalive(self):
