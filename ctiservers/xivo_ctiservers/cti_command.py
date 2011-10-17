@@ -538,15 +538,14 @@ class Command:
         return
 
     def regcommand_getqueuesstats(self):
-        # {"class": "getqueuesstats", "commandid": 165767435, "on": {"3": {"window": "3600", "xqos": "60"}, "4": {"window": "3600", "xqos": "60"}, "5": {"window": "3600", "xqos": "60"}}}
-        self.log.warning('getqueuesstats %s' % self.commanddict)
         if 'on' not in self.commanddict:
             return {}
+        statistic_results = {}
         for queue_id, params in self.commanddict['on'].iteritems():
-            self._queue_statistics_manager.get_statistics(queue_id,
+            statistic_results[queue_id] = self._queue_statistics_manager.get_statistics(queue_id,
                                                           int(params['xqos']),
                                                           int(params['window']))
-        return {}
+        return self._statistic_queue_encoder.encode(statistic_results)
 
     def regcommand_keepalive(self):
         nbytes = self.commanddict.get('rate-bytes', -1)
