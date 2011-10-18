@@ -98,7 +98,7 @@ switch($act)
 			$end   = intval($numb['numberend']);
 			$lstart = floor(log10($start)) + 1;
 			$lend   = floor(log10($end)) + 1;
-			
+
 			array_push($list_pool_free,array('numberbeg' => $start, 'numberend' => $end));
 
 			if($lfilter > $lend)
@@ -114,7 +114,7 @@ switch($act)
 
 			$numbers = array_merge($numbers, range($start, $end));
 		}
-		
+
 		if ($_QRY->get('getnumpool') !== null)
 		{
 			$_TPL->set_var('list', $list_pool_free);

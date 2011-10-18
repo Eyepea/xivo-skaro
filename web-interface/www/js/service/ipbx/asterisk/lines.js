@@ -298,7 +298,7 @@ $(document).ready(function() {
         update: update_row_infos
     });
     
-    $('#lnk-add-row').click(function(){        
+    $('#lnk-add-row').click(function(){
         $('#no-linefeatures').hide('fast');
         row = $('#ex-linefeatures').html();
         

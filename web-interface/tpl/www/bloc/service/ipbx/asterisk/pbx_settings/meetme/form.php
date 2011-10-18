@@ -39,6 +39,8 @@ if($this->get_var('fm_save') === false):
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
+$dhtml->write_js('var jsi18n_no_number_in_context = "'.$this->bbf('no_number_in_context').'"');
+
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">

@@ -671,14 +671,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		&& isset($this->_info['userfeatures']['id']) === true)
 			$iduserfeatures = (int) $this->_info['userfeatures']['id'];
 
-		if(isset($arr['userfeatures']['callerid']) === true
-		&& empty($arr['userfeatures']['callerid']) === false)
-			$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($arr['userfeatures']['callerid']);
-		else
-		{
-			$callerid = $arr['userfeatures']['firstname'].' '.$arr['userfeatures']['lastname'];
-			$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($callerid);
-		}
+		$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($arr['userfeatures']['callerid']);
 
 		$vmaction = $action;
 

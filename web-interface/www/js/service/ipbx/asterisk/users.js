@@ -419,11 +419,6 @@ function xivo_ast_user_cpy_name() {
 	else
 		callerid = callerid.replace(/^(?:"(.+)"|([^"]+))\s*<[^<]*>$/, '\$1');
 
-	if (callerid.length === 0 || callerid === name)
-		xivo_ast_fm_cpy_user_name['userfeatures-callerid'] = true;
-	else
-		xivo_ast_fm_cpy_user_name['userfeatures-callerid'] = false;
-
 	if (dwho_eid('it-voicemail-fullname') === false)
 		return (false);
 
@@ -745,8 +740,30 @@ function xivo_ast_user_onload() {
 	xivo_ast_dialaction_onload();
 }
 
+function update_callerid() {
+	var firstname = $('#it-userfeatures-firstname').val();
+	var lastname = $('#it-userfeatures-lastname').val();
+	var callerid = $('#it-userfeatures-callerid').val();
+
+	var name = '';
+	if (firstname && firstname.length > 0)
+		name += firstname;
+	if (lastname && lastname.length > 0)
+		name += name.length === 0 ? lastname : ' ' + lastname;
+	
+	callerid = name.replace(/^(?:"(.+)"|([^"]+))\s*<[^<]*>$/, '\$1');
+	
+	$('#it-userfeatures-callerid').val(callerid);
+	$('#it-voicemail-fullname').val( name);
+	
+	//xivo_ast_user_cpy_name();
+	//xivo_ast_user_chg_name();
+}
+
 $(function() {
 	$('#it-userfeatures-alarmclock').timepicker({});
+	$('#it-userfeatures-firstname').change(update_callerid);
+	$('#it-userfeatures-lastname').change(update_callerid);
 });
 
 dwho.dom.set_onload(xivo_ast_user_onload);

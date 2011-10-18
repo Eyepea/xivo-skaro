@@ -404,11 +404,10 @@ function xivo_ast_meetme_suggest_event_extension() {
 	xivo_ast_meetme_suggest_extension.set_field(this.id);
 }
 
-
 //get available number pool
 function xivo_http_search_numpool()
 {
-	var rs = '';
+	rs = jsi18n_no_number_in_context;
 	context = $('#it-meetmefeatures-context').val();
 	helper = $('#helper-context_num_pool');
 	
@@ -418,11 +417,12 @@ function xivo_http_search_numpool()
 		success: function(data) {
 			if (data === null || (nb = data.length) === 0)
 				return false;
+			rs = '';
 			for (var i = 0; i< nb; i++)
 				rs += data[i]['numberbeg']+' - '+data[i]['numberend']+'<br>';
-				helper.html(rs);
 		}
 	});
+	helper.html(rs);
 }
 
 function xivo_ast_meetme_onload() {
