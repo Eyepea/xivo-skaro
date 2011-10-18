@@ -102,7 +102,7 @@ class Safe:
         'trunks': ['context', 'protocol', 'name', 'host', 'type'],
         'voicemails' : ['context', 'fullname', 'mailbox', 'email'], # password
         'meetmes' : ['context', 'confno', 'name', 'admin_moderationmode',
-                     'pin_needed'], # 'pin', 'pinadmin' should not be transmitted
+                     'pin_needed'], # 'pin', 'pinadmin' should not be transmitted, due to security issues
         'incalls' : ['context', 'exten', 'destidentity', 'action'],
         'outcalls' : [],
         'contexts' : ['context', 'contextnumbers', 'contexttype', 'deletable', 'contextinclude'],
