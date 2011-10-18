@@ -6,6 +6,7 @@ from xivo_ctiservers.dao.sqlalchemy.queueinfo import QueueInfo
 from xivo_ctiservers.dao.sqlalchemy.base import Base
 import time
 from xivo_ctiservers.dao.queuestatisticdao import QueueStatisticDAO
+from xivo_ctiservers.dao.sqlalchemy.dbconnection import DBConnection
 
 
 class Test(unittest.TestCase):
@@ -13,15 +14,14 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         uri = 'postgresql://asterisk:asterisk@localhost/asterisktest'
-        engine = create_engine(uri)
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
-        
-        #queueinfo = QueueInfo()
-        Base.metadata.drop_all(engine, [QueueInfo().__table__])
-        Base.metadata.create_all(engine, [QueueInfo().__table__])
-        
-        #session.add(queueinfo)
+        connection = DBConnection(uri)
+        connection.connect()
+
+        Base.metadata.drop_all(connection.getEngine(), [QueueInfo().__table__])
+        Base.metadata.create_all(connection.getEngine(), [QueueInfo().__table__])
+
+        self.session = connection.getSession()
+
         self.session.commit()
         self._queue_statistic_dao = QueueStatisticDAO()
         self._queue_statistic_dao._session = self.session
