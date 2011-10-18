@@ -22,8 +22,6 @@
 if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
-dwho_var_dump($info['userfeatures']['callerid']);
-
 $return = &$info;
 $return['schedule_id'] = false;
 
