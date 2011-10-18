@@ -319,7 +319,7 @@ class ctiserver:
     def updates_period(self):
         return int(self.cconf.getconfig('main').get('updates_period', '3600'))
 
-    def _start_db_connection(self):
+    def _start_db_connections(self):
         queue_stats_uri = self.cconf.getconfig('main').get('asterisk_queuestat_db')
         connection = DBConnection(queue_stats_uri)
         self.log.info('Starting connection to queue stats database')
