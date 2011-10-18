@@ -5,4 +5,4 @@ If you are using python < 2.7, you need to install argparse.
 Make sure the src/ directory is in your PYTHONPATH, i.e. the correct way to
 launch the scripts if you are in this directory is, for example:
 
-  $ PYTHONPATH=src scripts/ctispy skaro-new
+  $ PYTHONPATH=src scripts/ctispy 192.168.32.100
