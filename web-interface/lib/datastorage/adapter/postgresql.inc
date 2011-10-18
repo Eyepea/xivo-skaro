@@ -455,6 +455,9 @@ class dwho_datastorage_adapter_postgresql extends dwho_datastorage_adapter_abstr
             case 'int':
                 $field .= '::int';
                 break;
+            case 'varchar':
+                $field .= '::varchar';
+                break;
         }
 
         return $field;
