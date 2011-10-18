@@ -404,13 +404,27 @@ function xivo_ast_meetme_suggest_event_extension() {
 	xivo_ast_meetme_suggest_extension.set_field(this.id);
 }
 
+
+//get available extensions
+function map_autocomplete_extension(obj){
+	context = $('#it-meetmefeatures-context').val();
+	$.getJSON('/service/ipbx/ui.php/pbx_settings/extension/search/?obj=meetme&format=jquery&context='+context, function(data) {
+		if (data === null || (nb = data.length) === 0)
+			return false;
+		$('#it-meetmefeatures-confno').autocomplete({
+			source: data.split('\n')
+		});
+	});
+}
+
 //get available number pool
 function xivo_http_search_numpool()
 {
 	rs = jsi18n_no_number_in_context;
 	context = $('#it-meetmefeatures-context').val();
 	helper = $('#helper-context_num_pool');
-	
+	$('#it-meetmefeatures-confno').autocomplete('destroy');
+
 	$.ajax({url: '/service/ipbx/ui.php/pbx_settings/extension/search/?context='+context+'&obj=meetme&getnumpool=1',
 		async: false,
 		dataType: 'json',
@@ -428,14 +442,15 @@ function xivo_http_search_numpool()
 function xivo_ast_meetme_onload() {
 
 	$('#it-meetmefeatures-context').change(function(){
-		xivo_ast_meetme_suggest_event_extension();
 		xivo_http_search_numpool();
+		xivo_ast_meetme_suggest_event_extension();
 	});
-	
+
 	xivo_http_search_numpool();
 	$('#it-meetmefeatures-confno').live({
 			focus: function() {
 				$('#helper-context_num_pool').show('slow');
+				map_autocomplete_extension();
 			},
 			blur: function() {
 				$('#helper-context_num_pool').hide('slow');
@@ -474,12 +489,13 @@ function xivo_ast_meetme_onload() {
 	xivo_ast_meetme_chg_admin_typefrom();
 	xivo_ast_meetme_chg_closeconfdurationexceeded();
 	xivo_ast_meetme_chg_user_enableexitcontext();
-
+/*
 	if ((num = dwho_eid('it-meetmefeatures-confno')) !== false) {
 		dwho.dom.add_event('focus', num,
 				xivo_ast_meetme_suggest_event_extension);
 		num.setAttribute('autocomplete', 'off');
 	}
+*/
 }
 
 dwho.dom.set_onload(xivo_ast_meetme_onload);

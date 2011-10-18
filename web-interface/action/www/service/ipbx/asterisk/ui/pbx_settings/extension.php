@@ -71,7 +71,7 @@ switch($act)
 		$obj = $_QRY->get('obj');
 		if(is_null($obj) || !array_key_exists($obj, $context['contextnumbers']))
 		{
-			$http_response->set_status_line(404);
+			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
 
