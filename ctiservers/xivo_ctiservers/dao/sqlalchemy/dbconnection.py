@@ -5,7 +5,10 @@ class DBConnection(object):
     _session = None
     
     def __init__(self, uri):
-        self._uri = uri
+        if '?' in uri:
+            self._uri = uri.split('?')[0]
+        else:
+            self._uri = uri
     
     def connect(self):
         self._engine = create_engine(self._uri)
