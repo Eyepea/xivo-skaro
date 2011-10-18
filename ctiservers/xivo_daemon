@@ -321,10 +321,13 @@ class ctiserver:
 
     def _start_db_connections(self):
         queue_stats_uri = self.cconf.getconfig('main').get('asterisk_queuestat_db')
+        queue_logger.queue_logger.init(queue_stats_uri)
+        if '?' in queue_stats_uri:
+            queue_stats_uri = queue_stats_uri.split('?')[0]
         connection = DBConnection(queue_stats_uri)
         log.info('Starting connection to queue stats database')
         connection.connect()
-        queue_logger.queue_logger.init(queue_stats_uri)
+
 
     def main_loop(self):    # {
         self.askedtoquit = False
