@@ -272,7 +272,7 @@ switch($act)
 						$load_ctimain['announce_active'] != 0
 					)
 				);
-				
+
         $out['certfile'] = $load_ctimain['tlscertfile'];
         $out['keyfile']  = $load_ctimain['tlsprivkeyfile'];
 
@@ -314,7 +314,8 @@ switch($act)
 
                     $accessstatus = array();
                     foreach(explode(',', $accessids) as $i)
-                        $accessstatus[] = $statref[$i];
+                    	if (isset($statref[$i]))
+                        	$accessstatus[] = $statref[$i];
                     $presout[$presid][$name]['allowed'] = $accessstatus;
 
                     $actions = explode(',', $stat['actions']);
@@ -322,9 +323,8 @@ switch($act)
                     $actionsout = array();
                     foreach($actions as $a)
                     {
-                        $match = array();
-                        preg_match($pattern, $a, $match);
-                        $actionsout[$match[1]] = $match[2];
+                        if (preg_match($pattern, $a, $match) > 0)
+                        	$actionsout[$match[1]] = $match[2];
                     }
                     $presout[$presid][$name]['actions'] = $actionsout;
                 }
