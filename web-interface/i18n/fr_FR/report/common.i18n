@@ -13,3 +13,6 @@ Erreur durant la récuperation
 
 ; error_during_edit_params
 Erreur durant la mise à jour 
+
+; cant_activate_xivoclient_without_login_and_password
+Vous ne pouvez pas activez le xivo client sans avoir spécifié un identifiant et un mot de passe.

@@ -4,3 +4,15 @@ Synchronize successful
 
 ; error_during_synchronize
 Synchronize error
+
+; params_successfully_updated
+Successfully updated
+
+; error_during_get_params
+Error during getting params
+
+; error_during_edit_params
+Error during edit params
+
+; cant_activate_xivoclient_without_login_and_password
+Can't activate xivoclient without login and password

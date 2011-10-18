@@ -788,6 +788,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 		}
 
+		if (isset($arr['enableclient'])
+		&&(dwho_has_len($arr['loginclient']) === false
+		|| dwho_has_len($arr['passwdclient']) === false))
+		{
+			dwho_report::push('error', 'cant_activate_xivoclient_without_login_and_password');
+			$err = array('loginclient' => 'empty', 'passwdclient' => 'empty');
+			$this->_set_error('userfeatures', $err);
+		}
+
 		$this->get_musiconhold();
 
 		if(isset($arr['musiconhold']) === true
@@ -842,16 +851,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($this->_userfeatures->loginclient_exists($rs['loginclient'],$id) === true)
 			{
 				$this->_set_result('userfeatures',$rs);
-				$this->_set_error('userfeatures','client login exists');
+				$this->_set_error('userfeatures',array('loginclient' => 'client login exists'));
 				return(false);
 			}
-		}
-
-		if(isset($rs['loginclient']) === false
-		|| dwho_has_len($rs['loginclient']) === false)
-		{
-			$rs['enableclient'] = false;
-			$rs['passwdclient'] = '';
 		}
 
 		if(dwho_has_len($rs['agentid']) === false
