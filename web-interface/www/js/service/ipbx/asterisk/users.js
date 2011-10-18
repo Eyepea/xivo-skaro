@@ -491,7 +491,7 @@ function xivo_ast_user_ingroup() {
 			|| (len = grouplist.length) < 1)
 		return (false);
 
-	for (i = 0; i < len; i++) {
+	for (var i = 0; i < len; i++) {
 		if ((group = dwho_eid('group-' + grouplist[i].value)) !== false)
 			group.style.display = 'table-row';
 	}
@@ -509,7 +509,7 @@ function xivo_ast_user_outgroup() {
 			|| (len = grouplist.length) < 1)
 		return (false);
 
-	for (i = 0; i < len; i++) {
+	for (var i = 0; i < len; i++) {
 		if ((group = dwho_eid('group-' + grouplist[i].value)) !== false)
 			group.style.display = 'none';
 	}

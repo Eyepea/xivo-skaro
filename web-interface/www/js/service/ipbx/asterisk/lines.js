@@ -342,11 +342,11 @@ $(document).ready(function() {
         return false;
     });
 
-    $('#lnk-add-row-line_free').click(function(){        
+    $('#lnk-add-row-line_free').click(function(){
         $('#no-linefeatures').hide('fast');
         
         idlinefeatures = $('#list_lines_free').val();
-        $('#ex-linefeatures').find('#linefeatures-id').val(idlinefeatures);        
+        $('#ex-linefeatures').find('#linefeatures-id').val(idlinefeatures);
         row = $('#ex-linefeatures').html();
         
         $('#list_linefeatures > tbody:last').fadeIn(400, function () {
@@ -358,7 +358,7 @@ $(document).ready(function() {
         it_context = $('#list_linefeatures > tbody:last > tr').find("#linefeatures-context");
         
         td_protocol = it_context.parents('tr:last').find('#td_ex-linefeatures-protocol');
-        td_name = it_context.parents('tr:last').find('#td_ex-linefeatures-name');              
+        td_name = it_context.parents('tr:last').find('#td_ex-linefeatures-name');
 
         it_context.parents('tr:last').find('#linefeatures-protocol').remove();
         it_context.parents('tr:last').find('#linefeatures-name').remove();
@@ -387,7 +387,7 @@ $(document).ready(function() {
         if ($('#list_lines_free option').length == 0)
             $('#box-lines_free').hide('slow');
         
-        update_row_infos();        
+        update_row_infos();
         return false;
     });
     

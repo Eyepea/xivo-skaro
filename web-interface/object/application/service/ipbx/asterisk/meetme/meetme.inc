@@ -266,9 +266,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		if($this->_errnb === 0 && $number !== '')
 		{
 			if(($rsmeetmemacro = $this->chk_macro('meetmemacro',
-							      $number,
-							      $this->_mk_meetmemacro_appdata(0),
-							      $context)) !== false)
+								$number,
+								$this->_mk_meetmemacro_appdata(0),
+								$context)) !== false)
 				$this->_set_result('meetmemacro',$rsmeetmemacro);
 
 			$this->set_extenumbers($action,$number,$context);
@@ -277,6 +277,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->set_contextnummember($context,$number);
 
 		$this->set_contextmember();
+
+		if (($err = $this->get_error('contextnummember')))
+			$this->_set_error('meetmefeatures',array('confno' => $err));
 
 		return(($this->get_errnb() < 1));
 	}
