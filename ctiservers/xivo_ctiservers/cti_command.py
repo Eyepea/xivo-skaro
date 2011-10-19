@@ -543,7 +543,8 @@ class Command:
             return {}
         statistic_results = {}
         for queue_id, params in self.commanddict['on'].iteritems():
-            statistic_results[queue_id] = self._queue_statistic_manager.get_statistics(queue_id,
+            queue_name = self.innerdata.xod_config['queues'].keeplist[queue_id]['name']
+            statistic_results[queue_id] = self._queue_statistic_manager.get_statistics(queue_name,
                                                                                         int(params['xqos']),
                                                                                         int(params['window']))
         return self._queue_statistic_encoder.encode(statistic_results)

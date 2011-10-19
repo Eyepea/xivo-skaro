@@ -18,13 +18,15 @@ class Test(unittest.TestCase):
         13:54:50.752110 Server > Client
         {"class": "queuestats", "direction": "client", "function": "update", "stats": {"2": {"Xivo-Holdtime-avg": "na", "Xivo-Holdtime-max": "na", "Xivo-Join": "0", "Xivo-Link": "0", "Xivo-Lost": "0", "Xivo-Qos": "na", "Xivo-Rate": "na", "Xivo-TalkingTime": "na"}, "3": {"Xivo-Holdtime-avg": "na", "Xivo-Holdtime-max": "na", "Xivo-Join": "0", "Xivo-Link": "0", "Xivo-Lost": "0", "Xivo-Qos": "na", "Xivo-Rate": "na", "Xivo-TalkingTime": "na"}}, "timenow": 1318960490.74}
         '''
-        expected = {'stats': {'service': {
+        expected = {'stats': {'3': {
                                           'Xivo-Join': 5,
                                           }}}
         queuestatistic = QueueStatistic()
         queuestatistic.received_call_count = 5
         queuestatisticencoder = QueueStatisticEncoder()
-        result = queuestatisticencoder.encode({'service': queuestatistic,})
+        statistic_results = {}
+        statistic_results['3'] = queuestatistic
+        result = queuestatisticencoder.encode(statistic_results)
         self.assertEqual(result, expected)
 
 
