@@ -8,4 +8,4 @@ class QueueStatisticEncoder(object):
             res[queue_name] = {
                                'Xivo-Join': statistic.received_call_count,
                                }
-        return res
+        return {'stats': res}
