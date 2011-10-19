@@ -21,7 +21,6 @@
 class dwho_datastorage_adapter_abstract
 {
     var $_param    = array();
-
     var $_error    = '';
     var $_errno    = 0;
     var $_quote    = false;

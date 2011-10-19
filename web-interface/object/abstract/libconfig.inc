@@ -263,8 +263,7 @@ abstract class xivo_libconfig_abstract
 
 		$error = $this->_filter->get_error();
 
-		foreach ($error as $key => $value)
-			dwho_report::push('error', "$key -> $value");
+		dwho_report::push_generic('error', $error);
 
 		return($error);
 	}

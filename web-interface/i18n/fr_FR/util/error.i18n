@@ -45,3 +45,9 @@ La valeur n'est pas dans l'intervalle
 
 ; error(invalidpwd)
 Mot de passe incorrect
+
+; invalid_name_context
+Nom du contexte invalide (%s)
+
+; reserved_context
+Liste des contextes résérvés: %s

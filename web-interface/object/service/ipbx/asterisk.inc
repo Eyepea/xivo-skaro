@@ -909,10 +909,15 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_context($context,$arr=null)
 	{
+		$_reserved_context = xivo_service_asterisk::get_contexts_list($arr);
 		if(is_scalar($context) === false
-		|| in_array($context,xivo_service_asterisk::get_contexts_list($arr)) === true
+		|| in_array($context,$_reserved_context) === true
 		|| preg_match('/^'.XIVO_SRE_IPBX_AST_REGEXP_CONTEXT.'$/',$context) !== 1)
+		{
+			dwho_report::push('error', dwho_i18n::babelfish('invalid_name_context',$context));
+			dwho_report::push('info', dwho_i18n::babelfish('reserved_context',implode(', ',$_reserved_context)));
 			return(false);
+		}
 
 		return($context);
 	}
