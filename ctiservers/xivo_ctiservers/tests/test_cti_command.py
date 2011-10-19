@@ -13,17 +13,16 @@ class Test(unittest.TestCase):
 
 
     def setUp(self):
-        pass
+        self.conn = Mock()
+        self.conn.requester = ('test_requester', 1)
 
 
     def tearDown(self):
         pass
 
     def test_regcommand_getqueuesstats_no_result(self):
-        conn = Mock()
-        conn.requester = ('test_requester', 1)
         message = {}
-        cti_command = Command(conn, message)
+        cti_command = Command(self.conn, message)
         self.assertEqual(cti_command.regcommand_getqueuesstats(), {},
                          'Default return an empty dict')
 
@@ -33,14 +32,12 @@ class Test(unittest.TestCase):
         safe = Mock(Safe)
         safe.xod_config = {'queues':queueList}
 
-        conn = Mock()
-        conn.requester = ('test_requester', 2)
         message = {"class": "getqueuesstats",
                    "commandid": 1234,
                    "on": {"3": {"window": "3600", "xqos": "60"}}}
         queueStatistics = Mock(QueueStatisticManager)
         encoder = Mock(QueueStatisticEncoder)
-        cti_command = Command(conn, message)
+        cti_command = Command(self.conn, message)
         cti_command.innerdata = safe
         cti_command._queue_statistic_manager = queueStatistics
         cti_command._queue_statistic_encoder = encoder
