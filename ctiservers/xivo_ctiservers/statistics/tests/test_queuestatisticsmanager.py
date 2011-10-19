@@ -22,6 +22,7 @@ class Test(unittest.TestCase):
         queue_statistic_manager._queue_statistic_dao = queue_statistic_dao
         queue_statistic_dao.get_received_call_count.return_value = 7
         queue_statistic_dao.get_answered_call_count.return_value = 12
+        queue_statistic_dao.get_abandonned_call_count.return_value = 11
         
         
         queue_statistics = queue_statistic_manager.get_statistics('3', xqos, window)
@@ -29,6 +30,7 @@ class Test(unittest.TestCase):
         
         self.assertEqual(queue_statistics.received_call_count, 7)
         self.assertEqual(queue_statistics.answered_call_count, 12)
+        self.assertEqual(queue_statistics.abandonned_call_count, 11)
         queue_statistic_dao.get_received_call_count.assert_called_with('3', window)
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from xivo_ctiservers.dao.sqlalchemy.base import Base
+from xivo_ctiservers.dao.alchemy.base import Base
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
 

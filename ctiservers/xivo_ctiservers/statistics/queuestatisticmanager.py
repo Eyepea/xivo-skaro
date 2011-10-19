@@ -11,4 +11,5 @@ class QueueStatisticManager(object):
         queue_statistic = QueueStatistic()
         queue_statistic.received_call_count = self._queue_statistic_dao.get_received_call_count(queue_name, window)
         queue_statistic.answered_call_count = self._queue_statistic_dao.get_answered_call_count(queue_name, window)
+        queue_statistic.abandonned_call_count = self._queue_statistic_dao.get_abandonned_call_count(queue_name, window)
         return queue_statistic
