@@ -20,13 +20,19 @@ class Test(unittest.TestCase):
         '''
         expected = {'stats': {'3': {
                                           'Xivo-Join': 5,
+                                          'Xivo-Link': 7,
                                           }}}
         queuestatistic = QueueStatistic()
         queuestatistic.received_call_count = 5
+        queuestatistic.answered_call_count = 7
+        
         queuestatisticencoder = QueueStatisticEncoder()
+        
         statistic_results = {}
         statistic_results['3'] = queuestatistic
+        
         result = queuestatisticencoder.encode(statistic_results)
+        
         self.assertEqual(result, expected)
 
 
