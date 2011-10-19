@@ -1,5 +1,6 @@
-from xivo_ctiservers.dao.sqlalchemy.queueinfo import QueueInfo
 import time
+
+from xivo_ctiservers.dao.sqlalchemy.queueinfo import QueueInfo
 from xivo_ctiservers.dao.sqlalchemy.dbconnection import DBConnection
 
 class QueueStatisticDAO(object):
@@ -11,3 +12,4 @@ class QueueStatisticDAO(object):
         in_window = time.time() - window
         return (DBConnection.getSession().query(QueueInfo).filter(QueueInfo.queue_name == queue_id)
                 .filter(QueueInfo.call_time_t > in_window).count())
+
