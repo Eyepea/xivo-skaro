@@ -17,6 +17,10 @@ class DBConnection(object):
     
     def getEngine(self):
         return self._engine
+    
+    @staticmethod
+    def close():
+        DBConnection._session.close()
         
     @staticmethod
     def getSession():
