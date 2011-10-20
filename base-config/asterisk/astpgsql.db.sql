@@ -350,12 +350,11 @@ CREATE INDEX "contexttype__idx__commented" ON "contexttype"("commented");
 CREATE INDEX "contexttype__idx__deletable" ON "contexttype"("deletable");
 CREATE UNIQUE INDEX "contexttype__uidx__name" ON "contexttype"("name");
 
-INSERT INTO "contexttype" VALUES(1, 'internal', 'Interne', 0, 0, '');
-INSERT INTO "contexttype" VALUES(2, 'incall', 'Entrant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(3, 'outcall', 'Sortant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(4, 'services', 'Services', 0, 0, '');
-INSERT INTO "contexttype" VALUES(5, 'others', 'Autres', 0, 0, '');
-SELECT setval('contexttype_id_seq', 6);
+INSERT INTO "contexttype" VALUES(DEFAULT, 'internal', 'Interne', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'incall', 'Entrant', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'outcall', 'Sortant', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 'Services', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 'Autres', 0, 0, '');
 
 
 DROP TABLE IF EXISTS "ctiaccounts";
@@ -376,10 +375,9 @@ CREATE TABLE "ctiagentstatus" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiagentstatus" VALUES(1,1,'Logué','#0DFF25');
-INSERT INTO "ctiagentstatus" VALUES(2,1,'Délogué','#030303');
-INSERT INTO "ctiagentstatus" VALUES(3,1,'En communication','#FF032D');
-SELECT setval('ctiagentstatus_id_seq', 4);
+INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'Logué','#0DFF25');
+INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'Délogué','#030303');
+INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'En communication','#FF032D');
 
 
 DROP TABLE IF EXISTS "ctiagentstatusgroup";
@@ -391,8 +389,7 @@ CREATE TABLE "ctiagentstatusgroup" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiagentstatusgroup" VALUES(1,'xivo','De base non supprimable',0);
-SELECT setval('ctiagentstatusgroup_id_seq', 2);
+INSERT INTO "ctiagentstatusgroup" VALUES(DEFAULT,'xivo','De base non supprimable',0);
 
 
 DROP TABLE IF EXISTS "ctilog";
@@ -420,8 +417,7 @@ CREATE TABLE "cticontexts" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "cticontexts" VALUES(3,'default','xivodir,internal','Display','Contexte par défaut',1);
-SELECT setval('cticontexts_id_seq', 4);
+INSERT INTO "cticontexts" VALUES(DEFAULT,'default','xivodir,internal','Display','Contexte par défaut',1);
 
 
 DROP TABLE IF EXISTS "ctidirectories";
@@ -437,9 +433,8 @@ CREATE TABLE "ctidirectories" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctidirectories" VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','Répertoire XiVO Externe',1);
-INSERT INTO "ctidirectories" VALUES(2,'internal','internal','','["userfeatures.firstname","userfeatures.lastname"]','','Répertoire XiVO Interne',1);
-SELECT setval('ctidirectories_id_seq', 3);
+INSERT INTO "ctidirectories" VALUES(DEFAULT,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','Répertoire XiVO Externe',1);
+INSERT INTO "ctidirectories" VALUES(DEFAULT,'internal','internal','','["userfeatures.firstname","userfeatures.lastname"]','','Répertoire XiVO Interne',1);
 
 
 DROP TABLE IF EXISTS "ctidirectoryfields";
@@ -472,8 +467,7 @@ CREATE TABLE "ctidisplays" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctidisplays" VALUES(4,'Display','{"10": [ "Nom","","","{db-firstname} {db-lastname}" ],"20": [ "Numéro","phone","","{db-phone}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail}" ], "50": [ "Source","","","{xivo-directory}" ]}',1,'Affichage par défaut');
-SELECT setval('ctidisplays_id_seq', 5);
+INSERT INTO "ctidisplays" VALUES(DEFAULT,'Display','{"10": [ "Nom","","","{db-firstname} {db-lastname}" ],"20": [ "Numéro","phone","","{db-phone}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail}" ], "50": [ "Source","","","{xivo-directory}" ]}',1,'Affichage par défaut');
 
 
 DROP TABLE IF EXISTS "ctimain";
@@ -512,8 +506,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(1, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
-SELECT setval('ctimain_id_seq', 2);
+INSERT INTO "ctimain" VALUES(DEFAULT, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
 
 
 DROP TABLE IF EXISTS "ctiphonehints";
@@ -526,16 +519,15 @@ CREATE TABLE "ctiphonehints" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiphonehints" VALUES(1,1,'-2','Inexistant','#030303');
-INSERT INTO "ctiphonehints" VALUES(2,1,'-1','Désactivé','#000000');
-INSERT INTO "ctiphonehints" VALUES(3,1,'0','Disponible','#0DFF25');
-INSERT INTO "ctiphonehints" VALUES(4,1,'1','En ligne OU appelle','#FF032D');
-INSERT INTO "ctiphonehints" VALUES(5,1,'2','Occupé','#FF0008');
-INSERT INTO "ctiphonehints" VALUES(6,1,'4','Indisponible','#FFFFFF');
-INSERT INTO "ctiphonehints" VALUES(7,1,'8','Sonne','#1B0AFF');
-INSERT INTO "ctiphonehints" VALUES(8,1,'9','(En Ligne OU Appelle) ET Sonne','#FF0526');
-INSERT INTO "ctiphonehints" VALUES(9,1,'16','En Attente','#F7FF05');
-SELECT setval('ctiphonehints_id_seq', 10);
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'-2','Inexistant','#030303');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'-1','Désactivé','#000000');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'0','Disponible','#0DFF25');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'1','En ligne OU appelle','#FF032D');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'2','Occupé','#FF0008');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'4','Indisponible','#FFFFFF');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'8','Sonne','#1B0AFF');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'9','(En Ligne OU Appelle) ET Sonne','#FF0526');
+INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'16','En Attente','#F7FF05');
 
 
 DROP TABLE IF EXISTS "ctiphonehintsgroup";
@@ -547,8 +539,7 @@ CREATE TABLE "ctiphonehintsgroup" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiphonehintsgroup" VALUES(1,'xivo','De base non supprimable',0);
-SELECT setval('ctiphonehintsgroup_id_seq', 2);
+INSERT INTO "ctiphonehintsgroup" VALUES(DEFAULT,'xivo','De base non supprimable',0);
 
 
 DROP TABLE IF EXISTS "ctipresences";
@@ -560,8 +551,7 @@ CREATE TABLE "ctipresences" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctipresences" VALUES(1,'xivo','De base non supprimable',0);
-SELECT setval('ctipresences_id_seq', 2);
+INSERT INTO "ctipresences" VALUES(DEFAULT,'xivo','De base non supprimable',0);
 
 
 DROP TABLE IF EXISTS "ctiprofiles";
@@ -581,15 +571,13 @@ CREATE TABLE "ctiprofiles" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiprofiles" VALUES(9,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(10,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(11,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(12,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(13,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(14,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database',-1,'Switchboard','switchboard','xivo','xivo','xivo','','',1);
-SELECT setval('ctiprofiles_id_seq', 16);
-
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','xivo','xivo','enablednd,fwdunc,fwdbusy,fwdrna','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database',-1,'Switchboard','switchboard','xivo','xivo','xivo','','',1);
 
 
 DROP TABLE IF EXISTS "ctireversedirectories";
@@ -603,8 +591,7 @@ CREATE TABLE "ctireversedirectories" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctireversedirectories" VALUES(1,'*', '*', '["xivodir"]','Répertoires XiVO',1);
-SELECT setval('ctireversedirectories_id_seq', 2);
+INSERT INTO "ctireversedirectories" VALUES(DEFAULT,'*', '*', '["xivodir"]','Répertoires XiVO',1);
 
 
 DROP TABLE IF EXISTS "ctisheetactions";
@@ -625,10 +612,9 @@ CREATE TABLE "ctisheetactions" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetactions" VALUES(6,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ ","title","","Appel {xivo-direction}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(7,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(8,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} (Custom)" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
-SELECT setval('ctisheetactions_id_seq', 9);
+INSERT INTO "ctisheetactions" VALUES(DEFAULT,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ ","title","","Appel {xivo-direction}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
+INSERT INTO "ctisheetactions" VALUES(DEFAULT,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1,0);
+INSERT INTO "ctisheetactions" VALUES(DEFAULT,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} (Custom)" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
 
 
 DROP TABLE IF EXISTS "ctisheetevents";
@@ -647,8 +633,7 @@ CREATE TABLE "ctisheetevents" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetevents" VALUES(1,'','','','','','','dial','','','{"custom-example1": "custom1"}');
-SELECT setval('ctisheetevents_id_seq', 2);
+INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','dial','','','{"custom-example1": "custom1"}');
 
 
 DROP TABLE IF EXISTS "ctistatus";
@@ -666,13 +651,12 @@ CREATE TABLE "ctistatus" (
 
 CREATE UNIQUE INDEX "ctistatus_presence_name" ON "ctistatus" (presence_id,name);
 
-INSERT INTO "ctistatus" VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',0);
-INSERT INTO "ctistatus" VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(6,1,'disconnected','Déconnecté','','#202020','6',0);
-SELECT setval('ctistatus_id_seq', 7);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',0);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'disconnected','Déconnecté','','#202020','6',0);
 
 
 DROP TABLE IF EXISTS "devicefeatures";
@@ -715,10 +699,10 @@ CREATE TYPE "dialaction_event" AS ENUM ('answer',
  'chanunavail',
  'inschedule',
  'outschedule',
-							'qctipresence',
-							'qnonctipresence',
-							'qwaittime',
-							'qwaitratio');
+ 'qctipresence',
+ 'qnonctipresence',
+ 'qwaittime',
+ 'qwaitratio');
 CREATE TYPE "dialaction_category" AS ENUM ('callfilter','group','incall','queue','schedule','user','outcall');
 CREATE TYPE "dialaction_action" AS ENUM ('none',
   'endcall:busy',
@@ -733,7 +717,7 @@ CREATE TYPE "dialaction_action" AS ENUM ('none',
   'schedule',
   'voicemenu',
   'extension',
-	'outcall',
+  'outcall',
   'application:callbackdisa',
   'application:disa',
   'application:directory',
