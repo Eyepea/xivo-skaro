@@ -228,11 +228,20 @@ class Test(unittest.TestCase):
             self.session.add(queueinfo)
         self.session.commit()
 
+    def _insert_call_answered_for_other_queue(self):
+        queueinfo = QueueInfo()
+        queueinfo.call_time_t = time.time()
+        queueinfo.queue_name = 'other_queue'
+        queueinfo.hold_time = 3400
+        queueinfo.call_picker = 'ff'
+        self.session.add(queueinfo)
+        
     def test_get_max_hold_time(self):
         window = 3600 # one hour
         nb_in_window = 3
         queue_name = 'service'
         self._insert_calls_answered_with_max_hold_time(window, nb_in_window, queue_name)
+        self._insert_call_answered_for_other_queue()
         
         max_hold_time = self._queue_statistic_dao.get_max_hold_time(queue_name, window)
         
