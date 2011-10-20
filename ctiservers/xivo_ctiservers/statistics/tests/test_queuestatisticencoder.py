@@ -21,10 +21,12 @@ class Test(unittest.TestCase):
         expected = {'stats': {'3': {
                                           'Xivo-Join': 5,
                                           'Xivo-Link': 7,
+                                          'Xivo-Lost': 11,
                                           }}}
         queuestatistic = QueueStatistic()
         queuestatistic.received_call_count = 5
         queuestatistic.answered_call_count = 7
+        queuestatistic.abandonned_call_count = 11
         
         queuestatisticencoder = QueueStatisticEncoder()
         
