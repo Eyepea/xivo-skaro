@@ -9,30 +9,57 @@ from xivo_ctiservers.dao.queuestatisticdao import QueueStatisticDAO
 class Test(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.queue_statistic_dao = Mock(QueueStatisticDAO)
+        self.queue_statistic_manager = QueueStatisticManager()
+        self.queue_statistic_manager._queue_statistic_dao = self.queue_statistic_dao
 
     def tearDown(self):
         pass
 
     def test_getStatistics(self):
-        queue_statistic_dao = Mock(QueueStatisticDAO)
-        queue_statistic_manager = QueueStatisticManager()
         window = 3600
         xqos = 25
-        queue_statistic_manager._queue_statistic_dao = queue_statistic_dao
-        queue_statistic_dao.get_received_call_count.return_value = 7
-        queue_statistic_dao.get_answered_call_count.return_value = 12
-        queue_statistic_dao.get_abandonned_call_count.return_value = 11
+        self.queue_statistic_dao.get_received_call_count.return_value = 7
+        self.queue_statistic_dao.get_answered_call_count.return_value = 12
+        self.queue_statistic_dao.get_abandonned_call_count.return_value = 11
         
         
-        queue_statistics = queue_statistic_manager.get_statistics('3', xqos, window)
+        queue_statistics = self.queue_statistic_manager.get_statistics('3', xqos, window)
         
         
         self.assertEqual(queue_statistics.received_call_count, 7)
         self.assertEqual(queue_statistics.answered_call_count, 12)
         self.assertEqual(queue_statistics.abandonned_call_count, 11)
-        queue_statistic_dao.get_received_call_count.assert_called_with('3', window)
+        self.queue_statistic_dao.get_received_call_count.assert_called_with('3', window)
+        self.queue_statistic_dao.get_answered_call_count.assert_called_with('3', window)
+        self.queue_statistic_dao.get_abandonned_call_count.assert_called_with('3', window)
 
+
+    def test_calculate_efficiency(self):
+        window = 3600
+        xqos = 25
+        self.queue_statistic_dao.get_received_call_count.return_value = 11
+        self.queue_statistic_dao.get_answered_call_count.return_value = 3
+        
+
+        queue_statistics = self.queue_statistic_manager.get_statistics('3', xqos, window)
+
+        self.assertEqual(queue_statistics.efficiency, 27)
+        
+        
+        
+    def test_efficiency_no_call_received(self):
+        window = 3600
+        xqos = 25
+        self.queue_statistic_dao.get_received_call_count.return_value = 0
+        self.queue_statistic_dao.get_answered_call_count.return_value = 0
+        
+
+        queue_statistics = self.queue_statistic_manager.get_statistics('3', xqos, window)
+
+        self.assertEqual(queue_statistics.efficiency, None)
+
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

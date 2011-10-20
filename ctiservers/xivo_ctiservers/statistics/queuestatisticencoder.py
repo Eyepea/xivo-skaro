@@ -9,5 +9,6 @@ class QueueStatisticEncoder(object):
                                'Xivo-Join': statistic.received_call_count,
                                'Xivo-Link': statistic.answered_call_count,
                                'Xivo-Lost': statistic.abandonned_call_count,
+                               'Xivo-Rate' : statistic.efficiency,
                                }
         return {'stats': res}
