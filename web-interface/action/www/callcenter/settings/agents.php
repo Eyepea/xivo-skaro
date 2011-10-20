@@ -77,6 +77,10 @@ switch($act)
 			}
 			else
 			{
+				$ipbx->discuss(array('xivo[agentlist,update]',
+									'module reload app_queue.so',
+									'module reload chan_agent.so',
+				));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
 		}
@@ -169,6 +173,10 @@ switch($act)
 			}
 			else
 			{
+				$ipbx->discuss(array('xivo[agentlist,update]',
+									'module reload app_queue.so',
+									'module reload chan_agent.so',
+				));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
 		}
