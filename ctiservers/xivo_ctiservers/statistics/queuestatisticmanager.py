@@ -12,7 +12,9 @@ class QueueStatisticManager(object):
         queue_statistic.received_call_count = self._queue_statistic_dao.get_received_call_count(queue_name, window)
         queue_statistic.answered_call_count = self._queue_statistic_dao.get_answered_call_count(queue_name, window)
         queue_statistic.abandonned_call_count = self._queue_statistic_dao.get_abandonned_call_count(queue_name, window)
+        queue_statistic.max_hold_time = self._queue_statistic_dao.get_max_hold_time(queue_name, window)
         received_and_done = self._queue_statistic_dao.get_received_and_done(queue_name, window)
+        
         if received_and_done:
             queue_statistic.efficiency = int(float(queue_statistic.answered_call_count) / received_and_done * 100)
         else:

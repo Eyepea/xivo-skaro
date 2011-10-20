@@ -207,6 +207,38 @@ class Test(unittest.TestCase):
         received_and_done = self._queue_statistic_dao.get_received_and_done(queue_name, window)
         self.assertEqual(received_and_done, count_in_window)
 
+    def _insert_calls_answered_with_max_hold_time(self, window, nb_in_window, queue_name):
+        out_of_window_delta = window + 30
+        in_window = time.time()
+        count_out_window = 3
+        out_of_window = time.time() - out_of_window_delta
+        for i in range(nb_in_window):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = in_window
+            queueinfo.queue_name = queue_name
+            queueinfo.hold_time = 5 + i
+            queueinfo.call_picker = 'ff'
+            self.session.add(queueinfo)
+        for i in range(count_out_window):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = out_of_window
+            queueinfo.queue_name = queue_name
+            queueinfo.hold_time = 5 + 2 * i
+            queueinfo.call_picker = 'ff'
+            self.session.add(queueinfo)
+        self.session.commit()
+
+    def test_get_max_hold_time(self):
+        window = 3600 # one hour
+        nb_in_window = 3
+        queue_name = 'service'
+        self._insert_calls_answered_with_max_hold_time(window, nb_in_window, queue_name)
+        
+        max_hold_time = self._queue_statistic_dao.get_max_hold_time(queue_name, window)
+        
+        self.assertEqual(max_hold_time,7)
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
