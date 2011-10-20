@@ -38,9 +38,10 @@ class Test(unittest.TestCase):
     def test_calculate_efficiency(self):
         window = 3600
         xqos = 25
-        self.queue_statistic_dao.get_received_call_count.return_value = 11
+        # self.queue_statistic_dao.get_received_call_count.return_value = 11
         self.queue_statistic_dao.get_answered_call_count.return_value = 3
         self.queue_statistic_dao.get_answered_call_in_qos_count.return_value = 0
+        self.queue_statistic_dao.get_received_and_done.return_value = 11
 
 
         queue_statistics = self.queue_statistic_manager.get_statistics('3', xqos, window)

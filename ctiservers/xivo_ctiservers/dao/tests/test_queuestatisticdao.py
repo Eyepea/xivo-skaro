@@ -187,6 +187,26 @@ class Test(unittest.TestCase):
 
         self.assertEqual(qos, number_in)
 
+    def _insert_received_and_done(self, queue_name, window, count):
+        in_window = time.time()
+        for i in range(count):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = in_window
+            queueinfo.queue_name = queue_name
+            queueinfo.call_picker = 'pascal'
+            queueinfo.hold_time = 5
+            self.session.add(queueinfo)
+
+    def test_get_received_and_done(self):
+        window = 3600 # one hour
+        count_in_window = 5
+        queue_name = 'service'
+        self._insert_received_and_done(queue_name, window, count_in_window)
+        self._insert_ongoing_call(queue_name)
+        self._insert_ongoing_call(queue_name)
+        received_and_done = self._queue_statistic_dao.get_received_and_done(queue_name, window)
+        self.assertEqual(received_and_done, count_in_window)
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
