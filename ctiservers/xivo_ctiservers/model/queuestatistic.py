@@ -7,4 +7,5 @@ class QueueStatistic(object):
         self.received_call_count = 0
         self.answered_call_count = 0
         self.abandonned_call_count = 0
-        self.efficiency = 0
+        self.efficiency = None
+        self.qos = None

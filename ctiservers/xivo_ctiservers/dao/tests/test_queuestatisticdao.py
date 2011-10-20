@@ -116,7 +116,7 @@ class Test(unittest.TestCase):
         number_of_answered_calls = self._queue_statistic_dao.get_answered_call_count(queue_name, window)
 
         self.assertEqual(answered_in_window, number_of_answered_calls)
-        
+
     def test_get_abandonned_call(self):
         window = 3600 # one hour
         unanswered_in_window = 5
@@ -131,6 +131,61 @@ class Test(unittest.TestCase):
         number_of_abandonned_calls = self._queue_statistic_dao.get_abandonned_call_count(queue_name, window)
 
         self.assertEqual(abandonned_calls, number_of_abandonned_calls)
+
+    def _insert_answered_in_qos(self, window, xqos, queue_name, number):
+        out_of_window_delta = window + 30
+        in_window = time.time()
+        count_out_window = 3
+        out_of_window = time.time() - out_of_window_delta
+        for i in range(number):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = in_window
+            queueinfo.queue_name = queue_name
+            queueinfo.hold_time = xqos - 1
+            queueinfo.call_picker = 'f'
+            self.session.add(queueinfo)
+        for i in range(count_out_window):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = out_of_window
+            queueinfo.queue_name = queue_name
+            queueinfo.hold_time = xqos
+            queueinfo.call_picker = 'f'
+            self.session.add(queueinfo)
+        self.session.commit()
+
+    def _insert_answered_out_qos(self, window, xqos, queue_name, number):
+        out_of_window_delta = window + 30
+        in_window = time.time()
+        count_out_window = 3
+        out_of_window = time.time() - out_of_window_delta
+        for i in range(number):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = in_window
+            queueinfo.queue_name = queue_name
+            queueinfo.hold_time = xqos + 1
+            queueinfo.call_picker = 'f'
+            self.session.add(queueinfo)
+        for i in range(count_out_window):
+            queueinfo = QueueInfo()
+            queueinfo.call_time_t = out_of_window
+            queueinfo.queue_name = queue_name
+            queueinfo.hold_time = xqos + 1
+            queueinfo.call_picker = 'f'
+            self.session.add(queueinfo)
+        self.session.commit()
+
+    def test_get_answered_in_qos(self):
+        window = 3600 # one hour
+        xqos = 60
+        number_in = 10
+        number_out = 25
+        queue_name = 'service'
+        self._insert_answered_in_qos(window, xqos, queue_name, number_in)
+        self._insert_answered_out_qos(window, xqos, queue_name, number_out)
+
+        qos = self._queue_statistic_dao.get_answered_call_in_qos_count(queue_name, window, xqos)
+
+        self.assertEqual(qos, number_in)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import time
 
 from xivo_ctiservers.dao.alchemy.queueinfo import QueueInfo
@@ -27,6 +28,14 @@ class QueueStatisticDAO(object):
                 .filter(QueueInfo.call_time_t > in_window)
                 .filter(or_(QueueInfo.call_picker == '',QueueInfo.call_picker == None))
                 .filter(QueueInfo.hold_time != None).count())
-    
+
+    def get_answered_call_in_qos_count(self, queue_name, window, xqos):
+        in_window = self._compute_window_time(window)
+        return (DBConnection.getSession().query(QueueInfo)
+                .filter(QueueInfo.queue_name == queue_name)
+                .filter(QueueInfo.call_time_t > in_window)
+                .filter(QueueInfo.call_picker != '')
+                .filter(QueueInfo.hold_time <= xqos).count())
+
     def _compute_window_time(self, window):
         return time.time() - window

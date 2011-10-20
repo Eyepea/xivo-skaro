@@ -16,4 +16,8 @@ class QueueStatisticManager(object):
             queue_statistic.efficiency = int(float(queue_statistic.answered_call_count) / queue_statistic.received_call_count * 100)
         else:
             queue_statistic.efficiency = None
+
+        if queue_statistic.answered_call_count:
+            answered_in_qos = self._queue_statistic_dao.get_answered_call_in_qos_count(queue_name, window, xqos)
+            queue_statistic.qos = int(float(answered_in_qos) / queue_statistic.answered_call_count * 100)
         return queue_statistic
