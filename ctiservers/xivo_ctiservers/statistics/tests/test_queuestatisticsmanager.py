@@ -25,6 +25,7 @@ class Test(unittest.TestCase):
         self.queue_statistic_dao.get_abandonned_call_count.return_value = 11
         self.queue_statistic_dao.get_answered_call_in_qos_count.return_value = 0
         self.queue_statistic_dao.get_received_and_done.return_value = 11
+        self.queue_statistic_dao.get_max_hold_time.return_value = 120
 
         queue_statistics = self.queue_statistic_manager.get_statistics('3', xqos, window)
 
@@ -32,9 +33,11 @@ class Test(unittest.TestCase):
         self.assertEqual(queue_statistics.received_call_count, 7)
         self.assertEqual(queue_statistics.answered_call_count, 12)
         self.assertEqual(queue_statistics.abandonned_call_count, 11)
+        self.assertEqual(queue_statistics.max_hold_time, 120)
         self.queue_statistic_dao.get_received_call_count.assert_called_with('3', window)
         self.queue_statistic_dao.get_answered_call_count.assert_called_with('3', window)
         self.queue_statistic_dao.get_abandonned_call_count.assert_called_with('3', window)
+        self.queue_statistic_dao.get_max_hold_time.assert_called_with('3', window)
 
     def test_calculate_efficiency(self):
         window = 3600

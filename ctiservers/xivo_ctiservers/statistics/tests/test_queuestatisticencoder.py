@@ -20,19 +20,22 @@ class Test(unittest.TestCase):
         13:54:50.752110 Server > Client
         {"class": "queuestats", "direction": "client", "function": "update", "stats": {"2": {"Xivo-Holdtime-avg": "na", "Xivo-Holdtime-max": "na", "Xivo-Join": "0", "Xivo-Link": "0", "Xivo-Lost": "0", "Xivo-Qos": "na", "Xivo-Rate": "na", "Xivo-TalkingTime": "na"}, "3": {"Xivo-Holdtime-avg": "na", "Xivo-Holdtime-max": "na", "Xivo-Join": "0", "Xivo-Link": "0", "Xivo-Lost": "0", "Xivo-Qos": "na", "Xivo-Rate": "na", "Xivo-TalkingTime": "na"}}, "timenow": 1318960490.74}
         '''
-        expected = {'stats': {'3': {
-                                          'Xivo-Join': 5,
-                                          'Xivo-Link': 7,
-                                          'Xivo-Lost': 11,
-                                          'Xivo-Rate' : 33,
-                                          'Xivo-Qos': 66,
-                                          }}}
         queuestatistic = QueueStatistic()
         queuestatistic.received_call_count = 5
         queuestatistic.answered_call_count = 7
         queuestatistic.abandonned_call_count = 11
         queuestatistic.efficiency = 33
         queuestatistic.qos = 66
+        queuestatistic.max_hold_time = 345
+
+        expected = {'stats': {'3': {
+                                          'Xivo-Join': 5,
+                                          'Xivo-Link': 7,
+                                          'Xivo-Lost': 11,
+                                          'Xivo-Rate' : 33,
+                                          'Xivo-Qos': 66,
+                                          'Xivo-Holdtime-max' : 345,
+                                          }}}
 
         queuestatisticencoder = QueueStatisticEncoder()
 
