@@ -1026,10 +1026,11 @@ class Safe:
             self.log.warning('old state %s (for user %s) not defined in config',
                              oldstate, userid)
             return
+        # available always exists, and we can't connect someone as disconnected ...
         if newstate not in profdetails:
             self.log.warning('new state %s (for user %s) not defined in config',
                              newstate, userid)
-            return
+            newstate = 'available'
 
         # XXX check on allowed states old => new
         # XXX check on ipbx-related state

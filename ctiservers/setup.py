@@ -16,7 +16,7 @@ setup(name='xivo_daemon',
                 'xivo_ctiservers.lists',
                 'xivo_ctiservers.statistics',
                 'xivo_ctiservers.dao',
-                'xivo_ctiservers.dao.sqlalchemy',],
+                'xivo_ctiservers.dao.alchemy',],
       data_files=[
           ('/usr/sbin', ['xivo_daemon']),
          ],

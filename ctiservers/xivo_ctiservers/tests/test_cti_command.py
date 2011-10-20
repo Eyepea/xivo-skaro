@@ -13,17 +13,16 @@ class Test(unittest.TestCase):
 
 
     def setUp(self):
-        pass
+        self.conn = Mock()
+        self.conn.requester = ('test_requester', 1)
 
 
     def tearDown(self):
         pass
 
     def test_regcommand_getqueuesstats_no_result(self):
-        conn = Mock()
-        conn.requester = ('test_requester', 1)
         message = {}
-        cti_command = Command(conn, message)
+        cti_command = Command(self.conn, message)
         self.assertEqual(cti_command.regcommand_getqueuesstats(), {},
                          'Default return an empty dict')
 
@@ -33,14 +32,12 @@ class Test(unittest.TestCase):
         safe = Mock(Safe)
         safe.xod_config = {'queues':queueList}
 
-        conn = Mock()
-        conn.requester = ('test_requester', 2)
         message = {"class": "getqueuesstats",
                    "commandid": 1234,
                    "on": {"3": {"window": "3600", "xqos": "60"}}}
         queueStatistics = Mock(QueueStatisticManager)
         encoder = Mock(QueueStatisticEncoder)
-        cti_command = Command(conn, message)
+        cti_command = Command(self.conn, message)
         cti_command.innerdata = safe
         cti_command._queue_statistic_manager = queueStatistics
         cti_command._queue_statistic_encoder = encoder
@@ -56,7 +53,47 @@ class Test(unittest.TestCase):
         queueStatistics.get_statistics.assert_called_with('service', 60, 3600)
         encoder.encode.assert_called_with(statisticsToEncode)
 
+    def test_regcommand_featuresput(self):
+        from xivo_ctiservers import cti_command
+        xws_inst = Mock()
+        xws_inst.connect    = Mock()
+        xws_inst.serviceput = Mock()
+        xws = Mock()
+        xws.__init__(return_value=xws_inst)
+        cti_command.xivo_webservices.xws = xws
+
+        conn = Mock()
+        conn.requester = ('test_requester', 3)
+
+        ##
+        message = {'class': 'featuresput',
+            'commandid': 1235,
+            'function': 'callrecord',
+            'value': '1'}
+
+        cti_command = Command(conn, message)
+        cti_command.ruserid = 1
+        cti_command.regcommand_featuresput()
+
+        self.assertTrue(xws_inst.connect.called)
+        xws_inst.serviceput.assert_called_with(1, {'callrecord':'1'})
+
+        ##
+        message = {'class': 'featuresput',
+            'commandid': 1522263052,
+            'function': 'fwd',
+            'value': {'destrna': '123', 'enablerna': '1'}
+        }
+
+        cti_command = Command(conn, message)
+        cti_command.ruserid = 1
+        cti_command.regcommand_featuresput()
+
+        self.assertTrue(xws_inst.connect.called)
+        xws_inst.serviceput.assert_called_with(1, {'enablerna':'1', 'destrna': '123'})
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

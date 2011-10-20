@@ -762,7 +762,7 @@ class AMI_1_8:
                                             'config': user})
             z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
             z.connect()
-            z.serviceput(userid, fn, status)
+            z.serviceput(userid, {fn: status})
             z.close()
         return reply
 

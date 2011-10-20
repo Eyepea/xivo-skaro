@@ -85,6 +85,10 @@ endif;
 				<?=$form->input_for_ms('access_statuslist',$this->bbf('ms_seek'))?>
 				<div class="slt-outlist">
 <?php
+				/* A status does not need to be authorized to access to itself,
+				 * so we remove it from the lists */
+				$status_id = $info['status']['id'];
+				unset($info['access_status']['list'][$status_id]);
 				echo    $form->select(array('name'  => 'access_statuslist',
 							'label' => false,
 							'id'    => 'it-access_statuslist',
@@ -115,6 +119,10 @@ endif;
 				</div>
 				<div class="slt-inlist">
 <?php
+				/* A status does not need to be authorized to access to itself,
+				 * so we remove it from the lists */
+				$status_id = $info['status']['id'];
+				unset($info['access_status']['slt'][$status_id]);
 				echo    $form->select(array('name'  => 'access_status[]',
 						'label' => false,
 						'id'    => 'it-access_status',

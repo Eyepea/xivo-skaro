@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # vim: set fileencoding=utf-8 :
-from xivo_ctiservers.dao.sqlalchemy.dbconnection import DBConnection
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -88,6 +87,7 @@ from xivo_ctiservers import amiinterpret
 from xivo_ctiservers import queue_logger
 from xivo_ctiservers.alarm import scheduler
 from xivo_ctiservers.alarm import alarm
+from xivo_ctiservers.dao.alchemy.dbconnection import DBConnection
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 

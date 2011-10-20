@@ -7,5 +7,9 @@ class QueueStatisticEncoder(object):
         for queue_name, statistic in statistics.iteritems():
             res[queue_name] = {
                                'Xivo-Join': statistic.received_call_count,
+                               'Xivo-Link': statistic.answered_call_count,
+                               'Xivo-Lost': statistic.abandonned_call_count,
+                               'Xivo-Rate' : statistic.efficiency,
+                               'Xivo-Qos': statistic.qos,
                                }
         return {'stats': res}

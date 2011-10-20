@@ -442,7 +442,11 @@ class Command:
         reply = {}
         z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
         z.connect()
-        z.serviceput(self.ruserid, self.commanddict.get('function'), self.commanddict.get('value'))
+
+        f = self.commanddict.get('function')
+        v = self.commanddict.get('value') if f == 'fwd' else {f: self.commanddict.get('value')}
+        
+        z.serviceput(self.ruserid, v)
         z.close()
         return reply
 
