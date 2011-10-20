@@ -88,6 +88,8 @@ class WEBI(Interfaces):
         multimsg = msg.replace('\r', '').split(self.sep)
         clireply = []
         closemenow = True
+        
+        print 'msg:', msg
 
         for iusefulmsg in multimsg:
             usefulmsg = iusefulmsg.strip()
