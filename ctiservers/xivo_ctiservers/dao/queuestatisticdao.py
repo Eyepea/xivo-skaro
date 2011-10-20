@@ -14,7 +14,8 @@ class QueueStatisticDAO(object):
 
     def get_received_call_count(self, queue_name, window):
         in_window = self._compute_window_time(window)
-        return (DBConnection.getSession().query(QueueInfo).filter(QueueInfo.queue_name == queue_name)
+        return (DBConnection.getSession().query(QueueInfo)
+                .filter(QueueInfo.queue_name == queue_name)
                 .filter(QueueInfo.call_time_t > in_window).count())
 
     def get_answered_call_count(self, queue_name, window):
@@ -48,6 +49,7 @@ class QueueStatisticDAO(object):
     def get_max_hold_time(self, queue_name, window):
         in_window = self._compute_window_time(window)
         return (DBConnection.getSession().query(func.max(QueueInfo.hold_time))
+                .filter(QueueInfo.queue_name == queue_name)
                 .filter(QueueInfo.call_time_t > in_window)).one()[0]
 
     def _compute_window_time(self, window):
