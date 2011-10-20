@@ -55,14 +55,18 @@ class xws():
         y = cjson.decode(z.read())
         return y
 
-    def serviceput(self, userid, function, value):
+    def serviceput(self, userid, values):
+        """
+
+            values: dict of function:value
+        """
         status = self.serviceget(userid)
         uri = '%s/?act=edit&id=%s' % (self.path, userid)
         userfeatures = status['userfeatures']
         # cjson workaround
         if 'timezone' in userfeatures:
             userfeatures['timezone'] = userfeatures['timezone'].replace('\\/', '/')
-        userfeatures[function] = value
+        userfeatures.update(values)
         pattern = { 'userfeatures' : userfeatures }
         self.myconn.request('POST', uri, cjson.encode(pattern), headers)
         z = self.myconn.getresponse()

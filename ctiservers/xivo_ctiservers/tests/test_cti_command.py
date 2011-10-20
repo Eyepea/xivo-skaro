@@ -53,7 +53,47 @@ class Test(unittest.TestCase):
         queueStatistics.get_statistics.assert_called_with('service', 60, 3600)
         encoder.encode.assert_called_with(statisticsToEncode)
 
+    def test_regcommand_featuresput(self):
+        from xivo_ctiservers import cti_command
+        xws_inst = Mock()
+        xws_inst.connect    = Mock()
+        xws_inst.serviceput = Mock()
+        xws = Mock()
+        xws.__init__(return_value=xws_inst)
+        cti_command.xivo_webservices.xws = xws
+
+        conn = Mock()
+        conn.requester = ('test_requester', 3)
+
+        ##
+        message = {'class': 'featuresput',
+            'commandid': 1235,
+            'function': 'callrecord',
+            'value': '1'}
+
+        cti_command = Command(conn, message)
+        cti_command.ruserid = 1
+        cti_command.regcommand_featuresput()
+
+        self.assertTrue(xws_inst.connect.called)
+        xws_inst.serviceput.assert_called_with(1, {'callrecord':'1'})
+
+        ##
+        message = {'class': 'featuresput',
+            'commandid': 1522263052,
+            'function': 'fwd',
+            'value': {'destrna': '123', 'enablerna': '1'}
+        }
+
+        cti_command = Command(conn, message)
+        cti_command.ruserid = 1
+        cti_command.regcommand_featuresput()
+
+        self.assertTrue(xws_inst.connect.called)
+        xws_inst.serviceput.assert_called_with(1, {'enablerna':'1', 'destrna': '123'})
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+
