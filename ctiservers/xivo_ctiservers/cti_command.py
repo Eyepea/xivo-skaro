@@ -144,7 +144,7 @@ class Command:
             if hasattr(self, methodname) and 'warning_string' not in messagebase:
                 try:
                     ztmp = getattr(self, methodname)()
-                    if ztmp is None:
+                    if ztmp is None or len(ztmp) == 0:
                         messagebase['warning_string'] = 'return_is_none'
                     elif isinstance(ztmp, str):
                         messagebase['error_string'] = ztmp
@@ -439,16 +439,30 @@ class Command:
         return reply
 
     def regcommand_featuresput(self):
-        reply = {}
+        user = self.rinnerdata.xod_config.get('users').finduser(self.ruserid)
+        if user is None:
+            return {'status': 'KO', 'error_string': 'unknown %d user' % self.ruserid}
+
+        func   = self.commanddict.get('function')
+        values = self.commanddict.get('value') if func == 'fwd' else\
+            {func: self.commanddict.get('value')}
+    
+        changed = False
+        for k, v in values.iteritems():
+            if v != user.get(k, None):
+                changed = True; break
+
+        # feature values has not been changed
+        if not changed:
+            return {'status': 'OK', 'warning_string': 'no changes'}
+
+        #user.update(values)
         z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
         z.connect()
-
-        f = self.commanddict.get('function')
-        v = self.commanddict.get('value') if f == 'fwd' else {f: self.commanddict.get('value')}
-        
-        z.serviceput(self.ruserid, v)
+        z.serviceput(self.ruserid, values)
         z.close()
-        return reply
+
+        return {'status': 'OK'}
 
     def regcommand_directory(self):
         # Since there's no direct, unique link between a user and a context in
