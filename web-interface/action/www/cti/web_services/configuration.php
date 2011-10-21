@@ -314,9 +314,11 @@ switch($act)
 
                     $accessstatus = array();
                     foreach(explode(',', $accessids) as $i)
-                    	if (isset($statref[$i]))
-                        	$accessstatus[] = $statref[$i];
-                    $presout[$presid][$name]['allowed'] = $accessstatus;
+                        if (isset($statref[$i]))
+                            $accessstatus[] = $statref[$i];
+                    if(!empty($accessstatus)) {
+                        $presout[$presid][$name]['allowed'] = $accessstatus;
+                    }
 
                     $actions = explode(',', $stat['actions']);
                     $pattern = '/^(.*)\((.*)\)/';
@@ -326,7 +328,9 @@ switch($act)
                         if (preg_match($pattern, $a, $match) > 0)
                         	$actionsout[$match[1]] = $match[2];
                     }
-                    $presout[$presid][$name]['actions'] = $actionsout;
+                    if(!empty($actionsout)) {
+                        $presout[$presid][$name]['actions'] = $actionsout;
+                    }
                 }
             }
             $out['userstatus'] = $presout;
