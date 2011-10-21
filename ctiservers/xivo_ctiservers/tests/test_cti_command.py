@@ -69,28 +69,63 @@ class Test(unittest.TestCase):
         message = {'class': 'featuresput',
             'commandid': 1235,
             'function': 'callrecord',
-            'value': '1'}
+            'value': True}
 
-        cti_command = Command(conn, message)
-        cti_command.ruserid = 1
-        cti_command.regcommand_featuresput()
+        ## 1. invalid/unknown user
+        cmd = Command(conn, message)
+        cmd.ruserid = -1
+        cmd.rinnerdata = Mock()
 
+        m_users = Mock()
+        m_users.finduser = Mock(return_value=None)
+        cmd.rinnerdata.xod_config = {'users':m_users}
+        res = cmd.regcommand_featuresput()
+
+        self.assertFalse(xws_inst.serviceput.called)
+        self.assertEqual(res, {'status':'KO','error_string': 'unknown -1 user'})
+
+        ## 2. value not changed
+        cmd = Command(conn, message)
+        cmd.ruserid = 1
+        cmd.rinnerdata = Mock()
+
+        user    = Mock()
+        user.get = Mock(return_value=True)
+        m_users = Mock()
+        m_users.finduser = Mock(return_value=user)
+        cmd.rinnerdata.xod_config = {'users':m_users}
+        res = cmd.regcommand_featuresput()
+
+        self.assertFalse(xws_inst.serviceput.called)
+        self.assertEqual(res, {'status':'OK','warning_string': 'no changes'})
+
+        ## 3. ok (simple feature)
+        cmd = Command(conn, message)
+        cmd.ruserid = 1
+        cmd.rinnerdata = Mock()
+        res = cmd.regcommand_featuresput()
+
+        self.assertEqual(res['status'],'OK')
         self.assertTrue(xws_inst.connect.called)
-        xws_inst.serviceput.assert_called_with(1, {'callrecord':'1'})
+        xws_inst.serviceput.assert_called_with(1, {'callrecord': True})
+        xws.inst.connect.reset_mock()
+        xws_inst.serviceput.reset_mock()
 
-        ##
+        ## 4. ok (feature with value)
         message = {'class': 'featuresput',
             'commandid': 1522263052,
             'function': 'fwd',
-            'value': {'destrna': '123', 'enablerna': '1'}
+            'value': {'destrna': '123', 'enablerna': True}
         }
 
-        cti_command = Command(conn, message)
-        cti_command.ruserid = 1
-        cti_command.regcommand_featuresput()
+        cmd = Command(conn, message)
+        cmd.ruserid = 1
+        cmd.rinnerdata = Mock()
+        cmd.regcommand_featuresput()
 
+        self.assertEqual(res['status'],'OK')
         self.assertTrue(xws_inst.connect.called)
-        xws_inst.serviceput.assert_called_with(1, {'enablerna':'1', 'destrna': '123'})
+        xws_inst.serviceput.assert_called_with(1, {'enablerna': True, 'destrna': '123'})
 
 
 if __name__ == "__main__":
