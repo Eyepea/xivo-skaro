@@ -285,11 +285,6 @@ $array['service/ipbx/asterisk/web_services/private/pbx_settings/voicemail'] = ar
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 # UI
-$array['service/ipbx/asterisk/ui/pbx_settings/users/agents/search'] = array(
-	'path'		=> 'callcenter/ui/agents',
-	'define'	=> array('XIVO_LOC_UI_ACL_CATEGORY'		=> 'pbx_settings',
-                        'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'agents',
-                        'XIVO_LOC_UI_ACTION'            => 'search'));
 $array['service/ipbx/asterisk/ui/pbx_settings/users/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/users',
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
@@ -301,11 +296,6 @@ $array['service/ipbx/asterisk/ui/pbx_settings/lines/search'] = array(
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'search'));
 $array['service/ipbx/asterisk/ui/pbx_settings/users/groups/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/groups',
-	'define'	=> array('XIVO_LOC_UI_ACL_CATEGORY'	    => 'pbx_settings',
-                        'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'users',
-                        'XIVO_LOC_UI_ACTION'		    => 'search'));
-$array['service/ipbx/asterisk/ui/pbx_settings/users/queues/search'] = array(
-	'path'		=> 'callcenter/ui/queues',
 	'define'	=> array('XIVO_LOC_UI_ACL_CATEGORY'	    => 'pbx_settings',
                         'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'users',
                         'XIVO_LOC_UI_ACTION'		    => 'search'));
