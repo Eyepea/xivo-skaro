@@ -108,7 +108,7 @@ if(isset($_QR['fm_send']) === true
 		if(dwho_issa('voicemail',$_QR) === true)
 			$ipbx->discuss(array('voicemail reload',
 								'xivo[voicemaillist,update]'));
-		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
+		#$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 }
 

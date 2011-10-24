@@ -43,8 +43,10 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		if(dwho_has_len($data,'exten') === true)
+		if(dwho_has_len($data,'exten') === true) {
+			$data['extenbrut'] = $data['exten'];
 			$data['exten'] = $this->_sre->display_extension($data['exten']);
+		}
 
 		$data['id'] = (int) $data['id'];
 		$data['typeval'] = (string) $data['typeval'];

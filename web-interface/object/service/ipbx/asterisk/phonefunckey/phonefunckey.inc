@@ -55,7 +55,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		$data['extension'] = false;
 		$data['supervision'] = (bool) $data['supervision'];
 		$data['progfunckey'] = (bool) $data['progfunckey'];
-		
+
 		switch($data['typeextenumbers'])
 		{
 			case 'extenfeatures':
@@ -71,10 +71,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 						$data['typeval'] = $data['typevalextenumbersright'];
 						return($data);
-					case 'extenfeatures-agentdynamiclogin':
-					case 'extenfeatures-agentstaticlogin':
-					case 'extenfeatures-agentstaticlogoff':
-					case 'extenfeatures-agentstaticlogtoggle':
+					case 'agentdynamiclogin':
+					case 'agentstaticlogin':
+					case 'agentstaticlogoff':
+					case 'agentstaticlogtoggle':
 					case 'groupaddmember':
 					case 'groupremovemember':
 					case 'grouptogglemember':
@@ -126,21 +126,8 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		|| isset($arr['iduserfeatures']) === false
 		|| ((int) $arr['iduserfeatures']) === 0)
 			return(false);
-			
-		if (($rs = parent::add($arr,$id)) === false)
-			return(false);
-			
-		if(($modlinefeatures = &$this->_sre->get_module('linefeatures')) === false
-		|| ($moddevicefeatures = &$this->_sre->get_module('devicefeatures')) === false)
-			return(false);
-			
-		if(($masterline = $modlinefeatures->get_user_masterline($arr['iduserfeatures'])) === false)
-			return($rs);
-		elseif(($device = $moddevicefeatures->get($masterline['device'])) === false
-		|| $this->rebuild_device_config($device['id']) === false)
-			return(false);
 
-		return($rs);
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr,$disable=null)
@@ -222,7 +209,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures-paging':
 				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
-					
+
 				$r['typeextenumbers'] = 'extenfeatures';
 				$r['typevalextenumbers'] = $type[1];
 				$r['typeextenumbersright'] = 'paging';
@@ -370,10 +357,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				   && $typeval !== 'agentstaticlogin'
 				   && $typeval !== 'agentstaticlogoff'
 				   && $typeval !== 'agentstaticlogtoggle') === true)
-				{
-					$rs['type'] = $typeright;
-					$rs['val'] = $typevalright;
-				}
+					return(false);
+
+				$rs['type'] = $typeright;
+				$rs['val'] = $typevalright;
 				break;
 			case 'user':
 			case 'queue':
@@ -383,9 +370,73 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				$rs['val'] = $typevalright;
 				break;
 		}
-		
+
 		return($rs);
 
+	}
+
+	function clean_extension($exten) {
+		if ($exten === null) {
+			return('');
+		}
+
+		$exten = (string) $exten;
+
+		if (substr($exten, 0, 1) === '_') {
+			$exten = substr($exten, 1);
+			if (preg_match('/[\[NXZ!\.]/',$exten,$out) > 0) {
+				$pos = strpos($exten, $out[0]);
+				$exten = substr($exten, 0, $pos);
+			}
+		}
+
+		return($exten);
+	}
+
+	function fkey_extension($xleft, $xlist) {
+		$components = array();
+
+		$xleft = $this->clean_extension($xleft);
+
+		foreach ($xlist as $x) {
+			$x = $this->clean_extension($x);
+			if (!empty($x)) {
+				array_push($components,$x);
+			}
+		}
+
+		return($xleft . $this->unsplit_extension($components));
+	}
+
+	/*
+	 Compute and return an extension from multi extensions.
+
+	>>> unsplit_extension(('*98','666'))
+	'**198*666'
+	*/
+	function unsplit_extension($xlist) {
+		if (!is_array($xlist)) {
+			return(false);
+		}
+
+		$ret = array();
+		$cur = '';
+		$i = 0;
+		foreach ($xlist as $x) {
+			$i += 1;
+			$arr = str_split($x, 1);
+			foreach ($arr as $c) {
+				if ($c === '*') {
+					$cur .= sprintf('**%d', $i);
+				} else {
+					$cur .= $c;
+				}
+			}
+			array_push($ret, $cur);
+			$cur = '';
+		}
+
+		return(implode('*',$ret));
 	}
 }
 
