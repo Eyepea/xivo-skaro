@@ -1,8 +1,6 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2011 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -30,7 +28,6 @@ import hashlib
 import logging
 import os
 import random
-import sys
 import string
 import threading
 import time
@@ -38,9 +35,11 @@ import Queue
 from xivo_ctiservers import lists
 import cti_urllist
 from xivo_ctiservers.lists import *
+from xivo_ctiservers import call_history
 from xivo_ctiservers import cti_directories
 from xivo_ctiservers import cti_sheets
 from xivo_ctiservers import db_connection_manager
+from xivo_ctiservers.dao.alchemy import dbconnection
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
@@ -174,6 +173,10 @@ class Safe:
         self.displays_mgr = cti_directories.DisplaysMgr()
         self.contexts_mgr = cti_directories.ContextsMgr()
         self.directories_mgr = cti_directories.DirectoriesMgr()
+        
+        cdr_uri = self.ctid.cconf.getconfig('ipbxes')[ipbxid]['cdr_db_uri']
+        dbconnection.add_connection(cdr_uri)
+        self.call_history_mgr = call_history.CallHistoryMgr.new_from_uri(cdr_uri)
 
         self.ctistack = []
 

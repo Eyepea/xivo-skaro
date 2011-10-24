@@ -1,9 +1,9 @@
+# -*- coding: UTF-8 -*-
 
 import unittest
 from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
 from tests.mock import Mock
 from xivo_ctiservers.dao.queuestatisticdao import QueueStatisticDAO
-
 
 
 class Test(unittest.TestCase):
@@ -76,8 +76,3 @@ class Test(unittest.TestCase):
         queue_statistics = self.queue_statistic_manager.get_statistics('3', xqos, window)
 
         self.assertEqual(queue_statistics.qos, 27)
-
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()

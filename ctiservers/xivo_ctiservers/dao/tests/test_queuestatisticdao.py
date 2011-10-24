@@ -1,31 +1,32 @@
+# -*- coding: UTF-8 -*-
 
+import time
 import unittest
 from xivo_ctiservers.dao.alchemy.queueinfo import QueueInfo
 from xivo_ctiservers.dao.alchemy.base import Base
-import time
 from xivo_ctiservers.dao.queuestatisticdao import QueueStatisticDAO
-from xivo_ctiservers.dao.alchemy.dbconnection import DBConnection
+from xivo_ctiservers.dao.alchemy import dbconnection
 
 
 class Test(unittest.TestCase):
-
-
     def setUp(self):
+        db_connection_pool = dbconnection.DBConnectionPool(dbconnection.DBConnection)
+        dbconnection.register_db_connection_pool(db_connection_pool)
+
         uri = 'postgresql://asterisk:asterisk@localhost/asterisktest'
-        connection = DBConnection(uri)
-        connection.connect()
+        dbconnection.add_connection_as(uri, 'queue_stats')
+        connection = dbconnection.get_connection('queue_stats')
 
-        Base.metadata.drop_all(connection.getEngine(), [QueueInfo().__table__])
-        Base.metadata.create_all(connection.getEngine(), [QueueInfo().__table__])
+        Base.metadata.drop_all(connection.get_engine(), [QueueInfo().__table__])
+        Base.metadata.create_all(connection.get_engine(), [QueueInfo().__table__])
 
-        self.session = connection.getSession()
+        self.session = connection.get_session()
 
         self.session.commit()
         self._queue_statistic_dao = QueueStatisticDAO()
-        self._queue_statistic_dao._session = self.session
 
     def tearDown(self):
-        DBConnection.close()
+        dbconnection.unregister_db_connection_pool()
 
     def _insert_received_calls(self, window, nb_in_window, queue_name):
         out_of_window_delta = window + 30
@@ -53,8 +54,6 @@ class Test(unittest.TestCase):
         self._insert_received_calls(window, count_in_window, queue_name)
         number_of_received_calls = self._queue_statistic_dao.get_received_call_count('service', window)
         self.assertEqual(number_of_received_calls, count_in_window)
-
-
 
     def _insert_calls_answered_and_unanwered(self, window, nb_in_window, queue_name):
         out_of_window_delta = window + 30
@@ -246,8 +245,3 @@ class Test(unittest.TestCase):
         max_hold_time = self._queue_statistic_dao.get_max_hold_time(queue_name, window)
         
         self.assertEqual(max_hold_time,7)
-
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()

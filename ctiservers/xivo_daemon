@@ -87,7 +87,7 @@ from xivo_ctiservers import amiinterpret
 from xivo_ctiservers import queue_logger
 from xivo_ctiservers.alarm import scheduler
 from xivo_ctiservers.alarm import alarm
-from xivo_ctiservers.dao.alchemy.dbconnection import DBConnection
+from xivo_ctiservers.dao.alchemy import dbconnection
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
@@ -319,13 +319,18 @@ class ctiserver:
     def updates_period(self):
         return int(self.cconf.getconfig('main').get('updates_period', '3600'))
 
-    def _start_db_connections(self):
-        queue_stats_uri = self.cconf.getconfig('main').get('asterisk_queuestat_db')
-        queue_logger.queue_logger.init(queue_stats_uri)
-        connection = DBConnection(queue_stats_uri)
-        log.info('Starting connection to queue stats database')
-        connection.connect()
+    def _init_db_connection_pool(self):
+        # XXX we should probably close the db_connection_pool when main loop exit
+        dbconnection.unregister_db_connection_pool()
+        dbconnection.register_db_connection_pool(self._new_db_connection_pool())
 
+    def _new_db_connection_pool(self):
+        return dbconnection.DBConnectionPool(dbconnection.DBConnection)
+
+    def _init_queue_stats(self):
+        queue_stats_uri = self.cconf.getconfig('main')['asterisk_queuestat_db']
+        queue_logger.queue_logger.init(queue_stats_uri)
+        dbconnection.add_connection_as(queue_stats_uri, 'queue_stats')
 
     def main_loop(self):    # {
         self.askedtoquit = False
@@ -339,6 +344,8 @@ class ctiserver:
         self.update_userlist = {}
         self.lastrequest_time = {}
 
+        self._init_db_connection_pool()
+
         self.cconf = cti_config.Config(XIVO_CONF_FILE, XIVO_CONF_FILE_DEFAULT)
         self.cconf.set_ipwebs(XIVOIP)
         if XIVO_CONF_OVER:
@@ -350,7 +357,7 @@ class ctiserver:
         self.cconf.update()
         self.cconf.set_rcti_special_profile()
 
-        self._start_db_connections()
+        self._init_queue_stats()
 
         xivoconf_general = self.cconf.getconfig('main')
 
