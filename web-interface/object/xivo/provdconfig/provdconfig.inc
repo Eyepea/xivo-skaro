@@ -225,7 +225,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	public function delete($id)
 	{
 		if(dwho_has_len($id) === false)
-		return(false);
+			return(false);
 
 		$uri = $this->_build_uri(array('configs',$id));
 		$rs = $this->request_delete($uri);
@@ -587,9 +587,41 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$raw_config = array_merge($raw_config,$this->build_raw_config_device($raw));
 		$raw_config = array_merge($raw_config,$this->_build_exten_config());
-		$raw_config = array_merge($raw_config,$this->_init_device_master_line($configid));
+
+		$funckeys = $this->_init_device_master_line($configid);
+		$raw_config = array_merge($raw_config,$funckeys);
+
+		if (empty($funckeys)) {
+			unset($raw_config['funckeys']);
+		}
 
 		return($globalconfig);
+	}
+
+	public function rebuild_lines_user($iduserfeatures)
+	{
+		$w = array('iduserfeatures' => (int) $iduserfeatures);
+		if (($list = $this->_linefeatures->get_all_where($w)) === false)
+			return(false);
+
+		for($i = 0;$i < $nb;$i++) {
+			$ref = &$rs[$i];
+			if ($this->rebuild_device_config($ref['device']) === false)
+				return(false);
+		}
+
+		return(true);
+	}
+
+	public function rebuild_master_line_user($iduserfeatures)
+	{
+		if (($line = $this->_linefeatures->get_user_masterline($iduserfeatures)) === false)
+			return(false);
+
+		if ($this->rebuild_device_config($line['device']) === false)
+			return(false);
+
+		return(true);
 	}
 
 	public function rebuild_device_config($deviceid)
@@ -635,10 +667,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		// build funckey from user masterline
 		if ($iduserfeatures !== false
-		&& ($rs = $this->_build_funckey($iduserfeatures)) !== false) {
-			$raw_config['funckeys'] = $rs;
-		} else {
+		&& ($rs = $this->_build_funckey($iduserfeatures)) === false) {
 			unset($raw_config['funckeys']);
+		} else {
+			$raw_config['funckeys'] = $rs;
 		}
 
 		return($raw_config);
@@ -697,10 +729,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$where = array();
 		$where['iduserfeatures'] = $iduserfeatures;
-
 		if (($rs = $this->_phonefunckey->get_all_where($where, null,true, array('fknum' => SORT_ASC))) === false
 		|| ($nb = count($rs)) === 0) {
-			return($conf);
+			return(false);
 		}
 
 		for($i = 0;$i < $nb;$i++) {
@@ -753,7 +784,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 									$typevalright)
 								);
 					}
-
 					break;
 				case 'featuremap':
 				case 'extenfeatures':
@@ -807,7 +837,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		}
 
-		return(empty($conf) ? false : $conf);
+		return((empty($conf) ? false : $conf));
 	}
 
 	public function build_raw_config_siplines($arr,$confregistrar)

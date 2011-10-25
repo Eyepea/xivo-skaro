@@ -39,6 +39,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_appentity		= false;
 	var $_entity		= false;
 	var $_phonefunckey	= null;
+	var $_provdconfig	= false;
 	var $_musiconhold	= array();
 	var $_profileclientlist	= array();
 	var $_conf			= array();
@@ -99,6 +100,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_appentity = &$_XOBJ->get_application('entity')) === false
 		|| ($this->_entity = &$_XOBJ->get_module('entity')) === false
+		|| ($this->_provdconfig = &$_XOBJ->get_module('provdconfig')) === false
 		|| ($this->_linefeatures = $this->_service->get_module('linefeatures')) === false
 		|| ($this->_attachment = $this->_service->get_module('attachment')) === false)
 			return(false);
@@ -1169,6 +1171,22 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$tmp[$info['fknum']] = 1;
 				$reslist[$j++] = $info;
 			}
+
+			if(($reslist['typeextenumbers'] !== null
+			|| $reslist['typeextenumbersright'] !== null) === true
+			&& $this->_phonefunckey->is_valid($reslist['typeextenumbers'],
+							  $reslist['typevalextenumbers'],
+							  $reslist['typeextenumbersright'],
+							  $reslist['typevalextenumbersright'],
+							  $reslist['iduserfeatures'],
+							  null) === false)
+				return(false);
+			else if($reslist['typeextenumbers'] === 'extenfeatures'
+			&& $reslist['typevalextenumbers'] === 'bsfilter'
+			&& $this->_dso->chk_bsfilter($reslist['iduserfeatures'],
+						     $bsfilter,
+						     $reslist['typevalextenumbersright']) === false)
+				return(false);
 		}
 
 		$this->_set_result('phonefunckey',$reslist);
@@ -1363,36 +1381,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$bsfilter = $this->get_result_var('userfeatures','bsfilter');
 
 		$id = $this->_return['phonefunckey'] = array();
+		$id['iduserfeatures'] = $userfeaturesid;
 
 		$nb = count($rs);
-
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
 			$ref['iduserfeatures'] = $userfeaturesid;
 
-			if(($ref['typeextenumbers'] !== null
-			   || $ref['typeextenumbersright'] !== null) === true
-			&& $this->_phonefunckey->is_valid($ref['typeextenumbers'],
-							  $ref['typevalextenumbers'],
-							  $ref['typeextenumbersright'],
-							  $ref['typevalextenumbersright'],
-							  $ref['iduserfeatures'],
-							  null) === false)
-				return(false);
-			else if($ref['typeextenumbers'] === 'extenfeatures'
-			&& $ref['typevalextenumbers'] === 'bsfilter'
-			&& $this->_dso->chk_bsfilter($ref['iduserfeatures'],
-						     $bsfilter,
-						     $ref['typevalextenumbersright']) === false)
-				return(false);
-
-			$id['iduserfeatures'] = $ref['iduserfeatures'];
-			$id['fknum'] = $ref['fknum'];
-
 			if($this->_phonefunckey->add($ref) === false)
 				return(false);
 
+			$id['fknum'] = $ref['fknum'];
 			$this->_return['phonefunckey'][] = $id;
 		}
 
@@ -1499,13 +1499,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->edit_rightcall() === false
 		|| $this->edit_dialaction() === false
 		|| $this->edit_voicemail() === false
-		|| $this->edit_phonefunckey() === false
-		|| $this->edit_schedule_path() === false)
+		|| $this->edit_schedule_path() === false
+		|| $this->edit_phonefunckey() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
 			return(false);
 		}
+
+		if($this->_provdconfig->rebuild_master_line_user($this->_info['userfeatures']['id']) === false)
+			return(false);
 
 		$this->_status = '';
 		return(true);
@@ -1771,54 +1774,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_return['phonefunckey'] = $this->delete_phonefunckey();
 
-		if(($rs = $this->get_result('phonefunckey')) === null || $rs === false)
-			return($rs);
-
-		$bsfilter = $this->get_result_var('userfeatures','bsfilter');
-
-		$id = $this->_return['phonefunckey'] = array();
-
-		$nb = count($rs);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$rs[$i];
-			$ref['iduserfeatures'] = $this->_info['userfeatures']['id'];
-
-			if(($ref['typeextenumbers'] !== null
-			|| $ref['typeextenumbersright'] !== null) === true
-			&& $this->_phonefunckey->is_valid($ref['typeextenumbers'],
-							  $ref['typevalextenumbers'],
-							  $ref['typeextenumbersright'],
-							  $ref['typevalextenumbersright'],
-							  $ref['iduserfeatures'],
-							  null) === false)
-				return(false);
-			else if($ref['typeextenumbers'] === 'extenfeatures'
-			&& $ref['typevalextenumbers'] === 'bsfilter'
-			&& $this->_dso->chk_bsfilter($ref['iduserfeatures'],
-						     $bsfilter,
-						     $ref['typevalextenumbersright']) === false)
-				return(false);
-
-			$id['iduserfeatures'] = $ref['iduserfeatures'];
-			$id['fknum'] = $ref['fknum'];
-
-			if($this->_phonefunckey->add($ref) === false)
-				return(false);
-
-			$this->_return['phonefunckey'][] = $id;
-		}
-
-		if(isset($this->_return['phonefunckey'][0]) === false)
-			$this->_return['phonefunckey'] = false;
-
-		return(true);
+		return($this->add_phonefunckey($this->_info['userfeatures']['id']));
 	}
 
 	function edit_schedule_path()
 	{
-		$this->_schedule_path->delete_where(array('path' => 'user', 'pathid' =>	intval($this->_info['userfeatures']['id'])));
+		$this->_schedule_path->delete_where(array('path' => 'user', 'pathid' => intval($this->_info['userfeatures']['id'])));
 
 		return $this->_schedule_path->schedule_add(
 			$this->get_result('schedule_id'),

@@ -127,7 +127,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		|| ((int) $arr['iduserfeatures']) === 0)
 			return(false);
 
-		return(parent::add($arr,$id));
+		if (($rs = parent::add($arr,$id)) === false)
+			return(false);
+
+		return($rs);
 	}
 
 	function edit($id,$arr,$disable=null)
