@@ -446,13 +446,13 @@ Delete messages from voicemail
 Agent
 
 ; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogtoggle)
-Disconnect a static agent
+Connect/Disconnect a static agent
 
 ; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogin)
 Connect a static agent
 
 ; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogoff)
-Disconnect a dynamic agent
+Disconnect a static agent
 
 ; fm_phonefunckey_type-opt(extenfeatures-agentdynamiclogin)
 Connect a dynamic agent
