@@ -2127,7 +2127,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function _prepare_import($arr)
+	function _prepare_import($arr, $partial=false)
 	{
 		$issa_userfeatures = dwho_issa('userfeatures',$arr);
 
@@ -2143,9 +2143,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($issa_userfeatures === true)
 		{
-			$arr['userfeatures']['callerid'] = '';
+			if(!partial)
+				$arr['userfeatures']['callerid'] = '';
 
-			if (dwho_issa('entityid',$arr['userfeatures']) === false)
+			if (!partial && dwho_issa('entityid',$arr['userfeatures']) === false)
 				$arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
@@ -2154,7 +2155,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(dwho_has_len($arr['userfeatures'],'lastname') === true)
 				$arr['userfeatures']['callerid'] .= $arr['userfeatures']['lastname'];
 
-			trim($arr['userfeatures']['callerid']);
+			if(!partial)
+				trim($arr['userfeatures']['callerid']);
 		}
 
 		if($issa_userfeatures === true
@@ -2343,13 +2345,37 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function edit_from_json()
+	function array_merge_recursive($arr1, $arr2)
+	{
+		foreach($arr2 as $k => $v)
+		{
+			if(array_key_exists($k, $arr1) && is_array($arr1[$k]) && is_array($v))
+				$arr1[$k] = $this->array_merge_recursive($arr1[$k], $arr2[$k]);
+			else
+				$arr1[$k] = $v;
+		}
+
+		return $arr1;
+	}
+
+	function edit_from_json($mergewith=null)
 	{
 		if(($data = $this->_get_data_from_json()) === false
-		|| ($arr = $this->_prepare_import($data)) === false
-		|| $this->set_edit($arr) === false
-		|| $this->edit() === false)
+		|| ($arr = $this->_prepare_import($data, !is_null($mergewith))) === false)
+		{
+			var_dump($this->get_error());
 			return(false);
+		}
+
+		if(!is_null($mergewith))
+			$arr = $this->array_merge_recursive($mergewith,$arr);
+
+		if($this->set_edit($arr) === false
+		|| $this->edit() === false)
+		{
+			var_dump($this->get_error());
+			return(false);
+		}
 
 		return(true);
 	}

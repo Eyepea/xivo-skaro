@@ -70,9 +70,13 @@ switch($act)
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
 
-		if($appuser->get($_QRY->get('id')) === false)
-			$status = 404;
-		else if($appuser->edit_from_json() === true)
+		if(($user = $appuser->get($_QRY->get('id'),
+										 null,
+										 false,
+										 array('linefeatures' => true, 'entity' => true))) === false)
+				 $status = 404;
+
+		else if($appuser->edit_from_json($user) === true)
 		{
 			$status = 200;
 			$ipbx->discuss(array('dialplan reload',

@@ -26,14 +26,14 @@ from xivojson import *
 from globals  import *
 
 
-class Test02User(unittest.TestCase):
+class Test02User(XiVOTestCase):
     def setUp(self):
         global IP, PORT, SSL, USERNAME, PASSWORD
 
         self.client = JSONClient(IP, PORT, SSL, USERNAME, PASSWORD)
         self.obj    = 'users'
 
-    def test_01_user(self):
+    def ztest_01_user(self):
         (resp, data) = self.client.list(self.obj)
         self.assertEqual(resp.status, 200)
         
@@ -84,3 +84,31 @@ class Test02User(unittest.TestCase):
 #        self.assertEqual(resp.status, 404)
 #        
 
+
+    def test_02_edit(self):
+        id = 7
+
+        (resp, data) = self.client.view(self.obj, id)
+        self.assertEqual(resp.status, 200)
+        ref = self.jdecode(data)
+        with open('/tmp/ref','w') as f:
+            pprint.pprint(ref, f)
+
+        (resp, data) = self.client.edit(self.obj, 
+            {'userfeatures': {'enableunc': True, 'destunc': '123'}},
+            id
+        )
+        self.assertEqual(resp.status, 200)
+
+        (resp, data) = self.client.view(self.obj, id)
+        self.assertEqual(resp.status, 200)
+        diff = self.jdecode(data)
+        with open('/tmp/diff','w') as f:
+            pprint.pprint(diff, f)
+
+        ref['userfeatures']['enableunc'] = True
+        ref['userfeatures']['destunc']   = '123'
+        self.assertEqual(ref, diff)
+
+if __name__ == '__main__':
+    unittest.main()

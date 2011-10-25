@@ -60,15 +60,9 @@ class xws():
 
             values: dict of function:value
         """
-        status = self.serviceget(userid)
         uri = '%s/?act=edit&id=%s' % (self.path, userid)
-        userfeatures = status['userfeatures']
-        # cjson workaround
-        if 'timezone' in userfeatures:
-            userfeatures['timezone'] = userfeatures['timezone'].replace('\\/', '/')
-        userfeatures.update(values)
-        pattern = { 'userfeatures' : userfeatures }
-        self.myconn.request('POST', uri, cjson.encode(pattern), headers)
+
+        self.myconn.request('POST', uri, cjson.encode({'userfeatures': values}), headers)
         z = self.myconn.getresponse()
         z.read()
         return
