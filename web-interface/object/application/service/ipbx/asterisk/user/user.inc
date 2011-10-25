@@ -2382,13 +2382,37 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function edit_from_json()
+	function array_merge_recursive($arr1, $arr2)
+	{
+		foreach($arr2 as $k => $v)
+		{
+			if(array_key_exists($k, $arr1) && is_array($v))
+				$arr1[$k] = $this->array_merge_recursive($arr1[$k], $arr2[$k]);
+			else
+				$arr1[$k] = $v;
+		}
+
+		return $arr1;
+	}
+
+	function edit_from_json($mergewith=null)
 	{
 		if(($data = $this->_get_data_from_json()) === false
-		|| ($arr = $this->_prepare_import($data)) === false
-		|| $this->set_edit($arr) === false
-		|| $this->edit() === false)
+		|| ($arr = $this->_prepare_import($data)) === false)
+		{
+			var_dump($this->get_error());
 			return(false);
+		}
+
+		if(!is_null($mergewith))
+			$arr = $this->array_merge_recursive($mergewith,$arr);
+
+		if($this->set_edit($arr) === false
+		|| $this->edit() === false)
+		{
+			var_dump($this->get_error());
+			return(false);
+		}
 
 		return(true);
 	}
