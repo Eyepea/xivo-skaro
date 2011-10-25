@@ -88,21 +88,6 @@ CREATE INDEX "entity__idx__disable" ON "entity"("disable");
 CREATE UNIQUE INDEX "entity__uidx__name" ON "entity"("name");
 
 
-DROP TABLE IF EXISTS "i18ncache";
-CREATE TABLE "i18ncache" (
- "locale" varchar(7) NOT NULL DEFAULT '',
- "path" varchar(255) NOT NULL DEFAULT '',
- "language" varchar(3) NOT NULL DEFAULT '',
- "dcreate" INTEGER NOT NULL DEFAULT 0,
- "dupdate" INTEGER NOT NULL DEFAULT 0,
- "obj" TEXT NOT NULL, -- BYTEA
- PRIMARY KEY("locale","path")
-);
-
-CREATE INDEX "i18ncache__idx__language" ON "i18ncache"("language");
-CREATE INDEX "i18ncache__idx__dupdate" ON "i18ncache"("dupdate");
-
-
 DROP TABLE IF EXISTS "iproute";
 CREATE TABLE "iproute" (
  "id" SERIAL,

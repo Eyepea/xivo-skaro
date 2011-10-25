@@ -26,7 +26,6 @@ define('DWHO_I18N_ARG_SEPARATOR','|');
 class dwho_i18n
 {
     var $_file        = null;
-    var $_dso        = null;
     var $_load        = array();
     var $_copy        = false;
     var $_loop        = array();
@@ -40,18 +39,6 @@ class dwho_i18n
 
         $this->_path_i18n = rtrim(DWHO_PATH_I18N,DWHO_SEP_DIR);
         $this->_path_i18n_len = mb_strlen($this->_path_i18n);
-
-        if(($dso = &dwho_gct::get('DWHO_DSO')) !== false)
-        {
-            $name = 'dwho_i18n_'.$dso->get_type();
-
-            if(dwho::load_class($name,'i18n::datastorage',$dso->get_type()) === false)
-                trigger_error('Failed to load i18n Datastorage',E_USER_ERROR);
-
-            $this->_dso = new $name($dso);
-        }
-        else
-            $this->_dso = false;
 
         if(isset($_SESSION['_i18n']) === false)
             $_SESSION['_i18n'] = array();
@@ -748,10 +735,6 @@ class dwho_i18n
 
         $cache['language']    = $this->get_language($cache['locale']);
         $cache['path']        = $this->_file['path'];
-
-        if(is_object($this->_dso) === true)
-            return($this->_dso->save_cache($cache));
-
         $cache['filectime'] = $cache['dcreate'];
 
         return($cache);
@@ -776,11 +759,7 @@ class dwho_i18n
 
         if(isset($cached[$namespace][$this->_file['locale']][$this->_file['path']]) === false)
         {
-            if(is_array($cache) === false
-            && (is_object($this->_dso) === false
-               || ($cache = $this->_dso->get_cache($this->_file)) === false) === true)
-                return(false);
-            else if($cache['locale'] !== $this->_file['locale']
+            if($cache['locale'] !== $this->_file['locale']
             || $cache['path'] !== $this->_file['path']
             || dwho_issa('obj',$cache) === false)
                 return(false);
