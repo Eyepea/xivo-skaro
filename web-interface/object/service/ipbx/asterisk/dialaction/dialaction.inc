@@ -69,9 +69,13 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 		if(isset($data[$exp[0]]) === true)
 		{
 			if(isset($exp[1]) === false)
+			{
+				$data['action'] = null;
 				$data[$exp[0]]['action'] = $exp[0];
+			}
 			else
 			{
+				$data['action'] = $exp[1];
 				$data[$exp[0]]['action'] = $exp[1];
 				$data[$exp[1]]['action'] = $exp[1];
 				$data[$exp[1]]['actionarg1'] = $data['actionarg1'];
@@ -113,7 +117,7 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 			}
 		}
 
-		$data['action'] = $exp[0];
+		$data['actiontype'] = $exp[0];
 		$data['linked'] = (bool) $data['linked'];
 
 		return($data);
