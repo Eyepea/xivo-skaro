@@ -606,7 +606,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		for($i = 0;$i < $nb;$i++) {
 			$ref = &$rs[$i];
-			if ($this->rebuild_device_config($ref['device']) === false)
+			if (dwho_has_len($line['device']) === true
+			&& $this->rebuild_device_config($ref['device']) === false)
 				return(false);
 		}
 
@@ -618,7 +619,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (($line = $this->_linefeatures->get_user_masterline($iduserfeatures)) === false)
 			return(false);
 
-		if ($this->rebuild_device_config($line['device']) === false)
+		if (dwho_has_len($line['device']) === true
+		&& $this->rebuild_device_config($line['device']) === false)
 			return(false);
 
 		return(true);
