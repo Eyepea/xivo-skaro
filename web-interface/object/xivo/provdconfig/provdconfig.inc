@@ -602,7 +602,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	{
 		$w = array('iduserfeatures' => (int) $iduserfeatures);
 		if (($list = $this->_linefeatures->get_all_where($w)) === false)
-			return(false);
+			return(null);
 
 		for($i = 0;$i < $nb;$i++) {
 			$ref = &$rs[$i];
@@ -617,7 +617,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	public function rebuild_master_line_user($iduserfeatures)
 	{
 		if (($line = $this->_linefeatures->get_user_masterline($iduserfeatures)) === false)
-			return(false);
+			return(null);
 
 		if (dwho_has_len($line['device']) === true
 		&& $this->rebuild_device_config($line['device']) === false)
