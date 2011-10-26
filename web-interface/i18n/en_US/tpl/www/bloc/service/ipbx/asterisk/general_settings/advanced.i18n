@@ -36,18 +36,6 @@ Disable connection announce:
 ; fm_agentfeatures_numgroup
 Group:
 
-; fm_agentoptions_ackcall
-Press DTMF before call pickup:
-
-; fm_agentoptions_ackcall-opt-no
-No
-
-; fm_agentoptions_ackcall-opt-yes
-Yes
-
-; fm_agentoptions_ackcall-opt-always
-Always
-
 ; fm_agentoptions_autologoff
 Ringing time before logging off the agent:
 
@@ -108,9 +96,6 @@ Default
 ; fm_agentoptions_enddtmf
 DTMF key: 
 
-; fm_agentoptions_acceptdtmf
-DTMF key: 
-
 ; fm_agentoptions_endcall
 Press DTMF to hangup: 
 
@@ -129,12 +114,6 @@ Asterisk config: autologoff
 
 ; hlp_fm_agentoptions_autologoffunavail
 Asterisk config: autologoffunavail
-
-; hlp_fm_agentoptions_ackcall
-Asterisk config: ackcall
-
-; hlp_fm_agentoptions_acceptdtmf
-Asterisk config: acceptdtmf
 
 ; hlp_fm_agentoptions_endcall
 Asterisk config: endcall
@@ -168,16 +147,6 @@ Asterisk config: savecallsin
 
 ; hlp_fm_agentoptions_custom_beep
 Asterisk config: custom_beep
-
-
-; fm_agentoptions_ackcall-opt(no)
-No
-
-; fm_agentoptions_ackcall-opt(yes)
-Yes
-
-; fm_agentoptions_ackcall-opt(always)
-Always
 
 ; fm_agentoptions_custom-beep-opt(default)
 Default
