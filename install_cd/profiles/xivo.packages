@@ -7,3 +7,5 @@ openssh-server
 console-data
 locales-all
 libbind9-60
+console-tools
+console-setup

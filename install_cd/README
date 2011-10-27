@@ -1,3 +1,6 @@
 = Xivo install cd for squeeze xivo skaro =
 
 aptitude install simple-cdd syslinux-common netpbm
+
+generate CD with following command:
+	$> simple-cdd --dist squeeze -g  --profiles-udeb-dist squeeze --conf ./xivo.conf

@@ -21,6 +21,7 @@ apt-get install -y -o Dpkg::Options::="--force-confold" pf-fai-xivo-1.2-skaro-de
 
 # restore apt configuration
 mv /etc/apt/sources.list.bkp /etc/apt/sources.list
+apt-get update
 
 # set machine hostname
 echo "xivo" > /etc/hostname

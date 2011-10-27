@@ -117,3 +117,9 @@ d-i partman/confirm_nooverwrite boolean true
 
 # d-i	preseed/early_command	string touch /PRESEED
 # d-i preseed/early_command string anna-install simple-cdd-profiles
+
+# keyboard
+d-i preseed/early_command string anna-install simple-cdd-profiles
+console-common console-data/keymap/policy select Don't touch keymap
+console-data console-data/keymap/policy select Don't touch keymap
+
