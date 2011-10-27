@@ -44,7 +44,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 				       array('linked','action','actionarg1','actionarg2'));
 
 		$this->_dso->leftjoin($this->_table['userfeatures'],
-				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['userfeatures'].'.id',
+				      #$this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['userfeatures'].'.id',
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_dso->cast($this->_table['userfeatures'].'.id','varchar'),
 				      null,
 				      array('userfirstname'	=> 'firstname',
 					    'userlastname'	=> 'lastname'));
@@ -68,7 +69,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 */
 
 		$this->_dso->leftjoin($this->_table['groupfeatures'],
-				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['groupfeatures'].'.id',
+				      #$this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['groupfeatures'].'.id',
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_dso->cast($this->_table['groupfeatures'].'.id','varchar'),
 				      null,
 				      array('groupname'		=> 'name',
 					    'groupnumber'	=> 'number',
@@ -82,7 +84,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 					  $this->_table['groupfeatures'].'.deleted = 0');
 
 		$this->_dso->leftjoin($this->_table['queuefeatures'],
-				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['queuefeatures'].'.id',
+				      #$this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['queuefeatures'].'.id',
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_dso->cast($this->_table['queuefeatures'].'.id','varchar'),
 				      null,
 				      array('queuename'		=> 'name',
 					    'queuenumber'	=> 'number',
@@ -93,7 +96,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 				       'queue');
 
 		$this->_dso->leftjoin($this->_table['meetmefeatures'],
-				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['meetmefeatures'].'.id',
+				      #$this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['meetmefeatures'].'.id',
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_dso->cast($this->_table['meetmefeatures'].'.id','varchar'),
 				      null,
 				      array('meetmename'	=> 'name',
 					    'meetmenumber'	=> 'confno',
@@ -104,7 +108,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 				       'meetme');
 
 		$this->_dso->leftjoin($this->_table['voicemail'],
-				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['voicemail'].'.uniqueid',
+				      #$this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['voicemail'].'.uniqueid',
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_dso->cast($this->_table['voicemail'].'.uniqueid','varchar'),
 				      null,
 				      array('voicemailfullname'	=> 'fullname',
 					    'voicemailmailbox'	=> 'mailbox',
@@ -128,7 +133,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 		*/
 
 		$this->_dso->leftjoin($this->_table['voicemenu'],
-				      $this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['voicemenu'].'.id',
+				      #$this->_dso->cast($this->_table['dialaction'].'.actionarg1','int').' = '.$this->_table['voicemenu'].'.id',
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_dso->cast($this->_table['voicemenu'].'.id','varchar'),
 				      null,
 				      array('voicemenuname'	=> 'name',
 					    'voicemenunumber'	=> 'number',

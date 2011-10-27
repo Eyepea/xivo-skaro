@@ -164,7 +164,12 @@ if(isset($_QR['fm_send']) === true)
 	else
 	{
 		$info['general'] = $_QR['general'];
-		$ipbx->discuss(array('xivo[cticonfig,update]'));
+		$ipbx->discuss(array('module reload chan_agent.so',
+							'module reload app_queue.so',
+							'module reload app_meetme.so',
+							'sip reload',
+							'xivo[cticonfig,update]')
+		);
 	}
 }
 

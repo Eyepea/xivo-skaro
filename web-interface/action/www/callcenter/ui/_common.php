@@ -19,8 +19,7 @@
 #
 
 $_ERR = &dwho_gct::get('dwho_tracerror');
-$_ERR->set_param('report_type',
-		 $_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
+$_ERR->set_param('report_type', $_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
 
 dwho::load_class('dwho_http');
 $http_response = dwho_http::factory('response');
@@ -31,7 +30,7 @@ if(isset($access_category,$access_subcategory) === false)
 	$http_response->send(true);
 }
 
-if(xivo_user::chk_acl($access_category,$access_subcategory) === false)
+if(xivo_user::chk_acl($access_category,$access_subcategory,'service/callcenter') === false)
 {
 	$http_response->set_status_line(403);
 	$http_response->send(true);

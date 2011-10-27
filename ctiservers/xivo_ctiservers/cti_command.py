@@ -1,6 +1,7 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
+from xivo_ctiservers.statistics.queuestatisticencoder import QueueStatisticEncoder
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -32,7 +33,6 @@ import threading
 import time
 from xivo_ctiservers import xivo_webservices
 from xivo_ctiservers import cti_fax
-from xivo_ctiservers import cti_history
 
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
@@ -54,7 +54,6 @@ REGCOMMANDS = [
     'faxsend',
     'filetransfer',
     'chitchat',
-    'actionfiche',
 
     'callcampaign',
     'logfromclient',
@@ -98,7 +97,8 @@ class Command:
         self.ctid = self.connection.ctid
         self.commanddict = thiscommand
         self.othermessages = list()
-        self._queue_statistics_manager = QueueStatisticManager()
+        self._queue_statistic_manager = QueueStatisticManager()
+        self._queue_statistic_encoder = QueueStatisticEncoder()
         self.log = logging.getLogger('cti_command(%s:%d)' % self.connection.requester)
         return
 
@@ -143,7 +143,7 @@ class Command:
             if hasattr(self, methodname) and 'warning_string' not in messagebase:
                 try:
                     ztmp = getattr(self, methodname)()
-                    if ztmp is None:
+                    if ztmp is None or len(ztmp) == 0:
                         messagebase['warning_string'] = 'return_is_none'
                     elif isinstance(ztmp, str):
                         messagebase['error_string'] = ztmp
@@ -438,12 +438,30 @@ class Command:
         return reply
 
     def regcommand_featuresput(self):
-        reply = {}
+        user = self.rinnerdata.xod_config.get('users').finduser(self.ruserid)
+        if user is None:
+            return {'status': 'KO', 'error_string': 'unknown %d user' % self.ruserid}
+
+        func   = self.commanddict.get('function')
+        values = self.commanddict.get('value') if func == 'fwd' else\
+            {func: self.commanddict.get('value')}
+    
+        changed = False
+        for k, v in values.iteritems():
+            if v != user.get(k, None):
+                changed = True; break
+
+        # feature values has not been changed
+        if not changed:
+            return {'status': 'OK', 'warning_string': 'no changes'}
+
+        #user.update(values)
         z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
         z.connect()
-        z.serviceput(self.ruserid, self.commanddict.get('function'), self.commanddict.get('value'))
+        z.serviceput(self.ruserid, values)
         z.close()
-        return reply
+
+        return {'status': 'OK'}
 
     def regcommand_directory(self):
         # Since there's no direct, unique link between a user and a context in
@@ -456,66 +474,70 @@ class Command:
         return result
 
     def regcommand_history(self):
-        """
-        Receives an history request from a CTI client
-        Modes:
-            0 - outcalls
-            1 - incalls
-            2 - missed
-        {
-            "class": "history",
-            "commandid": 218187832,
-            "mode": "2",
-            "size": "8",
-            "xuserid": "dev/3"
-        }
-        """
-        reply = {}
-        phoneidstruct = None
-        if self.ruserid in self.rinnerdata.xod_config.get('users').keeplist:
-            for k, v in self.rinnerdata.xod_config.get('phones').keeplist.iteritems():
-                if self.ruserid == str(v.get('iduserfeatures')):
-                    phoneidstruct = self.rinnerdata.xod_config.get('phones').keeplist.get(k)
-                    break
-
-        if phoneidstruct:
-            mode = int(self.commanddict.get('mode'))
-            size = int(self.commanddict.get('size'))
-            uri = self.ctid.cconf.getconfig('ipbxes').get(self.ripbxid).get('cdr_db_uri')
-            history = cti_history.History(uri)
-            history.setlimit(size)
-            if 'morerecentthan' in self.commanddict:
-                history.setlastdate(self.commanddict.get('morerecentthan'))
-            history.setlikestring(phoneidstruct.get('protocol').upper(), phoneidstruct.get('name'))
-            if mode == 0:
-                pp = history.fetch_outgoing_calls()
-            elif mode == 1:
-                pp = history.fetch_answered_calls()
-            elif mode == 2:
-                pp = history.fetch_missed_calls()
-            rs = []
-            for p in pp:
-                r = {}
-                r['calldate'] = p.get('calldate').isoformat()
-                r['duration'] = p.get('duration')
-                if mode == 0:
-                    termination = self.rinnerdata.ast_channel_to_termination(p.get('dstchannel'))
-                    phoneid = self.rinnerdata.zphones(termination.get('protocol'), termination.get('name'))
-                    usersummary = self.rinnerdata.usersummary_from_phoneid(phoneid)
-                    r['fullname'] = '"%s" <%s>' % (usersummary.get('fullname'), usersummary.get('phonenumber'))
-                    if not phoneid:
-                        # occurs in agentlogin (dis)connection cases
-                        self.log.warning('could not find a phoneid for %s' % p)
-                else:
-                    r['fullname'] = p.get('clid')
-                # todo : transmit a name + a number if possible ...
-                # r['number'] = p.get('src')
-                rs.append(r)
-            reply = {'mode' : mode, 'history' : rs}
+        phone = self._get_phone_from_user_id(self.ruserid, self.rinnerdata)
+        if phone is None:
+            reply = self._format_history_reply(None)
         else:
-            # no phone for user
-            reply = {}
+            history = self._get_history_for_phone(phone)
+            reply = self._format_history_reply(history)
         return reply
+
+    def _get_phone_from_user_id(self, user_id, innerdata):
+        for phone in innerdata.xod_config['phones'].keeplist.itervalues():
+            if str(phone['iduserfeatures']) == user_id:
+                return phone
+        return None
+
+    def _get_history_for_phone(self, phone):
+        mode = int(self.commanddict['mode'])
+        limit = int(self.commanddict['size'])
+        endpoint = self._get_endpoint_from_phone(phone)
+        if mode == 0:
+            return self._get_outgoing_history_for_endpoint(endpoint, limit)
+        elif mode == 1:
+            return self._get_answered_history_for_endpoint(endpoint, limit)
+        elif mode == 2:
+            return self._get_missed_history_for_endpoint(endpoint, limit)
+        else:
+            return None
+
+    def _get_outgoing_history_for_endpoint(self, endpoint, limit):
+        call_history_mgr = self.rinnerdata.call_history_mgr
+        result = []
+        for sent_call in call_history_mgr.outgoing_calls_for_endpoint(endpoint, limit):
+            result.append({'calldate': sent_call.date.isoformat(),
+                           'duration': sent_call.duration,
+                           # XXX this is not fullname, this is just an extension number like in 1.1
+                           'fullname': sent_call.extension})
+        return result
+
+    def _get_answered_history_for_endpoint(self, endpoint, limit):
+        call_history_mgr = self.rinnerdata.call_history_mgr
+        result = []
+        for received_call in call_history_mgr.answered_calls_for_endpoint(endpoint, limit):
+            result.append({'calldate': received_call.date.isoformat(),
+                           'duration': received_call.duration,
+                           'fullname': received_call.caller_name})
+        return result
+
+    def _get_missed_history_for_endpoint(self, endpoint, limit):
+        call_history_mgr = self.rinnerdata.call_history_mgr
+        result = []
+        for received_call in call_history_mgr.answered_calls_for_endpoint(endpoint, limit):
+            result.append({'calldate': received_call.date.isoformat(),
+                           'duration': received_call.duration,
+                           'fullname': received_call.caller_name})
+        return result
+
+    def _get_endpoint_from_phone(self, phone):
+        return "%s/%s" % (phone['protocol'].upper(), phone['name'])
+
+    def _format_history_reply(self, history):
+        if history is None:
+            return {}
+        else:
+            mode = int(self.commanddict['mode'])
+            return {'mode': mode, 'history': history}
 
     def regcommand_parking(self):
         reply = {}
@@ -538,15 +560,15 @@ class Command:
         return
 
     def regcommand_getqueuesstats(self):
-        # {"class": "getqueuesstats", "commandid": 165767435, "on": {"3": {"window": "3600", "xqos": "60"}, "4": {"window": "3600", "xqos": "60"}, "5": {"window": "3600", "xqos": "60"}}}
-        self.log.warning('getqueuesstats %s' % self.commanddict)
         if 'on' not in self.commanddict:
             return {}
+        statistic_results = {}
         for queue_id, params in self.commanddict['on'].iteritems():
-            self._queue_statistics_manager.get_statistics(queue_id,
-                                                          int(params['xqos']),
-                                                          int(params['window']))
-        return {}
+            queue_name = self.innerdata.xod_config['queues'].keeplist[queue_id]['name']
+            statistic_results[queue_id] = self._queue_statistic_manager.get_statistics(queue_name,
+                                                                                        int(params['xqos']),
+                                                                                        int(params['window']))
+        return self._queue_statistic_encoder.encode(statistic_results)
 
     def regcommand_keepalive(self):
         nbytes = self.commanddict.get('rate-bytes', -1)

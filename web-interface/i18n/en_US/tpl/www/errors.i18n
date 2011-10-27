@@ -38,4 +38,10 @@ Value too long
 Out-of-boundaries value
 
 ; title_content_name
-plop
+not_set
+
+; invalid_name_context
+invalid context name (%s)
+
+; reserved_context
+Context list reserved: %s

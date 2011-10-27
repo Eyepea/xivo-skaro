@@ -371,14 +371,14 @@ dwho.suggest.prototype.display_result = function()
             this._options.result_emptycallback(this);
             return(true);
         }
-        else if(this._options.result_emptyalert)    
+        else if(this._options.result_emptyalert)
             this._field.style.backgroundColor = '#ffcbcb';
 
         this.clear();
         return(false);
     }
 
-    if(this._options.result_emptyalert)    
+    if(this._options.result_emptyalert)
         this._field.style.backgroundColor = '#beddfb';
 
     this.deletetimeout();

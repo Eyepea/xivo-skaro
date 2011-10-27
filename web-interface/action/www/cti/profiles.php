@@ -187,7 +187,7 @@ switch($act)
 			}
 			else
 			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
+				$ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
 			}
 		}

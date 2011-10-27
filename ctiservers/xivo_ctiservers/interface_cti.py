@@ -72,8 +72,8 @@ class CTI(Interfaces):
             id = self.connection_details['userid']
             self._manage_logout(ipbxid, id, msg)
         except KeyError:
-            self.warning('Could not retrieve the user id %s',
-                         self.connection_details)
+            self.log.warning('Could not retrieve the user id %s',
+                             self.connection_details)
 
     def manage_connection(self, msg):
         z = list()

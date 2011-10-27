@@ -39,6 +39,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_appentity		= false;
 	var $_entity		= false;
 	var $_phonefunckey	= null;
+	var $_provdconfig	= false;
 	var $_musiconhold	= array();
 	var $_profileclientlist	= array();
 	var $_conf			= array();
@@ -99,6 +100,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_appentity = &$_XOBJ->get_application('entity')) === false
 		|| ($this->_entity = &$_XOBJ->get_module('entity')) === false
+		|| ($this->_provdconfig = &$_XOBJ->get_module('provdconfig')) === false
 		|| ($this->_linefeatures = $this->_service->get_module('linefeatures')) === false
 		|| ($this->_attachment = $this->_service->get_module('attachment')) === false)
 			return(false);
@@ -671,14 +673,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		&& isset($this->_info['userfeatures']['id']) === true)
 			$iduserfeatures = (int) $this->_info['userfeatures']['id'];
 
-		if(isset($arr['userfeatures']['callerid']) === true
-		&& empty($arr['userfeatures']['callerid']) === false)
-			$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($arr['userfeatures']['callerid']);
-		else
-		{
-			$callerid = $arr['userfeatures']['firstname'].' '.$arr['userfeatures']['lastname'];
-			$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($callerid);
-		}
+		$arr['userfeatures']['callerid'] = $this->_service->mk_callerid($arr['userfeatures']['callerid']);
 
 		$vmaction = $action;
 
@@ -708,14 +703,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		switch($this->get_result_var('userfeatures','voicemailtype'))
 		{
-		  case 'asterisk':
-		    break;
-		  case 'exchange':
-		      $this->_set_result_var('userfeatures','voicemailtype',null);
-		  default:
-		    $vmaction = 'none';
-		    $this->_set_result_var('userfeatures','voicemailid',null);
-		    break;
+			case 'asterisk':
+			break;
+			case 'exchange':
+				$this->_set_result_var('userfeatures','voicemailtype',null);
+			default:
+				$vmaction = 'none';
+				$this->_set_result_var('userfeatures','voicemailid',null);
+			break;
 		}
 /*
 		if(dwho_issa('group',$arr) === true
@@ -740,7 +735,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(dwho_issa('voicemail',$arr) === true
 		&& dwho_has_len($arr['voicemail'],'mailbox') === true
-		// getting master line
+		// getting master line for voicemail
 		&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 		{
 			$context = $linefeatures['context'];
@@ -793,6 +788,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_result('userfeatures',null);
 			$this->_set_error('userfeatures','invalid data');
 			return(false);
+		}
+
+		if (isset($arr['enableclient'])
+		&&(dwho_has_len($arr['loginclient']) === false
+		|| dwho_has_len($arr['passwdclient']) === false))
+		{
+			dwho_report::push('error', 'cant_activate_xivoclient_without_login_and_password');
+			$err = array('loginclient' => 'empty', 'passwdclient' => 'empty');
+			$this->_set_error('userfeatures', $err);
 		}
 
 		$this->get_musiconhold();
@@ -849,16 +853,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($this->_userfeatures->loginclient_exists($rs['loginclient'],$id) === true)
 			{
 				$this->_set_result('userfeatures',$rs);
-				$this->_set_error('userfeatures','client login exists');
+				$this->_set_error('userfeatures',array('loginclient' => 'client login exists'));
 				return(false);
 			}
-		}
-
-		if(isset($rs['loginclient']) === false
-		|| dwho_has_len($rs['loginclient']) === false)
-		{
-			$rs['enableclient'] = false;
-			$rs['passwdclient'] = '';
 		}
 
 		if(dwho_has_len($rs['agentid']) === false
@@ -1129,14 +1126,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('voicemail',$voicemailerror);
 			$this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
 		}
-		else $this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
+		else
+			$this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
 
 		if(($voicemailfeatureserror = $this->_voicemail->get_error('voicemailfeatures')) !== null)
 		{
 			$this->_set_error('voicemailfeatures',$voicemailfeatureserror);
 			$this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
 		}
-		else $this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
+		else
+			$this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
 
 		return($r);
 	}
@@ -1172,6 +1171,22 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$tmp[$info['fknum']] = 1;
 				$reslist[$j++] = $info;
 			}
+
+			if(($reslist['typeextenumbers'] !== null
+			|| $reslist['typeextenumbersright'] !== null) === true
+			&& $this->_phonefunckey->is_valid($reslist['typeextenumbers'],
+							  $reslist['typevalextenumbers'],
+							  $reslist['typeextenumbersright'],
+							  $reslist['typevalextenumbersright'],
+							  $reslist['iduserfeatures'],
+							  null) === false)
+				return(false);
+			else if($reslist['typeextenumbers'] === 'extenfeatures'
+			&& $reslist['typevalextenumbers'] === 'bsfilter'
+			&& $this->_dso->chk_bsfilter($reslist['iduserfeatures'],
+						     $bsfilter,
+						     $reslist['typevalextenumbersright']) === false)
+				return(false);
 		}
 
 		$this->_set_result('phonefunckey',$reslist);
@@ -1366,36 +1381,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$bsfilter = $this->get_result_var('userfeatures','bsfilter');
 
 		$id = $this->_return['phonefunckey'] = array();
+		$id['iduserfeatures'] = $userfeaturesid;
 
 		$nb = count($rs);
-
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
 			$ref['iduserfeatures'] = $userfeaturesid;
 
-			if(($ref['typeextenumbers'] !== null
-			   || $ref['typeextenumbersright'] !== null) === true
-			&& $this->_phonefunckey->is_valid($ref['typeextenumbers'],
-							  $ref['typevalextenumbers'],
-							  $ref['typeextenumbersright'],
-							  $ref['typevalextenumbersright'],
-							  $ref['iduserfeatures'],
-							  null) === false)
-				return(false);
-			else if($ref['typeextenumbers'] === 'extenfeatures'
-			&& $ref['typevalextenumbers'] === 'bsfilter'
-			&& $this->_dso->chk_bsfilter($ref['iduserfeatures'],
-						     $bsfilter,
-						     $ref['typevalextenumbersright']) === false)
-				return(false);
-
-			$id['iduserfeatures'] = $ref['iduserfeatures'];
-			$id['fknum'] = $ref['fknum'];
-
 			if($this->_phonefunckey->add($ref) === false)
 				return(false);
 
+			$id['fknum'] = $ref['fknum'];
 			$this->_return['phonefunckey'][] = $id;
 		}
 
@@ -1502,13 +1499,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->edit_rightcall() === false
 		|| $this->edit_dialaction() === false
 		|| $this->edit_voicemail() === false
-		|| $this->edit_phonefunckey() === false
-		|| $this->edit_schedule_path() === false)
+		|| $this->edit_schedule_path() === false
+		|| $this->edit_phonefunckey() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
 			return(false);
 		}
+
+		if($this->_provdconfig->rebuild_master_line_user($this->_info['userfeatures']['id']) === false)
+			return(false);
 
 		$this->_status = '';
 		return(true);
@@ -1774,54 +1774,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_return['phonefunckey'] = $this->delete_phonefunckey();
 
-		if(($rs = $this->get_result('phonefunckey')) === null || $rs === false)
-			return($rs);
-
-		$bsfilter = $this->get_result_var('userfeatures','bsfilter');
-
-		$id = $this->_return['phonefunckey'] = array();
-
-		$nb = count($rs);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$rs[$i];
-			$ref['iduserfeatures'] = $this->_info['userfeatures']['id'];
-
-			if(($ref['typeextenumbers'] !== null
-			|| $ref['typeextenumbersright'] !== null) === true
-			&& $this->_phonefunckey->is_valid($ref['typeextenumbers'],
-							  $ref['typevalextenumbers'],
-							  $ref['typeextenumbersright'],
-							  $ref['typevalextenumbersright'],
-							  $ref['iduserfeatures'],
-							  null) === false)
-				return(false);
-			else if($ref['typeextenumbers'] === 'extenfeatures'
-			&& $ref['typevalextenumbers'] === 'bsfilter'
-			&& $this->_dso->chk_bsfilter($ref['iduserfeatures'],
-						     $bsfilter,
-						     $ref['typevalextenumbersright']) === false)
-				return(false);
-
-			$id['iduserfeatures'] = $ref['iduserfeatures'];
-			$id['fknum'] = $ref['fknum'];
-
-			if($this->_phonefunckey->add($ref) === false)
-				return(false);
-
-			$this->_return['phonefunckey'][] = $id;
-		}
-
-		if(isset($this->_return['phonefunckey'][0]) === false)
-			$this->_return['phonefunckey'] = false;
-
-		return(true);
+		return($this->add_phonefunckey($this->_info['userfeatures']['id']));
 	}
 
 	function edit_schedule_path()
 	{
-		$this->_schedule_path->delete_where(array('path' => 'user', 'pathid' =>	intval($this->_info['userfeatures']['id'])));
+		$this->_schedule_path->delete_where(array('path' => 'user', 'pathid' => intval($this->_info['userfeatures']['id'])));
 
 		return $this->_schedule_path->schedule_add(
 			$this->get_result('schedule_id'),
@@ -2169,7 +2127,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function _prepare_import($arr)
+	function _prepare_import($arr, $partial=false)
 	{
 		$issa_userfeatures = dwho_issa('userfeatures',$arr);
 
@@ -2185,9 +2143,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($issa_userfeatures === true)
 		{
-			$arr['userfeatures']['callerid'] = '';
+			if(!partial)
+				$arr['userfeatures']['callerid'] = '';
 
-			if (dwho_issa('entityid',$arr['userfeatures']) === false)
+			if (!partial && dwho_issa('entityid',$arr['userfeatures']) === false)
 				$arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
@@ -2196,7 +2155,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(dwho_has_len($arr['userfeatures'],'lastname') === true)
 				$arr['userfeatures']['callerid'] .= $arr['userfeatures']['lastname'];
 
-			trim($arr['userfeatures']['callerid']);
+			if(!partial)
+				trim($arr['userfeatures']['callerid']);
 		}
 
 		if($issa_userfeatures === true
@@ -2385,13 +2345,37 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function edit_from_json()
+	function array_merge_recursive($arr1, $arr2)
+	{
+		foreach($arr2 as $k => $v)
+		{
+			if(array_key_exists($k, $arr1) && is_array($arr1[$k]) && is_array($v))
+				$arr1[$k] = $this->array_merge_recursive($arr1[$k], $arr2[$k]);
+			else
+				$arr1[$k] = $v;
+		}
+
+		return $arr1;
+	}
+
+	function edit_from_json($mergewith=null)
 	{
 		if(($data = $this->_get_data_from_json()) === false
-		|| ($arr = $this->_prepare_import($data)) === false
-		|| $this->set_edit($arr) === false
-		|| $this->edit() === false)
+		|| ($arr = $this->_prepare_import($data, !is_null($mergewith))) === false)
+		{
+			var_dump($this->get_error());
 			return(false);
+		}
+
+		if(!is_null($mergewith))
+			$arr = $this->array_merge_recursive($mergewith,$arr);
+
+		if($this->set_edit($arr) === false
+		|| $this->edit() === false)
+		{
+			var_dump($this->get_error());
+			return(false);
+		}
 
 		return(true);
 	}

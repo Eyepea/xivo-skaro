@@ -39,6 +39,8 @@ if($this->get_var('fm_save') === false):
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
+$dhtml->write_js('var jsi18n_no_number_in_context = "'.$this->bbf('no_number_in_context').'"');
+
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -50,9 +52,9 @@ endif;
 				  'default'	=> $element['meetmefeatures']['name']['default'],
 				  'value'	=> $info['meetmefeatures']['name'],
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error','meetmefeatures','name')))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_number'),
+					   $this->get_var('error','meetmefeatures','name'))));
+?>
+<?php 	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_number'),
 				  'name'	=> 'meetmefeatures[confno]',
 				  'labelid'	=> 'meetmefeatures-confno',
 				  'label'	=> 'lb-meetmefeatures-confno',
@@ -60,9 +62,10 @@ endif;
 				  'default'	=> $element['meetmefeatures']['confno']['default'],
 				  'value'	=> $info['meetmefeatures']['confno'],
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error','meetmefeatures','confno')))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_meetmeroom_pin'),
+					   $this->get_var('error','meetmefeatures','confno'))));
+?>
+		<div class="dialog-helper" style="margin-left:400px;" id="helper-context_num_pool"></div>
+<?php 	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmeroom_pin'),
 				  'name'	=> 'meetmeroom[pin]',
 				  'labelid'	=> 'meetmeroom-pin',
 				  'size'	=> 15,
@@ -73,9 +76,9 @@ endif;
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_context'),
-				    'name'	=> 'meetmefeatures[context]',
+				    'name'		=> 'meetmefeatures[context]',
 				    'labelid'	=> 'meetmefeatures-context',
-				    'key'	=> 'identity',
+				    'key'		=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['meetmefeatures']['context']['default'],
 				    'selected'	=> $info['meetmefeatures']['context']),

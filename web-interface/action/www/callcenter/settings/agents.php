@@ -341,8 +341,10 @@ switch($act)
 			else
 			{
 				$ipbx->discuss(array('module reload chan_agent.so',
-    				                 'module reload app_queue.so',  // must reload app_queue (propagate skills)
-    				                 'xivo[agentlist,update]'));
+									'module reload app_queue.so',  // must reload app_queue (propagate skills)
+									'xivo[agentlist,update]',
+									'xivo[userlist,update]')
+				);
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
@@ -472,7 +474,9 @@ switch($act)
 
 				$ipbx->discuss(array('module reload chan_agent.so',
     				                 'module reload app_queue.so',  // must reload app_queue (propagate skills)
-    				                 'xivo[agentlist,update]'));
+    				                 'xivo[agentlist,update]',
+									'xivo[userlist,update]')
+				);
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}

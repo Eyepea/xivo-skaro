@@ -44,6 +44,7 @@ AMI_REQUESTS = [
     'module reload',
     'module reload app_queue.so',
     'module reload chan_agent.so',
+    'module reload app_meetme.so',
     'features reload',
     'voicemail reload'
     ]
@@ -88,6 +89,8 @@ class WEBI(Interfaces):
         multimsg = msg.replace('\r', '').split(self.sep)
         clireply = []
         closemenow = True
+        
+        print 'msg:', msg
 
         for iusefulmsg in multimsg:
             usefulmsg = iusefulmsg.strip()

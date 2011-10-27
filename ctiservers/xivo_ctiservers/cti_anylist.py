@@ -43,11 +43,19 @@ class AnyList:
         lstchange = {}
         oldlist = self.keeplist
         newlist = {}
+
+        # Get new list from Web services.
         for url, urllist in self.requested_list.iteritems():
             gl = urllist.getlist(* self.anylist_properties['urloptions'])
             if gl == 2:
                 tmplist = getattr(self.commandclass, self.getter)(urllist.jsonreply)
                 newlist.update(tmplist)
+
+        # Update computed fields, if any.
+        self.update_computed_fields(newlist);
+
+        # Compare old (self.keeplist) and new (newlist) list:
+        # Compute the differences and update the current list.
         for a, b in newlist.iteritems():
             if a not in oldlist:
                 self.keeplist[a] = b
@@ -66,8 +74,11 @@ class AnyList:
         for a, b in oldlist.iteritems():
             if a not in newlist:
                 lstdel.append(a)
+
+        # Remove old items.
         for a in lstdel:
             del self.keeplist[a]
+
         if len(lstadd) > 0:
             log.info('%d new %s from %s' % (len(lstadd),
                                             self.anylist_properties['name'],
@@ -79,6 +90,12 @@ class AnyList:
         return { 'add' : lstadd,
                  'del' : lstdel,
                  'change' : lstchange }
+
+    def update_computed_fields(self, newlist):
+        # "Virtual" function
+        # You should reimplement it if the list items contains fields
+        # that depends on other fields. See MeetmeList for an example.
+        pass
 
     def setcommandclass(self, commandclass):
         self.commandclass = commandclass

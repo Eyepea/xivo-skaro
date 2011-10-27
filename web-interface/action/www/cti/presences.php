@@ -203,7 +203,7 @@ switch($act)
 				$_QR['status']['actions'] = '';
 
 			$_QR['status']['presence_id'] = $idpresences;
-			$_QR['status']['deletable'] = 1;
+			$_QR['status']['deletable'] = $status_list[$idstatus]['deletable'];
 
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)

@@ -38,8 +38,6 @@ class MeetmeList(AnyList):
 
     def update(self):
         ret = AnyList.update(self)
-        for idx, item in self.keeplist.iteritems():
-            item['pin_needed'] = 'pin' in item and len(item['pin']) > 0
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
             if ag['confno'] not in self.reverse_index:
@@ -47,6 +45,10 @@ class MeetmeList(AnyList):
             else:
                 log.warning('2 meetme have the same room number')
         return ret
+
+    def update_computed_fields(self, newlist):
+        for tid, item in newlist.iteritems():
+            item['pin_needed'] = 'pin' in item and len(item['pin']) > 0
 
     def idbyroomnumber(self, roomnumber):
         idx = self.reverse_index.get(roomnumber)

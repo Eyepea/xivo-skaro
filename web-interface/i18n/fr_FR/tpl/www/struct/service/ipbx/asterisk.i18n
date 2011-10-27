@@ -3,6 +3,9 @@
 ; service_type
 IPBX
 
+; no_number_in_context
+Pas de numéro dans le pool du contexte sélectionné.
+
 ; ast_codec_name_type(g723)
 G.723.1 (Audio)
 

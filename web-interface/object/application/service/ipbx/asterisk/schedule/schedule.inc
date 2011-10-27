@@ -85,7 +85,8 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			$arg2 = array_fill_keys(explode(';', $arg2),1);
 
 		$this->_info['dialaction'] = array('schedule_fallback' => array(
-			'action'  => $actiontype,
+			'actiontype'  => $actiontype,
+			'action'      => $action,
 			// /!\ need both
 			$actiontype => array(
 				'action' => $action,
@@ -126,7 +127,8 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 				$rs['actionargs'] = array_fill_keys(explode(';', $rs['actionargs']),1);
 
 			$this->_info['dialaction'][$i+1] = array(
-				'action'    => $actiontype,
+				'actiontype' => $actiontype,
+				'action'     => $action,
 				// /!\ need both
 				$actiontype => array(
 					'action' => $action,

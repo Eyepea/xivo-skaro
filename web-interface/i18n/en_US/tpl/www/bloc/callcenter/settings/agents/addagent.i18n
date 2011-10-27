@@ -113,7 +113,7 @@ Always
 Accept call DTMF :
 
 ; fm_agentfeatures_enddtmf
-End call DTFM :
+End call DTMF :
 
 ; fm_agentfeatures_autologoff
 Ring time before logoff :
