@@ -523,7 +523,7 @@ class Command:
     def _get_missed_history_for_endpoint(self, endpoint, limit):
         call_history_mgr = self.rinnerdata.call_history_mgr
         result = []
-        for received_call in call_history_mgr.answered_calls_for_endpoint(endpoint, limit):
+        for received_call in call_history_mgr.missed_calls_for_endpoint(endpoint, limit):
             result.append({'calldate': received_call.date.isoformat(),
                            'duration': received_call.duration,
                            'fullname': received_call.caller_name})
