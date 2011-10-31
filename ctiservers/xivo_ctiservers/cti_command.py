@@ -1,7 +1,5 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
-from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
-from xivo_ctiservers.statistics.queuestatisticencoder import QueueStatisticEncoder
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -33,6 +31,8 @@ import threading
 import time
 from xivo_ctiservers import xivo_webservices
 from xivo_ctiservers import cti_fax
+from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
+from xivo_ctiservers.statistics.queuestatisticencoder import QueueStatisticEncoder
 
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
