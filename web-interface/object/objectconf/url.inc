@@ -69,23 +69,23 @@ $array['xivo/configuration/network/iproute'] = 'xivo/configuration/index.php/net
 $array['xivo/configuration/network/resolvconf'] = 'xivo/configuration/index.php/network/resolvconf/';
 $array['xivo/configuration/network/mail'] = 'xivo/configuration/index.php/network/mail/';
 $array['xivo/configuration/network/dhcp'] = 'xivo/configuration/index.php/network/dhcp/';
-$array['xivo/configuration/network/ha'] = 'xivo/configuration/index.php/network/ha/';
-$array['xivo/configuration/network/ha_stop'] = 'xivo/configuration/index.php/network/ha_stop/';
+//$array['xivo/configuration/network/ha'] = 'xivo/configuration/index.php/network/ha/';
+//$array['xivo/configuration/network/ha_stop'] = 'xivo/configuration/index.php/network/ha_stop/';
 
 $array['xivo/configuration/json/restricted/network/interface'] = 'xivo/configuration/json.php/restricted/network/interface/';
 $array['xivo/configuration/json/restricted/network/iproute'] = 'xivo/configuration/json.php/restricted/network/iproute/';
 $array['xivo/configuration/json/restricted/network/resolvconf'] = 'xivo/configuration/json.php/restricted/network/resolvconf/';
 $array['xivo/configuration/json/restricted/network/mail'] = 'xivo/configuration/json.php/restricted/network/mail/';
 $array['xivo/configuration/json/restricted/network/dhcp'] = 'xivo/configuration/json.php/restricted/network/dhcp/';
-$array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
-$array['xivo/configuration/json/restricted/network/ha_stop'] = 'xivo/configuration/json.php/restricted/network/ha_stop/';
+//$array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
+//$array['xivo/configuration/json/restricted/network/ha_stop'] = 'xivo/configuration/json.php/restricted/network/ha_stop/';
 
 $array['xivo/configuration/json/private/network/interface'] = 'xivo/configuration/json.php/private/network/interface/';
 $array['xivo/configuration/json/private/network/iproute'] = 'xivo/configuration/json.php/private/network/iproute/';
 $array['xivo/configuration/json/private/network/resolvconf'] = 'xivo/configuration/json.php/private/network/resolvconf/';
 $array['xivo/configuration/json/private/network/mail'] = 'xivo/configuration/json.php/private/network/mail/';
 $array['xivo/configuration/json/private/network/dhcp'] = 'xivo/configuration/json.php/private/network/dhcp/';
-$array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/json.php/private/network/ha_stop/';
+//$array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/json.php/private/network/ha_stop/';
 
 
 // support
@@ -113,8 +113,8 @@ $array['xivo/configuration/ui/provisioning/configure'] = 'xivo/configuration/ui.
 
 // controlsystem
 $array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';
-$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
-$array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.php/controlsystem/ha_stop/';
+//$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
+//$array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.php/controlsystem/ha_stop/';
 
 
 /*

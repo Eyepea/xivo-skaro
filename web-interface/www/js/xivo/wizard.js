@@ -506,10 +506,6 @@ function xivo_wizard_dbconfig_backend_onload() {
 		this.type = 'submit';
 	});
 
-	dwho.dom.add_event('click', dwho_eid('it-verify'), function() {
-		this.form['verify'].value = 1;
-		this.type = 'submit';
-	});
 }
 
 dwho.dom.set_onload(xivo_wizard_dbconfig_backend_onload);
