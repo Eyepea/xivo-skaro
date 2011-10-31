@@ -149,58 +149,6 @@ endif;
 		</fieldset>
 		<div class="clearboth"></div>
 	</div>
-	<div class="fm-paragraph fm-description">
-		<fieldset id="cti-profiles_funcs">
-			<legend><?=$this->bbf('cti-profiles_funcs');?></legend>
-			<div id="profiles_funcs" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('funcslist',$this->bbf('ms_seek'))?>
-				<div class="slt-outlist">
-<?php
-				echo    $form->select(array('name'  => 'funcslist',
-							'label' => false,
-							'id'    => 'it-funcslist',
-							'key'   => 'name',
-							'altkey'    => 'id',
-							'multiple'  => true,
-							'size'  => 5,
-							'paragraph' => false),
-							$info['funcs']['list']);
-?>
-				</div>
-				<div class="inout-list">
-					<a href="#"
-					onclick="dwho.form.move_selected('it-funcslist','it-funcs');
-					return(dwho.dom.free_focus());"
-					title="<?=$this->bbf('bt_inaccess_profiles');?>">
-					<?=$url->img_html('img/site/button/arrow-left.gif',
-							$this->bbf('bt_inaccess_profiles'),
-							'class="bt-inlist" id="bt-inaccess_profiles" border="0"');?></a><br />
-
-					<a href="#"
-					onclick="dwho.form.move_selected('it-funcs','it-funcslist');
-					return(dwho.dom.free_focus());"
-					title="<?=$this->bbf('bt_outaccess_profiles');?>">
-					<?=$url->img_html('img/site/button/arrow-right.gif',
-							$this->bbf('bt_outaccess_profiles'),
-							'class="bt-outlist" id="bt-outaccess_profiles" border="0"');?></a>
-				</div>
-				<div class="slt-inlist">
-<?php
-				echo    $form->select(array('name'  => 'funcs[]',
-						'label' => false,
-						'id'    => 'it-funcs',
-						'key'	=> 'name',
-						'altkey'    => 'id',
-						'multiple'  => true,
-						'size'  => 5,
-						'paragraph' => false),
-					$info['funcs']['slt']);
-?>
-				</div>
-			</div>
-		</fieldset>
-		<div class="clearboth"></div>
-	</div>
 <?php
 	$type = 'preferences';
 	$count = count($info['preferences']['slt']);
