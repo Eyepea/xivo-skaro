@@ -303,32 +303,11 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			 $this->_musiconhold[$arr['user_musiconhold']]) === false)
 			$arr['user_musiconhold'] = '';
 
-		if(dwho_issa('startdate',$arr) === true)
-		{
-			if(dwho_implode('',$arr['startdate']) === '')
-				$arr['startdate'] = null;
-			else
-			{
-				ksort($arr['startdate']);
-				$arr['startdate'] = vsprintf('%04u-%02u-%02u %02u:%02u:%02u',
-							array_merge(array_slice($arr['startdate'],0,6),
-								    array_fill(0,6,'0')));
-			}
-		}
 
 		if(($rs = $this->_meetmefeatures->chk_values($arr)) === false)
 		{
 			$this->_set_result('meetmefeatures',$this->_meetmefeatures->get_filter_result());
 			$this->_set_error('meetmefeatures',$this->_meetmefeatures->get_filter_error());
-			return(false);
-		}
-		else if(dwho_has_len($rs['startdate']) === true
-		&& dwho_filter::chk_between_datetime(
-				strftime('%Y-%m-%d %H:%M:%S'),
-				$rs['startdate']) === false)
-		{
-			$this->_set_result('meetmefeatures',$rs);
-			$this->_set_error('meetmefeatures','invalid startdate');
 			return(false);
 		}
 		else if(($typefrom = $this->_meetmefeatures->normalize_admin_typefrom(
@@ -832,7 +811,6 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$variables['CONFPIN']		= (string) $this->get_result_var('meetmeroom','pin');
 		$variables['CONFPINADMIN']	= (string) $this->get_result_var('meetmeroom','pinadmin');
 		$variables['CONFNUMBER']	= (string) $this->get_result_var('meetmefeatures','confno');
-		$variables['CONFDATE']		= (string) $this->get_result_var('meetmefeatures','startdate');
 		$variables['CONFDURATION']	= (string) $this->get_result_var('meetmefeatures','durationm');
 
 		$emailsubject	= (string) $this->get_result_var('meetmefeatures','emailsubject');

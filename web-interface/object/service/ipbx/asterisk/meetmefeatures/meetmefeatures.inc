@@ -70,9 +70,6 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		$data['noplaymsgfirstenter']		= (bool) $data['noplaymsgfirstenter'];
 		$data['closeconfdurationexceeded']	= (bool) $data['closeconfdurationexceeded'];
 
-		if(dwho_has_len($data['startdate']) === true)
-			$data['startdate'] = getdate(strtotime($data['startdate']));
-
 		return($data);
 	}
 

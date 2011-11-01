@@ -208,58 +208,6 @@ $array['element']['maxusers'] = array();
 $array['element']['maxusers']['default'] = 0;
 $array['element']['maxusers']['set'] = true;
 
-$array['element']['startdate'] = array();
-$array['element']['startdate']['default'] = '';
-$array['element']['startdate']['null'] = true;
-
-$array['element']['startdatemday'] = array();
-$array['element']['startdatemday']['value'] = range(1,31);
-$array['element']['startdatemday']['default'] = '';
-$array['element']['startdatemday']['unset'] = true;
-
-$array['element']['startdatemon'] = array();
-$array['element']['startdatemon']['value'] = array(1	=> 'jan',
-						   2	=> 'feb',
-						   3	=> 'mar',
-						   4	=> 'apr',
-						   5	=> 'may',
-						   6	=> 'jun',
-						   7	=> 'jul',
-						   8	=> 'aug',
-						   9	=> 'sep',
-						   10	=> 'oct',
-						   11	=> 'nov',
-						   12	=> 'dec');
-$array['element']['startdatemon']['default'] = '';
-$array['element']['startdatemon']['unset'] = true;
-
-$array['element']['startdateyear'] = array();
-$array['element']['startdateyear']['value'] = array(strftime('%Y',time() + 3600),
-						    strftime('%Y',mktime(date('H'),
-						    			 date('i'),
-									 date('s'),
-									 date('n'),
-									 date('j'),
-									 date('Y') + 1)),
-						    strftime('%Y',mktime(date('H'),
-									 date('i'),
-									 date('s'),
-									 date('n'),
-									 date('j'),
-									 date('Y') + 2)));
-$array['element']['startdateyear']['default'] = '';
-$array['element']['startdateyear']['unset'] = true;
-
-$array['element']['startdatehours'] = array();
-$array['element']['startdatehours']['value'] = range(0,23);
-$array['element']['startdatehours']['default'] = '';
-$array['element']['startdatehours']['unset'] = true;
-
-$array['element']['startdateminutes'] = array();
-$array['element']['startdateminutes']['value'] = range(0,59);
-$array['element']['startdateminutes']['default'] = '';
-$array['element']['startdateminutes']['unset'] = true;
-
 $array['element']['emailfrom'] = array();
 $array['element']['emailfrom']['default'] = 'no-reply+meetme@xivo.fr';
 $array['element']['emailfrom']['setdef'] = true;
@@ -331,7 +279,6 @@ $array['filter']['closeconfdurationexceeded'] = array('bool' => true);
 $array['filter']['nbuserstartdeductduration'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
 $array['filter']['timeannounceclose'] = array('set' => false,'cast' => 'uint','between' => array(15,300,15));
 $array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
-$array['filter']['startdate'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_datetime','callbackarg' => array(true));
 $array['filter']['emailfrom'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['emailfromname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);

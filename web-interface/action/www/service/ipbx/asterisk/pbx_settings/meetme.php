@@ -59,10 +59,6 @@ switch($act)
 				$result = $appmeetme->get_result();
 				$error = $appmeetme->get_error();
 
-				$startdate = $appmeetme->get_result_var('meetmefeatures','startdate');
-				if(dwho_has_len($startdate) === true)
-					$result['meetmefeatures']['startdate'] = getdate(
-								strtotime($result['meetmefeatures']['startdate']));
 			}
 			else
 			{
@@ -113,10 +109,6 @@ switch($act)
 				$result = $appmeetme->get_result();
 				$error = $appmeetme->get_error();
 
-				$startdate = $appmeetme->get_result_var('meetmefeatures','startdate');
-				if(dwho_has_len($startdate) === true)
-					$result['meetmefeatures']['startdate'] = getdate(
-								strtotime($result['meetmefeatures']['startdate']));
 			}
 			else
 			{
