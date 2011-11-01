@@ -7,9 +7,6 @@ General
 ; smenu_advanced
 Advanced
 
-; smenu_period
-Period
-
 ; smenu_administrator
 Administrator
 
@@ -112,55 +109,6 @@ Preprocess subroutine :
 
 ; fm_meetmefeatures_description
 Description :
-
-; col_startdate
-Conference starting date
-
-; meetmefeatures_startdate-mday
-Monthday
-
-; meetmefeatures_startdate-mon
-Month
-
-; meetmefeatures_startdate-year
-Year
-
-; meetmefeatures_startdate-hours
-Yours
-
-; meetmefeatures_startdate-minutes
-Minutes
-
-; fm_meetmefeatures_durationm
-Duration (minutes) :
-
-; fm_meetmefeatures_closeconfdurationexceeded
-Close conference when duration exceeded :
-
-; fm_meetmefeatures_nbuserstartdeductduration
-Participants number before starting duration deduct :
-
-; fm_meetmefeatures_timeannounceclose
-Announce playing delay before conference closure :
-
-; fm_meetmefeatures_timeannounceclose-opt(default)
-Deactivated
-
-; fm_meetmefeatures_timeannounceclose-opt-seconds
-%s seconds
-
-; fm_meetmefeatures_timeannounceclose-opt-minute
-1 minute
-
-; fm_meetmefeatures_timeannounceclose-opt-minute-seconds
-%s min. %s sec.
-
-; fm_meetmefeatures_timeannounceclose-opt-minutes
-%s minutes
-
-; fm_meetmefeatures_timeannounceclose-opt-minutes-seconds
-%s min. %s sec.
-
 
 ; fm_meetmefeatures_admin-externalid
 Phone number :
