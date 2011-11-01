@@ -811,7 +811,6 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$variables['CONFPIN']		= (string) $this->get_result_var('meetmeroom','pin');
 		$variables['CONFPINADMIN']	= (string) $this->get_result_var('meetmeroom','pinadmin');
 		$variables['CONFNUMBER']	= (string) $this->get_result_var('meetmefeatures','confno');
-		$variables['CONFDURATION']	= (string) $this->get_result_var('meetmefeatures','durationm');
 
 		$emailsubject	= (string) $this->get_result_var('meetmefeatures','emailsubject');
 		$emailbody	= $this->get_result_var('meetmefeatures','emailbody');
