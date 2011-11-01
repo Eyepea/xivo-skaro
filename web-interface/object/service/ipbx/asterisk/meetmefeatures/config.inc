@@ -184,11 +184,6 @@ $array['element']['noplaymsgfirstenter']['value'] = array(0,1);
 $array['element']['noplaymsgfirstenter']['default'] = 0;
 $array['element']['noplaymsgfirstenter']['set'] = true;
 
-$array['element']['closeconfdurationexceeded'] = array();
-$array['element']['closeconfdurationexceeded']['value'] = array(0,1);
-$array['element']['closeconfdurationexceeded']['default'] = 0;
-$array['element']['closeconfdurationexceeded']['set'] = true;
-
 $array['element']['nbuserstartdeductduration'] = array();
 $array['element']['nbuserstartdeductduration']['default'] = '';
 $array['element']['nbuserstartdeductduration']['null'] = true;
@@ -270,7 +265,6 @@ $array['filter']['talkeroptimization'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['talkerdetection'] = array('bool' => true);
 $array['filter']['noplaymsgfirstenter'] = array('bool' => true);
-$array['filter']['closeconfdurationexceeded'] = array('bool' => true);
 $array['filter']['nbuserstartdeductduration'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
 $array['filter']['timeannounceclose'] = array('set' => false,'cast' => 'uint','between' => array(15,300,15));
 $array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));

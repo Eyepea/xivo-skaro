@@ -142,13 +142,7 @@ endif;
 
 <div id="sb-part-period" class="b-nodisplay">
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_closeconfdurationexceeded'),
-				      'name'	=> 'meetmefeatures[closeconfdurationexceeded]',
-				      'labelid'	=> 'meetmefeatures-closeconfdurationexceeded',
-				      'default'	=> $element['meetmefeatures']['closeconfdurationexceeded']['default'],
-				      'checked' => $info['meetmefeatures']['closeconfdurationexceeded'])),
-
-		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_nbuserstartdeductduration'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_nbuserstartdeductduration'),
 				  'name'	=> 'meetmefeatures[nbuserstartdeductduration]',
 				  'labelid'	=> 'meetmefeatures-nbuserstartdeductduration',
 				  'size'	=> 5,

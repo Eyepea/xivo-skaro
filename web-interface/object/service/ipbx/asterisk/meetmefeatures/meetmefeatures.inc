@@ -68,7 +68,6 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		$data['record']				= (bool) $data['record'];
 		$data['talkerdetection']		= (bool) $data['talkerdetection'];
 		$data['noplaymsgfirstenter']		= (bool) $data['noplaymsgfirstenter'];
-		$data['closeconfdurationexceeded']	= (bool) $data['closeconfdurationexceeded'];
 
 		return($data);
 	}
