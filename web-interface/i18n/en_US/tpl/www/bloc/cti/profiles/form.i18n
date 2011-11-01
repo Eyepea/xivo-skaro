@@ -37,9 +37,6 @@ Agent:
 ; cti-profiles-services
 Services
 
-; cti-profiles_funcs
-Functions
-
 ; col_preferences-name
 Preference name
 

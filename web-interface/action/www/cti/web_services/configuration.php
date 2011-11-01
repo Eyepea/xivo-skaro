@@ -387,7 +387,6 @@ switch($act)
                     'name' => $pf['appliname'],
 
                     'xlets' => dwho_json::decode($pf['xlets'], true),
-                    'functions' => "itm_functions_".$pfid,
                     'services' => "itm_services_".$pfid,
                     'preferences' => "itm_preferences_".$pfid,
                     'regcommands' => "itm_regcommands",
@@ -399,7 +398,6 @@ switch($act)
                     'channelstatus' => "itm_channelstatus",
                     #'callcenter_type' => $pf['callcenter_type']
                 );
-                $out['functions']["itm_functions_".$pfid] = explode(',', $pf['funcs']);
                 $out['services']["itm_services_".$pfid] = explode(',', $pf['services']);
                 $out['preferences']["itm_preferences_".$pfid] = 0?null:dwho_json::decode($pf['preferences']);
             }
