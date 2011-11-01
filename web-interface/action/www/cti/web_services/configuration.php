@@ -97,7 +97,6 @@ switch($act)
             'regcommands'      => array(),
             'ipbxcommands'     => array(),
             'services'         => array(),
-            'functions'        => array(),
             'preferences'      => array(),
             # object display options referred to by the profiles
             'userstatus'       => array(),
@@ -391,7 +390,6 @@ switch($act)
                     'preferences' => "itm_preferences_".$pfid,
                     'regcommands' => "itm_regcommands",
                     'ipbxcommands' => "itm_ipbxcommands",
-
                     'userstatus' => $pf['presence'],
                     'phonestatus' => "itm_phonestatus",
                     'agentstatus' => "itm_agentstatus",
