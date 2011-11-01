@@ -319,7 +319,7 @@ class Command:
         summarycapas = {}
         if profilespecs:
             for capakind in ['regcommands', 'ipbxcommands',
-                             'services', 'functions', 'preferences',
+                             'services', 'preferences',
                              'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
                 if profilespecs.get(capakind):
                     tt = profilespecs.get(capakind)
@@ -358,7 +358,6 @@ class Command:
 
 ## "capaxlets": ["customerinfo-dock-fcms", "dial-dock-fcms", "queues-dock-fcms"],
 ##  "presencecounter": {"connected": 1},
-## "capafuncs": ["switchboard", "dial", "presence", "customerinfo", "agents", "conference", "directory", "features", "history", "fax", "chitchat", "database"],
 
     def __check_user_connection__(self):
         cdetails = self.connection.connection_details

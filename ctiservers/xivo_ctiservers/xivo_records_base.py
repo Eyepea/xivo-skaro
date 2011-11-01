@@ -95,7 +95,7 @@ class XivoRecords():
         return hv
 
 
-    def __check_rights__(self, astid, userinfo, hlevel_r, agentnumbers, action):
+    def _check_rights(self, astid, userinfo, hlevel_r, agentnumbers, action):
         allowed = False
         for agentchannel in agentnumbers.split(','):
             if agentchannel.startswith('Agent/'):
@@ -123,215 +123,223 @@ class XivoRecords():
 
 
     def records_campaign(self, userinfo, command):
-        repstr = ''
-        astid = userinfo.get('astid')
-        function = command.get('function')
+        self._userinfo = userinfo
+        self._astid = self._userinfo.get('astid')
+        self._command = command
+        self._function = self._command.get('function')
 
         # if the requester does not match a hierarchy indicator,
         # give him the lowest hierarchy
-        hlevel_r = self.__hierarchy_value__(userinfo, self.HIERARCHY_MIN)
-        log.info('requester %s : hierarchy level is %s' % (userinfo.get('user'), hlevel_r))
+        self._hlevel_r = self.__hierarchy_value__(userinfo, self.HIERARCHY_MIN)
+        log.info('requester %s : hierarchy level is %s' % (userinfo.get('user'), self._hlevel_r))
 
-        if function in ['search']:
-            searchitems = command.get('searchitems')
-            requested = ('id', 'uniqueid', 'channel',
-                         'filename',
-                         'callstart', 'callstop', 'callduration',
-                         'calleridnum', 'queuenames',
-                         'agentnumbers', 'agentnames',
-                         'direction', 'skillrules',
-                         'recordstatus',
-                         'svientries', 'svivariables', 'svichoices',
-                         'callrecordtag', 'callrecordcomment')
-            results = self.records_db.get(requested)
-            finalresults = list()
-            for resultitem in results:
-                callrecordcomment = resultitem.get('callrecordcomment')
-                if callrecordcomment and isinstance(callrecordcomment, str):
-                    resultitem['callrecordcomment'] = callrecordcomment.decode('utf8')
-                appendme_or = False
-                appendme_and = True
-                searchoperator = command.get('searchoperator')
-                for searchitem in searchitems:
-                    searchkind = searchitem.get('searchkind')
-                    searchfield = searchitem.get('searchfield')
-                    if searchkind == 0:
-                        if resultitem.get('agentnames').lower().find(searchfield.lower()) >= 0:
-                            appendme_or = True
-                            continue
-                        else:
-                            appendme_and = False
-                    elif searchkind == 1:
-                        if resultitem.get('queuenames').lower().find(searchfield.lower()) >= 0:
-                            appendme_or = True
-                            continue
-                        else:
-                            appendme_and = False
-                    elif searchkind == 2:
-                        if resultitem.get('skillrules').lower().find(searchfield.lower()) >= 0:
-                            appendme_or = True
-                            continue
-                        else:
-                            appendme_and = False
-                    elif searchkind == 3:
-                        if resultitem.get('direction').lower() == searchfield.lower():
-                            appendme_or = True
-                            continue
-                        else:
-                            appendme_and = False
+        return self._parse_campain_function()
 
-                if appendme_or and searchoperator == 'or' or appendme_and and searchoperator == 'and':
-                    allowed = self.__check_rights__(astid, userinfo, hlevel_r,
-                                                    resultitem.get('agentnumbers'), 'info')
-                    if allowed:
-                        resultitem['id'] = '%06d' % resultitem.get('id')
-                        finalresults.append(resultitem)
+    def _parse_campain_function(self):
+        if self._function in ['search']:
+            return self._campain_search()
+        elif self._function in ['getprops']:
+            return self._campain_getprops()
+        elif self._function in ['tag']:
+            return self._campain_tag()
+        elif self._function in ['comment']:
+            return self._campain_comment()
+        elif self._function in ['read']:
+            return self._campain_read()
 
-            tosend = { 'class' : 'records_campaign',
-                       'function' : function,
-                       'payload' : finalresults
-                       }
-            repstr = self.cset.__cjson_encode__(tosend)
-
-        elif function in ['getprops']:
-            tosend = { 'class' : 'records_campaign',
-                       'function' : function,
-                       'tags' : self.recordcampaignconfig.get('tags')
-                       }
-            repstr = self.cset.__cjson_encode__(tosend)
-
-        elif function in ['tag']:
-            idv = command.get('id')
-            tag = command.get('tag')
-            retvalue = 'ko-unknown'
-
-            calldata = { 'id' : idv }
-            requested = ('id', 'agentnumbers', 'recordstatus', 'callrecordtag', 'filename')
-            resultitem = self.records_db.get_one_record(calldata, requested)
-
-            agentnumbers = resultitem.get('agentnumbers')
-            recordstatus = resultitem.get('recordstatus')
-            callrecordtag = resultitem.get('callrecordtag')
-
-            allowed = self.__check_rights__(astid, userinfo, hlevel_r, agentnumbers, 'tag')
-            if allowed:
-                tagdefs = self.recordcampaignconfig.get('tags')
-                if tag in tagdefs:
-                    action = tagdefs.get(tag).get('action')
-                    log.info('tag request from %s on id %s : tag=%s => action=%s'
-                             % (userinfo.get('user'), idv, tag, action))
-
-                    if action == 'keep':
-                        if recordstatus in ['rec_notag', 'rec_topurge']:
-                            calldata = {'callrecordtag' : tag}
-                            calldata.update({'recordstatus' : 'rec_tokeep'})
-                            self.records_db.update_call(idv, calldata)
-                            retvalue = 'ok'
-                            log.info('RECCAMP:manual:%s:%s:%s:%s'
-                                     % (function, action, userinfo.get('user'), idv))
-                        else:
-                            retvalue = 'ko:badstatus:%s' % recordstatus
-                            log.warning('bad current recordstatus %s for action %s'
-                                        % (recordstatus, action))
-
-                    elif action == 'purge':
-                        if recordstatus in ['rec_notag', 'rec_tokeep']:
-                            calldata = {'callrecordtag' : tag}
-                            calldata.update({'recordstatus' : 'rec_topurge'})
-                            self.records_db.update_call(idv, calldata)
-                            retvalue = 'ok'
-                            log.info('RECCAMP:manual:%s:%s:%s:%s'
-                                     % (function, action, userinfo.get('user'), idv))
-                        else:
-                            retvalue = 'ko:badstatus:%s' % recordstatus
-                            log.warning('bad current recordstatus %s for action %s'
-                                        % (recordstatus, action))
-
-                    elif action == 'removenow':
-                        if recordstatus in ['rec_notag', 'rec_topurge', 'rec_tokeep']:
-                            calldata = {'callrecordtag' : tag}
-                            calldata.update({'recordstatus' : 'manual_purged'})
-                            # XXX if the file can not be deleted, update the status anyway ?
-                            if self.__remove_files__(resultitem):
-                                self.records_db.update_call(idv, calldata)
-                                log.info('RECCAMP:manual:%s:%s:%s:%s'
-                                         % (function, action, userinfo.get('user'), idv))
-                                retvalue = 'ok'
-                            else:
-                                retvalue = 'ko:nofile'
-                        else:
-                            retvalue = 'ko:badstatus:%s' % recordstatus
-                            log.warning('bad current recordstatus %s for action %s'
-                                        % (recordstatus, action))
+    def _campain_search(self):
+        searchitems = self._command.get('searchitems')
+        requested = ('id', 'uniqueid', 'channel','filename', 'callstart',
+                     'callstop', 'callduration', 'calleridnum', 'queuenames',
+                     'agentnumbers', 'agentnames', 'direction', 'skillrules',
+                     'recordstatus', 'svientries', 'svivariables',
+                     'svichoices', 'callrecordtag', 'callrecordcomment')
+        results = self.records_db.get(requested)
+        finalresults = list()
+        for resultitem in results:
+            callrecordcomment = resultitem.get('callrecordcomment')
+            if callrecordcomment and isinstance(callrecordcomment, str):
+                resultitem['callrecordcomment'] = callrecordcomment.decode('utf8')
+            appendme_or = False
+            appendme_and = True
+            searchoperator = self._command.get('searchoperator')
+            for searchitem in searchitems:
+                searchkind = searchitem.get('searchkind')
+                searchfield = searchitem.get('searchfield')
+                if searchkind == 0:
+                    if resultitem.get('agentnames').lower().find(searchfield.lower()) >= 0:
+                        appendme_or = True
+                        continue
                     else:
-                        retvalue = 'ko:badaction:%s' % action
-                        log.warning('unknown action request %s from %s on id %s'
-                                    % (action, userinfo.get('user'), idv))
+                        appendme_and = False
+                elif searchkind == 1:
+                    if resultitem.get('queuenames').lower().find(searchfield.lower()) >= 0:
+                        appendme_or = True
+                        continue
+                    else:
+                        appendme_and = False
+                elif searchkind == 2:
+                    if resultitem.get('skillrules').lower().find(searchfield.lower()) >= 0:
+                        appendme_or = True
+                        continue
+                    else:
+                        appendme_and = False
+                elif searchkind == 3:
+                    if resultitem.get('direction').lower() == searchfield.lower():
+                        appendme_or = True
+                        continue
+                    else:
+                        appendme_and = False
+
+            if appendme_or and searchoperator == 'or' or appendme_and and searchoperator == 'and':
+                allowed = self._check_rights(self._astid, self._userinfo, self._hlevel_r,
+                                                resultitem.get('agentnumbers'), 'info')
+                if allowed:
+                    resultitem['id'] = '%06d' % resultitem.get('id')
+                    finalresults.append(resultitem)
+
+        tosend = { 'class' : 'records_campaign',
+                   'function' : self._function,
+                   'payload' : finalresults
+                   }
+        return self.cset.__cjson_encode__(tosend)
+
+    def _campain_getprops(self):
+        tosend = { 'class' : 'records_campaign',
+                  'function' : self._function,
+                  'tags' : self.recordcampaignconfig.get('tags')}
+        return self.cset.__cjson_encode__(tosend)
+
+    def _campain_tag(self):
+        idv = self._command.get('id')
+        tag = self._command.get('tag')
+        retvalue = 'ko-unknown'
+
+        calldata = { 'id' : idv }
+        requested = ('id', 'agentnumbers', 'recordstatus', 'callrecordtag', 'filename')
+        resultitem = self.records_db.get_one_record(calldata, requested)
+
+        agentnumbers = resultitem.get('agentnumbers')
+        recordstatus = resultitem.get('recordstatus')
+        callrecordtag = resultitem.get('callrecordtag')
+
+        allowed = self._check_rights(self._astid, self._userinfo, self._hlevel_r, agentnumbers, 'tag')
+        if allowed:
+            tagdefs = self.recordcampaignconfig.get('tags')
+            if tag in tagdefs:
+                action = tagdefs.get(tag).get('action')
+                log.info('tag request from %s on id %s : tag=%s => action=%s'
+                         % (self._userinfo.get('user'), idv, tag, action))
+
+                if action == 'keep':
+                    if recordstatus in ['rec_notag', 'rec_topurge']:
+                        calldata = {'callrecordtag' : tag}
+                        calldata.update({'recordstatus' : 'rec_tokeep'})
+                        self.records_db.update_call(idv, calldata)
+                        retvalue = 'ok'
+                        log.info('RECCAMP:manual:%s:%s:%s:%s'
+                                 % (self._function, action, self._userinfo.get('user'), idv))
+                    else:
+                        retvalue = 'ko:badstatus:%s' % recordstatus
+                        log.warning('bad current recordstatus %s for action %s'
+                                    % (recordstatus, action))
+
+                elif action == 'purge':
+                    if recordstatus in ['rec_notag', 'rec_tokeep']:
+                        calldata = {'callrecordtag' : tag}
+                        calldata.update({'recordstatus' : 'rec_topurge'})
+                        self.records_db.update_call(idv, calldata)
+                        retvalue = 'ok'
+                        log.info('RECCAMP:manual:%s:%s:%s:%s'
+                                 % (self._function, action, self._userinfo.get('user'), idv))
+                    else:
+                        retvalue = 'ko:badstatus:%s' % recordstatus
+                        log.warning('bad current recordstatus %s for action %s'
+                                    % (recordstatus, action))
+
+                elif action == 'removenow':
+                    if recordstatus in ['rec_notag', 'rec_topurge', 'rec_tokeep']:
+                        calldata = {'callrecordtag' : tag}
+                        calldata.update({'recordstatus' : 'manual_purged'})
+                        # XXX if the file can not be deleted, update the status anyway ?
+                        if self.__remove_files__(resultitem):
+                            self.records_db.update_call(idv, calldata)
+                            log.info('RECCAMP:manual:%s:%s:%s:%s'
+                                     % (self._function, action, self._userinfo.get('user'), idv))
+                            retvalue = 'ok'
+                        else:
+                            retvalue = 'ko:nofile'
+                    else:
+                        retvalue = 'ko:badstatus:%s' % recordstatus
+                        log.warning('bad current recordstatus %s for action %s'
+                                    % (recordstatus, action))
                 else:
-                    retvalue = 'ko:badtag:%s' % tag
-                    log.warning('unknown tag request %s from %s on id %s'
-                                % (tag, userinfo.get('user'), idv))
+                    retvalue = 'ko:badaction:%s' % action
+                    log.warning('unknown action request %s from %s on id %s'
+                                % (action, self._userinfo.get('user'), idv))
             else:
-                retvalue = 'ko:unallowed'
-                log.warning('unallowed tag request from %s on id %s : tag=%s'
-                            % (userinfo.get('user'), idv, tag))
+                retvalue = 'ko:badtag:%s' % tag
+                log.warning('unknown tag request %s from %s on id %s'
+                            % (tag, self._userinfo.get('user'), idv))
+        else:
+            retvalue = 'ko:unallowed'
+            log.warning('unallowed tag request from %s on id %s : tag=%s'
+                        % (self._userinfo.get('user'), idv, tag))
 
-            tosend = { 'class' : 'records_campaign',
-                       'function' : function,
-                       'id' : idv,
-                       'returncode' : retvalue
-                       }
-            repstr = self.cset.__cjson_encode__(tosend)
+        tosend = { 'class' : 'records_campaign',
+                   'function' : self._function,
+                   'id' : idv,
+                   'returncode' : retvalue
+                   }
+        return self.cset.__cjson_encode__(tosend)
 
-        elif function in ['comment']:
-            idv = command.get('id')
-            comment = command.get('comment')
-            retvalue = 'ko:unknown'
+    def _campain_comment(self):
+        idv = self._command.get('id')
+        comment = self._command.get('comment')
+        retvalue = 'ko:unknown'
 
-            calldata = { 'id' : idv }
-            requested = ('agentnumbers',)
-            agentnumbers = self.records_db.get_one_record(calldata, requested).get('agentnumbers')
-            allowed = self.__check_rights__(astid, userinfo, hlevel_r, agentnumbers, 'comment')
-            if allowed:
-                calldata = {'callrecordcomment' : comment}
-                self.records_db.update_call(idv, calldata)
-                retvalue = 'ok'
-                log.info('RECCAMP:manual:%s:-:%s:%s' % (function, userinfo.get('user'), idv))
-            else:
-                retvalue = 'ko:unallowed'
-                log.warning('unallowed comment request from %s on id %s : comment=%s'
-                            % (userinfo.get('user'), idv, comment))
+        calldata = { 'id' : idv }
+        requested = ('agentnumbers',)
+        agentnumbers = self.records_db.get_one_record(calldata, requested).get('agentnumbers')
+        allowed = self._check_rights(self._astid, self._userinfo, self._hlevel_r, agentnumbers, 'comment')
+        if allowed:
+            calldata = {'callrecordcomment' : comment}
+            self.records_db.update_call(idv, calldata)
+            retvalue = 'ok'
+            log.info('RECCAMP:manual:%s:-:%s:%s' % (self._function, self._userinfo.get('user'), idv))
+        else:
+            retvalue = 'ko:unallowed'
+            log.warning('unallowed comment request from %s on id %s : comment=%s'
+                        % (self._userinfo.get('user'), idv, comment))
 
-            tosend = { 'class' : 'records_campaign',
-                       'function' : function,
-                       'id' : idv,
-                       'returncode' : retvalue
-                       }
-            repstr = self.cset.__cjson_encode__(tosend)
+        tosend = { 'class' : 'records_campaign',
+                   'function' : self._function,
+                   'id' : idv,
+                   'returncode' : retvalue
+                   }
+        return self.cset.__cjson_encode__(tosend)
 
-        elif function in ['read']:
-            idv = command.get('id')
-            retvalue = 'ko:unknown'
+    def _campain_read(self):
+        idv = self._command.get('id')
+        retvalue = 'ko:unknown'
 
-            calldata = { 'id' : idv }
-            requested = ('agentnumbers',)
-            agentnumbers = self.records_db.get_one_record(calldata, requested).get('agentnumbers')
-            allowed = self.__check_rights__(astid, userinfo, hlevel_r, agentnumbers, 'read')
-            if allowed:
-                subfunction = command.get('subfunction')
-                if subfunction in ['fetch', 'play', 'forward', 'rewind']:
-                    pass
-            else:
-                retvalue = 'ko:unallowed'
+        calldata = { 'id' : idv }
+        requested = ('agentnumbers',)
+        agentnumbers = self.records_db.get_one_record(calldata, requested).get('agentnumbers')
+        allowed = self._check_rights(self._astid, self._userinfo, self._hlevel_r, agentnumbers, 'read')
+        if allowed:
+            subfunction = self._command.get('subfunction')
+            if subfunction in ['fetch', 'play', 'forward', 'rewind']:
+                pass
+        else:
+            retvalue = 'ko:unallowed'
 
-            tosend = { 'class' : 'records_campaign',
-                       'function' : function,
-                       'id' : idv,
-                       'returncode' : retvalue
-                       }
-            repstr = self.cset.__cjson_encode__(tosend)
-
-        return repstr
+        tosend = { 'class' : 'records_campaign',
+                   'function' : self._function,
+                   'id' : idv,
+                   'returncode' : retvalue
+                   }
+        return self.cset.__cjson_encode__(tosend)
 
 
     def __make_cron__(self):
