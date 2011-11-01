@@ -184,13 +184,6 @@ $array['element']['noplaymsgfirstenter']['value'] = array(0,1);
 $array['element']['noplaymsgfirstenter']['default'] = 0;
 $array['element']['noplaymsgfirstenter']['set'] = true;
 
-$array['element']['timeannounceclose'] = array();
-$array['element']['timeannounceclose']['value'] = array(15,30,45,60,75,90,105,120,
-							135,150,165,180,195,210,
-							225,240,255,270,285,300);
-$array['element']['timeannounceclose']['default'] = '';
-$array['element']['timeannounceclose']['null'] = true;
-
 $array['element']['maxusers'] = array();
 $array['element']['maxusers']['default'] = 0;
 $array['element']['maxusers']['set'] = true;
@@ -261,7 +254,6 @@ $array['filter']['talkeroptimization'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['talkerdetection'] = array('bool' => true);
 $array['filter']['noplaymsgfirstenter'] = array('bool' => true);
-$array['filter']['timeannounceclose'] = array('set' => false,'cast' => 'uint','between' => array(15,300,15));
 $array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
 $array['filter']['emailfrom'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['emailfromname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);

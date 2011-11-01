@@ -140,24 +140,6 @@ endif;
 	</div>
 </div>
 
-<div id="sb-part-period" class="b-nodisplay">
-<?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_timeannounceclose'),
-				    'name'	=> 'meetmefeatures[timeannounceclose]',
-				    'labelid'	=> 'meetmefeatures-timeannounceclose',
-				    'empty'	=> $this->bbf('fm_meetmefeatures_timeannounceclose-opt','default'),
-				    'key'	=> false,
-				    'bbf'	=> 'fm_meetmefeatures_timeannounceclose-opt',
-				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
-							 'time'		=> array(
-									'from'		=> 'second',
-									'format'	=> '%M%s')),
-				    'selected'	=> $info['meetmefeatures']['timeannounceclose'],
-				    'default'	=> $element['meetmefeatures']['timeannounceclose']['default']),
-			      $element['meetmefeatures']['timeannounceclose']['value']);
-?>
-</div>
-
 <div id="sb-part-administrator" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_admin-typefrom'),

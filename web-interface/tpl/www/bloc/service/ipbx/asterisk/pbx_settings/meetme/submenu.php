@@ -33,13 +33,6 @@
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</div>
-			<div class="stab">
-				<ul>
-					<li><a href="#period"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-period');">
-							<?=$this->bbf('smenu_period');?></a></li>
-				</ul>
-			</div>
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
