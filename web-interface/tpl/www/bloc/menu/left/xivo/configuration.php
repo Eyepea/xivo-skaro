@@ -91,11 +91,14 @@ $dhtml = &$this->get_module('dhtml');
 				<?=$url->href_html($this->bbf('mn_left_network-dhcp'),
 						   'xivo/configuration/network/dhcp');?>
 			</dd>
+<?php
+	/*
 			<dd id="mn-network--ha">
 				<?=$url->href_html($this->bbf('mn_left_network-ha'),
 						   'xivo/configuration/network/ha');?>
 			</dd>
-
+	*/
+?>
 		</dl>
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_support');?></dt>
@@ -154,6 +157,8 @@ $dhtml = &$this->get_module('dhtml');
 			    );
 ?>
 			</dd>
+<?php
+	/*
 			<dd id="mn-controlsystem--ha_stop">
 				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha_stop'),
 						   'xivo/configuration/controlsystem/ha_stop',
@@ -172,6 +177,8 @@ $dhtml = &$this->get_module('dhtml');
 						       '\'));"'
 			    );?>
 			</dd>
+*.
+?>
 		</dl>
 	</dd>
 	<dd class="b-nosize">

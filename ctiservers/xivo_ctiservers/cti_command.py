@@ -1,7 +1,5 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
-from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
-from xivo_ctiservers.statistics.queuestatisticencoder import QueueStatisticEncoder
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -33,6 +31,8 @@ import threading
 import time
 from xivo_ctiservers import xivo_webservices
 from xivo_ctiservers import cti_fax
+from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
+from xivo_ctiservers.statistics.queuestatisticencoder import QueueStatisticEncoder
 
 COMPULSORY_LOGIN_ID = ['company', 'userlogin', 'ident',
                        'xivoversion', 'git_hash', 'git_date']
@@ -319,7 +319,7 @@ class Command:
         summarycapas = {}
         if profilespecs:
             for capakind in ['regcommands', 'ipbxcommands',
-                             'services', 'functions', 'preferences',
+                             'services', 'preferences',
                              'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
                 if profilespecs.get(capakind):
                     tt = profilespecs.get(capakind)
@@ -358,7 +358,6 @@ class Command:
 
 ## "capaxlets": ["customerinfo-dock-fcms", "dial-dock-fcms", "queues-dock-fcms"],
 ##  "presencecounter": {"connected": 1},
-## "capafuncs": ["switchboard", "dial", "presence", "customerinfo", "agents", "conference", "directory", "features", "history", "fax", "chitchat", "database"],
 
     def __check_user_connection__(self):
         cdetails = self.connection.connection_details

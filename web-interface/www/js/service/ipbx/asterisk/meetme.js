@@ -264,31 +264,6 @@ xivo_ast_fm_meetme_admin_typefrom['undefined']['it-meetmefeatures-admin-identifi
 xivo_attrib_register('ast_fm_meetme_admin_typefrom-undefined',
 		xivo_ast_fm_meetme_admin_typefrom['undefined']);
 
-var xivo_ast_fm_meetme_closeconfdurationexceeded = {
-	'it-meetmefeatures-nbuserstartdeductduration' : {
-		property : [ {
-			disabled : true,
-			className : 'it-disabled'
-		}, {
-			disabled : false,
-			className : 'it-enabled'
-		} ],
-		link : 'it-meetmefeatures-timeannounceclose'
-	},
-	'it-meetmefeatures-timeannounceclose' : {
-		property : [ {
-			disabled : true,
-			className : 'it-disabled'
-		}, {
-			disabled : false,
-			className : 'it-enabled'
-		} ]
-	}
-};
-
-xivo_attrib_register('ast_fm_meetme_closeconfdurationexceeded',
-		xivo_ast_fm_meetme_closeconfdurationexceeded);
-
 var xivo_ast_fm_meetme_admin_enableexitcontext = {
 	'it-meetmefeatures-admin-exitcontext' : {
 		property : [ {
@@ -343,13 +318,6 @@ function xivo_ast_meetme_chg_admin_moderationmode() {
 	}
 
 	return (true);
-}
-
-function xivo_ast_meetme_chg_closeconfdurationexceeded() {
-	if ((closeconfdurationexceeded = dwho_eid('it-meetmefeatures-closeconfdurationexceeded')) !== false)
-		xivo_chg_attrib('ast_fm_meetme_closeconfdurationexceeded',
-				'it-meetmefeatures-nbuserstartdeductduration',
-				Number(closeconfdurationexceeded.checked));
 }
 
 function xivo_ast_meetme_chg_admin_enableexitcontext() {
@@ -475,10 +443,6 @@ function xivo_ast_meetme_onload() {
 			xivo_ast_meetme_chg_admin_moderationmode);
 
 	dwho.dom.add_event('change',
-			dwho_eid('it-meetmefeatures-closeconfdurationexceeded'),
-			xivo_ast_meetme_chg_closeconfdurationexceeded);
-
-	dwho.dom.add_event('change',
 			dwho_eid('it-meetmefeatures-admin-enableexitcontext'),
 			xivo_ast_meetme_chg_admin_enableexitcontext);
 
@@ -487,15 +451,7 @@ function xivo_ast_meetme_onload() {
 			xivo_ast_meetme_chg_user_enableexitcontext);
 
 	xivo_ast_meetme_chg_admin_typefrom();
-	xivo_ast_meetme_chg_closeconfdurationexceeded();
 	xivo_ast_meetme_chg_user_enableexitcontext();
-/*
-	if ((num = dwho_eid('it-meetmefeatures-confno')) !== false) {
-		dwho.dom.add_event('focus', num,
-				xivo_ast_meetme_suggest_event_extension);
-		num.setAttribute('autocomplete', 'off');
-	}
-*/
 }
 
 dwho.dom.set_onload(xivo_ast_meetme_onload);

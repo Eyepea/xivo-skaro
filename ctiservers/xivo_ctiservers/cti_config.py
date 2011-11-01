@@ -116,7 +116,6 @@ class Config:
     def set_rcti_special_profile(self):
         self.xc_json['userstatus']['ctiserver'] = { 'onlystate' : { 'allowed' : ['onlystate'] } }
         self.xc_json['profiles']['ctiserver'] = {
-            'functions' : None,
             'regcommands' : 'itm_regcommands', # XXX
             'userstatus': 'ctiserver',
             'preferences': None, # XXX

@@ -1,0 +1,1 @@
+alter table stats_conf add column timezone varchar(128);
