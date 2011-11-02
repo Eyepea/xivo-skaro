@@ -103,8 +103,9 @@ $element = $this->get_var('element');
             'help'      => $this->bbf('hlp_fm_protocol-forceencryption'),
             'selected'  => $this->get_var('info', 'protocol','forceencryption'),
             'default'   => $element['protocol']['iax']['forceencryption']['default']),
-         $element['protocol']['iax']['forceencryption']['value']),
+         $element['protocol']['iax']['forceencryption']['value']);
 
+/*
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_parkinglot'),
 					'name'	=> 'protocol[parkinglot]',
 					'labelid'   => 'procotol-parkinglot',
@@ -115,7 +116,8 @@ $element = $this->get_var('element');
 					'empty'     => true,
 					'selected'  => $this->get_var('info','protocol','parkinglot')),
 					//'default'     => $element['protocol']['parkinglot']['default']),
-						$this->get_var('parking_list'));
+		$this->get_var('parking_list'));
+*/
 ?>
 </div>
 

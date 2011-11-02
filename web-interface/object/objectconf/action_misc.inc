@@ -383,19 +383,22 @@ $array['service/ipbx/asterisk/web_services/restricted/pbx_services/phonebook'] =
 $array['service/ipbx/asterisk/web_services/restricted/pbx_services/extenfeatures'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/extenfeatures',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+/*
 $array['service/ipbx/asterisk/web_services/restricted/pbx_services/parkinglot'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/parkinglot',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-
+ */
 $array['service/ipbx/asterisk/web_services/private/pbx_services/phonebook'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/phonebook',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/pbx_services/extenfeatures'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/extenfeatures',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+/*
 $array['service/ipbx/asterisk/web_services/private/pbx_services/parkinglot'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_services/parkinglot',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+ */
 
 # system_management
 $array['service/ipbx/asterisk/web_services/restricted/system_management/context'] = array(

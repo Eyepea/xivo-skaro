@@ -23,7 +23,7 @@ $config = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
 $appsip = &$ipbx->get_apprealstatic('sip');
 $appgeneralsip = &$appsip->get_module('general');
 $modauth = &$ipbx->get_module('sipauthentication');
-$modpark = &$ipbx->get_module('parkinglot');
+//$modpark = &$ipbx->get_module('parkinglot');
 
 $fm_save = $error = null;
 
@@ -106,7 +106,7 @@ $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsip->get_context_list());
-$_TPL->set_var('parking_list', $modpark->get_all());
+//$_TPL->set_var('parking_list', $modpark->get_all());
 
 function cafilter($cert)
 {	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && in_array('CA', $cert) && $cert['CA'];	}

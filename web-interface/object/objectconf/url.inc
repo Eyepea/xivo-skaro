@@ -237,15 +237,15 @@ $array['service/ipbx/pbx_services/sounds'] = 'service/ipbx/index.php/pbx_service
 $array['service/ipbx/pbx_services/musiconhold'] = 'service/ipbx/index.php/pbx_services/musiconhold/';
 $array['service/ipbx/pbx_services/extenfeatures'] = 'service/ipbx/index.php/pbx_services/extenfeatures/';
 $array['service/ipbx/pbx_services/paging'] = 'service/ipbx/index.php/pbx_services/paging/';
-$array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
+//$array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
 $array['service/ipbx/pbx_services/phonebook'] = 'service/ipbx/index.php/pbx_services/phonebook/';
 
 $array['service/ipbx/json/restricted/pbx_services/phonebook'] = 'service/ipbx/json.php/restricted/pbx_services/phonebook/';
 $array['service/ipbx/json/restricted/pbx_services/extenfeatures'] = 'service/ipbx/json.php/restricted/pbx_services/extenfeatures/';
-$array['service/ipbx/json/restricted/pbx_services/parkinglot'] = 'service/ipbx/json.php/restricted/pbx_services/parkinglot/';
+//$array['service/ipbx/json/restricted/pbx_services/parkinglot'] = 'service/ipbx/json.php/restricted/pbx_services/parkinglot/';
 
 $array['service/ipbx/json/private/pbx_services/extenfeatures'] = 'service/ipbx/json.php/private/pbx_services/extenfeatures/';
-$array['service/ipbx/json/private/pbx_services/parkinglot'] = 'service/ipbx/json.php/private/pbx_services/parkinglot/';
+//$array['service/ipbx/json/private/pbx_services/parkinglot'] = 'service/ipbx/json.php/private/pbx_services/parkinglot/';
 
 # special..
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';

@@ -27,7 +27,7 @@ $error = $this->get_var('error');
 $element = $this->get_var('element');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
-$parking_list = $this->get_var('parking_list');
+//$parking_list = $this->get_var('parking_list');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -1603,7 +1603,8 @@ endif;
 				    'selected'	=> $this->get_var('info','insecure','var_val'),
 				    'default'	=> $element['insecure']['default']),
 			      $element['insecure']['value']),
-	
+
+/* PARKING - COMMENTED
 		$form->select(array('desc'	=> $this->bbf('fm_parkinglot'),
 				    'name'		=> 'parkinglot',
 				    'labelid'	=> 'parkinglot',
@@ -1615,6 +1616,7 @@ endif;
 				    'selected'	=> $this->get_var('info','parkinglot','var_val'),
 				    'default'	=> $element['parkinglot']['default']),
 					$parking_list),
+*/
 
      $form->select(array('desc'  => $this->bbf('fm_textsupport'),
             'name'      => 'textsupport',
