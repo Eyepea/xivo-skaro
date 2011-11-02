@@ -660,12 +660,12 @@ class Safe:
 
         # send a notification event if no new member
         self.handle_cti_stack('set', (list_name, 'updatestatus', queue_id))
-        midx = None
+        queue_member_id = None
         if location.lower().startswith('agent/'):
             aid = self.xod_config['agents'].idbyagentnumber(location[6:])
             if aid:
                 self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
-                midx = '%sa:%s-%s' % (list_name[0], queue_id, aid)
+                queue_member_id = '%sa:%s-%s' % (list_name[0], queue_id, aid)
                 # todo : group all this stuff, take care of relations
                 if props:
                     if aid not in self.xod_status[list_name][queue_id]['agentmembers']:
@@ -682,7 +682,7 @@ class Safe:
             pid = self.zphones(termination.get('protocol'), termination.get('name'))
             if pid:
                 self.handle_cti_stack('set', ('phones', 'updatestatus', pid))
-                midx = '%sp:%s-%s' % (list_name[0], queue_id, pid)
+                queue_member_id = '%sp:%s-%s' % (list_name[0], queue_id, pid)
                 if props:
                     if pid not in self.xod_status[list_name][queue_id]['phonemembers']:
                         self.xod_status[list_name][queue_id]['phonemembers'].append(pid)
@@ -695,7 +695,7 @@ class Safe:
                         self.xod_status['phones'][pid][list_name].remove(queue_id)
 
         if props:
-            self.handle_cti_stack('set', ('queuemembers', 'updatestatus', midx))
+            self.handle_cti_stack('set', ('queuemembers', 'updatestatus', queue_member_id))
             snew = {}
             if len(props) == 6:
                 (status, paused, membership, callstaken, penalty, lastcall) = props
@@ -710,26 +710,25 @@ class Safe:
             elif len(props) == 1:
                 (paused,) = props
                 snew = { 'paused' : paused }
-            if midx not in self.queuemembers:
-                self.queuemembers[midx] = {}
+            if queue_member_id not in self.queuemembers:
+                self.queuemembers[queue_member_id] = {}
             for k, v in snew.iteritems():
-                self.queuemembers[midx][k] = v
+                self.queuemembers[queue_member_id][k] = v
 
         else:
-            if midx in self.queuemembers:
-                del self.queuemembers[midx]
+            if queue_member_id in self.queuemembers:
+                del self.queuemembers[queue_member_id]
                 self.events_cti.put({'class' : 'getlist',
                                      'listname' : 'queuemembers',
                                      'function' : 'delconfig',
                                      'tipbxid' : self.ipbxid,
-                                     'list' : [midx]
+                                     'list' : [queue_member_id]
                                      })
             else:
-                self.log.warning('%s no more in queuemembers', midx)
+                self.log.warning('%s no more in queuemembers', queue_member_id)
 
         # send cti events in reverse order in order for the queuemember details to be received first
         self.handle_cti_stack('empty_stack')
-        return
 
     def queueentryupdate(self, queuename, channel, position, timestart = None):
         qid = self.xod_config['queues'].idbyqueuename(queuename)
