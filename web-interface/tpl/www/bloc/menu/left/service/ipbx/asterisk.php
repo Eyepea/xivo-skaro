@@ -366,7 +366,7 @@ $dhtml = &$this->get_module('dhtml');
 				'act=list'),
 				'</dd>';
 		endif;
-
+/* LDAP - COMMENTED
 		if(xivo_user::chk_acl('system_management','ldapfilter') === true):
 			echo	'<dd id="mn-system-management--ldapfilter">',
 				$url->href_html($this->bbf('mn_left_systemmanagement-ldapfilter'),
@@ -374,7 +374,7 @@ $dhtml = &$this->get_module('dhtml');
 						'act=list'),
 						'</dd>';
 		endif;
-
+ */
 		echo	'</dl>';
 	endif;
 

@@ -133,9 +133,11 @@ $array['xivo/configuration/web_services/restricted/network/mail'] = array(
 $array['xivo/configuration/web_services/restricted/network/dhcp'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/dhcp',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+/*
 $array['xivo/configuration/web_services/restricted/network/ha'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/ha',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+ */
 $array['xivo/configuration/web_services/restricted/support/monitoring'] = array(
 	'path'		=> 'xivo/configuration/web_services/support/monitoring',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));

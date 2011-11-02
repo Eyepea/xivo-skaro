@@ -33,7 +33,7 @@ $array['tree']['xivo']['configuration']['network']['iproute'] = true;
 $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 $array['tree']['xivo']['configuration']['network']['mail'] = true;
 $array['tree']['xivo']['configuration']['network']['dhcp'] = true;
-$array['tree']['xivo']['configuration']['network']['ha'] = true;
+//$array['tree']['xivo']['configuration']['network']['ha'] = true;
 
 $array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 
