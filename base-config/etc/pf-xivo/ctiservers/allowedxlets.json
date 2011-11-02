@@ -7,7 +7,6 @@
 "directory" : ["directory"],
 
 "calls" : ["dial"],
-"parking" : ["dial"],
 "switchboard" : ["dial"],
 "operator" : ["dial"],
 "popcaastra" : ["dial"],
@@ -19,7 +18,6 @@
 "agents" : ["agents"],
 "agentsnext" : ["agents"],
 "agentdetails" : ["agents"],
-"records" : ["agents"],
 
 "queues" : ["agents"],
 "queuedetails" : ["agents"],
