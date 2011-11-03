@@ -45,3 +45,6 @@ Value not in interval
 
 ; number_out_of_context_interval
 Number is out of context interval
+
+; already_exist
+%s already exists
