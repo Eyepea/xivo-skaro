@@ -1451,11 +1451,11 @@ Max forwards:
 ; hlp_fm_maxforwards
 Asterisk config: maxforwards
 
-; fm_disallow_methods
+; fm_disallowed_methods
 Disallow methods:
 
-; hlp_fm_disallow_methods
-Asterisk config: disallow_methods
+; hlp_fm_disallowed_methods
+Asterisk config: disallowed_methods
 
 ; fm_textsupport
 Text support:

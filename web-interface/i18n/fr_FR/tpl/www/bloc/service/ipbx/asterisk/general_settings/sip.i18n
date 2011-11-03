@@ -1470,11 +1470,11 @@ Nombre de relais maximum :
 ; hlp_fm_maxforwards
 Config asterisk: maxforwards
 
-; fm_disallow_methods
+; fm_disallowed_methods
 Interdire les méthodes SIP suivantes : 
 
-; hlp_fm_disallow_methods
-Config asterisk: disallow_methods
+; hlp_fm_disallowed_methods
+Config asterisk: disallowed_methods
 
 ; fm_domainsasrealm
 Utiliser le domaine comme «realm» : 
