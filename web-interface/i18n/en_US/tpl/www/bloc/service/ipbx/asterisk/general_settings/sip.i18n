@@ -1426,3 +1426,55 @@ Network transport protocols:
 
 ; hlp_fm_transport
 Asterisk config: transport
+
+; fm_use_q850_reason
+Q580 reason:
+
+; hlp_fm_use_q850_reason
+Asterisk config: use_q850_reason
+
+; fm_snom_aoc_enabled
+enable SNOM AOC:
+
+; hlp_fm_snom_aoc_enabled
+Asterisk config: snom_aoc_enabled
+
+; fm_subscribe_network_change_event
+Subscribe network change event:
+
+; hlp_fm_subscribe_network_change_event
+Asterisk config: subscribe_network_change_event
+
+; fm_maxforwards
+Max forwards:
+
+; hlp_fm_maxforwards
+Asterisk config: maxforwards
+
+; fm_disallow_methods
+Disallow methods:
+
+; hlp_fm_disallow_methods
+Asterisk config: disallow_methods
+
+; fm_textsupport
+Text support:
+
+; hlp_fm_textsupport
+Asterisk config: textsupport
+
+; fm_videosupport-opt(no)
+Disabled
+
+; fm_videosupport-opt(yes)
+Enabled
+
+; fm_videosupport-opt(always)
+Always
+
+; fm_domainsasrealm
+Use domain as realm:
+
+; hlp_fm_domainsasrealm
+Asterisk config: domainsasrealm
+
