@@ -1,51 +1,68 @@
 # -*- coding: UTF-8 -*-
 
-import datetime
 import unittest
+from datetime import datetime
 from tests.mock import Mock
 from xivo_ctiservers.call_history import CallHistoryMgr, ReceivedCall, SentCall
-from xivo_ctiservers.dao.alchemy.cdr import CDR
 
 
 class CallHistoryMgrTest(unittest.TestCase):
     def test_answered_calls_for_endpoint(self):
-        cdr_dao = Mock()
-        date = datetime.datetime.now()
+        date = datetime.now()
         duration = 1
-        caller_name = u'Foo'
-        cdr_dao.answered_calls_for_endpoint.return_value = [
-            CDR(calldate=date, duration=duration, clid=caller_name)
-        ]
+        caller_name = u'"Foo" <123>'
 
-        call_history_mgr = CallHistoryMgr(cdr_dao)
+        cel_channel = Mock()
+        cel_channel.linked_id.return_value = '1'
+        cel_channel.channel_start_time.return_value = date
+        cel_channel.answer_duration.return_value = duration
+
+        cel_dao = Mock()
+        cel_dao.answered_channels_for_endpoint.return_value = [
+            cel_channel
+        ]
+        cel_dao.caller_id_by_unique_id.return_value = caller_name
+
+        call_history_mgr = CallHistoryMgr(cel_dao)
         received_calls = call_history_mgr.answered_calls_for_endpoint(u'SIP/A', 5)
 
         self.assertEqual([ReceivedCall(date, duration, caller_name)], received_calls)
 
     def test_missed_calls_for_endpoint(self):
-        cdr_dao = Mock()
-        date = datetime.datetime.now()
-        duration = 1
-        caller_name = u'Foo'
-        cdr_dao.missed_calls_for_endpoint.return_value = [
-            CDR(calldate=date, duration=duration, clid=caller_name)
-        ]
+        date = datetime.now()
+        caller_name = u'"Foo" <123>'
 
-        call_history_mgr = CallHistoryMgr(cdr_dao)
+        cel_channel = Mock()
+        cel_channel.linked_id.return_value = '1'
+        cel_channel.channel_start_time.return_value = date
+
+        cel_dao = Mock()
+        cel_dao.missed_channels_for_endpoint.return_value = [
+            cel_channel
+        ]
+        cel_dao.caller_id_by_unique_id.return_value = caller_name
+
+        call_history_mgr = CallHistoryMgr(cel_dao)
         received_calls = call_history_mgr.missed_calls_for_endpoint(u'SIP/A', 5)
 
-        self.assertEqual([ReceivedCall(date, duration, caller_name)], received_calls)
+        self.assertEqual([ReceivedCall(date, 0.0, caller_name)], received_calls)
 
     def test_outgoing_calls_for_endpoint(self):
-        cdr_dao = Mock()
-        date = datetime.datetime.now()
+        date = datetime.now()
         duration = 1
-        extension = u'Foo'
-        cdr_dao.outgoing_calls_for_endpoint.return_value = [
-            CDR(calldate=date, duration=duration, dst=extension)
+        extension = u'100'
+
+        cel_channel = Mock()
+        cel_channel.channel_start_time.return_value = date
+        cel_channel.answer_duration.return_value = duration
+        cel_channel.exten.return_value = extension
+
+        cel_dao = Mock()
+        cel_dao.outgoing_channels_for_endpoint.return_value = [
+            cel_channel
         ]
 
-        call_history_mgr = CallHistoryMgr(cdr_dao)
+        call_history_mgr = CallHistoryMgr(cel_dao)
         sent_calls = call_history_mgr.outgoing_calls_for_endpoint(u'SIP/A', 5)
 
         self.assertEqual([SentCall(date, duration, extension)], sent_calls)
