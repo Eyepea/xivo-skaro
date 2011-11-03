@@ -94,7 +94,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		}
 		else
 		{
-			$chkerror = 'out of interval';
+			$chkerror = dwho_i18n::babelfish('number_out_of_context_interval');
 			$info['number'] = $this->_service->display_extension($this->_service->clean_extension($number));
 
 			$chk = $this->_contextnumbers->interval_number_exists($context,

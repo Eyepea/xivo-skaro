@@ -42,3 +42,6 @@ Invalid type
 
 ; error(between)
 Value not in interval
+
+; number_out_of_context_interval
+Number is out of context interval

@@ -51,3 +51,6 @@ Nom du contexte invalide (%s)
 
 ; reserved_context
 Liste des contextes résérvés: %s
+
+; number_out_of_context_interval
+Le numero est hors interval du contexte 
