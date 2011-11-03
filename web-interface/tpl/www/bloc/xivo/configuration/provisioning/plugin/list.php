@@ -42,6 +42,13 @@ $page = $url->pager($pager['pages'],
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value'	=> DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value'	=> $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
+
+<div id="box_installer" style="position: absolute;z-index: 99;background: #bbb;opacity: 0.8;filter: alpha(opacity=80);border: 1px solid #000;display: none;">
+	<div style="z-index: 100;margin: auto;width: 500px;height: 150px;background: #eee;border: 1px solid #333;
+	opacity: 0.9;filter: alpha(opacity=90);font-size: 12px;padding: 10px;text-align: center;font-weight: bold;">
+	</div>
+</div>
+
 <table id="table-main-listing">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -62,7 +69,7 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
-			
+
 		$upgrade = false;
 		if (isset($ref['version-installable']) === true):
 			if($ref['version'] !== $ref['version-installable']):
@@ -70,7 +77,7 @@ $page = $url->pager($pager['pages'],
 			 	$version = '<b>'.$ref['version'].' / '.$ref['version-installable'].'</b>';
 			else:
 				$version = $ref['version'];
-			endif;	
+			endif;
 		else:
 			$version = $ref['version'];
 		endif;
@@ -89,7 +96,7 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td>
 			<?=$version?>
-			<?php 
+<?php
 		if ($upgrade === true):
 			echo	$url->href_html($url->img_html('img/site/utils/app-upgrade.png',
 							       $this->bbf('opt_upgrade'),
@@ -100,7 +107,7 @@ $page = $url->pager($pager['pages'],
 						'style="margin-left:2px"',
 						$this->bbf('opt_upgrade'));
 		endif;
-		?>
+?>
 		</td>
 		<td><?=(isset($ref['dsize']) === true ? dwho_byte_to($ref['dsize']) : '-')?></td>
 		<td class="td-right" colspan="2">
@@ -109,12 +116,11 @@ $page = $url->pager($pager['pages'],
 			echo	$url->href_html($url->img_html('img/site/utils/app-install.png',
 							       $this->bbf('opt_install'),
 							       'border="0"'),
-						'xivo/configuration/provisioning/plugin',
-						array('act'	=> 'install',
-						      'id'	=> $ref['name']),
-						'style="margin-left:2px"',
+						'#',
+						null,
+						'onclick="init_install_plugin(\''.$ref['name'].'\');return(false);"',
 						$this->bbf('opt_install'));
-		elseif ($ref['type'] === 'installed'):			
+		elseif ($ref['type'] === 'installed'):
 			echo	$url->href_html($url->img_html('img/site/utils/edit-link.png',
 							       $this->bbf('opt_modify'),
 							       'border="0"'),
