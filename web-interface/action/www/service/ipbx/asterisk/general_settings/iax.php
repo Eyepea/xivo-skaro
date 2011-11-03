@@ -21,7 +21,7 @@
 $appiax = &$ipbx->get_apprealstatic('iax');
 $appgeneraliax = &$appiax->get_module('general');
 $modcalllimits = &$ipbx->get_module('iaxcallnumberlimits');
-$modpark = &$ipbx->get_module('parkinglot');
+//$modpark = &$ipbx->get_module('parkinglot');
 
 $fm_save = $error = null;
 
@@ -91,7 +91,7 @@ $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneraliax->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneraliax->get_context_list());
-$_TPL->set_var('parking_list', $modpark->get_all());
+//$_TPL->set_var('parking_list', $modpark->get_all());
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

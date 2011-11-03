@@ -33,7 +33,7 @@ $array['tree']['xivo']['configuration']['network']['iproute'] = true;
 $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 $array['tree']['xivo']['configuration']['network']['mail'] = true;
 $array['tree']['xivo']['configuration']['network']['dhcp'] = true;
-$array['tree']['xivo']['configuration']['network']['ha'] = true;
+//$array['tree']['xivo']['configuration']['network']['ha'] = true;
 
 $array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 
@@ -82,7 +82,7 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
-$array['tree']['service']['ipbx']['pbx_services']['parkinglot'] = true;
+//$array['tree']['service']['ipbx']['pbx_services']['parkinglot'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['context'] = true;

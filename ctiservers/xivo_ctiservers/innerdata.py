@@ -224,7 +224,6 @@ class Safe:
     def update_config_list_all(self):
         for listname, urllistkey in self.urlvars.iteritems():
             self.update_config_list(listname)
-        return
 
     def add_default_parking(self):
         """
@@ -315,7 +314,6 @@ class Safe:
                 user2phone[iduser].append(idphone)
         for iduser, v in self.xod_config['users'].keeplist.iteritems():
             v['linelist'] = user2phone.get(iduser, [])
-        return
 
     def config_from_external(self, listname, contents):
         function = contents.get('function')
@@ -337,7 +335,6 @@ class Safe:
                                        'tid' : tid,
                                        'status' : self.xod_status[listname][tid]
                                        } )
-        return
 
     def update_config_list(self, listname):
         if listname not in self.xod_config:
@@ -400,7 +397,6 @@ class Safe:
 
         except Exception:
             self.log.exception('update_config_list %s', listname)
-        return
 
     def get_x_list(self, xlist):
         lxlist = {}
@@ -471,7 +467,6 @@ class Safe:
 
     def user_status(self, userid):
         print self.xod_config['users'].keeplist[userid]
-        return
 
     def user_get_hashed_password(self, userid, sessionid):
         tohash = '%s:%s' % (sessionid,
@@ -567,7 +562,6 @@ class Safe:
         self.updaterelations(channel)
         self.channels[channel].update_state(state)
         self.handle_cti_stack('empty_stack')
-        return
 
     def meetmeupdate(self, confno, channel=None, opts={}):
         mid = self.xod_config['meetmes'].idbyroomnumber(confno)
@@ -605,7 +599,6 @@ class Safe:
         self.log.info('Channel statuses %s',
                       self.xod_status['meetmes'][mid]['channels'])
         self.handle_cti_stack('empty_stack')
-        return
 
     def agentlogin(self, agentnumber, channel):
         idx = self.xod_config['agents'].idbyagentnumber(agentnumber)
@@ -620,7 +613,6 @@ class Safe:
         agstatus['status'] = 'AGENT_IDLE'
         # define relations for agent:x : channel:y and phone:z
         self.handle_cti_stack('empty_stack')
-        return
 
     def agentlogout(self, agentnumber):
         idx = self.xod_config['agents'].idbyagentnumber(agentnumber)
@@ -629,7 +621,6 @@ class Safe:
         agstatus['status'] = 'AGENT_LOGGEDOFF'
         # define relations for agent:x : channel:y and phone:z
         self.handle_cti_stack('empty_stack')
-        return
 
     def agentstatus(self, agentnumber, status):
         idx = self.xod_config['agents'].idbyagentnumber(agentnumber)
@@ -638,7 +629,6 @@ class Safe:
         agstatus['status'] = status
         # define relations for agent:x : channel:y and phone:z
         self.handle_cti_stack('empty_stack')
-        return
 
     def voicemailupdate(self, mailbox, new, old = None, waiting = None):
         for k, v in self.xod_config['voicemails'].keeplist.iteritems():
@@ -649,87 +639,101 @@ class Safe:
                                                          'waiting' : waiting})
                 self.handle_cti_stack('empty_stack')
                 break
-        return
+
+    def _update_agent_member(self, location, props, queue_id, list_name):
+        aid = self.xod_config['agents'].idbyagentnumber(location[6:])
+        queue_member_id = None
+        if aid:
+            self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
+            queue_member_id = '%sa:%s-%s' % (list_name[0], queue_id, aid)
+        # todo : group all this stuff, take care of relations
+            if props:
+                if aid not in self.xod_status[list_name][queue_id]['agentmembers']:
+                    self.xod_status[list_name][queue_id]['agentmembers'].append(aid)
+                if queue_id not in self.xod_status['agents'][aid][list_name]:
+                    self.xod_status['agents'][aid][list_name].append(queue_id)
+            else:
+                if aid in self.xod_status[list_name][queue_id]['agentmembers']:
+                    self.xod_status[list_name][queue_id]['agentmembers'].remove(aid)
+                if queue_id in self.xod_status['agents'][aid][list_name]:
+                    self.xod_status['agents'][aid][list_name].remove(queue_id)
+        return queue_member_id
+
+
+    def _update_phone_member(self, location, props, queue_id, list_name):
+        queue_member_id = None
+        termination = self.ast_channel_to_termination(location)
+        pid = self.zphones(termination.get('protocol'), termination.get('name'))
+        if pid:
+            self.handle_cti_stack('set', ('phones', 'updatestatus', pid))
+            queue_member_id = '%sp:%s-%s' % (list_name[0], queue_id, pid)
+            if props:
+                if pid not in self.xod_status[list_name][queue_id]['phonemembers']:
+                    self.xod_status[list_name][queue_id]['phonemembers'].append(pid)
+                if queue_id not in self.xod_status['phones'][pid][list_name]:
+                    self.xod_status['phones'][pid][list_name].append(queue_id)
+            else:
+                if pid in self.xod_status[list_name][queue_id]['phonemembers']:
+                    self.xod_status[list_name][queue_id]['phonemembers'].remove(pid)
+                if queue_id in self.xod_status['phones'][pid][list_name]:
+                    self.xod_status['phones'][pid][list_name].remove(queue_id)
+        return queue_member_id
+
+
+    def _update_queue_member(self, props, queue_member_id):
+        if props:
+            self.handle_cti_stack('set', ('queuemembers', 'updatestatus', queue_member_id))
+            queue_member_status = self._extract_queue_member_status(props)
+            self._update_queue_member_status(queue_member_id, queue_member_status)
+        elif queue_member_id in self.queuemembers:
+            self._remove_queue_member(queue_member_id)
+        else:
+            self.log.warning('%s no more in queuemembers', queue_member_id)
 
     def queuememberupdate(self, queuename, location, props = None):
-        qgid = self.xod_config['queues'].idbyqueuename(queuename)
-        qgname = 'queues'
-        if not qgid:
-            qgid = self.xod_config['groups'].idbyqueuename(queuename)
-            qgname = 'groups'
+        if self.xod_config['queues'].hasqueue(queuename):
+            list_name = 'queues'
+        else:
+            list_name = 'groups'
+        queue_id = self.xod_config[list_name].idbyqueuename(queuename)
 
         # send a notification event if no new member
-        self.handle_cti_stack('set', (qgname, 'updatestatus', qgid))
-        midx = None
+        self.handle_cti_stack('set', (list_name, 'updatestatus', queue_id))
         if location.lower().startswith('agent/'):
-            aid = self.xod_config['agents'].idbyagentnumber(location[6:])
-            if aid:
-                self.handle_cti_stack('set', ('agents', 'updatestatus', aid))
-                midx = '%sa:%s-%s' % (qgname[0], qgid, aid)
-                # todo : group all this stuff, take care of relations
-                if props:
-                    if aid not in self.xod_status[qgname][qgid]['agentmembers']:
-                        self.xod_status[qgname][qgid]['agentmembers'].append(aid)
-                    if qgid not in self.xod_status['agents'][aid][qgname]:
-                        self.xod_status['agents'][aid][qgname].append(qgid)
-                else:
-                    if aid in self.xod_status[qgname][qgid]['agentmembers']:
-                        self.xod_status[qgname][qgid]['agentmembers'].remove(aid)
-                    if qgid in self.xod_status['agents'][aid][qgname]:
-                        self.xod_status['agents'][aid][qgname].remove(qgid)
+            queue_member_id = self._update_agent_member(location, props, queue_id, list_name)
         else:
-            termination = self.ast_channel_to_termination(location)
-            pid = self.zphones(termination.get('protocol'), termination.get('name'))
-            if pid:
-                self.handle_cti_stack('set', ('phones', 'updatestatus', pid))
-                midx = '%sp:%s-%s' % (qgname[0], qgid, pid)
-                if props:
-                    if pid not in self.xod_status[qgname][qgid]['phonemembers']:
-                        self.xod_status[qgname][qgid]['phonemembers'].append(pid)
-                    if qgid not in self.xod_status['phones'][pid][qgname]:
-                        self.xod_status['phones'][pid][qgname].append(qgid)
-                else:
-                    if pid in self.xod_status[qgname][qgid]['phonemembers']:
-                        self.xod_status[qgname][qgid]['phonemembers'].remove(pid)
-                    if qgid in self.xod_status['phones'][pid][qgname]:
-                        self.xod_status['phones'][pid][qgname].remove(qgid)
+            queue_member_id = self._update_phone_member(location, props, queue_id, list_name)
+        self._update_queue_member(props, queue_member_id)
 
-        if props:
-            self.handle_cti_stack('set', ('queuemembers', 'updatestatus', midx))
-            snew = {}
-            if len(props) == 6:
-                (status, paused, membership, callstaken, penalty, lastcall) = props
-                snew = {
-                    'status' : status,
+        # send cti events in reverse order in order for the queuemember details to be received first
+        self.handle_cti_stack('empty_stack')
+
+    def _extract_queue_member_status(self, properties):
+        if len(properties) == 6:
+            (status, paused, membership, callstaken, penalty, lastcall) = properties
+            return {'status' : status,
                     'paused' : paused,
                     'membership' : membership,
                     'callstaken' : callstaken,
                     'penalty' : penalty,
-                    'lastcall' : lastcall,
-                    }
-            elif len(props) == 1:
-                (paused,) = props
-                snew = { 'paused' : paused }
-            if midx not in self.queuemembers:
-                self.queuemembers[midx] = {}
-            for k, v in snew.iteritems():
-                self.queuemembers[midx][k] = v
+                    'lastcall' : lastcall,}
+        elif len(properties) == 1:
+            (paused,) = properties
+            return { 'paused' : paused }
 
-        else:
-            if midx in self.queuemembers:
-                del self.queuemembers[midx]
-                self.events_cti.put({'class' : 'getlist',
-                                     'listname' : 'queuemembers',
-                                     'function' : 'delconfig',
-                                     'tipbxid' : self.ipbxid,
-                                     'list' : [midx]
-                                     })
-            else:
-                self.log.warning('%s no more in queuemembers', midx)
+    def _remove_queue_member(self, queue_member_id):
+        del self.queuemembers[queue_member_id]
+        self.events_cti.put({'class' : 'getlist',
+                             'listname' : 'queuemembers',
+                             'function' : 'delconfig',
+                             'tipbxid' : self.ipbxid,
+                             'list' : [queue_member_id]})
 
-        # send cti events in reverse order in order for the queuemember details to be received first
-        self.handle_cti_stack('empty_stack')
-        return
+    def _update_queue_member_status(self, queue_member_id, status):
+        if queue_member_id not in self.queuemembers:
+            self.queuemembers[queue_member_id] = {}
+        for k, v in status.iteritems():
+            self.queuemembers[queue_member_id][k] = v
 
     def queueentryupdate(self, queuename, channel, position, timestart = None):
         qid = self.xod_config['queues'].idbyqueuename(queuename)
@@ -757,7 +761,6 @@ class Safe:
                 self.channels[channel].delrelation('queue:%s' % qid)
 
         self.handle_cti_stack('empty_stack')
-        return
 
     def update(self, channel):
         chanprops = self.channels.get(channel)
@@ -769,7 +772,6 @@ class Safe:
                 self.handle_cti_stack('setforce', ('phones', 'updatestatus', r[6:]))
         self.handle_cti_stack('setforce', ('channels', 'updatestatus', channel))
         self.handle_cti_stack('empty_stack')
-        return
 
     def statusbylist(self, listname, id):
         status = None
@@ -808,7 +810,6 @@ class Safe:
                 'status' : status
                 }
             self.events_cti.put(evt)
-        return
 
     def handle_cti_stack(self, action, event = None):
         """
@@ -844,7 +845,6 @@ class Safe:
                     oldevent_list = list(oldevent)
                     oldevent_list.append(sendstatus)
                     self.appendcti(* oldevent_list)
-        return
 
     def hangup(self, channel):
         if channel in self.channels:
@@ -868,7 +868,6 @@ class Safe:
         else:
             self.log.warning('channel %s not there ...', channel)
         self.log.info('remaining channels : %s', self.channels.keys())
-        return
 
     def updatehint(self, hint, status):
         termination = self.ast_channel_to_termination(hint)
@@ -885,7 +884,6 @@ class Safe:
                                        'tid' : p,
                                        'status' : {'hintstatus' : status}
                                        } )
-        return
 
     def updateregistration(self, peer, reg = ''):
         termination = self.ast_channel_to_termination(peer)
@@ -932,7 +930,6 @@ class Safe:
                 self.xod_status['phones'][t]['channels'] = oldchans
         except Exception:
             self.log.exception('find termination according to channel %s', channel)
-        return
 
     def masquerade(self, oldchannel, newchannel):
         self.log.info('masquerading channel %s into %s', oldchannel, newchannel)
@@ -964,7 +961,6 @@ class Safe:
             else:
                 self.log.warning('no peerchannel setting ... why ? %s %s',
                                  oldchannel, newchannel)
-        return
 
     def usersummary_from_phoneid(self, phoneid):
         usersummary = {}
@@ -988,7 +984,6 @@ class Safe:
                     usersummary = self.usersummary_from_phoneid(k[6:])
                     chanprops.properties['peerdisplay'] = '%s (%s)' % (usersummary.get('fullname'),
                                                                        usersummary.get('phonenumber'))
-        return
 
     def currentstatus(self):
         rep = []
@@ -1018,7 +1013,7 @@ class Safe:
 
 
     def user_connection_status(self, userid):
-        return
+        pass
 
     def update_presence(self, userid, newstate):
         oldstate = self.xod_status.get('users').get(userid).get('availstate')
@@ -1058,7 +1053,6 @@ class Safe:
             # XXX log to ctilog self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
             self.appendcti('users', 'updatestatus', userid)
             self.presence_action(userid)
-        return
 
     def presence_action(self, userid):
         availstate = self.xod_status.get('users').get(userid).get('availstate')
@@ -1075,7 +1069,6 @@ class Safe:
                 print 'presence_action (service)', availstate, actionname, actionopt
             if actionname in self.queues_actions_list:
                 print 'presence_action (queues)', availstate, actionname, actionopt
-        return
 
     services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
                              'enableunc', 'enablebusy', 'enablerna']
@@ -1164,7 +1157,6 @@ class Safe:
         with db_connection_manager.DbConnectionPool(uri) as connection:
             connection['cur'].query(request, columns, arguments)
             connection['conn'].commit()
-        return
 
     def sheetsend(self, where, channel, outdest = None):
         if 'sheets' not in self.ctid.cconf.getconfig():
@@ -1258,7 +1250,6 @@ class Safe:
             os.write(self.ctid.pipe_queued_threads[1], 'innerdata:%s\n' % self.ipbxid)
         except Exception:
             self.log.exception('cb_timer %s', args)
-        return
 
     # Timers/Synchro stuff - end
 
@@ -1280,7 +1271,6 @@ class Safe:
         elif action == 'clear':
             if channel in self.fagisync:
                 del self.fagisync[channel]
-        return
 
     def fagi_close(self, fagistruct, varstoset):
         channel = fagistruct.channel
@@ -1293,7 +1283,6 @@ class Safe:
             del self.fagichannels[channel]
         except Exception:
             self.log.exception('problem when closing channel %s', channel)
-        return
 
     def fagi_setup(self, fagistruct):
         if fagistruct.channel in self.fagichannels:
@@ -1305,7 +1294,6 @@ class Safe:
                                                   'fagistruct' : fagistruct }
         tm.setName('Thread-fagi-%s' % fagistruct.channel)
         tm.start()
-        return
 
     def fagi_handle(self, channel, where):
         self.log.info('handle FAGI for channel %s, sync comes from %s', channel, where)
@@ -1328,7 +1316,6 @@ class Safe:
 
         # the AGI handling has been done, exiting ...
         self.fagi_close(fagistruct, varstoset)
-        return
 
     def fagi_handle_real(self, agievent):
         # check capas !
@@ -1605,24 +1592,20 @@ class Channel:
         self.properties['parked'] = True
         self.properties['talkingto_kind'] = 'parking'
         self.properties['talkingto_id'] = '%s@%s' % (exten, parkinglot)
-        return
 
     def unsetparking(self):
         self.properties['peerdisplay'] = None
         self.properties['parked'] = False
         self.properties['talkingto_kind'] = None
         self.properties['talkingto_id'] = None
-        return
 
     def addrelation(self, relation):
         if relation not in self.relations:
             self.relations.append(relation)
-        return
 
     def delrelation(self, relation):
         if relation in self.relations:
             self.relations.remove(relation)
-        return
 
     def update_state(self, state):
         # values
@@ -1630,7 +1613,6 @@ class Channel:
         # 5 Ringing
         # 6 Up
         self.state = state
-        return
 
     def update_term(self):
         # define what (agent, queue, ...)
@@ -1666,7 +1648,6 @@ class Channel:
                 self.extra_data[family][varname] = varvalue
         else:
             self.extra_data[family][varname] = varvalue
-        return
 
     def get_extra_data(self, family, varname):
         if family == 'xivo':

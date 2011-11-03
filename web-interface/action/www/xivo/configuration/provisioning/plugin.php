@@ -30,7 +30,7 @@ $param['page'] = $page;
 
 if($search !== '')
 	$param['search'] = $search;
-	
+
 $error = false;
 
 $appprovdplugin = &$_XOBJ->get_application('provdplugin');
@@ -79,7 +79,7 @@ switch($act)
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appprovdplugin->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),array('act' => 'list'));
-			
+
 		$_TPL->set_var('id',$_QR['id']);
 		$_TPL->set_var('info',$info);
 		break;
@@ -90,7 +90,7 @@ switch($act)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_installation',array($_QR['id'])));
 		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_installed',array($_QR['id'])));
-			
+
 		$param['act'] = 'edit';
 		$param['id'] = $_QR['plugin'];
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
@@ -102,7 +102,7 @@ switch($act)
 			dwho_report::push('error',dwho_i18n::babelfish('error_during_uninstallation',array($_QR['id'])));
 		else
 			dwho_report::push('info',dwho_i18n::babelfish('successfully_uninstalled',array($_QR['id'])));
-			
+
 		$param['act'] = 'edit';
 		$param['id'] = $_QR['plugin'];
 		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
@@ -118,10 +118,10 @@ switch($act)
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
-		
+
 		$list = $appprovdplugin->get_plugin_list($search,$order,$limit);
 		$total = $appprovdplugin->get_cnt();
-		
+
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;

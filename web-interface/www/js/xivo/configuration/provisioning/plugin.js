@@ -48,15 +48,23 @@ $(function() {
 
 });
 
-function init_install(plugin, id) {
+function init_install_pkgs(plugin, id) {
+	var url = '/xivo/configuration/ui.php/provisioning/plugin?act=install-pkgs&plugin='+ plugin + '&id=' + id;
+	init_installer(url, plugin);
+}
+
+function init_install_plugin(id) {
+	var url = '/xivo/configuration/ui.php/provisioning/plugin?act=install_plugin&id=' + id;
+	init_installer(url, id);
+}
+
+function init_installer(url, id) {
 	$('#box_installer').show();
-	$.get(
-			'/xivo/configuration/ui.php/provisioning/plugin?act=install-pkgs&plugin='
-					+ plugin + '&id=' + id, function(data) {
+	$.get(url, function(data) {
 				if (data === null)
 					return false;
-				ajax_request_oip(data, plugin);
-				this.int = setInterval(ajax_request_oip, 1000, data, plugin);
+				ajax_request_oip(data, id);
+				this.int = setInterval(ajax_request_oip, 1000, data, id);
 			});
 }
 

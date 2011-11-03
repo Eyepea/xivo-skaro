@@ -36,8 +36,17 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
-		
+
 		$_TPL->display('/xivo/configuration/provisioning/generic');
+		break;
+	case 'install_plugin':
+		if (isset($_QR['id']) === false
+		|| ($location = $provdplugin->install($_QR['id'])) === false)
+		{
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+		die($location);
 		break;
 	case 'install-pkgs':
 		if (isset($_QR['id']) === false
@@ -91,21 +100,21 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
-		
+
 		$status = $data['status'];
 		$regex = '/(?:(\w+)\|)?(\w+)(?:;(\d+)(?:\/(\d+))?)?/';
 		preg_match_all($regex,$status,$out);
-		
+
 		if (($nbout = count($out)) === 0
 		|| ($nb = count($out[0])) === 0)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
-		
+
 		$header = array_shift($out);
 		$nbout--;
-		
+
 		$res = array();
 		for ($i=0;$i<$nbout;$i++)
 		{
@@ -119,7 +128,7 @@ switch($act)
 				array_push($res[$k], $ref[$k]);
 			}
 		}
-		
+
 		$nbres = count($res);
 		$rs = '';
 		$rs .= "<ul>";
@@ -169,7 +178,7 @@ switch($act)
 			$rs .= "</li>";
 		}
 		$rs .= "</ul>";
-		
+
 		die($rs);
 		break;
 	default:

@@ -46,11 +46,15 @@ $dhtml = &$this->get_module('dhtml');
 						   'xivo/configuration/manage/server',
 						   'act=list');?>
 			</dd>
+<?php
+/* LDAP - COMMENTED
 			<dd id="mn-manage--ldapserver">
 				<?=$url->href_html($this->bbf('mn_left_manage-ldapserver'),
 							      'xivo/configuration/manage/ldapserver',
 							      'act=list');?>
 			</dd>
+*/
+?>
 			<dd id="mn-manage--directories">
 				<?=$url->href_html($this->bbf('mn_left_manage-directories'),
 							      'xivo/configuration/manage/directories',
@@ -157,6 +161,13 @@ $dhtml = &$this->get_module('dhtml');
 			    );
 ?>
 			</dd>
+	</dd>
+	<dd class="b-nosize">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</dd>
+</dl>
 <?php
 	/*
 			<dd id="mn-controlsystem--ha_stop">

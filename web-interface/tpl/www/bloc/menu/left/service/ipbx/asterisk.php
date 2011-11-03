@@ -319,12 +319,15 @@ $dhtml = &$this->get_module('dhtml');
 						'</dd>';
 		endif;
 
+
+/* COMMENTED
 		if(xivo_user::chk_acl('pbx_services','parkinglot') === true):
 			echo	'<dd id="mn-pbx-services--parkinglot">',
 				$url->href_html($this->bbf('mn_left_pbx_services-parkinglot'),
 						'service/ipbx/pbx_services/parkinglot'),
 						'</dd>';
 		endif;
+ */
 
 		if(xivo_user::chk_acl('pbx_services','phonebook') === true):
 			echo	'<dd id="mn-pbx-services--phonebook">',
@@ -363,7 +366,7 @@ $dhtml = &$this->get_module('dhtml');
 				'act=list'),
 				'</dd>';
 		endif;
-
+/* LDAP - COMMENTED
 		if(xivo_user::chk_acl('system_management','ldapfilter') === true):
 			echo	'<dd id="mn-system-management--ldapfilter">',
 				$url->href_html($this->bbf('mn_left_systemmanagement-ldapfilter'),
@@ -371,7 +374,7 @@ $dhtml = &$this->get_module('dhtml');
 						'act=list'),
 						'</dd>';
 		endif;
-
+ */
 		echo	'</dl>';
 	endif;
 

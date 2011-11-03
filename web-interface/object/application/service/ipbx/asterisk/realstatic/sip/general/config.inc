@@ -703,9 +703,9 @@ $array['element']['maxforwards']['value'] = range(1,255,1);
 $array['element']['maxforwards']['default'] = '';
 $array['element']['maxforwards']['null'] = true;
 
-$array['element']['disallow_methods'] = array();
-$array['element']['disallow_methods']['default'] = '';
-$array['element']['disallow_methods']['null'] = true;
+$array['element']['disallowed_methods'] = array();
+$array['element']['disallowed_methods']['default'] = '';
+$array['element']['disallowed_methods']['null'] = true;
 
 $array['element']['domainsasrealm'] = array();
 $array['element']['domainsasrealm']['value'] = array('no','yes');
@@ -928,7 +928,7 @@ $array['filter']['use_q850_reason'] = array('bool' => true);
 $array['filter']['snom_aoc_enabled'] = array('bool' => true);
 $array['filter']['subscribe_network_change_event'] = array('bool' => true);
 $array['filter']['maxforwards'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,255,1));
-$array['filter']['disallow_methods'] = array('set' => false,'chk' => 2,'maxlen' => 255);
+$array['filter']['disallowed_methods'] = array('set' => false,'chk' => 2,'maxlen' => 255);
 $array['filter']['domainsasrealm'] = array('set' => false, 'chk' => 2, 'bool' => true);
 $array['filter']['textsupport'] = array('set' => false, 'chk' => 2, 'bool' => true);
 $array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','always'));

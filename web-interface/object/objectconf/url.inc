@@ -52,7 +52,7 @@ $array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configurati
 $array['xivo/configuration/manage/user'] = 'xivo/configuration/index.php/manage/user/';
 $array['xivo/configuration/manage/entity'] = 'xivo/configuration/index.php/manage/entity/';
 $array['xivo/configuration/manage/server'] = 'xivo/configuration/index.php/manage/server/';
-$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
+//$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
 $array['xivo/configuration/manage/directories'] = 'xivo/configuration/index.php/manage/directories/';
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
 $array['xivo/configuration/manage/certificate'] = 'xivo/configuration/index.php/manage/certificate/';
@@ -237,15 +237,15 @@ $array['service/ipbx/pbx_services/sounds'] = 'service/ipbx/index.php/pbx_service
 $array['service/ipbx/pbx_services/musiconhold'] = 'service/ipbx/index.php/pbx_services/musiconhold/';
 $array['service/ipbx/pbx_services/extenfeatures'] = 'service/ipbx/index.php/pbx_services/extenfeatures/';
 $array['service/ipbx/pbx_services/paging'] = 'service/ipbx/index.php/pbx_services/paging/';
-$array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
+//$array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
 $array['service/ipbx/pbx_services/phonebook'] = 'service/ipbx/index.php/pbx_services/phonebook/';
 
 $array['service/ipbx/json/restricted/pbx_services/phonebook'] = 'service/ipbx/json.php/restricted/pbx_services/phonebook/';
 $array['service/ipbx/json/restricted/pbx_services/extenfeatures'] = 'service/ipbx/json.php/restricted/pbx_services/extenfeatures/';
-$array['service/ipbx/json/restricted/pbx_services/parkinglot'] = 'service/ipbx/json.php/restricted/pbx_services/parkinglot/';
+//$array['service/ipbx/json/restricted/pbx_services/parkinglot'] = 'service/ipbx/json.php/restricted/pbx_services/parkinglot/';
 
 $array['service/ipbx/json/private/pbx_services/extenfeatures'] = 'service/ipbx/json.php/private/pbx_services/extenfeatures/';
-$array['service/ipbx/json/private/pbx_services/parkinglot'] = 'service/ipbx/json.php/private/pbx_services/parkinglot/';
+//$array['service/ipbx/json/private/pbx_services/parkinglot'] = 'service/ipbx/json.php/private/pbx_services/parkinglot/';
 
 # special..
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
@@ -257,7 +257,7 @@ $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/l
 $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/system_management/backupfiles/';
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
-$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
+//$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
 
 $array['service/ipbx/json/restricted/system_management/context'] = 'service/ipbx/json.php/restricted/system_management/context/';
 

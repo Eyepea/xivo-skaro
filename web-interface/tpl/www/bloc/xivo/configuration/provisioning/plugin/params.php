@@ -28,10 +28,10 @@ if (($params = $info['params']) !== false
 && is_array($params) === true
 && ($nb = count($params)) > 0):
 
-    $uri = '/xivo/configuration/ui.php/provisioning/plugin';
+	$uri = '/xivo/configuration/ui.php/provisioning/plugin';
 
 	for($i=0;$i<$nb;$i++):
-	    $ref = &$params[$i];
+		$ref = &$params[$i];
 		if (isset($ref['links'][0]) === false
 		|| isset($ref['links'][0]['href']) === false
 		|| ($href = $ref['links'][0]['href']) === '')

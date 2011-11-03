@@ -254,12 +254,6 @@ endif;
 				      'default'	=> $element['meetmefeatures']['admin_quiet']['default'],
 				      'checked'	=> $info['meetmefeatures']['admin_quiet'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_admin-starmenu'),
-				      'name'	=> 'meetmefeatures[admin_starmenu]',
-				      'labelid'	=> 'meetmefeatures-admin-starmenu',
-				      'default'	=> $element['meetmefeatures']['admin_starmenu']['default'],
-				      'checked'	=> $info['meetmefeatures']['admin_starmenu'])),
-
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_admin-closeconflastmarkedexit'),
 				      'name'	=> 'meetmefeatures[admin_closeconflastmarkedexit]',
 				      'labelid'	=> 'meetmefeatures-admin-closeconflastmarkedexit',
