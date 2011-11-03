@@ -30,8 +30,9 @@ $_TPL->load_i18n_file('tpl/www/bloc/cti/profiles/list-values.i18n', 'global');
 /** list values */
 $servicesavail = array(
     'enablevm'      => $_TPL->bbf('enablevm'),
-    'callrecord'    => $_TPL->bbf('callrecord'),
-    'incallrec'     => $_TPL->bbf('incallrec'),
+    // DISABLING CALL RECORDS	
+    //'callrecord'    => $_TPL->bbf('callrecord'),
+    //'incallrec'     => $_TPL->bbf('incallrec'),
     'incallfilter'  => $_TPL->bbf('incallfilter'),
     'enablednd'     => $_TPL->bbf('enablednd'),
     'fwdunc'        => $_TPL->bbf('fwdunc'),
