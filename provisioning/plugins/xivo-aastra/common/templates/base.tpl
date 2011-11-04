@@ -65,6 +65,9 @@ input language: {{ XX_locale[2] }}
 {% if XX_out_of_band_dtmf -%}
 sip out-of-band dtmf: {{ XX_out_of_band_dtmf }}
 {% endif -%}
+{% if XX_dtmf_method -%}
+sip dtmf method: {{ XX_dtmf_method }}
+{% endif -%}
 
 {% if sip_subscribe_mwi is defined -%}
 sip explicit mwi subscription: {{ sip_subscribe_mwi|int }}
