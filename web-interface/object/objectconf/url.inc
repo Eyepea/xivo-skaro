@@ -169,7 +169,6 @@ $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/js
 
 $array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
-$array['service/ipbx/json/restricted/call_management/cdr'] = 'service/ipbx/json.php/restricted/call_management/cdr/';
 $array['service/ipbx/json/restricted/trunk_management/sip'] = 'service/ipbx/json.php/restricted/trunk_management/sip/';
 $array['service/ipbx/json/restricted/trunk_management/iax'] = 'service/ipbx/json.php/restricted/trunk_management/iax/';
 $array['service/ipbx/json/restricted/trunk_management/custom'] = 'service/ipbx/json.php/restricted/trunk_management/custom/';
@@ -209,11 +208,9 @@ $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call
 $array['service/ipbx/call_management/pickup'] = 'service/ipbx/index.php/call_management/pickup/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
-$array['service/ipbx/call_management/cdr'] = 'service/ipbx/index.php/call_management/cdr/';
 
 $array['service/ipbx/json/restricted/call_management/incall']  = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
-$array['service/ipbx/json/restricted/call_management/cdr']     = 'service/ipbx/json.php/restricted/call_management/cdr/';
 $array['service/ipbx/json/restricted/call_management/pickup']  = 'service/ipbx/json.php/restricted/call_management/pickup/';
 
 $array['service/ipbx/json/private/call_management/incall']     = 'service/ipbx/json.php/private/call_management/incall/';

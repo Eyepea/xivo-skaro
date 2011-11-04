@@ -85,10 +85,6 @@ $array['module']['callfiltermember']['datastorage'] = true;
 $array['module']['configfiles'] = array();
 $array['module']['configfiles']['datastorage'] = false;
 
-$array['module']['cdr'] = array();
-$array['module']['cdr']['datastorage'] = array();
-$array['module']['cdr']['datastorage']['custom'] = true;
-
 $array['module']['cel'] = array();
 $array['module']['cel']['datastorage'] = true;
 

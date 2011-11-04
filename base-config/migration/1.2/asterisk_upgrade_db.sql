@@ -1,6 +1,5 @@
 DROP TABLE IF EXISTS "ctiprofiles";
 
-
 CREATE TABLE "ctiprofiles" (
  "id" SERIAL,
  "xlets" text,
@@ -26,3 +25,5 @@ INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "search", "dock", "fcms", "N/A" ],[
 grant all on ctiprofiles to asterisk;
 grant all on ctiprofiles_id_seq to asterisk;
 
+
+DROP TABLE IF EXISTS "cdr";

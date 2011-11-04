@@ -127,7 +127,7 @@ if(xivo_user::chk_acl_section('service/statistics/call_center') === true):
 <?php
 	endif;
 endif;
-    if(xivo_user::chk_acl_section('service/statistics/cdr') === true):
+    /* if(xivo_user::chk_acl_section('service/statistics/cdr') === true):
 ?>
 			<dt><?=$this->bbf('mn_left_ti_cel')?></dt>
 			<dd id="mn-1">
@@ -143,7 +143,7 @@ endif;
 						   'statistics/cdr/advanced_search');?>
 			</dd>
 <?php
-    endif;
+    endif; */
 ?>
 		</dl>
 	</dd>
