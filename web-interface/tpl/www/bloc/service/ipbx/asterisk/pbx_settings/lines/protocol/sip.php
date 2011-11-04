@@ -104,12 +104,6 @@
             'default'   => $element['protocol']['sip']['encryption']['default']),
          $element['protocol']['sip']['encryption']['value']),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_subscribemwi'),
-				      'name'	=> 'protocol[subscribemwi]',
-				      'labelid'	=> 'protocol-subscribemwi',
-				      'default'	=> $element['protocol']['sip']['subscribemwi']['default'],
-				      'checked'	=> $this->get_var('info','protocol','subscribemwi'))),
-
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_buggymwi'),
 				    'name'	=> 'protocol[buggymwi]',
 				    'labelid'	=> 'protocol-buggymwi',
