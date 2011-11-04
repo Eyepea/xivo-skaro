@@ -1,5 +1,5 @@
 {
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "Plugin for Aastra 6739i in version 3.0.1.2031.",
     "description_fr": "Greffon pour Aastra 6739i en version 3.0.1.2031.",
     "capabilities": {
