@@ -1136,11 +1136,10 @@ CREATE TABLE "musiconhold" (
 
 CREATE UNIQUE INDEX "musiconhold__uidx__filename_category_var_name" ON "musiconhold"("filename","category","var_name");
 
-INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','files');
-INSERT INTO "musiconhold" VALUES (2,0,0,1,'musiconhold.conf','default','application','');
-INSERT INTO "musiconhold" VALUES (3,0,0,0,'musiconhold.conf','default','random','no');
-INSERT INTO "musiconhold" VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
-SELECT setval('musiconhold_id_seq', 5);
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','mode','files');
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,1,'musiconhold.conf','default','application','');
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','random','no');
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 
 
 DROP TABLE IF EXISTS "operator";
@@ -2614,8 +2613,7 @@ CREATE TABLE "general"
  PRIMARY KEY("id")
 );
 
-INSERT INTO "general" VALUES (1, 'Europe/Paris', NULL, NULL, 0);
-SELECT setval('general_id_seq', 2);
+INSERT INTO "general" VALUES (DEFAULT, 'Europe/Paris', NULL, NULL, 0);
 
 
 DROP TABLE IF EXISTS "sipauthentication";
