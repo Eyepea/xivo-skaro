@@ -196,43 +196,6 @@ CREATE INDEX "callfiltermember__idx__active" ON "callfiltermember"("active");
 CREATE UNIQUE INDEX "callfiltermember__uidx__callfilterid_type_typeval" ON "callfiltermember"("callfilterid","type","typeval");
 
 
-DROP TABLE IF EXISTS "cdr";
-CREATE TABLE "cdr" (
- "id" SERIAL,
- "calldate" TIMESTAMP,
- "clid" varchar(80) NOT NULL DEFAULT '',
- "src" varchar(80) NOT NULL DEFAULT '',
- "dst" varchar(80) NOT NULL DEFAULT '',
- "dcontext" varchar(39) NOT NULL DEFAULT '',
- "channel" varchar(80) NOT NULL DEFAULT '',
- "dstchannel" varchar(80) NOT NULL DEFAULT '',
- "lastapp" varchar(80) NOT NULL DEFAULT '',
- "lastdata" varchar(80) NOT NULL DEFAULT '',
- "answer" TIMESTAMP,
- "end" TIMESTAMP,
- "duration" INTEGER NOT NULL DEFAULT 0,
- "billsec" INTEGER NOT NULL DEFAULT 0,
- "disposition" varchar(9) NOT NULL DEFAULT '',
- "amaflags" INTEGER NOT NULL DEFAULT 0,
- "accountcode" varchar(20) NOT NULL DEFAULT '',
- "uniqueid" varchar(32) NOT NULL DEFAULT '',
- "userfield" varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY("id")
-);
-
-CREATE INDEX "cdr__idx__calldate" ON "cdr"("calldate");
-CREATE INDEX "cdr__idx__clid" ON "cdr"("clid");
-CREATE INDEX "cdr__idx__src" ON "cdr"("src");
-CREATE INDEX "cdr__idx__dst" ON "cdr"("dst");
-CREATE INDEX "cdr__idx__channel" ON "cdr"("channel");
-CREATE INDEX "cdr__idx__dstchannel" ON "cdr"("dstchannel");
-CREATE INDEX "cdr__idx__duration" ON "cdr"("duration");
-CREATE INDEX "cdr__idx__disposition" ON "cdr"("disposition");
-CREATE INDEX "cdr__idx__amaflags" ON "cdr"("amaflags");
-CREATE INDEX "cdr__idx__accountcode" ON "cdr"("accountcode");
-CREATE INDEX "cdr__idx__userfield" ON "cdr"("userfield");
-
-
 DROP TABLE IF EXISTS "cel";
 CREATE TABLE "cel" (
  "id" serial , 

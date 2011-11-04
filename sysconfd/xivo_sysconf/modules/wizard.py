@@ -48,9 +48,7 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
        'asterisk_modules_config_filename':      "modules.conf",
        'asterisk_extconfig_config_filename':    "extconfig.conf",
        'asterisk_res_mysql_config_filename':    "res_config_mysql.conf",
-       'asterisk_cdr_mysql_config_filename':    "cdr_mysql.conf",
        'asterisk_res_postgresql_config_filename': "res_pgsql.conf",
-       'asterisk_cdr_postgresql_config_filename': "cdr_pgsql.conf",
        'asterisk_res_sqlite_config_filename':   "res_config_sqlite.conf",
        'asterisk_config_path':                  os.path.join(os.path.sep, 'etc', 'asterisk'),
        'asterisk_tpl_directory':                'asterisk',
@@ -76,13 +74,7 @@ WIZARD_IPBX_ENGINES         = {'asterisk':
                                                      'dbport':  'dbport',
                                                      'charset': 'dbcharset'},
 
-                                         'cdr':     {'dbname':  'dbname',
-                                                     'dbuser':  'user',
-                                                     'dbpass':  'password',
-                                                     'dbhost':  'hostname',
-                                                     'dbport':  'port',
-                                                     'charset': 'charset'},
-                                         'modules': ('res_config_mysql.so', 'cdr_addon_mysql.so')},
+                                         'modules': ('res_config_mysql.so',)},
                                     'postgresql':
                                         {'params':  {'charset':    'utf8'},
 
@@ -94,14 +86,7 @@ WIZARD_IPBX_ENGINES         = {'asterisk':
                                                      'charset': 'dbcharset',
                                                      'encoding': 'dbcharset'},
 
-                                         'cdr':     {'dbname':  'dbname',
-                                                     'dbuser':  'user',
-                                                     'dbpass':  'password',
-                                                     'dbhost':  'hostname',
-                                                     'dbport':  'port',
-                                                     'charset': 'dbcharset',
-                                                     'encoding': 'dbcharset'},
-                                         'modules': ('res_config_pgsql.so', 'cdr_pgsql.so')},
+                                         'modules': ('res_config_pgsql.so',)},
                                      'sqlite':
                                         {'params':  {'timeout_ms':  150},
                                          'modules': ('res_config_sqlite.so',)}}}}
@@ -406,15 +391,6 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbinfo['res'])},
                           ipbxengine='asterisk')
 
-        merge_config_file(Wdc['asterisk_cdr_mysql_tpl_file'],
-                          Wdc['asterisk_cdr_mysql_custom_tpl_file'],
-                          Wdc['asterisk_cdr_mysql_file'],
-                          {'global':
-                                asterisk_mysql_config(dburi[1],
-                                                      dbname,
-                                                      dbparams,
-                                                      dbinfo['cdr'])},
-                          ipbxengine='asterisk')
     # POSTGRESQL
     elif dburi[0] == 'postgresql':
         if dburi[2]:
@@ -431,16 +407,6 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbname,
                                                       dbparams,
                                                       dbinfo['res'])},
-                          ipbxengine='asterisk')
-
-        merge_config_file(Wdc['asterisk_cdr_postgresql_tpl_file'],
-                          Wdc['asterisk_cdr_postgresql_custom_tpl_file'],
-                          Wdc['asterisk_cdr_postgresql_file'],
-                          {'global':
-                                asterisk_postgresql_config(dburi[1],
-                                                      dbname,
-                                                      dbparams,
-                                                      dbinfo['cdr'])},
                           ipbxengine='asterisk')
 
         # change db type for asterisk compatibility
@@ -723,7 +689,7 @@ def safe_init(options):
                                                             Wdc["%s_tpl_directory" % x],
                                                             Wdc["%s_config_filename" % x])
 
-    for x in ('modules', 'extconfig', 'res_mysql', 'cdr_mysql', 'res_postgresql', 'cdr_postgresql', 'res_sqlite'):
+    for x in ('modules', 'extconfig', 'res_mysql', 'res_postgresql', 'res_sqlite'):
         Wdc["asterisk_%s_file" % x] = os.path.join(Wdc['asterisk_config_path'],
                                                    Wdc["asterisk_%s_config_filename" % x])
 
