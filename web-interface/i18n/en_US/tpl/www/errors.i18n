@@ -37,9 +37,6 @@ Value too long
 ; error(out of interval)
 Out-of-boundaries value
 
-; title_content_name
-not_set
-
 ; invalid_name_context
 invalid context name (%s)
 
