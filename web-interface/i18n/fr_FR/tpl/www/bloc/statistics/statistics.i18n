@@ -30,7 +30,7 @@ Résumé
 jusqu'à ce jour
 
 ; toolbar_fm_select_conf
-Choisisser la configuration à appliquer: 
+Choisissez la configuration à appliquer: 
 
 ; colstruct_traitment
 Traités
@@ -135,7 +135,7 @@ Présentés hors FA
 <acronym title="Login">Login</acronym>
 
 ; col_available
-<acronym title="Dispo">Dispo</acronym>
+<acronym title="Disponible">Dispo</acronym>
 
 ; col_pause
 <acronym title="Retrait">Retrait</acronym>
@@ -162,13 +162,13 @@ Durée
 Pic d'appels
 
 ; col_totalwithdrawal
-<acronym title="Total des retraits">Total</acronym>
+<acronym title="Total des retraits">Tot Ret.</acronym>
 
 ; col_total_with_talk
-<acronym title="Dont conversation">Conv.</acronym>
+<acronym title="Total conversation">Tot Conv.</acronym>
 
 ; col_total_with_wup
-<acronym title="Dont WRAPUP">WUP.</acronym>
+<acronym title="Total WRAPUP">WUP.</acronym>
 
 ; col_tperiod1
 <acronym title="Intervalle 1">P1</acronym>
@@ -468,13 +468,13 @@ Semaine %d
 Cache %s n'est pas généré
 
 ; no_type_in_conf 
-Aucune entrées dans la configuration
+Aucune entrée dans la configuration
 
 ; tbl-lnk-expotcsv
 Exporter CSV
 
 ; total_call_repartition_by_event
-Repartition des appels par événement
+Répartition des appels par événement
 
 ; queue_performance
 Performance files d'attentes

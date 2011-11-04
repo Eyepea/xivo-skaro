@@ -1,3 +1,4 @@
+
 ; toolbar_fm_conf
 Choose a configuration
 
@@ -29,10 +30,10 @@ Summary
 to date
 
 ; toolbar_fm_select_conf
-Choisisser configuration to apply:
+Choose configuration to apply:
 
 ; colstruct_traitment
-Treaties
+Processed
 
 ; colstruct_abandon
 Abandoned calls
@@ -44,73 +45,76 @@ Withdrawal
 Calls handled
 
 ; col_nb
-<acronym title="Nombre"> Nb. </acronym>
+<acronym title="Number">Nb.</acronym>
 
 ; col_average_call_duration
-<acronym title="Moyenne Time d'Appels"> MTA </acronym>
+<acronym title="Average call duration">MTA</acronym>
 
 ; col_presented
-Pre <acronym title="Total">Total</acronym>
+<acronym title="Total">Total</acronym>
 
 ; col_connect
-Rep. <acronym title="Answered">Answered</acronym>
+<acronym title="Answered">Answered</acronym>
 
 ; col_abandon
 <acronym title="Abandoned">Abandoned</acronym>
 
 ; col_ringnoanswer
-Not <acronym title="NO Answered">NO Answered</acronym>
+<acronym title="No Answered">No Answ.</acronym>
 
 ; col_outgoing
-Sort <acronym title="Outcall">Outcall</acronym>
+<acronym title="Outgoing calls">Out</acronym>
 
 ; col_completeagent
-<acronym title="reattached by agent"> RbA </acronym>
+<acronym title="Agent on hook">AOH</acronym>
 
 ; col_completecaller
-<acronym title="reattached by caller"> RbY </acronym>
+<acronym title="Caller on hook">COH</acronym>
 
 ; col_transfer
-<acronym title="Forward">Forward </acronym>
+<acronym title="Forwarded">Forw.</acronym>
 
 ; colstruct_deterred
-Deterred
+Dissuaded
 
 ; col_on_close
-<acronym title="Deterred on close"> DF </acronym>
+<acronym title="Dissuaded on close">Close</acronym>
 
 ; col_on_saturation
-<acronym title="Deterred on saturation"> on DS </acronym>
+<acronym title="Dissuaded on saturation">Satur.</acronym>
 
 ; colstruct_rerouted
-Rerouted
+Dissuaded
 
 ; col_on_hungup
-<acronym title="Deterred on reattached"> DR </acronym>
+<acronym title="Rerouted after on hook">ROH</acronym>
 
 ; col_on_guide
-<acronym title="Deterred on guide"> DG </acronym>
+<acronym title="Rerouted after guide">ROG</acronym>
 
 ; col_on_number
-<acronym title="Rerouted on number"> RN </acronym>
+<acronym title="Rerouted on number">RN</acronym>
 
 ; col_average_time_waiting
-<acronym title="Average waiting time"> AWT </acronym>
+<acronym title="Average waiting time">AWT</acronym>
 
 ; col_home_rated
-<acronym title="Rates Home"> RH </acronym>
+<acronym title="Arrival Rate"> RH </acronym>
 
 ; col_qos
-<acronym title="Qualité of service"> QOS </acronym>
+<acronym title="Quality of service"> QOS </acronym>
+
+; colstruct_calls
+Calls
 
 ; colstruct_call_counter
-Call Number
+Nb. of calls
 
 ; colstruct_total_time
 Total time
 
 ; colstruct_average_time
-Average length
+Average Time
 
 ; colstruct_queue
 Queue
@@ -122,79 +126,79 @@ Agent
 Presented to a queue
 
 ; col_not_presented_to_queue
-Presented out queue
+Presented out of queue
 
 ; col_productivity
-<acronym title="Productivité"> Prod. </acronym>
+<acronym title="Productivity">Prod.</acronym>
 
 ; col_login
-<acronym title="Login"> Login </acronym>
+<acronym title="Login">Login</acronym>
 
 ; col_available
-<acronym title="Dispo"> Available </acronym>
+<acronym title="Available">Avail.</acronym>
 
 ; col_pause
-<acronym title="Retrait"> Withdrawal </acronym>
+<acronym title="Withdrawal"> Withd.</acronym>
 
 ; col_traitment
-<acronym title="Traitement"> Trait. </acronym>
+<acronym title="Processed">Proc.</acronym>
 
 ; col_dmt
-<acronym title="Durée average traitement"> DMT </acronym>
+<acronym title="Average Processing Time">AvPT</acronym>
 
 ; col_dmmeg
-<acronym title="Durée means for garde"> DMMEG </acronym>
+<acronym title="Average Hold Time">AvHoldT</acronym>
 
 ; col_dmwu
-<acronym title="Durée average WRAPUP"> DMWU </acronym>
+<acronym title="Average WrapUp Time">AvWrupT</acronym>
 
 ; col_total
-<acronym title="Total"> Total </acronym>
+<acronym title="Total">Total</acronym>
 
 ; col_duration
-Interval
+Duration
 
 ; col_max_concurrent_calls
-Peak call
+Max Nb calls
 
 ; col_totalwithdrawal
-<acronym title="Total retraits"> of Total </acronym>
+<acronym title="Total on Withdraw">Tot. With.</acronym>
 
 ; col_total_with_talk
-<acronym title="Dont conversation"> Conv. </acronym>
+<acronym title="Total conversation">Conv.</acronym>
 
 ; col_total_with_wup
-<acronym title="Dont WRAPUP"> WUP. </acronym>
+<acronym title="Total WRAPUP"> WUP. </acronym>
 
 ; col_tperiod1
-<acronym title="Interval 1"> P1 </acronym>
+<acronym title="Interval 1">P1</acronym>
 
 ; col_tperiod2
-<acronym title="Interval 2"> P2 </acronym>
+<acronym title="Interval 2">P2</acronym>
 
 ; col_tperiod3
-<acronym title="Interval 3"> P3 </acronym>
+<acronym title="Interval 3">P3</acronym>
 
 ; col_tperiod4
-<acronym title="Interval 4"> P4 </acronym>
+<acronym title="Interval 4">P4</acronym>
 
 ; col_tperiod5
-<acronym title="Interval 5"> P5 </acronym>
+<acronym title="Interval 5">P5</acronym>
 
 ; col_aperiod1
-<acronym title="Interval 1"> P1 </acronym>
+<acronym title="Interval 1">P1</acronym>
 
 ; col_aperiod2
-<acronym title="Interval 2"> P2 </acronym>
+<acronym title="Interval 2">P2</acronym>
 
 ; col_aperiod3
-<acronym title="Interval 3"> P3 </acronym>
+<acronym title="Interval 3">P3</acronym>
 
 ; col_aperiod4
-<acronym title="Interval 4"> P4 </acronym>
+<acronym title="Interval 4">P4</acronym>
 
 ; col_aperiod5
-<acronym title="Interval 5"> P5 </acronym>
+<acronym title="Interval 5">P5</acronym>
 
 ; colstruct_nb
 Number
@@ -212,7 +216,7 @@ Outgoing
 Total
 
 ; colstruct_max_concurrent_calls
-Peak call
+Max Nb calls
 
 ; col_max_concurrent_calls_intern
 Internal
@@ -242,7 +246,7 @@ Outgoing
 Total
 
 ; colstruct_average_call_duration
-<acronym title="Moyenne Time d'Appels"> MTA </acronym>
+<acronym title="Average Call Time">ACT</acronym>
 
 ; col_average_call_duration_intern
 Internal
@@ -260,13 +264,13 @@ Total
 Internal Call
 
 ; title_cel_calls_by_trunk
-Call for trunk
+Call per trunk
 
 ; title_cel_top10_calls
 TOP10 calls
 
 ; top10_call_nb_intern
-TOP10 (Num. calls)
+TOP10 (Internal. calls)
 
 ; top10_call_nb_in
 TOP10 (Num. incoming call)
@@ -281,7 +285,7 @@ TOP10 (Internal Call Duration)
 TOP10 (Incoming Call Duration)
 
 ; top10_call_duration_out
-TOP10 (Time Out Call)
+TOP10 (Time Outg. Call)
 
 ; top10_call_price
 TOP10 (Cost of Appeals)
@@ -290,7 +294,7 @@ TOP10 (Cost of Appeals)
 Please select a configuration to apply.
 
 ; conf_axetype
-Axis of analysis:
+Analysis Axis :
 
 ; fm_dbeg
 Start:
@@ -323,13 +327,13 @@ Completed successfully
 Dashboard
 
 ; title_conf_cache_period
-Interval of cache
+Cache Interval
 
 ; bench_dashboard
 Performance
 
 ; conf_time_range
-Slot
+Time Slot
 
 ; conf_workweek
 Working days
@@ -392,7 +396,7 @@ November
 December
 
 ; cdr_axetype
-Axis of analysis:
+Analysis Axis :
 
 ; fm_stats_cdr_default
 
@@ -410,7 +414,7 @@ Week
 Month
 
 ; fm_axetype-default
-Axis analysis
+Analysis Axis 
 
 ; fm_axetype-opt(type)
 Type
@@ -428,7 +432,7 @@ Month
 Year
 
 ; week_number-opt
-Week No. %d
+Week Nb. %d
 
 ; month_number-opt
 Month %s %d
@@ -464,7 +468,7 @@ Sunday %d
 Cache %s is not generated
 
 ; no_type_in_conf
-No entries in the configuration
+No entry in configuration
 
 ; tbl-lnk-expotcsv
 CSV Export
@@ -473,16 +477,16 @@ CSV Export
 Distribution of calls per event
 
 ; queue_performance
-Performance queues
+Queues Performance
 
 ; productivity_by_agent
-Productivity per agent
+Agent Productivity
 
 ; agent_total_time_for_login
-Allocation of time connected
+Distribution of connected time 
 
 ; agent_performance
-Performance agent
+Agent Performance 
 
 ; total_call_connect_by_period
 Total calls handled
@@ -491,4 +495,4 @@ Total calls handled
 Total abandoned calls
 
 ; cel_performance
-Perfomance calls
+ Calls Perfomance
