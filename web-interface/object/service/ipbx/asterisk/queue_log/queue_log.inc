@@ -18,16 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'filter.inc'));
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_queue_log extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'queue_log';
-	var $_filter	= false;
+	protected	$_dso		= null;
+	protected	$_name		= 'queue_log';
+	protected	$_filter	= false;
 
-	function xivo_service_asterisk_queue_log(&$sre,&$dso)
+	public function __construct(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);

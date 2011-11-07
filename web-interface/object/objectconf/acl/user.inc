@@ -120,16 +120,17 @@ $array['tree']['service']['graphs'] = array();
 $array['tree']['service']['graphs']['munin'] = true;
 
 // statistics
-$array['tree']['service']['statistics'] = array();
-$array['tree']['service']['statistics']['call_center'] = array();
-$array['tree']['service']['statistics']['call_center']['configuration'] = true;
-$array['tree']['service']['statistics']['call_center']['data'] = true;
-$array['tree']['service']['statistics']['call_center']['genercache'] = true;
-$array['tree']['service']['statistics']['call_center']['genergraphic'] = true;
-$array['tree']['service']['statistics']['call_center']['queue'] = true;
-$array['tree']['service']['statistics']['cdr'] = array();
-$array['tree']['service']['statistics']['cdr']['search'] = true;
-$array['tree']['service']['statistics']['cdr']['advanced_search'] = true;
+$array['tree']['statistics'] = array();
+$array['tree']['statistics']['call_center'] = array();
+$array['tree']['statistics']['call_center']['settings'] = array();
+$array['tree']['statistics']['call_center']['settings']['configuration'] = true;
+$array['tree']['statistics']['call_center']['settings']['genercache'] = true;
+$array['tree']['statistics']['call_center']['settings']['cache'] = true;
+$array['tree']['statistics']['call_center']['data'] = array();
+$array['tree']['statistics']['call_center']['data']['stats1'] = true;
+$array['tree']['statistics']['call_center']['data']['stats2'] = true;
+$array['tree']['statistics']['call_center']['data']['stats3'] = true;
+$array['tree']['statistics']['call_center']['data']['stats4'] = true;
 
 // callcenter
 $array['tree']['service']['callcenter'] = array();

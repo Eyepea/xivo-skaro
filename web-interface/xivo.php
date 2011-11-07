@@ -40,6 +40,7 @@ dwho::load_class('location');
 $_LOC = dwho_gct::set_get(new dwho_location($_CF['location'],$_ACTION_MISC));
 
 $_XOBJ = dwho_gct::get('xivo_object');
+$_STS = &dwho_gct::get('xivo_stats');
 $_SRE = dwho_gct::get('xivo_service');
 $_USR = dwho_gct::get('_USR');
 

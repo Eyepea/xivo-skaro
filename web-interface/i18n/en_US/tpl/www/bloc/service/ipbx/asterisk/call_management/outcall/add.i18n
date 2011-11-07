@@ -172,4 +172,5 @@ Callerid
 ; col_outcall-dialpattern_emergency 	
 Emergency
 
-   
+; create_dundipeer
+Create a dundi peer

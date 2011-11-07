@@ -1,0 +1,650 @@
+; title_content_name
+Files d'attente > Ajouter
+
+; smenu_general
+Général
+
+; smenu_announces
+Annonces
+
+; smenu_members
+Membres
+
+; smenu_application
+Application
+
+; smenu_dialaction
+Non réponse
+
+; smenu_advanced
+Avancé
+
+; add_announce
+Ajouter une annonce
+
+; fld-users
+Utilisateurs
+
+; fld-agents
+Agents
+
+; bt_inuser
+Ajouter un ou plusieurs utilisateurs ->
+
+; bt_outuser
+<- Enlever un ou plusieurs utilisateurs
+
+; create_agent-group
+Créer un groupe d'agent
+
+; fm_agentgroup
+Groupes:
+
+; bt_inagentgroup
+Ajouter un ou plusieurs groupes d'agents ->
+
+; bt_outagentgroup
+<- Enlever un ou plusieurs groupes d'agents
+
+; create_agent
+Créer un agent
+
+; fm_agent
+Agents:
+
+; bt_inagent
+Ajouter un ou plusieurs agents ->
+
+; bt_outagent
+<- Enlever un ou plusieurs agents
+
+; fm_queuefeatures_name
+Nom:
+
+; fm_queuefeatures_number
+Numéro:
+
+; fm_queue_strategy
+Stratégie de sonnerie:
+
+; fm_queue_strategy-opt(leastrecent)
+Le moins récent
+
+; fm_queue_strategy-opt(fewestcalls)
+Le moins d'appels
+
+; fm_queue_strategy-opt(roundrobin)
+Répartition cyclique
+
+; fm_queue_strategy-opt(rrmemory)
+Répartition cyclique (mémorisée)
+
+; fm_queue_strategy-opt(random)
+Aléatoire
+
+; fm_queue_strategy-opt(linear)
+Dans l'ordre de leur définition (ou ajout)
+
+; fm_queue_strategy-opt(wrandom)
+Aléatoire pondéré par leur pénalités
+
+; fm_queue_strategy-opt(ringall)
+Tous
+
+; fm_queuefeatures_context
+Contexte:
+
+; create_context
+Créer un contexte
+
+; fm_queue_musicclass
+Musique d'attente:
+
+; hlp_fm_queue-musicclass
+Config asterisk: musicclass
+
+; fm_callerid_mode
+Personnaliser le nom de l'appelant:
+
+; fm_callerid_mode-opt(prepend)
+Préfixer
+
+; fm_callerid_mode-opt(overwrite)
+Remplacer
+
+; fm_callerid_mode-opt(append)
+Suffixer
+
+; fm_queuefeatures_preprocess-subroutine
+Sous-routine de prétraitement:
+
+; fm_queuefeatures_stats_qos
+Qualité de service (statistiques): 
+
+; fm_queuefeatures_timeout
+Temps de sonnerie:
+
+; fm_queuefeatures_timeout-opt(0)
+Illimité
+
+; fm_queuefeatures_timeout-opt-seconds
+%s secondes
+
+; fm_queuefeatures_timeout-opt-minute
+1 minute
+
+; fm_queuefeatures_timeout-opt-minute-seconds
+%s min. %s sec.
+
+; fm_queuefeatures_timeout-opt-minutes
+%s minutes
+
+; fm_queuefeatures_data-quality
+Qualité des données:
+
+; fm_queuefeatures_hitting-callee
+Autorise l'appelant à sortir avec "*":
+
+; fm_queuefeatures_hitting-caller
+Autorise l'appelé à sortir avec "*":
+
+; fm_queuefeatures_retries
+Aucun rappel pour le temps dépassé:
+
+; fm_queuefeatures_ring
+Sonnerie au lieu de musique d'attente:
+
+; fm_queuefeatures_transfer-user
+Autorise l'appelé à transférer l'appelant:
+
+; fm_queuefeatures_transfer-call
+Autorise l'appelant à transférer l'appel:
+
+; fm_queuefeatures_write-caller
+Autorise l'appelé à enregistrer l'appel:
+
+; fm_queuefeatures_write-calling
+Autorise l'appelant à enregistrer l'appel:
+
+; fm_queue_announce
+Annonce au décrochage du membre:
+
+; fm_queue_context
+Contexte de sortie:
+
+; fm_queue_servicelevel
+Niveau de service:
+
+; fm_queue_weight
+Poids:
+
+; fm_queue_timeout
+Délai d'attente pour joindre un membre:
+
+; fm_queue_timeout-opt(0)
+Désactivé
+
+; fm_queue_timeout-opt
+%s secondes
+
+; fm_queue_retry
+Délai d'attente avant rappel des membres:
+
+; fm_queue_retry-opt(1)
+1 seconde
+
+; fm_queue_retry-opt
+%s secondes
+
+; fm_queue_wrapuptime
+Délai de réattribution d'appel:
+
+; fm_queue_wrapuptime-opt(0)
+Désactivé
+
+; fm_queue_wrapuptime-opt
+%s secondes
+
+; fm_queue_maxlen
+Nombre de personnes autorisées à attendre:
+
+; fm_queue_announce-frequency
+Fréquence d'annonce de position:
+
+; fm_queue_announce-frequency-opt(0)
+Désactivée
+
+; fm_queue_announce-frequency-opt-seconds
+%s secondes
+
+; fm_queue_announce-frequency-opt-minute
+1 minute
+
+; fm_queue_announce-frequency-opt-minute-seconds
+%s min. %s sec.
+
+; fm_queue_announce-frequency-opt-minutes
+%s minutes
+
+; fm_queue_announce-frequency-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_queue_announce-holdtime
+Annoncer le temps d'attente:
+
+; fm_queuefeatures_announce_holdtime
+Announcer le temps d'attente avant d'entrer dans la file : 
+
+; fm_queue_announce-holdtime-opt(no)
+Non
+
+; fm_queue_announce-holdtime-opt(yes)
+Oui
+
+; fm_queue_announce-holdtime-opt(once)
+Une fois
+
+; fm_queue_announce-round-seconds
+Arrondi du temps d'attente:
+
+; fm_queue_announce-round-seconds-opt(0)
+Désactivé
+
+; fm_queue_announce-round-seconds-opt
+%s secondes
+
+; fm_queue_monitor-format
+Format d'enregistrement:
+
+; fm_queue_monitor-type
+Enregistrement:
+
+; fm_queue_monitor-type-opt(no)
+Non
+
+; fm_queue_monitor-type-opt(mixmonitor)
+MixMonitor
+
+; fm_queue_joinempty
+Joindre une file d'attente vide:
+
+; fm_queue_joinempty-opt(no)
+Non
+
+; fm_queue_joinempty-opt(yes)
+Oui
+
+; fm_queue_joinempty-opt(strict)
+Strict
+
+; fm_queue_leavewhenempty
+Sortir d'une file d'attente vide:
+
+; fm_queue_leavewhenempty-opt(no)
+Non
+
+; fm_queue_leavewhenempty-opt(yes)
+Oui
+
+; fm_queue_leavewhenempty-opt(strict)
+Strict
+
+; fm_queue_ringinuse
+Appeler un membre déjà en communication:
+
+; fm_queue_eventwhencalled
+Activer les événements (AMI):
+
+; fm_queue_eventmemberstatus
+Activer les événements des membres (AMI):
+
+; fm_queue_reportholdtime
+Activer le rapport d'attente d'un appelant:
+
+; fm_queue_memberdelay
+Délai d'attente avant de passer l'appel:
+
+; fm_queue_memberdelay-opt(0)
+Désactivé
+
+; fm_queue_memberdelay-opt
+%s secondes
+
+; fm_queue_timeoutrestart
+Délai de réinitialisation du temps de réponse d'un membre:
+
+; fm_queue_queue-youarenext
+Vous serez le prochain:
+
+; fm_queue_queue-youarenext-opt(default)
+Défaut
+
+; fm_queue_queue-thereare
+Il y a:
+
+; fm_queue_queue-thereare-opt(default)
+Défaut
+
+; fm_queue_queue-callswaiting
+Appel en attente:
+
+; fm_queue_queue-callswaiting-opt(default)
+Défaut
+
+; fm_queue_queue-holdtime
+Durée d'attente est de:
+
+; fm_queue_queue-holdtime-opt(default)
+Défaut
+
+; fm_queue_queue-minutes
+Minutes:
+
+; fm_queue_queue-minutes-opt(default)
+Défaut
+
+; fm_queue_queue-seconds
+Secondes:
+
+; fm_queue_queue-seconds-opt(default)
+Défaut
+
+; fm_queue_queue-thankyou
+Merci de votre patience:
+
+; fm_queue_queue-thankyou-opt(default)
+Défaut
+
+; fm_queue_queue-lessthan
+Reste plus que:
+
+; fm_queue_queue-lessthan-opt(default)
+Défaut
+
+; fm_queue_queue-reporthold
+Durée d'attente d'un appelant:
+
+; fm_queue_queue-reporthold-opt(default)
+Défaut
+
+; fm_queue_periodic-announce
+Annonces périodiques:
+
+; bt_uppannounce
+Monter une ou plusieurs annonces
+
+; bt_downpannounce
+Descendre une ou plusieurs annonces
+
+; bt_inpannounce
+Ajouter une ou plusieurs annonces ->
+
+; bt_outpannounce
+<- Enlever une ou plusieurs annonces
+
+; fm_queue_periodic-announce-opt(default)
+Défaut
+
+; fm_queue_periodic-announce-frequency
+Fréquence des annonces périodiques:
+
+;;; options 1.8
+
+; fm_queue_timeoutpriority
+Priorité du temps de sonnerie: 
+
+; fm_queue_autofill
+Activer le nouveau système de distribution des appels: 
+
+; fm_queue_autopause
+Mettre en pause un membre s'il ne peut répondre à un appel: 
+
+; fm_queue_setinterfacevar
+Définir les variables de plan d'appel MEMBER*: 
+
+
+; fm_queue_setqueueentryvar
+Définir les variables de plan d'appel QE*: 
+
+
+; fm_queue_setqueuevar
+Définir les variables de plan d'appel QUEUE*: 
+
+
+; fm_queue_membermacro
+Macro exécutée à la connexion d'un member: 
+
+
+; fm_queue_min-announce-frequency
+Temps minimum entre les annonces de positions et d'attente estimée: 
+
+
+; fm_queue_random-periodic-announce
+Jouer les annonces périodiques dans un ordre aléatoire:
+
+; fm_queue_announce-position
+Annoncer la position dans la file d'attente: 
+
+; fm_queue_announce-position-limit
+Nombre limite d'appel en attente pour l'annonce de position:
+
+; fm_queue_defaultrule
+Pénalitées appliquées:
+
+; hlp_fm_queue_timeoutpriority
+Config asterisk: timeoutpriority
+
+; fm_queue_timeoutpriority-opt(app)
+Plan d'appel
+
+; fm_queue_timeoutpriority-opt(conf)
+Configuration
+
+; hlp_fm_queue_autofill
+Config asterisk: autofill
+
+; hlp_fm_queue_autopause
+Config asterisk: autopause
+
+; hlp_fm_queue_setinterfacevar
+Config asterisk: setinterfacevar
+
+; hlp_fm_queue_setqueueentryvar
+Config asterisk: setqueueentryvar
+
+; hlp_fm_queue_setqueuevar
+Config asterisk: setqueuevar
+
+; hlp_fm_queue_membermacro
+Config asterisk: membermacro
+
+; hlp_fm_queue_min-announce-frequency
+Config asterisk: min-announce-frequency
+
+; hlp_fm_queue_random-periodic-announce
+Config asterisk: random-periodic-announce
+
+; hlp_fm_queue_announce-position
+Config asterisk: announce-position
+
+; fm_queue_announce-position-opt(yes)
+Oui
+
+; fm_queue_announce-position-opt(no)
+Non
+
+; fm_queue_announce-position-opt(limit)
+Dans les limites
+
+; fm_queue_announce-position-opt(more)
+Supérieur
+
+; hlp_fm_queue_announce-position-limit
+Config asterisk: announce-position-limit
+
+; hlp_fm_queue_defaultrule
+Config asterisk: defaultrule
+
+; hlp_fm_queue-queue
+Config asterisk: queue
+
+; hlp_fm_queue-announce
+Config asterisk: announce
+
+; hlp_fm_queue-announce-frequency
+Config asterisk: announce-frequency
+
+; hlp_fm_queue-announce-holdtime
+Config asterisk: announce-holdtime
+
+; hlp_fm_queue-announce-round-seconds
+Config asterisk: announce-round-seconds
+
+; hlp_fm_queue-category
+Config asterisk: category
+
+; hlp_fm_queue-context
+Config asterisk: context
+
+; hlp_fm_queue-eventmemberstatus
+Config asterisk: eventmemberstatus
+
+; hlp_fm_queue-eventwhencalled
+Config asterisk: eventwhencalled
+
+; hlp_fm_queue-joinempty
+Config asterisk: joinempty
+
+; hlp_fm_queue-leavewhenempty
+Config asterisk: leavewhenempty
+
+; hlp_fm_queue-maxlen
+Config asterisk: maxlen
+
+; hlp_fm_queue-memberdelay
+Config asterisk: memberdelay
+
+; hlp_fm_queue-monitor-format
+Config asterisk: monitor-format
+
+; hlp_fm_queue-monitor-type
+Config asterisk: monitor-type
+
+; hlp_fm_queue-musiconhold
+Config asterisk: musiconhold
+
+; hlp_fm_queue-name
+Config asterisk: name
+
+; hlp_fm_queue-periodic-announce
+Config asterisk: periodic-announce
+
+; hlp_fm_queue-periodic-announce-frequency
+Config asterisk: periodic-announce-frequency
+
+; hlp_fm_queue-queue-callswaiting
+Config asterisk: queue-callswaiting
+
+; hlp_fm_queue-queue-holdtime
+Config asterisk: queue-holdtime
+
+; hlp_fm_queue-queue-lessthan
+Config asterisk: queue-lessthan
+
+; hlp_fm_queue-queue-minutes
+Config asterisk: queue-minutes
+
+; hlp_fm_queue-queue-reporthold
+Config asterisk: queue-reporthold
+
+; hlp_fm_queue-queue-seconds
+Config asterisk: queue-seconds
+
+; hlp_fm_queue-queue-thankyou
+Config asterisk: queue-thankyou
+
+; hlp_fm_queue-queue-thereare
+Config asterisk: queue-thereare
+
+; hlp_fm_queue-queue-youarenext
+Config asterisk: queue-youarenext
+
+; hlp_fm_queue-reportholdtime
+Config asterisk: reportholdtime
+
+; hlp_fm_queue-retry
+Config asterisk: retry
+
+; hlp_fm_queue-ringinuse
+Config asterisk: ringinuse
+
+; hlp_fm_queue-servicelevel
+Config asterisk: servicelevel
+
+; hlp_fm_queue-strategy
+Config asterisk: strategy
+
+; hlp_fm_queue-timeout
+Config asterisk: timeout
+
+; hlp_fm_queue-timeoutrestart
+Config asterisk: timeoutrestart
+
+; hlp_fm_queue-weight
+Config asterisk: weight
+
+; hlp_fm_queue-wrapuptime
+Config asterisk: wrapuptime
+
+
+; smenu_schedule
+Horaires
+
+; fm_queue_schedule
+Horaires :
+
+; create_schedules
+Créer un horaire
+
+; smenu_diversion
+Diversions
+
+; fld-diversion-ctipresence
+Sur présence d'un ou plusieurs status CTI
+
+; fld-diversion-nonctipresence
+Sur absence d'un ou plusieurs status CTI
+
+; fld-diversion-waittime
+Sur dépassement du temps d'attente estimé
+
+;  fm_queuefeatures_waittime
+Seuil (temps d'attente estimé) : 
+
+; fld-diversion-waitratio
+Sur dépassement d'un ratio appels en attente / agents disponibles
+
+; fm_queuefeatures_waitratio
+Ratio appels en attente / agents disponibles : 
+
+; hlp_fm_queuefeatures_waitratio
+Saisissez un pourcentage (par ex. 100 pour 100%)
+
+; ctipresence_col1
+Status
+
+; ctipresence_col2
+Nombre d'agents >= à
+
+
+; nonctipresence_col1
+Status
+
+; nonctipresence_col2
+Nombre d'agents <= à
+
+; no_ctipresence-disp
+Aucune règle
+
+; no_nonctipresence-disp
+Aucune règle

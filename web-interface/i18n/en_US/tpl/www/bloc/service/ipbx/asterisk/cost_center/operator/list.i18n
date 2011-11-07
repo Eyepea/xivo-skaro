@@ -3,3 +3,6 @@ Name
 
 ; col_currency
 Currency
+
+; no_operator
+No operator

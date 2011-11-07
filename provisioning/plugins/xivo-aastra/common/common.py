@@ -207,7 +207,8 @@ class BaseAastraPlugin(StandardPlugin):
         dtmf_mode = raw_config.get(u'sip_dtmf_mode')
         if dtmf_mode in self._SIP_DTMF_MODE:
             raw_config[u'XX_out_of_band_dtmf'] = self._SIP_DTMF_MODE[dtmf_mode][0]
-    
+            raw_config[u'XX_dtmf_method'] = self._SIP_DTMF_MODE[dtmf_mode][1]
+
     def _add_locale(self, raw_config):
         locale = raw_config.get(u'locale')
         if locale in self._LOCALE:

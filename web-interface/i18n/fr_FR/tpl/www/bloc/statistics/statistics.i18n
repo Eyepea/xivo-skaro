@@ -3,10 +3,13 @@
 Choisir une configuration
 
 ; no_conf_selected_for_homepage
-Aucune configuration séléctionnées pour la page d'accueil.
+Aucune configuration séléctionnée pour la page d'accueil.
 
 ; no_queue
 Aucune file
+
+; no_agent
+Aucun agent
 
 ; no_conf
 Aucune configuration
@@ -30,7 +33,7 @@ Résumé
 jusqu'à ce jour
 
 ; toolbar_fm_select_conf
-Choisissez la configuration à appliquer: 
+Choisisser la configuration à appliquer: 
 
 ; colstruct_traitment
 Traités
@@ -49,6 +52,9 @@ Appels traités
 
 ; col_average_call_duration
 <acronym title="Moyenne Temps d'Appels">MTA</acronym>
+
+; col_connected
+<acronym title="Présentés">Présentés</acronym>
 
 ; col_presented
 <acronym title="Total">Total</acronym>
@@ -78,10 +84,10 @@ Appels traités
 Dissuadés
 
 ; col_on_close
-<acronym title="Dissuadés sur fermeture">fermeture</acronym>
+<acronym title="Dissuadés sur fermeture">DF</acronym>
 
 ; col_on_saturation	
-<acronym title="Dissuadés sur saturation">saturation</acronym>
+<acronym title="Dissuadés sur saturation">DS</acronym>
 
 ; colstruct_rerouted
 Reroutés
@@ -122,12 +128,6 @@ File d'attente
 ; colstruct_agent
 Agent
 
-; col_presented_to_queue
-Présentés à une FA
-
-; col_not_presented_to_queue
-Présentés hors FA
-
 ; col_productivity
 <acronym title="Productivité">Prod.</acronym>
 
@@ -135,7 +135,7 @@ Présentés hors FA
 <acronym title="Login">Login</acronym>
 
 ; col_available
-<acronym title="Disponible">Dispo</acronym>
+<acronym title="Dispo">Dispo</acronym>
 
 ; col_pause
 <acronym title="Retrait">Retrait</acronym>
@@ -162,13 +162,13 @@ Durée
 Pic d'appels
 
 ; col_totalwithdrawal
-<acronym title="Total des retraits">Tot Ret.</acronym>
+<acronym title="Total des retraits">Total</acronym>
 
 ; col_total_with_talk
-<acronym title="Total conversation">Tot Conv.</acronym>
+<acronym title="Dont conversation">Conv.</acronym>
 
 ; col_total_with_wup
-<acronym title="Total WRAPUP">WUP.</acronym>
+<acronym title="Dont WRAPUP">WUP.</acronym>
 
 ; col_tperiod1
 <acronym title="Intervalle 1">P1</acronym>
@@ -468,13 +468,13 @@ Semaine %d
 Cache %s n'est pas généré
 
 ; no_type_in_conf 
-Aucune entrée dans la configuration
+Aucune entrées dans la configuration
 
 ; tbl-lnk-expotcsv
 Exporter CSV
 
 ; total_call_repartition_by_event
-Répartition des appels par événement
+Repartition des appels par événement
 
 ; queue_performance
 Performance files d'attentes

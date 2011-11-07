@@ -1,0 +1,99 @@
+; title_content_name
+Agents > Add an agent
+
+; smenu_general
+General
+
+; smenu_users
+Users
+
+; smenu_queues
+Queues
+
+; smenu_advanced
+Advanced
+
+; fm_agentfeatures_firstname
+First name:
+
+; fm_agentfeatures_lastname
+Last name:
+
+; fm_agentfeatures_number
+Number:
+
+; fm_agentfeatures_passwd
+Password:
+
+; fm_agentfeatures_context
+Context:
+
+; create_context
+Add a context
+
+; fm_agentfeatures_language
+Language:
+
+; fm_agentfeatures_numgroup
+Group:
+
+; fm_agentfeatures_silent
+Disable connection announce:
+
+; fm_agentfeatures_numgroup
+Group:
+
+; bt_inqueue
+Add ->
+
+; bt_outqueue
+<- Remove
+
+; col_queue-name
+Name
+
+; col_queue-penalty
+Penalty
+
+; no_queue
+No queues
+
+; create_queue
+Create a queue
+
+; fm_agentfeatures_description
+Description:
+
+; bt_inuser
+Add user(s) ->
+
+; bt_outuser
+<- Remove user(s)
+
+
+; smenu_queueskills
+Queueskills
+
+; col_1
+Skill
+
+; col_2
+Weight
+
+; no_disp
+No skills
+
+; error_fm_queueskill_skillid(doubloon)
+Same skill can't be affected twice
+
+; error_fm_queueskill_weight(empty)
+You must set a weight (between 0 and 100)
+
+; error_fm_queueskill_weight(notnumeric)
+weight is not an integer
+
+; error_fm_queueskill_weight(unbound)
+weight must be an integer between 0 and 100
+
+; fm_agentoptions_musiconhold
+Musiconhold:

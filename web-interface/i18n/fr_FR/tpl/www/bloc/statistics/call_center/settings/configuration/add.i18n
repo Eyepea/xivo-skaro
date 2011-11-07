@@ -1,0 +1,156 @@
+
+; title_content_name
+Configuration > Ajouter
+
+; smenu_general
+Général
+
+; smenu_workweek
+Semaine de travail
+
+; smenu_incall
+Appels entrant
+
+; smenu_queue
+Files d'attente
+
+; smenu_qos
+Qualité de service
+
+; smenu_agents
+Agents
+
+; smenu_permissions
+Permissions
+
+; fm_description_general
+
+; fm_name
+Nom: 
+
+; fm_stats_conf_client 
+Client: 
+
+; fm_stats_conf_timezone
+Fuseau horaire: 
+
+; fm_default_delta
+Interval: 
+
+; hlp_fm_default_delta
+Permet de definir l'interval de temps par defaut  pour la vue par type.<br>
+e.g. [ -1 day ] veut dire qu'on prend la date du jour -1 pour un delta de 1 jour.<br>
+e.g. [ -3 days ] [ -1 weeks ] [ -1 month ]<br>
+Valeur disponible: - [0-999] [day|weeks|month] s <br>
+Laisser 0 pour le jour en cours.
+
+; fm_conf_homepage
+Afficher sur la page d'accueil: 
+
+; fm_description_cache
+Les dates pour le cache doivent être sous la forme AAAA-MM.
+
+; cache_during_period
+Période du cache
+
+; fm_dbegcache
+Début: 
+
+; fm_dendcache
+Fin: 
+
+; hlp_fm_dendcache
+Laissez 0 pour que le cache continue au jour le jour...
+
+; stats_conf_workhour
+Heure de travail
+
+; fm_hour_start
+Début: 
+
+; fm_hour_end
+Fin: 
+
+; stats_conf_period
+Périodes
+
+; fm_period1
+Période 1: 
+
+; fm_period2
+Période 2: 
+
+; fm_period3
+Période 3: 
+
+; fm_period4
+Période 4: 
+
+; fm_period5
+Période 5: 
+
+;hlp_fm_period
+eg. 0-20 (pour une périodes de 0 à 20 secondes)
+
+; fm_description
+Description: 
+
+; fm_workweek_monday
+Lundi: 
+
+; fm_workweek_tuesday
+Mardi: 
+
+; fm_workweek_wednesday
+Mercredi: 
+
+; fm_workweek_thursday
+Jeudi: 
+
+; fm_workweek_friday
+Vendredi: 
+
+; fm_workweek_saturday
+Samedi: 
+
+; fm_workweek_sunday
+Dimanche: 
+
+; agent
+Agents
+
+; create_agent
+Créer un agent
+
+; user
+Utilisateurs
+
+; create_user
+Créer un utilisateur
+
+; queue
+Files d'attente
+
+; create_queue
+Créer une file d'attente
+
+; group
+Groupes
+
+; create_group
+Créer un groupe
+
+; fm_description_stats_queue_qos
+Configuration de la qualité de service pour les files d'attente et groupe exprimées en secondes
+
+; fm-queue_name-
+%s: 
+
+; no_queue
+Aucune files d'attente
+
+; no_agent
+Aucun agent
+
+; xivo_user
+Utilisteurs autorisés

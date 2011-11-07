@@ -1,0 +1,151 @@
+; title_content_name
+Agents > Ajouter un agent
+
+; smenu_general
+Général
+
+; smenu_users
+Utilisateurs
+
+; smenu_queues
+Files d'attente
+
+; smenu_advanced
+Avancé
+
+; fm_agentfeatures_firstname
+Prénom :
+
+; fm_agentfeatures_lastname
+Nom :
+
+; fm_agentfeatures_number
+Numéro :
+
+; fm_agentfeatures_passwd
+Mot de passe :
+
+; fm_agentfeatures_context
+Contexte:
+
+; create_context
+Créer un contexte
+
+; fm_agentfeatures_language
+Langue:
+
+; fm_agentfeatures_numgroup
+Groupe:
+
+; fm_agentfeatures_silent
+Désactiver l'annonce de connexion :
+
+
+; bt_inuser
+Ajouter un ou plusieurs utilisateurs ->
+
+; bt_outuser
+<- Enlever un ou plusieurs utilisateurs
+
+; bt_inqueue
+Ajouter une ou plusieurs files d'attente ->
+
+; bt_outqueue
+<- Enlever une ou plusieurs files d'attente
+
+; col_queue-name
+Nom
+
+; col_queue-penalty
+Pénalité
+
+; no_queue
+Aucune file d'attente
+
+; fm_agentfeatures_description
+Description :
+
+; smenu_queueskills
+Compétences
+
+; fm_queueskills_item
+Pondération des compétences
+
+; col_1
+Compétence
+
+; col_2
+Pondération
+
+; no_disp
+Aucune compétence
+
+; error_fm_queueskill_skillid(doubloon)
+La même compétence est affectée plusieur fois
+
+; error_fm_queueskill_weight(empty)
+Vous devez saisir un poid (nombre entier compris entre 0 et 100)
+
+; error_fm_queueskill_weight(notnumeric)
+Le poids saisi n'est pas un nombre entier
+
+; error_fm_queueskill_weight(unbound)
+Le poids doit être un nombre entier compris entre 0 et 100
+
+; fm_agentfeatures_musiconhold
+Musique d'attente:
+
+; fm_agentfeatures_ackcall-opt(no)
+Non
+
+; fm_agentfeatures_ackcall-opt(yes)
+Oui
+
+; fm_agentfeatures_ackcall-opt(always)
+Toujours
+
+; fm_agentfeatures_autologoff
+Temps de sonnerie avant déconnexion :
+
+; fm_agentfeatures_autologoff-opt(0)
+Illimité
+
+; fm_agentfeatures_autologoff-opt
+%s secondes
+
+; fm_agentfeatures_wrapuptime
+Délai de réattribution d'appel :
+
+; fm_agentfeatures_wrapuptime-opt(0)
+Désactivé
+
+; fm_agentfeatures_wrapuptime-opt-seconds
+%s secondes
+
+; fm_agentfeatures_ackcall
+Requérir un DTMF avant de prendre un appel :
+
+; fm_agentfeatures_enddtmf
+DTMF requis : 
+
+; fm_agentfeatures_acceptdtmf
+DTMF requis : 
+
+; hlp_fm_agentfeatures_autologoff
+Config asterisk: autologoff
+
+; hlp_fm_agentfeatures_ackcall
+Config asterisk: ackcall
+
+; hlp_fm_agentfeatures_acceptdtmf
+Config asterisk: acceptdtmf
+
+; hlp_fm_agentfeatures_enddtmf
+Config asterisk: enddtmf
+
+; hlp_fm_agentfeatures_warpuptime
+Config asterisk: warpuptime
+
+; hlp_fm_agentfeatures_musiconhold
+Config asterisk: musiconhold
+
