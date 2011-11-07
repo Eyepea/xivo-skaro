@@ -168,7 +168,7 @@ Déplacer les messages consultés dans le répertoire <b>Old</b> :
 Config asterisk: moveheard
 
 ; fm_voicemail-minsecs
-Durée minimun d'un message :
+Durée minimum d'un message :
 
 ; hlp_fm_voicemail-minsecs
 Config asterisk: minsecs
