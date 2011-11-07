@@ -109,9 +109,9 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 		$this->_cnt = 0;
 
 		$field = array((object) ('SUM("'.$fieldsum.'")'));
-		
+
 		$this->_dso->new_select($this->_table,$field);
-	
+
 		switch ($type)
 		{
 			case 'agent':
@@ -140,12 +140,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('event' => $event));
-		
+
 		if (is_null($addwhere) === false)
 			$this->search_add_where($addwhere);
-	
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
@@ -161,7 +161,7 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			else
 				return(false);
 		}
-		
+
 		$r = $this->_dso->select_singlecolumn();
 
 		if(isset($r[0]) === false)
@@ -169,13 +169,13 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 
 		return((int) $r[0]);
 	}
-	
+
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
 	{
 		$this->_cnt = 0;
 
 		$this->_dso->new_select($this->_table,array('event'));
-		
+
 		switch ($type)
 		{
 			case 'agent':
@@ -204,12 +204,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			default:
 				return(false);
 		}
-		
+
 		$this->_dso->andwhere(array('event' => $event));
-		
+
 		if (is_null($addwhere) === false)
 			$this->search_add_where($addwhere);
-		
+
 		if (is_null($interval) === false)
 		{
 			if(isset($interval['beg']) === true
@@ -222,14 +222,14 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 			elseif (($nbinterval = count($interval)) > 2)
 			{
 				$this->_dso->aggregate_where(false,'AND');
-				
+
 				foreach ($interval as $itl)
 				{
 					#$this->_dso->orwhere('"'.$this->_table.'"."time"::timestamp BETWEEN \''.$itl['beg'].'\'::timestamp AND \''.$itl['end'].'\'::timestamp');
 					$this->_dso->orwherebetween('time',$itl['beg'],$itl['end'],$this->_table);
 					#$this->_dso->orwheredatetime('time',$itl['beg'],$itl['end'],$this->_table,'datetime');
 				}
-				
+
 				$this->_dso->aggregate_where(false,'AND');
 			}
 			else
@@ -241,12 +241,12 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 
 		return($this->_cnt);
 	}
-	
+
 	private function search_add_where($addwhere)
 	{
 		if(is_array($addwhere) === false)
 			return(false);
-			
+
 		$type = $addwhere[0];
 		$value = $addwhere[1];
 		switch ($type)

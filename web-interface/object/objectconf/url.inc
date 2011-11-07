@@ -383,16 +383,15 @@ $array['graphs/munin/other']        = 'graphs/munin/index.php/other';
  *
  */
 
-$array['statistics']								= 'statistics/index.php';
-$array['statistics/call_center']					= 'statistics/call_center/index.php';
-$array['statistics/call_center/index']				= 'statistics/call_center/index.php';
-$array['statistics/call_center/stats1']				= 'statistics/call_center/index.php/stats1';
-$array['statistics/call_center/stats2']				= 'statistics/call_center/index.php/stats2';
-$array['statistics/call_center/stats3']				= 'statistics/call_center/index.php/stats3';
-$array['statistics/call_center/stats4']				= 'statistics/call_center/index.php/stats4';
-$array['statistics/call_center/stats5']				= 'statistics/call_center/index.php/stats5';
-$array['statistics/call_center/configuration']		= 'statistics/call_center/index.php/configuration/';
-$array['statistics/call_center/cache']				= 'statistics/call_center/index.php/cache/';
+$array['statistics']										= 'statistics/index.php';
+$array['statistics/call_center']							= 'statistics/call_center/index.php';
+$array['statistics/call_center/data/stats1']				= 'statistics/call_center/index.php/data/stats1';
+$array['statistics/call_center/data/stats2']				= 'statistics/call_center/index.php/data/stats2';
+$array['statistics/call_center/data/stats3']				= 'statistics/call_center/index.php/data/stats3';
+$array['statistics/call_center/data/stats4']				= 'statistics/call_center/index.php/data/stats4';
+$array['statistics/call_center/data/stats5']				= 'statistics/call_center/index.php/data/stats5';
+$array['statistics/call_center/settings/configuration']		= 'statistics/call_center/index.php/settings/configuration/';
+$array['statistics/call_center/settings/cache']				= 'statistics/call_center/index.php/settings/cache/';
 
 $array['statistics/cdr'] 						= 'statistics/cdr/index.php';
 $array['statistics/cdr/index'] 					= 'statistics/cdr/index.php';

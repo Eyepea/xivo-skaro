@@ -307,50 +307,53 @@ Général
 ; acl(xivo-configuration-check)
 Check
 
-; acl(service-statistics)
+; acl(statistics)
 Statistiques
-
-; acl(statistics-statistics)
-Statistiques
-
-; acl(statistics-statistics-call_center)
-Centre d'appels
-
-; acl(statistics-statistics-cel)
-Journaux d'appels
 
 ; acl(statistics-call_center)
-Statistiques centre d'appel
+Statistiques
 
-; acl(statistics-call_center-queue)
+; acl(statistics-call_center-ressources)
+Ressources
+
+; acl(statistics-call_center-ressources-agents)
+Agent
+
+; acl(statistics-call_center-ressources-queues)
 File d'attente
 
-; acl(service-statistics-call_center)
-Statistiques centre d'appel
+; acl(statistics-call_center-settings)
+Paramètres
 
-; acl(service-statistics-call_center-configuration)
+; acl(statistics-call_center-settings-configuration)
 Configuration
 
-; acl(service-statistics-call_center-queue)
-File d'attente
+; acl(statistics-call_center-settings-cache)
+Cache
 
-; acl(service-statistics-call_center-genercache)
-Génération manuel du cache
+; acl(statistics-call_center-settings-genercache)
+Génération du cache
 
-; acl(service-statistics-call_center-genergraphic)
-Génération des graphiques
-
-; acl(service-statistics-call_center-data)
+; acl(statistics-call_center-data)
 Données
 
-; acl(service-statistics-cdr)
-Statistiques Journaux d'appels
+; acl(statistics-call_center-data-queue)
+File d'attente
 
-; acl(service-statistics-cdr-search)
-Recherche
+; acl(statistics-call_center-data-stats1)
+File d'attente
 
-; acl(service-statistics-cdr-advanced_search)
-Recherche avancées
+; acl(statistics-call_center-data-stats2)
+Agent performance
+
+; acl(statistics-call_center-data-stats3)
+Agents détails / durées
+
+; acl(statistics-call_center-data-stats4)
+Détails par période
+
+; acl(statistics-call_center-data-stats5)
+Appels entrants
 
 ; acl(service-callcenter)
 Centre d'appel

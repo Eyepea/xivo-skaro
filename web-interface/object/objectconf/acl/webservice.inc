@@ -95,9 +95,15 @@ $array['tree']['service']['ipbx']['control_system']['reload'] = true;
 $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 $array['tree']['statistics'] = array();
-$array['tree']['statistics']['statistics'] = array();
-$array['tree']['statistics']['statistics']['call_center'] = true;
-$array['tree']['statistics']['statistics']['cel'] = true;
+$array['tree']['statistics']['call_center'] = array();
+#$array['tree']['statistics']['call_center']['settings'] = array();
+#$array['tree']['statistics']['call_center']['settings']['genercache'] = true;
+$array['tree']['statistics']['call_center']['data'] = array();
+$array['tree']['statistics']['call_center']['data']['stats1'] = true;
+$array['tree']['statistics']['call_center']['data']['stats2'] = true;
+$array['tree']['statistics']['call_center']['data']['stats3'] = true;
+$array['tree']['statistics']['call_center']['data']['stats4'] = true;
+$array['tree']['statistics']['call_center']['data']['stats5'] = true;
 
 $array['tree']['service']['callcenter'] = array();
 $array['tree']['service']['callcenter']['settings']['agents'] = true;

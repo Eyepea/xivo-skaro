@@ -1,0 +1,96 @@
+; title_content_name
+Generation of the cache for %s
+
+; conf_axetype
+choose:
+
+; fm_dbeg
+Arrival date:
+
+; fm_dend
+End date:
+
+; fm_type-default
+
+
+; fm_type-opt(tail)
+Queue
+
+; fm_type-opt(agent)
+agent
+
+; fm_type-opt(period)
+period
+
+; fm_type-opt(incall)
+incoming call
+
+; fm_description_cache
+Period cache: %s %s depending on configuration.
+
+; fm_description_cache-with_end
+   %s
+ 
+; fm_description_cache-without_end
+to date
+
+; object_all
+all
+
+; col_cache_name
+name
+
+; col_cache_status
+status
+
+; no_type_in_conf-opt
+No %s in configuration
+
+; cache_noexist
+Cache nonexistent
+
+; cache_exist-nbfile
+Existing cache files with %d
+
+; bt-cache_generation
+Generate %s
+
+; bt-cache_generation_all
+generate all
+
+; wait_during_traitment
+Please wait while the treatment and do not refresh or change pages.
+This would cancel the current job.
+
+; bt-submit-wait
+Processing
+
+; bt-success-submit
+Completed successfully
+
+; cache_generation_all
+Entire generation of cache
+
+; in_progress
+underway.
+
+; object_processing
+Ongoing:
+
+; cache_generation_processing
+Generation of the cache being ...
+
+; process_last_time_traitment
+Processing time for the next generation:
+
+; process_remaining_time
+Total time remaining:
+
+; process_total_time
+Total time of progression:
+
+; legend-cache_generation_success
+Generation completed!
+
+; cache_generation_success
+Generation succeeded!

@@ -51,6 +51,7 @@ class xivo extends dwho
         $this->_set_i18n();
         $this->_set_xivo_object();
         $this->_set_service();
+		$this->_set_stats();
 
         if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === true)
             $this->_set_user();
@@ -162,6 +163,12 @@ class xivo extends dwho
         self::load_class('xivo_service',XIVO_PATH_OBJECT,null,false);
         dwho_gct::set(new xivo_service($this->_conf['xivo']['ini']['service']));
     }
+
+	function _set_stats()
+	{
+		xivo::load_class('xivo_stats',XIVO_PATH_OBJECT,'stats',false);
+		dwho_gct::set(new xivo_stats());
+	}
 
     protected function _set_user()
     {

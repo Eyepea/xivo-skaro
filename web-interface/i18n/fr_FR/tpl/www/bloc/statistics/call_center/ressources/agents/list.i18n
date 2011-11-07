@@ -1,0 +1,20 @@
+; col_fullname
+Nom complet
+
+; col_number-agents
+Nombre d'agents
+
+; col_number
+Numéro
+
+; col_passwd
+Mot de passe
+
+; no_agent
+Aucun agent trouvé
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet agent ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cet ou ces agents ?

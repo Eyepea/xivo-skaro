@@ -1,0 +1,14 @@
+; col_name
+Nom de la configuration
+
+; col_client
+Client
+
+; opt_delete_confirm
+Êtes-vous sur de vouloir supprimer cette configuration ?
+
+; opt_editcache
+Configuration du cache
+
+; no_conf
+Aucune configuration
