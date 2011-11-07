@@ -1,7 +1,7 @@
 Index: asterisk-1.8.7.0/channels/chan_agent.c
 ===================================================================
 --- asterisk-1.8.7.0.orig/channels/chan_agent.c	2011-11-07 14:29:40.723264866 -0500
-+++ asterisk-1.8.7.0/channels/chan_agent.c	2011-11-07 14:29:51.213265449 -0500
++++ asterisk-1.8.7.0/channels/chan_agent.c	2011-11-07 14:32:38.922561867 -0500
 @@ -198,13 +198,29 @@
  			<para>Sets an agent as no longer logged in.</para>
  		</description>
@@ -108,7 +108,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +			}
 +			if (strcasecmp(p->chan->name, dev) == 0 || strcasecmp(basename, dev) == 0) {
 +				p->inherited_devicestate = state;
-+				ast_device_state_changed("Agent/%s", p->agent);
++				ast_devstate_changed(state, "Agent/%s", p->agent);
 +			}
 +		}
 +		ast_mutex_unlock(&p->lock);
@@ -149,7 +149,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +			}
 +			if (strcasecmp(p->chan->name, dev) == 0 || strcasecmp(basename, dev) == 0) {
 +				p->inherited_devicestate = state;
-+				ast_device_state_changed("Agent/%s", p->agent);
++				ast_devstate_changed(state, "Agent/%s", p->agent);
 +			}
 +		}
 +		ast_mutex_unlock(&p->lock);
@@ -645,7 +645,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +				ast_hangup(p->chan);
 +				p->chan = NULL;
 +				p->inherited_devicestate = -1;
-+				ast_device_state_changed("Agent/%s", p->agent);
++				ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", p->agent);
 +			}
 +			ast_log(LOG_DEBUG, "Hungup, howlong is %d, autologoff is %d\n", howlong, p->autologoff);
 +			if ((p->deferlogoff) || (howlong && p->autologoff && (howlong > p->autologoff))) {
@@ -1036,7 +1036,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +	p->loginchan[0] ='\0';
 +	p->logincallerid[0] = '\0';
 +	p->inherited_devicestate = -1;
-+	ast_device_state_changed("Agent/%s", p->agent);
++	ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", p->agent);
 +	if (persistent_agents)
 +		dump_agents();
 +
@@ -1365,7 +1365,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +							ast_queue_log("NONE", chan->uniqueid, agent, "AGENTCALLBACKLOGIN", "%s", p->loginchan);
 +							if (option_verbose > 1)
 +								ast_verbose(VERBOSE_PREFIX_2 "Callback Agent '%s' logged in on %s\n", p->agent, p->loginchan);
-+							ast_device_state_changed("Agent/%s", p->agent);
++							ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", p->agent);
 +							if (persistent_agents)
 +								dump_agents();
 +						} else {
@@ -1626,7 +1626,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +		ast_queue_log("NONE", "NONE", agent, "AGENTCALLBACKLOGIN", "%s", p->loginchan);
 +		if (option_verbose > 1)
 +			ast_verbose(VERBOSE_PREFIX_2 "Callback Agent '%s' logged in on %s\n", p->agent, p->loginchan);
-+		ast_device_state_changed("Agent/%s", p->agent);
++		ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", p->agent);
 +		ast_mutex_unlock(&p->lock);
 +		if (persistent_agents)
 +			dump_agents();
@@ -1730,7 +1730,7 @@ Index: asterisk-1.8.7.0/channels/chan_agent.c
 +				cur_agent->logincallerid[0] = '\0';
 +			if (cur_agent->loginstart == 0)
 +				time(&cur_agent->loginstart);
-+			ast_device_state_changed("Agent/%s", cur_agent->agent);	
++			ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", cur_agent->agent);	
 +		}
 +	}
 +	AST_LIST_UNLOCK(&agents);
