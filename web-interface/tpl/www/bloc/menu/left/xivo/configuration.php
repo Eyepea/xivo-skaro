@@ -161,6 +161,7 @@ $dhtml = &$this->get_module('dhtml');
 			    );
 ?>
 			</dd>
+		</dl>
 	</dd>
 	<dd class="b-nosize">
 		<span class="span-left">&nbsp;</span>
@@ -198,3 +199,6 @@ $dhtml = &$this->get_module('dhtml');
 		<span class="span-right">&nbsp;</span>
 	</dd>
 </dl>
+
+*/
+?>
