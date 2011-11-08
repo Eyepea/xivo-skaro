@@ -96,7 +96,7 @@ class Safe:
             'initialized', 'outcallerid', 'allowtransfer',
             ],
         'agents' : ['context', 'firstname', 'lastname', 'number', 'ackcall', 'wrapuptime'],
-        'queues' : ['context', 'name', 'number'],
+        'queues' : ['context', 'name', 'displayname', 'number'],
         'groups': ['context', 'name', 'number'],
         'trunks': ['context', 'protocol', 'name', 'host', 'type'],
         'voicemails' : ['context', 'fullname', 'mailbox', 'email'], # password

@@ -2,10 +2,10 @@
 Generation of the cache for %s
 
 ; conf_axetype
-choose:
+Chose:
 
 ; fm_dbeg
-Arrival date:
+Start Date:
 
 ; fm_dend
 End date:
@@ -13,20 +13,20 @@ End date:
 ; fm_type-default
 
 
-; fm_type-opt(tail)
+; fm_type-opt(queue)
 Queue
 
 ; fm_type-opt(agent)
-agent
+Agent
 
 ; fm_type-opt(period)
-period
+Period
 
 ; fm_type-opt(incall)
-incoming call
+Incoming call
 
 ; fm_description_cache
-Period cache: %s %s depending on configuration.
+Cache period: %s %s depends on configuration.
 
 ; fm_description_cache-with_end
    %s
@@ -35,13 +35,13 @@ Period cache: %s %s depending on configuration.
 to date
 
 ; object_all
-all
+All
 
 ; col_cache_name
-name
+Name
 
 ; col_cache_status
-status
+Status
 
 ; no_type_in_conf-opt
 No %s in configuration
@@ -50,13 +50,13 @@ No %s in configuration
 Cache nonexistent
 
 ; cache_exist-nbfile
-Existing cache files with %d
+Existing cache with %d files
 
 ; bt-cache_generation
 Generate %s
 
 ; bt-cache_generation_all
-generate all
+Generate all
 
 ; wait_during_traitment
 Please wait while the treatment and do not refresh or change pages.
@@ -72,13 +72,13 @@ Completed successfully
 Entire generation of cache
 
 ; in_progress
-underway.
+in progress.
 
 ; object_processing
-Ongoing:
+In progress:
 
 ; cache_generation_processing
-Generation of the cache being ...
+Generation of the cache in progress ...
 
 ; process_last_time_traitment
 Processing time for the next generation:
@@ -87,10 +87,10 @@ Processing time for the next generation:
 Total time remaining:
 
 ; process_total_time
-Total time of progression:
+Total time of progress:
 
 ; legend-cache_generation_success
 Generation completed!
 
 ; cache_generation_success
-Generation succeeded!
+Generation successfull!

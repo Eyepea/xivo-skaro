@@ -43,8 +43,17 @@ endif;
 <div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_name'),
-				  'name'	=> 'queuefeatures[displayname]',
+				  'name'	=> 'queuefeatures[name]',
 				  'labelid' => 'queuefeatures-name',
+				  'size'	=> 15,
+				  'default'	=> $element['queuefeatures']['name']['default'],
+				  'value'	=> $this->get_var('info','queuefeatures','name'),
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error','queuefeatures','name')))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_displayname'),
+				  'name'	=> 'queuefeatures[displayname]',
+				  'labelid' => 'queuefeatures-displayname',
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['displayname']['default'],
 				  'value'	=> $this->get_var('info','queuefeatures','displayname'),
