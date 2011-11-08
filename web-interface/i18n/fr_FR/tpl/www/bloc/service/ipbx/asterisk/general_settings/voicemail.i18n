@@ -35,7 +35,7 @@ Sensibilité de détection d'un silence:
 Config asterisk: silencethreshold
 
 ; fm_voicemail-minsecs
-Durée minimun d'un message:
+Durée minimum d'un message:
 
 ; hlp_fm_voicemail-minsecs
 Config asterisk: minmessage

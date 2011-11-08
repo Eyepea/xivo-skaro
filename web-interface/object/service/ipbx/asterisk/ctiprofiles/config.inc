@@ -30,8 +30,6 @@ $array['element']['appliname'] = array();
 $array['element']['appliname']['default'] = '';
 $array['element']['xlets'] = array();
 $array['element']['xlets']['default'] = '';
-$array['element']['funcs'] = array();
-$array['element']['funcs']['default'] = '';
 
 $array['element']['maxgui'] = array();
 $array['element']['maxgui']['default'] = -1;
@@ -62,7 +60,6 @@ $array['filter']['presence'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/
 $array['filter']['agents'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
 $array['filter']['phonehints'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
 $array['filter']['services'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
-$array['filter']['funcs'] 		= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['preferences'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['deletable'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 ?>

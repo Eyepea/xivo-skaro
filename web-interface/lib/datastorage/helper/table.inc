@@ -333,8 +333,7 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 
         if($this->_dso->select_single() === false)
             return(true);
-
-        dwho_report::push('debug', 'unique key already exist on table '.$this->_table.' File: '.__FILE__.' Line: '.__LINE__);
+        dwho_report::push('error',dwho_i18n::babelfish('already_exist',$key));
         return(false);
     }
 

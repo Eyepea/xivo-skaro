@@ -52,7 +52,7 @@ $array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configurati
 $array['xivo/configuration/manage/user'] = 'xivo/configuration/index.php/manage/user/';
 $array['xivo/configuration/manage/entity'] = 'xivo/configuration/index.php/manage/entity/';
 $array['xivo/configuration/manage/server'] = 'xivo/configuration/index.php/manage/server/';
-$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
+//$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
 $array['xivo/configuration/manage/directories'] = 'xivo/configuration/index.php/manage/directories/';
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
 $array['xivo/configuration/manage/certificate'] = 'xivo/configuration/index.php/manage/certificate/';
@@ -69,23 +69,23 @@ $array['xivo/configuration/network/iproute'] = 'xivo/configuration/index.php/net
 $array['xivo/configuration/network/resolvconf'] = 'xivo/configuration/index.php/network/resolvconf/';
 $array['xivo/configuration/network/mail'] = 'xivo/configuration/index.php/network/mail/';
 $array['xivo/configuration/network/dhcp'] = 'xivo/configuration/index.php/network/dhcp/';
-$array['xivo/configuration/network/ha'] = 'xivo/configuration/index.php/network/ha/';
-$array['xivo/configuration/network/ha_stop'] = 'xivo/configuration/index.php/network/ha_stop/';
+//$array['xivo/configuration/network/ha'] = 'xivo/configuration/index.php/network/ha/';
+//$array['xivo/configuration/network/ha_stop'] = 'xivo/configuration/index.php/network/ha_stop/';
 
 $array['xivo/configuration/json/restricted/network/interface'] = 'xivo/configuration/json.php/restricted/network/interface/';
 $array['xivo/configuration/json/restricted/network/iproute'] = 'xivo/configuration/json.php/restricted/network/iproute/';
 $array['xivo/configuration/json/restricted/network/resolvconf'] = 'xivo/configuration/json.php/restricted/network/resolvconf/';
 $array['xivo/configuration/json/restricted/network/mail'] = 'xivo/configuration/json.php/restricted/network/mail/';
 $array['xivo/configuration/json/restricted/network/dhcp'] = 'xivo/configuration/json.php/restricted/network/dhcp/';
-$array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
-$array['xivo/configuration/json/restricted/network/ha_stop'] = 'xivo/configuration/json.php/restricted/network/ha_stop/';
+//$array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
+//$array['xivo/configuration/json/restricted/network/ha_stop'] = 'xivo/configuration/json.php/restricted/network/ha_stop/';
 
 $array['xivo/configuration/json/private/network/interface'] = 'xivo/configuration/json.php/private/network/interface/';
 $array['xivo/configuration/json/private/network/iproute'] = 'xivo/configuration/json.php/private/network/iproute/';
 $array['xivo/configuration/json/private/network/resolvconf'] = 'xivo/configuration/json.php/private/network/resolvconf/';
 $array['xivo/configuration/json/private/network/mail'] = 'xivo/configuration/json.php/private/network/mail/';
 $array['xivo/configuration/json/private/network/dhcp'] = 'xivo/configuration/json.php/private/network/dhcp/';
-$array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/json.php/private/network/ha_stop/';
+//$array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/json.php/private/network/ha_stop/';
 
 
 // support
@@ -113,8 +113,8 @@ $array['xivo/configuration/ui/provisioning/configure'] = 'xivo/configuration/ui.
 
 // controlsystem
 $array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';
-$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
-$array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.php/controlsystem/ha_stop/';
+//$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
+//$array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.php/controlsystem/ha_stop/';
 
 
 /*
@@ -169,7 +169,6 @@ $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/js
 
 $array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
-$array['service/ipbx/json/restricted/call_management/cdr'] = 'service/ipbx/json.php/restricted/call_management/cdr/';
 $array['service/ipbx/json/restricted/trunk_management/sip'] = 'service/ipbx/json.php/restricted/trunk_management/sip/';
 $array['service/ipbx/json/restricted/trunk_management/iax'] = 'service/ipbx/json.php/restricted/trunk_management/iax/';
 $array['service/ipbx/json/restricted/trunk_management/custom'] = 'service/ipbx/json.php/restricted/trunk_management/custom/';
@@ -209,11 +208,9 @@ $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call
 $array['service/ipbx/call_management/pickup'] = 'service/ipbx/index.php/call_management/pickup/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
-$array['service/ipbx/call_management/cdr'] = 'service/ipbx/index.php/call_management/cdr/';
 
 $array['service/ipbx/json/restricted/call_management/incall']  = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
-$array['service/ipbx/json/restricted/call_management/cdr']     = 'service/ipbx/json.php/restricted/call_management/cdr/';
 $array['service/ipbx/json/restricted/call_management/pickup']  = 'service/ipbx/json.php/restricted/call_management/pickup/';
 
 $array['service/ipbx/json/private/call_management/incall']     = 'service/ipbx/json.php/private/call_management/incall/';
@@ -237,15 +234,15 @@ $array['service/ipbx/pbx_services/sounds'] = 'service/ipbx/index.php/pbx_service
 $array['service/ipbx/pbx_services/musiconhold'] = 'service/ipbx/index.php/pbx_services/musiconhold/';
 $array['service/ipbx/pbx_services/extenfeatures'] = 'service/ipbx/index.php/pbx_services/extenfeatures/';
 $array['service/ipbx/pbx_services/paging'] = 'service/ipbx/index.php/pbx_services/paging/';
-$array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
+//$array['service/ipbx/pbx_services/parkinglot'] = 'service/ipbx/index.php/pbx_services/parkinglot/';
 $array['service/ipbx/pbx_services/phonebook'] = 'service/ipbx/index.php/pbx_services/phonebook/';
 
 $array['service/ipbx/json/restricted/pbx_services/phonebook'] = 'service/ipbx/json.php/restricted/pbx_services/phonebook/';
 $array['service/ipbx/json/restricted/pbx_services/extenfeatures'] = 'service/ipbx/json.php/restricted/pbx_services/extenfeatures/';
-$array['service/ipbx/json/restricted/pbx_services/parkinglot'] = 'service/ipbx/json.php/restricted/pbx_services/parkinglot/';
+//$array['service/ipbx/json/restricted/pbx_services/parkinglot'] = 'service/ipbx/json.php/restricted/pbx_services/parkinglot/';
 
 $array['service/ipbx/json/private/pbx_services/extenfeatures'] = 'service/ipbx/json.php/private/pbx_services/extenfeatures/';
-$array['service/ipbx/json/private/pbx_services/parkinglot'] = 'service/ipbx/json.php/private/pbx_services/parkinglot/';
+//$array['service/ipbx/json/private/pbx_services/parkinglot'] = 'service/ipbx/json.php/private/pbx_services/parkinglot/';
 
 # special..
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
@@ -257,7 +254,7 @@ $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/l
 $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/system_management/backupfiles/';
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
-$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
+//$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
 
 $array['service/ipbx/json/restricted/system_management/context'] = 'service/ipbx/json.php/restricted/system_management/context/';
 
@@ -386,16 +383,15 @@ $array['graphs/munin/other']        = 'graphs/munin/index.php/other';
  *
  */
 
-$array['statistics']								= 'statistics/index.php';
-$array['statistics/call_center']					= 'statistics/call_center/index.php';
-$array['statistics/call_center/index']				= 'statistics/call_center/index.php';
-$array['statistics/call_center/stats1']				= 'statistics/call_center/index.php/stats1';
-$array['statistics/call_center/stats2']				= 'statistics/call_center/index.php/stats2';
-$array['statistics/call_center/stats3']				= 'statistics/call_center/index.php/stats3';
-$array['statistics/call_center/stats4']				= 'statistics/call_center/index.php/stats4';
-$array['statistics/call_center/stats5']				= 'statistics/call_center/index.php/stats5';
-$array['statistics/call_center/configuration']		= 'statistics/call_center/index.php/configuration/';
-$array['statistics/call_center/cache']				= 'statistics/call_center/index.php/cache/';
+$array['statistics']										= 'statistics/index.php';
+$array['statistics/call_center']							= 'statistics/call_center/index.php';
+$array['statistics/call_center/data/stats1']				= 'statistics/call_center/index.php/data/stats1';
+$array['statistics/call_center/data/stats2']				= 'statistics/call_center/index.php/data/stats2';
+$array['statistics/call_center/data/stats3']				= 'statistics/call_center/index.php/data/stats3';
+$array['statistics/call_center/data/stats4']				= 'statistics/call_center/index.php/data/stats4';
+$array['statistics/call_center/data/stats5']				= 'statistics/call_center/index.php/data/stats5';
+$array['statistics/call_center/settings/configuration']		= 'statistics/call_center/index.php/settings/configuration/';
+$array['statistics/call_center/settings/cache']				= 'statistics/call_center/index.php/settings/cache/';
 
 $array['statistics/cdr'] 						= 'statistics/cdr/index.php';
 $array['statistics/cdr/index'] 					= 'statistics/cdr/index.php';

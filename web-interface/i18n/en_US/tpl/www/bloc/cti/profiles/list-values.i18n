@@ -157,9 +157,6 @@ Dialer
 ; xlet-directory
 Directory
 
-; xlet-outlook
-Outlook (Windows only)
-
 ; xlet-fax
 Fax
 

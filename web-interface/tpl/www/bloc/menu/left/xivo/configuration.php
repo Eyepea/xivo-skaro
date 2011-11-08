@@ -46,11 +46,15 @@ $dhtml = &$this->get_module('dhtml');
 						   'xivo/configuration/manage/server',
 						   'act=list');?>
 			</dd>
+<?php
+/* LDAP - COMMENTED
 			<dd id="mn-manage--ldapserver">
 				<?=$url->href_html($this->bbf('mn_left_manage-ldapserver'),
 							      'xivo/configuration/manage/ldapserver',
 							      'act=list');?>
 			</dd>
+*/
+?>
 			<dd id="mn-manage--directories">
 				<?=$url->href_html($this->bbf('mn_left_manage-directories'),
 							      'xivo/configuration/manage/directories',
@@ -91,11 +95,14 @@ $dhtml = &$this->get_module('dhtml');
 				<?=$url->href_html($this->bbf('mn_left_network-dhcp'),
 						   'xivo/configuration/network/dhcp');?>
 			</dd>
+<?php
+	/*
 			<dd id="mn-network--ha">
 				<?=$url->href_html($this->bbf('mn_left_network-ha'),
 						   'xivo/configuration/network/ha');?>
 			</dd>
-
+	*/
+?>
 		</dl>
 		<dl>
 			<dt><?=$this->bbf('mn_left_ti_support');?></dt>
@@ -154,6 +161,16 @@ $dhtml = &$this->get_module('dhtml');
 			    );
 ?>
 			</dd>
+		</dl>
+	</dd>
+	<dd class="b-nosize">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</dd>
+</dl>
+<?php
+	/*
 			<dd id="mn-controlsystem--ha_stop">
 				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha_stop'),
 						   'xivo/configuration/controlsystem/ha_stop',
@@ -172,6 +189,8 @@ $dhtml = &$this->get_module('dhtml');
 						       '\'));"'
 			    );?>
 			</dd>
+*.
+?>
 		</dl>
 	</dd>
 	<dd class="b-nosize">
@@ -180,3 +199,6 @@ $dhtml = &$this->get_module('dhtml');
 		<span class="span-right">&nbsp;</span>
 	</dd>
 </dl>
+
+*/
+?>

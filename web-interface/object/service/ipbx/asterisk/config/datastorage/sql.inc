@@ -52,10 +52,6 @@ $array['callfiltermember'] = array();
 $array['callfiltermember']['table'] = 'callfiltermember';
 $array['callfiltermember']['primary'] = array('id' => '');
 
-$array['cdr'] = array();
-$array['cdr']['table'] = 'cdr';
-$array['cdr']['primary'] = array('id' => '');
-
 $array['cel'] = array();
 $array['cel']['table'] = 'cel';
 $array['cel']['primary'] = array('id' => '');

@@ -404,27 +404,24 @@ class xivo_jqplot
         foreach ($listrow as $row)
             array_push($list_ticks,$row['identity']);
 
-        $listlogin = $listavailable = $listpause = $listtraitment = array();
+        $listavailable = $listpause = $listtraitment = array();
         foreach ($data_table as $colname => $colvalue)
         {
-            $login_time = $colvalue['login']['result'];
+            #if(($login_time = (int) $colvalue['login']['result']) === 0)
+            #	continue;
 
-            $available_time_pct = 0;
-            if (($available_time = $colvalue['available']['result']) !== 0
-            && $login_time !== 0)
-                $available_time_pct = ($available_time / $login_time * 100);
+            $available_time = (int) $colvalue['available']['result'];
+            $pause_time = (int) $colvalue['pause']['result'];
+            $traitment_time = (int) $colvalue['traitment']['result'];
+
+            $total = ($available_time + $pause_time + $traitment_time);
+
+            $available_time_pct = $this->_calculate_average($available_time, $total);
+            $pause_time_pct = $this->_calculate_average($pause_time, $total);
+            $traitment_time_pct = $this->_calculate_average($traitment_time, $total);
+
             array_push($listavailable,$available_time_pct);
-
-            $pause_time_pct = 0;
-            if (($pause_time = $colvalue['pause']['result']) !== 0
-            && $login_time !== 0)
-                $pause_time_pct = ($pause_time / $login_time * 100);
             array_push($listpause,$pause_time_pct);
-
-            $traitment_time_pct = 0;
-            if (($traitment_time = $colvalue['traitment']['result']) !== 0
-            && $login_time !== 0)
-                $traitment_time_pct = ($traitment_time / $login_time * 100);
             array_push($listtraitment,$traitment_time_pct);
         }
 
@@ -1192,6 +1189,13 @@ class xivo_jqplot
     private function bbf($str,$args=array())
     {
         return addslashes(dwho_i18n::babelfish($str,$args));
+    }
+
+    private function _calculate_average($value, $total)
+    {
+		if ((int) $value === 0)
+			return(0);
+		return(($value / $total * 100));
     }
 }
 

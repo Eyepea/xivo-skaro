@@ -61,6 +61,9 @@ Add one or more agents ->
 ; fm_queuefeatures_name
 Name:
 
+; fm_queuefeatures_displayname
+Display name:
+
 ; fm_queuefeatures_number
 Number:
 

@@ -80,31 +80,6 @@ $dhtml = &$this->get_module('dhtml');
 
     	endif;
 
-    	if(xivo_user::chk_acl('registrationcampaign','','service/callcenter') === true):
-
-    		echo '<dt>',$this->bbf('mn_left_ti_callcenter-campaigns'),'</dt>';
-
-        	if(xivo_user::chk_acl('registrationcampaign','general','service/callcenter') === true):
-        		echo	'<dd id="mn-general">',
-        			$url->href_html($this->bbf('mn_left_callcenter-general'),
-        				'callcenter/registrationcampaign/general'),
-        			'</dd>';
-        	endif;
-        	if(xivo_user::chk_acl('registrationcampaign','campaigns','service/callcenter') === true):
-        		echo	'<dd id="mn-campaigns">',
-        			$url->href_html($this->bbf('mn_left_callcenter-campaigns'),
-        				'callcenter/registrationcampaign/campaigns'),
-        			'</dd>';
-        	endif;
-        	if(xivo_user::chk_acl('registrationcampaign','tags','service/callcenter') === true):
-        		echo	'<dd id="mn-tags">',
-        			$url->href_html($this->bbf('mn_left_callcenter-tags'),
-        				'callcenter/registrationcampaign/tags'),
-        			'</dd>';
-        	endif;
-
-    	endif;
-
 		echo	'</dl>';
 
 	endif;

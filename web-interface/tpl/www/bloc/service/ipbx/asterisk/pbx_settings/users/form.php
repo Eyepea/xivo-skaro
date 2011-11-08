@@ -543,18 +543,13 @@ endif;
 				      'default'	=> $element['userfeatures']['enablexfer']['default'],
 				      'checked'	=> $info['userfeatures']['enablexfer'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableautomon'),
-				      'name'	=> 'userfeatures[enableautomon]',
-				      'labelid'	=> 'userfeatures-enableautomon',
-				      'default'	=> $element['userfeatures']['enableautomon']['default'],
-				      'checked'	=> $info['userfeatures']['enableautomon'])),
-
+/* DISABLE RECORDING FEATURE
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_callrecord'),
 				      'name'	=> 'userfeatures[callrecord]',
 				      'labelid'	=> 'userfeatures-callrecord',
 				      'default'	=> $element['userfeatures']['callrecord']['default'],
 				      'checked'	=> $info['userfeatures']['callrecord'])),
-
+*/
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_incallfilter'),
 				      'name'	=> 'userfeatures[incallfilter]',
 				      'labelid'	=> 'userfeatures-incallfilter',

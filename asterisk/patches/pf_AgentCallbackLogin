@@ -404,7 +404,7 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_agent.c
  	struct agent_pvt *p = ast->tech_pvt;
  	int res = -1;
  	ast_mutex_lock(&p->lock);
-@@ -748,72 +925,86 @@
+@@ -748,72 +925,87 @@
  	} else
  		res = 0;
  	ast_mutex_unlock(&p->lock);
@@ -483,6 +483,7 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_agent.c
 +
 +		ast_set_callerid(p->chan,
 +			ast->caller.id.number.str, ast->caller.id.name.str, NULL);
++		ast_party_connected_line_copy(&p->chan->connected, &ast->connected);
 +		ast_channel_inherit_variables(ast, p->chan);
 +		res = ast_call(p->chan, p->loginchan, 0);
 +		CLEANUP(ast,p);

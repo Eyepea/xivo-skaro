@@ -43,7 +43,7 @@ abstract class dwho_report {
 				if (is_array($value)) {
 					self::push_generic($type,$value);
 				} else {
-					self::push('error', "$name -> ".$value);
+					self::push('error', "$key -> ".$value);
 				}
 			}
 		}

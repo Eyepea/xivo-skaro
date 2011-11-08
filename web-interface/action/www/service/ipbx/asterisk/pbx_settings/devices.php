@@ -45,7 +45,7 @@ switch($act)
 		else
 			dwho_report::push('info','successfully_reset');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-	    break;
+		break;
 	case 'autoprov':
 		$param['page'] = $page;
 

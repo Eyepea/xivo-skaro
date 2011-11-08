@@ -52,15 +52,17 @@ endif;
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-2"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-xivoserver');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-xivoserver',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><a href="#xivoserver"><?=$this->bbf('smenu_xivoservers');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
+<?php
+/* LDAP - COMMENTED
 		<li id="dwsm-tab-3"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
@@ -70,7 +72,9 @@ endif;
 				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_ldapfilters');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
-		</li>
+			</li>
+*/
+?>
 	</ul>
 </div>
 
@@ -189,13 +193,15 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
 <?php
+/* LDAP - COMMENTED
+<div id="sb-part-last" class="b-nodisplay">
+\<?php
 	if($info['ldapfilter']['list'] !== false):
-?>
+\?>
 		<div id="ldapfilterlist" class="fm-paragraph fm-multilist">
 			<div class="slt-outlist">
-<?php
+\<?php
 		echo	$form->select(array('name'	=> 'ldapfilterlist',
 					    'label'	=> false,
 					    'id'	=> 'it-ldapfilterlist',
@@ -206,7 +212,7 @@ endif;
 					    'size'	=> 5,
 					    'paragraph'	=> false),
 				      $info['ldapfilter']['list']);
-?>
+\?>
 			</div>
 			<div class="inout-list">
 				<a href="#"
@@ -225,7 +231,7 @@ endif;
 							  'class="bt-outlist" id="bt-outldapfilter" border="0"');?></a>
 			</div>
 			<div class="slt-inlist">
-<?php
+\<?php
 		echo	$form->select(array('name'	=> 'ldapfilter[]',
 					    'label'	=> false,
 					    'id'	=> 'it-ldapfilter',
@@ -236,11 +242,11 @@ endif;
 					    'size'	=> 5,
 					    'paragraph'	=> false),
 				      $info['ldapfilter']['slt']);
-?>
+\?>
 			</div>
 		</div>
 		<div class="clearboth"></div>
-<?php
+\<?php
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_ldapfilter'),
@@ -248,8 +254,10 @@ endif;
 					'act=add'),
 			'</div>';
 	endif;
+\?>
+	</div>
+*/
 ?>
-</div>
 	<?=$form->submit(array('name'	=> 'submit',
 			       'id'	=> 'it-submit',
 			       'value'	=> $this->bbf('fm_bt-save')));?>

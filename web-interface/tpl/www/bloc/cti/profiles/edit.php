@@ -25,7 +25,7 @@ $form = &$this->get_module('form');
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 <?php $this->file_include('bloc/cti/profiles/submenu'); ?>
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-services'); dwho.form.select('it-funcs');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-services');">
 
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>

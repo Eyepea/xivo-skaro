@@ -1,0 +1,13 @@
+remove genudevrules generation, provide by debian/dahdi.linux.udev to fix #2560
+Index: dahdi-linux-2.5.0.2/Makefile
+===================================================================
+--- dahdi-linux-2.5.0.2.orig/Makefile
++++ dahdi-linux-2.5.0.2/Makefile
+@@ -139,7 +139,6 @@ uninstall-include:
+ 
+ install-devices:
+ 	install -d $(DESTDIR)$(UDEV_DIR)
+-	build_tools/genudevrules > $(DESTDIR)$(UDEV_DIR)/dahdi.rules
+ 	install -m 644 drivers/dahdi/xpp/xpp.rules $(DESTDIR)$(UDEV_DIR)/
+ 
+ uninstall-devices:

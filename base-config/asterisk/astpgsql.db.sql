@@ -42,9 +42,6 @@ CREATE TABLE "accessfeatures" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "accessfeatures__idx__host" ON "accessfeatures"("host");
-CREATE INDEX "accessfeatures__idx__feature" ON "accessfeatures"("feature");
-CREATE INDEX "accessfeatures__idx__commented" ON "accessfeatures"("commented");
 CREATE UNIQUE INDEX "accessfeatures__uidx__host_feature" ON "accessfeatures"("host","feature");
 
 
@@ -76,7 +73,6 @@ CREATE TABLE "agentfeatures" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "agentfeatures__idx__commented" ON "agentfeatures"("commented");
 CREATE UNIQUE INDEX "agentfeatures__uidx__agentid" ON "agentfeatures"("agentid");
 CREATE UNIQUE INDEX "agentfeatures__uidx__number" ON "agentfeatures"("number");
 
@@ -93,14 +89,9 @@ CREATE TABLE "agentgroup" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "agentgroup__idx__groupid" ON "agentgroup"("groupid");
-CREATE INDEX "agentgroup__idx__name" ON "agentgroup"("name");
-CREATE INDEX "agentgroup__idx__commented" ON "agentgroup"("commented");
-CREATE INDEX "agentgroup__idx__deleted" ON "agentgroup"("deleted");
-
 INSERT INTO "agentgroup" VALUES (DEFAULT,1,'default','',0,0,'');
 
--- agent queueskills
+
 DROP TABLE IF EXISTS "agentqueueskill";
 CREATE TABLE "agentqueueskill" (
  "agentid" INTEGER,
@@ -108,8 +99,6 @@ CREATE TABLE "agentqueueskill" (
  "weight" INTEGER NOT NULL DEFAULT 0,
  PRIMARY KEY("agentid", "skillid")
 );
-
-CREATE INDEX "agentqueueskill__idx__agentid" ON "agentqueueskill"("agentid");
 
 
 DROP TABLE IF EXISTS "attachment";
@@ -163,11 +152,6 @@ CREATE TABLE "callfilter" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "callfilter__idx__context" ON "callfilter"("context");
-CREATE INDEX "callfilter__idx__type" ON "callfilter"("type");
-CREATE INDEX "callfilter__idx__bosssecretary" ON "callfilter"("bosssecretary");
-CREATE INDEX "callfilter__idx__callfrom" ON "callfilter"("callfrom");
-CREATE INDEX "callfilter__idx__commented" ON "callfilter"("commented");
 CREATE UNIQUE INDEX "callfilter__uidx__name" ON "callfilter"("name");
 
 
@@ -190,47 +174,7 @@ CREATE TABLE "callfiltermember" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "callfiltermember__idx__priority" ON "callfiltermember"("priority");
-CREATE INDEX "callfiltermember__idx__bstype" ON "callfiltermember"("bstype");
-CREATE INDEX "callfiltermember__idx__active" ON "callfiltermember"("active");
 CREATE UNIQUE INDEX "callfiltermember__uidx__callfilterid_type_typeval" ON "callfiltermember"("callfilterid","type","typeval");
-
-
-DROP TABLE IF EXISTS "cdr";
-CREATE TABLE "cdr" (
- "id" SERIAL,
- "calldate" TIMESTAMP,
- "clid" varchar(80) NOT NULL DEFAULT '',
- "src" varchar(80) NOT NULL DEFAULT '',
- "dst" varchar(80) NOT NULL DEFAULT '',
- "dcontext" varchar(39) NOT NULL DEFAULT '',
- "channel" varchar(80) NOT NULL DEFAULT '',
- "dstchannel" varchar(80) NOT NULL DEFAULT '',
- "lastapp" varchar(80) NOT NULL DEFAULT '',
- "lastdata" varchar(80) NOT NULL DEFAULT '',
- "answer" TIMESTAMP,
- "end" TIMESTAMP,
- "duration" INTEGER NOT NULL DEFAULT 0,
- "billsec" INTEGER NOT NULL DEFAULT 0,
- "disposition" varchar(9) NOT NULL DEFAULT '',
- "amaflags" INTEGER NOT NULL DEFAULT 0,
- "accountcode" varchar(20) NOT NULL DEFAULT '',
- "uniqueid" varchar(32) NOT NULL DEFAULT '',
- "userfield" varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY("id")
-);
-
-CREATE INDEX "cdr__idx__calldate" ON "cdr"("calldate");
-CREATE INDEX "cdr__idx__clid" ON "cdr"("clid");
-CREATE INDEX "cdr__idx__src" ON "cdr"("src");
-CREATE INDEX "cdr__idx__dst" ON "cdr"("dst");
-CREATE INDEX "cdr__idx__channel" ON "cdr"("channel");
-CREATE INDEX "cdr__idx__dstchannel" ON "cdr"("dstchannel");
-CREATE INDEX "cdr__idx__duration" ON "cdr"("duration");
-CREATE INDEX "cdr__idx__disposition" ON "cdr"("disposition");
-CREATE INDEX "cdr__idx__amaflags" ON "cdr"("amaflags");
-CREATE INDEX "cdr__idx__accountcode" ON "cdr"("accountcode");
-CREATE INDEX "cdr__idx__userfield" ON "cdr"("userfield");
 
 
 DROP TABLE IF EXISTS "cel";
@@ -271,11 +215,6 @@ CREATE TABLE "context" (
  PRIMARY KEY("name")
 );
 
-CREATE INDEX "context__idx__displayname" ON "context"("displayname");
-CREATE INDEX "context__idx__contexttype" ON "context"("contexttype");
-CREATE INDEX "context__idx__entity" ON "context"("entity");
-CREATE INDEX "context__idx__commented" ON "context"("commented");
-
 
 DROP TABLE IF EXISTS "contextinclude";
 CREATE TABLE "contextinclude" (
@@ -284,10 +223,6 @@ CREATE TABLE "contextinclude" (
  "priority" INTEGER NOT NULL DEFAULT 0,
  PRIMARY KEY("context","include")
 );
-
-CREATE INDEX "contextinclude__idx__context" ON "contextinclude"("context");
-CREATE INDEX "contextinclude__idx__include" ON "contextinclude"("include");
-CREATE INDEX "contextinclude__idx__priority" ON "contextinclude"("priority");
 
 
 DROP TABLE IF EXISTS "contextmember";
@@ -319,8 +254,6 @@ CREATE TABLE "contextnumbers" (
  PRIMARY KEY("context","type","numberbeg","numberend")
 );
 
-CREATE INDEX "contextnumbers__idx__context_type" ON "contextnumbers"("context","type");
-
 
 DROP TABLE IF EXISTS "contextnummember";
 CREATE TABLE "contextnummember" (
@@ -335,6 +268,7 @@ CREATE INDEX "contextnummember__idx__context" ON "contextnummember"("context");
 CREATE INDEX "contextnummember__idx__context_type" ON "contextnummember"("context","type");
 CREATE INDEX "contextnummember__idx__number" ON "contextnummember"("number");
 
+
 DROP TABLE IF EXISTS "contexttype";
 CREATE TABLE "contexttype" (
  "id" SERIAL,
@@ -346,8 +280,6 @@ CREATE TABLE "contexttype" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "contexttype__idx__commented" ON "contexttype"("commented");
-CREATE INDEX "contexttype__idx__deletable" ON "contexttype"("deletable");
 CREATE UNIQUE INDEX "contexttype__uidx__name" ON "contexttype"("name");
 
 INSERT INTO "contexttype" VALUES(DEFAULT, 'internal', 'Interne', 0, 0, '');
@@ -558,7 +490,6 @@ DROP TABLE IF EXISTS "ctiprofiles";
 CREATE TABLE "ctiprofiles" (
  "id" SERIAL,
  "xlets" text,
- "funcs" varchar(255),
  "maxgui" integer,
  "appliname" varchar(255),
  "name" varchar(40) unique,
@@ -571,13 +502,12 @@ CREATE TABLE "ctiprofiles" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]','agents,presence,switchboard',-1,'Superviseur','agentsup','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]','presence',-1,'Agent','agent','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client','client','xivo','xivo','xivo','enablednd,fwdunc,fwdbusy,fwdrna','',1);
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ],[ "outlook", "tab", "fcms", "N/A" ]]','presence,customerinfo',-1,'Client+Outlook','clientoutlook','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "datetime", "dock", "fm", "N/A" ]]','',-1,'Horloge','clock','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ],[ "parking", "dock", "fcm", "N/A" ]]','presence,switchboard,search,dial',-1,'Opérateur','oper','xivo','xivo','xivo','','',1);
-INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "parking", "dock", "fcms", "N/A" ],[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "operator", "dock", "fcms", "N/A" ]]','switchboard,dial,presence,customerinfo,search,agents,conference,directory,features,history,fax,chitchat,database',-1,'Switchboard','switchboard','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "queues", "dock", "fms", "N/A" ],[ "queuedetails", "dock", "fms", "N/A" ],[ "queueentrydetails", "dock", "fcms", "N/A" ],[ "agents", "dock", "fcms", "N/A" ],[ "agentdetails", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "conference", "dock", "fcm", "N/A" ]]',-1,'Superviseur','agentsup','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "queues", "dock", "ms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "customerinfo", "dock", "cms", "N/A" ],[ "agentdetails", "dock", "cms", "N/A" ]]',-1,'Agent','agent','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "tabber", "grid", "fcms", "1" ],[ "dial", "grid", "fcms", "2" ],[ "search", "tab", "fcms", "0" ],[ "customerinfo", "tab", "fcms", "4" ],[ "identity", "grid", "fcms", "0" ],[ "fax", "tab", "fcms", "N/A" ],[ "history", "tab", "fcms", "N/A" ],[ "directory", "tab", "fcms", "N/A" ],[ "features", "tab", "fcms", "N/A" ],[ "mylocaldir", "tab", "fcms", "N/A" ],[ "conference", "tab", "fcms", "N/A" ]]',-1,'Client','client','xivo','xivo','xivo','enablednd,fwdunc,fwdbusy,fwdrna','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "datetime", "dock", "fm", "N/A" ]]',-1,'Horloge','clock','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "dial", "dock", "fm", "N/A" ],[ "operator", "dock", "fcm", "N/A" ],[ "datetime", "dock", "fcm", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "calls", "dock", "fcm", "N/A" ]]',-1,'Opérateur','oper','xivo','xivo','xivo','','',1);
+INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "search", "dock", "fcms", "N/A" ],[ "calls", "dock", "fcms", "N/A" ],[ "switchboard", "dock", "fcms", "N/A" ],[ "customerinfo", "dock", "fcms", "N/A" ],[ "datetime", "dock", "fcms", "N/A" ],[ "dial", "dock", "fcms", "N/A" ],[ "identity", "grid", "fcms", "0" ],[ "operator", "dock", "fcms", "N/A" ]]',-1,'Switchboard','switchboard','xivo','xivo','xivo','','',1);
 
 
 DROP TABLE IF EXISTS "ctireversedirectories";
@@ -739,8 +669,6 @@ CREATE TABLE "dialaction" (
 );
 
 CREATE INDEX "dialaction__idx__action_actionarg1" ON "dialaction"("action","actionarg1");
-CREATE INDEX "dialaction__idx__actionarg2" ON "dialaction"("actionarg2");
-CREATE INDEX "dialaction__idx__linked" ON "dialaction"("linked");
 
 
 DROP TABLE IF EXISTS "dialpattern";
@@ -760,6 +688,7 @@ CREATE TABLE "dialpattern" (
 
 CREATE INDEX "dialpattern__idx__type_typeid" ON "dialpattern"("type","typeid");
 
+
 DROP TABLE IF EXISTS "extensions";
 CREATE TABLE "extensions" (
  "id" SERIAL,
@@ -773,7 +702,6 @@ CREATE TABLE "extensions" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "extensions__idx__commented" ON "extensions"("commented");
 CREATE INDEX "extensions__idx__context_exten_priority" ON "extensions"("context","exten","priority");
 CREATE INDEX "extensions__idx__name" ON "extensions"("name");
 
@@ -916,10 +844,7 @@ CREATE TABLE "features" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "features__idx__commented" ON "features"("commented");
-CREATE INDEX "features__idx__filename" ON "features"("filename");
 CREATE INDEX "features__idx__category" ON "features"("category");
-CREATE INDEX "features__idx__var_name" ON "features"("var_name");
 
 INSERT INTO "features" VALUES (DEFAULT,0,0,0,'features.conf','general','parkext','700');
 INSERT INTO "features" VALUES (DEFAULT,0,0,0,'features.conf','general','parkpos','701-750');
@@ -985,8 +910,6 @@ CREATE TABLE "paginguser" (
 );
 
 CREATE INDEX "paginguser__idx__pagingid" ON "paginguser"("pagingid");
-CREATE INDEX "paginguser__idx__userfeaturesid" ON "paginguser"("userfeaturesid");
-CREATE INDEX "paginguser__idx__caller" ON "paginguser"("caller");
 
 
 DROP TABLE IF EXISTS "parkinglot";
@@ -1033,7 +956,6 @@ CREATE TABLE "groupfeatures" (
 CREATE INDEX "groupfeatures__idx__name" ON "groupfeatures"("name");
 CREATE INDEX "groupfeatures__idx__number" ON "groupfeatures"("number");
 CREATE INDEX "groupfeatures__idx__context" ON "groupfeatures"("context");
-CREATE INDEX "groupfeatures__idx__deleted" ON "groupfeatures"("deleted");
 
 
 DROP TABLE IF EXISTS "incall";
@@ -1052,7 +974,6 @@ CREATE TABLE "incall" (
 
 CREATE INDEX "incall__idx__exten" ON "incall"("exten");
 CREATE INDEX "incall__idx__context" ON "incall"("context");
-CREATE INDEX "incall__idx__commented" ON "incall"("commented");
 CREATE UNIQUE INDEX "incall__uidx__exten_context" ON "incall"("exten","context");
 
 
@@ -1088,7 +1009,6 @@ CREATE INDEX "linefeatures__idx__config" ON "linefeatures"("config");
 CREATE INDEX "linefeatures__idx__device" ON "linefeatures"("device");
 CREATE INDEX "linefeatures__idx__number" ON "linefeatures"("number");
 CREATE INDEX "linefeatures__idx__context" ON "linefeatures"("context");
-CREATE INDEX "linefeatures__idx__commented" ON "linefeatures"("commented");
 CREATE INDEX "linefeatures__idx__internal" ON "linefeatures"("internal");
 CREATE UNIQUE INDEX "linefeatures__uidx__provisioningid" ON "linefeatures"("provisioningid");
 CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
@@ -1117,8 +1037,6 @@ CREATE TABLE "ldapfilter" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "ldapfilter__idx__ldapserverid" ON "ldapfilter"("ldapserverid");
-CREATE INDEX "ldapfilter__idx__commented" ON "ldapfilter"("commented");
 CREATE UNIQUE INDEX "ldapfilter__uidx__name" ON "ldapfilter"("name");
 
 
@@ -1202,10 +1120,6 @@ CREATE TABLE "meetmeguest" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "meetmeguest__idx__meetmefeaturesid" ON "meetmeguest"("meetmefeaturesid");
-CREATE INDEX "meetmeguest__idx__fullname" ON "meetmeguest"("fullname");
-CREATE INDEX "meetmeguest__idx__email" ON "meetmeguest"("email");
-
 
 DROP TABLE IF EXISTS "musiconhold";
 CREATE TABLE "musiconhold" (
@@ -1220,14 +1134,12 @@ CREATE TABLE "musiconhold" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "musiconhold__idx__commented" ON "musiconhold"("commented");
 CREATE UNIQUE INDEX "musiconhold__uidx__filename_category_var_name" ON "musiconhold"("filename","category","var_name");
 
-INSERT INTO "musiconhold" VALUES (1,0,0,0,'musiconhold.conf','default','mode','files');
-INSERT INTO "musiconhold" VALUES (2,0,0,1,'musiconhold.conf','default','application','');
-INSERT INTO "musiconhold" VALUES (3,0,0,0,'musiconhold.conf','default','random','no');
-INSERT INTO "musiconhold" VALUES (4,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
-SELECT setval('musiconhold_id_seq', 5);
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','mode','files');
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,1,'musiconhold.conf','default','application','');
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','random','no');
+INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','directory','/var/lib/pf-xivo/moh/default');
 
 
 DROP TABLE IF EXISTS "operator";
@@ -1243,7 +1155,6 @@ CREATE TABLE "operator" (
 );
 
 CREATE UNIQUE INDEX "operator__uidx__name" ON "operator"("name");
-CREATE INDEX "operator__idx__disable" ON "operator"("disable");
 
 
 DROP TABLE IF EXISTS "operator_destination";
@@ -1259,7 +1170,6 @@ CREATE TABLE "operator_destination" (
 );
 
 CREATE UNIQUE INDEX "operator_destination__uidx__name" ON "operator_destination"("name");
-CREATE INDEX "operator_destination__idx__disable" ON "operator_destination"("disable");
 
 
 DROP TABLE IF EXISTS "operator_trunk";
@@ -1284,7 +1194,6 @@ CREATE TABLE "outcall" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "outcall__idx__commented" ON "outcall"("commented");
 CREATE UNIQUE INDEX "outcall__uidx__name" ON "outcall"("name");
 
 
@@ -1307,8 +1216,6 @@ CREATE TABLE "outcalldundipeer" (
  PRIMARY KEY("outcallid","dundipeerid")
 );
 
-CREATE INDEX "outcalldundipeer__idx__priority" ON "outcalldundipeer"("priority");
-
 
 DROP TABLE IF EXISTS "phonebook";
 DROP TYPE  IF EXISTS "phonebook_title";
@@ -1329,13 +1236,6 @@ CREATE TABLE "phonebook" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "phonebook__idx__title" ON "phonebook"("title");
-CREATE INDEX "phonebook__idx__firstname" ON "phonebook"("firstname");
-CREATE INDEX "phonebook__idx__lastname" ON "phonebook"("lastname");
-CREATE INDEX "phonebook__idx__displayname" ON "phonebook"("displayname");
-CREATE INDEX "phonebook__idx__society" ON "phonebook"("society");
-CREATE INDEX "phonebook__idx__email" ON "phonebook"("email");
-
 
 DROP TABLE IF EXISTS "phonebookaddress";
 DROP TYPE  IF EXISTS "phonebookaddress_type";
@@ -1355,13 +1255,6 @@ CREATE TABLE "phonebookaddress" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "phonebookaddress__idx__address1" ON "phonebookaddress"("address1");
-CREATE INDEX "phonebookaddress__idx__address2" ON "phonebookaddress"("address2");
-CREATE INDEX "phonebookaddress__idx__city" ON "phonebookaddress"("city");
-CREATE INDEX "phonebookaddress__idx__state" ON "phonebookaddress"("state");
-CREATE INDEX "phonebookaddress__idx__zipcode" ON "phonebookaddress"("zipcode");
-CREATE INDEX "phonebookaddress__idx__country" ON "phonebookaddress"("country");
-CREATE INDEX "phonebookaddress__idx__type" ON "phonebookaddress"("type");
 CREATE UNIQUE INDEX "phonebookaddress__uidx__phonebookid_type" ON "phonebookaddress"("phonebookid","type");
 
 
@@ -1378,8 +1271,6 @@ CREATE TABLE "phonebooknumber" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "phonebooknumber__idx__number" ON "phonebooknumber"("number");
-CREATE INDEX "phonebooknumber__idx__type" ON "phonebooknumber"("type");
 CREATE UNIQUE INDEX "phonebooknumber__uidx__phonebookid_type" ON "phonebooknumber"("phonebookid","type");
 
 
@@ -1471,7 +1362,6 @@ CREATE TABLE "queue" (
  PRIMARY KEY("name")
 );
 
-CREATE INDEX "queue__idx__commented" ON "queue"("commented");
 CREATE INDEX "queue__idx__category" ON "queue"("category");
 
 
@@ -1547,7 +1437,6 @@ CREATE TABLE "queuemember" (
  PRIMARY KEY("queue_name","interface")
 );
 
-CREATE INDEX "queuemember__idx__commented" ON "queuemember"("commented");
 CREATE INDEX "queuemember__idx__usertype" ON "queuemember"("usertype");
 CREATE INDEX "queuemember__idx__userid" ON "queuemember"("userid");
 CREATE INDEX "queuemember__idx__channel" ON "queuemember"("channel");
@@ -1592,10 +1481,6 @@ CREATE TABLE "rightcall" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "rightcall__idx__context" ON "rightcall"("context");
-CREATE INDEX "rightcall__idx__passwd" ON "rightcall"("passwd");
-CREATE INDEX "rightcall__idx__authorization" ON "rightcall"("authorization");
-CREATE INDEX "rightcall__idx__commented" ON "rightcall"("commented");
 CREATE UNIQUE INDEX "rightcall__uidx__name" ON "rightcall"("name");
 
 
@@ -1640,8 +1525,6 @@ CREATE TABLE "schedule" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "schedule__idx__commented" ON "schedule"("commented");
-
 
 DROP TABLE IF EXISTS "schedule_path";
 DROP TYPE  IF EXISTS "schedule_path_type";
@@ -1680,7 +1563,6 @@ CREATE TABLE "schedule_time" (
  PRIMARY KEY("id")
 );
 
---CREATE INDEX "schedule__idx__commented" ON "schedule"("commented");
 CREATE INDEX "schedule_time__idx__scheduleid_commented" ON "schedule_time"("schedule_id","commented");
 
 
@@ -1700,10 +1582,6 @@ CREATE TABLE "serverfeatures" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "serverfeatures__idx__serverid" ON "serverfeatures"("serverid");
-CREATE INDEX "serverfeatures__idx__feature" ON "serverfeatures"("feature");
-CREATE INDEX "serverfeatures__idx__type" ON "serverfeatures"("type");
-CREATE INDEX "serverfeatures__idx__commented" ON "serverfeatures"("commented");
 CREATE UNIQUE INDEX "serverfeatures__uidx__serverid_feature_type" ON "serverfeatures"("serverid","feature","type");
 
 
@@ -1719,7 +1597,6 @@ CREATE TABLE "servicesgroup" (
 
 CREATE UNIQUE INDEX "servicesgroup__uidx__name" ON "servicesgroup"("name");
 CREATE UNIQUE INDEX "servicesgroup__uidx__accountcode" ON "servicesgroup"("accountcode");
-CREATE INDEX "servicesgroup__idx__disable" ON "servicesgroup"("disable");
 
 
 DROP TABLE IF EXISTS "servicesgroup_user";
@@ -1747,11 +1624,7 @@ CREATE TABLE "staticagent" (
 
 CREATE INDEX "staticagent__idx__cat_metric" ON "staticagent"("cat_metric");
 CREATE INDEX "staticagent__idx__var_metric" ON "staticagent"("var_metric");
-CREATE INDEX "staticagent__idx__commented" ON "staticagent"("commented");
-CREATE INDEX "staticagent__idx__filename" ON "staticagent"("filename");
 CREATE INDEX "staticagent__idx__category" ON "staticagent"("category");
-CREATE INDEX "staticagent__idx__var_name" ON "staticagent"("var_name");
-CREATE INDEX "staticagent__idx__var_val" ON "staticagent"("var_val");
 
 INSERT INTO "staticagent" VALUES (DEFAULT,0,0,0,'agents.conf','general','multiplelogin','yes');
 INSERT INTO "staticagent" VALUES (DEFAULT,1,0,0,'agents.conf','agents','recordagentcalls','no');
@@ -1772,10 +1645,7 @@ CREATE TABLE "staticiax" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "staticiax__idx__commented" ON "staticiax"("commented");
-CREATE INDEX "staticiax__idx__filename" ON "staticiax"("filename");
 CREATE INDEX "staticiax__idx__category" ON "staticiax"("category");
-CREATE INDEX "staticiax__idx__var_name" ON "staticiax"("var_name");
 
 INSERT INTO "staticiax" VALUES (DEFAULT,0,0,0,'iax.conf','general','bindport',4569);
 INSERT INTO "staticiax" VALUES (DEFAULT,0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
@@ -1829,6 +1699,7 @@ INSERT INTO "staticiax" VALUES (DEFAULT,0,0,0,'iax.conf','general','maxcallnumbe
 INSERT INTO "staticiax" VALUES (DEFAULT,0,0,0,'iax.conf','general','maxcallnumbers_nonvalidated',NULL);
 INSERT INTO "staticiax" VALUES (DEFAULT,0,0,0,'iax.conf','general','shrinkcallerid',NULL);
 
+
 DROP TABLE IF EXISTS "staticmeetme";
 CREATE TABLE "staticmeetme" (
  "id" SERIAL,
@@ -1842,10 +1713,7 @@ CREATE TABLE "staticmeetme" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "staticmeetme__idx__commented" ON "staticmeetme"("commented");
-CREATE INDEX "staticmeetme__idx__filename" ON "staticmeetme"("filename");
 CREATE INDEX "staticmeetme__idx__category" ON "staticmeetme"("category");
-CREATE INDEX "staticmeetme__idx__var_name" ON "staticmeetme"("var_name");
 
 INSERT INTO "staticmeetme" VALUES (DEFAULT,0,0,0,'meetme.conf','general','audiobuffers',32);
 INSERT INTO "staticmeetme" VALUES (DEFAULT,0,0,0,'meetme.conf','general','schedule','yes');
@@ -1868,10 +1736,7 @@ CREATE TABLE "staticqueue" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "staticqueue__idx__commented" ON "staticqueue"("commented");
-CREATE INDEX "staticqueue__idx__filename" ON "staticqueue"("filename");
 CREATE INDEX "staticqueue__idx__category" ON "staticqueue"("category");
-CREATE INDEX "staticqueue__idx__var_name" ON "staticqueue"("var_name");
 
 INSERT INTO "staticqueue" VALUES (DEFAULT,0,0,0,'queues.conf','general','persistentmembers','yes');
 INSERT INTO "staticqueue" VALUES (DEFAULT,0,0,0,'queues.conf','general','autofill','no');
@@ -1893,10 +1758,7 @@ CREATE TABLE "staticsip" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "staticsip__idx__commented" ON "staticsip"("commented");
-CREATE INDEX "staticsip__idx__filename" ON "staticsip"("filename");
 CREATE INDEX "staticsip__idx__category" ON "staticsip"("category");
-CREATE INDEX "staticsip__idx__var_name" ON "staticsip"("var_name");
 
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','bindport',5060);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','videosupport','no');
@@ -2040,7 +1902,7 @@ INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','use_q850_rea
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','snom_aoc_enabled','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','subscribe_network_change_event','yes');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','maxforwards',NULL);
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','disallow_methods',NULL);
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','disallowed_methods',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','domainsasrealm',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','textsupport',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','auth_options_requests','no');
@@ -2060,10 +1922,7 @@ CREATE TABLE "staticvoicemail" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "staticvoicemail__idx__commented" ON "staticvoicemail"("commented");
-CREATE INDEX "staticvoicemail__idx__filename" ON "staticvoicemail"("filename");
 CREATE INDEX "staticvoicemail__idx__category" ON "staticvoicemail"("category");
-CREATE INDEX "staticvoicemail__idx__var_name" ON "staticvoicemail"("var_name");
 
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','maxmsg',100);
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','silencethreshold',256);
@@ -2165,10 +2024,7 @@ CREATE TABLE "staticsccp" (
  PRIMARY KEY("id")
 );
 
-CREATE INDEX "staticsccp__idx__commented" ON "staticvoicemail"("commented");
-CREATE INDEX "staticsccp__idx__filename" ON "staticvoicemail"("filename");
 CREATE INDEX "staticsccp__idx__category" ON "staticvoicemail"("category");
-CREATE INDEX "staticsccp__idx__var_name" ON "staticvoicemail"("var_name");
 
 INSERT INTO "staticsccp" VALUES(DEFAULT,0,0,0,'sccp.conf','general','servername','Asterisk');
 INSERT INTO "staticsccp" VALUES(DEFAULT,0,0,0,'sccp.conf','general','keepalive',60);
@@ -2237,8 +2093,6 @@ CREATE TABLE "usercustom" (
 
 CREATE INDEX "usercustom__idx__name" ON "usercustom"("name");
 CREATE INDEX "usercustom__idx__context" ON "usercustom"("context");
-CREATE INDEX "usercustom__idx__commented" ON "usercustom"("commented");
-CREATE INDEX "usercustom__idx__protocol" ON "usercustom"("protocol");
 CREATE INDEX "usercustom__idx__category" ON "usercustom"("category");
 CREATE UNIQUE INDEX "usercustom__uidx__interface_intfsuffix_category" ON "usercustom"("interface","intfsuffix","category");
 
@@ -2305,7 +2159,6 @@ CREATE INDEX "userfeatures__idx__entityid" ON "userfeatures"("entityid");
 CREATE INDEX "userfeatures__idx__agentid" ON "userfeatures"("agentid");
 CREATE INDEX "userfeatures__idx__loginclient" ON "userfeatures"("loginclient");
 CREATE INDEX "userfeatures__idx__musiconhold" ON "userfeatures"("musiconhold");
-CREATE INDEX "userfeatures__idx__commented" ON "userfeatures"("commented");
 
 
 DROP TABLE IF EXISTS "useriax";
@@ -2390,13 +2243,7 @@ CREATE TABLE "useriax" (
 );
 
 CREATE INDEX "useriax__idx__mailbox" ON "useriax"("mailbox");
-CREATE INDEX "useriax__idx__protocol" ON "useriax"("protocol");
 CREATE INDEX "useriax__idx__category" ON "useriax"("category");
-CREATE INDEX "useriax__idx__commented" ON "useriax"("commented");
-CREATE INDEX "useriax__idx__name_host" ON "useriax"("name","host");
-CREATE INDEX "useriax__idx__name_ipaddr_port" ON "useriax"("name","ipaddr","port");
-CREATE INDEX "useriax__idx__ipaddr_port" ON "useriax"("ipaddr","port");
-CREATE INDEX "useriax__idx__host_port" ON "useriax"("host","port");
 CREATE UNIQUE INDEX "useriax__uidx__name" ON "useriax"("name");
 
 
@@ -2526,12 +2373,7 @@ CREATE TABLE "usersip" (
 );
 
 CREATE INDEX "usersip__idx__mailbox" ON "usersip"("mailbox");
-CREATE INDEX "usersip__idx__protocol" ON "usersip"("protocol");
 CREATE INDEX "usersip__idx__category" ON "usersip"("category");
-CREATE INDEX "usersip__idx__commented" ON "usersip"("commented");
-CREATE INDEX "usersip__idx__host_port" ON "usersip"("host","port");
-CREATE INDEX "usersip__idx__ipaddr_port" ON "usersip"("ipaddr","port");
-CREATE INDEX "usersip__idx__lastms" ON "usersip"("lastms");
 CREATE UNIQUE INDEX "usersip__uidx__name" ON "usersip"("name");
 
 
@@ -2591,7 +2433,6 @@ CREATE TABLE "voicemail" (
 );
 
 CREATE INDEX "voicemail__idx__context" ON "voicemail"("context");
-CREATE INDEX "voicemail__idx__commented" ON "voicemail"("commented");
 CREATE UNIQUE INDEX "voicemail__uidx__mailbox_context" ON "voicemail"("mailbox","context");
 
 
@@ -2619,7 +2460,6 @@ CREATE TABLE "voicemenu" (
 
 CREATE INDEX "voicemenu__idx__number" ON "voicemenu"("number");
 CREATE INDEX "voicemenu__idx__context" ON "voicemenu"("context");
-CREATE INDEX "voicemenu__idx__commented" ON "voicemenu"("commented");
 CREATE UNIQUE INDEX "voicemenu__uidx__name" ON "voicemenu"("name");
 
 
@@ -2773,8 +2613,7 @@ CREATE TABLE "general"
  PRIMARY KEY("id")
 );
 
-INSERT INTO "general" VALUES (1, 'Europe/Paris', NULL, NULL, 0);
-SELECT setval('general_id_seq', 2);
+INSERT INTO "general" VALUES (DEFAULT, 'Europe/Paris', NULL, NULL, 0);
 
 
 DROP TABLE IF EXISTS "sipauthentication";
@@ -2791,6 +2630,7 @@ CREATE TABLE "sipauthentication"
  "realm" VARCHAR(1024) NOT NULL,
  PRIMARY KEY("id")
 );
+
 CREATE INDEX "sipauthentication__idx__usersip_id" ON "sipauthentication"("usersip_id");
 
 

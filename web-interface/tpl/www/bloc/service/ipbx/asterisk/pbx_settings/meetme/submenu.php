@@ -33,25 +33,6 @@
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</div>
-			<div class="stab">
-				<ul>
-					<li><a href="#period"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-period');">
-							<?=$this->bbf('smenu_period');?></a></li>
-				</ul>
-			</div>
-		</li>
-		<li id="dwsm-tab-2"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-administrator');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
-			<div class="tab">
-				<span class="span-center">
-					<a href="#administrator"><?=$this->bbf('smenu_administrator');?></a>
-				</span>
-			</div>
-			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-3"
 		    class="dwsm-blur"

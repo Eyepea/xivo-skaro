@@ -85,8 +85,3 @@ $packages = $this->get_var('packages');
 			    array('package_level' => 'recommends'));
 ?>
 </div>
-<?php
-	echo	$form->button(array('name'	=> 'verify',
-				    'value'	=> $this->bbf('fm_bt-verify'),
-				    'id'	=> 'it-verify'));
-?>

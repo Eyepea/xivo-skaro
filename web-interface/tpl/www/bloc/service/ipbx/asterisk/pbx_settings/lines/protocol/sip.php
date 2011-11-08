@@ -104,12 +104,6 @@
             'default'   => $element['protocol']['sip']['encryption']['default']),
          $element['protocol']['sip']['encryption']['value']),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_subscribemwi'),
-				      'name'	=> 'protocol[subscribemwi]',
-				      'labelid'	=> 'protocol-subscribemwi',
-				      'default'	=> $element['protocol']['sip']['subscribemwi']['default'],
-				      'checked'	=> $this->get_var('info','protocol','subscribemwi'))),
-
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_buggymwi'),
 				    'name'	=> 'protocol[buggymwi]',
 				    'labelid'	=> 'protocol-buggymwi',
@@ -119,8 +113,9 @@
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['sip']['buggymwi']['default'],
 				    'selected'	=> $this->get_var('info','protocol','buggymwi')),
-			      $element['protocol']['sip']['buggymwi']['value']),
+			      $element['protocol']['sip']['buggymwi']['value']);
 
+/*
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_parkinglot'),
 					'name'	=> 'protocol[parkinglot]',
 					'labelid'   => 'procotol-parkinglot',
@@ -131,7 +126,8 @@
 					'empty'     => true,
 					'selected'  => $this->get_var('info','protocol','parkinglot')),
 					//'default'     => $element['protocol']['parkinglot']['default']),
-						$this->get_var('parking_list'));
+			$this->get_var('parking_list'));
+*/
 ?>
 </div>
 

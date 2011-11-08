@@ -75,16 +75,6 @@ $this->file_include('bloc/menu/top/user/loginbox');
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
-					    <span class="span-center">'.$this->bbf('mn_top_preferences').'</span>
-					    <span class="span-right">&nbsp;</span>',
-					   'xivo/preferences',
-					   null,
-					   null,
-					   $this->bbf('mn_top_preferences'));?>
-		</li>
-		<li onmouseout="this.className = 'moo';"
-		    onmouseover="this.className = 'mov';">
-			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_help').'</span>
 					    <span class="span-right">&nbsp;</span>',
 					   'xivo/help',

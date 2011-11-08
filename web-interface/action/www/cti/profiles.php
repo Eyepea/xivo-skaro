@@ -30,8 +30,9 @@ $_TPL->load_i18n_file('tpl/www/bloc/cti/profiles/list-values.i18n', 'global');
 /** list values */
 $servicesavail = array(
     'enablevm'      => $_TPL->bbf('enablevm'),
-    'callrecord'    => $_TPL->bbf('callrecord'),
-    'incallrec'     => $_TPL->bbf('incallrec'),
+    // DISABLING CALL RECORDS	
+    //'callrecord'    => $_TPL->bbf('callrecord'),
+    //'incallrec'     => $_TPL->bbf('incallrec'),
     'incallfilter'  => $_TPL->bbf('incallfilter'),
     'enablednd'     => $_TPL->bbf('enablednd'),
     'fwdunc'        => $_TPL->bbf('fwdunc'),
@@ -55,24 +56,6 @@ $preferencesavail = array(
     'xlet.queues.statsfetchperiod'    => $_TPL->bbf('pref-xlet-queues-statsfetchperiod'),
     'presence.autochangestate'        => $_TPL->bbf('pref-presence-autochangestate'),
     'adlibitum'                       => $_TPL->bbf('pref-adlibitum')
-);
-
-$funcsavail = array(
-    'agents' => $_TPL->bbf('func-agents'),
-    'presence' => $_TPL->bbf('func-presence'),
-    'switchboard' => $_TPL->bbf('func-switchboard'),
-    'customerinfo' => $_TPL->bbf('func-customerinfo'),
-    'search' => $_TPL->bbf('func-search'),
-    'dial' => $_TPL->bbf('func-dial'),
-    'chitchat' => $_TPL->bbf('func-chitchat'),
-    'conference' => $_TPL->bbf('func-conference'),
-    'directory' => $_TPL->bbf('func-directory'),
-    'fax' => $_TPL->bbf('func-fax'),
-    'features' => $_TPL->bbf('func-features'),
-    'history' => $_TPL->bbf('func-history'),
-    'database' => $_TPL->bbf('func-database'),
-    'supervisor' => $_TPL->bbf('func-supervisor'),
-    'administrator' => $_TPL->bbf('func-administrator'),
 );
 
 $ctixlets = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
@@ -160,14 +143,6 @@ switch($act)
 			else
 				$_QR['profiles']['services'] = '';
 
-			if(array_key_exists('funcs', $_QR))
-			{
-				$_QR['profiles']['funcs'] = implode(',', $_QR['funcs']);
-			}
-			else
-				$_QR['profiles']['funcs'] = '';
-
-
 			if(array_key_exists('preferencesargs', $_QR))
 			{
 				$pres = array();
@@ -196,8 +171,6 @@ switch($act)
 
 		$info['services']['list'] = $servicesavail;
 		$info['services']['slt'] = null;
-		$info['funcs']['list'] = $funcsavail;
-		$info['funcs']['slt'] = null;
 		$info['preferences']['avail'] = $preferencesavail;
 		$info['preferences']['slt'] = null;
 		$info['xlets']['list']['xlets'] = $xletsavail;
@@ -282,15 +255,6 @@ switch($act)
 			else
 				$_QR['profiles']['services'] = '';
 
-
-			if(array_key_exists('funcs', $_QR))
-			{
-				$_QR['profiles']['funcs'] = implode(',', $_QR['funcs']);
-			}
-			else
-				$_QR['profiles']['funcs'] = '';
-
-
 			if(array_key_exists('preferencesargs', $_QR))
 			{
 				$pres = array();
@@ -338,20 +302,6 @@ switch($act)
 			}
 		}
 
-		$info['funcs']['list'] = $funcsavail;
-		$info['funcs']['slt'] = array();
-		if(isset($info['ctiprofiles']['funcs']) && dwho_has_len($info['ctiprofiles']['funcs']))
-		{
-			$fncs = explode(',', $info['ctiprofiles']['funcs']);
-
-			$info['funcs']['slt'] = array();
-			foreach($fncs as $fnc)
-			{
-				$info['funcs']['slt'][$fnc] = $info['funcs']['list'][$fnc];
-				unset($info['funcs']['list'][$fnc]);
-			}
-		}
-
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
 
@@ -375,7 +325,6 @@ switch($act)
 		$_TPL->set_var('phonehintslist',$phonehintslist);
 		$_TPL->set_var('agentslist',$agentslist);
 		$_TPL->set_var('servicesavail',$servicesavail);
-		$_TPL->set_var('funcsavail',$funcsavail);
 		$_TPL->set_var('preferencesavail',$preferencesavail);
 		$_TPL->set_var('xletsavail',$xletsavail);
 		$_TPL->set_var('xletslocavail',$xletslocavail);

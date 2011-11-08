@@ -29,6 +29,7 @@ $array['sound']['courtesytone'] = true;
 $array['sound']['xfersound'] = true;
 $array['sound']['xferfailsound'] = true;
 
+/*
 $array['element'] = array();
 $array['element']['parkext'] = array();
 $array['element']['parkext']['default'] = 700;
@@ -56,11 +57,13 @@ $array['element']['comebacktoorigin'] = array();
 $array['element']['comebacktoorigin']['value'] = array('no','yes');
 $array['element']['comebacktoorigin']['default'] = 'yes';
 $array['element']['comebacktoorigin']['set'] = true;
+ */
 
 $array['element']['courtesytone'] = array();
 $array['element']['courtesytone']['default'] = '';
 $array['element']['courtesytone']['null'] = true;
 
+/*
 $array['element']['parkedplay'] = array();
 $array['element']['parkedplay']['value'] = array('parked','caller','both');
 $array['element']['parkedplay']['default'] = 'caller';
@@ -104,6 +107,7 @@ $array['element']['findslot']['set'] = true;
 $array['element']['parkedmusicclass'] = array();
 $array['element']['parkedmusicclass']['default'] = 'default';
 $array['element']['parkedmusicclass']['null'] = true;
+ */
 
 $array['element']['transferdigittimeout'] = array();
 $array['element']['transferdigittimeout']['value'] = range(1,30);
@@ -144,6 +148,7 @@ $array['element']['atxfercallbackretries']['default'] = 2;
 
 
 $array['filter'] = array();
+/*
 $array['filter']['parkext'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['parkpos'] = array('regexp' => '/^[0-9]{1,5}-[0-9]{1,5}$/','minlen' => 3,'maxlen' => 11);
 $array['filter']['context'] = array('set' => false);
@@ -153,7 +158,9 @@ $array['filter']['parkingtime'] = array('key' => array(15,30,45,60,75,90,
 						       195,210,225,240,255,270,285,
 									 300,600,900,1200,1500,1800));
 $array['filter']['comebacktoorigin'] = array('bool' => true);
+ */
 $array['filter']['courtesytone'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
+/*
 $array['filter']['parkedplay']          = array('set' => false,'chk' => 2, 'key' => array('parked','caller','both'));
 $array['filter']['parkedcalltransfers'] = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both','no'));
 $array['filter']['parkedcallreparking'] = array('set' => false,'chk' => 2, 'key' => array('callee','caller','both','no'));
@@ -163,6 +170,7 @@ $array['filter']['parkeddynamic'] = array('bool' => true);
 $array['filter']['adsipark'] = array('bool' => true);
 $array['filter']['findslot'] = array('bool' => true);
 $array['filter']['parkedmusicclass'] = array('set' => false);
+ */
 $array['filter']['transferdigittimeout'] = array('cast' => 'uint','between' => array(1,30));
 $array['filter']['xfersound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['xferfailsound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');

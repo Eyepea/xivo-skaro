@@ -46,7 +46,7 @@ $params = $info['params'];
 		<?$this->bbf('plugin-description');?>
 		<?=$pginfo['description'];?>
 	</fieldset>
-<?php 
+<?php
 if ($params !== false):
 	$this->file_include('bloc/xivo/configuration/provisioning/plugin/params');
 endif;
@@ -54,17 +54,13 @@ endif;
 if (empty($pkgs) === true):
 	echo $this->bbf('no_package');
 else:
-
 ?>
 	<div id="box_installer" style="position: absolute;z-index: 99;background: #bbb;opacity: 0.8;filter: alpha(opacity=80);border: 1px solid #000;display: none;">
-	
 		<div style="z-index: 100;margin: auto;width: 500px;height: 150px;background: #eee;border: 1px solid #333;
 		opacity: 0.9;filter: alpha(opacity=90);font-size: 12px;padding: 10px;text-align: center;font-weight: bold;">
-			
 		</div>
-	
 	</div>
-	
+
 	<div class="sb-list">
 	<table id="tb-list-pkgs">
 		<thead>
@@ -105,7 +101,7 @@ else:
 								       'border="0"'),
 							'#',
 							null,
-							'onclick="init_install(\''.$this->get_var('id').'\',\''.$ref['name'].'\');return(false);"',
+							'onclick="init_install_pkgs(\''.$this->get_var('id').'\',\''.$ref['name'].'\');return(false);"',
 							$this->bbf('opt_install'));
 			elseif ($ref['type'] === 'installed'):
 				echo	$url->href_html($url->img_html('img/site/utils/app-delete.png',
