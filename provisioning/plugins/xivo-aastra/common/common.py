@@ -283,7 +283,7 @@ class BaseAastraPlugin(StandardPlugin):
         # are counting 60 keys per expansion module (nb of keys of the M675i),
         # not 36.
         expmod_keynum = keynum - keycount - 1
-        expmod_no = expmod_keynum // 60 + 1,
+        expmod_no = expmod_keynum // 60 + 1
         if expmod_no > nb_expmods:
             logger.info('Model %s has less than %s function keys', model, keynum)
             return None
