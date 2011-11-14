@@ -41,6 +41,7 @@ AMI_REQUESTS = [
     'sccp reload',
     'sip reload',
     'moh reload',
+    'iax2 reload',
     'module reload',
     'module reload app_queue.so',
     'module reload chan_agent.so',
@@ -89,8 +90,6 @@ class WEBI(Interfaces):
         multimsg = msg.replace('\r', '').split(self.sep)
         clireply = []
         closemenow = True
-        
-        print 'msg:', msg
 
         for iusefulmsg in multimsg:
             usefulmsg = iusefulmsg.strip()
