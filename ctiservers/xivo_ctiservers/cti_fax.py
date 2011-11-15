@@ -168,7 +168,6 @@ class Fax:
                 },
             'amicommand' : 'txfax',
             'amiargs' : (self.faxfilepath,
-                         self.fileid,
                          self.userid,
                          self.callerid,
                          self.number,

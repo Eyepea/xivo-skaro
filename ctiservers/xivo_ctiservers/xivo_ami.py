@@ -533,16 +533,15 @@ class AMIClass:
         except Exception:
             return False
 
-    def txfax(self, faxdir, faxid, userid, callerid, number, context):
+    def txfax(self, faxpath, userid, callerid, number, context):
         # originate a call btw src and dst
         # src will ring first, and dst will ring when src responds
         try:
             ret = self.sendcommand('Originate', [('Channel', 'Local/%s@%s' % (number, context)),
                                                  ('CallerID', callerid),
-                                                 ('Variable', 'FAXDIR=%s' % faxdir),
-                                                 ('Variable', 'FAXID=%s' % faxid),
+                                                 ('Variable', 'XIVO_FAX_PATH=%s' % faxpath),
                                                  ('Variable', 'XIVO_USERID=%s' % userid),
-                                                 ('Context', 'macro-txfax'),
+                                                 ('Context', 'txfax'),
                                                  ('Exten', 's'),
                                                  ('Async', 'true'),
                                                  ('Priority', '1')])
