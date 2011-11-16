@@ -111,7 +111,7 @@ class Safe:
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
                                  'availstate' : 'disconnected'
                                  },
-                     'phones' : { 'hintstatus' : '-2',
+                     'phones' : { 'hintstatus' : '4',
                                   'reg' : '',
                                   'channels' : [],
                                   'queues' : [],
