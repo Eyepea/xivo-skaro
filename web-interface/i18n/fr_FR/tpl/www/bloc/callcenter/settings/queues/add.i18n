@@ -432,7 +432,7 @@ Annoncer la position dans la file d'attente:
 Nombre limite d'appel en attente pour l'annonce de position:
 
 ; fm_queue_defaultrule
-Pénalitées appliquées:
+Pénalités appliquées:
 
 ; hlp_fm_queue_timeoutpriority
 Config asterisk: timeoutpriority

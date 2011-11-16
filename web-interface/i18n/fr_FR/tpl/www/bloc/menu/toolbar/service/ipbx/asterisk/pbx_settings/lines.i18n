@@ -1,0 +1,17 @@
+; toolbar_adv_menu_delete_confirm
+Êtes-vous certain de vouloir supprimer ces lignes ?
+
+; toolbar_fm_free
+Ligne disponible
+
+; toolbar_menu_add_sip
+Ajouter une ligne SIP
+
+; toolbar_menu_add_iax
+Ajouter une ligne IAX
+
+; toolbar_menu_add_sccp
+Ajouter une ligne SCCP
+
+; toolbar_menu_add_custom
+Ajouter une ligne personnalisée

@@ -31,20 +31,5 @@ Aucun utilisateur trouvé
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet utilisateur ?
 
-; toolbar_adv_menu_delete_confirm
-Etes-vous certain de vouloir supprimer cet ou ces utilisateurs ?
-
-; toolbar_adv_menu_autoprov
-Réapprovisionner
-
-; autoprov_reboot_phones
-Redémarrer les téléphones
-
-; autoprov_cancel
-Annuler
-
-; autoprov_validate
-OK
-
 ; col_nb_line
 Nombre de lignes
