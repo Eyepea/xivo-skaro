@@ -258,6 +258,8 @@ class AsteriskFrontend(Frontend):
         for vm_context in self.backend.voicemails.all(commented=False, order='context'):
             print >> o, self._gen_voicemail_context(vm_context)
 
+        print >> o, self._gen_voicemail_imapusers()
+
         return o.getvalue()
 
     def _gen_voicemail_emailbody(self, voicemail_config):
@@ -299,7 +301,7 @@ class AsteriskFrontend(Frontend):
 
     def _gen_voicemail_imapusers(self):
         output = StringIO()
-        if len(self._imapusers) > 0:
+        if self._imapusers:
             print >> output, '\n[imapvm]'
 
             for vm_context in self._imapusers:
