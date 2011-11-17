@@ -272,7 +272,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| dwho_issa('groupfeatures',$arr) === false
 		|| dwho_issa('queue',$arr) === false)
 			return(false);
-			
+
 		$this->set_groupfeatures($arr['groupfeatures']);
 
 		$name = strtolower($this->get_result_var('groupfeatures','name'));
@@ -424,7 +424,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				$this->_set_error('user','wrong user');
 				continue;
 			}
-			
+
 			if(($masterline = $linefeatures->get_user_masterline($list[$i])) === false)
 			{
 				$this->_set_error('line','invalid master line');
@@ -1071,7 +1071,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return $this->_schedule_path->delete_where(array('path' => 'group', 'pathid' =>	$this->_info['groupfeatures']['id']));
 	}
 
-
 	function _reverse_delete()
 	{
 		if($this->get_errnb() > 0
@@ -1145,7 +1144,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set_add($data) === false
 		|| $this->add() === false) {
-			var_dump($this->get_error());
+			dwho_var_dump($this->get_error());
 			return(false);
 		}
 

@@ -92,7 +92,7 @@ $page = $url->pager($pager['pages'],
 			<?=dwho_htmlen(dwho_trunc($ref['name'],25,'...',false));?>
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($ref['description']);?>">
-			<?=dwho_htmlen(dwho_trunc($ref['description'],50,'...',false));?>
+			<?=dwho_htmlen(dwho_trunc($ref['description'],65,'...',false));?>
 		</td>
 		<td>
 			<?=$version?>

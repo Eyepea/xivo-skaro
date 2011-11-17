@@ -77,8 +77,12 @@ switch($act)
 	case 'deleteall':
 		$appgroup = &$ipbx->get_application('group');
 
-		$list = $appgroup->get_groups_list();
-		$nb = count($list);
+		if(($list = $appgroup->get_groups_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
 		for ($i=0;$i<$nb;$i++){
 			$ref = &$list[$i];
 			$grp = $appgroup->get($ref['id']);

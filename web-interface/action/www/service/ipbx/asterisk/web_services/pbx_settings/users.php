@@ -116,15 +116,24 @@ switch($act)
 	case 'deleteall':
 		$appuser = &$ipbx->get_application('user');
 
-		$list = $appuser->get_users_list();
-		$nb = count($list);
+		if(($list = $appuser->get_users_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
 		for ($i=0;$i<$nb;$i++){
 			$ref = &$list[$i];
 			$appuser->get($ref['id']);
 			$appuser->delete();
 		}
 		$status = 200;
-		$ipbx->discuss('xivo[userlist,update]');
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]',
+							'xivo[phonelist,update]',
+							'module reload app_queue.so',
+							'sip reload'
+		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

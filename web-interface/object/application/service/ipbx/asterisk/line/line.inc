@@ -34,6 +34,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	protected $_extensions		= false;
 	protected $_contextnummember= false;
 	protected $_protocol		= false;
+	protected $_queuemember		= null;
 	protected $_provdconfig		= false;
 	protected $_provddevice		= false;
 	protected $_devicefeatures 	= false;
@@ -84,6 +85,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| ($this->_provddevice = &$_XOBJ->get_module('provddevice')) === false)
 			return(false);
 
+		$this->_queuemember = &$this->_service->get_module('queuemember');
+
 		return(true);
 	}
 
@@ -94,7 +97,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(parent::_reset());
 	}
 
-	public function get($id,$disable=null,$nocomponents=null,$ipbxinfos=false)
+	public function get($id,$disable=null,$nocomponents=null,$ipbxinfos=false,$userid=0)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -113,6 +116,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		if($this->_components === false)
 			return($this->_info);
+
+		if(dwho_ak('groupmember',$nocomponents,true) === false)
+			$this->_get_groupmember($userid);
+
+		if(dwho_ak('queuemember',$nocomponents,true) === false)
+			$this->_get_queuemember($userid);
 
 		if(dwho_ak('usermacro',$nocomponents,true) === false)
 			$this->_get_usermacro();
@@ -163,6 +172,59 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_origin['hints'] = $this->_extensions->get_origin();
 
 		return($this->_info['hints']);
+	}
+
+	function _get_groupmember($userid)
+	{
+		return($this->_get_member_type('group', $userid));
+	}
+
+	function _get_queuemember($userid)
+	{
+		return($this->_get_member_type('queue', $userid));
+	}
+
+	function _get_member_type($type, $userid)
+	{
+		if($type !== 'group' && $type !== 'queue')
+			return(false);
+		elseif ((int) $userid === 0)
+			return(false);
+
+		$membertype = $type.'member';
+
+		$this->_info[$membertype] = false;
+		$this->_origin[$membertype] = false;
+
+		$where = array();
+		$where['category'] = $type;
+		$where['usertype'] = 'user';
+		$where['userid'] = $userid;
+
+		if(is_object($this->_queuemember) === false
+		|| ($module = &$this->_service->get_module($type.'features')) === false
+		|| ($this->_info[$membertype] = $this->_queuemember->get_all_where($where)) === false
+		|| ($nb = count($this->_info[$membertype])) === 0)
+		{
+			$this->_info[$membertype] = false;
+			return(false);
+		}
+
+		$ref = &$this->_info[$membertype];
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($id = $module->get_primary(array('name' => $ref[$i]['queue_name']))) === false)
+				continue;
+			else if($type === 'queue')
+				$ref[$i]['queuefeaturesid'] = $id;
+			else
+				$ref[$i]['groupfeaturesid'] = $id;
+		}
+
+		$this->_origin[$membertype] = $this->_queuemember->get_origin_list();
+
+		return($this->_info[$membertype]);
 	}
 
 	function _get_ipbx_infos()
@@ -413,7 +475,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		else
 			$name = $this->get_result_var('protocol','name');
 
-		$context = $this->get_result_var('protocol','context');
+		$context = (string) $this->get_result_var('protocol','context');
+		$number = (string) $this->get_result_var('linefeatures','number');
 
 		if (dwho_issa('linefeatures',$arr) === false)
 		{
@@ -429,10 +492,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if (dwho_issa('userfeatures',$arr) === false)
 		{
 			$this->set_linefeatures($action,$arr['linefeatures']);
-			if($this->get_errnb() === 0)
-				return(true);
+			if($this->get_errnb() > 0)
+				$this->_protocolname = $r = false;
+			else
+				$r = true;
 
-			return(false);
+			return($r);
 		}
 		else
 		{
@@ -459,6 +524,34 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 			&& dwho_has_len($musiconhold) === true)
 				$this->_set_result_var('protocol','mohsuggest',$musiconhold);
+
+			if(dwho_issa('group',$arr) === true
+			&& dwho_issa('group-select',$arr) === true
+			&& $this->set_groupmember($arr['group'],
+						  $arr['group-select'],
+						  $name,
+						  $context,
+						  $number,
+						  $protocolname) === true
+			&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
+			{
+				$callgroup = $this->get_result('callgroup');
+
+				if(is_array($callgroup) === true && isset($callgroup[0]) === true)
+					$callgroup = implode(',',$callgroup);
+				else
+					$callgroup = '';
+
+				$this->_set_result_var('protocol','callgroup',$callgroup);
+			}
+
+			if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true)
+				$this->set_queuemember($arr['queue'],
+							$arr['queue-select'],
+							$name,
+							$context,
+							$number,
+							$protocolname);
 		}
 
 		$this->set_linefeatures($action,$arr['linefeatures']);
@@ -492,27 +585,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 						break;
 				}
 			}
-/*
-			if(dwho_issa('group',$arr) === true
-			&& dwho_issa('group-select',$arr) === true
-			&& $this->set_groupmember($arr['group'],
-						  $arr['group-select'],
-						  $name,
-						  $context,
-						  $number,
-						  $protocolname) === true
-			&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
-			{
-				$callgroup = $this->get_result('callgroup');
 
-				if(is_array($callgroup) === true && isset($callgroup[0]) === true)
-					$callgroup = implode(',',$callgroup);
-				else
-					$callgroup = '';
-
-				$this->_set_result_var('protocol','callgroup',$callgroup);
-			}
-*/
 			if((bool) $chkcontext === true)
 				$this->set_contextnummember($context,$number);
 
@@ -604,6 +677,101 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
+	function set_groupmember($group,$select,$name,$context='',$number='',$protocolname='')
+	{
+		return($this->_set_member_type('group',$group,$select,$name,$context,$number,$protocolname));
+	}
+
+	function set_queuemember($queue,$select,$name,$context='',$number='',$protocolname='')
+	{
+		return($this->_set_member_type('queue',$queue,$select,$name,$context,$number,$protocolname));
+	}
+
+	function _set_member_type($type,$list,$select,$name,$context='',$number='',$protocolname='')
+	{
+		if(($type !== 'group' && $type !== 'queue') === true
+		|| is_array($list) === false
+		|| is_array($select) === false
+		|| ($module = &$this->_service->get_module($type.'features')) === false
+		|| is_object($this->_queuemember) === false)
+			return(false);
+
+		$slt = array_values($select);
+
+		if(($nb = count($slt)) === 0)
+			return(null);
+
+		$info = array();
+		$info['usertype'] = 'user';
+		$info['userid'] = 0;
+		$info['category'] = $type;
+
+		$key = $type.'member';
+
+		$tmp = $reslist = array();
+
+		if($type === 'group')
+		{
+			$callgroup = array();
+			$info['penalty'] = 0;
+		}
+		if($type == 'queue')
+			$info['skills'] = '';
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$qname = &$slt[$i];
+
+			if(isset($tmp[$qname]) === true
+			|| isset($list[$qname]) === false
+			|| ($chantype = dwho_ak('chantype',$list[$qname],true)) === false
+			|| ($interface = $this->mk_interface($name,
+							     $chantype,
+							     $context,
+							     $number,
+							     $protocolname)) === false
+			|| ($typeid = $module->get_primary(array('name' => $qname))) === false)
+				continue;
+
+			$info['queue_name'] = $qname;
+			$info['interface'] = $interface['interface'];
+			$info['channel'] = $interface['channel'];
+
+			$values = array_merge($list[$qname],$info);
+
+			if(($rs = $this->_queuemember->chk_values($values)) === false)
+				continue;
+			else if($type === 'queue')
+				$rs['queuefeaturesid'] = $typeid;
+			else
+			{
+				$rs['groupfeaturesid'] = $typeid;
+				$callgroup[] = $typeid;
+			}
+
+			$tmp[$qname] = 1;
+			$reslist[] = $rs;
+		}
+
+		if(isset($reslist[0]) === false)
+		{
+			$this->_set_result($key,false);
+			$this->_set_error($key,'empty');
+
+			if($type === 'group')
+				$this->_set_result('callgroup','');
+
+			return(false);
+		}
+
+		$this->_set_result($key,$reslist);
+
+		if($type === 'group')
+			$this->_set_result('callgroup',$callgroup);
+
+		return(true);
+	}
+
 	function _set_usermacro($action,$iduserfeatures,$idlinefeatures)
 	{
 		$rs = false;
@@ -662,32 +830,40 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| $this->add_config($linefeaturesid,$protocolid) === false)
 		{
 			$r = false;
-			if($protocolid !== null)
+			if($protocolid !== null) {
 				$this->_reverse_add();
+			}
 		}
 
-		if($this->get_result_var('linefeatures','number') !== '')
+		if(dwho_has_len($this->get_result_var('linefeatures','number')) === true)
 		{
 			if($this->add_hints() === false
 			|| $this->add_extenumbers($linefeaturesid) === false
 			|| $this->add_contextnummember($linefeaturesid) === false)
 			{
 				$r = false;
-				if($protocolid !== null)
+				if($protocolid !== null) {
 					$this->_reverse_add();
+				}
 			}
 		}
 
-		if(((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures')) !== 0
-		&& dwho_has_len($this->get_result_var('linefeatures','number')) === true)
+		if(((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures')) !== 0)
 		{
-			if($this->update_protocol_setvar($protocolid,$iduserfeatures) === false
-			|| $this->add_usermacro($iduserfeatures,$linefeaturesid) === false)
+			if($this->add_groupmember($iduserfeatures) === false
+			|| $this->add_queuemember($iduserfeatures) === false) {
 				$r = false;
+			}
+			elseif(dwho_has_len($this->get_result_var('linefeatures','number')) === true
+			&& ($this->update_protocol_setvar($protocolid,$iduserfeatures) === false
+			|| $this->add_usermacro($iduserfeatures,$linefeaturesid) === false)) {
+				$r = false;
+			}
 		}
 
-		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
 			$this->_service->discuss('sccp reload');
+		}
 
 		$this->_status = '';
 
@@ -783,20 +959,20 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(($this->_return['hints'] = $this->_extensions->add_hints($rs)));
 	}
 
-	function add_groupmember($linefeaturesid)
+	function add_groupmember($iduserfeatures)
 	{
-		return($this->_add_member_type('group',$linefeaturesid));
+		return($this->_add_member_type('group',$iduserfeatures));
 	}
 
-	function add_queuemember($linefeaturesid)
+	function add_queuemember($iduserfeatures)
 	{
-		return($this->_add_member_type('queue',$linefeaturesid));
+		return($this->_add_member_type('queue',$iduserfeatures));
 	}
 
-	function _add_member_type($type,$linefeaturesid)
+	function _add_member_type($type,$iduserfeatures)
 	{
 		if(($type !== 'group' && $type !== 'queue') === true
-		|| ($linefeaturesid = dwho_ulongint($linefeaturesid)) === 0)
+		|| ($iduserfeatures = dwho_ulongint($iduserfeatures)) === 0)
 			return(false);
 
 		$key = $type.'member';
@@ -809,9 +985,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$nb = count($rs);
 		for($i = 0;$i < $nb;$i++)
 		{
-			$rs[$i]['userid'] = $linefeaturesid;
+			$rs[$i]['userid'] = $iduserfeatures;
 			if($type == 'queue')
-			{ $rs[$i]['skills'] = $linefeaturesid; }
+			{ $rs[$i]['skills'] = $iduserfeatures; }
 
 			unset($rs[$i]['groupfeaturesid'],$rs[$i]['queuefeaturesid']);
 
@@ -858,6 +1034,14 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					break;
 				case 'hints':
 					$this->_extensions->delete_hints($val);
+					break;
+				case 'groupmember':
+				case 'queuemember':
+					if(is_array($val) === false)
+						continue;
+
+					foreach($val as $memberval)
+						$this->_queuemember->delete($memberval);
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->reverse_add();
@@ -951,7 +1135,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
 				|| $this->add_extenumbers($linefeaturesid) === false
 				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-				   && $this->add_hints() === false) === true)
+					&& $this->add_hints() === false) === true)
 				{
 					$this->_reverse_edit($protocolret);
 					$this->_status = '';
@@ -959,9 +1143,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				}
 			}
 
-			if($this->edit_contextnummember() === false)
-			#|| $this->edit_groupmember() === false
-			#|| $this->edit_queuemember() === false)
+			if($this->edit_contextnummember() === false
+			|| $this->edit_groupmember() === false
+			|| $this->edit_queuemember() === false)
 			{
 				$this->_reverse_edit($protocolret);
 				$this->_status = '';
@@ -1133,7 +1317,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(false);
 		else if(dwho_issa('groupmember',$this->_info) === false)
-			return($this->add_groupmember($this->_info['linefeatures']['id']));
+			return($this->add_groupmember($this->_info['linefeatures']['iduserfeatures']));
 
 		$this->_return['groupmember'] = $this->delete_groupmember();
 
@@ -1148,7 +1332,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(false);
 		else if(dwho_issa('queuemember',$this->_info) === false)
-			return($this->add_queuemember($this->_info['linefeatures']['id']));
+			return($this->add_queuemember($this->_info['linefeatures']['iduserfeatures']));
 
 		$this->_return['queuemember'] = $this->delete_queuemember();
 
@@ -1175,9 +1359,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$rs[$i]['userid'] = $this->_info['linefeatures']['id'];
-			if($type == 'queue')
-			{ $rs[$i]['skills'] = $this->_info['linefeatures']['id']; }
+			$rs[$i]['userid'] = $this->_info['linefeatures']['iduserfeatures'];
+			if($type == 'queue') {
+				$rs[$i]['skills'] = $rs[$i]['userid'];
+			}
 
 			unset($rs[$i]['groupfeaturesid'],$rs[$i]['queuefeaturesid']);
 
@@ -1282,8 +1467,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| $this->delete_macro('usermacro') === false
 		|| $this->delete_hints() === false
 		|| $this->delete_extenumbers() === false
-		#|| $this->delete_groupmember() === false
-		#|| $this->delete_queuemember() === false
+		|| $this->delete_groupmember() === false
+		|| $this->delete_queuemember() === false
 		|| $this->delete_contextnummember() === false)
 		{
 			$r = false;
@@ -1368,7 +1553,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$where = array();
 		$where['usertype'] = 'user';
 		$where['category'] = $type;
-		$where['userid'] = $this->_info['linefeatures']['id'];
+		$where['userid'] = $this->_info['linefeatures']['iduserfeatures'];
 
 		$r = $this->_queuemember->delete_where($where);
 
@@ -1597,28 +1782,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$pwd = strtolower($pwd);
 
 		return $pwd;
-	}
-
-	function mass_provisioning($userids, $reboot=false)
-	{
-		foreach($userids as $userid)
-		{
-			//$this->_info['linefeatures'] = array('id' => $userid);
-			$this->_info['linefeatures'] = $this->_linefeatures->get($userid);
-			$this->_get_autoprov();
-			if(is_null($this->_info['autoprov']['macaddr']))
-				continue;
-
-			$cmd = array(
-				'from'           => 'webi',
-				'idlinefeatures' => $userid,
-				'proto'          => $this->_info['linefeatures']['protocol'],
-				'macaddr'        => $this->_info['autoprov']['macaddr'],
-				'actions'        => $reboot?'yes':'no'
-			);
-
-			$this->_autoprov->notification($cmd, 'prov');
-		}
 	}
 }
 

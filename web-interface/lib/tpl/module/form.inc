@@ -1176,17 +1176,17 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(($this->_selected === true
 		&& $this->_param['multiple'] === false) === true
 		|| is_scalar($key) === false)
-		return('');
+			return('');
 		else if(is_bool($key) === true)
-		$key = (int) $key;
+			$key = (int) $key;
 
 		if($this->_param['valuef'] !== false)
-		$key = sprintf(dwho_printf_escape($this->_param['valuef'],1),$key);
+			$key = sprintf(dwho_printf_escape($this->_param['valuef'],1),$key);
 
 		if (is_array($val) === true && in_array($key, $val) === true)
-		return(' selected="selected"');
+			return(' selected="selected"');
 		elseif((string) $key !== $val)
-		return('');
+			return('');
 
 		$this->_selected = true;
 		return(' selected="selected"');
@@ -1225,7 +1225,7 @@ class dwho_tpl_form extends dwho_tpl_module
 			$r['selected'] = $this->_mk_slt_option_selected($r['key'],$this->_param['selected']);
 		}
 		else
-		return(false);
+			return(false);
 
 		return($r);
 	}
@@ -1257,7 +1257,7 @@ class dwho_tpl_form extends dwho_tpl_module
 	function _mk_slt_option(&$arr,$prevkey=null)
 	{
 		if(is_array($arr) === false || empty($arr) === true)
-		return(false);
+			return(false);
 		else if($this->_is_slt_key($arr) === true)
 		{
 			if($this->_is_slt_altkey($arr) === true)
@@ -1292,36 +1292,34 @@ class dwho_tpl_form extends dwho_tpl_module
 			}
 
 			if($this->_param['optgroup'] !== true)
-			$this->_param['optgroup'] = $optgroup;
+				$this->_param['optgroup'] = $optgroup;
 			else if($prevkey !== null)
-			$key = $prevkey;
+				$key = $prevkey;
 
 			if(is_array($ref) === true)
 			{
 				if(is_array($this->_param['optgroup']) === true
 				&& $this->_mk_slt_optgroup($key,$ref) !== false)
-				continue;
+					continue;
 				else
-				$this->_param['optgroup'] = false;
+					$this->_param['optgroup'] = false;
 
 				if(($render = $this->_mk_slt_option_param_array($key,$ref)) !== false)
-				$this->_mk_slt_option_render($render);
+					$this->_mk_slt_option_render($render);
 				else if(isset($this->_param['bbfopt']['argvalue']) === true)
-				$this->_mk_slt_option_render(
-				$this->_mk_slt_option_param($key,$ref),
-				$ref);
+					$this->_mk_slt_option_render($this->_mk_slt_option_param($key,$ref),$ref);
 				else
-				$this->_mk_slt_option($ref);
+					$this->_mk_slt_option($ref);
 			}
 			else
-			$this->_mk_slt_option_render($this->_mk_slt_option_param($key,$ref));
+				$this->_mk_slt_option_render($this->_mk_slt_option_param($key,$ref));
 		}
 	}
 
 	function _mk_slt_optgroup($key,&$arr)
 	{
 		if(is_array($this->_param['optgroup']) === false)
-		return(null);
+			return(null);
 
 		$label = $prevkey = null;
 
@@ -1502,21 +1500,6 @@ class dwho_tpl_form extends dwho_tpl_module
                 </script>\n\n";
 				$this->_render = $this->_render.$r;
 			}
-			/*
-			 else
-			{
-			$r = "
-			<script type=\"text/javascript\">
-			function load_$uniqid()
-			{
-			var cc = new clean_ms('it-$uniqid','$id','$id2');
-			cc.__init();
-			}
-			dwho.dom.set_onload(load_$uniqid);
-			</script>\n\n";
-			$this->_render = $this->_render.$r;
-			}
-			*/
 		}
 
 		$this->_mk_help();
@@ -1603,10 +1586,10 @@ class dwho_tpl_form extends dwho_tpl_module
 		if($this->_param['empty'] !== false
 		|| ($this->_param['invalid'] === true
 		&& $this->_selected === false) === true)
-		$r .= $this->_mk_slt_option_empty();
+			$r .= $this->_mk_slt_option_empty();
 
 		if($arr !== '' && $arr !== false)
-		$this->_mk_slt_option($arr);
+			$this->_mk_slt_option($arr);
 
 		$this->_render = $r.$this->_render.'</select>';
 		$this->_render .= "\n";
