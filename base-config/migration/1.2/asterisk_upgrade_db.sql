@@ -187,3 +187,8 @@ DROP INDEX IF EXISTS "usersip__idx__commented";
 DROP INDEX IF EXISTS "voicemail__idx__commented";
 
 DROP INDEX IF EXISTS "voicemenu__idx__commented";
+
+
+-- 1.2.0-alpha-6
+
+UPDATE staticvoicemail set var_val = E'Bonjour ${VM_NAME},\n\nVous avez reçu un message d''une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.\n\nLe dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone.\n\nMerci.\n\n-- Messagerie XiVO --' where var_name = 'emailbody';
