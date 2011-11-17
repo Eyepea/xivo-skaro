@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "$Revision$ $Date$"
-
 from distutils.core import setup
 
 setup(
@@ -16,7 +14,10 @@ setup(
     url='http://wiki.xivo.fr/',
     license='GPLv3',
      
-    packages=['xivo_confgen', 'xivo_confgen.frontends', 'xivo_confgen.backends'],
+    packages=['xivo_confgen',
+              'xivo_confgen.frontends',
+              'xivo_confgen.frontends.asterisk',
+              'xivo_confgen.backends'],
     package_dir={'xivo_confgen': 'xivo_confgen'},
     scripts=['bin/confgen', 'bin/confgend'],
     data_files=[('/etc/pf-xivo', ['etc/confgen.conf', 'etc/confgend.conf']),

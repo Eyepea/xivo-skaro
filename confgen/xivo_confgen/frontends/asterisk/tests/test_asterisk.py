@@ -176,55 +176,6 @@ class Test(unittest.TestCase):
         result = self.asteriskFrontEnd.gen_sip_user(user, pickups)
         self.assertEqual(result, u'\n[unused]\n')
 
-    def test_gen_voicemail_emailbody_accents(self):
-        general_config = {'var_name': 'emailbody',
-                          'var_val': 'pépè'}
-        result = self.asteriskFrontEnd._gen_voicemail_emailbody(general_config)
-        self.assertEqual(result, u'emailbody = pépè\n')
-
-    def test_gen_voicemail_emailbody_empty(self):
-        general_config = {}
-        result = self.asteriskFrontEnd._gen_voicemail_emailbody(general_config)
-        self.assertEqual(result, '')
-
-    def test_gen_voicemail_context_accents(self):
-        voicemail_context = {'context': 'default',
-                             'mailbox': 8000,
-                             'password': 'password',
-                             'fullname': 'cédric',
-                             'email': 'dev@avencall.com',
-                             'pager': 'pager',
-                             'imapuser': None}
-        self.asteriskFrontEnd._vm_context = None
-        result = self.asteriskFrontEnd._gen_voicemail_context(voicemail_context)
-        self.assertTrue(u'[default]' in result)
-        self.assertTrue(u'8000 => password,cédric,dev@avencall.com,pager,' in result)
-
-    def test_gen_voicemail_imapusers(self):
-        self.asteriskFrontEnd._imapusers = [{'uniqueid': 1, 'context': u'default',
-                                             'mailbox': u'8000', 'password': u'0000',
-                                             'fullname': u'cédric', 'email': None,
-                                             'pager': None, 'dialout': None, 'callback': None,
-                                             'exitcontext': None, 'language': None,
-                                             'tz': u'eu-fr', 'attach': None, 'saycid': None,
-                                             'review': None, 'operator': None, 'envelope': None,
-                                             'sayduration': None, 'saydurationm': None,
-                                             'sendvoicemail': None, 'deletevoicemail': 0,
-                                             'forcename': None, 'forcegreetings': None,
-                                             'hidefromdir': u'no', 'maxmsg': None,
-                                             'emailsubject': u'éééé', 'emailbody': u'test',
-                                             'imapuser': u'cabunar', 'imappassword': u'superpass',
-                                             'imapfolder': u'lol', 'imapvmsharedid': u'lol',
-                                             'attachfmt': None, 'serveremail': u'francis',
-                                             'locale': u'fr_FR', 'tempgreetwarn': None,
-                                             'messagewrap': None, 'moveheard': None,
-                                             'minsecs': None, 'maxsecs': None, 'nextaftercmd': None,
-                                             'backupdeleted': None, 'volgain': None,
-                                             'passwordlocation': None, 'commented': 0}]
-        result = self.asteriskFrontEnd._gen_voicemail_imapusers()
-        self.assertTrue(u'[imapvm]' in result)
-        self.assertTrue(u'8000 => 0000,cédric,,,imappassword = superpass|imapfolder = lol|imapuser = cabunar' in result)
-
     def test_gen_queues(self):
         """
         [general]
