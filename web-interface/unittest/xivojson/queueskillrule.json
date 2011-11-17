@@ -1,7 +1,0 @@
-{
-    "name" : "boucherie sandoz",
-    "rule" : [
-        "saucisse > 75",
-        "$CHARCUTERIE >= 25"
-    ]
-}
