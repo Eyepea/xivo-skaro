@@ -113,6 +113,22 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'deleteall':
+		$appuser = &$ipbx->get_application('user');
+
+		$list = $appuser->get_users_list();
+		$nb = count($list);
+		for ($i=0;$i<$nb;$i++){
+			$ref = &$list[$i];
+			$appuser->get($ref['id']);
+			$appuser->delete();
+		}
+		$status = 200;
+		$ipbx->discuss('xivo[userlist,update]');
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'search':
 		$appuser = &$ipbx->get_application('user',null,false);
 

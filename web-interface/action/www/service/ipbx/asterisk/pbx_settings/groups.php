@@ -48,12 +48,9 @@ switch($act)
 		$userorder = array();
 		$userorder['firstname'] = SORT_ASC;
 		$userorder['lastname'] = SORT_ASC;
-		$userorder['number'] = SORT_ASC;
-		$userorder['context'] = SORT_ASC;
-		$userorder['name'] = SORT_ASC;
 
 		$appuser = &$ipbx->get_application('user',null,false);
-		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+		$user['list'] = $appuser->get_users_list(null,$userorder,null,true,true);
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);

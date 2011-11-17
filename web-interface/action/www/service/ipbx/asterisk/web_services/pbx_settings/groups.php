@@ -74,6 +74,22 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'deleteall':
+		$appgroup = &$ipbx->get_application('group');
+
+		$list = $appgroup->get_groups_list();
+		$nb = count($list);
+		for ($i=0;$i<$nb;$i++){
+			$ref = &$list[$i];
+			$grp = $appgroup->get($ref['id']);
+			$appgroup->delete();
+		}
+		$status = 200;
+		$ipbx->discuss('xivo[grouplist,update]');
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'search':
 		$appgroup = &$ipbx->get_application('group',null,false);
 
