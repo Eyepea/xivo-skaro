@@ -1,8 +1,7 @@
-# -*- coding: utf8 -*-
+# -*- coding: UTF-8 -*-
 
-__author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
-    Copyright (C) 2010-2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
+    Copyright (C) 2011 Proformatique
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +18,21 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-from xivo_confgen.frontends.asterisk import AsteriskFrontend
+
+def format_ast_section(name):
+    return u'[%s]' % name
 
 
-frontends = {'asterisk': AsteriskFrontend}
+def format_ast_option(name, value):
+    return u'%s = %s' % (name, value)
+
+
+def format_ast_object_option(name, value):
+    return u'%s => %s' % (name, value)
+
+
+def format_none_as_empty(value):
+    if value is None:
+        return u''
+    else:
+        return value

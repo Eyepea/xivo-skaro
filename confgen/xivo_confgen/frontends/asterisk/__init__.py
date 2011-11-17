@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-__version__ = "$Revision$ $Date$"
+
 __author__ = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010-2011 Proformatique, Guillaume Bour <gbour@proformatique.com>
@@ -24,6 +24,8 @@ from xivo             import xivo_helpers
 
 from StringIO        import StringIO
 from xivo_confgen.frontend import Frontend
+from xivo_confgen.frontends.asterisk.voicemail import VoicemailConf
+
 
 class AsteriskFrontend(Frontend):
     def sip_conf(self):
@@ -240,82 +242,10 @@ class AsteriskFrontend(Frontend):
         return output.getvalue()
 
     def voicemail_conf(self):
-        o = StringIO()
-
-        ## section::general
-        print >> o, '[general]'
-        for item in self.backend.voicemail.all(commented=False, category='general'):
-            if 'var_name' in item and 'emailbody' in item['var_name']:
-                print >> o, self._gen_voicemail_emailbody(item)
-
-        print >> o, '\n[zonemessages]'
-        for item in self.backend.voicemail.all(commented=False, category='zonemessages'):
-            print >> o, self._gen_value_line(item['var_name'], item['var_val'])
-
-        self._vm_context = None
-        self._imapusers = []
-
-        for vm_context in self.backend.voicemails.all(commented=False, order='context'):
-            print >> o, self._gen_voicemail_context(vm_context)
-
-        print >> o, self._gen_voicemail_imapusers()
-
-        return o.getvalue()
-
-    def _gen_voicemail_emailbody(self, voicemail_config):
+        # XXX there might be a bit too much boilerplate
         output = StringIO()
-        try:
-            if voicemail_config['var_name'] == 'emailbody':
-                voicemail_config['var_val'] = voicemail_config['var_val'].replace('\n', '\\n')
-                print >> output, self._gen_value_line(voicemail_config['var_name'], voicemail_config['var_val'])
-        except KeyError:
-            pass
-
-        return output.getvalue()
-
-    def _gen_voicemail_context(self, vm_context):
-        excluded = ('uniqueid', 'context', 'mailbox', 'password', 'fullname',
-                    'email', 'pager', 'commented', 'imapuser', 'imappassword',
-                    'imapfolder',)
-
-        output = StringIO()
-        if vm_context['context'] != self._vm_context:
-            self._vm_context = vm_context['context']
-            print >> output, '\n[%s]' % vm_context['context']
-
-        print >> output, "%s => %s,%s,%s,%s,%s" % (
-            vm_context['mailbox'],
-            vm_context['password'],
-            self._get_is_not_none(vm_context, 'fullname'),
-            self._get_is_not_none(vm_context, 'email'),
-            self._get_is_not_none(vm_context, 'pager'),
-            '|'.join(["%s=%s" % (k, vm_context[k])
-                      for k in vm_context.iterkeys()
-                      if k not in excluded and vm_context[k] is not None])
-        )
-
-        if vm_context['imapuser'] is not None:
-            self._imapusers.append(vm_context)
-
-        return output.getvalue()
-
-    def _gen_voicemail_imapusers(self):
-        output = StringIO()
-        if self._imapusers:
-            print >> output, '\n[imapvm]'
-
-            for vm_context in self._imapusers:
-                print >> output, "%s => %s,%s,%s,%s,%s" % (
-                    vm_context['mailbox'],
-                    vm_context['password'],
-                    self._get_is_not_none(vm_context, 'fullname'),
-                    self._get_is_not_none(vm_context, 'email'),
-                    self._get_is_not_none(vm_context, 'pager'),
-                    '|'.join([self._gen_value_line(k, vm_context[k])
-                              for k in vm_context.iterkeys()
-                              if k in ('imapuser', 'imappassword', 'imapfolder') and vm_context[k] is not None])
-                )
-
+        voicemail_conf = VoicemailConf.new_from_backend(self.backend)
+        voicemail_conf.generate(output)
         return output.getvalue()
 
     def queues_conf(self):
@@ -778,4 +708,3 @@ class AsteriskFrontend(Frontend):
             line = re.sub('%%([^%]+)%%', varset, line)
             print >> o, prefix, line
         return o.getvalue()
-

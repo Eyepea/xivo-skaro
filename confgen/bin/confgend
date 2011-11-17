@@ -7,7 +7,8 @@ from twisted.internet           import reactor
 from twisted.internet.protocol  import Protocol, ServerFactory
 from twisted.application        import service, internet
 
-from xivo_confgen import backends, frontends, cache
+from xivo_confgen import backends, cache
+from xivo_confgen.frontends import frontends
 
 
 class Confgen(Protocol):
@@ -23,9 +24,6 @@ class Confgen(Protocol):
 			callback = callback.replace('.', '_')
 		except:
 			print "cannot split"; return
-
-		if not hasattr(frontends, frontend):
-			print "frontend not found"; return
 
 		if frontend not in self.factory.frontends:
 			print "callback not found"; return
@@ -56,7 +54,7 @@ class ConfgendFactory(ServerFactory):
 
 		self.frontends = {}
 		for f in frontnames:
-			self.frontends[f] = getattr(frontends, f)(backend, **frontendOpts(config, f))
+			self.frontends[f] = frontends[f](backend, **frontendOpts(config, f))
 
 		self.cache = cache.FileCache(cachedir)
 
