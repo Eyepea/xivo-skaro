@@ -83,9 +83,10 @@ switch($act)
 			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
-		for ($i=0;$i<$nb;$i++){
+		for ($i=0; $i<$nb; $i++)
+		{
 			$ref = &$list[$i];
-			$grp = $appgroup->get($ref['id']);
+			$appgroup->get($ref['id']);
 			$appgroup->delete();
 		}
 		$status = 200;

@@ -122,7 +122,8 @@ switch($act)
 			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
-		for ($i=0;$i<$nb;$i++){
+		for ($i=0; $i<$nb; $i++)
+		{
 			$ref = &$list[$i];
 			$appuser->get($ref['id']);
 			$appuser->delete();

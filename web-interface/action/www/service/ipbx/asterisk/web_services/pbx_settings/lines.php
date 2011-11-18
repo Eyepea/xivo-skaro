@@ -84,15 +84,36 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'deleteall':
+		$appline = &$ipbx->get_application('line');
+
+		if(($list = $appline->get_lines_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appline->get($ref['id']);
+			$appline->delete();
+		}
+		$status = 200;
+		$ipbx->discuss('xivo[userlist,update]');
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'search':
 		$appline = &$ipbx->get_application('line',null,false);
-		
+
 		if (($context = $_QRY->get('context')) !== null)
 			$context = $context;
-		
+
 		if (($protocols = $_QRY->get('protocol')) !== null)
 			$protocols = array($protocols);
-		
+
 		if (($free = $_QRY->get('free')) !== null)
 			$free = ((bool) $free);
 
@@ -109,10 +130,10 @@ switch($act)
 		$act = 'list';
 
 		$appline = &$ipbx->get_application('line',null,false);
-		
+
 		if (($protocols = $_QRY->get('protocol')) !== null)
 			$protocols = array($protocols);
-		
+
 		if (($free = $_QRY->get('free')) !== null)
 			$free = ((bool) $free);
 
