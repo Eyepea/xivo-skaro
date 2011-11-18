@@ -807,3 +807,6 @@ Oui
 
 ; fm_protocol-videosupport-opt(always)
 Toujours
+
+; no_ipbxinfos_found
+Aucune information IPBX disponible

@@ -33,7 +33,7 @@ $data 		= $this->get_var('queueskills');
 
 <div id="sb-list">
 <?php
-	$type = 'disp';
+	$type = 'row';
 	$count = $data?count($data):0;
 	$errdisplay = '';
 ?>
@@ -47,12 +47,12 @@ $data 		= $this->get_var('queueskills');
 				<th class="th-center"><?=$this->bbf('col_2');?></th>
 				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
-									  $this->bbf('col_add'),
+									  $this->bbf('col_queueskill-add'),
 									  'border="0"'),
 							   '#',
 							   null,
 							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
-							   $this->bbf('col_add'));?>
+							   $this->bbf('col_queueskill-add'));?>
 				</th>
 			</tr>
 			</thead>
@@ -72,7 +72,7 @@ $data 		= $this->get_var('queueskills');
 							'altkey'	=> 'id',
 							'empty'		=> true,
 							'optgroup'	=> array(
-								'key'		=> 'category', 
+								'key'		=> 'category',
 								'unique' 	=> true,
 							),
 							'selected'	=> $data[$i]['skillid'],

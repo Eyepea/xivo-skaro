@@ -1336,3 +1336,5 @@ Schedules:
 ; create_schedules
 Create a schedule
 
+; no_ipbxinfos_found
+No IPBX infos found

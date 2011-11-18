@@ -791,9 +791,12 @@ Horaires
 Horaires :
 
 ; fm_userfeatures_servicesgroup
-Groupde services : 
+Groupe de services : 
 
 ; col_line-add
+Ajouter une nouvelle ligne
+
+; col_line-add_free
 Ajouter une ligne existante
 
 ; col_rules_group-add
@@ -877,12 +880,11 @@ Personnalisé
 ; fm_type-opt(simul)
 Simultané
 
-; no_lines_free 
-Aucune ligne éxistante de libre
+; no_lines_free
+Aucune ligne existante disponible
 
 ; fm_lines_free
 Lignes disponible :
-
 
 ; fm_register-transport
 Transport : 
@@ -912,3 +914,6 @@ Asterisk: parkinglot
 
 ; no_linefeatures
 Aucune ligne
+
+; col_queueskill-add
+Ajouter une compétence

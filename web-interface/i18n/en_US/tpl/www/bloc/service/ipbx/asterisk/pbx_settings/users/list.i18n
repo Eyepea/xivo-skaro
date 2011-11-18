@@ -1,6 +1,9 @@
 ; col_fullname
 Full name
 
+; col_sort_fullname
+Sort by name
+
 ; col_protocol
 Protocol
 

@@ -845,11 +845,17 @@ Parking lot :
 
 ; hlp_fm_parkinglot
 
+; no_lines_free
+No free lines
+
 ; fm_lines_free
 Free lines: 
 
 ; fm_rules_group
 Add a new group: 
+
+; col_rules_group-add
+Add a group: 
 
 ; no_context_for_this_entity
 No context for this entity
@@ -896,8 +902,17 @@ Line (N°)
 ; col_line-device
 Device
 
+; col_line-add
+Add a new line
+
+; col_line-add_free
+Add an existing line
+
 ; fm_type-opt(simul)
 simul
 
 ; no_linefeatures
 No line
+
+; col_queueskill-add
+Add a queueskill

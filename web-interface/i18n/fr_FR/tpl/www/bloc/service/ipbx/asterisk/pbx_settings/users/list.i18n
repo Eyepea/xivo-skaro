@@ -1,6 +1,9 @@
 ; col_fullname
 Nom complet
 
+; col_sort_fullname
+Trier par nom
+
 ; col_protocol
 Protocole
 

@@ -43,7 +43,7 @@ $err = $this->get_var('error','linefeatures');
 		<label id="lb-lines_free" for="it-lines_free"><?=$this->bbf('fm_lines_free');?></label>
 	</span>
 	<span id="box-no_lines_free" class="b-nodisplay">
-		<?=$this->bbf('no_line_free');?>
+		<?=$this->bbf('no_lines_free');?>
 	</span>
 	<span id="box-list_lines_free">
 		<?=$form->select(array('paragraph'	=> false,
@@ -57,7 +57,7 @@ $err = $this->get_var('error','linefeatures');
 						'#lines',
 						null,
 						'id="lnk-add-row-line_free"',
-						$this->bbf('col_line-add'));?>
+						$this->bbf('col_line-add_free'));?>
 	</span>
 </p>
 
