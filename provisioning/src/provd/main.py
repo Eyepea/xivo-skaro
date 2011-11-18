@@ -387,6 +387,10 @@ class UTFFixedSysLogHandler(SysLogHandler):
             self.handleError(record)
 
 
+def _null_function(*args, **kwargs):
+    pass
+
+
 class ProvisioningServiceMaker(object):
     implements(IServiceMaker, IPlugin)
     
@@ -410,12 +414,10 @@ class ProvisioningServiceMaker(object):
         else:
             root_logger.setLevel(logging.INFO)
         # configure twisted.log module
-        observer = log.PythonLoggingObserver()
-        observer.start()
-        # XXX next line doesn't work, it seems impossible to completely
-        # disable twisted log observers when starting an app with twistd
-        # without resorting to ugly hacks
-        #log.startLoggingWithObserver(observer.emit, False)
+        # ugly hack to disable twistd logging, no sane way to do this
+        log.theLogPublisher.observers = [log.PythonLoggingObserver().emit]
+        log.addObserver = _null_function
+        log.removeObserver = _null_function
     
     def _read_config(self, options):
         logger.info('Reading application configuration')
