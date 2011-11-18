@@ -38,7 +38,7 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 __dialallowed__ = '[0-9*#+]'
 __specialextensions__ = ['s', 'BUSY']
 
-switch_originates = True
+switch_originates = False
 
 ## \class AMIClass
 # AMI definition in order to interact with the Asterisk AMI.
