@@ -34,5 +34,4 @@ pf_meetme_moderation
 pf_skill_queues
 pf_manager_inherit.patch
 pf_AgentCallbackLogin
-
-# digium patches
+pf_cel_pgsql_mem_leak
