@@ -101,7 +101,12 @@ class dwho_tpl
         if(dwho_has_len($namespace) === false)
             $namespace = $this->get_option('i18n_namespace');
 
-        return(dwho_i18n::babelfish($name,$args,$namespace));
+        $ret = dwho_i18n::babelfish($name,$args,$namespace);
+        if ($ret == $name) {
+            $bt = debug_backtrace();
+            $ret = '__missing_translation:'.$bt[0]['file'].':'.$ret.':';
+        }
+        return($ret);
     }
 
     function get_path()
