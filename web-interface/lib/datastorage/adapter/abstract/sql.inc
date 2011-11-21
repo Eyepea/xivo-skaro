@@ -1211,7 +1211,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
         else
             $column = $this->quote_identifier($table).'.'.$this->quote_identifier($column);
 
-        $func = (bool) $not === false ? 'LIKE' : 'NOT LIKE';
+        $func = (bool) $not === false ? 'ILIKE' : 'NOT LIKE';
 
         switch($format)
         {
