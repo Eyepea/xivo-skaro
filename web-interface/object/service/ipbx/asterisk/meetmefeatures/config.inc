@@ -254,7 +254,7 @@ $array['filter']['talkeroptimization'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['talkerdetection'] = array('bool' => true);
 $array['filter']['noplaymsgfirstenter'] = array('bool' => true);
-$array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
+$array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,99));
 $array['filter']['emailfrom'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['emailfromname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
