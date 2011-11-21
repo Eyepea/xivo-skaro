@@ -20,9 +20,9 @@
 dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('provd_plugin');
 
-$act = isset($_QR['act']) === true ? $_QR['act']  : 'list';
-$page    = dwho_uint($prefs->get('page', 1));
-$search  = strval($prefs->get('search', ''));
+$act = isset($_QR['act']) === true ? $_QR['act'] : 'list';
+$page = dwho_uint($prefs->get('page', 1));
+$search = strval($prefs->get('search', ''));
 
 $param = array();
 $param['act'] = $act;
@@ -38,17 +38,6 @@ $provdplugin = &$_XOBJ->get_module('provdplugin');
 
 switch($act)
 {
-	case 'update':
-	    $sysconfd = &$_XOBJ->get_module('sysconfd');
-		if ($provdplugin->update() === false
-		|| $sysconfd->request_get('/dhcpd_update') === false
-		|| $sysconfd->request_post('/services', array('isc-dhcp-server' => 'restart')) === false)
-			dwho_report::push('error',dwho_i18n::babelfish('error_during_update'));
-		else
-			dwho_report::push('info',dwho_i18n::babelfish('successfully_updated'));
-		$param['act'] = 'list';
-		$_QRY->go($_TPL->url('xivo/configuration/provisioning/plugin'),$param);
-		break;
 	case 'upgrade':
 		if (isset($_QR['id']) === false
 		|| $provdplugin->upgrade($_QR['id']) === false)

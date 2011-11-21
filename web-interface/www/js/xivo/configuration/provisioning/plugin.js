@@ -58,6 +58,11 @@ function init_install_plugin(id) {
 	init_installer(url, id);
 }
 
+function init_update_plugin() {
+	var url = '/xivo/configuration/ui.php/provisioning/plugin?act=update_plugin';
+	init_installer(url, null);
+}
+
 function init_installer(url, id) {
 	$('#box_installer').show();
 	$.get(url, function(data) {
@@ -69,15 +74,18 @@ function init_installer(url, id) {
 }
 
 function ajax_request_oip(url, plugin) {
-	$.get('/xivo/configuration/ui.php/provisioning/plugin?act=request_oip&id='
-			+ plugin + '&path=' + url, function(data) {
-		if (data === null)
-			return false;
-		if (data.indexOf("act=edit") > -1) {
-			$('#box_installer').hide();
-			top.location.href = data;
-		} else {
-			$('#box_installer').find('div').html(data);
+	if (plugin == null) {
+		uri = '/xivo/configuration/ui.php/provisioning/plugin?act=request_oip&path=' + url;
+	} else {
+		uri = '/xivo/configuration/ui.php/provisioning/plugin?act=request_oip&id=' + plugin + '&path=' + url;
+	}
+	$.get(uri, function(data) {
+		var str = data.split('::');
+		var box = $('#box_installer').find('div');
+		if (str[0] == 'redirecturi') {
+			box.hide();
+			top.location.href = str[1];
 		}
+		box.html(data);
 	});
 }

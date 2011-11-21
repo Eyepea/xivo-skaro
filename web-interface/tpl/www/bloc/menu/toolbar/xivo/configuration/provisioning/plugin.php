@@ -53,11 +53,11 @@ $dhtml->write_js($toolbar_js);
 	</div>
 </form><?php
 echo	$url->href_html($url->img_html('img/site/utils/update-manager.png',
-				       $this->bbf('toolbar_opt_update'),
-				       'id="toolbar-bt-update"
-					border="0"'),
-			'xivo/configuration/provisioning/plugin',
-			'act=update',
+						$this->bbf('toolbar_opt_update'),
+						'id="toolbar-bt-update"
+						border="0"'),
+			'#',
 			null,
+			'onclick="init_update_plugin();return(false);"',
 			$this->bbf('toolbar_opt_update'));
 ?>

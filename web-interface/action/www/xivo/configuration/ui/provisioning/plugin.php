@@ -25,6 +25,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $act = $_QRY->get('act');
 
+$code = 400;
 $provdplugin = &$_XOBJ->get_module('provdplugin');
 
 switch($act)
@@ -38,6 +39,17 @@ switch($act)
 		}
 
 		$_TPL->display('/xivo/configuration/provisioning/generic');
+		break;
+	case 'update_plugin':
+		$sysconfd = &$_XOBJ->get_module('sysconfd');
+		if (($location = $provdplugin->update()) === false
+		|| $sysconfd->request_get('/dhcpd_update') === false
+		|| $sysconfd->request_post('/services', array('isc-dhcp-server' => 'restart')) === false)
+		{
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+		die($location);
 		break;
 	case 'install_plugin':
 		if (isset($_QR['id']) === false
@@ -92,7 +104,6 @@ switch($act)
 			$http_response->send(true);
 		}
 		elseif (isset($_QR['path']) === false
-		|| isset($_QR['id']) === false
 		|| ($path = urldecode($_QR['path'])) === false
 		|| ($data = $provdplugin->request_oip($path)) === false
 		|| isset($data['status']) === false)
@@ -112,6 +123,7 @@ switch($act)
 			$http_response->send(true);
 		}
 
+		$code = 400;
 		$header = array_shift($out);
 		$nbout--;
 
@@ -148,20 +160,31 @@ switch($act)
 						break;
 					case 1:
 						$query = array();
-						$query['act'] = 'edit';
-						$query['id'] = $_QR['id'];
+						if (isset($_QR['id']) === true) {
+							$query['id'] = $_QR['id'];
+							$query['act'] = 'edit';
+						} else {
+							$_QR['id'] = '';
+						}
+
 						$q = $_QRY->build_query_str($query);
 						if ($str === 'success')
 						{
 							dwho_report::push('info',dwho_i18n::babelfish('successfully_installed',array($_QR['id'])));
 							$_SESSION['_report'] = dwho_report::encode();
-							die($_TPL->url('xivo/configuration/provisioning/plugin').'?'.$q);
+							$uri = $_TPL->url('xivo/configuration/provisioning/plugin').'?'.$q;
+							$msg = 'redirecturi::'.($uri);
+							$provdplugin->request_delete($path);
+							die($msg);
 						}
 						elseif ($str === 'fail')
 						{
 							dwho_report::push('error',dwho_i18n::babelfish('error_during_installation',array($_QR['id'])));
 							$_SESSION['_report'] = dwho_report::encode();
-							die($_TPL->url('xivo/configuration/provisioning/plugin').'?'.$q);
+							$uri = $_TPL->url('xivo/configuration/provisioning/plugin').'?'.$q;
+							$msg = 'redirecturi::'.($uri);
+							$provdplugin->request_delete($path);
+							die($msg);
 						}
 						$rs .= " $str";
 						break;
@@ -181,9 +204,9 @@ switch($act)
 
 		die($rs);
 		break;
-	default:
-		$http_response->set_status_line(400);
-		$http_response->send(true);
 }
+
+$http_response->set_status_line($code);
+$http_response->send(true);
 
 ?>
