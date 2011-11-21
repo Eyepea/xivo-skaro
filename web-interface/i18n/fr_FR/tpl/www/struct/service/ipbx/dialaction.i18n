@@ -252,3 +252,6 @@ Appel sortant :
 
 ; fm_dialaction_outcall-actionarg2
 Numéro destinataire : 
+
+; create_outcall
+Créer un appel sortant
