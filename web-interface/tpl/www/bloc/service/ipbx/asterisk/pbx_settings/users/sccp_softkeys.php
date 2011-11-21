@@ -36,6 +36,7 @@ $errdisplay = '';
 	<?= $this->bbf('softkey_event', $softkey); ?>:
 	<div class="sb-list">
 		<table>
+			<thead>
 			<tr class="sb-top">
 				<th class="th-left"><?=$this->bbf('softkey_order');?></th>
 				<th class="th-center"><?=$this->bbf('softkey_key');?></th>

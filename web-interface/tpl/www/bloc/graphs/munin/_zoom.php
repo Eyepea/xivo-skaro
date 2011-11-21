@@ -36,7 +36,6 @@ function bbf_format($ctx, $link)
 <div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
-		</span>
 		<span class="span-center"><?= bbf_format($this, $zoom); ?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>

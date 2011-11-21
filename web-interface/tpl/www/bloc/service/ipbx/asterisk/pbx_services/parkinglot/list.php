@@ -40,7 +40,7 @@ $page = $url->pager($pager['pages'],
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-parkinglot" method="post:" accept-charset="utf-8">
+<form action="#" name="fm-parkinglot" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
