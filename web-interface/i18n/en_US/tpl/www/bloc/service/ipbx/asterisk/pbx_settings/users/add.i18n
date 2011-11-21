@@ -908,6 +908,9 @@ Add a new line
 ; col_line-add_free
 Add an existing line
 
+; opt_line-delete
+Delete this line
+
 ; fm_type-opt(simul)
 simul
 

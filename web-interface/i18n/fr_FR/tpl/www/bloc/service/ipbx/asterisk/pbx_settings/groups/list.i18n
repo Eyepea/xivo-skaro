@@ -1,8 +1,14 @@
 ; col_name
 Nom
 
+; col_sort_name
+Trier par nom
+
 ; col_number
 Numéro
+
+; col_sort_number
+Trier par numéro
 
 ; col_number-users
 Nombre d'utilisateurs
