@@ -53,6 +53,16 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
+	
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
+	
+		return(parent::add($arr,$id));
+	}
 
 	function get($id,$delete=false)
 	{
