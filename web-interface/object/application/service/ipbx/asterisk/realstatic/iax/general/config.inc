@@ -243,7 +243,6 @@ $array['element']['shrinkcallerid'] = array();
 $array['element']['shrinkcallerid']['value'] = array('no','yes');
 $array['element']['shrinkcallerid']['default'] = 'yes';
 
-
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
@@ -291,5 +290,6 @@ $array['filter']['lagrqtime'] = array('cast' => 'uint','between' => array(0,60,5
 $array['filter']['nochecksums'] = array('bool' => true);
 $array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['calltokenoptional'] = array('set' => false,'chk' => 2);
+$array['filter']['shrinkcallerid'] = array('bool' => true);
 
 ?>
