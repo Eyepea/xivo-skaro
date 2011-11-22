@@ -291,5 +291,6 @@ $array['filter']['nochecksums'] = array('bool' => true);
 $array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['calltokenoptional'] = array('set' => false,'chk' => 2);
 $array['filter']['shrinkcallerid'] = array('bool' => true);
+$array['filter']['allowfwdownload'] = array('bool' => true);
 
 ?>
