@@ -268,11 +268,11 @@ $array['element']['smdienable']['default'] = 'no';
 $array['element']['smdienable']['set'] = true;
 
 $array['element']['externpassnotify'] = array();
-$array['element']['externpassnotify']['default'] = '';                                                                                                                                                    
+$array['element']['externpassnotify']['default'] = '';
 $array['element']['externpassnotify']['null'] = true;
 
 $array['element']['externpasscheck'] = array();
-$array['element']['externpasscheck']['default'] = ''; 
+$array['element']['externpasscheck']['default'] = '';
 $array['element']['externpasscheck']['null'] = true;
 
 $array['element']['directoryintro'] = array();
@@ -285,8 +285,8 @@ $array['element']['pollmailboxes']['default'] = 'no';
 $array['element']['pollmailboxes']['set'] = true;
 
 $array['element']['pollfreq'] = array();
-$array['element']['pollfreq']['value'] = range(0,600);
-$array['element']['pollfreq']['default'] = 30; 
+$array['element']['pollfreq']['value'] = range(1,600);
+$array['element']['pollfreq']['default'] = 30;
 
 $array['element']['imapgreetings'] = array();
 $array['element']['imapgreetings']['value'] = array('no','yes');
@@ -334,7 +334,7 @@ $array['element']['vm-reenterpassword'] = array();
 $array['element']['vm-reenterpassword']['default'] = '';
 $array['element']['vm-reenterpassword']['null'] = true;
 
-$array['element']['vm-mistmatch'] = array(); 
+$array['element']['vm-mistmatch'] = array();
 $array['element']['vm-mistmatch']['default'] = '';
 $array['element']['vm-mistmatch']['null'] = true;
 
@@ -455,14 +455,14 @@ $array['filter']['externpassnotify'] = array('set' => false,'chk' => 2,'maxlen' 
 $array['filter']['externpasscheck'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['directoryintro'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['pollmailboxes'] = array('bool' => true);
-$array['filter']['pollfreq'] = array('cast' => 'uint','between' => array(1,256));
+$array['filter']['pollfreq'] = array('cast' => 'uint','between' => array(1,600));
 $array['filter']['imapgreetings'] = array('bool' => true);
 $array['filter']['greetingsfolder'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['imapparentfolder'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['tz'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['hidefromdir'] = array('bool' => true);
 $array['filter']['messagewrap'] = array('bool' => true);
-$array['filter']['minpassword'] = array('cast' => 'uint','between' => array(1,256));
+$array['filter']['minpassword'] = array('cast' => 'uint','between' => array(0,10));
 $array['filter']['vm-password'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['vm-newpassword'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
 $array['filter']['vm-passchanged'] = array('set' => false,'chk' => 2,'maxlen' => 1024);
