@@ -221,7 +221,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 									       'border="0"'),
 								'#',
 								null,
-								'onclick="xivo_context_entity_enable_add(\'incall\',this);
+								'id="add_line_button" onclick="xivo_context_entity_enable_add(\'incall\',this);
 									  return(dwho.dom.free_focus());"',
 								$this->bbf('col_contextnumbers_incall-add'));?></th>
 		</tr>

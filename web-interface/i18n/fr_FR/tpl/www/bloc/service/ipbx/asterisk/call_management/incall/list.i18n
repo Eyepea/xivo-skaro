@@ -1,14 +1,26 @@
-; col_did
+; col_exten
 SDA
+
+; col_sort_exten
+Trier par SDA
 
 ; col_context
 Contexte
 
+; col_sort_context
+Trier par contexte
+
 ; col_destination
 Destination
 
+; col_sort_destination
+Trier par destination
+
 ; col_identity
 Identité
+
+; col_sort_identity
+Trier par identité
 
 ; incall_destination-none
 Aucune
