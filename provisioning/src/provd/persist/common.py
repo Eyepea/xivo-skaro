@@ -45,7 +45,7 @@ Here's examples of valid selector and the documents the selector will match:
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2011  Proformatique <technique@proformatique.com>
+    Copyright (C) 2011  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

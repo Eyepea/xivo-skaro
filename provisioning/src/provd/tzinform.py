@@ -4,7 +4,7 @@
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (c) 2010-2011  Proformatique <technique@proformatique.com>
+    Copyright (c) 2010-2011  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
