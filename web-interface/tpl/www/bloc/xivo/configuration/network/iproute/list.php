@@ -3,7 +3,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

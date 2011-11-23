@@ -8,7 +8,7 @@ Support the 6730i, 6731i, 6739i, 6751i, 6753i, 6755i, 6757i, 9143i and 9180i.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

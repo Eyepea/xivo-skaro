@@ -1,14 +1,14 @@
 # -*- coding: utf8 -*-
 """Threaded HTTP Server
 
-Copyright (C) 2007-2010  Proformatique
+Copyright (C) 2007-2010  Avencall
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;
-    Copyright (C) 2007-2010  Proformatique
+    Copyright (C) 2007-2010  Avencall
                                         All Rights Reserved
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
