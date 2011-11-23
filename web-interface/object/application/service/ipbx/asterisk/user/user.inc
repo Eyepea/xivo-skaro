@@ -719,8 +719,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			case 'asterisk':
 			break;
-			case 'exchange':
-				$this->_set_result_var('userfeatures','voicemailtype',null);
 			default:
 				$vmaction = 'none';
 				$this->_set_result_var('userfeatures','voicemailid',null);

@@ -133,9 +133,6 @@ Aucune
 ; fm_userfeatures_voicemailtype-opt(asterisk)
 Asterisk
 
-; fm_userfeatures_voicemailtype-opt(exchange)
-Exchange 2010
-
 ; fm_voicemail_option
 Messagerie vocale :
 

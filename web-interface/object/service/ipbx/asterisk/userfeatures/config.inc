@@ -39,7 +39,7 @@ $array['element']['pitchdirection']['default'] = '';
 $array['element']['pitchdirection']['null'] = true;
 
 $array['element']['voicemailtype'] = array();
-$array['element']['voicemailtype']['value'] = array('asterisk','exchange');
+$array['element']['voicemailtype']['value'] = array('asterisk');
 $array['element']['voicemailtype']['default'] = '';
 $array['element']['voicemailtype']['null'] = true;
 
