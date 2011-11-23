@@ -2,7 +2,7 @@
 
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
-    Copyright (C) 2010  Proformatique
+    Copyright (C) 2010  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
