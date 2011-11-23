@@ -653,6 +653,12 @@ Netmask
 ; fm_col_calllimits
 Call limits (per IP)
 
+; col_add
+Add a call limit
+
+; opt_disp-delete
+Delete this limit
+
 ; title_pernetwork_calllimits
 Call number limits per IP address ranges (limits take effect for every individual
 address within range)
