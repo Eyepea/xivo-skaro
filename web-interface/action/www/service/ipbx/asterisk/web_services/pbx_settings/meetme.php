@@ -67,6 +67,26 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'deleteall':
+		$appmeetme = &$ipbx->get_application('meetme');
+
+		if(($list = $appmeetme->get_meetme_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appmeetme->get($ref['id']);
+			$appmeetme->delete();
+		}
+		$status = 200;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'search':
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
