@@ -55,7 +55,7 @@ $array['element']['dbconfig']['create_auto']['checked'] = true;
 $array['element']['dbconfig']['create_auto']['null'] = true;
 
 $array['element']['dbconfig']['backend'] = array();
-$array['element']['dbconfig']['backend']['value'] = array('mysql','postgresql','sqlite');
+$array['element']['dbconfig']['backend']['value'] = array('postgresql');
 $array['element']['dbconfig']['backend']['default'] = 'postgresql';
 
 $array['element']['dbconfig']['sqlite'] = array();
