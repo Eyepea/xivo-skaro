@@ -630,7 +630,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 				$dialpattern['list'][$ref['id']] = $ref;
 			}
 		}
-		dwho_var_dump($dialpattern['list']);
 		$dialpattern['slt'] = dwho_array_intersect_key($rs,$dialpattern['list'],'id');
 
 		if($dialpattern['slt'] !== false)
