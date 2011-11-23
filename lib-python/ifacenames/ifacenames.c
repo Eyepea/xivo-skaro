@@ -1,6 +1,6 @@
 /*
     ifacenames - get logical interface names from /etc/network/interfaces
-    Copyright (C) 2008-2010  Proformatique
+    Copyright (C) 2008-2010  Avencall
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ static void version(void)
 
 	printf(
 "%s revision %d\n"
-"Copyright (C) 2008-2010  Proformatique\n"
+"Copyright (C) 2008-2010  Avencall\n"
 "\n"
 "This program is free software: you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
