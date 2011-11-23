@@ -237,7 +237,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		// schedule
 		if(array_key_exists('schedule_id', $arr))
 			$this->_set_result('schedule_id', intval($arr['schedule_id']));
-
 		return(($this->get_errnb() < 1));
 	}
 
@@ -619,25 +618,24 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if(($rs = $this->get_result('dialpattern')) === null
 		|| ($outcallid = dwho_ulongint($outcallid)) === 0)
 			return($rs);
-			
 		$context = (string) $this->get_result_var('outcall','context');
 		
 		$dialpattern = array();
 		$dialpattern['list'] = array();
-		$infolist = $this->_info['dialpattern'];
-		for($i = 0;$i < count($infolist);$i++)
+		if(($infolist = $this->_info['dialpattern']) !== false)
 		{
-			$ref = &$infolist[$i];
-			$dialpattern['list'][$ref['id']] = $ref;
+			for($i = 0;$i < count($infolist);$i++)
+			{
+				$ref = &$infolist[$i];
+				$dialpattern['list'][$ref['id']] = $ref;
+			}
 		}
-	
+		dwho_var_dump($dialpattern['list']);
 		$dialpattern['slt'] = dwho_array_intersect_key($rs,$dialpattern['list'],'id');
 
 		if($dialpattern['slt'] !== false)
 			$dialpattern['list'] = dwho_array_diff_key($dialpattern['list'],$dialpattern['slt']);
-
-		if(empty($dialpattern['list']) === false
-		&& ($nb = count($dialpattern['list'])) > 0)
+		if(empty($dialpattern['list']) === false && ($nb = count($dialpattern['list'])) > 0)
 		{
 			$dialpattern_list = array_values($dialpattern['list']);
 			for($i = 0;$i < $nb;$i++)
@@ -651,7 +649,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					return(false);
 			}
 		}
-	
 		$errnb = 0;
 		$error = array();
 		$res = array();
