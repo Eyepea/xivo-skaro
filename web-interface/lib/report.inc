@@ -96,7 +96,7 @@ abstract class dwho_report {
 		krsort($self);
 
 		$return = '';
-		$return .= '<div class="xivo-'.$type.' xivo-messages">';
+		$return .= '<div id="report-xivo-'.$type.'" class="xivo-'.$type.' xivo-messages">';
 		$return .= '<ul>';
 		foreach($self as $k => $v)
 		{
