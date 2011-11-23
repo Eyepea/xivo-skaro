@@ -32,7 +32,7 @@ $array['element']['confno'] = array();
 $array['element']['confno']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
 
 $array['element']['admin_typefrom'] = array();
 $array['element']['admin_typefrom']['value'] = array('none','internal','external','undefined');
