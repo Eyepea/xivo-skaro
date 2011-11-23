@@ -1,8 +1,14 @@
 ; col_name
 Nom
 
+; col_sort_name
+Trier par nom
+
 ; col_confno
 Numéro
+
+; col_sort_confno
+Trier par numéro
 
 ; col_pin
 Code PIN
