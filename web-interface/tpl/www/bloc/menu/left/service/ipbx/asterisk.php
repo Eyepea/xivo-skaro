@@ -46,20 +46,22 @@ $dhtml = &$this->get_module('dhtml');
 						'service/ipbx/general_settings/iax'),
 				'</dd>';
 		endif;
-
+/*
 		if(xivo_user::chk_acl('general_settings','sccp') === true):
 			echo	'<dd id="mn-general-settings--sccp">',
 				$url->href_html($this->bbf('mn_left_generalsettings-sccp'),
 						'service/ipbx/general_settings/sccp'),
 				'</dd>';
 		endif;
-
+*/
+/*
 		if(xivo_user::chk_acl('general_settings','dundi') === true):
 			echo	'<dd id="mn-general-settings--dundi">',
 				$url->href_html($this->bbf('mn_left_generalsettings-dundi'),
 						'service/ipbx/general_settings/dundi'),
 				'</dd>';
 		endif;
+*/
 /*
 		if(xivo_user::chk_acl('general_settings','dahdi') === true):
 			echo	'<dd id="mn-general-settings--dahdi">',
@@ -88,14 +90,14 @@ $dhtml = &$this->get_module('dhtml');
 						'service/ipbx/general_settings/advanced'),
 				'</dd>';
 		endif;
-
+/*
 		if(xivo_user::chk_acl('general_settings','outboundmwi') === true):
 			echo	'<dd id="mn-general-settings--outboundmwi">',
 				$url->href_html($this->bbf('mn_left_generalsettings-outboundmwi'),
 						'service/ipbx/general_settings/outboundmwi'),
 				'</dd>';
 		endif;
-
+*/
 		echo	'</dl>';
 	endif;
 
@@ -243,7 +245,7 @@ $dhtml = &$this->get_module('dhtml');
 
 		echo	'</dl>';
 	endif;
-
+/*
 	if(xivo_user::chk_acl('dundi') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_dundi'),'</dt>';
 
@@ -263,7 +265,8 @@ $dhtml = &$this->get_module('dhtml');
 
 		echo	'</dl>';
 	endif;
-
+*/
+	/*
 	if(xivo_user::chk_acl('cost_center') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_cost_center'),'</dt>';
 
@@ -285,7 +288,7 @@ $dhtml = &$this->get_module('dhtml');
 
 		echo	'</dl>';
 	endif;
-
+*/
 	if(xivo_user::chk_acl('pbx_services') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxservices'),'</dt>';
 
