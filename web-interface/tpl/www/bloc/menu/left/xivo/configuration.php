@@ -41,11 +41,15 @@ $dhtml = &$this->get_module('dhtml');
 							      'xivo/configuration/manage/entity',
 							      'act=list');?>
 			</dd>
+<?php
+/*
 			<dd id="mn-manage--server">
 				<?=$url->href_html($this->bbf('mn_left_manage-server'),
 						   'xivo/configuration/manage/server',
 						   'act=list');?>
 			</dd>
+*/
+?>
 <?php
 /* LDAP - COMMENTED
 			<dd id="mn-manage--ldapserver">
