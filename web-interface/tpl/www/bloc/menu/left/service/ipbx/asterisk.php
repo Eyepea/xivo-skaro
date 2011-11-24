@@ -204,7 +204,7 @@ $dhtml = &$this->get_module('dhtml');
 						'act=list'),
 				'</dd>';
 		endif;
-
+/*
 		if(xivo_user::chk_acl('call_management','voicemenu') === true):
 			echo	'<dd id="mn-call-management--voicemenu">',
 				$url->href_html($this->bbf('mn_left_callmanagement-voicemenu'),
@@ -212,7 +212,7 @@ $dhtml = &$this->get_module('dhtml');
 						'act=list'),
 				'</dd>';
 		endif;
-
+*/
 		echo	'</dl>';
 	endif;
 
