@@ -3,7 +3,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011  Avencall'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,7 @@ AMI_REQUESTS = [
     'sccp reload',
     'sip reload',
     'moh reload',
+    'iax2 reload',
     'module reload',
     'module reload app_queue.so',
     'module reload chan_agent.so',
@@ -89,8 +90,6 @@ class WEBI(Interfaces):
         multimsg = msg.replace('\r', '').split(self.sep)
         clireply = []
         closemenow = True
-        
-        print 'msg:', msg
 
         for iusefulmsg in multimsg:
             usefulmsg = iusefulmsg.strip()

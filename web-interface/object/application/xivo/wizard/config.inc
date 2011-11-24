@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ $array['element']['dbconfig']['create_auto']['checked'] = true;
 $array['element']['dbconfig']['create_auto']['null'] = true;
 
 $array['element']['dbconfig']['backend'] = array();
-$array['element']['dbconfig']['backend']['value'] = array('mysql','postgresql','sqlite');
+$array['element']['dbconfig']['backend']['value'] = array('postgresql');
 $array['element']['dbconfig']['backend']['default'] = 'postgresql';
 
 $array['element']['dbconfig']['sqlite'] = array();

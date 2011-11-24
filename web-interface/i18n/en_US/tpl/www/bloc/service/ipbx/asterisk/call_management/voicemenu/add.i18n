@@ -448,15 +448,6 @@ Handup (h)
 ; fm_dialaction_actiontype-opt(queueskill|Asterisk)
 Queue skills
 
-; fm_dialaction_queueskill-skill
-Queue skill : 
-
-; fm_dialaction_queueskill-varname
-Variable name : 
-
-; fm_dialaction_queueskillrule-name
-Rule : 
-
 ; fm_dialaction_actiontype-opt(queueskillrule|Asterisk)
 Queue skill rule
 

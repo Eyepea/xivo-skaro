@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011  Avencall'
 __author__    = 'Corentin Le Gall'
 
 """

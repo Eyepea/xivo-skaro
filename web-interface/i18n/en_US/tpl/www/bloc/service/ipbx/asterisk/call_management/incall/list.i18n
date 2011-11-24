@@ -1,14 +1,26 @@
-; col_did
+; col_exten
 DID
+
+; col_sort_exten
+Sort by DID
 
 ; col_context
 Context
 
+; col_sort_context
+Sort by context
+
 ; col_destination
 Destination
 
+; col_sort_destination
+Sort by destination
+
 ; col_identity
 Identity
+
+; col_sort_identity
+Sort by identity
 
 ; incall_type-endcall
 End call

@@ -1,4 +1,0 @@
-
-ALTER DATABASE `asterisk` DEFAULT CHARACTER SET utf8;
-ALTER DATABASE `asterisk` DEFAULT COLLATE utf8_general_ci;
-

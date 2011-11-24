@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ $array['element']['confno'] = array();
 $array['element']['confno']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
 
 $array['element']['admin_typefrom'] = array();
 $array['element']['admin_typefrom']['value'] = array('none','internal','external','undefined');
@@ -254,7 +254,7 @@ $array['filter']['talkeroptimization'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['talkerdetection'] = array('bool' => true);
 $array['filter']['noplaymsgfirstenter'] = array('bool' => true);
-$array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
+$array['filter']['maxusers'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,99));
 $array['filter']['emailfrom'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['emailfromname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);

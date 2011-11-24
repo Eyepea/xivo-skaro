@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,6 +52,16 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		$data['deleted'] = (bool) $data['deleted'];
 
 		return($data);
+	}
+	
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
+	
+		return(parent::add($arr,$id));
 	}
 
 	function get($id,$delete=false)

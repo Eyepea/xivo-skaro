@@ -641,6 +641,12 @@ Masque réseau
 ; fm_col_calllimits
 Nombre max d'appels (par IP)
 
+; col_add
+Ajouter une limite d'appels
+
+; opt_disp-delete
+Supprimer cette limite
+
 ; title_pernetwork_calllimits
 Limitation du nombre d'appels par sous-réseau (la limite vaut pour chaque IP du sous-réseau) :
 

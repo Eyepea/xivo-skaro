@@ -3,7 +3,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011  Avencall'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 __dialallowed__ = '[0-9*#+]'
 __specialextensions__ = ['s', 'BUSY']
 
-switch_originates = True
+switch_originates = False
 
 ## \class AMIClass
 # AMI definition in order to interact with the Asterisk AMI.
@@ -533,16 +533,15 @@ class AMIClass:
         except Exception:
             return False
 
-    def txfax(self, faxdir, faxid, userid, callerid, number, context):
+    def txfax(self, faxpath, userid, callerid, number, context):
         # originate a call btw src and dst
         # src will ring first, and dst will ring when src responds
         try:
             ret = self.sendcommand('Originate', [('Channel', 'Local/%s@%s' % (number, context)),
                                                  ('CallerID', callerid),
-                                                 ('Variable', 'FAXDIR=%s' % faxdir),
-                                                 ('Variable', 'FAXID=%s' % faxid),
+                                                 ('Variable', 'XIVO_FAX_PATH=%s' % faxpath),
                                                  ('Variable', 'XIVO_USERID=%s' % userid),
-                                                 ('Context', 'macro-txfax'),
+                                                 ('Context', 'txfax'),
                                                  ('Exten', 's'),
                                                  ('Async', 'true'),
                                                  ('Priority', '1')])

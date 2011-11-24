@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ abstract class dwho_report {
 		krsort($self);
 
 		$return = '';
-		$return .= '<div class="xivo-'.$type.' xivo-messages">';
+		$return .= '<div id="report-xivo-'.$type.'" class="xivo-'.$type.' xivo-messages">';
 		$return .= '<ul>';
 		foreach($self as $k => $v)
 		{

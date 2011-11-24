@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -209,14 +209,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 
 		if (isset($decoded['Location']) === false)
 			return(false);
-		/*
-		$this->request_delete($decoded['Location']);
 
-		if ($this->_status_code !== 204)
-			return(false);
-
-		return(true);
-		*/
 		return(urlencode($decoded['Location']));
 	}
 
@@ -296,12 +289,15 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		if (isset($decoded['Location']) === false)
 			return(false);
 
+		return(urlencode($decoded['Location']));
+		/*
 		$this->request_delete($decoded['Location']);
 
 		if ($this->_status_code !== 204)
 			return(false);
 
 		return(true);
+		*/
 	}
 }
 

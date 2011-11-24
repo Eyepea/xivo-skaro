@@ -4,11 +4,11 @@ Appels entrants > Ajouter
 ; smenu_general
 Général
 
-; smenu_faxdetect
-Détection de Fax
-
 ; smenu_rightcalls
 Droits d'appels
+
+; smenu_faxdetect
+Détection de Fax
 
 ; fm_incall_exten
 SDA :

@@ -8,7 +8,7 @@ Support the T12, T20, T22, T26 and T28.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2011  Proformatique <technique@proformatique.com>
+    Copyright (C) 2011  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,8 +1,14 @@
 ; col_name
 Name
 
+; col_sort_name
+Sort by name
+
 ; col_confno
 Number
+
+; col_sort_confno
+Sort by number
 
 ; col_pin
 PIN code

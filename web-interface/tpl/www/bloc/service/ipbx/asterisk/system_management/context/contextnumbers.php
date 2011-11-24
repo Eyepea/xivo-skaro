@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ $err = $this->get_var('error','contextnumbers',$type);
 								       'border="0"'),
 							'#',
 							null,
-							'onclick="xivo_context_entity_enable_add(\''.$type.'\',this);
+							'id="add_line_button" onclick="xivo_context_entity_enable_add(\''.$type.'\',this);
 								  return(dwho.dom.free_focus());"',
 							$this->bbf('col_contextnumbers_'.$type.'-add'));?></th>
 	</tr>

@@ -97,6 +97,9 @@ Parcourir
 ; opt_delete
 Supprimer
 
+; opt_upgrade
+Mettre à jour
+
 ; fm_bool-opt(1)
 Oui
 
@@ -166,13 +169,14 @@ par année
 ; next
 suivant »
 
-
 ; fm_bool-opt(on)
 Activé
 
 ; fm_bool-opt(off)
 Désactivé
 
+; fm_bool-opt(full)
+Tout
 
 ; fm_digit(1)
 1

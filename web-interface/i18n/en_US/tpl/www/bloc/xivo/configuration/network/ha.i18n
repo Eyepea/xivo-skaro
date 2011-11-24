@@ -243,7 +243,7 @@ Postgresql
 ; fm_ha_service_pf-xivo-agid
 XiVO Agid
 
-; fm_ha_service_pf-xivo-confgend
+; fm_ha_service_xivo-confgend
 XiVO Confgend
 
 ; fm_ha_service_pf-xivo-cti-server

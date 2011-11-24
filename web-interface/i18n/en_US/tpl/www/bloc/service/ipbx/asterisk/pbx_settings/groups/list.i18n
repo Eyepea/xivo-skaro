@@ -1,8 +1,14 @@
 ; col_name
 Name
 
+; col_sort_name
+Sort by name
+
 ; col_number
 Number
+
+; col_sort_number
+Sort by number
 
 ; col_number-users
 Number of users

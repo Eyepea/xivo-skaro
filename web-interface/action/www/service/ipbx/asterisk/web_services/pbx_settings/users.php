@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -109,6 +109,32 @@ switch($act)
 		}
 		else
 			$status = 500;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
+	case 'deleteall':
+		$appuser = &$ipbx->get_application('user');
+
+		if(($list = $appuser->get_users_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appuser->get($ref['id']);
+			$appuser->delete();
+		}
+		$status = 200;
+		$ipbx->discuss(array('dialplan reload',
+							'xivo[userlist,update]',
+							'xivo[phonelist,update]',
+							'module reload app_queue.so',
+							'sip reload'
+		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

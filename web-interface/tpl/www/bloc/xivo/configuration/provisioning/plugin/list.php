@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ $page = $url->pager($pager['pages'],
 			<?=dwho_htmlen(dwho_trunc($ref['name'],25,'...',false));?>
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($ref['description']);?>">
-			<?=dwho_htmlen(dwho_trunc($ref['description'],50,'...',false));?>
+			<?=dwho_htmlen(dwho_trunc($ref['description'],65,'...',false));?>
 		</td>
 		<td>
 			<?=$version?>

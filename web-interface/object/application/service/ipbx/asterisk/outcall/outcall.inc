@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -237,7 +237,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		// schedule
 		if(array_key_exists('schedule_id', $arr))
 			$this->_set_result('schedule_id', intval($arr['schedule_id']));
-
 		return(($this->get_errnb() < 1));
 	}
 
@@ -619,25 +618,23 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if(($rs = $this->get_result('dialpattern')) === null
 		|| ($outcallid = dwho_ulongint($outcallid)) === 0)
 			return($rs);
-			
 		$context = (string) $this->get_result_var('outcall','context');
 		
 		$dialpattern = array();
 		$dialpattern['list'] = array();
-		$infolist = $this->_info['dialpattern'];
-		for($i = 0;$i < count($infolist);$i++)
+		if(($infolist = $this->_info['dialpattern']) !== false)
 		{
-			$ref = &$infolist[$i];
-			$dialpattern['list'][$ref['id']] = $ref;
+			for($i = 0;$i < count($infolist);$i++)
+			{
+				$ref = &$infolist[$i];
+				$dialpattern['list'][$ref['id']] = $ref;
+			}
 		}
-	
 		$dialpattern['slt'] = dwho_array_intersect_key($rs,$dialpattern['list'],'id');
 
 		if($dialpattern['slt'] !== false)
 			$dialpattern['list'] = dwho_array_diff_key($dialpattern['list'],$dialpattern['slt']);
-
-		if(empty($dialpattern['list']) === false
-		&& ($nb = count($dialpattern['list'])) > 0)
+		if(empty($dialpattern['list']) === false && ($nb = count($dialpattern['list'])) > 0)
 		{
 			$dialpattern_list = array_values($dialpattern['list']);
 			for($i = 0;$i < $nb;$i++)
@@ -651,7 +648,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					return(false);
 			}
 		}
-	
 		$errnb = 0;
 		$error = array();
 		$res = array();
@@ -796,7 +792,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->delete_outcall() === false
+		if($this->_delete_dialpattern($this->_info['dialpattern'], $this->_info['outcall']['context']) === false
+		|| $this->delete_outcall() === false
 		|| $this->delete_outcalltrunk() === false
 		|| $this->delete_outcalldundipeer() === false
 		|| $this->delete_rightcall() === false
@@ -816,13 +813,31 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
-
+		
 		$r = $this->_outcall->delete($this->_info['outcall']['id']);
 
 		if($this->_status === 'delete')
 			$this->_return['outcall'] = $r;
 
 		return($r);
+	}
+	
+	function _delete_dialpattern($patterns,$context)
+	{
+		if(empty($patterns) === true)
+			return(true);
+		for($i = 0;$i < count($patterns);$i++)
+		{
+			$ref = &$patterns[$i];
+
+			if (isset($ref['id']) === true
+				&& $this->_dialpattern->get($ref['id'],$context) !== false
+				&& $this->_dialpattern->delete() !== false)
+				continue;
+			else
+				return(false);
+		}
+
 	}
 
 	function delete_outcalldundipeer()

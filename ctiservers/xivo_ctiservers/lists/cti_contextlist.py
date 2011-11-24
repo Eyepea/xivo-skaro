@@ -3,7 +3,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date: 2011-04-07 15:00:27 +0200 (Thu, 07 Apr 2011) $'
-__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011  Avencall'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify

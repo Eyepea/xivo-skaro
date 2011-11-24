@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,6 +70,27 @@ switch($act)
 		}
 		else
 			$status = 500;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
+	case 'deleteall':
+		$appgroup = &$ipbx->get_application('group');
+
+		if(($list = $appgroup->get_groups_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appgroup->get($ref['id']);
+			$appgroup->delete();
+		}
+		$status = 200;
+		$ipbx->discuss('xivo[grouplist,update]');
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

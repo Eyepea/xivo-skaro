@@ -685,9 +685,6 @@ None
 ; fm_linefeatures_voicemailtype-opt(asterisk)
 Asterisk
 
-; fm_linefeatures_voicemailtype-opt(exchange)
-Exchange
-
 ; fm_voicemail_option
 Option:
 
@@ -1336,3 +1333,5 @@ Schedules:
 ; create_schedules
 Create a schedule
 
+; no_ipbxinfos_found
+No IPBX infos found

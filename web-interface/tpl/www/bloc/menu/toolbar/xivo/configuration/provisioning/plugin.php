@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,11 +53,11 @@ $dhtml->write_js($toolbar_js);
 	</div>
 </form><?php
 echo	$url->href_html($url->img_html('img/site/utils/update-manager.png',
-				       $this->bbf('toolbar_opt_update'),
-				       'id="toolbar-bt-update"
-					border="0"'),
-			'xivo/configuration/provisioning/plugin',
-			'act=update',
+						$this->bbf('toolbar_opt_update'),
+						'id="toolbar-bt-update"
+						border="0"'),
+			'#',
 			null,
+			'onclick="init_update_plugin();return(false);"',
 			$this->bbf('toolbar_opt_update'));
 ?>

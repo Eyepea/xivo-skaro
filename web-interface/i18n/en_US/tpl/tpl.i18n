@@ -25,23 +25,17 @@ Synchronize
 ; toolbar_adv_menu_select-all
 Select all
 
-; toolbar_fm_search
-Search
+; toolbar_adv_menu_install
+Install
+
+; toolbar_adv_menu_uninstall
+Uninstall
 
 ; toolbar_opt_update
 Update
 
-; toolbar_opt_add
-Add
-
-; toolbar_opt_delete
-Delete
-
-; no_row
-No row
-
-; toolbar_opt_advanced
-Advanced mode
+; toolbar_fm_search
+Search
 
 ; autoprov_validate
 Validate
@@ -49,8 +43,29 @@ Validate
 ; autoprov_cancel
 Cancel
 
+; col_row-add
+Add a line
+
+; opt_row-delete
+Delete line
+
+; no_row
+No entry
+
+; toolbar_opt_add
+Add
+
+; toolbar_opt_delete
+Delete
+
+; toolbar_opt_advanced
+Advanced mode
+
 ; col_action
 Action
+
+; autoprov_validate
+Validate
 
 ; opt_synchronize
 Synchronize
@@ -64,20 +79,26 @@ Install
 ; opt_uninstall
 Uninstall
 
-; col_row-add
-Add a line
-
-; opt_row-delete
-Delete a line
-
 ; opt_uninstall_confirm
 Confirm uninstall?
+
+; opt_add
+Add
 
 ; opt_modify
 Edit
 
+; opt_acl
+Access rights
+
+; opt_browse
+Browse
+
 ; opt_delete
 Delete
+
+; opt_upgrade
+Upgrade
 
 ; fm_bool-opt(1)
 Yes
@@ -97,14 +118,26 @@ Reject
 ; fm_bool-opt(silent)
 Silent
 
+; fm_bool-opt(always)
+always
+
+; fm_bool-opt(aes128)
+AES128
+
+; fm_success-save
+Save completed.
+
+; fm_error-save
+Error on saving form.
+
+; fm_bt-add
+Add
+
 ; fm_bt-save
 Save
 
 ; fm_bt-select
 Select
-
-; number_percent
-%.2f %%
 
 ; fm_bt-previous
 < Previous
@@ -115,8 +148,26 @@ Next >
 ; fm_bt-validate
 Validate
 
-; fm_bt-add
-Add
+; number_percent
+%.2f %%
+
+; per-day
+per day
+
+; per-week
+per week
+
+; per-month
+per month
+
+; per-year
+per year
+
+; previous
+« previous
+
+; next
+next »
 
 ; fm_bool-opt(on)
 Yes
@@ -153,7 +204,6 @@ Full
 
 ; fm_digit(9)
 9
-
 
 ; time-opt(0)
 Deactivated

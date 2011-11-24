@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ $calllimits = $modcalllimits->get_all();
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
-	
+
 	// calllimits
 	$calllimits = array();
 	$error  = array('calllimits' => array());
@@ -65,6 +65,7 @@ if(isset($_QR['fm_send']) === true)
 			$info = $rs['result'];
 			$error = $rs['error'];
 			$fm_save = empty($error);
+			$ipbx->discuss(array('iax2 reload'));
 		}
 	}
 }

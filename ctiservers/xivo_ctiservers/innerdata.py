@@ -1,7 +1,7 @@
 # vim: set fileencoding=utf-8 :
 # XiVO CTI Server
 
-__copyright__ = 'Copyright (C) 2007-2011 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2011  Avencall'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ class Safe:
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
                                  'availstate' : 'disconnected'
                                  },
-                     'phones' : { 'hintstatus' : '-2',
+                     'phones' : { 'hintstatus' : '4',
                                   'reg' : '',
                                   'channels' : [],
                                   'queues' : [],

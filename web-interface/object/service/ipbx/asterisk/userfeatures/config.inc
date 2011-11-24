@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ $array['element']['pitchdirection']['default'] = '';
 $array['element']['pitchdirection']['null'] = true;
 
 $array['element']['voicemailtype'] = array();
-$array['element']['voicemailtype']['value'] = array('asterisk','exchange');
+$array['element']['voicemailtype']['value'] = array('asterisk');
 $array['element']['voicemailtype']['default'] = '';
 $array['element']['voicemailtype']['null'] = true;
 

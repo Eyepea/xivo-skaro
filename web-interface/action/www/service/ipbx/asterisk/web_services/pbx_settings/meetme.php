@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Proformatique <technique@proformatique.com>
+# Copyright (C) 2006-2011  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,6 +63,26 @@ switch($act)
 			$status = 200;
 		else
 			$status = 500;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
+	case 'deleteall':
+		$appmeetme = &$ipbx->get_application('meetme');
+
+		if(($list = $appmeetme->get_meetme_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appmeetme->get($ref['id']);
+			$appmeetme->delete();
+		}
+		$status = 200;
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

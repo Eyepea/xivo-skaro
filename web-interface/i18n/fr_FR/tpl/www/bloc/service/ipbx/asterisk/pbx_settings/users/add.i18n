@@ -46,7 +46,7 @@ Vous ne pouvez pas changer lorsque des lignes sont associées à l'utilisateur.
 ; fm_userfeatures_picture
 Image utilisateur : 
 
-; fm_userfeatures_language 
+; fm_userfeatures_language
 Langue :
 
 ; fm_userfeatures_ringseconds
@@ -132,9 +132,6 @@ Aucune
 
 ; fm_userfeatures_voicemailtype-opt(asterisk)
 Asterisk
-
-; fm_userfeatures_voicemailtype-opt(exchange)
-Exchange 2010
 
 ; fm_voicemail_option
 Messagerie vocale :
@@ -791,9 +788,12 @@ Horaires
 Horaires :
 
 ; fm_userfeatures_servicesgroup
-Groupde services : 
+Groupe de services : 
 
 ; col_line-add
+Ajouter une nouvelle ligne
+
+; col_line-add_free
 Ajouter une ligne existante
 
 ; col_rules_group-add
@@ -877,12 +877,11 @@ Personnalisé
 ; fm_type-opt(simul)
 Simultané
 
-; no_lines_free 
-Aucune ligne éxistante de libre
+; no_lines_free
+Aucune ligne existante disponible
 
 ; fm_lines_free
 Lignes disponible :
-
 
 ; fm_register-transport
 Transport : 
@@ -912,3 +911,6 @@ Asterisk: parkinglot
 
 ; no_linefeatures
 Aucune ligne
+
+; col_queueskill-add
+Ajouter une compétence
