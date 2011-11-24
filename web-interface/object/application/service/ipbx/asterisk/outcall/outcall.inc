@@ -792,7 +792,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->delete_outcall() === false
+		if($this->_delete_dialpattern($this->_info['dialpattern'], $this->_info['outcall']['context']) === false
+		|| $this->delete_outcall() === false
 		|| $this->delete_outcalltrunk() === false
 		|| $this->delete_outcalldundipeer() === false
 		|| $this->delete_rightcall() === false
@@ -812,13 +813,31 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
-
+		
 		$r = $this->_outcall->delete($this->_info['outcall']['id']);
 
 		if($this->_status === 'delete')
 			$this->_return['outcall'] = $r;
 
 		return($r);
+	}
+	
+	function _delete_dialpattern($patterns,$context)
+	{
+		if(empty($patterns) === true)
+			return(true);
+		for($i = 0;$i < count($patterns);$i++)
+		{
+			$ref = &$patterns[$i];
+
+			if (isset($ref['id']) === true
+				&& $this->_dialpattern->get($ref['id'],$context) !== false
+				&& $this->_dialpattern->delete() !== false)
+				continue;
+			else
+				return(false);
+		}
+
 	}
 
 	function delete_outcalldundipeer()
