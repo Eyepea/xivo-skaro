@@ -24,7 +24,7 @@ $prefs = new dwho_prefs('devices');
 $act     = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
-$sort    = $prefs->flipflop('sort', 'name');
+$sort    = $prefs->flipflop('sort', 'ip');
 
 $param = array();
 $param['act'] = 'list';
@@ -235,8 +235,8 @@ switch($act)
 		$appdevice = &$ipbx->get_application('device');
 
 		$order = array();
-		if($sort[1] == 'name')
-			$order['name'] = $sort[0];
+		if($sort[1] == 'ip')
+			$order['ip'] = $sort[0];
 		else
 			$order[$sort[1]] = $sort[0];
 
