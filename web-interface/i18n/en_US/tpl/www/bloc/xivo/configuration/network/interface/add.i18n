@@ -51,7 +51,7 @@ Netmask:
 Broadcast:
 
 ; fm_gateway
-Gateway:
+Default gateway:
 
 ; fm_mtu
 MTU:
