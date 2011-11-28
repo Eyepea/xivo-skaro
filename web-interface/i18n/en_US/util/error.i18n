@@ -48,3 +48,6 @@ Number is out of context interval
 
 ; already_exist
 %s already exists
+
+; default_gateway_already_exist
+A default gateway already exists on the interface %s

@@ -16,6 +16,9 @@ Method
 ; col_address
 Address
 
+; col_gateway
+Gateway
+
 ; col_vlanid
 VLAN ID
 

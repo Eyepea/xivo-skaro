@@ -722,6 +722,31 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			return(false);
 		}
 
+		if (dwho_has_len($arr['gateway']))
+		{
+			$netiface = $this->_sysconfd->request_get('/netiface');
+			$gatexist = array();
+			foreach ($netiface as $interfaces => $netinfos)
+			{
+				if (isset($netinfos['gateway'])
+				&& dwho_has_len($netinfos['gateway'])
+				&& $arr['gateway'] !== $netinfos['gateway'])
+				{
+					$gatexist['interfaces'] = $interfaces;
+					$gatexist['gateway'] = $netinfos['gateway'];
+					break;
+				}
+			}
+			if (count($gatexist) > 0)
+			{
+				$this->_set_result('netiface', $arr);
+				$this->_set_error('netiface', array('gateway' =>
+					dwho_i18n::babelfish('default_gateway_already_exist',
+						array($gatexist['interfaces']))));
+				return(false);
+			}
+		}
+
 		$arr['hwtypeid'] = 1;
 
 		if(is_array($this->_info) === true
