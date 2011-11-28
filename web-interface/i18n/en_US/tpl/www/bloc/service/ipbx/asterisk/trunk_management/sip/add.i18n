@@ -234,6 +234,15 @@ Autoframing :
 ; fm_protocol_videosupport
 Video support :
 
+; fm_protocol-videosupport-opt(no)
+No
+
+; fm_protocol-videosupport-opt(yes)
+Yes
+
+; fm_protocol-videosupport-opt(always)
+Always
+
 ; fm_protocol_outboundproxy
 Outbound proxy : 
 

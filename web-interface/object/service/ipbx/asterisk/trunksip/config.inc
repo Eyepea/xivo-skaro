@@ -123,7 +123,7 @@ $array['element']['usereqphone']['default'] = '';
 $array['element']['usereqphone']['null'] = true;
 
 $array['element']['videosupport'] = array();
-$array['element']['videosupport']['value'] = array(1,0);
+$array['element']['videosupport']['value'] = array('no','yes','always');
 $array['element']['videosupport']['default'] = '';
 $array['element']['videosupport']['null'] = true;
 
@@ -432,7 +432,7 @@ $array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('n
 $array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','yes','never','route'));
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['videosupport'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','always'));
 $array['filter']['trustrpid'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['sendrpid'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['allowsubscribe'] = array('set' => false,'chk' => 2,'bool' => true);

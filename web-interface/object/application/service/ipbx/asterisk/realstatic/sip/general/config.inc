@@ -25,11 +25,6 @@ $array['element']['bindport'] = array();
 $array['element']['bindport']['default'] = 5060;
 $array['element']['bindport']['setdef'] = true;
 
-$array['element']['videosupport'] = array();
-$array['element']['videosupport']['value'] = array('no','yes');
-$array['element']['videosupport']['default'] = 'no';
-$array['element']['videosupport']['set'] = true;
-
 $array['element']['autocreatepeer'] = array();
 $array['element']['autocreatepeer']['value'] = array('no','yes');
 $array['element']['autocreatepeer']['default'] = 'no';
@@ -653,10 +648,10 @@ $array['element']['stunaddr']['null']     = true;
 
 $array['element']['directmedia'] = array();
 $array['element']['directmedia']['value']    = array(
-	'yes'          => 'yes', 
-	'no'           => 'no', 
+	'yes'          => 'yes',
+	'no'           => 'no',
 	'nonat'        => 'nonat',
-	'update'       => 'update', 
+	'update'       => 'update',
 	'update,nonat' => 'update,nonat');
 $array['element']['directmedia']['default']  = 'yes';
 $array['element']['directmedia']['null']     = true;
@@ -747,7 +742,6 @@ $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint',
 $array['filter']['udpbindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
 				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)),
 				     'maxlen'		=> 64);
-$array['filter']['videosupport'] = array('bool' => true);
 $array['filter']['autocreatepeer'] = array('bool' => true);
 $array['filter']['allowguest'] = array('bool' => true);
 $array['filter']['allowsubscribe'] = array('bool' => true);

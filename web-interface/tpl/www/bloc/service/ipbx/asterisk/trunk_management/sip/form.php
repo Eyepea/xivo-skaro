@@ -382,7 +382,7 @@ endif;
 				    'labelid'	=> 'protocol-videosupport',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'bbf'	=> 'fm_bool-opt',
+				    'bbf'	=> 'fm_protocol-videosupport-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['videosupport']['default'],
 				    'selected'	=> $info['protocol']['videosupport']),

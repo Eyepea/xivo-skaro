@@ -172,6 +172,15 @@ Frame automatique :
 ; fm_protocol_videosupport
 Support vidéo :
 
+; fm_protocol-videosupport-opt(no)
+Non
+
+; fm_protocol-videosupport-opt(yes)
+Oui
+
+; fm_protocol-videosupport-opt(always)
+Toujours
+
 ; fm_protocol_outboundproxy
 Serveur proxy sortant : 
 

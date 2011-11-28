@@ -1464,10 +1464,10 @@ Text support:
 Asterisk config: textsupport
 
 ; fm_videosupport-opt(no)
-Disabled
+No
 
 ; fm_videosupport-opt(yes)
-Enabled
+Yes
 
 ; fm_videosupport-opt(always)
 Always
