@@ -411,11 +411,11 @@ $array['filter']['amaflags'] = array('set'	=> false,
 				     'key'	=> xivo_service_asterisk::get_amaflags_list());
 $array['filter']['allowtransfer'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
-$array['filter']['fromdomain'] = array('set'		=> false,
-				       'chk'		=> 2,
-				       'callback'	=> 'dwho_network::valid_host',
-				       'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
-								  DWHO_NETWORK_HOST_HOSTNAME)));
+$array['filter']['fromdomain'] = array('set' => false,
+					'chk'		=> 2,
+					'callback'	=> 'dwho_network::valid_host',
+					'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+						DWHO_NETWORK_HOST_HOSTNAME)));
 $array['filter']['mailbox'] = array('set' => false,'chk' => 0);
 $array['filter']['subscribemwi'] = array('set' => false);
 $array['filter']['buggymwi'] = array('set' => false,'chk' => 0);

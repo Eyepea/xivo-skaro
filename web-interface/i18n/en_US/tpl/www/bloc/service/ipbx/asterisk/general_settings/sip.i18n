@@ -158,7 +158,7 @@ Caller ID:
 Asterisk config: callerid
 
 ; fm_fromdomain
-From-Domain field rewrite:
+Rewriting the From field-Domain:
 
 ; hlp_fm_fromdomain
 Asterisk config: fromdomain

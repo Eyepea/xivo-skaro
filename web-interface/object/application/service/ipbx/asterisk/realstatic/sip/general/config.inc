@@ -766,7 +766,11 @@ $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 $array['filter']['callerid'] = array('maxlen'	=> 80,
 				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 				     'notag'	=> false);
-$array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-\.]+$/i','maxlen' => 80);
+$array['filter']['fromdomain'] = array('set' => false,
+					'chk'		=> 2,
+					'callback'	=> 'dwho_network::valid_host',
+					'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+						DWHO_NETWORK_HOST_HOSTNAME)));
 $array['filter']['sipdebug'] = array('bool' => true);
 $array['filter']['dumphistory'] = array('bool' => true);
 $array['filter']['recordhistory'] = array('bool' => true);

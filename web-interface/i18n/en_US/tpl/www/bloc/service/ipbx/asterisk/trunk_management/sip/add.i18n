@@ -31,12 +31,6 @@ Caller ID:
 ; fm_protocol_context
 Context:
 
-; fm_protocol_fromuser
-From-User field:
-
-; fm_protocol_fromdomain
-From-Domain field:
-
 ; fm_protocol_calllimit
 Call limit:
 
@@ -318,10 +312,10 @@ Without NAT
 Update without NAT
 
 ; fm_protocol_fromuser
-Rewrite From-User field :
+Rewriting the From field-User:
 
 ; fm_protocol_fromdomain
-Rewrite From-Domain field :
+Rewriting the From field-Domain:
 
 ; fm_protocol_amaflags
 amaflag :
