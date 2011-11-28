@@ -33,7 +33,7 @@ $general   = &$ipbx->get_module('general');
 $trunkapp = &$ipbx->get_application('trunk', array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
 $siptrunks = array();
 foreach($trunkapp->get_trunks_list() as $id => $values)
-	$siptrunks[$values['id']] = $values['name']; 
+	$siptrunks[$values['id']] = $values['name'];
 
 if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 {
@@ -70,6 +70,8 @@ if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 			$fm_save = false;
 		}
 	}
+
+	$ipbx->discuss(array('voicemail reload'));
 }
 
 $element = array();
