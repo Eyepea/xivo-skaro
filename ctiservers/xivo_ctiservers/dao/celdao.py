@@ -56,8 +56,7 @@ class CELChannel(object):
     def exten(self):
         chan_start_exten = self._chan_start_event.exten
         exten = chan_start_exten
-        # handle originate stuff
-        if exten == u's':
+        if self.is_originate():
             chan_end_cid_num = self._chan_end_event.cid_num
             if chan_end_cid_num != chan_start_exten:
                 exten = chan_end_cid_num
@@ -65,6 +64,9 @@ class CELChannel(object):
 
     def linked_id(self):
         return self._chan_start_event.linkedid
+
+    def is_originate(self):
+        return self._chan_start_event.exten == u's'
 
 
 class CELDAO(object):
