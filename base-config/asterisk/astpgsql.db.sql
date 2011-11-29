@@ -2162,7 +2162,7 @@ DROP TYPE  IF EXISTS "useriax_protocol";
 DROP TYPE  IF EXISTS "useriax_category";
 
 -- WARNING: used also in usersip table
-CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer');
+CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer', 'user');
 -- WARNING: used also in usersip table
 CREATE TYPE "useriax_amaflags" AS ENUM ('default', 'omit', 'billing', 'documentation');
 CREATE TYPE "useriax_auth" AS ENUM ('plaintext', 'md5', 'rsa', 'plaintext,md5', 'plaintext,rsa', 'md5,rsa', 'plaintext,md5,rsa');
