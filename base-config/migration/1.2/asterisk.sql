@@ -58,3 +58,11 @@ ALTER TABLE "useriax" ADD COLUMN keyrotate INTEGER DEFAULT NULL;
 ALTER TABLE "useriax" ALTER allow TYPE text;
 
 COMMIT;
+
+
+-- fix trunk management sip form
+BEGIN;
+
+ALTER TABLE "usersip" ALTER allow TYPE text;
+
+COMMIT;

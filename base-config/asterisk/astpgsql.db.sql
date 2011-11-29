@@ -2297,7 +2297,7 @@ CREATE TABLE "usersip" (
  "qualify" varchar(4), -- general / peer --
  "g726nonstandard" INTEGER, -- BOOLEAN -- general / user / peer --
  "disallow" varchar(100), -- general / user / peer --
- "allow" varchar(100), -- general / user / peer --
+ "allow" text, -- general / user / peer --
  "autoframing" INTEGER, -- BOOLEAN -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --
