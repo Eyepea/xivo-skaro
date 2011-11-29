@@ -18,12 +18,35 @@
 
 \connect asterisk;
 
+-- alter type "useriax_type" add new value 'user' in enum ('friend', 'peer');
+BEGIN;
+
+ALTER TYPE "useriax_type" RENAME TO "useriax_type2";
+CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer', 'user');
+
+ALTER TABLE "useriax" RENAME COLUMN "type" TO "_type";
+ALTER TABLE "usersip" RENAME COLUMN "type" TO "_type";
+
+ALTER TABLE "useriax" ADD type "useriax_type";
+ALTER TABLE "usersip" ADD type "useriax_type";
+
+UPDATE "useriax" SET "type" = "_type"::text::"useriax_type";
+UPDATE "usersip" SET "type" = "_type"::text::"useriax_type";
+
+ALTER TABLE "useriax" DROP COLUMN "_type";
+ALTER TABLE "usersip" DROP COLUMN "_type";
+
+DROP TYPE "useriax_type2";
+
+COMMIT;
+
+
 -- remove faxdetect for incall
 BEGIN;
 
-ALTER TABLE incall DROP COLUMN faxdetectenable;
-ALTER TABLE incall DROP COLUMN faxdetecttimeout;
-ALTER TABLE incall DROP COLUMN faxdetectemail;
+ALTER TABLE "incall" DROP COLUMN faxdetectenable;
+ALTER TABLE "incall" DROP COLUMN faxdetecttimeout;
+ALTER TABLE "incall" DROP COLUMN faxdetectemail;
 
 COMMIT;
 
@@ -31,7 +54,7 @@ COMMIT;
 -- fix trunk management iax form
 BEGIN;
 
-ALTER TABLE useriax ADD COLUMN keyrotate INTEGER DEFAULT NULL;
-ALTER TABLE useriax ALTER allow TYPE text;
+ALTER TABLE "useriax" ADD COLUMN keyrotate INTEGER DEFAULT NULL;
+ALTER TABLE "useriax" ALTER allow TYPE text;
 
 COMMIT;
