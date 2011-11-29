@@ -68,7 +68,7 @@ switch($act)
 
 		if(dwho_issa('incall',$result) === false || empty($result['incall']) === true)
 			$result['incall'] = null;
-		
+
 		if($rightcall['list'] !== false && dwho_issa('rightcall',$result) === true)
 		{
 			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
@@ -108,7 +108,6 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
-		$return['schedule_id'] = false;
 		$rightcall['slt'] = $rightcall = array();
 
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -134,7 +133,7 @@ switch($act)
 
 		if(dwho_issa('incall',$return) === false || empty($return['incall']) === true)
 			$return['incall'] = null;
-		
+
 		if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true)
 		{
 			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
@@ -148,6 +147,9 @@ switch($act)
 
 			if(dwho_issa('callerid',$return) === false || empty($return['callerid']) === true)
 				$return['callerid'] = null;
+
+			if(array_key_exists('schedule_id', $return) === false)
+				$return['schedule_id'] = null;
 		}
 
 		$_TPL->set_var('id',$info['incall']['id']);
