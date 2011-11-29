@@ -928,7 +928,7 @@ $array['filter']['subscribe_network_change_event'] = array('bool' => true);
 $array['filter']['maxforwards'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,255,1));
 $array['filter']['disallowed_methods'] = array('set' => false,'chk' => 2,'maxlen' => 255);
 $array['filter']['domainsasrealm'] = array('set' => false, 'chk' => 2, 'bool' => true);
-$array['filter']['textsupport'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['textsupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes'));
 $array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => array('no','yes','always'));
 $array['filter']['auth_options_requests'] = array('bool' => true);
 
