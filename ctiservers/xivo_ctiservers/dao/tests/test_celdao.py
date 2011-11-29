@@ -176,6 +176,43 @@ class TestCELChannel(unittest.TestCase):
 
         CELChannel(cel_events)
 
+    def test_is_originate(self):
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid=1, exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid=1),
+            _new_cel(eventtype='APP_START', uniqueid=1),
+            _new_cel(eventtype='CHAN_START', uniqueid=2),
+            _new_cel(eventtype='ANSWER', uniqueid=2),
+            _new_cel(eventtype='BRIDGE_START', uniqueid=1),
+            _new_cel(eventtype='BRIDGE_END', uniqueid=1),
+            _new_cel(eventtype='HANGUP', uniqueid=2),
+            _new_cel(eventtype='CHAN_END', uniqueid=2),
+            _new_cel(eventtype='HANGUP', uniqueid=1),
+            _new_cel(eventtype='CHAN_END', uniqueid=1),
+        ]
+
+        cel_channel = CELChannel(cel_events)
+
+        self.assertTrue(cel_channel.is_originate())
+
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid=1),
+            _new_cel(eventtype='ANSWER', uniqueid=1),
+            _new_cel(eventtype='APP_START', uniqueid=1),
+            _new_cel(eventtype='CHAN_START', uniqueid=2),
+            _new_cel(eventtype='ANSWER', uniqueid=2),
+            _new_cel(eventtype='BRIDGE_START', uniqueid=1),
+            _new_cel(eventtype='BRIDGE_END', uniqueid=1),
+            _new_cel(eventtype='HANGUP', uniqueid=2),
+            _new_cel(eventtype='CHAN_END', uniqueid=2),
+            _new_cel(eventtype='HANGUP', uniqueid=1),
+            _new_cel(eventtype='CHAN_END', uniqueid=1),
+        ]
+
+        cel_channel = CELChannel(cel_events)
+
+        self.assertFalse(cel_channel.is_originate())
+
 
 class TestCELDAO(unittest.TestCase):
     _URI = 'sqlite:///:memory:'
@@ -472,10 +509,13 @@ class TestCELDAO(unittest.TestCase):
 
     def test_1_answered_call_to_phone_from_originate(self):
         self._insert_cels([
-            _new_cel(eventtype='CHAN_START', channame='SIP/A-0', uniqueid='1'),
+            _new_cel(eventtype='CHAN_START', channame='SIP/A-0', uniqueid='1',),
             _new_cel(eventtype='ANSWER', channame='SIP/A-0', uniqueid='1'),
+            _new_cel(eventtype='APP_START', channame='SIP/A-0', uniqueid='1'),
             _new_cel(eventtype='CHAN_START', channame='SIP/B-0', uniqueid='2'),
             _new_cel(eventtype='ANSWER', channame='SIP/B-0', uniqueid='2'),
+            _new_cel(eventtype='BRIDGE_START', channame='SIP/A-0', uniqueid='1'),
+            _new_cel(eventtype='BRIDGE_END', channame='SIP/A-0', uniqueid='1'),
             _new_cel(eventtype='HANGUP', channame='SIP/B-0', uniqueid='2'),
             _new_cel(eventtype='CHAN_END', channame='SIP/B-0', uniqueid='2'),
             _new_cel(eventtype='HANGUP', channame='SIP/A-0', uniqueid='1'),
