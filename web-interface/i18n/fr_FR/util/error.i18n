@@ -57,3 +57,6 @@ Le numero est hors interval du contexte
 
 ; already_exist
 %s existe déjà
+
+; default_gateway_already_exist
+Une passerelle par défaut existe déjà sur l'interface %s

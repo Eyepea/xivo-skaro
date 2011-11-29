@@ -58,10 +58,10 @@ $page = $url->pager($pager['pages'],
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_ifname');?></th>
-		<th class="th-center"><?=$this->bbf('col_hwtype');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwaddress');?></th>
 		<th class="th-center"><?=$this->bbf('col_method');?></th>
 		<th class="th-center"><?=$this->bbf('col_address');?></th>
+		<th class="th-center"><?=$this->bbf('col_gateway');?></th>
 		<th class="th-center"><?=$this->bbf('col_vlanid');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -78,7 +78,8 @@ $page = $url->pager($pager['pages'],
 			$netinfo = &$list[$i]['netinfo'];
 			$netiface = &$list[$i]['netiface'];
 
-			$id		= '';
+			$id			= '';
+			$gateway	= '-';
 			$name		= '-';
 			$ifname		= '';
 			$hwtype		= '';
@@ -125,7 +126,7 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			if(empty($netiface) === false):
-				$id		= $netiface['id'];
+				$id			= $netiface['id'];
 				$name		= $netiface['name'];
 				$ifname		= $netiface['ifname'];
 				$hwtype		= $netiface['hwtype'];
@@ -139,6 +140,10 @@ $page = $url->pager($pager['pages'],
 
 				if(dwho_has_len($netiface['vlanid']) === true):
 					$vlanid = $netiface['vlanid'];
+				endif;
+
+				if(dwho_has_len($netiface,'gateway') === true):
+					$gateway = $netiface['gateway'];
 				endif;
 
 				if($netiface['disable'] === true):
@@ -180,10 +185,10 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td title="<?=dwho_alttitle($ifname);?>"><?=dwho_htmlen(dwho_trunc($ifname,10,'...',false));?></td>
-		<td><?=$this->bbf('network_arphrd',$hwtype);?></td>
 		<td><?=$hwaddress?></td>
 		<td><?=$method?></td>
 		<td><?=$address?></td>
+		<td><?=$gateway;?></td>
 		<td><?=$vlanid?></td>
 		<td class="td-right" colspan="2">
 <?php
