@@ -152,9 +152,6 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		if($ret === false)
 			return($ret);
 
-		if(array_key_exists('tlscertfile', $ret['result']))
-			$ret['result']['tlscertfile']['var_val'] = substr(strrchr($ret['result']['tlscertfile']['var_val'], '/'), 1);
-
 		return $ret;
 	}
 
