@@ -26,13 +26,13 @@ $array['element']['maintenance'] = array();
 $array['element']['maintenance']['default'] = false;
 
 $array['element']['alert_emails'] = array();
-$array['element']['alert_emails']['default'] = null;
+$array['element']['alert_emails']['default'] = '';
 
 $array['element']['dahdi_monitor_ports'] = array();
-$array['element']['dahdi_monitor_ports']['default'] = null;
+$array['element']['dahdi_monitor_ports']['default'] = '';
 
 $array['element']['max_call_duration'] = array();
-$array['element']['max_call_duration']['default'] = null;
+$array['element']['max_call_duration']['default'] = '';
 
 
 ### filters ###
