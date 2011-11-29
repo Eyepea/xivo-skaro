@@ -15,20 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-    
 
-    if((servicesgroup_id = dwho_eid('it-userfeatures-servicesgroup_id')) !== false
-    && (accountcode = dwho_eid('userfeatures-accountcode')) !== false)
-    {
-        dwho.dom.add_event('change',
-                    servicesgroup_id,
-                   function()
-                   {
-                    servicesgroup_id_val = servicesgroup_id.value;
-                        
-                    if (typeof servicesgroup_id_val  == "undefined")
-                        accountcode.value = null;
-                    else
-                        accountcode.value = listservicesgroup[servicesgroup_id_val];
-                   });
-    }
+function update_sip_srtp_mode() {
+	var it_sipsrtpmode_val = $('#it-config-sip_srtp_mode').val();
+	var it_siptrans = $('#it-config-sip_transport');
+
+	it_siptrans.attr('disabled', 'disabled');
+	it_siptrans.addClass('it-disabled');
+
+	if (it_sipsrtpmode_val == 'preferred' || it_sipsrtpmode_val == 'required') {
+		it_siptrans.removeAttr('disabled');
+		it_siptrans.removeClass('it-disabled');
+	}
+}
+
+$(document).ready(function() {
+	update_sip_srtp_mode();
+	$('#it-config-sip_srtp_mode').change(update_sip_srtp_mode);
+});
