@@ -31,9 +31,13 @@ $info['zonemessages'] = $appzonemessages->get_all_name();
 
 $general   = &$ipbx->get_module('general');
 $trunkapp = &$ipbx->get_application('trunk', array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
+
 $siptrunks = array();
-foreach($trunkapp->get_trunks_list() as $id => $values)
-	$siptrunks[$values['id']] = $values['name'];
+if (($trunks = $trunkapp->get_trunks_list()) !== false) {
+	foreach($trunks as $id => $values) {
+		$siptrunks[$values['id']] = $values['name'];
+	}
+}
 
 if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 {
