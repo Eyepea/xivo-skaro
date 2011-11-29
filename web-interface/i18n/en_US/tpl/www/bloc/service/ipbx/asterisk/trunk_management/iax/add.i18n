@@ -170,8 +170,23 @@ Config asterisk: outkey
 ; fm_protocol_encryption
 Encryption : 
 
+; fm_protocol_maxauthreq
+Maximum authentication attempts:
+
+; fm_protocol_maxauthreq-opt(0)
+Disabled
+
+; fm_protocol_maxauthreq-opt
+%s
+
 ; fm_protocol_adsi
 Activate ADSI support
+
+; fm_protocol_amaflags
+Billing flag:
+
+; fm_protocol_accountcode
+Account code:
 
 ; fm_protocol_requirecalltoken
 Calltoken validation : 
@@ -244,6 +259,21 @@ Force jitterbuffer :
 
 ; fm_protocol_timezone
 Timezone : 
+
+; fm_protocol_codecpriority
+Codecs priority:
+
+; fm_protocol_codecpriority-opt(disabled)
+Disabled
+
+; fm_protocol_codecpriority-opt(host)
+Host
+
+; fm_protocol_codecpriority-opt(caller)
+Caller
+
+; fm_protocol_codecpriority-opt(reqonly)
+Request only
 
 ; fm_protocol_qualify-opt(no)
 no

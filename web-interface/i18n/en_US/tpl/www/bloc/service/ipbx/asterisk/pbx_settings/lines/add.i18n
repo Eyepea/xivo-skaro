@@ -131,7 +131,7 @@ Documentation
 Invite:
 
 ; fm_protocol_accountcode
-Account number:
+Account code:
 
 ; fm_protocol_progressinband
 Events in the band RING:
@@ -1323,6 +1323,12 @@ Always
 
 ; fm_protocol_maxauthreq
 Maximum authentication attempts:
+
+; fm_protocol_maxauthreq-opt(0)
+Disabled
+
+; fm_protocol_maxauthreq-opt
+%s
 
 ; smenu_schedule
 Schedules
