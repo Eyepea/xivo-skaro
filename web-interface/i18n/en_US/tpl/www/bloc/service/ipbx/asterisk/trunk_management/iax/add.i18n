@@ -164,6 +164,9 @@ Public RSA key :
 ; fm_protocol_outkey
 Private RSA key : 
 
+; hlp_fm_protocol-outkey
+Config asterisk: outkey
+
 ; fm_protocol_encryption
 Encryption : 
 

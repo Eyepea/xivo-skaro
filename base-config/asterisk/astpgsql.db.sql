@@ -2207,7 +2207,7 @@ CREATE TABLE "useriax" (
  "qualifyfreqnotok" INTEGER NOT NULL DEFAULT 10000, -- peer --
  "timezone" varchar(80), -- peer --
  "disallow" varchar(100), -- general / user / peer --
- "allow" varchar(100), -- general / user / peer --
+ "allow" text NOT NULL, -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --
  "deny" varchar(31), -- user / peer --
@@ -2223,6 +2223,7 @@ CREATE TABLE "useriax" (
  "ipaddr" varchar(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
  "immediate" INTEGER DEFAULT NULL, -- BOOLEAN
+ "keyrotate" INTEGER DEFAULT NULL, -- BOOLEAN
  "parkinglot" INTEGER DEFAULT NULL,
  "protocol" varchar(15) NOT NULL DEFAULT 'iax' CHECK (protocol = 'iax'), -- ENUM
  "category" useriax_category NOT NULL,
