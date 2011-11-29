@@ -557,7 +557,7 @@ endif;
             'selected' => $this->get_var('info','transport','var_val'),
             'default'  => $element['transport']['default']),
          $element['transport']['value']),
-		
+
     $form->text(array('desc'  => $this->bbf('fm_externtcpport'),
             'name'     => 'externtcpport',
             'labelid'  => 'externtcpport',
@@ -752,7 +752,7 @@ endif;
 				    'key'		   => false,
 				    'bbf'		   => 'fm_tlscipher-opt',
 				    'bbfopt'	 => array('argmode' => 'paramvalue'),
-  					'help'		 => $this->bbf('hlp_fm_tlscipher'),
+					'help'		 => $this->bbf('hlp_fm_tlscipher'),
 				    'selected' => $this->get_var('info','tlscipher','var_val'),
 				    'default'	 => $element['tlscipher']['default']),
 			      $element['tlscipher']['value']);

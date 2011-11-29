@@ -39,7 +39,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		$_config = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
 		$this->_tlscadir   = $_config['tls']['cadir'];
 		$this->_tlscertdir = $_config['tls']['certdir'];
-		
+
 		return($this->_init(&$service));
 	}
 
@@ -154,8 +154,6 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 		if(array_key_exists('tlscertfile', $ret['result']))
 			$ret['result']['tlscertfile']['var_val'] = substr(strrchr($ret['result']['tlscertfile']['var_val'], '/'), 1);
-		if(array_key_exists('tlscafile', $ret['result']))
-			$ret['result']['tlscafile']['var_val'] = substr(strrchr($ret['result']['tlscafile']['var_val'], '/'), 1);
 
 		return $ret;
 	}
@@ -173,7 +171,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 			if($type == 'cert' && substr($file, -4) != '.pem'
 			|| $type != 'cert' && substr($file, -4) == '.pem')
 				continue;
-				
+
 			$files[] = $file;
 		}
 		sort($files);
