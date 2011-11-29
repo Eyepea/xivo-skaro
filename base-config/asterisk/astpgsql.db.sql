@@ -964,9 +964,6 @@ CREATE TABLE "incall" (
  "exten" varchar(40) NOT NULL,
  "context" varchar(39) NOT NULL,
  "preprocess_subroutine" varchar(39),
- "faxdetectenable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "faxdetecttimeout" INTEGER NOT NULL DEFAULT 4,
- "faxdetectemail" varchar(255) NOT NULL DEFAULT '',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
