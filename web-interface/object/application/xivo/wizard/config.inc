@@ -28,7 +28,6 @@ $array['step']['dbconfig'] = true;
 $array['step']['checkcomponents'] = true;
 $array['step']['mainconfig'] = true;
 $array['step']['entitycontext'] = true;
-$array['step']['ipbximportuser'] = true;
 $array['step']['validate'] = true;
 
 $array['ipbximportuser'] = array();
