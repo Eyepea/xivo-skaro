@@ -103,7 +103,7 @@ switch($act)
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
-		$_TPL->set_var('context_list',$appline->get_context_list());
+		$_TPL->set_var('context_list',$appline->get_context_list(null,null,null,false,'internal'));
 		//$_TPL->set_var('parking_list', $modpark->get_all());
 		$_TPL->set_var('proto',$_QR['proto']);
 
@@ -172,7 +172,7 @@ switch($act)
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
-		$_TPL->set_var('context_list',$appline->get_context_list());
+		$_TPL->set_var('context_list',$appline->get_context_list(null,null,null,false,'internal'));
 		//$_TPL->set_var('parking_list', $modpark->get_all());
 
 		$dhtml = &$_TPL->get_module('dhtml');

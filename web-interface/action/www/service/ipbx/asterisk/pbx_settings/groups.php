@@ -108,7 +108,7 @@ switch($act)
 		$_TPL->set_var('rightcall',$rightcall);
 		$_TPL->set_var('destination_list',$appgroup->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appgroup->get_musiconhold());
-		$_TPL->set_var('context_list',$appgroup->get_context_list());
+		$_TPL->set_var('context_list',$appgroup->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('schedule_id', $result['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -201,7 +201,7 @@ switch($act)
 		$_TPL->set_var('rightcall',$rightcall);
 		$_TPL->set_var('destination_list',$appgroup->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appgroup->get_musiconhold());
-		$_TPL->set_var('context_list',$appgroup->get_context_list());
+		$_TPL->set_var('context_list',$appgroup->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('schedule_id', $info['schedule_id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
