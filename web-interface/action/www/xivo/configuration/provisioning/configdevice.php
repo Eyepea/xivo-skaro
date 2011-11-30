@@ -57,6 +57,10 @@ switch($act)
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('element',$appprovdconfig->get_elements());
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/service/ipbx/asterisk/devices.js');
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appprovdconfig->get($_QR['id'])) === false)
@@ -83,6 +87,10 @@ switch($act)
 		$_TPL->set_var('id',$info['config']['id']);
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('element',$appprovdconfig->get_elements());
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/service/ipbx/asterisk/devices.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -147,9 +155,6 @@ $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 $menu->set_toolbar('toolbar/xivo/configuration/provisioning/configdevice');
-
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_bloc('main','xivo/configuration/provisioning/configdevice/'.$act);
 $_TPL->set_struct('xivo/configuration');
