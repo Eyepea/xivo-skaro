@@ -41,8 +41,8 @@ switch($act)
 				if(array_key_exists("member-".$type."s", $_QR))
 					foreach($_QR["member-".$type."s"] as $mbid)
 						$_QR['pickup']['members'][] = array(
-							'category'   => 'member', 
-							'membertype' => $type, 
+							'category'   => 'member',
+							'membertype' => $type,
 							'memberid'   => $mbid
 						);
 
@@ -76,7 +76,7 @@ switch($act)
 		);
 
 		$appgroup = &$ipbx->get_application('group');
-		if(($groups = $appgroup->get_groups_list()) !== false)			
+		if(($groups = $appgroup->get_groups_list()) !== false)
 			foreach($groups as $_grp)
 				$dtsource['groups'][$_grp['id']] = $_grp;
 
@@ -152,8 +152,8 @@ switch($act)
 			foreach(array('group','queue','user') as $type)
 				foreach($_QR["member-".$type."s"] as $mbid)
 					$_QR['pickup']['members'][] = array(
-						'category'   => 'member', 
-						'membertype' => $type, 
+						'category'   => 'member',
+						'membertype' => $type,
 						'memberid'   => $mbid
 					);
 
@@ -265,7 +265,7 @@ switch($act)
 			if($apppickup->get($values[$i]) !== false)
 				$apppickup->delete();
 		}
-			
+
 		$ipbx->discuss(array('sip reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
@@ -326,8 +326,6 @@ $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/pickup');
 
-$menu = &$_TPL->get_module('menu');
-$_TPL->set_var('timezones', array_keys(dwho_i18n::get_timezone_list()));
 $_TPL->set_var('act',$act);
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/pickup/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
