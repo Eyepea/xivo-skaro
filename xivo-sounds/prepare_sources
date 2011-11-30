@@ -19,7 +19,7 @@ prepare_temp_dir () {
     echo "Prepare build directory $tmp_dir"
     clean_tmp_dir
     mkdir -p $tmp_dir/tarballs
-    rsync -av asterisk xivo freeswitch $tmp_dir/ > /dev/null 2>&1
+    rsync -av asterisk xivo $tmp_dir/ --exclude=xivo/wav/xivo-son.ods > /dev/null 2>&1
 }
 
 get_tarball () {
@@ -95,7 +95,7 @@ create_final_tarball () {
 }
 
 
-xivo_sounds_version=$(cat ./SOURCE-VERSION)
+xivo_sounds_version=${ast_version}
 
 tmp_dir='tmp'
 
