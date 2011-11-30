@@ -40,7 +40,7 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
 	{
         return $this->_monitoring->get(1);
 	}
-	
+
 	function set_monitoring($arr)
     {
         $this->_reset();
@@ -57,7 +57,7 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
             if(!in_array($key, $keys))
                 unset($arr[$key]);
         }
-        
+
         if($this->_monitoring->edit(1, $arr) === false)
             return false;
 
@@ -65,7 +65,7 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
         return $this->_commonconf->notify_changes();
     }
 
-    
+
     function set_alerts($arr)
     {
         $this->_reset();
@@ -79,25 +79,25 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
                     $this->_set_error('dahdi_monitor_ports', 'typechecking');
             }
         }
-        
+
         if($this->get_errnb() > 0)
             return false;
-        
+
         return $this->set_monitoring($arr);
     }
-    
+
 
     function set_max_call_duration($arr)
     {
         $this->_reset();
 
-        // checking duration is int or empty
-        if(strlen($arr['duration']) > 0 && !ctype_digit($arr['duration']))
-            $this->_set_error('max_call_duration', 'typechecking');
-            
-        if($this->get_errnb() > 0)
-            return false;
-        
+        if (!isset($arr['max_call_duration'])
+        || $arr['max_call_duration'] == ''
+        || !is_numeric($arr['max_call_duration']))
+        	$arr['max_call_duration'] = null;
+        else
+        	$arr['max_call_duration'] = (int) $arr['max_call_duration'];
+
         return $this->set_monitoring($arr);
     }
 }

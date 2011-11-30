@@ -217,6 +217,9 @@ Clés RSA publiques :
 ; fm_protocol_outkey
 Clé RSA privée :
 
+; hlp_fm_protocol-outkey
+Config asterisk: outkey
+
 ; fm_protocol_encryption
 Chiffrement :
 

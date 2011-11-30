@@ -18,6 +18,9 @@ Méthode
 ; col_address
 Adresse
 
+; col_gateway
+Passerelle
+
 ; col_vlanid
 VLAN ID
 

@@ -157,7 +157,7 @@ switch($act)
 		if(empty($return) === false)
 			$return['protocol']['allow'] = $allow;
 
-		if($return['register']['contact'] == 'callbackextension')
+		if(isset($return['register']) && $return['register']['contact'] == 'callbackextension')
 		{
 			$return['register']['contact'] = '';
 			$return['register']['callbackextension'] = true;

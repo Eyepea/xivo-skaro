@@ -166,8 +166,9 @@ $array['element']['sip_dtmf_mode']['value'] = array('RTP-in-band','RTP-out-of-ba
 $array['element']['sip_dtmf_mode']['default'] = '';
 
 $array['element']['sip_srtp_mode'] = array();
-$array['element']['sip_srtp_mode']['value'] = array('disabled','preferred','required');
-$array['element']['sip_srtp_mode']['default'] = 'disabled';
+#'disabled','preferred','required'
+$array['element']['sip_srtp_mode']['value'] = array('preferred','required');
+$array['element']['sip_srtp_mode']['default'] = 'required';
 
 $array['element']['sip_transport'] = array();
 $array['element']['sip_transport']['value'] = array('udp','tcp','tls');

@@ -307,8 +307,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->set_dialaction($arr['dialaction']) === null
 		|| is_array(($dialaction_answer = $this->get_result_var('dialaction','answer'))) === false)
 			$this->_set_error('dialaction','invalid data');
-		else if(dwho_ak('action',$dialaction_answer,true) === 'application:faxtomail')
-			$this->_set_result_var('incall','faxdetectenable',false);
 
 		if(($rsexten = $this->set_macro($action,'exten',$number,$this->_mk_exten_appdata($number),$context)) !== false)
 			$this->_set_result('exten',$rsexten);
@@ -323,11 +321,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if(dwho_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
-
-		if($this->get_errnb() < 1
-		&& (bool) $this->get_result_var('incall','faxdetectenable') === true
-		&& dwho_has_len($this->get_result_var('incall','faxdetectemail')) === false)
-			$this->_set_result_var('incall','faxdetectenable',false);
 
 		// schedule
 		if(array_key_exists('schedule_id', $arr))

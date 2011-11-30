@@ -223,14 +223,6 @@ endif;
 					  'error'    => $this->bbf_args('error',
 						   $this->get_var('error', 'tcpbindaddr')) )),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_videosupport'),
-				      'name'		=> 'videosupport',
-				      'labelid'		=> 'videosupport',
-					  'help'		=> $this->bbf('hlp_fm_videosupport'),
-					  'required'	=> false,
-				      'checked'		=> $this->get_var('info','videosupport','var_val'),
-				      'default'		=> $element['videosupport']['default'])),
-
 		$form->checkbox(array('desc'	=> $this->bbf('fm_autocreatepeer'),
 				      'name'		=> 'autocreatepeer',
 				      'labelid'		=> 'autocreatepeer',
@@ -565,7 +557,7 @@ endif;
             'selected' => $this->get_var('info','transport','var_val'),
             'default'  => $element['transport']['default']),
          $element['transport']['value']),
-		
+
     $form->text(array('desc'  => $this->bbf('fm_externtcpport'),
             'name'     => 'externtcpport',
             'labelid'  => 'externtcpport',
@@ -760,7 +752,7 @@ endif;
 				    'key'		   => false,
 				    'bbf'		   => 'fm_tlscipher-opt',
 				    'bbfopt'	 => array('argmode' => 'paramvalue'),
-  					'help'		 => $this->bbf('hlp_fm_tlscipher'),
+					'help'		 => $this->bbf('hlp_fm_tlscipher'),
 				    'selected' => $this->get_var('info','tlscipher','var_val'),
 				    'default'	 => $element['tlscipher']['default']),
 			      $element['tlscipher']['value']);
@@ -1633,8 +1625,8 @@ endif;
      $form->select(array('desc'  => $this->bbf('fm_videosupport'),
             'name'    => 'videosupport',
             'labelid' => 'videosupport',
-            'key'   => false,
             'empty' => true,
+            'key'   => false,
             'bbf'   => 'fm_videosupport-opt',
             'bbfopt'  => array('argmode' => 'paramvalue'),
             'help'    => $this->bbf('hlp_fm_videosupport'),

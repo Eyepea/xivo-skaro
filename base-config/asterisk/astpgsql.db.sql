@@ -964,9 +964,6 @@ CREATE TABLE "incall" (
  "exten" varchar(40) NOT NULL,
  "context" varchar(39) NOT NULL,
  "preprocess_subroutine" varchar(39),
- "faxdetectenable" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "faxdetecttimeout" INTEGER NOT NULL DEFAULT 4,
- "faxdetectemail" varchar(255) NOT NULL DEFAULT '',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -1761,7 +1758,6 @@ CREATE TABLE "staticsip" (
 CREATE INDEX "staticsip__idx__category" ON "staticsip"("category");
 
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','bindport',5060);
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','videosupport','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreatepeer','yes');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_context','xivo-initconfig');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_persist','yes');
@@ -1905,6 +1901,7 @@ INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','maxforwards'
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','disallowed_methods',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','domainsasrealm',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','textsupport',NULL);
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','videosupport',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','auth_options_requests','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','transport','udp');
 
@@ -2165,7 +2162,7 @@ DROP TYPE  IF EXISTS "useriax_protocol";
 DROP TYPE  IF EXISTS "useriax_category";
 
 -- WARNING: used also in usersip table
-CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer');
+CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer', 'user');
 -- WARNING: used also in usersip table
 CREATE TYPE "useriax_amaflags" AS ENUM ('default', 'omit', 'billing', 'documentation');
 CREATE TYPE "useriax_auth" AS ENUM ('plaintext', 'md5', 'rsa', 'plaintext,md5', 'plaintext,rsa', 'md5,rsa', 'plaintext,md5,rsa');
@@ -2210,7 +2207,7 @@ CREATE TABLE "useriax" (
  "qualifyfreqnotok" INTEGER NOT NULL DEFAULT 10000, -- peer --
  "timezone" varchar(80), -- peer --
  "disallow" varchar(100), -- general / user / peer --
- "allow" varchar(100), -- general / user / peer --
+ "allow" text NOT NULL, -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --
  "deny" varchar(31), -- user / peer --
@@ -2226,6 +2223,7 @@ CREATE TABLE "useriax" (
  "ipaddr" varchar(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
  "immediate" INTEGER DEFAULT NULL, -- BOOLEAN
+ "keyrotate" INTEGER DEFAULT NULL, -- BOOLEAN
  "parkinglot" INTEGER DEFAULT NULL,
  "protocol" varchar(15) NOT NULL DEFAULT 'iax' CHECK (protocol = 'iax'), -- ENUM
  "category" useriax_category NOT NULL,
@@ -2299,7 +2297,7 @@ CREATE TABLE "usersip" (
  "qualify" varchar(4), -- general / peer --
  "g726nonstandard" INTEGER, -- BOOLEAN -- general / user / peer --
  "disallow" varchar(100), -- general / user / peer --
- "allow" varchar(100), -- general / user / peer --
+ "allow" text, -- general / user / peer --
  "autoframing" INTEGER, -- BOOLEAN -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --

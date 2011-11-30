@@ -26,25 +26,25 @@ $array['categoryevent']['group'] = array('noanswer','congestion','busy','chanuna
 $array['categoryevent']['incall'] = array('answer');
 $array['categoryevent']['queue'] = array('noanswer','congestion','busy','chanunavail',
 		'qctipresence','qnonctipresence','qwaittime','qwaitratio');
-//$array['categoryevent']['schedule'] = array('inschedule','outschedule');
 $array['categoryevent']['user'] = array('noanswer','congestion','busy','chanunavail');
-$array['categoryevent']['trunk'] = array('noanswer','congestion','busy','chanunavail');
+//$array['categoryevent']['trunk'] = array('noanswer','congestion','busy','chanunavail');
+//$array['categoryevent']['schedule'] = array('inschedule','outschedule');
 
 
 $array['element'] = array();
 
 $array['element']['event'] = array();
 $array['element']['event']['value'] = array('answer',
-					    'noanswer',
-					    'congestion',
-					    'busy',
-					    'chanunavail',
-					    'inschedule',
-							'outschedule',
-						  'qctipresence',
-						  'qnonctipresence',
-						  'qwaittime',
-						  'qwaitratio');
+						'noanswer',
+						'congestion',
+						'busy',
+						'chanunavail',
+						'inschedule',
+						'outschedule',
+						'qctipresence',
+						'qnonctipresence',
+						'qwaittime',
+						'qwaitratio');
 $array['element']['event']['default'] = '';
 
 $array['element']['category'] = array();
@@ -95,7 +95,7 @@ $array['element']['actiontype']['value'] = array('none',
 						 'queue',
 						 'meetme',
 						 'voicemail',
-						 'trunk',
+						 //'trunk',
 						 //'schedule',
 						 'voicemenu',
 						 'extension',
@@ -145,7 +145,7 @@ $array['filter']['action'] = array('key' => array('none',
 						'queue',
 						'meetme',
 						'voicemail',
-						'trunk',
+						//'trunk',
 						//'schedule',
 						'voicemenu',
 						'extension',

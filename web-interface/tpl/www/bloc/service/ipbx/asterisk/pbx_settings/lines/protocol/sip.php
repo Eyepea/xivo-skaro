@@ -258,7 +258,7 @@
 				    'labelid'	=> 'protocol-videosupport',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'bbf'	=> 'fm_bool-opt',
+				    'bbf'	=> 'fm_protocol-videosupport-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['sip']['videosupport']['default'],
 				    'selected'	=> $this->get_var('info','protocol','videosupport')),

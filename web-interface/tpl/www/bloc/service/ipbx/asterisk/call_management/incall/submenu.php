@@ -33,16 +33,6 @@
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-faxdetect');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
-			<div class="tab">
-				<span class="span-center"><a href="#faxdetect"><?=$this->bbf('smenu_faxdetect');?></a></span>
-			</div>
-			<span class="span-right">&nbsp;</span>
-		</li>
-		<li id="dwsm-tab-3"
-		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-rightcalls');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
@@ -51,7 +41,7 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-4"
+		<li id="dwsm-tab-3"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-schedule',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
