@@ -203,14 +203,20 @@ switch($act)
 
 		$mbsource = $dtsource;
 		$members  = array('groups' => array(), 'queues' => array(), 'users' => array());
-		foreach($return['members'] as $_mb)
-			$members[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		if(dwho_issa('members',$return) === true)
+		{
+			foreach($return['members'] as $_mb)
+				$members[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		}
 		$return['members'] = $members;
 
 		$pksource = $dtsource;
 		$pickups  = array('groups' => array(), 'queues' => array(), 'users' => array());
-		foreach($return['pickups'] as $_mb)
-			$pickups[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		if(dwho_issa('pickups',$return) === true)
+		{
+			foreach($return['pickups'] as $_mb)
+				$pickups[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		}
 		$return['pickups'] = $pickups;
 
 		$_TPL->set_var('id',$info['pickup']['id']);
