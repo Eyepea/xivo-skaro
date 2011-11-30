@@ -30,7 +30,7 @@ function update_sip_srtp_mode() {
 	}
 }
 
-$(document).ready(function() {
+$().ready(function() {
 	update_sip_srtp_mode();
 	$('#it-config-sip_transport').change(update_sip_srtp_mode);
 });

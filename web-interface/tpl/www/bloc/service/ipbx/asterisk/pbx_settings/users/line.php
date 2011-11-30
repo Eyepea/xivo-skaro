@@ -328,18 +328,18 @@ endif;
 		</td>
 		<td id="td_ex-linefeatures-protocol">
 			<?=$form->select(array('paragraph'	=> false,
-				    'name'		=> 'linefeatures[protocol][]',
-				    'id'		=> 'linefeatures-protocol',
-				    'label'		=> false,
-				    'key'		=> false,
+					'name'		=> 'linefeatures[protocol][]',
+					'id'		=> 'linefeatures-protocol',
+					'label'		=> false,
+					'key'		=> false,
 					'bbf'		=> 'line_protocol-opt',
-				    'default'	=> $element['linefeatures']['protocol']['default']),
-			      $element['linefeatures']['protocol']['value']);?>
+					'default'	=> $element['linefeatures']['protocol']['default']),
+				$element['linefeatures']['protocol']['value']);?>
 		</td>
 		<td id="td_ex-linefeatures-name">
 			<?=$form->hidden(array('name' => 'linefeatures[name][]',
 					'value' 	=> null,
-				    'id'		=> 'linefeatures-name'));?>
+					'id'		=> 'linefeatures-name'));?>
 		</td>
 		<td id="td_ex-linefeatures-context">
 			<?=$form->select(array('paragraph'	=> false,

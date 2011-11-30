@@ -116,7 +116,7 @@ function xivo_ast_build_trunks_elt()
 
     for(property in xivo_ast_trunks_elt_default)
     {
-        fd_trunktype = fd_trunktype = changed = false;
+        fd_trunktype = changed = false;
 
         key = xivo_ast_trunks_elt_default[property];
 

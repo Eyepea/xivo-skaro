@@ -217,16 +217,4 @@ $_TPL->set_var('order_list', $order_list);
 $_TPL->set_var('softkeys_list', $softkeys_list);
 $_TPL->set_var('parking_list', $modpark->get_all());
 
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/dwho/uri.js');
-$dhtml->set_js('js/dwho/http.js');
-$dhtml->set_js('js/dwho/suggest.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/lines.js');
-$dhtml->set_js('js/dwho/submenu.js');
-$dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');
-$dhtml->load_js_multiselect_files();
-
 ?>
