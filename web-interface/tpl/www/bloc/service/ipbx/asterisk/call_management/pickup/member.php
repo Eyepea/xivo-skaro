@@ -18,20 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-  $form = &$this->get_module('form');
+	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
 	$category     = $this->get_var('category');
 	$membertype   = $this->get_var('membertype');
 	$info         = $this->get_var('info');
-	$datasource   = array_values($this->get_var($category,$membertype));
-
-	if(!function_exists("dts_sort")) {
-		function dts_sort($a,$b) {
-			return strcmp($a['identity'],$b['identity']);
-		}
-	}
-	usort($datasource, "dts_sort"); 
+	$datasource   = $this->get_var($category,$membertype);
 
 	$type         = $category.'-'.$membertype;
 
@@ -43,8 +36,8 @@
 
 	if(count($datasource) > 0 || (array_key_exists($category.'s',$info) && count($info[$category.'s'][$membertype]))) {
 
-     echo $form->jq_select(array(
-            'name'    => $type."[]",
+		echo $form->jq_select(array(
+						'name'    => $type."[]",
 						'labelid' => $type,
 						'paragraph'   => false,
 						'class'   => 'multiselect',
@@ -52,9 +45,8 @@
 						'key'   => 'identity',
 						'altkey'   => 'id',
 						//'jqmode'    => 'list',
-            'selected'  => $this->get_var('info',$category.'s', $membertype)),
+						'selected'  => $this->get_var('info',$category.'s', $membertype)),
 				$datasource);
-
 
 	} else {
 		echo    "<div id=\"fd-create-$type\" class=\"txt-center\">",

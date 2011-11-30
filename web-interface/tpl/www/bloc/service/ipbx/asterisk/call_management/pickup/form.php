@@ -68,7 +68,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 		<legend><?=$this->bbf('fld-members-groups');?></legend>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/pickup/member',
-			array('membertype'	=> 'groups', 'category' => 'member'));
+			array('membertype' => 'groups', 'category' => 'member'));
 ?>
 	</fieldset>
 
@@ -76,7 +76,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 		<legend><?=$this->bbf('fld-members-queues');?></legend>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/pickup/member',
-			array('membertype'	=> 'queues', 'category' => 'member'));
+			array('membertype' => 'queues', 'category' => 'member'));
 ?>
 	</fieldset>
 
@@ -84,7 +84,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 		<legend><?=$this->bbf('fld-members-users');?></legend>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/pickup/member',
-			array('membertype'	=> 'users', 'category' => 'member'));
+			array('membertype' => 'users', 'category' => 'member'));
 ?>
 	</fieldset>
 </div>
@@ -94,7 +94,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 		<legend><?=$this->bbf('fld-interceptors-groups');?></legend>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/pickup/member',
-			array('membertype'	=> 'groups', 'category' => 'pickup'));
+			array('membertype' => 'groups', 'category' => 'pickup'));
 ?>
 	</fieldset>
 
@@ -102,7 +102,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 		<legend><?=$this->bbf('fld-interceptors-queues');?></legend>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/pickup/member',
-			array('membertype'	=> 'queues', 'category' => 'pickup'));
+			array('membertype' => 'queues', 'category' => 'pickup'));
 ?>
 	</fieldset>
 
@@ -110,7 +110,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_pickup_name'),
 		<legend><?=$this->bbf('fld-interceptors-users');?></legend>
 <?php
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/pickup/member',
-			array('membertype'=> 'users', 'category' => 'pickup'));
+			array('membertype' => 'users', 'category' => 'pickup'));
 ?>
 	</fieldset>
 </div>

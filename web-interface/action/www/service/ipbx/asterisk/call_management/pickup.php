@@ -75,20 +75,20 @@ switch($act)
 			'queues' => array()
 		);
 
+		$order = array('name' => SORT_ASC);
 		$appgroup = &$ipbx->get_application('group');
-		if(($groups = $appgroup->get_groups_list()) !== false)
-			foreach($groups as $_grp)
-				$dtsource['groups'][$_grp['id']] = $_grp;
+		if(($groups = $appgroup->get_groups_list(null,$order,null,true)) !== false)
+			$dtsource['groups'] = $groups;
 
+		$order = array('firstname' => SORT_ASC, 'lastname' => SORT_ASC);
 		$appuser = &$ipbx->get_application('user');
-		if(($users = $appuser->get_users_list()) !== false)
-			foreach($users as $_usr)
-				$dtsource['users'][$_usr['id']] = $_usr;
+		if(($users = $appuser->get_users_list(null,$order,null,true)) !== false)
+			$dtsource['users'] = $users;
 
+		$order = array('name' => SORT_ASC);
 		$appqueue = &$ipbx->get_application('queue');
-		if(($queues = $appqueue->get_queues_list()) !== false)
-			foreach($queues as $_que)
-				$dtsource['queues'][$_que['id']] = $_que;
+		if(($queues = $appqueue->get_queues_list(null,$order,null,true)) !== false)
+			$dtsource['queues'] = $queues;
 
 		$mbsource = $dtsource;
 		$members  = array('groups' => array(), 'queues' => array(), 'users' => array());
@@ -186,31 +186,37 @@ switch($act)
 			'queues' => array()
 		);
 
+		$order = array('name' => SORT_ASC);
 		$appgroup = &$ipbx->get_application('group');
-		if(($groups = $appgroup->get_groups_list()) !== false)
-			foreach($groups as $_grp)
-				$dtsource['groups'][$_grp['id']] = $_grp;
+		if(($groups = $appgroup->get_groups_list(null,$order,null,true)) !== false)
+			$dtsource['groups'] = $groups;
 
+		$order = array('firstname' => SORT_ASC, 'lastname' => SORT_ASC);
 		$appuser = &$ipbx->get_application('user');
-		if(($users = $appuser->get_users_list()) !== false)
-			foreach($users as $_usr)
-				$dtsource['users'][$_usr['id']] = $_usr;
+		if(($users = $appuser->get_users_list(null,$order,null,true)) !== false)
+			$dtsource['users'] = $users;
 
+		$order = array('name' => SORT_ASC);
 		$appqueue = &$ipbx->get_application('queue');
-		if(($queues = $appqueue->get_queues_list()) !== false)
-			foreach($queues as $_que)
-				$dtsource['queues'][$_que['id']] = $_que;
+		if(($queues = $appqueue->get_queues_list(null,$order,null,true)) !== false)
+			$dtsource['queues'] = $queues;
 
 		$mbsource = $dtsource;
 		$members  = array('groups' => array(), 'queues' => array(), 'users' => array());
-		foreach($return['members'] as $_mb)
-			$members[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		if(dwho_issa('members',$return) === true)
+		{
+			foreach($return['members'] as $_mb)
+				$members[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		}
 		$return['members'] = $members;
 
 		$pksource = $dtsource;
 		$pickups  = array('groups' => array(), 'queues' => array(), 'users' => array());
-		foreach($return['pickups'] as $_mb)
-			$pickups[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		if(dwho_issa('pickups',$return) === true)
+		{
+			foreach($return['pickups'] as $_mb)
+				$pickups[$_mb['membertype'].'s'][] = $_mb['memberid'];
+		}
 		$return['pickups'] = $pickups;
 
 		$_TPL->set_var('id',$info['pickup']['id']);
