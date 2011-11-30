@@ -35,7 +35,7 @@
 			<dd id="mn-wizard--checkcomponents"><?=$this->bbf('mn_left_wizard-checkcomponents');?></dd>
 			<dd id="mn-wizard--mainconfig"><?=$this->bbf('mn_left_wizard-mainconfig');?></dd>
 			<dd id="mn-wizard--entitycontext"><?=$this->bbf('mn_left_wizard-entitycontext');?></dd>
-			<dd id="mn-wizard--ipbximportuser"><?=$this->bbf('mn_left_wizard-ipbximportuser');?></dd>
+			<?php /*<dd id="mn-wizard--ipbximportuser"><?=$this->bbf('mn_left_wizard-ipbximportuser');?></dd>*/ ?>
 			<dd id="mn-wizard--validate"><?=$this->bbf('mn_left_wizard-validate');?></dd>
 		</dl>
 	</dd>
