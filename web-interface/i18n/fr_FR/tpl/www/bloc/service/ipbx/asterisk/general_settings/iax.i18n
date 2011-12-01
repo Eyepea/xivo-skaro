@@ -652,3 +652,21 @@ Limitation du nombre d'appels par sous-réseau (la limite vaut pour chaque IP du
 
 ; no_disp
 Aucune entrée
+
+; calllimits-destination(empty)
+Champ requis
+
+; calllimits-netmask(empty)
+Champ requis
+
+; calllimits-calllimits(empty)
+Champ requis
+
+; calllimits-destination(callback)
+Doit être une adresse IP valide
+
+; calllimits-netmask(callback)
+Doit être un masque de sous-réseau valide
+
+; calllimits-netmask(callback)
+Contient des caractères invalides

@@ -665,3 +665,21 @@ address within range)
 
 ; no_disp
 No entries
+
+; calllimits-destination(empty)
+Required Field
+
+; calllimits-netmask(empty)
+Required Field
+
+; calllimits-calllimits(empty)
+Required Field
+
+; calllimits-destination(callback)
+Must be a valid IP address
+
+; calllimits-netmask(callback)
+Must be a valid IP subnet mask
+
+; calllimits-netmask(callback)
+Contains invalid characters
