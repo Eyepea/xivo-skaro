@@ -73,6 +73,15 @@ Physical memory
 ; sysinfos_swap-partition
 Swap partition
 
+; sysinfos_used-memory
+Used Memory (%.2f %%)
+
+; sysinfos_buffers-memory
+Buffer memory (%.2f %%)
+
+; sysinfos_cached-memory
+Cached memory (%.2f %%)
+
 ; sysinfos_network
 Network
 
