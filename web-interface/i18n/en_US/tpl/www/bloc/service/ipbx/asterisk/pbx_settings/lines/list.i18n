@@ -1,8 +1,17 @@
-; col_fullname
-Full name
+; col_identity
+Identity
+
+; col_sort_identity
+Sort by identity
 
 ; col_protocol
 Protocol
+
+; col_sort_protocol
+Sort by protocol
+
+; col_fullname
+Full name
 
 ; col_name
 Username
@@ -15,9 +24,6 @@ Phone number
 
 ; col_provisioning
 Provisioning
-
-; col_identity
-Identity
 
 ; line_protocol-sip
 SIP

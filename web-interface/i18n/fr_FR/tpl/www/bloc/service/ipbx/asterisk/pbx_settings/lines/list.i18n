@@ -1,8 +1,14 @@
 ; col_identity
 Identité
 
+; col_sort_identity
+Trier par identité
+
 ; col_protocol
 Protocole
+
+; col_sort_protocol
+Trier par protocole
 
 ; col_name
 Identifiant
