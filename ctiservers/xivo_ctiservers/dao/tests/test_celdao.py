@@ -8,6 +8,7 @@ from xivo_ctiservers.dao.alchemy.base import Base
 from xivo_ctiservers.dao.alchemy.cel import CEL
 from xivo_ctiservers.dao.celdao import CELDAO, CELChannel, CELException
 from xivo_ctiservers import cti_config
+from xivo_ctiservers.dao.alchemy import dbconnection
 
 
 def _new_datetime_generator(step=timedelta(seconds=1)):
@@ -216,7 +217,12 @@ class TestCELChannel(unittest.TestCase):
         self.assertFalse(cel_channel.is_originate())
 
     def test_peers_uniqueid(self):
-        cti_config.cconf = Mock()
+        dbconnectionpool = dbconnection.DBConnectionPool(dbconnection.DBConnection)
+        dbconnection.register_db_connection_pool(dbconnectionpool)
+        cdr_uri = 'sqlite:///:memory:'
+        dbconnection.add_connection(cdr_uri)
+        cti_config.cconf = Mock(cti_config.Config)
+        cti_config.cconf.getconfig.return_value = {'xivoid': {'cdr_db_uri': cdr_uri,},}
         cel_events = [
             _new_cel(eventtype='CHAN_START', uniqueid=1, exten=u's'),
             _new_cel(eventtype='ANSWER', uniqueid=1),
@@ -286,6 +292,33 @@ class TestCELDAO(unittest.TestCase):
 
         channel = self._celdao.channel_by_unique_id('1')
         self.assertEqual(u'100', channel.exten())
+
+    def test_channels_by_linked_id(self):
+        self._insert_cels([
+            _new_cel(eventtype='CHAN_START', uniqueid=1, linkedid=67, exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid=1, linkedid=67,),
+            _new_cel(eventtype='APP_START', uniqueid=1, linkedid=67,),
+            _new_cel(eventtype='CHAN_START', uniqueid=2, linkedid=67,),
+            _new_cel(eventtype='ANSWER', uniqueid=2, linkedid=67,),
+            _new_cel(eventtype='BRIDGE_START', uniqueid=1, linkedid=67,),
+            _new_cel(eventtype='BRIDGE_END', uniqueid=1, linkedid=67,),
+            _new_cel(eventtype='HANGUP', uniqueid=2, linkedid=67,),
+            _new_cel(eventtype='CHAN_END', uniqueid=2, linkedid=67,),
+            _new_cel(eventtype='HANGUP', uniqueid=1, linkedid=67,),
+            _new_cel(eventtype='CHAN_END', uniqueid=1, linkedid=67,),
+        ])
+
+        channels = self._celdao.channels_by_linked_id(67)
+
+        self.assertEqual(len(channels), 2)
+
+        channel_ids = set()
+
+        for channel in channels:
+            channel_ids.add(channel.uniqueid)
+
+        self.assertTrue(1 in channel_ids)
+        self.assertTrue(2 in channel_ids)
 
     def test_channel_by_unique_id_when_channel_is_missing(self):
         self._insert_cels([

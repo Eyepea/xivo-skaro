@@ -72,14 +72,13 @@ class CELChannel(object):
     def peers_uniqueid(self):
         linkedid = self._chan_start_event.linkedid
         uniqueid = self._chan_start_event.uniqueid
-        for config in cti_config.cconf.getconfig('ipbxes'):
+        for config in cti_config.cconf.getconfig('ipbxes').itervalues():
             cel_uri = config['cdr_db_uri']
             celdao = CELDAO.new_from_uri(cel_uri)
             channels_with_uniqueid = celdao.channels_by_linkedid(linkedid)
             for channel in channels_with_uniqueid:
                 if channel.uniqueid != uniqueid:
                     return channel.uniqueid
-
 
 
 class CELDAO(object):
@@ -105,6 +104,9 @@ class CELDAO(object):
             raise CELException('no such CEL event with uniqueid %s' % unique_id)
         else:
             return CELChannel(cel_events)
+
+    def channels_by_linked_id(self, linked_id):
+        return []
 
     def _channel_pattern_from_endpoint(self, endpoint):
         return "%s-%%" % endpoint
