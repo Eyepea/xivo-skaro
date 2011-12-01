@@ -55,12 +55,14 @@ class Test(unittest.TestCase):
 
     def test_regcommand_featuresput(self):
         from xivo_ctiservers import cti_command
+        from xivo_ctiservers import cti_config
         xws_inst = Mock()
         xws_inst.connect    = Mock()
         xws_inst.serviceput = Mock()
         xws = Mock()
         xws.__init__(return_value=xws_inst)
         cti_command.xivo_webservices.xws = xws
+        cti_config.cconf = Mock()
 
         conn = Mock()
         conn.requester = ('test_requester', 3)
