@@ -193,8 +193,6 @@ Use ADSI announces:
 ; fm_generalfeatures_transferdigittimeout
 Dial timeout on transfer:
 
-; fm_generalfeatures_xferfailsound
-
 ; fm_generalfeatures_transferdigittimeout-opt1
 1 second
 
