@@ -1,11 +1,7 @@
 # XiVO CTI Server
 # vim: set fileencoding=utf-8
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2011  Avencall'
-__author__    = 'Corentin Le Gall'
-
+# Copyright (C) 2007-2011  Avencall
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
@@ -23,6 +19,8 @@ __author__    = 'Corentin Le Gall'
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+__author__ = 'Corentin Le Gall'
 
 import logging
 import urllib2
