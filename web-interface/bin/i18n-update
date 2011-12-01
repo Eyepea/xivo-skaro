@@ -2,7 +2,7 @@
 
 # For now, this script allows to detect non-translated strings.
 # But it detects a LOT of false positive (translated strings that are not in a
-# dedicated file.
+# dedicated file).
 
 # Launch it in web_interface.
 # Entry point is print_not_translated, but each little function could be reused
@@ -17,18 +17,22 @@
 
 tpl_regexp="bbf('\([^']*\)')"
 
+# Make one translation per line
 function tpl_split_lines {
     sed "s/$tpl_regexp/&\n/g" -
 }
 
+# Only the lines containing a translation
 function tpl_filter_lines {
     grep "$tpl_regexp" -
 }
 
+# Only the translation of a line
 function tpl_clean_string_ids {
     sed "s/.*$tpl_regexp.*/\1/" -
 }
 
+# String ids of files
 function tpl_extract_string_ids {
     if [ ! -r "$1" ] ; then
         return
@@ -67,6 +71,7 @@ function i18n_extract_string_ids {
     cat "$@" | i18n_filter_lines | i18n_clean_string_ids | sort -u
 }
 
+# Print the lines of the first arg minus the lines of the second
 function difference {
     # <(command) creates a named pipe containing the output of the command
     comm -23 <(echo "$1") <(echo "$2")
@@ -126,3 +131,14 @@ function print_not_translated {
 }
 
 #print_not_translated
+
+# Find strings translated in french but not in english
+function french_not_english {
+    fr_files=$(find i18n/fr_FR -type f -name '*.i18n')
+    for fr_file in $fr_files ; do
+        en_file=$(sed 's/fr_FR/en_US/' <<< "$fr_file")
+        difference "$(i18n_extract_string_ids $fr_file)" "$(i18n_extract_string_ids $en_file)" \
+            | sed "s|^|$en_file : |"
+    done
+}
+french_not_english
