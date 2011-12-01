@@ -30,6 +30,24 @@ import cjson
 
 log = logging.getLogger('cti_config')
 
+import ssl
+
+ALARM_DIRECTORY = '/var/lib/pf-xivo-cti-server/alarms'
+BUFSIZE_LARGE = 262144
+DAEMONNAME = 'ctid'
+DEBUG_MODE = False
+LOGDAEMONNAME = 'ctid'
+LOGFILENAME = '/var/log/pf-xivo-cti-server/daemon.log'
+PIDFILE = '/var/run/%s.pid' % DAEMONNAME
+PORTDELTA = 0
+SSLPROTO = ssl.PROTOCOL_TLSv1
+XIVOIP = 'localhost'
+XIVO_CONF_FILE = 'http://localhost/cti/json.php/private/configuration'
+XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
+XIVO_CONF_OVER = None
+
+cconf = None
+
 class Config:
     def __init__(self, * urilist):
         self.urilist = urilist

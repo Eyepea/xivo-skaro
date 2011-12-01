@@ -40,6 +40,7 @@ from xivo_ctiservers import cti_directories
 from xivo_ctiservers import cti_sheets
 from xivo_ctiservers import db_connection_manager
 from xivo_ctiservers.dao.alchemy import dbconnection
+from xivo_ctiservers import cti_config
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
@@ -174,7 +175,7 @@ class Safe:
         self.contexts_mgr = cti_directories.ContextsMgr()
         self.directories_mgr = cti_directories.DirectoriesMgr()
         
-        cdr_uri = self.ctid.cconf.getconfig('ipbxes')[ipbxid]['cdr_db_uri']
+        cdr_uri = cti_config.cconf.getconfig('ipbxes')[ipbxid]['cdr_db_uri']
         dbconnection.add_connection(cdr_uri)
         self.call_history_mgr = call_history.CallHistoryMgr.new_from_uri(cdr_uri)
 
@@ -479,7 +480,7 @@ class Safe:
 
     def user_get_userstatuskind(self, userid):
         profileclient = self.user_get_ctiprofile(userid)
-        zz = self.ctid.cconf.getconfig('profiles').get(profileclient)
+        zz = cti_config.cconf.getconfig('profiles').get(profileclient)
         return zz.get('userstatus')
 
     def user_get_all(self):
@@ -1082,11 +1083,11 @@ class Safe:
             return ret
         profileclient = self.user_get_ctiprofile(userid)
         if profileclient:
-            profilespecs = self.ctid.cconf.getconfig('profiles').get(profileclient)
+            profilespecs = cti_config.cconf.getconfig('profiles').get(profileclient)
             if profilespecs:
                 kindid = profilespecs.get(kind)
                 if kindid:
-                    ret = self.ctid.cconf.getconfig(kind).get(kindid)
+                    ret = cti_config.cconf.getconfig(kind).get(kindid)
                 else:
                     self.log.warning('get_user_permissions %s %s : no kindid', kind, userid)
             else:
@@ -1159,9 +1160,9 @@ class Safe:
             connection['conn'].commit()
 
     def sheetsend(self, where, channel, outdest = None):
-        if 'sheets' not in self.ctid.cconf.getconfig():
+        if 'sheets' not in cti_config.cconf.getconfig():
             return
-        bsheets = self.ctid.cconf.getconfig('sheets')
+        bsheets = cti_config.cconf.getconfig('sheets')
         self.sheetevents = bsheets.get('events')
         self.sheetdisplays = bsheets.get('displays')
         self.sheetoptions = bsheets.get('options')
@@ -1355,7 +1356,7 @@ class Safe:
             try:
                 if agiargs:
                     presenceid = agiargs.get('1')
-                    presences = self.ctid.cconf.getconfig('userstatus')
+                    presences = cti_config.cconf.getconfig('userstatus')
 
                     prescountdict = {}
                     for k, v in presences.iteritems():
@@ -1476,13 +1477,13 @@ class Safe:
         # This function must be called after a certain amount of initialization
         # went by in the ctid object since some of the directories depends on
         # some information which is not available during this Safe __init__
-        display_contents = self.ctid.cconf.getconfig('displays')
+        display_contents = cti_config.cconf.getconfig('displays')
         self.displays_mgr.update(display_contents)
         
-        directories_contents = self.ctid.cconf.getconfig('directories')
+        directories_contents = cti_config.cconf.getconfig('directories')
         self.directories_mgr.update(self.ctid, directories_contents)
         
-        contexts_contents = self.ctid.cconf.getconfig('contexts')
+        contexts_contents = cti_config.cconf.getconfig('contexts')
         self.contexts_mgr.update(self.displays_mgr.displays,
                                  self.directories_mgr.directories,
                                  contexts_contents)
