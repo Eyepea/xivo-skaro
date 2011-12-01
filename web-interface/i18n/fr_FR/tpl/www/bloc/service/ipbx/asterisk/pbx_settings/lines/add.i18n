@@ -241,26 +241,11 @@ Tous
 ; fm_protocol_codec-allow
 Codecs activés :
 
-; bt_upcodec
-Monter un ou plusieurs codecs
+; fm_protocol_t38pt-udptl
+Activé T38 (UDPTL) :
 
-; bt_downcodec
-Descendre un ou plusieurs codecs
-
-; bt_incodec
-Ajouter un ou plusieurs codecs ->
-
-; bt_outcodec
-<- Enlever un ou plusieurs codecs
-
-; fld-callgroup
-Groupes
-
-; bt_ingroup
-Ajouter un ou plusieurs groupes ->
-
-; bt_outgroup
-<- Enlever un ou plusieurs groupes
+; fm_protocol_t38pt-usertpsource
+Utiliser l'adresse IP source comme destination pour le T38 :
 
 ; fm_protocol_callerid
 Nom d'appel :
@@ -271,16 +256,13 @@ Envoyer la présentation du nom et numéro d'appel :
 ; fm_protocol_insecure
 Insécurité :
 
-; fm_protocol_insecure-opt(no)
-Non
-
 ; fm_protocol_insecure-opt(port)
 Port
 
 ; fm_protocol_insecure-opt(invite)
 Invite
 
-; fm_protocol_insecure-opt(all)
+; fm_protocol_insecure-opt(port,invite)
 Tout
 
 ; fm_protocol_host-type
@@ -364,32 +346,11 @@ Numéro d'acompte :
 ; fm_protocol_useclientcode
 Code client :
 
-; fm_protocol_adhocnumber
-Numéro adhoc: 
-
-; fm_protocol_video_cos
-COS vidéo: 
-
-; fm_protocol_video_tos
-TOS vidéo: 
-
-; fm_protocol_audio_cos
-COS audio: 
-
-; fm_protocol_audio_tos
-TOS audio: 
-
-; fm_protocol_secondary_dialtone_tone
-tonalité d'appel secondaire: 
-
 ; fm_protocol_secondary_dialtone_digits
 Nombre de chiffres de la tonalité secondaire: 
 
 ; fm_protocol_trustphoneip
 Faire confiance à l'IP du téléphone: 
-
-; fm_protocol_imageversion
-Version du firmware: 
 
 ; fm_protocol_tzoffset
 Décalage par rapport au fuseau horaire: 
@@ -472,9 +433,6 @@ Flash
 ; fm_mwilamp(blink)
 Clignotant (blink)
 
-; fm_protocol_keepalive
-Vérification de présence: 
-
 ; fm_privacy(on)
 Activée
 
@@ -537,13 +495,7 @@ Active la suppression des silences
 ; hlp_fm_incominglimit
 Si déja en ligne, les appels suivants sont mis en attente
 
-; hlp_fm_keepalive
-mettre la valeur *0* pour désactiver la vérification de présence
-
 ; hlp_fm_tzoffset
-
-; hlp_fm_imageversion
-Utile pour mettre à jours les vieux firmware (ceux qui ne téléchargent pas le fichier xml depuis le serveur tftp)
 
 ; hlp_fm_trustphoneip
 Utile pour les téléphones derrière un NAT (où l'adresse IP du téléphone est différente de l'adresse de connexion)
@@ -554,28 +506,8 @@ Chiffre de la tonalité secondaire (9 max)
 ; hlp_fm_dialtone_tone
 tonalité de sortie
 
-; hlp_fm_audio_tos
-Valeur «Type of Service» des paquets audio/RTP (par défaut 0xb8, soit 184).<br/>
-Les valeurs possibles sont 0x??, lowdelay, throughput, reliability, mincost (sur solaris uniquement), none
-
-; hlp_fm_audio_cos
-Valeur «Class of Service» des paquets audio/RTP (par défaut 6)
-
-; hlp_fm_video_tos
-Valeur «Type of Service» des paquets vidéo/RTP (par défaut 0x88, soit 136)
-
-; hlp_fm_video_cos
-Valeur «Class of Service» des paquets vidéo/RTP (par défaut 5)
-
 ; hlp_fm_sccp_amaflags
 Drapeau de facturation enregistré dans la table CDR
-
-; hlp_fm_adhocnumber
-Numéro Adhoc ou «Private-line automatic ringdown» (PLAR). Les lignes Adhoc/PLAR sont statiques et ne nécéssite pas la saisie d'un numéro de la part de l'utilisateur:<br/>
-<ul>
-<li>Le numéro adhoc est automatiquement composé dès que le téléphone est décroché ou que l'utilisateur appuie sur le bouton «nouvelle appel»</li>
-<li>Par contre, l'utilisateur pourra toujours composer un numéro après avoir sélectionné une ligne</li>
-</ul>
 
 ; fm_pickupmodeanswer-opt(on)
 Asterisk

@@ -29,12 +29,7 @@ $context_list = $this->get_var('context_list');
 $ipbxinfos = $this->get_var('info','ipbx');
 
 if(isset($info['protocol']) === true):
-	if(dwho_issa('allow',$info['protocol']) === true):
-		$allow = $info['protocol']['allow'];
-	else:
-		$allow = array();
-	endif;
-
+	$allow = explode(',', $info['protocol']['allow']);
 	$protocol = (string) dwho_ak('protocol',$info['protocol'],true);
 	$context = (string) dwho_ak('context',$info['protocol'],true);
 	$amaflags = (string) dwho_ak('amaflags',$info['protocol'],true);

@@ -412,102 +412,45 @@
             'name'     => 'protocol[maxforwards]',
             'labelid'  => 'protocol-maxforwards',
             'key'      => false,
-						'empty'    => true,
+			'empty'    => true,
             'help'     => $this->bbf('hlp_fm_protocol-maxforwards'),
             'selected' => $info['protocol']['maxforwards'],
             'default'  => $element['protocol']['sip']['maxforwards']['default']),
-        $element['protocol']['sip']['maxforwards']['value']),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_codec-custom'),
-				      'name'	=> 'codec-active',
-				      'labelid'	=> 'codec-active',
-				      'checked'	=> $codec_active),
-				'onclick="xivo_chg_attrib(\'ast_fm_user_codec\',
-							  \'it-protocol-disallow\',
-							  Number((this.checked === false)));"'),
-
-		$form->select(array('desc'	=> $this->bbf('fm_protocol_codec-disallow'),
-				    'name'	=> 'protocol[disallow]',
-				    'labelid'	=> 'protocol-disallow',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_protocol_codec-disallow-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue')),
-			      $element['protocol']['sip']['disallow']['value']);
+        $element['protocol']['sip']['maxforwards']['value']);
 ?>
 
-<div id="codeclist" class="fm-paragraph fm-multilist">
-	<p>
-		<label id="lb-codeclist" for="it-codeclist" onclick="dwho_eid('it-codeclist').focus();">
-			<?=$this->bbf('fm_protocol_codec-allow');?>
-		</label>
-		<?=$form->input_for_ms('codeclist',$this->bbf('ms_seek'))?>
-	</p>
-	<div class="slt-outlist">
+<fieldset id="fld-codeclist">
+	<legend><?=$this->bbf('fld-codeclist');?></legend>
 <?php
-		echo	$form->select(array('name'	=> 'codeclist',
-					    'label'	=> false,
-					    'id'	=> 'it-codeclist',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false,
-					    'key'	=> false,
-					    'bbf'	=> 'ast_codec_name_type',
-					    'bbfopt'	=> array('argmode' => 'paramvalue')),
-				      $element['protocol']['sip']['allow']['value']);
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_codec-custom'),
+							'name'	=> 'codec-active',
+							'labelid'	=> 'codec-active',
+							'checked'	=> $codec_active));
 ?>
-	</div>
-
-	<div class="inout-list">
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-codeclist',
-						  'it-codec');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_incodec');?>">
-			<?=$url->img_html('img/site/button/arrow-left.gif',
-					  $this->bbf('bt_incodec'),
-					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-codec',
-						  'it-codeclist');
-			    return(dwho.dom.free_focus());"
-		   title="<?=$this->bbf('bt_outcodec');?>">
-			<?=$url->img_html('img/site/button/arrow-right.gif',
-					  $this->bbf('bt_outcodec'),
-					  'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
-	</div>
-
-	<div class="slt-inlist">
+<div id="codeclist">
 <?php
-		echo	$form->select(array('name'	=> 'protocol[allow][]',
-					    'label'	=> false,
-					    'id'	=> 'it-codec',
-					    'multiple'	=> true,
-					    'size'	=> 5,
-					    'paragraph'	=> false,
-					    'key'	=> false,
-					    'bbf'	=> 'ast_codec_name_type',
-					    'bbfopt'	=> array('argmode' => 'paramvalue')),
-				      $allow);
+	echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_codec-disallow'),
+							'name'		=> 'protocol[disallow]',
+							'labelid'	=> 'protocol-disallow',
+							'key'		=> false,
+							'bbf'		=> 'fm_protocol_codec-disallow-opt',
+							'bbfopt'	=> array('argmode' => 'paramvalue')),
+					$element['protocol']['sip']['disallow']['value']);
 ?>
-		<div class="bt-updown">
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-codec',1);
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_upcodec');?>">
-				<?=$url->img_html('img/site/button/arrow-up.gif',
-						  $this->bbf('bt_upcodec'),
-						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-codec',-1);
-				    return(dwho.dom.free_focus());"
-			   title="<?=$this->bbf('bt_downcodec');?>">
-				<?=$url->img_html('img/site/button/arrow-down.gif',
-						  $this->bbf('bt_downcodec'),
-						  'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
-		</div>
+	<div class="fm-paragraph fm-description">
+		<?=$form->jq_select(array('paragraph'	=> false,
+							'label'		=> false,
+							'name'		=> 'protocol[allow][]',
+							'id' 		=> 'it-protocol-allow',
+							'key'		=> false,
+							'bbf'		=> 'ast_codec_name_type',
+							'bbfopt'	=> array('argmode' => 'paramvalue'),
+							'selected'  => $allow),
+					$element['protocol']['sip']['allow']['value']);?>
+	<div class="clearboth"></div>
 	</div>
 </div>
-<div class="clearboth"></div>
+</fieldset>
 
 </div>
 
@@ -559,10 +502,10 @@
 			      $element['protocol']['sip']['insecure']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_host-type'),
-				    'name'	=> 'protocol[host-type]',
+				    'name'		=> 'protocol[host-type]',
 				    'labelid'	=> 'protocol-host-type',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_protocol_host-type-opt',
+				    'key'		=> false,
+				    'bbf'		=> 'fm_protocol_host-type-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'selected'	=> ($host_static === true ? 'static' : $host)),
 			      $element['protocol']['sip']['host-type']['value']),
@@ -687,69 +630,6 @@
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'fromdomain')) )),
 
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_keepalive'),
-				  'name'	=> 'protocol[keepalive]',
-				  'labelid'	=> 'protocol-keepalive',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','keepalive'),
-				  'help'		=> $this->bbf('hlp_fm_keepalive'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'keepalive')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_imageversion'),
-				  'name'	=> 'protocol[imageversion]',
-				  'labelid'	=> 'protocol-imageversion',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','imageversion'),
-				  'help'		=> $this->bbf('hlp_fm_imageversion'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'imageversion')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_secondary_dialtone_tone'),
-				  'name'	=> 'protocol[secondary_dialtone_tone]',
-				  'labelid'	=> 'protocol-secondary_dialtone_tone',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','secondary_dialtone_tone'),
-				  'help'		=> $this->bbf('hlp_fm_dialtone_tone'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'secondary_dialtone_tone')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_audio_tos'),
-				  'name'	=> 'protocol[audio_tos]',
-				  'labelid'	=> 'protocol-audio_tos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','audio_tos'),
-				  'help'		=> $this->bbf('hlp_fm_audio_tos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'audio_tos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_audio_cos'),
-				  'name'	=> 'protocol[audio_cos]',
-				  'labelid'	=> 'protocol-audio_cos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','audio_cos'),
-				  'help'		=> $this->bbf('hlp_fm_audio_cos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'audio_cos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_video_tos'),
-				  'name'	=> 'protocol[video_tos]',
-				  'labelid'	=> 'protocol-video_tos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','video_tos'),
-				  'help'		=> $this->bbf('hlp_fm_video_tos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'video_tos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_video_cos'),
-				  'name'	=> 'protocol[video_cos]',
-				  'labelid'	=> 'protocol-video_cos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','video_cos'),
-				  'help'		=> $this->bbf('hlp_fm_video_cos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'video_cos')) )),
-
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_useclientcode'),
 				    'name'	=> 'protocol[useclientcode]',
 				    'labelid'	=> 'protocol-useclientcode',
@@ -760,15 +640,6 @@
 				    'default'	=> $element['protocol']['sip']['useclientcode']['default'],
 				    'selected'	=> $this->get_var('info','protocol','useclientcode')),
 			      $element['protocol']['sip']['useclientcode']['value']),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_adhocnumber'),
-				  'name'	=> 'protocol[adhocnumber]',
-				  'labelid'	=> 'protocol-adhocnumber',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','adhocnumber'),
-				  'help'		=> $this->bbf('hlp_fm_adhocnumber'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'adhocnumber')) )),
 
 	// asterisk 1.8 fields
     $form->select(array('desc'  => $this->bbf('fm_protocol-transport'),

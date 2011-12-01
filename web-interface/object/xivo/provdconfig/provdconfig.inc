@@ -567,8 +567,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				}
 				else
 				{
-					unset($raw['sip_transport'],
-					$raw['sip_srtp_mode'],
+					unset($raw['sip_srtp_mode'],
 					$raw['sip_servers_root_and_intermediate_certificates'],
 					$raw_config['sip_transport'],
 					$raw_config['sip_servers_root_and_intermediate_certificates'],

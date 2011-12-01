@@ -6,6 +6,9 @@ IPBX
 ; no_number_in_context
 Pas de numéro dans le pool du contexte sélectionné.
 
+; fld-codeclist
+Codecs
+
 ; ast_codec_name_type(g723)
 G.723.1 (Audio)
 

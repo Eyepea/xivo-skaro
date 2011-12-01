@@ -34,37 +34,17 @@
 				<span class="span-right">&nbsp;</span>
 			</div>
 		</li>
-		<li id="dwsm-tab-3"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-user');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
+		<li id="dwsm-tab-2"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-user',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#user"><?=$this->bbf('smenu_user');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
-		</li>
-		<li id="dwsm-tab-4"
-		    class="dwsm-blur-last"
-		    onmouseout="dwho_submenu.blur(this,1);"
-		    onmouseover="dwho_submenu.focus(this,1);">
-			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-last',1);">
-				<div class="tab">
-					<span class="span-center">
-						<a href="#last"><?=$this->bbf('smenu_guest');?></a>
-					</span>
-				</div>
-				<span class="span-right">&nbsp;</span>
-			</div>
-			<div class="stab">
-				<ul>
-					<li><a href="#email"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-email',1);">
-							<?=$this->bbf('smenu_email');?></a></li>
-				</ul>
-		</div>
 		</li>
 	</ul>
 </div>

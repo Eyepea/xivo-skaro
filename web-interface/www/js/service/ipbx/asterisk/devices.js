@@ -17,19 +17,20 @@
  */
 
 function update_sip_srtp_mode() {
-	var it_sipsrtpmode_val = $('#it-config-sip_srtp_mode').val();
-	var it_siptrans = $('#it-config-sip_transport');
+	var it_sipsrtpmode = $('#it-config-sip_srtp_mode');
+	var it_siptrans_val = $('#it-config-sip_transport').val();
 
-	it_siptrans.attr('disabled', 'disabled');
-	it_siptrans.addClass('it-disabled');
+	it_sipsrtpmode.attr('disabled', 'disabled');
+	it_sipsrtpmode.addClass('it-disabled');
 
-	if (it_sipsrtpmode_val == 'preferred' || it_sipsrtpmode_val == 'required') {
-		it_siptrans.removeAttr('disabled');
-		it_siptrans.removeClass('it-disabled');
+	if (it_siptrans_val == 'tls') {
+		it_sipsrtpmode.removeAttr('disabled');
+		it_sipsrtpmode.removeClass('it-disabled');
+		it_sipsrtpmode.val('required');
 	}
 }
 
-$(document).ready(function() {
+$().ready(function() {
 	update_sip_srtp_mode();
-	$('#it-config-sip_srtp_mode').change(update_sip_srtp_mode);
+	$('#it-config-sip_transport').change(update_sip_srtp_mode);
 });

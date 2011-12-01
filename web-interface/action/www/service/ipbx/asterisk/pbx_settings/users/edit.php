@@ -171,30 +171,30 @@ $_TPL->load_i18n_file('tpl/www/bloc/service/ipbx/asterisk/pbx_settings/users/edi
 
 $order_list    = range(1, 20);
 $softkeys_list = array(
-	'redial'=> $_TPL->bbf('softkey_redial'),
+	'redial'        => $_TPL->bbf('softkey_redial'),
 	'newcall'       => $_TPL->bbf('softkey_newcall'),
 	'cfwdall'       => $_TPL->bbf('softkey_cfwdall'),
 	'cfwdbusy'      => $_TPL->bbf('softkey_cfwdbusy'),
 	'cfwdnoanswer'  => $_TPL->bbf('softkey_cfwdnoanswer'),
-	'pickup'=> $_TPL->bbf('softkey_pickup'),
+	'pickup'        => $_TPL->bbf('softkey_pickup'),
 	'gpickup'       => $_TPL->bbf('softkey_gpickup'),
 	'conflist'      => $_TPL->bbf('softkey_conflist'),
-	'dnd'   => $_TPL->bbf('softkey_dnd'),
-	'hold'  => $_TPL->bbf('softkey_hold'),
+	'dnd'           => $_TPL->bbf('softkey_dnd'),
+	'hold'          => $_TPL->bbf('softkey_hold'),
 	'endcall'       => $_TPL->bbf('softkey_endcall'),
-	'park'  => $_TPL->bbf('softkey_park'),
-	'select'=> $_TPL->bbf('softkey_select'),
+	'park'          => $_TPL->bbf('softkey_park'),
+	'select'        => $_TPL->bbf('softkey_select'),
 	'idivert'       => $_TPL->bbf('softkey_idivert'),
-	'resume'=> $_TPL->bbf('softkey_resume'),
+	'resume'        => $_TPL->bbf('softkey_resume'),
 	'transfer'      => $_TPL->bbf('softkey_transfer'),
 	'dirtrfr'       => $_TPL->bbf('softkey_dirtrfr'),
-	'answer'=> $_TPL->bbf('softkey_answer'),
+	'answer'        => $_TPL->bbf('softkey_answer'),
 	'transvm'       => $_TPL->bbf('softkey_transvm'),
 	'private'       => $_TPL->bbf('softkey_private'),
-	'meetme'=> $_TPL->bbf('softkey_meetme'),
-	'barge' => $_TPL->bbf('softkey_barge'),
-	'cbarge'=> $_TPL->bbf('softkey_cbarge'),
-	'conf'  => $_TPL->bbf('softkey_conf'),
+	'meetme'        => $_TPL->bbf('softkey_meetme'),
+	'barge'         => $_TPL->bbf('softkey_barge'),
+	'cbarge'        => $_TPL->bbf('softkey_cbarge'),
+	'conf'          => $_TPL->bbf('softkey_conf'),
 	'backjoin'      => $_TPL->bbf('softkey_backjoin'),
 );
 
@@ -227,17 +227,5 @@ $_TPL->set_var('order_list', $order_list);
 $_TPL->set_var('softkeys_list', $softkeys_list);
 $_TPL->set_var('parking_list', $modpark->get_all());
 $_TPL->set_var('schedule_id', $return['schedule_id']);
-
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/dwho/uri.js');
-$dhtml->set_js('js/dwho/http.js');
-$dhtml->set_js('js/dwho/suggest.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/lines.js');
-$dhtml->set_js('js/dwho/submenu.js');
-$dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');
-$dhtml->load_js_multiselect_files();
 
 ?>

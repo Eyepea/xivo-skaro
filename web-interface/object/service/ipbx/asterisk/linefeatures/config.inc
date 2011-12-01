@@ -38,9 +38,9 @@ $array['element'] = array();
 
 $array['element']['protocol'] = array();
 $array['element']['protocol']['value'] = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
-					       XIVO_SRE_IPBX_AST_PROTO_IAX,
-					       XIVO_SRE_IPBX_AST_PROTO_SCCP,
-					       XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
+												#XIVO_SRE_IPBX_AST_PROTO_IAX,
+												#XIVO_SRE_IPBX_AST_PROTO_SCCP,
+												XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 
 $array['element']['protocolid'] = array();
@@ -101,10 +101,7 @@ $array['element']['description']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
-						    XIVO_SRE_IPBX_AST_PROTO_IAX,
-						    XIVO_SRE_IPBX_AST_PROTO_SCCP,
-						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
+$array['filter']['protocol'] = array('key' => $array['element']['protocol']['value']);
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['iduserfeatures'] = array('set' => false,'cast' => 'ulongint');
 $array['filter']['num'] = array('set' => false,'cast' => 'ulongint');

@@ -65,14 +65,17 @@ Explicit notification of messages:
 ; fm_userfeatures_description
 Description:
 
+; fld-device-sip_config
+SIP
+
+; fm_config_sip_transport
+Transport: 
+
 ; fld-device-srtp_config
 SRTP
 
 ; fm_config_sip_srtp_mode
 Mode:
-
-; fm_config_sip_transport
-Transport: 
 
 ; fld-device-vlan_config
 VLAN

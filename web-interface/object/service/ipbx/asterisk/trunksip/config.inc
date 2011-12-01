@@ -100,10 +100,9 @@ $array['element']['maxcallbitrate']['default'] = '';
 $array['element']['maxcallbitrate']['null'] = true;
 
 $array['element']['insecure'] = array();
-$array['element']['insecure']['value'] = array('no'		=> 'no',
-					       'port'		=> 'port',
-					       'invite'		=> 'invite',
-					       'port,invite'	=> 'all');
+$array['element']['insecure']['value'] = array('port'		=> 'port',
+												'invite'	=> 'invite',
+												'port,invite'	=> 'port,invite');
 $array['element']['insecure']['default'] = '';
 $array['element']['insecure']['null'] = true;
 
@@ -428,7 +427,7 @@ $array['filter']['callerid'] = array('set'	=> false,
 $array['filter']['fullname'] = array('set' => false,'chk' => 2);
 $array['filter']['cid_number'] = array('set' => false,'chk' => 2);
 $array['filter']['maxcallbitrate'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,1860));
-$array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('no','port','invite','port,invite'));
+$array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => $array['element']['insecure']['value']);
 $array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','yes','never','route'));
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
@@ -455,12 +454,10 @@ $array['filter']['rtpholdtimeout'] = array('set' => false,'chk' => 2,'cast' => '
 $array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
-				 'callback'		=> 'dwho_network::valid_subnet_ipv4',
-				 'callbackarg'		=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
+				 'callback'		=> 'dwho_network::valid_subnet_ipv4');
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
-				   'callback'		=> 'dwho_network::valid_subnet_ipv4',
-				   'callbackarg'	=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
+				   'callback'		=> 'dwho_network::valid_subnet_ipv4');
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 0);
 $array['filter']['pickupgroup'] = array('set' => false,'chk' => 0);
