@@ -28,12 +28,12 @@ import os
 import sys
 
 from xivo_ctiservers import ctiserver
-from xivo_ctiservers import config
+from xivo_ctiservers import cti_config
 
 try:
-    config.DAEMONNAME = os.path.basename(sys.argv[0])
+    cti_config.DAEMONNAME = os.path.basename(sys.argv[0])
 except:
-    config.DAEMONNAME = 'ctid'
+    cti_config.DAEMONNAME = 'ctid'
 
 GETOPT_SHORTOPTS = 'dc:C:p:l:i:P:'
 GETOPT_LONGOPTS = ['debug',
@@ -49,23 +49,23 @@ GETOPT_LONGOPTS = ['debug',
 def parse_command_line():
     for opt, arg in getopt.getopt(sys.argv[1:], GETOPT_SHORTOPTS, GETOPT_LONGOPTS)[0]:
         if opt == '-d':
-            config.DEBUG_MODE = True
+            cti_config.DEBUG_MODE = True
         elif opt == '-c':
-            config.XIVO_CONF_FILE = arg
+            cti_config.XIVO_CONF_FILE = arg
         elif opt == '-C':
-            config.XIVO_CONF_OVER = arg
+            cti_config.XIVO_CONF_OVER = arg
         elif opt == '-p':
-            config.PIDFILE = arg
+            cti_config.PIDFILE = arg
         elif opt == '-l':
-            config.LOGFILENAME = arg
+            cti_config.LOGFILENAME = arg
         elif opt == '-i':
-            config.XIVOIP = arg
+            cti_config.XIVOIP = arg
         elif opt == '-P':
-            config.PORTDELTA = int(arg)
+            cti_config.PORTDELTA = int(arg)
 
 
 if __name__ == '__main__':
     parse_command_line()
-    if config.XIVOIP != 'localhost':
-        config.XIVO_CONF_FILE = 'https://%s/cti/json.php/restricted/configuration' % config.XIVOIP
+    if cti_config.XIVOIP != 'localhost':
+        cti_config.XIVO_CONF_FILE = 'https://%s/cti/json.php/restricted/configuration' % cti_config.XIVOIP
     main = ctiserver.CTIServer()

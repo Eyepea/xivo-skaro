@@ -40,7 +40,7 @@ from xivo_ctiservers import cti_directories
 from xivo_ctiservers import cti_sheets
 from xivo_ctiservers import db_connection_manager
 from xivo_ctiservers.dao.alchemy import dbconnection
-from xivo_ctiservers import config
+from xivo_ctiservers import cti_config
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
@@ -175,7 +175,7 @@ class Safe:
         self.contexts_mgr = cti_directories.ContextsMgr()
         self.directories_mgr = cti_directories.DirectoriesMgr()
         
-        cdr_uri = config.cconf.getconfig('ipbxes')[ipbxid]['cdr_db_uri']
+        cdr_uri = cti_config.cconf.getconfig('ipbxes')[ipbxid]['cdr_db_uri']
         dbconnection.add_connection(cdr_uri)
         self.call_history_mgr = call_history.CallHistoryMgr.new_from_uri(cdr_uri)
 
@@ -480,7 +480,7 @@ class Safe:
 
     def user_get_userstatuskind(self, userid):
         profileclient = self.user_get_ctiprofile(userid)
-        zz = config.cconf.getconfig('profiles').get(profileclient)
+        zz = cti_config.cconf.getconfig('profiles').get(profileclient)
         return zz.get('userstatus')
 
     def user_get_all(self):
@@ -1050,7 +1050,7 @@ class Safe:
                                  '%s|agent:%s/%s|user:%s/%s'
                                  % (truestate, self.ipbxid, agentid, self.ipbxid, userid))
                     }
-                config.myami.get(self.ipbxid).execute_and_track(actionid, params)
+                self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
             # XXX log to ctilog self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
             self.appendcti('users', 'updatestatus', userid)
             self.presence_action(userid)
@@ -1083,11 +1083,11 @@ class Safe:
             return ret
         profileclient = self.user_get_ctiprofile(userid)
         if profileclient:
-            profilespecs = config.cconf.getconfig('profiles').get(profileclient)
+            profilespecs = cti_config.cconf.getconfig('profiles').get(profileclient)
             if profilespecs:
                 kindid = profilespecs.get(kind)
                 if kindid:
-                    ret = config.cconf.getconfig(kind).get(kindid)
+                    ret = cti_config.cconf.getconfig(kind).get(kindid)
                 else:
                     self.log.warning('get_user_permissions %s %s : no kindid', kind, userid)
             else:
@@ -1160,9 +1160,9 @@ class Safe:
             connection['conn'].commit()
 
     def sheetsend(self, where, channel, outdest = None):
-        if 'sheets' not in config.cconf.getconfig():
+        if 'sheets' not in cti_config.cconf.getconfig():
             return
-        bsheets = config.cconf.getconfig('sheets')
+        bsheets = cti_config.cconf.getconfig('sheets')
         self.sheetevents = bsheets.get('events')
         self.sheetdisplays = bsheets.get('displays')
         self.sheetoptions = bsheets.get('options')
@@ -1196,7 +1196,7 @@ class Safe:
             #    + according to conditions
             #    final 'whom' description should be clearly written in order to send across 'any path'
             tomatch = sheet.checkdest(channelprops)
-            tosendlist = config.get_connected(tomatch)
+            tosendlist = self.ctid.get_connected(tomatch)
 
             # 2. make an extra call to a db if requested ? could be done elsewhere (before) also ...
 
@@ -1209,7 +1209,7 @@ class Safe:
             # print sheet.internaldata
 
             # 7. send the payload
-            config.sendsheettolist(tosendlist,
+            self.ctid.sendsheettolist(tosendlist,
                                       { 'class' : 'sheet',
                                         'channel' : channel,
                                         'serial' : sheet.serial,
@@ -1238,7 +1238,7 @@ class Safe:
                 if removeme:
                     params = self.faxes[fileid].getparams()
                     actionid = fileid
-                    config.myami.get(self.ipbxid).execute_and_track(actionid, params)
+                    self.ctid.myami.get(self.ipbxid).execute_and_track(actionid, params)
                     del self.faxes[fileid]
 
             # other cases to handle : login, agentlogoff (would that still be true ?)
@@ -1248,7 +1248,7 @@ class Safe:
         try:
             self.log.info('cb_timer (timer finished at %s) %s', time.asctime(), args)
             self.timeout_queue.put(args)
-            os.write(config.pipe_queued_threads[1], 'innerdata:%s\n' % self.ipbxid)
+            os.write(self.ctid.pipe_queued_threads[1], 'innerdata:%s\n' % self.ipbxid)
         except Exception:
             self.log.exception('cb_timer %s', args)
 
@@ -1280,7 +1280,7 @@ class Safe:
             for k, v in varstoset.iteritems():
                 cid.sendall('SET VARIABLE %s "%s"\n' % (k, v))
             cid.close()
-            del config.fdlist_established[cid]
+            del self.ctid.fdlist_established[cid]
             del self.fagichannels[channel]
         except Exception:
             self.log.exception('problem when closing channel %s', channel)
@@ -1356,7 +1356,7 @@ class Safe:
             try:
                 if agiargs:
                     presenceid = agiargs.get('1')
-                    presences = config.cconf.getconfig('userstatus')
+                    presences = cti_config.cconf.getconfig('userstatus')
 
                     prescountdict = {}
                     for k, v in presences.iteritems():
@@ -1477,13 +1477,13 @@ class Safe:
         # This function must be called after a certain amount of initialization
         # went by in the ctid object since some of the directories depends on
         # some information which is not available during this Safe __init__
-        display_contents = config.cconf.getconfig('displays')
+        display_contents = cti_config.cconf.getconfig('displays')
         self.displays_mgr.update(display_contents)
         
-        directories_contents = config.cconf.getconfig('directories')
+        directories_contents = cti_config.cconf.getconfig('directories')
         self.directories_mgr.update(self.ctid, directories_contents)
         
-        contexts_contents = config.cconf.getconfig('contexts')
+        contexts_contents = cti_config.cconf.getconfig('contexts')
         self.contexts_mgr.update(self.displays_mgr.displays,
                                  self.directories_mgr.directories,
                                  contexts_contents)

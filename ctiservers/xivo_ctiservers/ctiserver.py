@@ -53,7 +53,6 @@ from xivo_ctiservers.alarm import alarm
 from xivo_ctiservers.alarm import scheduler
 from xivo_ctiservers.client_connection import ClientConnection
 from xivo_ctiservers.dao.alchemy import dbconnection
-from xivo_ctiservers import config
 
 
 class CTIServer:
@@ -70,22 +69,22 @@ class CTIServer:
         log = logging.getLogger('main')
 
         try:
-            logfilehandler = RotatingFileHandler(config.LOGFILENAME)
+            logfilehandler = RotatingFileHandler(cti_config.LOGFILENAME)
             formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
-                                          % config.LOGDAEMONNAME)
+                                          % cti_config.LOGDAEMONNAME)
             logfilehandler.setFormatter(formatter)
             root_logger = logging.getLogger()
             root_logger.addHandler(logfilehandler)
-            if config.DEBUG_MODE:
+            if cti_config.DEBUG_MODE:
                 root_logger.setLevel(logging.DEBUG)
 
         except Exception:
             log.exception('logfilehandler')
 
-        if not config.DEBUG_MODE:
+        if not cti_config.DEBUG_MODE:
             daemonize.daemonize()
 
-        daemonize.lock_pidfile_or_die(config.PIDFILE)
+        daemonize.lock_pidfile_or_die(cti_config.PIDFILE)
 
         self.nreload = 0
         self.myami = {}
@@ -94,7 +93,7 @@ class CTIServer:
         self.timeout_queue = Queue.Queue()
         self.pipe_queued_threads = None
         self.scheduler = scheduler.Scheduler()
-        persister = alarm.JSONPersister(config.ALARM_DIRECTORY)
+        persister = alarm.JSONPersister(cti_config.ALARM_DIRECTORY)
         persister = alarm.MaxDeltaPersisterDecorator(datetime.timedelta(hours=2),
                                                      persister)
         try:
@@ -176,7 +175,7 @@ class CTIServer:
 
     def find_matching_ipbxid(self, ipaddress):
         found_ipbxid = None
-        for ipbxid, ipbxconfig in config.cconf.getconfig('ipbxes').iteritems():
+        for ipbxid, ipbxconfig in cti_config.cconf.getconfig('ipbxes').iteritems():
             if 'ipbx_connection' in ipbxconfig:
                 connparams = ipbxconfig.get('ipbx_connection')
                 cfg_ip_address = connparams.get('ipaddress')
@@ -238,7 +237,7 @@ class CTIServer:
         return
 
     def updates_period(self):
-        return int(config.cconf.getconfig('main').get('updates_period', '3600'))
+        return int(cti_config.cconf.getconfig('main').get('updates_period', '3600'))
 
     def _init_db_connection_pool(self):
         # XXX we should probably close the db_connection_pool when main loop exit
@@ -249,7 +248,7 @@ class CTIServer:
         return dbconnection.DBConnectionPool(dbconnection.DBConnection)
 
     def _init_queue_stats(self):
-        queue_stats_uri = config.cconf.getconfig('main')['asterisk_queuestat_db']
+        queue_stats_uri = cti_config.cconf.getconfig('main')['asterisk_queuestat_db']
         queue_logger.queue_logger.init(queue_stats_uri)
         dbconnection.add_connection_as(queue_stats_uri, 'queue_stats')
 
@@ -267,20 +266,20 @@ class CTIServer:
 
         self._init_db_connection_pool()
 
-        config.cconf = cti_config.Config(config.XIVO_CONF_FILE, config.XIVO_CONF_FILE_DEFAULT)
-        config.cconf.set_ipwebs(config.XIVOIP)
-        if config.XIVO_CONF_OVER:
-            urldata = urllib.urlopen(config.XIVO_CONF_OVER)
+        cti_config.cconf = cti_config.Config(cti_config.XIVO_CONF_FILE, cti_config.XIVO_CONF_FILE_DEFAULT)
+        cti_config.cconf.set_ipwebs(cti_config.XIVOIP)
+        if cti_config.XIVO_CONF_OVER:
+            urldata = urllib.urlopen(cti_config.XIVO_CONF_OVER)
             payload = urldata.read()
             urldata.close()
             overconf = cjson.decode(payload)
-            config.cconf.set_rcti_override_ipbxes(overconf)
-        config.cconf.update()
-        config.cconf.set_rcti_special_profile()
+            cti_config.cconf.set_rcti_override_ipbxes(overconf)
+        cti_config.cconf.update()
+        cti_config.cconf.set_rcti_special_profile()
 
         self._init_queue_stats()
 
-        xivoconf_general = config.cconf.getconfig('main')
+        xivoconf_general = cti_config.cconf.getconfig('main')
 
         # loads the general configuration
         ctilog = xivoconf_general.get('ctilog_db_uri')
@@ -300,9 +299,9 @@ class CTIServer:
         self.fdlist_ami = {}
         self.fdlist_remote_cti = {}
 
-        log.info("the monitored ipbx's is/are : %s" % config.cconf.getconfig('ipbxes').keys())
+        log.info("the monitored ipbx's is/are : %s" % cti_config.cconf.getconfig('ipbxes').keys())
 
-        for ipbxid, ipbxconfig in config.cconf.getconfig('ipbxes').iteritems():
+        for ipbxid, ipbxconfig in cti_config.cconf.getconfig('ipbxes').iteritems():
             if 'ipbx_connection' in ipbxconfig:
                 self.myipbxid = ipbxid
                 break
@@ -311,7 +310,7 @@ class CTIServer:
 
         log.info('# STARTING %s # (1/3) Local AMI socket connection' % self.xdname)
         if self.myipbxid:
-            ipbxconfig = config.cconf.getconfig('ipbxes').get(self.myipbxid)
+            ipbxconfig = cti_config.cconf.getconfig('ipbxes').get(self.myipbxid)
             # interface : safe deposit
             self.safe[self.myipbxid] = innerdata.Safe(self, self.myipbxid,
                                                       ipbxconfig.get('urllists'))
@@ -341,7 +340,7 @@ class CTIServer:
                 log.exception('%s : commandclass.updates()' % self.myipbxid)
 
         log.info('# STARTING %s # (2/3) Remote CTI connections' % self.xdname)
-        for ipbxid, ipbxconfig in config.cconf.getconfig('ipbxes').iteritems():
+        for ipbxid, ipbxconfig in cti_config.cconf.getconfig('ipbxes').iteritems():
             if ipbxid != self.myipbxid:
                 log.info('other ipbx to connect to : %s' % ipbxid)
                 try:
@@ -370,7 +369,7 @@ class CTIServer:
                 continue
             try:
                 (bind, port) = bind_and_port[:2]
-                trueport = int(port) + config.PORTDELTA
+                trueport = int(port) + cti_config.PORTDELTA
                 gai = socket.getaddrinfo(bind, trueport, 0, socket.SOCK_STREAM, socket.SOL_TCP)
                 if not gai:
                     continue
@@ -392,7 +391,7 @@ class CTIServer:
                 continue
             try:
                 (bind, port) = bind_and_port[:2]
-                trueport = int(port) + config.PORTDELTA
+                trueport = int(port) + cti_config.PORTDELTA
                 gai = socket.getaddrinfo(bind, trueport, 0, socket.SOCK_DGRAM, socket.SOL_UDP)
                 if not gai:
                     continue
@@ -405,7 +404,7 @@ class CTIServer:
                 log.exception('udp %s %d' % (bind, trueport))
 
         # Main select() loop - Receive messages
-        if not config.cconf.getconfig():
+        if not cti_config.cconf.getconfig():
             nsecs = 5
             log.info('waiting %d seconds in case a config would be available ...' % nsecs)
             try:
@@ -483,7 +482,7 @@ class CTIServer:
 
     def _schedule_alarms(self):
         # Schedule new alarms/reschedule updated alarm
-        global_zone = config.cconf.getconfig('ipbxes').get(self.myipbxid, {}).get('timezone')
+        global_zone = cti_config.cconf.getconfig('ipbxes').get(self.myipbxid, {}).get('timezone')
         userlist = self.safe[self.myipbxid].xod_config['users']
         if global_zone != self.global_zone:
             log.info('Global zone changed to %s', global_zone)
@@ -569,7 +568,7 @@ class CTIServer:
                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                     print '--- (stop) killing thread <%s>' % t.getName()
                     t._Thread__stop()
-                daemonize.unlock_pidfile(config.PIDFILE)
+                daemonize.unlock_pidfile(cti_config.PIDFILE)
                 sys.exit(5)
             else:
                 # self.commandclass.reset('reload')
@@ -605,7 +604,7 @@ class CTIServer:
                         try:
                             amiint = self.fdlist_ami.get(sel_i)
                             ipbxid = amiint.ipbxid
-                            buf = sel_i.recv(config.BUFSIZE_LARGE)
+                            buf = sel_i.recv(cti_config.BUFSIZE_LARGE)
                             if len(buf) == 0:
                                 log.warning('AMI %s : CLOSING (%s)' % (ipbxid, time.asctime()))
                                 del self.fdlist_ami[sel_i]
@@ -623,7 +622,7 @@ class CTIServer:
                         try:
                             cticonn = self.fdlist_remote_cti.get(sel_i)
                             ipbxid = cticonn.ipbxid
-                            buf = sel_i.recv(config.BUFSIZE_LARGE)
+                            buf = sel_i.recv(cti_config.BUFSIZE_LARGE)
                             if len(buf) == 0:
                                 log.warning('RCTI %s : CLOSING' % ipbxid)
                                 del self.fdlist_remote_cti[sel_i]
@@ -641,7 +640,7 @@ class CTIServer:
                     elif sel_i in self.fdlist_udp_cti: # {
                         [kind, nmax] = self.fdlist_udp_cti[sel_i].split(':')
                         if kind == 'ANNOUNCE':
-                            [data, sockparams] = sel_i.recvfrom(config.BUFSIZE_LARGE)
+                            [data, sockparams] = sel_i.recvfrom(cti_config.BUFSIZE_LARGE)
                             log.info('UDP %s <%s> %s' % (kind, data.strip(), sockparams))
                             # scheduling AMI reconnection
                             k = threading.Timer(1, self.cb_timer,
@@ -667,15 +666,15 @@ class CTIServer:
                             try:
                                 connstream = ssl.wrap_socket(connc,
                                                              server_side = True,
-                                                             certfile = config.cconf.getconfig('certfile'),
-                                                             keyfile = config.cconf.getconfig('keyfile'),
-                                                             ssl_version = config.SSLPROTO)
+                                                             certfile = cti_config.cconf.getconfig('certfile'),
+                                                             keyfile = cti_config.cconf.getconfig('keyfile'),
+                                                             ssl_version = cti_config.SSLPROTO)
                                 connc = ClientConnection(connstream, sockparams, ctiseparator)
                             except ssl.SSLError:
                                 log.exception('%s:%s:%d cert=%s key=%s)'
                                               % (kind, sockparams[0], sockparams[1],
-                                                 config.cconf.getconfig('certfile'),
-                                                 config.cconf.getconfig('keyfile')))
+                                                 cti_config.cconf.getconfig('certfile'),
+                                                 cti_config.cconf.getconfig('keyfile')))
                                 connc.close()
                                 connc = None
                         # appending the opened socket to the ones watched
@@ -702,7 +701,7 @@ class CTIServer:
                                                 % (kind, sockparams[0]))
 
                             if kind in ['CTI', 'CTIS']:
-                                logintimeout = int(config.cconf.getconfig('main').get('logintimeout', 5))
+                                logintimeout = int(cti_config.cconf.getconfig('main').get('logintimeout', 5))
                                 # logintimeout = 3600
                                 nc.logintimer = threading.Timer(logintimeout, self.cb_timer,
                                                                 ({'action' : 'ctilogin',
@@ -736,7 +735,7 @@ class CTIServer:
                                     log.info('TCP socket %s closed(A %s) on %s' % (kind.kind, cexc, requester))
                             else: # {
                                 try:
-                                    msg = sel_i.recv(config.BUFSIZE_LARGE, socket.MSG_DONTWAIT)
+                                    msg = sel_i.recv(cti_config.BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                     lmsg = len(msg)
                                 except Exception:
                                     log.exception('connection to %s (%s)' % (requester, kind))
@@ -813,7 +812,7 @@ class CTIServer:
                                          % (self.xdname, ipbxid, time.asctime(), self.update_userlist[ipbxid]))
                                 try:
                                     # manage_connection.update_amisocks(ipbxid, self)
-                                    config.cconf.update()
+                                    cti_config.cconf.update()
                                     safe.regular_update()
                                 except Exception:
                                     log.exception('%s : failed while updating lists and sockets (computed timeout)'
@@ -846,7 +845,7 @@ class CTIServer:
 
                         try:
                             # manage_connection.update_amisocks(ipbxid, self)
-                            config.cconf.update()
+                            cti_config.cconf.update()
                             safe.regular_update()
                         except Exception:
                             log.exception('%s : failed while updating lists and sockets (select timeout)' % ipbxid)

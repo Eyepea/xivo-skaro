@@ -31,7 +31,7 @@ import threading
 import time
 from xivo_ctiservers import xivo_webservices
 from xivo_ctiservers import cti_fax
-from xivo_ctiservers import config
+from xivo_ctiservers import cti_config
 from xivo_ctiservers.statistics.queuestatisticmanager import QueueStatisticManager
 from xivo_ctiservers.statistics.queuestatisticencoder import QueueStatisticEncoder
 
@@ -314,7 +314,7 @@ class Command:
 ##            return userinfo
 
         profileclient = self.innerdata.xod_config['users'].keeplist[self.userid].get('profileclient')
-        profilespecs = config.cconf.getconfig('profiles').get(profileclient)
+        profilespecs = cti_config.cconf.getconfig('profiles').get(profileclient)
 
         capastruct = {}
         summarycapas = {}
@@ -324,7 +324,7 @@ class Command:
                              'userstatus', 'phonestatus', 'channelstatus', 'agentstatus']:
                 if profilespecs.get(capakind):
                     tt = profilespecs.get(capakind)
-                    cfg_capakind = config.cconf.getconfig(capakind)
+                    cfg_capakind = cti_config.cconf.getconfig(capakind)
                     if cfg_capakind:
                         details = cfg_capakind.get(tt)
                     else:
@@ -372,7 +372,7 @@ class Command:
         cdetails = self.connection.connection_details
         ipbxid = cdetails.get('ipbxid')
         userid = cdetails.get('userid')
-        if capaid not in config.cconf.getconfig('profiles').keys():
+        if capaid not in cti_config.cconf.getconfig('profiles').keys():
             return 'unknownprofile'
         if capaid != self.ctid.safe[ipbxid].xod_config['users'].keeplist[userid]['profileclient']:
             return 'wrongprofile'
@@ -419,7 +419,7 @@ class Command:
     def regcommand_actionfiche(self):
         reply = {}
         infos = self.commanddict.get('infos')
-        uri = config.cconf.getconfig('ipbxes').get(self.ripbxid).get('cdr_db_uri')
+        uri = cti_config.cconf.getconfig('ipbxes').get(self.ripbxid).get('cdr_db_uri')
         self.rinnerdata.fill_user_ctilog(uri,
                                          self.ruserid,
                                          'cticommand:actionfiche',
@@ -428,7 +428,7 @@ class Command:
 
     def regcommand_featuresget(self):
         reply = {}
-        z = xivo_webservices.xws(config.cconf.ipwebs, 80)
+        z = xivo_webservices.xws(cti_config.cconf.ipwebs, 80)
         z.connect()
         services = z.serviceget(self.ruserid)
         z.close()
@@ -456,7 +456,7 @@ class Command:
             return {'status': 'OK', 'warning_string': 'no changes'}
 
         #user.update(values)
-        z = xivo_webservices.xws(config.cconf.ipwebs, 80)
+        z = xivo_webservices.xws(cti_config.cconf.ipwebs, 80)
         z.connect()
         z.serviceput(self.ruserid, values)
         z.close()
@@ -622,7 +622,7 @@ class Command:
         return reply
 
     def regcommand_getipbxlist(self):
-        reply = { 'ipbxlist' : config.cconf.getconfig('ipbxes').keys() }
+        reply = { 'ipbxlist' : cti_config.cconf.getconfig('ipbxes').keys() }
         return reply
 
     def regcommand_getlist(self):
@@ -676,9 +676,9 @@ class Command:
             self.log.warning('unknown ipbxcommand %s' % self.ipbxcommand)
             return reply
         profileclient = self.rinnerdata.xod_config['users'].keeplist[self.ruserid].get('profileclient')
-        profilespecs = config.cconf.getconfig('profiles').get(profileclient)
+        profilespecs = cti_config.cconf.getconfig('profiles').get(profileclient)
         ipbxcommands_id = profilespecs.get('ipbxcommands')
-        ipbxcommands = config.cconf.getconfig('ipbxcommands').get(ipbxcommands_id)
+        ipbxcommands = cti_config.cconf.getconfig('ipbxcommands').get(ipbxcommands_id)
         if self.ipbxcommand not in ipbxcommands:
             self.log.warning('profile %s : unallowed ipbxcommand %s (intermediate %s)'
                         % (profileclient, self.ipbxcommand, ipbxcommands_id))
