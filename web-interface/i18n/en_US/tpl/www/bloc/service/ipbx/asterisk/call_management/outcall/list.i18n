@@ -1,11 +1,17 @@
 ; col_name
 Name
 
+; col_sort_name
+Sort by name
+
 ; col_exten
 Extension
 
 ; col_context
 Context
+
+; col_sort_context
+Sort by context
 
 ; no_outcall
 No outgoing call found
