@@ -3,6 +3,7 @@
 import logging
 from xivo_ctiservers.dao.alchemy import dbconnection
 from xivo_ctiservers.dao.alchemy.cel import CEL
+from xivo_ctiservers import cti_config
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,18 @@ class CELChannel(object):
 
     def is_originate(self):
         return self._chan_start_event.exten == u's'
+
+    def peers_uniqueid(self):
+        linkedid = self._chan_start_event.linkedid
+        uniqueid = self._chan_start_event.uniqueid
+        for config in cti_config.cconf.getconfig('ipbxes'):
+            cel_uri = config['cdr_db_uri']
+            celdao = CELDAO.new_from_uri(cel_uri)
+            channels_with_uniqueid = celdao.channels_by_linkedid(linkedid)
+            for channel in channels_with_uniqueid:
+                if channel.uniqueid != uniqueid:
+                    return channel.uniqueid
+
 
 
 class CELDAO(object):

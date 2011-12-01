@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
 
 import unittest
+from tests.mock import Mock
 from datetime import datetime, timedelta
 from xivo_ctiservers.dao.alchemy.dbconnection import DBConnection
 from xivo_ctiservers.dao.alchemy.base import Base
 from xivo_ctiservers.dao.alchemy.cel import CEL
 from xivo_ctiservers.dao.celdao import CELDAO, CELChannel, CELException
+from xivo_ctiservers import cti_config
 
 
 def _new_datetime_generator(step=timedelta(seconds=1)):
@@ -212,6 +214,26 @@ class TestCELChannel(unittest.TestCase):
         cel_channel = CELChannel(cel_events)
 
         self.assertFalse(cel_channel.is_originate())
+
+    def test_peers_uniqueid(self):
+        cti_config.cconf = Mock()
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid=1, exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid=1),
+            _new_cel(eventtype='APP_START', uniqueid=1),
+            _new_cel(eventtype='CHAN_START', uniqueid=2),
+            _new_cel(eventtype='ANSWER', uniqueid=2),
+            _new_cel(eventtype='BRIDGE_START', uniqueid=1),
+            _new_cel(eventtype='BRIDGE_END', uniqueid=1),
+            _new_cel(eventtype='HANGUP', uniqueid=2),
+            _new_cel(eventtype='CHAN_END', uniqueid=2),
+            _new_cel(eventtype='HANGUP', uniqueid=1),
+            _new_cel(eventtype='CHAN_END', uniqueid=1),
+        ]
+
+        cel_channel = CELChannel(cel_events)
+
+        self.assertEqual(cel_channel.peers_uniqueid(), 2)
 
 
 class TestCELDAO(unittest.TestCase):
