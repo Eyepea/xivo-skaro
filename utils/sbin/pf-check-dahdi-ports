@@ -9,7 +9,7 @@ if [ ! -d /proc/dahdi ]; then
 fi
 
 DAHDI_MONITOR_PORTS="all"
-[ -e /etc/pf-config/common.conf ] && . /etc/pf-config/common.conf
+[ -e /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
 
 DAHDI_PORT_DIR=/proc/dahdi
 RESULT_DIR=/var/lib/pf-xivo-monitoring

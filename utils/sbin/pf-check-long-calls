@@ -3,7 +3,7 @@
 # Warns admins when a call lasts too much
 #
 
-[ -e /etc/pf-config/common.conf ] && . /etc/pf-config/common.conf
+[ -e /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
 
 if [ -z "${MAX_CALL_DURATION}" ]; then
   exit 0
