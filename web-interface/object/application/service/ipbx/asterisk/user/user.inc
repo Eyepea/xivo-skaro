@@ -1428,7 +1428,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$ref = &$linefeatures_list[$i];
 				if (isset($ref['id']) === false)
 					continue;
-				if($this->_linefeatures->disassociate_line($ref['id']) === false)
+				if($this->_line->get($ref['id']) === false
+				||$this->_line->delete() === false)
 					dwho_report::push('error','Can\'t disassociate line: '.$ref['id'],'linefeatures');
 			}
 		}
@@ -1654,16 +1655,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(null);
 
-		$where = array('iduserfeatures' => (int) $this->_info['userfeatures']['id']);
-
-		if (($listline = $this->_linefeatures->get_all_where($where)) === false)
-			return(true);
-
 		$r = array();
-		foreach($listline as $line)
+		foreach($this->_info['linefeatures'] as $line)
 		{
-			if(($r[$line['id']] = $this->_linefeatures->disassociate_line($line['id'])) === false)
-				dwho_report::push('error','Can\'t disassociate line: '.$line['id'],'linefeatures');
+			if($this->_line->get($line['id']) === false
+			|| $this->_line->delete() === false)
+				dwho_report::push('error','Can\'t remove line: '.$line['id'],'linefeatures');
 		}
 
 		if($this->_status === 'delete')
