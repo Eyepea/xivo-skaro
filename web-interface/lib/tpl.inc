@@ -102,7 +102,9 @@ class dwho_tpl
             $namespace = $this->get_option('i18n_namespace');
 
         $ret = dwho_i18n::babelfish($name,$args,$namespace);
-        if ($ret == $name || $ret == $name.'('.join(', ', array($args)).')') {
+        if (is_array($args))
+            $args = join(', ', $args);
+        if ($ret == $name || $ret == $name.'('.$args.')') {
             $bt = debug_backtrace();
             $ret = '__missing_translation:'.$bt[0]['file'].':'.$ret.':';
         }
