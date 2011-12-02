@@ -94,8 +94,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$engines = $_SRE->get_engines('ipbx');
 
 		if(defined('XIVO_SRE_IPBX_LABEL') === false)
-			define('XIVO_SRE_IPBX_LABEL',
-		$engines[$this->_wizsess['ipbxengine']['engine']]['label']);
+			define('XIVO_SRE_IPBX_LABEL', $engines[$this->_wizsess['ipbxengine']['engine']]['label']);
 
 		$config['general'] = array();
 		$config['general']['datastorage'] = $this->_wizsess['dbconfig']['save']['ipbx'];
@@ -105,6 +104,16 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_ipbx = &$_SRE->get('ipbx',$this->_wizsess['ipbxengine']['engine'],true);
 
 		return(true);
+	}
+
+	function _get_save_data_tmp()
+	{
+		if (!($data = file_get_contents($this->_savetmpfile))
+		|| !($wizsess = dwho_json::decode($data,true))) {
+			dwho_report::push('error', 'Can\'t get data for wizard');
+			return false;
+		}
+		return(($this->_wizsess = $wizsess));
 	}
 
 	function reset_wizard()
@@ -256,7 +265,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function discover_finish_uri()
 	{
-		if (($wizsess = $this->get_save_data_tmp()) === false)
+		if (($wizsess = $this->_get_save_data_tmp()) === false)
 		{
 			dwho_report::push('error', 'Can\'t get data for provd');
 			return false;
@@ -578,7 +587,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			fclose($fh);
 		}
 
-		$this->get_save_data_tmp();
+		$this->_get_save_data_tmp();
 
 		return($this->_wizsess);
 	}
@@ -631,33 +640,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$this->_wizsess['step'] = $this->get_next_step('license');
 
-		return(true);
-	}
-
-	function save_step_ipbxengine($data)
-	{
-		$this->_wizsess['prevstep'] = $this->get_current_step();
-
-		if(is_array($data) === false
-		|| isset($data['ipbxengine']) === false)
-		{
-			$this->_set_error('ipbxengine','missing');
-			return(false);
-		}
-
-		$_SRE = dwho_gct::get('xivo_service');
-		$engines = $_SRE->get_engines('ipbx');
-
-		if(isset($engines[$data['ipbxengine']]) === false)
-		{
-			$this->_set_error('ipbxengine','invalid');
-			return(false);
-		}
-
+		// step ipbx
 		$this->_wizsess['ipbxengine'] = array();
-		$this->_wizsess['ipbxengine']['engine'] = $data['ipbxengine'];
-
-		$this->_wizsess['step'] = $this->get_next_step('ipbxengine');
+		$this->_wizsess['ipbxengine']['engine'] = 'asterisk';
 
 		return(true);
 	}
@@ -677,9 +662,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_filter->set_validator(array('backend' => $this->_conf['filter']['dbconfig']['backend']));
 
 		if(($backend = $this->_filter->chk_value('backend',$data['dbconfig']['backend'])) === false
-		|| isset($this->_conf['filter']['dbconfig'][$backend],
-		$data['dbconfig'][$backend]) === false)
-		$this->_set_error('dbconfig','backend','invalid');
+		|| isset($this->_conf['filter']['dbconfig'][$backend], $data['dbconfig'][$backend]) === false) {
+			$this->_set_error('dbconfig','backend','invalid');
+		}
 
 		$create_auto = false;
 		if (isset($data['dbconfig']['create_auto']) === true)
@@ -719,17 +704,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 			switch($result['backend'])
 			{
-				case 'sqlite':
-					$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'astsqlite.db.sql');
-					$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.db.sqlite.sql');
-					break;
-				case 'mysql':
-					$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'astmysql.db.sql');
-					$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.db.mysql.sql');
-					break;
 				case 'postgresql':
-					$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'astpgsql.db.sql');
-					$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.db.postgresql.sql');
+					$ipbxdbpathfile = dwho_file::joinpath($base_config_path,'asterisk.sql');
+					$xivodbpathfile = dwho_file::joinpath($base_config_path,'xivo.sql');
 					break;
 				default:
 					$this->_set_error('dbconfig','backend','invalid');
@@ -754,25 +731,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		switch($result['backend'])
 		{
-			case 'sqlite':
-				$xivodburi['path'] = $ref['xivodb'];
-				$ipbxdburi['path'] = $ref['ipbxdb'];
-				break;
-			case 'mysql':
-				$xivodburi['host'] = $ref['host'];
-				$xivodburi['port'] = $ref['port'];
-				$xivodburi['authority'] = array();
-				$xivodburi['authority']['user'] = $ref['xivouser'];
-				$xivodburi['authority']['passwd'] = $ref['xivopass'];
-				$xivodburi['path'] = '/'.$ref['xivodbname'];
-
-				$ipbxdburi['host'] = $ref['host'];
-				$ipbxdburi['port'] = $ref['port'];
-				$ipbxdburi['authority'] = array();
-				$ipbxdburi['authority']['user'] = $ref['ipbxuser'];
-				$ipbxdburi['authority']['passwd'] = $ref['ipbxpass'];
-				$ipbxdburi['path'] = '/'.$ref['ipbxdbname'];
-				break;
 			case 'postgresql':
 				$xivodburi['host'] = $ref['host'];
 				$xivodburi['port'] = $ref['port'];
@@ -1589,13 +1547,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function set_default_provisioning_values()
 	{
-		if (($wizsess = $this->get_save_data_tmp()) === false)
-		{
-			dwho_report::push('error', 'Can\'t get data for provd');
-			return false;
-		}
-
-		// save to database
+		$wizsess = $this->_get_save_data_tmp();
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
 
@@ -1636,6 +1588,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function _commit_language($lang)
 	{
+		$this->_get_save_data_tmp();
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
 
@@ -1677,20 +1630,14 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		return true;
 	}
 
-	function get_save_data_tmp()
-	{
-		$data = file_get_contents($this->_savetmpfile);
-		$wizsess = dwho_json::decode($data,true);
-		return($wizsess);
-	}
-
 	function save_step_validate($data, $tpl)
 	{
+		return(true);
 	}
 
 	function commit_db_data()
 	{
-		// save to database
+		$this->_get_save_data_tmp();
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
 

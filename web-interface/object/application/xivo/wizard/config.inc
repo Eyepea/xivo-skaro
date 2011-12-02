@@ -23,7 +23,7 @@ $array = array();
 $array['step'] = array();
 $array['step']['welcome'] = true;
 $array['step']['license'] = true;
-$array['step']['ipbxengine'] = true;
+#$array['step']['ipbxengine'] = true;
 $array['step']['dbconfig'] = true;
 $array['step']['checkcomponents'] = true;
 $array['step']['mainconfig'] = true;
@@ -58,38 +58,6 @@ $array['element']['dbconfig']['backend'] = array();
 $array['element']['dbconfig']['backend']['value'] = array('postgresql');
 $array['element']['dbconfig']['backend']['default'] = 'postgresql';
 
-$array['element']['dbconfig']['sqlite'] = array();
-$array['element']['dbconfig']['sqlite']['xivodb'] = array();
-$array['element']['dbconfig']['sqlite']['xivodb']['default'] = '/var/lib/pf-xivo-web-interface/sqlite/xivo.db';
-
-$array['element']['dbconfig']['sqlite']['ipbxdb'] = array();
-$array['element']['dbconfig']['sqlite']['ipbxdb']['default'] = '/var/lib/asterisk/astsqlite';
-
-$array['element']['dbconfig']['mysql'] = array();
-$array['element']['dbconfig']['mysql']['host'] = array();
-$array['element']['dbconfig']['mysql']['host']['default'] = 'localhost';
-
-$array['element']['dbconfig']['mysql']['port'] = array();
-$array['element']['dbconfig']['mysql']['port']['default'] = '';
-
-$array['element']['dbconfig']['mysql']['xivouser'] = array();
-$array['element']['dbconfig']['mysql']['xivouser']['default'] = '';
-
-$array['element']['dbconfig']['mysql']['xivopass'] = array();
-$array['element']['dbconfig']['mysql']['xivopass']['default'] = '';
-
-$array['element']['dbconfig']['mysql']['xivodbname'] = array();
-$array['element']['dbconfig']['mysql']['xivodbname']['default'] = 'xivo';
-
-$array['element']['dbconfig']['mysql']['ipbxuser'] = array();
-$array['element']['dbconfig']['mysql']['ipbxuser']['default'] = '';
-
-$array['element']['dbconfig']['mysql']['ipbxpass'] = array();
-$array['element']['dbconfig']['mysql']['ipbxpass']['default'] = '';
-
-$array['element']['dbconfig']['mysql']['ipbxdbname'] = array();
-$array['element']['dbconfig']['mysql']['ipbxdbname']['default'] = 'asterisk';
-
 $array['element']['dbconfig']['postgresql'] = array();
 $array['element']['dbconfig']['postgresql']['host'] = array();
 $array['element']['dbconfig']['postgresql']['host']['default'] = 'localhost';
@@ -98,19 +66,19 @@ $array['element']['dbconfig']['postgresql']['port'] = array();
 $array['element']['dbconfig']['postgresql']['port']['default'] = '';
 
 $array['element']['dbconfig']['postgresql']['xivouser'] = array();
-$array['element']['dbconfig']['postgresql']['xivouser']['default'] = '';
+$array['element']['dbconfig']['postgresql']['xivouser']['default'] = 'xivo';
 
 $array['element']['dbconfig']['postgresql']['xivopass'] = array();
-$array['element']['dbconfig']['postgresql']['xivopass']['default'] = '';
+$array['element']['dbconfig']['postgresql']['xivopass']['default'] = 'proformatique';
 
 $array['element']['dbconfig']['postgresql']['xivodbname'] = array();
 $array['element']['dbconfig']['postgresql']['xivodbname']['default'] = 'xivo';
 
 $array['element']['dbconfig']['postgresql']['ipbxuser'] = array();
-$array['element']['dbconfig']['postgresql']['ipbxuser']['default'] = '';
+$array['element']['dbconfig']['postgresql']['ipbxuser']['default'] = 'asterisk';
 
 $array['element']['dbconfig']['postgresql']['ipbxpass'] = array();
-$array['element']['dbconfig']['postgresql']['ipbxpass']['default'] = '';
+$array['element']['dbconfig']['postgresql']['ipbxpass']['default'] = 'proformatique';
 
 $array['element']['dbconfig']['postgresql']['ipbxdbname'] = array();
 $array['element']['dbconfig']['postgresql']['ipbxdbname']['default'] = 'asterisk';
@@ -197,46 +165,8 @@ dwho::load_class('dwho_network');
 $array['filter'] = array();
 
 $array['filter']['dbconfig'] = array();
-$array['filter']['dbconfig']['backend'] = array('key' => array('sqlite','mysql','postgresql'));
+$array['filter']['dbconfig']['backend'] = array('key' => array('postgresql'));
 $array['filter']['dbconfig']['create_auto'] = array('set' => false,'chk' => 2,'bool' => true);
-
-$array['filter']['dbconfig']['sqlite'] = array();
-$array['filter']['dbconfig']['sqlite']['xivodb'] = array('minlen'	=> 4,
-							 'maxlen'	=> 255,
-							 'cast'		=> 'sgraph');
-$array['filter']['dbconfig']['sqlite']['ipbxdb'] = array('minlen'	=> 4,
-							 'maxlen'	=> 255,
-							 'cast'		=> 'sgraph');
-
-$array['filter']['dbconfig']['mysql'] = array();
-$array['filter']['dbconfig']['mysql']['host'] = array('callback'	=> 'dwho_network::valid_host',
-						      'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
-										  DWHO_NETWORK_HOST_HOSTNAME)));
-$array['filter']['dbconfig']['mysql']['port'] = array('set'		=> false,
-						      'chk'		=> 2,
-						      'callback'	=> 'dwho_network::valid_port_number');
-$array['filter']['dbconfig']['mysql']['xivouser'] = array('set'		=> false,
-							  'chk'		=> 2,
-							  'maxlen'	=> 64,
-							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
-$array['filter']['dbconfig']['mysql']['xivopass'] = array('set'		=> false,
-							  'chk'		=> 2,
-							  'maxlen'	=> 64,
-							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
-$array['filter']['dbconfig']['mysql']['xivodbname'] = array('minlen'	=> 1,
-							    'maxlen'	=> 64,
-							    'regexp'	=> '/^[a-zA-Z0-9_]+$/');
-$array['filter']['dbconfig']['mysql']['ipbxuser'] = array('set'		=> false,
-							  'chk'		=> 2,
-							  'maxlen'	=> 64,
-							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
-$array['filter']['dbconfig']['mysql']['ipbxpass'] = array('set'		=> false,
-							  'chk'		=> 2,
-							  'maxlen'	=> 64,
-							  'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
-$array['filter']['dbconfig']['mysql']['ipbxdbname'] = array('minlen'	=> 1,
-							    'maxlen'	=> 64,
-							    'regexp'	=> '/^[a-zA-Z0-9_]+$/');
 
 $array['filter']['dbconfig']['postgresql'] = array();
 $array['filter']['dbconfig']['postgresql']['host'] = array('callback'	=> 'dwho_network::valid_host',

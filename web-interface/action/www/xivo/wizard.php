@@ -62,9 +62,6 @@ switch($step)
 
 		$_TPL->set_var('license',$license);
 		break;
-	case 'ipbxengine':
-		$_TPL->set_var('info',$appwizard->step_ipbxengine());
-		break;
 	case 'dbconfig':
 		if($previous === true
 		|| $trysave === false

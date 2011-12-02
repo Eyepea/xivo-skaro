@@ -68,24 +68,12 @@ $step = $this->get_var('step');
 		</span>
 	</div>
 	<div class="sb-content">
-<?php
-
-		echo	$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1)),
-
-			$form->hidden(array('name'	=> 'step',
-					    'value'	=> $step)),
-
-			$form->hidden(array('name'	=> 'verify',
-					    'value'	=> 0)),
-
-			$form->hidden(array('name'	=> 'refresh',
-					    'value'	=> 0)),
-
-			$form->hidden(array('name'	=> 'hl',
-					    'value'	=> DWHO_I18N_BABELFISH_LANGUAGE));
-?>
-		<div class="clearboth"></div>
+<?=$form->hidden(array('name' => 'fm_send', 'value' => 1))?>
+<?=$form->hidden(array('name' => 'step', 'value' => $step))?>
+<?=$form->hidden(array('name' => 'verify', 'value' => 0))?>
+<?=$form->hidden(array('name' => 'refresh', 'value' => 0))?>
+<?=$form->hidden(array('name' => 'hl', 'value' => DWHO_I18N_BABELFISH_LANGUAGE))?>
+	<div class="clearboth"></div>
 <?php
 		$this->file_include('bloc/xivo/wizard/'.$step);
 ?>
