@@ -45,15 +45,16 @@ $array['import']['field']['bosssecretary'] = array('userfeatures','bsfilter');
 
 $array['import']['field']['phonenumber'] = array('linefeatures','number',0);
 $array['import']['field']['context'] = array('linefeatures','context',0);
-
+$array['import']['field']['callerid'] = array('linefeatures','callerid',0);
+$array['import']['field']['protocol'] = array('linefeatures','protocol',0);
+/*
 $array['import']['field']['interface'] = array('protocol','interface');
 $array['import']['field']['protocol'] = array('protocol','protocol');
 $array['import']['field']['context'] = array('protocol','context');
-$array['import']['field']['callerid'] = array('protocol','callerid');
 $array['import']['field']['subscribemwi'] = array('protocol','subscribemwi');
 $array['import']['field']['accountcode'] = array('protocol','accountcode');
 $array['import']['field']['amaflags'] = array('protocol','amaflags');
-
+*/
 $array['import']['field']['voicemailname'] = array('voicemail','fullname');
 $array['import']['field']['voicemailmailbox'] = array('voicemail','mailbox');
 $array['import']['field']['voicemailpassword'] = array('voicemail','password');

@@ -976,7 +976,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref['iduserfeatures'] = (int) $iduserfeatures;
 			$ref['rules_order'] = isset($ref['rules_order']) ? (int) $ref['rules_order'] : 0;
 			$ref['rules_group'] = isset($ref['rules_group']) ? $ref['rules_group'] : '';
-			$ref['num'] = (int) $ref['num'];
+			$ref['num'] = isset($ref['num']) ? (int) $ref['num'] : 1;
 
 			$callerid = $this->get_result_var('userfeatures','callerid');
 			$ref['callerid'] = $this->_service->mk_callerid($callerid,$number,$protocolname);
@@ -1900,20 +1900,17 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(dwho_issa('voicemail',$arr) === true
 		&& empty($arr['voicemail']) === false
-		&& dwho_has_len($arr['voicemail'],'mailbox') === true)
-		{
-			if($issa_userfeatures === true)
+		&& dwho_has_len($arr['voicemail'],'mailbox') === true) {
+			if($issa_userfeatures === true) {
 				$arr['userfeatures']['enablevoicemail'] = true;
-		}
-		else
+			}
+		} else {
 			unset($arr['voicemail']);
+		}
 
 		if($issa_userfeatures === true)
 		{
-			if(!partial)
-				$arr['userfeatures']['callerid'] = '';
-
-			if (!partial && dwho_issa('entityid',$arr['userfeatures']) === false)
+			if (dwho_issa('entityid',$arr['userfeatures']) === false)
 				$arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
@@ -1921,22 +1918,25 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if(dwho_has_len($arr['userfeatures'],'lastname') === true)
 				$arr['userfeatures']['callerid'] .= $arr['userfeatures']['lastname'];
-
-			if(!partial)
-				trim($arr['userfeatures']['callerid']);
 		}
 
 		if($issa_userfeatures === true
 		&& dwho_has_len($arr['userfeatures'],'agentnumber') === true
 		&& is_object($this->_agentfeatures) === true
 		&& ($agentid = $this->_agentfeatures->get_primary(
-						array('number' => $arr['userfeatures']['agentnumber']))) !== false)
+					array('number' => $arr['userfeatures']['agentnumber']))) !== false) {
 			$arr['userfeatures']['agentid'] = $agentid;
+		}
 
 		unset($arr['userfeatures']['agentnumber']);
 
-		if(dwho_issa('linefeatures',$arr) === true)
+		if(dwho_issa('linefeatures',$arr) === true) {
+			if (!dwho_issa('id', $arr['linefeatures'])) {
+				$arr['linefeatures']['id'] = array();
+				array_push($arr['linefeatures']['id'], 0);
+			}
 			array_push($arr['linefeatures']['id'], 0);
+		}
 
 		return($arr);
 	}
