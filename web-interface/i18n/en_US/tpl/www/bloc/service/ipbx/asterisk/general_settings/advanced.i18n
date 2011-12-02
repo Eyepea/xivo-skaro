@@ -39,7 +39,7 @@ Group:
 ; fm_agentoptions_autologoff
 Ringing time before logging off the agent:
 
-; fm_agentoptions_autologoff-opt0
+; fm_agentoptions_autologoff-opt(0)
 Unlimited
 
 ; fm_agentoptions_autologoff-opt
@@ -48,7 +48,7 @@ Unlimited
 ; fm_agentoptions_wrapuptime
 Delay before reassigning a call:
 
-; fm_agentoptions_wrapuptime-opt0
+; fm_agentoptions_wrapuptime-opt(0)
 Disabled
 
 ; fm_agentoptions_wrapuptime-opt
@@ -57,7 +57,7 @@ Disabled
 ; fm_agentoptions_maxlogintries
 Number of login retries:
 
-; fm_agentoptions_maxlogintries-opt0
+; fm_agentoptions_maxlogintries-opt(0)
 Unlimited
 
 ; fm_agentoptions_maxlogintries-opt

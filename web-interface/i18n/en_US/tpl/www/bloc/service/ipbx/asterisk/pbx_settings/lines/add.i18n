@@ -29,7 +29,7 @@ Provisioning
 Advanced
 
 ; smenu_ipbxinfos
-IPBX Infos 
+IPBX Infos
 
 ; col_line-key
 Key
@@ -211,7 +211,7 @@ Phone number:
 ; fm_linefeatures_ringseconds
 Ringing time:
 
-; fm_linefeatures_ringseconds-opt0
+; fm_linefeatures_ringseconds-opt(0)
 Unlimited
 
 ; fm_linefeatures_ringseconds-opt
@@ -229,14 +229,38 @@ Video support:
 ; fm_protocol_maxcallbitrate
 Max call bitrate video:
 
+; fm_protocol_g726nonstandard
+Activate G726 no standard:
+
+; fm_protocol_jitterbuffer
+Enable Jitter Buffer:
+
+; fm_protocol_forcejitterbuffer
+Force Jitter Buffer:
+
+; fm_protocol_codecpriority
+Codecs priority:
+
+; fm_protocol_codecpriority-opt(disabled)
+Disabled
+
+; fm_protocol_codecpriority-opt(host)
+Host
+
+; fm_protocol_codecpriority-opt(caller)
+Caller
+
+; fm_protocol_codecpriority-opt(reqonly)
+Request only
+
+; fm_codec-custom
+Customize codecs:
+
 ; fm_protocol_codec-disallow
 Codecs disallow:
 
 ; fm_protocol_codec-disallow-opt(all)
 All
-
-; fm_protocol_g726nonstandard
-Activate G726 no standard:
 
 ; fm_linefeatures_simultcalls
 Simultaneous calls:
@@ -1272,6 +1296,9 @@ Disabled
 
 ; fm_protocol_maxauthreq-opt
 %s
+
+; fm_protocol_adsi
+Enable ADSI support:
 
 ; smenu_schedule
 Schedules

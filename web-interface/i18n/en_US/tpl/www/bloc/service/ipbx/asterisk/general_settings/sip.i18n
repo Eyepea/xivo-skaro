@@ -133,7 +133,7 @@ Check for the presence of new messages:
 ; hlp_fm_checkmwi
 Asterisk config: checkmwi
 
-; fm_checkmwi-opt0
+; fm_checkmwi-opt(0)
 Disabled
 
 ; fm_checkmwi-opt

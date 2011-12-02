@@ -52,7 +52,7 @@ Additional call text:
 ; fm_callfilter_ringseconds
 Ringing time:
 
-; fm_callfilter_ringseconds-opt0
+; fm_callfilter_ringseconds-opt(0)
 Unlimited
 
 ; fm_callfilter_ringseconds-opt
@@ -67,7 +67,7 @@ Identity:
 ; fm_callfiltermember_ringseconds-boss
 Ringing time:
 
-; fm_callfiltermember_ringseconds-boss-opt0
+; fm_callfiltermember_ringseconds-boss-opt(0)
 Unlimited
 
 ; fm_callfiltermember_ringseconds-boss-opt

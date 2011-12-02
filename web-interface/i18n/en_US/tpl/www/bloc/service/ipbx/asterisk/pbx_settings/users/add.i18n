@@ -142,7 +142,7 @@ Call Forward
 ; fm_userfeatures_ringseconds
 Ringing time:
 
-; fm_userfeatures_ringseconds-opt0
+; fm_userfeatures_ringseconds-opt(0)
 Unlimited
 
 ; fm_userfeatures_ringseconds-opt

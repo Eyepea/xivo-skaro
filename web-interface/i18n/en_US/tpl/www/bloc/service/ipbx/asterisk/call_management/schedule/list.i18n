@@ -34,34 +34,64 @@ Public holiday
 ; schedule_rangemonth
 %s - %s
 
-; schedule_typetrue-endcall
+; schedule_destination-none
+None
+
+; schedule_destination-endcall-hangup
+Hangup
+
+; schedule_destination-endcall-busy
+Busy
+
+; schedule_destination-endcall-congestion
+Congestion
+
+; schedule_destination-endcall
 End call
 
-; schedule_typetrue-user
+; schedule_destination-user
 User
 
-; schedule_typetrue-group
+; schedule_destination-group
 Group
 
-; schedule_typetrue-queue
+; schedule_destination-queue
 Queue
 
-; schedule_typetrue-meetme
+; schedule_destination-meetme
 Conference room
 
-; schedule_typetrue-voicemail
+; schedule_destination-voicemail
 Voicemail
 
-; schedule_typetrue-schedule
+; schedule_destination-schedule
 Schedule
 
-; schedule_typetrue-application
-Application
+; schedule_destination-voicemenu
+Voicemenu
 
-; schedule_typetrue-sound
+; schedule_destination-extension
+Extension
+
+; schedule_destination-application-callbackdisa
+CallBackDISA
+
+; schedule_destination-application-disa
+DISA
+
+; schedule_destination-application-directory
+Directory
+
+; schedule_destination-application-faxtomail
+FaxToMail
+
+; schedule_destination-application-voicemailmain
+Consult voicemail
+
+; schedule_destination-sound
 Audio file
 
-; schedule_typetrue-custom
+; schedule_destination-custom
 Customized
 
 ; schedule_publicholiday-0

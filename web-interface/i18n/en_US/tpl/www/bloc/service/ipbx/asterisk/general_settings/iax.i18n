@@ -493,7 +493,7 @@ Asterisk config: lagrqtime
 ; hlp_fm_lagrqtime
 Asterisk config: lagrqtime
 
-; fm_lagrqtime-opt0
+; fm_lagrqtime-opt(0)
 0 second
 
 ; fm_lagrqtime-opt

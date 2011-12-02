@@ -82,7 +82,7 @@ Internal:
 ; fm_outcall_hangupringtime
 Ringing time before hangup:
 
-; fm_outcall_hangupringtime-opt0
+; fm_outcall_hangupringtime-opt(0)
 Unlimited
 
 ; fm_outcall_hangupringtime-opt15
