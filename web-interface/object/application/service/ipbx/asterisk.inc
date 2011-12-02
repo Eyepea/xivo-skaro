@@ -57,8 +57,10 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 			case XIVO_SRE_IPBX_AST_CHAN_LOCAL:
 				$r['interface'] = $this->_service->mk_interface($name,null,$number,$context);
 
-				if($number === '' || $r['interface'] === false)
+				if($number === '' || $r['interface'] === false) {
+					dwho_report::push('error','line_need_number_if_chan_is_local');
 					return(false);
+				}
 
 				$r['channel'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
 				break;

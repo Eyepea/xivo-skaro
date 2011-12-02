@@ -23,44 +23,38 @@ if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 $return = &$info;
-$return['schedule_id'] = false;
-
 $result = $fm_save = $error = null;
 
 $gmember = $qmember = $rightcall = array();
-$gmember['list'] = $qmember['list'] = false;
-$gmember['info'] = $qmember['info'] = false;
+$gmember['list'] = $qmember['list'] = $rightcall['list'] = false;
+$gmember['info'] = $qmember['info'] = $rightcall['info'] = false;
 $gmember['slt'] = $qmember['slt'] = $rightcall['slt'] = array();
 
 $appgroup = &$ipbx->get_application('group',null,false);
-
-if(($groups = $appgroup->get_groups_list(null,
-					 array('name' => SORT_ASC),
-					 null,
-					 true)) !== false)
+$order = array('name' => SORT_ASC);
+if(($groups = $appgroup->get_groups_list(null, $order, null, true)) !== false) {
 	$gmember['list'] = $groups;
+}
 
 $appqueue = &$ipbx->get_application('queue',null,false);
-
-if(($queues = $appqueue->get_queues_list(null,
-					 array('name' => SORT_ASC),
-					 null,
-					 true)) !== false)
+$order = array('name' => SORT_ASC);
+if(($queues = $appqueue->get_queues_list(null, $order, null, true)) !== false) {
 	$qmember['list'] = $queues;
+}
 
 $apprightcall = &$ipbx->get_application('rightcall',null,false);
+$order = array('name' => SORT_ASC);
+if(($rightcalls = $apprightcall->get_rightcalls_list(null, $order, null, true)) !== false) {
+	$rightcall['list'] = $rightcalls;
+}
 
-$rightcall['list'] = $apprightcall->get_rightcalls_list(null,
-							array('name' => SORT_ASC),
-							null,
-							true);
-
-$appqueue = &$ipbx->get_application('queue');
-$_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
+#$appqueue = &$ipbx->get_application('queue');
+#$_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
 
 if(isset($_QR['fm_send']) === true
 && dwho_issa('userfeatures',$_QR) === true)
 {
+/*
 	$queueskills = array();
 
 	// skipping the last one (empty entry)
@@ -74,9 +68,9 @@ if(isset($_QR['fm_send']) === true
 		);
 	}
 	$skillerr = $appqueue->userskills_setedit($queueskills);
-
+*/
 	if($appuser->set_edit($_QR) === false
-	|| $skillerr === false
+#	|| $skillerr === false
 	|| $appuser->edit() === false)
 	{
 		$fm_save = false;
@@ -86,16 +80,17 @@ if(isset($_QR['fm_send']) === true
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 
 		$return = array_merge($return,$result);
-
+/*
 		$error = $appuser->get_error();
 		$error['queueskills'] = $appqueue->userskills_get_error();
 
 		$_TPL->set_var('queueskills', $queueskills);
+*/
 	}
 	else
 	{
 		// updating skills
-		$appqueue->userskills_edit($_QR['id'], $queueskills);
+		#$appqueue->userskills_edit($_QR['id'], $queueskills);
 		/**
 		 * sip reload: refresh pickup groups
 		 * */
@@ -150,9 +145,9 @@ if($qmember['list'] !== false && dwho_ak('queuemember',$return) === true)
 	}
 }
 
-	if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true
-	&& ($rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid')) !== false)
-		$rightcall['slt'] = array_keys($rightcall['slt']);
+if($rightcall['list'] !== false && dwho_issa('rightcall',$return) === true
+&& ($rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid')) !== false)
+	$rightcall['slt'] = array_keys($rightcall['slt']);
 
 $element = $appuser->get_elements();
 

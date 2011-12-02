@@ -158,13 +158,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_get_phonefunckey();
 
 		// queueskills
-		$skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
-		$this->_info['queueskills'] = $skills === false?array():$skills;
+		//$skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
+		//$this->_info['queueskills'] = $skills === false?array():$skills;
 
 		// schedule
-		$schedule = $this->_schedule_path->get_where(array('path' => 'user', 'pathid' => $this->_info['userfeatures']['id']));
-
-		if($schedule !== false)
+		$this->_info['schedule_id'] = 0;
+		$where = array('path' => 'user', 'pathid' => $this->_info['userfeatures']['id']);
+		if(($schedule = $this->_schedule_path->get_where($where)) !== false)
 			$this->_info['schedule_id'] = intval($schedule['schedule_id']);
 
 		return($this->_info);
@@ -506,14 +506,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$userfeatures = dwho_array_startswith_key($ref,'userfeatures.',true);
 			$r[$userfeatures['id']] = $this->_userfeatures->_prepare($userfeatures);
-
+/*
 			// get userskills
 			$skills = $this->_queueskills->get_skills($userfeatures['id']);
 			if($skills === false)
 				$skills = array();
 
 			$r[$userfeatures['id']]['queueskills'] = $skills;
-
+*/
 			if($this->_components === false)
 				continue;
 
@@ -759,11 +759,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(dwho_issa('phonefunckey',$arr) === true)
 			$this->set_phonefunckey($arr['phonefunckey']);
-
+/*
 		// QUEUESKILLS
 		if(dwho_issa('queueskills',$arr) === true)
 			$this->set_queueskills($action, $arr['queueskills']);
-
+*/
 		if($this->get_errnb() > 0)
 			$r = false;
 		else
@@ -1069,20 +1069,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$reslist[$j++] = $info;
 			}
 
-			if(($reslist['typeextenumbers'] !== null
-			|| $reslist['typeextenumbersright'] !== null) === true
-			&& $this->_phonefunckey->is_valid($reslist['typeextenumbers'],
-							  $reslist['typevalextenumbers'],
-							  $reslist['typeextenumbersright'],
-							  $reslist['typevalextenumbersright'],
-							  $reslist['iduserfeatures'],
+			if(($info['typeextenumbers'] !== null
+			|| $info['typeextenumbersright'] !== null) === true
+			&& $this->_phonefunckey->is_valid($info['typeextenumbers'],
+							  $info['typevalextenumbers'],
+							  $info['typeextenumbersright'],
+							  $info['typevalextenumbersright'],
+							  $info['iduserfeatures'],
 							  null) === false)
 				return(false);
-			else if($reslist['typeextenumbers'] === 'extenfeatures'
-			&& $reslist['typevalextenumbers'] === 'bsfilter'
-			&& $this->_dso->chk_bsfilter($reslist['iduserfeatures'],
-						     $bsfilter,
-						     $reslist['typevalextenumbersright']) === false)
+			else if($info['typeextenumbers'] === 'extenfeatures'
+			&& $info['typevalextenumbers'] === 'bsfilter'
+			&& $this->_dso->chk_bsfilter($info['iduserfeatures'],
+						     $this->get_result_var('userfeatures','bsfilter'),
+						     $info['typevalextenumbersright']) === false)
 				return(false);
 		}
 

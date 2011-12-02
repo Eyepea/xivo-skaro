@@ -83,6 +83,12 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
+
+			if($ref['commented'] === true):
+				$icon = 'disable';
+			else:
+				$icon = 'enable';
+			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -97,6 +103,7 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($ref['fullname']);?>">
 			<label for="it-users-<?=$i?>" id="lb-users-<?=$i?>">
+			<?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?>
 			<?=dwho_htmlen(dwho_trunc($ref['fullname'],25,'...',false))?>
 			</label>
 		</td>

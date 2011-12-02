@@ -27,8 +27,8 @@ CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer', 'user');
 ALTER TABLE "useriax" RENAME COLUMN "type" TO "_type";
 ALTER TABLE "usersip" RENAME COLUMN "type" TO "_type";
 
-ALTER TABLE "useriax" ADD type "useriax_type";
-ALTER TABLE "usersip" ADD type "useriax_type";
+ALTER TABLE "useriax" ADD "type" "useriax_type";
+ALTER TABLE "usersip" ADD "type" "useriax_type";
 
 UPDATE "useriax" SET "type" = "_type"::text::"useriax_type";
 UPDATE "usersip" SET "type" = "_type"::text::"useriax_type";
@@ -64,5 +64,18 @@ COMMIT;
 BEGIN;
 
 ALTER TABLE "usersip" ALTER allow TYPE text USING NOT NULL;
+
+COMMIT;
+
+-- alter type "phonefunckey_typeextenumbersright add new value 'paging' in enum ('agent', 'group', 'meetme', 'queue', 'user');
+BEGIN;
+
+ALTER TYPE "phonefunckey_typeextenumbersright" RENAME TO "phonefunckey_typeextenumbersright2";
+CREATE TYPE "phonefunckey_typeextenumbersright" AS ENUM ('agent', 'group', 'meetme', 'queue', 'user','paging');
+ALTER TABLE "phonefunckey" RENAME COLUMN "typeextenumbersright" TO "_typeextenumbersright";
+ALTER TABLE "phonefunckey" ADD "typeextenumbersright" "phonefunckey_typeextenumbersright";
+UPDATE "phonefunckey" SET "typeextenumbersright" = "_typeextenumbersright"::text::"phonefunckey_typeextenumbersright";
+ALTER TABLE "phonefunckey" DROP COLUMN "_typeextenumbersright";
+DROP TYPE "phonefunckey_typeextenumbersright2";
 
 COMMIT;

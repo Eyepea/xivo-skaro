@@ -60,3 +60,6 @@ Le numero est hors interval du contexte
 
 ; default_gateway_already_exist
 Une passerelle par défaut existe déjà sur l'interface %s
+
+; line_need_number_if_chan_is_local
+Vous devez renseigner un numero pour un canal Local

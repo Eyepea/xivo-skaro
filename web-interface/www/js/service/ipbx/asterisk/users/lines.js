@@ -142,19 +142,20 @@ function lnkdroprow(obj)
     setTimeout(update_row_infos, 420);
     
     it_id = $(obj).parents('tr').find('#linefeatures-id');
+    it_lineid_val = it_id.val();
     
-    if (it_id.val() == 0)
+    if (it_lineid_val == 0 || it_lineid_val == undefined) {
         return false;
+    }
     
     it_protocol = $(obj).parents('tr').find('#linefeatures-protocol');
     it_name = $(obj).parents('tr').find('#linefeatures-name');
     
-    $('#list_lines_free').append("<option value=" + it_id.val() + ">" + it_protocol.val()+'/'+it_name.val() + "</option>");
+    $('#list_lines_free').append("<option value=" + it_lineid_val + ">" + it_protocol.val()+'/'+it_name.val() + "</option>");
     
-    if ($('#list_lines_free option').length > 0)
+    if ($('#list_lines_free option').length > 0) {
         $('#box-lines_free').show();
-    
-    return false;
+    }
 }
 
 function get_entityid_val()

@@ -55,6 +55,7 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
+<?php /*
 		<li id="dwsm-tab-4"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-queueskills');"
@@ -66,7 +67,8 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-5"
+*/ ?>
+		<li id="dwsm-tab-4"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-service');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -77,7 +79,7 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-6"
+		<li id="dwsm-tab-5"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-voicemail');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -88,7 +90,7 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-7"
+		<li id="dwsm-tab-6"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-groups');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -99,7 +101,7 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-8"
+		<li id="dwsm-tab-7"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-funckeys',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"

@@ -1276,7 +1276,7 @@ DROP TYPE  IF EXISTS "phonefunckey_typeextenumbers";
 DROP TYPE  IF EXISTS "phonefunckey_typeextenumbersright";
 
 CREATE TYPE "phonefunckey_typeextenumbers" AS ENUM ('extenfeatures', 'featuremap', 'generalfeatures');
-CREATE TYPE "phonefunckey_typeextenumbersright" AS ENUM ('agent', 'group', 'meetme', 'queue', 'user');
+CREATE TYPE "phonefunckey_typeextenumbersright" AS ENUM ('agent', 'group', 'meetme', 'queue', 'user','paging');
 
 CREATE TABLE "phonefunckey" (
  "iduserfeatures" INTEGER NOT NULL,

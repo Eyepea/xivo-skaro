@@ -46,8 +46,23 @@ Value not in interval
 ; number_out_of_context_interval
 Number is out of context interval
 
+; error(invalidpwd)
+Invalid password
+
+; invalid_name_context
+Context name invalid (%s)
+
+; reserved_context
+Reserved context: %s
+
+; number_out_of_context_interval
+Number out of context interval
+
 ; already_exist
 %s already exists
 
 ; default_gateway_already_exist
 A default gateway already exists on the interface %s
+
+; line_need_number_if_chan_is_local
+You must enter a number to a Local channel

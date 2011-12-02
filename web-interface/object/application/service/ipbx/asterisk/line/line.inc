@@ -455,28 +455,33 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| dwho_issa('protocol',$arr) === false)
+		|| dwho_issa('protocol',$arr) === false) {
 			return(false);
+		}
 
 		$this->_protocolname = $protocolname;
 
-		if ($action === 'add')
+		if ($action === 'add') {
 			$arr['protocol']['secret'] = $this->gen_password(6);
+		}
 
-		if(isset($arr['protocol']['callerid']) === true)
-			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
-		elseif(isset($arr['linefeatures']['callerid']) === true)
-			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['linefeatures']['callerid']);
+		if(isset($arr['protocol']['callerid']) === true) {
+			$callerid =$arr['protocol']['callerid'];
+		} elseif(isset($arr['linefeatures']['callerid']) === true) {
+			$callerid = $arr['linefeatures']['callerid'];
+		}
+
+		$arr['protocol']['callerid'] = $this->_service->mk_callerid($callerid, '', $protocolname);
 
 		$this->set_protocol($arr['protocol'],$protocolname);
 
-		if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+		if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM) {
 			$name = $this->get_result_var('protocol','interface');
-		else
+		} else {
 			$name = $this->get_result_var('protocol','name');
+		}
 
 		$context = (string) $this->get_result_var('protocol','context');
-		$number = (string) $this->get_result_var('linefeatures','number');
 
 		if (dwho_issa('linefeatures',$arr) === false)
 		{
@@ -492,84 +497,88 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if (dwho_issa('userfeatures',$arr) === false)
 		{
 			$this->set_linefeatures($action,$arr['linefeatures']);
-			if($this->get_errnb() > 0)
+			if($this->get_errnb() > 0) {
 				$this->_protocolname = $r = false;
-			else
+			} else {
 				$r = true;
+			}
 
 			return($r);
 		}
-		else
-		{
-			$userfeatures = $arr['userfeatures'];
 
-			if (isset($arr['userfeatures']['id']) === true)
-				$arr['linefeatures']['iduserfeatures'] = (int) $arr['userfeatures']['id'];
+		$userfeatures = $arr['userfeatures'];
 
-			$simultcalls = (int) $arr['userfeatures']['simultcalls'];
-			$musiconhold = (string) $arr['userfeatures']['musiconhold'];
-
-			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
-				$protocol['call-limit'] = (2 * $simultcalls);
-
-			if($protocolname == 'sccp')
-			{
-				if(array_key_exists('musiconhold',$userfeatures))
-					$protocol['musicclass'] = $userfeatures['musiconhold'];
-			}
-
-			if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
-				$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
-
-			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-			&& dwho_has_len($musiconhold) === true)
-				$this->_set_result_var('protocol','mohsuggest',$musiconhold);
-
-			if(dwho_issa('group',$arr) === true
-			&& dwho_issa('group-select',$arr) === true
-			&& $this->set_groupmember($arr['group'],
-						  $arr['group-select'],
-						  $name,
-						  $context,
-						  $number,
-						  $protocolname) === true
-			&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
-			{
-				$callgroup = $this->get_result('callgroup');
-
-				if(is_array($callgroup) === true && isset($callgroup[0]) === true)
-					$callgroup = implode(',',$callgroup);
-				else
-					$callgroup = '';
-
-				$this->_set_result_var('protocol','callgroup',$callgroup);
-			}
-
-			if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true)
-				$this->set_queuemember($arr['queue'],
-							$arr['queue-select'],
-							$name,
-							$context,
-							$number,
-							$protocolname);
+		if (isset($userfeatures['id']) === true) {
+			$arr['linefeatures']['iduserfeatures'] = (int) $userfeatures['id'];
 		}
 
 		$this->set_linefeatures($action,$arr['linefeatures']);
-		$this->_set_result('userfeatures',$arr['userfeatures']);
+
+		$number = (string) $arr['linefeatures']['number'];
+		$numhaslen = dwho_has_len($number);
+
+		$simultcalls = (int) $userfeatures['simultcalls'];
+		$musiconhold = (string) $userfeatures['musiconhold'];
+
+		switch ($this->_protocolname)
+		{
+			case XIVO_SRE_IPBX_AST_PROTO_SIP:
+				$protocol['call-limit'] = (2 * $simultcalls);
+				$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
+
+				if(dwho_issa('group',$arr) === true
+				&& dwho_issa('group-select',$arr) === true
+				&& $this->set_groupmember($arr['group'],
+										$arr['group-select'],
+										$name,
+										$context,
+										$number,
+										$protocolname) === true)
+				{
+					$callgroup = $this->get_result('callgroup');
+
+					if(is_array($callgroup) === true && isset($callgroup[0]) === true) {
+					$callgroup = implode(',',$callgroup);
+					} else {
+						$callgroup = '';
+					}
+					$this->_set_result_var('protocol','callgroup',$callgroup);
+				}
+
+				break;
+			case XIVO_SRE_IPBX_AST_PROTO_SCCP:
+				if (array_key_exists('musiconhold',$userfeatures)) {
+					$protocol['musicclass'] = $userfeatures['musiconhold'];
+				}
+				break;
+			case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
+				if (dwho_has_len($musiconhold) === true) {
+					$this->_set_result_var('protocol','mohsuggest',$musiconhold);
+				}
+				break;
+		}
+
+		if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true) {
+			$this->set_queuemember($arr['queue'],
+						$arr['queue-select'],
+						$name,
+						$context,
+						$number,
+						$protocolname);
+		}
+
+		$this->_set_result('userfeatures',$userfeatures);
 
 		$this->_extenumbers->_reset();
 		$this->_contextnummember->_reset();
-
-		$number = (string) $this->get_result_var('linefeatures','number');
-
-		$numhaslen = dwho_has_len($number);
 
 		if ($this->_errnb === 0 && $numhaslen === true)
 		{
 			$vmaction = $action;
 
-			if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM) {
 				$arr['voicemail-option'] = 'none';
+			}
 
 			if(isset($arr['voicemail-option']) === true)
 			{
@@ -586,33 +595,33 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				}
 			}
 
-			if((bool) $chkcontext === true)
+			if((bool) $chkcontext === true) {
 				$this->set_contextnummember($context,$number);
+			}
 
 			if(($rsusermacro = $this->chk_macro('usermacro',
 							    $number,
 							    $this->_mk_usermacro_appdata(0,'',0),
-							    $context)) !== false)
+							    $context)) !== false) {
 				$this->_set_result('usermacro',$rsusermacro);
+			}
 
 			$this->set_extenumbers($action,$number,$context);
 
-			$callerid = (string) $this->get_result_var('protocol','callerid');
-			$callerid = $this->_service->mk_callerid($callerid, '', $protocolname);
-			$this->_set_result_var('protocol','callerid',$callerid);
-
 			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
 
-			if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false)
+			if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false) {
 				$this->_set_error('hints');
+			}
 
 			$this->_set_result('hints',$hints);
 		}
 
-		if($this->get_errnb() > 0)
+		if($this->get_errnb() > 0) {
 			$this->_protocolname = $r = false;
-		else
+		} else {
 			$r = true;
+		}
 
 		return($r);
 	}
@@ -730,8 +739,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 							     $context,
 							     $number,
 							     $protocolname)) === false
-			|| ($typeid = $module->get_primary(array('name' => $qname))) === false)
+			|| ($typeid = $module->get_primary(array('name' => $qname))) === false) {
 				continue;
+			}
 
 			$info['queue_name'] = $qname;
 			$info['interface'] = $interface['interface'];
