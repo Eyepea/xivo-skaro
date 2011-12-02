@@ -229,6 +229,9 @@ Invite
 ; fm_protocol_insecure-opt(all)
 Tout
 
+; fm_protocol_insecure-opt(port,invite)
+Tout
+
 ; fm_protocol_port
 Port :
 
