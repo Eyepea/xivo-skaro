@@ -37,7 +37,7 @@ $err = $this->get_var('error','linefeatures');
 </fieldset>
 -->
 <span id="box-entityid"></span>
-<?php /*
+
 <p id="box-lines_free" class="fm-paragraph b-nodisplay">
 	<span class="fm-desc clearboth">
 		<label id="lb-lines_free" for="it-lines_free"><?=$this->bbf('fm_lines_free');?></label>
@@ -78,7 +78,7 @@ $err = $this->get_var('error','linefeatures');
 								'id="lnk-add-row-rules_group"',
 								$this->bbf('col_rules_group-add'));?>
 </p>
-*/ ?>
+
 <table id="list_linefeatures">
 	<thead>
 	<tr class="sb-top">
@@ -88,7 +88,7 @@ $err = $this->get_var('error','linefeatures');
 		<th class="th-center"><?=$this->bbf('col_line-context');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-number');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-config_registrar');?></th>
-		<?php /*<th class="th-center th-rule"><?=$this->bbf('col_line-rules_time');?></th> */ ?>
+		<th class="th-center th-rule"><?=$this->bbf('col_line-rules_time');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-device');?></th>
 		<th class="th-center"><?=$this->bbf('col_line-num');?></th>
 		<th class="th-right">
@@ -137,7 +137,7 @@ if($list !== false):
 		<td class="td-left">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 		</td>
-		<td colspan="7" class="txt-center" id="td_rules_group_name">
+		<td colspan="8" class="txt-center" id="td_rules_group_name">
 			<?=$rulesgroup?>
 		</td>
 		<td class="td-right">
@@ -225,7 +225,6 @@ if($list !== false):
 					'selected'	=> $ref['configregistrar']),
 			      $list_configregistrar);?>
 		</td>
-		<?php /*
 		<td>
 			<?=$form->text(array('paragraph'	=> false,
 				  'name'	=> 'linefeatures[rules_time][]',
@@ -234,7 +233,6 @@ if($list !== false):
 				  'size'	=> 2,
 				  'value'	=> $ref['rules_time']));?>
 		</td>
-		*/ ?>
 		<td>
 		<?php if ($list_device_line === false): ?>
 			 -
@@ -283,7 +281,7 @@ endif;
 	</tbody>
 	<tfoot>
 	<tr id="no-linefeatures"<?=($list !== false ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="9" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
+		<td colspan="10" class="td-single"><?=$this->bbf('no_linefeatures');?></td>
 	</tr>
 	</tfoot>
 </table>
@@ -294,7 +292,7 @@ endif;
 		<td class="td-left">
 			<span class="ui-icon ui-icon-arrowthick-2-n-s" style="float:left;"></span>
 		</td>
-		<td colspan="7" class="txt-center" id="td_rules_group_name">
+		<td colspan="8" class="txt-center" id="td_rules_group_name">
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -371,7 +369,6 @@ endif;
 				    'default'	=> $element['linefeatures']['configregistrar']['default']),
 			      $list_configregistrar);?>
 		</td>
-		<?php /*
 		<td>
 			<?=$form->text(array('paragraph'	=> false,
 				  'name'	=> 'linefeatures[rules_time][]',
@@ -379,7 +376,6 @@ endif;
 				  'label'	=> false,
 				  'size'	=> 2));?>
 		</td>
-		*/ ?>
 		<td id="td_ex-linefeatures-device">
 		<?php if ($list_device_line === false): ?>
 			 -

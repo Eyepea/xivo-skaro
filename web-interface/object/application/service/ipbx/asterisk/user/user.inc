@@ -961,7 +961,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$this->_set_result_var('userfeatures','voicemailtype',null);
 
-			switch($this->get_result_var('userfeatures','voicemailtype'))
+			switch($userfeatures['voicemailtype'])
 			{
 				case 'asterisk':
 				break;
@@ -976,10 +976,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref['iduserfeatures'] = (int) $iduserfeatures;
 			$ref['rules_order'] = isset($ref['rules_order']) ? (int) $ref['rules_order'] : 0;
 			$ref['rules_group'] = isset($ref['rules_group']) ? $ref['rules_group'] : '';
+			$ref['rules_time'] = (int) $userfeatures['ringseconds'];
 			$ref['num'] = isset($ref['num']) ? (int) $ref['num'] : 1;
-
-			$callerid = $this->get_result_var('userfeatures','callerid');
-			$ref['callerid'] = $this->_service->mk_callerid($callerid,$number,$protocolname);
+			$ref['callerid'] = $this->_service->mk_callerid($userfeatures['callerid'],$number,$protocolname);
 
 			if($this->_linefeatures->chk_values($ref) === false)
 			{
