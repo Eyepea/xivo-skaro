@@ -44,9 +44,9 @@ COMMIT;
 -- remove faxdetect for incall
 BEGIN;
 
-ALTER TABLE "incall" DROP COLUMN faxdetectenable;
-ALTER TABLE "incall" DROP COLUMN faxdetecttimeout;
-ALTER TABLE "incall" DROP COLUMN faxdetectemail;
+ALTER TABLE "incall" DROP COLUMN IF EXISTS faxdetectenable;
+ALTER TABLE "incall" DROP COLUMN IF EXISTS faxdetecttimeout;
+ALTER TABLE "incall" DROP COLUMN IF EXISTS faxdetectemail;
 
 COMMIT;
 
@@ -54,7 +54,7 @@ COMMIT;
 -- fix trunk management iax form
 BEGIN;
 
-ALTER TABLE "useriax" ADD COLUMN keyrotate INTEGER DEFAULT NULL;
+ALTER TABLE "useriax" ADD COLUMN IF NOT EXISTS keyrotate INTEGER DEFAULT NULL;
 ALTER TABLE "useriax" ALTER allow TYPE text USING NOT NULL;
 
 COMMIT;
@@ -77,5 +77,14 @@ ALTER TABLE "phonefunckey" ADD "typeextenumbersright" "phonefunckey_typeextenumb
 UPDATE "phonefunckey" SET "typeextenumbersright" = "_typeextenumbersright"::text::"phonefunckey_typeextenumbersright";
 ALTER TABLE "phonefunckey" DROP COLUMN "_typeextenumbersright";
 DROP TYPE "phonefunckey_typeextenumbersright2";
+
+COMMIT;
+
+-- removr all occurences of chan_sccp-b
+BEGIN;
+
+DROP TABLE IF EXISTS "sccpline";
+DROP TABLE IF EXISTS "usersccp";
+DROP TABLE IF EXISTS "staticsccp";
 
 COMMIT;
