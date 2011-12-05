@@ -88,3 +88,45 @@ DROP TABLE IF EXISTS "usersccp";
 DROP TABLE IF EXISTS "staticsccp";
 
 COMMIT;
+
+-- add libsccp schema
+DROP TABLE IF EXISTS "sccpgeneral";
+CREATE TABLE "sccpgeneral" (
+	"id"		SERIAL,
+	"name"		varchar(80) NOT NULL,
+	"option_name"	varchar(80) NOT NULL,
+	"value"		varchar(80) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+DROP TABLE IF EXISTS "sccpline";
+CREATE TABLE "sccpline" (
+	"id"		SERIAL,
+	"name"		varchar(80) NOT NULL,
+	"cid_name"	varchar(80) NOT NULL,
+	"cid_num"	varchar(80) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+DROP TABLE IF EXISTS "sccpdevice";
+CREATE TABLE "sccpdevice" (
+	"id"		SERIAL,
+	"name"		varchar(80) NOT NULL,
+	"device"	varchar(80) NOT NULL,
+	"line"		varchar(80) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+END;
+
+-- grant all rights to asterisk.* for asterisk user
+CREATE OR REPLACE FUNCTION execute(text)
+RETURNS VOID AS '
+BEGIN
+        execute $1;
+END;
+' LANGUAGE plpgsql;
+SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
+SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
+
+COMMIT;
