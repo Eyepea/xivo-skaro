@@ -371,7 +371,7 @@ class InternalDirectoryDataSource(object):
         connection = conn_mgr.get()
         try:
             cursor = connection['cur']
-            log.debug('Doing SQL request: %s', request)
+            log.debug('Doing SQL request: %s', request % params)
             cursor.query(request, columns, params)
             def generator():
                 try:

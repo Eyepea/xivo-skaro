@@ -36,7 +36,11 @@ class serialJson():
     def __init__(self):
         return
     def decode(self, linein):
-        v = cjson.decode(linein.replace('\\/', '/'))
+        # Output of the cjson.decode is a Unicode object, even though the
+        # non-ASCII characters have not been decoded.
+        # Without the .decode('utf-8'), some Unicode character (try asian, not european)
+        # will not be interpreted correctly.
+        v = cjson.decode(linein.decode('utf-8').replace('\\/', '/'))
         return v
     def encode(self, obj):
         obj['timenow'] = time.time()
@@ -91,7 +95,6 @@ class CTI(Interfaces):
                 self.log.debug('commanddict: %s', cmd)
                 nc = cti_command.Command(self, cmd)
                 z.extend(nc.parse())
-                # print nc.commandid
         return z
 
     def set_as_transfer(self, direction, faxobj):
