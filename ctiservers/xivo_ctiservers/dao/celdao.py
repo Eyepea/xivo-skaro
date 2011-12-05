@@ -77,7 +77,15 @@ class CELChannel(object):
             return set([cel.uniqueid for cel in cel_entries_with_uniqueid if cel.uniqueid != uniqueid])
 
     def peers_exten(self):
-        pass
+        try:
+            peers_unique_id = self.peers_uniqueids().pop()
+            for config in cti_config.cconf.getconfig('ipbxes').itervalues():
+                cel_uri = config['cdr_db_uri']
+                celdao = CELDAO.new_from_uri(cel_uri)
+                peers_channel = celdao.channel_by_uniqueid(peers_unique_id)
+                return peers_channel.exten()
+        except KeyError:
+            return self._chan_start_event.exten
 
 
 class CELDAO(object):

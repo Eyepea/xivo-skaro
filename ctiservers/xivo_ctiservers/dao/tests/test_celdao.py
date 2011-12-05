@@ -149,16 +149,6 @@ class TestCELChannel(unittest.TestCase):
         channel = CELChannel(cel_events)
         self.assertEqual(u'100', channel.exten())
 
-#    def test_exten_when_from_originate(self):
-#        cel_events = [
-#            _new_cel(eventtype='CHAN_START', exten=u's'),
-#            _new_cel(eventtype='HANGUP'),
-#            _new_cel(eventtype='CHAN_END', cid_num=u'*10')
-#        ]
-#
-#        channel = CELChannel(cel_events)
-#        self.assertEqual(u'*10', channel.exten())
-
     def test_linked_id(self):
         cel_events = [
             _new_cel(eventtype='CHAN_START', linkedid='2'),
@@ -246,7 +236,12 @@ class TestCELChannel(unittest.TestCase):
         self.assertEqual(len(unique_ids), 1)
 
     def test_peers_exten(self):
+        cdr_uri = 'sqlite:///:memory:'
+        cti_config.cconf = Mock(cti_config.Config)
+        cti_config.cconf.getconfig.return_value = {'xivoid': {'cdr_db_uri': cdr_uri,},}
+        CELDAO.new_from_uri = Mock()
         mocked_celdao = Mock(CELDAO)
+        CELDAO.new_from_uri.return_value = mocked_celdao
         cel_events = [
             _new_cel(eventtype='CHAN_START', uniqueid='1', linkedid='67', exten=u's'),
             _new_cel(eventtype='ANSWER', uniqueid='1', linkedid='67'),
@@ -260,8 +255,15 @@ class TestCELChannel(unittest.TestCase):
             _new_cel(eventtype='HANGUP', uniqueid='1', linkedid='67'),
             _new_cel(eventtype='CHAN_END', uniqueid='1', linkedid='67'),
         ]
-        mocked_celdao.cels_by_linked_id.return_value = cel_events
+
+        mocked_celdao.channel_by_uniqueid = lambda x: CELChannel([
+            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67', exten='113'),
+            _new_cel(eventtype='ANSWER', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='2', linkedid='67'),])
+
         cel_channel = CELChannel(cel_events)
+        cel_channel.peers_uniqueids = lambda: set('2')
 
         self.assertEqual(cel_channel.peers_exten(), '113')
 
