@@ -2770,3 +2770,4 @@ SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class
 
 COMMIT;
 
+\i sccp.sql

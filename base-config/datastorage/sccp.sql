@@ -4,6 +4,7 @@
  * Author: Nicolas Bouliane <nbouliane@avencall.com>
  */
 
+\connect asterisk;
 BEGIN;
 
 /*
@@ -48,4 +49,15 @@ CREATE TABLE "sccpdevice" (
 );
 
 END;
+
+-- grant all rights to asterisk.* for asterisk user
+CREATE OR REPLACE FUNCTION execute(text)
+RETURNS VOID AS '
+BEGIN
+        execute $1;
+END;
+' LANGUAGE plpgsql;
+SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
+SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
+
 COMMIT;
