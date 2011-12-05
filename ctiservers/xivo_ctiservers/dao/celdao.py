@@ -58,9 +58,7 @@ class CELChannel(object):
         chan_start_exten = self._chan_start_event.exten
         exten = chan_start_exten
         if self.is_originate():
-            chan_end_cid_num = self._chan_end_event.cid_num
-            if chan_end_cid_num != chan_start_exten:
-                exten = chan_end_cid_num
+            exten = self.peers_exten()
         return exten
 
     def linked_id(self):
@@ -77,6 +75,9 @@ class CELChannel(object):
             celdao = CELDAO.new_from_uri(cel_uri)
             cel_entries_with_uniqueid = celdao.cels_by_linked_id(linked_id)
             return set([cel.uniqueid for cel in cel_entries_with_uniqueid if cel.uniqueid != uniqueid])
+
+    def peers_exten(self):
+        pass
 
 
 class CELDAO(object):
