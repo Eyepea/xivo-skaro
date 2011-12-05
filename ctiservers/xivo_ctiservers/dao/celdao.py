@@ -69,16 +69,14 @@ class CELChannel(object):
     def is_originate(self):
         return self._chan_start_event.exten == u's'
 
-    def peers_uniqueid(self):
-        linkedid = self._chan_start_event.linkedid
+    def peers_uniqueids(self):
         uniqueid = self._chan_start_event.uniqueid
+        linked_id = self.linked_id()
         for config in cti_config.cconf.getconfig('ipbxes').itervalues():
             cel_uri = config['cdr_db_uri']
             celdao = CELDAO.new_from_uri(cel_uri)
-            channels_with_uniqueid = celdao.channels_by_linkedid(linkedid)
-            for channel in channels_with_uniqueid:
-                if channel.uniqueid != uniqueid:
-                    return channel.uniqueid
+            cel_entries_with_uniqueid = celdao.cels_by_linked_id(linked_id)
+            return set([cel.uniqueid for cel in cel_entries_with_uniqueid if cel.uniqueid != uniqueid])
 
 
 class CELDAO(object):
@@ -105,8 +103,15 @@ class CELDAO(object):
         else:
             return CELChannel(cel_events)
 
-    def channels_by_linked_id(self, linked_id):
-        return []
+    def cels_by_linked_id(self, linked_id):
+        cel_events = (self._session.query(CEL)
+                      .filter(CEL.linkedid == linked_id)
+                      .all())
+        if not cel_events:
+            raise CELException('no such CEL event with linkedid %s' % linked_id)
+        else:
+            print 'Return: %s => %s' % (type(cel_events), cel_events)
+            return cel_events
 
     def _channel_pattern_from_endpoint(self, endpoint):
         return "%s-%%" % endpoint
