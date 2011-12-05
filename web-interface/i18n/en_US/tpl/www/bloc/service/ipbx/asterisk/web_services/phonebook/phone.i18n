@@ -4,6 +4,9 @@ XiVO Search
 ; phone_search-prompt
 Name or number:
 
+; phone_search-submit
+Search
+
 ; phone_noentries
 No entries
 

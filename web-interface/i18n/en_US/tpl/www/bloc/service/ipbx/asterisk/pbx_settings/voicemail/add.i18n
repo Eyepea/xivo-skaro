@@ -64,7 +64,7 @@ Announce duration:
 ; fm_voicemail_saydurationm
 Minimum time to announce duration:
 
-; fm_voicemail_saydurationm-opt1
+; fm_voicemail_saydurationm-opt(1)
 1 minute
 
 ; fm_voicemail_saydurationm-opt

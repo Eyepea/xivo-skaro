@@ -7,27 +7,6 @@ Trier par nom
 ; col_protocol
 Protocole
 
-; col_name
-Identifiant
-
-; col_phone
-N° Téléphone
-
-; col_provisioning
-Approvisionnement
-
-; user_protocol-sip
-SIP
-
-; user_protocol-iax
-IAX
-
-; user_protocol-sccp
-SCCP
-
-; user_protocol-custom
-Personnalisé
-
 ; no_user
 Aucun utilisateur trouvé
 

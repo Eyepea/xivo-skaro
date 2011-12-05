@@ -55,8 +55,14 @@ Language:
 ; fm_userfeatures_entity
 Entity: 
 
+; fm_userfeatures_servicesgroup
+Services group: 
+
 ; hlp_fm_userfeatures_entity
 You can't modify entity if it has a line.
+
+; no_lines-line
+No lines registered
 
 ; line_protocol-sip
 SIP
@@ -132,6 +138,9 @@ Very very low-pitched
 
 ; fld-rightcalls
 Rightcall
+
+; fld-client
+XiVO Client
 
 ; fm_userfeatures_rightcallcode
 Rightcall Code: 
@@ -297,6 +306,9 @@ Add one or more call permission ->
 
 ; create_rightcall
 Create a call permission
+
+; create_context
+Create a context
 
 ; create_schedules
 Create a schedules
@@ -499,6 +511,9 @@ Disabled
 ; fm_phonefunckey_supervision-opt(1)
 Enabled
 
+; phonefunckey_no-user
+No user found
+
 ; fm_userfeatures_voicemailtype
 Voice Mail:
 
@@ -561,6 +576,9 @@ Weight
 
 ; no_disp
 No skills
+
+; fm_queueskills_item
+Skills weighting
 
 ; error_fm_queueskill_skillid(doubloon)
 Same skill can't be affected twice
@@ -906,6 +924,9 @@ Add a new line
 Add an existing line
 
 ; opt_line-delete
+Delete this line
+
+; opt_row-delete
 Delete this line
 
 ; fm_type-opt(simul)

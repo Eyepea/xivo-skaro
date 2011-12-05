@@ -524,13 +524,16 @@ Aucune compétence
 La même compétence est affectée plusieur fois
 
 ; error_fm_queueskill_weight(empty)
-Vous devez saisir un poid (nombre entier compris entre 0 et 100)
+Vous devez saisir un poids (nombre entier compris entre 0 et 100)
 
 ; error_fm_queueskill_weight(notnumeric)
 Le poids saisi n'est pas un nombre entier
 
 ; error_fm_queueskill_weight(unbound)
 Le poids doit être un nombre entier compris entre 0 et 100
+
+; error_fm_queueskill_skillid(empty)
+Vous devez sélectionner une compétence
 
 ; addon_description
 Ajoutez ici les modules d'extension connectés au téléphone, dans l'ordre de gauche à droite.
