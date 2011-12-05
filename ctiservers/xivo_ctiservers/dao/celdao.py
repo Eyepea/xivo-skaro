@@ -82,10 +82,12 @@ class CELChannel(object):
             for config in cti_config.cconf.getconfig('ipbxes').itervalues():
                 cel_uri = config['cdr_db_uri']
                 celdao = CELDAO.new_from_uri(cel_uri)
-                peers_channel = celdao.channel_by_uniqueid(peers_unique_id)
-                return peers_channel.exten()
+                peers_channel = celdao.channel_by_unique_id(peers_unique_id)
+                if peers_channel:
+                    return peers_channel._chan_start_event.cid_num
         except KeyError:
-            return self._chan_start_event.exten
+            pass
+        return 'unknown'
 
 
 class CELDAO(object):
@@ -119,7 +121,6 @@ class CELDAO(object):
         if not cel_events:
             raise CELException('no such CEL event with linkedid %s' % linked_id)
         else:
-            print 'Return: %s => %s' % (type(cel_events), cel_events)
             return cel_events
 
     def _channel_pattern_from_endpoint(self, endpoint):
