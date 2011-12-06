@@ -178,6 +178,36 @@ Yes
 ; fm_protocol_qualify-opt
 %s milliseconds
 
+; fm_protocol_qualifysmoothing
+Quality smoothing : 
+
+; fm_protocol_qualifyfreqok
+Qualify frequency when ok : 
+
+; fm_protocol_qualifyfreqnotok
+Qualify frequency when fail : 
+
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s milliseconds
+
+; fm_protocol_qualifyfreq-opt-second
+1 second
+
+; fm_protocol_qualifyfreq-opt-seconds
+%s seconds
+
+; fm_protocol_qualifyfreq-opt-minute
+1 minute
+
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
+
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
+%s min. %s sec.
+
 ; fm_protocol_rtptimeout
 RTP timeout:
 
@@ -433,6 +463,9 @@ Create a call permission
 ; fm_protocol_callerid
 Caller ID:
 
+; fm_protocol_sendani
+Send call name/number presentation : 
+
 ; fm_linefeatures_outcallerid
 Outgoing Caller ID:
 
@@ -459,6 +492,9 @@ Invite
 
 ; fm_protocol_insecure-opt(port,invite)
 All
+
+; fm_protocol_mask
+Network mask:
 
 ; fm_protocol_permit
 IP address or subnet mask allowed:

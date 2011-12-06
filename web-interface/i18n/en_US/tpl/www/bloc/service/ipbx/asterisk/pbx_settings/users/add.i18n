@@ -587,10 +587,13 @@ Same skill can't be affected twice
 You must set a weight (between 0 and 100)
 
 ; error_fm_queueskill_weight(notnumeric)
-weight is not an integer
+Weight is not an integer
 
 ; error_fm_queueskill_weight(unbound)
-weight must be an integer between 0 and 100
+Weight must be an integer between 0 and 100
+
+; error_fm_queueskill_skillid(empty)
+You must select a skill
 
 ; column_addon
 Expansion modules
