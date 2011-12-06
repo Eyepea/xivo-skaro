@@ -107,6 +107,7 @@ class Safe:
         'outcalls' : [],
         'contexts' : ['context', 'contextnumbers', 'contexttype', 'deletable', 'contextinclude'],
         'parkinglots' : ['context', 'name', 'extension', 'positions', 'description', 'duration'],
+        'phonebooks': [],
         }
 
     props_status = { 'users' : { 'connection' : None, # maybe should not transmitted
