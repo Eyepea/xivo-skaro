@@ -22,7 +22,6 @@ CREATE USER xivo WITH PASSWORD 'proformatique';
 CREATE DATABASE xivo WITH OWNER xivo ENCODING 'UTF8';
 
 \connect xivo;
-CREATE LANGUAGE plpgsql;
 
 BEGIN;
 
@@ -489,4 +488,3 @@ SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO xivo;') FROM pg
 SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO xivo;') FROM pg_class WHERE relkind = 'S';
 
 COMMIT;
-
