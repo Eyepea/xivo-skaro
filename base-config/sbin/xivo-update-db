@@ -1,0 +1,245 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+__license__ = """
+    Copyright (C) 2011  Avencall
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import argparse
+import errno
+import logging
+import os
+import subprocess
+import sys
+
+DB_NAMES = ['asterisk', 'xivo']
+
+logger = logging.getLogger(__name__)
+
+
+class NoUpdateFileException(Exception):
+    pass
+
+
+class SQLExecutionException(Exception):
+    pass
+
+
+class UpdateFile(object):
+    def __init__(self, db_name, state_dir, dry_run=False):
+        self._db_name = db_name
+        self._state_dir = state_dir
+        self._dry_run = dry_run
+
+    def read(self):
+        logger.info('Reading update file')
+        with self._open() as fobj:
+            content = fobj.read()
+        update_id = content.strip()
+        logger.info('Read %r from update file', update_id)
+        return update_id
+
+    def _open(self, mode='r'):
+        filename = self._get_filename()
+        try:
+            return open(filename, mode)
+        except IOError, e:
+            if e.errno == errno.ENOENT:
+                logger.info('Update file %r not found', filename)
+                raise NoUpdateFileException(filename)
+            else:
+                raise
+
+    def _get_filename(self):
+        return '%s-last' % os.path.join(self._state_dir, self._db_name)
+
+    def write(self, update_id):
+        logger.info('Writing %r to update file', update_id)
+        content = '%s\n' % update_id
+        if not self._dry_run:
+            with self._open('w') as fobj:
+                fobj.write(content)
+
+
+class PostgresDB(object):
+    def __init__(self, db_name, dry_run=False):
+        self._db_name = db_name
+        self._dry_run = dry_run
+
+    def is_database_created(self):
+        logger.info('Testing if database %r is created', self._db_name)
+        retcode = self._exec_psql_command(['--list', self._db_name],
+                                          hide_stderr=True)
+        return retcode == 0
+
+    def _exec_psql_command(self, psql_args, hide_stderr=False):
+        command = self._format_command(psql_args, hide_stderr)
+        logger.info('Executing command %r', command)
+        if not self._dry_run:
+            process = subprocess.Popen(command)
+            process.communicate()
+            retcode = process.returncode
+        else:
+            retcode = 0
+        return retcode
+
+    def _format_command(self, psql_args, hide_stderr):
+        psql_command = self._format_psql_command(psql_args, hide_stderr)
+        return ['su', '-', '-c', psql_command, 'postgres']
+
+    def _format_psql_command(self, psql_args, hide_stderr):
+        command = ['psql', '--set', 'ON_ERROR_STOP=']
+        command.extend("'%s'" % psql_arg for psql_arg in psql_args)
+        command.extend(['>', '/dev/null'])
+        if hide_stderr:
+            command.extend(['2>', '/dev/null'])
+        return ' '.join(command)
+
+    def execute_sql_file(self, filename):
+        logger.info('Executing SQL file %r', filename)
+        retcode = self._exec_psql_command(['-f', filename])
+        if retcode != 0:
+            raise SQLExecutionException('psql command returned %r' % retcode)
+
+
+class SQLFile(object):
+    def __init__(self, filename, update_id):
+        self.filename = filename
+        self.update_id = update_id
+
+
+class SQLFilesRepository(object):
+    def __init__(self, db_name, datastorage_dir, migration_dir):
+        self._db_name = db_name
+        self._datastorage_dir = datastorage_dir
+        self._migration_dir = migration_dir
+
+    def get_datastorage_file(self):
+        logger.info('Getting datastorage file')
+        abs_filename = os.path.join(self._datastorage_dir, '%s.sql' % self._db_name)
+        return SQLFile(abs_filename, None)
+
+    def get_new_migration_files(self, last_update_id):
+        logger.info('Getting migration files newer than %r', last_update_id)
+        return [sql_file for sql_file in self._new_migration_files_iterator() if
+                sql_file.update_id > last_update_id]
+
+    def _new_migration_files_iterator(self, reverse=False):
+        filename_prefix = self._get_migration_file_prefix()
+        filename_prefix_len = len(filename_prefix)
+        for filename in sorted(os.listdir(self._migration_dir), reverse=reverse):
+            if filename.startswith(filename_prefix):
+                abs_filename = os.path.join(self._migration_dir, filename)
+                update_id = filename[filename_prefix_len:]
+                yield SQLFile(abs_filename, update_id)
+
+    def _get_migration_file_prefix(self):
+        return '%s-' % self._db_name
+
+    def get_last_migration_file(self):
+        logger.info('Getting last migration file')
+        migration_files_iterator = self._new_migration_files_iterator(reverse=True)
+        try:
+            last_sql_file = migration_files_iterator.next()
+        except StopIteration:
+            logger.info('No migration file found')
+            last_sql_file = SQLFile(None, '')
+        return last_sql_file
+
+
+def update_db(db_name, postgres_db, repository, update_file):
+    logger.info('Updating database %r...', db_name)
+    try:
+        update_file_id = update_file.read()
+    except NoUpdateFileException:
+        if not postgres_db.is_database_created():
+            logger.info('Database %r not created, creating it...', db_name)
+            datastorage_sql_file = repository.get_datastorage_file()
+            postgres_db.execute_sql_file(datastorage_sql_file.filename)
+            logger.info('Database %r created successfully', db_name)
+        last_sql_file = repository.get_last_migration_file()
+        update_file.write(last_sql_file.update_id)
+    else:
+        new_sql_files = repository.get_new_migration_files(update_file_id)
+        if new_sql_files:
+            logger.info('Found %d new migration files', len(new_sql_files))
+            last_executed_sql_file = None
+            try:
+                for sql_file in new_sql_files:
+                    postgres_db.execute_sql_file(sql_file.filename)
+                    last_executed_sql_file = sql_file
+            finally:
+                if last_executed_sql_file:
+                    update_file.write(last_executed_sql_file.update_id)
+        else:
+            logger.info('No new migration files')
+    logger.info('Database %r updated successfully\n', db_name)
+
+
+def main():
+    args = _parse_args(sys.argv[1:])
+    _init_logging(args.verbose)
+
+    for db_name in DB_NAMES:
+        postgres_db = PostgresDB(db_name, args.dry_run)
+        update_file = UpdateFile(db_name, args.state_dir, args.dry_run)
+        repository = SQLFilesRepository(db_name,
+                                        args.datastorage_dir,
+                                        args.migration_dir)
+        try:
+            update_db(db_name, postgres_db, repository, update_file)
+        except SQLExecutionException, e:
+            logger.error('Error while updating database %r: %s', db_name, e)
+            sys.exit(1)
+
+
+def _parse_args(args):
+    parser = _new_argument_parser()
+    parsed_args = parser.parse_args(args)
+    return parsed_args
+
+
+def _new_argument_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', '--dry-run', action='store_true', default=False,
+                        help='perform a trial run with no changes made')
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help='increase verbosity')
+    parser.add_argument('--state-dir', action='store',
+                        default='/var/lib/xivo-update-db',
+                        help='state directory')
+    parser.add_argument('--datastorage-dir', action='store',
+                        default='/usr/share/pf-xivo-base-config/datastorage',
+                        help='datastorage directory')
+    parser.add_argument('--migration-dir', action='store',
+                        default='/usr/share/pf-xivo-base-config/migration',
+                        help='migration directory')
+    return parser
+
+
+def _init_logging(verbose=False):
+    logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(handler)
+    if verbose:
+        logger.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.ERROR)
+
+
+if __name__ == '__main__':
+    main()
