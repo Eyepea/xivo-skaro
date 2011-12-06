@@ -679,8 +679,6 @@ CREATE TABLE "dialpattern" (
  "prefix" varchar(32),
  "exten" varchar(40) NOT NULL,
  "stripnum" integer,
- "emergency" integer,
- "setcallerid" integer NOT NULL DEFAULT 0,
  "callerid" varchar(80),
  PRIMARY KEY("id")
 );
