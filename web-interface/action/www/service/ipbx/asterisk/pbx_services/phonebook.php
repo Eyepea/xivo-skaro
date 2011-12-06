@@ -50,7 +50,10 @@ switch($act)
 				$error  = $appphonebook->get_error();
 			}
 			else
+			{
+				$ipbx->discuss(array('xivo[phonebooklist,update]'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
+			}
 		}
 
 		if(dwho_issa('phonebook',$result) === false || empty($result['phonebook']) === true)
@@ -92,7 +95,10 @@ switch($act)
 				$error  = $appphonebook->get_error();
 			}
 			else
+			{
+				$ipbx->discuss(array('xivo[phonebooklist,update]'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
+			}
 		}
 
 		if(dwho_issa('phonebook',$return) === false || empty($return['phonebook']) === true)
@@ -124,6 +130,7 @@ switch($act)
 
 		$appphonebook->delete();
 
+		$ipbx->discuss(array('xivo[phonebooklist,update]'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
 	case 'deletes':
@@ -140,12 +147,14 @@ switch($act)
 				$appphonebook->delete();
 		}
 
+		$ipbx->discuss(array('xivo[phonebooklist,update]'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
 	case 'import':
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appphonebook->import_csv();
+			$ipbx->discuss(array('xivo[phonebooklist,update]'));
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
