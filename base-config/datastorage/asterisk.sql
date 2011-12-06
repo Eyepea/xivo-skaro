@@ -20,7 +20,6 @@ CREATE USER asterisk WITH PASSWORD 'proformatique';
 CREATE DATABASE asterisk WITH OWNER asterisk ENCODING 'UTF8';
 
 \connect asterisk;
-CREATE LANGUAGE plpgsql;
 
 BEGIN;
 
@@ -2770,4 +2769,5 @@ SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class
 
 COMMIT;
 
-\i sccp.sql
+\set sccp_filename :dir /sccp.sql
+\i :sccp_filename

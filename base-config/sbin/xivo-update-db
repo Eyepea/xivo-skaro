@@ -101,7 +101,7 @@ class PostgresDB(object):
         return ['su', '-', '-c', psql_command, 'postgres']
 
     def _format_psql_command(self, psql_args, hide_stderr):
-        command = ['psql', '--set', 'ON_ERROR_STOP=']
+        command = ['psql', '-v', 'ON_ERROR_STOP=']
         command.extend("'%s'" % psql_arg for psql_arg in psql_args)
         command.extend(['>', '/dev/null'])
         if hide_stderr:
@@ -110,7 +110,8 @@ class PostgresDB(object):
 
     def execute_sql_file(self, filename):
         logger.info('Executing SQL file %r', filename)
-        retcode = self._exec_psql_command(['-f', filename])
+        psql_args = ['-f', filename, '-v', 'dir=%s' % os.path.dirname(filename)]
+        retcode = self._exec_psql_command(psql_args)
         if retcode != 0:
             raise SQLExecutionException('psql command returned %r' % retcode)
 
