@@ -36,11 +36,6 @@ $array['element']['externprefix']['default'] = '';
 $array['element']['callerid'] = array();
 $array['element']['callerid']['default'] = '';
 
-$array['element']['setcallerid'] = array();
-$array['element']['setcallerid']['value'] = array(0,1);
-$array['element']['setcallerid']['default'] = 0;
-$array['element']['setcallerid']['set'] = true;
-
 $array['element']['exten'] = array();
 $array['element']['exten']['default'] = '';
 
@@ -49,17 +44,10 @@ $array['element']['stripnum']['value'] = range(0,20);
 $array['element']['stripnum']['default'] = 0;
 $array['element']['stripnum']['setdef'] = true;
 
-$array['element']['emergency'] = array();
-$array['element']['emergency']['value'] = array(0,1);
-$array['element']['emergency']['default'] = 0;
-$array['element']['emergency']['set'] = true;
-
-
 $array['filter'] = array();
 $array['filter']['typeid'] =  array('cast' => 'ulongint');
 $array['filter']['prefix'] =  array('set' => false,'chk' => 2,'maxlen' => 10,'regexp' => '/^(?:\+|\+?[0-9#\*]+)$/');
 $array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^(?:\+|\+?[0-9#\*]+)$/');
-$array['filter']['setcallerid'] = array('bool' => true);
 $array['filter']['callerid'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'maxlen'	=> 80,
@@ -68,6 +56,5 @@ $array['filter']['callerid'] = array('set'	=> false,
 $array['filter']['type'] =  array('maxlen' => 32,'regexp' => '/^[a-z\-_]+$/');
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^_?\+?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['stripnum'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
-$array['filter']['emergency'] = array('bool' => true);
 
 ?>

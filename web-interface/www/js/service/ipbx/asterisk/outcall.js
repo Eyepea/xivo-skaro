@@ -21,15 +21,5 @@ $(function() {
     
     var dt = new dyntable('exten');
     
-    $('#list_exten').find('tbody > tr').
-    each(function() {
-        $(this).find('#enable-emergency').bind('click', function(){
-            emergency = $(this).parents('tr').find('#dialpattern-emergency');
-            if (!$(this).attr('checked'))
-                emergency.val('0');
-            else
-                emergency.val('1');                
-        });
-    });
     
 });

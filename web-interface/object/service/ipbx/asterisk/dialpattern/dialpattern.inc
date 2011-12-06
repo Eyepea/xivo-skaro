@@ -48,8 +48,6 @@ class xivo_service_asterisk_dialpattern extends xivo_service_asterisk_abstract
 		$data['exten'] = $this->_sre->display_extension($data['exten']);
 		$data['typeid'] = (int) $data['typeid'];
 		$data['stripnum'] = (int) $data['stripnum'];
-		$data['setcallerid'] = (bool) $data['setcallerid'];
-		$data['emergency'] = (bool) $data['emergency'];
 
 		return($data);
 	}

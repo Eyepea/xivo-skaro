@@ -37,7 +37,6 @@ $nb = 0;
 		<th class="th-center"><?=$this->bbf('col_outcall-dialpattern_exten');?></th>
 		<th class="th-center"><?=$this->bbf('col_outcall-dialpattern_stripnum');?></th>
 		<th class="th-center"><?=$this->bbf('col_outcall-dialpattern_callerid');?></th>
-		<th class="th-center"><?=$this->bbf('col_outcall-dialpattern_emergency');?></th>
 		<th class="th-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 								$this->bbf('col_row-add'),
@@ -116,17 +115,6 @@ if($list !== false
 						  'default'	=> $element['dialpattern']['callerid']['default'],
 						  'value'	=> $ref['callerid']));?>
 		</td>
-		<td>
-			<?=$form->hidden(array('name' => 'dialpattern[emergency][]',
-					    'id'		=> 'dialpattern-emergency',
-						'value' 	=> $ref['emergency']));?>
-			<?=$form->checkbox(array('paragraph'	=> false,
-					    'label'		=> false,
-						'name'		=> 'enable-emergency',
-					    'id'		=> 'enable-emergency',
-					    'checked'	=> $ref['emergency'],
-					    'default'	=> $element['dialpattern']['emergency']['default']))?>
-		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 						       $this->bbf('opt_row-delete'),
@@ -193,12 +181,6 @@ endif;
 					     'id'			=> false,
 					     'label'		=> false,
 					     'size'			=> 15));?>
-		</td>
-		<td>
-			<?=$form->checkbox(array('paragraph'	=> false,
-					     'label'	=> false,
-					     'id'		=> false,
-					     'name'		=> 'dialpattern[emergency][]'))?>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

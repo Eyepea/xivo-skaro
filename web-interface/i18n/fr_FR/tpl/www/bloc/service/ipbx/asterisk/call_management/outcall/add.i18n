@@ -139,8 +139,5 @@ Stripnum
 ; col_outcall-dialpattern_callerid
 Nom d'appel
 
-; col_outcall-dialpattern_emergency 	
-Urgence
-
 ; create_dundipeer
 Créer un pair dundi
