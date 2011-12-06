@@ -48,8 +48,6 @@ CREATE TABLE "sccpdevice" (
 	PRIMARY KEY("id")
 );
 
-END;
-
 -- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text)
 RETURNS VOID AS '
