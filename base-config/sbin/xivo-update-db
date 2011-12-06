@@ -101,7 +101,7 @@ class PostgresDB(object):
         return ['su', '-', '-c', psql_command, 'postgres']
 
     def _format_psql_command(self, psql_args, hide_stderr):
-        command = ['psql', '-v', 'ON_ERROR_STOP=']
+        command = ['PGOPTIONS=--client-min-messages=warning', 'psql', '-v', 'ON_ERROR_STOP=']
         command.extend("'%s'" % psql_arg for psql_arg in psql_args)
         command.extend(['>', '/dev/null'])
         if hide_stderr:
