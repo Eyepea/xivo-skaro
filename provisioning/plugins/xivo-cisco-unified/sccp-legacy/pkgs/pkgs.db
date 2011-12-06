@@ -1,57 +1,8 @@
-[pkg_7902-fw]
-description: Firmware for Cisco 7902G (SCCP)
-description_fr: Micrologiciel pour Cisco 7902G (SCCP)
-version: 8.0.2
-files: 7902-fw
-install: cisco-unified-fw
-
-[pkg_7905-fw]
-description: Firmware for Cisco 7905G (SCCP)
-description_fr: Micrologiciel pour Cisco 7905G (SCCP)
-version: 8.0.3
-files: 7905-fw
-install: cisco-unified-fw
-
-[pkg_7910-fw]
-description: Firmware for Cisco 7910G (SCCP)
-description_fr: Micrologiciel pour Cisco 7910G (SCCP)
-version: 5.0.7
-files: 7910-fw
-install: cisco-unified-fw
-
-[pkg_7912-fw]
-description: Firmware for Cisco 7912G (SCCP)
-description_fr: Micrologiciel pour Cisco 7912G (SCCP)
-version: 8.0.4
-files: 7912-fw
-install: cisco-unified-fw
-
 [pkg_7940-7960-fw]
-description: Firmware for Cisco 7940G and 7960G (SCCP)
-description_fr: Micrologiciel pour Cisco 7940G et 7960G (SCCP)
+description: Firmware for Cisco 7940G (SCCP)
+description_fr: Micrologiciel pour Cisco 7940G (SCCP)
 version: 8.1.2
 files: 7940-7960-fw
-install: cisco-unified-fw
-
-[pkg_7914-fw]
-description: Firmware for Cisco Expansion Module 7914G (SCCP)
-description_fr: Micrologiciel pour module d'extension Cisco 7914G (SCCP)
-version: 5.0.4
-files: 7914-fw
-install: cisco-unified-fw
-
-[pkg_7915-fw]
-description: Firmware for Cisco Expansion Module 7915G (SCCP)
-description_fr: Micrologiciel pour module d'extension Cisco 7915G (SCCP)
-version: 1.0.4
-files: 7915-fw
-install: cisco-unified-fw
-
-[pkg_7916-fw]
-description: Firmware for Cisco Expansion Module 7916G (SCCP)
-description_fr: Micrologiciel pour module d'extension Cisco 7916G (SCCP)
-version: 1.0.4
-files: 7916-fw
 install: cisco-unified-fw
 
 [pkg_networklocale]
