@@ -18,9 +18,9 @@
 
 \connect asterisk;
 
+-- alter type "useriax_type" add new value 'user' in enum ('friend', 'peer');
 BEGIN;
 
--- alter type "useriax_type" add new value 'user' in enum ('friend', 'peer');
 ALTER TYPE "useriax_type" RENAME TO "useriax_type2";
 CREATE TYPE "useriax_type" AS ENUM ('friend', 'peer', 'user');
 
@@ -38,23 +38,38 @@ ALTER TABLE "usersip" DROP COLUMN "_type";
 
 DROP TYPE "useriax_type2";
 
+COMMIT;
+
 
 -- remove faxdetect for incall
+BEGIN;
+
 ALTER TABLE "incall" DROP COLUMN IF EXISTS faxdetectenable;
 ALTER TABLE "incall" DROP COLUMN IF EXISTS faxdetecttimeout;
 ALTER TABLE "incall" DROP COLUMN IF EXISTS faxdetectemail;
 
+COMMIT;
+
 
 -- fix trunk management iax form
-ALTER TABLE "useriax" ADD COLUMN IF NOT EXISTS keyrotate INTEGER DEFAULT NULL;
+BEGIN;
+
+ALTER TABLE "useriax" ADD COLUMN keyrotate INTEGER DEFAULT NULL;
 ALTER TABLE "useriax" ALTER allow TYPE text USING NOT NULL;
+
+COMMIT;
 
 
 -- fix trunk management sip form
+BEGIN;
+
 ALTER TABLE "usersip" ALTER allow TYPE text USING NOT NULL;
+
+COMMIT;
 
 
 -- alter type "phonefunckey_typeextenumbersright add new value 'paging' in enum ('agent', 'group', 'meetme', 'queue', 'user');
+BEGIN;
 
 ALTER TYPE "phonefunckey_typeextenumbersright" RENAME TO "phonefunckey_typeextenumbersright2";
 CREATE TYPE "phonefunckey_typeextenumbersright" AS ENUM ('agent', 'group', 'meetme', 'queue', 'user','paging');
@@ -64,15 +79,22 @@ UPDATE "phonefunckey" SET "typeextenumbersright" = "_typeextenumbersright"::text
 ALTER TABLE "phonefunckey" DROP COLUMN "_typeextenumbersright";
 DROP TYPE "phonefunckey_typeextenumbersright2";
 
+COMMIT;
+
 
 -- remove all occurences of chan_sccp-b
+BEGIN;
 
 DROP TABLE IF EXISTS "sccpline";
 DROP TABLE IF EXISTS "usersccp";
 DROP TABLE IF EXISTS "staticsccp";
 
+COMMIT;
+
 
 -- add libsccp schema
+BEGIN;
+
 DROP TABLE IF EXISTS "sccpgeneral";
 CREATE TABLE "sccpgeneral" (
 	"id"		SERIAL,
@@ -100,8 +122,12 @@ CREATE TABLE "sccpdevice" (
 	PRIMARY KEY("id")
 );
 
+COMMIT;
+
 
 -- grant all rights to asterisk.* for asterisk user
+BEGIN;
+
 SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
 SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
 

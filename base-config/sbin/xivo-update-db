@@ -101,16 +101,18 @@ class PostgresDB(object):
         return ['su', '-', '-c', psql_command, 'postgres']
 
     def _format_psql_command(self, psql_args, hide_stderr):
-        command = ['PGOPTIONS=--client-min-messages=warning', 'psql', '-v', 'ON_ERROR_STOP=']
+        command = ['PGOPTIONS=--client-min-messages=warning', 'psql']
         command.extend("'%s'" % psql_arg for psql_arg in psql_args)
         command.extend(['>', '/dev/null'])
         if hide_stderr:
             command.extend(['2>', '/dev/null'])
         return ' '.join(command)
 
-    def execute_sql_file(self, filename):
+    def execute_sql_file(self, filename, on_error_stop=True):
         logger.info('Executing SQL file %r', filename)
         psql_args = ['-f', filename, '-v', 'dir=%s' % os.path.dirname(filename)]
+        if on_error_stop:
+            psql_args.extend(['-v', 'ON_ERROR_STOP='])
         retcode = self._exec_psql_command(psql_args)
         if retcode != 0:
             raise SQLExecutionException('psql command returned %r' % retcode)
@@ -137,6 +139,10 @@ class SQLFilesRepository(object):
         logger.info('Getting migration files newer than %r', last_update_id)
         return [sql_file for sql_file in self._new_migration_files_iterator() if
                 sql_file.update_id > last_update_id]
+
+    def get_migration_files(self):
+        logger.info('Getting migration files')
+        return list(self._new_migration_files_iterator())
 
     def _new_migration_files_iterator(self, reverse=False):
         filename_prefix = self._get_migration_file_prefix()
@@ -171,20 +177,27 @@ def update_db(db_name, postgres_db, repository, update_file):
             datastorage_sql_file = repository.get_datastorage_file()
             postgres_db.execute_sql_file(datastorage_sql_file.filename)
             logger.info('Database %r created successfully', db_name)
-        last_sql_file = repository.get_last_migration_file()
-        update_file.write(last_sql_file.update_id)
+        sql_files = repository.get_migration_files()
+        logger.info('Found %d migration files', len(sql_files))
+        last_update_id = ''
+        try:
+            for sql_file in sql_files:
+                postgres_db.execute_sql_file(sql_file.filename, on_error_stop=False)
+                last_update_id = sql_file.update_id
+        finally:
+            update_file.write(last_update_id)
     else:
         new_sql_files = repository.get_new_migration_files(update_file_id)
         if new_sql_files:
             logger.info('Found %d new migration files', len(new_sql_files))
-            last_executed_sql_file = None
+            last_sql_file = None
             try:
                 for sql_file in new_sql_files:
                     postgres_db.execute_sql_file(sql_file.filename)
-                    last_executed_sql_file = sql_file
+                    last_sql_file = sql_file
             finally:
-                if last_executed_sql_file:
-                    update_file.write(last_executed_sql_file.update_id)
+                if last_sql_file:
+                    update_file.write(last_sql_file.update_id)
         else:
             logger.info('No new migration files')
     logger.info('Database %r updated successfully\n', db_name)
