@@ -1597,7 +1597,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		else
 			$lang = 'en_US';
 
-		foreach(array('sip', 'iax', 'sccp') as $name)
+		foreach(array('sip', 'iax') as $name)
 		{
 			$app = &$this->_ipbx->get_apprealstatic($name);
 			$module = &$app->get_module('general');

@@ -74,7 +74,7 @@ $array['filter']['configured'] = array('bool' => true);
 $array['filter']['sn'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9\-_]+$/i');
 $array['filter']['vendor'] = array('set' => false,'chk' => 2,'maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/i');
 $array['filter']['model'] = array('set' => false,'chk' => 2,'maxlen' => 16,'regexp' => '/^[a-z0-9\-_ ]+$/i');
-$array['filter']['proto'] = array('set' => false,'chk' => 2,'key' => array('sip', 'sccp'));
+$array['filter']['proto'] = array('set' => false,'chk' => 2,'key' => array('sip'));
 $array['filter']['ip'] = array('set' 		=> false,
 						    'chk'			=> 2,
 						    'callback'		=> 'dwho_network::valid_host',

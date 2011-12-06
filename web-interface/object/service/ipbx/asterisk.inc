@@ -390,10 +390,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		// SCCP protocol: we do not return a module, but an application instead
-		if($name == 'sccp')
-			$r = &$this->get_application($name);
-		else if(($module = $this->get_protocol_module_name($name)) !== false)
+		if(($module = $this->get_protocol_module_name($name)) !== false)
 			$r = &$this->get_module($module);
 
 		return(($ref = &$r));

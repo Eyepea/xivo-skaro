@@ -96,9 +96,6 @@ $context_js = $dhtml->escape($context);
 		<li><?=$url->href_html($this->bbf('toolbar_menu_add_iax'),
 				       'service/ipbx/pbx_settings/lines',
 				       array('act'=>'add','proto'=>'iax'));?></li>
-		<li><?=$url->href_html($this->bbf('toolbar_menu_add_sccp'),
-				       'service/ipbx/pbx_settings/lines',
-				       array('act'=>'add','proto'=>'sccp'));?></li>
 */ ?>
 		<li><?=$url->href_html($this->bbf('toolbar_menu_add_custom'),
 				       'service/ipbx/pbx_settings/lines',

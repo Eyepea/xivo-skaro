@@ -10,9 +10,6 @@ SIP Protocol
 ; mn_left_generalsettings-iax
 IAX Protocol
 
-; mn_left_generalsettings-sccp
-SCCP Protocol
-
 ; mn_left_generalsettings-dundi
 Dundi Protocol
 

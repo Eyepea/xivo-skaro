@@ -76,9 +76,6 @@ SIP
 ; fm_protocol_protocol-opt(iax)
 IAX
 
-; fm_protocol_protocol-opt(sccp)
-SCCP
-
 ; fm_protocol_protocol-opt(custom)
 Customized
 
@@ -823,9 +820,6 @@ weight must be an integer between 0 and 100
 ; column_addon
 Expansion modules
 
-; smenu_sccp
-SCCP parameters
-
 ; addon_description
 Add here expansion modules connected to the phone, from left to right.
 
@@ -987,9 +981,6 @@ Digits for the secondary dialtone (max 9 digits)
 
 ; hlp_fm_dialtone_tone
 Outside dialtone
-
-; hlp_fm_sccp_amaflags
-Default AMA flag code stored in the CDR record
 
 ; fm_pickupmodeanswer-opt(on)
 Asterisk mode

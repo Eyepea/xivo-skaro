@@ -232,7 +232,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$protocols = array(
 			'sip'  => 'sip show peer',
 			'iax'  => 'iax2 show peer',
-			'sccp' => 'sccp show line'
 		);
 
 		$this->_info['ipbx'] = false;
@@ -409,13 +408,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$iax['identity'] = strtoupper($iax['protocol']).'/'.$iax['name'];
 					$r[$linefeatures['id']] = array_merge($iax,$linefeatures);
 					break;
-				case XIVO_SRE_IPBX_AST_PROTO_SCCP:
-					#$sccp = dwho_array_startswith_key($ref,'sccpline.',true);
-					$sccp = dwho_array_startswith_key($ref,'usersccp.',true);
-					$sccp['initialized'] = true;
-					$sccp['identity'] = strtoupper($sccp['protocol']).'/'.$sccp['name'];
-					$r[$linefeatures['id']] = array_merge($sccp,$linefeatures);
-					break;
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
 					$custom = dwho_array_startswith_key($ref,'usercustom.',true);
 					$custom['initialized'] = true;
@@ -545,11 +537,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$this->_set_result_var('protocol','callgroup',$callgroup);
 				}
 
-				break;
-			case XIVO_SRE_IPBX_AST_PROTO_SCCP:
-				if (array_key_exists('musiconhold',$userfeatures)) {
-					$protocol['musicclass'] = $userfeatures['musiconhold'];
-				}
 				break;
 			case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
 				if (dwho_has_len($musiconhold) === true) {
@@ -871,10 +858,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			}
 		}
 
-		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
-			$this->_service->discuss('sccp reload');
-		}
-
 		$this->_status = '';
 
 		return($r);
@@ -1162,9 +1145,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				return(false);
 			}
 		}
-
-		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-			$this->_service->discuss('sccp reload');
 
 		$this->_status = '';
 		return(true);

@@ -49,9 +49,6 @@ Protocole SIP
 ; acl(service-ipbx-general_settings-iax)
 Protocole IAX
 
-; acl(service-ipbx-general_settings-sccp)
-Protocole SCCP
-
 ; acl(service-ipbx-general_settings-voicemail)
 Messageries vocales
 

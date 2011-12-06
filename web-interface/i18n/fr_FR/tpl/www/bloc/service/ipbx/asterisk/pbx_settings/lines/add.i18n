@@ -49,9 +49,6 @@ SIP
 ; fm_protocol_protocol-opt(iax)
 IAX
 
-; fm_protocol_protocol-opt(sccp)
-SCCP
-
 ; fm_protocol_protocol-opt(custom)
 Personnalisé
 
@@ -505,9 +502,6 @@ Chiffre de la tonalité secondaire (9 max)
 
 ; hlp_fm_dialtone_tone
 tonalité de sortie
-
-; hlp_fm_sccp_amaflags
-Drapeau de facturation enregistré dans la table CDR
 
 ; fm_pickupmodeanswer-opt(on)
 Asterisk

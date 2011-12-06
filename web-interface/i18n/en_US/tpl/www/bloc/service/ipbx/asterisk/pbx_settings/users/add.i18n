@@ -76,12 +76,6 @@ IAX
 ; line_protocol-opt(iax)
 IAX
 
-; line_protocol-sccp
-SCCP
-
-; line_protocol-opt(sccp)
-SCCP
-
 ; line_protocol-custom
 Customized
 
@@ -598,9 +592,6 @@ You must select a skill
 ; column_addon
 Expansion modules
 
-; smenu_sccp
-SCCP parameters
-
 ; addon_description
 Add here expansion modules connected to the phone, from left to right.
 
@@ -719,9 +710,6 @@ Default video/RTP packets Type of Service (default is 0x88 == 136)
 
 ; hlp_fm_video_cos
 Default video/RTP packets Class of Service (default is 5)
-
-; hlp_fm_sccp_amaflags
-Default AMA flag code stored in the CDR record
 
 ; hlp_fm_adhocnumber
 Adhoc number or Private-line automatic ringdown (PLAR). Adhoc/PLAR circuits are statically configured endpoints and do not required the user dialing to connect calls:<br/>
