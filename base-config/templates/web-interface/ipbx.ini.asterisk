@@ -1,7 +1,7 @@
 [general]
 name = asterisk
 
-[ami]
+[ctibus]
 bindaddr = 127.0.0.1
 port = 5004
 

@@ -171,21 +171,21 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		// here we can sort by phonebook number
 		if($subsort !== false)
-		{ 
+		{
 			function f_sortby_office_number($a, $b)
-			{ 
+			{
 				return strcmp(
-					$a['phonebooknumber']['office']['number'], 
-					$b['phonebooknumber']['office']['number']); 
+					$a['phonebooknumber']['office']['number'],
+					$b['phonebooknumber']['office']['number']);
 			}
 			function f_sortby_mobile_number($a, $b)
-			{ 
+			{
 				return strcmp(
-					$a['phonebooknumber']['mobile']['number'], 
-					$b['phonebooknumber']['mobile']['number']); 
+					$a['phonebooknumber']['mobile']['number'],
+					$b['phonebooknumber']['mobile']['number']);
 			}
 
-			usort($r, "f_sortby_".str_replace('-', '_', $subsort[0])); 
+			usort($r, "f_sortby_".str_replace('-', '_', $subsort[0]));
 
 			if($subsort[1] === SORT_DESC)
 				$r = array_reverse($r);
@@ -338,8 +338,15 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			if(($rs = $module->chk_values($infotmp)) !== false
 			&& isset($reslist[$rs['type']]) === false)
 				$reslist[$rs['type']] = $rs;
+			else {
+				$this->_set_result($type,$module->get_filter_result());
+				$this->_set_error($type,$module->get_filter_error());
+			}
 		}
 
+		if($this->get_errnb() > 1) {
+			return(false);
+		}
 		if($type === 'number' && empty($list) === true)
 			return(null);
 		else if(empty($reslist) === true)

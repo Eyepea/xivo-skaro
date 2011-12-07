@@ -29,7 +29,7 @@ Provisioning
 Advanced
 
 ; smenu_ipbxinfos
-IPBX Infos 
+IPBX Infos
 
 ; col_line-key
 Key
@@ -75,9 +75,6 @@ SIP
 
 ; fm_protocol_protocol-opt(iax)
 IAX
-
-; fm_protocol_protocol-opt(sccp)
-SCCP
 
 ; fm_protocol_protocol-opt(custom)
 Customized
@@ -131,7 +128,7 @@ Documentation
 Invite:
 
 ; fm_protocol_accountcode
-Account number:
+Account code:
 
 ; fm_protocol_progressinband
 Events in the band RING:
@@ -178,6 +175,36 @@ Yes
 ; fm_protocol_qualify-opt
 %s milliseconds
 
+; fm_protocol_qualifysmoothing
+Quality smoothing : 
+
+; fm_protocol_qualifyfreqok
+Qualify frequency when ok : 
+
+; fm_protocol_qualifyfreqnotok
+Qualify frequency when fail : 
+
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s milliseconds
+
+; fm_protocol_qualifyfreq-opt-second
+1 second
+
+; fm_protocol_qualifyfreq-opt-seconds
+%s seconds
+
+; fm_protocol_qualifyfreq-opt-minute
+1 minute
+
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
+
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
+%s min. %s sec.
+
 ; fm_protocol_rtptimeout
 RTP timeout:
 
@@ -211,7 +238,7 @@ Phone number:
 ; fm_linefeatures_ringseconds
 Ringing time:
 
-; fm_linefeatures_ringseconds-opt0
+; fm_linefeatures_ringseconds-opt(0)
 Unlimited
 
 ; fm_linefeatures_ringseconds-opt
@@ -229,14 +256,38 @@ Video support:
 ; fm_protocol_maxcallbitrate
 Max call bitrate video:
 
+; fm_protocol_g726nonstandard
+Activate G726 no standard:
+
+; fm_protocol_jitterbuffer
+Enable Jitter Buffer:
+
+; fm_protocol_forcejitterbuffer
+Force Jitter Buffer:
+
+; fm_protocol_codecpriority
+Codecs priority:
+
+; fm_protocol_codecpriority-opt(disabled)
+Disabled
+
+; fm_protocol_codecpriority-opt(host)
+Host
+
+; fm_protocol_codecpriority-opt(caller)
+Caller
+
+; fm_protocol_codecpriority-opt(reqonly)
+Request only
+
+; fm_codec-custom
+Customize codecs:
+
 ; fm_protocol_codec-disallow
 Codecs disallow:
 
 ; fm_protocol_codec-disallow-opt(all)
 All
-
-; fm_protocol_g726nonstandard
-Activate G726 no standard:
 
 ; fm_linefeatures_simultcalls
 Simultaneous calls:
@@ -298,14 +349,11 @@ Boss
 ; fm_linefeatures_bsfilter-opt-secretary
 Secretary
 
-; fld-callgroup
-Groups
+; fm_protocol_t38pt-udptl
+Activate T38 (UDPTL) :
 
-; bt_ingroup
-Add one or more groups ->
-
-; bt_outgroup
-<- Remove one or more groups
+; fm_protocol_t38pt-usertpsource
+Use the source IP address as the destination for the T38:
 
 ; col_group-name
 Name
@@ -412,6 +460,9 @@ Create a call permission
 ; fm_protocol_callerid
 Caller ID:
 
+; fm_protocol_sendani
+Send call name/number presentation : 
+
 ; fm_linefeatures_outcallerid
 Outgoing Caller ID:
 
@@ -430,17 +481,17 @@ Subroutine preprocess:
 ; fm_protocol_insecure
 Insecure:
 
-; fm_protocol_insecure-opt(no)
-No
-
 ; fm_protocol_insecure-opt(port)
 Port
 
 ; fm_protocol_insecure-opt(invite)
 Invite
 
-; fm_protocol_insecure-opt(all)
+; fm_protocol_insecure-opt(port,invite)
 All
+
+; fm_protocol_mask
+Network mask:
 
 ; fm_protocol_permit
 IP address or subnet mask allowed:
@@ -769,38 +820,14 @@ weight must be an integer between 0 and 100
 ; column_addon
 Expansion modules
 
-; smenu_sccp
-SCCP parameters
-
 ; addon_description
 Add here expansion modules connected to the phone, from left to right.
-
-; fm_protocol_adhocnumber
-Adhoc number: 
-
-; fm_protocol_video_cos
-Video COS: 
-
-; fm_protocol_video_tos
-Video TOS: 
-
-; fm_protocol_audio_cos
-Audio COS: 
-
-; fm_protocol_audio_tos
-Audio TOS: 
-
-; fm_protocol_secondary_dialtone_tone
-Secondary dialtone tone: 
 
 ; fm_protocol_secondary_dialtone_digits
 Secondary dialtone digits: 
 
 ; fm_protocol_trustphoneip
 Trust phone IP: 
-
-; fm_protocol_imageversion
-Firmware image version: 
 
 ; fm_protocol_tzoffset
 Timezone offset: 
@@ -883,9 +910,6 @@ Flash
 ; fm_mwilamp(blink)
 Blink
 
-; fm_protocol_keepalive
-Keepalive: 
-
 ; fm_privacy(on)
 Activated
 
@@ -947,13 +971,7 @@ Set the silence suppression
 ; hlp_fm_incominglimit
 more than 1 incoming call = call waiting
 
-; hlp_fm_keepalive
-Set 0 to disable keepalive check
-
 ; hlp_fm_tzoffset
-
-; hlp_fm_imageversion
-Useful to upgrade old firmwares (the ones that do not load xml from the tftp server)
 
 ; hlp_fm_trustphoneip
 Used if the phone is behind a NAT (so we must trust ip address connection, not phone ones)
@@ -963,28 +981,6 @@ Digits for the secondary dialtone (max 9 digits)
 
 ; hlp_fm_dialtone_tone
 Outside dialtone
-
-; hlp_fm_audio_tos
-Default audio/RTP packets Type of Service (default is 0xb8 == 184). Possible values are 0x??, lowdelay, throughput, reliability, mincost (solaris only), none
-
-; hlp_fm_audio_cos
-Default audio/RTP packets Class of Service (defaults is 6)
-
-; hlp_fm_video_tos
-Default video/RTP packets Type of Service (default is 0x88 == 136)
-
-; hlp_fm_video_cos
-Default video/RTP packets Class of Service (default is 5)
-
-; hlp_fm_sccp_amaflags
-Default AMA flag code stored in the CDR record
-
-; hlp_fm_adhocnumber
-Adhoc number or Private-line automatic ringdown (PLAR). Adhoc/PLAR circuits are statically configured endpoints and do not required the user dialing to connect calls:<br/>
-<ul>
-<li>the adhocNumber is dialed as soon as the phone is taken off-hook or when the new-call button is pressed</li>
-<li>the number will not be dialed when choosing a line; so when you choose a line you can enter a number manually</li>
-</ul>
 
 ; fm_pickupmodeanswer-opt(on)
 Asterisk mode
@@ -1004,8 +1000,6 @@ Key
 
 ; no_softkeys
 No softkeys
-
-
 
 ; softkey_event(onhook)
 On hook
@@ -1323,6 +1317,15 @@ Always
 
 ; fm_protocol_maxauthreq
 Maximum authentication attempts:
+
+; fm_protocol_maxauthreq-opt(0)
+Disabled
+
+; fm_protocol_maxauthreq-opt
+%s
+
+; fm_protocol_adsi
+Enable ADSI support:
 
 ; smenu_schedule
 Schedules

@@ -58,7 +58,7 @@ Create a context
 ; fm_groupfeatures_timeout
 Ring time:
 
-; fm_groupfeatures_timeout-opt0
+; fm_groupfeatures_timeout-opt(0)
 Unlimited
 
 ; fm_groupfeatures_timeout-opt
@@ -67,7 +67,7 @@ Unlimited
 ; fm_queue_timeout
 User reachability timeout:
 
-; fm_queue_timeout-opt0
+; fm_queue_timeout-opt(0)
 Disabled
 
 ; fm_queue_timeout-opt

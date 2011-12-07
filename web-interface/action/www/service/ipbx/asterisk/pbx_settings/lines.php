@@ -103,9 +103,15 @@ switch($act)
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
-		$_TPL->set_var('context_list',$appline->get_context_list());
+		$_TPL->set_var('context_list',$appline->get_context_list(null,null,null,false,'internal'));
 		//$_TPL->set_var('parking_list', $modpark->get_all());
 		$_TPL->set_var('proto',$_QR['proto']);
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/utils/codeclist.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/lines.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'edit':
 		$appline = &$ipbx->get_application('line');
@@ -166,8 +172,14 @@ switch($act)
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$element);
-		$_TPL->set_var('context_list',$appline->get_context_list());
+		$_TPL->set_var('context_list',$appline->get_context_list(null,null,null,false,'internal'));
 		//$_TPL->set_var('parking_list', $modpark->get_all());
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/utils/codeclist.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/lines.js');
+		$dhtml->load_js_multiselect_files();
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -279,12 +291,6 @@ switch($act)
 $_TPL->set_var('act',$act);
 $_TPL->set_var('contexts',$contexts);
 $_TPL->set_var('frees',array(1 => 'yes',0 => 'no'));
-
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/dwho/uri.js');
-$dhtml->set_js('js/dwho/http.js');
-$dhtml->set_js('js/dwho/suggest.js');
-$dhtml->set_js('js/dwho/submenu.js');
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

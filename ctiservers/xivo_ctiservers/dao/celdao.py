@@ -3,6 +3,7 @@
 import logging
 from xivo_ctiservers.dao.alchemy import dbconnection
 from xivo_ctiservers.dao.alchemy.cel import CEL
+from xivo_ctiservers import cti_config
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +57,37 @@ class CELChannel(object):
     def exten(self):
         chan_start_exten = self._chan_start_event.exten
         exten = chan_start_exten
-        # handle originate stuff
-        if exten == u's':
-            chan_end_cid_num = self._chan_end_event.cid_num
-            if chan_end_cid_num != chan_start_exten:
-                exten = chan_end_cid_num
+        if self.is_originate():
+            exten = self.peers_exten()
         return exten
 
     def linked_id(self):
         return self._chan_start_event.linkedid
+
+    def is_originate(self):
+        return self._chan_start_event.exten == u's'
+
+    def peers_uniqueids(self):
+        uniqueid = self._chan_start_event.uniqueid
+        linked_id = self.linked_id()
+        for config in cti_config.cconf.getconfig('ipbxes').itervalues():
+            cel_uri = config['cdr_db_uri']
+            celdao = CELDAO.new_from_uri(cel_uri)
+            cel_entries_with_uniqueid = celdao.cels_by_linked_id(linked_id)
+            return set([cel.uniqueid for cel in cel_entries_with_uniqueid if cel.uniqueid != uniqueid])
+
+    def peers_exten(self):
+        try:
+            peers_unique_id = self.peers_uniqueids().pop()
+            for config in cti_config.cconf.getconfig('ipbxes').itervalues():
+                cel_uri = config['cdr_db_uri']
+                celdao = CELDAO.new_from_uri(cel_uri)
+                peers_channel = celdao.channel_by_unique_id(peers_unique_id)
+                if peers_channel:
+                    return peers_channel._chan_start_event.cid_num
+        except KeyError:
+            pass
+        return 'unknown'
 
 
 class CELDAO(object):
@@ -90,6 +113,15 @@ class CELDAO(object):
             raise CELException('no such CEL event with uniqueid %s' % unique_id)
         else:
             return CELChannel(cel_events)
+
+    def cels_by_linked_id(self, linked_id):
+        cel_events = (self._session.query(CEL)
+                      .filter(CEL.linkedid == linked_id)
+                      .all())
+        if not cel_events:
+            raise CELException('no such CEL event with linkedid %s' % linked_id)
+        else:
+            return cel_events
 
     def _channel_pattern_from_endpoint(self, endpoint):
         return "%s-%%" % endpoint

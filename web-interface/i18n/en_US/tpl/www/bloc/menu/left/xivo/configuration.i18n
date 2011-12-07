@@ -64,6 +64,9 @@ Control System
 ; mn_left_controlsystem-commonconf 
 Apply system configuration
 
+; mn_left_controlsystem-network 
+Apply network configuration
+
 ; mn_left_controlsystem-ha 
 Reload HA
 
@@ -71,6 +74,9 @@ Reload HA
 Stop HA
 
 ; controlsystem_commonconf_confirm
+Are you sure you want to apply the changes ?
+
+; controlsystem_network_confirm
 Are you sure you want to apply the changes ?
 
 ; controlsystem_ha_confirm

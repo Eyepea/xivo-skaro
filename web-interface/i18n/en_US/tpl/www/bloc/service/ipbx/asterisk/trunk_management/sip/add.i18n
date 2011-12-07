@@ -31,12 +31,6 @@ Caller ID:
 ; fm_protocol_context
 Context:
 
-; fm_protocol_fromuser
-From-User field:
-
-; fm_protocol_fromdomain
-From-Domain field:
-
 ; fm_protocol_calllimit
 Call limit:
 
@@ -83,6 +77,9 @@ Port
 Invite
 
 ; fm_protocol_insecure-opt-all
+All
+
+; fm_protocol_insecure-opt(port,invite)
 All
 
 ; fm_codec-custom
@@ -234,6 +231,15 @@ Autoframing :
 ; fm_protocol_videosupport
 Video support :
 
+; fm_protocol-videosupport-opt(no)
+No
+
+; fm_protocol-videosupport-opt(yes)
+Yes
+
+; fm_protocol-videosupport-opt(always)
+Always
+
 ; fm_protocol_outboundproxy
 Outbound proxy : 
 
@@ -309,10 +315,10 @@ Without NAT
 Update without NAT
 
 ; fm_protocol_fromuser
-Rewrite From-User field :
+Rewriting the From field-User:
 
 ; fm_protocol_fromdomain
-Rewrite From-Domain field :
+Rewriting the From field-Domain:
 
 ; fm_protocol_amaflags
 amaflag :

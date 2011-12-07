@@ -8,6 +8,8 @@
 
 ; load util/error
 
+; load util/network
+
 ; load tpl/tpl
 
 ; xivo_service_label(ipbx)
@@ -30,6 +32,12 @@ Export
 
 ; successfully_reset
 Device successfully "Autoprov" mode reset
+
+; successfully_apply
+%s successfully apply
+
+; error_during_apply
+Error during apply %s
 
 ; successfully_installed
 %s successfully installed

@@ -1,14 +1,14 @@
 ; ipbximportuser_instruction
 Le fichier à importer doit être composé de lignes au format CSV suivant :
-"firstname"|"lastname"|"username"|"password"|"phonenumber"|"incallexten"
+firstname|lastname|phonenumber|context|protocol
 
 ; fm_example
 Exemple du contenu du fichier :
 
 ; fm_example-content
-"firstname"|"lastname"|"username"|"password"|"phonenumber"|"incallexten"
-"John"|"Doe"|"johndoe"|"1234"|"4000"|"9998"
-"Jane"|"Doe"|"janedoe"|"5678"|"4001"|"9999"
+firstname|lastname|phonenumber|context|protocol
+John|Doe|1001|default|sip
+Jane|Doe|1002|default|sip
 
 ; ipbximportuser_view_error(1)
 Voir l'erreur qui s'est produite lors de l'importation.

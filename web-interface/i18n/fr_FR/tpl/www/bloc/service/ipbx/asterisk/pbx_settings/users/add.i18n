@@ -524,13 +524,16 @@ Aucune compétence
 La même compétence est affectée plusieur fois
 
 ; error_fm_queueskill_weight(empty)
-Vous devez saisir un poid (nombre entier compris entre 0 et 100)
+Vous devez saisir un poids (nombre entier compris entre 0 et 100)
 
 ; error_fm_queueskill_weight(notnumeric)
 Le poids saisi n'est pas un nombre entier
 
 ; error_fm_queueskill_weight(unbound)
 Le poids doit être un nombre entier compris entre 0 et 100
+
+; error_fm_queueskill_skillid(empty)
+Vous devez sélectionner une compétence
 
 ; addon_description
 Ajoutez ici les modules d'extension connectés au téléphone, dans l'ordre de gauche à droite.
@@ -651,9 +654,6 @@ Valeur «Type of Service» des paquets vidéo/RTP (par défaut 0x88, soit 136)
 
 ; hlp_fm_video_cos
 Valeur «Class of Service» des paquets vidéo/RTP (par défaut 5)
-
-; hlp_fm_sccp_amaflags
-Drapeau de facturation enregistré dans la table CDR
 
 ; hlp_fm_adhocnumber
 Numéro Adhoc ou «Private-line automatic ringdown» (PLAR). Les lignes Adhoc/PLAR sont statiques et ne nécéssite pas la saisie d'un numéro de la part de l'utilisateur:<br/>
@@ -861,12 +861,6 @@ IAX
 
 ; line_protocol-iax
 IAX
-
-; line_protocol-opt(sccp)
-SCCP
-
-; line_protocol-sccp
-SCCP
 
 ; line_protocol-opt(custom)
 Personnalisé

@@ -1,17 +1,32 @@
 ; col_displayname
 Display name
 
+; col_sort_displayname
+Sort by display name
+
 ; col_society
 Company
+
+; col_sort_society
+Sort by company
 
 ; col_office-number
 Office phone
 
+; col_sort_office-number
+Sort by office phone
+
 ; col_mobile-number
 Mobile phone
 
+; col_sort_mobile-number
+Sort by mobile phone
+
 ; col_email
 E-mail
+
+; col_sort_email
+Sort by e-mail
 
 ; number_phonebook-result
 Result(s): %s

@@ -65,6 +65,7 @@ UPDATE_REQUESTS = [
     'xivo[meetmelist,update]',
     'xivo[voicemaillist,update]',
     'xivo[incalllist,update]',
+    'xivo[phonebooklist,update]'
     ]
 
 class WEBI(Interfaces):

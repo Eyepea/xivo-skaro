@@ -55,8 +55,14 @@ Language:
 ; fm_userfeatures_entity
 Entity: 
 
+; fm_userfeatures_servicesgroup
+Services group: 
+
 ; hlp_fm_userfeatures_entity
 You can't modify entity if it has a line.
+
+; no_lines-line
+No lines registered
 
 ; line_protocol-sip
 SIP
@@ -69,12 +75,6 @@ IAX
 
 ; line_protocol-opt(iax)
 IAX
-
-; line_protocol-sccp
-SCCP
-
-; line_protocol-opt(sccp)
-SCCP
 
 ; line_protocol-custom
 Customized
@@ -133,6 +133,9 @@ Very very low-pitched
 ; fld-rightcalls
 Rightcall
 
+; fld-client
+XiVO Client
+
 ; fm_userfeatures_rightcallcode
 Rightcall Code: 
 
@@ -142,7 +145,7 @@ Call Forward
 ; fm_userfeatures_ringseconds
 Ringing time:
 
-; fm_userfeatures_ringseconds-opt0
+; fm_userfeatures_ringseconds-opt(0)
 Unlimited
 
 ; fm_userfeatures_ringseconds-opt
@@ -297,6 +300,9 @@ Add one or more call permission ->
 
 ; create_rightcall
 Create a call permission
+
+; create_context
+Create a context
 
 ; create_schedules
 Create a schedules
@@ -499,6 +505,9 @@ Disabled
 ; fm_phonefunckey_supervision-opt(1)
 Enabled
 
+; phonefunckey_no-user
+No user found
+
 ; fm_userfeatures_voicemailtype
 Voice Mail:
 
@@ -562,6 +571,9 @@ Weight
 ; no_disp
 No skills
 
+; fm_queueskills_item
+Skills weighting
+
 ; error_fm_queueskill_skillid(doubloon)
 Same skill can't be affected twice
 
@@ -569,16 +581,16 @@ Same skill can't be affected twice
 You must set a weight (between 0 and 100)
 
 ; error_fm_queueskill_weight(notnumeric)
-weight is not an integer
+Weight is not an integer
 
 ; error_fm_queueskill_weight(unbound)
-weight must be an integer between 0 and 100
+Weight must be an integer between 0 and 100
+
+; error_fm_queueskill_skillid(empty)
+You must select a skill
 
 ; column_addon
 Expansion modules
-
-; smenu_sccp
-SCCP parameters
 
 ; addon_description
 Add here expansion modules connected to the phone, from left to right.
@@ -698,9 +710,6 @@ Default video/RTP packets Type of Service (default is 0x88 == 136)
 
 ; hlp_fm_video_cos
 Default video/RTP packets Class of Service (default is 5)
-
-; hlp_fm_sccp_amaflags
-Default AMA flag code stored in the CDR record
 
 ; hlp_fm_adhocnumber
 Adhoc number or Private-line automatic ringdown (PLAR). Adhoc/PLAR circuits are statically configured endpoints and do not required the user dialing to connect calls:<br/>
@@ -906,6 +915,9 @@ Add a new line
 Add an existing line
 
 ; opt_line-delete
+Delete this line
+
+; opt_row-delete
 Delete this line
 
 ; fm_type-opt(simul)

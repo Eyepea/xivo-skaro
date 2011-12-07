@@ -283,8 +283,8 @@ $array['filter']['rtcachefriends'] = array('bool' => true);
 $array['filter']['rtupdate'] = array('bool' => true);
 $array['filter']['rtignoreregexpire'] = array('bool' => true);
 $array['filter']['rtautoclear'] = array('key' => array('yes','no',1,10,20,30,40,50,60,70,80,90,
-						       100,110,120,130,140,150,160,170,180,
-						       190,200,210,220,230,240));
+                                                                  100,110,120,130,140,150,160,170,180,
+                                                                  190,200,210,220,230,240));
 $array['filter']['pingtime'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['lagrqtime'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['nochecksums'] = array('bool' => true);
@@ -292,5 +292,6 @@ $array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,200
 $array['filter']['calltokenoptional'] = array('set' => false,'chk' => 2);
 $array['filter']['shrinkcallerid'] = array('bool' => true);
 $array['filter']['allowfwdownload'] = array('bool' => true);
+$array['filter']['srvlookup'] = array('bool' => true);
 
 ?>

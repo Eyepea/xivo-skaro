@@ -220,7 +220,7 @@ Maximum number of people allowed to wait:
 ; fm_queue_announce-frequency
 Position announce frequency:
 
-; fm_queue_announce-frequency-opt0
+; fm_queue_announce-frequency-opt(0)
 Disabled
 
 ; fm_queue_announce-frequency-opt15
@@ -259,7 +259,7 @@ Disabled
 ; fm_queue_announce-frequency-opt
 %s min. %s sec.
 
-; fm_queue_periodic-announce-frequency-opt0
+; fm_queue_periodic-announce-frequency-opt(0)
 Disabled
 
 ; fm_queue_periodic-announce-frequency-opt15

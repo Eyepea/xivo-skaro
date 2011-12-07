@@ -48,7 +48,6 @@ class xivo_object_netiface_sql extends xivo_object_abstract_sql
 		$this->_dso->new_select($this->_table);
 		$this->_dso->where(array('uuid' => $uuid));
 		$this->_dso->where(array('networktype' => 'voip'));
-		$this->_dso->where(array('disable' => 0));
 
 		return($this->_dso->select_single());
 	}

@@ -76,18 +76,6 @@ endif;
 				    'selected'	=> $amaflags),
 			      $element['protocol']['iax']['amaflags']['value']),
 
-		$form->select(array('desc'	=> $this->bbf('fm_protocol_amaflags'),
-				    'name'	=> 'protocol[amaflags]',
-				    'labelid'	=> 'sccp-protocol-amaflags',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'bbf'	=> 'ast_amaflag_name_info',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-					  'help'		=> $this->bbf('hlp_fm_sccp_amaflags'),
-				    'default'	=> $element['protocol']['sccp']['amaflags']['default'],
-				    'selected'	=> $amaflags),
-			      $element['protocol']['sccp']['amaflags']['value']),
-
      $form->select(array('desc'  => $this->bbf('fm_userfeatures_servicesgroup'),
             'name'      => 'userfeatures[servicesgroup_id]',
             'labelid'   => 'userfeatures-servicesgroup_id',

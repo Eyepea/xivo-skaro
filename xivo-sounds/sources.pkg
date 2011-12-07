@@ -1,8 +1,0 @@
-# Digium sounds
-ast_version="1.4.20"
-ast_base_url="http://downloads.asterisk.org/pub/telephony/sounds/releases/"
-ast_languages="en fr es"
-ast_tarball_prefix="asterisk-core-sounds"
-# For de-DE asterisk sounds
-greenable_filename="core-prompts-DE-greenable.tar.gz"
-greenable_url="http://www.greenable.de/downloads"

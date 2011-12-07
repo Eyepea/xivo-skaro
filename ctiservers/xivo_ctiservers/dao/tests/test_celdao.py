@@ -1,11 +1,14 @@
 # -*- coding: UTF-8 -*-
 
 import unittest
+from tests.mock import Mock
 from datetime import datetime, timedelta
 from xivo_ctiservers.dao.alchemy.dbconnection import DBConnection
 from xivo_ctiservers.dao.alchemy.base import Base
 from xivo_ctiservers.dao.alchemy.cel import CEL
 from xivo_ctiservers.dao.celdao import CELDAO, CELChannel, CELException
+from xivo_ctiservers import cti_config
+from xivo_ctiservers.dao.alchemy import dbconnection
 
 
 def _new_datetime_generator(step=timedelta(seconds=1)):
@@ -146,16 +149,6 @@ class TestCELChannel(unittest.TestCase):
         channel = CELChannel(cel_events)
         self.assertEqual(u'100', channel.exten())
 
-    def test_exten_when_from_originate(self):
-        cel_events = [
-            _new_cel(eventtype='CHAN_START', exten=u's'),
-            _new_cel(eventtype='HANGUP'),
-            _new_cel(eventtype='CHAN_END', cid_num=u'*10')
-        ]
-
-        channel = CELChannel(cel_events)
-        self.assertEqual(u'*10', channel.exten())
-
     def test_linked_id(self):
         cel_events = [
             _new_cel(eventtype='CHAN_START', linkedid='2'),
@@ -175,6 +168,104 @@ class TestCELChannel(unittest.TestCase):
         ]
 
         CELChannel(cel_events)
+
+    def test_is_originate(self):
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid=1, exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid=1),
+            _new_cel(eventtype='APP_START', uniqueid=1),
+            _new_cel(eventtype='CHAN_START', uniqueid=2),
+            _new_cel(eventtype='ANSWER', uniqueid=2),
+            _new_cel(eventtype='BRIDGE_START', uniqueid=1),
+            _new_cel(eventtype='BRIDGE_END', uniqueid=1),
+            _new_cel(eventtype='HANGUP', uniqueid=2),
+            _new_cel(eventtype='CHAN_END', uniqueid=2),
+            _new_cel(eventtype='HANGUP', uniqueid=1),
+            _new_cel(eventtype='CHAN_END', uniqueid=1),
+        ]
+
+        cel_channel = CELChannel(cel_events)
+
+        self.assertTrue(cel_channel.is_originate())
+
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid=1),
+            _new_cel(eventtype='ANSWER', uniqueid=1),
+            _new_cel(eventtype='APP_START', uniqueid=1),
+            _new_cel(eventtype='CHAN_START', uniqueid=2),
+            _new_cel(eventtype='ANSWER', uniqueid=2),
+            _new_cel(eventtype='BRIDGE_START', uniqueid=1),
+            _new_cel(eventtype='BRIDGE_END', uniqueid=1),
+            _new_cel(eventtype='HANGUP', uniqueid=2),
+            _new_cel(eventtype='CHAN_END', uniqueid=2),
+            _new_cel(eventtype='HANGUP', uniqueid=1),
+            _new_cel(eventtype='CHAN_END', uniqueid=1),
+        ]
+
+        cel_channel = CELChannel(cel_events)
+
+        self.assertFalse(cel_channel.is_originate())
+
+    def test_peers_uniqueid(self):
+        cdr_uri = 'sqlite:///:memory:'
+        cti_config.cconf = Mock(cti_config.Config)
+        cti_config.cconf.getconfig.return_value = {'xivoid': {'cdr_db_uri': cdr_uri,},}
+        CELDAO.new_from_uri = Mock()
+        mocked_celdao = Mock(CELDAO)
+        CELDAO.new_from_uri.return_value = mocked_celdao
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid='1', linkedid='67', exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='APP_START', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='ANSWER', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='BRIDGE_START', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='BRIDGE_END', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='1', linkedid='67'),
+        ]
+        mocked_celdao.cels_by_linked_id.return_value = cel_events
+
+        cel_channel = CELChannel(cel_events)
+
+        unique_ids = cel_channel.peers_uniqueids()
+
+        self.assertTrue('2' in unique_ids)
+        self.assertEqual(len(unique_ids), 1)
+
+    def test_peers_exten(self):
+        cdr_uri = 'sqlite:///:memory:'
+        cti_config.cconf = Mock(cti_config.Config)
+        cti_config.cconf.getconfig.return_value = {'xivoid': {'cdr_db_uri': cdr_uri,},}
+        CELDAO.new_from_uri = Mock()
+        mocked_celdao = Mock(CELDAO)
+        CELDAO.new_from_uri.return_value = mocked_celdao
+        cel_events = [
+            _new_cel(eventtype='CHAN_START', uniqueid='1', linkedid='67', exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='APP_START', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67', exten='113'),
+            _new_cel(eventtype='ANSWER', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='BRIDGE_START', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='BRIDGE_END', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='1', linkedid='67'),
+        ]
+
+        mocked_celdao.channel_by_unique_id = lambda x: CELChannel([
+            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67', exten='113', cid_num='113'),
+            _new_cel(eventtype='ANSWER', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='2', linkedid='67'),])
+
+        cel_channel = CELChannel(cel_events)
+        cel_channel.peers_uniqueids = lambda: set('2')
+
+        self.assertEqual(cel_channel.peers_exten(), '113')
 
 
 class TestCELDAO(unittest.TestCase):
@@ -227,6 +318,31 @@ class TestCELDAO(unittest.TestCase):
 
         channel = self._celdao.channel_by_unique_id('1')
         self.assertEqual(u'100', channel.exten())
+
+    def test_channels_by_linked_id(self):
+        self._insert_cels([
+            _new_cel(eventtype='CHAN_START', uniqueid='1', linkedid='67', exten=u's'),
+            _new_cel(eventtype='ANSWER', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='APP_START', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='ANSWER', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='BRIDGE_START', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='BRIDGE_END', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='2', linkedid='67'),
+            _new_cel(eventtype='HANGUP', uniqueid='1', linkedid='67'),
+            _new_cel(eventtype='CHAN_END', uniqueid='1', linkedid='67'),
+        ])
+
+        cels = self._celdao.cels_by_linked_id(67)
+
+        channel_ids = set()
+
+        for cel in cels:
+            channel_ids.add(cel.uniqueid)
+
+        self.assertTrue('1' in channel_ids)
+        self.assertTrue('2' in channel_ids)
 
     def test_channel_by_unique_id_when_channel_is_missing(self):
         self._insert_cels([
@@ -472,10 +588,13 @@ class TestCELDAO(unittest.TestCase):
 
     def test_1_answered_call_to_phone_from_originate(self):
         self._insert_cels([
-            _new_cel(eventtype='CHAN_START', channame='SIP/A-0', uniqueid='1'),
+            _new_cel(eventtype='CHAN_START', channame='SIP/A-0', uniqueid='1',),
             _new_cel(eventtype='ANSWER', channame='SIP/A-0', uniqueid='1'),
+            _new_cel(eventtype='APP_START', channame='SIP/A-0', uniqueid='1'),
             _new_cel(eventtype='CHAN_START', channame='SIP/B-0', uniqueid='2'),
             _new_cel(eventtype='ANSWER', channame='SIP/B-0', uniqueid='2'),
+            _new_cel(eventtype='BRIDGE_START', channame='SIP/A-0', uniqueid='1'),
+            _new_cel(eventtype='BRIDGE_END', channame='SIP/A-0', uniqueid='1'),
             _new_cel(eventtype='HANGUP', channame='SIP/B-0', uniqueid='2'),
             _new_cel(eventtype='CHAN_END', channame='SIP/B-0', uniqueid='2'),
             _new_cel(eventtype='HANGUP', channame='SIP/A-0', uniqueid='1'),

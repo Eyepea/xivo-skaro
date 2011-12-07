@@ -10,8 +10,5 @@ Ajouter une ligne SIP
 ; toolbar_menu_add_iax
 Ajouter une ligne IAX
 
-; toolbar_menu_add_sccp
-Ajouter une ligne SCCP
-
 ; toolbar_menu_add_custom
 Ajouter une ligne personnalisée

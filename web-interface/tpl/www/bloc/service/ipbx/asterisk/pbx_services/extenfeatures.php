@@ -142,7 +142,7 @@ if(isset($error_js[0]) === true)
 			</div>
 			<div class="stab">
 				<ul>
-<?php 
+<?php
 /* PARKING - COMMENTED
 					<li><a href="#parking"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-parking',1);">
@@ -481,19 +481,6 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['generalfeatures']['xferfailsound']['default'],
 				    'selected'	=> $this->get_var('generalfeatures','xferfailsound','var_val')),
 			      $sound_list),
-
-		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_featuredigittimeout'),
-				    'name'	=> 'generalfeatures[featuredigittimeout]',
-				    'labelid'	=> 'generalfeatures-featuredigittimeout',
-				    'key'	=> false,
-						'bbf'	=> 'time-opt',
-				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
-							 'time'		=> array(
-									'from'		=> 'second',
-									'format'	=> '%M%s')),
-				    'selected'	=> $this->get_var('generalfeatures','featuredigittimeout','var_val'),
-				    'default'	=> $element['generalfeatures']['featuredigittimeout']['default']),
-			      $element['generalfeatures']['featuredigittimeout']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_atxfernoanswertimeout'),
 				    'name'	=> 'generalfeatures[atxfernoanswertimeout]',

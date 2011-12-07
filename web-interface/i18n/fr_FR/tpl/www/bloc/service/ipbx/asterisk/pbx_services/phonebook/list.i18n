@@ -1,17 +1,32 @@
 ; col_displayname
 Nom affiché
 
+; col_sort_displayname
+Trier par nom affiché
+
 ; col_society
 Société
+
+; col_sort_society
+Trier par société
 
 ; col_office-number
 Tél. Bureau
 
+; col_sort_office-number
+Trier par tél. bureau
+
 ; col_mobile-number
 Tél. Mobile
 
+; col_sort_mobile-number
+Trier par tél. mobile
+
 ; col_email
 E-mail
+
+; col_sort_email
+Trier par e-mail
 
 ; number_phonebook-result
 Résultat(s) : %s

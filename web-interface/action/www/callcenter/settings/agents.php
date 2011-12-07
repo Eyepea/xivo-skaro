@@ -392,7 +392,7 @@ switch($act)
 		$_TPL->set_var('beep_list',$appagent->get_beep());
 		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
 		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
-		$_TPL->set_var('context_list',$appagent->get_context_list());
+		$_TPL->set_var('context_list',$appagent->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -527,7 +527,7 @@ switch($act)
 		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
 		$_TPL->set_var('beep_list',$appagent->get_beep());
 		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
-		$_TPL->set_var('context_list',$appagent->get_context_list());
+		$_TPL->set_var('context_list',$appagent->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_TPL->get_module('dhtml');

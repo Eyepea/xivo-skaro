@@ -47,9 +47,6 @@ $array['realstatic']['staticqueue']['datastorage'] = true;
 $array['realstatic']['staticsip'] = array();
 $array['realstatic']['staticsip']['datastorage'] = true;
 
-$array['realstatic']['staticsccp'] = array();
-$array['realstatic']['staticsccp']['datastorage'] = true;
-
 $array['realstatic']['staticvoicemail'] = array();
 $array['realstatic']['staticvoicemail']['datastorage'] = true;
 
@@ -301,18 +298,6 @@ $array['module']['voicemailfeatures']['datastorage'] = true;
 $array['module']['voicemenu'] = array();
 $array['module']['voicemenu']['datastorage'] = true;
 
-$array['module']['usersccp'] = array();
-$array['module']['usersccp']['datastorage'] = true;
-
-$array['module']['sccpline'] = array();
-$array['module']['sccpline']['datastorage'] = true;
-
-$array['module']['sccpbuttonconfig'] = array();
-$array['module']['sccpbuttonconfig']['datastorage'] = true;
-
-$array['module']['generalsccp'] = array();
-$array['module']['generalsccp']['datastorage'] = true;
-
 $array['module']['agentqueueskill'] = array();
 $array['module']['agentqueueskill']['datastorage'] = true;
 
@@ -390,13 +375,11 @@ $array['module']['campaign_campaign_filter']['datastorage'] = true;
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX]    = array('module' => 'useriax');
-$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SCCP]   = array('application' => 'sccp');
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_CUSTOM] = array('module' => 'usercustom');
 
 $array['channel'] = array();
 $array['channel']['sip'] = XIVO_SRE_IPBX_AST_CHAN_SIP;
 $array['channel']['iax'] = XIVO_SRE_IPBX_AST_CHAN_IAX;
-$array['channel']['sccp'] = XIVO_SRE_IPBX_AST_CHAN_SCCP;
 $array['channel']['local'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
 $array['channel']['agent'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
 

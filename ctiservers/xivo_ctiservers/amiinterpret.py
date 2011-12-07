@@ -35,6 +35,7 @@ import time
 
 from queue_logger import queue_logger
 from xivo_ctiservers import xivo_webservices
+from xivo_ctiservers import cti_config
 
 log_ami_events_statusrequest = True
 log_ami_events_complete = False
@@ -48,7 +49,7 @@ class AMI_1_8:
         self.ipbxid = ipbxid
         self.innerdata = self.ctid.safe.get(self.ipbxid)
         self.log = logging.getLogger('AMI_1.8(%s)' % self.ipbxid)
-        fagiport = self.ctid.cconf.getconfig('main').get('incoming_tcp').get('FAGI')[1]
+        fagiport = cti_config.cconf.getconfig('main').get('incoming_tcp').get('FAGI')[1]
         self.fagiportstring = ':%s/' % fagiport
         return
 
@@ -760,7 +761,7 @@ class AMI_1_8:
                                             'tipbxid': self.ipbxid,
                                             'tid': userid,
                                             'config': user})
-            z = xivo_webservices.xws(self.ctid.cconf.ipwebs, 80)
+            z = xivo_webservices.xws(cti_config.cconf.ipwebs, 80)
             z.connect()
             z.serviceput(userid, {fn: status})
             z.close()

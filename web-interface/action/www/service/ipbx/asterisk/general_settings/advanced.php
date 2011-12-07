@@ -39,9 +39,6 @@ $appgeneralmeetme = &$appmeetme->get_module('general');
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 $element['generalmeetme'] = $appgeneralmeetme->get_elements();
 
-$appsccp = &$ipbx->get_apprealstatic('sccp');
-$appgeneralsccp = &$appsccp->get_module('general');
-
 $appsip = &$ipbx->get_apprealstatic('sip');
 $appgeneralsip = &$appsip->get_module('general');
 $autocreatepeer = $appgeneralsip->get('autocreatepeer');
@@ -120,31 +117,23 @@ if(isset($_QR['fm_send']) === true)
 	if(dwho_issa('userinternal',$_QR) === false)
 		$_QR['userinternal'] = array();
 
-	$rs_sccp = array();
-	$rs_sccp['commented'] = 0;
-	$rs_sccp['var_name'] = 'hotline_enabled';
-
 	$rs_sip = array();
 	$rs_sip['commented'] = 0;
 	$rs_sip['var_name'] = 'autocreatepeer';
 
 	if(isset($_QR['userinternal']['guest']) === true)
 	{
-		$rs_sccp['var_val'] = 'yes';
 		$rs_sip['var_val'] = 'yes';
 		$info['userinternal']['guest'] = true;
 	}
 	else
 	{
-		$rs_sccp['var_val'] = 'no';
 		$rs_sip['var_val'] = 'no';
 		$info['userinternal']['guest'] = false;
 	}
 
 	if($appgeneralsip->set($rs_sip) === false
-	|| $appgeneralsccp->set($rs_sccp) === false
-	|| $appgeneralsip->save() === false
-	|| $appgeneralsccp->save() === false)
+	|| $appgeneralsip->save() === false)
 	{
 		dwho_report::push('error', 'Can\'t edit autocreatepeer in staticsip table');
 	}

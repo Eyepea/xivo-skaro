@@ -186,21 +186,25 @@ class xivo_object_commonconf extends xivo_object_abstract
 		for($i = 0; $i < count($list); $i++)
 		{
 			$item = &$list[$i];
-			if(array_key_exists('netiface', $item))
-			$_netifaces[$item['netiface']['ifname']] = $item;
+			if(array_key_exists('netiface', $item)) {
+				$_netifaces[$item['netiface']['ifname']] = $item;
+			}
 
 			if(!$item['actionable']
 			|| $item['netiface']['disable']
-			|| strcmp($item['netiface']['networktype'], 'voip') != 0)
-			continue;
+			|| strcmp($item['netiface']['networktype'], 'voip') != 0) {
+				continue;
+			}
 
 			$ifaces .= $item['netiface']['ifname'] . ' ';
 
-			if($vlanid == 0 && $item['netinfo']['vlanif'])
-			$vlanid = intval($item['netiface']['vlanid']);
+			if($vlanid == 0 && $item['netinfo']['vlanif']) {
+				$vlanid = intval($item['netiface']['vlanid']);
+			}
 
-			if($cidr_id < 0 && (!$onlystatic || strcmp($item['netiface']['method'], 'static') == 0))
-			$cidr_id = $i;
+			if($cidr_id < 0 && (!$onlystatic || strcmp($item['netiface']['method'], 'static') == 0)) {
+				$cidr_id = $i;
+			}
 		}
 
 		// no VOIP netiface defined

@@ -243,7 +243,7 @@ switch($act)
 		$_TPL->set_var('destination_list',$appqueue->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
-		$_TPL->set_var('context_list',$appqueue->get_context_list());
+		$_TPL->set_var('context_list',$appqueue->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('ctipresence', $ctistatus);
 		$_TPL->set_var('nonctipresence', $ctistatus);
 		if(array_key_exists('schedule_id', $result))
@@ -446,7 +446,7 @@ switch($act)
 		$_TPL->set_var('destination_list',$appqueue->get_dialaction_destination_list());
 		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
-		$_TPL->set_var('context_list',$appqueue->get_context_list());
+		$_TPL->set_var('context_list',$appqueue->get_context_list(null,null,null,false,'internal'));
 		if(array_key_exists('schedule_id',$return))
 			$_TPL->set_var('schedule_id', $return['schedule_id']);
 		$_TPL->set_var('ctipresence', $ctistatus);

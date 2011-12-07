@@ -45,32 +45,32 @@ switch($act)
 		$appcontext= &$ipbx->get_application('context');
 		if(($context_list = $appcontext->get_contexts_list(null,array('name' => SORT_ASC),null,false,'internal')) !== false)
 		{
-    		$idx = array();
-    		$entity_list = array();
-    		$nb = count($context_list);
-    		for($i = 0;$i < $nb;$i++)
-    		{
-    			$ref = &$context_list[$i];
+			$idx = array();
+			$entity_list = array();
+			$nb = count($context_list);
+			for($i = 0;$i < $nb;$i++)
+			{
+				$ref = &$context_list[$i];
 
-    			if (($contextnumbers = $ref['contextnumbers']) === false)
-    				continue;
+				if (($contextnumbers = $ref['contextnumbers']) === false)
+					continue;
 
-    			if (is_array($contextnumbers) === true
-    			&& ($nbct = count($contextnumbers)) === 0)
-    				continue;
+				if (is_array($contextnumbers) === true
+				&& ($nbct = count($contextnumbers)) === 0)
+					continue;
 
-    			for($k = 0;$k < $nbct;$k++)
-    			{
-    				$refct = &$contextnumbers[$k];
+				for($k = 0;$k < $nbct;$k++)
+				{
+					$refct = &$contextnumbers[$k];
 
-    				if ($refct['type'] !== 'user'
-    				|| isset($idx[$ref['entity']['id']]) === true)
-    					continue;
+					if ($refct['type'] !== 'user'
+					|| isset($idx[$ref['entity']['id']]) === true)
+						continue;
 
-    				$idx[$ref['entity']['id']] = true;
-    				array_push($entity_list, $ref['entity']);
-    			}
-    		}
+					$idx[$ref['entity']['id']] = true;
+					array_push($entity_list, $ref['entity']);
+				}
+			}
 		}
 
 		$appprovdconfig = &$_XOBJ->get_application('provdconfig');
@@ -86,7 +86,19 @@ switch($act)
 		$_TPL->set_var('list_device_line',$list_device_line);
 		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 
+		include(dirname(__FILE__).'/users/'.$act.'.php');
+
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/lines.js');
+		$dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');
+		$dhtml->load_js_multiselect_files();
 
 		// timepicker
 		$dhtml->set_css('extra-libs/timepicker/jquery-ui-timepicker-addon.css',true);
@@ -95,8 +107,6 @@ switch($act)
 		// autocomplete
 		$dhtml->set_css('extra-libs/jquery-ui/themes/ui-lightness/jquery.ui.autocomplete.css',true);
 		$dhtml->set_js('extra-libs/jquery-ui/ui/jquery.ui.autocomplete.js',true);
-
-		include(dirname(__FILE__).'/users/'.$act.'.php');
 		break;
 	case 'delete':
 		$param['page'] = $page;

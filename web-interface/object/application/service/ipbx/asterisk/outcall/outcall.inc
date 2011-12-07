@@ -282,11 +282,12 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					$reslist[$i][$key] = $arr[$key][$i];
 			}
 		}
-		
+
 		array_pop($reslist);
-		
-		if(empty($reslist) === true)
-			return(null);
+
+		/* Do not return false if $reslist is empty, this prevents deleting
+		 * all entries
+		 */
 
 		$errnb = 0;
 		$res = array();

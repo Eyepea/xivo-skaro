@@ -117,36 +117,6 @@ endif;
 	</div>
 </div>
 
-<div id="sb-part-faxdetect" class="b-nodisplay">
-<?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_incall_faxdetectenable'),
-				      'name'	=> 'incall[faxdetectenable]',
-				      'labelid'	=> 'incall-faxdetectenable',
-				      'checked'	=> $this->get_var('incall','faxdetectenable'),
-				      'default'	=> $element['incall']['faxdetectenable']['default']),
-				'onchange="xivo_ast_enable_faxdetect();"'),
-
-		$form->select(array('desc'	=> $this->bbf('fm_incall_faxdetecttimeout'),
-				    'name'	=> 'incall[faxdetecttimeout]',
-				    'labelid'	=> 'incall-faxdetecttimeout',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_incall_faxdetecttimeout-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['incall']['faxdetecttimeout']['default'],
-				    'selected'	=> $this->get_var('incall','faxdetecttimeout')),
-			      $element['incall']['faxdetecttimeout']['value']),
-
-		$form->text(array('desc'	=> $this->bbf('fm_incall_faxdetectemail'),
-				  'name'	=> 'incall[faxdetectemail]',
-				  'labelid'	=> 'incall-faxdetectemail',
-				  'size'	=> 15,
-				  'default'	=> $element['incall']['faxdetectemail']['default'],
-				  'value'	=> $this->get_var('incall','faxdetectemail'),
-				  'error'	=> $this->bbf_args('incall-faxdetectemail',
-					   $this->get_var('error','incall','faxdetectemail'))));
-?>
-</div>
-
 <div id="sb-part-rightcalls" class="b-nodisplay">
 <?php
 	if($rightcall['list'] !== false):

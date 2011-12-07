@@ -58,10 +58,11 @@ $page = $url->pager($pager['pages'],
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_ifname');?></th>
-		<th class="th-center"><?=$this->bbf('col_hwtype');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwaddress');?></th>
+		<th class="th-center"><?=$this->bbf('col_networktype');?></th>
 		<th class="th-center"><?=$this->bbf('col_method');?></th>
 		<th class="th-center"><?=$this->bbf('col_address');?></th>
+		<th class="th-center"><?=$this->bbf('col_gateway');?></th>
 		<th class="th-center"><?=$this->bbf('col_vlanid');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -70,7 +71,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="10" class="td-single"><?=$this->bbf('no_netiface');?></td>
+		<td colspan="11" class="td-single"><?=$this->bbf('no_netiface');?></td>
 	</tr>
 <?php
 	else:
@@ -78,7 +79,8 @@ $page = $url->pager($pager['pages'],
 			$netinfo = &$list[$i]['netinfo'];
 			$netiface = &$list[$i]['netiface'];
 
-			$id		= '';
+			$id			= '';
+			$gateway	= '-';
 			$name		= '-';
 			$ifname		= '';
 			$hwtype		= '';
@@ -124,14 +126,18 @@ $page = $url->pager($pager['pages'],
 				endif;
 			endif;
 
+			$voip_iface = false;
+			$networktype = 'data';
 			if(empty($netiface) === false):
-				$id		= $netiface['id'];
+				$id			= $netiface['id'];
 				$name		= $netiface['name'];
 				$ifname		= $netiface['ifname'];
 				$hwtype		= $netiface['hwtype'];
 				$hwtypeid	= dwho_uint($netiface['hwtypeid']);
 				$methodname	= $netiface['method'];
 				$method		= $this->bbf('network_method',$netiface['method']);
+				$networktype	= $netiface['networktype'];
+
 
 				if(dwho_has_len($netiface['address']) === true):
 					$address = $netiface['address'];
@@ -141,16 +147,21 @@ $page = $url->pager($pager['pages'],
 					$vlanid = $netiface['vlanid'];
 				endif;
 
+				if(dwho_has_len($netiface,'gateway') === true):
+					$gateway = $netiface['gateway'];
+				endif;
+
 				if($netiface['disable'] === true):
 					$icon = 'disable';
+				endif;
+
+				if ($netiface['networktype'] === 'voip'):
+					$voip_iface = true;
 				endif;
 			endif;
 
 			if(dwho_has_len($address) === false):
 				$address = '-';
-				if($methodname === 'dhcp' && $icon === 'enable'):
-					$icon = 'unknown';
-				endif;
 			endif;
 
 			if($hwtypeid === 1):
@@ -169,7 +180,7 @@ $page = $url->pager($pager['pages'],
 						 'id'		=> 'it-netiface-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false,
-						 'disabled'	=> ($hwtypeid !== 1 || $list[$i]['deletable'] === false)));?>
+						 'disabled'	=> ($hwtypeid !== 1 || $list[$i]['disableable'] === false)));?>
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($displayname);?>">
 			<label for="it-netiface-<?=$i?>" id="lb-netiface-<?=$i?>">
@@ -180,10 +191,11 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td title="<?=dwho_alttitle($ifname);?>"><?=dwho_htmlen(dwho_trunc($ifname,10,'...',false));?></td>
-		<td><?=$this->bbf('network_arphrd',$hwtype);?></td>
 		<td><?=$hwaddress?></td>
+		<td><?=$this->bbf('fm_networktype-opt',$networktype)?></td>
 		<td><?=$method?></td>
 		<td><?=$address?></td>
+		<td><?=$gateway;?></td>
 		<td><?=$vlanid?></td>
 		<td class="td-right" colspan="2">
 <?php
@@ -191,12 +203,12 @@ $page = $url->pager($pager['pages'],
 				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
 			elseif(empty($netiface) === true):
 				echo	$url->href_html($url->img_html('img/site/button/add.gif',
-    								       $this->bbf('opt_add'),
-								       'border="0"'),
+										$this->bbf('opt_add'),
+										'border="0"'),
 							'xivo/configuration/network/interface',
 							array('act'		=> 'add',
-							      'devname'		=> $ifname,
-							      'hwtypeid'	=> $hwtypeid),
+								'devname'	=> $ifname,
+								'hwtypeid'	=> $hwtypeid),
 							null,
 							$this->bbf('opt_add'));
 			else:
@@ -232,7 +244,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="8"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="9"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
@@ -243,3 +255,17 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 </div>
+
+<fieldset>
+	<legend><?=$this->bbf('network_interfaces-list_legend');?></legend>
+	<p>
+		<?=$url->img_html('img/site/flag/enable.gif',null,'class="icons-list"');?>
+		<?=$this->bbf('network_interfaces-list_legend-opt',array('enable'));?>
+		&nbsp;&nbsp;
+		<?=$url->img_html('img/site/flag/disable.gif',null,'class="icons-list"');?>
+		<?=$this->bbf('network_interfaces-list_legend-opt',array('disable'));?>
+		&nbsp;&nbsp;
+		<?=$url->img_html('img/site/flag/unavailable.gif',null,'class="icons-list"');?>
+		<?=$this->bbf('network_interfaces-list_legend-opt',array('waiting'));?>
+	</p>
+</fieldset>

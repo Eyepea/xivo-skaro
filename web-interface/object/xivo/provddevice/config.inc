@@ -64,25 +64,25 @@ $array['element']['commented']['set'] = true;
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
+
 $array['filter'] = array();
-$array['filter']['mac'] = array('set'	     => false,
-								'chk'	     => 2,
-								'minlen'     => 11,
-								'maxlen'     => 17,
-								'regexp'     => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/');
-$array['filter']['ip'] = array('callback'		=> 'dwho_network::valid_host',
-						    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['plugin'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['config'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['deviceid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['sn'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['vendor'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['model'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['proto'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
-$array['filter']['version'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['deviceid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 32);
+$array['filter']['config'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 32);
+$array['filter']['plugin'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 64);
+$array['filter']['ip'] = array('set' => false,
+							'chk' => 2,
+							'callback' => 'dwho_network::valid_host',
+							'callbackarg' => array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+$array['filter']['mac'] = array('set' => false,
+							'chk' => 2,
+							'regexp' => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/i');
+$array['filter']['sn'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 64);
+$array['filter']['vendor'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 32);
+$array['filter']['model'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 32);
+$array['filter']['version'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 32);
+$array['filter']['proto'] = array('set' => false,'chk' => 2,'key' => array('sip'));
 $array['filter']['configured'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
-
 
 ?>

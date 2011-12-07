@@ -453,6 +453,7 @@ endif;
 	<fieldset id="fld-services">
 		<legend><?=$this->bbf('fld-services');?></legend>
 <?php
+/*
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_ringintern'),
 				  'name'	=> 'userfeatures[ringintern]',
 				  'labelid'	=> 'userfeatures-ringintern',
@@ -488,8 +489,9 @@ endif;
 				  'value'	=> $info['userfeatures']['ringforward'],
 				  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'userfeatures', 'ringforward')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_alarmclock'),
+*/
+/* hide alarm clock
+	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_alarmclock'),
 				  'name'	=> 'userfeatures[alarmclock]',
 				  'labelid'	=> 'userfeatures-alarmclock',
 				  'size'	=> 5,
@@ -497,6 +499,7 @@ endif;
 				  'value'	=> $info['userfeatures']['alarmclock'],
 				  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'userfeatures', 'alarmclock'))));
+*/
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>

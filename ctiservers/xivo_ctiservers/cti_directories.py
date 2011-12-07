@@ -48,6 +48,7 @@ from itertools import chain, ifilter, imap, izip
 from operator import itemgetter
 from xivo_ctiservers import db_connection_manager
 from xivo_ctiservers import xivo_ldap
+from xivo_ctiservers import cti_config
 
 log = logging.getLogger('directories')
 
@@ -370,7 +371,7 @@ class InternalDirectoryDataSource(object):
         connection = conn_mgr.get()
         try:
             cursor = connection['cur']
-            log.debug('Doing SQL request: %s', request)
+            log.debug('Doing SQL request: %s', request % params)
             cursor.query(request, columns, params)
             def generator():
                 try:
@@ -393,7 +394,7 @@ class InternalDirectoryDataSource(object):
     
     @classmethod
     def new_from_contents(cls, ctid, contents):
-        db_uri = ctid.cconf.getconfig('ipbxes')[ctid.myipbxid]['userfeatures_db_uri']
+        db_uri = cti_config.cconf.getconfig('ipbxes')[ctid.myipbxid]['userfeatures_db_uri']
         key_mapping = _get_key_mapping(contents)
         return cls(db_uri, key_mapping)
 

@@ -218,20 +218,9 @@ endif;
 </div>
 <div id="sb-part-advanced" class="b-nodisplay">
 <fieldset>
-	<legend><?=$this->bbf('fld-device-srtp_config')?></legend>
+	<legend><?=$this->bbf('fld-device-sip_config')?></legend>
 <?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_config_sip_srtp_mode'),
-				  'name'	=> 'config[sip_srtp_mode]',
-				  'labelid'	=> 'config-sip_srtp_mode',
-				  'empty'	=> true,
-				  'key'	=> false,
-				  'selected'	=> $this->get_var('info','config','sip_srtp_mode'),
-				  'legend'	=> $this->get_var('configdevice','raw_config','sip_srtp_mode'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'config', 'sip_srtp_mode')) ),
-			      $element['config']['sip_srtp_mode']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_config_sip_transport'),
+	echo	$form->select(array('desc'	=> $this->bbf('fm_config_sip_transport'),
 				    'name'	=> 'config[sip_transport]',
 				    'labelid'	=> 'config-sip_transport',
 				    'empty'	=> true,
@@ -241,6 +230,20 @@ endif;
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'sip_transport')) ),
 			      $element['config']['sip_transport']['value']);
+?>
+</fieldset>
+<fieldset>
+	<legend><?=$this->bbf('fld-device-srtp_config')?></legend>
+<?php
+	echo	$form->select(array('desc'	=> $this->bbf('fm_config_sip_srtp_mode'),
+				  'name'	=> 'config[sip_srtp_mode]',
+				  'labelid'	=> 'config-sip_srtp_mode',
+				  'key'	=> false,
+				  'selected'	=> $this->get_var('info','config','sip_srtp_mode'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','sip_srtp_mode'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'sip_srtp_mode')) ),
+			      $element['config']['sip_srtp_mode']['value']);
 ?>
 </fieldset>
 <fieldset>

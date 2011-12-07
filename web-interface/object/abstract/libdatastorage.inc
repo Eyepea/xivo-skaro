@@ -107,10 +107,12 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 	{
 		if($this->_dso->is_single_primary() === true)
 		{
-			if(dwho_has_len($id) === false)
+			if(dwho_has_len($id) === false) {
+				dwho_report::push('error', 'you_must_set_id_for_edit');
 				return(false);
-			else
+			} else {
 				return($this->_dso->mk_primary_key_value($id));
+			}
 		}
 		else if($this->_dso->is_multi_primary() === false)
 			return(false);
@@ -493,8 +495,9 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 	function edit($id,$arr,$disable=null,$chkunique=true)
 	{
 		if(is_array($arr) === false
-		|| ($id = $this->_chk_primary_key($id)) === false)
+		|| ($id = $this->_chk_primary_key($id)) === false) {
 			return(false);
+		}
 
 		return($this->_dso->edit($id,$arr,$disable,$chkunique));
 	}

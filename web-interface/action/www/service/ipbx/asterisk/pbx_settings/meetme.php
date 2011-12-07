@@ -72,7 +72,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appmeetme->get_elements());
 		$_TPL->set_var('moh_list',$appmeetme->get_musiconhold());
-		$_TPL->set_var('context_list',$appmeetme->get_context_list());
+		$_TPL->set_var('context_list',$appmeetme->get_context_list(null,null,null,false,'internal'));
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');
@@ -123,7 +123,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appmeetme->get_elements());
 		$_TPL->set_var('moh_list',$appmeetme->get_musiconhold());
-		$_TPL->set_var('context_list',$appmeetme->get_context_list());
+		$_TPL->set_var('context_list',$appmeetme->get_context_list(null,null,null,false,'internal'));
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/uri.js');

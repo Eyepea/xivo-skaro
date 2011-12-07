@@ -43,6 +43,7 @@ endif;
 
 <div id="sb-part-first">
 <?php
+
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
 
@@ -53,7 +54,6 @@ endif;
 				  'name'	=> 'max_call_duration',
 				  'labelid'	=> 'max_call_duration',
 				  'size'	=> 15,
-				  'default'	=> $element['monitoring']['max_call_duration']['default'],
 				  'value'	=> $info['max_call_duration'],
 				  'help'    => $this->bbf('fm_help-max_call_duration'),
 				  'error'   => $this->bbf_args('max_call_duration',

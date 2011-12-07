@@ -66,7 +66,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appvoicemail->get_elements());
 		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
-		$_TPL->set_var('context_list',$appvoicemail->get_context_list());
+		$_TPL->set_var('context_list',$appvoicemail->get_context_list(null,null,null,false,'internal'));
 		break;
 
 	case 'edit':
@@ -104,7 +104,7 @@ switch($act)
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appvoicemail->get_elements());
 		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
-		$_TPL->set_var('context_list',$appvoicemail->get_context_list());
+		$_TPL->set_var('context_list',$appvoicemail->get_context_list(null,null,null,false,'internal'));
 		break;
 
 	case 'delete':

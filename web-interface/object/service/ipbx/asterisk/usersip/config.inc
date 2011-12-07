@@ -104,10 +104,9 @@ $array['element']['maxcallbitrate']['default'] = '';
 $array['element']['maxcallbitrate']['null'] = true;
 
 $array['element']['insecure'] = array();
-$array['element']['insecure']['value'] = array('no'		=> 'no',
-					       'port'		=> 'port',
-					       'invite'		=> 'invite',
-					       'port,invite'	=> 'all');
+$array['element']['insecure']['value'] = array('port'			=> 'port',
+												'invite'		=> 'invite',
+												'port,invite'	=> 'port,invite');
 $array['element']['insecure']['default'] = '';
 $array['element']['insecure']['null'] = true;
 
@@ -126,11 +125,6 @@ $array['element']['usereqphone'] = array();
 $array['element']['usereqphone']['value'] = array(1,0);
 $array['element']['usereqphone']['default'] = '';
 $array['element']['usereqphone']['null'] = true;
-
-$array['element']['videosupport'] = array();
-$array['element']['videosupport']['value'] = array(1,0);
-$array['element']['videosupport']['default'] = '';
-$array['element']['videosupport']['null'] = true;
 
 $array['element']['trustrpid'] = array();
 $array['element']['trustrpid']['value'] = array(1,0);
@@ -447,11 +441,11 @@ $array['filter']['amaflags'] = array('set'	=> false,
 				     'key'	=> xivo_service_asterisk::get_amaflags_list());
 $array['filter']['allowtransfer'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
-$array['filter']['fromdomain'] = array('set'		=> false,
-				       'chk'		=> 2,
-				       'callback'	=> 'dwho_network::valid_host',
-				       'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
-								  DWHO_NETWORK_HOST_HOSTNAME)));
+$array['filter']['fromdomain'] = array('set' => false,
+					'chk'		=> 2,
+					'callback'	=> 'dwho_network::valid_host',
+					'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+						DWHO_NETWORK_HOST_HOSTNAME)));
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 $array['filter']['subscribemwi'] = array('bool' => true);
 $array['filter']['buggymwi'] = array('set' => false,'chk' => 2,'bool' => true);
@@ -464,11 +458,10 @@ $array['filter']['callerid'] = array('set'	=> false,
 $array['filter']['fullname'] = array('set' => false,'chk' => 0);
 $array['filter']['cid_number'] = array('set' => false,'chk' => 0);
 $array['filter']['maxcallbitrate'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,1860));
-$array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('no','port','invite','port,invite'));
+$array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => $array['element']['insecure']['value']);
 $array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','yes','never','route'));
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['videosupport'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['trustrpid'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['sendrpid'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['allowsubscribe'] = array('set' => false,'chk' => 2,'bool' => true);
@@ -491,12 +484,10 @@ $array['filter']['rtpholdtimeout'] = array('set' => false,'chk' => 2,'cast' => '
 $array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
-				 'callback'		=> 'dwho_network::valid_subnet_ipv4',
-				 'callbackarg'		=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
+				 'callback'	=> 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
-				   'callback'		=> 'dwho_network::valid_subnet_ipv4',
-				   'callbackarg'	=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
+				 'callback'	=> 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
 $array['filter']['pickupgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);

@@ -195,3 +195,6 @@ IPv6-in-IPv4
 
 ; network_method(wvdial)
 WvDial
+
+; network_config
+Network configuration

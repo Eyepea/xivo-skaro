@@ -64,6 +64,9 @@ Système de contrôle
 ; mn_left_controlsystem-commonconf
 Appliquer les modifications système
 
+; mn_left_controlsystem-network 
+Appliquer les modifications réseau
+
 ; mn_left_controlsystem-ha
 Appliquer la configuration HA
 
@@ -71,6 +74,9 @@ Appliquer la configuration HA
 Arrêter la HA
 
 ; controlsystem_commonconf_confirm
+Êtes-vous sûr de vouloir appliquer les modifications ?
+
+; controlsystem_network_confirm
 Êtes-vous sûr de vouloir appliquer les modifications ?
 
 ; controlsystem_ha_confirm

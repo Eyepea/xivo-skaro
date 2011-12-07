@@ -22,12 +22,6 @@ $dhtml   = &$this->get_module('dhtml');
 $status  = $this->get_var('status');
 $info    = $this->get_var('info');
 
-if($status == 200):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-else:
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div class="b-infos b-form">

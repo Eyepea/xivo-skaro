@@ -808,6 +808,11 @@ class dwho_filter
         return($value);
     }
 
+    /*! \params
+     *    key = the key of the value checked
+     *    arr = the parameters of the filter
+     *    v   = the value being checked
+     */
     function _chk_key_value($key,&$arr,&$v,$set=true)
     {
         $arr = (array) $arr;

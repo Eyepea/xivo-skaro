@@ -82,7 +82,7 @@ Internal:
 ; fm_outcall_hangupringtime
 Ringing time before hangup:
 
-; fm_outcall_hangupringtime-opt0
+; fm_outcall_hangupringtime-opt(0)
 Unlimited
 
 ; fm_outcall_hangupringtime-opt15
@@ -168,9 +168,6 @@ Stripnum
 
 ; col_outcall-dialpattern_callerid
 Callerid
-
-; col_outcall-dialpattern_emergency 	
-Emergency
 
 ; create_dundipeer
 Create a dundi peer

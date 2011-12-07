@@ -18,21 +18,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-#$sysconfd    = &$_XOBJ->get_module('sysconfd');
-#$content     = $sysconfd->request_get('/commonconf_apply');
-$commonconf    = &$_XOBJ->get_module('commonconf');
+$commonconf = &$_XOBJ->get_module('commonconf');
 
+$status = 0;
 $content = '';
 if($commonconf->generate(&$content) !== false)
 {
-	$content     = $commonconf->apply();
-	$status      = $commonconf->last_status_code();
+	$content = $commonconf->apply();
+	$status = $commonconf->last_status_code();
 
 	if($status != 200)
 	{
-	    preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
-	    if(count($matches) > 1)
-        	$content = $matches[1];
+		preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
+		if(count($matches) > 1) {
+			$content = $matches[1];
+		}
+		dwho_report::push('error',dwho_i18n::babelfish('error_during_apply',
+						array(dwho_i18n::babelfish('commonconf'))));
+	} else {
+		dwho_report::push('info',dwho_i18n::babelfish('successfully_apply',
+						array(dwho_i18n::babelfish('commonconf'))));
 	}
 }
 

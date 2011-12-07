@@ -45,7 +45,7 @@ class xivo_application_service_asterisk_meetme_sql extends xivo_application_abst
 		{
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('name',$value,true,$this->_table['meetmefeatures']);
-			$this->_dso->orwherecontain('number',$value,true,$this->_table['meetmefeatures']);
+			$this->_dso->orwherecontain('confno',$value,true,$this->_table['meetmefeatures']);
 			$this->_dso->aggregate_where();
 		}
 

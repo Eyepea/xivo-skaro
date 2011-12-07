@@ -7,9 +7,6 @@ Général
 ; smenu_rightcalls
 Droits d'appels
 
-; smenu_faxdetect
-Détection de Fax
-
 ; fm_incall_exten
 SDA :
 
@@ -36,24 +33,6 @@ Sous-routine de prétraitement :
 
 ; fm_incall_description
 Description :
-
-; fm_incall_faxdetectenable
-Activer la détection :
-
-; fm_incall_faxdetecttimeout
-Temps de détection :
-
-; fm_incall_faxdetecttimeout-opt(0)
-Illimitée
-
-; fm_incall_faxdetecttimeout-opt(1)
-1 seconde
-
-; fm_incall_faxdetecttimeout-opt
-%s secondes
-
-; fm_incall_faxdetectemail
-E-mail de réception :
 
 ; bt_inrightcall
 Ajouter un ou plusieurs droits d'appels ->

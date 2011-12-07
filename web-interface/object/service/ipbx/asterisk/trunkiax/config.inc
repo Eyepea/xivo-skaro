@@ -256,6 +256,11 @@ $array['element']['immediate']['value'] = array(1, 0);
 $array['element']['immediate']['default'] = '';
 $array['element']['immediate']['null']    = true;
 
+$array['element']['keyrotate'] = array();
+$array['element']['keyrotate']['value'] = array(1, 0);
+$array['element']['keyrotate']['default'] = '';
+$array['element']['keyrotate']['null']    = true;
+
 
 
 dwho::load_class('dwho_network');
@@ -370,5 +375,6 @@ $array['filter']['category'] = array('set' => false);
 $array['filter']['requirecalltoken'] = array('set' => true,
     'chk' => 2,'key' => array('auto', 'no','yes'));
 $array['filter']['immediate'] = array('set' => false, 'chk' => 2, 'bool' => true);
+$array['filter']['keyrotate'] = array('set' => false, 'chk' => 2, 'bool' => true);
 
 ?>

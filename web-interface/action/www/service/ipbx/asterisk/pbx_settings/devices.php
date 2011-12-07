@@ -24,7 +24,7 @@ $prefs = new dwho_prefs('devices');
 $act     = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page    = dwho_uint($prefs->get('page', 1));
 $search  = strval($prefs->get('search', ''));
-$sort    = $prefs->flipflop('sort', 'name');
+$sort    = $prefs->flipflop('sort', 'ip');
 
 $param = array();
 $param['act'] = 'list';
@@ -113,6 +113,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/devices.js');
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -161,6 +162,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/devices.js');
 
 		$_TPL->set_var('id',$_QR['id']);
 		$_TPL->set_var('deviceid',$info['devicefeatures']['deviceid']);
@@ -235,8 +237,8 @@ switch($act)
 		$appdevice = &$ipbx->get_application('device');
 
 		$order = array();
-		if($sort[1] == 'name')
-			$order['name'] = $sort[0];
+		if($sort[1] == 'ip')
+			$order['ip'] = $sort[0];
 		else
 			$order[$sort[1]] = $sort[0];
 

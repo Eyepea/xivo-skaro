@@ -206,9 +206,6 @@ $array['service/ipbx/asterisk/web_services/restricted/general_settings/sip'] = a
 $array['service/ipbx/asterisk/web_services/restricted/general_settings/iax'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/iax',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['service/ipbx/asterisk/web_services/restricted/general_settings/sccp'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/sccp',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/general_settings/voicemail'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/voicemail',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
@@ -230,9 +227,6 @@ $array['service/ipbx/asterisk/web_services/private/general_settings/sip'] = arra
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/general_settings/iax'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/iax',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['service/ipbx/asterisk/web_services/private/general_settings/sccp'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/sccp',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/general_settings/voicemail'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/general_settings/voicemail',

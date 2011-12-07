@@ -30,12 +30,12 @@
 			<dt><?=$this->bbf('mn_left_ti_wizard');?></dt>
 			<dd id="mn-wizard--welcome"><?=$this->bbf('mn_left_wizard-welcome');?></dd>
 			<dd id="mn-wizard--license"><?=$this->bbf('mn_left_wizard-license');?></dd>
-			<dd id="mn-wizard--ipbxengine"><?=$this->bbf('mn_left_wizard-ipbxengine');?></dd>
+			<?php /*<dd id="mn-wizard--ipbxengine"><?=$this->bbf('mn_left_wizard-ipbxengine');?></dd>*/ ?>
 			<dd id="mn-wizard--dbconfig"><?=$this->bbf('mn_left_wizard-dbconfig');?></dd>
 			<dd id="mn-wizard--checkcomponents"><?=$this->bbf('mn_left_wizard-checkcomponents');?></dd>
 			<dd id="mn-wizard--mainconfig"><?=$this->bbf('mn_left_wizard-mainconfig');?></dd>
 			<dd id="mn-wizard--entitycontext"><?=$this->bbf('mn_left_wizard-entitycontext');?></dd>
-			<dd id="mn-wizard--ipbximportuser"><?=$this->bbf('mn_left_wizard-ipbximportuser');?></dd>
+			<?php /*<dd id="mn-wizard--ipbximportuser"><?=$this->bbf('mn_left_wizard-ipbximportuser');?></dd>*/ ?>
 			<dd id="mn-wizard--validate"><?=$this->bbf('mn_left_wizard-validate');?></dd>
 		</dl>
 	</dd>

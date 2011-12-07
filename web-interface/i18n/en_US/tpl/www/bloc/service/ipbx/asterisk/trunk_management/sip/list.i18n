@@ -1,14 +1,26 @@
 ; col_name
 Name
 
+; col_sort_name
+Sort by name
+
 ; col_host
 Host
+
+; col_sort_host
+Sort by host
 
 ; col_type
 Connection type
 
+; col_sort_type
+Sort by connection type
+
 ; col_call-limit
 Number of calls
+
+; col_sort_call-limit
+Sort by number of calls
 
 ; protocol_host-unknown
 Unknown host
@@ -30,5 +42,3 @@ No SIP trunk found
 
 ; opt_delete_confirm
 Are you sure you want to delete this trunk?
-
-

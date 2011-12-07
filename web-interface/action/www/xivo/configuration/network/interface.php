@@ -20,6 +20,8 @@
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
+$hwtypeid = isset($_QR['hwtypeid']) ? (int) $_QR['hwtypeid'] : null;
+$devname = isset($_QR['devname']) ? $_QR['devname'] :null;
 
 $param = array();
 $param['act'] = 'list';
@@ -33,15 +35,8 @@ switch($act)
 	case 'add':
 		$result = $fm_save = $ifname = $devinfo = null;
 
-		if(isset($_QR['devname']) === true)
-			$devname = $_QR['devname'];
-		else
-			$devname = null;
-
 		if(isset($_QR['fm_send']) === true)
 		{
-			$currentiface = $appnetiface->discover_current_interface();
-
 			if($appnetiface->set_add($_QR) === false
 			|| $appnetiface->add() === false)
 			{
@@ -49,22 +44,13 @@ switch($act)
 				$result = $appnetiface->get_result('netiface');
 				$error = $appnetiface->get_error('netiface');
 				$ifname = $appnetiface->get_result_var('netiface','ifname');
-			}
-			else if(is_array($currentiface) === true
-			&& isset($currentiface['name']) === true
-			&& ($uri = $appnetiface->get_redirect_uri(
-					$appnetiface->get_result_var('netiface','ifname'),$currentiface['name'])) !== false)
-			{
-				$_TPL->set_var('redirect_url',$uri.$_TPL->url('xivo/configuration/network/interface'));
-				$_TPL->set_var('redirect_url_query',$param);
-				$_TPL->set_var('redirect_seconds',5);
-				$_TPL->display('redirect');
-			}
-			else
+			} else {
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
+			}
 		}
-		else if(isset($devname) === true)
+		else if(dwho_has_len($devname)) {
 			$devinfo = $appnetiface->get_sysconf_netiface_info($devname,1,true,true);
+		}
 
 		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$ifname)) !== false)
 		{
@@ -73,50 +59,41 @@ switch($act)
 			uksort($interfaces,array(&$ifacesort,'str_usort'));
 		}
 
+		$hwtype = 'virtual';
+		if (dwho_has_len($devname) && dwho_has_len($hwtypeid)) {
+			$hwtype = 'physical';
+		}
+
 		$_TPL->set_var('devinfo',$devinfo);
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appnetiface->get_elements());
 		$_TPL->set_var('interfaces',$interfaces);
+		$_TPL->set_var('hwtype',$hwtype);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/xivo/configuration/network/interface.js');
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $appnetiface->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 
-		$result = $fm_save = null;
+		$fm_save = null;
 		$return = &$info['netiface'];
 
 		if(isset($_QR['fm_send']) === true)
 		{
-			$return = &$result;
-
-			$currentiface = $appnetiface->discover_current_interface();
-
 			if($appnetiface->set_edit($_QR) === false
 			|| $appnetiface->edit() === false)
 			{
 				$fm_save = false;
 				$result = $appnetiface->get_result('netiface');
 				$error = $appnetiface->get_error('netiface');
-			}
-			else if(is_array($currentiface) === true
-			&& isset($currentiface['name']) === true
-			&& ($uri = $appnetiface->get_redirect_uri(
-					$appnetiface->get_result_var('netiface',
-								     'ifname'),
-					$currentiface['name'])) !== false)
-			{
-				$_TPL->set_var('redirect_url',$uri.$_TPL->url('xivo/configuration/network/interface'));
-				$_TPL->set_var('redirect_url_query',$param);
-				$_TPL->set_var('redirect_seconds',5);
-				$_TPL->display('redirect');
-			}
-			else
+
+				$return = array_merge($return, $result);
+			} else {
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
+			}
 		}
 
 		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$return['ifname'])) !== false)
@@ -129,12 +106,13 @@ switch($act)
 		$_TPL->set_var('id',$info['netiface']['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('deletable',$info['deletable']);
+		$_TPL->set_var('disableable',$info['disableable']);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appnetiface->get_elements());
 		$_TPL->set_var('interfaces',$interfaces);
+		$_TPL->set_var('hwtype',$return['hwtype']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/xivo/configuration/network/interface.js');
 		break;
 	case 'delete':
@@ -212,6 +190,8 @@ switch($act)
 $_TPL->set_var('act',$act);
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
+$_TPL->set_var('hwtypeid',$hwtypeid);
+$_TPL->set_var('devname',$devname);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

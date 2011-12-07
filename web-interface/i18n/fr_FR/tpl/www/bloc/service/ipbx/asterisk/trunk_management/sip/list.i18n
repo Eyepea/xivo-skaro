@@ -1,14 +1,26 @@
 ; col_name
 Nom
 
+; col_sort_name
+Trier par nom
+
 ; col_host
 Hôte
+
+; col_sort_host
+Trier par hôte
 
 ; col_type
 Type de connexion
 
+; col_sort_type
+Trier par type de connexion
+
 ; col_call-limit
 Nombre d'appels
+
+; col_sort_call-limit
+Trier par nombre d'appels
 
 ; protocol_host-unknown
 Hôte inconnu

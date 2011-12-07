@@ -47,14 +47,6 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 /*
-		if(xivo_user::chk_acl('general_settings','sccp') === true):
-			echo	'<dd id="mn-general-settings--sccp">',
-				$url->href_html($this->bbf('mn_left_generalsettings-sccp'),
-						'service/ipbx/general_settings/sccp'),
-				'</dd>';
-		endif;
-*/
-/*
 		if(xivo_user::chk_acl('general_settings','dundi') === true):
 			echo	'<dd id="mn-general-settings--dundi">',
 				$url->href_html($this->bbf('mn_left_generalsettings-dundi'),
@@ -204,7 +196,7 @@ $dhtml = &$this->get_module('dhtml');
 						'act=list'),
 				'</dd>';
 		endif;
-
+/*
 		if(xivo_user::chk_acl('call_management','voicemenu') === true):
 			echo	'<dd id="mn-call-management--voicemenu">',
 				$url->href_html($this->bbf('mn_left_callmanagement-voicemenu'),
@@ -212,7 +204,7 @@ $dhtml = &$this->get_module('dhtml');
 						'act=list'),
 				'</dd>';
 		endif;
-
+*/
 		echo	'</dl>';
 	endif;
 

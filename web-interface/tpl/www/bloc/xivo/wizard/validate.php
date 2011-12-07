@@ -60,8 +60,6 @@ endif;
 	<dl>
 		<dt><?=$this->bbf('info_language');?></dt>
 		<dd><?=dwho_htmlen($this->bbf('language_'.$info['welcome']['language']));?></dd>
-		<dt><?=$this->bbf('info_ipbxengine');?></dt>
-		<dd><?=dwho_htmlen($this->get_var('ipbxengine','engines',$info['ipbxengine']['engine'],'label'));?></dd>
 		<dt><?=$this->bbf('info_dbbackend');?></dt>
 		<dd><?=dwho_htmlen($this->get_var('dbbackend',$info['dbconfig']['result']['backend'],'label')).
 		       $dhtml->message_error(
