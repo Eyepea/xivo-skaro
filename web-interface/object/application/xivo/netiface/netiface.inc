@@ -1040,7 +1040,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
-		return $this->update_server();
+		return true;
 	}
 
 	function delete_netiface()
@@ -1123,7 +1123,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
-		return $this->update_server();
+		return true;
 	}
 
 	function disable()
@@ -1151,7 +1151,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
         if($r === false)
             return false;
 
-        return $this->update_server();
+        return true;
 	}
 
 	function enable_netiface()
@@ -1256,7 +1256,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 	function commit_sysconfnet()
 	{
-		if (($interfaces = $this->get_netifaces_list(true)) === false) {
+		if (($interfaces = $this->get_netifaces_list()) === false) {
 			return(false);
 		}
 
@@ -1266,6 +1266,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		{
 			$netinfo = &$interfaces[$i]['netinfo'];
 			$netiface = &$interfaces[$i]['netiface'];
+
+			if ($netiface === false) {
+				continue;
+			}
 
 			$ifname = $netiface['ifname'];
 
@@ -1278,12 +1282,13 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			}
 
 			$rs = $this->get_result('sysconfnet');
-			unset($rs['ifname'], $rs['devname'], $rs['virtualif']);
+			unset($rs['devname'], $rs['virtualif']);
 
 			if($this->_sysnet->is_alias_if($ifname) === true
 			|| $this->_sysnet->is_vlan_if($ifname) === true) {
 				$get_method = 'replace_virtual_eth_ipv4';
 			} else {
+				unset($rs['ifname']);
 				$get_method = 'modify_physical_eth_ipv4';
 			}
 
