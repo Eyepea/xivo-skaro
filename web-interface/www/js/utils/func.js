@@ -33,12 +33,12 @@ function nl2br(str) {
 
 function xivo_fm_disabled(obj) {
 	obj.attr('disabled', 'disabled');
-	obj.addClass('it-disabled');
+	obj.removeClass('it-enabled').addClass('it-disabled');
 }
 
 function xivo_fm_enabled(obj) {
 	obj.removeAttr('disabled');
-	obj.removeClass('it-disabled');
+	obj.removeClass('it-disabled').addClass('it-enabled');
 }
 
 // Return a helper with preserved width of cells

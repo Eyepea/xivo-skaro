@@ -49,6 +49,12 @@ class xivo_object_netiface extends xivo_object_abstract
 	{
 		$this->_identity->_prepare_identity($data);
 
+		if ($this->_sysnet->netinfo_interface_is_physical($data['ifname']) === true)
+			$hwtype = 'physical';
+		else
+			$hwtype = 'virtual';
+
+		$data['hwtype'] = $hwtype;
 		$data['disable'] = (bool) $data['disable'];
 
 		return($data);
@@ -90,7 +96,7 @@ class xivo_object_netiface extends xivo_object_abstract
 
 	function get_voip_iface($uuid)
 	{
-	    return($this->_dso->get_voip_iface($uuid));
+		return($this->_dso->get_voip_iface($uuid));
 	}
 
 	function save($arr)

@@ -113,6 +113,7 @@ $array['xivo/configuration/ui/provisioning/configure'] = 'xivo/configuration/ui.
 
 // controlsystem
 $array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';
+$array['xivo/configuration/controlsystem/network'] = 'xivo/configuration/index.php/controlsystem/network/';
 //$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
 //$array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.php/controlsystem/ha_stop/';
 

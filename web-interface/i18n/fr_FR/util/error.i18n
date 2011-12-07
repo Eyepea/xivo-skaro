@@ -63,3 +63,6 @@ Une passerelle par défaut existe déjà sur l'interface %s
 
 ; line_need_number_if_chan_is_local
 Vous devez renseigner un numero pour un canal Local
+
+; voip_interface_can_not_disabled
+Vous ne pouvez pas désactiver l'interface voix.

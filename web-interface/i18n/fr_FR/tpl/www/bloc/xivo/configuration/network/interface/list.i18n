@@ -12,6 +12,9 @@ Matériel
 ; col_hwaddress
 Adresse MAC
 
+; col_networktype
+Type
+
 ; col_method
 Méthode
 
@@ -24,6 +27,12 @@ Passerelle
 ; col_vlanid
 VLAN ID
 
+; fm_networktype-opt(data)
+Données
+
+; fm_networktype-opt(voip)
+Voix
+
 ; no_netiface
 Aucune interface trouvée
 
@@ -32,3 +41,15 @@ Etes-vous certain de vouloir supprimer cette interface ?
 
 ; toolbar_adv_menu_delete_confirm
 Etes-vous certain de vouloir supprimer cette ou ces interfaces ?
+
+; network_interfaces-list_legend
+Legende
+
+; network_interfaces-list_legend-opt(enable)
+Activée
+
+; network_interfaces-list_legend-opt(disable)
+Desactivée
+
+; network_interfaces-list_legend-opt(waiting)
+Non appliquée

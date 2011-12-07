@@ -363,9 +363,9 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
     {
         if(is_array($value) === false
         || (is_array($arr) === false && ($arr = $this->mk_primary_key_value($arr)) === false) === true
-        || ((bool) $unique === true && $this->chk_unique($value,$arr) === false) === true)
+        || ((bool) $unique === true && $this->chk_unique($value,$arr) === false) === true) {
             return(false);
-        else if(isset($this->_forcecolumn) === true)
+        } else if(isset($this->_forcecolumn) === true)
         {
             $arr = array_merge($arr,$this->_forcecolumn);
             $value = array_merge($value,$this->_forcecolumn);

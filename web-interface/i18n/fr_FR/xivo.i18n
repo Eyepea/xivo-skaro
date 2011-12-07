@@ -8,6 +8,8 @@
 
 ; load util/error
 
+; load util/network
+
 ; load tpl/tpl
 
 ; xivo_service_label(ipbx)
@@ -31,6 +33,12 @@ Exporter
 ; successfully_reset
 Terminaison réinitialisée en mode "Autoprov" 
 
+; successfully_apply
+%s correctement executé
+
+; error_during_apply
+%s à rencontré une erreur durant l'execution
+
 ; successfully_installed
 %s correctement installé
 
@@ -41,7 +49,7 @@ Terminaison réinitialisée en mode "Autoprov"
 %s correctement désinstallé
 
 ; error_during_uninstallation
-%s a rencontré une erreur durant la désinstallation
+%s à rencontré une erreur durant la désinstallation
 
 ; error_during_update
 Une erreur est survenu durant la mise a jour

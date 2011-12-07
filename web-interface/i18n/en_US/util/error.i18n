@@ -66,3 +66,6 @@ A default gateway already exists on the interface %s
 
 ; line_need_number_if_chan_is_local
 You must enter a number to a Local channel
+
+; voip_interface_can_not_disabled
+VOiP Interface can't disabled

@@ -33,6 +33,17 @@ endif;
 
 <div id="sb-part-first">
 <?php
+	echo	$form->hidden(array('name'	=> 'ifname',
+					'value' => $this->get_var_default('info', 'ifname', $this->get_var('devinfo','name'))));
+
+if ($this->get_var('disableable') === true):
+	echo	$form->checkbox(array('desc'		=> $this->bbf('fm_disable'),
+				  'name'		=> 'disable',
+				  'labelid'		=> 'disable',
+				  'default'		=> $element['netiface']['disable']['default'],
+				  'checked'		=> $this->get_var_default('info','disable',$this->get_var('devinfo','auto'))));
+endif;
+
 	echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 				  'name'	=> 'name',
 				  'labelid'	=> 'name',
@@ -43,31 +54,24 @@ endif;
 					   $this->get_var('error', 'name')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_ifname'),
-				  'name'	=> 'ifname',
-				  'labelid'	=> 'ifname',
-				  'size'	=> 15,
-				  'default'	=> $element['netiface']['ifname']['default'],
-				  'value'	=> $this->get_var_default('info','ifname',$this->get_var('devinfo','name')),
-				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'ifname')))),
+				  'name'		=> 'ifname',
+				  'labelid'		=> 'ifname',
+				  'size'		=> 10,
+				  'disabled'	=> true,
+				  'readonly' 	=> true,
+				  'class'    	=> 'it-disabled',
+				  'value'		=> $this->get_var_default('info', 'ifname', $this->get_var('devinfo','name'))));
 
-		$form->checkbox(array('desc'		=> $this->bbf('fm_disable'),
-				      'name'		=> 'disable',
-				      'labelid'		=> 'disable',
-				      'default'		=> $element['netiface']['disable']['default'],
-				      'checked'		=> $this->get_var_default('info','disable',$this->get_var('devinfo','auto')),
-				      'disabled'	=> $this->get_var('deletable') === false)),
-
-		$form->select(array('desc'	=> $this->bbf('fm_networktype'),
-				    'name'	=> 'networktype',
+	echo	$form->select(array('desc'	=> $this->bbf('fm_networktype'),
+				    'name'		=> 'networktype',
 				    'labelid'	=> 'networktype',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_networktype-opt',
+				    'key'		=> false,
+				    'bbf'		=> 'fm_networktype-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'help'      => $this->bbf('help_networktype'),
 				    'default'	=> $element['netiface']['networktype']['default'],
 				    'selected'	=> $info['networktype'],
-				    'error'	=> $this->bbf_args('error',
+				    'error'		=> $this->bbf_args('error',
 					   $this->get_var('error', 'networktype'))),
 			      $element['netiface']['networktype']['value']),
 
@@ -101,15 +105,6 @@ endif;
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'netmask')))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_broadcast'),
-				  'name'	=> 'broadcast',
-				  'labelid'	=> 'broadcast',
-				  'size'	=> 15,
-				  'default'	=> $element['netiface']['broadcast']['default'],
-				  'value'	=> $this->get_var_default('info','broadcast',$this->get_var('devinfo','broadcast')),
-				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'broadcast')))),
-
 		$form->text(array('desc'	=> $this->bbf('fm_gateway'),
 				  'name'	=> 'gateway',
 				  'labelid'	=> 'gateway',
@@ -117,16 +112,7 @@ endif;
 				  'default'	=> $element['netiface']['gateway']['default'],
 				  'value'	=> $this->get_var_default('info','gateway',$this->get_var('devinfo','gateway')),
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'gateway')))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_mtu'),
-				  'name'	=> 'mtu',
-				  'labelid'	=> 'mtu',
-				  'size'	=> 10,
-				  'default'	=> $element['netiface']['mtu']['default'],
-				  'value'	=> $this->get_var_default('info','mtu',$this->get_var('devinfo','mtu')),
-				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'mtu'))));
+					   $this->get_var('error', 'gateway'))));
 	?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -147,12 +133,12 @@ endif;
 
 <div id="sb-part-vlan" class="b-nodisplay">
 <?php
-	if(($interfaces = $this->get_var('interfaces')) !== false):
+	if($interfaces !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_vlanrawdevice'),
-					    'name'	=> 'vlanrawdevice',
+					    'name'		=> 'vlanrawdevice',
 					    'labelid'	=> 'vlanrawdevice',
-					    'empty'	=> true,
-					    'key'	=> 'identity',
+					    'empty'		=> true,
+					    'key'		=> 'identity',
 					    'altkey'	=> 'ifname',
 					    'default'	=> $element['netiface']['vlanrawdevice']['default'],
 					    'selected'	=> $this->get_var_default('info',

@@ -19,6 +19,7 @@
 #
 
 $form = &$this->get_module('form');
+$hwtype = $this->get_var('hwtype');
 
 ?>
 <div class="b-infos b-form">
@@ -27,32 +28,15 @@ $form = &$this->get_module('form');
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
 		<span class="span-right">&nbsp;</span>
 	</h3>
-
-<?php
-	$this->file_include('bloc/xivo/configuration/network/interface/submenu');
-?>
-
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">
-<?php
-		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
-					    'value'	=> DWHO_SESS_ID)),
-
-			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'edit')),
-
-			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1)),
-
-			$form->hidden(array('name'	=> 'id',
-					    'value'	=> $this->get_var('id')));
-
-		$this->file_include('bloc/xivo/configuration/network/interface/form');
-
-		echo	$form->submit(array('name'	=> 'submit',
-					    'id'	=> 'it-submit',
-					    'value'	=> $this->bbf('fm_bt-save')));
-?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME, 'value' => DWHO_SESS_ID));?>
+<?=$form->hidden(array('name' => 'act', 'value' => 'edit'));?>
+<?=$form->hidden(array('name' => 'fm_send', 'value' => 1));?>
+<?=$form->hidden(array('name' => 'id', 'value' => $this->get_var('id')));?>
+<?=$form->hidden(array('name' => 'devname', 'value' => $this->get_var('devinfo','name')));?>
+<?php $this->file_include('bloc/xivo/configuration/network/interface/'.$hwtype.'/form');?>
+<?=$form->submit(array('name' => 'submit', 'id' => 'it-submit', 'value' => $this->bbf('fm_bt-save')));?>
 		</form>
 	</div>
 	<div class="sb-foot xspan">

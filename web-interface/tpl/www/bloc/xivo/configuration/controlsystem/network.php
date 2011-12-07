@@ -19,7 +19,6 @@
 #
 $dhtml   = &$this->get_module('dhtml');
 
-$status  = $this->get_var('status');
 $info    = $this->get_var('info');
 
 ?>

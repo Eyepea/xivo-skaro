@@ -146,23 +146,37 @@ $dhtml = &$this->get_module('dhtml');
 			<dt><?=$this->bbf('mn_left_ti_controlsystem');?></dt>
 			<dd id="mn-controlsystem--commonconf">
 <?php
-	$class = file_exists('/var/lib/pf-xivo-web-interface/commonconf.reload')?'active':false;
 
-				echo $url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
-						   'xivo/configuration/controlsystem/commonconf',
-						   null,
-						   'onclick="return(confirm(\''.
-						       $dhtml->escape($this->bbf('controlsystem_commonconf_confirm')).
-						       '\'));"',
-						   null,
-						   false,
-						   '&amp;',
-						   true,
-						   true,
-						   true,
-						   null,
-					           $class
-			    );
+	$class_network = file_exists('/var/lib/pf-xivo-web-interface/network.reload')?'active':false;
+
+	echo $url->href_html($this->bbf('mn_left_controlsystem-network'),
+				'xivo/configuration/controlsystem/network',
+				null,
+				'onclick="return(confirm(\''.$dhtml->escape($this->bbf('controlsystem_network_confirm')).'\'));"',
+				null,
+				false,
+				'&amp;',
+				true,
+				true,
+				true,
+				null,
+				$class_network);
+
+	$class_commonconf = file_exists('/var/lib/pf-xivo-web-interface/commonconf.reload')?'active':false;
+
+	echo $url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
+				'xivo/configuration/controlsystem/commonconf',
+				null,
+				'onclick="return(confirm(\''.$dhtml->escape($this->bbf('controlsystem_commonconf_confirm')).'\'));"',
+				null,
+				false,
+				'&amp;',
+				true,
+				true,
+				true,
+				null,
+				$class_commonconf
+	);
 ?>
 			</dd>
 		</dl>

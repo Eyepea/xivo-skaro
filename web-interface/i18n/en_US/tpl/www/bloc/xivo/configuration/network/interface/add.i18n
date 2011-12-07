@@ -34,7 +34,6 @@ You must set *ONE* (and only one) VoIP interface
 ; fm_method
 Method:
 
-
 ; network_method(static)
 Static
 

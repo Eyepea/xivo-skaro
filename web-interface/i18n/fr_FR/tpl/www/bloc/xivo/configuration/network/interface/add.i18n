@@ -16,7 +16,7 @@ Avancé
 Nom :
 
 ; fm_ifname
-Nom de l'interface :
+Interface :
 
 ; fm_disable
 Désactiver l'interface :
@@ -25,10 +25,10 @@ Désactiver l'interface :
 Type de réseau :
 
 ; fm_networktype-opt(data)
-Informatique
+Donnés
 
 ; fm_networktype-opt(voip)
-VOIP
+Voix
 
 ; help_networktype
 Vous devez obligatoirement spécifier *UNE* interface de type VoIP (et une uniquement)
