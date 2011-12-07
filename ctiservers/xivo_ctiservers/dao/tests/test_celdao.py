@@ -257,7 +257,7 @@ class TestCELChannel(unittest.TestCase):
         ]
 
         mocked_celdao.channel_by_unique_id = lambda x: CELChannel([
-            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67', exten='113'),
+            _new_cel(eventtype='CHAN_START', uniqueid='2', linkedid='67', exten='113', cid_num='113'),
             _new_cel(eventtype='ANSWER', uniqueid='2', linkedid='67'),
             _new_cel(eventtype='HANGUP', uniqueid='2', linkedid='67'),
             _new_cel(eventtype='CHAN_END', uniqueid='2', linkedid='67'),])
