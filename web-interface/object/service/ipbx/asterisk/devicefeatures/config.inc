@@ -66,20 +66,22 @@ $array['element']['description']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['plugin'] =  array('set' => false,'chk' => 2,'maxlen' => 128);
-$array['filter']['config'] =  array('set' => false,'chk' => 2,'maxlen' => 64);
-$array['filter']['deviceid'] =  array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9]+$/','minlen' => 32,'maxlen' => 32);
-$array['filter']['mac'] = array('set' => false,'chk' => 2,'maxlen' => 17,'regexp' => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/i');
-$array['filter']['configured'] = array('bool' => true);
-$array['filter']['sn'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9\-_]+$/i');
-$array['filter']['vendor'] = array('set' => false,'chk' => 2,'maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/i');
-$array['filter']['model'] = array('set' => false,'chk' => 2,'maxlen' => 16,'regexp' => '/^[a-z0-9\-_ ]+$/i');
-$array['filter']['proto'] = array('set' => false,'chk' => 2,'key' => array('sip'));
+$array['filter']['deviceid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 32);
+$array['filter']['config'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 32);
+$array['filter']['plugin'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 64);
 $array['filter']['ip'] = array('set' 		=> false,
-						    'chk'			=> 2,
-						    'callback'		=> 'dwho_network::valid_host',
-						    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['version'] = array('set' => false,'chk' => 2,'maxlen' => 128);
+							'chk'			=> 2,
+							'callback'		=> 'dwho_network::valid_host',
+							'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+$array['filter']['mac'] = array('set' => false,
+							'chk' => 2,
+							'regexp' => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/i');
+$array['filter']['sn'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 64);
+$array['filter']['vendor'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 32);
+$array['filter']['model'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 32);
+$array['filter']['version'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 32);
+$array['filter']['proto'] = array('set' => false,'chk' => 2,'key' => array('sip'));
+$array['filter']['configured'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
