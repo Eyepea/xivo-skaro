@@ -77,16 +77,15 @@ function xivo_network_chg_method() {
 function xivo_network_onload() {
 	xivo_network_chg_method();
 
-	dwho.dom.add_event('change', 
-						dwho_eid('it-method'), 
-						xivo_network_chg_method);
+	dwho.dom
+			.add_event('change', dwho_eid('it-method'), xivo_network_chg_method);
 }
 
 dwho.dom.set_onload(xivo_network_onload);
 
 function metwork_chk_type() {
 	var it_networktype = $('#it-networktype');
-	
+
 	if (it_networktype.val() == 'voip') {
 		$('#it-method').val('static');
 		xivo_network_chg_method();
@@ -98,7 +97,7 @@ function metwork_chk_type() {
 
 function metwork_chk_disable() {
 	var it_disable = $('#it-disable');
-	
+
 	if (it_disable.attr('checked')) {
 		$('#it-networktype').val('data');
 		xivo_fm_disabled($('#it-networktype'));
