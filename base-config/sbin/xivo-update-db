@@ -167,40 +167,70 @@ class SQLFilesRepository(object):
         return last_sql_file
 
 
-def update_db(db_name, postgres_db, repository, update_file):
-    logger.info('Updating database %r...', db_name)
-    try:
-        update_file_id = update_file.read()
-    except NoUpdateFileException:
-        if not postgres_db.is_database_created():
-            logger.info('Database %r not created, creating it...', db_name)
-            datastorage_sql_file = repository.get_datastorage_file()
-            postgres_db.execute_sql_file(datastorage_sql_file.filename)
-            logger.info('Database %r created successfully', db_name)
-        sql_files = repository.get_migration_files()
+class DatabaseUpdater(object):
+    def __init__(self, db_name, postgres_db, repository, update_file):
+        self._db_name = db_name
+        self._postgres_db = postgres_db
+        self._repository = repository
+        self._update_file = update_file
+
+    def update(self):
+        logger.info('Updating database %r...', self._db_name)
+        try:
+            update_file_id = self._update_file.read()
+        except NoUpdateFileException:
+            self._update_on_new_install()
+        else:
+            self._update_on_old_install(update_file_id)
+        logger.info('Database %r updated successfully\n', self._db_name)
+
+    def _update_on_new_install(self):
+        if self._postgres_db.is_database_created():
+            self._update_on_new_install_and_db()
+        else:
+            self._update_on_new_install_and_no_db()
+
+    def _update_on_new_install_and_db(self):
+        sql_files = self._repository.get_migration_files()
         logger.info('Found %d migration files', len(sql_files))
-        last_update_id = ''
+        sql_file = SQLFile(None, '')
         try:
             for sql_file in sql_files:
-                postgres_db.execute_sql_file(sql_file.filename, on_error_stop=False)
-                last_update_id = sql_file.update_id
+                self._postgres_db.execute_sql_file(sql_file.filename,
+                                                   on_error_stop=False)
         finally:
-            update_file.write(last_update_id)
-    else:
-        new_sql_files = repository.get_new_migration_files(update_file_id)
+            self._update_file.write(sql_file.update_id)
+
+    def _update_on_new_install_and_no_db(self):
+        logger.info('Database %r not created, creating it...', self._db_name)
+        sql_file = self._repository.get_datastorage_file()
+        self._postgres_db.execute_sql_file(sql_file.filename)
+        logger.info('Database %r created successfully', self._db_name)
+
+        last_sql_file = self._repository.get_last_migration_file()
+        self._update_file.write(last_sql_file.update_id)
+
+    def _update_on_old_install(self, update_file_id):
+        new_sql_files = self._repository.get_new_migration_files(update_file_id)
         if new_sql_files:
             logger.info('Found %d new migration files', len(new_sql_files))
-            last_sql_file = None
+            last_sql_file = SQLFile(None, update_file_id)
             try:
                 for sql_file in new_sql_files:
-                    postgres_db.execute_sql_file(sql_file.filename)
+                    self._postgres_db.execute_sql_file(sql_file.filename)
                     last_sql_file = sql_file
             finally:
-                if last_sql_file:
-                    update_file.write(last_sql_file.update_id)
+                self._update_file.write(last_sql_file.update_id)
         else:
             logger.info('No new migration files')
-    logger.info('Database %r updated successfully\n', db_name)
+
+    @classmethod
+    def new_from_name_and_args(cls, db_name, args):
+        postgres_db = PostgresDB(db_name, args.dry_run)
+        repository = SQLFilesRepository(db_name, args.datastorage_dir,
+                                        args.migration_dir)
+        update_file = UpdateFile(db_name, args.state_dir, args.dry_run)
+        return cls(db_name, postgres_db, repository, update_file)
 
 
 def main():
@@ -208,13 +238,9 @@ def main():
     _init_logging(args.verbose)
 
     for db_name in DB_NAMES:
-        postgres_db = PostgresDB(db_name, args.dry_run)
-        update_file = UpdateFile(db_name, args.state_dir, args.dry_run)
-        repository = SQLFilesRepository(db_name,
-                                        args.datastorage_dir,
-                                        args.migration_dir)
+        db_updater = DatabaseUpdater.new_from_name_and_args(db_name, args)
         try:
-            update_db(db_name, postgres_db, repository, update_file)
+            db_updater.update()
         except SQLExecutionException, e:
             logger.error('Error while updating database %r: %s', db_name, e)
             sys.exit(1)
