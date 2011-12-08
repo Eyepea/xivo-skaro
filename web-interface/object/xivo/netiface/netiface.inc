@@ -22,9 +22,9 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 
 class xivo_object_netiface extends xivo_object_abstract
 {
-	var $_dso		= null;
+	var $_dso			= null;
 	var $_sysnet		= null;
-	var $_name		= 'netiface';
+	var $_name			= 'netiface';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
