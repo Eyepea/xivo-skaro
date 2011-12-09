@@ -382,8 +382,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 			if($id === null)
 			{
-				if($this->_netiface->exists($where) === true)
+				if($this->_netiface->exists($where) === true) {
+					$this->_set_error('netiface', 'address', 'already-defined');
 					return(false);
+				}
 			}
 			else
 			{
@@ -410,13 +412,16 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if($hwtypeid !== null)
 				$where['hwtypeid'] = $hwtypeid;
 
-			if($this->_netiface->exists($where) !== true)
+			if($this->_netiface->exists($where) !== true) {
+				$this->_set_error('netiface', 'ifname', 'already-defined');
 				return(false);
+			}
 
 			if($hwtypeid !== null
 			&& isset($phyiface['hwtypeid']) === true
-			&& dwho_uint($phyiface['hwtypeid']) !== $hwtypeid)
+			&& dwho_uint($phyiface['hwtypeid']) !== $hwtypeid) {
 				return(false);
+			}
 
 			return(true);
 		}
@@ -881,7 +886,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		|| ($netifacename = $this->add_netiface()) === false)
 		{
 			$r = false;
-			$this->_set_error('netiface', 'ifname', 'already-defined');
 			if($netifacename !== null)
 				$this->_reverse_add();
 		}
