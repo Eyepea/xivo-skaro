@@ -689,33 +689,33 @@ def _execute_cmd(cmd):
 
 
 def route_set(address, netmask, gateway, iface):
-    cmd = [ROUTE, '-s', '-s', 'route', 'add', 'table', 'xivo',
+    cmd = [ROUTE, '-s', '-s', 'route', 'add',
         '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
 
     return _execute_cmd(cmd)
 
 
 def route_unset(address, netmask, gateway, iface):
-    cmd = [ROUTE, 'route', 'del', 'table', 'xivo',
+    cmd = [ROUTE, 'route', 'del',
         '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
 
     return _execute_cmd(cmd)
 
 
 def route_flush():
-    cmd = [ROUTE, 'route', 'flush', 'table', 'xivo']
+    cmd = [ROUTE, 'route', 'flush']
 
     return _execute_cmd(cmd)
 
 
 def route_flush_cache():
-    cmd = [ROUTE, 'route', 'flush', 'cache', 'table', 'xivo']
+    cmd = [ROUTE, 'route', 'flush', 'cache']
 
     return _execute_cmd(cmd)
 
 
 def route_list():
-    cmd = [ROUTE, 'route', 'list', 'table', 'xivo']
+    cmd = [ROUTE, 'route', 'list']
 
     (returncode, output) = _execute_cmd(cmd)
 
