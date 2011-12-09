@@ -63,7 +63,7 @@ IFPLUGD_START = ["/usr/sbin/invoke-rc.d", "ifplugd", "start"]
 
 IFDOWN = "/sbin/ifdown"
 
-ROUTE  = '/bin/ip'
+ROUTE = '/bin/ip'
 
 # CODE
 
@@ -144,7 +144,7 @@ def sorted_lst_lexdec(seqof_lexdec_str):
     * This function do not strip leading zeros in decimal parts; elements
       are preserved as they are.
     """
-    return sorted(seqof_lexdec_str, cmp = cmp_lexdec)
+    return sorted(seqof_lexdec_str, cmp=cmp_lexdec)
 
 
 def is_linux_netdev_if(ifname):
@@ -438,7 +438,7 @@ def ipv4_from_macaddr(macaddr, exc_info=True, ifname_match_func=lambda x: True, 
         result = None
         try:
             child = subprocess.Popen(arping_cmd_list + ["-r", "-c", "1", "-w", str(arping_sleep_us), '-I', iface, macaddr],
-                                     bufsize = 0, stdout = subprocess.PIPE, close_fds = True)
+                                     bufsize=0, stdout=subprocess.PIPE, close_fds=True)
             StreamedLines.makeNonBlocking(child.stdout)
             for (result,) in StreamedLines.rxStreamedLines(fobjs=(child.stdout,), timeout=arping_sleep_us * 10. / 1000000.):
                 break
@@ -680,57 +680,47 @@ def ifplugd_start():
         raise NetworkOpError("failure of: " + ' '.join(IFPLUGD_START))
 
 
-def route_set(address, netmask, gateway, iface):
-    cmd = [ROUTE, '-s', '-s', 'route', 'add', 'table', 'xivo', 
-        '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
-    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+def _execute_cmd(cmd):
+    log.debug('command: %s', cmd)
+    p = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
     stdout = p.communicate()[0]
 
     return (p.returncode, stdout)
 
 
-def route_unset(address, netmask, gateway, iface):
-    cmd = [ROUTE, 'route', 'del', 'table', 'xivo', 
+def route_set(address, netmask, gateway, iface):
+    cmd = [ROUTE, '-s', '-s', 'route', 'add', 'table', 'xivo',
         '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
-    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    ret = p.wait()
 
-    stdout = p.stdout.read()
-    p.stdout.close()
-    
-    return (ret, stdout)
+    return _execute_cmd(cmd)
+
+
+def route_unset(address, netmask, gateway, iface):
+    cmd = [ROUTE, 'route', 'del', 'table', 'xivo',
+        '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
+
+    return _execute_cmd(cmd)
+
 
 def route_flush():
     cmd = [ROUTE, 'route', 'flush', 'table', 'xivo']
-    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    ret = p.wait()
 
-    stdout = p.stdout.read()
-    p.stdout.close()
-    
-    return (ret, stdout)
+    return _execute_cmd(cmd)
 
 
 def route_flush_cache():
     cmd = [ROUTE, 'route', 'flush', 'cache', 'table', 'xivo']
-    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    ret = p.wait()
 
-    stdout = p.stdout.read()
-    p.stdout.close()
-    
-    return (ret, stdout)
+    return _execute_cmd(cmd)
+
 
 def route_list():
     cmd = [ROUTE, 'route', 'list', 'table', 'xivo']
-    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    ret = p.wait()
 
-    stdout = p.stdout.read()
-    p.stdout.close()
+    (returncode, output) = _execute_cmd(cmd)
 
     res = []
-    for line in stdout.split('\n'):
+    for line in output.split('\n'):
         m = re.match(r"^([\d.:]+)(?:/(\d+))? via ([\d.:]+).*", line)
         if m is not None:
             route = list(m.groups())
