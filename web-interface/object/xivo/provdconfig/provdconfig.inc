@@ -577,10 +577,14 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				if (is_array($lines) === true)
 				{
 					$rslines = $this->_build_lines($lines);
-					if (isset($raw_config['sip_lines']) === true)
+					if (isset($raw_config['sip_lines']) === true) {
 						$raw_config['sip_lines'] = array_replace($raw_config['sip_lines'],$rslines);
-					else
+					} else {
 						$raw_config['sip_lines'] = $rslines;
+					}
+					if (isset($raw_config['sip_lines'][0])) {
+						unset($raw_config['sip_lines'][0]);
+					}
 				}
 		}
 
