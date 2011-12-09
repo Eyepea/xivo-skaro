@@ -684,12 +684,9 @@ def route_set(address, netmask, gateway, iface):
     cmd = [ROUTE, '-s', '-s', 'route', 'add', 'table', 'xivo', 
         '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
     p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    ret = p.wait()
+    stdout = p.communicate()[0]
 
-    stdout = p.stdout.read()
-    p.stdout.close()
-    
-    return (ret, stdout)
+    return (p.returncode, stdout)
 
 
 def route_unset(address, netmask, gateway, iface):
