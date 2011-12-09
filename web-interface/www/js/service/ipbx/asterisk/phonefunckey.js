@@ -299,7 +299,7 @@ function xivo_build_phonefunckey_array(id) {
 
 function xivo_phonefunckey_incr_fknum(idcnt) {
 	if ((curfknum = dwho_eid('it-phonefunckey-fknum-' + idcnt)) === false
-			|| dwho_is_undef(curfknum.selectedIndex) === true)
+	|| dwho_is_undef(curfknum.selectedIndex) === true)
 		return (false);
 
 	var prevfknum = false;
@@ -312,12 +312,6 @@ function xivo_phonefunckey_incr_fknum(idcnt) {
 			break;
 		}
 	}
-
-	if (prevfknum === false
-			&& (simultcalls = dwho_eid('it-userfeatures-simultcalls')) !== false
-			&& dwho_is_undef(simultcalls.value) === false
-			&& dwho_is_uint(simultcalls.value) === true)
-		curfknum.selectedIndex = Number(simultcalls.value);
 }
 
 function xivo_phonefunckey_chg_type(type) {
