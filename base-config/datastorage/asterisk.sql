@@ -202,6 +202,8 @@ CREATE TABLE "cel" (
  PRIMARY KEY("id")
 );
 
+CREATE INDEX "cel__idx__uniqueid" ON "cel"("uniqueid");
+
 
 DROP TABLE IF EXISTS "context";
 CREATE TABLE "context" (
