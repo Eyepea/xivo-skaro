@@ -1044,6 +1044,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
+		$this->notify_changes();
+
 		return true;
 	}
 
@@ -1127,6 +1129,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
+		$this->notify_changes();
+
 		return true;
 	}
 
@@ -1152,10 +1156,12 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$this->_status = '';
 
-        if($r === false)
-            return false;
+		if($r === false)
+			return false;
 
-        return true;
+		$this->notify_changes();
+
+		return true;
 	}
 
 	function enable_netiface()
