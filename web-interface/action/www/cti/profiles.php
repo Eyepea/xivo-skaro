@@ -58,7 +58,7 @@ $preferencesavail = array(
     'adlibitum'                       => $_TPL->bbf('pref-adlibitum')
 );
 
-$ctixlets = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
+$ctixlets = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/xivo-ctid/allowedxlets.json'), true));
 
 $xletsavail = array();
 foreach ($ctixlets as $xlet)
