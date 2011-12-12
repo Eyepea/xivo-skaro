@@ -812,10 +812,10 @@ Non
 Oui
 
 ; fm_nat-opt(force_rport)
-RPORT
+Force rport
 
 ; fm_nat-opt(comedia)
-COMEDIA
+Comedia
 
 ; fm_nat-opt(never)
 Jamais
@@ -1538,3 +1538,9 @@ Protocoles réseau :
 
 ; hlp_fm_transport
 Config asterisk: transport
+
+; col_add
+Ajouter
+
+; opt_disp-delete
+Supprimer
