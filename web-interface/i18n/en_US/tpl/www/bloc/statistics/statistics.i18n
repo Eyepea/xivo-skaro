@@ -317,7 +317,7 @@ Year:
 ; fm_bt-cal
 Apply
 
-; fm-submit-wait
+; fm-wait-submit
 Processing
 
 ; bt-success-submit
@@ -495,5 +495,10 @@ Total calls handled
 Total abandoned calls
 
 ; cel_performance
- Calls Perfomance
- 
+Calls Perfomance
+
+; unknown
+Unknown
+
+; total
+Total
