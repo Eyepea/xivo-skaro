@@ -37,8 +37,8 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 	function get_phonehints_list($order=null,$limit=null,$assoc=false,$idgroup=1)
 	{
-	    $w = array();
-	    $w['idgroup'] = (int) $idgroup;
+		$w = array();
+		$w['idgroup'] = (int) $idgroup;
 
 		if(($rs = $this->_ctiphonehints->get_all_where($w,null,true,$order,$limit)) === false
 		|| ($nb = count($rs)) === 0)
@@ -93,11 +93,6 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return($r);
 	}
 
-	function set_add($arr)
-	{
-		return($this->_set('add',$arr));
-	}
-
 	function set_edit($arr)
 	{
 		if(empty($this->_info) === true)
@@ -110,7 +105,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 	{
 		$this->_reset();
 
-		if(($action !== 'add' && $action !== 'edit') === true
+		if(($action !== 'edit') === true
 		|| dwho_issa('phonehints',$arr) === false)
 			return(false);
 
@@ -135,60 +130,6 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		}
 
 		$this->_set_result('phonehints',$rs);
-
-		return(true);
-	}
-
-	function add()
-	{
-		$r = true;
-
-		$this->_status = 'add';
-		$this->_return = array();
-
-		if($this->get_errnb() > 0
-		|| ($phonehintsid = $this->add_phonehints()) === false)
-		{
-			$r = false;
-			if($phonehintsid !== null)
-				$this->_reverse_add();
-		}
-
-		$this->_status = '';
-
-		return($r);
-	}
-
-	function add_phonehints()
-	{
-		if(($rs = $this->get_result('phonehints')) === null
-		|| $rs === false)
-			return(false);
-
-		$this->_return['phonehints'] = $this->_ctiphonehints->add($rs);
-		return($this->_return['phonehints']);
-	}
-
-	function _reverse_add()
-	{
-		if($this->get_errnb() > 0
-		|| $this->_status !== 'add'
-		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
-			return(false);
-
-		foreach($this->_return as $key => $val)
-		{
-			if($val === false)
-				continue;
-
-			switch($key)
-			{
-				case 'phonehints':
-					$this->_ctiphonehints->delete($val);
-					break;
-			}
-		}
 
 		return(true);
 	}
