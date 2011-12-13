@@ -112,14 +112,15 @@ switch($act)
 
 	case 'add':
 		$app = &$ipbx->get_application('ctiphonehints');
-		$param['idgroup'] = $idgroup;
 
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('phonehints',$_QR) === true)
 		{
-		    $_QR['phonehints']['idgroup'] = $idgroup;
+		    $_QR['phonehints']['idgroup'] = $info['phonehints']['idgroup'];
+		    $_QR['phonehints']['number'] = $info['phonehints']['number'];
+
 			if($app->set_add($_QR) === false
 			|| $app->add() === false)
 			{
@@ -146,7 +147,6 @@ switch($act)
 
 	case 'edit':
 		$app = &$ipbx->get_application('ctiphonehints');
-		$param['idgroup'] = $idgroup;
 
 		if(isset($_QR['idphonehints']) === false
 		|| ($info = $app->get($_QR['idphonehints'])) === false)
@@ -160,7 +160,8 @@ switch($act)
 		{
 			$return = &$result;
 
-			$_QR['phonehints']['idgroup'] = $idgroup;
+			$_QR['phonehints']['idgroup'] = $info['phonehints']['idgroup'];
+			$_QR['phonehints']['number'] = $info['phonehints']['number'];
 
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)

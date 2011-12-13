@@ -67,14 +67,15 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return(false);
 	}
 
-	function get($id,$disable=null)
+	function get($id)
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_info['phonehints'] = $this->_ctiphonehints->get($id);
+		$phonehints = $this->_ctiphonehints->get($id);
+		if($phonehints === false)
+			return(false);
 
-		if($this->_components === false)
-			return($this->_info);
+		$this->_info['phonehints'] = $phonehints;
 
 		return($this->_info);
 	}
