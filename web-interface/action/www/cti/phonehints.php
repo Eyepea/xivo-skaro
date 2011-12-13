@@ -152,21 +152,6 @@ switch($act)
 		$dhtml->set_js('js/jscolor/jscolor.js');
 		break;
 
-	case 'delete':
-		$param['page'] = $page;
-
-		$app = &$ipbx->get_application('ctiphonehints');
-
-		if(isset($_QR['idphonehints']) === false
-		|| ($info = $app->get($_QR['idphonehints'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
-
-		$app->delete();
-	    $ipbx->discuss('xivo[cticonfig,update]');
-
-		$_QRY->go($_TPL->url('cti/phonehints'),$param);
-		break;
-
 	case 'list':
 		$act = 'list';
 		$prevpage = $page - 1;

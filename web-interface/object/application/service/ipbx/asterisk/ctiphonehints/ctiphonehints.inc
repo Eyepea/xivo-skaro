@@ -240,7 +240,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 				case 'phonehints':
 					if(isset($this->_origin['phonehints']) === false
 					|| $this->_origin['phonehints'] === false)
-						$this->delete_phonehints();
+						$this->_delete_phonehints();
 					else
 						$this->_ctiphonehints->edit_origin($this->_origin['phonehints']);
 					break;
@@ -250,26 +250,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 		return(true);
 	}
 
-	function delete()
-	{
-		$r = true;
-
-		$this->_status = 'delete';
-		$this->_return = array();
-
-		if($this->get_errnb() > 0
-		|| $this->delete_phonehints() === false)
-		{
-			$r = false;
-			$this->_reverse_delete();
-		}
-
-		$this->_status = '';
-
-		return($r);
-	}
-
-	function delete_phonehints()
+	function _delete_phonehints()
 	{
 		if(dwho_issa('phonehints',$this->_info) === false)
 			return(false);
@@ -280,31 +261,6 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 			$this->_return['phonehints'] = $r;
 
 		return($r);
-	}
-
-	function _reverse_delete()
-	{
-		if($this->_status !== 'delete'
-		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
-			return(false);
-
-		foreach($this->_return as $key => $val)
-		{
-			if($val === false)
-				continue;
-
-			switch($key)
-			{
-				case 'phonehints':
-                    if(isset($this->_origin['phonehints']) === true
-                    && $this->_origin['phonehints'] !== false)
-                        $this->_ctiphonehints->add_origin($this->_origin['phonehints']);
-					break;
-			}
-		}
-
-		return(true);
 	}
 
 	function enable()
