@@ -546,7 +546,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		/* cannot remove/disable a interface if another one is depending on */
 		if($this->_netiface->exists_link($ifname, $uuid) !== false
 		|| isset($unremovables[$ifname]) === true
-		|| $voip_iface['name'] == $ifname) {
+		|| $voip_iface['ifname'] == $ifname) {
 			$res['disableable'] = false;
 			$res['deletable'] = false;
 		}
@@ -707,13 +707,17 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$arr['networktype'] = 'data';
 		}
 
+		if (isset($arr['vlanrawdevice']) && dwho_has_len($arr['vlanid'])) {
+			$arr['ifname'] = 'vlan'.$arr['vlanid'];
+			$arr['devname'] = $arr['vlanrawdevice'];
+		}
+
 		switch($action)
 		{
 			case 'add':
 				if(isset($arr['devname']) === true
 				&& dwho_has_len($arr['devname']) === true)
 					$devname = $arr['devname'];
-				$arr['ifname'] = $arr['name'];
 				break;
 			case 'edit':
 				if(dwho_issa('netiface',$this->_info) === true
@@ -874,18 +878,21 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			dwho_report::push('info', 'voip_interface_successfully_updated');
 		}
 
-		$defaultconf = $this->_appprovdconfig->get('default');
-
-		$config = &$defaultconf['config'];
-		$config['registrar_main'] = $netiface['address'];
-		$config['proxy_main'] = $netiface['address'];
-
-		if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
-		|| $this->_appprovdconfig->edit() === false)
+		if ($netiface['networktype'] == 'voip')
 		{
-			$error = $this->_appprovdconfig->get_error('config');
-			dwho_report::push('error', 'error_during_update_voip_default_line_registrar');
-			return false;
+			$defaultconf = $this->_appprovdconfig->get('default');
+
+			$config = &$defaultconf['config'];
+			$config['registrar_main'] = $voip_iface['address'];
+			$config['proxy_main'] = $voip_iface['address'];
+
+			if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
+			|| $this->_appprovdconfig->edit() === false)
+			{
+				$error = $this->_appprovdconfig->get_error('config');
+				dwho_report::push('error', 'error_during_update_voip_default_line_registrar');
+				return false;
+			}
 		}
 
 		return(true);
@@ -931,7 +938,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->make_voip_interface($rs);
 
 		if($this->_netiface->add($rs) !== false)
-			$this->_return['netiface'] = $rs['name'];
+			$this->_return['netiface'] = $rs['id'];
 		else
 			$this->_return['netiface'] = false;
 
@@ -1005,7 +1012,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->make_voip_interface($rs);
 
 		if($this->_netiface->edit($this->_info['netiface']['id'],$rs) !== false)
-			$this->_return['netiface'] = $rs['name'];
+			$this->_return['netiface'] = $rs['id'];
 		else
 			$this->_return['netiface'] = false;
 
