@@ -353,6 +353,7 @@ dwho.suggest.prototype.clear = function()
     this.deletetimeout();
     this._highlightedid    = null;
     this._suggestid        = null;
+    this._searchval        = '';
     dwho.dom.remove_element(dwho_eid(this._dwsid,true));
 
 };
