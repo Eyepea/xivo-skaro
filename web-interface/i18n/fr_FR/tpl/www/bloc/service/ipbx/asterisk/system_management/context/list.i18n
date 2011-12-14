@@ -13,6 +13,21 @@ Type de contexte
 ; no_context
 Aucun contexte trouvé
 
+; ctx_internal
+Interne
+
+; ctx_incall
+Entrant
+
+; ctx_outcall
+Sortant
+
+; ctx_services
+Service
+
+; ctx_others
+Autre
+
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce contexte ?
 

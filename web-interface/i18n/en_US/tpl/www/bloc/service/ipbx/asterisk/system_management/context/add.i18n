@@ -130,3 +130,17 @@ Add context(s) ->
 ; bt_outcontext
 <- Remove context(s)
 
+;fm_context_type-opt(internal)
+Internal
+
+;fm_context_type-opt(incall)
+Incall
+
+;fm_context_type-opt(outcall)
+Outcall
+
+;fm_context_type-opt(services)
+Service
+
+;fm_context_type-opt(others)
+Other
