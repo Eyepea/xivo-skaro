@@ -871,22 +871,23 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 				dwho_report::push('error', 'error_during_update_voip_interface');
 				return false;
 			}
-
-			$defaultconf = $this->_appprovdconfig->get('default');
-
-			$config = &$defaultconf['config'];
-			$config['registrar_main'] = $netiface['address'];
-			$config['proxy_main'] = $netiface['address'];
-
-			if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
-			|| $this->_appprovdconfig->edit() === false)
-			{
-				$error = $this->_appprovdconfig->get_error('config');
-				dwho_report::push('error', 'error_during_update_voip_default_line_registrar');
-				return false;
-			}
 			dwho_report::push('info', 'voip_interface_successfully_updated');
 		}
+
+		$defaultconf = $this->_appprovdconfig->get('default');
+
+		$config = &$defaultconf['config'];
+		$config['registrar_main'] = $netiface['address'];
+		$config['proxy_main'] = $netiface['address'];
+
+		if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
+		|| $this->_appprovdconfig->edit() === false)
+		{
+			$error = $this->_appprovdconfig->get_error('config');
+			dwho_report::push('error', 'error_during_update_voip_default_line_registrar');
+			return false;
+		}
+
 		return(true);
 	}
 
