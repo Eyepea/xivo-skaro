@@ -246,7 +246,7 @@ XiVO Agid
 ; fm_ha_service_xivo-confgend
 XiVO Confgend
 
-; fm_ha_service_pf-xivo-cti-server
+; fm_ha_service_xivo-ctid
 XiVO CTI
 
 ; fm_ha_service_pf-xivo-dxtora
