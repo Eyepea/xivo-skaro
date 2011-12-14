@@ -2,5 +2,11 @@
 ; col_name
 Name
 
+; col_registrar_main
+Registrar main
+
+; col_proxy_main
+Proxy main
+
 ; opt_delete_confirm
 Are you sure you want to delete this template line ?
