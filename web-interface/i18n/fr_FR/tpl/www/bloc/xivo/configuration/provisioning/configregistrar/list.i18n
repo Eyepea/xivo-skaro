@@ -2,8 +2,5 @@
 ; col_name
 Nom
 
-; col_registrar_main
-Enregistrement
-
-; col_proxy
-Proxy
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce modele de ligne ?

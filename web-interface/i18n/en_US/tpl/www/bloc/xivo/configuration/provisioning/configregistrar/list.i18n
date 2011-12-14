@@ -2,8 +2,5 @@
 ; col_name
 Name
 
-; col_registrar_main
-Enregistrement
-
-; col_proxy
-Proxy
+; opt_delete_confirm
+Are you sure you want to delete this template line ?

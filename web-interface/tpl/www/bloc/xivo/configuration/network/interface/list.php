@@ -174,6 +174,7 @@ $page = $url->pager($pager['pages'],
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
+
 			<?=$form->checkbox(array('name'		=> 'netiface[]',
 						 'value'	=> $id,
 						 'label'	=> false,
