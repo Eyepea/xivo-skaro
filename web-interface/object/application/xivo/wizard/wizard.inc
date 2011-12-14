@@ -644,6 +644,28 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_wizsess['ipbxengine'] = array();
 		$this->_wizsess['ipbxengine']['engine'] = 'asterisk';
 
+		// step dbconfig
+		$this->_wizsess['dbconfig'] = array(
+			'save'	=> array(
+				'xivo'	=> 'postgresql://xivo:proformatique@localhost/xivo',
+				'ipbx'	=> 'postgresql://asterisk:proformatique@localhost/asterisk'
+			),
+			'result' => array(
+				'backend'		=> 'postgresql',
+				'create_auto'	=> false,
+				'postgresql'	=> array(
+					'host'			=> 'localhost',
+					'port'			=> '',
+					'xivouser'		=> 'xivo',
+					'xivopass'		=> 'proformatique',
+					'xivodbname'	=> 'xivo',
+					'ipbxuser'		=> 'asterisk',
+					'ipbxpass'		=> 'proformatique',
+					'ipbxdbname'	=> 'asterisk'
+				),
+			)
+		);
+
 		return(true);
 	}
 
