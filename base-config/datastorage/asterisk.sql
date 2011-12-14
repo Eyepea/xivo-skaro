@@ -274,7 +274,6 @@ DROP TABLE IF EXISTS "contexttype";
 CREATE TABLE "contexttype" (
  "id" SERIAL,
  "name" varchar(40) NOT NULL,
- "displayname" varchar(40) NOT NULL,
  "commented" integer,
  "deletable" integer,
  "description" text,
@@ -283,11 +282,11 @@ CREATE TABLE "contexttype" (
 
 CREATE UNIQUE INDEX "contexttype__uidx__name" ON "contexttype"("name");
 
-INSERT INTO "contexttype" VALUES(DEFAULT, 'internal', 'Interne', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'incall', 'Entrant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'outcall', 'Sortant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 'Services', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 'Autres', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'internal', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'incall', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'outcall', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 0, 0, '');
 
 
 DROP TABLE IF EXISTS "ctiaccounts";
