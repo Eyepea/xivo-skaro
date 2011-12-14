@@ -27,6 +27,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	var $_netiface	= false;
 	var $_sysconfd	= false;
 	var $_sysnet	= false;
+	var $_appprovdconfig	= false;
 	var $_commonconf = false;
 
 	function xivo_application_xivo_object_netiface(&$xobj)
@@ -35,7 +36,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		if(($this->_netiface = &$this->_xobj->get_module('netiface')) === false
 		|| ($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false
-		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)
+		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false
+		|| ($this->_appprovdconfig = &$this->_xobj->get_application('provdconfig')) === false)
 			return(false);
 
 		$sysinfo = new dwho_sysinfo();
@@ -858,19 +860,33 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 	function make_voip_interface($netiface)
 	{
-		if (!$netiface || !is_array($netiface) || empty($netiface)) {
+		if (!is_array($netiface) || empty($netiface)) {
 			return(false);
 		} elseif(($voip_iface = $this->_netiface->get_voip_iface($netiface['uuid'])) !== false
 		&& $netiface['networktype'] == 'voip'
 		&& $voip_iface['ifname'] !== $netiface['ifname'])
 		{
-			$iface = array('networktype' => 'data');
-			if($this->_netiface->edit($voip_iface['id'], $iface) === false) {
-				dwho_report::push('error', dwho_i18n::babelfish('error_during_update_voip_interface'));
+			$data = array('networktype' => 'data');
+			if($this->_netiface->edit($voip_iface['id'], $data) === false) {
+				dwho_report::push('error', 'error_during_update_voip_interface');
 				return false;
 			}
-		}
 
+			$defaultconf = $this->_appprovdconfig->get('default');
+
+			$config = &$defaultconf['config'];
+			$config['registrar_main'] = $netiface['address'];
+			$config['proxy_main'] = $netiface['address'];
+
+			if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
+			|| $this->_appprovdconfig->edit() === false)
+			{
+				$error = $this->_appprovdconfig->get_error('config');
+				dwho_report::push('error', 'error_during_update_voip_default_line_registrar');
+				return false;
+			}
+			dwho_report::push('info', 'voip_interface_successfully_updated');
+		}
 		return(true);
 	}
 
@@ -894,7 +910,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
-		$this->make_voip_interface($this->get_result('netiface'));
 		$this->notify_changes();
 
 		return($r);
@@ -911,6 +926,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					  $rs['vlanid'],
 					  $rs['uuid']) === false)
 			return(false);
+
+		$this->make_voip_interface($rs);
 
 		if($this->_netiface->add($rs) !== false)
 			$this->_return['netiface'] = $rs['name'];
@@ -962,7 +979,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
-		$this->make_voip_interface($this->get_result('netiface'));
 		$this->notify_changes();
 
 		return($r);
@@ -984,6 +1000,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		else if(strcmp($rs['ifname'],$this->_info['netiface']['ifname']) !== 0
 		&& $this->_netiface->exists_link($this->_info['netiface']['ifname'], $this->_info['netiface']['uuid']) !== false)
 			return(false);
+
+		$this->make_voip_interface($rs);
 
 		if($this->_netiface->edit($this->_info['netiface']['id'],$rs) !== false)
 			$this->_return['netiface'] = $rs['name'];
