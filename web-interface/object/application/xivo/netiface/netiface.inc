@@ -708,22 +708,22 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		if (isset($arr['vlanrawdevice']) && dwho_has_len($arr['vlanid'])) {
-			$arr['ifname'] = 'vlan'.$arr['vlanid'];
-			$arr['devname'] = $arr['vlanrawdevice'];
+			$devname = $arr['vlanrawdevice'];
+			$arr['ifname'] = $devname.'.'.$arr['vlanid'];
 		}
 
 		switch($action)
 		{
 			case 'add':
-				if(isset($arr['devname']) === true
-				&& dwho_has_len($arr['devname']) === true)
-					$devname = $arr['devname'];
 				break;
 			case 'edit':
 				if(dwho_issa('netiface',$this->_info) === true
-				&& isset($this->_info['netiface']['ifname']) === true)
+				&& isset($this->_info['netiface']['ifname']) === true
+				&& $this->_info['netiface']['hwtype'] === 'static') {
 					$devname = $this->_info['netiface']['ifname'];
-				$arr['ifname'] = $devname;
+					$arr['ifname'] = $devname;
+				}
+				$arr['devname'] = $devname;
 				break;
 			default:
 				return(false);
@@ -754,7 +754,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$this->_set_error('netiface',dwho_i18n::babelfish('voip_interface_can_not_configured_in_dhcp'));
 		}
 
-		if ((bool) $arr['disable'] === true && $arr['networktype'] === 'voip') {
+		if ((bool) $arr['disable'] === true && $arr['networktype'] === 'voip')
+		{
 			$this->_set_result('netiface', $arr);
 			$this->_set_error('netiface',dwho_i18n::babelfish('voip_interface_can_not_disabled'));
 		}

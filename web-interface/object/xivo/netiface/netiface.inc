@@ -28,7 +28,6 @@ class xivo_object_netiface extends xivo_object_abstract
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
-	var $_identity		= false;
 
 	function xivo_object_netiface(&$xobj,&$dso)
 	{
@@ -41,14 +40,10 @@ class xivo_object_netiface extends xivo_object_abstract
 
 		$sysinfo = new dwho_sysinfo();
 		$this->_sysnet = $sysinfo->net();
-
-		$this->_identity = &$this->_xobj->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		$this->_identity->_prepare_identity($data);
-
 		if ($this->_sysnet->netinfo_interface_is_physical($data['ifname']) === true)
 			$hwtype = 'physical';
 		else

@@ -56,14 +56,12 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_ifname');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwaddress');?></th>
 		<th class="th-center"><?=$this->bbf('col_networktype');?></th>
 		<th class="th-center"><?=$this->bbf('col_method');?></th>
 		<th class="th-center"><?=$this->bbf('col_address');?></th>
 		<th class="th-center"><?=$this->bbf('col_gateway');?></th>
-		<th class="th-center"><?=$this->bbf('col_vlanid');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -81,7 +79,6 @@ $page = $url->pager($pager['pages'],
 
 			$id			= '';
 			$gateway	= '-';
-			$name		= '-';
 			$ifname		= '';
 			$hwtype		= '';
 			$hwtypeid	= 0;
@@ -130,7 +127,6 @@ $page = $url->pager($pager['pages'],
 			$networktype = 'data';
 			if(empty($netiface) === false):
 				$id			= $netiface['id'];
-				$name		= $netiface['name'];
 				$ifname		= $netiface['ifname'];
 				$hwtype		= $netiface['hwtype'];
 				$hwtypeid	= dwho_uint($netiface['hwtypeid']);
@@ -163,18 +159,11 @@ $page = $url->pager($pager['pages'],
 			if(dwho_has_len($address) === false):
 				$address = '-';
 			endif;
-
-			if($hwtypeid === 1):
-				$displayname = $name;
-			else:
-				$displayname = $ifname;
-			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
-
 			<?=$form->checkbox(array('name'		=> 'netiface[]',
 						 'value'	=> $id,
 						 'label'	=> false,
@@ -183,21 +172,19 @@ $page = $url->pager($pager['pages'],
 						 'paragraph'	=> false,
 						 'disabled'	=> ($hwtypeid !== 1 || $list[$i]['disableable'] === false)));?>
 		</td>
-		<td class="txt-left" title="<?=dwho_alttitle($displayname);?>">
-			<label for="it-netiface-<?=$i?>" id="lb-netiface-<?=$i?>">
+		<td class="txt-left" title="<?=dwho_alttitle($ifname);?>">
+			<label for="it-ifname-<?=$i?>" id="lb-ifname-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					dwho_htmlen(dwho_trunc($displayname,10,'...',false));
+					dwho_htmlen(dwho_trunc($ifname,10,'...',false));
 ?>
 			</label>
 		</td>
-		<td title="<?=dwho_alttitle($ifname);?>"><?=dwho_htmlen(dwho_trunc($ifname,10,'...',false));?></td>
 		<td><?=$hwaddress?></td>
 		<td><?=$this->bbf('fm_networktype-opt',$networktype)?></td>
 		<td><?=$method?></td>
 		<td><?=$address?></td>
 		<td><?=$gateway;?></td>
-		<td><?=$vlanid?></td>
 		<td class="td-right" colspan="2">
 <?php
 			if($hwtypeid !== 1 || $list[$i]['actionable'] === false):
@@ -245,7 +232,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="9"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="7"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

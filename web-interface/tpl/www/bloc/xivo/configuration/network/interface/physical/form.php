@@ -44,16 +44,7 @@ if ($this->get_var('disableable') === true):
 				  'checked'		=> $this->get_var_default('info','disable',$this->get_var('devinfo','auto'))));
 endif;
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
-				  'name'	=> 'name',
-				  'labelid'	=> 'name',
-				  'size'	=> 15,
-				  'default'	=> $element['netiface']['name']['default'],
-				  'value'	=> $info['name'],
-				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'name')))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_ifname'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_ifname'),
 				  'name'		=> 'ifname',
 				  'labelid'		=> 'ifname',
 				  'size'		=> 10,

@@ -168,7 +168,7 @@ switch($act)
 		$nbbypage = 20;
 
 		$order = array();
-		$order['name'] = SORT_ASC;
+		$order['ifname'] = SORT_ASC;
 
 		$limit = array();
 		$limit[0] = $prevpage * $nbbypage;
