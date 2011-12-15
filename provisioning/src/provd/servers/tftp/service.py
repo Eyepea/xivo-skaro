@@ -28,7 +28,7 @@ from zope.interface import Interface
 
 class ITFTPReadService(Interface):
     """A TFTP read service handles TFTP read requests (RRQ)."""
-    
+
     def handle_read_request(request, response):
         """Handle a TFTP read request (RRQ).
         
@@ -56,11 +56,11 @@ class ITFTPReadService(Interface):
 
 class TFTPNullService(object):
     """A read service that always reject the requests."""
-    
+
     def __init__(self, errcode=ERR_FNF, errmsg="File not found"):
         self.errcode = errcode
         self.errmsg = errmsg
-    
+
     def handle_read_request(self, request, response):
         response.reject(self.errcode, self.errmsg)
 
@@ -69,7 +69,7 @@ class TFTPStringService(object):
     """A read service that always serve the same string."""
     def __init__(self, msg):
         self._msg = msg
-    
+
     def handle_read_request(self, request, response):
         response.accept(StringIO.StringIO(self._msg))
 
@@ -87,7 +87,7 @@ class TFTPFileService(object):
     """
     def __init__(self, path):
         self._path = os.path.abspath(path)
-    
+
     def handle_read_request(self, request, response):
         rq_orig_path = request['packet']['filename']
         rq_stripped_path = rq_orig_path.lstrip(os.sep)
@@ -112,11 +112,11 @@ class TFTPHookService(object):
     """
     def __init__(self, service):
         self._service = service
-    
+
     def _pre_handle(self, request):
         """This MAY be overridden in derived classes."""
         pass
-    
+
     def handle_read_request(self, request, response):
         self._pre_handle(request)
         self._service.handle_read_request(request, response)
@@ -131,7 +131,7 @@ class TFTPLogService(TFTPHookService):
         """
         TFTPHookService.__init__(self, service)
         self._logger = logger
-        
+
     def _pre_handle(self, request):
         packet = request['packet']
         msg = "TFTP request from %s - filename '%s' - mode '%s'" % \
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     from twisted.python import log
     import sys
     log.startLogging(sys.stderr)
-    
+
     from twisted.internet import reactor
     test_service = TFTPStringService("""\
    TFTP is a simple protocol to transfer files, and therefore was named
@@ -177,10 +177,10 @@ if __name__ == '__main__':
 """)
     null_service = TFTPNullService()
     def aff(msg):
-        print >>sys.stderr, msg
+        print >> sys.stderr, msg
     log_service = TFTPLogService(aff, null_service)
     file_service = TFTPLogService(aff, TFTPFileService('/tmp/tftp'))
-    
+
     service = file_service
     reactor.listenUDP(6969, TFTPProtocol(service))
     reactor.run()

@@ -8,7 +8,6 @@ old format (pre 2011-07) to the newer (post 2011-07).
 
 from __future__ import print_function
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

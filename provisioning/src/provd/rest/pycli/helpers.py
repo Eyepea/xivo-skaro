@@ -97,12 +97,12 @@ def mass_update_devices_plugin(old_plugin, new_plugin, synchronize=False):
     """Update all devices using plugin old_plugin to plugin new_plugin, and
     optionally synchronize the affected devices.
     
-    """ 
+    """
     if not isinstance(old_plugin, basestring):
         raise ValueError(old_plugin)
     if not isinstance(new_plugin, basestring):
         raise ValueError(new_plugin)
-    
+
     for device in _devices.find({u'plugin': old_plugin}):
         device[u'plugin'] = new_plugin
         print 'Updating device %s' % device[u'id']

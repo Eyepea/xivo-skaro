@@ -23,21 +23,21 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-OP_RRQ =  '\x00\x01'
-OP_WRQ =  '\x00\x02'
+OP_RRQ = '\x00\x01'
+OP_WRQ = '\x00\x02'
 OP_DATA = '\x00\x03'
-OP_ACK =  '\x00\x04'
-OP_ERR =  '\x00\x05'
+OP_ACK = '\x00\x04'
+OP_ERR = '\x00\x05'
 OP_OACK = '\x00\x06'
 
-ERR_UNDEF =      '\x00\x00'     # Not defined, see error message (if any)
-ERR_FNF =        '\x00\x01'     # File not found
-ERR_ACCESS =     '\x00\x02'     # Access violation
-ERR_ALLOC =      '\x00\x03'     # Disk full or allocation exceeded
-ERR_ILL =        '\x00\x04'     # Illegal TFTP operation
+ERR_UNDEF = '\x00\x00'     # Not defined, see error message (if any)
+ERR_FNF = '\x00\x01'     # File not found
+ERR_ACCESS = '\x00\x02'     # Access violation
+ERR_ALLOC = '\x00\x03'     # Disk full or allocation exceeded
+ERR_ILL = '\x00\x04'     # Illegal TFTP operation
 ERR_UNKNWN_TID = '\x00\x05'     # Unknown transfer ID
-ERR_FEXIST =     '\x00\x06'     # File already exists
-ERR_NO_USER =    '\x00\x07'     # No such user
+ERR_FEXIST = '\x00\x06'     # File already exists
+ERR_NO_USER = '\x00\x07'     # No such user
 
 
 class PacketError(Exception):

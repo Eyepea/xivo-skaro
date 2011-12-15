@@ -2,7 +2,6 @@
 
 """Synchronization primitives for event driven systems."""
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 
@@ -20,8 +19,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO add support for cancel
-
 import logging
 from collections import deque
 from twisted.internet import defer
@@ -37,14 +34,14 @@ class _DeferredRWLock_Base(object):
     def __init__(self, acquire_fun, release_fun):
         self._acquire_fun = acquire_fun
         self._release_fun = release_fun
-    
+
     def acquire(self):
         return self._acquire_fun()
-    
+
     def _releaseAndReturn(self, r):
         self.release()
         return r
-    
+
     def run(self, f, *args, **kwargs):
         def execute(ignoredResult):
             d = defer.maybeDeferred(f, *args, **kwargs)
@@ -81,21 +78,21 @@ class DeferredRWLock(object):
                                               self._release_read_lock)
         self.write_lock = _DeferredRWLock_Base(self._acquire_write_lock,
                                                self._release_write_lock)
-    
+
     def _acquire_read_lock(self):
         logger.debug('Waiting for read lock acquisition of RWLock %s', self)
         d = defer.Deferred()
         self._read_waiting.append(d)
         self._reschedule()
         return d
-    
+
     def _acquire_write_lock(self):
         logger.debug('Waiting for write lock acquisition of RWLock %s', self)
         d = defer.Deferred()
         self._write_waiting.append(d)
         self._reschedule()
         return d
-    
+
     def _unlock_all_readers(self):
         assert self._read_waiting
         while self._read_waiting:
@@ -103,14 +100,14 @@ class DeferredRWLock(object):
             self._reading += 1
             d = self._read_waiting.popleft()
             d.callback(self)
-    
+
     def _unlock_one_writer(self):
         assert self._write_waiting
         logger.debug('Acquiring write lock %d of RWLock %s', self._writing, self)
         self._writing += 1
         d = self._write_waiting.popleft()
         d.callback(self)
-    
+
     def _reschedule(self):
         # Check if we can fire new callbacks
         if self._reading:
@@ -155,7 +152,7 @@ class DeferredRWLock(object):
         logger.debug('Releasing read lock %d of RWLock %s', self._reading - 1, self)
         self._reading -= 1
         self._reschedule()
-    
+
     def _release_write_lock(self):
         if not self._writing:
             raise InvalidLockUsage('write lock released while no one was writing')

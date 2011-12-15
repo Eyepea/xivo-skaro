@@ -1,4 +1,5 @@
 {% extends 'base.tpl' %}
+{% block encoding %}ISO-8859-1{% endblock %}
 {% block upgrade_rule %}
 <Upgrade_Rule>http://{{ ip }}:{{ http_port }}/firmware/spa962-6-1-5a.bin</Upgrade_Rule>
 {% endblock %}

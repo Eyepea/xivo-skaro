@@ -30,20 +30,20 @@ class _Response(object):
         self._answered = False
         self._do_reject = freject
         self._do_accept = faccept
-        
+
     def _raise_if_answered(self):
         if self._answered:
             raise ValueError('Request has already been answered')
         else:
             self._answered = True
-            
+
     def ignore(self):
         self._raise_if_answered()
-    
+
     def reject(self, errcode, errmsg):
         self._raise_if_answered()
         self._do_reject(errcode, errmsg)
-    
+
     def accept(self, fobj):
         self._raise_if_answered()
         self._do_accept(fobj)
@@ -52,7 +52,7 @@ class _Response(object):
 class TFTPProtocol(DatagramProtocol):
     def __init__(self, read_service):
         self._service = read_service
-        
+
     def _handle_rrq(self, pkt, addr):
         # only accept mode octet
         if pkt['mode'] != 'octet':
@@ -83,13 +83,13 @@ class TFTPProtocol(DatagramProtocol):
             request = {'address': addr, 'packet': pkt}
             response = _Response(on_reject, on_accept)
             self._service.handle_read_request(request, response)
-            
+
     def _handle_wrq(self, pkt, addr):
         # we don't accept WRQ - send an error
         logger.info('TFTP write request not supported')
         dgram = build_dgram(err_packet(ERR_UNDEF, 'WRQ not supported'))
         self.transport.write(dgram, addr)
-    
+
     def datagramReceived(self, dgram, addr):
         try:
             pkt = parse_dgram(dgram)

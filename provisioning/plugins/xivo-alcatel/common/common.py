@@ -6,7 +6,6 @@ Support the IP Touch 4008EE and 4018EE.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

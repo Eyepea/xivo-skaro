@@ -50,14 +50,14 @@ from twisted.web.server import NOT_DONE_YET
 
 logger = logging.getLogger(__name__)
 
-REL_INSTALL_SRV     = u'srv.install'
-REL_INSTALL         = u'srv.install.install'
-REL_UNINSTALL       = u'srv.install.uninstall'
-REL_INSTALLED       = u'srv.install.installed'
-REL_INSTALLABLE     = u'srv.install.installable'
-REL_UPGRADE         = u'srv.install.upgrade'
-REL_UPDATE          = u'srv.install.update'
-REL_CONFIGURE_SRV   = u'srv.configure'
+REL_INSTALL_SRV = u'srv.install'
+REL_INSTALL = u'srv.install.install'
+REL_UNINSTALL = u'srv.install.uninstall'
+REL_INSTALLED = u'srv.install.installed'
+REL_INSTALLABLE = u'srv.install.installable'
+REL_UPGRADE = u'srv.install.upgrade'
+REL_UPDATE = u'srv.install.update'
+REL_CONFIGURE_SRV = u'srv.configure'
 REL_CONFIGURE_PARAM = u'srv.configure.param'
 REALM_NAME = 'provd server'
 
@@ -288,7 +288,7 @@ def _ignore_deferred_error(deferred):
 
 class IntermediaryResource(Resource):
     # TODO document better and maybe change the name
-    
+
     def __init__(self, links):
         """
         links -- a list of tuple (rel, path, resource)
@@ -305,18 +305,18 @@ class IntermediaryResource(Resource):
         Resource.__init__(self)
         self._links = links
         self._register_childs()
-    
+
     def _register_childs(self):
         for _, path, resource in self._links:
             self.putChild(path, resource)
-    
+
     def _build_links(self, base_uri):
         links = []
         for rel, path, _ in self._links:
             href = uri_append_path(base_uri, path)
             links.append({u'rel': rel, u'href': href})
         return links
-    
+
     @json_response_entity
     def render_GET(self, request):
         content = {u'links': self._build_links(request.path)}
@@ -326,7 +326,7 @@ class IntermediaryResource(Resource):
 def ServerResource(app, dhcp_request_processing_service):
     links = [(u'dev', 'dev_mgr', DeviceManagerResource(app, dhcp_request_processing_service)),
              (u'cfg', 'cfg_mgr', ConfigManagerResource(app)),
-             (u'pg',  'pg_mgr',  PluginManagerResource(app)),
+             (u'pg', 'pg_mgr', PluginManagerResource(app)),
              (REL_CONFIGURE_SRV, 'configure', ConfigureServiceResource(app.configure_service))]
     return IntermediaryResource(links)
 
@@ -347,7 +347,7 @@ class OperationInProgressResource(Resource):
     def render_GET(self, request):
         content = {u'status': format_oip(self._oip)}
         return json_dumps(content)
-    
+
     def render_DELETE(self, request):
         if self._on_delete is not None:
             self._on_delete()
@@ -361,10 +361,10 @@ class ConfigureServiceResource(Resource):
         """
         Resource.__init__(self)
         self._cfg_srv = cfg_srv
-    
+
     def getChild(self, path, request):
         return ConfigureParameterResource(self._cfg_srv, path)
-    
+
     def _get_localized_description_list(self):
         locale, lang = get_locale_and_language()
         cfg_srv = self._cfg_srv
@@ -381,7 +381,7 @@ class ConfigureServiceResource(Resource):
                         pass
         # in last case, return the non-localized description
         return cfg_srv.description
-    
+
     @json_response_entity
     def render_GET(self, request):
         description_list = self._get_localized_description_list()
@@ -404,7 +404,7 @@ class ConfigureParameterResource(Resource):
         # key is not necessary to be valid
         self._cfg_srv = cfg_srv
         self._key = key
-    
+
     @json_response_entity
     def render_GET(self, request):
         try:
@@ -415,7 +415,7 @@ class ConfigureParameterResource(Resource):
         else:
             content = {u'param': {u'value': value}}
             return json_dumps(content)
-    
+
     @json_request_entity
     def render_PUT(self, request, content):
         try:
@@ -436,7 +436,7 @@ class ConfigureParameterResource(Resource):
 
 
 def InstallServiceResource(install_srv):
-    links = [(REL_INSTALL, 'install',   InstallResource(install_srv)),
+    links = [(REL_INSTALL, 'install', InstallResource(install_srv)),
              (REL_UNINSTALL, 'uninstall', UninstallResource(install_srv)),
              (REL_INSTALLED, 'installed', InstalledResource(install_srv)),
              (REL_INSTALLABLE, 'installable', InstallableResource(install_srv))]
@@ -451,7 +451,7 @@ class _OipInstallResource(Resource):
     def __init__(self):
         Resource.__init__(self)
         self._id_gen = new_id_generator()
-    
+
     def _add_new_oip(self, oip, request):
         # add a new child to this resource, and return the location
         # of the child
@@ -470,7 +470,7 @@ class InstallResource(_OipInstallResource):
     def __init__(self, install_srv):
         _OipInstallResource.__init__(self)
         self._install_srv = install_srv
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -494,7 +494,7 @@ class UninstallResource(Resource):
     def __init__(self, install_srv):
         Resource.__init__(self)
         self._install_srv = install_srv
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -514,7 +514,7 @@ class UpgradeResource(_OipInstallResource):
     def __init__(self, install_srv):
         _OipInstallResource.__init__(self)
         self._install_srv = install_srv
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -538,7 +538,7 @@ class UpdateResource(_OipInstallResource):
     def __init__(self, install_srv):
         _OipInstallResource.__init__(self)
         self._install_srv = install_srv
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -559,7 +559,7 @@ class _ListInstallxxxxResource(Resource):
         Resource.__init__(self)
         self._install_srv = install_srv
         self._method_name = method_name
-    
+
     @json_response_entity
     def render_GET(self, request):
         fun = getattr(self._install_srv, self._method_name)
@@ -593,7 +593,7 @@ class DeviceSynchronizeResource(_OipInstallResource):
     def __init__(self, app):
         _OipInstallResource.__init__(self)
         self._app = app
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -612,7 +612,7 @@ class DeviceReconfigureResource(Resource):
     def __init__(self, app):
         Resource.__init__(self)
         self._app = app
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -634,7 +634,7 @@ class DeviceDHCPInfoResource(Resource):
     def __init__(self, dhcp_request_processing_service):
         Resource.__init__(self)
         self._dhcp_req_processing_srv = dhcp_request_processing_service
-    
+
     def _transform_options(self, raw_options):
         options = {}
         for raw_option in raw_options:
@@ -643,7 +643,7 @@ class DeviceDHCPInfoResource(Resource):
                             raw_option[3:].split('.'))
             options[code] = value
         return options
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -673,10 +673,10 @@ class DevicesResource(Resource):
     def __init__(self, app):
         Resource.__init__(self)
         self._app = app
-    
+
     def getChild(self, path, request):
         return DeviceResource(self._app, path)
-    
+
     @json_response_entity
     def render_GET(self, request):
         find_arguments = find_arguments_from_request(request)
@@ -688,7 +688,7 @@ class DevicesResource(Resource):
         d = self._app.dev_find(**find_arguments)
         d.addCallbacks(on_callback, on_errback)
         return NOT_DONE_YET
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         # XXX praise KeyError
@@ -710,7 +710,7 @@ class DeviceResource(Resource):
         Resource.__init__(self)
         self._app = app
         self._id = id
-    
+
     @json_response_entity
     def render_GET(self, request):
         def on_callback(device):
@@ -724,7 +724,7 @@ class DeviceResource(Resource):
         d = self._app.dev_retrieve(self._id)
         d.addCallbacks(on_callback, on_error)
         return NOT_DONE_YET
-    
+
     @json_request_entity
     def render_PUT(self, request, content):
         # XXX praise KeyError
@@ -741,7 +741,7 @@ class DeviceResource(Resource):
         d = self._app.dev_update(device)
         d.addCallbacks(on_callback, on_errback)
         return NOT_DONE_YET
-    
+
     def render_DELETE(self, request):
         def on_callback(_):
             deferred_respond_no_content(request)
@@ -765,7 +765,7 @@ class AutocreateConfigResource(Resource):
     def __init__(self, app):
         Resource.__init__(self)
         self._app = app
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         def on_callback(id):
@@ -784,10 +784,10 @@ class ConfigsResource(Resource):
     def __init__(self, app):
         Resource.__init__(self)
         self._app = app
-    
+
     def getChild(self, path, request):
         return ConfigResource(self._app, path)
-    
+
     @json_response_entity
     def render_GET(self, request):
         find_arguments = find_arguments_from_request(request)
@@ -799,7 +799,7 @@ class ConfigsResource(Resource):
         d = self._app.cfg_find(**find_arguments)
         d.addCallbacks(on_callback, on_errback)
         return NOT_DONE_YET
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         # XXX praise KeyError
@@ -821,13 +821,13 @@ class ConfigResource(Resource):
         Resource.__init__(self)
         self._app = app
         self._id = id
-    
+
     def getChild(self, path, request):
         if path == 'raw':
             return RawConfigResource(self._app, self._id)
         else:
             return Resource.getChild(self, path, request)
-    
+
     @json_response_entity
     def render_GET(self, request):
         def on_callback(config):
@@ -841,7 +841,7 @@ class ConfigResource(Resource):
         d = self._app.cfg_retrieve(self._id)
         d.addCallbacks(on_callback, on_error)
         return NOT_DONE_YET
-    
+
     @json_request_entity
     def render_PUT(self, request, content):
         # XXX praise KeyError
@@ -858,7 +858,7 @@ class ConfigResource(Resource):
         d = self._app.cfg_update(config)
         d.addCallbacks(on_callback, on_errback)
         return NOT_DONE_YET
-    
+
     def render_DELETE(self, request):
         def on_callback(_):
             deferred_respond_no_content(request)
@@ -876,7 +876,7 @@ class RawConfigResource(Resource):
     def __init__(self, app, id):
         self._app = app
         self._id = id
-    
+
     @json_response_entity
     def render_GET(self, request):
         def on_callback(raw_config):
@@ -903,7 +903,7 @@ def PluginManagerResource(app):
 def PluginManagerInstallServiceResource(app):
     install_srv = _PluginManagerInstallServiceAdapter(app)
     pg_mgr_uninstall_res = PluginManagerUninstallResource(app)
-    links = [(REL_INSTALL, 'install',   InstallResource(install_srv)),
+    links = [(REL_INSTALL, 'install', InstallResource(install_srv)),
              (REL_UNINSTALL, 'uninstall', pg_mgr_uninstall_res),
              (REL_INSTALLED, 'installed', InstalledResource(install_srv)),
              (REL_INSTALLABLE, 'installable', InstallableResource(install_srv)),
@@ -916,28 +916,28 @@ class _PluginManagerInstallServiceAdapter(object):
     # Adapt every method of the IService except uninstall
     def __init__(self, app):
         self._app = app
-    
+
     def install(self, pkg_id):
         return self._app.pg_install(pkg_id)
-    
+
     def upgrade(self, pkg_id):
         return self._app.pg_upgrade(pkg_id)
-    
+
     @staticmethod
     def _clean_info(pkg_info):
         return dict((k, v) for (k, v) in pkg_info.iteritems() if k != 'filename')
-    
+
     @staticmethod
     def _clean_installable_pkgs(pkg_infos):
         clean_info = _PluginManagerInstallServiceAdapter._clean_info
         return dict((k, clean_info(v)) for (k, v) in pkg_infos.iteritems())
-    
+
     def list_installable(self):
         return self._clean_installable_pkgs(self._app.pg_mgr.list_installable())
-    
+
     def list_installed(self):
         return self._app.pg_mgr.list_installed()
-    
+
     def update(self):
         return self._app.pg_mgr.update()
 
@@ -946,7 +946,7 @@ class PluginManagerUninstallResource(Resource):
     def __init__(self, app):
         Resource.__init__(self)
         self._app = app
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -974,19 +974,19 @@ class PluginsResource(Resource):
         self._obs = BasePluginManagerObserver(self._on_plugin_load,
                                               self._on_plugin_unload)
         pg_mgr.attach(self._obs)
-    
+
     def _on_plugin_load(self, pg_id):
         self._childs[pg_id] = PluginResource(self._pg_mgr[pg_id])
-    
+
     def _on_plugin_unload(self, pg_id):
         del self._childs[pg_id]
-    
+
     def getChild(self, path, request):
         try:
             return self._childs[path]
         except KeyError:
             return Resource.getChild(self, path, request)
-    
+
     @json_response_entity
     def render_GET(self, request):
         plugins = {}
@@ -1002,7 +1002,7 @@ class PluginReloadResource(Resource):
     def __init__(self, app):
         Resource.__init__(self)
         self._app = app
-    
+
     @json_request_entity
     def render_POST(self, request, content):
         try:
@@ -1023,7 +1023,7 @@ class PluginInfoResource(Resource):
     def __init__(self, plugin):
         Resource.__init__(self)
         self._plugin = plugin
-    
+
     @json_response_entity
     def render_GET(self, request):
         return json_dumps({u'plugin_info': self._plugin.info()})
@@ -1047,10 +1047,10 @@ def new_server_resource(app, dhcp_request_processing_service):
 
 class _SimpleRealm(object):
     # implements(IRealm)
-    
+
     def __init__(self, resource):
         self._resource = resource
-    
+
     def requestAvatar(self, avatarID, mind, *interfaces):
         if IResource in interfaces:
             return IResource, self._resource, lambda: None

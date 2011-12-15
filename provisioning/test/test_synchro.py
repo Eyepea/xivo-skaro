@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision $ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 
@@ -36,7 +35,7 @@ class TracingDeferred(defer.Deferred):
         self._id = id
         print u'%.4f <%2s> Constructing' % (_time_since_load(), self._id)
         defer.Deferred.__init__(self)
-    
+
     def callback(self, result):
         print u'%.4f <%2s> Before callback' % (_time_since_load(), self._id)
         defer.Deferred.callback(self, result)
@@ -153,7 +152,7 @@ def rw_lock_tests():
                      rw_lock_test_read_more_while_read_and_no_write_wait,
                      rw_lock_test_no_write_while_write,
                      rw_lock_privelege_writers,
-                     rw_lock_schedule_all_readers_if_possible]: 
+                     rw_lock_schedule_all_readers_if_possible]:
         def wrap_test(test_fun_):
             deferred_generator = gen_incr_fixed_deferred()
             print '\n== Starting test %s ==' % test_fun_.__name__
