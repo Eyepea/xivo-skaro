@@ -21,8 +21,7 @@ import unittest
 import provd.persist.memory as memory
 from provd.persist.common import ID_KEY
 from provd.persist.id import numeric_id_generator, urandom_id_generator
-from provd.persist.util import _retrieve_doc_values, _create_pred_from_selector,\
-    _create_value_matcher
+from provd.persist.util import _retrieve_doc_values, _create_pred_from_selector
 
 # TODO fix the test so they all work with the new async interface
 
