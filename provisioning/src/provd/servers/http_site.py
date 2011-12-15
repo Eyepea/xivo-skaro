@@ -53,7 +53,7 @@ class Request(server.Request):
 class Site(server.Site):
     # originally taken from twisted.web.server.Site
     requestFactory = Request
-    
+
     def getResourceFor(self, request):
         """
         Get a deferred that will callback with a resource for a request.
@@ -84,23 +84,23 @@ def getChildForRequest(resource, request):
         else:
             resource = retval
     defer.returnValue(resource)
-    
+
 
 if __name__ == '__main__':
     from twisted.web.resource import Resource
     from twisted.web import static
-    
+
     class TestResource(Resource):
         def getChild(self, path, request):
             from twisted.internet import reactor
             d = defer.Deferred()
             reactor.callLater(2, d.callback, static.Data('foobar\n', 'text/plain'))
             return d
-    
+
     root = Resource()
     root.putChild('test', TestResource())
     site = Site(root)
-    
+
     from twisted.internet import reactor
     reactor.listenTCP(8080, site)
     reactor.run()

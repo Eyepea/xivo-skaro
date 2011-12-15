@@ -32,12 +32,12 @@ from twisted.web import static
 
 
 IHTTPService = resource.IResource
-"""An HTTP service is exactly the same thing as an IResource.""" 
+"""An HTTP service is exactly the same thing as an IResource."""
 
 
 class BaseHTTPHookService(resource.Resource):
     """Base class for HTTPHookService. Not made to be instantiated directly."""
-    
+
     def __init__(self, service):
         resource.Resource.__init__(self)
         self._service = service
@@ -54,11 +54,11 @@ class BaseHTTPHookService(resource.Resource):
 
 class HTTPHookService(BaseHTTPHookService):
     """Base class for synchronous non-terminal service."""
-    
+
     def _pre_handle(self, path, request):
         """This SHOULD be overridden in derived classes."""
         pass
-    
+
     def getChild(self, path, request):
         self._pre_handle(path, request)
         return self._next_service(path, request)
@@ -102,7 +102,7 @@ class HTTPLogService(HTTPHookService):
         """
         HTTPHookService.__init__(self, service)
         self._logger = logger
-    
+
     def _pre_handle(self, path, request):
         # XXX this is just an example
         self._logger(str(path) + ' ---- ' + str(request))
@@ -117,10 +117,10 @@ class HTTPNoListingFileService(static.File):
                                              'Directory listing not permitted.')
     _NOT_ALLOWED_RESOURCE = resource.ErrorPage(http.NOT_ALLOWED, 'Method Not Allowed',
                                                'Method not allowed.')
-    
+
     def directoryListing(self):
         return self._FORBIDDEN_RESOURCE
-    
+
     def getChild(self, path, request):
         if request.method != 'GET':
             return self._NOT_ALLOWED_RESOURCE
@@ -133,15 +133,15 @@ if __name__ == '__main__':
     from twisted.python import log
     import sys
     log.startLogging(sys.stderr)
-    
+
     def metaaff(prefix):
         def aff(msg):
-            print >>sys.stderr, prefix, msg
+            print >> sys.stderr, prefix, msg
         return aff
     hook = HTTPLogService(metaaff('1:'), HTTPLogService(metaaff('2:'), resource.NoResource('Not found')))
     res = HTTPNoListingFileService('/home/etienne', 'application/octet-stream')
     site = Site(res)
-    
+
     from twisted.internet import reactor
     reactor.listenTCP(8080, site)
     reactor.run()

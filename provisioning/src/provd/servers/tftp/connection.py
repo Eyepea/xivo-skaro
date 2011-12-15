@@ -60,11 +60,11 @@ class _AbstractConnection(DatagramProtocol):
     once after the connection is closed, in any circumstances.
     
     """
-    
+
     blksize = 512
     timeout = 4
     max_retries = 4
-    
+
     def __init__(self, addr):
         """Create a new connection with a remote host.
         
@@ -80,7 +80,7 @@ class _AbstractConnection(DatagramProtocol):
         self._timeout_timer = None
         from twisted.internet import reactor
         self._reactor = reactor
-        
+
     def _close(self):
         """Close this connection.
         
@@ -88,14 +88,14 @@ class _AbstractConnection(DatagramProtocol):
         once. MAY be overridden in derived class. 
         """
         pass
-        
+
     def _next_dgram(self):
         """Return the next datagram to send to the remote host.
         
         Must be overridden in derived class.
         """
         raise NotImplementedError('Must be implemented in derived class')
-    
+
     def __do_close(self):
         """Cleanup and make sure self._close is called once."""
         if not self._closed:
@@ -104,18 +104,18 @@ class _AbstractConnection(DatagramProtocol):
             self._close()
             self._closed = True
             self.transport.stopListening()
-            
+
     def _cancel_timeout(self):
         if self._timeout_timer:
             logger.debug('Cancelling timeout')
             self._retry_cnt = 0
             self._timeout_timer.cancel()
             self._timeout_timer = None
-    
+
     def _set_timeout(self):
         logger.debug('Setting %ss timeout', self.timeout)
         self._timeout_timer = self._reactor.callLater(self.timeout, self._timeout_expired)
-    
+
     def _timeout_expired(self):
         logger.info('Timeout has expired with current retry count %s', self._retry_cnt)
         self._timeout_timer = None
@@ -124,11 +124,11 @@ class _AbstractConnection(DatagramProtocol):
             self.__do_close()
         else:
             self._send_last_dgram()
-            
+
     def _send_dgram(self, dgram):
         self.transport.write(dgram, self._addr)
         self._set_timeout()
-        
+
     def _send_next_dgram(self):
         try:
             dgram = self._next_dgram()
@@ -139,26 +139,26 @@ class _AbstractConnection(DatagramProtocol):
             logger.debug('Sending next datagram')
             self._send_dgram(dgram)
             self._last_dgram = dgram
-    
+
     def _send_last_dgram(self):
         logger.debug('Resending last datagram')
         self._send_dgram(self._last_dgram)
-            
+
     def _handle_wrong_tid(self, addr):
         dgram = build_dgram(err_packet(ERR_UNKNWN_TID, 'Unknown TID'))
         self.transport.write(dgram, addr)
-    
+
     def _handle_invalid_dgram(self):
         """Called when a datagram sent by the remote host could not be parsed."""
         dgram = build_dgram(err_packet(ERR_UNDEF, 'Invalid datagram'))
         self.transport.write(dgram, self._addr)
         self.__do_close()
-        
+
     def _handle_illegal_pkt(self, errmsg='Illegal TFTP operation'):
         dgram = build_dgram(err_packet(ERR_ILL, errmsg))
         self.transport.write(dgram, self._addr)
         self.__do_close()
-        
+
     def _handle_ack(self, pkt):
         blk_no = _unpack_to_uint16(pkt['blkno'])
         if blk_no == self._blk_no:
@@ -178,7 +178,7 @@ class _AbstractConnection(DatagramProtocol):
         else:
             logger.debug('Received ACK with an illegal block number')
             self._handle_illegal_pkt('Illegal block number')
-    
+
     def datagramReceived(self, dgram, addr):
         logger.debug('Datagram received')
         if not self._closed:
@@ -200,7 +200,7 @@ class _AbstractConnection(DatagramProtocol):
                     else:
                         logger.info('Received an unexpected packet - opcode %s', pkt['opcode'])
                         self._handle_illegal_pkt()
-    
+
     def startProtocol(self):
         logger.debug('In startProtocol')
         self._send_next_dgram()
@@ -222,10 +222,10 @@ class RFC1350Connection(_AbstractConnection):
         self._fobj = fobj
         self._blk_no = 0
         self._last_buf = None
-    
+
     def _close(self):
         self._fobj.close()
-    
+
     def _next_dgram(self):
         buf = self._fobj.read(self.blksize)
         if not buf and self._blk_no != 0 and len(self._last_buf) != self.blksize:
@@ -255,10 +255,10 @@ class RFC2347Connection(_AbstractConnection):
         self._oack_dgram = oack_dgram
         self._blk_no = -1
         self._last_buf = None
-    
+
     def _close(self):
         self._fobj.close()
-    
+
     def _next_dgram(self):
         if self._blk_no == -1:
             self._blk_no += 1

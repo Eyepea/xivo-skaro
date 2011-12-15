@@ -37,7 +37,7 @@ from sys import exit, stderr
 
 BUILD_FILENAME = 'build.py'
 DB_FILENAME = 'plugins.db'
-PLUGIN_INFO_FILENAME  = 'plugin-info'
+PLUGIN_INFO_FILENAME = 'plugin-info'
 PACKAGE_SUFFIX = '.tar.bz2'
 
 
@@ -93,7 +93,7 @@ class Bplugin(object):
         self._load_bplugin(path)
         self._bplugin_path = path
         self.name = os.path.basename(path)
-    
+
     def _load_bplugin(self, path):
         targets = {}
         def _target(target_id, pg_id, std_dirs=True):
@@ -109,7 +109,7 @@ class Bplugin(object):
         build_file = os.path.join(path, BUILD_FILENAME)
         execfile(build_file, {'target': _target})
         self.targets = targets
-    
+
     def build(self, target_id, pgdir):
         """Build the target plugin in pgdir.
         
@@ -133,18 +133,18 @@ class Bplugin(object):
             os.chdir(old_cwd)
         if target['std_dirs']:
             self._mk_std_dirs(abs_path)
-    
+
     def _mk_std_dirs(self, abs_path):
         for dir in ['var', 'var/cache', 'var/installed', 'var/templates', 'var/tftpboot']:
             _mkdir(os.path.join(abs_path, dir))
-    
+
 
 def build_op(opts, args, src_dir, dest_dir):
     # Pre: src_dir is a directory
     # Pre: dest_dir is a directory
     bdir = src_dir
     pgdir = dest_dir
-    
+
     # parse bplugins and target to build
     if args:
         bplugin_path = os.path.join(bdir, args[0])
@@ -154,14 +154,14 @@ def build_op(opts, args, src_dir, dest_dir):
         bplugins_target = {}
         for bplugin_path in _list_bplugins(bdir):
             bplugins_target[bplugin_path] = None
-    
+
     # create bplugins object and check targets
     bplugins_obj = {}
     for bplugin_path, targets in bplugins_target.iteritems():
         try:
             bplugin = Bplugin(bplugin_path)
         except Exception, e:
-            print >>stderr, "error: while loading bplugin '%s': %s" % (bplugin_path, e)
+            print >> stderr, "error: while loading bplugin '%s': %s" % (bplugin_path, e)
             exit(1)
         else:
             bplugins_obj[bplugin_path] = bplugin
@@ -170,10 +170,10 @@ def build_op(opts, args, src_dir, dest_dir):
             else:
                 for target_id in targets:
                     if target_id not in bplugin.targets:
-                        print >>stderr, "error: target '%s' not in bplugin '%s'" % \
+                        print >> stderr, "error: target '%s' not in bplugin '%s'" % \
                               (target_id, bplugin_path)
                         exit(1)
-    
+
     # build bplugins
     for bplugin_path, targets in bplugins_target.iteritems():
         print "Processing targets for bplugin '%s'..." % bplugin_path
@@ -187,7 +187,7 @@ def build_op(opts, args, src_dir, dest_dir):
             try:
                 bplugin.build(target_id, pgdir)
             except Exception:
-                print >>stderr, "error while building target '%s':" % target_id 
+                print >> stderr, "error while building target '%s':" % target_id
                 traceback.print_exc(None, stderr)
 
 
@@ -211,7 +211,7 @@ def _get_plugin_version(plugin):
         raw_plugin_info = json.load(fobj)
         return raw_plugin_info[u'version']
     except (ValueError, KeyError):
-        print >>stderr, "error: plugin '%s' has invalid plugin info file" % plugin
+        print >> stderr, "error: plugin '%s' has invalid plugin info file" % plugin
         exit(1)
     finally:
         fobj.close()
@@ -220,18 +220,18 @@ def _get_plugin_version(plugin):
 def package_op(opts, args, src_dir, dest_dir):
     pg_dir = src_dir
     pkg_dir = dest_dir
-    
+
     # parse plugins to package
     if args:
         plugins = [file for arg in args for file in glob.iglob(os.path.join(pg_dir, arg))]
         # make sure plugins are plugins...
         for plugin in plugins:
             if not _is_plugin(plugin):
-                print >>stderr, "error: plugin '%s' is missing info file" % plugin
+                print >> stderr, "error: plugin '%s' is missing info file" % plugin
                 exit(1)
     else:
         plugins = _list_plugins(pg_dir)
-    
+
     # build packages
     for plugin in plugins:
         plugin_version = _get_plugin_version(plugin)
@@ -258,7 +258,7 @@ def _get_package_name(package):
         if tar_package.getmember(shortest_name).isdir():
             return shortest_name
         else:
-            print >>stderr, "error: package '%s' should have only 1 directory at depth 0" % package
+            print >> stderr, "error: package '%s' should have only 1 directory at depth 0" % package
             exit(1)
     finally:
         tar_package.close()
@@ -271,9 +271,9 @@ def _get_package_plugin_info(package, package_name):
     try:
         plugin_info_name = os.path.join(package_name, PLUGIN_INFO_FILENAME)
         if plugin_info_name not in tar_package.getnames():
-            print >>stderr, "error: package '%s' has no file '%s'" % (package, plugin_info_name)
+            print >> stderr, "error: package '%s' has no file '%s'" % (package, plugin_info_name)
             exit(1)
-        
+
         fobj = tar_package.extractfile(plugin_info_name)
         try:
             raw_plugin_info = json.load(fobj)
@@ -282,7 +282,7 @@ def _get_package_plugin_info(package, package_name):
                     raise ValueError()
             return raw_plugin_info
         except ValueError:
-            print >>stderr, "error: package '%s' has invalid plugin-info file" % package
+            print >> stderr, "error: package '%s' has invalid plugin-info file" % package
             exit(1)
         finally:
             fobj.close()
@@ -335,13 +335,13 @@ def _version_cmp(version1, version2):
 def create_db_op(opts, args, src_dir, dest_dir):
     pkg_dir = src_dir
     db_file = os.path.join(dest_dir, DB_FILENAME)
-    
+
     # parse packages to use to build db file
     if args:
         packages = [os.path.join(pkg_dir, arg) for arg in args]
     else:
         packages = _list_packages(pkg_dir)
-    
+
     # get package infos, and only for the most recent packages
     package_infos = {}
     for package in packages:
@@ -349,14 +349,14 @@ def create_db_op(opts, args, src_dir, dest_dir):
         if package_name in package_infos:
             cur_version = package_info['version']
             last_version = package_infos[package_name]['version']
-            print >>stderr, "warning: found package %s in version %s and %s" % \
+            print >> stderr, "warning: found package %s in version %s and %s" % \
                   (package_name, cur_version, last_version)
             if _version_cmp(cur_version, last_version) > 0:
                 package_infos[package_name] = package_info
         else:
             print "  Adding package '%s'..." % package
             package_infos[package_name] = package_info
-    
+
     # create db file
     fobj = open(db_file, 'w')
     try:
@@ -376,7 +376,7 @@ def _get_directory(opt_value):
         return os.curdir
     else:
         if not os.path.isdir(opt_value):
-            print >>stderr, "error: '%s' is not a directory" % opt_value
+            print >> stderr, "error: '%s' is not a directory" % opt_value
             exit(1)
         return opt_value
 
@@ -400,14 +400,14 @@ def main():
                       help='destination directory')
     parser.add_option('--pretty-db', action='store_true', dest='pretty_db',
                       help='pretty format the DB file')
-    
+
     opts, args = parser.parse_args()
     nb_op = count(getattr(opts, name) for name in ('build', 'package', 'create_db'))
     if nb_op != 1:
-        print >>stderr, "error: only one operation may be used at a time (%s given)" % nb_op
+        print >> stderr, "error: only one operation may be used at a time (%s given)" % nb_op
         exit(1)
     # assert: only one operation is specified
-    
+
     src_dir, dest_dir = _get_directories(opts)
     if opts.build:
         build_op(opts, args, src_dir, dest_dir)
