@@ -22,7 +22,7 @@ from provd.servers.tftp.packet import *
 
 RRQ_DGRAM_OPTS_1 = ('\x00\x01filename\x00mode\x00opt1\x00value1\x00',
                     (OP_RRQ, 'filename', 'mode', {'opt1': 'value1'}))
-                             
+
 class TestTFTP(unittest.TestCase):
     def test_parse_valid_rrq_dgram_correctly(self):
         self.assertEqual({'opcode': OP_RRQ, 'filename': 'fname', 'mode': 'mode', 'options': {}},
