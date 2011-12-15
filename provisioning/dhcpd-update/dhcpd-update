@@ -8,7 +8,6 @@ installed on a XiVO.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 
@@ -104,7 +103,7 @@ def _read_config_from_commandline(config):
     parser.add_option('-r', '--regenerate', action='store_true')
     parser.add_option('-i', '--ignoremissing', action='store_true')
     parser.add_option('-F', '--configfile', action='store')
-    
+
     opts, args = parser.parse_args()
     result = {'general': {}}
     if opts.newempty:
@@ -166,7 +165,7 @@ def read_config():
 
 def _do_new_empty(config):
     dhcpd_dir = config['general']['dhcpd_dir']
-    new_empty_dhcpd_update_file(dhcpd_dir) 
+    new_empty_dhcpd_update_file(dhcpd_dir)
 
 
 def _do_download(config):
@@ -185,22 +184,22 @@ def _do_regenerate(config):
 
 def main():
     config = read_config()
-    
+
     op_new_empty = config['general'].get('new_empty') == 'yes'
     if op_new_empty:
         _do_new_empty(config)
-    
+
     op_download = config['general'].get('download') == 'yes'
     if op_download:
         _do_download(config)
-    
+
     op_regenerate = config['general'].get('regenerate') == 'yes'
     if op_regenerate:
         _do_regenerate(config)
-    
+
     if not (op_new_empty or op_download or op_regenerate):
         # Error: no operation specified
-        print >>sys.stderr, 'error: no operation specified'
+        print >> sys.stderr, 'error: no operation specified'
         raise SystemExit(2)
 
 
