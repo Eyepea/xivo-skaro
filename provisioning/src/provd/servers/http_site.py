@@ -5,7 +5,6 @@ Only thing you need to do is to use this Site class instead of twisted.web.serve
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 

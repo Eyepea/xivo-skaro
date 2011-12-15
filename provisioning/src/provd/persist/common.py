@@ -43,7 +43,6 @@ Here's examples of valid selector and the documents the selector will match:
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

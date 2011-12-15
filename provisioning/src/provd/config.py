@@ -52,7 +52,6 @@ configuration file are documented in provd.conf):
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 

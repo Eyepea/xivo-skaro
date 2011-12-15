@@ -3,7 +3,6 @@
 # next line is to prevent from importing our own module when doing 'import shelve'
 from __future__ import absolute_import 
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

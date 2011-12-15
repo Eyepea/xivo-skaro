@@ -15,7 +15,6 @@ and modifiers) as for now since there would be no use.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

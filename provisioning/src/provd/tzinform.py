@@ -2,7 +2,6 @@
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (c) 2010-2011  Avencall
 
