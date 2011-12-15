@@ -32,9 +32,9 @@ from xml.sax.saxutils import escape
 from provd import tzinform
 from provd import synchronize
 from provd.devices.config import RawConfigError
-from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT, \
     PROBABLE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT
-from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
+from provd.plugins import StandardPlugin, FetchfwPluginHelper, \
     TemplatePluginHelper
 from provd.servers.http import HTTPNoListingFileService, HTTPHookService
 from provd.servers.tftp.service import TFTPFileService
@@ -52,16 +52,16 @@ def _norm_model(raw_model):
 
 class BaseCiscoDHCPDeviceInfoExtractor(object):
     _RAW_VENDORS = ['LINKSYS', 'Cisco']
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         options = request[u'options']
         if 60 in options:
             return self._extract_from_vdi(options[60])
         return None
-    
+
     def _extract_from_vdi(self, vdi):
         # Vendor class identifier:
         #   "LINKSYS SPA-942" (SPA942 6.1.5a)
@@ -87,10 +87,10 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
     _LINKSYS_UA_REGEX = re.compile(r'^Linksys/([\w\-]+)-([^\s\-]+) \((\w+)\)$')
     _CISCO_UA_REGEX = re.compile(r'^Cisco/(\w+)-(\S+) (?:\(([\dA-F]{12})\))?\((\w+)\)$')
     _PATH_REGEX = re.compile(r'\b([\da-f]{12})\.xml$')
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
@@ -102,7 +102,7 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
                     self._extract_from_path(request.path, dev_info)
                 return dev_info
         return None
-    
+
     def _extract_from_ua(self, ua, dev_info):
         # HTTP User-Agent:
         # Note: the last group of digit is the serial number;
@@ -118,7 +118,7 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
             self._extract_linksys_from_ua(ua, dev_info)
         elif ua.startswith('Cisco/'):
             self._extract_cisco_from_ua(ua, dev_info)
-    
+
     def _extract_linksys_from_ua(self, ua, dev_info):
         # Pre: ua.startswith('Linksys/')
         m = self._LINKSYS_UA_REGEX.match(ua)
@@ -127,7 +127,7 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
             dev_info[u'model'] = _norm_model(raw_model)
             dev_info[u'version'] = version.decode('ascii')
             dev_info[u'sn'] = sn.decode('ascii')
-    
+
     def _extract_cisco_from_ua(self, ua, dev_info):
         # Pre: ua.startswith('Cisco/')
         m = self._CISCO_UA_REGEX.match(ua)
@@ -138,7 +138,7 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
             if raw_mac:
                 dev_info[u'mac'] = norm_mac(raw_mac.decode('ascii'))
             dev_info[u'sn'] = sn.decode('ascii')
-    
+
     def _extract_from_path(self, path, dev_info):
         # try to extract MAC address from path
         m = self._PATH_REGEX.search(path)
@@ -155,10 +155,10 @@ class BaseCiscoHTTPDeviceInfoExtractor(object):
 class BaseCiscoTFTPDeviceInfoExtractor(object):
     _SEPFILE_REGEX = re.compile(r'^SEP([\dA-F]{12})\.cnf\.xml$')
     _SPAFILE_REGEX = re.compile(r'^/spa(.+?)\.cfg$')
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         packet = request['packet']
         filename = packet['filename']
@@ -168,7 +168,7 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
                 dev_info[u'vendor'] = u'Cisco'
                 return dev_info
         return None
-    
+
     def _test_sepfile(self, filename):
         # Test if filename is "SEPMAC.cnf.xml".
         m = self._SEPFILE_REGEX.match(filename)
@@ -176,7 +176,7 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
             raw_mac = m.group(1)
             return {u'mac': norm_mac(raw_mac.decode('ascii'))}
         return None
-    
+
     def _test_spafile(self, filename):
         # Test if filename is "/spa$PSN.cfg".
         m = self._SPAFILE_REGEX.match(filename)
@@ -184,7 +184,7 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
             raw_model = 'SPA' + m.group(1)
             return {u'model': _norm_model(raw_model)}
         return None
-    
+
     def _test_init(self, filename):
         # Test if filename is "/init.cfg".
         if filename == '/init.cfg':
@@ -196,7 +196,7 @@ class BaseCiscoPgAssociator(BasePgAssociator):
     def __init__(self, model_version):
         BasePgAssociator.__init__(self)
         self._model_version = model_version
-    
+
     def _do_associate(self, vendor, model, version):
         if vendor == u'Cisco':
             if model in self._model_version:
@@ -215,11 +215,11 @@ class BaseCiscoPgAssociator(BasePgAssociator):
 
 class BaseCiscoHTTPHookService(HTTPHookService):
     # HTTP handler to support the config file encryption mess.
-    
+
     def __init__(self, service, plugin):
         HTTPHookService.__init__(self, service)
         self._plugin = plugin
-    
+
     def _pre_handle(self, path, request):
         # XXX we might also want to remove the encrypted file when
         #     it's no more needed, although there isn't any real problem
@@ -246,7 +246,7 @@ class BaseCiscoPlugin(StandardPlugin):
     the common_configure function.
     
     """
-    
+
     _ENCODING = 'UTF-8'
     _NB_FKEY = {
         # <model>: (<nb keys>, <nb expansion modules>)
@@ -269,34 +269,34 @@ class BaseCiscoPlugin(StandardPlugin):
         u'fr_FR': u'French',
         u'fr_CA': u'French',
     }
-    
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         self._app = app
         self._cache_dir = os.path.join(plugin_dir, 'var', 'cache')
-        
+
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        
+
         downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
-        
+
         self.services = fetchfw_helper.services()
         self.http_service = BaseCiscoHTTPHookService(HTTPNoListingFileService(self._tftpboot_dir), self)
         self.tftp_service = TFTPFileService(self._tftpboot_dir)
-    
+
     dhcp_dev_info_extractor = BaseCiscoDHCPDeviceInfoExtractor()
-    
+
     http_dev_info_extractor = BaseCiscoHTTPDeviceInfoExtractor()
-    
+
     tftp_dev_info_extractor = BaseCiscoTFTPDeviceInfoExtractor()
-    
+
     def configure_common(self, raw_config):
         tpl = self._tpl_helper.get_template('common/model.cfg.tpl')
         common_filenames = self._COMMON_FILENAMES
         for filename in common_filenames:
             dst = os.path.join(self._tftpboot_dir, filename)
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
-    
+
     def _add_fkeys(self, raw_config, model):
         if model not in self._NB_FKEY:
             logger.info(u'Unknown model or model with no funckeys: %s', model)
@@ -334,7 +334,7 @@ class BaseCiscoPlugin(StandardPlugin):
                     lines.append(u'<Unit_%s_Key_%s>%s</Unit_%s_Key_%s>' %
                                  (expmod_no, expmod_key_no, function, expmod_no, expmod_key_no))
         raw_config[u'XX_fkeys'] = u'\n'.join(lines)
-    
+
     def _format_dst_change(self, dst_change):
         _day = dst_change['day']
         if _day.startswith('D'):
@@ -347,10 +347,10 @@ class BaseCiscoPlugin(StandardPlugin):
                 day = '-1'
             else:
                 day = (int(week) - 1) * 7 + 1
-        
+
         h, m, s = dst_change['time'].as_hms
         return u'%s/%s/%s/%s:%s:%s' % (dst_change['month'], day, weekday, h, m, s)
-    
+
     def _format_tzinfo(self, tzinfo):
         lines = []
         hours, minutes = tzinfo['utcoffset'].as_hms[:2]
@@ -366,7 +366,7 @@ class BaseCiscoPlugin(StandardPlugin):
                           h, m, s,
                           ))
         return u'\n'.join(lines)
-    
+
     def _add_timezone(self, raw_config):
         if u'timezone' in raw_config:
             try:
@@ -375,7 +375,7 @@ class BaseCiscoPlugin(StandardPlugin):
                 logger.info('Unknown timezone: %s', e)
             else:
                 raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
-    
+
     def _format_proxy(self, raw_config, line, line_no):
         proxy_ip = line.get(u'proxy_ip') or raw_config[u'sip_proxy_ip']
         backup_proxy_ip = line.get(u'backup_proxy_ip') or raw_config.get(u'sip_backup_proxy_ip')
@@ -387,45 +387,45 @@ class BaseCiscoPlugin(StandardPlugin):
         else:
             proxy_value = u'%s:%s' % (proxy_ip, proxy_port)
         return proxy_value
-    
+
     def _add_proxies(self, raw_config):
         proxies = {}
         for line_no, line in raw_config[u'sip_lines'].iteritems():
             proxies[line_no] = self._format_proxy(raw_config, line, line_no)
         raw_config[u'XX_proxies'] = proxies
-    
+
     def _add_language(self, raw_config):
         locale = raw_config.get(u'locale')
         if locale in self._LOCALE:
             raw_config[u'XX_language'] = self._LOCALE[locale]
-    
+
     def _new_encryption_key(self):
         return b2a_hex(os.urandom(32))
-    
+
     def _dev_specific_filename(self, dev):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(dev[u'mac'], separator='')
         return fmted_mac + '.xml'
-    
+
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-    
+
     def _check_device(self, device):
         if u'mac' not in device:
             raise Exception('MAC address needed for device configuration')
-    
+
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
-        
+
         self._add_fkeys(raw_config, device.get(u'model'))
         self._add_timezone(raw_config)
         self._add_proxies(raw_config)
         self._add_language(raw_config)
-        
+
         update_device = False
         if raw_config.get(u'config_encryption_enabled'):
             # config encryption is enabled
@@ -436,10 +436,10 @@ class BaseCiscoPlugin(StandardPlugin):
                 device[u'X_xivo_cisco_spa_encrypted'] = False
                 update_device = True
             raw_config[u'XX_key'] = device[u'X_xivo_cisco_spa_key']
-        
+
         cache_path = os.path.join(self._cache_dir, filename)
-        self._tpl_helper.dump(tpl, raw_config, cache_path, self._ENCODING)
-        
+        self._tpl_helper.dump(tpl, raw_config, cache_path, self._ENCODING, errors='replace')
+
         # encrypt configuration file if needed
         if raw_config.get(u'config_encryption_enabled') or device.get(u'X_xivo_cisco_spa_encrypted'):
             in_file = cache_path
@@ -448,7 +448,7 @@ class BaseCiscoPlugin(StandardPlugin):
             subprocess.check_call(['openssl', 'enc', '-aes-256-cbc',
                                    '-k', device[u'X_xivo_cisco_spa_key'],
                                    '-in', in_file, '-out', out_file])
-        
+
         # create a link to unencrypted config file if needed
         if not raw_config.get(u'config_encryption_enabled') or not device.get(u'X_xivo_cisco_spa_encrypted'):
             tftpboot_path = os.path.join(self._tftpboot_dir, filename)
@@ -460,11 +460,11 @@ class BaseCiscoPlugin(StandardPlugin):
                     os.symlink(cache_path, tftpboot_path)
                 else:
                     raise
-        
+
         # update device if needed
         if update_device:
             self._app.dev_update(device)
-    
+
     def deconfigure(self, device):
         filename = self._dev_specific_filename(device)
         cache_path = os.path.join(self._cache_dir, filename)
@@ -476,7 +476,7 @@ class BaseCiscoPlugin(StandardPlugin):
             except OSError:
                 # ignore -- probably an already removed file
                 pass
-    
+
     def synchronize(self, device, raw_config):
         try:
             ip = device[u'ip'].encode('ascii')

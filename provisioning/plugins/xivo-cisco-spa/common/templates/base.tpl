@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="{% block encoding %}UTF-8{% endblock %}" standalone="yes"?>
 <flat-profile>
 
 <!-- Note that this file is made to be used in conjunction with other files.
