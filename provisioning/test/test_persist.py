@@ -37,20 +37,6 @@ class TestListCollection(unittest.TestCase):
     def setUp(self):
         self._collection = new_list_collection()
     
-    def test_preserve_insertion_order(self):
-        id_generator = urandom_id_generator()
-        documents = [{ID_KEY: id_generator.next()} for i in xrange(500)]
-        
-        for document in documents:
-            self._collection.insert(document)
-        for i, document in enumerate(self._collection.find({})):
-            self.assertEqual(documents[i], document)
-
-    def test_retrieve_works_correctly(self):
-        # XXX invalid test since switch to async
-        self._collection.insert({ID_KEY: 'a'})
-        self.assertEqual({ID_KEY: 'a'}, self._collection.retrieve('a'))
-    
     def test_return_id_on_insert(self):
         id = self._collection.insert({'k': 'v'})
         self.assertNotEqual(None, id)
@@ -59,12 +45,6 @@ class TestListCollection(unittest.TestCase):
         doc = {'k': 'v'}
         self._collection.insert(doc)
         self.assertTrue(ID_KEY in doc)
-    
-    def test_id_inserted_same_as_returned_on_insert(self):
-        # XXX invalid test since switch to async
-        doc = {'k': 'v'}
-        id = self._collection.insert(doc)
-        self.assertTrue(doc[ID_KEY] == id)
     
     def test_leave_id_unchanged_if_present(self):
         id = 'test_id'
@@ -85,12 +65,6 @@ class TestDictCollection(unittest.TestCase):
         doc = {'k': 'v'}
         self._collection.insert(doc)
         self.assertTrue(ID_KEY in doc)
-    
-    def test_id_inserted_same_as_returned_on_insert(self):
-        # XXX invalid test since switch to async
-        doc = {'k': 'v'}
-        id = self._collection.insert(doc)
-        self.assertTrue(doc[ID_KEY] == id)
     
     def test_leave_id_unchanged_if_present(self):
         id = 'test_id'
@@ -122,7 +96,7 @@ class TestSelectorSelectValue(unittest.TestCase):
     
     def test_select_value_list(self):
         doc = {'k': ['v1', 'v2']}
-        self.assertEqual(['v1', 'v2'],
+        self.assertEqual([['v1', 'v2']],
                          list(_retrieve_doc_values('k', doc)))
     
     def test_select_value_dict_inside_list(self):
@@ -133,35 +107,6 @@ class TestSelectorSelectValue(unittest.TestCase):
         doc = {'k': [{'kk': 'v1'}, {'kk': 'v2'}]}
         self.assertEqual(['v1', 'v2'],
                          list(_retrieve_doc_values('k.kk', doc)))
-
-
-class TestSelectorValueMatcher(unittest.TestCase):
-    def test_match_scalar_if_match(self):
-        matcher = _create_value_matcher('v')
-        self.assertTrue(matcher('v'))
-    
-    def test_nomatch_scalar_if_no_match(self):
-        matcher = _create_value_matcher('v')
-        self.assertFalse(matcher('v1'))
-    
-    def test_match_dict_if_match(self):
-        matcher = _create_value_matcher({'k': 'v'})
-        self.assertTrue(matcher({'k': 'v'}))
-    
-    def test_nomatch_dict_if_no_match(self):
-        matcher = _create_value_matcher({'k': 'v'})
-        self.assertFalse(matcher({'k': 'v1'}))
-        self.assertFalse(matcher({'k1': 'v'}))
-
-    def test_match_Sin_if_match(self):
-        matcher = _create_value_matcher({'$in': [1, 2]})
-        self.assertTrue(matcher(1))
-        self.assertTrue(matcher(2))
-    
-    def test_nomatch_Sin_if_no_match(self):
-        matcher = _create_value_matcher({'$in': [1,2]})
-        self.assertFalse(matcher(0))
-        self.assertFalse(matcher(3))
 
 
 class TestSelectorCreatePredicate(unittest.TestCase):
@@ -192,12 +137,6 @@ class TestSelectorCreatePredicate(unittest.TestCase):
         self.assertFalse(pred({'k1': 'v1'}))
         self.assertFalse(pred({'k2': 'v2'}))
         self.assertFalse(pred({'k1': 'v1', 'k2': 'v1'}))
-
-    def test_1item_list_selector_match(self):
-        pred = _create_pred_from_selector({'k1': 'v1'})
-        self.assertTrue(pred({'k1': ['v1']}))
-        self.assertTrue(pred({'k1': ['v2', 'v1']}))
-        self.assertTrue(pred({'k1': 'v1'}))
 
     def test_1item_list_selector_nomatch(self):
         pred = _create_pred_from_selector({'k1': 'v1'})
